@@ -1,15 +1,13 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 9/9] iommu/vt-d: Clean up PASID talbe management for SVM
-Date: Tue, 1 May 2018 09:24:24 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439BE7567@SHSMSX104.ccr.corp.intel.com>
-References: <1523934202-21669-1-git-send-email-baolu.lu@linux.intel.com>
-	<1523934202-21669-10-git-send-email-baolu.lu@linux.intel.com>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/rockchip: make clock handling optional
+Date: Tue, 01 May 2018 11:57:29 +0200
+Message-ID: <1951663.B4MoXU0Rz2@phil>
+References: <20180417120915.31535-1-heiko@sntech.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1523934202-21669-10-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180417120915.31535-1-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,138 +17,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org, vicencb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, tomeu-XCtybt49RKsYaV1qd6yewg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> Sent: Tuesday, April 17, 2018 11:03 AM
-> 
-> The previous per iommu pasid table alloc/free interfaces
-> are no longer used. Clean up the driver by removing it.
+Ho Joerg,
 
-I think this patch major cleans intel_svm_alloc_pasid_tables
-and intel_svm_free_pasid_tables. Actually, only PASID State
-table allocation is remained in these two functions.
+Am Dienstag, 17. April 2018, 14:09:15 CEST schrieb Heiko Stuebner:
+> iommu clocks are optional, so the driver should not fail if they are not
+> present. Instead just set the number of clocks to 0, which the clk-blk APIs
+> can handle just fine.
+> 
+> Fixes: f2e3a5f557ad ("iommu/rockchip: Control clocks needed to access the IOMMU")
+> Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-Since PASID Table is modified to be per-iommu domain. How
-about the PASID State Table? Should it also be per-iommu domain?
+could you pick up this patch as fix for 4.17 please?
+As without it, we loose display output with old devicetrees.
 
-Thanks,
-Yi Liu
-> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c |  6 +++---
->  drivers/iommu/intel-svm.c   | 17 ++---------------
->  include/linux/intel-iommu.h |  5 ++---
->  3 files changed, 7 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 5fe7f91..5acb90d 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1736,7 +1736,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
->  	if (pasid_enabled(iommu)) {
->  		if (ecap_prs(iommu->ecap))
->  			intel_svm_finish_prq(iommu);
-> -		intel_svm_free_pasid_tables(iommu);
-> +		intel_svm_exit(iommu);
->  	}
->  #endif
->  }
-> @@ -3291,7 +3291,7 @@ static int __init init_dmars(void)
->  			hw_pass_through = 0;
->  #ifdef CONFIG_INTEL_IOMMU_SVM
->  		if (pasid_enabled(iommu))
-> -			intel_svm_alloc_pasid_tables(iommu);
-> +			intel_svm_init(iommu);
->  #endif
->  	}
-> 
-> @@ -4268,7 +4268,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
-> 
->  #ifdef CONFIG_INTEL_IOMMU_SVM
->  	if (pasid_enabled(iommu))
-> -		intel_svm_alloc_pasid_tables(iommu);
-> +		intel_svm_init(iommu);
->  #endif
-> 
->  	if (dmaru->ignored) {
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> index 3b14819..38cae65 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -34,7 +34,7 @@
-> 
->  static irqreturn_t prq_event_thread(int irq, void *d);
-> 
-> -int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
-> +int intel_svm_init(struct intel_iommu *iommu)
->  {
->  	struct page *pages;
->  	int order;
-> @@ -59,15 +59,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
->  		iommu->pasid_max = 0x20000;
-> 
->  	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
-> -	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-> -	if (!pages) {
-> -		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
-> -			iommu->name);
-> -		return -ENOMEM;
-> -	}
-> -	iommu->pasid_table = page_address(pages);
-> -	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
-> -
->  	if (ecap_dis(iommu->ecap)) {
->  		/* Just making it explicit... */
->  		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct
-> pasid_state_entry));
-> @@ -82,14 +73,10 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu
-> *iommu)
->  	return 0;
->  }
-> 
-> -int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-> +int intel_svm_exit(struct intel_iommu *iommu)
->  {
->  	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
-> 
-> -	if (iommu->pasid_table) {
-> -		free_pages((unsigned long)iommu->pasid_table, order);
-> -		iommu->pasid_table = NULL;
-> -	}
->  	if (iommu->pasid_state_table) {
->  		free_pages((unsigned long)iommu->pasid_state_table, order);
->  		iommu->pasid_state_table = NULL;
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 08e5811..44c7613 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -470,7 +470,6 @@ struct intel_iommu {
->  	 * devices away to userspace processes (e.g. for DPDK) and don't
->  	 * want to trust that userspace will use *only* the PASID it was
->  	 * told to. But while it's all driver-arbitrated, we're fine. */
-> -	struct pasid_entry *pasid_table;
->  	struct pasid_state_entry *pasid_state_table;
->  	struct page_req_dsc *prq;
->  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-> @@ -539,8 +538,8 @@ void free_pgtable_page(void *vaddr);
->  struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
-> 
->  #ifdef CONFIG_INTEL_IOMMU_SVM
-> -extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
-> -extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-> +int intel_svm_init(struct intel_iommu *iommu);
-> +int intel_svm_exit(struct intel_iommu *iommu);
->  extern int intel_svm_enable_prq(struct intel_iommu *iommu);
->  extern int intel_svm_finish_prq(struct intel_iommu *iommu);
-> 
-> --
-> 2.7.4
+
+Thanks
+Heiko
