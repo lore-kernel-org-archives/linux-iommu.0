@@ -1,14 +1,15 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCHv4 1/2] iommu/vt-d: Ratelimit each dmar fault printing
-Date: Wed, 02 May 2018 03:22:24 +0100
-Message-ID: <1525227744.14025.6.camel@arista.com>
-References: <20180331003312.6390-1-dima@arista.com>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 5/9] iommu/vt-d: Per domain pasid table interfaces
+Date: Wed, 2 May 2018 11:08:27 +0800
+Message-ID: <5AE92BAB.3010705@linux.intel.com>
+References: <1523934202-21669-1-git-send-email-baolu.lu@linux.intel.com>
+	<1523934202-21669-6-git-send-email-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439BE7516@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180331003312.6390-1-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439BE7516-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,114 +19,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Yi,
 
-is there anything I may do about those two patches?
-In 2/2 I've limited loop cnt as discussed in v3.
-This one solves softlockup for us, might be useful.
+Thank you very much for reviewing my patches.
 
-On Sat, 2018-03-31 at 01:33 +0100, Dmitry Safonov wrote:
-> There is a ratelimit for printing, but it's incremented each time the
-> cpu recives dmar fault interrupt. While one interrupt may signal
-> about
-> *many* faults.
-> So, measuring the impact it turns out that reading/clearing one fault
-> takes < 1 usec, and printing info about the fault takes ~170 msec.
-> 
-> Having in mind that maximum number of fault recording registers per
-> remapping hardware unit is 256.. IRQ handler may run for (170*256)
-> msec.
-> And as fault-serving loop runs without a time limit, during servicing
-> new faults may occur..
-> 
-> Ratelimit each fault printing rather than each irq printing.
-> 
-> Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
-> 
-> BUG: spinlock lockup suspected on CPU#0, CliShell/9903
->  lock: 0xffffffff81a47440, .magic: dead4ead, .owner:
-> kworker/u16:2/8915, .owner_cpu: 6
-> CPU: 0 PID: 9903 Comm: CliShell
-> Call Trace:$\n'
-> [..] dump_stack+0x65/0x83$\n'
-> [..] spin_dump+0x8f/0x94$\n'
-> [..] do_raw_spin_lock+0x123/0x170$\n'
-> [..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
-> [..] uart_chars_in_buffer+0x20/0x4d$\n'
-> [..] tty_chars_in_buffer+0x18/0x1d$\n'
-> [..] n_tty_poll+0x1cb/0x1f2$\n'
-> [..] tty_poll+0x5e/0x76$\n'
-> [..] do_select+0x363/0x629$\n'
-> [..] compat_core_sys_select+0x19e/0x239$\n'
-> [..] compat_SyS_select+0x98/0xc0$\n'
-> [..] sysenter_dispatch+0x7/0x25$\n'
-> [..]
-> NMI backtrace for cpu 6
-> CPU: 6 PID: 8915 Comm: kworker/u16:2
-> Workqueue: dmar_fault dmar_fault_work
-> Call Trace:$\n'
-> [..] wait_for_xmitr+0x26/0x8f$\n'
-> [..] serial8250_console_putchar+0x1c/0x2c$\n'
-> [..] uart_console_write+0x40/0x4b$\n'
-> [..] serial8250_console_write+0xe6/0x13f$\n'
-> [..] call_console_drivers.constprop.13+0xce/0x103$\n'
-> [..] console_unlock+0x1f8/0x39b$\n'
-> [..] vprintk_emit+0x39e/0x3e6$\n'
-> [..] printk+0x4d/0x4f$\n'
-> [..] dmar_fault+0x1a8/0x1fc$\n'
-> [..] dmar_fault_work+0x15/0x17$\n'
-> [..] process_one_work+0x1e8/0x3a9$\n'
-> [..] worker_thread+0x25d/0x345$\n'
-> [..] kthread+0xea/0xf2$\n'
-> [..] ret_from_fork+0x58/0x90$\n'
-> 
-> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/dmar.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index accf58388bdb..6c4ea32ee6a9 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->  	int reg, fault_index;
->  	u32 fault_status;
->  	unsigned long flag;
-> -	bool ratelimited;
->  	static DEFINE_RATELIMIT_STATE(rs,
->  				      DEFAULT_RATELIMIT_INTERVAL,
->  				      DEFAULT_RATELIMIT_BURST);
->  
-> -	/* Disable printing, simply clear the fault when ratelimited
-> */
-> -	ratelimited = !__ratelimit(&rs);
-> -
->  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
->  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
-> -	if (fault_status && !ratelimited)
-> +	if (fault_status && __ratelimit(&rs))
->  		pr_err("DRHD: handling fault status reg %x\n",
-> fault_status);
->  
->  	/* TBD: ignore advanced fault log currently */
-> @@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->  	fault_index = dma_fsts_fault_record_index(fault_status);
->  	reg = cap_fault_reg_offset(iommu->cap);
->  	while (1) {
-> +		/* Disable printing, simply clear the fault when
-> ratelimited */
-> +		bool ratelimited = !__ratelimit(&rs);
->  		u8 fault_reason;
->  		u16 source_id;
->  		u64 guest_addr;
+On 05/01/2018 05:22 PM, Liu, Yi L wrote:
+>> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+>> Sent: Tuesday, April 17, 2018 11:03 AM
+>>
+>> This patch adds the interfaces for per domain pasid table
+>> management. Currently we allocate one pasid table for all
+>> devices under the scope of an IOMMU. It's insecure in the
+>> cases where multiple devices under one single IOMMU unit
+>> support PASID feature. With per domain pasid table, we can
+>> achieve finer protection and isolation granularity.
+>>
+>> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Suggested-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> ---
+>>  drivers/iommu/intel-pasid.c | 75
+>> +++++++++++++++++++++++++++++++++++++++++++++
+>>  drivers/iommu/intel-pasid.h |  4 +++
+>>  include/linux/intel-iommu.h |  5 +++
+>>  3 files changed, 84 insertions(+)
+>>
+>> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+>> index 0690f39..b8691a6 100644
+>> --- a/drivers/iommu/intel-pasid.c
+>> +++ b/drivers/iommu/intel-pasid.c
+>> @@ -13,6 +13,7 @@
+>>  #include <linux/intel-iommu.h>
+>>  #include <linux/iommu.h>
+>>  #include <linux/memory.h>
+>> +#include <linux/pci.h>
+>>  #include <linux/spinlock.h>
+>>
+>>  #include "intel-pasid.h"
+>> @@ -58,3 +59,77 @@ void *intel_pasid_lookup_id(int pasid)
+>>
+>>  	return p;
+>>  }
+>> +
+>> +/*
+>> + * Interfaces for per domain pasid table management:
+>> + */
+>> +int intel_pasid_alloc_table(struct device *dev, size_t entry_size,
+>> +			    size_t entry_count)
+>> +{
+>> +	struct device_domain_info *info;
+>> +	struct dmar_domain *domain;
+>> +	struct page *pages;
+>> +	int order;
+>> +
+>> +	info = dev->archdata.iommu;
+>> +	if (WARN_ON(!info || !dev_is_pci(dev) ||
+>> +		    !info->pasid_supported ||
+>> +		    !info->domain))
+>> +		return -EINVAL;
+>> +
+>> +	domain = info->domain;
+>> +
+>> +	if (entry_count > intel_pasid_max_id)
+>> +		entry_count = intel_pasid_max_id;
+>> +
+>> +	order = get_order(entry_size * entry_count);
+>> +	pages = alloc_pages_node(domain->nid, GFP_KERNEL | __GFP_ZERO, order);
+>> +	if (!pages)
+>> +		return -ENOMEM;
+>> +
+>> +	spin_lock(&pasid_lock);
+>> +	if (domain->pasid_table) {
+> Can the check be moved prior to the page allocation?
+
+I chose allocation and then assignment with lock to avoid
+race and possible page allocation failure.
+
+>
+>> +		__free_pages(pages, order);
+>> +	} else {
+>> +		domain->pasid_table	= page_address(pages);
+>> +		domain->order		= order;
+>> +		domain->max_pasid	= entry_count;
+>> +	}
+>> +	domain->pasid_users++;
+>> +	spin_unlock(&pasid_lock);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +void intel_pasid_free_table(struct device *dev)
+>> +{
+>> +	struct dmar_domain *domain;
+>> +
+>> +	domain = get_valid_domain_for_dev(dev);
+>> +	if (!domain || !dev_is_pci(dev))
+>> +		return;
+>> +
+>> +	spin_lock(&pasid_lock);
+>> +	if (domain->pasid_table) {
+>> +		domain->pasid_users--;
+>> +		if (!domain->pasid_users) {
+>> +			free_pages((unsigned long)domain->pasid_table,
+>> +				   domain->order);
+>> +			domain->pasid_table	= NULL;
+>> +			domain->order		= 0;
+>> +			domain->max_pasid	= 0;
+>> +		}
+>> +	}
+>> +	spin_unlock(&pasid_lock);
+>> +}
+>> +
+>> +void *intel_pasid_get_table(struct device *dev)
+> Will intel_iommu_get_pasid_table() more accurate?
+
+This function defines in intel-pasid.c. The name pattern for global
+functions defined in this function is intel_pasid_xxx_xxxx().
+
+>
+> Regards,
+> Yi Liu
+>
+
+Best regards,
+Lu Baolu
