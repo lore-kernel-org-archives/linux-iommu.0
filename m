@@ -1,67 +1,68 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH] swiotlb: Fix inversed DMA_ATTR_NO_WARN test
-Date: Wed, 2 May 2018 14:18:56 +0200
-Message-ID: <CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
-References: <20180501132411.2311-1-michel@daenzer.net>
- <786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
+From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCHv4 2/2] iommu/vt-d: Limit number of faults to clear in
+	irq handler
+Date: Wed, 02 May 2018 13:38:07 +0100
+Message-ID: <1525264687.14025.20.camel@arista.com>
+References: <20180331003312.6390-1-dima@arista.com>
+	<20180331003312.6390-2-dima@arista.com>
+	<5AE95BFF.5040306@linux.intel.com>
+Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, =?UTF-8?Q?Michel_D=C3=A4nzer?= <michel@daenzer.net>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5AE95BFF.5040306-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBNYXkgMiwgMjAxOCBhdCAxMTo0OSBBTSwgQ2hyaXN0aWFuIEvDtm5pZwo8Y2tvZW5p
-Zy5sZWljaHR6dW1lcmtlbkBnbWFpbC5jb20+IHdyb3RlOgo+IEFtIDAxLjA1LjIwMTggdW0gMTU6
-MjQgc2NocmllYiBNaWNoZWwgRMOkbnplcjoKPj4KPj4gRnJvbTogTWljaGVsIETDpG56ZXIgPG1p
-Y2hlbC5kYWVuemVyQGFtZC5jb20+Cj4+Cj4+IFRoZSByZXN1bHQgd2FzIHByaW50aW5nIHRoZSB3
-YXJuaW5nIG9ubHkgd2hlbiB3ZSB3ZXJlIGV4cGxpY2l0bHkgYXNrZWQKPj4gbm90IHRvLgo+Pgo+
-PiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwo+PiBGaXhlczogMDE3NmFkYjAwNDA2NWQ2ODE1
-YThlNjc5NDY3NTJkZjRjZDk0N2M1YiAic3dpb3RsYjogcmVmYWN0b3IKPj4gICBjb2hlcmVudCBi
-dWZmZXIgYWxsb2NhdGlvbiIKPj4gU2lnbmVkLW9mZi1ieTogTWljaGVsIETDpG56ZXIgPG1pY2hl
-bC5kYWVuemVyQGFtZC5jb20+Cj4KPgo+IEdvb2QgY2F0Y2gsIGxvb2tlZCBhdCB0aGUgY29kZSBt
-dWx0aXBsZSB0aW1lcyBhbmQgaGF2ZW4ndCBzZWVuIHRoYXQgbXlzZWxmCj4gOikKPgo+IFJldmll
-d2VkLWJ5OiBDaHJpc3RpYW4gS8O2bmlnIDxjaHJpc3RpYW4ua29lbmlnQGFtZC5jb20+LgoKT3Ro
-ZXIgZG1hLWFwaSBiYWNrZW5kcyBsaWtlIGNtYSBqdXN0IHNodXQgdXAgd2hlbiBfX0dGUF9OT1dB
-Uk4gaXMKcGFzc2VkLiBBbmQgYWZhaXVpIENocmlzdG9waCBIZWxsd2lnIGhhcyBwbGFucyB0byBu
-dWtlIHRoZSBETUFfQVRUUgpzdHVmZiAob3IgYXQgbGVhc3QgY2xlYW4gaXQgdXApIC0gc2hvdWxk
-IHdlIGp1c3QgcmVtb3ZlCkRNQV9BVFRSX05PX1dBUk4gYW5kIGluc3RlYWQgb25seSBsb29rIGF0
-IF9fR0ZQX05PV0FSTj8KCkZvciBjb250ZXh0IHRoZSBDTUEgcGF0Y2g6Cgpjb21taXQgZWY0NjUw
-MTQ0ZTc2YWUzNjFmZTRiOGM5YTBhZmNkNTMwNzRjZDUyMApBdXRob3I6IEJvcmlzIEJyZXppbGxv
-biA8Ym9yaXMuYnJlemlsbG9uQGZyZWUtZWxlY3Ryb25zLmNvbT4KRGF0ZTogICBGcmkgT2N0IDEz
-IDE1OjU4OjAxIDIwMTcgLTA3MDAKCiAgICBtbS9jbWEuYzogdGFrZSBfX0dGUF9OT1dBUk4gaW50
-byBhY2NvdW50IGluIGNtYV9hbGxvYygpCgpPciBtYXliZSB3ZSBzaG91bGQgYXQgbGVhc3QgZW5m
-b3JjZSB0aGF0IGJvdGggb3Igbm9uZSBhcmUgc2V0LCBmb3IKY29uc2lzdGVuY3kgZm9yIG5vdz8K
-CkNoZWVycywgRGFuaWVsCgoKPgo+IENocmlzdGlhbi4KPgo+PiAtLS0KPj4gICBsaWIvc3dpb3Rs
-Yi5jIHwgMiArLQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlv
-bigtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvbGliL3N3aW90bGIuYyBiL2xpYi9zd2lvdGxiLmMKPj4g
-aW5kZXggYzQzZWMyMjcxNDY5Li5lOWFjMjE1NDA2MjggMTAwNjQ0Cj4+IC0tLSBhL2xpYi9zd2lv
-dGxiLmMKPj4gKysrIGIvbGliL3N3aW90bGIuYwo+PiBAQCAtNzUwLDcgKzc1MCw3IEBAIHN3aW90
-bGJfYWxsb2NfYnVmZmVyKHN0cnVjdCBkZXZpY2UgKmRldiwgc2l6ZV90IHNpemUsCj4+IGRtYV9h
-ZGRyX3QgKmRtYV9oYW5kbGUsCj4+ICAgICAgICAgc3dpb3RsYl90YmxfdW5tYXBfc2luZ2xlKGRl
-diwgcGh5c19hZGRyLCBzaXplLCBETUFfVE9fREVWSUNFLAo+PiAgICAgICAgICAgICAgICAgICAg
-ICAgICBETUFfQVRUUl9TS0lQX0NQVV9TWU5DKTsKPj4gICBvdXRfd2FybjoKPj4gLSAgICAgICBp
-ZiAoKGF0dHJzICYgRE1BX0FUVFJfTk9fV0FSTikgJiYgcHJpbnRrX3JhdGVsaW1pdCgpKSB7Cj4+
-ICsgICAgICAgaWYgKCEoYXR0cnMgJiBETUFfQVRUUl9OT19XQVJOKSAmJiBwcmludGtfcmF0ZWxp
-bWl0KCkpIHsKPj4gICAgICAgICAgICAgICAgIGRldl93YXJuKGRldiwKPj4gICAgICAgICAgICAg
-ICAgICAgICAgICAgInN3aW90bGI6IGNvaGVyZW50IGFsbG9jYXRpb24gZmFpbGVkLCBzaXplPSV6
-dVxuIiwKPj4gICAgICAgICAgICAgICAgICAgICAgICAgc2l6ZSk7Cj4KPgo+IF9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gZHJpLWRldmVsIG1haWxpbmcg
-bGlzdAo+IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKPiBodHRwczovL2xpc3RzLmZy
-ZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAoKCgotLSAKRGFuaWVsIFZl
-dHRlcgpTb2Z0d2FyZSBFbmdpbmVlciwgSW50ZWwgQ29ycG9yYXRpb24KKzQxICgwKSA3OSAzNjUg
-NTcgNDggLSBodHRwOi8vYmxvZy5mZndsbC5jaApfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
-cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9kcmktZGV2ZWwK
+Hi Lu,
+
+On Wed, 2018-05-02 at 14:34 +0800, Lu Baolu wrote:
+> Hi,
+> 
+> On 03/31/2018 08:33 AM, Dmitry Safonov wrote:
+> > Theoretically, on some machines faults might be generated faster
+> > than
+> > they're cleared by CPU.
+> 
+> Is this a real case?
+
+No. 1/2 is a real case and this one was discussed on v3:
+lkml.kernel.org/r/<20180215191729.15777-1-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+
+It's not possible on my hw as far as I tried, but the discussion result
+was to fix this theoretical issue too.
+
+> 
+> >  Let's limit the cleaning-loop by number of hw
+> > fault registers.
+> 
+> Will this cause the fault recording registers full of faults, hence
+> new faults will be dropped without logging?
+
+If faults come faster then they're being cleared - some of them will be
+dropped without logging. Not sure if it's worth to report all faults in
+such theoretical(!) situation.
+If amount of reported faults for such situation is not enough and it's
+worth to keep all the faults, then probably we should introduce a
+workqueue here (which I did in v1, but it was rejected by the reason
+that it will introduce some latency in fault reporting).
+
+> And even worse, new faults will not generate interrupts?
+
+They will, we clear page fault overflow outside of the loop, so any new
+fault will raise interrupt, iiuc.
+
+-- 
+Thanks,
+             Dmitry
