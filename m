@@ -1,15 +1,14 @@
 From: James Hogan via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 08/13] arch: define the ARCH_DMA_ADDR_T_64BIT config
-	symbol in lib/Kconfig
-Date: Wed, 2 May 2018 23:09:34 +0100
-Message-ID: <20180502220933.GB20766@jamesdev>
+Subject: Re: [PATCH 11/13] mips, unicore32: swiotlb doesn't need sg->dma_length
+Date: Wed, 2 May 2018 23:20:18 +0100
+Message-ID: <20180502222017.GC20766@jamesdev>
 References: <20180425051539.1989-1-hch@lst.de>
-	<20180425051539.1989-9-hch@lst.de>
+	<20180425051539.1989-12-hch@lst.de>
 Reply-To: James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1923251509981083835=="
+Content-Type: multipart/mixed; boundary="===============3302778552088347097=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180425051539.1989-9-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180425051539.1989-12-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,79 +23,45 @@ Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, sstabellini-DgEjT+Ai2ygd
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1923251509981083835==
+--===============3302778552088347097==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="wzJLGUyc3ArbnUjN"
+	protocol="application/pgp-signature"; boundary="Izn7cH1Com+I3R9J"
 Content-Disposition: inline
 
 
---wzJLGUyc3ArbnUjN
+--Izn7cH1Com+I3R9J
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 25, 2018 at 07:15:34AM +0200, Christoph Hellwig wrote:
-> Define this symbol if the architecture either uses 64-bit pointers or the
-> PHYS_ADDR_T_64BIT is set.  This covers 95% of the old arch magic.  We only
-> need an additional select for Xen on ARM (why anyway?), and we now always
-> set ARCH_DMA_ADDR_T_64BIT on mips boards with 64-bit physical addressing
-> instead of only doing it when highmem is set.
+On Wed, Apr 25, 2018 at 07:15:37AM +0200, Christoph Hellwig wrote:
+> Only mips and unicore32 select CONFIG_NEED_SG_DMA_LENGTH when building
+> swiotlb.  swiotlb itself never merges segements and doesn't accesses the
+> dma_length field directly, so drop the dependency.
 
-I think this should be fine. It only affects alchemy and Netlogic, and
-Netlogic supports highmem already.
-
-So for MIPS:
-Acked-by: James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Is that at odds with Documentation/DMA-API-HOWTO.txt, which seems to
+suggest arch ports should enable it for IOMMUs?
 
 Cheers
 James
 
-> diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-> index 985388078872..e10cc5c7be69 100644
-> --- a/arch/mips/Kconfig
-> +++ b/arch/mips/Kconfig
-> @@ -1101,9 +1101,6 @@ config GPIO_TXX9
->  config FW_CFE
->  	bool
-> =20
-> -config ARCH_DMA_ADDR_T_64BIT
-> -	def_bool (HIGHMEM && PHYS_ADDR_T_64BIT) || 64BIT
-> -
->  config ARCH_SUPPORTS_UPROBES
->  	bool
-
-> diff --git a/lib/Kconfig b/lib/Kconfig
-> index ce9fa962d59b..1f12faf03819 100644
-> --- a/lib/Kconfig
-> +++ b/lib/Kconfig
-> @@ -435,6 +435,9 @@ config NEED_SG_DMA_LENGTH
->  config NEED_DMA_MAP_STATE
->  	bool
-> =20
-> +config ARCH_DMA_ADDR_T_64BIT
-> +	def_bool 64BIT || PHYS_ADDR_T_64BIT
-> +
->  config IOMMU_HELPER
->  	bool
-
---wzJLGUyc3ArbnUjN
+--Izn7cH1Com+I3R9J
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYIAB0WIQS7lRNBWUYtqfDOVL41zuSGKxAj8gUCWuo3DwAKCRA1zuSGKxAj
-8tikAQDi/ZUNjW7+epg5yVcHFsdN4zPqszjMfOoZb9Tw0/w5/QD+O0gHySriLqfv
-vZwnsvl5Mx2kzMLvdMNqFC++weR4XwQ=
-=H1g4
+iHUEARYIAB0WIQS7lRNBWUYtqfDOVL41zuSGKxAj8gUCWuo5nwAKCRA1zuSGKxAj
+8toFAQDILXOi2KhP1yoO3zabIiof3I/tmRomgzUgGA3ESVm5lgEA4elhmn7zDXhX
+YG33reqJ7xyPenaOF8AX63cB5eqjOQ8=
+=UDV2
 -----END PGP SIGNATURE-----
 
---wzJLGUyc3ArbnUjN--
+--Izn7cH1Com+I3R9J--
 
---===============1923251509981083835==
+--===============3302778552088347097==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1923251509981083835==--
+--===============3302778552088347097==--
