@@ -1,17 +1,16 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCHv4 2/2] iommu/vt-d: Limit number of faults to clear in
-	irq handler
-Date: Wed, 02 May 2018 13:38:07 +0100
-Message-ID: <1525264687.14025.20.camel@arista.com>
-References: <20180331003312.6390-1-dima@arista.com>
-	<20180331003312.6390-2-dima@arista.com>
-	<5AE95BFF.5040306@linux.intel.com>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH] swiotlb: Fix inversed DMA_ATTR_NO_WARN test
+Date: Wed, 2 May 2018 14:41:51 +0200
+Message-ID: <20180502124151.GA22857@lst.de>
+References: <20180501132411.2311-1-michel@daenzer.net>
+	<786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
+	<CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5AE95BFF.5040306-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,48 +20,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Michel =?iso-8859-1?Q?D=E4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Chris Wilson <chris-Y6uKTt2uX1cEflXRtASbqLVCufUGDwFn@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lu,
+On Wed, May 02, 2018 at 02:18:56PM +0200, Daniel Vetter wrote:
+> Other dma-api backends like cma just shut up when __GFP_NOWARN is
+> passed. And afaiui Christoph Hellwig has plans to nuke the DMA_ATTR
+> stuff (or at least clean it up) - should we just remove
+> DMA_ATTR_NO_WARN and instead only look at __GFP_NOWARN?
 
-On Wed, 2018-05-02 at 14:34 +0800, Lu Baolu wrote:
-> Hi,
-> 
-> On 03/31/2018 08:33 AM, Dmitry Safonov wrote:
-> > Theoretically, on some machines faults might be generated faster
-> > than
-> > they're cleared by CPU.
-> 
-> Is this a real case?
+No.  __GFP_NOWARN (and gfp_t flags in general) are the wrong interface
+for dma allocations and just cause problems.  I actually plan to
+get rid of the gfp_t argument in dma_alloc_attrs sooner, and only
+allow either GFP_KERNEL or GFP_DMA passed in dma_alloc_coherent.
 
-No. 1/2 is a real case and this one was discussed on v3:
-lkml.kernel.org/r/<20180215191729.15777-1-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+> Or maybe we should at least enforce that both or none are set, for
+> consistency for now?
 
-It's not possible on my hw as far as I tried, but the discussion result
-was to fix this theoretical issue too.
-
-> 
-> >  Let's limit the cleaning-loop by number of hw
-> > fault registers.
-> 
-> Will this cause the fault recording registers full of faults, hence
-> new faults will be dropped without logging?
-
-If faults come faster then they're being cleared - some of them will be
-dropped without logging. Not sure if it's worth to report all faults in
-such theoretical(!) situation.
-If amount of reported faults for such situation is not enough and it's
-worth to keep all the faults, then probably we should introduce a
-workqueue here (which I did in v1, but it was rejected by the reason
-that it will introduce some latency in fault reporting).
-
-> And even worse, new faults will not generate interrupts?
-
-They will, we clear page fault overflow outside of the loop, so any new
-fault will raise interrupt, iiuc.
-
--- 
-Thanks,
-             Dmitry
+The interface should be DMA_ATTR_NO_WARN.  __GFP_NOWARN in this
+context was never documented, and just slipped in.
