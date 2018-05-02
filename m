@@ -1,15 +1,18 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCHv4 2/2] iommu/vt-d: Limit number of faults to clear in irq
-	handler
-Date: Wed, 2 May 2018 14:34:39 +0800
-Message-ID: <5AE95BFF.5040306@linux.intel.com>
-References: <20180331003312.6390-1-dima@arista.com>
-	<20180331003312.6390-2-dima@arista.com>
+From: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+Subject: Re: [PATCH v4 6/6] arm64: dts: ls208xa: comply with the iommu map
+	binding for fsl_mc
+Date: Wed, 2 May 2018 09:14:18 +0000
+Message-ID: <5AE98169.7060102@nxp.com>
+References: <1524824826-29473-1-git-send-email-nipun.gupta@nxp.com>
+	<1525069641-8523-1-git-send-email-nipun.gupta@nxp.com>
+	<1525069641-8523-7-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180331003312.6390-2-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1525069641-8523-7-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Content-Language: en-US
+Content-ID: <0CEE781F71EAB84AA64ED4307E463E0C-jdb/QiT5osKcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,59 +22,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Nipun,
 
-On 03/31/2018 08:33 AM, Dmitry Safonov wrote:
-> Theoretically, on some machines faults might be generated faster than
-> they're cleared by CPU.
-
-Is this a real case?
-
->  Let's limit the cleaning-loop by number of hw
-> fault registers.
-
-Will this cause the fault recording registers full of faults, hence new
-faults will be dropped without logging? And even worse, new faults
-will not generate interrupts?
-
-Best regards,
-Lu Baolu
-
+On 04/30/2018 09:27 AM, Nipun Gupta wrote:
+> fsl-mc bus support the new iommu-map property. Comply to this binding
+> for fsl_mc bus.
 >
-> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+
+This looks good to me, so:
+
+Reviewed-By: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+
+---
+Best Regards, Laurentiu
+
 > ---
->  drivers/iommu/dmar.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>   arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index 6c4ea32ee6a9..cf1105111209 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1615,7 +1615,7 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
->  irqreturn_t dmar_fault(int irq, void *dev_id)
->  {
->  	struct intel_iommu *iommu = dev_id;
-> -	int reg, fault_index;
-> +	int reg, fault_index, i;
->  	u32 fault_status;
->  	unsigned long flag;
->  	static DEFINE_RATELIMIT_STATE(rs,
-> @@ -1633,7 +1633,7 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
->  
->  	fault_index = dma_fsts_fault_record_index(fault_status);
->  	reg = cap_fault_reg_offset(iommu->cap);
-> -	while (1) {
-> +	for (i = 0; i < cap_num_fault_regs(iommu->cap); i++) {
->  		/* Disable printing, simply clear the fault when ratelimited */
->  		bool ratelimited = !__ratelimit(&rs);
->  		u8 fault_reason;
+> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+> index 137ef4d..6010505 100644
+> --- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+> @@ -184,6 +184,7 @@
+>   		#address-cells = <2>;
+>   		#size-cells = <2>;
+>   		ranges;
+> +		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
+>
+>   		clockgen: clocking@1300000 {
+>   			compatible = "fsl,ls2080a-clockgen";
+> @@ -357,6 +358,8 @@
+>   			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
+>   			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+>   			msi-parent = <&its>;
+> +			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
+> +			dma-coherent;
+>   			#address-cells = <3>;
+>   			#size-cells = <1>;
+>
+> @@ -460,6 +463,8 @@
+>   			compatible = "arm,mmu-500";
+>   			reg = <0 0x5000000 0 0x800000>;
+>   			#global-interrupts = <12>;
+> +			#iommu-cells = <1>;
+> +			stream-match-mask = <0x7C00>;
+>   			interrupts = <0 13 4>, /* global secure fault */
+>   				     <0 14 4>, /* combined secure interrupt */
+>   				     <0 15 4>, /* global non-secure fault */
+> @@ -502,7 +507,6 @@
+>   				     <0 204 4>, <0 205 4>,
+>   				     <0 206 4>, <0 207 4>,
+>   				     <0 208 4>, <0 209 4>;
+> -			mmu-masters = <&fsl_mc 0x300 0>;
+>   		};
+>
+>   		dspi: dspi@2100000 {
+>
