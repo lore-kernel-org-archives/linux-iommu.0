@@ -1,17 +1,14 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v4 05/22] iommu: introduce iommu invalidate API function
-Date: Tue, 1 May 2018 15:58:38 -0700
-Message-ID: <20180501155838.4ec3720c@jacob-builder>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-6-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180420181951.GA50099@ostrya.localdomain>
-	<20180423134325.6780f6ac@jacob-builder>
-	<72ee47c4-55fa-4ff1-d94e-cc26203e3eda@arm.com>
+From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCHv4 1/2] iommu/vt-d: Ratelimit each dmar fault printing
+Date: Wed, 02 May 2018 03:22:24 +0100
+Message-ID: <1525227744.14025.6.camel@arista.com>
+References: <20180331003312.6390-1-dima@arista.com>
+Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <72ee47c4-55fa-4ff1-d94e-cc26203e3eda-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180331003312.6390-1-dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,270 +18,114 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org" <Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>, "Liu,
-	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 27 Apr 2018 19:07:43 +0100
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+Hi Joerg,
 
-> On 23/04/18 21:43, Jacob Pan wrote:
-> [...]
-> >> The last name is a bit unfortunate. Since the Arm architecture uses
-> >> the name "context" for what a PASID points to, "Device cache" would
-> >> suit us better but it's not important.
-> >>  
-> > or call it device context cache. actually so far context cache is
-> > here only for completeness purpose. the expected use case is that
-> > QEMU traps guest device context cache flush and call
-> > bind_pasid_table.   
-> 
-> Right, makes sense
-> 
-> [...]
-> >> If this corresponds to QI_GRAN_ALL_ALL in patch 9, the comment
-> >> should be "Cache of all PASIDs"? Or maybe "all entries for all
-> >> PASIDs"? Is it different from GRANU_DOMAIN then?  
-> > QI_GRAN_ALL_ALL maps to VT-d spec 6.5.2.4, which invalidates all ext
-> > TLB cache within a domain. It could reuse GRANU_DOMAIN but I was
-> > also trying to match the naming convention in the spec.  
-> 
-> Sorry I don't quite understand the difference between TLB and ext TLB
-> invalidation. Can an ext TLB invalidation do everything a TLB can do
-> plus some additional parameters (introduced in more recent version of
-> the spec), or do they have distinct purposes? I'm trying to understand
-> why it needs to be user-visible
-> 
-> >>> +	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate
-> >>> specified PASID */ +
-> >>> +	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within
-> >>> all PASIDs */
-> >>> +	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a
-> >>> PASIDs */    
-> >>
-> >> Are the "NG" variant needed since there is a
-> >> IOMMU_INVALIDATE_GLOBAL_PAGE below? We should drop either flag or
-> >> granule.
-> >>
-> >> FWIW I'm starting to think more granule options is actually better
-> >> than flags, because it flattens the combinations and keeps them to
-> >> two dimensions, that we can understand and explain with a table.
-> >>  
-> >>> +	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective
-> >>> within a PASID */    
-> >>
-> >> Maybe this should be called "NG_PAGE_PASID",  
-> > Sure. I was thinking page range already implies non-global pages.  
-> >> and "DOMAIN_PAGE" should
-> >> instead be "PAGE_PASID". If I understood their meaning correctly,
-> >> it would be more consistent with the rest.
-> >>  
-> > I am trying not to mix granu between request w/ PASID and w/o.
-> > DOMAIN_PAGE meant to be for request w/o PASID.  
-> 
-> Is the distinction necessary? I understand the IOMMU side might offer
-> many possibilities for invalidation, but the user probably doesn't
-> need all of them. It might be easier to document, upstream and
-> maintain if we only specify what's currently needed by users (what
-> does QEMU VT-d use?) Others can always extend it by increasing the
-> version.
-> 
-> Do you think that this invalidation message will be used outside of
-> BIND_PASID_TABLE context? I can't see an other use but who knows. At
-> the moment requests w/o PASID are managed with
-> VFIO_IOMMU_MAP/UNMAP_DMA, which doesn't require invalidation. And in
-> a BIND_PASID_TABLE context, IOMMUs requests w/o PASID are just a
-> special case using PASID 0 (for Arm and AMD) so I suppose they'll use
-> the same invalidation commands as requests w/ PASID.
-> 
-My understanding is that for GIOVA use case, VT-d vIOMMU creates
-GIOVA-GPA mapping and the host shadows the 2nd level page tables to
-create GIOVA-HPA mapping. So when assigned device in the guest can do
-both DMA map/unmap and VFIO map/unmap, VFIO unmap is one time deal
-(I guess invalidation can be captured in other code path), but guest
-kernel use of DMA unmap could will trigger invalidation. QEMU needs to
-trap those invalidation and passdown to physical IOMMU. So we do need
-invalidation w/o PASID.
+is there anything I may do about those two patches?
+In 2/2 I've limited loop cnt as discussed in v3.
+This one solves softlockup for us, might be useful.
 
-> >>> +	IOMMU_INV_NR_GRANU,
-> >>> +};
-> >>> +
-> >>> +/** enum iommu_inv_type - Generic translation cache types for
-> >>> invalidation
-> >>> + *
-> >>> + * Invalidation requests sent to IOMMU may indicate which
-> >>> translation cache
-> >>> + * to be operated on.
-> >>> + * Combined with enum iommu_inv_granularity, model specific
-> >>> driver can do a
-> >>> + * simple lookup to convert generic type to model specific value.
-> >>> + */
-> >>> +enum iommu_inv_type {    
-> >>
-> >> These should be flags (1 << 0), (1 << 1) etc, since IOMMUs will
-> >> want to invalidate multiple caches at once (at least DTLB and
-> >> TLB). You could then do for_each_set_bit in the driver
-> >>  
-> > I was thinking the invalidation to be inclusive as we discussed
-> > earlier ,last year :).
-> > TLB includes DLTB
-> > PASID cache includes TLB and DTLB. I need to document it better.  
+On Sat, 2018-03-31 at 01:33 +0100, Dmitry Safonov wrote:
+> There is a ratelimit for printing, but it's incremented each time the
+> cpu recives dmar fault interrupt. While one interrupt may signal
+> about
+> *many* faults.
+> So, measuring the impact it turns out that reading/clearing one fault
+> takes < 1 usec, and printing info about the fault takes ~170 msec.
 > 
-> Ah right, I guess I was stuck on an old version :) Then the current
-> values make sense
+> Having in mind that maximum number of fault recording registers per
+> remapping hardware unit is 256.. IRQ handler may run for (170*256)
+> msec.
+> And as fault-serving loop runs without a time limit, during servicing
+> new faults may occur..
 > 
-> >>> +	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
-> >>> +	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure
-> >>> cache */
-> >>> +	IOMMU_INV_TYPE_PASID,	/* PASID cache */
-> >>> +	IOMMU_INV_TYPE_CONTEXT,	/* device context entry
-> >>> cache */
-> >>> +	IOMMU_INV_NR_TYPE
-> >>> +};    
-> >>
-> >> We need to summarize and explain valid combinations, because
-> >> reading inv_type_granu_map and inv_type_granu_table is a bit
-> >> tedious. I tried to reproduce inv_type_granu_map here (Cell format
-> >> is PASID_TAGGED / !PASID_TAGGED). Could you check if this matches
-> >> your model?  
-> > great summary. thanks  
-> >>
-> >>             type |   DTLB    |    TLB    |   PASID   |  CONTEXT
-> >>  granule         |           |           |           |
-> >> -----------------+-----------+-----------+-----------+-----------
-> >>    -             |     / Y   |     / Y   |           |     / Y  
-> > what is this row?  
+> Ratelimit each fault printing rather than each irq printing.
 > 
-> Hm, the arrays in patch 9 have 9 entries, this is entry 0 (for which I
-> asked if it corresponded to "invalidate all caches" in my previous
-> reply).
+> Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
 > 
-I see, I have removed global invalidation. So we can remove this row.
-> >>  DOMAIN          |           |     / Y   |           |     / Y
-> >>  DEVICE          |           |           |           |     / Y
-> >>  DOMAIN_PAGE     |           |     / Y   |           |
-> >>  ALL_PASID       |   Y       |   Y       |           |
-> >>  PASID_SEL       |   Y       |           |   Y       |
-> >>  NG_ALL_PASID    |           |   Y       |   Y       |
-> >>  NG_PASID        |           |   Y       |           |
-> >>  PAGE_PASID      |           |   Y       |           |
-> >>  
-> > Mostly match what I intended for VT-d. Just one thing on the PASID
-> > column, all PASID associated with a given domain ID can go either
-> > NG_ALL_PASID (as in your table) or ALL_PASID.
-> > 
-> > Here is what I plan to change in comments that can reflect what you
-> > have in the table above.
-> > Can I also copy your table in the next version?  
+> BUG: spinlock lockup suspected on CPU#0, CliShell/9903
+>  lock: 0xffffffff81a47440, .magic: dead4ead, .owner:
+> kworker/u16:2/8915, .owner_cpu: 6
+> CPU: 0 PID: 9903 Comm: CliShell
+> Call Trace:$\n'
+> [..] dump_stack+0x65/0x83$\n'
+> [..] spin_dump+0x8f/0x94$\n'
+> [..] do_raw_spin_lock+0x123/0x170$\n'
+> [..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
+> [..] uart_chars_in_buffer+0x20/0x4d$\n'
+> [..] tty_chars_in_buffer+0x18/0x1d$\n'
+> [..] n_tty_poll+0x1cb/0x1f2$\n'
+> [..] tty_poll+0x5e/0x76$\n'
+> [..] do_select+0x363/0x629$\n'
+> [..] compat_core_sys_select+0x19e/0x239$\n'
+> [..] compat_SyS_select+0x98/0xc0$\n'
+> [..] sysenter_dispatch+0x7/0x25$\n'
+> [..]
+> NMI backtrace for cpu 6
+> CPU: 6 PID: 8915 Comm: kworker/u16:2
+> Workqueue: dmar_fault dmar_fault_work
+> Call Trace:$\n'
+> [..] wait_for_xmitr+0x26/0x8f$\n'
+> [..] serial8250_console_putchar+0x1c/0x2c$\n'
+> [..] uart_console_write+0x40/0x4b$\n'
+> [..] serial8250_console_write+0xe6/0x13f$\n'
+> [..] call_console_drivers.constprop.13+0xce/0x103$\n'
+> [..] console_unlock+0x1f8/0x39b$\n'
+> [..] vprintk_emit+0x39e/0x3e6$\n'
+> [..] printk+0x4d/0x4f$\n'
+> [..] dmar_fault+0x1a8/0x1fc$\n'
+> [..] dmar_fault_work+0x15/0x17$\n'
+> [..] process_one_work+0x1e8/0x3a9$\n'
+> [..] worker_thread+0x25d/0x345$\n'
+> [..] kthread+0xea/0xf2$\n'
+> [..] ret_from_fork+0x58/0x90$\n'
 > 
-> Sure
+> Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Signed-off-by: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/dmar.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
 > 
-> (For the patch, putting all descriptions in a single comment at the
-> top of the enum would be better)
-> 
-ok, will do.
-> > enum iommu_inv_granularity {
-> > 	IOMMU_INV_GRANU_DOMAIN = 1,	/* IOTLBs and device
-> > context
-> > 					 * cache associated with a
-> > 					 * domain ID
-> > 					 */
-> > 
-> > 	IOMMU_INV_GRANU_DEVICE,		/* device context
-> > cache
-> > 					 * associated with a device
-> > ID */
-> > 
-> > 	IOMMU_INV_GRANU_DOMAIN_PAGE,	/* IOTLBs associated
-> > with
-> > 					 * address range of a
-> > 					 * given domain ID
-> > 					 */  
-> 
-> Another nit: it might be easier to understand if we sort these values
-> by "coarseness". DOMAIN_PAGE seems finer than ALL_PASID or PASID_SEL
-> because it doesn't nuke all TLB entries of an address space, so might
-> make more sense to move it at the bottom. Though as said above, I
-> don't think we should distinguish between DOMAIN_PAGE and PAGE_PASID
-> 
-
-It is hard to sort by coarseness when we cross different types. If you
-are convinced that we do need w/o PASID case, can we keep both
-DOMAIN_PAGE and PAGE_PASID?
-
-> > 
-> >         IOMMU_INV_GRANU_ALL_PASID,	/* DTLB or IOTLB of all
-> >         				 * PASIDs associated to a
-> > 					 * given domain ID
-> > 					 */
-> > 
-> > 	IOMMU_INV_GRANU_PASID_SEL,	/* DTLB and PASID cache
-> > 					 * associated to a PASID
-> > 					 */  
-> 
-> This comment has "DTLB", the previous had "DTLB or IOTLB", and the
-> first one had "IOTLBs". But doesn't the TLB selection, either DTLB or
-> "DTLB+IOTLB", depend on iommu_inv_type? So maybe saying "TLB entries"
-> everywhere in the granule comments is good enough?
-> 
-Since not all inv_types and granu combinations are valid, I was trying
-to give additional info so that people can understand certain granu
-only apply to certain types. I guess your truth table explains the same
-information better, I will rename them to TLB entries.
-
-
-> > 	IOMMU_INV_GRANU_NG_ALL_PASID,	/* IOTLBs of non-global
-> > 					 * pages for all PASIDs for
-> > a
-> > 					 * given domain ID
-> > 				   	 */
-> > 
-> > 	IOMMU_INV_GRANU_NG_PASID,	/* IOTLBs of non-global
-> > 					 * pages for a given PASID
-> > 					 */
-> > 
-> >    	IOMMU_INV_GRANU_PAGE_PASID,	/* IOTLBs of selected
-> > page
-> > 					 *  range within a PASID
-> > 					 */  
-> 
-> I think the other comments are fine
-> 
-> [...]
-> >>> + * @size:		2^size of 4K pages, 0 for 4k, 9 for 2MB,
-> >>> etc.    
-> >>
-> >> Maybe start the size at 1 byte, we don't know what sort of
-> >> granularity future architectures will offer.
-> >>  
-> > I can't see any case we are not operating at sub-page size. why
-> > would anyone cache translation for 1 byte, that is too much
-> > overhead.  
-> 
-> 1 bytes is probably overkill, but why not 2048 for TCP packets... we
-> don't really know what strange ideas people will come up with. But
-> you're right, it's unlikely.
-> 
-> However I thought about this more and we are actually missing
-> something. Some architectures will have arbitrary ranges in their
-> invalidation commands, they might want to invalidate three pages at a
-> time without sending three invalidation commands. Having a page
-> granularity is good, because users might want to invalidate huge TLB,
-> but we should also have a number of pages.
-> 
-> Could you add a nr_pages parameter?
-> 
-> 	@size: one page is 2^size (*4k?) bytes
-> 	@nr_pages: number of pages to invalidate
-> 
-> 	u8 size
-> 	u64 nr_pages
-> 
-That sounds good. VT-d DTLB size is implied in the address bits. but it
-better to open code here to accommodate all.
-> Sorry about the late changes, I don't want to slow this down and I
-> think we're nearly there, but this last point seems important.
-> 
-> Thanks,
-> Jean
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index accf58388bdb..6c4ea32ee6a9 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -1618,17 +1618,13 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+>  	int reg, fault_index;
+>  	u32 fault_status;
+>  	unsigned long flag;
+> -	bool ratelimited;
+>  	static DEFINE_RATELIMIT_STATE(rs,
+>  				      DEFAULT_RATELIMIT_INTERVAL,
+>  				      DEFAULT_RATELIMIT_BURST);
+>  
+> -	/* Disable printing, simply clear the fault when ratelimited
+> */
+> -	ratelimited = !__ratelimit(&rs);
+> -
+>  	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+>  	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+> -	if (fault_status && !ratelimited)
+> +	if (fault_status && __ratelimit(&rs))
+>  		pr_err("DRHD: handling fault status reg %x\n",
+> fault_status);
+>  
+>  	/* TBD: ignore advanced fault log currently */
+> @@ -1638,6 +1634,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+>  	fault_index = dma_fsts_fault_record_index(fault_status);
+>  	reg = cap_fault_reg_offset(iommu->cap);
+>  	while (1) {
+> +		/* Disable printing, simply clear the fault when
+> ratelimited */
+> +		bool ratelimited = !__ratelimit(&rs);
+>  		u8 fault_reason;
+>  		u16 source_id;
+>  		u64 guest_addr;
