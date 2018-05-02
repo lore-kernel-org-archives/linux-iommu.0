@@ -1,15 +1,15 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 8/9] iommu/vt-d: Use per-domain pasid table
-Date: Wed, 2 May 2018 12:38:18 +0800
-Message-ID: <5AE940BA.8050407@linux.intel.com>
+Subject: Re: [PATCH 9/9] iommu/vt-d: Clean up PASID talbe management for SVM
+Date: Wed, 2 May 2018 12:43:17 +0800
+Message-ID: <5AE941E5.2060102@linux.intel.com>
 References: <1523934202-21669-1-git-send-email-baolu.lu@linux.intel.com>
-	<1523934202-21669-9-git-send-email-baolu.lu@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439BE7558@SHSMSX104.ccr.corp.intel.com>
+	<1523934202-21669-10-git-send-email-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439BE7567@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439BE7558-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439BE7567-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,26 +27,27 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-On 05/01/2018 05:23 PM, Liu, Yi L wrote:
+On 05/01/2018 05:24 PM, Liu, Yi L wrote:
 >> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
 >> Sent: Tuesday, April 17, 2018 11:03 AM
 >>
->> This patch replaces current per iommu pasid table with
->> the new added per domain pasid table. Each svm-capable
->> PCI device will have its own pasid table.
-> This is not accurate. pasid table is per-iommu domain. May
-> more accurate "Each svm-capable PCI device will be configed
-> with a pasid table which shares with other svm-capable device
-> within its iommu domain"
+>> The previous per iommu pasid table alloc/free interfaces
+>> are no longer used. Clean up the driver by removing it.
+> I think this patch major cleans intel_svm_alloc_pasid_tables
+> and intel_svm_free_pasid_tables.
 
-Yes. Should be refined.
+Yes.
+
+>  Actually, only PASID State
+> table allocation is remained in these two functions.
+
+Together with GB pages and 5-level page table support checks.
 
 >
-> Can include my reviewed by after refining the description.
->
-> Reviewed-by: Liu, Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Since PASID Table is modified to be per-iommu domain. How
+> about the PASID State Table? Should it also be per-iommu domain?
 
-Sure.
+Yes. This is in plan. I will do this in another patch series.
 
 >
 > Thanks,
@@ -62,161 +63,111 @@ Lu Baolu
 >> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 >> ---
 >>  drivers/iommu/intel-iommu.c |  6 +++---
->>  drivers/iommu/intel-svm.c   | 37 +++++++++++++++++++++++++------------
->>  2 files changed, 28 insertions(+), 15 deletions(-)
+>>  drivers/iommu/intel-svm.c   | 17 ++---------------
+>>  include/linux/intel-iommu.h |  5 ++---
+>>  3 files changed, 7 insertions(+), 21 deletions(-)
 >>
 >> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index d4f9cea..5fe7f91 100644
+>> index 5fe7f91..5acb90d 100644
 >> --- a/drivers/iommu/intel-iommu.c
 >> +++ b/drivers/iommu/intel-iommu.c
->> @@ -5191,7 +5191,7 @@ int intel_iommu_enable_pasid(struct intel_iommu
->> *iommu, struct intel_svm_dev *sd
->>  	if (!(ctx_lo & CONTEXT_PASIDE)) {
->>  		if (iommu->pasid_state_table)
->>  			context[1].hi = (u64)virt_to_phys(iommu-
->>> pasid_state_table);
->> -		context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
->> +		context[1].lo = (u64)virt_to_phys(domain->pasid_table) |
->>  			intel_iommu_get_pts(domain);
->>
->>  		wmb();
->> @@ -5259,8 +5259,8 @@ struct intel_iommu *intel_svm_device_to_iommu(struct
->> device *dev)
->>  		return NULL;
+>> @@ -1736,7 +1736,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+>>  	if (pasid_enabled(iommu)) {
+>>  		if (ecap_prs(iommu->ecap))
+>>  			intel_svm_finish_prq(iommu);
+>> -		intel_svm_free_pasid_tables(iommu);
+>> +		intel_svm_exit(iommu);
+>>  	}
+>>  #endif
+>>  }
+>> @@ -3291,7 +3291,7 @@ static int __init init_dmars(void)
+>>  			hw_pass_through = 0;
+>>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>>  		if (pasid_enabled(iommu))
+>> -			intel_svm_alloc_pasid_tables(iommu);
+>> +			intel_svm_init(iommu);
+>>  #endif
 >>  	}
 >>
->> -	if (!iommu->pasid_table) {
->> -		dev_err(dev, "PASID not enabled on IOMMU; cannot enable
->> SVM\n");
->> +	if (!intel_pasid_get_table(dev)) {
->> +		dev_err(dev, "No PASID table for device; cannot enable SVM\n");
->>  		return NULL;
->>  	}
+>> @@ -4268,7 +4268,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
 >>
+>>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>>  	if (pasid_enabled(iommu))
+>> -		intel_svm_alloc_pasid_tables(iommu);
+>> +		intel_svm_init(iommu);
+>>  #endif
+>>
+>>  	if (dmaru->ignored) {
 >> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
->> index 3abc94f..3b14819 100644
+>> index 3b14819..38cae65 100644
 >> --- a/drivers/iommu/intel-svm.c
 >> +++ b/drivers/iommu/intel-svm.c
->> @@ -256,6 +256,7 @@ static void intel_flush_pasid_dev(struct intel_svm *svm,
->> struct intel_svm_dev *s
->>  static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
->>  {
->>  	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
->> +	struct pasid_entry *pasid_table;
->>  	struct intel_svm_dev *sdev;
+>> @@ -34,7 +34,7 @@
 >>
->>  	/* This might end up being called from exit_mmap(), *before* the page
->> @@ -270,11 +271,16 @@ static void intel_mm_release(struct mmu_notifier *mn,
->> struct mm_struct *mm)
->>  	 * page) so that we end up taking a fault that the hardware really
->>  	 * *has* to handle gracefully without affecting other processes.
->>  	 */
->> -	svm->iommu->pasid_table[svm->pasid].val = 0;
->> -	wmb();
+>>  static irqreturn_t prq_event_thread(int irq, void *d);
+>>
+>> -int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>> +int intel_svm_init(struct intel_iommu *iommu)
+>>  {
+>>  	struct page *pages;
+>>  	int order;
+>> @@ -59,15 +59,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>>  		iommu->pasid_max = 0x20000;
+>>
+>>  	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+>> -	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+>> -	if (!pages) {
+>> -		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
+>> -			iommu->name);
+>> -		return -ENOMEM;
+>> -	}
+>> -	iommu->pasid_table = page_address(pages);
+>> -	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
 >> -
->>  	rcu_read_lock();
->>  	list_for_each_entry_rcu(sdev, &svm->devs, list) {
->> +		pasid_table = intel_pasid_get_table(sdev->dev);
->> +		if (!pasid_table)
->> +			continue;
->> +
->> +		pasid_table[svm->pasid].val = 0;
->> +		/* Make sure the entry update is visible before translation. */
->> +		wmb();
->> +
->>  		intel_flush_pasid_dev(svm, sdev, svm->pasid);
->>  		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
->>  	}
->> @@ -295,6 +301,7 @@ static LIST_HEAD(global_svm_list);
->>  int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops
->> *ops)
+>>  	if (ecap_dis(iommu->ecap)) {
+>>  		/* Just making it explicit... */
+>>  		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct
+>> pasid_state_entry));
+>> @@ -82,14 +73,10 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu
+>> *iommu)
+>>  	return 0;
+>>  }
+>>
+>> -int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
+>> +int intel_svm_exit(struct intel_iommu *iommu)
 >>  {
->>  	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
->> +	struct pasid_entry *pasid_table;
->>  	struct intel_svm_dev *sdev;
->>  	struct intel_svm *svm = NULL;
->>  	struct mm_struct *mm = NULL;
->> @@ -302,7 +309,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int
->> flags, struct svm_dev_
->>  	int pasid_max;
->>  	int ret;
+>>  	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
 >>
->> -	if (WARN_ON(!iommu || !iommu->pasid_table))
->> +	pasid_table = intel_pasid_get_table(dev);
->> +	if (WARN_ON(!iommu || !pasid_table))
->>  		return -EINVAL;
+>> -	if (iommu->pasid_table) {
+>> -		free_pages((unsigned long)iommu->pasid_table, order);
+>> -		iommu->pasid_table = NULL;
+>> -	}
+>>  	if (iommu->pasid_state_table) {
+>>  		free_pages((unsigned long)iommu->pasid_state_table, order);
+>>  		iommu->pasid_state_table = NULL;
+>> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+>> index 08e5811..44c7613 100644
+>> --- a/include/linux/intel-iommu.h
+>> +++ b/include/linux/intel-iommu.h
+>> @@ -470,7 +470,6 @@ struct intel_iommu {
+>>  	 * devices away to userspace processes (e.g. for DPDK) and don't
+>>  	 * want to trust that userspace will use *only* the PASID it was
+>>  	 * told to. But while it's all driver-arbitrated, we're fine. */
+>> -	struct pasid_entry *pasid_table;
+>>  	struct pasid_state_entry *pasid_state_table;
+>>  	struct page_req_dsc *prq;
+>>  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+>> @@ -539,8 +538,8 @@ void free_pgtable_page(void *vaddr);
+>>  struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
 >>
->>  	if (dev_is_pci(dev)) {
->> @@ -380,8 +388,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int
->> flags, struct svm_dev_
->>  		}
->>  		svm->iommu = iommu;
+>>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>> -extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
+>> -extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
+>> +int intel_svm_init(struct intel_iommu *iommu);
+>> +int intel_svm_exit(struct intel_iommu *iommu);
+>>  extern int intel_svm_enable_prq(struct intel_iommu *iommu);
+>>  extern int intel_svm_finish_prq(struct intel_iommu *iommu);
 >>
->> -		if (pasid_max > iommu->pasid_max)
->> -			pasid_max = iommu->pasid_max;
->> +		if (pasid_max > intel_pasid_max_id)
->> +			pasid_max = intel_pasid_max_id;
->>
->>  		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
->>  		ret = intel_pasid_alloc_id(svm,
->> @@ -414,7 +422,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int
->> flags, struct svm_dev_
->>  		if (cpu_feature_enabled(X86_FEATURE_LA57))
->>  			pasid_entry_val |= PASID_ENTRY_FLPM_5LP;
->>
->> -		iommu->pasid_table[svm->pasid].val = pasid_entry_val;
->> +		pasid_table[svm->pasid].val = pasid_entry_val;
->>
->>  		wmb();
->>
->> @@ -442,6 +450,7 @@ EXPORT_SYMBOL_GPL(intel_svm_bind_mm);
->>
->>  int intel_svm_unbind_mm(struct device *dev, int pasid)
->>  {
->> +	struct pasid_entry *pasid_table;
->>  	struct intel_svm_dev *sdev;
->>  	struct intel_iommu *iommu;
->>  	struct intel_svm *svm;
->> @@ -449,7 +458,8 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
->>
->>  	mutex_lock(&pasid_mutex);
->>  	iommu = intel_svm_device_to_iommu(dev);
->> -	if (!iommu || !iommu->pasid_table)
->> +	pasid_table = intel_pasid_get_table(dev);
->> +	if (!iommu || !pasid_table)
->>  		goto out;
->>
->>  	svm = intel_pasid_lookup_id(pasid);
->> @@ -472,11 +482,14 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
->>  				intel_flush_pasid_dev(svm, sdev, svm->pasid);
->>  				intel_flush_svm_range_dev(svm, sdev, 0, -1,
->> 0, !svm->mm);
->>  				kfree_rcu(sdev, rcu);
->> +				pasid_table[svm->pasid].val = 0;
->> +				/*
->> +				 * Make sure the entry update is visible
->> +				 * before translation.
->> +				 */
->> +				wmb();
->>
->>  				if (list_empty(&svm->devs)) {
->> -					svm->iommu->pasid_table[svm->pasid].val
->> = 0;
->> -					wmb();
->> -
->>  					intel_pasid_free_id(svm->pasid);
->>  					if (svm->mm)
->>  						mmu_notifier_unregister(&svm-
->>> notifier, svm->mm);
->> @@ -509,7 +522,7 @@ int intel_svm_is_pasid_valid(struct device *dev, int pasid)
->>
->>  	mutex_lock(&pasid_mutex);
->>  	iommu = intel_svm_device_to_iommu(dev);
->> -	if (!iommu || !iommu->pasid_table)
->> +	if (!iommu)
->>  		goto out;
->>
->>  	svm = intel_pasid_lookup_id(pasid);
 >> --
 >> 2.7.4
 >
