@@ -1,23 +1,45 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] swiotlb: Suppress "Out of SW-IOMMU" errors for NO_WARN
-Date: Wed, 2 May 2018 14:44:02 +0200
-Message-ID: <20180502124402.GC22857@lst.de>
-References: <20180502100501.28440-1-chris@chris-wilson.co.uk>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: centralize SWIOTLB config symbol and misc other cleanups V3
+Date: Wed, 2 May 2018 05:46:17 -0700
+Message-ID: <20180502124617.GA22001@infradead.org>
+References: <20180425051539.1989-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180502100501.28440-1-chris@chris-wilson.co.uk>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Mike Galbraith <efault@gmx.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <20180425051539.1989-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 02, 2018 at 11:05:01AM +0100, Chris Wilson wrote:
-> This extends the warning suppression from commit d0bc0c2a31c9 ("swiotlb:
-> suppress warning when __GFP_NOWARN is set") to suppress the warnings
-> when DMA_ATTR_NO_WARN is given by caller. In such cases the caller wants
-> to handle the error themselves.
+Any more comments?  Especially from the x86, mips and powerpc arch
+maintainers?  I'd like to merge this in a few days as various other
+patches depend on it.
 
-I have patches that remove swiotlb_full entirely to be posted soon.
-I'll defer the patch for now.
+On Wed, Apr 25, 2018 at 07:15:26AM +0200, Christoph Hellwig wrote:
+> Hi all,
+> 
+> this seris aims for a single defintion of the Kconfig symbol.  To get
+> there various cleanups, mostly about config symbols are included as well.
+> 
+> Changes since V2:
+>  - swiotlb doesn't need the dma_length field by itself, so don't select it
+>  - don't offer a user visible SWIOTLB choice
+> 
+> Chages since V1:
+>  - fixed a incorrect Reviewed-by that should be a Signed-off-by.
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+---end quoted text---
