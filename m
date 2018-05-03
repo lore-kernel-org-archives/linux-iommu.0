@@ -1,31 +1,34 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu: amd: hide unused iommu_table_lock
-Date: Thu, 3 May 2018 14:48:33 +0200
-Message-ID: <20180503124832.f4klueztrtc664st@8bytes.org>
-References: <20180404105713.633983-1-arnd@arndb.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v1 0/4] Tegra GART fixes and improvements
+Date: Thu, 3 May 2018 14:52:20 +0200
+Message-ID: <20180503125220.er6fnjlas4jtr344@8bytes.org>
+References: <cover.1523304324.git.digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180404105713.633983-1-arnd@arndb.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Baoquan He <bhe@redhat.com>, Alex Williamson <alex.williamson@redhat.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>, Gary R Hook <gary.hook@amd.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <cover.1523304324.git.digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 04, 2018 at 12:56:59PM +0200, Arnd Bergmann wrote:
-> The newly introduced lock is only used when CONFIG_IRQ_REMAP is enabled:
+On Mon, Apr 09, 2018 at 11:07:18PM +0300, Dmitry Osipenko wrote:
+> GART driver wasn't ever been utilized in upstream, but finally this should
+> change sometime soon with Tegra's DRM driver rework. In general GART driver
+> works fine, though there are couple things that could be improved.
 > 
-> drivers/iommu/amd_iommu.c:86:24: error: 'iommu_table_lock' defined but not used [-Werror=unused-variable]
->  static DEFINE_SPINLOCK(iommu_table_lock);
-> 
-> This moves the definition next to the user, within the #ifdef protected
-> section of the file.
-> 
-> Fixes: ea6166f4b83e ("iommu/amd: Split irq_lookup_table out of the amd_iommu_devtable_lock")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/iommu/amd_iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Dmitry Osipenko (4):
+>   iommu/tegra: gart: Add debugging facility
+>   iommu/tegra: gart: Fix gart_iommu_unmap()
 
-Applied, thanks.
+Applied these two patches, thanks.
