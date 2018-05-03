@@ -1,45 +1,55 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v4 1/2] dma-mapping: move dma configuration to bus
- infrastructure
-Date: Thu, 3 May 2018 14:21:47 +0200
-Message-ID: <20180503122147.GB18590@lst.de>
-References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
- <1524883919-29484-1-git-send-email-nipun.gupta@nxp.com>
- <20180430104124.GE2476@ulmo>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: fix usage of force parameter in
+	intel_ir_reconfigure_irte()
+Date: Thu, 3 May 2018 14:23:46 +0200
+Message-ID: <20180503122346.nl3dovkyb3py3zpc@8bytes.org>
+References: <1520375981-4958-1-git-send-email-jag.raman@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180430104124.GE2476@ulmo>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: zajec5@gmail.com, linux-pci@vger.kernel.org, jarkko.sakkinen@linux.intel.com, david.brown@linaro.org, frowand.list@gmail.com, hch@lst.de, m.szyprowski@samsung.com, vinod.koul@intel.com, bharat.bhushan@nxp.com, rafael.j.wysocki@intel.com, linux@armlinux.org.uk, andy.gross@linaro.org, msuchanek@suse.de, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-msm@vger.kernel.org, johan@kernel.org, robh+dt@kernel.org, dri-devel@lists.freedesktop.org, Nipun Gupta <nipun.gupta@nxp.com>, bhelgaas@google.com, dan.j.williams@intel.com, linux-soc@vger.kernel.org, gregkh@linuxfoundation.org, dmitry.torokhov@gmail.com, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, leoyang.li@nxp.com, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, robin.murphy@arm.com
+In-Reply-To: <1520375981-4958-1-git-send-email-jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jagannathan Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBBcHIgMzAsIDIwMTggYXQgMTI6NDE6MjRQTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcg
-d3JvdGU6Cj4gT24gU2F0LCBBcHIgMjgsIDIwMTggYXQgMDg6MjE6NThBTSArMDUzMCwgTmlwdW4g
-R3VwdGEgd3JvdGU6Cj4gWy4uLl0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9ob3N0MXgv
-YnVzLmMgYi9kcml2ZXJzL2dwdS9ob3N0MXgvYnVzLmMKPiA+IGluZGV4IDg4YTM1NTguLmE5ZWM5
-OWQgMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL2dwdS9ob3N0MXgvYnVzLmMKPiA+ICsrKyBiL2Ry
-aXZlcnMvZ3B1L2hvc3QxeC9idXMuYwo+ID4gQEAgLTMxNCw2ICszMTQsMTMgQEAgc3RhdGljIGlu
-dCBob3N0MXhfZGV2aWNlX21hdGNoKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9k
-cml2ZXIgKmRydikKPiA+ICAJcmV0dXJuIHN0cmNtcChkZXZfbmFtZShkZXYpLCBkcnYtPm5hbWUp
-ID09IDA7Cj4gPiAgfQo+ID4gIAo+ID4gK3N0YXRpYyBpbnQgaG9zdDF4X2RtYV9jb25maWd1cmUo
-c3RydWN0IGRldmljZSAqZGV2KQo+ID4gK3sKPiA+ICsJaWYgKGRldi0+b2Zfbm9kZSkKPiA+ICsJ
-CXJldHVybiBvZl9kbWFfY29uZmlndXJlKGRldiwgZGV2LT5vZl9ub2RlKTsKPiAKPiBUaGUgY29u
-ZGl0aW9uYWwgaGVyZSBpcyBzb21ld2hhdCBwb2ludGxlc3Mgc2luY2UgdGhlIG9mX25vZGUgc2hv
-dWxkCj4gYWx3YXlzIGJlIHNldC4gSWYgaXQgd2VyZW4ndCBpdCBzaG91bGQgYmUgY29uc2lkZXJl
-ZCBhIGJ1ZyBhbmQgdGhpcwo+IGZ1bmN0aW9uIHdlbGNvbWUgdG8gY3Jhc2ggdG8gbWFrZSB0aGF0
-IHZlcnkgb2J2aW91cy4KCkFncmVlZC4gIFBsZWFzZSByZW1vdmUgdGhlIGNoZWNrIGZvciB0aGUg
-cmVzZW5kLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpk
-cmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0
-cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Tue, Mar 06, 2018 at 05:39:41PM -0500, Jagannathan Raman wrote:
+> It was noticed that the IRTE configured for guest OS kernel
+> was over-written while the guest was running. As a result,
+> vt-d Posted Interrupts configured for the guest are not being
+> delivered directly, and instead bounces off the host. Every
+> interrupt delivery takes a VM Exit.
+> 
+> It was noticed that the following stack is doing the over-write:
+> [  147.463177]  modify_irte+0x171/0x1f0
+> [  147.463405]  intel_ir_set_affinity+0x5c/0x80
+> [  147.463641]  msi_domain_set_affinity+0x32/0x90
+> [  147.463881]  irq_do_set_affinity+0x37/0xd0
+> [  147.464125]  irq_set_affinity_locked+0x9d/0xb0
+> [  147.464374]  __irq_set_affinity+0x42/0x70
+> [  147.464627]  write_irq_affinity.isra.5+0xe1/0x110
+> [  147.464895]  proc_reg_write+0x38/0x70
+> [  147.465150]  __vfs_write+0x36/0x180
+> [  147.465408]  ? handle_mm_fault+0xdf/0x200
+> [  147.465671]  ? _cond_resched+0x15/0x30
+> [  147.465936]  vfs_write+0xad/0x1a0
+> [  147.466204]  SyS_write+0x52/0xc0
+> [  147.466472]  do_syscall_64+0x74/0x1a0
+> [  147.466744]  entry_SYSCALL_64_after_hwframe+0x3d/0xa2
+> 
+> reversing the sense of force check in intel_ir_reconfigure_irte()
+> restores proper posted interrupt functionality
+> 
+> Signed-off-by: Jagannathan Raman <jag.raman-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+
+Applie, thanks.
