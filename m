@@ -1,44 +1,34 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [GIT PULL] dma mapping fix for 4.17-rc4
-Date: Thu, 3 May 2018 09:14:34 +0200
-Message-ID: <20180503071434.GA13895@infradead.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v4 1/2] dma-mapping: move dma configuration to bus
+ infrastructure
+Date: Thu, 3 May 2018 14:21:33 +0200
+Message-ID: <20180503122133.GA18590@lst.de>
+References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
+ <1524883919-29484-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1524883919-29484-1-git-send-email-nipun.gupta@nxp.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Nipun Gupta <nipun.gupta@nxp.com>
+Cc: zajec5@gmail.com, linux-pci@vger.kernel.org, jarkko.sakkinen@linux.intel.com, david.brown@linaro.org, thierry.reding@gmail.com, frowand.list@gmail.com, hch@lst.de, m.szyprowski@samsung.com, vinod.koul@intel.com, bharat.bhushan@nxp.com, rafael.j.wysocki@intel.com, linux@armlinux.org.uk, andy.gross@linaro.org, msuchanek@suse.de, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-msm@vger.kernel.org, johan@kernel.org, robh+dt@kernel.org, dri-devel@lists.freedesktop.org, bhelgaas@google.com, dan.j.williams@intel.com, linux-soc@vger.kernel.org, gregkh@linuxfoundation.org, dmitry.torokhov@gmail.com, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, leoyang.li@nxp.com, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-The following changes since commit 2d618bdf71635463a4aa4ad0fe46ec852292bc0c:
-
-  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git=
-/rkuo/linux-hexagon-kernel (2018-05-01 19:54:22 -0700)
-
-are available in the Git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.17-4
-
-for you to fetch changes up to 892a0be43edd63e1cd228af3453a064e9e94f08e:
-
-  swiotlb: fix inversed DMA_ATTR_NO_WARN test (2018-05-02 14:48:55 +0200)
-
-----------------------------------------------------------------
-Fix an incorrect warning selection introduces in the last merge window.
-
-----------------------------------------------------------------
-Michel D=E4nzer (1):
-      swiotlb: fix inversed DMA_ATTR_NO_WARN test
-
- lib/swiotlb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+VGhpcyBzdGlsbCBmYWlscyB0byBhcHBseSBhZ2FpbnN0IGVpdGhlciA0LjE3LXJjMyBvciBjdXJy
+ZW50IExpbnVzCm1hc3RlciBmb3IgbWUuICBQbGVhc2UgcmVzZW5kIGFnYWluc3QgaXQsIGFuZCBt
+ZW50aW9uIHRoZSB0cmVlIGl0CmlzIGFnYWluc3QuCgpBbHNvIHBsZWFzZSByZXNlbmQgaXQgaW4g
+YSBzZXBhcmF0ZSBlbWFpbCB0aHJlYWQgKGFsbCB5b3VyIHBhdGNoZXMKd2VyZSByZXBsaWVzIHRv
+IHRoZSBwcmV2aW91cyBvbmVzKSBhbmQgaW5jbHVkZSBhIGNvdmVyIGxldHRlci4KX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
+bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
