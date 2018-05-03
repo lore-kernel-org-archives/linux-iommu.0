@@ -1,23 +1,16 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCHv4 2/2] iommu/vt-d: Limit number of faults to clear in irq
-	handler
-Date: Thu, 3 May 2018 10:44:12 +0800
-Message-ID: <5AEA777C.1060901@linux.intel.com>
-References: <20180331003312.6390-1-dima@arista.com>
-	<20180331003312.6390-2-dima@arista.com>
-	<5AE95BFF.5040306@linux.intel.com>
-	<1525264687.14025.20.camel@arista.com>
-	<5AEA4E84.6050609@linux.intel.com>
-	<1525308755.14025.25.camel@arista.com>
-	<5AEA66BC.5050202@linux.intel.com>
-	<1525312776.14025.29.camel@arista.com>
-	<5AEA70FD.1010209@linux.intel.com>
-	<1525314890.14025.38.camel@arista.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 11/13] mips,unicore32: swiotlb doesn't need sg->dma_length
+Date: Thu, 3 May 2018 05:56:43 +0200
+Message-ID: <20180503035643.GA9781@lst.de>
+References: <20180425051539.1989-1-hch@lst.de>
+	<20180425051539.1989-12-hch@lst.de>
+	<20180502222017.GC20766@jamesdev>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1525314890.14025.38.camel-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180502222017.GC20766@jamesdev>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,86 +20,22 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Wed, May 02, 2018 at 11:20:18PM +0100, James Hogan wrote:
+> On Wed, Apr 25, 2018 at 07:15:37AM +0200, Christoph Hellwig wrote:
+> > Only mips and unicore32 select CONFIG_NEED_SG_DMA_LENGTH when building
+> > swiotlb.  swiotlb itself never merges segements and doesn't accesses the
+> > dma_length field directly, so drop the dependency.
+> 
+> Is that at odds with Documentation/DMA-API-HOWTO.txt, which seems to
+> suggest arch ports should enable it for IOMMUs?
 
-On 05/03/2018 10:34 AM, Dmitry Safonov wrote:
-> On Thu, 2018-05-03 at 10:16 +0800, Lu Baolu wrote:
->> Hi,
->>
->> On 05/03/2018 09:59 AM, Dmitry Safonov wrote:
->>> On Thu, 2018-05-03 at 09:32 +0800, Lu Baolu wrote:
->>>> Hi,
->>>>
->>>> On 05/03/2018 08:52 AM, Dmitry Safonov wrote:
->>>>> AFAICS, we're doing fault-clearing in a loop inside irq
->>>>> handler.
->>>>> That means that while we're clearing if a fault raises, it'll
->>>>> make
->>>>> an irq level triggered (or on edge) on lapic. So, whenever we
->>>>> return
->>>>> from the irq handler, irq will raise again.
->>>>>
->>>> Uhm, double checked with the spec. Interrupts should be generated
->>>> since we always clear the fault overflow bit.
->>>>
->>>> Anyway, we can't clear faults in a limited loop, as the spec says
->>>> in
->>>> 7.3.1:
->>> Mind to elaborate?
->>> ITOW, I do not see a contradiction. We're still clearing faults in
->>> FIFO
->>> fashion. There is no limitation to do some spare work in between
->>> clearings (return from interrupt, then fault again and continue).
->> Hardware maintains an internal index to reference the fault recording
->> register in which the next fault can be recorded. When a fault comes,
->> hardware will check the Fault bit (bit 31 of the 4th 32-bit register
->> recording
->> register) referenced by the internal index. If this bit is set,
->> hardware will
->> not record the fault.
->>
->> Since we now don't clear the F bit until a register entry which has
->> the F bit
->> cleared, we might exit the fault handling with some register entries
->> still
->> have the F bit set.
->>
->>   F
->>> 0 |  xxxxxxxxxxxxx|
->>> 0 |  xxxxxxxxxxxxx|
->>> 0 |  xxxxxxxxxxxxx|  <--- Fault record index in fault status
->>> register
->>> 0 |  xxxxxxxxxxxxx|
->>> 1 |  xxxxxxxxxxxxx|  <--- hardware maintained index
->>> 1 |  xxxxxxxxxxxxx|
->>> 1 |  xxxxxxxxxxxxx|
->>> 0 |  xxxxxxxxxxxxx|
->>> 0 |  xxxxxxxxxxxxx|
->>> 0 |  xxxxxxxxxxxxx|
->>> 0 |  xxxxxxxxxxxxx|
->> Take an example as above, hardware could only record 2 more faults
->> with
->> others all dropped.
-> Ugh, yeah, I got what you're saying.. Thanks for explanations.
-> So, we shouldn't mark faults as cleared until we've actually processed
-> them here:
-> :        writel(DMA_FSTS_PFO | DMA_FSTS_PPF | DMA_FSTS_PRO,
-> :               iommu->reg + DMAR_FSTS_REG);
->
-> As Joerg mentioned, we do care about latency here, so this fault work
-> can't be moved entirely into workqueue.. but we might limit loop and
-> check if we've hit the limit - to proceed servicing faults in a wq,
-> as in that case we should care about being too long in irq-disabled
-> section more than about latencies.
-> Does that makes any sense, what do you think?
->
-> I can possibly re-write 2/2 with idea above..
-
-Very appreciated. I am open to the idea. :-)
-
-Best regards,
-Lu Baolu
+swiotlb isn't really an iommu..  That being said iommus don't have to
+merge segments either if they don't want to, and we have various
+implementations that don't.  The whole dma api documentation needs
+a major overhaul, including merging the various files and dropping a lot
+of dead wood.  It has been on my todo list for a while, with an inner
+hope that someone else would do it before me.
