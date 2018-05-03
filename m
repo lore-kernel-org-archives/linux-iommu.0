@@ -1,43 +1,47 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCHv4 1/2] iommu/vt-d: Ratelimit each dmar fault printing
-Date: Thu, 03 May 2018 17:12:01 +0100
-Message-ID: <1525363921.14025.39.camel@arista.com>
-References: <20180331003312.6390-1-dima@arista.com>
-	<1525227744.14025.6.camel@arista.com>
-	<20180503124010.n73opdv2k7qrpfoo@8bytes.org>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH v4 2/2] drivers: remove force dma flag from buses
+Date: Thu, 3 May 2018 22:06:22 +0530
+Message-ID: <20180503163622.GA6014@localhost>
+References: <1520868292-2479-1-git-send-email-nipun.gupta@nxp.com>
+ <1524883919-29484-1-git-send-email-nipun.gupta@nxp.com>
+ <1524883919-29484-2-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180503124010.n73opdv2k7qrpfoo-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <1524883919-29484-2-git-send-email-nipun.gupta@nxp.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Nipun Gupta <nipun.gupta@nxp.com>
+Cc: zajec5@gmail.com, linux-pci@vger.kernel.org, jarkko.sakkinen@linux.intel.com, david.brown@linaro.org, thierry.reding@gmail.com, frowand.list@gmail.com, hch@lst.de, m.szyprowski@samsung.com, bharat.bhushan@nxp.com, rafael.j.wysocki@intel.com, linux@armlinux.org.uk, andy.gross@linaro.org, msuchanek@suse.de, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-arm-msm@vger.kernel.org, johan@kernel.org, robh+dt@kernel.org, dri-devel@lists.freedesktop.org, bhelgaas@google.com, dan.j.williams@intel.com, linux-soc@vger.kernel.org, gregkh@linuxfoundation.org, dmitry.torokhov@gmail.com, linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org, leoyang.li@nxp.com, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2018-05-03 at 14:40 +0200, Joerg Roedel wrote:
-> On Wed, May 02, 2018 at 03:22:24AM +0100, Dmitry Safonov wrote:
-> > Hi Joerg,
-> > 
-> > is there anything I may do about those two patches?
-> > In 2/2 I've limited loop cnt as discussed in v3.
-> > This one solves softlockup for us, might be useful.
-> 
-> Applied the first patch, thanks. Please re-work the second one
-> according
-> to the comments.
-
-Will do.
-
--- 
-Thanks,
-             Dmitry
+T24gU2F0LCBBcHIgMjgsIDIwMTggYXQgMDg6MjE6NTlBTSArMDUzMCwgTmlwdW4gR3VwdGEgd3Jv
+dGU6Cj4gV2l0aCBlYWNoIGJ1cyBpbXBsZW1lbnRpbmcgaXRzIG93biBETUEgY29uZmlndXJhdGlv
+biBjYWxsYmFjaywKPiB0aGVyZSBpcyBubyBuZWVkIGZvciBidXMgdG8gZXhwbGljaXRseSBoYXZl
+IGZvcmNlX2RtYSBpbiBpdHMKPiBnbG9iYWwgc3RydWN0dXJlLiBUaGlzIHBhdGNoIG1vZGlmaWVz
+IG9mX2RtYV9jb25maWd1cmUgQVBJIHRvCj4gYWNjZXB0IGFuIGlucHV0IHBhcmFtZXRlciB3aGlj
+aCBzcGVjaWZpZXMgaWYgaW1wbGljaXQgRE1BCj4gY29uZmlndXJhdGlvbiBpcyByZXF1aXJlZCBl
+dmVuIHdoZW4gaXQgaXMgbm90IGRlc2NyaWJlZCBieSB0aGUKPiBmaXJtd2FyZS4KPiAKPiBTaWdu
+ZWQtb2ZmLWJ5OiBOaXB1biBHdXB0YSA8bmlwdW4uZ3VwdGFAbnhwLmNvbT4KPiBBY2tlZC1ieTog
+Qmpvcm4gSGVsZ2FhcyA8YmhlbGdhYXNAZ29vZ2xlLmNvbT4gICMgUENJIHBhcnRzCj4gLS0tCj4g
+Q2hhbmdlcyBpbiB2MjoKPiAgIC0gVGhpcyBpcyBhIG5ldyBjaGFuZ2Ugc3VnZ2VzdGVkIGJ5IFJv
+YmluIGFuZCBDaHJpc3RvcGgKPiAgICAgYW5kIGlzIGFkZGVkIHRvIHRoZSBzZXJpZXMuCj4gCj4g
+Q2hhbmdlcyBpbiB2MzoKPiAgIC0gUmViYXNlIGFuZCBjaGFuZ2VzIGNvcnJlc3BvbmRpbmcgdG8g
+dGhlIGNoYW5nZXMgaW4gcGF0Y2ggMS8yCj4gCj4gQ2hhbmdlcyBpbiB2NDoKPiAgIC0gUmViYXNl
+ZCBvbiB0b3Agb2YgNC4xNy1yYzIKPiAKPiAgZHJpdmVycy9hbWJhL2J1cy5jICAgICAgICAgICAg
+fCAxIC0KPiAgZHJpdmVycy9iYXNlL3BsYXRmb3JtLmMgICAgICAgfCAzICstLQo+ICBkcml2ZXJz
+L2JjbWEvbWFpbi5jICAgICAgICAgICB8IDIgKy0KPiAgZHJpdmVycy9kbWEvcWNvbS9oaWRtYV9t
+Z210LmMgfCAyICstCgpUaGlzIG9uZToKQWNrZWQtYnk6IFZpbm9kIEtvdWwgPHZrb3VsQGtlcm5l
+bC5vcmc+CgotLSAKflZpbm9kCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNr
+dG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2Ry
+aS1kZXZlbAo=
