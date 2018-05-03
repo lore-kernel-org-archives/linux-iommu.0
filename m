@@ -1,32 +1,45 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 2/3] intel-iommu: generalize __mapping_notify_one()
-Date: Thu, 3 May 2018 15:14:24 +0200
-Message-ID: <20180503131424.jsn4qvfuwur7adcb@8bytes.org>
-References: <20180418083953.21492-1-peterx@redhat.com>
- <20180418083953.21492-3-peterx@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 4/7] iommu/dma: Move PCI window region reservation
+	back into dma specific path.
+Date: Thu, 3 May 2018 15:16:48 +0200
+Message-ID: <20180503131648.GX15462@8bytes.org>
+References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
+	<20180418114045.7968-5-shameerali.kolothum.thodi@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180418083953.21492-3-peterx@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Xu <peterx@redhat.com>
-Cc: Linux IOMMU Mailing List <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Jintack Lim <jintack@cs.columbia.edu>, Alexander Witte <alexander.witte@baicanada.com>
+In-Reply-To: <20180418114045.7968-5-shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pmorel-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuwei5-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 18, 2018 at 04:39:52PM +0800, Peter Xu wrote:
-> Generalize this new helper to notify one newly created mapping on one
-> single IOMMU.  We can further leverage this helper in the next patch.
+On Wed, Apr 18, 2018 at 12:40:42PM +0100, Shameer Kolothum wrote:
+> This pretty much reverts commit 273df9635385 ("iommu/dma: Make PCI
+> window reservation generic")  by moving the PCI window region
+> reservation back into the dma specific path so that these regions
+> doesn't get exposed via the IOMMU API interface. With this change,
+> the vfio interface will report only iommu specific reserved regions
+> to the user space.
+> 
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 54 ++++++++++++++++++++++-------------------------
+>  1 file changed, 25 insertions(+), 29 deletions(-)
 
-You introduce the function, you do not generalize it. Please fix that in
-the subject and description.
-
-Also, please drop patch 1, I don't like this pr_debug stuff in the
-code. And please also fix the subject line in general to match the form:
-
-	iommu/vt-d: _I_ntroduce __mapping_notify_one()
-
-When that is done, please re-send.
+Applied to my iommu/fixes branch.
 
 Thanks,
 
