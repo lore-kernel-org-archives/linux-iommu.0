@@ -1,17 +1,16 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC/RFT] Add noats flag to boot parameters
-Date: Thu, 3 May 2018 10:23:02 -0400
-Message-ID: <5cf699f1-90c1-5ad8-07fe-a65042395d05@codeaurora.org>
-References: <1525025808-2365-1-git-send-email-gilkup@cs.technion.ac.il>
-	<20180503133459.waawna3ebtu3udn6@8bytes.org>
-	<359d736a-a7ac-f0e4-f4db-dc7bb506481c@codeaurora.org>
-	<20180503135920.o2rdh3exai7qmkvu@8bytes.org>
+From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCHv4 1/2] iommu/vt-d: Ratelimit each dmar fault printing
+Date: Thu, 03 May 2018 17:12:01 +0100
+Message-ID: <1525363921.14025.39.camel@arista.com>
+References: <20180331003312.6390-1-dima@arista.com>
+	<1525227744.14025.6.camel@arista.com>
+	<20180503124010.n73opdv2k7qrpfoo@8bytes.org>
+Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180503135920.o2rdh3exai7qmkvu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180503124010.n73opdv2k7qrpfoo-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,43 +21,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Gil Kupfer <gilkup-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: 0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-+Bjorn,
-
-On 5/3/2018 9:59 AM, Joerg Roedel wrote:
-> On Thu, May 03, 2018 at 09:46:34AM -0400, Sinan Kaya wrote:
->> I also like the idea in general.
->> Minor nit..
->>
->> Shouldn't this be an iommu parameter rather than a PCI kernel command line parameter?
->> We now have an iommu.passthrough argument that prevents page translation.
->>
->> Doesn't this fit into the same category especially when it is the IOMMU drivers that
->> call ATS functions for enablement not the PCI drivers.
+On Thu, 2018-05-03 at 14:40 +0200, Joerg Roedel wrote:
+> On Wed, May 02, 2018 at 03:22:24AM +0100, Dmitry Safonov wrote:
+> > Hi Joerg,
+> > 
+> > is there anything I may do about those two patches?
+> > In 2/2 I've limited loop cnt as discussed in v3.
+> > This one solves softlockup for us, might be useful.
 > 
-> ATS is a bit of a grey area between PCI and IOMMU, but since ATS is
-> PCI-specific and the code to enable/disable it is in PCI as well, I
-> think the parameter makes sense for PCI too.
-> 
+> Applied the first patch, thanks. Please re-work the second one
+> according
+> to the comments.
 
-OK. Bjorn was interested in having a command line driven feature enables in driver/pci
-directory with bitmasks for each optional PCI spec capability rather than noXYZ feature.
-
-This would allow us to troubleshoot code breakage as well as the platform bring up to
-turn off all optional features.
-
-Sounds like this would be a good match for that work.
-
-
-> 
-> 	Joerg
-> 
-> 
-
+Will do.
 
 -- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+Thanks,
+             Dmitry
