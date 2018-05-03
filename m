@@ -1,36 +1,36 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Use for_each_set_bit to simplify
-	code
-Date: Thu, 3 May 2018 15:31:45 +0200
-Message-ID: <20180503133145.z6rpl3qd64tgfpm6@8bytes.org>
-References: <20180426044929.16896-1-yuehaibing@huawei.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [RFC/RFT] Add noats flag to boot parameters
+Date: Thu, 3 May 2018 15:35:00 +0200
+Message-ID: <20180503133459.waawna3ebtu3udn6@8bytes.org>
+References: <1525025808-2365-1-git-send-email-gilkup@cs.technion.ac.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180426044929.16896-1-yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: YueHaibing <yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1525025808-2365-1-git-send-email-gilkup@cs.technion.ac.il>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Gil Kupfer <gilkup@gmail.com>
+Cc: dwmw2@infradead.org, bhelgaas@google.com, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, nadav.amit@gmail.com, Gil Kupfer <gilkup@cs.technion.ac.il>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 26, 2018 at 12:49:29PM +0800, YueHaibing wrote:
-> We can use for_each_set_bit() to simplify code slightly in the
-> ARM io-pgtable self tests while unmapping.
+On Sun, Apr 29, 2018 at 09:16:48PM +0300, Gil Kupfer wrote:
+> This patch adds noats option to the pci boot parameter.
+> When noats is selected, all ATS related functions fail immediately and
+> the IOMMU is configured to not use device-iotlb.
 > 
-> Signed-off-by: YueHaibing <yuehaibing-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/io-pgtable-arm-v7s.c | 5 +----
->  drivers/iommu/io-pgtable-arm.c     | 5 +----
->  2 files changed, 2 insertions(+), 8 deletions(-)
+> Any function that checks for ATS capabilities directly against the
+> devices should also check this flag. (Currently, such functions exist
+> only in IOMMU drivers, and they are covered by this patch.)
+> 
+> The motivation behind this patch is the existence of malicious devices.
+> Lots of research has been done about how to utilitize the IOMMU as a
+> protection from such devices. When ATS is supported, any I/O device can
+> access any physical access by faking device-IOTLB entries.
+> Adding the ability to ignore these entries lets sysadmins enhance system
+> security.
+> 
+> Signed-off-by: Gil Kupfer <gilkup@cs.technion.ac.il>
 
-Applied, thanks.
+This has also been on my list, thanks for doing that.
+
+Acked-by: Joerg Roedel <jroedel@suse.de>
