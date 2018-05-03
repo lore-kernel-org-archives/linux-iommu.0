@@ -1,18 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/amd - Update the PASID information printed to
-	the system log
-Date: Thu, 3 May 2018 22:29:28 +0200
-Message-ID: <20180503202928.GZ15462@8bytes.org>
-References: <152520429853.30928.9793486018349326103.stgit@taos>
-	<152520437211.30928.8410126837908568791.stgit@taos>
-	<20180503135706.nypxlwlt7jhqhhum@8bytes.org>
-	<526f3331-610f-9556-1d6d-f595d689b6de@amd.com>
+From: Jean Delvare <jdelvare-l3A5Bk7waGM@public.gmane.org>
+Subject: [PATCH] swiotlb: Silent unwanted warning "buffer is full"
+Date: Thu, 3 May 2018 23:54:46 +0200
+Message-ID: <20180503235446.6a3d3118@endymion>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <526f3331-610f-9556-1d6d-f595d689b6de-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,17 +15,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gary R Hook <ghook-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Michel =?UTF-8?B?RMOk?= =?UTF-8?B?bnplcg==?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, Takashi Iwai <tiwai-l3A5Bk7waGM@public.gmane.org>, Christian =?UTF-8?B?S8O2bmln?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 03, 2018 at 01:09:18PM -0500, Gary R Hook wrote:
-> Yes, I didn't quite get this right. Both values should be passed along. Or
-> perhaps the entire event could be passed in and decoded by
-> amd_iommu_report_page_fault()?
-
-You already pass in the flags, you can chose the correct message by
-looking at the GN flag there and treat the value as a domid or a pasid.
-
-
-	Joerg
+SWYgRE1BX0FUVFJfTk9fV0FSTiBpcyBwYXNzZWQgdG8gc3dpb3RsYl9hbGxvY19idWZmZXIoKSwg
+aXQgc2hvdWxkIGJlCnBhc3NlZCBmdXJ0aGVyIGRvd24gdG8gc3dpb3RsYl90YmxfbWFwX3Npbmds
+ZSgpLiBPdGhlcndpc2Ugd2UgZXNjYXBlCmhhbGYgb2YgdGhlIHdhcm5pbmdzIGJ1dCBzdGlsbCBs
+b2cgdGhlIG90aGVyIGhhbGYuCgpUaGlzIGlzIG9uZSBvZiB0aGUgbXVsdGlwbGUgY2F1c2VzIG9m
+IHNwdXJpb3VzIHdhcm5pbmdzIHJlcG9ydGVkIGF0OgpodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Au
+b3JnL3Nob3dfYnVnLmNnaT9pZD0xMDQwODIKClNpZ25lZC1vZmYtYnk6IEplYW4gRGVsdmFyZSA8
+amRlbHZhcmVAc3VzZS5kZT4KRml4ZXM6IDAxNzZhZGIwMDQwNiAoInN3aW90bGI6IHJlZmFjdG9y
+IGNvaGVyZW50IGJ1ZmZlciBhbGxvY2F0aW9uIikKQ2M6IENocmlzdG9waCBIZWxsd2lnIDxoY2hA
+bHN0LmRlPgpDYzogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPgpD
+YzogTWljaGVsIETDpG56ZXIgPG1pY2hlbEBkYWVuemVyLm5ldD4KQ2M6IFRha2FzaGkgSXdhaSA8
+dGl3YWlAc3VzZS5kZT4KQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcgIyB2NC4xNgotLS0KIGxp
+Yi9zd2lvdGxiLmMgfCAgICAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEg
+ZGVsZXRpb24oLSkKCi0tLSBsaW51eC00LjE2Lm9yaWcvbGliL3N3aW90bGIuYwkyMDE4LTA1LTAy
+IDE1OjA2OjQ5LjY3Nzc2OTUzMiArMDIwMAorKysgbGludXgtNC4xNi9saWIvc3dpb3RsYi5jCTIw
+MTgtMDUtMDMgMTU6MDQ6MjcuMTM2OTIxMjI1ICswMjAwCkBAIC03MjcsNyArNzI3LDcgQEAgc3dp
+b3RsYl9hbGxvY19idWZmZXIoc3RydWN0IGRldmljZSAqZGV2LAogCiAJcGh5c19hZGRyID0gc3dp
+b3RsYl90YmxfbWFwX3NpbmdsZShkZXYsCiAJCQlzd2lvdGxiX3BoeXNfdG9fZG1hKGRldiwgaW9f
+dGxiX3N0YXJ0KSwKLQkJCTAsIHNpemUsIERNQV9GUk9NX0RFVklDRSwgMCk7CisJCQkwLCBzaXpl
+LCBETUFfRlJPTV9ERVZJQ0UsIGF0dHJzKTsKIAlpZiAocGh5c19hZGRyID09IFNXSU9UTEJfTUFQ
+X0VSUk9SKQogCQlnb3RvIG91dF93YXJuOwogCgoKLS0gCkplYW4gRGVsdmFyZQpTVVNFIEwzIFN1
+cHBvcnQKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
