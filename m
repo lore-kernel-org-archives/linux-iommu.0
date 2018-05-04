@@ -1,16 +1,11 @@
 From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] intel-iommu: generalize __mapping_notify_one()
-Date: Fri, 4 May 2018 10:23:52 +0800
-Message-ID: <20180504022352.GK29580@xz-mi>
-References: <20180418083953.21492-1-peterx@redhat.com>
-	<20180418083953.21492-3-peterx@redhat.com>
-	<20180503131424.jsn4qvfuwur7adcb@8bytes.org>
+Subject: [PATCH v3 0/2] iommu/vt-d: Fix mapping PSI missing for iommu_map()
+Date: Fri,  4 May 2018 10:34:51 +0800
+Message-ID: <20180504023453.25682-1-peterx@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180503131424.jsn4qvfuwur7adcb-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,26 +15,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
+To: Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 03, 2018 at 03:14:24PM +0200, Joerg Roedel wrote:
-> On Wed, Apr 18, 2018 at 04:39:52PM +0800, Peter Xu wrote:
-> > Generalize this new helper to notify one newly created mapping on one
-> > single IOMMU.  We can further leverage this helper in the next patch.
-> 
-> You introduce the function, you do not generalize it. Please fix that in
-> the subject and description.
-> 
-> Also, please drop patch 1, I don't like this pr_debug stuff in the
-> code. And please also fix the subject line in general to match the form:
-> 
-> 	iommu/vt-d: _I_ntroduce __mapping_notify_one()
-> 
-> When that is done, please re-send.
+v3:
+- drop the pr_debug patch [Joerg]
+- rename all the subjects as suggested [Joerg]
+- rebase
 
-Will do.  Thanks, Joerg.
+v2:
+- cc correct people and iommu list
+
+(PSI stands for: Page Selective Invalidations)
+
+Intel IOMMU has the caching mode to ease emulation of the device.
+When that bit is set, we need to send PSIs even for newly mapped
+pages.  However current driver is not fully obey the rule.  E.g.,
+iommu_map() API will only do the mapping but it never sent the PSIs
+before.  That can be problematic to emulated IOMMU devices since
+they'll never be able to build up the shadow page tables if without
+such information.  This patchset tries to fix the problem.
+
+Patch 1 introduces a helper to notify the MAP PSIs.
+
+Patch 2 fixes the real problem by making sure every domain mapping
+will trigger the MAP PSI notifications.
+
+Without the patchset, nested device assignment (assign one device
+firstly to L1 guest, then to L2 guest) won't work for QEMU.  After
+applying the patchset, it works.
+
+Please review.  Thanks.
+
+Peter Xu (2):
+  iommu/vt-d: Introduce __mapping_notify_one()
+  iommu/vt-d: Fix iotlb psi missing for mappings
+
+ drivers/iommu/intel-iommu.c | 65 ++++++++++++++++++++++++++-----------
+ 1 file changed, 46 insertions(+), 19 deletions(-)
 
 -- 
-Peter Xu
+2.17.0
