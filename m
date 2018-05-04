@@ -1,13 +1,19 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 2/2] iommu/vt-d: Fix iotlb psi missing for mappings
-Date: Fri,  4 May 2018 10:34:53 +0800
-Message-ID: <20180504023453.25682-3-peterx@redhat.com>
-References: <20180504023453.25682-1-peterx@redhat.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 05/22] iommu: introduce iommu invalidate API function
+Date: Thu, 3 May 2018 21:46:16 -0700
+Message-ID: <20180503214616.51553247@jacob-builder>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1523915351-54415-6-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20180420181951.GA50099@ostrya.localdomain>
+	<20180423134325.6780f6ac@jacob-builder>
+	<72ee47c4-55fa-4ff1-d94e-cc26203e3eda@arm.com>
+	<20180501155838.4ec3720c@jacob-builder>
+	<b12bcd35-9472-83ed-a26f-e5be3794e2d2@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180504023453.25682-1-peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <b12bcd35-9472-83ed-a26f-e5be3794e2d2-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,116 +23,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org" <Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>, "Liu,
+	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When caching mode is enabled for IOMMU, we should send explicit IOTLB
-PSIs even for newly created mappings.  However these events are missing
-for all intel_iommu_map() callers, e.g., iommu_map().  One direct user
-is the vfio-pci driver.
+On Wed, 2 May 2018 10:31:50 +0100
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-To make sure we'll send the PSIs always when necessary, this patch
-firstly introduced domain_mapping() helper for page mappings, then fixed
-the problem by generalizing the explicit map IOTLB PSI logic into that
-new helper. With that, we let iommu_domain_identity_map() to use the
-simplified version to avoid sending the notifications, while for all the
-rest of cases we send the notifications always.
+> On 01/05/18 23:58, Jacob Pan wrote:
+> >>>> Maybe this should be called "NG_PAGE_PASID",    
+> >>> Sure. I was thinking page range already implies non-global
+> >>> pages.    
+> >>>> and "DOMAIN_PAGE" should
+> >>>> instead be "PAGE_PASID". If I understood their meaning correctly,
+> >>>> it would be more consistent with the rest.
+> >>>>    
+> >>> I am trying not to mix granu between request w/ PASID and w/o.
+> >>> DOMAIN_PAGE meant to be for request w/o PASID.    
+> >>
+> >> Is the distinction necessary? I understand the IOMMU side might
+> >> offer many possibilities for invalidation, but the user probably
+> >> doesn't need all of them. It might be easier to document, upstream
+> >> and maintain if we only specify what's currently needed by users
+> >> (what does QEMU VT-d use?) Others can always extend it by
+> >> increasing the version.
+> >>
+> >> Do you think that this invalidation message will be used outside of
+> >> BIND_PASID_TABLE context? I can't see an other use but who knows.
+> >> At the moment requests w/o PASID are managed with
+> >> VFIO_IOMMU_MAP/UNMAP_DMA, which doesn't require invalidation. And
+> >> in a BIND_PASID_TABLE context, IOMMUs requests w/o PASID are just a
+> >> special case using PASID 0 (for Arm and AMD) so I suppose they'll
+> >> use the same invalidation commands as requests w/ PASID.
+> >>  
+> > My understanding is that for GIOVA use case, VT-d vIOMMU creates
+> > GIOVA-GPA mapping and the host shadows the 2nd level page tables to
+> > create GIOVA-HPA mapping. So when assigned device in the guest can
+> > do both DMA map/unmap and VFIO map/unmap, VFIO unmap is one time
+> > deal (I guess invalidation can be captured in other code path), but
+> > guest kernel use of DMA unmap could will trigger invalidation. QEMU
+> > needs to trap those invalidation and passdown to physical IOMMU. So
+> > we do need invalidation w/o PASID.  
+> 
+> Hm, isn't this all done by host userspace? Whether guest does DMA
+> map/unmap or VFIO map/unmap, it creates/removes IOVA-GPA mappings in
+> the vIOMMU. QEMU captures invalidation requests for these mappings
+> from the guest, finds GPA-HVA in the shadow map and sends a VFIO
+> map/unmap request for IOVA-HVA.
+> 
+Sorry for the delay but you are right, I have also confirmed with Yi
+that we don't need second level invalidation. I will remove IOTLB
+invalidation w/o PASID case from the API.
 
-For VM case, we send the PSIs to all the backend IOMMUs for the domain.
+Thanks,
 
-This patch allows the nested device assignment to work with QEMU (assign
-device firstly to L1 guest, then assign it again to L2 guest).
+> Thanks,
+> Jean
+> 
 
-Signed-off-by: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 43 +++++++++++++++++++++++++++++--------
- 1 file changed, 34 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 13190a54aba2..601d3789211f 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2352,18 +2352,47 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 	return 0;
- }
- 
-+static int domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
-+                         struct scatterlist *sg, unsigned long phys_pfn,
-+                         unsigned long nr_pages, int prot)
-+{
-+       int ret;
-+       struct intel_iommu *iommu;
-+
-+       /* Do the real mapping first */
-+       ret = __domain_mapping(domain, iov_pfn, sg, phys_pfn, nr_pages, prot);
-+       if (ret)
-+               return ret;
-+
-+       /* Notify about the new mapping */
-+       if (domain_type_is_vm(domain)) {
-+	       /* VM typed domains can have more than one IOMMUs */
-+	       int iommu_id;
-+	       for_each_domain_iommu(iommu_id, domain) {
-+		       iommu = g_iommus[iommu_id];
-+		       __mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
-+	       }
-+       } else {
-+	       /* General domains only have one IOMMU */
-+	       iommu = domain_get_iommu(domain);
-+	       __mapping_notify_one(iommu, domain, iov_pfn, nr_pages);
-+       }
-+
-+       return 0;
-+}
-+
- static inline int domain_sg_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 				    struct scatterlist *sg, unsigned long nr_pages,
- 				    int prot)
- {
--	return __domain_mapping(domain, iov_pfn, sg, 0, nr_pages, prot);
-+	return domain_mapping(domain, iov_pfn, sg, 0, nr_pages, prot);
- }
- 
- static inline int domain_pfn_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
- 				     unsigned long phys_pfn, unsigned long nr_pages,
- 				     int prot)
- {
--	return __domain_mapping(domain, iov_pfn, NULL, phys_pfn, nr_pages, prot);
-+	return domain_mapping(domain, iov_pfn, NULL, phys_pfn, nr_pages, prot);
- }
- 
- static void domain_context_clear_one(struct intel_iommu *iommu, u8 bus, u8 devfn)
-@@ -2668,9 +2697,9 @@ static int iommu_domain_identity_map(struct dmar_domain *domain,
- 	 */
- 	dma_pte_clear_range(domain, first_vpfn, last_vpfn);
- 
--	return domain_pfn_mapping(domain, first_vpfn, first_vpfn,
--				  last_vpfn - first_vpfn + 1,
--				  DMA_PTE_READ|DMA_PTE_WRITE);
-+	return __domain_mapping(domain, first_vpfn, NULL,
-+				first_vpfn, last_vpfn - first_vpfn + 1,
-+				DMA_PTE_READ|DMA_PTE_WRITE);
- }
- 
- static int domain_prepare_identity_map(struct device *dev,
-@@ -3637,8 +3666,6 @@ static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
- 	if (ret)
- 		goto error;
- 
--	__mapping_notify_one(iommu, domain, mm_to_dma_pfn(iova_pfn), size);
--
- 	start_paddr = (phys_addr_t)iova_pfn << PAGE_SHIFT;
- 	start_paddr += paddr & ~PAGE_MASK;
- 	return start_paddr;
-@@ -3825,8 +3852,6 @@ static int intel_map_sg(struct device *dev, struct scatterlist *sglist, int nele
- 		return 0;
- 	}
- 
--	__mapping_notify_one(iommu, domain, start_vpfn, size);
--
- 	return nelems;
- }
- 
--- 
-2.17.0
+[Jacob Pan]
