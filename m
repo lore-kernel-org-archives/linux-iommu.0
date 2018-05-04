@@ -1,43 +1,68 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/4] iommu/vt-d: Clean up unused variable in find_or_alloc_domain
-Date: Fri,  4 May 2018 13:08:17 +0800
-Message-ID: <1525410499-18632-3-git-send-email-baolu.lu@linux.intel.com>
-References: <1525410499-18632-1-git-send-email-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1525410499-18632-1-git-send-email-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 0/2] iommu/vt-d: Fix mapping PSI missing for iommu_map()
+Date: Fri, 4 May 2018 15:32:00 +0800
+Message-ID: <5AEC0C70.4080700@linux.intel.com>
+References: <20180504023453.25682-1-peterx@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180504023453.25682-1-peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Remove it to make the code more concise.
+Hi,
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel-iommu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On 05/04/2018 10:34 AM, Peter Xu wrote:
+> v3:
+> - drop the pr_debug patch [Joerg]
+> - rename all the subjects as suggested [Joerg]
+> - rebase
+>
+> v2:
+> - cc correct people and iommu list
+>
+> (PSI stands for: Page Selective Invalidations)
+>
+> Intel IOMMU has the caching mode to ease emulation of the device.
+> When that bit is set, we need to send PSIs even for newly mapped
+> pages.  However current driver is not fully obey the rule.  E.g.,
+> iommu_map() API will only do the mapping but it never sent the PSIs
+> before.  That can be problematic to emulated IOMMU devices since
+> they'll never be able to build up the shadow page tables if without
+> such information.  This patchset tries to fix the problem.
+>
+> Patch 1 introduces a helper to notify the MAP PSIs.
+>
+> Patch 2 fixes the real problem by making sure every domain mapping
+> will trigger the MAP PSI notifications.
+>
+> Without the patchset, nested device assignment (assign one device
+> firstly to L1 guest, then to L2 guest) won't work for QEMU.  After
+> applying the patchset, it works.
+>
+> Please review.  Thanks.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 749d8f2..9064607 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2533,7 +2533,7 @@ static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
- 	struct device_domain_info *info = NULL;
- 	struct dmar_domain *domain = NULL;
- 	struct intel_iommu *iommu;
--	u16 req_id, dma_alias;
-+	u16 dma_alias;
- 	unsigned long flags;
- 	u8 bus, devfn;
- 
-@@ -2541,8 +2541,6 @@ static struct dmar_domain *find_or_alloc_domain(struct device *dev, int gaw)
- 	if (!iommu)
- 		return NULL;
- 
--	req_id = ((u16)bus << 8) | devfn;
--
- 	if (dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(dev);
- 
--- 
-2.7.4
+Both patches look good to me.
+
+Best regards,
+Lu Baolu
+
+>
+> Peter Xu (2):
+>   iommu/vt-d: Introduce __mapping_notify_one()
+>   iommu/vt-d: Fix iotlb psi missing for mappings
+>
+>  drivers/iommu/intel-iommu.c | 65 ++++++++++++++++++++++++++-----------
+>  1 file changed, 46 insertions(+), 19 deletions(-)
+>
