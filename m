@@ -1,16 +1,10 @@
-From: Jerry Snitselaar <jsnitsel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v4 05/22] iommu: introduce iommu invalidate API function
-Date: Sat, 5 May 2018 15:19:43 -0700
-Message-ID: <20180505221943.iy724cn4ltmycv5i@cantor>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-6-git-send-email-jacob.jun.pan@linux.intel.com>
-Reply-To: Jerry Snitselaar <jsnitsel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.17-rc4
+Date: Sun, 6 May 2018 11:44:05 +0200
+Message-ID: <20180506094358.ysb5lq7xbjejymxa@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7967643750017437262=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1523915351-54415-6-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,201 +14,114 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon Apr 16 18, Jacob Pan wrote:
->From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->
->When an SVM capable device is assigned to a guest, the first level page
->tables are owned by the guest and the guest PASID table pointer is
->linked to the device context entry of the physical IOMMU.
->
->Host IOMMU driver has no knowledge of caching structure updates unless
->the guest invalidation activities are passed down to the host. The
->primary usage is derived from emulated IOMMU in the guest, where QEMU
->can trap invalidation activities before passing them down to the
->host/physical IOMMU.
->Since the invalidation data are obtained from user space and will be
->written into physical IOMMU, we must allow security check at various
->layers. Therefore, generic invalidation data format are proposed here,
->model specific IOMMU drivers need to convert them into their own format.
->
->Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
->Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->---
-> drivers/iommu/iommu.c      | 14 ++++++++
-> include/linux/iommu.h      | 12 +++++++
-> include/uapi/linux/iommu.h | 79 ++++++++++++++++++++++++++++++++++++++++++++++
-> 3 files changed, 105 insertions(+)
->
->diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->index 3a69620..784e019 100644
->--- a/drivers/iommu/iommu.c
->+++ b/drivers/iommu/iommu.c
->@@ -1344,6 +1344,20 @@ void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-> }
-> EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
->
->+int iommu_sva_invalidate(struct iommu_domain *domain,
->+		struct device *dev, struct tlb_invalidate_info *inv_info)
->+{
->+	int ret = 0;
->+
->+	if (unlikely(!domain->ops->sva_invalidate))
->+		return -ENODEV;
->+
->+	ret = domain->ops->sva_invalidate(domain, dev, inv_info);
->+
->+	return ret;
->+}
->+EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
->+
-> static void __iommu_detach_device(struct iommu_domain *domain,
-> 				  struct device *dev)
-> {
->diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->index 8ad111f..e963dbd 100644
->--- a/include/linux/iommu.h
->+++ b/include/linux/iommu.h
->@@ -190,6 +190,7 @@ struct iommu_resv_region {
->  * @pgsize_bitmap: bitmap of all possible supported page sizes
->  * @bind_pasid_table: bind pasid table pointer for guest SVM
->  * @unbind_pasid_table: unbind pasid table pointer and restore defaults
->+ * @sva_invalidate: invalidate translation caches of shared virtual address
->  */
-> struct iommu_ops {
-> 	bool (*capable)(enum iommu_cap);
->@@ -243,6 +244,8 @@ struct iommu_ops {
-> 				struct pasid_table_config *pasidt_binfo);
-> 	void (*unbind_pasid_table)(struct iommu_domain *domain,
-> 				struct device *dev);
->+	int (*sva_invalidate)(struct iommu_domain *domain,
->+		struct device *dev, struct tlb_invalidate_info *inv_info);
->
-> 	unsigned long pgsize_bitmap;
-> };
->@@ -309,6 +312,9 @@ extern int iommu_bind_pasid_table(struct iommu_domain *domain,
-> 		struct device *dev, struct pasid_table_config *pasidt_binfo);
-> extern void iommu_unbind_pasid_table(struct iommu_domain *domain,
-> 				struct device *dev);
->+extern int iommu_sva_invalidate(struct iommu_domain *domain,
->+		struct device *dev, struct tlb_invalidate_info *inv_info);
->+
-> extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
-> extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> 		     phys_addr_t paddr, size_t size, int prot);
->@@ -720,6 +726,12 @@ void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-> {
-> }
->
->+static inline int iommu_sva_invalidate(struct iommu_domain *domain,
->+		struct device *dev, struct tlb_invalidate_info *inv_info)
->+{
->+	return -EINVAL;
->+}
->+
 
-Would -ENODEV make more sense here?
+--===============7967643750017437262==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="64yjnfe6iayobsid"
+Content-Disposition: inline
 
-> #endif /* CONFIG_IOMMU_API */
->
-> #endif /* __LINUX_IOMMU_H */
->diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
->index 9f7a6bf..4447943 100644
->--- a/include/uapi/linux/iommu.h
->+++ b/include/uapi/linux/iommu.h
->@@ -29,4 +29,83 @@ struct pasid_table_config {
-> 	__u8 pasid_bits;
-> };
->
->+/**
->+ * enum iommu_inv_granularity - Generic invalidation granularity
->+ *
->+ * When an invalidation request is sent to IOMMU to flush translation caches,
->+ * it may carry different granularity. These granularity levels are not specific
->+ * to a type of translation cache. For an example, PASID selective granularity
->+ * is only applicable to PASID cache invalidation.
->+ * This enum is a collection of granularities for all types of translation
->+ * caches. The idea is to make it easy for IOMMU model specific driver do
->+ * conversion from generic to model specific value.
->+ */
->+enum iommu_inv_granularity {
->+	IOMMU_INV_GRANU_DOMAIN = 1,	/* all TLBs associated with a domain */
->+	IOMMU_INV_GRANU_DEVICE,		/* caching structure associated with a
->+					 * device ID
->+					 */
->+	IOMMU_INV_GRANU_DOMAIN_PAGE,	/* address range with a domain */
->+	IOMMU_INV_GRANU_ALL_PASID,	/* cache of a given PASID */
->+	IOMMU_INV_GRANU_PASID_SEL,	/* only invalidate specified PASID */
->+
->+	IOMMU_INV_GRANU_NG_ALL_PASID,	/* non-global within all PASIDs */
->+	IOMMU_INV_GRANU_NG_PASID,	/* non-global within a PASIDs */
->+	IOMMU_INV_GRANU_PAGE_PASID,	/* page-selective within a PASID */
->+	IOMMU_INV_NR_GRANU,
->+};
->+
->+/** enum iommu_inv_type - Generic translation cache types for invalidation
->+ *
->+ * Invalidation requests sent to IOMMU may indicate which translation cache
->+ * to be operated on.
->+ * Combined with enum iommu_inv_granularity, model specific driver can do a
->+ * simple lookup to convert generic type to model specific value.
->+ */
->+enum iommu_inv_type {
->+	IOMMU_INV_TYPE_DTLB,	/* device IOTLB */
->+	IOMMU_INV_TYPE_TLB,	/* IOMMU paging structure cache */
->+	IOMMU_INV_TYPE_PASID,	/* PASID cache */
->+	IOMMU_INV_TYPE_CONTEXT,	/* device context entry cache */
->+	IOMMU_INV_NR_TYPE
->+};
->+
->+/**
->+ * Translation cache invalidation header that contains mandatory meta data.
->+ * @version:	info format version, expecting future extesions
->+ * @type:	type of translation cache to be invalidated
->+ */
->+struct tlb_invalidate_hdr {
->+	__u32 version;
->+#define TLB_INV_HDR_VERSION_1 1
->+	enum iommu_inv_type type;
->+};
->+
->+/**
->+ * Translation cache invalidation information, contains generic IOMMU
->+ * data which can be parsed based on model ID by model specific drivers.
->+ *
->+ * @granularity:	requested invalidation granularity, type dependent
->+ * @size:		2^size of 4K pages, 0 for 4k, 9 for 2MB, etc.
->+ * @pasid:		processor address space ID value per PCI spec.
->+ * @addr:		page address to be invalidated
->+ * @flags	IOMMU_INVALIDATE_PASID_TAGGED: DMA with PASID tagged,
->+ *						@pasid validity can be
->+ *						deduced from @granularity
->+ *		IOMMU_INVALIDATE_ADDR_LEAF: leaf paging entries
->+ *		IOMMU_INVALIDATE_GLOBAL_PAGE: global pages
->+ *
->+ */
->+struct tlb_invalidate_info {
->+	struct tlb_invalidate_hdr	hdr;
->+	enum iommu_inv_granularity	granularity;
->+	__u32		flags;
->+#define IOMMU_INVALIDATE_NO_PASID	(1 << 0)
->+#define IOMMU_INVALIDATE_ADDR_LEAF	(1 << 1)
->+#define IOMMU_INVALIDATE_GLOBAL_PAGE	(1 << 2)
->+#define IOMMU_INVALIDATE_PASID_TAGGED	(1 << 3)
->+	__u8		size;
->+	__u32		pasid;
->+	__u64		addr;
->+};
-> #endif /* _UAPI_IOMMU_H */
->-- 
->2.7.4
->
->_______________________________________________
->iommu mailing list
->iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+--64yjnfe6iayobsid
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 6da6c0db5316275015e8cc2959f12a17584aeb64:
+
+  Linux v4.17-rc3 (2018-04-29 14:17:42 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.17-rc4
+
+for you to fetch changes up to 40fa84e10134ef5c892b628e02382349b5db3e0c:
+
+  iommu: rockchip: fix building without CONFIG_OF (2018-05-03 16:36:07 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.17-rc4
+
+Fixes come with:
+
+	* Fix for compile warning in AMD IOMMU driver with irq remapping
+	  disabled
+
+	* Fix for VT-d interrupt remapping and invalidation size (caused
+	  a BUG_ON when trying to invalidate more than 4GB)
+
+	* Build fix and a regression fix for broken graphics with old
+	  DTS for the rockchip iommu driver
+
+	* A revert in PCI window reservation code which fixes a
+	  regression with VFIO.
+
+----------------------------------------------------------------
+Arnd Bergmann (2):
+      iommu/amd: Hide unused iommu_table_lock
+      iommu: rockchip: fix building without CONFIG_OF
+
+Changbin Du (1):
+      iommu/vt-d: fix shift-out-of-bounds in bug checking
+
+Heiko Stuebner (1):
+      iommu/rockchip: Make clock handling optional
+
+Jagannathan Raman (1):
+      iommu/vt-d: Fix usage of force parameter in intel_ir_reconfigure_irte()
+
+Joerg Roedel (1):
+      iommu/vt-d: Use WARN_ON_ONCE instead of BUG_ON in qi_flush_dev_iotlb()
+
+Shameer Kolothum (1):
+      iommu/dma: Move PCI window region reservation back into dma specific path.
+
+ drivers/iommu/amd_iommu.c           |  2 +-
+ drivers/iommu/dma-iommu.c           | 54 +++++++++++++++++--------------------
+ drivers/iommu/dmar.c                |  2 +-
+ drivers/iommu/intel_irq_remapping.c |  2 +-
+ drivers/iommu/rockchip-iommu.c      | 11 ++++++--
+ 5 files changed, 37 insertions(+), 34 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--64yjnfe6iayobsid
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJa7s5eAAoJECvwRC2XARrjnhAQAJAagB6m6DoQrbYywRK3b55+
+8dl3rNEZ6v7daJIBZ9hlLQP+zMVLvvC9fcFqQIAs6PtZbag9misXp/EIvxotRCHQ
+fHMbs9xC8PJclmaMgd9UG8mJ1b45hjRa0jGDm2eddaZq/s4toMHrBg8JktnlIfVI
+FVc1nOFiJEXpIhwngJi8sxenhmzcO/MmA1noevqhnkXYnTa+0PXFzTUBQNPM1CnJ
+xXLAYmnHwA7ZzOK7vXs/q3ZbeFZBQhSLkOe15qX+paqiXdPiYegOrp1rRDjh55Kt
+NCMzxpaMtmzb/rjKM4WC81820iWv01HAUb4hPbp9W9bcAF1qxSD9DTr3DQiGqPMl
+JvjzAOxosnlPKwPA8Xci/5aiP7sgCuqGdksAmBPTVIuOrch3NSfgezXvYZi+a1ro
+V/z9unDE5/Vt19kVyX8OS1FxFYyPBcV2ovYvCd34agtbmGGPtNuJiN6/fNxIT/gu
+56mOinTotQU6hQ3vYzlQ0TPNwfeSXUN3JVafVIWp1I8FpRmDU7GD08nv5DFFXdB3
+uZMrmhbB91SOqO13g7dm6gyJqgIAeJW7M7WPG8eK62DaT5F0kbLJSsiyNqOkYfCu
+GzFAt3q66NNm2u9Hu/NpKr5EEWq+9J0653fkv8TM20u4G1oAcxoWyi62hqBiLDQB
+IzVfuCRuPKE0x/TtPOY1
+=qw4c
+-----END PGP SIGNATURE-----
+
+--64yjnfe6iayobsid--
+
+--===============7967643750017437262==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7967643750017437262==--
