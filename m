@@ -1,11 +1,17 @@
-From: Danilo Krummrich <danilokrummrich-q2z19idT6fYRctDU1SCqIg@public.gmane.org>
-Subject: [PATCH] iommu/amd: fix unused symbol iommu_table_lock
-Date: Sun,  6 May 2018 11:53:26 +0200
-Message-ID: <20180506095326.5031-1-danilokrummrich@dk-develop.de>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1 4/4] iommu/tegra: gart: Optimize map/unmap
+Date: Mon, 7 May 2018 00:19:01 +0300
+Message-ID: <6827bda3-1aa2-da60-a749-8e2dd2e595f3@gmail.com>
+References: <cover.1523304324.git.digetx@gmail.com>
+	<f21a7b6a8f141b87f75687904a76f3728ea639a8.1523304324.git.digetx@gmail.com>
+	<20180427100202.GO30388@ulmo>
+	<716edf58-38a7-21e5-1668-b866bf392e34@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <716edf58-38a7-21e5-1668-b866bf392e34-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,33 +21,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Danilo Krummrich <danilokrummrich-q2z19idT6fYRctDU1SCqIg@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When CONFIG_IRQ_REMAP is not set iommu_table_lock is unused and hece
-a warning is generated.
-
-Fixes: ea6166f4b83e9 ("iommu/amd: Split irq_lookup_table out of the amd_iommu_devtable_lock")
-Signed-off-by: Danilo Krummrich <danilokrummrich-q2z19idT6fYRctDU1SCqIg@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 2a99f0f14795..94816a3a5bad 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -83,7 +83,10 @@
- 
- static DEFINE_SPINLOCK(amd_iommu_devtable_lock);
- static DEFINE_SPINLOCK(pd_bitmap_lock);
-+
-+#ifdef CONFIG_IRQ_REMAP
- static DEFINE_SPINLOCK(iommu_table_lock);
-+#endif
- 
- /* List of all available dev_data structures */
- static LLIST_HEAD(dev_data_list);
--- 
-2.17.0
+T24gMjcuMDQuMjAxOCAxNTozNiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IEhpIFRoaWVycnksCj4g
+Cj4gT24gMjcvMDQvMTggMTE6MDIsIFRoaWVycnkgUmVkaW5nIHdyb3RlOgo+PiBPbiBNb24sIEFw
+ciAwOSwgMjAxOCBhdCAxMTowNzoyMlBNICswMzAwLCBEbWl0cnkgT3NpcGVua28gd3JvdGU6Cj4+
+PiBDdXJyZW50bHkgR0FSVCB3cml0ZXMgb25lIHBhZ2UgZW50cnkgYXQgYSB0aW1lLiBNb3JlIG9w
+dGltYWwgd291bGQgYmUgdG8KPj4+IGFnZ3JlZ2F0ZSB0aGUgd3JpdGVzIGFuZCBmbHVzaCBCVVMg
+YnVmZmVyIGluIHRoZSBlbmQsIHRoaXMgZ2l2ZXMgbWFwL3VubWFwCj4+PiAxMC00MCUgKGRlcGVu
+ZGluZyBvbiBzaXplIG9mIG1hcHBpbmcpIHBlcmZvcm1hbmNlIGJvb3N0IGNvbXBhcmVkIHRvIGEK
+Pj4+IGZsdXNoaW5nIGFmdGVyIGVhY2ggZW50cnkgdXBkYXRlLgo+Pj4KPj4+IFNpZ25lZC1vZmYt
+Ynk6IERtaXRyeSBPc2lwZW5rbyA8ZGlnZXR4QGdtYWlsLmNvbT4KPj4+IC0tLQo+Pj4gwqAgZHJp
+dmVycy9pb21tdS90ZWdyYS1nYXJ0LmMgfCA2MyArKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKy0tLS0tLS0tLS0tCj4+PiDCoCAxIGZpbGUgY2hhbmdlZCwgNDggaW5zZXJ0aW9ucygr
+KSwgMTUgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvdGVn
+cmEtZ2FydC5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1nYXJ0LmMKPj4+IGluZGV4IDRhMDYwNzY2
+OWQzNC4uOWY1OWY1ZjE3NjYxIDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS90ZWdyYS1n
+YXJ0LmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvdGVncmEtZ2FydC5jCj4+PiBAQCAtMzYsNyAr
+MzYsNyBAQAo+Pj4gwqAgI2RlZmluZSBHQVJUX0FQRVJUVVJFX1NJWkXCoMKgwqAgU1pfMzJNCj4+
+PiDCoCDCoCAvKiBiaXRtYXAgb2YgdGhlIHBhZ2Ugc2l6ZXMgY3VycmVudGx5IHN1cHBvcnRlZCAq
+Lwo+Pj4gLSNkZWZpbmUgR0FSVF9JT01NVV9QR1NJWkVTwqDCoMKgIChTWl80SykKPj4+ICsjZGVm
+aW5lIEdBUlRfSU9NTVVfUEdTSVpFU8KgwqDCoCBHRU5NQVNLKDI0LCAxMikKPj4KPj4gVGhhdCBk
+b2Vzbid0IGxvb2sgcmlnaHQuIFRoZSBHQVJUIHJlYWxseSBvbmx5IHN1cHBvcnRzIDQgS2lCIHBh
+Z2VzLiBZb3UKPj4gc2VlbSB0byBiZSAiZW11bGF0aW5nIiBtb3JlIHBhZ2Ugc2l6ZXMgaGVyZSBp
+biBvcmRlciB0byBpbXByb3ZlIG1hcHBpbmcKPj4gcGVyZm9ybWFuY2UuIFRoYXQgc2VlbXMgd3Jv
+bmcgdG8gbWUuIEknbSB3b25kZXJpbmcgaWYgdGhpcyBjb3VsZG4ndCBiZQo+PiBpbXByb3ZlZCBi
+eSBhIHNpbWlsYXIgZmFjdG9yIGJ5IHNpbXBseSBtb3ZpbmcgdGhlIGZsdXNoaW5nIGludG8gYW4K
+Pj4gaW1wbGVtZW50YXRpb24gb2YgLT5pb3RsYl9zeW5jKCkuCj4+Cj4+IFRoYXQgc2FpZCwgaXQg
+c2VlbXMgbGlrZSAtPmlvdGxiX3N5bmMoKSBpcyBvbmx5IHVzZWQgZm9yIHVubWFwcGluZywgYnV0
+Cj4+IEkgZG9uJ3Qgc2VlIGEgcmVhc29uIHdoeSBpb21tdV9tYXAoKSB3b3VsZG4ndCBuZWVkIHRv
+IGNhbGwgaXQgYXMgd2VsbAo+PiBhZnRlciBnb2luZyB0aHJvdWdoIHNldmVyYWwgY2FsbHMgdG8g
+LT5tYXAoKS4gSXQgc2VlbXMgdG8gbWUgbGlrZSBhCj4+IGRyaXZlciB0aGF0IGltcGxlbWVudHMg
+LT5pb3RsYl9zeW5jKCkgd291bGQgd2FudCB0byB1c2UgaXQgdG8gb3B0aW1pemUKPj4gZm9yIGJv
+dGggdGhlIG1hcHBpbmcgYW5kIHVubWFwcGluZyBjYXNlcy4KPj4KPj4gSm9lcmcsIEkndmUgZ29u
+ZSBvdmVyIHRoZSBnaXQgbG9nIGFuZCBoZWFkZXIgZmlsZXMgYW5kIEkgc2VlIG5vIG1lbnRpb24K
+Pj4gb2Ygd2h5IHRoZSBUTEIgZmx1c2ggaW50ZXJmYWNlIGlzbid0IHVzZWQgZm9yIG1hcHBpbmcu
+IERvIHlvdSByZWNhbGwgYW55Cj4+IHNwZWNpYWwgcmVhc29ucyB3aHkgdGhlIHNhbWUgc2hvdWxk
+bid0IGJlIGFwcGxpZWQgZm9yIG1hcHBpbmc/IFdvdWxkIHlvdQo+PiBhY2NlcHQgYW55IHBhdGNo
+ZXMgZG9pbmcgdGhpcz8KPiAKPiBJbiBnZW5lcmFsLCByZXF1aXJpbmcgVExCIG1haW50ZW5hbmNl
+IHdoZW4gdHJhbnNpdGlvbmluZyBmcm9tIGFuIGludmFsaWQgZW50cnkKPiB0byBhIHZhbGlkIG9u
+ZSB0ZW5kcyB0byBiZSB0aGUgZXhjZXB0aW9uIHJhdGhlciB0aGFuIHRoZSBub3JtLCBhbmQgSSB0
+aGluayB3ZQo+IGVuZGVkIHVwIGF0IHRoZSBjb25zZW5zdXMgdGhhdCBpdCB3YXNuJ3Qgd29ydGgg
+dGhlIGNvbXBsaWNhdGlvbiBvZiB0cnlpbmcgdG8KPiBjYXRlciBmb3IgdGhpcyBpbiB0aGUgZ2Vu
+ZXJpYyBpb3RsYiBBUEkuCj4gCj4gVG8gYmUgZmFpciwgb24gc2ltcGxlIGhhcmR3YXJlIHdoaWNo
+IGRvZXNuJ3QgaW1wbGVtZW50IG11bHRpcGxlIHBhZ2Ugc2l6ZXMgd2l0aAo+IGFzc29jaWF0ZWQg
+d2FsayBkZXB0aC9UTEIgcHJlc3N1cmUgYmVuZWZpdHMgZm9yIGxhcmdlciBvbmVzLCB0aGVyZSdz
+IG5vIG5lZWQgZm9yCj4gdGhlIElPTU1VIEFQSSAoYW5kL29yIHRoZSBvd25lciBvZiB0aGUgZG9t
+YWluKSB0byB0cnkgaGFyZGVyIHRvIHVzZSB0aGVtLCBzbwo+IGhhbmRsaW5nICJjb21wb3VuZCIg
+cGFnZSBzaXplcyB3aXRoaW4gdGhlIGRyaXZlciBpcyBhIG1vcmUgcmVhc29uYWJsZSB0aGluZyB0
+bwo+IGRvLiBUaGVyZSBpcyBhbHJlYWR5IHNvbWUgcHJlY2VkZW50IGZvciB0aGlzIGluIG90aGVy
+IGRyaXZlcnMgKGUuZy4gbXRrX2lvbW11X3YxKS4KUHJvYmFibHkgdGhlIGJlc3QgdmFyaWFudCB3
+b3VsZCBiZSB0byBnaXZlIGFuIGV4cGxpY2l0IGNvbnRyb2wgb3ZlciBzeW5jaW5nIHRvIGEKdXNl
+ciBvZiB0aGUgSU9NTVUgQVBJLCBsaWtlIGZvciBleGFtcGxlIGRldmljZSBkcml2ZXIgbWF5IHBl
+cmZvcm0gbXVsdGlwbGUKbWFwcGluZ3MgLyB1bm1hcHBpbmdzIGFuZCB0aGVuIHN5bmMvZmx1c2gg
+aW4gdGhlIGVuZC4gSSdtIG5vdCBzdXJlIHRoYXQgaXQncwpyZWFsbHkgd29ydGggdGhlIGhhc3Ns
+ZSB0byBzaHVmZmxlIHRoZSBBUEkgcmlnaHQgbm93LCBtYXliZSB3ZSBjYW4gaW1wbGVtZW50IGl0
+CmxhdGVyIGlmIG5lZWRlZC4gSm9lcmcsIGRvIHlvdSBoYXZlIG9iamVjdGlvbnMgdG8gYSAnY29t
+cG91bmQgcGFnZScgYXBwcm9hY2g/Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pb21tdQ==
