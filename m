@@ -1,20 +1,15 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 4/4] iommu/tegra: gart: Optimize map/unmap
-Date: Mon, 7 May 2018 20:38:31 +0300
-Message-ID: <8967e349-3af1-af17-dfa2-187d06dca18c@gmail.com>
-References: <cover.1523304324.git.digetx@gmail.com>
-	<f21a7b6a8f141b87f75687904a76f3728ea639a8.1523304324.git.digetx@gmail.com>
-	<20180427100202.GO30388@ulmo>
-	<716edf58-38a7-21e5-1668-b866bf392e34@arm.com>
-	<6827bda3-1aa2-da60-a749-8e2dd2e595f3@gmail.com>
-	<20180507080420.GB18595@8bytes.org>
-	<a6e26d17-97ac-d02e-7bf4-f009af1a25dc@gmail.com>
+From: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu: armsmmu: set iommu ops for rpmsg bus
+Date: Mon, 7 May 2018 12:28:37 -0700
+Message-ID: <CAOCOHw4RDwmbCySN==-zT7cQ6abzLzKUhBHBSdv_EvWnU4g4Pg@mail.gmail.com>
+References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
+	<20180302145531.20463-4-srinivas.kandagatla@linaro.org>
+	<57fc5480-c57e-dfd3-e6af-5e5bba296430@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <a6e26d17-97ac-d02e-7bf4-f009af1a25dc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <57fc5480-c57e-dfd3-e6af-5e5bba296430-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,28 +19,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07.05.2018 18:51, Dmitry Osipenko wrote:
+On Fri, Mar 2, 2018 at 8:59 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 02/03/18 14:55, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org wrote:
+>>
+>> From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>
+>> On Qualcomm SoCs, ADSP exposes many functions like audio and
+>> others. These services need iommu access to allocate any
+>> memory for the DSP. As these drivers are childeren of
+>> rpmsg bus, able to allocate memory from iommus is basic
+>> requirement. So set arm smmu iommu ops for this bus type.
+>
 
-[snip]
+Forgot to answer this and the dma_ops patch seems to be going in the
+right direction.
 
-> Secondly, the interesting part is that mapping / unmapping of a contiguous
-> allocation (CMA using DMA API) is slower by ~50% then doing it for a sparse
-> allocation (get_pages using bare IOMMU API). /I think/ it's a shortcoming of the
-> arch/arm/mm/dma-mapping.c, which also suffers from other inflexibilities that
-> Thierry faced recently. Though I haven't really tried to figure out what is the
-> bottleneck yet and Thierry was going to re-write ARM's dma-mapping
-> implementation anyway, I'll take a closer look at this issue a bit later.
+>
+> Documentation/rpmsg.txt: "Every rpmsg device is a communication channel with
+> a remote processor (thus rpmsg devices are called channels)."
+>
+> I'd instinctively assume that a remote processor already has its own memory,
+> and that a communication channel doesn't somehow go directly through an
+> IOMMU, so that "basic requirement" seems like a pretty big assumption.
+>
 
-Please scratch my accusation of ARM's dma-mapping, it's not the culprit at all.
-I completely forgot that in a case of sparse allocation displays framebuffer
-IOMMU mapping is "pinned" to the GART and hence it's not getting dynamically
-mapped / unmapped during of my testing. I also forgot to set CPU freq governor
-to "perfomance", that reduced 50% to 20% of the above perf difference. The rest
-of the testing is unaffected, flushing after whole mapping is still much more
-efficient than flushing after modification of each page entry. And yet again,
-performance of sparse mapping is nearly the same as of contiguous mapping unless
-sparse allocation is large and _very_ fragmented.
+As of today rpmsg exclusively uses system memory for implementing the
+communication fifos, but this memory is owned/handled by the rpmsg
+bus. The need here is for drivers on top of the rpmsg_bus,
+implementing some application-level protocol that requires indirection
+buffers; e.g. to achieve zero copy of audio or image buffers that the
+remote processor is expected to operate on. In this case the device
+sitting on top of the rpmsg bus will have to map the buffer to the
+appropriate context and can then send application specific control
+requests referencing this mapping.
+
+As different parts of the firmware might operate in different contexts
+it's not feasible to utilize the parent's (the rpmsg_bus) context for
+these indirection buffers.
+
+>> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> ---
+>>   drivers/iommu/arm-smmu.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index e6920d32ac9e..9b63489af15c 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -53,6 +53,7 @@
+>>   #include <linux/spinlock.h>
+>>     #include <linux/amba/bus.h>
+>> +#include <linux/rpmsg.h>
+>>     #include "io-pgtable.h"
+>>   #include "arm-smmu-regs.h"
+>> @@ -2168,6 +2169,10 @@ static void arm_smmu_bus_init(void)
+>>                 bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>>         }
+>>   #endif
+>> +#ifdef CONFIG_RPMSG
+>
+>
+> Ah, so this will at least build OK with RPMSG=m, but I doubt it does what
+> you want it to in that case.
+>
+
+Things have been refactored but the core has remained tristate,
+causing extra head aches in various areas. I think it's very
+reasonable to review the rpmsg config options and make CONFIG_RPMSG
+bool.
+
+So with the addition of making CONFIG_RPMSG bool the patch has my Acked-by.
+
+That said I'm generally concerned about the first probed iommu
+implementation assigning itself as the sole iommu implementation for
+all busses, but I guess we haven't yet hit the point where there are
+different iommu implementations in a single SoC?
+
+Regards,
+Bjorn
