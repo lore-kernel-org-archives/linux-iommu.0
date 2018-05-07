@@ -1,103 +1,70 @@
-From: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/3] iommu: armsmmu: set iommu ops for rpmsg bus
-Date: Mon, 7 May 2018 12:28:37 -0700
-Message-ID: <CAOCOHw4RDwmbCySN==-zT7cQ6abzLzKUhBHBSdv_EvWnU4g4Pg@mail.gmail.com>
-References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
-	<20180302145531.20463-4-srinivas.kandagatla@linaro.org>
-	<57fc5480-c57e-dfd3-e6af-5e5bba296430@arm.com>
+From: Gary R Hook <gary.hook@amd.com>
+Subject: [PATCH v5 0/2] Base enablement of IOMMU debugfs support
+Date: Mon, 07 May 2018 15:01:52 -0500
+Message-ID: <152572281179.3235.11484188869064303333.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <57fc5480-c57e-dfd3-e6af-5e5bba296430-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 2, 2018 at 8:59 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 02/03/18 14:55, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org wrote:
->>
->> From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>
->> On Qualcomm SoCs, ADSP exposes many functions like audio and
->> others. These services need iommu access to allocate any
->> memory for the DSP. As these drivers are childeren of
->> rpmsg bus, able to allocate memory from iommus is basic
->> requirement. So set arm smmu iommu ops for this bus type.
->
+These patches create a top-level function, called at IOMMU initialization,
+to create a debugfs directory for the IOMMU. Under this directory drivers
+may create and populate-specific directories for their device internals.
 
-Forgot to answer this and the dma_ops patch seems to be going in the
-right direction.
+Patch 1: general IOMMU enablement
+Patch 2: basic AMD enablement to demonstrate linkage with patch 1
 
->
-> Documentation/rpmsg.txt: "Every rpmsg device is a communication channel with
-> a remote processor (thus rpmsg devices are called channels)."
->
-> I'd instinctively assume that a remote processor already has its own memory,
-> and that a communication channel doesn't somehow go directly through an
-> IOMMU, so that "basic requirement" seems like a pretty big assumption.
->
+Introduce a new Kconfig parameter IOMMU_DEBUGFS to globally allow/disallow
+debugfs code to be built.
 
-As of today rpmsg exclusively uses system memory for implementing the
-communication fifos, but this memory is owned/handled by the rpmsg
-bus. The need here is for drivers on top of the rpmsg_bus,
-implementing some application-level protocol that requires indirection
-buffers; e.g. to achieve zero copy of audio or image buffers that the
-remote processor is expected to operate on. In this case the device
-sitting on top of the rpmsg bus will have to map the buffer to the
-appropriate context and can then send application specific control
-requests referencing this mapping.
+The Makefile structure is intended to allow the use of a single switch for
+turning on DebugFS.
 
-As different parts of the firmware might operate in different contexts
-it's not feasible to utilize the parent's (the rpmsg_bus) context for
-these indirection buffers.
+Changes since v4:
+ - Guard vendor-specific debugfs files in the Makefile
+ - Call top-level routine from iommu_init()
+ - Add function for instantiating a driver-specific directory
+ - Change AMD driver code to use this new format
 
->> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->> ---
->>   drivers/iommu/arm-smmu.c | 5 +++++
->>   1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index e6920d32ac9e..9b63489af15c 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -53,6 +53,7 @@
->>   #include <linux/spinlock.h>
->>     #include <linux/amba/bus.h>
->> +#include <linux/rpmsg.h>
->>     #include "io-pgtable.h"
->>   #include "arm-smmu-regs.h"
->> @@ -2168,6 +2169,10 @@ static void arm_smmu_bus_init(void)
->>                 bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
->>         }
->>   #endif
->> +#ifdef CONFIG_RPMSG
->
->
-> Ah, so this will at least build OK with RPMSG=m, but I doubt it does what
-> you want it to in that case.
->
+Changes since v3:
+ - Remove superfluous calls to debugfs_initialized()
+ - Emit a warning exactly one time
+ - Change the Kconfig name to IOMMU_DEBUGFS
+ - Change the way debugfs modules are made
 
-Things have been refactored but the core has remained tristate,
-causing extra head aches in various areas. I think it's very
-reasonable to review the rpmsg config options and make CONFIG_RPMSG
-bool.
+Changes since v2:
+ - Move a declaration to outside an ifdef
+ - Remove a spurious blank line
 
-So with the addition of making CONFIG_RPMSG bool the patch has my Acked-by.
+Changes since v1:
+ - Remove debug cruft
+ - Remove cruft produced by design change
+ - Change the lock to a mutex
+ - Coding style fixes
+ - Add a comment to document the framework
 
-That said I'm generally concerned about the first probed iommu
-implementation assigning itself as the sole iommu implementation for
-all busses, but I guess we haven't yet hit the point where there are
-different iommu implementations in a single SoC?
+---
 
-Regards,
-Bjorn
+Gary R Hook (2):
+      iommu - Enable debugfs exposure of IOMMU driver internals
+      iommu/amd: Add basic debugfs infrastructure for AMD IOMMU
+
+
+ drivers/iommu/Kconfig             |   11 ++++++
+ drivers/iommu/Makefile            |    6 +++
+ drivers/iommu/amd_iommu_debugfs.c |   41 ++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_init.c    |    6 ++-
+ drivers/iommu/amd_iommu_proto.h   |    6 +++
+ drivers/iommu/amd_iommu_types.h   |    3 ++
+ drivers/iommu/iommu-debugfs.c     |   64 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c             |    2 +
+ include/linux/iommu.h             |    8 +++++
+ 9 files changed, 145 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+ create mode 100644 drivers/iommu/iommu-debugfs.c
+
+--
