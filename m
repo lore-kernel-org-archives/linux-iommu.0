@@ -1,11 +1,15 @@
-From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] swiotlb: Update the comment of swiotlb
-Date: Mon, 7 May 2018 19:06:25 +0800
-Message-ID: <1525691185-55657-1-git-send-email-xieyisheng1@huawei.com>
+From: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu/amd: Do not flush when device is busy
+Date: Mon, 7 May 2018 14:38:54 +0200 (CEST)
+Message-ID: <alpine.DEB.2.20.1805071430530.2795@hypnos.tec.linutronix.de>
+References: <20180504162233.11283-1-bigeasy@linutronix.de>
+	<20180504162233.11283-4-bigeasy@linutronix.de>
+	<0e5269ee-093f-9bb2-0a18-ee0e56fcf8f7@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0e5269ee-093f-9bb2-0a18-ee0e56fcf8f7-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,41 +19,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Cc: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-swiotlb use physical address of bounce buffer when do map and unmap,
-therefore, related comment should be updated.
+On Fri, 4 May 2018, Gary R Hook wrote:
 
-Signed-off-by: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- lib/swiotlb.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+> On 05/04/2018 11:22 AM, Sebastian Andrzej Siewior wrote:
+> > From: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> > 
+> > When device is already attached to a domain, there is no need to execute
+> > the domain_flush_tlb_pde(). Therefore move the check if the domain is set
+> > into attach_device().
+> > 
+> > Signed-off-by: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> > Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> > ---
+> >   drivers/iommu/amd_iommu.c | 32 ++++++++++----------------------
+> >   1 file changed, 10 insertions(+), 22 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > index f66a5d0b7c62..a801678ae1b4 100644
+> > --- a/drivers/iommu/amd_iommu.c
+> > +++ b/drivers/iommu/amd_iommu.c
+> > @@ -1878,8 +1878,11 @@ static void clear_dte_entry(u16 devid)
+> >   	amd_iommu_apply_erratum_63(devid);
+> >   }
+> >   -static void do_attach(struct iommu_dev_data *dev_data,
+> > -		      struct protection_domain *domain)
+> > +/*
+> > + * This function does assigns the device visible for the hardware
+> > + */
+> 
+> <grammar cop>
+> 
+> The prior version of this comment appears 3 times in the file, and is
+> grammatically problematic every time. Can we simplify it to say
+> 
+>  * This function makes the device visible in the domain
+> 
+> Or some such? I.e. tidy up the two remaining comments?
+> 
+> </grammar cop>
+> 
 
-diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index fece575..e3d9445 100644
---- a/lib/swiotlb.c
-+++ b/lib/swiotlb.c
-@@ -593,9 +593,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- }
- 
- /*
-- * Allocates bounce buffer and returns its kernel virtual address.
-+ * Allocates bounce buffer and returns its physical address.
-  */
--
- static phys_addr_t
- map_single(struct device *hwdev, phys_addr_t phys, size_t size,
- 	   enum dma_data_direction dir, unsigned long attrs)
-@@ -614,7 +613,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- }
- 
- /*
-- * dma_addr is the kernel virtual address of the bounce buffer to unmap.
-+ * tlb_addr is the physical address of the bounce buffer to unmap.
-  */
- void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- 			      size_t size, enum dma_data_direction dir,
--- 
-1.7.12.4
+Will fix it in a separate patch - but I only found 2 places where the
+prior version of this comment appears.
+
+Anna-Maria
