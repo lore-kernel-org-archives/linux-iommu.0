@@ -1,7 +1,8 @@
 From: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH v2 1/4] iommu/amd: Fix grammar of comments
-Date: Mon,  7 May 2018 14:53:26 +0200
-Message-ID: <20180507125329.24648-2-anna-maria@linutronix.de>
+Subject: [PATCH v2 2/4] iommu/amd: Prevent possible null pointer dereference
+	and infinite loop
+Date: Mon,  7 May 2018 14:53:27 +0200
+Message-ID: <20180507125329.24648-3-anna-maria@linutronix.de>
 References: <20180507125329.24648-1-anna-maria@linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,37 +22,79 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Suggested-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+The check for !dev_data->domain in __detach_device() emits a warning and
+returns. The calling code in detach_device() dereferences dev_data->domain
+afterwards unconditionally, so in case that dev_data->domain is NULL the
+warning will be immediately followed by a NULL pointer dereference.
+
+The calling code in cleanup_domain() loops infinite when !dev_data->domain
+and the check in __detach_device() returns immediately because dev_list is
+not changed.
+
+do_detach() duplicates this check without throwing a warning.
+
+Move the check with the explanation of the do_detach() code into the caller
+detach_device() and return immediately. Throw an error, when hitting the
+condition in cleanup_domain().
+
 Signed-off-by: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iommu/amd_iommu.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 8fb8c737fffe..6f13c03eba62 100644
+index 6f13c03eba62..a632cc2daada 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1939,8 +1939,8 @@ static void do_detach(struct iommu_dev_data *dev_data)
- }
+@@ -1911,15 +1911,6 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ 	struct amd_iommu *iommu;
+ 	u16 alias;
  
- /*
-- * If a device is not yet associated with a domain, this function does
-- * assigns it visible for the hardware
-+ * If a device is not yet associated with a domain, this function makes the
-+ * device visible in the domain
-  */
- static int __attach_device(struct iommu_dev_data *dev_data,
- 			   struct protection_domain *domain)
-@@ -2061,8 +2061,8 @@ static bool pci_pri_tlp_required(struct pci_dev *pdev)
- }
+-	/*
+-	 * First check if the device is still attached. It might already
+-	 * be detached from its domain because the generic
+-	 * iommu_detach_group code detached it and we try again here in
+-	 * our alias handling.
+-	 */
+-	if (!dev_data->domain)
+-		return;
+-
+ 	iommu = amd_iommu_rlookup_table[dev_data->devid];
+ 	alias = dev_data->alias;
  
- /*
-- * If a device is not yet associated with a domain, this function
-- * assigns it visible for the hardware
-+ * If a device is not yet associated with a domain, this function makes the
-+ * device visible in the domain
-  */
- static int attach_device(struct device *dev,
- 			 struct protection_domain *domain)
+@@ -2124,9 +2115,6 @@ static void __detach_device(struct iommu_dev_data *dev_data)
+ 	 */
+ 	WARN_ON(!irqs_disabled());
+ 
+-	if (WARN_ON(!dev_data->domain))
+-		return;
+-
+ 	domain = dev_data->domain;
+ 
+ 	spin_lock(&domain->lock);
+@@ -2148,6 +2136,15 @@ static void detach_device(struct device *dev)
+ 	dev_data = get_dev_data(dev);
+ 	domain   = dev_data->domain;
+ 
++	/*
++	 * First check if the device is still attached. It might already
++	 * be detached from its domain because the generic
++	 * iommu_detach_group code detached it and we try again here in
++	 * our alias handling.
++	 */
++	if (WARN_ON(!dev_data->domain))
++		return;
++
+ 	/* lock device table */
+ 	spin_lock_irqsave(&amd_iommu_devtable_lock, flags);
+ 	__detach_device(dev_data);
+@@ -2793,6 +2790,7 @@ static void cleanup_domain(struct protection_domain *domain)
+ 	while (!list_empty(&domain->dev_list)) {
+ 		entry = list_first_entry(&domain->dev_list,
+ 					 struct iommu_dev_data, list);
++		BUG_ON(!entry->domain);
+ 		__detach_device(entry);
+ 	}
+ 
 -- 
 2.15.1
