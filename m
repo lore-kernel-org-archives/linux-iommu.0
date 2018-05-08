@@ -1,89 +1,87 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v1 3/9] iommu/tegra: gart: Remove code related to module
-	unloading
-Date: Tue,  8 May 2018 21:16:54 +0300
-Message-ID: <20180508181700.5169-4-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v1 6/9] iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+Date: Tue,  8 May 2018 21:16:57 +0300
+Message-ID: <20180508181700.5169-7-digetx@gmail.com>
 References: <20180508181700.5169-1-digetx@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180508181700.5169-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180508181700.5169-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>
+Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART driver is built-in, hence it can't be unloaded. This patch merely
-removes the dead code.
+GART can't handle all devices, ignore devices that aren't related to GART.
+Device tree must explicitly assign GART IOMMU to the devices.
 
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/iommu/tegra-gart.c | 25 +++----------------------
- 1 file changed, 3 insertions(+), 22 deletions(-)
+ drivers/iommu/tegra-gart.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index de48943bf843..268d29fb9097 100644
+index 39305224c48d..5b2d27620350 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -502,20 +502,6 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	return 0;
+@@ -366,6 +366,26 @@ static void gart_iommu_remove_device(struct device *dev)
+ 	iommu_device_unlink(&gart_handle->iommu, dev);
  }
  
--static int tegra_gart_remove(struct platform_device *pdev)
--{
--	struct gart_device *gart = platform_get_drvdata(pdev);
--
--	iommu_device_unregister(&gart->iommu);
--	iommu_device_sysfs_remove(&gart->iommu);
--
--	writel(0, gart->regs + GART_CONFIG);
--	if (gart->savedata)
--		vfree(gart->savedata);
--	gart_handle = NULL;
--	return 0;
--}
--
- static const struct dev_pm_ops tegra_gart_pm_ops = {
- 	.suspend	= tegra_gart_suspend,
- 	.resume		= tegra_gart_resume,
-@@ -529,26 +515,21 @@ MODULE_DEVICE_TABLE(of, tegra_gart_of_match);
- 
- static struct platform_driver tegra_gart_driver = {
- 	.probe		= tegra_gart_probe,
--	.remove		= tegra_gart_remove,
- 	.driver = {
- 		.name	= "tegra-gart",
- 		.pm	= &tegra_gart_pm_ops,
- 		.of_match_table = tegra_gart_of_match,
-+		.suppress_bind_attrs = true,
- 	},
-+	.prevent_deferred_probe = true,
++static int gart_iommu_check_device(struct gart_device *gart,
++				   struct device *dev);
++
++struct iommu_group *gart_iommu_device_group(struct device *dev)
++{
++	int err;
++
++	err = gart_iommu_check_device(gart_handle, dev);
++	if (err)
++		return ERR_PTR(err);
++
++	return generic_device_group(dev);
++}
++
++static int gart_iommu_of_xlate(struct device *dev,
++			       struct of_phandle_args *args)
++{
++	return 0;
++}
++
+ static const struct iommu_ops gart_iommu_ops = {
+ 	.capable	= gart_iommu_capable,
+ 	.domain_alloc	= gart_iommu_domain_alloc,
+@@ -374,14 +394,24 @@ static const struct iommu_ops gart_iommu_ops = {
+ 	.detach_dev	= gart_iommu_detach_dev,
+ 	.add_device	= gart_iommu_add_device,
+ 	.remove_device	= gart_iommu_remove_device,
+-	.device_group	= generic_device_group,
++	.device_group	= gart_iommu_device_group,
+ 	.map		= gart_iommu_map,
+ 	.map_sg		= default_iommu_map_sg,
+ 	.unmap		= gart_iommu_unmap,
+ 	.iova_to_phys	= gart_iommu_iova_to_phys,
+ 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
++	.of_xlate	= gart_iommu_of_xlate,
  };
  
- static int tegra_gart_init(void)
- {
- 	return platform_driver_register(&tegra_gart_driver);
- }
--
--static void __exit tegra_gart_exit(void)
--{
--	platform_driver_unregister(&tegra_gart_driver);
--}
--
- subsys_initcall(tegra_gart_init);
--module_exit(tegra_gart_exit);
++static int gart_iommu_check_device(struct gart_device *gart,
++				   struct device *dev)
++{
++	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &gart_iommu_ops)
++		return -ENODEV;
 +
- module_param(gart_debug, bool, 0644);
++	return 0;
++}
++
+ static int tegra_gart_suspend(struct device *dev)
+ {
+ 	struct gart_device *gart = dev_get_drvdata(dev);
+@@ -462,6 +492,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	}
  
- MODULE_PARM_DESC(gart_debug, "Enable GART debugging");
+ 	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
++	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
+ 
+ 	ret = iommu_device_register(&gart->iommu);
+ 	if (ret) {
 -- 
 2.17.0
