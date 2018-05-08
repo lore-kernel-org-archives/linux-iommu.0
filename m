@@ -1,101 +1,31 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 05/22] iommu: introduce iommu invalidate API function
-Date: Tue, 8 May 2018 11:35:00 +0100
-Message-ID: <ef462e73-01e3-d581-cf91-3e012a337c61@arm.com>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-6-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180420181951.GA50099@ostrya.localdomain>
-	<20180423134325.6780f6ac@jacob-builder>
-	<72ee47c4-55fa-4ff1-d94e-cc26203e3eda@arm.com>
-	<20180501155838.4ec3720c@jacob-builder>
-	<b12bcd35-9472-83ed-a26f-e5be3794e2d2@arm.com>
-	<20180503214616.51553247@jacob-builder>
-	<20180504110706.3392a98e@jacob-builder>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 3/3] dma-debug: unexport dma_debug_resize_entries and
+        debug_dma_dump_mappings
+Date: Tue, 8 May 2018 12:45:56 +0200
+Message-ID: <20180508104556.GA26841@lst.de>
+References: <20180424140235.9125-1-hch@lst.de> <20180424140235.9125-4-hch@lst.de> <bb5bb25f-24da-9729-a39b-3b88c65ef628@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180504110706.3392a98e@jacob-builder>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org" <Liu-U/l+663ovUtSq9BJjBFyUp/QNRX+jHPU@public.gmane.org>, "Liu,
-	Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <bb5bb25f-24da-9729-a39b-3b88c65ef628@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-xtensa@linux-xtensa.org, Michal Simek <monstr@monstr.eu>, Vincent Chen <deanbo422@gmail.com>, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Greentime Hu <green.hu@gmail.com>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
+On Tue, May 08, 2018 at 11:05:20AM +0100, Robin Murphy wrote:
+> On 24/04/18 15:02, Christoph Hellwig wrote:
+>> Only used by the AMD GART driver, which must be built in.
+>
+> FWIW debug_dma_dump_mappings() is also called by the Intel VT-d driver, but 
+> the same reasoning still applies.
 
-Looks mostly good to me, I just have a couple more comments
+I'll update the changelog.
 
-On 04/05/18 19:07, Jacob Pan wrote:
-> Now the passdown invalidation granularities look like:
-> (sorted by coarseness), will send out in v5 patchset soon if no issues.
-> 
-> /**
->  * enum iommu_inv_granularity - Generic invalidation granularity
->  *
->  * @IOMMU_INV_GRANU_DOMAIN:		Device context cache associated with a
->  *					domain ID.
->  * @IOMMU_INV_GRANU_DEVICE:		Device context cache associated with a
->  *					device ID
->  * @IOMMU_INV_GRANU_DOMAIN_ALL_PASID:	TLB entries or PASID caches of all
->  *					PASIDs associated with a domain ID
->  * @IOMMU_INV_GRANU_PASID_SEL:		TLB entries or PASID cache associated
->  *					with a PASID and a domain
->  * @IOMMU_INV_GRANU_PAGE_PASID:		TLB entries of selected page range
->  *					within a PASID
->  *
->  * When an invalidation request is passed down to IOMMU to flush translation
->  * caches, it may carry different granularity levels, which can be specific
->  * to certain types of translation caches. For an example, PASID selective
->  * granularity is only applicable PASID cache and IOTLB invalidation but for
->  * device context caches.
+> This does rather beg the question of 
+> whether it's right to have bits of low-level dma-debug internals *only* 
+> called by a couple of IOMMU drivers, but that can wait for another day.
 
-Should it be "PASID selective granularity is only applicable to PASID
-cache and IOTLB but not device context caches"?
-
->  * This enum is a collection of granularities for all types of translation
->  * caches. The idea is to make it easy for IOMMU model specific driver to
->  * convert from generic to model specific value. Not all combinations between
->  * translation caches and granularity levels are valid. Each IOMMU driver
->  * can enforce check based on its own conversion table. The conversion is
->  * based on 2D look-up with inputs as follows:
->  * - translation cache types
->  * - granularity
->  * No global granularity is allowed in that passdown invalidation for an
->  * assigned device should only impact the device or domain itself.
-
-That last sentence is a bit confusing, because "global granularity"
-might also refer to the "global" TLB flag which is allowed. In my
-opinion you can leave this rationale out, I doubt userspace will ever
-demand a mechanism for global invalidation.
-
->  *
->  *             type |   DTLB    |    TLB    |   PASID   |  CONTEXT
->  *  granule         |           |           |           |
->  * -----------------+-----------+-----------+-----------+-----------
->  *  DOMAIN          |           |           |           |     Y
->  *  DEVICE          |           |           |           |     Y
-
-I can't really see a use-case for DOMAIN and DEVICE. It might make more
-sense to keep only DN_ALL_PASID, which would then also invalidate the
-device context cache. But since they will be very rare events, factoring
-them doesn't seem important.
-
->  *  DN_ALL_PASID    |   Y       |   Y       |   Y       |
->  *  PASID_SEL       |   Y       |   Y       |   Y       |
->  *  PAGE_PASID      |           |   Y       |           |
-
-Why not allow PAGE_PASID+DTLB? We need a way to invalidate individual
-DTLB entries
-
-Thanks,
-Jean
+My gut feeling is that it is wrong, but I didn't have time to look into
+the details and history of how this happened.
