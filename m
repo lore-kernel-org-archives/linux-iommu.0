@@ -1,31 +1,80 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/3] dma-debug: unexport dma_debug_resize_entries and
-        debug_dma_dump_mappings
-Date: Tue, 8 May 2018 12:45:56 +0200
-Message-ID: <20180508104556.GA26841@lst.de>
-References: <20180424140235.9125-1-hch@lst.de> <20180424140235.9125-4-hch@lst.de> <bb5bb25f-24da-9729-a39b-3b88c65ef628@arm.com>
+From: "Hook, Gary" <ghook@amd.com>
+Subject: Re: [PATCH v5 1/2] iommu - Enable debugfs exposure of IOMMU driver
+ internals
+Date: Tue, 8 May 2018 12:08:26 -0500
+Message-ID: <a9600652-f087-5d8f-ff0b-80200d570591@amd.com>
+References: <152572332370.3235.16541462864315443906.stgit@sosxen2.amd.com>
+ <201805080700.Jm8moLQz%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <bb5bb25f-24da-9729-a39b-3b88c65ef628@arm.com>
+In-Reply-To: <201805080700.Jm8moLQz%fengguang.wu@intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-xtensa@linux-xtensa.org, Michal Simek <monstr@monstr.eu>, Vincent Chen <deanbo422@gmail.com>, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org, linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, Greentime Hu <green.hu@gmail.com>, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, nios2-dev@lists.rocketboards.org, linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+To: kbuild test robot <lkp@intel.com>, Gary R Hook <gary.hook@amd.com>
+Cc: kbuild-all@01.org, iommu@lists.linux-foundation.org, joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 08, 2018 at 11:05:20AM +0100, Robin Murphy wrote:
-> On 24/04/18 15:02, Christoph Hellwig wrote:
->> Only used by the AMD GART driver, which must be built in.
->
-> FWIW debug_dma_dump_mappings() is also called by the Intel VT-d driver, but 
-> the same reasoning still applies.
+On 5/7/2018 6:47 PM, kbuild test robot wrote:
+> Hi Gary,
+> 
 
-I'll update the changelog.
+I imagine these questions have been asked before, so I'll ask for
+forgiveness up front.
 
-> This does rather beg the question of 
-> whether it's right to have bits of low-level dma-debug internals *only* 
-> called by a couple of IOMMU drivers, but that can wait for another day.
 
-My gut feeling is that it is wrong, but I didn't have time to look into
-the details and history of how this happened.
+> Thank you for the patch! Yet something to improve:
+> 
+> [auto build test ERROR on iommu/next]
+> [also build test ERROR on v4.17-rc4 next-20180507]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Gary-R-Hook/iommu-Enable-debugfs-exposure-of-IOMMU-driver-internals/20180508-062918
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
+> config: x86_64-randconfig-x016-201818 (attached as .config)
+> compiler: gcc-7 (Debian 7.3.0-16) 7.3.0
+> reproduce:
+>          # save the attached .config to linux build tree
+>          make ARCH=x86_64
+
+Is the gcc 7 compiler now a requirement to build the kernel? Or only to 
+run krobot tests?
+
+Is this the earliest version of the compiler that can be used? I'm still 
+using 4.8 and 5.4, which seems to suffice for the kernel.
+
+Googling about this has been fruitless.
+
+> 
+> All error/warnings (new ones prefixed by >>):
+> 
+>     In file included from include/linux/intel-iommu.h:32:0,
+>                      from drivers/gpu/drm/i915/i915_drv.h:41,
+>                      from drivers/gpu/drm/i915/i915_oa_bxt.c:31:
+>     include/linux/iommu.h: In function 'iommu_debugfs_new_driver_dir':
+>>> include/linux/iommu.h:706:8: error: parameter name omitted
+>      struct dentry *iommu_debugfs_new_driver_dir(char *) {};
+>             ^~~~~~
+>     In file included from include/linux/intel-iommu.h:32:0,
+>                      from drivers/gpu/drm/i915/i915_drv.h:41,
+>                      from drivers/gpu/drm/i915/i915_oa_bxt.c:31:
+>>> include/linux/iommu.h:706:8: warning: control reaches end of non-void function [-Wreturn-type]
+>      struct dentry *iommu_debugfs_new_driver_dir(char *) {};
+>             ^~~~~~
+> 
+> vim +706 include/linux/iommu.h
+> 
+>     700	
+>     701	#ifdef CONFIG_IOMMU_DEBUGFS
+>     702	void iommu_debugfs_setup(void);
+>     703	struct dentry *iommu_debugfs_new_driver_dir(char *);
+>     704	#else
+>     705	static inline void iommu_debugfs_setup(void) {}
+>   > 706	struct dentry *iommu_debugfs_new_driver_dir(char *) {};
+>     707	#endif
+>     708	
+
+I have no problems with adding parameter names. But 
+scripts/checkpatch.pl doesn't seem to check for this, nor require it. 
+Should checkpatch be updated?
