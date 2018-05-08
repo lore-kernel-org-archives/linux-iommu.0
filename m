@@ -1,80 +1,66 @@
-From: "Hook, Gary" <ghook@amd.com>
-Subject: Re: [PATCH v5 1/2] iommu - Enable debugfs exposure of IOMMU driver
- internals
-Date: Tue, 8 May 2018 12:08:26 -0500
-Message-ID: <a9600652-f087-5d8f-ff0b-80200d570591@amd.com>
-References: <152572332370.3235.16541462864315443906.stgit@sosxen2.amd.com>
- <201805080700.Jm8moLQz%fengguang.wu@intel.com>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v1 0/9] Tegra GART driver clean up and optimization
+Date: Tue,  8 May 2018 21:16:51 +0300
+Message-ID: <20180508181700.5169-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <201805080700.Jm8moLQz%fengguang.wu@intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: kbuild test robot <lkp@intel.com>, Gary R Hook <gary.hook@amd.com>
-Cc: kbuild-all@01.org, iommu@lists.linux-foundation.org, joro@8bytes.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/7/2018 6:47 PM, kbuild test robot wrote:
-> Hi Gary,
-> 
+Hello,
 
-I imagine these questions have been asked before, so I'll ask for
-forgiveness up front.
+This series addresses multiple shortcomings of the GART driver:
 
+1. Thierry noticed that Memory Controller driver uses registers that belong
+   to GART in [0] and for now MC driver only reports the fact of GART's page
+   fault. The first two patches of the series are addressing this shortcoming.
 
-> Thank you for the patch! Yet something to improve:
-> 
-> [auto build test ERROR on iommu/next]
-> [also build test ERROR on v4.17-rc4 next-20180507]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Gary-R-Hook/iommu-Enable-debugfs-exposure-of-IOMMU-driver-internals/20180508-062918
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-> config: x86_64-randconfig-x016-201818 (attached as .config)
-> compiler: gcc-7 (Debian 7.3.0-16) 7.3.0
-> reproduce:
->          # save the attached .config to linux build tree
->          make ARCH=x86_64
+   [0] https://www.spinics.net/lists/linux-tegra/msg33072.html
 
-Is the gcc 7 compiler now a requirement to build the kernel? Or only to 
-run krobot tests?
+2. Currently GART is kept disabled by the commit c7e3ca515e784 ("iommu/tegra:
+   gart: Do not register with bus"). If GART is re-enabled than all devices
+   in the system are getting assigned to the GART as it is a global systems
+   IOMMU provider. This is wrong simply because GART doesn't handle all those
+   devices. This series makes GART to accept only devices that are explicitly
+   assigned to GART in device tree using 'iommu' phandle.
 
-Is this the earliest version of the compiler that can be used? I'm still 
-using 4.8 and 5.4, which seems to suffice for the kernel.
+3. This series makes a generic clean up of the driver by removing dead code,
+   allowing to have one IOMMU domain at max, etc.
 
-Googling about this has been fruitless.
+4. This series introduces and utilizes iotlb_sync_map() callback that was
+   previously suggested by Joerg Roedel in [1].
 
-> 
-> All error/warnings (new ones prefixed by >>):
-> 
->     In file included from include/linux/intel-iommu.h:32:0,
->                      from drivers/gpu/drm/i915/i915_drv.h:41,
->                      from drivers/gpu/drm/i915/i915_oa_bxt.c:31:
->     include/linux/iommu.h: In function 'iommu_debugfs_new_driver_dir':
->>> include/linux/iommu.h:706:8: error: parameter name omitted
->      struct dentry *iommu_debugfs_new_driver_dir(char *) {};
->             ^~~~~~
->     In file included from include/linux/intel-iommu.h:32:0,
->                      from drivers/gpu/drm/i915/i915_drv.h:41,
->                      from drivers/gpu/drm/i915/i915_oa_bxt.c:31:
->>> include/linux/iommu.h:706:8: warning: control reaches end of non-void function [-Wreturn-type]
->      struct dentry *iommu_debugfs_new_driver_dir(char *) {};
->             ^~~~~~
-> 
-> vim +706 include/linux/iommu.h
-> 
->     700	
->     701	#ifdef CONFIG_IOMMU_DEBUGFS
->     702	void iommu_debugfs_setup(void);
->     703	struct dentry *iommu_debugfs_new_driver_dir(char *);
->     704	#else
->     705	static inline void iommu_debugfs_setup(void) {}
->   > 706	struct dentry *iommu_debugfs_new_driver_dir(char *) {};
->     707	#endif
->     708	
+   [1] https://www.spinics.net/lists/linux-tegra/msg32914.html
 
-I have no problems with adding parameter names. But 
-scripts/checkpatch.pl doesn't seem to check for this, nor require it. 
-Should checkpatch be updated?
+Dmitry Osipenko (9):
+  memory: tegra: Provide facility for integration with the GART driver
+  iommu/tegra: gart: Provide access to Memory Controller driver
+  iommu/tegra: gart: Remove code related to module unloading
+  iommu/tegra: gart: Remove pr_fmt and clean up includes
+  iommu/tegra: gart: Clean up driver probe failure unwinding
+  iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+  iommu/tegra: gart: Provide single domain and group for all devices
+  iommu: Introduce iotlb_sync_map callback
+  iommu/tegra: gart: Optimize mapping / unmapping performance
+
+ drivers/iommu/iommu.c      |   8 +-
+ drivers/iommu/tegra-gart.c | 216 +++++++++++++++++--------------------
+ drivers/memory/tegra/mc.c  |  26 ++++-
+ include/linux/iommu.h      |   1 +
+ include/soc/tegra/mc.h     |  13 +++
+ 5 files changed, 143 insertions(+), 121 deletions(-)
+
+-- 
+2.17.0
