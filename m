@@ -1,7 +1,8 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v5 17/23] iommu/vt-d: report non-recoverable faults to device
-Date: Fri, 11 May 2018 13:54:09 -0700
-Message-ID: <1526072055-86990-18-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v5 08/23] iommu/vt-d: support flushing more translation cache
+	types
+Date: Fri, 11 May 2018 13:54:00 -0700
+Message-ID: <1526072055-86990-9-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,313 +19,143 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, dmar fault IRQ handler does nothing more than rate
-limited printk, no critical hardware handling need to be done
-in IRQ context.
-For some use case such as vIOMMU, it might be useful to report
-non-recoverable faults outside host IOMMU subsystem. DMAR fault
-can come from both DMA and interrupt remapping which has to be
-set up early before threaded IRQ is available.
-This patch adds an option and a workqueue such that when faults
-are requested, DMAR fault IRQ handler can use the IOMMU fault
-reporting API to report.
+When Shared Virtual Memory is exposed to a guest via vIOMMU, extended
+IOTLB invalidation may be passed down from outside IOMMU subsystems.
+This patch adds invalidation functions that can be used for additional
+translation cache types.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/dmar.c        | 159 ++++++++++++++++++++++++++++++++++++++++++--
- drivers/iommu/intel-iommu.c |   6 +-
- include/linux/dmar.h        |   2 +-
- include/linux/intel-iommu.h |   1 +
- 4 files changed, 159 insertions(+), 9 deletions(-)
+ drivers/iommu/dmar.c        | 44 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h | 21 +++++++++++++++++++--
+ 2 files changed, 63 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 0b5b052..ef846e3 100644
+index 7852678..0b5b052 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -1110,6 +1110,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	return err;
+@@ -1339,6 +1339,18 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 	qi_submit_sync(&desc, iommu);
  }
  
-+static inline void dmar_free_fault_wq(struct intel_iommu *iommu)
++void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr, u32 pasid,
++		unsigned int size_order, u64 granu, bool global)
 +{
-+	if (iommu->fault_wq)
-+		destroy_workqueue(iommu->fault_wq);
++	struct qi_desc desc;
++
++	desc.low = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
++		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
++	desc.high = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_GL(global) |
++		QI_EIOTLB_IH(0) | QI_EIOTLB_AM(size_order);
++	qi_submit_sync(&desc, iommu);
 +}
 +
- static void free_iommu(struct intel_iommu *iommu)
+ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 			u16 qdep, u64 addr, unsigned mask)
  {
- 	if (intel_iommu_enabled) {
-@@ -1126,6 +1132,7 @@ static void free_iommu(struct intel_iommu *iommu)
- 		free_irq(iommu->irq, iommu);
- 		dmar_free_hwirq(iommu->irq);
- 		iommu->irq = 0;
-+		dmar_free_fault_wq(iommu);
- 	}
- 
- 	if (iommu->qi) {
-@@ -1554,6 +1561,31 @@ static const char *irq_remap_fault_reasons[] =
- 	"Blocked an interrupt request due to source-id verification failure",
- };
- 
-+/* fault data and status */
-+enum intel_iommu_fault_reason {
-+	INTEL_IOMMU_FAULT_REASON_SW,
-+	INTEL_IOMMU_FAULT_REASON_ROOT_NOT_PRESENT,
-+	INTEL_IOMMU_FAULT_REASON_CONTEXT_NOT_PRESENT,
-+	INTEL_IOMMU_FAULT_REASON_CONTEXT_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH,
-+	INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS,
-+	INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS,
-+	INTEL_IOMMU_FAULT_REASON_NEXT_PT_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_ROOT_ADDR_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_CONTEXT_PTR_INVALID,
-+	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_RTP,
-+	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_CTP,
-+	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_PTE,
-+	NR_INTEL_IOMMU_FAULT_REASON,
-+};
-+
-+/* fault reasons that are allowed to be reported outside IOMMU subsystem */
-+#define INTEL_IOMMU_FAULT_REASON_ALLOWED			\
-+	((1ULL << INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH) |	\
-+		(1ULL << INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS) |	\
-+		(1ULL << INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS))
-+
-+
- static const char *dmar_get_fault_reason(u8 fault_reason, int *fault_type)
- {
- 	if (fault_reason >= 0x20 && (fault_reason - 0x20 <
-@@ -1634,11 +1666,91 @@ void dmar_msi_read(int irq, struct msi_msg *msg)
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+@@ -1360,6 +1372,38 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 	qi_submit_sync(&desc, iommu);
  }
  
-+static enum iommu_fault_reason to_iommu_fault_reason(u8 reason)
++void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
++		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64 granu)
 +{
-+	if (reason >= NR_INTEL_IOMMU_FAULT_REASON) {
-+		pr_warn("unknown DMAR fault reason %d\n", reason);
-+		return IOMMU_FAULT_REASON_UNKNOWN;
-+	}
-+	switch (reason) {
-+	case INTEL_IOMMU_FAULT_REASON_SW:
-+	case INTEL_IOMMU_FAULT_REASON_ROOT_NOT_PRESENT:
-+	case INTEL_IOMMU_FAULT_REASON_CONTEXT_NOT_PRESENT:
-+	case INTEL_IOMMU_FAULT_REASON_CONTEXT_INVALID:
-+	case INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH:
-+	case INTEL_IOMMU_FAULT_REASON_ROOT_ADDR_INVALID:
-+	case INTEL_IOMMU_FAULT_REASON_CONTEXT_PTR_INVALID:
-+		return IOMMU_FAULT_REASON_INTERNAL;
-+	case INTEL_IOMMU_FAULT_REASON_NEXT_PT_INVALID:
-+	case INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS:
-+	case INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS:
-+		return IOMMU_FAULT_REASON_PERMISSION;
-+	default:
-+		return IOMMU_FAULT_REASON_UNKNOWN;
-+	}
-+}
++	struct qi_desc desc;
 +
-+struct dmar_fault_work {
-+	struct work_struct fault_work;
-+	struct intel_iommu *iommu;
-+	u64 addr;
-+	int type;
-+	int fault_type;
-+	enum intel_iommu_fault_reason reason;
-+	u16 sid;
-+};
++	desc.low = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
++		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE;
++	desc.high |= QI_DEV_EIOTLB_GLOB(granu);
 +
-+static void report_fault_to_device(struct work_struct *work)
-+{
-+	struct dmar_fault_work *dfw = container_of(work, struct dmar_fault_work,
-+						fault_work);
-+	struct iommu_fault_event event;
-+	struct pci_dev *pdev;
-+	u8 bus, devfn;
-+
-+	memset(&event, 0, sizeof(struct iommu_fault_event));
-+
-+	/* check if fault reason is permitted to report outside IOMMU */
-+	if (!((1 << dfw->reason) & INTEL_IOMMU_FAULT_REASON_ALLOWED)) {
-+		pr_debug("Fault reason %d not allowed to report to device\n",
-+			dfw->reason);
-+		goto free_work;
-+	}
-+
-+	bus = PCI_BUS_NUM(dfw->sid);
-+	devfn = PCI_DEVFN(PCI_SLOT(dfw->sid), PCI_FUNC(dfw->sid));
-+	/*
-+	 * we need to check if the fault reporting is requested for the
-+	 * offending device.
++	/* If S bit is 0, we only flush a single page. If S bit is set,
++	 * The least significant zero bit indicates the size. VT-d spec
++	 * 6.5.2.6
 +	 */
-+	pdev = pci_get_domain_bus_and_slot(dfw->iommu->segment, bus, devfn);
-+	if (!pdev) {
-+		pr_warn("No PCI device found for source ID %x\n", dfw->sid);
-+		goto free_work;
-+	}
-+	/*
-+	 * unrecoverable fault is reported per IOMMU, notifier handler can
-+	 * resolve PCI device based on source ID.
-+	 */
-+	event.reason = to_iommu_fault_reason(dfw->reason);
-+	event.addr = dfw->addr;
-+	event.type = IOMMU_FAULT_DMA_UNRECOV;
-+	event.prot = dfw->type ? IOMMU_READ : IOMMU_WRITE;
-+	dev_warn(&pdev->dev, "report device unrecoverable fault: %d, %x, %d\n",
-+		event.reason, dfw->sid, event.type);
-+	iommu_report_device_fault(&pdev->dev, &event);
-+	pci_dev_put(pdev);
-+
-+free_work:
-+	kfree(dfw);
-+}
-+
- static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 		u8 fault_reason, u16 source_id, unsigned long long addr)
- {
- 	const char *reason;
- 	int fault_type;
-+	struct dmar_fault_work *dfw;
- 
- 	reason = dmar_get_fault_reason(fault_reason, &fault_type);
- 
-@@ -1647,11 +1759,29 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 			source_id >> 8, PCI_SLOT(source_id & 0xFF),
- 			PCI_FUNC(source_id & 0xFF), addr >> 48,
- 			fault_reason, reason);
--	else
++	if (!size)
++		desc.high = QI_DEV_EIOTLB_ADDR(addr) & ~QI_DEV_EIOTLB_SIZE;
 +	else {
- 		pr_err("[%s] Request device [%02x:%02x.%d] fault addr %llx [fault reason %02d] %s\n",
- 		       type ? "DMA Read" : "DMA Write",
- 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
- 		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
++		unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size);
++
++		desc.high = QI_DEV_EIOTLB_ADDR(addr & ~mask) | QI_DEV_EIOTLB_SIZE;
 +	}
-+
-+	dfw = kmalloc(sizeof(*dfw), GFP_ATOMIC);
-+	if (!dfw)
-+		return -ENOMEM;
-+
-+	INIT_WORK(&dfw->fault_work, report_fault_to_device);
-+	dfw->addr = addr;
-+	dfw->type = type;
-+	dfw->fault_type = fault_type;
-+	dfw->reason = fault_reason;
-+	dfw->sid = source_id;
-+	dfw->iommu = iommu;
-+	if (!queue_work(iommu->fault_wq, &dfw->fault_work)) {
-+		kfree(dfw);
-+		return -EBUSY;
-+	}
-+
- 	return 0;
- }
- 
-@@ -1731,10 +1861,28 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--int dmar_set_interrupt(struct intel_iommu *iommu)
-+static int dmar_set_fault_wq(struct intel_iommu *iommu)
-+{
-+	if (iommu->fault_wq)
-+		return 0;
-+
-+	iommu->fault_wq = alloc_ordered_workqueue(iommu->name, 0);
-+	if (!iommu->fault_wq)
-+		return -ENOMEM;
-+
-+	return 0;
++	qi_submit_sync(&desc, iommu);
 +}
 +
-+int dmar_set_interrupt(struct intel_iommu *iommu, bool queue_fault)
- {
- 	int irq, ret;
- 
-+	/* fault can be reported back to device drivers via a wq */
-+	if (queue_fault) {
-+		ret = dmar_set_fault_wq(iommu);
-+		if (ret)
-+			pr_err("Failed to create fault handling workqueue\n");
-+	}
- 	/*
- 	 * Check if the fault interrupt is already initialized.
- 	 */
-@@ -1748,10 +1896,11 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
- 		pr_err("No free IRQ vectors\n");
- 		return -EINVAL;
- 	}
--
- 	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
--	if (ret)
-+	if (ret) {
- 		pr_err("Can't request irq\n");
-+		dmar_free_fault_wq(iommu);
-+	}
- 	return ret;
- }
- 
-@@ -1765,7 +1914,7 @@ int __init enable_drhd_fault_handling(void)
- 	 */
- 	for_each_iommu(iommu, drhd) {
- 		u32 fault_status;
--		int ret = dmar_set_interrupt(iommu);
-+		int ret = dmar_set_interrupt(iommu, false);
- 
- 		if (ret) {
- 			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 684bd98..3949b3cf 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3401,10 +3401,10 @@ static int __init init_dmars(void)
- 				goto free_iommu;
- 		}
- #endif
--		ret = dmar_set_interrupt(iommu);
-+		ret = dmar_set_interrupt(iommu, true);
++void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
++{
++	struct qi_desc desc;
 +
- 		if (ret)
- 			goto free_iommu;
--
- 		if (!translation_pre_enabled(iommu))
- 			iommu_enable_translation(iommu);
- 
-@@ -4291,7 +4291,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- 			goto disable_iommu;
- 	}
- #endif
--	ret = dmar_set_interrupt(iommu);
-+	ret = dmar_set_interrupt(iommu, true);
- 	if (ret)
- 		goto disable_iommu;
- 
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index e2433bc..21f2162 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -278,7 +278,7 @@ extern void dmar_msi_unmask(struct irq_data *data);
- extern void dmar_msi_mask(struct irq_data *data);
- extern void dmar_msi_read(int irq, struct msi_msg *msg);
- extern void dmar_msi_write(int irq, struct msi_msg *msg);
--extern int dmar_set_interrupt(struct intel_iommu *iommu);
-+extern int dmar_set_interrupt(struct intel_iommu *iommu, bool queue_fault);
- extern irqreturn_t dmar_fault(int irq, void *dev_id);
- extern int dmar_alloc_hwirq(int id, int node, void *arg);
- extern void dmar_free_hwirq(int irq);
++	desc.high = 0;
++	desc.low = QI_PC_TYPE | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_PASID(pasid);
++
++	qi_submit_sync(&desc, iommu);
++}
+ /*
+  * Disable Queued Invalidation interface.
+  */
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 5ac0c28..b3a26c7 100644
+index 678a0f4..5ac0c28 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -472,6 +472,7 @@ struct intel_iommu {
- 	struct iommu_device iommu;  /* IOMMU core code handle */
- 	int		node;
- 	u32		flags;      /* Software defined flags */
-+	struct workqueue_struct *fault_wq; /* Reporting IOMMU fault to device */
- };
+@@ -262,6 +262,10 @@ enum {
+ #define QI_PGRP_RESP_TYPE	0x9
+ #define QI_PSTRM_RESP_TYPE	0xa
  
- /* PCI domain-device relationship */
++#define QI_DID(did)		(((u64)did & 0xffff) << 16)
++#define QI_DID_MASK		GENMASK(31, 16)
++#define QI_TYPE_MASK		GENMASK(3, 0)
++
+ #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+ #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+ #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
+@@ -293,8 +297,9 @@ enum {
+ #define QI_PC_DID(did)		(((u64)did) << 16)
+ #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
+ 
+-#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
+-#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
++/* PASID cache invalidation granu */
++#define QI_PC_ALL_PASIDS	0
++#define QI_PC_PASID_SEL		1
+ 
+ #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
+ #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
+@@ -304,6 +309,10 @@ enum {
+ #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
+ #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
+ 
++/* QI Dev-IOTLB inv granu */
++#define QI_DEV_IOTLB_GRAN_ALL		1
++#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
++
+ #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
+ #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+ #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+@@ -332,6 +341,7 @@ enum {
+ #define QI_RESP_INVALID		0x1
+ #define QI_RESP_FAILURE		0xf
+ 
++/* QI EIOTLB inv granu */
+ #define QI_GRAN_ALL_ALL			0
+ #define QI_GRAN_NONG_ALL		1
+ #define QI_GRAN_NONG_PASID		2
+@@ -504,8 +514,15 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
+ 			     u8 fm, u64 type);
+ extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+ 			  unsigned int size_order, u64 type);
++extern void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr,
++			u32 pasid, unsigned int size_order, u64 type, bool global);
+ extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 			u16 qdep, u64 addr, unsigned mask);
++
++extern void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
++			u32 pasid, u16 qdep, u64 addr, unsigned size, u64 granu);
++extern void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
++
+ extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+ 
+ extern int dmar_ir_support(void);
 -- 
 2.7.4
