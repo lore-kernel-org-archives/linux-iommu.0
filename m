@@ -1,17 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/3] iommu: armsmmu: set iommu ops for rpmsg bus
-Date: Fri, 11 May 2018 19:24:10 +0100
-Message-ID: <61ded3c7-d367-1557-a2e8-f69fcd48964d@arm.com>
-References: <20180302145531.20463-1-srinivas.kandagatla@linaro.org>
-	<20180302145531.20463-4-srinivas.kandagatla@linaro.org>
-	<57fc5480-c57e-dfd3-e6af-5e5bba296430@arm.com>
-	<CAOCOHw4RDwmbCySN==-zT7cQ6abzLzKUhBHBSdv_EvWnU4g4Pg@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2 00/40] Shared Virtual Addressing for the IOMMU
+Date: Fri, 11 May 2018 20:06:01 +0100
+Message-ID: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOCOHw4RDwmbCySN==-zT7cQ6abzLzKUhBHBSdv_EvWnU4g4Pg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,144 +15,170 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Ohad Ben-Cohen <ohad-Ix1uc/W3ht7QT0dZR+AlfA@public.gmane.org>, "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" <linux-remoteproc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
+Cc: xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/05/18 20:28, Bjorn Andersson wrote:
-> On Fri, Mar 2, 2018 at 8:59 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 02/03/18 14:55, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org wrote:
->>>
->>> From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>>
->>> On Qualcomm SoCs, ADSP exposes many functions like audio and
->>> others. These services need iommu access to allocate any
->>> memory for the DSP. As these drivers are childeren of
->>> rpmsg bus, able to allocate memory from iommus is basic
->>> requirement. So set arm smmu iommu ops for this bus type.
->>
-> 
-> Forgot to answer this and the dma_ops patch seems to be going in the
-> right direction.
-> 
->>
->> Documentation/rpmsg.txt: "Every rpmsg device is a communication channel with
->> a remote processor (thus rpmsg devices are called channels)."
->>
->> I'd instinctively assume that a remote processor already has its own memory,
->> and that a communication channel doesn't somehow go directly through an
->> IOMMU, so that "basic requirement" seems like a pretty big assumption.
->>
-> 
-> As of today rpmsg exclusively uses system memory for implementing the
-> communication fifos, but this memory is owned/handled by the rpmsg
-> bus. The need here is for drivers on top of the rpmsg_bus,
-> implementing some application-level protocol that requires indirection
-> buffers; e.g. to achieve zero copy of audio or image buffers that the
-> remote processor is expected to operate on. In this case the device
-> sitting on top of the rpmsg bus will have to map the buffer to the
-> appropriate context and can then send application specific control
-> requests referencing this mapping.
+This is version 2 of the Shared Virtual Addressing (SVA) series, which
+adds process address space management (1-6) and I/O page faults (7-9) to
+the IOMMU core. It also includes two example users of the API: VFIO as
+device driver (10-13), and Arm SMMUv3 as IOMMU driver (14-40).
 
-Right, but that's more or less what I was getting at - rpmsg can be used 
-as a means to signal some DMA master device to start doing a thing, but 
-that thing itself is unrelated to rpmsg, and it by no means implies that 
-everything which rpmsg can talk to is always capable of system-wide DMA. 
-It's no different if that communication channel is a hardware mailbox or 
-an I2C/SPI/USB/etc. link, rather than virtio; we wouldn't automatically 
-consider devices on the other end of those to be directly connected to 
-an IOMMU either.
+The series is getting bulky and although it will remove lots of context,
+I'll probably split next version into IOMMU, VFIO and SMMU changes. This
+time around I also Cc'd the mm list even though get_maintainers doesn't
+pick it up, because I'd like to export a few symbols in patches 10-12
+and because of the recent interest in sharing mm with devices [1], which
+seems somewhat related.
 
-IOMMU and DMA operations are highly dependent on the physical hardware 
-topology, which is why I really don't like trying to shoehorn them into 
-software constructs without modelling the actual hardware reasonably 
-accurately. For instance it's not unheard of for remote processors in a 
-SoC to see a different physical memory map from the main application 
-processors - how would rpmsg try to describe that? What even is the 
-address space of the rpmsg "bus"?
+Major changes since v1 [2]:
 
-> As different parts of the firmware might operate in different contexts
-> it's not feasible to utilize the parent's (the rpmsg_bus) context for
-> these indirection buffers.
+* Removed bind_group(). Only bind_device() is supported. Supporting
+  multi-device groups is difficult and unnecessary at the moment.
 
-Indeed, and I maintain that that wouldn't be the right thing to do 
-anyway. As before, I think the most accurate way to model the situation 
-with the tools we have available is to have the actual hardware function 
-represented by a platform device, which is associated with a 
-corresponding rpmsg endpoint. Then the driver can manage communication 
-in the rpmsg context, and physical DMA setup in the 'real' hardware 
-context, and everything looks sane without questionable abstraction 
-breakage. Since this looked to be more or less what is actually 
-implemented anyway, it doesn't seem all that hard to refine; if there 
-are multiple DMA master functions identified distinctly to the IOMMU, 
-then they could either be represented as separate platform devices with 
-explicit IOMMU specifiers, or you could model the actual DSP subsystem 
-hardware as its own bus-like arrangement with an iommu-map arrangement 
-translating function identifiers to IOMMU identifiers.
+* Reworked the I/O Page Fault code to support multiple queues. IOMMU
+  driver now registers IOPF queues as needed (for example one per IOMMU
+  device), then attach devices that require IOPF (for example, in
+  sva_device_init)
 
-What I don't like is forcing IOMMU drivers to pretend that some data in 
-a shared memory buffer is itself directly capable of generating 
-transactions on the interconnect. If other 'indirect' bus abstractions 
-like CoreSight can get this right, I don't see why rpmsg deserves to be 
-special.
+* mm_exit callback is allowed to sleep. It is now registered with
+  init_sva_device_init() instead of a separate function.
 
->>> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>> ---
->>>    drivers/iommu/arm-smmu.c | 5 +++++
->>>    1 file changed, 5 insertions(+)
->>>
->>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>> index e6920d32ac9e..9b63489af15c 100644
->>> --- a/drivers/iommu/arm-smmu.c
->>> +++ b/drivers/iommu/arm-smmu.c
->>> @@ -53,6 +53,7 @@
->>>    #include <linux/spinlock.h>
->>>      #include <linux/amba/bus.h>
->>> +#include <linux/rpmsg.h>
->>>      #include "io-pgtable.h"
->>>    #include "arm-smmu-regs.h"
->>> @@ -2168,6 +2169,10 @@ static void arm_smmu_bus_init(void)
->>>                  bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
->>>          }
->>>    #endif
->>> +#ifdef CONFIG_RPMSG
->>
->>
->> Ah, so this will at least build OK with RPMSG=m, but I doubt it does what
->> you want it to in that case.
->>
-> 
-> Things have been refactored but the core has remained tristate,
-> causing extra head aches in various areas. I think it's very
-> reasonable to review the rpmsg config options and make CONFIG_RPMSG
-> bool.
-> 
-> So with the addition of making CONFIG_RPMSG bool the patch has my Acked-by.
-> 
-> That said I'm generally concerned about the first probed iommu
-> implementation assigning itself as the sole iommu implementation for
-> all busses, but I guess we haven't yet hit the point where there are
-> different iommu implementations in a single SoC?
+* Remove IOMMU_SVA_FEAT_PASID, making PASID support mandatory for now.
+  If a future series implements !PASID, it will have to introduce flag
+  IOMMU_SVA_FEAT_NO_PASID.
 
-As it happens I do know of one such SoC already - Rockchip RK3288 seems 
-to have an undocumented Arm SMMU alongside all the rockchip-iommu 
-instances, but it's not used by Linux (and I have no idea what it was 
-intended for; I just went and poked the intriguing "peripheral MMU" 
-region of the memory map and found what looks an awful lot like an Arm 
-MMU-400). More realistically, I also know of folks using the Arm Juno 
-dev board with an MMU-600 in the add-on FPGA tile, which would have that 
-driver-probe-order fight with the MMU-401 instances in the SoC, but I 
-figure they were either using an older firmware which didn't enable the 
-latter or just got lucky with not having the SMMUv2 driver enabled.
+* Removed the atomic/blocking handler distinction for now. It is a bit
+  irrelevant here and can be added back later.
 
-But yes, the per-bus ops thing is awful and I've been complaining about 
-it for years now. Since iommu_fwspec we at least have the foundations 
-for per-device ops in place now, but as is often the case, getting 80% 
-of the way there is simple[1], whilst the last 20% (like replacing 
-iommu_domain_alloc(), and where to call iommu_{add,remove}_device() 
-from) is really hard.
+* Tried to address all comments. Please let me know if I missed
+  something.
 
-Robin.
+The series relies on Jacob Pan's fault reporting work, currently under
+discussion [3].
 
-[1] 
-https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg14576.html
+You can pull everything from:
+     git://linux-arm.org/linux-jpb.git sva/v2
+Branch sva/debug contains tracepoints and other tools that I found
+useful for validation.
+
+[1] https://lwn.net/Articles/753481/
+[2] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg21813.html
+[3] IOMMU and VT-d driver support for Shared Virtual Address (SVA)
+    https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg22640.html
+                                ---
+
+If you're unfamiliar with SVM/SVA, a wordy description copied from
+previous version follows.
+
+Shared Virtual Addressing (SVA) is the ability to share process address
+spaces with devices. It is called "SVM" (Shared Virtual Memory) by OpenCL
+and some IOMMU architectures, but since that abbreviation is already used
+for AMD virtualisation in Linux (Secure Virtual Machine), we prefer the
+less ambiguous "SVA".
+
+Sharing process address spaces with devices allows to rely on core kernel
+memory management for DMA, removing some complexity from application and
+device drivers. After binding to a device, applications can instruct it to
+perform DMA on buffers obtained with malloc.
+
+The device, bus and IOMMU must support the following features:
+
+* Multiple address spaces per device, for example using the PCI PASID
+  (Process Address Space ID) extension. The IOMMU driver allocates a
+  PASID and the device uses it in DMA transactions.
+
+* I/O Page Faults (IOPF), for example PCI PRI (Page Request Interface) or
+  Arm SMMU stall. The core mm handles translation faults from the IOMMU.
+
+* MMU and IOMMU implement compatible page table formats.
+
+This series requires to support all three features. Upcoming patches will
+enable private PASID management, which doesn't share page tables and
+augments the map/unmap API with PASIDs.
+
+Although we don't have any performance measurement at the moment, SVA will
+likely be slower than classical DMA since it relies on page faults,
+whereas classical DMA pins all pages in memory. SVA mostly aims at
+simplifying DMA management, but also improves security by isolating
+address spaces in devices.
+
+Jean-Philippe Brucker (40):
+  iommu: Introduce Shared Virtual Addressing API
+  iommu/sva: Bind process address spaces to devices
+  iommu/sva: Manage process address spaces
+  iommu/sva: Add a mm_exit callback for device drivers
+  iommu/sva: Track mm changes with an MMU notifier
+  iommu/sva: Search mm by PASID
+  iommu: Add a page fault handler
+  iommu/iopf: Handle mm faults
+  iommu/sva: Register page fault handler
+  mm: export symbol mm_access
+  mm: export symbol find_get_task_by_vpid
+  mm: export symbol mmput_async
+  vfio: Add support for Shared Virtual Addressing
+  dt-bindings: document stall and PASID properties for IOMMU masters
+  iommu/of: Add stall and pasid properties to iommu_fwspec
+  arm64: mm: Pin down ASIDs for sharing mm with devices
+  iommu/arm-smmu-v3: Link domains and devices
+  iommu/io-pgtable-arm: Factor out ARM LPAE register defines
+  iommu: Add generic PASID table library
+  iommu/arm-smmu-v3: Move context descriptor code
+  iommu/arm-smmu-v3: Add support for Substream IDs
+  iommu/arm-smmu-v3: Add second level of context descriptor table
+  iommu/arm-smmu-v3: Share process page tables
+  iommu/arm-smmu-v3: Seize private ASID
+  iommu/arm-smmu-v3: Add support for VHE
+  iommu/arm-smmu-v3: Enable broadcast TLB maintenance
+  iommu/arm-smmu-v3: Add SVA feature checking
+  iommu/arm-smmu-v3: Implement mm operations
+  iommu/arm-smmu-v3: Add support for Hardware Translation Table Update
+  iommu/arm-smmu-v3: Register I/O Page Fault queue
+  iommu/arm-smmu-v3: Improve add_device error handling
+  iommu/arm-smmu-v3: Maintain a SID->device structure
+  iommu/arm-smmu-v3: Add stall support for platform devices
+  ACPI/IORT: Check ATS capability in root complex nodes
+  iommu/arm-smmu-v3: Add support for PCI ATS
+  iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops
+  iommu/arm-smmu-v3: Disable tagged pointers
+  PCI: Make "PRG Response PASID Required" handling common
+  iommu/arm-smmu-v3: Add support for PRI
+  iommu/arm-smmu-v3: Add support for PCI PASID
+
+ .../devicetree/bindings/iommu/iommu.txt       |   24 +
+ MAINTAINERS                                   |    6 +-
+ arch/arm64/include/asm/mmu.h                  |    1 +
+ arch/arm64/include/asm/mmu_context.h          |   11 +-
+ arch/arm64/mm/context.c                       |   92 +-
+ drivers/acpi/arm64/iort.c                     |   11 +
+ drivers/iommu/Kconfig                         |   29 +
+ drivers/iommu/Makefile                        |    4 +
+ drivers/iommu/amd_iommu.c                     |   19 +-
+ drivers/iommu/arm-smmu-v3-context.c           |  700 ++++++++
+ drivers/iommu/arm-smmu-v3.c                   | 1438 ++++++++++++++---
+ drivers/iommu/io-pgfault.c                    |  445 +++++
+ drivers/iommu/io-pgtable-arm.c                |   49 +-
+ drivers/iommu/io-pgtable-arm.h                |   54 +
+ drivers/iommu/iommu-pasid-table.c             |   52 +
+ drivers/iommu/iommu-pasid-table.h             |  177 ++
+ drivers/iommu/iommu-sva.c                     |  792 +++++++++
+ drivers/iommu/iommu.c                         |   84 +
+ drivers/iommu/of_iommu.c                      |   12 +
+ drivers/pci/ats.c                             |   17 +
+ drivers/vfio/vfio_iommu_type1.c               |  449 ++++-
+ include/linux/iommu.h                         |  184 +++
+ include/linux/pci-ats.h                       |    8 +
+ include/uapi/linux/pci_regs.h                 |    1 +
+ include/uapi/linux/vfio.h                     |   76 +
+ kernel/fork.c                                 |   15 +
+ kernel/pid.c                                  |    1 +
+ 27 files changed, 4469 insertions(+), 282 deletions(-)
+ create mode 100644 drivers/iommu/arm-smmu-v3-context.c
+ create mode 100644 drivers/iommu/io-pgfault.c
+ create mode 100644 drivers/iommu/io-pgtable-arm.h
+ create mode 100644 drivers/iommu/iommu-pasid-table.c
+ create mode 100644 drivers/iommu/iommu-pasid-table.h
+ create mode 100644 drivers/iommu/iommu-sva.c
+
+-- 
+2.17.0
