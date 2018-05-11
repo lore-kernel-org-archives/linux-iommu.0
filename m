@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 31/40] iommu/arm-smmu-v3: Improve add_device error handling
-Date: Fri, 11 May 2018 20:06:32 +0100
-Message-ID: <20180511190641.23008-32-jean-philippe.brucker@arm.com>
+Subject: [PATCH v2 32/40] iommu/arm-smmu-v3: Maintain a SID->device structure
+Date: Fri, 11 May 2018 20:06:33 +0100
+Message-ID: <20180511190641.23008-33-jean-philippe.brucker@arm.com>
 References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,90 +21,192 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pc
 Cc: xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As add_device becomes more likely to fail when adding new features, let it
-clean up behind itself. The iommu_bus_init function does call
-remove_device on error, but other sites (e.g. of_iommu) do not.
-
-Don't free level-2 stream tables because we'd have to track if we
-allocated each of them or if they are used by other endpoints. It's not
-worth the hassle since they are managed resources.
+When handling faults from the event or PRI queue, we need to find the
+struct device associated to a SID. Add a rb_tree to keep track of SIDs.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-
 ---
-v1->v2: new
----
- drivers/iommu/arm-smmu-v3.c | 36 ++++++++++++++++++++++++++++--------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 114 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 113 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5d57f41f79b4..d5f3875abfb9 100644
+index d5f3875abfb9..0f2d8aa0deee 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2123,26 +2123,43 @@ static int arm_smmu_add_device(struct device *dev)
- 	for (i = 0; i < fwspec->num_ids; i++) {
- 		u32 sid = fwspec->ids[i];
+@@ -570,9 +570,18 @@ struct arm_smmu_device {
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
  
--		if (!arm_smmu_sid_in_range(smmu, sid))
--			return -ERANGE;
-+		if (!arm_smmu_sid_in_range(smmu, sid)) {
-+			ret = -ERANGE;
-+			goto err_free_master;
-+		}
++	struct rb_root			streams;
++	struct mutex			streams_mutex;
++
+ 	struct iopf_queue		*iopf_queue;
+ };
  
- 		/* Ensure l2 strtab is initialised */
- 		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
- 			ret = arm_smmu_init_l2_strtab(smmu, sid);
- 			if (ret)
--				return ret;
-+				goto err_free_master;
- 		}
- 	}
++struct arm_smmu_stream {
++	u32				id;
++	struct arm_smmu_master_data	*master;
++	struct rb_node			node;
++};
++
+ /* SMMU private data for each master */
+ struct arm_smmu_master_data {
+ 	struct arm_smmu_device		*smmu;
+@@ -580,6 +589,7 @@ struct arm_smmu_master_data {
  
- 	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
+ 	struct arm_smmu_domain		*domain;
+ 	struct list_head		list; /* domain->devices */
++	struct arm_smmu_stream		*streams;
  
-+	ret = iommu_device_link(&smmu->iommu, dev);
-+	if (ret)
-+		goto err_free_master;
-+
- 	group = iommu_group_get_for_dev(dev);
--	if (!IS_ERR(group)) {
--		iommu_group_put(group);
--		iommu_device_link(&smmu->iommu, dev);
-+	if (IS_ERR(group)) {
-+		ret = PTR_ERR(group);
-+		goto err_unlink;
- 	}
- 
--	return PTR_ERR_OR_ZERO(group);
-+	iommu_group_put(group);
-+
-+	return 0;
-+
-+err_unlink:
-+	iommu_device_unlink(&smmu->iommu, dev);
-+
-+err_free_master:
-+	kfree(master);
-+	fwspec->iommu_priv = NULL;
-+
-+	return ret;
+ 	struct device			*dev;
+ 	size_t				ssid_bits;
+@@ -1186,6 +1196,32 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 	return 0;
  }
  
- static void arm_smmu_remove_device(struct device *dev)
-@@ -2155,9 +2172,12 @@ static void arm_smmu_remove_device(struct device *dev)
- 		return;
++__maybe_unused
++static struct arm_smmu_master_data *
++arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
++{
++	struct rb_node *node;
++	struct arm_smmu_stream *stream;
++	struct arm_smmu_master_data *master = NULL;
++
++	mutex_lock(&smmu->streams_mutex);
++	node = smmu->streams.rb_node;
++	while (node) {
++		stream = rb_entry(node, struct arm_smmu_stream, node);
++		if (stream->id < sid) {
++			node = node->rb_right;
++		} else if (stream->id > sid) {
++			node = node->rb_left;
++		} else {
++			master = stream->master;
++			break;
++		}
++	}
++	mutex_unlock(&smmu->streams_mutex);
++
++	return master;
++}
++
+ /* IRQ and event handlers */
+ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ {
+@@ -2086,6 +2122,71 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+ 	return sid < limit;
+ }
  
- 	master = fwspec->iommu_priv;
-+	if (!master)
++static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
++				  struct arm_smmu_master_data *master)
++{
++	int i;
++	int ret = 0;
++	struct arm_smmu_stream *new_stream, *cur_stream;
++	struct rb_node **new_node, *parent_node = NULL;
++	struct iommu_fwspec *fwspec = master->dev->iommu_fwspec;
++
++	master->streams = kcalloc(fwspec->num_ids,
++				  sizeof(struct arm_smmu_stream), GFP_KERNEL);
++	if (!master->streams)
++		return -ENOMEM;
++
++	mutex_lock(&smmu->streams_mutex);
++	for (i = 0; i < fwspec->num_ids && !ret; i++) {
++		new_stream = &master->streams[i];
++		new_stream->id = fwspec->ids[i];
++		new_stream->master = master;
++
++		new_node = &(smmu->streams.rb_node);
++		while (*new_node) {
++			cur_stream = rb_entry(*new_node, struct arm_smmu_stream,
++					      node);
++			parent_node = *new_node;
++			if (cur_stream->id > new_stream->id) {
++				new_node = &((*new_node)->rb_left);
++			} else if (cur_stream->id < new_stream->id) {
++				new_node = &((*new_node)->rb_right);
++			} else {
++				dev_warn(master->dev,
++					 "stream %u already in tree\n",
++					 cur_stream->id);
++				ret = -EINVAL;
++				break;
++			}
++		}
++
++		if (!ret) {
++			rb_link_node(&new_stream->node, parent_node, new_node);
++			rb_insert_color(&new_stream->node, &smmu->streams);
++		}
++	}
++	mutex_unlock(&smmu->streams_mutex);
++
++	return ret;
++}
++
++static void arm_smmu_remove_master(struct arm_smmu_device *smmu,
++				   struct arm_smmu_master_data *master)
++{
++	int i;
++	struct iommu_fwspec *fwspec = master->dev->iommu_fwspec;
++
++	if (!master->streams)
 +		return;
 +
- 	smmu = master->smmu;
- 	iopf_queue_remove_device(dev);
--	if (master && master->ste.assigned)
-+	if (master->ste.assigned)
++	mutex_lock(&smmu->streams_mutex);
++	for (i = 0; i < fwspec->num_ids; i++)
++		rb_erase(&master->streams[i].node, &smmu->streams);
++	mutex_unlock(&smmu->streams_mutex);
++
++	kfree(master->streams);
++}
++
+ static struct iommu_ops arm_smmu_ops;
+ 
+ static int arm_smmu_add_device(struct device *dev)
+@@ -2142,16 +2243,23 @@ static int arm_smmu_add_device(struct device *dev)
+ 	if (ret)
+ 		goto err_free_master;
+ 
++	ret = arm_smmu_insert_master(smmu, master);
++	if (ret)
++		goto err_unlink;
++
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group)) {
+ 		ret = PTR_ERR(group);
+-		goto err_unlink;
++		goto err_remove_master;
+ 	}
+ 
+ 	iommu_group_put(group);
+ 
+ 	return 0;
+ 
++err_remove_master:
++	arm_smmu_remove_master(smmu, master);
++
+ err_unlink:
+ 	iommu_device_unlink(&smmu->iommu, dev);
+ 
+@@ -2180,6 +2288,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	if (master->ste.assigned)
  		arm_smmu_detach_dev(dev);
  	iommu_group_remove_device(dev);
++	arm_smmu_remove_master(smmu, master);
  	iommu_device_unlink(&smmu->iommu, dev);
+ 	kfree(master);
+ 	iommu_fwspec_free(dev);
+@@ -2483,6 +2592,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ 	int ret;
+ 
+ 	atomic_set(&smmu->sync_nr, 0);
++	mutex_init(&smmu->streams_mutex);
++	smmu->streams = RB_ROOT;
++
+ 	ret = arm_smmu_init_queues(smmu);
+ 	if (ret)
+ 		return ret;
 -- 
 2.17.0
