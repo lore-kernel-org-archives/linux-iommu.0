@@ -1,158 +1,102 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v5 18/23] iommu/intel-svm: report device page request
-Date: Fri, 11 May 2018 13:54:10 -0700
-Message-ID: <1526072055-86990-19-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v5 12/23] iommu: add a timeout parameter for prq response
+Date: Fri, 11 May 2018 13:54:04 -0700
+Message-ID: <1526072055-86990-13-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-If the source device of a page request has its PASID table pointer
-bound to a guest, the first level page tables are owned by the guest.
-In this case, we shall let guest OS to manage page fault.
+When an IO page request is processed outside IOMMU subsystem, response can be
+delayed or lost. Add a tunable setup parameter such that user can chooose
+the timeout for IOMMU to track pending page requests.
+This timeout mechanism is a basic safty net which can be implemented in conjunction
+with credit based or device level page response exception handling.
 
-This patch uses the IOMMU fault reporting API to send fault events,
-possibly via VFIO, to the guest OS. Once guest pages are fault in, guest
-will issue page response which will be passed down via the invalidation
-passdown APIs.
-
-Recoverable faults, such as page request reporting is not limitted to
-guest use. In kernel driver can also request a chance to receive fault
-notifications.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-svm.c | 73 ++++++++++++++++++++++++++++++++++++++++-------
- include/linux/iommu.h     |  1 +
- 2 files changed, 64 insertions(+), 10 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |  8 +++++++
+ drivers/iommu/iommu.c                           | 28 +++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index e8cd984..a8186f8 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -577,6 +577,58 @@ static bool is_canonical_address(u64 addr)
- 	return (((saddr << shift) >> shift) == saddr);
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 11fc28e..5c1e836 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1718,6 +1718,14 @@
+ 			1 - Bypass the IOMMU for DMA.
+ 			unset - Use IOMMU translation for DMA.
+ 
++	iommu.prq_timeout=
++			Timeout in seconds to wait for page response
++			of a pending page request.
++			Format: <integer>
++			Default: 10
++			0 - no timeout tracking
++			1 to 100 - allowed range
++
+ 	io7=		[HW] IO7 for Marvel based alpha systems
+ 			See comment before marvel_specify_io7 in
+ 			arch/alpha/kernel/core_marvel.c.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 784e019..3a49b96 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -37,6 +37,18 @@
+ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
++/*
++ * Timeout to wait for page response of a pending page request. This is
++ * intended as a basic safty net in case a pending page request is not
++ * responded for an exceptionally long time. Device may also implement
++ * its own protection mechanism against this exception.
++ * Units are in jiffies with a range between 1 - 100 seconds equivalent.
++ * Default to 10 seconds.
++ * Setting 0 means no timeout tracking.
++ */
++#define IOMMU_PAGE_RESPONSE_MAX_TIMEOUT (HZ * 100)
++#define IOMMU_PAGE_RESPONSE_DEF_TIMEOUT (HZ * 10)
++static unsigned long prq_timeout = IOMMU_PAGE_RESPONSE_DEF_TIMEOUT;
+ 
+ struct iommu_callback_data {
+ 	const struct iommu_ops *ops;
+@@ -125,6 +137,22 @@ static int __init iommu_set_def_domain_type(char *str)
  }
+ early_param("iommu.passthrough", iommu_set_def_domain_type);
  
-+static int prq_to_iommu_prot(struct page_req_dsc *req)
++static int __init iommu_set_prq_timeout(char *str)
 +{
-+	int prot = 0;
++	unsigned long timeout;
 +
-+	if (req->rd_req)
-+		prot |= IOMMU_FAULT_READ;
-+	if (req->wr_req)
-+		prot |= IOMMU_FAULT_WRITE;
-+	if (req->exe_req)
-+		prot |= IOMMU_FAULT_EXEC;
-+	if (req->priv_req)
-+		prot |= IOMMU_FAULT_PRIV;
++	if (!str)
++		return -EINVAL;
++	timeout = simple_strtoul(str, NULL, 0);
++	timeout = timeout * HZ;
++	if (timeout > IOMMU_PAGE_RESPONSE_MAX_TIMEOUT)
++		return -EINVAL;
++	prq_timeout = timeout;
 +
-+	return prot;
++	return 0;
 +}
++early_param("iommu.prq_timeout", iommu_set_prq_timeout);
 +
-+static int intel_svm_prq_report(struct intel_iommu *iommu,
-+				struct page_req_dsc *desc)
-+{
-+	int ret = 0;
-+	struct iommu_fault_event event;
-+	struct pci_dev *pdev;
-+
-+	memset(&event, 0, sizeof(struct iommu_fault_event));
-+	pdev = pci_get_domain_bus_and_slot(iommu->segment,
-+					desc->bus, desc->devfn);
-+	if (!pdev) {
-+		pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
-+			desc->bus, PCI_SLOT(desc->devfn),
-+			PCI_FUNC(desc->devfn));
-+		return -ENODEV;
-+	}
-+
-+	/* Fill in event data for device specific processing */
-+	event.type = IOMMU_FAULT_PAGE_REQ;
-+	event.addr = (u64)desc->addr << VTD_PAGE_SHIFT;
-+	event.pasid = desc->pasid;
-+	event.page_req_group_id = desc->prg_index;
-+	event.prot = prq_to_iommu_prot(desc);
-+	event.last_req = desc->lpig;
-+	event.pasid_valid = 1;
-+	/* keep track of PRQ so that when the response comes back, we know
-+	 * whether we do group response or stream response. SRR[0] and
-+	 * private[54:32] bits in the descriptor are stored.
-+	 */
-+	event.iommu_private = *(u64 *)desc;
-+	ret = iommu_report_device_fault(&pdev->dev, &event);
-+	pci_dev_put(pdev);
-+
-+	return ret;
-+}
-+
- static irqreturn_t prq_event_thread(int irq, void *d)
+ static ssize_t iommu_group_attr_show(struct kobject *kobj,
+ 				     struct attribute *__attr, char *buf)
  {
- 	struct intel_iommu *iommu = d;
-@@ -625,6 +677,16 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 				goto no_pasid;
- 			}
- 		}
-+		/* If address is not canonical, return invalid response */
-+		if (!is_canonical_address(address))
-+			goto bad_req;
-+
-+		/*
-+		 * If prq is to be handled outside iommu driver via receiver of
-+		 * the fault notifiers, we skip the page response here.
-+		 */
-+		if (!intel_svm_prq_report(iommu, req))
-+			goto prq_advance;
- 
- 		result = QI_RESP_INVALID;
- 		/* Since we're using init_mm.pgd directly, we should never take
-@@ -635,9 +697,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		if (!mmget_not_zero(svm->mm))
- 			goto bad_req;
- 
--		/* If address is not canonical, return invalid response */
--		if (!is_canonical_address(address))
--			goto bad_req;
- 
- 		down_read(&svm->mm->mmap_sem);
- 		vma = find_extend_vma(svm->mm, address);
-@@ -670,12 +729,6 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 
- 		if (WARN_ON(&sdev->list == &svm->devs))
- 			sdev = NULL;
--
--		if (sdev && sdev->ops && sdev->ops->fault_cb) {
--			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
--				(req->exe_req << 1) | (req->priv_req);
--			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
--		}
- 		/* We get here in the error case where the PASID lookup failed,
- 		   and these can be NULL. Do not use them below this point! */
- 		sdev = NULL;
-@@ -701,7 +754,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 
- 			qi_submit_sync(&resp, iommu);
- 		}
--
-+	prq_advance:
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 	}
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f3665b7..8a973ee 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -42,6 +42,7 @@
-  * if the IOMMU page table format is equivalent.
-  */
- #define IOMMU_PRIV	(1 << 5)
-+#define IOMMU_EXEC	(1 << 6)
- 
- struct iommu_ops;
- struct iommu_group;
 -- 
 2.7.4
