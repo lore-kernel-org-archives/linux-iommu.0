@@ -1,189 +1,106 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v5 01/23] iommu: introduce bind_pasid_table API function
-Date: Fri, 11 May 2018 13:53:53 -0700
-Message-ID: <1526072055-86990-2-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Nate Watterson <nwatters@codeaurora.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
+Date: Fri, 11 May 2018 16:52:02 -0400
+Message-ID: <f033e1a8-282a-764a-a001-5630a3c303c9@codeaurora.org>
+References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
+ <3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
+ <3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
+ <438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
+ <7756f245-6c63-92d4-d101-4040a45b660b@arm.com>
+ <265a41d4-ec3c-6697-0340-6830807ea10f@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <265a41d4-ec3c-6697-0340-6830807ea10f@arm.com>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Goel, Sameer" <sgoel@codeaurora.org>, Timur Tabi <timur@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
-use in the guest:
-https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
-
-As part of the proposed architecture, when an SVM capable PCI
-device is assigned to a guest, nested mode is turned on. Guest owns the
-first level page tables (request with PASID) which performs GVA->GPA
-translation. Second level page tables are owned by the host for GPA->HPA
-translation for both request with and without PASID.
-
-A new IOMMU driver interface is therefore needed to perform tasks as
-follows:
-* Enable nested translation and appropriate translation type
-* Assign guest PASID table pointer (in GPA) and size to host IOMMU
-
-This patch introduces new API functions to perform bind/unbind guest PASID
-tables. Based on common data, model specific IOMMU drivers can be extended
-to perform the specific steps for binding pasid table of assigned devices.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/iommu/iommu.c      | 19 +++++++++++++++++++
- include/linux/iommu.h      | 24 ++++++++++++++++++++++++
- include/uapi/linux/iommu.h | 33 +++++++++++++++++++++++++++++++++
- 3 files changed, 76 insertions(+)
- create mode 100644 include/uapi/linux/iommu.h
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d2aa2320..3a69620 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1325,6 +1325,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_attach_device);
- 
-+int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-+			struct pasid_table_config *pasidt_binfo)
-+{
-+	if (unlikely(!domain->ops->bind_pasid_table))
-+		return -ENODEV;
-+
-+	return domain->ops->bind_pasid_table(domain, dev, pasidt_binfo);
-+}
-+EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
-+
-+void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-+{
-+	if (unlikely(!domain->ops->unbind_pasid_table))
-+		return;
-+
-+	domain->ops->unbind_pasid_table(domain, dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee..5199ca4 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -25,6 +25,7 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
-+#include <uapi/linux/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
- #define IOMMU_WRITE	(1 << 1)
-@@ -187,6 +188,8 @@ struct iommu_resv_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @bind_pasid_table: bind pasid table pointer for guest SVM
-+ * @unbind_pasid_table: unbind pasid table pointer and restore defaults
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -233,8 +236,14 @@ struct iommu_ops {
- 	u32 (*domain_get_windows)(struct iommu_domain *domain);
- 
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
-+
- 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
- 
-+	int (*bind_pasid_table)(struct iommu_domain *domain, struct device *dev,
-+				struct pasid_table_config *pasidt_binfo);
-+	void (*unbind_pasid_table)(struct iommu_domain *domain,
-+				struct device *dev);
-+
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -296,6 +305,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_bind_pasid_table(struct iommu_domain *domain,
-+		struct device *dev, struct pasid_table_config *pasidt_binfo);
-+extern void iommu_unbind_pasid_table(struct iommu_domain *domain,
-+				struct device *dev);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		     phys_addr_t paddr, size_t size, int prot);
-@@ -696,6 +709,17 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 	return NULL;
- }
- 
-+static inline
-+int iommu_bind_pasid_table(struct iommu_domain *domain, struct device *dev,
-+			struct pasid_table_config *pasidt_binfo)
-+{
-+	return -ENODEV;
-+}
-+static inline
-+void iommu_unbind_pasid_table(struct iommu_domain *domain, struct device *dev)
-+{
-+}
-+
- #endif /* CONFIG_IOMMU_API */
- 
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-new file mode 100644
-index 0000000..cb2d625
---- /dev/null
-+++ b/include/uapi/linux/iommu.h
-@@ -0,0 +1,33 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/*
-+ * IOMMU user API definitions
-+ *
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef _UAPI_IOMMU_H
-+#define _UAPI_IOMMU_H
-+
-+#include <linux/types.h>
-+
-+/**
-+ * PASID table data used to bind guest PASID table to the host IOMMU. This will
-+ * enable guest managed first level page tables.
-+ * @version: for future extensions and identification of the data format
-+ * @bytes: size of this structure
-+ * @base_ptr:	PASID table pointer
-+ * @pasid_bits:	number of bits supported in the guest PASID table, must be less
-+ *		or equal than the host supported PASID size.
-+ */
-+struct pasid_table_config {
-+	__u32 version;
-+#define PASID_TABLE_CFG_VERSION_1 1
-+	__u32 bytes;
-+	__u64 base_ptr;
-+	__u8 pasid_bits;
-+};
-+
-+#endif /* _UAPI_IOMMU_H */
--- 
-2.7.4
+SGkgTWFyaywKCk9uIDQvMTIvMjAxOCA3OjU2IEFNLCBNYXJjIFp5bmdpZXIgd3JvdGU6Cj4gT24g
+MTIvMDQvMTggMTE6MTcsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gT24gMTEvMDQvMTggMTc6NTQs
+IE1hcmMgWnluZ2llciB3cm90ZToKPj4+IEhpIFNhbW1lciwKPj4+Cj4+PiBPbiAxMS8wNC8xOCAx
+Njo1OCwgR29lbCwgU2FtZWVyIHdyb3RlOgo+Pj4+Cj4+Pj4KPj4+PiBPbiAzLzI4LzIwMTggOTow
+MCBBTSwgTWFyYyBaeW5naWVyIHdyb3RlOgo+Pj4+PiBPbiAyMDE4LTAzLTI4IDE1OjM5LCBUaW11
+ciBUYWJpIHdyb3RlOgo+Pj4+Pj4gRnJvbTogU2FtZWVyIEdvZWwgPHNnb2VsQGNvZGVhdXJvcmEu
+b3JnPgo+Pj4+Pj4KPj4+Pj4+IFNldCBTTU1VX0dCUEEgdG8gYWJvcnQgYWxsIGluY29taW5nIHRy
+YW5zbGF0aW9ucyBkdXJpbmcgdGhlIFNNTVUgcmVzZXQKPj4+Pj4+IHdoZW4gU01NVUVOPT0wLgo+
+Pj4+Pj4KPj4+Pj4+IFRoaXMgcHJldmVudHMgYSByYWNlIGNvbmRpdGlvbiB3aGVyZSBhIHN0cmF5
+IERNQSBmcm9tIHRoZSBjcmFzaGVkIHByaW1hcnkKPj4+Pj4+IGtlcm5lbCBjYW4gdHJ5IHRvIGFj
+Y2VzcyBhbiBJT1ZBIGFkZHJlc3MgYXMgYW4gaW52YWxpZCBQQSB3aGVuIFNNTVUgaXMKPj4+Pj4+
+IGRpc2FibGVkIGR1cmluZyByZXNldCBpbiB0aGUgY3Jhc2gga2VybmVsLgo+Pj4+Pj4KPj4+Pj4+
+IFNpZ25lZC1vZmYtYnk6IFNhbWVlciBHb2VsIDxzZ29lbEBjb2RlYXVyb3JhLm9yZz4KPj4+Pj4+
+IC0tLQo+Pj4+Pj4gICDCoGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDEyICsrKysrKysr
+KysrKwo+Pj4+Pj4gICDCoDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspCj4+Pj4+Pgo+
+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMv
+aW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+Pj4gaW5kZXggM2YyZjFmYzY4YjUyLi5jMDRhODkzMTBj
+NTkgMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPj4+Pj4+
+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+Pj4gQEAgLTI0NTgsNiArMjQ1
+OCwxOCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9yZXNldChzdHJ1Y3QKPj4+Pj4+IGFy
+bV9zbW11X2RldmljZSAqc21tdSwgYm9vbCBieXBhc3MpCj4+Pj4+PiAgIMKgwqDCoMKgIGlmIChy
+ZWcgJiBDUjBfU01NVUVOKQo+Pj4+Pj4gICDCoMKgwqDCoMKgwqDCoMKgIGRldl93YXJuKHNtbXUt
+PmRldiwgIlNNTVUgY3VycmVudGx5IGVuYWJsZWQhIFJlc2V0dGluZy4uLlxuIik7Cj4+Pj4+Pgo+
+Pj4+Pj4gK8KgwqDCoCAvKgo+Pj4+Pj4gK8KgwqDCoMKgICogQWJvcnQgYWxsIGluY29taW5nIHRy
+YW5zbGF0aW9ucy4gVGhpcyBjYW4gaGFwcGVuIGluIGEga2R1bXAgY2FzZQo+Pj4+Pj4gK8KgwqDC
+oMKgICogd2hlcmUgU01NVSBpcyBpbml0aWFsaXplZCB3aGVuIGEgcHJpb3IgRE1BIGlzIHBlbmRp
+bmcuIEp1c3QKPj4+Pj4+ICvCoMKgwqDCoCAqIGRpc2FibGluZyB0aGUgU01NVSBpbiB0aGlzIGNh
+c2UgbWlnaHQgcmVzdWx0IGluIHdyaXRlcyB0byBpbnZhbGlkCj4+Pj4+PiArwqDCoMKgwqAgKiBQ
+QXMuCj4+Pj4+PiArwqDCoMKgwqAgKi8KPj4+Pj4+ICvCoMKgwqAgcmV0ID0gYXJtX3NtbXVfdXBk
+YXRlX2dicGEoc21tdSwgMSwgR0JQQV9BQk9SVCk7Cj4+Pj4+PiArwqDCoMKgIGlmIChyZXQpIHsK
+Pj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKHNtbXUtPmRldiwgIkdCUEEgbm90IHJlc3Bv
+bmRpbmcgdG8gdXBkYXRlXG4iKTsKPj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+
+Pj4+Pj4gK8KgwqDCoCB9Cj4+Pj4+PiArCj4+Pj4+PiAgIMKgwqDCoMKgIHJldCA9IGFybV9zbW11
+X2RldmljZV9kaXNhYmxlKHNtbXUpOwo+Pj4+Pj4gICDCoMKgwqDCoCBpZiAocmV0KQo+Pj4+Pj4g
+ICDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiByZXQ7Cj4+Pj4+Cj4+Pj4+IEEgdGFuZ2VudGlhbCBx
+dWVzdGlvbjogY2FuIHdlIHJlbGlhYmx5IGRldGVjdCB0aGF0IHRoZSBTTU1VIGFscmVhZHkKPj4+
+Pj4gaGFzIHZhbGlkIG1hcHBpbmdzLCB3aGljaCB3b3VsZCBpbmRpY2F0ZSB0aGF0IHdlJ3JlIGlu
+IGEgcHJldHR5IGJhZAo+Pj4+PiBzaGFwZSBhbHJlYWR5IGJ5IHRoZSB0aW1lIHdlIHNldCB0aGF0
+IGJpdD8gRm9yIGFsbCB3ZSBrbm93LCBtZW1vcnkKPj4+Pj4gY291bGQgaGF2ZSBiZWVuIGNvcnJ1
+cHRlZCBsb25nIGJlZm9yZSB3ZSBoaXQgdGhpcyBwb2ludCwgYW5kIHRoaXMKPj4+Pj4gcGF0Y2gg
+YmFyZWx5IG5hcnJvd3MgdGhlIHdpbmRvdyBvZiBvcHBvcnR1bml0eS4KPj4+Pgo+Pj4+IDopIFll
+cyB0aGF0IGlzIGNvcnJlY3QuIFRoaXMgb25seSBjb3ZlcnMgdGhlIGtkdW1wIHNjZW5hcmlvLiBU
+cnlpbmcKPj4+PiB0byBnZXQgc29tZSByZWxpYWJpbGl0eSB3aGVuIGJvb3RpbmcgdXAgdGhlIGNy
+YXNoIGtlcm5lbC4gVGhlIHN5c3RlbQo+Pj4+IGlzIGFscmVhZHkgaW4gYSBiYWQgc3RhdGUuIEkg
+ZG9uJ3QgdGhpbmsgdGhhdCB0aGlzIHdpbGwgaGFwcGVuIGluIGEKPj4+PiBub3JtYWwgc2NlbmFy
+aW8uIEJ1dCBwbGVhc2UgcG9pbnQgbWUgdG8gdGhlIEdJQ3YzIGNoYW5nZSBhbmQgSSdsbAo+Pj4+
+IGhhdmUgYSBsb29rLgo+Pj4KPj4+IFNlZSB0aGlzOgo+Pj4gaHR0cHM6Ly9naXQua2VybmVsLm9y
+Zy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbWF6L2FybS1wbGF0Zm9ybXMuZ2l0L3RyZWUvZHJp
+dmVycy9pcnFjaGlwL2lycS1naWMtdjMtaXRzLmM/aD1pcnEvaXJxY2hpcC00LjE3JmlkPTZlYjQ4
+NmI2NmEzMDk0Y2RjZDY4ZGMzOWM5ZGYzYTI5ZDZhNTFkZDUjbjM0MDcKPj4KPj4gVGhlIG5lYXJl
+c3QgZXF1aXZhbGVudCB0byB0aGF0IGlzIHByb2JhYmx5IHRoZSB0b3AtbGV2ZWwgU01NVUVOIGNo
+ZWNrCj4+IHRoYXQgd2UgYWxyZWFkeSBoYXZlIChzZWUgdGhlIGRpZmYgY29udGV4dCBhYm92ZSku
+IFRvIGdvIGJleW9uZCB0aGF0Cj4+IHlvdSdkIGhhdmUgdG8gY2hhc2UgdGhlIG9sZCBzdHJlYW0g
+dGFibGUgcG9pbnRlciBhbmQgc2NhbiB0aGUgd2hvbGUKPj4gdGhpbmcgbG9va2luZyBmb3IgdmFs
+aWQgY29udGV4dHMsIHRoZW4gcG90ZW50aWFsbHkgd2FsayBwYWdlIHRhYmxlcwo+PiB3aXRoaW4g
+dGhvc2UgY29udGV4dHMgdG8gY2hlY2sgZm9yIGxpdmUgdHJhbnNsYXRpb25zIGlmIHlvdSByZWFs
+bHkKPj4gd2FudGVkIHRvIGJlIHN1cmUuIFRoYXQgd291bGQgYmUgYSBoZWxsIG9mIGEgbG90IG9m
+IHdvcmsgdG8gZG8gaW4gdGhlCj4+IGJvb3QgcGF0aC4KPiBZZWFoLCBmZWVscyBhIGJpdCB0b28g
+aW52b2x2ZWQgZm9yIHNhbml0eS4gSSdkIHNpbXBseSBzdWdnZXN0IHlvdSB0YWludAo+IHRoZSBr
+ZXJuZWwgaWYgeW91IGZpbmQgdGhlIFNNTVUgZW5hYmxlZCwgYXMgeW91J3JlIGFscmVhZHkgb24g
+c2hha3kgZ3JvdW5kLgoKRmluZGluZyB0aGUgU01NVSBhbHJlYWR5IGVuYWJsZWQgZG9lcyBub3Qg
+bmVjZXNzYXJpbHkgaW5kaWNhdGUgdGhhdAphbnl0aGluZyBjYXRhc3Ryb3BoaWMgaGFzIG9jY3Vy
+cmVkLgoKRm9yIGluc3RhbmNlLCB0byBzdXBwb3J0IE9TZXMgd2l0aG91dCBhbiBTTU1VdjMgZHJp
+dmVyLCBib290IEZXIG1heSBoYXZlCmVuYWJsZWQgdGhlIFNNTVUgYW5kIGluc3RhbGxlZCAxLXRv
+LTEgbWFwcGluZ3MgZm9yIEREUiBhbmQgTVNJIHRhcmdldAphZGRyKHMpIHRvIGNvbXBlbnNhdGUg
+Zm9yIGEgTVNJLWNhcGFibGUgbWFzdGVyIHdob3NlIGRlZmF1bHQgRE1BIGF0dHJzCm5lZWRlZCB0
+d2Vha2luZyAoZXg6IG5vbi1jb2hlcmVudCAtPiBjb2hlcmVudCkuCgpJZiBzdWNoIGEgY29uZmln
+dXJhdGlvbiB3YXJyYW50cyB0YWludGluZyB0aGUga2VybmVsLCB0aGVuIHdlIHNob3VsZApzaW1p
+bGFybHkgY2hlY2sgR0JQQSBmb3IgYXR0ciBvdmVycmlkZXMgYW5kIHRhaW50IHRoZSBrZXJuZWwg
+aWYgYW55IGFyZQpmb3VuZCB0aGVyZS4KCj4gCj4gVGhhbmtzLAo+IAo+IAlNLgo+IAoKLS0gClF1
+YWxjb21tIERhdGFjZW50ZXIgVGVjaG5vbG9naWVzIGFzIGFuIGFmZmlsaWF0ZSBvZiBRdWFsY29t
+bSBUZWNobm9sb2dpZXMsIEluYy4KUXVhbGNvbW0gVGVjaG5vbG9naWVzLCBJbmMuIGlzIGEgbWVt
+YmVyIG9mIHRoZSBDb2RlIEF1cm9yYSBGb3J1bSwgYSBMaW51eCBGb3VuZGF0aW9uIENvbGxhYm9y
+YXRpdmUgUHJvamVjdC4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlz
+dHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2xpbnV4LWFybS1rZXJuZWwK
