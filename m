@@ -1,16 +1,19 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 1/2] iommu - Enable debugfs exposure of IOMMU driver
-	internals
-Date: Fri, 11 May 2018 16:22:54 +0100
-Message-ID: <474751d1-02ec-9e00-26c8-36988ad83092@arm.com>
-References: <152604905217.106201.15533883255216330970.stgit@sosxen2.amd.com>
-	<152604925157.106201.5299224478351644530.stgit@sosxen2.amd.com>
+From: "Goel, Sameer" <sgoel-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
+Date: Fri, 11 May 2018 10:15:03 -0600
+Message-ID: <22143dc9-4110-3278-3148-66ca5f3d102e@codeaurora.org>
+References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
+	<3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
+	<3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
+	<438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
+	<7756f245-6c63-92d4-d101-4040a45b660b@arm.com>
+	<265a41d4-ec3c-6697-0340-6830807ea10f@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <152604925157.106201.5299224478351644530.stgit-tq90VzyE+wXkLsZ8J5Uweg@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <265a41d4-ec3c-6697-0340-6830807ea10f-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,209 +23,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Timur Tabi <timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Gary,
-
-Just a few trivial nitpicks below, otherwise:
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-On 11/05/18 15:34, Gary R Hook wrote:
-> Provide base enablement for using debugfs to expose internal data of an
-> IOMMU driver. When called, create the /sys/kernel/debug/iommu directory.
-> 
-> Emit a strong warning at boot time to indicate that this feature is
-> enabled.
-> 
-> This function is called from iommu_init, and creates the initial DebugFS
-> directory. Drivers may then call iommu_debugfs_new_driver_dir() to
-> instantiate a device-specific directory to expose internal data.
-> It will return a pointer to the new dentry structure created in
-> /sys/kernel/debug/iommu, or NULL in the event of a failure.
-> 
-> Since the IOMMU driver can not be removed from the running system, there
-> is no need for an "off" function.
-> 
-> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-> ---
->   drivers/iommu/Kconfig         |   11 ++++++
->   drivers/iommu/Makefile        |    1 +
->   drivers/iommu/iommu-debugfs.c |   70 +++++++++++++++++++++++++++++++++++++++++
->   drivers/iommu/iommu.c         |    2 +
->   include/linux/iommu.h         |   10 ++++++
->   5 files changed, 94 insertions(+)
->   create mode 100644 drivers/iommu/iommu-debugfs.c
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f3a21343e636..ff511fa8ca7d 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -60,6 +60,17 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
->   
->   endmenu
->   
-> +config IOMMU_DEBUGFS
-> +	bool "Export IOMMU internals in DebugFS"
-> +	depends on DEBUG_FS
-> +	default n
-
-bool implicitly defaults to n anyway, so you don't really need to say it.
-
-> +	help
-> +	  Allows exposure of IOMMU device internals. This option enables
-> +	  the use of debugfs by IOMMU drivers as required. Devices can,
-> +	  at initialization time, cause the IOMMU code to create a top-level
-> +	  debug/iommu directory, and then populate a subdirectory with
-> +	  entries as required.
-> +
->   config IOMMU_IOVA
->   	tristate
->   
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 1fb695854809..74cfbc392862 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -2,6 +2,7 @@
->   obj-$(CONFIG_IOMMU_API) += iommu.o
->   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-> +obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
->   obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
->   obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
->   obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
-> diff --git a/drivers/iommu/iommu-debugfs.c b/drivers/iommu/iommu-debugfs.c
-> new file mode 100644
-> index 000000000000..9df3b44aef55
-> --- /dev/null
-> +++ b/drivers/iommu/iommu-debugfs.c
-> @@ -0,0 +1,70 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * IOMMU driver
-
-"driver"? ;) I'd have thought something like "IOMMU debugfs core 
-infrastructure", but arguably it's self-evident enough that it doesn't 
-necessarily need describing at all.
-
-> + *
-> + * Copyright (C) 2018 Advanced Micro Devices, Inc.
-> + *
-> + * Author: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-> + */
-> +
-> +#include <linux/pci.h>
-> +#include <linux/iommu.h>
-> +#include <linux/debugfs.h>
-> +
-> +static struct dentry *iommu_debugfs_dir;
-> +
-> +/**
-> + * iommu_debugfs_setup - create the top-level iommu directory in debugfs
-> + *
-> + * Provide base enablement for using debugfs to expose internal data of an
-> + * IOMMU driver. When called, this function creates the
-> + * /sys/kernel/debug/iommu directory.
-> + *
-> + * Emit a strong warning at boot time to indicate that this feature is
-> + * enabled.
-> + *
-> + * This function is called from iommu_init; drivers may then call
-> + * iommu_debugfs_new_driver_dir() to instantiate a vendor-specific
-> + * directory to be used to expose internal data.
-> + */
-> +void iommu_debugfs_setup(void)
-> +{
-> +	if (!iommu_debugfs_dir) {
-> +		iommu_debugfs_dir = debugfs_create_dir("iommu", NULL);
-> +		if (iommu_debugfs_dir) {
-> +			pr_warn("\n");
-> +			pr_warn("*************************************************************\n");
-> +			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
-> +			pr_warn("**                                                         **\n");
-> +			pr_warn("**  IOMMU DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL  **\n");
-> +			pr_warn("**                                                         **\n");
-> +			pr_warn("** This means that this kernel is built to expose internal **\n");
-> +			pr_warn("** IOMMU data structures, which may compromise security on **\n");
-> +			pr_warn("** your system.                                            **\n");
-> +			pr_warn("**                                                         **\n");
-> +			pr_warn("** If you see this message and you are not debugging the   **\n");
-> +			pr_warn("** kernel, report this immediately to your vendor!         **\n");
-> +			pr_warn("**                                                         **\n");
-> +			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
-> +			pr_warn("*************************************************************\n");
-> +		}
-> +	}
-> +}
-> +
-> +/**
-> + * iommu_debugfs_new_driver_dir - create a vendor directory under debugfs/iommu
-> + * @vendor: name of the vendor-specific subdirectory to create
-> + *
-> + * This function is called by an IOMMU driver to create the top-level debugfs
-> + * directory for that driver. The return value is the dentry for the requested
-> + * vendor directory, or NULL in case of failure.
-
-According to kernel-doc.rst, return values should be in a dedicated 
-section (i.e. "Return: The dentry...") rather than as part of the 
-function description.
-
-> + */
-> +struct dentry *iommu_debugfs_new_driver_dir(char *vendor)
-
-const char *?
-
-> +{
-> +	struct dentry *d_new;
-> +
-> +	d_new = debugfs_create_dir(vendor, iommu_debugfs_dir);
-> +
-> +	return d_new;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_debugfs_new_driver_dir);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d2aa23202bb9..350819f1c5e1 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1747,6 +1747,8 @@ static int __init iommu_init(void)
->   					       NULL, kernel_kobj);
->   	BUG_ON(!iommu_group_kset);
->   
-> +	iommu_debugfs_setup();
-> +
->   	return 0;
->   }
->   core_initcall(iommu_init);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 19938ee6eb31..25018ac0fdab 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -698,4 +698,14 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->   
->   #endif /* CONFIG_IOMMU_API */
->   
-> +#ifdef CONFIG_IOMMU_DEBUGFS
-> +void iommu_debugfs_setup(void);
-> +struct dentry *iommu_debugfs_new_driver_dir(char *vendor);
-> +#else
-> +static inline void iommu_debugfs_setup(void) {}
-> +static inline struct dentry *iommu_debugfs_new_driver_dir(char *vendor) { \
-
-Since this is a function, not a macro, it doesn't really need the line 
-continuations.
-
-Robin.
-
-> +	return NULL; \
-> +}
-> +#endif
-> +
->   #endif /* __LINUX_IOMMU_H */
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+CgpPbiA0LzEyLzIwMTggNTo1NiBBTSwgTWFyYyBaeW5naWVyIHdyb3RlOgo+IE9uIDEyLzA0LzE4
+IDExOjE3LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDExLzA0LzE4IDE3OjU0LCBNYXJjIFp5
+bmdpZXIgd3JvdGU6Cj4+PiBIaSBTYW1tZXIsCj4+Pgo+Pj4gT24gMTEvMDQvMTggMTY6NTgsIEdv
+ZWwsIFNhbWVlciB3cm90ZToKPj4+Pgo+Pj4+Cj4+Pj4gT24gMy8yOC8yMDE4IDk6MDAgQU0sIE1h
+cmMgWnluZ2llciB3cm90ZToKPj4+Pj4gT24gMjAxOC0wMy0yOCAxNTozOSwgVGltdXIgVGFiaSB3
+cm90ZToKPj4+Pj4+IEZyb206IFNhbWVlciBHb2VsIDxzZ29lbEBjb2RlYXVyb3JhLm9yZz4KPj4+
+Pj4+Cj4+Pj4+PiBTZXQgU01NVV9HQlBBIHRvIGFib3J0IGFsbCBpbmNvbWluZyB0cmFuc2xhdGlv
+bnMgZHVyaW5nIHRoZSBTTU1VIHJlc2V0Cj4+Pj4+PiB3aGVuIFNNTVVFTj09MC4KPj4+Pj4+Cj4+
+Pj4+PiBUaGlzIHByZXZlbnRzIGEgcmFjZSBjb25kaXRpb24gd2hlcmUgYSBzdHJheSBETUEgZnJv
+bSB0aGUgY3Jhc2hlZCBwcmltYXJ5Cj4+Pj4+PiBrZXJuZWwgY2FuIHRyeSB0byBhY2Nlc3MgYW4g
+SU9WQSBhZGRyZXNzIGFzIGFuIGludmFsaWQgUEEgd2hlbiBTTU1VIGlzCj4+Pj4+PiBkaXNhYmxl
+ZCBkdXJpbmcgcmVzZXQgaW4gdGhlIGNyYXNoIGtlcm5lbC4KPj4+Pj4+Cj4+Pj4+PiBTaWduZWQt
+b2ZmLWJ5OiBTYW1lZXIgR29lbCA8c2dvZWxAY29kZWF1cm9yYS5vcmc+Cj4+Pj4+PiAtLS0KPj4+
+Pj4+ICDCoGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDEyICsrKysrKysrKysrKwo+Pj4+
+Pj4gIMKgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKykKPj4+Pj4+Cj4+Pj4+PiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS12My5jIGIvZHJpdmVycy9pb21tdS9hcm0t
+c21tdS12My5jCj4+Pj4+PiBpbmRleCAzZjJmMWZjNjhiNTIuLmMwNGE4OTMxMGM1OSAxMDA2NDQK
+Pj4+Pj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+Pj4gKysrIGIvZHJp
+dmVycy9pb21tdS9hcm0tc21tdS12My5jCj4+Pj4+PiBAQCAtMjQ1OCw2ICsyNDU4LDE4IEBAIHN0
+YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX3Jlc2V0KHN0cnVjdAo+Pj4+Pj4gYXJtX3NtbXVfZGV2
+aWNlICpzbW11LCBib29sIGJ5cGFzcykKPj4+Pj4+ICDCoMKgwqDCoCBpZiAocmVnICYgQ1IwX1NN
+TVVFTikKPj4+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgIGRldl93YXJuKHNtbXUtPmRldiwgIlNNTVUg
+Y3VycmVudGx5IGVuYWJsZWQhIFJlc2V0dGluZy4uLlxuIik7Cj4+Pj4+Pgo+Pj4+Pj4gK8KgwqDC
+oCAvKgo+Pj4+Pj4gK8KgwqDCoMKgICogQWJvcnQgYWxsIGluY29taW5nIHRyYW5zbGF0aW9ucy4g
+VGhpcyBjYW4gaGFwcGVuIGluIGEga2R1bXAgY2FzZQo+Pj4+Pj4gK8KgwqDCoMKgICogd2hlcmUg
+U01NVSBpcyBpbml0aWFsaXplZCB3aGVuIGEgcHJpb3IgRE1BIGlzIHBlbmRpbmcuIEp1c3QKPj4+
+Pj4+ICvCoMKgwqDCoCAqIGRpc2FibGluZyB0aGUgU01NVSBpbiB0aGlzIGNhc2UgbWlnaHQgcmVz
+dWx0IGluIHdyaXRlcyB0byBpbnZhbGlkCj4+Pj4+PiArwqDCoMKgwqAgKiBQQXMuCj4+Pj4+PiAr
+wqDCoMKgwqAgKi8KPj4+Pj4+ICvCoMKgwqAgcmV0ID0gYXJtX3NtbXVfdXBkYXRlX2dicGEoc21t
+dSwgMSwgR0JQQV9BQk9SVCk7Cj4+Pj4+PiArwqDCoMKgIGlmIChyZXQpIHsKPj4+Pj4+ICvCoMKg
+wqDCoMKgwqDCoCBkZXZfZXJyKHNtbXUtPmRldiwgIkdCUEEgbm90IHJlc3BvbmRpbmcgdG8gdXBk
+YXRlXG4iKTsKPj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+Pj4+Pj4gK8KgwqDC
+oCB9Cj4+Pj4+PiArCj4+Pj4+PiAgwqDCoMKgwqAgcmV0ID0gYXJtX3NtbXVfZGV2aWNlX2Rpc2Fi
+bGUoc21tdSk7Cj4+Pj4+PiAgwqDCoMKgwqAgaWYgKHJldCkKPj4+Pj4+ICDCoMKgwqDCoMKgwqDC
+oMKgIHJldHVybiByZXQ7Cj4+Pj4+Cj4+Pj4+IEEgdGFuZ2VudGlhbCBxdWVzdGlvbjogY2FuIHdl
+IHJlbGlhYmx5IGRldGVjdCB0aGF0IHRoZSBTTU1VIGFscmVhZHkKPj4+Pj4gaGFzIHZhbGlkIG1h
+cHBpbmdzLCB3aGljaCB3b3VsZCBpbmRpY2F0ZSB0aGF0IHdlJ3JlIGluIGEgcHJldHR5IGJhZAo+
+Pj4+PiBzaGFwZSBhbHJlYWR5IGJ5IHRoZSB0aW1lIHdlIHNldCB0aGF0IGJpdD8gRm9yIGFsbCB3
+ZSBrbm93LCBtZW1vcnkKPj4+Pj4gY291bGQgaGF2ZSBiZWVuIGNvcnJ1cHRlZCBsb25nIGJlZm9y
+ZSB3ZSBoaXQgdGhpcyBwb2ludCwgYW5kIHRoaXMKPj4+Pj4gcGF0Y2ggYmFyZWx5IG5hcnJvd3Mg
+dGhlIHdpbmRvdyBvZiBvcHBvcnR1bml0eS4KPj4+Pgo+Pj4+IDopIFllcyB0aGF0IGlzIGNvcnJl
+Y3QuIFRoaXMgb25seSBjb3ZlcnMgdGhlIGtkdW1wIHNjZW5hcmlvLiBUcnlpbmcKPj4+PiB0byBn
+ZXQgc29tZSByZWxpYWJpbGl0eSB3aGVuIGJvb3RpbmcgdXAgdGhlIGNyYXNoIGtlcm5lbC4gVGhl
+IHN5c3RlbQo+Pj4+IGlzIGFscmVhZHkgaW4gYSBiYWQgc3RhdGUuIEkgZG9uJ3QgdGhpbmsgdGhh
+dCB0aGlzIHdpbGwgaGFwcGVuIGluIGEKPj4+PiBub3JtYWwgc2NlbmFyaW8uIEJ1dCBwbGVhc2Ug
+cG9pbnQgbWUgdG8gdGhlIEdJQ3YzIGNoYW5nZSBhbmQgSSdsbAo+Pj4+IGhhdmUgYSBsb29rLgo+
+Pj4KPj4+IFNlZSB0aGlzOgo+Pj4gaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4
+L2tlcm5lbC9naXQvbWF6L2FybS1wbGF0Zm9ybXMuZ2l0L3RyZWUvZHJpdmVycy9pcnFjaGlwL2ly
+cS1naWMtdjMtaXRzLmM/aD1pcnEvaXJxY2hpcC00LjE3JmlkPTZlYjQ4NmI2NmEzMDk0Y2RjZDY4
+ZGMzOWM5ZGYzYTI5ZDZhNTFkZDUjbjM0MDcKPj4KPj4gVGhlIG5lYXJlc3QgZXF1aXZhbGVudCB0
+byB0aGF0IGlzIHByb2JhYmx5IHRoZSB0b3AtbGV2ZWwgU01NVUVOIGNoZWNrIAo+PiB0aGF0IHdl
+IGFscmVhZHkgaGF2ZSAoc2VlIHRoZSBkaWZmIGNvbnRleHQgYWJvdmUpLiBUbyBnbyBiZXlvbmQg
+dGhhdCAKPj4geW91J2QgaGF2ZSB0byBjaGFzZSB0aGUgb2xkIHN0cmVhbSB0YWJsZSBwb2ludGVy
+IGFuZCBzY2FuIHRoZSB3aG9sZSAKPj4gdGhpbmcgbG9va2luZyBmb3IgdmFsaWQgY29udGV4dHMs
+IHRoZW4gcG90ZW50aWFsbHkgd2FsayBwYWdlIHRhYmxlcyAKPj4gd2l0aGluIHRob3NlIGNvbnRl
+eHRzIHRvIGNoZWNrIGZvciBsaXZlIHRyYW5zbGF0aW9ucyBpZiB5b3UgcmVhbGx5IAo+PiB3YW50
+ZWQgdG8gYmUgc3VyZS4gVGhhdCB3b3VsZCBiZSBhIGhlbGwgb2YgYSBsb3Qgb2Ygd29yayB0byBk
+byBpbiB0aGUgCj4+IGJvb3QgcGF0aC4KPiBZZWFoLCBmZWVscyBhIGJpdCB0b28gaW52b2x2ZWQg
+Zm9yIHNhbml0eS4gSSdkIHNpbXBseSBzdWdnZXN0IHlvdSB0YWludAo+IHRoZSBrZXJuZWwgaWYg
+eW91IGZpbmQgdGhlIFNNTVUgZW5hYmxlZCwgYXMgeW91J3JlIGFscmVhZHkgb24gc2hha3kgZ3Jv
+dW5kLgoKT2suIEkgdGhpbmsgc2luY2UgdGhpcyBpcyBhIGtkdW1wIGtlcm5lbCBhIHRhaW50IGlz
+IG5vdCBuZWNlc3Nhcnk/Cj4gCj4gVGhhbmtzLAo+IAo+IAlNLgo+IAoKLS0gCiBRdWFsY29tbSBE
+YXRhY2VudGVyIFRlY2hub2xvZ2llcyBhcyBhbiBhZmZpbGlhdGUgb2YgUXVhbGNvbW0gVGVjaG5v
+bG9naWVzLCBJbmMuIFF1YWxjb21tIFRlY2hub2xvZ2llcywgSW5jLiBpcyBhIG1lbWJlciBvZiB0
+aGUgQ29kZSBBdXJvcmEgRm9ydW0sIGEgTGludXggRm91bmRhdGlvbiBDb2xsYWJvcmF0aXZlIFBy
+b2plY3QuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
+bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
+L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
