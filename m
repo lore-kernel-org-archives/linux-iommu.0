@@ -1,106 +1,74 @@
-From: Nate Watterson <nwatters@codeaurora.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Set GBPA to abort all transactions
-Date: Fri, 11 May 2018 16:52:02 -0400
-Message-ID: <f033e1a8-282a-764a-a001-5630a3c303c9@codeaurora.org>
-References: <1522247980-31892-1-git-send-email-timur@codeaurora.org>
- <3350f0eb84c8c621cf43aa06ed117cfb@www.loen.fr>
- <3772fb2d-01b7-4820-6d13-a0263654dabc@codeaurora.org>
- <438a6180-fca8-d3a1-985f-e595529911f3@arm.com>
- <7756f245-6c63-92d4-d101-4040a45b660b@arm.com>
- <265a41d4-ec3c-6697-0340-6830807ea10f@arm.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v5 11/23] driver core: add per device iommu param
+Date: Fri, 11 May 2018 13:54:03 -0700
+Message-ID: <1526072055-86990-12-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <265a41d4-ec3c-6697-0340-6830807ea10f@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, "Goel, Sameer" <sgoel@codeaurora.org>, Timur Tabi <timur@codeaurora.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgTWFyaywKCk9uIDQvMTIvMjAxOCA3OjU2IEFNLCBNYXJjIFp5bmdpZXIgd3JvdGU6Cj4gT24g
-MTIvMDQvMTggMTE6MTcsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gT24gMTEvMDQvMTggMTc6NTQs
-IE1hcmMgWnluZ2llciB3cm90ZToKPj4+IEhpIFNhbW1lciwKPj4+Cj4+PiBPbiAxMS8wNC8xOCAx
-Njo1OCwgR29lbCwgU2FtZWVyIHdyb3RlOgo+Pj4+Cj4+Pj4KPj4+PiBPbiAzLzI4LzIwMTggOTow
-MCBBTSwgTWFyYyBaeW5naWVyIHdyb3RlOgo+Pj4+PiBPbiAyMDE4LTAzLTI4IDE1OjM5LCBUaW11
-ciBUYWJpIHdyb3RlOgo+Pj4+Pj4gRnJvbTogU2FtZWVyIEdvZWwgPHNnb2VsQGNvZGVhdXJvcmEu
-b3JnPgo+Pj4+Pj4KPj4+Pj4+IFNldCBTTU1VX0dCUEEgdG8gYWJvcnQgYWxsIGluY29taW5nIHRy
-YW5zbGF0aW9ucyBkdXJpbmcgdGhlIFNNTVUgcmVzZXQKPj4+Pj4+IHdoZW4gU01NVUVOPT0wLgo+
-Pj4+Pj4KPj4+Pj4+IFRoaXMgcHJldmVudHMgYSByYWNlIGNvbmRpdGlvbiB3aGVyZSBhIHN0cmF5
-IERNQSBmcm9tIHRoZSBjcmFzaGVkIHByaW1hcnkKPj4+Pj4+IGtlcm5lbCBjYW4gdHJ5IHRvIGFj
-Y2VzcyBhbiBJT1ZBIGFkZHJlc3MgYXMgYW4gaW52YWxpZCBQQSB3aGVuIFNNTVUgaXMKPj4+Pj4+
-IGRpc2FibGVkIGR1cmluZyByZXNldCBpbiB0aGUgY3Jhc2gga2VybmVsLgo+Pj4+Pj4KPj4+Pj4+
-IFNpZ25lZC1vZmYtYnk6IFNhbWVlciBHb2VsIDxzZ29lbEBjb2RlYXVyb3JhLm9yZz4KPj4+Pj4+
-IC0tLQo+Pj4+Pj4gICDCoGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDEyICsrKysrKysr
-KysrKwo+Pj4+Pj4gICDCoDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspCj4+Pj4+Pgo+
-Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMv
-aW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+Pj4gaW5kZXggM2YyZjFmYzY4YjUyLi5jMDRhODkzMTBj
-NTkgMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKPj4+Pj4+
-ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYwo+Pj4+Pj4gQEAgLTI0NTgsNiArMjQ1
-OCwxOCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9yZXNldChzdHJ1Y3QKPj4+Pj4+IGFy
-bV9zbW11X2RldmljZSAqc21tdSwgYm9vbCBieXBhc3MpCj4+Pj4+PiAgIMKgwqDCoMKgIGlmIChy
-ZWcgJiBDUjBfU01NVUVOKQo+Pj4+Pj4gICDCoMKgwqDCoMKgwqDCoMKgIGRldl93YXJuKHNtbXUt
-PmRldiwgIlNNTVUgY3VycmVudGx5IGVuYWJsZWQhIFJlc2V0dGluZy4uLlxuIik7Cj4+Pj4+Pgo+
-Pj4+Pj4gK8KgwqDCoCAvKgo+Pj4+Pj4gK8KgwqDCoMKgICogQWJvcnQgYWxsIGluY29taW5nIHRy
-YW5zbGF0aW9ucy4gVGhpcyBjYW4gaGFwcGVuIGluIGEga2R1bXAgY2FzZQo+Pj4+Pj4gK8KgwqDC
-oMKgICogd2hlcmUgU01NVSBpcyBpbml0aWFsaXplZCB3aGVuIGEgcHJpb3IgRE1BIGlzIHBlbmRp
-bmcuIEp1c3QKPj4+Pj4+ICvCoMKgwqDCoCAqIGRpc2FibGluZyB0aGUgU01NVSBpbiB0aGlzIGNh
-c2UgbWlnaHQgcmVzdWx0IGluIHdyaXRlcyB0byBpbnZhbGlkCj4+Pj4+PiArwqDCoMKgwqAgKiBQ
-QXMuCj4+Pj4+PiArwqDCoMKgwqAgKi8KPj4+Pj4+ICvCoMKgwqAgcmV0ID0gYXJtX3NtbXVfdXBk
-YXRlX2dicGEoc21tdSwgMSwgR0JQQV9BQk9SVCk7Cj4+Pj4+PiArwqDCoMKgIGlmIChyZXQpIHsK
-Pj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKHNtbXUtPmRldiwgIkdCUEEgbm90IHJlc3Bv
-bmRpbmcgdG8gdXBkYXRlXG4iKTsKPj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm4gcmV0Owo+
-Pj4+Pj4gK8KgwqDCoCB9Cj4+Pj4+PiArCj4+Pj4+PiAgIMKgwqDCoMKgIHJldCA9IGFybV9zbW11
-X2RldmljZV9kaXNhYmxlKHNtbXUpOwo+Pj4+Pj4gICDCoMKgwqDCoCBpZiAocmV0KQo+Pj4+Pj4g
-ICDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiByZXQ7Cj4+Pj4+Cj4+Pj4+IEEgdGFuZ2VudGlhbCBx
-dWVzdGlvbjogY2FuIHdlIHJlbGlhYmx5IGRldGVjdCB0aGF0IHRoZSBTTU1VIGFscmVhZHkKPj4+
-Pj4gaGFzIHZhbGlkIG1hcHBpbmdzLCB3aGljaCB3b3VsZCBpbmRpY2F0ZSB0aGF0IHdlJ3JlIGlu
-IGEgcHJldHR5IGJhZAo+Pj4+PiBzaGFwZSBhbHJlYWR5IGJ5IHRoZSB0aW1lIHdlIHNldCB0aGF0
-IGJpdD8gRm9yIGFsbCB3ZSBrbm93LCBtZW1vcnkKPj4+Pj4gY291bGQgaGF2ZSBiZWVuIGNvcnJ1
-cHRlZCBsb25nIGJlZm9yZSB3ZSBoaXQgdGhpcyBwb2ludCwgYW5kIHRoaXMKPj4+Pj4gcGF0Y2gg
-YmFyZWx5IG5hcnJvd3MgdGhlIHdpbmRvdyBvZiBvcHBvcnR1bml0eS4KPj4+Pgo+Pj4+IDopIFll
-cyB0aGF0IGlzIGNvcnJlY3QuIFRoaXMgb25seSBjb3ZlcnMgdGhlIGtkdW1wIHNjZW5hcmlvLiBU
-cnlpbmcKPj4+PiB0byBnZXQgc29tZSByZWxpYWJpbGl0eSB3aGVuIGJvb3RpbmcgdXAgdGhlIGNy
-YXNoIGtlcm5lbC4gVGhlIHN5c3RlbQo+Pj4+IGlzIGFscmVhZHkgaW4gYSBiYWQgc3RhdGUuIEkg
-ZG9uJ3QgdGhpbmsgdGhhdCB0aGlzIHdpbGwgaGFwcGVuIGluIGEKPj4+PiBub3JtYWwgc2NlbmFy
-aW8uIEJ1dCBwbGVhc2UgcG9pbnQgbWUgdG8gdGhlIEdJQ3YzIGNoYW5nZSBhbmQgSSdsbAo+Pj4+
-IGhhdmUgYSBsb29rLgo+Pj4KPj4+IFNlZSB0aGlzOgo+Pj4gaHR0cHM6Ly9naXQua2VybmVsLm9y
-Zy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbWF6L2FybS1wbGF0Zm9ybXMuZ2l0L3RyZWUvZHJp
-dmVycy9pcnFjaGlwL2lycS1naWMtdjMtaXRzLmM/aD1pcnEvaXJxY2hpcC00LjE3JmlkPTZlYjQ4
-NmI2NmEzMDk0Y2RjZDY4ZGMzOWM5ZGYzYTI5ZDZhNTFkZDUjbjM0MDcKPj4KPj4gVGhlIG5lYXJl
-c3QgZXF1aXZhbGVudCB0byB0aGF0IGlzIHByb2JhYmx5IHRoZSB0b3AtbGV2ZWwgU01NVUVOIGNo
-ZWNrCj4+IHRoYXQgd2UgYWxyZWFkeSBoYXZlIChzZWUgdGhlIGRpZmYgY29udGV4dCBhYm92ZSku
-IFRvIGdvIGJleW9uZCB0aGF0Cj4+IHlvdSdkIGhhdmUgdG8gY2hhc2UgdGhlIG9sZCBzdHJlYW0g
-dGFibGUgcG9pbnRlciBhbmQgc2NhbiB0aGUgd2hvbGUKPj4gdGhpbmcgbG9va2luZyBmb3IgdmFs
-aWQgY29udGV4dHMsIHRoZW4gcG90ZW50aWFsbHkgd2FsayBwYWdlIHRhYmxlcwo+PiB3aXRoaW4g
-dGhvc2UgY29udGV4dHMgdG8gY2hlY2sgZm9yIGxpdmUgdHJhbnNsYXRpb25zIGlmIHlvdSByZWFs
-bHkKPj4gd2FudGVkIHRvIGJlIHN1cmUuIFRoYXQgd291bGQgYmUgYSBoZWxsIG9mIGEgbG90IG9m
-IHdvcmsgdG8gZG8gaW4gdGhlCj4+IGJvb3QgcGF0aC4KPiBZZWFoLCBmZWVscyBhIGJpdCB0b28g
-aW52b2x2ZWQgZm9yIHNhbml0eS4gSSdkIHNpbXBseSBzdWdnZXN0IHlvdSB0YWludAo+IHRoZSBr
-ZXJuZWwgaWYgeW91IGZpbmQgdGhlIFNNTVUgZW5hYmxlZCwgYXMgeW91J3JlIGFscmVhZHkgb24g
-c2hha3kgZ3JvdW5kLgoKRmluZGluZyB0aGUgU01NVSBhbHJlYWR5IGVuYWJsZWQgZG9lcyBub3Qg
-bmVjZXNzYXJpbHkgaW5kaWNhdGUgdGhhdAphbnl0aGluZyBjYXRhc3Ryb3BoaWMgaGFzIG9jY3Vy
-cmVkLgoKRm9yIGluc3RhbmNlLCB0byBzdXBwb3J0IE9TZXMgd2l0aG91dCBhbiBTTU1VdjMgZHJp
-dmVyLCBib290IEZXIG1heSBoYXZlCmVuYWJsZWQgdGhlIFNNTVUgYW5kIGluc3RhbGxlZCAxLXRv
-LTEgbWFwcGluZ3MgZm9yIEREUiBhbmQgTVNJIHRhcmdldAphZGRyKHMpIHRvIGNvbXBlbnNhdGUg
-Zm9yIGEgTVNJLWNhcGFibGUgbWFzdGVyIHdob3NlIGRlZmF1bHQgRE1BIGF0dHJzCm5lZWRlZCB0
-d2Vha2luZyAoZXg6IG5vbi1jb2hlcmVudCAtPiBjb2hlcmVudCkuCgpJZiBzdWNoIGEgY29uZmln
-dXJhdGlvbiB3YXJyYW50cyB0YWludGluZyB0aGUga2VybmVsLCB0aGVuIHdlIHNob3VsZApzaW1p
-bGFybHkgY2hlY2sgR0JQQSBmb3IgYXR0ciBvdmVycmlkZXMgYW5kIHRhaW50IHRoZSBrZXJuZWwg
-aWYgYW55IGFyZQpmb3VuZCB0aGVyZS4KCj4gCj4gVGhhbmtzLAo+IAo+IAlNLgo+IAoKLS0gClF1
-YWxjb21tIERhdGFjZW50ZXIgVGVjaG5vbG9naWVzIGFzIGFuIGFmZmlsaWF0ZSBvZiBRdWFsY29t
-bSBUZWNobm9sb2dpZXMsIEluYy4KUXVhbGNvbW0gVGVjaG5vbG9naWVzLCBJbmMuIGlzIGEgbWVt
-YmVyIG9mIHRoZSBDb2RlIEF1cm9yYSBGb3J1bSwgYSBMaW51eCBGb3VuZGF0aW9uIENvbGxhYm9y
-YXRpdmUgUHJvamVjdC4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBsaXN0CmxpbnV4LWFybS1rZXJuZWxAbGlz
-dHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2xpbnV4LWFybS1rZXJuZWwK
+DMA faults can be detected by IOMMU at device level. Adding a pointer
+to struct device allows IOMMU subsystem to report relevant faults
+back to the device driver for further handling.
+For direct assigned device (or user space drivers), guest OS holds
+responsibility to handle and respond per device IOMMU fault.
+Therefore we need fault reporting mechanism to propagate faults beyond
+IOMMU subsystem.
+
+There are two other IOMMU data pointers under struct device today, here
+we introduce iommu_param as a parent pointer such that all device IOMMU
+data can be consolidated here. The idea was suggested here by Greg KH
+and Joerg. The name iommu_param is chosen here since iommu_data has been used.
+
+Suggested-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Link: https://lkml.org/lkml/2017/10/6/81
+---
+ include/linux/device.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 4779569..c1b1796 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -41,6 +41,7 @@ struct iommu_ops;
+ struct iommu_group;
+ struct iommu_fwspec;
+ struct dev_pin_info;
++struct iommu_param;
+ 
+ struct bus_attribute {
+ 	struct attribute	attr;
+@@ -899,6 +900,7 @@ struct dev_links_info {
+  * 		device (i.e. the bus driver that discovered the device).
+  * @iommu_group: IOMMU group the device belongs to.
+  * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
++ * @iommu_param: Per device generic IOMMU runtime data
+  *
+  * @offline_disabled: If set, the device is permanently online.
+  * @offline:	Set after successful invocation of bus type's .offline().
+@@ -988,6 +990,7 @@ struct device {
+ 	void	(*release)(struct device *dev);
+ 	struct iommu_group	*iommu_group;
+ 	struct iommu_fwspec	*iommu_fwspec;
++	struct iommu_param	*iommu_param;
+ 
+ 	bool			offline_disabled:1;
+ 	bool			offline:1;
+-- 
+2.7.4
