@@ -1,7 +1,7 @@
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v5 22/23] trace/iommu: add sva trace events
-Date: Fri, 11 May 2018 13:54:14 -0700
-Message-ID: <1526072055-86990-23-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v5 20/23] iommu/intel-svm: do not flush iotlb for viommu
+Date: Fri, 11 May 2018 13:54:12 -0700
+Message-ID: <1526072055-86990-21-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -10,140 +10,28 @@ To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg
 Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+vIOMMU passdown invalidation will be inclusive, PASID cache invalidation
+includes TLBs. See Intel VT-d Specification Ch 6.5.2.2 for details.
+
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- include/trace/events/iommu.h | 112 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 112 insertions(+)
+ drivers/iommu/intel-svm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-index 72b4582..e64eb29 100644
---- a/include/trace/events/iommu.h
-+++ b/include/trace/events/iommu.h
-@@ -12,6 +12,8 @@
- #define _TRACE_IOMMU_H
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index bdda1b6..697d5c2 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -284,7 +284,9 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(sdev, &svm->devs, list) {
+ 		intel_flush_pasid_dev(svm, sdev, svm->pasid);
+-		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
++		/* for emulated iommu, PASID cache invalidation implies IOTLB/DTLB */
++		if (!cap_caching_mode(svm->iommu->cap))
++			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0, !svm->mm);
+ 	}
+ 	rcu_read_unlock();
  
- #include <linux/tracepoint.h>
-+#include <linux/iommu.h>
-+#include <uapi/linux/iommu.h>
- 
- struct device;
- 
-@@ -161,6 +163,116 @@ DEFINE_EVENT(iommu_error, io_page_fault,
- 
- 	TP_ARGS(dev, iova, flags)
- );
-+
-+TRACE_EVENT(dev_fault,
-+
-+	TP_PROTO(struct device *dev,  struct iommu_fault_event *evt),
-+
-+	TP_ARGS(dev, evt),
-+
-+	TP_STRUCT__entry(
-+		__string(device, dev_name(dev))
-+		__field(int, type)
-+		__field(int, reason)
-+		__field(u64, addr)
-+		__field(u32, pasid)
-+		__field(u32, pgid)
-+		__field(u32, last_req)
-+		__field(u32, prot)
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(device, dev_name(dev));
-+		__entry->type = evt->type;
-+		__entry->reason = evt->reason;
-+		__entry->addr = evt->addr;
-+		__entry->pasid = evt->pasid;
-+		__entry->pgid = evt->page_req_group_id;
-+		__entry->last_req = evt->last_req;
-+		__entry->prot = evt->prot;
-+	),
-+
-+	TP_printk("IOMMU:%s type=%d reason=%d addr=0x%016llx pasid=%d group=%d last=%d prot=%d",
-+		__get_str(device),
-+		__entry->type,
-+		__entry->reason,
-+		__entry->addr,
-+		__entry->pasid,
-+		__entry->pgid,
-+		__entry->last_req,
-+		__entry->prot
-+	)
-+);
-+
-+TRACE_EVENT(dev_page_response,
-+
-+	TP_PROTO(struct device *dev,  struct page_response_msg *msg),
-+
-+	TP_ARGS(dev, msg),
-+
-+	TP_STRUCT__entry(
-+		__string(device, dev_name(dev))
-+		__field(int, code)
-+		__field(u64, addr)
-+		__field(u32, pasid)
-+		__field(u32, pgid)
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(device, dev_name(dev));
-+		__entry->code = msg->resp_code;
-+		__entry->addr = msg->addr;
-+		__entry->pasid = msg->pasid;
-+		__entry->pgid = msg->page_req_group_id;
-+	),
-+
-+	TP_printk("IOMMU:%s code=%d addr=0x%016llx pasid=%d group=%d",
-+		__get_str(device),
-+		__entry->code,
-+		__entry->addr,
-+		__entry->pasid,
-+		__entry->pgid
-+	)
-+);
-+
-+TRACE_EVENT(sva_invalidate,
-+
-+	TP_PROTO(struct device *dev,  struct tlb_invalidate_info *ti),
-+
-+	TP_ARGS(dev, ti),
-+
-+	TP_STRUCT__entry(
-+		__string(device, dev_name(dev))
-+		__field(int, type)
-+		__field(u32, granu)
-+		__field(u32, flags)
-+		__field(u8, size)
-+		__field(u32, pasid)
-+		__field(u64, addr)
-+	),
-+
-+	TP_fast_assign(
-+		__assign_str(device, dev_name(dev));
-+		__entry->type = ti->hdr.type;
-+		__entry->flags = ti->flags;
-+		__entry->granu = ti->granularity;
-+		__entry->size = ti->size;
-+		__entry->pasid = ti->pasid;
-+		__entry->addr = ti->addr;
-+	),
-+
-+	TP_printk("IOMMU:%s type=%d flags=0x%08x granu=%d size=%d pasid=%d addr=0x%016llx",
-+		__get_str(device),
-+		__entry->type,
-+		__entry->flags,
-+		__entry->granu,
-+		__entry->size,
-+		__entry->pasid,
-+		__entry->addr
-+	)
-+);
-+
-+
- #endif /* _TRACE_IOMMU_H */
- 
- /* This part must be outside protection */
 -- 
 2.7.4
