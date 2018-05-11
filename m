@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 09/40] iommu/sva: Register page fault handler
-Date: Fri, 11 May 2018 20:06:10 +0100
-Message-ID: <20180511190641.23008-10-jean-philippe.brucker@arm.com>
+Subject: [PATCH v2 10/40] mm: export symbol mm_access
+Date: Fri, 11 May 2018 20:06:11 +0100
+Message-ID: <20180511190641.23008-11-jean-philippe.brucker@arm.com>
 References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,157 +18,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Cc: xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, felix.kuehling-5C7GfCeVMHo@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Let users call iommu_sva_device_init() with the IOMMU_SVA_FEAT_IOPF flag,
-that enables the I/O Page Fault queue. The IOMMU driver checks is the
-device supports a form of page fault, in which case they add the device to
-a fault queue. If the device doesn't support page faults, the IOMMU driver
-aborts iommu_sva_device_init().
+Some devices can access process address spaces directly. When creating
+such bond, to check that a process controlling the device is allowed to
+access the target address space, the device driver uses mm_access(). Since
+the drivers (in this case VFIO) can be built as a module, export the
+mm_access symbol.
 
-The fault queue must be flushed before any io_mm is freed, to make sure
-that its PASID isn't used in any fault queue, and can be reallocated.
-Add iopf_queue_flush() calls in a few strategic locations.
-
+Cc: felix.kuehling-5C7GfCeVMHo@public.gmane.org
+Cc: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 
 ---
-v1->v2: new
+This patch was already sent last year for AMD KFD. I'm resending it for
+VFIO, trying to address Andrew Morton's request to comment the exported
+function: http://lkml.iu.edu/hypermail/linux/kernel/1705.2/06774.html
 ---
- drivers/iommu/iommu-sva.c | 36 ++++++++++++++++++++++++++++++++----
- drivers/iommu/iommu.c     |  6 +++---
- include/linux/iommu.h     |  2 ++
- 3 files changed, 37 insertions(+), 7 deletions(-)
+ kernel/fork.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 5abe0f0b445c..e98b994c15f1 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -441,6 +441,8 @@ static void iommu_notifier_release(struct mmu_notifier *mn, struct mm_struct *mm
- 			dev_WARN(bond->dev, "possible leak of PASID %u",
- 				 io_mm->pasid);
+diff --git a/kernel/fork.c b/kernel/fork.c
+index a5d21c42acfc..1062f7450e97 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1098,6 +1098,19 @@ struct mm_struct *get_task_mm(struct task_struct *task)
+ }
+ EXPORT_SYMBOL_GPL(get_task_mm);
  
-+		iopf_queue_flush_dev(bond->dev);
-+
- 		spin_lock(&iommu_sva_lock);
- 		next = list_next_entry(bond, mm_head);
- 
-@@ -518,6 +520,9 @@ static struct mmu_notifier_ops iommu_mmu_notifier = {
-  * description. Setting @max_pasid to a non-zero value smaller than this limit
-  * overrides it.
-  *
-+ * If the device should support recoverable I/O Page Faults (e.g. PCI PRI), the
-+ * IOMMU_SVA_FEAT_IOPF feature must be requested.
++/**
++ * mm_access - check access permission to a task and and acquire a reference to
++ * its mm.
++ * @task: target task
++ * @mode: selects type of access and caller credentials
 + *
-  * If the driver intends to share process address spaces, it should pass a valid
-  * @mm_exit handler. Otherwise @mm_exit can be NULL. After @mm_exit returns, the
-  * device must not issue any more transaction with the PASID given as argument.
-@@ -546,12 +551,21 @@ int iommu_sva_device_init(struct device *dev, unsigned long features,
- 	if (!domain || !domain->ops->sva_device_init)
- 		return -ENODEV;
- 
--	if (features)
-+	if (features & ~IOMMU_SVA_FEAT_IOPF)
- 		return -EINVAL;
- 
-+	if (features & IOMMU_SVA_FEAT_IOPF) {
-+		ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf,
-+							  dev);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	param = kzalloc(sizeof(*param), GFP_KERNEL);
--	if (!param)
--		return -ENOMEM;
-+	if (!param) {
-+		ret = -ENOMEM;
-+		goto err_remove_handler;
-+	}
- 
- 	param->features		= features;
- 	param->max_pasid	= max_pasid;
-@@ -584,6 +598,9 @@ int iommu_sva_device_init(struct device *dev, unsigned long features,
- err_free_param:
- 	kfree(param);
- 
-+err_remove_handler:
-+	iommu_unregister_device_fault_handler(dev);
-+
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_sva_device_init);
-@@ -593,7 +610,8 @@ EXPORT_SYMBOL_GPL(iommu_sva_device_init);
-  * @dev: the device
-  *
-  * Disable SVA. Device driver should ensure that the device isn't performing any
-- * DMA while this function is running.
-+ * DMA while this function is running. In addition all faults should have been
-+ * flushed to the IOMMU.
-  */
- int iommu_sva_device_shutdown(struct device *dev)
++ * Return the task's mm on success, or %NULL if it cannot be accessed.
++ *
++ * Check if the caller is allowed to read or write the target task's pages.
++ * @mode describes the access mode and credentials using ptrace access flags.
++ * See ptrace_may_access() for more details. On success, a reference to the mm
++ * is taken.
++ */
+ struct mm_struct *mm_access(struct task_struct *task, unsigned int mode)
  {
-@@ -617,6 +635,8 @@ int iommu_sva_device_shutdown(struct device *dev)
+ 	struct mm_struct *mm;
+@@ -1117,6 +1130,7 @@ struct mm_struct *mm_access(struct task_struct *task, unsigned int mode)
  
- 	kfree(param);
- 
-+	iommu_unregister_device_fault_handler(dev);
-+
- 	return 0;
+ 	return mm;
  }
- EXPORT_SYMBOL_GPL(iommu_sva_device_shutdown);
-@@ -694,6 +714,12 @@ int __iommu_sva_unbind_device(struct device *dev, int pasid)
- 	if (!param || WARN_ON(!domain))
- 		return -EINVAL;
++EXPORT_SYMBOL_GPL(mm_access);
  
-+	/*
-+	 * Caller stopped the device from issuing PASIDs, now make sure they are
-+	 * out of the fault queue.
-+	 */
-+	iopf_queue_flush_dev(dev);
-+
- 	/* spin_lock_irq matches the one in wait_event_lock_irq */
- 	spin_lock_irq(&iommu_sva_lock);
- 	list_for_each_entry(bond, &param->mm_list, dev_head) {
-@@ -721,6 +747,8 @@ void __iommu_sva_unbind_dev_all(struct device *dev)
- 	struct iommu_sva_param *param;
- 	struct iommu_bond *bond, *next;
- 
-+	iopf_queue_flush_dev(dev);
-+
- 	/*
- 	 * io_mm_detach_locked might wait, so we shouldn't call it with the dev
- 	 * param lock held. It's fine to read sva_param outside the lock because
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 333801e1519c..13f705df0725 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2278,9 +2278,9 @@ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-  * iommu_sva_device_init() must be called first, to initialize the required SVA
-  * features. @flags is a subset of these features.
-  *
-- * The caller must pin down using get_user_pages*() all mappings shared with the
-- * device. mlock() isn't sufficient, as it doesn't prevent minor page faults
-- * (e.g. copy-on-write).
-+ * If IOMMU_SVA_FEAT_IOPF isn't requested, the caller must pin down using
-+ * get_user_pages*() all mappings shared with the device. mlock() isn't
-+ * sufficient, as it doesn't prevent minor page faults (e.g. copy-on-write).
-  *
-  * On success, 0 is returned and @pasid contains a valid ID. Otherwise, an error
-  * is returned.
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index fad3a60e1c14..933100678f64 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -64,6 +64,8 @@ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
- typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
- typedef int (*iommu_mm_exit_handler_t)(struct device *dev, int pasid, void *);
- 
-+#define IOMMU_SVA_FEAT_IOPF		(1 << 0)
-+
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
- 	dma_addr_t aperture_end;   /* Last address that can be mapped     */
+ static void complete_vfork_done(struct task_struct *tsk)
+ {
 -- 
 2.17.0
