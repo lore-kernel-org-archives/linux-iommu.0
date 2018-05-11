@@ -1,55 +1,75 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 04/20] arm-nommu: use generic dma_noncoherent_ops
-Date: Fri, 11 May 2018 14:56:16 +0100
-Message-ID: <73603c68-da05-22bd-efab-d0387a98225d@huawei.com>
-References: <20180511075945.16548-1-hch@lst.de>
-	<20180511075945.16548-5-hch@lst.de>
+From: Gary R Hook <gary.hook@amd.com>
+Subject: [PATCH v6 0/2] Base enablement of IOMMU debugfs support
+Date: Fri, 11 May 2018 09:34:03 -0500
+Message-ID: <152604905217.106201.15533883255216330970.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180511075945.16548-5-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/05/2018 08:59, Christoph Hellwig wrote:
-> Switch to the generic noncoherent direct mapping implementation for
-> the nommu dma map implementation.
->
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  arch/arc/Kconfig                |   1 +
->  arch/arm/Kconfig                |   4 +
->  arch/arm/mm/dma-mapping-nommu.c | 139 +++++---------------------------
->  3 files changed, 23 insertions(+), 121 deletions(-)
->
-> diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-> index 89d47eac18b2..3a492a9aeaad 100644
-> --- a/arch/arc/Kconfig
-> +++ b/arch/arc/Kconfig
-> @@ -9,6 +9,7 @@
->  config ARC
->  	def_bool y
->  	select ARC_TIMERS
-> +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->  	select ARCH_HAS_SYNC_DMA_FOR_CPU
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+These patches create a top-level function, called at IOMMU initialization,
+to create a debugfs directory for the IOMMU. Under this directory drivers
+may create and populate-specific directories for their device internals.
 
-I guess that this arc change is here by accident, no? And isn't 
-ARCH_HAS_SYNC_DMA_FOR_DEVICE already selected (by 3/20)?
+Patch 1: general IOMMU enablement
+Patch 2: basic AMD enablement to demonstrate linkage with patch 1
 
->  	select ARCH_HAS_SG_CHAIN
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index c43f5bb55ac8..76ddd0064f87 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
+Introduce a new Kconfig parameter IOMMU_DEBUGFS to globally allow/disallow
+debugfs code to be built.
+
+The Makefile structure is intended to allow the use of a single switch for
+turning on DebugFS.
+
+Changes since v5:
+ - Added parameters names in declarations/definitions
+ - Reformatted an inline definition
+
+Changes since v4:
+ - Guard vendor-specific debugfs files in the Makefile
+ - Call top-level routine from iommu_init()
+ - Add function for instantiating a driver-specific directory
+ - Change AMD driver code to use this new format
+
+Changes since v3:
+ - Remove superfluous calls to debugfs_initialized()
+ - Emit a warning exactly one time
+ - Change the Kconfig name to IOMMU_DEBUGFS
+ - Change the way debugfs modules are made
+
+Changes since v2:
+ - Move a declaration to outside an ifdef
+ - Remove a spurious blank line
+
+Changes since v1:
+ - Remove debug cruft
+ - Remove cruft produced by design change
+ - Change the lock to a mutex
+ - Coding style fixes
+ - Add a comment to document the framework
+
+---
+
+Gary R Hook (2):
+      iommu - Enable debugfs exposure of IOMMU driver internals
+      iommu/amd: Add basic debugfs infrastructure for AMD IOMMU
+
+
+ drivers/iommu/Kconfig             |   11 ++++++
+ drivers/iommu/Makefile            |    6 +++
+ drivers/iommu/amd_iommu_debugfs.c |   39 +++++++++++++++++++++
+ drivers/iommu/amd_iommu_init.c    |    6 ++-
+ drivers/iommu/amd_iommu_proto.h   |    6 +++
+ drivers/iommu/amd_iommu_types.h   |    3 ++
+ drivers/iommu/iommu-debugfs.c     |   70 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c             |    2 +
+ include/linux/iommu.h             |   10 +++++
+ 9 files changed, 151 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+ create mode 100644 drivers/iommu/iommu-debugfs.c
+
+--
+Signature
