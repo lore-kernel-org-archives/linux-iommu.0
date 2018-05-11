@@ -1,161 +1,162 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v5 08/23] iommu/vt-d: support flushing more translation cache
-	types
-Date: Fri, 11 May 2018 13:54:00 -0700
-Message-ID: <1526072055-86990-9-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v5 15/23] iommu: handle page response timeout
+Date: Fri, 11 May 2018 13:54:07 -0700
+Message-ID: <1526072055-86990-16-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When Shared Virtual Memory is exposed to a guest via vIOMMU, extended
-IOTLB invalidation may be passed down from outside IOMMU subsystems.
-This patch adds invalidation functions that can be used for additional
-translation cache types.
+When IO page faults are reported outside IOMMU subsystem, the page
+request handler may fail for various reasons. E.g. a guest received
+page requests but did not have a chance to run for a long time. The
+irresponsive behavior could hold off limited resources on the pending
+device.
+There can be hardware or credit based software solutions as suggested
+in the PCI ATS Ch-4. To provide a basic safty net this patch
+introduces a per device deferrable timer which monitors the longest
+pending page fault that requires a response. Proper action such as
+sending failure response code could be taken when timer expires but not
+included in this patch. We need to consider the life cycle of page
+groupd ID to prevent confusion with reused group ID by a device.
+For now, a warning message provides clue of such failure.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/dmar.c        | 44 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h | 21 +++++++++++++++++++--
- 2 files changed, 63 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h |  4 ++++
+ 2 files changed, 57 insertions(+)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 7852678..0b5b052 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1339,6 +1339,18 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	qi_submit_sync(&desc, iommu);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 02fed3e..1f2f49e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -827,6 +827,37 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
  }
+ EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
  
-+void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr, u32 pasid,
-+		unsigned int size_order, u64 granu, bool global)
++static void iommu_dev_fault_timer_fn(struct timer_list *t)
 +{
-+	struct qi_desc desc;
++	struct iommu_fault_param *fparam = from_timer(fparam, t, timer);
++	struct iommu_fault_event *evt;
 +
-+	desc.low = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
-+		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
-+	desc.high = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_GL(global) |
-+		QI_EIOTLB_IH(0) | QI_EIOTLB_AM(size_order);
-+	qi_submit_sync(&desc, iommu);
-+}
++	u64 now;
 +
- void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask)
- {
-@@ -1360,6 +1372,38 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	qi_submit_sync(&desc, iommu);
- }
- 
-+void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
-+		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64 granu)
-+{
-+	struct qi_desc desc;
++	now = get_jiffies_64();
 +
-+	desc.low = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
-+		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE;
-+	desc.high |= QI_DEV_EIOTLB_GLOB(granu);
-+
-+	/* If S bit is 0, we only flush a single page. If S bit is set,
-+	 * The least significant zero bit indicates the size. VT-d spec
-+	 * 6.5.2.6
++	/* The goal is to ensure driver or guest page fault handler(via vfio)
++	 * send page response on time. Otherwise, limited queue resources
++	 * may be occupied by some irresponsive guests or drivers.
++	 * When per device pending fault list is not empty, we periodically checks
++	 * if any anticipated page response time has expired.
++	 *
++	 * TODO:
++	 * We could do the following if response time expires:
++	 * 1. send page response code FAILURE to all pending PRQ
++	 * 2. inform device driver or vfio
++	 * 3. drain in-flight page requests and responses for this device
++	 * 4. clear pending fault list such that driver can unregister fault
++	 *    handler(otherwise blocked when pending faults are present).
 +	 */
-+	if (!size)
-+		desc.high = QI_DEV_EIOTLB_ADDR(addr) & ~QI_DEV_EIOTLB_SIZE;
-+	else {
-+		unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size);
-+
-+		desc.high = QI_DEV_EIOTLB_ADDR(addr & ~mask) | QI_DEV_EIOTLB_SIZE;
++	list_for_each_entry(evt, &fparam->faults, list) {
++		if (time_after64(now, evt->expire))
++			pr_err("Page response time expired!, pasid %d gid %d exp %llu now %llu\n",
++				evt->pasid, evt->page_req_group_id, evt->expire, now);
 +	}
-+	qi_submit_sync(&desc, iommu);
++	mod_timer(t, now + prq_timeout);
 +}
 +
-+void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
-+{
-+	struct qi_desc desc;
+ /**
+  * iommu_register_device_fault_handler() - Register a device fault handler
+  * @dev: the device
+@@ -879,6 +910,9 @@ int iommu_register_device_fault_handler(struct device *dev,
+ 	param->fault_param->data = data;
+ 	INIT_LIST_HEAD(&param->fault_param->faults);
+ 
++	if (prq_timeout)
++		timer_setup(&param->fault_param->timer, iommu_dev_fault_timer_fn,
++			TIMER_DEFERRABLE);
+ done_unlock:
+ 	mutex_unlock(&param->lock);
+ 
+@@ -935,6 +969,8 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+ {
+ 	int ret = 0;
+ 	struct iommu_fault_event *evt_pending;
++	struct timer_list *tmr;
++	u64 exp;
+ 	struct iommu_fault_param *fparam;
+ 
+ 	/* iommu_param is allocated when device is added to group */
+@@ -955,7 +991,17 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+ 			ret = -ENOMEM;
+ 			goto done_unlock;
+ 		}
++		/* Keep track of response expiration time */
++		exp = get_jiffies_64() + prq_timeout;
++		evt_pending->expire = exp;
+ 		mutex_lock(&fparam->lock);
++		if (list_empty(&fparam->faults)) {
++			/* First pending event, start timer */
++			tmr = &dev->iommu_param->fault_param->timer;
++			WARN_ON(timer_pending(tmr));
++			mod_timer(tmr, exp);
++		}
 +
-+	desc.high = 0;
-+	desc.low = QI_PC_TYPE | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_PASID(pasid);
+ 		list_add_tail(&evt_pending->list, &fparam->faults);
+ 		mutex_unlock(&fparam->lock);
+ 	}
+@@ -1572,6 +1618,13 @@ int iommu_page_response(struct device *dev,
+ 		}
+ 	}
+ 
++	/* stop response timer if no more pending request */
++	if (list_empty(&param->fault_param->faults) &&
++		timer_pending(&param->fault_param->timer)) {
++		pr_debug("no pending PRQ, stop timer\n");
++		del_timer(&param->fault_param->timer);
++	}
 +
-+	qi_submit_sync(&desc, iommu);
-+}
- /*
-  * Disable Queued Invalidation interface.
+ done_unlock:
+ 	mutex_unlock(&param->fault_param->lock);
+ 	return ret;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 722b90f..f3665b7 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -360,6 +360,7 @@ enum iommu_fault_reason {
+  * @iommu_private: used by the IOMMU driver for storing fault-specific
+  *                 data. Users should not modify this field before
+  *                 sending the fault response.
++ * @expire: time limit in jiffies will wait for page response
   */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 678a0f4..5ac0c28 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -262,6 +262,10 @@ enum {
- #define QI_PGRP_RESP_TYPE	0x9
- #define QI_PSTRM_RESP_TYPE	0xa
+ struct iommu_fault_event {
+ 	struct list_head list;
+@@ -373,6 +374,7 @@ struct iommu_fault_event {
+ 	u32 prot;
+ 	u64 device_private;
+ 	u64 iommu_private;
++	u64 expire;
+ };
  
-+#define QI_DID(did)		(((u64)did & 0xffff) << 16)
-+#define QI_DID_MASK		GENMASK(31, 16)
-+#define QI_TYPE_MASK		GENMASK(3, 0)
-+
- #define QI_IEC_SELECTIVE	(((u64)1) << 4)
- #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
- #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
-@@ -293,8 +297,9 @@ enum {
- #define QI_PC_DID(did)		(((u64)did) << 16)
- #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
- 
--#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
--#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
-+/* PASID cache invalidation granu */
-+#define QI_PC_ALL_PASIDS	0
-+#define QI_PC_PASID_SEL		1
- 
- #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
- #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
-@@ -304,6 +309,10 @@ enum {
- #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
- #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
- 
-+/* QI Dev-IOTLB inv granu */
-+#define QI_DEV_IOTLB_GRAN_ALL		1
-+#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
-+
- #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
- #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
- #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
-@@ -332,6 +341,7 @@ enum {
- #define QI_RESP_INVALID		0x1
- #define QI_RESP_FAILURE		0xf
- 
-+/* QI EIOTLB inv granu */
- #define QI_GRAN_ALL_ALL			0
- #define QI_GRAN_NONG_ALL		1
- #define QI_GRAN_NONG_PASID		2
-@@ -504,8 +514,15 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
- 			     u8 fm, u64 type);
- extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 			  unsigned int size_order, u64 type);
-+extern void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-+			u32 pasid, unsigned int size_order, u64 type, bool global);
- extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask);
-+
-+extern void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
-+			u32 pasid, u16 qdep, u64 addr, unsigned size, u64 granu);
-+extern void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
-+
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
- 
- extern int dmar_ir_support(void);
+ /**
+@@ -380,11 +382,13 @@ struct iommu_fault_event {
+  * @dev_fault_handler: Callback function to handle IOMMU faults at device level
+  * @data: handler private data
+  * @faults: holds the pending faults which needs response, e.g. page response.
++ * @timer: track page request pending time limit
+  * @lock: protect pending PRQ event list
+  */
+ struct iommu_fault_param {
+ 	iommu_dev_fault_handler_t handler;
+ 	struct list_head faults;
++	struct timer_list timer;
+ 	struct mutex lock;
+ 	void *data;
+ };
 -- 
 2.7.4
