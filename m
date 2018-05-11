@@ -1,15 +1,12 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v1 8/9] iommu: Introduce iotlb_sync_map callback
-Date: Fri, 11 May 2018 14:02:04 +0100
-Message-ID: <da823a61-5bda-042b-c61f-d0d98f9b6e6f@arm.com>
-References: <20180508181700.5169-1-digetx@gmail.com>
-	<20180508181700.5169-9-digetx@gmail.com>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v3 0/3] arm64: Revert L1_CACHE_SHIFT back to 6 (64-byte cache
+	line size)
+Date: Fri, 11 May 2018 14:55:44 +0100
+Message-ID: <20180511135547.34521-1-catalin.marinas@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180508181700.5169-9-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,86 +16,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Yang Li <pku.leo-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/05/18 19:16, Dmitry Osipenko wrote:
-> Introduce iotlb_sync_map() callback that is invoked in the end of
-> iommu_map(). This new callback allows IOMMU drivers to avoid syncing
-> on mapping of each contiguous chunk and sync only when whole mapping
-> is completed, optimizing performance of the mapping operation.
+Hi,
 
-This looks like a reasonable compromise - for users of 
-IO_PGTABLE_QUIRK_TLBI_ON_MAP we can leave the implicit add_flush() in 
-place for each individual map call, but at least move the sync() out to 
-this callback, which should still be beneficial overall.
+The previous version of this patch [1] didn't make it into 4.17 because
+of the (compile-time) conflicts with the generic dma-direct.h changes.
+I'm reposting it for 4.18 with some minor changes:
 
-Modulo one possible nit below,
+- phys_to_dma()/dma_to_phys() now gained underscores to match the
+  generic dma-direct.h implementation
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+- the patch is split in three to make the changes clearer to the
+  reviewers
 
-> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->   drivers/iommu/iommu.c | 8 ++++++--
->   include/linux/iommu.h | 1 +
->   2 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d2aa23202bb9..39b2ee66aa96 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1508,13 +1508,14 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
->   int iommu_map(struct iommu_domain *domain, unsigned long iova,
->   	      phys_addr_t paddr, size_t size, int prot)
->   {
-> +	const struct iommu_ops *ops = domain->ops;
->   	unsigned long orig_iova = iova;
->   	unsigned int min_pagesz;
->   	size_t orig_size = size;
->   	phys_addr_t orig_paddr = paddr;
->   	int ret = 0;
->   
-> -	if (unlikely(domain->ops->map == NULL ||
-> +	if (unlikely(ops->map == NULL ||
->   		     domain->pgsize_bitmap == 0UL))
->   		return -ENODEV;
->   
-> @@ -1543,7 +1544,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
->   		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
->   			 iova, &paddr, pgsize);
->   
-> -		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
-> +		ret = ops->map(domain, iova, paddr, pgsize, prot);
->   		if (ret)
->   			break;
->   
-> @@ -1552,6 +1553,9 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
->   		size -= pgsize;
->   	}
->   
-> +	if (ops->iotlb_sync_map)
-> +		ops->iotlb_sync_map(domain);
+If at some point in the future the generic swiotlb code gain
+non-choerent DMA awareness, the last patch in the series could be
+refactored. In the meantime, the simplest, non-intrusive approach is to
+select ARCH_HAS_PHYS_TO_DMA on arm64 and force bounce buffering through
+an arch-specific dma_capable() implementation.
 
-Is it worth trying to skip this in the error case when we're just going 
-to undo it immediately?
+Thanks,
 
-Robin.
+Catalin
 
-> +
->   	/* unroll mapping in case something went wrong */
->   	if (ret)
->   		iommu_unmap(domain, orig_iova, orig_size - size);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 19938ee6eb31..5224aa376377 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -206,6 +206,7 @@ struct iommu_ops {
->   	void (*flush_iotlb_all)(struct iommu_domain *domain);
->   	void (*iotlb_range_add)(struct iommu_domain *domain,
->   				unsigned long iova, size_t size);
-> +	void (*iotlb_sync_map)(struct iommu_domain *domain);
->   	void (*iotlb_sync)(struct iommu_domain *domain);
->   	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
->   	int (*add_device)(struct device *dev);
-> 
+[1] http://lkml.kernel.org/r/20180228184720.25467-1-catalin.marinas-5wv7dgnIgG8@public.gmane.org
+
+Catalin Marinas (3):
+  Revert "arm64: Increase the max granular size"
+  arm64: Increase ARCH_DMA_MINALIGN to 128
+  arm64: Force swiotlb bounce buffering for non-coherent DMA with large
+    CWG
+
+ arch/arm64/Kconfig                  |  1 +
+ arch/arm64/include/asm/cache.h      |  6 +++---
+ arch/arm64/include/asm/dma-direct.h | 43 +++++++++++++++++++++++++++++++++++++
+ arch/arm64/kernel/cpufeature.c      |  9 ++------
+ arch/arm64/mm/dma-mapping.c         | 17 +++++++++++++++
+ arch/arm64/mm/init.c                |  3 ++-
+ 6 files changed, 68 insertions(+), 11 deletions(-)
+ create mode 100644 arch/arm64/include/asm/dma-direct.h
