@@ -1,16 +1,16 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 7/9] iommu/tegra: gart: Provide single domain and group
-	for all devices
-Date: Fri, 11 May 2018 14:12:56 +0300
-Message-ID: <2f966990-7961-63de-87ec-f6a67c95d0bf@gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v1 6/9] iommu/tegra: gart: Ignore devices without IOMMU
+	phandle in DT
+Date: Fri, 11 May 2018 12:34:08 +0100
+Message-ID: <a3293da9-b750-6c5c-6f84-53b1aafc5e53@arm.com>
 References: <20180508181700.5169-1-digetx@gmail.com>
-	<20180508181700.5169-8-digetx@gmail.com>
+	<20180508181700.5169-7-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180508181700.5169-8-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180508181700.5169-7-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,149 +20,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08.05.2018 21:16, Dmitry Osipenko wrote:
-> GART aperture is shared by all devices, hence there is a single IOMMU
-> domain and group shared by these devices. Allocation of a group per
-> device only wastes resources and allowance of having more than one domain
-> is simply wrong because IOMMU mappings made by the users of "different"
-> domains will stomp on each other.
+Hi Dmitry,
+
+On 08/05/18 19:16, Dmitry Osipenko wrote:
+> GART can't handle all devices, ignore devices that aren't related to GART.
+> Device tree must explicitly assign GART IOMMU to the devices.
 > 
 > Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/iommu/tegra-gart.c | 107 +++++++++----------------------------
->  1 file changed, 24 insertions(+), 83 deletions(-)
+>   drivers/iommu/tegra-gart.c | 33 ++++++++++++++++++++++++++++++++-
+>   1 file changed, 32 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-> index 5b2d27620350..ebc105c201bd 100644
+> index 39305224c48d..5b2d27620350 100644
 > --- a/drivers/iommu/tegra-gart.c
 > +++ b/drivers/iommu/tegra-gart.c
-> @@ -19,7 +19,6 @@
->  
->  #include <linux/io.h>
->  #include <linux/iommu.h>
-> -#include <linux/list.h>
->  #include <linux/module.h>
->  #include <linux/of_device.h>
->  #include <linux/slab.h>
-> @@ -44,22 +43,17 @@
->  #define GART_PAGE_MASK						\
->  	(~(GART_PAGE_SIZE - 1) & ~GART_ENTRY_PHYS_ADDR_VALID)
->  
-> -struct gart_client {
-> -	struct device		*dev;
-> -	struct list_head	list;
-> -};
-> -
->  struct gart_device {
->  	void __iomem		*regs;
->  	u32			*savedata;
->  	u32			page_count;	/* total remappable size */
->  	dma_addr_t		iovmm_base;	/* offset to vmm_area */
->  	spinlock_t		pte_lock;	/* for pagetable */
-> -	struct list_head	client;
-> -	spinlock_t		client_lock;	/* for client list */
->  	struct device		*dev;
->  
->  	struct iommu_device	iommu;		/* IOMMU Core handle */
-> +	struct iommu_group	*group;		/* Common IOMMU group */
-> +	struct gart_domain	*domain;	/* Unique IOMMU domain */
->  
->  	struct tegra_mc_gart_handle mc_gart_handle;
->  };
-> @@ -169,81 +163,31 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
->  static int gart_iommu_attach_dev(struct iommu_domain *domain,
->  				 struct device *dev)
->  {
-> -	struct gart_domain *gart_domain = to_gart_domain(domain);
-> -	struct gart_device *gart = gart_domain->gart;
-> -	struct gart_client *client, *c;
-> -	int err = 0;
-> -
-> -	client = devm_kzalloc(gart->dev, sizeof(*c), GFP_KERNEL);
-> -	if (!client)
-> -		return -ENOMEM;
-> -	client->dev = dev;
-> -
-> -	spin_lock(&gart->client_lock);
-> -	list_for_each_entry(c, &gart->client, list) {
-> -		if (c->dev == dev) {
-> -			dev_err(gart->dev,
-> -				"%s is already attached\n", dev_name(dev));
-> -			err = -EINVAL;
-> -			goto fail;
-> -		}
-> -	}
-> -	list_add(&client->list, &gart->client);
-> -	spin_unlock(&gart->client_lock);
-> -	dev_dbg(gart->dev, "Attached %s\n", dev_name(dev));
->  	return 0;
-> -
-> -fail:
-> -	devm_kfree(gart->dev, client);
-> -	spin_unlock(&gart->client_lock);
-> -	return err;
->  }
->  
->  static void gart_iommu_detach_dev(struct iommu_domain *domain,
->  				  struct device *dev)
->  {
-> -	struct gart_domain *gart_domain = to_gart_domain(domain);
-> -	struct gart_device *gart = gart_domain->gart;
-> -	struct gart_client *c;
-> -
-> -	spin_lock(&gart->client_lock);
-> -
-> -	list_for_each_entry(c, &gart->client, list) {
-> -		if (c->dev == dev) {
-> -			list_del(&c->list);
-> -			devm_kfree(gart->dev, c);
-> -			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
-> -			goto out;
-> -		}
-> -	}
-> -	dev_err(gart->dev, "Couldn't find\n");
-> -out:
-> -	spin_unlock(&gart->client_lock);
->  }
->  
->  static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
->  {
-> -	struct gart_domain *gart_domain;
-> -	struct gart_device *gart;
-> -
-> -	if (type != IOMMU_DOMAIN_UNMANAGED)
-> -		return NULL;
-> +	struct gart_device *gart = gart_handle;
->  
-> -	gart = gart_handle;
-> -	if (!gart)
-> +	if (type != IOMMU_DOMAIN_UNMANAGED || gart->domain)
->  		return NULL;
->  
-> -	gart_domain = kzalloc(sizeof(*gart_domain), GFP_KERNEL);
-> -	if (!gart_domain)
-> -		return NULL;
-> -
-> -	gart_domain->gart = gart;
-> -	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
-> -	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
-> +	gart->domain = kzalloc(sizeof(*gart->domain), GFP_KERNEL);
-> +	if (gart->domain) {
-> +		gart->domain->domain.geometry.aperture_start = gart->iovmm_base;
-> +		gart->domain->domain.geometry.aperture_end = gart->iovmm_base +
->  					gart->page_count * GART_PAGE_SIZE - 1;
-> -	gart_domain->domain.geometry.force_aperture = true;
-> +		gart->domain->domain.geometry.force_aperture = true;
-> +		gart->domain->gart = gart;
-> +	}
->  
-> -	return &gart_domain->domain;
-> +	return &gart->domain->domain;
->  }
+> @@ -366,6 +366,26 @@ static void gart_iommu_remove_device(struct device *dev)
+>   	iommu_device_unlink(&gart_handle->iommu, dev);
+>   }
+>   
+> +static int gart_iommu_check_device(struct gart_device *gart,
+> +				   struct device *dev);
+> +
+> +struct iommu_group *gart_iommu_device_group(struct device *dev)
+> +{
+> +	int err;
+> +
+> +	err = gart_iommu_check_device(gart_handle, dev);
+> +	if (err)
+> +		return ERR_PTR(err);
+> +
+> +	return generic_device_group(dev);
+> +}
+> +
+> +static int gart_iommu_of_xlate(struct device *dev,
+> +			       struct of_phandle_args *args)
+> +{
+> +	return 0;
+> +}
+> +
+>   static const struct iommu_ops gart_iommu_ops = {
+>   	.capable	= gart_iommu_capable,
+>   	.domain_alloc	= gart_iommu_domain_alloc,
+> @@ -374,14 +394,24 @@ static const struct iommu_ops gart_iommu_ops = {
+>   	.detach_dev	= gart_iommu_detach_dev,
+>   	.add_device	= gart_iommu_add_device,
+>   	.remove_device	= gart_iommu_remove_device,
+> -	.device_group	= generic_device_group,
+> +	.device_group	= gart_iommu_device_group,
+>   	.map		= gart_iommu_map,
+>   	.map_sg		= default_iommu_map_sg,
+>   	.unmap		= gart_iommu_unmap,
+>   	.iova_to_phys	= gart_iommu_iova_to_phys,
+>   	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
+> +	.of_xlate	= gart_iommu_of_xlate,
+>   };
+>   
+> +static int gart_iommu_check_device(struct gart_device *gart,
+> +				   struct device *dev)
+> +{
+> +	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &gart_iommu_ops)
+> +		return -ENODEV;
 
-I've missed a NULL-check and locking here, this will be fixed in v2. For now
-I'll wait for the review comments (please review).
+Conceptually, it would be better to verify this in .add_device *before* 
+calling iommu_group_get_for_dev(). That would also align with what other 
+drivers do, and let you save introducing the .device_group callback 
+until the real implementation in the later patch.
+
+Robin.
+
+> +
+> +	return 0;
+> +}
+> +
+>   static int tegra_gart_suspend(struct device *dev)
+>   {
+>   	struct gart_device *gart = dev_get_drvdata(dev);
+> @@ -462,6 +492,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
+> +	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
+>   
+>   	ret = iommu_device_register(&gart->iommu);
+>   	if (ret) {
+> 
