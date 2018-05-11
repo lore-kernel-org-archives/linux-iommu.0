@@ -1,15 +1,16 @@
-From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Subject: Re: [PATCH 04/20] arm-nommu: use generic dma_noncoherent_ops
-Date: Fri, 11 May 2018 10:11:15 +0100
-Message-ID: <20180511091114.GA16141@n2100.armlinux.org.uk>
-References: <20180511075945.16548-1-hch@lst.de>
-	<20180511075945.16548-5-hch@lst.de>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v1 7/9] iommu/tegra: gart: Provide single domain and group
+	for all devices
+Date: Fri, 11 May 2018 14:12:56 +0300
+Message-ID: <2f966990-7961-63de-87ec-f6a67c95d0bf@gmail.com>
+References: <20180508181700.5169-1-digetx@gmail.com>
+	<20180508181700.5169-8-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180511075945.16548-5-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180508181700.5169-8-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,136 +20,149 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 11, 2018 at 09:59:29AM +0200, Christoph Hellwig wrote:
-> Switch to the generic noncoherent direct mapping implementation for
-> the nommu dma map implementation.
+On 08.05.2018 21:16, Dmitry Osipenko wrote:
+> GART aperture is shared by all devices, hence there is a single IOMMU
+> domain and group shared by these devices. Allocation of a group per
+> device only wastes resources and allowance of having more than one domain
+> is simply wrong because IOMMU mappings made by the users of "different"
+> domains will stomp on each other.
 > 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
->  arch/arc/Kconfig                |   1 +
->  arch/arm/Kconfig                |   4 +
->  arch/arm/mm/dma-mapping-nommu.c | 139 +++++---------------------------
->  3 files changed, 23 insertions(+), 121 deletions(-)
+>  drivers/iommu/tegra-gart.c | 107 +++++++++----------------------------
+>  1 file changed, 24 insertions(+), 83 deletions(-)
 > 
-> diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-> index 89d47eac18b2..3a492a9aeaad 100644
-> --- a/arch/arc/Kconfig
-> +++ b/arch/arc/Kconfig
-> @@ -9,6 +9,7 @@
->  config ARC
->  	def_bool y
->  	select ARC_TIMERS
-> +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->  	select ARCH_HAS_SYNC_DMA_FOR_CPU
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->  	select ARCH_HAS_SG_CHAIN
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index c43f5bb55ac8..76ddd0064f87 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -12,6 +12,8 @@ config ARM
->  	select ARCH_HAS_PHYS_TO_DMA
->  	select ARCH_HAS_STRICT_KERNEL_RWX if MMU && !XIP_KERNEL
->  	select ARCH_HAS_STRICT_MODULE_RWX if MMU
-> +	select ARCH_HAS_SYNC_DMA_FOR_CPU if !MMU
-> +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if !MMU
->  	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
->  	select ARCH_HAVE_CUSTOM_GPIO_H
->  	select ARCH_HAS_GCOV_PROFILE_ALL
-> @@ -27,6 +29,8 @@ config ARM
->  	select CPU_PM if (SUSPEND || CPU_IDLE)
->  	select DCACHE_WORD_ACCESS if HAVE_EFFICIENT_UNALIGNED_ACCESS
->  	select DMA_DIRECT_OPS if !MMU
-> +	select DMA_NONCOHERENT_OPS if !MMU
-> +	select DMA_NONCOHERENT_MMAP if !MMU
->  	select EDAC_SUPPORT
->  	select EDAC_ATOMIC_SCRUB
->  	select GENERIC_ALLOCATOR
-> diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
-> index f448a0663b10..a74ed6632982 100644
-> --- a/arch/arm/mm/dma-mapping-nommu.c
-> +++ b/arch/arm/mm/dma-mapping-nommu.c
-> @@ -12,6 +12,7 @@
->  #include <linux/export.h>
->  #include <linux/mm.h>
->  #include <linux/dma-direct.h>
-> +#include <linux/dma-noncoherent.h>
->  #include <linux/scatterlist.h>
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index 5b2d27620350..ebc105c201bd 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -19,7 +19,6 @@
 >  
->  #include <asm/cachetype.h>
-> @@ -26,18 +27,16 @@
->   *   - MMU/MPU is off
->   *   - cpu is v7m w/o cache support
->   *   - device is coherent
-> - *  otherwise arm_nommu_dma_ops is used.
-> + *  otherwise dma_noncoherent_ops is used.
->   *
-> - *  arm_nommu_dma_ops rely on consistent DMA memory (please, refer to
-> + *  dma_noncoherent_ops rely on consistent DMA memory (please, refer to
->   *  [1] on how to declare such memory).
->   *
->   *  [1] Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
->   */
+>  #include <linux/io.h>
+>  #include <linux/iommu.h>
+> -#include <linux/list.h>
+>  #include <linux/module.h>
+>  #include <linux/of_device.h>
+>  #include <linux/slab.h>
+> @@ -44,22 +43,17 @@
+>  #define GART_PAGE_MASK						\
+>  	(~(GART_PAGE_SIZE - 1) & ~GART_ENTRY_PHYS_ADDR_VALID)
 >  
-> -static void *arm_nommu_dma_alloc(struct device *dev, size_t size,
-> -				 dma_addr_t *dma_handle, gfp_t gfp,
-> -				 unsigned long attrs)
+> -struct gart_client {
+> -	struct device		*dev;
+> -	struct list_head	list;
+> -};
 > -
-> +void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> +		gfp_t gfp, unsigned long attrs)
+>  struct gart_device {
+>  	void __iomem		*regs;
+>  	u32			*savedata;
+>  	u32			page_count;	/* total remappable size */
+>  	dma_addr_t		iovmm_base;	/* offset to vmm_area */
+>  	spinlock_t		pte_lock;	/* for pagetable */
+> -	struct list_head	client;
+> -	spinlock_t		client_lock;	/* for client list */
+>  	struct device		*dev;
+>  
+>  	struct iommu_device	iommu;		/* IOMMU Core handle */
+> +	struct iommu_group	*group;		/* Common IOMMU group */
+> +	struct gart_domain	*domain;	/* Unique IOMMU domain */
+>  
+>  	struct tegra_mc_gart_handle mc_gart_handle;
+>  };
+> @@ -169,81 +163,31 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
+>  static int gart_iommu_attach_dev(struct iommu_domain *domain,
+>  				 struct device *dev)
 >  {
->  	void *ret;
->  
-> @@ -65,9 +64,8 @@ static void *arm_nommu_dma_alloc(struct device *dev, size_t size,
->  	return ret;
->  }
->  
-> -static void arm_nommu_dma_free(struct device *dev, size_t size,
-> -			       void *cpu_addr, dma_addr_t dma_addr,
-> -			       unsigned long attrs)
-> +void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
-> +		dma_addr_t dma_addr, unsigned long attrs)
->  {
->  	if (attrs & DMA_ATTR_NON_CONSISTENT) {
->  		dma_direct_free(dev, size, cpu_addr, dma_addr, attrs);
-> @@ -81,9 +79,9 @@ static void arm_nommu_dma_free(struct device *dev, size_t size,
->  	return;
->  }
->  
-> -static int arm_nommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
-> -			      void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> -			      unsigned long attrs)
-> +int arch_dma_mmap(struct device *dev, struct vm_area_struct *vma,
-> +		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> +		unsigned long attrs)
->  {
->  	int ret;
->  
-> @@ -93,9 +91,8 @@ static int arm_nommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->  	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
->  }
->  
+> -	struct gart_domain *gart_domain = to_gart_domain(domain);
+> -	struct gart_device *gart = gart_domain->gart;
+> -	struct gart_client *client, *c;
+> -	int err = 0;
 > -
-> -static void __dma_page_cpu_to_dev(phys_addr_t paddr, size_t size,
-> -				  enum dma_data_direction dir)
-> +void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
-> +		size_t size, enum dma_data_direction dir)
+> -	client = devm_kzalloc(gart->dev, sizeof(*c), GFP_KERNEL);
+> -	if (!client)
+> -		return -ENOMEM;
+> -	client->dev = dev;
+> -
+> -	spin_lock(&gart->client_lock);
+> -	list_for_each_entry(c, &gart->client, list) {
+> -		if (c->dev == dev) {
+> -			dev_err(gart->dev,
+> -				"%s is already attached\n", dev_name(dev));
+> -			err = -EINVAL;
+> -			goto fail;
+> -		}
+> -	}
+> -	list_add(&client->list, &gart->client);
+> -	spin_unlock(&gart->client_lock);
+> -	dev_dbg(gart->dev, "Attached %s\n", dev_name(dev));
+>  	return 0;
+> -
+> -fail:
+> -	devm_kfree(gart->dev, client);
+> -	spin_unlock(&gart->client_lock);
+> -	return err;
+>  }
+>  
+>  static void gart_iommu_detach_dev(struct iommu_domain *domain,
+>  				  struct device *dev)
+>  {
+> -	struct gart_domain *gart_domain = to_gart_domain(domain);
+> -	struct gart_device *gart = gart_domain->gart;
+> -	struct gart_client *c;
+> -
+> -	spin_lock(&gart->client_lock);
+> -
+> -	list_for_each_entry(c, &gart->client, list) {
+> -		if (c->dev == dev) {
+> -			list_del(&c->list);
+> -			devm_kfree(gart->dev, c);
+> -			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
+> -			goto out;
+> -		}
+> -	}
+> -	dev_err(gart->dev, "Couldn't find\n");
+> -out:
+> -	spin_unlock(&gart->client_lock);
+>  }
+>  
+>  static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
+>  {
+> -	struct gart_domain *gart_domain;
+> -	struct gart_device *gart;
+> -
+> -	if (type != IOMMU_DOMAIN_UNMANAGED)
+> -		return NULL;
+> +	struct gart_device *gart = gart_handle;
+>  
+> -	gart = gart_handle;
+> -	if (!gart)
+> +	if (type != IOMMU_DOMAIN_UNMANAGED || gart->domain)
+>  		return NULL;
+>  
+> -	gart_domain = kzalloc(sizeof(*gart_domain), GFP_KERNEL);
+> -	if (!gart_domain)
+> -		return NULL;
+> -
+> -	gart_domain->gart = gart;
+> -	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
+> -	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
+> +	gart->domain = kzalloc(sizeof(*gart->domain), GFP_KERNEL);
+> +	if (gart->domain) {
+> +		gart->domain->domain.geometry.aperture_start = gart->iovmm_base;
+> +		gart->domain->domain.geometry.aperture_end = gart->iovmm_base +
+>  					gart->page_count * GART_PAGE_SIZE - 1;
+> -	gart_domain->domain.geometry.force_aperture = true;
+> +		gart->domain->domain.geometry.force_aperture = true;
+> +		gart->domain->gart = gart;
+> +	}
+>  
+> -	return &gart_domain->domain;
+> +	return &gart->domain->domain;
+>  }
 
-Please no.  There is a lot of history of these (__dma_page_cpu_to_dev etc)
-functions being abused by out of tree drivers, because they think they
-know better.  This is stopped by making them static and ensuring that
-drivers have no access to these functions.
-
-Please do not re-expose these to the global kernel.
-
-While it may make things easier for a cross-architecture point of view,
-it makes it a lot easier for people to abuse these private APIs.
-
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-According to speedtest.net: 8.21Mbps down 510kbps up
+I've missed a NULL-check and locking here, this will be fixed in v2. For now
+I'll wait for the review comments (please review).
