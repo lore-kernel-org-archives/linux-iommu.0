@@ -1,8 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 29/40] iommu/arm-smmu-v3: Add support for Hardware
-	Translation Table Update
-Date: Fri, 11 May 2018 20:06:30 +0100
-Message-ID: <20180511190641.23008-30-jean-philippe.brucker@arm.com>
+Subject: [PATCH v2 30/40] iommu/arm-smmu-v3: Register I/O Page Fault queue
+Date: Fri, 11 May 2018 20:06:31 +0100
+Message-ID: <20180511190641.23008-31-jean-philippe.brucker@arm.com>
 References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,139 +21,268 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pc
 Cc: xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-If the SMMU supports it and the kernel was built with HTTU support, enable
-hardware update of access and dirty flags. This is essential for shared
-page tables, to reduce the number of access faults on the fault queue.
+When using PRI or Stall, the PRI or event handler enqueues faults into the
+core fault queue. Register it based on the SMMU features.
 
-We can enable HTTU even if CPUs don't support it, because the kernel
-always checks for HW dirty bit and updates the PTE flags atomically.
+When the core stops using a PASID, it notifies the SMMU to flush all
+instances of this PASID from the PRI queue. Add a way to flush the PRI and
+event queue. PRI and event thread now take a spinlock while processing the
+queue. The flush handler takes this lock to inspect the queue state.
+We avoid livelock, where the SMMU adds fault to the queue faster than we
+can consume them, by incrementing a 'batch' number on every cycle so the
+flush handler only has to wait a complete cycle (two batch increments).
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3-context.c | 16 ++++++++++++++--
- drivers/iommu/arm-smmu-v3.c         | 12 ++++++++++++
- drivers/iommu/iommu-pasid-table.h   |  4 ++++
- 3 files changed, 30 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3-context.c b/drivers/iommu/arm-smmu-v3-context.c
-index 0e12f6804e16..bdc9bfd1f35d 100644
---- a/drivers/iommu/arm-smmu-v3-context.c
-+++ b/drivers/iommu/arm-smmu-v3-context.c
-@@ -52,6 +52,11 @@
- #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
- #define ARM64_TCR_TBI0			(1ULL << 37)
- 
-+#define CTXDESC_CD_0_TCR_HA		(1UL << 43)
-+#define ARM64_TCR_HA			(1ULL << 39)
-+#define CTXDESC_CD_0_TCR_HD		(1UL << 42)
-+#define ARM64_TCR_HD			(1ULL << 40)
-+
- #define CTXDESC_CD_0_AA64		(1UL << 41)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
-@@ -182,7 +187,7 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_cd_tables *tbl, u32 ssid)
- 	return l1_desc->ptr + idx * CTXDESC_CD_DWORDS;
- }
- 
--static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
-+static u64 arm_smmu_cpu_tcr_to_cd(struct arm_smmu_context_cfg *cfg, u64 tcr)
- {
- 	u64 val = 0;
- 
-@@ -197,6 +202,12 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- 	val |= ARM_SMMU_TCR2CD(tcr, IPS);
- 	val |= ARM_SMMU_TCR2CD(tcr, TBI0);
- 
-+	if (cfg->hw_access)
-+		val |= ARM_SMMU_TCR2CD(tcr, HA);
-+
-+	if (cfg->hw_dirty)
-+		val |= ARM_SMMU_TCR2CD(tcr, HD);
-+
- 	return val;
- }
- 
-@@ -250,7 +261,7 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_cd_tables *tbl, int ssid,
- 		iommu_pasid_flush(&tbl->pasid, ssid, true);
- 
- 
--		val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
-+		val = arm_smmu_cpu_tcr_to_cd(cfg, cd->tcr) |
- #ifdef __BIG_ENDIAN
- 		      CTXDESC_CD_0_ENDI |
- #endif
-@@ -455,6 +466,7 @@ arm_smmu_alloc_shared_cd(struct iommu_pasid_table_ops *ops, struct mm_struct *mm
- 	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
- 	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
- 	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
-+	tcr |= TCR_HA | TCR_HD;
- 
- 	cd->ttbr	= virt_to_phys(mm->pgd);
- 	cd->tcr		= tcr;
+---
+v1->v2: Use an iopf_queue for each SMMU
+---
+ drivers/iommu/Kconfig       |   1 +
+ drivers/iommu/arm-smmu-v3.c | 111 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 110 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 70900670a9fa..41db49795c90 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -344,6 +344,7 @@ config ARM_SMMU_V3
+ 	depends on ARM64
+ 	select IOMMU_API
+ 	select IOMMU_SVA
++	select IOMMU_PAGE_FAULT
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_SMMU_V3_CONTEXT
+ 	select GENERIC_MSI_IRQ_DOMAIN
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c2c96025ac3b..7c839d305d97 100644
+index 7c839d305d97..5d57f41f79b4 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -66,6 +66,8 @@
- #define IDR0_ASID16			(1 << 12)
- #define IDR0_ATS			(1 << 10)
- #define IDR0_HYP			(1 << 9)
-+#define IDR0_HD				(1 << 7)
-+#define IDR0_HA				(1 << 6)
- #define IDR0_BTM			(1 << 5)
- #define IDR0_COHACC			(1 << 4)
- #define IDR0_TTF			GENMASK(3, 2)
-@@ -528,6 +530,8 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_E2H		(1 << 15)
- #define ARM_SMMU_FEAT_BTM		(1 << 16)
- #define ARM_SMMU_FEAT_SVA		(1 << 17)
-+#define ARM_SMMU_FEAT_HA		(1 << 18)
-+#define ARM_SMMU_FEAT_HD		(1 << 19)
- 	u32				features;
+@@ -448,6 +448,10 @@ struct arm_smmu_queue {
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1567,6 +1571,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 		.arm_smmu = {
- 			.stall		= !!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE),
- 			.asid_bits	= smmu->asid_bits,
-+			.hw_access	= !!(smmu->features & ARM_SMMU_FEAT_HA),
-+			.hw_dirty	= !!(smmu->features & ARM_SMMU_FEAT_HD),
- 		},
- 	};
+ 	u32 __iomem			*prod_reg;
+ 	u32 __iomem			*cons_reg;
++
++	/* Event and PRI */
++	u64				batch;
++	wait_queue_head_t		wq;
+ };
  
-@@ -2818,6 +2824,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			smmu->features |= ARM_SMMU_FEAT_E2H;
- 	}
+ struct arm_smmu_cmdq {
+@@ -565,6 +569,8 @@ struct arm_smmu_device {
  
-+	if (reg & (IDR0_HA | IDR0_HD)) {
-+		smmu->features |= ARM_SMMU_FEAT_HA;
-+		if (reg & IDR0_HD)
-+			smmu->features |= ARM_SMMU_FEAT_HD;
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
++
++	struct iopf_queue		*iopf_queue;
+ };
+ 
+ /* SMMU private data for each master */
+@@ -577,6 +583,7 @@ struct arm_smmu_master_data {
+ 
+ 	struct device			*dev;
+ 	size_t				ssid_bits;
++	bool				can_fault;
+ };
+ 
+ /* SMMU private data for an IOMMU domain */
+@@ -1183,14 +1190,23 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ {
+ 	int i;
++	int num_handled = 0;
+ 	struct arm_smmu_device *smmu = dev;
+ 	struct arm_smmu_queue *q = &smmu->evtq.q;
++	size_t queue_size = 1 << q->max_n_shift;
+ 	u64 evt[EVTQ_ENT_DWORDS];
+ 
++	spin_lock(&q->wq.lock);
+ 	do {
+ 		while (!queue_remove_raw(q, evt)) {
+ 			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
+ 
++			if (++num_handled == queue_size) {
++				q->batch++;
++				wake_up_all_locked(&q->wq);
++				num_handled = 0;
++			}
++
+ 			dev_info(smmu->dev, "event 0x%02x received:\n", id);
+ 			for (i = 0; i < ARRAY_SIZE(evt); ++i)
+ 				dev_info(smmu->dev, "\t0x%016llx\n",
+@@ -1208,6 +1224,11 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ 
+ 	/* Sync our overflow flag, as we believe we're up to speed */
+ 	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
++
++	q->batch++;
++	wake_up_all_locked(&q->wq);
++	spin_unlock(&q->wq.lock);
++
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -1251,13 +1272,24 @@ static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
+ 
+ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ {
++	int num_handled = 0;
+ 	struct arm_smmu_device *smmu = dev;
+ 	struct arm_smmu_queue *q = &smmu->priq.q;
++	size_t queue_size = 1 << q->max_n_shift;
+ 	u64 evt[PRIQ_ENT_DWORDS];
+ 
++	spin_lock(&q->wq.lock);
+ 	do {
+-		while (!queue_remove_raw(q, evt))
++		while (!queue_remove_raw(q, evt)) {
++			spin_unlock(&q->wq.lock);
+ 			arm_smmu_handle_ppr(smmu, evt);
++			spin_lock(&q->wq.lock);
++			if (++num_handled == queue_size) {
++				q->batch++;
++				wake_up_all_locked(&q->wq);
++				num_handled = 0;
++			}
++		}
+ 
+ 		if (queue_sync_prod(q) == -EOVERFLOW)
+ 			dev_err(smmu->dev, "PRIQ overflow detected -- requests lost\n");
+@@ -1265,9 +1297,60 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
+ 
+ 	/* Sync our overflow flag, as we believe we're up to speed */
+ 	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
++
++	q->batch++;
++	wake_up_all_locked(&q->wq);
++	spin_unlock(&q->wq.lock);
++
+ 	return IRQ_HANDLED;
+ }
+ 
++/*
++ * arm_smmu_flush_queue - wait until all events/PPRs currently in the queue have
++ * been consumed.
++ *
++ * Wait until the queue thread finished a batch, or until the queue is empty.
++ * Note that we don't handle overflows on q->batch. If it occurs, just wait for
++ * the queue to be empty.
++ */
++static int arm_smmu_flush_queue(struct arm_smmu_device *smmu,
++				struct arm_smmu_queue *q, const char *name)
++{
++	int ret;
++	u64 batch;
++
++	spin_lock(&q->wq.lock);
++	if (queue_sync_prod(q) == -EOVERFLOW)
++		dev_err(smmu->dev, "%s overflow detected -- requests lost\n", name);
++
++	batch = q->batch;
++	ret = wait_event_interruptible_locked(q->wq, queue_empty(q) ||
++					      q->batch >= batch + 2);
++	spin_unlock(&q->wq.lock);
++
++	return ret;
++}
++
++static int arm_smmu_flush_queues(void *cookie, struct device *dev)
++{
++	struct arm_smmu_master_data *master;
++	struct arm_smmu_device *smmu = cookie;
++
++	if (dev) {
++		master = dev->iommu_fwspec->iommu_priv;
++		/* TODO: add support for PRI and Stall */
++		return 0;
 +	}
 +
- 	/*
- 	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
- 	 * will create TLB entries for NH-EL1 world and will miss the
-diff --git a/drivers/iommu/iommu-pasid-table.h b/drivers/iommu/iommu-pasid-table.h
-index b84709e297bc..a7243579a4cb 100644
---- a/drivers/iommu/iommu-pasid-table.h
-+++ b/drivers/iommu/iommu-pasid-table.h
-@@ -78,12 +78,16 @@ struct iommu_pasid_sync_ops {
-  * SMMU properties:
-  * @stall: devices attached to the domain are allowed to stall.
-  * @asid_bits: number of ASID bits supported by the SMMU
-+ * @hw_dirty: hardware may update dirty flag
-+ * @hw_access: hardware may update access flag
-  *
-  * @s1fmt: PASID table format, chosen by the allocator.
-  */
- struct arm_smmu_context_cfg {
- 	u8				stall:1;
- 	u8				asid_bits;
-+	u8				hw_dirty:1;
-+	u8				hw_access:1;
++	/* No target device, flush all queues. */
++	if (smmu->features & ARM_SMMU_FEAT_STALLS)
++		arm_smmu_flush_queue(smmu, &smmu->evtq.q, "evtq");
++	if (smmu->features & ARM_SMMU_FEAT_PRI)
++		arm_smmu_flush_queue(smmu, &smmu->priq.q, "priq");
++
++	return 0;
++}
++
+ static int arm_smmu_device_disable(struct arm_smmu_device *smmu);
  
- #define ARM_SMMU_S1FMT_LINEAR		0x0
- #define ARM_SMMU_S1FMT_4K_L2		0x1
+ static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
+@@ -1864,15 +1947,24 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+ 
+ static int arm_smmu_sva_init(struct device *dev, struct iommu_sva_param *param)
+ {
++	int ret;
+ 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
+ 
+ 	/* SSID support is mandatory for the moment */
+ 	if (!master->ssid_bits)
+ 		return -EINVAL;
+ 
+-	if (param->features)
++	if (param->features & ~IOMMU_SVA_FEAT_IOPF)
+ 		return -EINVAL;
+ 
++	if (param->features & IOMMU_SVA_FEAT_IOPF) {
++		if (!master->can_fault)
++			return -EINVAL;
++		ret = iopf_queue_add_device(master->smmu->iopf_queue, dev);
++		if (ret)
++			return ret;
++	}
++
+ 	if (!param->max_pasid)
+ 		param->max_pasid = 0xfffffU;
+ 
+@@ -1886,6 +1978,7 @@ static int arm_smmu_sva_init(struct device *dev, struct iommu_sva_param *param)
+ static void arm_smmu_sva_shutdown(struct device *dev,
+ 				  struct iommu_sva_param *param)
+ {
++	iopf_queue_remove_device(dev);
+ }
+ 
+ static struct io_mm *arm_smmu_mm_alloc(struct iommu_domain *domain,
+@@ -2063,6 +2156,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 
+ 	master = fwspec->iommu_priv;
+ 	smmu = master->smmu;
++	iopf_queue_remove_device(dev);
+ 	if (master && master->ste.assigned)
+ 		arm_smmu_detach_dev(dev);
+ 	iommu_group_remove_device(dev);
+@@ -2222,6 +2316,10 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 	q->q_base |= FIELD_PREP(Q_BASE_LOG2SIZE, q->max_n_shift);
+ 
+ 	q->prod = q->cons = 0;
++
++	init_waitqueue_head(&q->wq);
++	q->batch = 0;
++
+ 	return 0;
+ }
+ 
+@@ -3128,6 +3226,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (smmu->features & (ARM_SMMU_FEAT_STALLS | ARM_SMMU_FEAT_PRI)) {
++		smmu->iopf_queue = iopf_queue_alloc(dev_name(dev),
++						    arm_smmu_flush_queues,
++						    smmu);
++		if (!smmu->iopf_queue)
++			return -ENOMEM;
++	}
++
+ 	/* And we're up. Go go go! */
+ 	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+ 				     "smmu3.%pa", &ioaddr);
+@@ -3170,6 +3276,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
++	iopf_queue_free(smmu->iopf_queue);
+ 	arm_smmu_device_disable(smmu);
+ 
+ 	return 0;
 -- 
 2.17.0
