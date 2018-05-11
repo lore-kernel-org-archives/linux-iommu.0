@@ -1,54 +1,179 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v5 23/23] iommu: use sva invalidate and device fault trace event
-Date: Fri, 11 May 2018 13:54:15 -0700
-Message-ID: <1526072055-86990-24-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v5 10/23] iommu: introduce device fault data
+Date: Fri, 11 May 2018 13:54:02 -0700
+Message-ID: <1526072055-86990-11-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-For performance and debugging purposes, these trace events help
-analyzing device faults and passdown invalidations that interact
-with IOMMU subsystem.
-E.g.
-IOMMU:0000:00:0a.0 type=2 reason=0 addr=0x00000000007ff000 pasid=1
-group=1 last=0 prot=1
+Device faults detected by IOMMU can be reported outside IOMMU
+subsystem for further processing. This patch intends to provide
+a generic device fault data such that device drivers can be
+communicated with IOMMU faults without model specific knowledge.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+The proposed format is the result of discussion at:
+https://lkml.org/lkml/2017/11/10/291
+Part of the code is based on Jean-Philippe Brucker's patchset
+(https://patchwork.kernel.org/patch/9989315/).
+
+The assumption is that model specific IOMMU driver can filter and
+handle most of the internal faults if the cause is within IOMMU driver
+control. Therefore, the fault reasons can be reported are grouped
+and generalized based common specifications such as PCI ATS.
+
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/iommu.h | 101 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 99 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1f2f49e..0108970 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1006,6 +1006,7 @@ int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
- 		mutex_unlock(&fparam->lock);
- 	}
- 	ret = fparam->handler(evt, fparam->data);
-+	trace_dev_fault(dev, evt);
- done_unlock:
- 	mutex_unlock(&dev->iommu_param->lock);
- 	return ret;
-@@ -1574,6 +1575,7 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
- 		return -ENODEV;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index e8cadb6..aeadb4f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -49,13 +49,17 @@ struct bus_type;
+ struct device;
+ struct iommu_domain;
+ struct notifier_block;
++struct iommu_fault_event;
  
- 	ret = domain->ops->sva_invalidate(domain, dev, inv_info);
-+	trace_sva_invalidate(dev, inv_info);
+ /* iommu fault flags */
+-#define IOMMU_FAULT_READ	0x0
+-#define IOMMU_FAULT_WRITE	0x1
++#define IOMMU_FAULT_READ		(1 << 0)
++#define IOMMU_FAULT_WRITE		(1 << 1)
++#define IOMMU_FAULT_EXEC		(1 << 2)
++#define IOMMU_FAULT_PRIV		(1 << 3)
  
- 	return ret;
- }
-@@ -1611,6 +1613,7 @@ int iommu_page_response(struct device *dev,
- 		if (evt->pasid == msg->pasid &&
- 		    msg->page_req_group_id == evt->page_req_group_id) {
- 			msg->private_data = evt->iommu_private;
-+			trace_dev_page_response(dev, msg);
- 			ret = domain->ops->page_response(dev, msg);
- 			list_del(&evt->list);
- 			kfree(evt);
+ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
++typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
+ 
+ struct iommu_domain_geometry {
+ 	dma_addr_t aperture_start; /* First address that can be mapped    */
+@@ -264,6 +268,98 @@ struct iommu_device {
+ 	struct device *dev;
+ };
+ 
++/*  Generic fault types, can be expanded IRQ remapping fault */
++enum iommu_fault_type {
++	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
++	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
++};
++
++enum iommu_fault_reason {
++	IOMMU_FAULT_REASON_UNKNOWN = 0,
++
++	/* IOMMU internal error, no specific reason to report out */
++	IOMMU_FAULT_REASON_INTERNAL,
++
++	/* Could not access the PASID table */
++	IOMMU_FAULT_REASON_PASID_FETCH,
++
++	/*
++	 * PASID is out of range (e.g. exceeds the maximum PASID
++	 * supported by the IOMMU) or disabled.
++	 */
++	IOMMU_FAULT_REASON_PASID_INVALID,
++
++	/* Could not access the page directory (Invalid PASID entry) */
++	IOMMU_FAULT_REASON_PGD_FETCH,
++
++	/* Could not access the page table entry (Bad address) */
++	IOMMU_FAULT_REASON_PTE_FETCH,
++
++	/* Protection flag check failed */
++	IOMMU_FAULT_REASON_PERMISSION,
++};
++
++/**
++ * struct iommu_fault_event - Generic per device fault data
++ *
++ * - PCI and non-PCI devices
++ * - Recoverable faults (e.g. page request), information based on PCI ATS
++ * and PASID spec.
++ * - Un-recoverable faults of device interest
++ * - DMA remapping and IRQ remapping faults
++
++ * @type contains fault type.
++ * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
++ *         faults are not reported
++ * @addr: tells the offending page address
++ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
++ * @page_req_group_id: page request group index
++ * @last_req: last request in a page request group
++ * @pasid_valid: indicates if the PRQ has a valid PASID
++ * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
++ * @device_private: if present, uniquely identify device-specific
++ *                  private data for an individual page request.
++ * @iommu_private: used by the IOMMU driver for storing fault-specific
++ *                 data. Users should not modify this field before
++ *                 sending the fault response.
++ */
++struct iommu_fault_event {
++	enum iommu_fault_type type;
++	enum iommu_fault_reason reason;
++	u64 addr;
++	u32 pasid;
++	u32 page_req_group_id;
++	u32 last_req : 1;
++	u32 pasid_valid : 1;
++	u32 prot;
++	u64 device_private;
++	u64 iommu_private;
++};
++
++/**
++ * struct iommu_fault_param - per-device IOMMU fault data
++ * @dev_fault_handler: Callback function to handle IOMMU faults at device level
++ * @data: handler private data
++ *
++ */
++struct iommu_fault_param {
++	iommu_dev_fault_handler_t handler;
++	void *data;
++};
++
++/**
++ * struct iommu_param - collection of per-device IOMMU data
++ *
++ * @fault_param: IOMMU detected device fault reporting data
++ *
++ * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
++ *	struct iommu_group	*iommu_group;
++ *	struct iommu_fwspec	*iommu_fwspec;
++ */
++struct iommu_param {
++	struct iommu_fault_param *fault_param;
++};
++
+ int  iommu_device_register(struct iommu_device *iommu);
+ void iommu_device_unregister(struct iommu_device *iommu);
+ int  iommu_device_sysfs_add(struct iommu_device *iommu,
+@@ -437,6 +533,7 @@ struct iommu_ops {};
+ struct iommu_group {};
+ struct iommu_fwspec {};
+ struct iommu_device {};
++struct iommu_fault_param {};
+ 
+ static inline bool iommu_present(struct bus_type *bus)
+ {
 -- 
 2.7.4
