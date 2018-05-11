@@ -1,179 +1,114 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v5 10/23] iommu: introduce device fault data
-Date: Fri, 11 May 2018 13:54:02 -0700
-Message-ID: <1526072055-86990-11-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v5 19/23] iommu/intel-svm: replace dev ops with fault report API
+Date: Fri, 11 May 2018 13:54:11 -0700
+Message-ID: <1526072055-86990-20-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Device faults detected by IOMMU can be reported outside IOMMU
-subsystem for further processing. This patch intends to provide
-a generic device fault data such that device drivers can be
-communicated with IOMMU faults without model specific knowledge.
+With the introduction of generic IOMMU device fault reporting API, we
+can replace the private fault callback functions with standard function
+and event data.
 
-The proposed format is the result of discussion at:
-https://lkml.org/lkml/2017/11/10/291
-Part of the code is based on Jean-Philippe Brucker's patchset
-(https://patchwork.kernel.org/patch/9989315/).
-
-The assumption is that model specific IOMMU driver can filter and
-handle most of the internal faults if the cause is within IOMMU driver
-control. Therefore, the fault reasons can be reported are grouped
-and generalized based common specifications such as PCI ATS.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- include/linux/iommu.h | 101 +++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 99 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-svm.c |  7 +------
+ include/linux/intel-svm.h | 20 +++-----------------
+ 2 files changed, 4 insertions(+), 23 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e8cadb6..aeadb4f 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -49,13 +49,17 @@ struct bus_type;
- struct device;
- struct iommu_domain;
- struct notifier_block;
-+struct iommu_fault_event;
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index a8186f8..bdda1b6 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -299,7 +299,7 @@ static const struct mmu_notifier_ops intel_mmuops = {
  
- /* iommu fault flags */
--#define IOMMU_FAULT_READ	0x0
--#define IOMMU_FAULT_WRITE	0x1
-+#define IOMMU_FAULT_READ		(1 << 0)
-+#define IOMMU_FAULT_WRITE		(1 << 1)
-+#define IOMMU_FAULT_EXEC		(1 << 2)
-+#define IOMMU_FAULT_PRIV		(1 << 3)
+ static DEFINE_MUTEX(pasid_mutex);
  
- typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
- 			struct device *, unsigned long, int, void *);
-+typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
- 
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
-@@ -264,6 +268,98 @@ struct iommu_device {
- 	struct device *dev;
- };
- 
-+/*  Generic fault types, can be expanded IRQ remapping fault */
-+enum iommu_fault_type {
-+	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
-+	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
-+};
-+
-+enum iommu_fault_reason {
-+	IOMMU_FAULT_REASON_UNKNOWN = 0,
-+
-+	/* IOMMU internal error, no specific reason to report out */
-+	IOMMU_FAULT_REASON_INTERNAL,
-+
-+	/* Could not access the PASID table */
-+	IOMMU_FAULT_REASON_PASID_FETCH,
-+
-+	/*
-+	 * PASID is out of range (e.g. exceeds the maximum PASID
-+	 * supported by the IOMMU) or disabled.
-+	 */
-+	IOMMU_FAULT_REASON_PASID_INVALID,
-+
-+	/* Could not access the page directory (Invalid PASID entry) */
-+	IOMMU_FAULT_REASON_PGD_FETCH,
-+
-+	/* Could not access the page table entry (Bad address) */
-+	IOMMU_FAULT_REASON_PTE_FETCH,
-+
-+	/* Protection flag check failed */
-+	IOMMU_FAULT_REASON_PERMISSION,
-+};
-+
-+/**
-+ * struct iommu_fault_event - Generic per device fault data
-+ *
-+ * - PCI and non-PCI devices
-+ * - Recoverable faults (e.g. page request), information based on PCI ATS
-+ * and PASID spec.
-+ * - Un-recoverable faults of device interest
-+ * - DMA remapping and IRQ remapping faults
-+
-+ * @type contains fault type.
-+ * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
-+ *         faults are not reported
-+ * @addr: tells the offending page address
-+ * @pasid: contains process address space ID, used in shared virtual memory(SVM)
-+ * @page_req_group_id: page request group index
-+ * @last_req: last request in a page request group
-+ * @pasid_valid: indicates if the PRQ has a valid PASID
-+ * @prot: page access protection flag, e.g. IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
-+ * @device_private: if present, uniquely identify device-specific
-+ *                  private data for an individual page request.
-+ * @iommu_private: used by the IOMMU driver for storing fault-specific
-+ *                 data. Users should not modify this field before
-+ *                 sending the fault response.
-+ */
-+struct iommu_fault_event {
-+	enum iommu_fault_type type;
-+	enum iommu_fault_reason reason;
-+	u64 addr;
-+	u32 pasid;
-+	u32 page_req_group_id;
-+	u32 last_req : 1;
-+	u32 pasid_valid : 1;
-+	u32 prot;
-+	u64 device_private;
-+	u64 iommu_private;
-+};
-+
-+/**
-+ * struct iommu_fault_param - per-device IOMMU fault data
-+ * @dev_fault_handler: Callback function to handle IOMMU faults at device level
-+ * @data: handler private data
-+ *
-+ */
-+struct iommu_fault_param {
-+	iommu_dev_fault_handler_t handler;
-+	void *data;
-+};
-+
-+/**
-+ * struct iommu_param - collection of per-device IOMMU data
-+ *
-+ * @fault_param: IOMMU detected device fault reporting data
-+ *
-+ * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
-+ *	struct iommu_group	*iommu_group;
-+ *	struct iommu_fwspec	*iommu_fwspec;
-+ */
-+struct iommu_param {
-+	struct iommu_fault_param *fault_param;
-+};
-+
- int  iommu_device_register(struct iommu_device *iommu);
- void iommu_device_unregister(struct iommu_device *iommu);
- int  iommu_device_sysfs_add(struct iommu_device *iommu,
-@@ -437,6 +533,7 @@ struct iommu_ops {};
- struct iommu_group {};
- struct iommu_fwspec {};
- struct iommu_device {};
-+struct iommu_fault_param {};
- 
- static inline bool iommu_present(struct bus_type *bus)
+-int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
++int intel_svm_bind_mm(struct device *dev, int *pasid, int flags)
  {
+ 	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+ 	struct intel_svm_dev *sdev;
+@@ -346,10 +346,6 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 
+ 			list_for_each_entry(sdev, &svm->devs, list) {
+ 				if (dev == sdev->dev) {
+-					if (sdev->ops != ops) {
+-						ret = -EBUSY;
+-						goto out;
+-					}
+ 					sdev->users++;
+ 					goto success;
+ 				}
+@@ -375,7 +371,6 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 	}
+ 	/* Finish the setup now we know we're keeping it */
+ 	sdev->users = 1;
+-	sdev->ops = ops;
+ 	init_rcu_head(&sdev->rcu);
+ 
+ 	if (!svm) {
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 99bc5b3..a39a502 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -18,18 +18,6 @@
+ 
+ struct device;
+ 
+-struct svm_dev_ops {
+-	void (*fault_cb)(struct device *dev, int pasid, u64 address,
+-			 u32 private, int rwxp, int response);
+-};
+-
+-/* Values for rxwp in fault_cb callback */
+-#define SVM_REQ_READ	(1<<3)
+-#define SVM_REQ_WRITE	(1<<2)
+-#define SVM_REQ_EXEC	(1<<1)
+-#define SVM_REQ_PRIV	(1<<0)
+-
+-
+ /*
+  * The SVM_FLAG_PRIVATE_PASID flag requests a PASID which is *not* the "main"
+  * PASID for the current process. Even if a PASID already exists, a new one
+@@ -60,7 +48,6 @@ struct svm_dev_ops {
+  * @dev:	Device to be granted acccess
+  * @pasid:	Address for allocated PASID
+  * @flags:	Flags. Later for requesting supervisor mode, etc.
+- * @ops:	Callbacks to device driver
+  *
+  * This function attempts to enable PASID support for the given device.
+  * If the @pasid argument is non-%NULL, a PASID is allocated for access
+@@ -82,8 +69,7 @@ struct svm_dev_ops {
+  * Multiple calls from the same process may result in the same PASID
+  * being re-used. A reference count is kept.
+  */
+-extern int intel_svm_bind_mm(struct device *dev, int *pasid, int flags,
+-			     struct svm_dev_ops *ops);
++extern int intel_svm_bind_mm(struct device *dev, int *pasid, int flags);
+ 
+ /**
+  * intel_svm_unbind_mm() - Unbind a specified PASID
+@@ -120,7 +106,7 @@ extern int intel_svm_is_pasid_valid(struct device *dev, int pasid);
+ #else /* CONFIG_INTEL_IOMMU_SVM */
+ 
+ static inline int intel_svm_bind_mm(struct device *dev, int *pasid,
+-				    int flags, struct svm_dev_ops *ops)
++				int flags)
+ {
+ 	return -ENOSYS;
+ }
+@@ -136,6 +122,6 @@ static int intel_svm_is_pasid_valid(struct device *dev, int pasid)
+ }
+ #endif /* CONFIG_INTEL_IOMMU_SVM */
+ 
+-#define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL, 0, NULL))
++#define intel_svm_available(dev) (!intel_svm_bind_mm((dev), NULL, 0))
+ 
+ #endif /* __INTEL_SVM_H__ */
 -- 
 2.7.4
