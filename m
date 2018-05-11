@@ -1,8 +1,8 @@
 From: Gary R Hook <gary.hook@amd.com>
-Subject: [PATCH v6 1/2] iommu - Enable debugfs exposure of IOMMU driver
- internals
-Date: Fri, 11 May 2018 09:34:11 -0500
-Message-ID: <152604925157.106201.5299224478351644530.stgit@sosxen2.amd.com>
+Subject: [PATCH v6 2/2] iommu/amd: Add basic debugfs infrastructure for AMD
+ IOMMU
+Date: Fri, 11 May 2018 09:34:20 -0500
+Message-ID: <152604926050.106201.12749369479920979102.stgit@sosxen2.amd.com>
 References: <152604905217.106201.15533883255216330970.stgit@sosxen2.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -14,170 +14,136 @@ To: iommu@lists.linux-foundation.org
 Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Provide base enablement for using debugfs to expose internal data of an
-IOMMU driver. When called, create the /sys/kernel/debug/iommu directory.
+Implement a skeleton framework for debugfs support in the
+AMD IOMMU.
 
-Emit a strong warning at boot time to indicate that this feature is
-enabled.
-
-This function is called from iommu_init, and creates the initial DebugFS
-directory. Drivers may then call iommu_debugfs_new_driver_dir() to
-instantiate a device-specific directory to expose internal data.
-It will return a pointer to the new dentry structure created in
-/sys/kernel/debug/iommu, or NULL in the event of a failure.
-
-Since the IOMMU driver can not be removed from the running system, there
-is no need for an "off" function.
 
 Signed-off-by: Gary R Hook <gary.hook@amd.com>
 ---
- drivers/iommu/Kconfig         |   11 ++++++
- drivers/iommu/Makefile        |    1 +
- drivers/iommu/iommu-debugfs.c |   70 +++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/iommu.c         |    2 +
- include/linux/iommu.h         |   10 ++++++
- 5 files changed, 94 insertions(+)
- create mode 100644 drivers/iommu/iommu-debugfs.c
+ drivers/iommu/Makefile            |    5 +++++
+ drivers/iommu/amd_iommu_debugfs.c |   39 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_init.c    |    6 ++++--
+ drivers/iommu/amd_iommu_proto.h   |    6 ++++++
+ drivers/iommu/amd_iommu_types.h   |    3 +++
+ 5 files changed, 57 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iommu/amd_iommu_debugfs.c
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f3a21343e636..ff511fa8ca7d 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -60,6 +60,17 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
- 
- endmenu
- 
-+config IOMMU_DEBUGFS
-+	bool "Export IOMMU internals in DebugFS"
-+	depends on DEBUG_FS
-+	default n
-+	help
-+	  Allows exposure of IOMMU device internals. This option enables
-+	  the use of debugfs by IOMMU drivers as required. Devices can,
-+	  at initialization time, cause the IOMMU code to create a top-level
-+	  debug/iommu directory, and then populate a subdirectory with
-+	  entries as required.
-+
- config IOMMU_IOVA
- 	tristate
- 
 diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 1fb695854809..74cfbc392862 100644
+index 74cfbc392862..dd980f7dd8b6 100644
 --- a/drivers/iommu/Makefile
 +++ b/drivers/iommu/Makefile
-@@ -2,6 +2,7 @@
- obj-$(CONFIG_IOMMU_API) += iommu.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-+obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
- obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
-diff --git a/drivers/iommu/iommu-debugfs.c b/drivers/iommu/iommu-debugfs.c
+@@ -30,3 +30,8 @@ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+ obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
++
++# This ensures that only the required files are compiled
++ifeq ($(CONFIG_IOMMU_DEBUGFS), y)
++obj-$(CONFIG_AMD_IOMMU) += amd_iommu_debugfs.o
++endif
+diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
 new file mode 100644
-index 000000000000..9df3b44aef55
+index 000000000000..6dff98552969
 --- /dev/null
-+++ b/drivers/iommu/iommu-debugfs.c
-@@ -0,0 +1,70 @@
++++ b/drivers/iommu/amd_iommu_debugfs.c
+@@ -0,0 +1,39 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * IOMMU driver
++ * AMD IOMMU driver
 + *
 + * Copyright (C) 2018 Advanced Micro Devices, Inc.
 + *
 + * Author: Gary R Hook <gary.hook@amd.com>
 + */
 +
-+#include <linux/pci.h>
-+#include <linux/iommu.h>
 +#include <linux/debugfs.h>
++#include <linux/iommu.h>
++#include <linux/pci.h>
++#include "amd_iommu_proto.h"
++#include "amd_iommu_types.h"
 +
-+static struct dentry *iommu_debugfs_dir;
++static struct dentry *amd_iommu_debugfs;
++static DEFINE_MUTEX(amd_iommu_debugfs_lock);
 +
-+/**
-+ * iommu_debugfs_setup - create the top-level iommu directory in debugfs
-+ *
-+ * Provide base enablement for using debugfs to expose internal data of an
-+ * IOMMU driver. When called, this function creates the
-+ * /sys/kernel/debug/iommu directory.
-+ *
-+ * Emit a strong warning at boot time to indicate that this feature is
-+ * enabled.
-+ *
-+ * This function is called from iommu_init; drivers may then call
-+ * iommu_debugfs_new_driver_dir() to instantiate a vendor-specific
-+ * directory to be used to expose internal data.
-+ */
-+void iommu_debugfs_setup(void)
++#define	MAX_NAME_LEN	20
++
++void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
 +{
-+	if (!iommu_debugfs_dir) {
-+		iommu_debugfs_dir = debugfs_create_dir("iommu", NULL);
-+		if (iommu_debugfs_dir) {
-+			pr_warn("\n");
-+			pr_warn("*************************************************************\n");
-+			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
-+			pr_warn("**                                                         **\n");
-+			pr_warn("**  IOMMU DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL  **\n");
-+			pr_warn("**                                                         **\n");
-+			pr_warn("** This means that this kernel is built to expose internal **\n");
-+			pr_warn("** IOMMU data structures, which may compromise security on **\n");
-+			pr_warn("** your system.                                            **\n");
-+			pr_warn("**                                                         **\n");
-+			pr_warn("** If you see this message and you are not debugging the   **\n");
-+			pr_warn("** kernel, report this immediately to your vendor!         **\n");
-+			pr_warn("**                                                         **\n");
-+			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
-+			pr_warn("*************************************************************\n");
++	char name[MAX_NAME_LEN + 1];
++
++	mutex_lock(&amd_iommu_debugfs_lock);
++	if (!amd_iommu_debugfs)
++		amd_iommu_debugfs = iommu_debugfs_new_driver_dir("amd");
++	mutex_unlock(&amd_iommu_debugfs_lock);
++
++	if (amd_iommu_debugfs) {
++		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
++		iommu->debugfs = debugfs_create_dir(name,
++						    amd_iommu_debugfs);
++		if (!iommu->debugfs) {
++			debugfs_remove_recursive(amd_iommu_debugfs);
++			amd_iommu_debugfs = NULL;
 +		}
 +	}
 +}
-+
-+/**
-+ * iommu_debugfs_new_driver_dir - create a vendor directory under debugfs/iommu
-+ * @vendor: name of the vendor-specific subdirectory to create
-+ *
-+ * This function is called by an IOMMU driver to create the top-level debugfs
-+ * directory for that driver. The return value is the dentry for the requested
-+ * vendor directory, or NULL in case of failure.
-+ */
-+struct dentry *iommu_debugfs_new_driver_dir(char *vendor)
-+{
-+	struct dentry *d_new;
-+
-+	d_new = debugfs_create_dir(vendor, iommu_debugfs_dir);
-+
-+	return d_new;
-+}
-+EXPORT_SYMBOL_GPL(iommu_debugfs_new_driver_dir);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d2aa23202bb9..350819f1c5e1 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1747,6 +1747,8 @@ static int __init iommu_init(void)
- 					       NULL, kernel_kobj);
- 	BUG_ON(!iommu_group_kset);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 904c575d1677..031e6dbb8345 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2721,6 +2721,7 @@ int __init amd_iommu_enable_faulting(void)
+  */
+ static int __init amd_iommu_init(void)
+ {
++	struct amd_iommu *iommu;
+ 	int ret;
  
-+	iommu_debugfs_setup();
+ 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
+@@ -2730,14 +2731,15 @@ static int __init amd_iommu_init(void)
+ 			disable_iommus();
+ 			free_iommu_resources();
+ 		} else {
+-			struct amd_iommu *iommu;
+-
+ 			uninit_device_table_dma();
+ 			for_each_iommu(iommu)
+ 				iommu_flush_all_caches(iommu);
+ 		}
+ 	}
+ 
++	for_each_iommu(iommu)
++		amd_iommu_debugfs_setup(iommu);
 +
- 	return 0;
+ 	return ret;
  }
- core_initcall(iommu_init);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee6eb31..25018ac0fdab 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -698,4 +698,14 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
  
- #endif /* CONFIG_IOMMU_API */
+diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+index 640c286a0ab9..39053f11dda3 100644
+--- a/drivers/iommu/amd_iommu_proto.h
++++ b/drivers/iommu/amd_iommu_proto.h
+@@ -33,6 +33,12 @@ extern void amd_iommu_uninit_devices(void);
+ extern void amd_iommu_init_notifier(void);
+ extern int amd_iommu_init_api(void);
  
 +#ifdef CONFIG_IOMMU_DEBUGFS
-+void iommu_debugfs_setup(void);
-+struct dentry *iommu_debugfs_new_driver_dir(char *vendor);
++void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
 +#else
-+static inline void iommu_debugfs_setup(void) {}
-+static inline struct dentry *iommu_debugfs_new_driver_dir(char *vendor) { \
-+	return NULL; \
-+}
++static inline void amd_iommu_debugfs_setup(struct amd_iommu *iommu) {}
 +#endif
 +
- #endif /* __LINUX_IOMMU_H */
+ /* Needed for interrupt remapping */
+ extern int amd_iommu_prepare(void);
+ extern int amd_iommu_enable(void);
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 1c9b080276c9..2ca0959ae9e6 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -593,6 +593,9 @@ struct amd_iommu {
+ 
+ 	u32 flags;
+ 	volatile u64 __aligned(8) cmd_sem;
++
++	/* DebugFS Info */
++	struct dentry *debugfs;
+ };
+ 
+ static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
