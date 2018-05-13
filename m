@@ -1,8 +1,8 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Subject: Re: [PATCH v5 03/23] iommu/vt-d: add a flag for pasid table bound
 	status
-Date: Sun, 13 May 2018 15:33:23 +0800
-Message-ID: <5AF7EA43.5060805@linux.intel.com>
+Date: Sun, 13 May 2018 16:01:50 +0800
+Message-ID: <5AF7F0EE.902@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
 	<1526072055-86990-4-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
@@ -23,15 +23,10 @@ To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cun
 Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi again,
 
 On 05/12/2018 04:53 AM, Jacob Pan wrote:
 > Adding a flag in device domain into to track whether a guest or
-typo:                                       ^^info
-
-Best regards,
-Lu Baolu
-
 > user PASID table is bound to a device.
 >
 > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
@@ -48,6 +43,13 @@ Lu Baolu
 >  	u8 ats_supported:1;
 >  	u8 ats_enabled:1;
 > +	u8 pasid_table_bound:1;
+
+Can you please add some comments here? So that, people can
+understand the purpose for this bit exactly.
+
+Best regards,
+Lu Baolu
+
 >  	u8 ats_qdep;
 >  	u64 fault_mask;	/* selected IOMMU faults to be reported */
 >  	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
