@@ -1,14 +1,16 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 14/23] iommu: introduce page response function
-Date: Mon, 14 May 2018 14:39:51 +0800
-Message-ID: <5AF92F37.3050404@linux.intel.com>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-15-git-send-email-jacob.jun.pan@linux.intel.com>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v4 16/22] iommu/vt-d: report non-recoverable faults to
+	device
+Date: Mon, 14 May 2018 06:55:17 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439BEFA65@SHSMSX104.ccr.corp.intel.com>
+References: <1521774734-48433-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1521774734-48433-17-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526072055-86990-15-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1521774734-48433-17-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,177 +20,317 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David
+	Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki, Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Raj,
+	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Jacob,
 
-On 05/12/2018 04:54 AM, Jacob Pan wrote:
-> IO page faults can be handled outside IOMMU subsystem. For an example,
-> when nested translation is turned on and guest owns the
-> first level page tables, device page request can be forwared
-> to the guest for handling faults. As the page response returns
-> by the guest, IOMMU driver on the host need to process the
-> response which informs the device and completes the page request
-> transaction.
->
-> This patch introduces generic API function for page response
-> passing from the guest or other in-kernel users. The definitions of
-> the generic data is based on PCI ATS specification not limited to
-> any vendor.
->
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+pci_get_bus_and_slot() is deprecated, may update accordingly.
+
+Thanks,
+Yi Liu
+> From: Jacob Pan [mailto:jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+> Sent: Friday, March 23, 2018 11:12 AM
+> Subject: [PATCH v4 16/22] iommu/vt-d: report non-recoverable faults to device
+> 
+> Currently, dmar fault IRQ handler does nothing more than rate limited printk, no
+> critical hardware handling need to be done in IRQ context.
+> For some use case such as vIOMMU, it might be useful to report non-recoverable
+> faults outside host IOMMU subsystem. DMAR fault can come from both DMA and
+> interrupt remapping which has to be set up early before threaded IRQ is available.
+> This patch adds an option and a workqueue such that when faults are requested,
+> DMAR fault IRQ handler can use the IOMMU fault reporting API to report.
+> 
 > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Link: https://lkml.org/lkml/2017/12/7/1725
+> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/iommu/iommu.c | 45 +++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h | 43 +++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 88 insertions(+)
->
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b3f9daf..02fed3e 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1533,6 +1533,51 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
+>  drivers/iommu/dmar.c        | 157
+> ++++++++++++++++++++++++++++++++++++++++++--
+>  drivers/iommu/intel-iommu.c |   6 +-
+>  include/linux/dmar.h        |   2 +-
+>  include/linux/intel-iommu.h |   1 +
+>  4 files changed, 157 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c index 2ed4979..0f1abfc
+> 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -1110,6 +1110,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+>  	return err;
 >  }
->  EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
->  
-> +int iommu_page_response(struct device *dev,
-> +			struct page_response_msg *msg)
-> +{
-> +	struct iommu_param *param = dev->iommu_param;
-> +	int ret = -EINVAL;
-> +	struct iommu_fault_event *evt;
-> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> +
-> +	if (!domain || !domain->ops->page_response)
-> +		return -ENODEV;
-> +
-> +	/*
-> +	 * Device iommu_param should have been allocated when device is
-> +	 * added to its iommu_group.
-> +	 */
-> +	if (!param || !param->fault_param)
-> +		return -EINVAL;
-> +
-> +	/* Only send response if there is a fault report pending */
-> +	mutex_lock(&param->fault_param->lock);
-> +	if (list_empty(&param->fault_param->faults)) {
-> +		pr_warn("no pending PRQ, drop response\n");
-> +		goto done_unlock;
-> +	}
-> +	/*
-> +	 * Check if we have a matching page request pending to respond,
-> +	 * otherwise return -EINVAL
-> +	 */
-> +	list_for_each_entry(evt, &param->fault_param->faults, list) {
-> +		if (evt->pasid == msg->pasid &&
-> +		    msg->page_req_group_id == evt->page_req_group_id) {
-> +			msg->private_data = evt->iommu_private;
-> +			ret = domain->ops->page_response(dev, msg);
-> +			list_del(&evt->list);
-> +			kfree(evt);
-> +			break;
-> +		}
-> +	}
-
-Are above two checks duplicated? We won't find a matching
-request if the list is empty. And we need to  printk a message
-if we can't find the matching request.
-
-Best regards,
-Lu Baolu
-
-> +
-> +done_unlock:
-> +	mutex_unlock(&param->fault_param->lock);
-> +	return ret;
+> 
+> +static inline void dmar_free_fault_wq(struct intel_iommu *iommu) {
+> +	if (iommu->fault_wq)
+> +		destroy_workqueue(iommu->fault_wq);
 > +}
-> +EXPORT_SYMBOL_GPL(iommu_page_response);
 > +
->  static void __iommu_detach_device(struct iommu_domain *domain,
->  				  struct device *dev)
->  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index b3312ee..722b90f 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -163,6 +163,41 @@ struct iommu_resv_region {
->  #ifdef CONFIG_IOMMU_API
->  
->  /**
-> + * enum page_response_code - Return status of fault handlers, telling the IOMMU
-> + * driver how to proceed with the fault.
-> + *
-> + * @IOMMU_PAGE_RESP_SUCCESS: Fault has been handled and the page tables
-> + *	populated, retry the access. This is "Success" in PCI PRI.
-> + * @IOMMU_PAGE_RESP_FAILURE: General error. Drop all subsequent faults from
-> + *	this device if possible. This is "Response Failure" in PCI PRI.
-> + * @IOMMU_PAGE_RESP_INVALID: Could not handle this fault, don't retry the
-> + *	access. This is "Invalid Request" in PCI PRI.
-> + */
-> +enum page_response_code {
-> +	IOMMU_PAGE_RESP_SUCCESS = 0,
-> +	IOMMU_PAGE_RESP_INVALID,
-> +	IOMMU_PAGE_RESP_FAILURE,
+>  static void free_iommu(struct intel_iommu *iommu)  {
+>  	if (intel_iommu_enabled) {
+> @@ -1126,6 +1132,7 @@ static void free_iommu(struct intel_iommu *iommu)
+>  		free_irq(iommu->irq, iommu);
+>  		dmar_free_hwirq(iommu->irq);
+>  		iommu->irq = 0;
+> +		dmar_free_fault_wq(iommu);
+>  	}
+> 
+>  	if (iommu->qi) {
+> @@ -1554,6 +1561,31 @@ static const char *irq_remap_fault_reasons[] =
+>  	"Blocked an interrupt request due to source-id verification failure",  };
+> 
+> +/* fault data and status */
+> +enum intel_iommu_fault_reason {
+> +	INTEL_IOMMU_FAULT_REASON_SW,
+> +	INTEL_IOMMU_FAULT_REASON_ROOT_NOT_PRESENT,
+> +	INTEL_IOMMU_FAULT_REASON_CONTEXT_NOT_PRESENT,
+> +	INTEL_IOMMU_FAULT_REASON_CONTEXT_INVALID,
+> +	INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH,
+> +	INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS,
+> +	INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS,
+> +	INTEL_IOMMU_FAULT_REASON_NEXT_PT_INVALID,
+> +	INTEL_IOMMU_FAULT_REASON_ROOT_ADDR_INVALID,
+> +	INTEL_IOMMU_FAULT_REASON_CONTEXT_PTR_INVALID,
+> +	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_RTP,
+> +	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_CTP,
+> +	INTEL_IOMMU_FAULT_REASON_NONE_ZERO_PTE,
+> +	NR_INTEL_IOMMU_FAULT_REASON,
 > +};
 > +
-> +/**
-> + * Generic page response information based on PCI ATS and PASID spec.
-> + * @addr: servicing page address
-> + * @pasid: contains process address space ID
-> + * @resp_code: response code
-> + * @page_req_group_id: page request group index
-> + * @private_data: uniquely identify device-specific private data for an
-> + *                individual page response
-> + */
-> +struct page_response_msg {
+> +/* fault reasons that are allowed to be reported outside IOMMU subsystem */
+> +#define INTEL_IOMMU_FAULT_REASON_ALLOWED			\
+> +	((1ULL << INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH) |	\
+> +		(1ULL << INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS) |
+> 	\
+> +		(1ULL << INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS))
+> +
+> +
+>  static const char *dmar_get_fault_reason(u8 fault_reason, int *fault_type)  {
+>  	if (fault_reason >= 0x20 && (fault_reason - 0x20 < @@ -1634,11 +1666,90
+> @@ void dmar_msi_read(int irq, struct msi_msg *msg)
+>  	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);  }
+> 
+> +static enum iommu_fault_reason to_iommu_fault_reason(u8 reason) {
+> +	if (reason >= NR_INTEL_IOMMU_FAULT_REASON) {
+> +		pr_warn("unknown DMAR fault reason %d\n", reason);
+> +		return IOMMU_FAULT_REASON_UNKNOWN;
+> +	}
+> +	switch (reason) {
+> +	case INTEL_IOMMU_FAULT_REASON_SW:
+> +	case INTEL_IOMMU_FAULT_REASON_ROOT_NOT_PRESENT:
+> +	case INTEL_IOMMU_FAULT_REASON_CONTEXT_NOT_PRESENT:
+> +	case INTEL_IOMMU_FAULT_REASON_CONTEXT_INVALID:
+> +	case INTEL_IOMMU_FAULT_REASON_BEYOND_ADDR_WIDTH:
+> +	case INTEL_IOMMU_FAULT_REASON_ROOT_ADDR_INVALID:
+> +	case INTEL_IOMMU_FAULT_REASON_CONTEXT_PTR_INVALID:
+> +		return IOMMU_FAULT_REASON_INTERNAL;
+> +	case INTEL_IOMMU_FAULT_REASON_NEXT_PT_INVALID:
+> +	case INTEL_IOMMU_FAULT_REASON_PTE_WRITE_ACCESS:
+> +	case INTEL_IOMMU_FAULT_REASON_PTE_READ_ACCESS:
+> +		return IOMMU_FAULT_REASON_PERMISSION;
+> +	default:
+> +		return IOMMU_FAULT_REASON_UNKNOWN;
+> +	}
+> +}
+> +
+> +struct dmar_fault_work {
+> +	struct work_struct fault_work;
 > +	u64 addr;
-> +	u32 pasid;
-> +	enum page_response_code resp_code;
-> +	u32 pasid_present:1;
-> +	u32 page_req_group_id;
-> +	u64 private_data;
+> +	int type;
+> +	int fault_type;
+> +	enum intel_iommu_fault_reason reason;
+> +	u16 sid;
 > +};
 > +
-> +/**
->   * struct iommu_ops - iommu ops and capabilities
->   * @capable: check capability
->   * @domain_alloc: allocate iommu domain
-> @@ -195,6 +230,7 @@ struct iommu_resv_region {
->   * @bind_pasid_table: bind pasid table pointer for guest SVM
->   * @unbind_pasid_table: unbind pasid table pointer and restore defaults
->   * @sva_invalidate: invalidate translation caches of shared virtual address
-> + * @page_response: handle page request response
->   */
->  struct iommu_ops {
->  	bool (*capable)(enum iommu_cap);
-> @@ -250,6 +286,7 @@ struct iommu_ops {
->  				struct device *dev);
->  	int (*sva_invalidate)(struct iommu_domain *domain,
->  		struct device *dev, struct tlb_invalidate_info *inv_info);
-> +	int (*page_response)(struct device *dev, struct page_response_msg *msg);
->  
->  	unsigned long pgsize_bitmap;
->  };
-> @@ -470,6 +507,7 @@ extern int iommu_unregister_device_fault_handler(struct device *dev);
->  
->  extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
->  
-> +extern int iommu_page_response(struct device *dev, struct page_response_msg *msg);
->  extern int iommu_group_id(struct iommu_group *group);
->  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
-> @@ -758,6 +796,11 @@ static inline int iommu_report_device_fault(struct device *dev, struct iommu_fau
->  	return -ENODEV;
->  }
->  
-> +static inline int iommu_page_response(struct device *dev, struct page_response_msg *msg)
-> +{
-> +	return -ENODEV;
+> +static void report_fault_to_device(struct work_struct *work) {
+> +	struct dmar_fault_work *dfw = container_of(work, struct dmar_fault_work,
+> +						fault_work);
+> +	struct iommu_fault_event event;
+> +	struct pci_dev *pdev;
+> +	u8 bus, devfn;
+> +
+> +	memset(&event, 0, sizeof(struct iommu_fault_event));
+> +
+> +	/* check if fault reason is permitted to report outside IOMMU */
+> +	if (!((1 << dfw->reason) & INTEL_IOMMU_FAULT_REASON_ALLOWED)) {
+> +		pr_debug("Fault reason %d not allowed to report to device\n",
+> +			dfw->reason);
+> +		goto free_work;
+> +	}
+> +
+> +	bus = PCI_BUS_NUM(dfw->sid);
+> +	devfn = PCI_DEVFN(PCI_SLOT(dfw->sid), PCI_FUNC(dfw->sid));
+> +	/*
+> +	 * we need to check if the fault reporting is requested for the
+> +	 * offending device.
+> +	 */
+> +	pdev = pci_get_bus_and_slot(bus, devfn);
+> +	if (!pdev) {
+> +		pr_warn("No PCI device found for source ID %x\n", dfw->sid);
+> +		goto free_work;
+> +	}
+> +	/*
+> +	 * unrecoverable fault is reported per IOMMU, notifier handler can
+> +	 * resolve PCI device based on source ID.
+> +	 */
+> +	event.reason = to_iommu_fault_reason(dfw->reason);
+> +	event.addr = dfw->addr;
+> +	event.type = IOMMU_FAULT_DMA_UNRECOV;
+> +	event.prot = dfw->type ? IOMMU_READ : IOMMU_WRITE;
+> +	dev_warn(&pdev->dev, "report device unrecoverable fault: %d, %x, %d\n",
+> +		event.reason, dfw->sid, event.type);
+> +	iommu_report_device_fault(&pdev->dev, &event);
+> +	pci_dev_put(pdev);
+> +
+> +free_work:
+> +	kfree(dfw);
 > +}
 > +
->  static inline int iommu_group_id(struct iommu_group *group)
+>  static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
+>  		u8 fault_reason, u16 source_id, unsigned long long addr)  {
+>  	const char *reason;
+>  	int fault_type;
+> +	struct dmar_fault_work *dfw;
+> 
+>  	reason = dmar_get_fault_reason(fault_reason, &fault_type);
+> 
+> @@ -1647,11 +1758,28 @@ static int dmar_fault_do_one(struct intel_iommu
+> *iommu, int type,
+>  			source_id >> 8, PCI_SLOT(source_id & 0xFF),
+>  			PCI_FUNC(source_id & 0xFF), addr >> 48,
+>  			fault_reason, reason);
+> -	else
+> +	else {
+>  		pr_err("[%s] Request device [%02x:%02x.%d] fault addr %llx [fault
+> reason %02d] %s\n",
+>  		       type ? "DMA Read" : "DMA Write",
+>  		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+>  		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
+> +	}
+> +
+> +	dfw = kmalloc(sizeof(*dfw), GFP_ATOMIC);
+> +	if (!dfw)
+> +		return -ENOMEM;
+> +
+> +	INIT_WORK(&dfw->fault_work, report_fault_to_device);
+> +	dfw->addr = addr;
+> +	dfw->type = type;
+> +	dfw->fault_type = fault_type;
+> +	dfw->reason = fault_reason;
+> +	dfw->sid = source_id;
+> +	if (!queue_work(iommu->fault_wq, &dfw->fault_work)) {
+> +		kfree(dfw);
+> +		return -EBUSY;
+> +	}
+> +
+>  	return 0;
+>  }
+> 
+> @@ -1731,10 +1859,28 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+>  	return IRQ_HANDLED;
+>  }
+> 
+> -int dmar_set_interrupt(struct intel_iommu *iommu)
+> +static int dmar_set_fault_wq(struct intel_iommu *iommu) {
+> +	if (iommu->fault_wq)
+> +		return 0;
+> +
+> +	iommu->fault_wq = alloc_ordered_workqueue(iommu->name, 0);
+> +	if (!iommu->fault_wq)
+> +		return -ENOMEM;
+> +
+> +	return 0;
+> +}
+> +
+> +int dmar_set_interrupt(struct intel_iommu *iommu, bool queue_fault)
 >  {
->  	return -ENODEV;
+>  	int irq, ret;
+> 
+> +	/* fault can be reported back to device drivers via a wq */
+> +	if (queue_fault) {
+> +		ret = dmar_set_fault_wq(iommu);
+> +		if (ret)
+> +			pr_err("Failed to create fault handling workqueue\n");
+> +	}
+>  	/*
+>  	 * Check if the fault interrupt is already initialized.
+>  	 */
+> @@ -1748,10 +1894,11 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+>  		pr_err("No free IRQ vectors\n");
+>  		return -EINVAL;
+>  	}
+> -
+>  	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name,
+> iommu);
+> -	if (ret)
+> +	if (ret) {
+>  		pr_err("Can't request irq\n");
+> +		dmar_free_fault_wq(iommu);
+> +	}
+>  	return ret;
+>  }
+> 
+> @@ -1765,7 +1912,7 @@ int __init enable_drhd_fault_handling(void)
+>  	 */
+>  	for_each_iommu(iommu, drhd) {
+>  		u32 fault_status;
+> -		int ret = dmar_set_interrupt(iommu);
+> +		int ret = dmar_set_interrupt(iommu, false);
+> 
+>  		if (ret) {
+>  			pr_err("DRHD %Lx: failed to enable fault, interrupt,
+> ret %d\n", diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 771ee1e..3229e20 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -3424,10 +3424,10 @@ static int __init init_dmars(void)
+>  				goto free_iommu;
+>  		}
+>  #endif
+> -		ret = dmar_set_interrupt(iommu);
+> +		ret = dmar_set_interrupt(iommu, true);
+> +
+>  		if (ret)
+>  			goto free_iommu;
+> -
+>  		if (!translation_pre_enabled(iommu))
+>  			iommu_enable_translation(iommu);
+> 
+> @@ -4345,7 +4345,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+>  			goto disable_iommu;
+>  	}
+>  #endif
+> -	ret = dmar_set_interrupt(iommu);
+> +	ret = dmar_set_interrupt(iommu, true);
+>  	if (ret)
+>  		goto disable_iommu;
+> 
+> diff --git a/include/linux/dmar.h b/include/linux/dmar.h index e2433bc..21f2162
+> 100644
+> --- a/include/linux/dmar.h
+> +++ b/include/linux/dmar.h
+> @@ -278,7 +278,7 @@ extern void dmar_msi_unmask(struct irq_data *data);
+> extern void dmar_msi_mask(struct irq_data *data);  extern void dmar_msi_read(int
+> irq, struct msi_msg *msg);  extern void dmar_msi_write(int irq, struct msi_msg *msg);
+> -extern int dmar_set_interrupt(struct intel_iommu *iommu);
+> +extern int dmar_set_interrupt(struct intel_iommu *iommu, bool
+> +queue_fault);
+>  extern irqreturn_t dmar_fault(int irq, void *dev_id);  extern int dmar_alloc_hwirq(int
+> id, int node, void *arg);  extern void dmar_free_hwirq(int irq); diff --git
+> a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h index 245ac7e..dacb6cf
+> 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -445,6 +445,7 @@ struct intel_iommu {
+>  	struct iommu_device iommu;  /* IOMMU core code handle */
+>  	int		node;
+>  	u32		flags;      /* Software defined flags */
+> +	struct workqueue_struct *fault_wq; /* Reporting IOMMU fault to device
+> +*/
+>  };
+> 
+>  /* PCI domain-device relationship */
+> --
+> 2.7.4
