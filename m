@@ -1,78 +1,62 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v5 09/23] iommu/vt-d: add svm/sva invalidate function
-Date: Mon, 14 May 2018 13:49:27 -0700
-Message-ID: <20180514134927.04886814@jacob-builder>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v5 11/23] driver core: add per device iommu param
+Date: Mon, 14 May 2018 13:52:08 -0700
+Message-ID: <20180514135208.51987d8f@jacob-builder>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1526072055-86990-10-git-send-email-jacob.jun.pan@linux.intel.com>
-        <5AF903E9.6070408@linux.intel.com>
+	<1526072055-86990-12-git-send-email-jacob.jun.pan@linux.intel.com>
+	<5AF91E31.9060705@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5AF903E9.6070408@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, jacob.jun.pan@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5AF91E31.9060705-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 May 2018 11:35:05 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Mon, 14 May 2018 13:27:13 +0800
+Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
-> > +	switch (inv_info->hdr.type) {
-> > +	case IOMMU_INV_TYPE_TLB:
-> > +		if (inv_info->size &&
-> > +			(inv_info->addr & ((1 << (VTD_PAGE_SHIFT +
-> > inv_info->size)) - 1))) {
-> > +			pr_err("Addr out of range, addr 0x%llx,
-> > size order %d\n",
-> > +				inv_info->addr, inv_info->size);
-> > +			ret = -ERANGE;
-> > +			goto out_unlock;
-> > +		}
-> > +
-> > +		qi_flush_eiotlb(iommu, did,
-> > mm_to_dma_pfn(inv_info->addr),
-> > +				inv_info->pasid,
-> > +				inv_info->size, granu,
-> > +				inv_info->flags &
-> > IOMMU_INVALIDATE_GLOBAL_PAGE);
-> > +		/**
-> > +		 * Always flush device IOTLB if ATS is enabled
-> > since guest
-> > +		 * vIOMMU exposes CM = 1, no device IOTLB flush
-> > will be passed
-> > +		 * down.
-> > +		 */
-> > +		info = iommu_support_dev_iotlb(dmar_domain, iommu,
-> > bus, devfn);
-> > +		if (info && info->ats_enabled) {
-> > +			qi_flush_dev_eiotlb(iommu, sid,
-> > +					inv_info->pasid,
-> > info->ats_qdep,
-> > +					inv_info->addr,
-> > inv_info->size,
-> > +					granu);
-> > +		}
-> > +		break;
-> > +	case IOMMU_INV_TYPE_PASID:
-> > +		qi_flush_pasid(iommu, did, granu, inv_info->pasid);
-> > +
-> > +		break;
-> > +	default:
-> > +		dev_err(dev, "Unknown IOMMU invalidation type
-> > %d\n",
-> > +			inv_info->hdr.type);  
+> Hi,
 > 
-> There are three types of invalidation:
+> On 05/12/2018 04:54 AM, Jacob Pan wrote:
+> > DMA faults can be detected by IOMMU at device level. Adding a
+> > pointer to struct device allows IOMMU subsystem to report relevant
+> > faults back to the device driver for further handling.
+> > For direct assigned device (or user space drivers), guest OS holds
+> > responsibility to handle and respond per device IOMMU fault.
+> > Therefore we need fault reporting mechanism to propagate faults
+> > beyond IOMMU subsystem.
+> >
+> > There are two other IOMMU data pointers under struct device today,
+> > here we introduce iommu_param as a parent pointer such that all
+> > device IOMMU data can be consolidated here. The idea was suggested
+> > here by Greg KH and Joerg. The name iommu_param is chosen here
+> > since iommu_data has been used.  
 > 
-> enum iommu_inv_type {
->         IOMMU_INV_TYPE_DTLB,
->         IOMMU_INV_TYPE_TLB,
->         IOMMU_INV_TYPE_PASID,
->         IOMMU_INV_NR_TYPE
-> };
+> This doesn't match what you've done in the patch. Maybe you
+> forgot to cleanup? :-)
 > 
-> So "unsupported" looks better than "unknown" in the message.
+No, I was trying to explain the thought process behind naming
+iommu_param. I meant to say iommu_data is a probably a better name but
+taken already.
+> The idea is to create a parent pointer under device struct and
+> move previous iommu_group and iommu_fwspec together with
+> the iommu fault related data into it.
 > 
-agreed, makes more sense.
+> Best regards,
+> Lu Baolu
+> 
 >  [...]  
+> 
+
+[Jacob Pan]
