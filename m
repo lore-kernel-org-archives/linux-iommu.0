@@ -1,14 +1,14 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 06/23] iommu/vt-d: add definitions for PFSID
-Date: Mon, 14 May 2018 09:36:08 +0800
-Message-ID: <5AF8E808.5030402@linux.intel.com>
+Subject: Re: [PATCH v5 07/23] iommu/vt-d: fix dev iotlb pfsid use
+Date: Mon, 14 May 2018 09:52:04 +0800
+Message-ID: <5AF8EBC4.4040104@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-7-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1526072055-86990-8-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526072055-86990-7-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1526072055-86990-8-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,64 +25,104 @@ List-Id: iommu@lists.linux-foundation.org
 Hi,
 
 On 05/12/2018 04:53 AM, Jacob Pan wrote:
-> When SRIOV VF device IOTLB is invalidated, we need to provide
-> the PF source ID such that IOMMU hardware can gauge the depth
-> of invalidation queue which is shared among VFs. This is needed
-> when device invalidation throttle (DIT) capability is supported.
->
-> This patch adds bit definitions for checking and tracking PFSID.
+> PFSID should be used in the invalidation descriptor for flushing
+> device IOTLBs on SRIOV VFs.
 
-Patch 6 and 7 could be posted in a separated patch series.
+This patch could be submitted separately.
 
 >
 > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > ---
->  include/linux/intel-iommu.h | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/iommu/dmar.c        |  6 +++---
+>  drivers/iommu/intel-iommu.c | 16 +++++++++++++++-
+>  include/linux/intel-iommu.h |  5 ++---
+>  3 files changed, 20 insertions(+), 7 deletions(-)
 >
+> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> index 460bed4..7852678 100644
+> --- a/drivers/iommu/dmar.c
+> +++ b/drivers/iommu/dmar.c
+> @@ -1339,8 +1339,8 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+>  	qi_submit_sync(&desc, iommu);
+>  }
+>  
+> -void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+> -			u64 addr, unsigned mask)
+> +void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+> +			u16 qdep, u64 addr, unsigned mask)
+>  {
+>  	struct qi_desc desc;
+>  
+> @@ -1355,7 +1355,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+>  		qdep = 0;
+>  
+>  	desc.low = QI_DEV_IOTLB_SID(sid) | QI_DEV_IOTLB_QDEP(qdep) |
+> -		   QI_DIOTLB_TYPE;
+> +		   QI_DIOTLB_TYPE | QI_DEV_IOTLB_PFSID(pfsid);
+>  
+>  	qi_submit_sync(&desc, iommu);
+>  }
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 4623294..732a10f 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1459,6 +1459,19 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+>  		return;
+>  
+>  	pdev = to_pci_dev(info->dev);
+> +	/* For IOMMU that supports device IOTLB throttling (DIT), we assign
+> +	 * PFSID to the invalidation desc of a VF such that IOMMU HW can gauge
+> +	 * queue depth at PF level. If DIT is not set, PFSID will be treated as
+> +	 * reserved, which should be set to 0.
+> +	 */
+> +	if (!ecap_dit(info->iommu->ecap))
+> +		info->pfsid = 0;
+> +	else if (pdev && pdev->is_virtfn) {
+> +		if (ecap_dit(info->iommu->ecap))
+> +			dev_warn(&pdev->dev, "SRIOV VF device IOTLB enabled without flow control\n");
+
+I can't understand these two lines.
+
+Isn't the condition always true? What does the error message mean?
+
+> +		info->pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
+> +	} else
+> +		info->pfsid = PCI_DEVID(info->bus, info->devfn);
+>  
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>  	/* The PCIe spec, in its wisdom, declares that the behaviour of
+> @@ -1524,7 +1537,8 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
+>  
+>  		sid = info->bus << 8 | info->devfn;
+>  		qdep = info->ats_qdep;
+> -		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
+> +		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
+> +				qdep, addr, mask);
+
+Alignment should match open parenthesis.
+
+>  	}
+>  	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  }
 > diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index ddc7d79..dfacd49 100644
+> index dfacd49..678a0f4 100644
 > --- a/include/linux/intel-iommu.h
 > +++ b/include/linux/intel-iommu.h
-> @@ -114,6 +114,7 @@
->   * Extended Capability Register
->   */
+> @@ -504,9 +504,8 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
+>  			     u8 fm, u64 type);
+>  extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+>  			  unsigned int size_order, u64 type);
+> -extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
+> -			       u64 addr, unsigned mask);
+> -
+> +extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+> +			u16 qdep, u64 addr, unsigned mask);
+
+Alignment should match open parenthesis.
+
+>  extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
 >  
-> +#define ecap_dit(e)		((e >> 41) & 0x1)
->  #define ecap_pasid(e)		((e >> 40) & 0x1)
->  #define ecap_pss(e)		((e >> 35) & 0x1f)
->  #define ecap_eafs(e)		((e >> 34) & 0x1)
-> @@ -284,6 +285,7 @@ enum {
->  #define QI_DEV_IOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
->  #define QI_DEV_IOTLB_QDEP(qdep)	(((qdep) & 0x1f) << 16)
->  #define QI_DEV_IOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
-> +#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xff0) << 48))
->  #define QI_DEV_IOTLB_SIZE	1
->  #define QI_DEV_IOTLB_MAX_INVS	32
->  
-> @@ -308,6 +310,7 @@ enum {
->  #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
->  #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
->  #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
-> +#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xff0) << 48))
-
-PFSID[15:4] are stored in Descriptor [63:52], hence it should look like:
-
-+#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xfff0) << 48))
-
-
-
->  #define QI_DEV_EIOTLB_MAX_INVS	32
->  
->  #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
-> @@ -467,6 +470,7 @@ struct device_domain_info {
->  	struct list_head global; /* link to global list */
->  	u8 bus;			/* PCI bus number */
->  	u8 devfn;		/* PCI devfn number */
-> +	u16 pfsid;		/* SRIOV physical function source ID */
->  	u8 pasid_supported:3;
->  	u8 pasid_enabled:1;
->  	u8 pri_supported:1;
+>  extern int dmar_ir_support(void);
 
 Best regards,
 Lu Baolu
