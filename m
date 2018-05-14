@@ -1,15 +1,15 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 04/23] iommu/vt-d: add bind_pasid_table function
-Date: Mon, 14 May 2018 13:22:53 -0700
-Message-ID: <20180514132253.1472bbbf@jacob-builder>
+Subject: Re: [PATCH v5 06/23] iommu/vt-d: add definitions for PFSID
+Date: Mon, 14 May 2018 13:30:34 -0700
+Message-ID: <20180514133034.54aaf4ed@jacob-builder>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-5-git-send-email-jacob.jun.pan@linux.intel.com>
-	<5AF8058B.4090703@linux.intel.com>
+	<1526072055-86990-7-git-send-email-jacob.jun.pan@linux.intel.com>
+	<5AF8E808.5030402@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5AF8058B.4090703-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <5AF8E808.5030402-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,188 +23,77 @@ To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 13 May 2018 17:29:47 +0800
+On Mon, 14 May 2018 09:36:08 +0800
 Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
 > Hi,
 > 
 > On 05/12/2018 04:53 AM, Jacob Pan wrote:
-> > Add Intel VT-d ops to the generic iommu_bind_pasid_table API
-> > functions.
+> > When SRIOV VF device IOTLB is invalidated, we need to provide
+> > the PF source ID such that IOMMU hardware can gauge the depth
+> > of invalidation queue which is shared among VFs. This is needed
+> > when device invalidation throttle (DIT) capability is supported.
 > >
-> > The primary use case is for direct assignment of SVM capable
-> > device. Originated from emulated IOMMU in the guest, the request
-> > goes through many layers (e.g. VFIO). Upon calling host IOMMU
-> > driver, caller passes guest PASID table pointer (GPA) and size.
-> >
-> > Device context table entry is modified by Intel IOMMU specific
-> > bind_pasid_table function. This will turn on nesting mode and
-> > matching translation type.
-> >
-> > The unbind operation restores default context mapping.
+> > This patch adds bit definitions for checking and tracking PFSID.  
+> 
+> Patch 6 and 7 could be posted in a separated patch series.
+> 
+Thought about that also, but we need to include PFSID passdown
+invalidation in this patchset, that is why i prefer to include
+this fix, otherwise this patchset will continue to be wrong.
 > >
 > > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > > ---
-> >  drivers/iommu/intel-iommu.c   | 122
-> > ++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/dma_remapping.h |   1 + 2 files changed, 123
-> > insertions(+)
+> >  include/linux/intel-iommu.h | 4 ++++
+> >  1 file changed, 4 insertions(+)
 > >
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index a0f81a4..4623294 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -2409,6 +2409,7 @@ static struct dmar_domain
-> > *dmar_insert_one_dev_info(struct intel_iommu *iommu,
-> > info->ats_supported = info->pasid_supported = info->pri_supported =
-> > 0; info->ats_enabled = info->pasid_enabled = info->pri_enabled = 0;
-> > info->ats_qdep = 0;
-> > +	info->pasid_table_bound = 0;
-> >  	info->dev = dev;
-> >  	info->domain = domain;
-> >  	info->iommu = iommu;
-> > @@ -5132,6 +5133,7 @@ static void
-> > intel_iommu_put_resv_regions(struct device *dev, 
-> >  #ifdef CONFIG_INTEL_IOMMU_SVM
-> >  #define MAX_NR_PASID_BITS (20)
-> > +#define MIN_NR_PASID_BITS (5)
-> >  static inline unsigned long intel_iommu_get_pts(struct intel_iommu
-> > *iommu) {
-> >  	/*
-> > @@ -5258,6 +5260,122 @@ struct intel_iommu
-> > *intel_svm_device_to_iommu(struct device *dev) 
-> >  	return iommu;
-> >  }
-> > +
-> > +static int intel_iommu_bind_pasid_table(struct iommu_domain
-> > *domain,
-> > +		struct device *dev, struct pasid_table_config
-> > *pasidt_binfo) +{
-> > +	struct intel_iommu *iommu;
-> > +	struct context_entry *context;
-> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > +	struct device_domain_info *info;
-> > +	struct pci_dev *pdev;
-> > +	u8 bus, devfn, host_table_pasid_bits;
-> > +	u16 did, sid;
-> > +	int ret = 0;
-> > +	unsigned long flags;
-> > +	u64 ctx_lo;  
+> > diff --git a/include/linux/intel-iommu.h
+> > b/include/linux/intel-iommu.h index ddc7d79..dfacd49 100644
+> > --- a/include/linux/intel-iommu.h
+> > +++ b/include/linux/intel-iommu.h
+> > @@ -114,6 +114,7 @@
+> >   * Extended Capability Register
+> >   */
+> >  
+> > +#define ecap_dit(e)		((e >> 41) & 0x1)
+> >  #define ecap_pasid(e)		((e >> 40) & 0x1)
+> >  #define ecap_pss(e)		((e >> 35) & 0x1f)
+> >  #define ecap_eafs(e)		((e >> 34) & 0x1)
+> > @@ -284,6 +285,7 @@ enum {
+> >  #define QI_DEV_IOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
+> >  #define QI_DEV_IOTLB_QDEP(qdep)	(((qdep) & 0x1f) << 16)
+> >  #define QI_DEV_IOTLB_ADDR(addr)	((u64)(addr) &
+> > VTD_PAGE_MASK) +#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid &
+> > 0xf) << 12) | ((u64)(pfsid & 0xff0) << 48)) #define
+> > QI_DEV_IOTLB_SIZE	1 #define QI_DEV_IOTLB_MAX_INVS	32
+> >  
+> > @@ -308,6 +310,7 @@ enum {
+> >  #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
+> >  #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
+> >  #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
+> > +#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) |
+> > ((u64)(pfsid & 0xff0) << 48))  
 > 
-> I personally prefer to have this in order.
+> PFSID[15:4] are stored in Descriptor [63:52], hence it should look
+> like:
 > 
->         struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->         u8 bus, devfn, host_table_pasid_bits;
->         struct device_domain_info *info;
->         struct context_entry *context;
->         struct intel_iommu *iommu;
->         struct pci_dev *pdev;
->         unsigned long flags;
->         u16 did, sid;
->         int ret = 0;
->         u64 ctx_lo;
-> 
-looks better.
-> > +
-> > +	if ((pasidt_binfo->version != PASID_TABLE_CFG_VERSION_1)
-> > ||  
-> 
-> Unnecessary parentheses.
-> 
-here for readability.
-> > +		pasidt_binfo->bytes != sizeof(*pasidt_binfo))  
-> 
-> Alignment should match open parenthesis.
-> 
-> > +		return -EINVAL;
-> > +	iommu = device_to_iommu(dev, &bus, &devfn);
-> > +	if (!iommu)
-> > +		return -ENODEV;
-> > +	/* VT-d spec section 9.4 says pasid table size is encoded
-> > as 2^(x+5) */
-> > +	host_table_pasid_bits = intel_iommu_get_pts(iommu) +
-> > MIN_NR_PASID_BITS;
-> > +	if (!pasidt_binfo || pasidt_binfo->pasid_bits >
-> > host_table_pasid_bits ||  
-> 
-> "!pasidt_binfo" checking should be moved up to the version checking.
-> 
-good point!
-> > +		pasidt_binfo->pasid_bits < MIN_NR_PASID_BITS) {
-> > +		pr_err("Invalid gPASID bits %d, host range %d -
-> > %d\n",  
-> 
-> How about dev_err()? 
-> 
-the error is not exactly specific to the device but rather the guest.
-> > +			pasidt_binfo->pasid_bits,
-> > +			MIN_NR_PASID_BITS, host_table_pasid_bits);
-> > +		return -ERANGE;
-> > +	}
-> > +	if (!ecap_nest(iommu->ecap)) {
-> > +		dev_err(dev, "Cannot bind PASID table, no nested
-> > translation\n");
-> > +		ret = -ENODEV;
-> > +		goto out;  
-> 
-> How about
-> +        return -ENODEV;
-> ?
-> 
-> > +	}
-> > +	pdev = to_pci_dev(dev);  
-> 
-> We can't always assume that it is a PCI device, right?
-> 
-for vt-d, I don't think we expect any non-pci device.
-> > +	sid = PCI_DEVID(bus, devfn);
-> > +	info = dev->archdata.iommu;
-> > +
-> > +	if (!info) {
-> > +		dev_err(dev, "Invalid device domain info\n");
-> > +		ret = -EINVAL;
-> > +		goto out;
-> > +	}
-> > +	if (info->pasid_table_bound) {  
-> 
-> We should do this checking with lock hold.
-> 
-agreed. will hold the device_domain_lock.
-> Otherwise,
-> 
-> Thread A on CPUx                Thread B on CPUy
-> ===========                ============
-> check pasid_table_bound    check pasid_table_bound
-> 
-> mutex_lock()
-> Setup context
-> pasid_table_bound = 1
-> mutex_unlock()
-> 
->                                                mutex_lock()
->                                                Setup context
->                                                pasid_table_bound = 1
->                                                mutex_unlock()
+> +#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) |
+> ((u64)(pfsid & 0xfff0) << 48))
 > 
 > 
-> > +		dev_err(dev, "Device PASID table already bound\n");
-> > +		ret = -EBUSY;
-> > +		goto out;
-> > +	}
-> > +	if (!info->pasid_enabled) {
-> > +		ret = pci_enable_pasid(pdev, info->pasid_supported
-> > & ~1);
-> > +		if (ret) {
-> > +			dev_err(dev, "Failed to enable PASID\n");
-> > +			goto out;
-> > +		}
-> > +	}  
+good catch! thanks.
 > 
-> I prefer a blank line here.
-> 
->  [...]  
+> >  #define QI_DEV_EIOTLB_MAX_INVS	32
+> >  
+> >  #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
+> > @@ -467,6 +470,7 @@ struct device_domain_info {
+> >  	struct list_head global; /* link to global list */
+> >  	u8 bus;			/* PCI bus number */
+> >  	u8 devfn;		/* PCI devfn number */
+> > +	u16 pfsid;		/* SRIOV physical function
+> > source ID */ u8 pasid_supported:3;
+> >  	u8 pasid_enabled:1;
+> >  	u8 pri_supported:1;  
 > 
 > Best regards,
 > Lu Baolu
