@@ -1,15 +1,15 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 06/23] iommu/vt-d: add definitions for PFSID
-Date: Mon, 14 May 2018 13:30:34 -0700
-Message-ID: <20180514133034.54aaf4ed@jacob-builder>
+Subject: Re: [PATCH v5 07/23] iommu/vt-d: fix dev iotlb pfsid use
+Date: Mon, 14 May 2018 13:38:25 -0700
+Message-ID: <20180514133825.5b166b68@jacob-builder>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-7-git-send-email-jacob.jun.pan@linux.intel.com>
-	<5AF8E808.5030402@linux.intel.com>
+	<1526072055-86990-8-git-send-email-jacob.jun.pan@linux.intel.com>
+	<5AF8EBC4.4040104@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5AF8E808.5030402-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <5AF8EBC4.4040104-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,77 +23,34 @@ To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 May 2018 09:36:08 +0800
+On Mon, 14 May 2018 09:52:04 +0800
 Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
-> Hi,
-> 
-> On 05/12/2018 04:53 AM, Jacob Pan wrote:
-> > When SRIOV VF device IOTLB is invalidated, we need to provide
-> > the PF source ID such that IOMMU hardware can gauge the depth
-> > of invalidation queue which is shared among VFs. This is needed
-> > when device invalidation throttle (DIT) capability is supported.
-> >
-> > This patch adds bit definitions for checking and tracking PFSID.  
-> 
-> Patch 6 and 7 could be posted in a separated patch series.
-> 
-Thought about that also, but we need to include PFSID passdown
-invalidation in this patchset, that is why i prefer to include
-this fix, otherwise this patchset will continue to be wrong.
-> >
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > ---
-> >  include/linux/intel-iommu.h | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index ddc7d79..dfacd49 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -114,6 +114,7 @@
-> >   * Extended Capability Register
-> >   */
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index 4623294..732a10f 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -1459,6 +1459,19 @@ static void iommu_enable_dev_iotlb(struct
+> > device_domain_info *info) return;
 > >  
-> > +#define ecap_dit(e)		((e >> 41) & 0x1)
-> >  #define ecap_pasid(e)		((e >> 40) & 0x1)
-> >  #define ecap_pss(e)		((e >> 35) & 0x1f)
-> >  #define ecap_eafs(e)		((e >> 34) & 0x1)
-> > @@ -284,6 +285,7 @@ enum {
-> >  #define QI_DEV_IOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
-> >  #define QI_DEV_IOTLB_QDEP(qdep)	(((qdep) & 0x1f) << 16)
-> >  #define QI_DEV_IOTLB_ADDR(addr)	((u64)(addr) &
-> > VTD_PAGE_MASK) +#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid &
-> > 0xf) << 12) | ((u64)(pfsid & 0xff0) << 48)) #define
-> > QI_DEV_IOTLB_SIZE	1 #define QI_DEV_IOTLB_MAX_INVS	32
-> >  
-> > @@ -308,6 +310,7 @@ enum {
-> >  #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
-> >  #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
-> >  #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
-> > +#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) |
-> > ((u64)(pfsid & 0xff0) << 48))  
+> >  	pdev = to_pci_dev(info->dev);
+> > +	/* For IOMMU that supports device IOTLB throttling (DIT),
+> > we assign
+> > +	 * PFSID to the invalidation desc of a VF such that IOMMU
+> > HW can gauge
+> > +	 * queue depth at PF level. If DIT is not set, PFSID will
+> > be treated as
+> > +	 * reserved, which should be set to 0.
+> > +	 */
+> > +	if (!ecap_dit(info->iommu->ecap))
+> > +		info->pfsid = 0;
+> > +	else if (pdev && pdev->is_virtfn) {
+> > +		if (ecap_(info->iommu->ecap))
+> > +			dev_warn(&pdev->dev, "SRIOV VF device
+> > IOTLB enabled without flow control\n");  
 > 
-> PFSID[15:4] are stored in Descriptor [63:52], hence it should look
-> like:
+> I can't understand these two lines.
 > 
-> +#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) |
-> ((u64)(pfsid & 0xfff0) << 48))
-> 
-> 
-good catch! thanks.
-> 
-> >  #define QI_DEV_EIOTLB_MAX_INVS	32
-> >  
-> >  #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
-> > @@ -467,6 +470,7 @@ struct device_domain_info {
-> >  	struct list_head global; /* link to global list */
-> >  	u8 bus;			/* PCI bus number */
-> >  	u8 devfn;		/* PCI devfn number */
-> > +	u16 pfsid;		/* SRIOV physical function
-> > source ID */ u8 pasid_supported:3;
-> >  	u8 pasid_enabled:1;
-> >  	u8 pri_supported:1;  
-> 
-> Best regards,
-> Lu Baolu
+> Isn't the condition always true? What does the error message mean?
+
+you are right, there is no need to check ecap_dit again. thanks!
