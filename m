@@ -1,15 +1,16 @@
 From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 07/23] iommu/vt-d: fix dev iotlb pfsid use
-Date: Mon, 14 May 2018 13:38:25 -0700
-Message-ID: <20180514133825.5b166b68@jacob-builder>
+Subject: Re: [PATCH v5 08/23] iommu/vt-d: support flushing more translation
+	cache types
+Date: Mon, 14 May 2018 13:46:42 -0700
+Message-ID: <20180514134642.45cdbb4d@jacob-builder>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-8-git-send-email-jacob.jun.pan@linux.intel.com>
-	<5AF8EBC4.4040104@linux.intel.com>
+	<1526072055-86990-9-git-send-email-jacob.jun.pan@linux.intel.com>
+	<5AF8F204.2010800@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5AF8EBC4.4040104-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <5AF8F204.2010800-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,34 +24,72 @@ To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 May 2018 09:52:04 +0800
+On Mon, 14 May 2018 10:18:44 +0800
 Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index 4623294..732a10f 100644
-> > --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -1459,6 +1459,19 @@ static void iommu_enable_dev_iotlb(struct
-> > device_domain_info *info) return;
+> Hi,
+> 
+> On 05/12/2018 04:54 AM, Jacob Pan wrote:
+> > When Shared Virtual Memory is exposed to a guest via vIOMMU,
+> > extended IOTLB invalidation may be passed down from outside IOMMU
+> > subsystems. This patch adds invalidation functions that can be used
+> > for additional translation cache types.
+> >
+> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> > ---
+> >  drivers/iommu/dmar.c        | 44
+> > ++++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/intel-iommu.h | 21 +++++++++++++++++++-- 2 files
+> > changed, 63 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+> > index 7852678..0b5b052 100644
+> > --- a/drivers/iommu/dmar.c
+> > +++ b/drivers/iommu/dmar.c
+> > @@ -1339,6 +1339,18 @@ void qi_flush_iotlb(struct intel_iommu
+> > *iommu, u16 did, u64 addr, qi_submit_sync(&desc, iommu);
+> >  }
 > >  
-> >  	pdev = to_pci_dev(info->dev);
-> > +	/* For IOMMU that supports device IOTLB throttling (DIT),
-> > we assign
-> > +	 * PFSID to the invalidation desc of a VF such that IOMMU
-> > HW can gauge
-> > +	 * queue depth at PF level. If DIT is not set, PFSID will
-> > be treated as
-> > +	 * reserved, which should be set to 0.
-> > +	 */
-> > +	if (!ecap_dit(info->iommu->ecap))
-> > +		info->pfsid = 0;
-> > +	else if (pdev && pdev->is_virtfn) {
-> > +		if (ecap_(info->iommu->ecap))
-> > +			dev_warn(&pdev->dev, "SRIOV VF device
-> > IOTLB enabled without flow control\n");  
+> > +void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+> > u32 pasid,
+> > +		unsigned int size_order, u64 granu, bool global)  
 > 
-> I can't understand these two lines.
+> Alignment should match open parenthesis.
 > 
-> Isn't the condition always true? What does the error message mean?
-
-you are right, there is no need to check ecap_dit again. thanks!
+> > +{
+> > +	struct qi_desc desc;
+> > +
+> > +	desc.low = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
+> > +		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
+> > +	desc.high = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_GL(global) |
+> > +		QI_EIOTLB_IH(0) | QI_EIOTLB_AM(size_order);
+> > +	qi_submit_sync(&desc, iommu);
+> > +}
+> > +
+> >  void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16
+> > pfsid, u16 qdep, u64 addr, unsigned mask)
+> >  {
+> > @@ -1360,6 +1372,38 @@ void qi_flush_dev_iotlb(struct intel_iommu
+> > *iommu, u16 sid, u16 pfsid, qi_submit_sync(&desc, iommu);
+> >  }
+> >  
+> > +void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
+> > +		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64
+> > granu)  
+> 
+> Ditto.
+> 
+> > +{
+> > +	struct qi_desc desc;
+> > +
+> > +	desc.low = QI_DEV_EIOTLB_PASID(pasid) |
+> > QI_DEV_EIOTLB_SID(sid) |
+> > +		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE;  
+> 
+> Have you forgotten PFSID, or I missed anything here?
+you are right, missed pfsid in this case.
+> 
+>  [...]  
+> 
+> Best regards,
+> Lu Baolu
