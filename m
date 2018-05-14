@@ -1,14 +1,15 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 07/23] iommu/vt-d: fix dev iotlb pfsid use
-Date: Mon, 14 May 2018 09:52:04 +0800
-Message-ID: <5AF8EBC4.4040104@linux.intel.com>
+Subject: Re: [PATCH v5 08/23] iommu/vt-d: support flushing more translation
+	cache types
+Date: Mon, 14 May 2018 10:18:44 +0800
+Message-ID: <5AF8F204.2010800@linux.intel.com>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-8-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1526072055-86990-9-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526072055-86990-8-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1526072055-86990-9-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,102 +25,148 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-On 05/12/2018 04:53 AM, Jacob Pan wrote:
-> PFSID should be used in the invalidation descriptor for flushing
-> device IOTLBs on SRIOV VFs.
-
-This patch could be submitted separately.
-
+On 05/12/2018 04:54 AM, Jacob Pan wrote:
+> When Shared Virtual Memory is exposed to a guest via vIOMMU, extended
+> IOTLB invalidation may be passed down from outside IOMMU subsystems.
+> This patch adds invalidation functions that can be used for additional
+> translation cache types.
 >
 > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > ---
->  drivers/iommu/dmar.c        |  6 +++---
->  drivers/iommu/intel-iommu.c | 16 +++++++++++++++-
->  include/linux/intel-iommu.h |  5 ++---
->  3 files changed, 20 insertions(+), 7 deletions(-)
+>  drivers/iommu/dmar.c        | 44 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/intel-iommu.h | 21 +++++++++++++++++++--
+>  2 files changed, 63 insertions(+), 2 deletions(-)
 >
 > diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index 460bed4..7852678 100644
+> index 7852678..0b5b052 100644
 > --- a/drivers/iommu/dmar.c
 > +++ b/drivers/iommu/dmar.c
-> @@ -1339,8 +1339,8 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+> @@ -1339,6 +1339,18 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
 >  	qi_submit_sync(&desc, iommu);
 >  }
 >  
-> -void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
-> -			u64 addr, unsigned mask)
-> +void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-> +			u16 qdep, u64 addr, unsigned mask)
->  {
->  	struct qi_desc desc;
->  
-> @@ -1355,7 +1355,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
->  		qdep = 0;
->  
->  	desc.low = QI_DEV_IOTLB_SID(sid) | QI_DEV_IOTLB_QDEP(qdep) |
-> -		   QI_DIOTLB_TYPE;
-> +		   QI_DIOTLB_TYPE | QI_DEV_IOTLB_PFSID(pfsid);
->  
->  	qi_submit_sync(&desc, iommu);
->  }
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 4623294..732a10f 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1459,6 +1459,19 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
->  		return;
->  
->  	pdev = to_pci_dev(info->dev);
-> +	/* For IOMMU that supports device IOTLB throttling (DIT), we assign
-> +	 * PFSID to the invalidation desc of a VF such that IOMMU HW can gauge
-> +	 * queue depth at PF level. If DIT is not set, PFSID will be treated as
-> +	 * reserved, which should be set to 0.
-> +	 */
-> +	if (!ecap_dit(info->iommu->ecap))
-> +		info->pfsid = 0;
-> +	else if (pdev && pdev->is_virtfn) {
-> +		if (ecap_dit(info->iommu->ecap))
-> +			dev_warn(&pdev->dev, "SRIOV VF device IOTLB enabled without flow control\n");
-
-I can't understand these two lines.
-
-Isn't the condition always true? What does the error message mean?
-
-> +		info->pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
-> +	} else
-> +		info->pfsid = PCI_DEVID(info->bus, info->devfn);
->  
->  #ifdef CONFIG_INTEL_IOMMU_SVM
->  	/* The PCIe spec, in its wisdom, declares that the behaviour of
-> @@ -1524,7 +1537,8 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
->  
->  		sid = info->bus << 8 | info->devfn;
->  		qdep = info->ats_qdep;
-> -		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
-> +		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
-> +				qdep, addr, mask);
+> +void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr, u32 pasid,
+> +		unsigned int size_order, u64 granu, bool global)
 
 Alignment should match open parenthesis.
 
->  	}
->  	spin_unlock_irqrestore(&device_domain_lock, flags);
+> +{
+> +	struct qi_desc desc;
+> +
+> +	desc.low = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
+> +		QI_EIOTLB_GRAN(granu) | QI_EIOTLB_TYPE;
+> +	desc.high = QI_EIOTLB_ADDR(addr) | QI_EIOTLB_GL(global) |
+> +		QI_EIOTLB_IH(0) | QI_EIOTLB_AM(size_order);
+> +	qi_submit_sync(&desc, iommu);
+> +}
+> +
+>  void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>  			u16 qdep, u64 addr, unsigned mask)
+>  {
+> @@ -1360,6 +1372,38 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>  	qi_submit_sync(&desc, iommu);
 >  }
+>  
+> +void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
+> +		u32 pasid,  u16 qdep, u64 addr, unsigned size, u64 granu)
+
+Ditto.
+
+> +{
+> +	struct qi_desc desc;
+> +
+> +	desc.low = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
+> +		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE;
+
+Have you forgotten PFSID, or I missed anything here?
+
+> +	desc.high |= QI_DEV_EIOTLB_GLOB(granu);
+> +
+> +	/* If S bit is 0, we only flush a single page. If S bit is set,
+> +	 * The least significant zero bit indicates the size. VT-d spec
+> +	 * 6.5.2.6
+> +	 */
+> +	if (!size)
+> +		desc.high = QI_DEV_EIOTLB_ADDR(addr) & ~QI_DEV_EIOTLB_SIZE;
+> +	else {
+> +		unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size);
+> +
+> +		desc.high = QI_DEV_EIOTLB_ADDR(addr & ~mask) | QI_DEV_EIOTLB_SIZE;
+> +	}
+> +	qi_submit_sync(&desc, iommu);
+> +}
+> +
+> +void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
+> +{
+> +	struct qi_desc desc;
+> +
+> +	desc.high = 0;
+> +	desc.low = QI_PC_TYPE | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_PASID(pasid);
+> +
+> +	qi_submit_sync(&desc, iommu);
+> +}
+>  /*
+>   * Disable Queued Invalidation interface.
+>   */
 > diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index dfacd49..678a0f4 100644
+> index 678a0f4..5ac0c28 100644
 > --- a/include/linux/intel-iommu.h
 > +++ b/include/linux/intel-iommu.h
-> @@ -504,9 +504,8 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
+> @@ -262,6 +262,10 @@ enum {
+>  #define QI_PGRP_RESP_TYPE	0x9
+>  #define QI_PSTRM_RESP_TYPE	0xa
+>  
+> +#define QI_DID(did)		(((u64)did & 0xffff) << 16)
+> +#define QI_DID_MASK		GENMASK(31, 16)
+> +#define QI_TYPE_MASK		GENMASK(3, 0)
+> +
+>  #define QI_IEC_SELECTIVE	(((u64)1) << 4)
+>  #define QI_IEC_IIDEX(idx)	(((u64)(idx & 0xffff) << 32))
+>  #define QI_IEC_IM(m)		(((u64)(m & 0x1f) << 27))
+> @@ -293,8 +297,9 @@ enum {
+>  #define QI_PC_DID(did)		(((u64)did) << 16)
+>  #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
+>  
+> -#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
+> -#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
+> +/* PASID cache invalidation granu */
+> +#define QI_PC_ALL_PASIDS	0
+> +#define QI_PC_PASID_SEL		1
+>  
+>  #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
+>  #define QI_EIOTLB_GL(gl)	(((u64)gl) << 7)
+> @@ -304,6 +309,10 @@ enum {
+>  #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
+>  #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
+>  
+> +/* QI Dev-IOTLB inv granu */
+> +#define QI_DEV_IOTLB_GRAN_ALL		1
+> +#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
+> +
+>  #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
+>  #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+>  #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+> @@ -332,6 +341,7 @@ enum {
+>  #define QI_RESP_INVALID		0x1
+>  #define QI_RESP_FAILURE		0xf
+>  
+> +/* QI EIOTLB inv granu */
+>  #define QI_GRAN_ALL_ALL			0
+>  #define QI_GRAN_NONG_ALL		1
+>  #define QI_GRAN_NONG_PASID		2
+> @@ -504,8 +514,15 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
 >  			     u8 fm, u64 type);
 >  extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
 >  			  unsigned int size_order, u64 type);
-> -extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
-> -			       u64 addr, unsigned mask);
-> -
-> +extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-> +			u16 qdep, u64 addr, unsigned mask);
-
-Alignment should match open parenthesis.
-
+> +extern void qi_flush_eiotlb(struct intel_iommu *iommu, u16 did, u64 addr,
+> +			u32 pasid, unsigned int size_order, u64 type, bool global);
+>  extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>  			u16 qdep, u64 addr, unsigned mask);
+> +
+> +extern void qi_flush_dev_eiotlb(struct intel_iommu *iommu, u16 sid,
+> +			u32 pasid, u16 qdep, u64 addr, unsigned size, u64 granu);
+> +extern void qi_flush_pasid(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
+> +
 >  extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
 >  
 >  extern int dmar_ir_support(void);
