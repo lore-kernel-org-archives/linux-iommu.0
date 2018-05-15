@@ -1,33 +1,29 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v3 0/2] iommu/vt-d: Fix mapping PSI missing for iommu_map()
-Date: Tue, 15 May 2018 16:32:08 +0200
-Message-ID: <20180515143208.2z3xgge3jifyhzep@8bytes.org>
-References: <20180504023453.25682-1-peterx@redhat.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 0/4] iommu/vt-d: Several cleanup patches
+Date: Tue, 15 May 2018 16:35:18 +0200
+Message-ID: <20180515143517.dyabef7n2xnmecaa@8bytes.org>
+References: <1525410499-18632-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180504023453.25682-1-peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Linux IOMMU Mailing List <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alexander Witte <alexander.witte-eh6l0D9wmvKB+jHODAdFcQ@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jintack Lim <jintack-eQaUEPhvms7ENvBUuze7eA@public.gmane.org>
+In-Reply-To: <1525410499-18632-1-git-send-email-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 04, 2018 at 10:34:51AM +0800, Peter Xu wrote:
-> Peter Xu (2):
->   iommu/vt-d: Introduce __mapping_notify_one()
->   iommu/vt-d: Fix iotlb psi missing for mappings
+On Fri, May 04, 2018 at 01:08:15PM +0800, Lu Baolu wrote:
+> Lu Baolu (4):
+>   iommu: Clean up the comments for iommu_group_alloc
+>   iommu/vt-d: Clean up unused variable in find_or_alloc_domain
+>   iommu/vt-d: Clean up pasid quirk for pre-production devices
+>   iommu/vt-d: Remove unnecessary parentheses
 > 
->  drivers/iommu/intel-iommu.c | 65 ++++++++++++++++++++++++++-----------
->  1 file changed, 46 insertions(+), 19 deletions(-)
+>  drivers/iommu/intel-iommu.c | 36 +++---------------------------------
+>  drivers/iommu/intel-svm.c   |  2 +-
+>  drivers/iommu/iommu.c       |  1 -
+>  include/linux/intel-iommu.h |  1 -
+>  4 files changed, 4 insertions(+), 36 deletions(-)
 
 Applied, thanks.
