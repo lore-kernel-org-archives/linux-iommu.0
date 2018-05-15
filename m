@@ -1,176 +1,70 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5/6] swiotlb: share more code between map_page and map_sg
-Date: Tue, 15 May 2018 20:05:22 +0200
-Message-ID: <20180515180523.3038-6-hch@lst.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH 3/6] swiotlb: merge swiotlb_unmap_page and unmap_single
+Date: Tue, 15 May 2018 20:05:20 +0200
+Message-ID: <20180515180523.3038-4-hch@lst.de>
 References: <20180515180523.3038-1-hch@lst.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180515180523.3038-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180515180523.3038-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Refactor all the common code into what previously was map_single, which
-is now renamed to __swiotlb_map_page.  This also improves the map_sg
-error handling and diagnostics to match the map_page ones.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- lib/swiotlb.c | 114 +++++++++++++++++++++++---------------------------
- 1 file changed, 53 insertions(+), 61 deletions(-)
+ lib/swiotlb.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
 
 diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index 8333277d1cd1..5becc2fc680a 100644
+index 4d36340bc4f9..2ebbc7204061 100644
 --- a/lib/swiotlb.c
 +++ b/lib/swiotlb.c
-@@ -595,21 +595,47 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- /*
-  * Allocates bounce buffer and returns its physical address.
+@@ -814,9 +814,9 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+  * After this call, reads by the cpu to the buffer are guaranteed to see
+  * whatever the device wrote there.
   */
--static phys_addr_t
--map_single(struct device *hwdev, phys_addr_t phys, size_t size,
--	   enum dma_data_direction dir, unsigned long attrs)
-+static int
-+__swiotlb_map_page(struct device *dev, phys_addr_t phys, size_t size,
-+		enum dma_data_direction dir, unsigned long attrs,
-+		dma_addr_t *dma_addr)
+-static void unmap_single(struct device *hwdev, dma_addr_t dev_addr,
+-			 size_t size, enum dma_data_direction dir,
+-			 unsigned long attrs)
++void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
++			size_t size, enum dma_data_direction dir,
++			unsigned long attrs)
  {
--	dma_addr_t start_dma_addr;
--
--	if (swiotlb_force == SWIOTLB_NO_FORCE) {
--		dev_warn_ratelimited(hwdev, "Cannot do DMA to address %pa\n",
--				     &phys);
--		return SWIOTLB_MAP_ERROR;
-+	phys_addr_t map_addr;
-+
-+	if (WARN_ON_ONCE(dir == DMA_NONE))
-+		return -EINVAL;
-+	*dma_addr = phys_to_dma(dev, phys);
-+
-+	switch (swiotlb_force) {
-+	case SWIOTLB_NO_FORCE:
-+		dev_warn_ratelimited(dev,
-+			"swiotlb: force disabled for address %pa\n", &phys);
-+		return -EOPNOTSUPP;
-+	case SWIOTLB_NORMAL:
-+		/* can we address the memory directly? */
-+		if (dma_capable(dev, *dma_addr, size))
-+			return 0;
-+		break;
-+	case SWIOTLB_FORCE:
-+		break;
- 	}
+ 	phys_addr_t paddr = dma_to_phys(hwdev, dev_addr);
  
--	start_dma_addr = __phys_to_dma(hwdev, io_tlb_start);
--	return swiotlb_tbl_map_single(hwdev, start_dma_addr, phys, size,
--				      dir, attrs);
-+	trace_swiotlb_bounced(dev, *dma_addr, size, swiotlb_force);
-+	map_addr = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
-+			phys, size, dir, attrs);
-+	if (unlikely(map_addr == SWIOTLB_MAP_ERROR))
-+		return -ENOMEM;
-+
-+	/* Ensure that the address returned is DMA'ble */
-+	*dma_addr = __phys_to_dma(dev, map_addr);
-+	if (unlikely(!dma_capable(dev, *dma_addr, size))) {
-+		dev_err_ratelimited(dev,
-+			"DMA: swiotlb buffer not addressable.\n");
-+		swiotlb_tbl_unmap_single(dev, map_addr, size, dir,
-+			attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+		return -EINVAL;
-+	}
-+	return 0;
+@@ -839,13 +839,6 @@ static void unmap_single(struct device *hwdev, dma_addr_t dev_addr,
+ 	dma_mark_clean(phys_to_virt(paddr), size);
  }
  
+-void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+-			size_t size, enum dma_data_direction dir,
+-			unsigned long attrs)
+-{
+-	unmap_single(hwdev, dev_addr, size, dir, attrs);
+-}
+-
  /*
-@@ -775,35 +801,12 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
- 			    enum dma_data_direction dir,
- 			    unsigned long attrs)
- {
--	phys_addr_t map, phys = page_to_phys(page) + offset;
--	dma_addr_t dev_addr = phys_to_dma(dev, phys);
--
--	BUG_ON(dir == DMA_NONE);
--	/*
--	 * If the address happens to be in the device's DMA window,
--	 * we can safely return the device addr and not worry about bounce
--	 * buffering it.
--	 */
--	if (dma_capable(dev, dev_addr, size) && swiotlb_force != SWIOTLB_FORCE)
--		return dev_addr;
-+	dma_addr_t dma_addr;
+  * Make physical memory consistent for a single streaming mode DMA translation
+  * after a transfer.
+@@ -949,7 +942,7 @@ swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
+ 	BUG_ON(dir == DMA_NONE);
  
--	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
--
--	/* Oh well, have to allocate and map a bounce buffer. */
--	map = map_single(dev, phys, size, dir, attrs);
--	if (map == SWIOTLB_MAP_ERROR)
-+	if (unlikely(__swiotlb_map_page(dev, page_to_phys(page) + offset, size,
-+			dir, attrs, &dma_addr) < 0))
- 		return __phys_to_dma(dev, io_tlb_overflow_buffer);
--
--	dev_addr = __phys_to_dma(dev, map);
--
--	/* Ensure that the address returned is DMA'ble */
--	if (dma_capable(dev, dev_addr, size))
--		return dev_addr;
--
--	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
--	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
--
--	return __phys_to_dma(dev, io_tlb_overflow_buffer);
-+	return dma_addr;
+ 	for_each_sg(sgl, sg, nelems, i)
+-		unmap_single(hwdev, sg->dma_address, sg_dma_len(sg), dir,
++		swiotlb_unmap_page(hwdev, sg->dma_address, sg_dma_len(sg), dir,
+ 			     attrs);
  }
  
- /*
-@@ -894,37 +897,26 @@ swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
-  * same here.
-  */
- int
--swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl, int nelems,
-+swiotlb_map_sg_attrs(struct device *dev, struct scatterlist *sgl, int nelems,
- 		     enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct scatterlist *sg;
- 	int i;
- 
--	BUG_ON(dir == DMA_NONE);
--
- 	for_each_sg(sgl, sg, nelems, i) {
--		phys_addr_t paddr = sg_phys(sg);
--		dma_addr_t dev_addr = phys_to_dma(hwdev, paddr);
--
--		if (swiotlb_force == SWIOTLB_FORCE ||
--		    !dma_capable(hwdev, dev_addr, sg->length)) {
--			phys_addr_t map = map_single(hwdev, sg_phys(sg),
--						     sg->length, dir, attrs);
--			if (map == SWIOTLB_MAP_ERROR) {
--				/* Don't panic here, we expect map_sg users
--				   to do proper error handling. */
--				attrs |= DMA_ATTR_SKIP_CPU_SYNC;
--				swiotlb_unmap_sg_attrs(hwdev, sgl, i, dir,
--						       attrs);
--				sg_dma_len(sgl) = 0;
--				return 0;
--			}
--			sg->dma_address = __phys_to_dma(hwdev, map);
--		} else
--			sg->dma_address = dev_addr;
-+		if (unlikely(__swiotlb_map_page(dev, sg_phys(sg), sg->length,
-+				dir, attrs, &sg->dma_address) < 0))
-+			goto out_error;
- 		sg_dma_len(sg) = sg->length;
- 	}
-+
- 	return nelems;
-+
-+out_error:
-+	swiotlb_unmap_sg_attrs(dev, sgl, i, dir,
-+			attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+	sg_dma_len(sgl) = 0;
-+	return 0;
- }
- 
- /*
 -- 
 2.17.0
