@@ -1,70 +1,53 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 3/6] swiotlb: merge swiotlb_unmap_page and unmap_single
-Date: Tue, 15 May 2018 20:05:20 +0200
-Message-ID: <20180515180523.3038-4-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 6/6] swiotlb: respect DMA_ATTR_NO_WARN in __swiotlb_map_page
+Date: Tue, 15 May 2018 20:05:23 +0200
+Message-ID: <20180515180523.3038-7-hch@lst.de>
 References: <20180515180523.3038-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180515180523.3038-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180515180523.3038-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- lib/swiotlb.c | 15 ++++-----------
- 1 file changed, 4 insertions(+), 11 deletions(-)
+ lib/swiotlb.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
 diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index 4d36340bc4f9..2ebbc7204061 100644
+index 5becc2fc680a..5cf88e090cb6 100644
 --- a/lib/swiotlb.c
 +++ b/lib/swiotlb.c
-@@ -814,9 +814,9 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
-  * After this call, reads by the cpu to the buffer are guaranteed to see
-  * whatever the device wrote there.
-  */
--static void unmap_single(struct device *hwdev, dma_addr_t dev_addr,
--			 size_t size, enum dma_data_direction dir,
--			 unsigned long attrs)
-+void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
-+			size_t size, enum dma_data_direction dir,
-+			unsigned long attrs)
- {
- 	phys_addr_t paddr = dma_to_phys(hwdev, dev_addr);
+@@ -608,8 +608,11 @@ __swiotlb_map_page(struct device *dev, phys_addr_t phys, size_t size,
  
-@@ -839,13 +839,6 @@ static void unmap_single(struct device *hwdev, dma_addr_t dev_addr,
- 	dma_mark_clean(phys_to_virt(paddr), size);
- }
- 
--void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
--			size_t size, enum dma_data_direction dir,
--			unsigned long attrs)
--{
--	unmap_single(hwdev, dev_addr, size, dir, attrs);
--}
--
- /*
-  * Make physical memory consistent for a single streaming mode DMA translation
-  * after a transfer.
-@@ -949,7 +942,7 @@ swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
- 	BUG_ON(dir == DMA_NONE);
- 
- 	for_each_sg(sgl, sg, nelems, i)
--		unmap_single(hwdev, sg->dma_address, sg_dma_len(sg), dir,
-+		swiotlb_unmap_page(hwdev, sg->dma_address, sg_dma_len(sg), dir,
- 			     attrs);
- }
- 
+ 	switch (swiotlb_force) {
+ 	case SWIOTLB_NO_FORCE:
+-		dev_warn_ratelimited(dev,
+-			"swiotlb: force disabled for address %pa\n", &phys);
++		if (!(attrs & DMA_ATTR_NO_WARN)) {
++			dev_warn_ratelimited(dev,
++				"swiotlb: force disabled for address %pa\n",
++				&phys);
++		}
+ 		return -EOPNOTSUPP;
+ 	case SWIOTLB_NORMAL:
+ 		/* can we address the memory directly? */
+@@ -629,10 +632,12 @@ __swiotlb_map_page(struct device *dev, phys_addr_t phys, size_t size,
+ 	/* Ensure that the address returned is DMA'ble */
+ 	*dma_addr = __phys_to_dma(dev, map_addr);
+ 	if (unlikely(!dma_capable(dev, *dma_addr, size))) {
+-		dev_err_ratelimited(dev,
+-			"DMA: swiotlb buffer not addressable.\n");
++		if (!(attrs & DMA_ATTR_NO_WARN)) {
++			dev_err_ratelimited(dev,
++				"DMA: swiotlb buffer not addressable.\n");
++		}
+ 		swiotlb_tbl_unmap_single(dev, map_addr, size, dir,
+-			attrs | DMA_ATTR_SKIP_CPU_SYNC);
++				attrs | DMA_ATTR_SKIP_CPU_SYNC);
+ 		return -EINVAL;
+ 	}
+ 	return 0;
 -- 
 2.17.0
