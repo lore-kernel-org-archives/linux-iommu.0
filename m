@@ -1,31 +1,43 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v7 2/2] iommu/amd: Add basic debugfs infrastructure for
- AMD IOMMU
-Date: Tue, 15 May 2018 15:46:03 +0200
-Message-ID: <20180515134603.GD18595@8bytes.org>
-References: <152631818082.18929.13970142119193316487.stgit@sosxen2.amd.com>
- <152631842907.18929.8819955271544326298.stgit@sosxen2.amd.com>
- <ba2bb6f7-77ea-4431-af0f-d20c19820d5d@infradead.org>
- <5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 0/9] iommu/vt-d: Improve PASID id and table management
+Date: Tue, 15 May 2018 16:11:01 +0200
+Message-ID: <20180515141101.GF18595@8bytes.org>
+References: <1525398084-28815-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Gary R Hook <gary.hook@amd.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1525398084-28815-1-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 14, 2018 at 03:00:50PM -0500, Gary R Hook wrote:
-> This was brought up a few weeks ago in, I believe, version 3 of this patch.
-> That question was discussed (because that's what I did the first time out),
-> and _someone_ _else_ asked about why I didn't just do it the way I've done
-> it here.
-
-You don't have this problem if you put the code in amd_iommu.c in an
-IOMMU_DEBUGFS ifdef.
+On Fri, May 04, 2018 at 09:41:15AM +0800, Lu Baolu wrote:
+> PATCH 4~9 implement per domain PASID table. Current per IOMMU
+> PASID table implementation is insecure in the cases where
+> multiple devices under one single IOMMU unit support PASID
+> feature. With per domain PASID table, we can achieve finer
+> protection and isolation granularity.
 
 
+Hold on, we hat discussions in the past about doing a system-wide pasid
+space, so that every mm_struct with devices attached gets the same pasid
+across all devices it is talking to. Reason was that some devices (will)
+require this to work correctly. This goes into the opposite direction,
+so I am a bit confused here. Please explain, is this not longer
+necessary?
+
+
+Regards,
 
 	Joerg
