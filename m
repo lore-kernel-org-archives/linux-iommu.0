@@ -1,18 +1,15 @@
-From: Joseph Salisbury <joseph.salisbury-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-Subject: Re: iommu/amd: flush IOTLB for specific domains only (v2)
-Date: Tue, 15 May 2018 10:47:13 -0400
-Message-ID: <507eb167-5b3c-074a-3766-9f7dd4444f7f@canonical.com>
-References: <44f4f22d-c0f4-a6c8-5521-1f532a60c3fe@canonical.com>
-	<MWHPR12MB1518E68ADE46948FBA415E7D9C930@MWHPR12MB1518.namprd12.prod.outlook.com>
-	<1998976d-57ce-0fe5-54ab-a9a13263f362@canonical.com>
-	<MWHPR12MB1518DD41E3BDA4820F27D7429C930@MWHPR12MB1518.namprd12.prod.outlook.com>
-	<8f5ed491-c9d4-95f9-2cb1-955be42caea0@amd.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] iommu/amd: Fix grammar of comments
+Date: Tue, 15 May 2018 16:47:29 +0200
+Message-ID: <20180515144729.rfk3bvp2e2yn6eby@8bytes.org>
+References: <20180507125329.24648-1-anna-maria@linutronix.de>
+	<20180507125329.24648-2-anna-maria@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8f5ed491-c9d4-95f9-2cb1-955be42caea0-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180507125329.24648-2-anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,81 +19,15 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "michel-otUistvHUpPR7s880joybQ@public.gmane.org" <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Deucher,
-	Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, "1747463-T8XWwAfLipRB/Vz2p19nDaxOck334EZe@public.gmane.org" <1747463-T8XWwAfLipRB/Vz2p19nDaxOck334EZe@public.gmane.org>, "linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Kuehling,
-	Felix" <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>
+To: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDUvMTUvMjAxOCAwOTowOCBBTSwgVG9tIExlbmRhY2t5IHdyb3RlOgo+IE9uIDUvMTUvMjAx
-OCA3OjM0IEFNLCBOYXRoLCBBcmluZGFtIHdyb3RlOgo+Pgo+Pj4gLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0KPj4+IEZyb206IEpvc2VwaCBTYWxpc2J1cnkgW21haWx0bzpqb3NlcGguc2FsaXNi
-dXJ5QGNhbm9uaWNhbC5jb21dCj4+PiBTZW50OiBUdWVzZGF5LCBNYXkgMTUsIDIwMTggNTo0MCBQ
-TQo+Pj4gVG86IE5hdGgsIEFyaW5kYW0gPEFyaW5kYW0uTmF0aEBhbWQuY29tPgo+Pj4gQ2M6IGlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBCcmlkZ21hbiwgSm9obgo+Pj4gPEpvaG4u
-QnJpZGdtYW5AYW1kLmNvbT47IGpvcm9AOGJ5dGVzLm9yZzsgYW1kLQo+Pj4gZ2Z4QGxpc3RzLmZy
-ZWVkZXNrdG9wLm9yZzsgZHJha2VAZW5kbGVzc20uY29tOyBzdGVpbjEyY0BnbWFpbC5jb207Cj4+
-PiBTdXRoaWt1bHBhbml0LCBTdXJhdmVlIDxTdXJhdmVlLlN1dGhpa3VscGFuaXRAYW1kLmNvbT47
-IERldWNoZXIsCj4+PiBBbGV4YW5kZXIgPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5jb20+OyBLdWVo
-bGluZywgRmVsaXgKPj4+IDxGZWxpeC5LdWVobGluZ0BhbWQuY29tPjsgbGludXhAZW5kbGVzc20u
-Y29tOyBtaWNoZWxAZGFlbnplci5uZXQ7Cj4+PiAxNzQ3NDYzQGJ1Z3MubGF1bmNocGFkLm5ldDsg
-TGVuZGFja3ksIFRob21hcwo+Pj4gPFRob21hcy5MZW5kYWNreUBhbWQuY29tPgo+Pj4gU3ViamVj
-dDogUmU6IGlvbW11L2FtZDogZmx1c2ggSU9UTEIgZm9yIHNwZWNpZmljIGRvbWFpbnMgb25seSAo
-djIpCj4+Pgo+Pj4gT24gMDUvMTUvMjAxOCAwNDowMyBBTSwgTmF0aCwgQXJpbmRhbSB3cm90ZToK
-Pj4+PiBBZGRpbmcgVG9tLgo+Pj4+Cj4+Pj4gSGkgSm9lLAo+Pj4+Cj4+Pj4gTXkgb3JpZ2luYWwg
-cGF0Y2ggd2FzIG5ldmVyIGFjY2VwdGVkLiBUb20gYW5kIEpvZXJnIHdvcmtlZCBvbiBhbm90aGVy
-Cj4+PiBwYXRjaCBzZXJpZXMgd2hpY2ggd2FzIHN1cHBvc2VkIHRvIGZpeCB0aGUgaXNzdWUgaW4g
-cXVlc3Rpb24gaW4gYWRkaXRpb24gdG8gZG8KPj4+IHNvbWUgY29kZSBjbGVhbnVwcy4gSSBiZWxp
-ZXZlIHRoZWlyIHBhdGNoZXMgYXJlIGFscmVhZHkgaW4gdGhlIG1haW5saW5lLiBJZiBJCj4+PiBy
-ZW1lbWJlciBjb3JyZWN0bHksIG9uZSBvZiB0aGUgcGF0Y2hlcyBkaXNhYmxlZCBQQ0kgQVRTIGZv
-ciB0aGUgZ3JhcGhpY3MKPj4+IGNhcmQgd2hpY2ggd2FzIGNhdXNpbmcgdGhlIGlzc3VlLgo+Pj4+
-IERvIHlvdSBzdGlsbCBzZWUgdGhlIGlzc3VlIHdpdGggbGF0ZXN0IG1haW5saW5lIGtlcm5lbD8K
-Pj4+Pgo+Pj4+IEJSLAo+Pj4+IEFyaW5kYW0KPj4+Pgo+Pj4+IC0tLS0tT3JpZ2luYWwgTWVzc2Fn
-ZS0tLS0tCj4+Pj4gRnJvbTogSm9zZXBoIFNhbGlzYnVyeSBbbWFpbHRvOmpvc2VwaC5zYWxpc2J1
-cnlAY2Fub25pY2FsLmNvbV0KPj4+PiBTZW50OiBUdWVzZGF5LCBNYXkgMTUsIDIwMTggMToxNyBB
-TQo+Pj4+IFRvOiBOYXRoLCBBcmluZGFtIDxBcmluZGFtLk5hdGhAYW1kLmNvbT4KPj4+PiBDYzog
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IEJyaWRnbWFuLCBKb2huCj4+Pj4gPEpv
-aG4uQnJpZGdtYW5AYW1kLmNvbT47IGpvcm9AOGJ5dGVzLm9yZzsKPj4+PiBhbWQtZ2Z4QGxpc3Rz
-LmZyZWVkZXNrdG9wLm9yZzsgZHJha2VAZW5kbGVzc20uY29tOwo+Pj4gc3RlaW4xMmNAZ21haWwu
-Y29tOwo+Pj4+IFN1dGhpa3VscGFuaXQsIFN1cmF2ZWUgPFN1cmF2ZWUuU3V0aGlrdWxwYW5pdEBh
-bWQuY29tPjsgRGV1Y2hlciwKPj4+PiBBbGV4YW5kZXIgPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5j
-b20+OyBLdWVobGluZywgRmVsaXgKPj4+PiA8RmVsaXguS3VlaGxpbmdAYW1kLmNvbT47IGxpbnV4
-QGVuZGxlc3NtLmNvbTsgbWljaGVsQGRhZW56ZXIubmV0Owo+Pj4+IDE3NDc0NjNAYnVncy5sYXVu
-Y2hwYWQubmV0Cj4+Pj4gU3ViamVjdDogaW9tbXUvYW1kOiBmbHVzaCBJT1RMQiBmb3Igc3BlY2lm
-aWMgZG9tYWlucyBvbmx5ICh2MikKPj4+Pgo+Pj4+IEhlbGxvIEFyaW5kYW0sCj4+Pj4KPj4+PiBU
-aGVyZSBpcyBhIGJ1ZyByZXBvcnRbMF0gdGhhdCB5b3UgY3JlYXRlZCBhIHBhdGNoWzFdIGZvciBh
-IHdoaWxlIGJhY2suCj4+PiBIb3dldmVyLCB0aGUgcGF0Y2ggbmV2ZXIgbGFuZGVkIGluIG1haW5s
-aW5lLsKgIFRoZXJlIGlzIGEgYnVnIHJlcG9ydGVyIGluCj4+PiBVYnVudHVbMl0gdGhhdCBpcyBh
-ZmZlY3RlZCBieSB0aGlzIGJ1ZyBhbmQgaXMgd2lsbGluZyB0byB0ZXN0IHRoZSBwYXRjaC7CoCBJ
-Cj4+PiBhdHRlbXB0ZWQgdG8gYnVpbGQgYSB0ZXN0IGtlcm5lbCB3aXRoIHRoZSBwYXRjaCwgYnV0
-IGl0IGRvZXMgbm90IGFwcGx5IHRvCj4+PiBjdXJyZW50bHkgbWFpbmxpbmUgY2xlYW5seS7CoCBE
-byB5b3Ugc3RpbGwgdGhpbmsgdGhpcyBwYXRjaCBtYXkgcmVzb2x2ZSB0aGlzCj4+PiBidWc/wqAg
-SWYgc28sIGlzIHRoZXJlIGEgdmVyc2lvbiBvZiB5b3VyIHBhdGNoIGF2YWlsYWJsZSB0aGF0IHdp
-bGwgYXBwbHkgdG8gY3VycmVudAo+Pj4gbWFpbmxpbmU/Cj4+Pj4gVGhhbmtzLAo+Pj4+Cj4+Pj4g
-Sm9lCj4+Pj4KPj4+PiBbMF0gaHR0cHM6Ly9idWdzLmZyZWVkZXNrdG9wLm9yZy9zaG93X2J1Zy5j
-Z2k/aWQ9MTAxMDI5Cj4+Pj4gWzFdIGh0dHBzOi8vcGF0Y2h3b3JrLmZyZWVkZXNrdG9wLm9yZy9w
-YXRjaC8xNTczMjcvCj4+Pj4gWzJdIGh0dHA6Ly9wYWQubHYvMTc0NzQ2Mwo+Pj4+Cj4+PiBIaSBB
-cmluZGFtLAo+Pj4KPj4+IFRoYW5rcyBmb3IgdGhlIGZlZWRiYWNrLsKgIFllcywgdGhlIGxhdGVz
-dCBtYWlubGluZSBrZXJuZWwgd2FzIHRlc3RlZCwgYW5kIGl0IGlzCj4+PiByZXBvcnRlZCB0aGUg
-YnVnIHN0aWxsIGhhcHBlbnMgaW4gdGhlIFVidW50dSBrZXJuZWwgYnVnWzBdLiBJcyB0aGVyZSBh
-bnkKPj4+IHNwZWNpZmljIGRpYWdub3N0aWMgaW5mbyB3ZSBjYW4gY29sbGVjdCB0aGF0IG1pZ2h0
-IGhlbHA/Cj4+IEpvZSwgSSBiZWxpZXZlIGFsbCB0aGUgaW5mb3JtYXRpb24gbmVlZGVkIGlzIGFs
-cmVhZHkgcHJvdmlkZWQgaW4gWzJdLiBMZXQgdXMgd2FpdCBmb3IgaW5wdXRzIGZyb20gVG9tIGFu
-ZCBKb2VyZy4KPj4KPj4gSSBjb3VsZCB0YWtlIGEgbG9vayBhdCB0aGUgaXNzdWUgbG9jYWxseSwg
-YnV0IGl0IHdpbGwgdGFrZSBtZSBzb21lIHJlYWxseSBsb25nIHRpbWUgc2luY2UgSSBhbSBvY2N1
-cGllZCB3aXRoIG90aGVyIGFzc2lnbm1lbnRzIHJpZ2h0IG5vdy4KPiBJIGRvbid0IHNlZSBhbnl0
-aGluZyBpbiB0aGUgYnVnIHRoYXQgaW5kaWNhdGVzIHRoZSBsYXRlc3QgbWFpbmxpbmUga2VybmVs
-Cj4gd2FzIHRlc3RlZC4gIFRoZSBwYXRjaGVzL2ZpeGVzIGluIHF1ZXN0aW9uIGFyZSBwYXJ0IG9m
-IHRoZSA0LjEzIGtlcm5lbCwgSQo+IG9ubHkgc2VlIHJlZmVyZW5jZXMgdG8gNC4xMCBrZXJuZWxz
-IHNvIEkgd291bGRuJ3QgZXhwZWN0IHRoZSBpc3N1ZSB0byBiZQo+IHJlc29sdmVkIHVubGVzcyB0
-aGUgcGF0Y2hlcyBmcm9tIDQuMTMgd2VyZSBiYWNrcG9ydGVkIHRvIHRoZSBVYnVudHUgNC4xMAo+
-IGtlcm5lbC4KPgo+IFRoYW5rcywKPiBUb20KPgo+PiBCUiwKPj4gQXJpbmRhbQo+Pgo+Pj4gVGhh
-bmtzLAo+Pj4KPj4+IEpvZQo+Pj4KPj4+IFswXSBodHRwOi8vcGFkLmx2LzE3NDc0NjMKSGkgVG9t
-LAoKVGhlIHJlcXVlc3QgdG8gdGVzdCBtYWlubGluZSB3YXMgaW4gY29tbWVudCAjMzBbMF0uwqAg
-SG93ZXZlciwgdGhlIGJ1ZwpyZXBvcnRlciBzdGF0ZWQgdGhlIGJ1ZyBzdGlsbCBleGlzdGVkIG9u
-IElSQyBhbmQgbm90IGluIHRoZSBidWcgcmVwb3J0LsKgCkknbGwgcmVxdWVzdCBoZSBhZGRzIHRo
-ZSB0ZXN0IHJlc3VsdHMgdG8gdGhlIGJ1Zy4KClRoYW5rcywKCkpvZQoKCgoKWzBdIGh0dHBzOi8v
-YnVncy5sYXVuY2hwYWQubmV0L3VidW50dS8rc291cmNlL2xpbnV4LytidWcvMTc0NzQ2My9jb21t
-ZW50cy8zMApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Mon, May 07, 2018 at 02:53:26PM +0200, Anna-Maria Gleixner wrote:
+> Suggested-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+> Signed-off-by: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+
+Applied, thanks.
