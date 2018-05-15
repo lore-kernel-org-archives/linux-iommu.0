@@ -1,18 +1,14 @@
-From: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v7 2/2] iommu/amd: Add basic debugfs infrastructure for
-	AMD IOMMU
-Date: Mon, 14 May 2018 14:00:02 -0700
-Message-ID: <938d5a51-0aa8-0d28-84e3-ce007e73c173@infradead.org>
-References: <152631818082.18929.13970142119193316487.stgit@sosxen2.amd.com>
-	<152631842907.18929.8819955271544326298.stgit@sosxen2.amd.com>
-	<ba2bb6f7-77ea-4431-af0f-d20c19820d5d@infradead.org>
-	<5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
+From: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Linux-c6x-dev] [PATCH 05/20] c6x: use generic dma_noncoherent_ops
+Date: Mon, 14 May 2018 20:25:52 -0400
+Message-ID: <f3a126c511ca75869e3f21dc60364e6a89cda90b.camel@redhat.com>
+References: <20180511075945.16548-1-hch@lst.de>
+	<20180511075945.16548-6-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5e45f38e-cb45-d4a1-f351-30543f787290-5C7GfCeVMHo@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180511075945.16548-6-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,55 +18,325 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDUvMTQvMjAxOCAwMTowMCBQTSwgR2FyeSBSIEhvb2sgd3JvdGU6Cj4gT24gMDUvMTQvMjAx
-OCAxMjo1MCBQTSwgUmFuZHkgRHVubGFwIHdyb3RlOgo+PiBPbiAwNS8xNC8yMDE4IDEwOjIwIEFN
-LCBHYXJ5IFIgSG9vayB3cm90ZToKPj4+IEltcGxlbWVudCBhIHNrZWxldG9uIGZyYW1ld29yayBm
-b3IgZGVidWdmcyBzdXBwb3J0IGluIHRoZQo+Pj4gQU1EIElPTU1VLgo+Pj4KPj4+IFNpZ25lZC1v
-ZmYtYnk6IEdhcnkgUiBIb29rIDxnYXJ5Lmhvb2tAYW1kLmNvbT4KPj4+IC0tLQo+Pj4gwqAgZHJp
-dmVycy9pb21tdS9NYWtlZmlsZcKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfMKgwqDCoCA1ICsrKysr
-Cj4+PiDCoCBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9kZWJ1Z2ZzLmMgfMKgwqAgMzkgKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+Pj4gwqAgZHJpdmVycy9pb21tdS9hbWRf
-aW9tbXVfaW5pdC5jwqDCoMKgIHzCoMKgwqAgNiArKysrLS0KPj4+IMKgIGRyaXZlcnMvaW9tbXUv
-YW1kX2lvbW11X3Byb3RvLmjCoMKgIHzCoMKgwqAgNiArKysrKysKPj4+IMKgIGRyaXZlcnMvaW9t
-bXUvYW1kX2lvbW11X3R5cGVzLmjCoMKgIHzCoMKgwqAgMyArKysKPj4+IMKgIDUgZmlsZXMgY2hh
-bmdlZCwgNTcgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4+IMKgIGNyZWF0ZSBtb2Rl
-IDEwMDY0NCBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9kZWJ1Z2ZzLmMKPj4+Cj4+PiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9NYWtlZmlsZSBiL2RyaXZlcnMvaW9tbXUvTWFrZWZpbGUKPj4+
-IGluZGV4IDc0Y2ZiYzM5Mjg2Mi4uZGQ5ODBmN2RkOGI2IDEwMDY0NAo+Pj4gLS0tIGEvZHJpdmVy
-cy9pb21tdS9NYWtlZmlsZQo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9NYWtlZmlsZQo+Pj4gQEAg
-LTMwLDMgKzMwLDggQEAgb2JqLSQoQ09ORklHX0VYWU5PU19JT01NVSkgKz0gZXh5bm9zLWlvbW11
-Lm8KPj4+IMKgIG9iai0kKENPTkZJR19GU0xfUEFNVSkgKz0gZnNsX3BhbXUubyBmc2xfcGFtdV9k
-b21haW4ubwo+Pj4gwqAgb2JqLSQoQ09ORklHX1MzOTBfSU9NTVUpICs9IHMzOTAtaW9tbXUubwo+
-Pj4gwqAgb2JqLSQoQ09ORklHX1FDT01fSU9NTVUpICs9IHFjb21faW9tbXUubwo+Pj4gKwo+Pj4g
-KyMgVGhpcyBlbnN1cmVzIHRoYXQgb25seSB0aGUgcmVxdWlyZWQgZmlsZXMgYXJlIGNvbXBpbGVk
-Cj4+PiAraWZlcSAoJChDT05GSUdfSU9NTVVfREVCVUdGUyksIHkpCj4+Cj4+IE1vc3QgTWFrZWZp
-bGVzIGRvbid0IHVzZSBhIHNwYWNlIGJlZm9yZSB0aGUgJ3knLCBidXQgc2luY2UgeW91IHRlc3Rl
-ZCBpdCwKPj4gSSBndWVzcyBlaXRoZXIgd2F5IHdvcmtzLgo+IAo+IFByZXR0eSBzdXJlIHdoaXRl
-c3BhY2UgaXNuJ3QgdXNlZCBhcyBhIGRlbGltaXRlciBpbiB0aGlzIGNvbnN0cnVjdC4gSSBjb3Vs
-ZCBiZSBtaXN0YWtlbi4gQnV0IHllcywgaXQncyBwZXJmZWN0bHkgc2VydmljZWFibGUuCj4gCj4+
-IEJ1dCB3aHkgZG8gdGhpcyBpbiB0aGUgTWFrZWZpbGUgYXQgYWxsP8KgIFdoeSBub3QganVzdCBh
-ZGQgYW5vdGhlciBLY29uZmlnCj4+IHN5bWJvbCBhbmQgc2ltcGxpZnkgdGhlIE1ha2VmaWxlPwo+
-Pgo+Pj4gK29iai0kKENPTkZJR19BTURfSU9NTVUpICs9IGFtZF9pb21tdV9kZWJ1Z2ZzLm8KPj4+
-ICtlbmRpZgo+IAo+IAo+IFRoaXMgd2FzIGJyb3VnaHQgdXAgYSBmZXcgd2Vla3MgYWdvIGluLCBJ
-IGJlbGlldmUsIHZlcnNpb24gMyBvZiB0aGlzIHBhdGNoLiBUaGF0IHF1ZXN0aW9uIHdhcyBkaXNj
-dXNzZWQgKGJlY2F1c2UgdGhhdCdzIHdoYXQgSSBkaWQgdGhlIGZpcnN0IHRpbWUgb3V0KSwgYW5k
-IF9zb21lb25lXyBfZWxzZV8gYXNrZWQgYWJvdXQgd2h5IEkgZGlkbid0IGp1c3QgZG8gaXQgdGhl
-IHdheSBJJ3ZlIGRvbmUgaXQgaGVyZS4KClNvcnJ5IEkgbWlzc2VkIGl0LiAgSSB3b3VsZCBoYXZl
-IGJlZW4gZ2xhZCB0byBjaGltZSBpbiBhdCB0aGF0IHRpbWUuCgo+IEV2ZXJ5b25lIGhhcyBhIHBy
-ZWZlcmVuY2UuCj4gCj4gSSBjaG9zZSB0byBzaW1wbGlmeSB0aGUgY2hvaWNlcyBhbmQgYXZvaWQg
-bXVsdGlwbGUgc3ltYm9scywgaW5zdGVhZCBvcHRpbmcgZm9yIHR3byBzd2l0Y2hlczogY2hvb3Nl
-IHlvdXIgZGV2aWNlLCBhbmQgZGVjaWRlIG9uIERlYnVnIEZTIGVuYWJsZW1lbnQgZm9yIGl0LiBJ
-TU8gVmVyeSBzaW1wbGUuCj4gCj4gSSBjYW4ndCBmYXRob20gYSBzY2VuYXJpbyB3aGVyZSB0aGlz
-IHdvdWxkbid0IHdvcmsuIElzIHRoZXJlIG9uZT8KClByb2JhYmx5IG5vdC4KCkJ1dCB3ZSB1c2Vk
-IHRvIGhhdmUgdWdseSwgbWVzc3ksIGNvbnZvbHV0ZWQgbWFrZWZpbGVzIHdpdGggdmVyeSBsaXR0
-bGUgY29uZmlnIGhlbHAuClRoZW4gd2UgZ290IGJldHRlciBrY29uZmlnIHRvb2xzICh3ZWxsLCBh
-cmd1YWJseSA6KSBhbmQgdGhlbiB0aGUgbWFrZWZpbGVzIHdlcmUKY2xlYW5lZCB1cCBhbmQgc2lt
-cGxpZmllZCBhIGxvdCAob3IgQSBMT1QhKS4gIFdlIHNob3VsZG4ndCB3YW50IHRvIGdvIGJhY2sg
-dGhlcmUuCgotLSAKflJhbmR5Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+On Fri, 2018-05-11 at 09:59 +0200, Christoph Hellwig wrote:
+> Switch to the generic noncoherent direct mapping implementation.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>  arch/c6x/Kconfig                   |   3 +
+>  arch/c6x/include/asm/Kbuild        |   1 +
+>  arch/c6x/include/asm/dma-mapping.h |  28 ------
+>  arch/c6x/include/asm/setup.h       |   2 +
+>  arch/c6x/kernel/Makefile           |   2 +-
+>  arch/c6x/kernel/dma.c              | 138 -----------------------------
+>  arch/c6x/mm/dma-coherent.c         |  40 ++++++++-
+>  7 files changed, 44 insertions(+), 170 deletions(-)
+>  delete mode 100644 arch/c6x/include/asm/dma-mapping.h
+>  delete mode 100644 arch/c6x/kernel/dma.c
+> 
+> diff --git a/arch/c6x/Kconfig b/arch/c6x/Kconfig
+> index 8c088b96e372..bf59855628ac 100644
+> --- a/arch/c6x/Kconfig
+> +++ b/arch/c6x/Kconfig
+> @@ -6,7 +6,10 @@
+>  
+>  config C6X
+>  	def_bool y
+> +	select ARCH_HAS_SYNC_DMA_FOR_CPU
+> +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+>  	select CLKDEV_LOOKUP
+> +	select DMA_NONCOHERENT_OPS
+>  	select GENERIC_ATOMIC64
+>  	select GENERIC_IRQ_SHOW
+>  	select HAVE_ARCH_TRACEHOOK
+> diff --git a/arch/c6x/include/asm/Kbuild b/arch/c6x/include/asm/Kbuild
+> index fd4c840de837..434600e47662 100644
+> --- a/arch/c6x/include/asm/Kbuild
+> +++ b/arch/c6x/include/asm/Kbuild
+> @@ -5,6 +5,7 @@ generic-y += current.h
+>  generic-y += device.h
+>  generic-y += div64.h
+>  generic-y += dma.h
+> +generic-y += dma-mapping.h
+>  generic-y += emergency-restart.h
+>  generic-y += exec.h
+>  generic-y += extable.h
+> diff --git a/arch/c6x/include/asm/dma-mapping.h b/arch/c6x/include/asm/dma-mapping.h
+> deleted file mode 100644
+> index 05daf1038111..000000000000
+> --- a/arch/c6x/include/asm/dma-mapping.h
+> +++ /dev/null
+> @@ -1,28 +0,0 @@
+> -/*
+> - *  Port on Texas Instruments TMS320C6x architecture
+> - *
+> - *  Copyright (C) 2004, 2009, 2010, 2011 Texas Instruments Incorporated
+> - *  Author: Aurelien Jacquiot <aurelien.jacquiot-l0cyMroinI0@public.gmane.org>
+> - *
+> - *  This program is free software; you can redistribute it and/or modify
+> - *  it under the terms of the GNU General Public License version 2 as
+> - *  published by the Free Software Foundation.
+> - *
+> - */
+> -#ifndef _ASM_C6X_DMA_MAPPING_H
+> -#define _ASM_C6X_DMA_MAPPING_H
+> -
+> -extern const struct dma_map_ops c6x_dma_ops;
+> -
+> -static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+> -{
+> -	return &c6x_dma_ops;
+> -}
+> -
+> -extern void coherent_mem_init(u32 start, u32 size);
+> -void *c6x_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+> -		gfp_t gfp, unsigned long attrs);
+> -void c6x_dma_free(struct device *dev, size_t size, void *vaddr,
+> -		dma_addr_t dma_handle, unsigned long attrs);
+> -
+> -#endif	/* _ASM_C6X_DMA_MAPPING_H */
+> diff --git a/arch/c6x/include/asm/setup.h b/arch/c6x/include/asm/setup.h
+> index 852afb209afb..350f34debb19 100644
+> --- a/arch/c6x/include/asm/setup.h
+> +++ b/arch/c6x/include/asm/setup.h
+> @@ -28,5 +28,7 @@ extern unsigned char c6x_fuse_mac[6];
+>  extern void machine_init(unsigned long dt_ptr);
+>  extern void time_init(void);
+>  
+> +extern void coherent_mem_init(u32 start, u32 size);
+> +
+>  #endif /* !__ASSEMBLY__ */
+>  #endif /* _ASM_C6X_SETUP_H */
+> diff --git a/arch/c6x/kernel/Makefile b/arch/c6x/kernel/Makefile
+> index 02f340d7b8fe..fbe74174de87 100644
+> --- a/arch/c6x/kernel/Makefile
+> +++ b/arch/c6x/kernel/Makefile
+> @@ -8,6 +8,6 @@ extra-y := head.o vmlinux.lds
+>  obj-y := process.o traps.o irq.o signal.o ptrace.o
+>  obj-y += setup.o sys_c6x.o time.o devicetree.o
+>  obj-y += switch_to.o entry.o vectors.o c6x_ksyms.o
+> -obj-y += soc.o dma.o
+> +obj-y += soc.o
+>  
+>  obj-$(CONFIG_MODULES)           += module.o
+> diff --git a/arch/c6x/kernel/dma.c b/arch/c6x/kernel/dma.c
+> deleted file mode 100644
+> index 31e1a9ec3a9c..000000000000
+> --- a/arch/c6x/kernel/dma.c
+> +++ /dev/null
+> @@ -1,138 +0,0 @@
+> -/*
+> - *  Copyright (C) 2011 Texas Instruments Incorporated
+> - *  Author: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> - *
+> - *  This program is free software; you can redistribute it and/or modify
+> - *  it under the terms of the GNU General Public License version 2 as
+> - *  published by the Free Software Foundation.
+> - */
+> -#include <linux/module.h>
+> -#include <linux/dma-mapping.h>
+> -#include <linux/mm.h>
+> -#include <linux/mm_types.h>
+> -#include <linux/scatterlist.h>
+> -
+> -#include <asm/cacheflush.h>
+> -
+> -static void c6x_dma_sync(dma_addr_t handle, size_t size,
+> -			 enum dma_data_direction dir)
+> -{
+> -	unsigned long paddr = handle;
+> -
+> -	BUG_ON(!valid_dma_direction(dir));
+> -
+> -	switch (dir) {
+> -	case DMA_FROM_DEVICE:
+> -		L2_cache_block_invalidate(paddr, paddr + size);
+> -		break;
+> -	case DMA_TO_DEVICE:
+> -		L2_cache_block_writeback(paddr, paddr + size);
+> -		break;
+> -	case DMA_BIDIRECTIONAL:
+> -		L2_cache_block_writeback_invalidate(paddr, paddr + size);
+> -		break;
+> -	default:
+> -		break;
+> -	}
+> -}
+> -
+> -static dma_addr_t c6x_dma_map_page(struct device *dev, struct page *page,
+> -		unsigned long offset, size_t size, enum dma_data_direction dir,
+> -		unsigned long attrs)
+> -{
+> -	dma_addr_t handle = virt_to_phys(page_address(page) + offset);
+> -
+> -	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> -		c6x_dma_sync(handle, size, dir);
+> -
+> -	return handle;
+> -}
+> -
+> -static void c6x_dma_unmap_page(struct device *dev, dma_addr_t handle,
+> -		size_t size, enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> -		c6x_dma_sync(handle, size, dir);
+> -}
+> -
+> -static int c6x_dma_map_sg(struct device *dev, struct scatterlist *sglist,
+> -		int nents, enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	struct scatterlist *sg;
+> -	int i;
+> -
+> -	for_each_sg(sglist, sg, nents, i) {
+> -		sg->dma_address = sg_phys(sg);
+> -		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> -			c6x_dma_sync(sg->dma_address, sg->length, dir);
+> -	}
+> -
+> -	return nents;
+> -}
+> -
+> -static void c6x_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+> -		  int nents, enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	struct scatterlist *sg;
+> -	int i;
+> -
+> -	if (attrs & DMA_ATTR_SKIP_CPU_SYNC)
+> -		return;
+> -
+> -	for_each_sg(sglist, sg, nents, i)
+> -		c6x_dma_sync(sg_dma_address(sg), sg->length, dir);
+> -}
+> -
+> -static void c6x_dma_sync_single_for_cpu(struct device *dev, dma_addr_t handle,
+> -		size_t size, enum dma_data_direction dir)
+> -{
+> -	c6x_dma_sync(handle, size, dir);
+> -
+> -}
+> -
+> -static void c6x_dma_sync_single_for_device(struct device *dev,
+> -		dma_addr_t handle, size_t size, enum dma_data_direction dir)
+> -{
+> -	c6x_dma_sync(handle, size, dir);
+> -
+> -}
+> -
+> -static void c6x_dma_sync_sg_for_cpu(struct device *dev,
+> -		struct scatterlist *sglist, int nents,
+> -		enum dma_data_direction dir)
+> -{
+> -	struct scatterlist *sg;
+> -	int i;
+> -
+> -	for_each_sg(sglist, sg, nents, i)
+> -		c6x_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+> -					sg->length, dir);
+> -
+> -}
+> -
+> -static void c6x_dma_sync_sg_for_device(struct device *dev,
+> -		struct scatterlist *sglist, int nents,
+> -		enum dma_data_direction dir)
+> -{
+> -	struct scatterlist *sg;
+> -	int i;
+> -
+> -	for_each_sg(sglist, sg, nents, i)
+> -		c6x_dma_sync_single_for_device(dev, sg_dma_address(sg),
+> -					   sg->length, dir);
+> -
+> -}
+> -
+> -const struct dma_map_ops c6x_dma_ops = {
+> -	.alloc			= c6x_dma_alloc,
+> -	.free			= c6x_dma_free,
+> -	.map_page		= c6x_dma_map_page,
+> -	.unmap_page		= c6x_dma_unmap_page,
+> -	.map_sg			= c6x_dma_map_sg,
+> -	.unmap_sg		= c6x_dma_unmap_sg,
+> -	.sync_single_for_device	= c6x_dma_sync_single_for_device,
+> -	.sync_single_for_cpu	= c6x_dma_sync_single_for_cpu,
+> -	.sync_sg_for_device	= c6x_dma_sync_sg_for_device,
+> -	.sync_sg_for_cpu	= c6x_dma_sync_sg_for_cpu,
+> -};
+> -EXPORT_SYMBOL(c6x_dma_ops);
+> diff --git a/arch/c6x/mm/dma-coherent.c b/arch/c6x/mm/dma-coherent.c
+> index 95e38ad27c69..d0a8e0c4b27e 100644
+> --- a/arch/c6x/mm/dma-coherent.c
+> +++ b/arch/c6x/mm/dma-coherent.c
+> @@ -19,10 +19,12 @@
+>  #include <linux/bitops.h>
+>  #include <linux/module.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/dma-mapping.h>
+> +#include <linux/dma-noncoherent.h>
+>  #include <linux/memblock.h>
+>  
+> +#include <asm/cacheflush.h>
+>  #include <asm/page.h>
+> +#include <asm/setup.h>
+>  
+>  /*
+>   * DMA coherent memory management, can be redefined using the memdma=
+> @@ -73,7 +75,7 @@ static void __free_dma_pages(u32 addr, int order)
+>   * Allocate DMA coherent memory space and return both the kernel
+>   * virtual and DMA address for that space.
+>   */
+> -void *c6x_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+> +void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+>  		gfp_t gfp, unsigned long attrs)
+>  {
+>  	u32 paddr;
+> @@ -98,7 +100,7 @@ void *c6x_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+>  /*
+>   * Free DMA coherent memory as defined by the above mapping.
+>   */
+> -void c6x_dma_free(struct device *dev, size_t size, void *vaddr,
+> +void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+>  		dma_addr_t dma_handle, unsigned long attrs)
+>  {
+>  	int order;
+> @@ -139,3 +141,35 @@ void __init coherent_mem_init(phys_addr_t start, u32 size)
+>  	dma_bitmap = phys_to_virt(bitmap_phys);
+>  	memset(dma_bitmap, 0, dma_pages * PAGE_SIZE);
+>  }
+> +
+> +static void c6x_dma_sync(struct device *dev, phys_addr_t paddr, size_t size,
+> +		enum dma_data_direction dir)
+> +{
+> +	BUG_ON(!valid_dma_direction(dir));
+> +
+> +	switch (dir) {
+> +	case DMA_FROM_DEVICE:
+> +		L2_cache_block_invalidate(paddr, paddr + size);
+> +		break;
+> +	case DMA_TO_DEVICE:
+> +		L2_cache_block_writeback(paddr, paddr + size);
+> +		break;
+> +	case DMA_BIDIRECTIONAL:
+> +		L2_cache_block_writeback_invalidate(paddr, paddr + size);
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +}
+> +
+> +void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
+> +		size_t size, enum dma_data_direction dir)
+> +{
+> +	return c6x_dma_sync(dev, paddr, size, dir);
+> +}
+> +
+> +void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
+> +		size_t size, enum dma_data_direction dir)
+> +{
+> +	return c6x_dma_sync(dev, paddr, size, dir);
+> +}
+Acked-by: Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
