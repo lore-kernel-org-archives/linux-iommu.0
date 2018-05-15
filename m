@@ -1,95 +1,31 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: iommu/amd: flush IOTLB for specific domains only (v2)
-Date: Tue, 15 May 2018 08:08:45 -0500
-Message-ID: <8f5ed491-c9d4-95f9-2cb1-955be42caea0@amd.com>
-References: <44f4f22d-c0f4-a6c8-5521-1f532a60c3fe@canonical.com>
- <MWHPR12MB1518E68ADE46948FBA415E7D9C930@MWHPR12MB1518.namprd12.prod.outlook.com>
- <1998976d-57ce-0fe5-54ab-a9a13263f362@canonical.com>
- <MWHPR12MB1518DD41E3BDA4820F27D7429C930@MWHPR12MB1518.namprd12.prod.outlook.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v7 2/2] iommu/amd: Add basic debugfs infrastructure for
+ AMD IOMMU
+Date: Tue, 15 May 2018 15:46:03 +0200
+Message-ID: <20180515134603.GD18595@8bytes.org>
+References: <152631818082.18929.13970142119193316487.stgit@sosxen2.amd.com>
+ <152631842907.18929.8819955271544326298.stgit@sosxen2.amd.com>
+ <ba2bb6f7-77ea-4431-af0f-d20c19820d5d@infradead.org>
+ <5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <MWHPR12MB1518DD41E3BDA4820F27D7429C930-Gy0DoCVfaSXKu+HfpMNLNQdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
-List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, Joseph Salisbury <joseph.salisbury-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "michel-otUistvHUpPR7s880joybQ@public.gmane.org" <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stein12c-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Suthikulpanit,
- Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, "Deucher,
- Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, "1747463-T8XWwAfLipRB/Vz2p19nDaxOck334EZe@public.gmane.org" <1747463-T8XWwAfLipRB/Vz2p19nDaxOck334EZe@public.gmane.org>, "linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org" <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Kuehling,
- Felix" <Felix.Kuehling-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Gary R Hook <gary.hook@amd.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gNS8xNS8yMDE4IDc6MzQgQU0sIE5hdGgsIEFyaW5kYW0gd3JvdGU6Cj4gCj4gCj4+IC0tLS0t
-T3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4+IEZyb206IEpvc2VwaCBTYWxpc2J1cnkgW21haWx0bzpq
-b3NlcGguc2FsaXNidXJ5QGNhbm9uaWNhbC5jb21dCj4+IFNlbnQ6IFR1ZXNkYXksIE1heSAxNSwg
-MjAxOCA1OjQwIFBNCj4+IFRvOiBOYXRoLCBBcmluZGFtIDxBcmluZGFtLk5hdGhAYW1kLmNvbT4K
-Pj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBCcmlkZ21hbiwgSm9obgo+
-PiA8Sm9obi5CcmlkZ21hbkBhbWQuY29tPjsgam9yb0A4Ynl0ZXMub3JnOyBhbWQtCj4+IGdmeEBs
-aXN0cy5mcmVlZGVza3RvcC5vcmc7IGRyYWtlQGVuZGxlc3NtLmNvbTsgc3RlaW4xMmNAZ21haWwu
-Y29tOwo+PiBTdXRoaWt1bHBhbml0LCBTdXJhdmVlIDxTdXJhdmVlLlN1dGhpa3VscGFuaXRAYW1k
-LmNvbT47IERldWNoZXIsCj4+IEFsZXhhbmRlciA8QWxleGFuZGVyLkRldWNoZXJAYW1kLmNvbT47
-IEt1ZWhsaW5nLCBGZWxpeAo+PiA8RmVsaXguS3VlaGxpbmdAYW1kLmNvbT47IGxpbnV4QGVuZGxl
-c3NtLmNvbTsgbWljaGVsQGRhZW56ZXIubmV0Owo+PiAxNzQ3NDYzQGJ1Z3MubGF1bmNocGFkLm5l
-dDsgTGVuZGFja3ksIFRob21hcwo+PiA8VGhvbWFzLkxlbmRhY2t5QGFtZC5jb20+Cj4+IFN1Ympl
-Y3Q6IFJlOiBpb21tdS9hbWQ6IGZsdXNoIElPVExCIGZvciBzcGVjaWZpYyBkb21haW5zIG9ubHkg
-KHYyKQo+Pgo+PiBPbiAwNS8xNS8yMDE4IDA0OjAzIEFNLCBOYXRoLCBBcmluZGFtIHdyb3RlOgo+
-Pj4gQWRkaW5nIFRvbS4KPj4+Cj4+PiBIaSBKb2UsCj4+Pgo+Pj4gTXkgb3JpZ2luYWwgcGF0Y2gg
-d2FzIG5ldmVyIGFjY2VwdGVkLiBUb20gYW5kIEpvZXJnIHdvcmtlZCBvbiBhbm90aGVyCj4+IHBh
-dGNoIHNlcmllcyB3aGljaCB3YXMgc3VwcG9zZWQgdG8gZml4IHRoZSBpc3N1ZSBpbiBxdWVzdGlv
-biBpbiBhZGRpdGlvbiB0byBkbwo+PiBzb21lIGNvZGUgY2xlYW51cHMuIEkgYmVsaWV2ZSB0aGVp
-ciBwYXRjaGVzIGFyZSBhbHJlYWR5IGluIHRoZSBtYWlubGluZS4gSWYgSQo+PiByZW1lbWJlciBj
-b3JyZWN0bHksIG9uZSBvZiB0aGUgcGF0Y2hlcyBkaXNhYmxlZCBQQ0kgQVRTIGZvciB0aGUgZ3Jh
-cGhpY3MKPj4gY2FyZCB3aGljaCB3YXMgY2F1c2luZyB0aGUgaXNzdWUuCj4+Pgo+Pj4gRG8geW91
-IHN0aWxsIHNlZSB0aGUgaXNzdWUgd2l0aCBsYXRlc3QgbWFpbmxpbmUga2VybmVsPwo+Pj4KPj4+
-IEJSLAo+Pj4gQXJpbmRhbQo+Pj4KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4+PiBG
-cm9tOiBKb3NlcGggU2FsaXNidXJ5IFttYWlsdG86am9zZXBoLnNhbGlzYnVyeUBjYW5vbmljYWwu
-Y29tXQo+Pj4gU2VudDogVHVlc2RheSwgTWF5IDE1LCAyMDE4IDE6MTcgQU0KPj4+IFRvOiBOYXRo
-LCBBcmluZGFtIDxBcmluZGFtLk5hdGhAYW1kLmNvbT4KPj4+IENjOiBpb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZzsgQnJpZGdtYW4sIEpvaG4KPj4+IDxKb2huLkJyaWRnbWFuQGFtZC5j
-b20+OyBqb3JvQDhieXRlcy5vcmc7Cj4+PiBhbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZzsg
-ZHJha2VAZW5kbGVzc20uY29tOwo+PiBzdGVpbjEyY0BnbWFpbC5jb207Cj4+PiBTdXRoaWt1bHBh
-bml0LCBTdXJhdmVlIDxTdXJhdmVlLlN1dGhpa3VscGFuaXRAYW1kLmNvbT47IERldWNoZXIsCj4+
-PiBBbGV4YW5kZXIgPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5jb20+OyBLdWVobGluZywgRmVsaXgK
-Pj4+IDxGZWxpeC5LdWVobGluZ0BhbWQuY29tPjsgbGludXhAZW5kbGVzc20uY29tOyBtaWNoZWxA
-ZGFlbnplci5uZXQ7Cj4+PiAxNzQ3NDYzQGJ1Z3MubGF1bmNocGFkLm5ldAo+Pj4gU3ViamVjdDog
-aW9tbXUvYW1kOiBmbHVzaCBJT1RMQiBmb3Igc3BlY2lmaWMgZG9tYWlucyBvbmx5ICh2MikKPj4+
-Cj4+PiBIZWxsbyBBcmluZGFtLAo+Pj4KPj4+IFRoZXJlIGlzIGEgYnVnIHJlcG9ydFswXSB0aGF0
-IHlvdSBjcmVhdGVkIGEgcGF0Y2hbMV0gZm9yIGEgd2hpbGUgYmFjay4KPj4gSG93ZXZlciwgdGhl
-IHBhdGNoIG5ldmVyIGxhbmRlZCBpbiBtYWlubGluZS7CoCBUaGVyZSBpcyBhIGJ1ZyByZXBvcnRl
-ciBpbgo+PiBVYnVudHVbMl0gdGhhdCBpcyBhZmZlY3RlZCBieSB0aGlzIGJ1ZyBhbmQgaXMgd2ls
-bGluZyB0byB0ZXN0IHRoZSBwYXRjaC7CoCBJCj4+IGF0dGVtcHRlZCB0byBidWlsZCBhIHRlc3Qg
-a2VybmVsIHdpdGggdGhlIHBhdGNoLCBidXQgaXQgZG9lcyBub3QgYXBwbHkgdG8KPj4gY3VycmVu
-dGx5IG1haW5saW5lIGNsZWFubHkuwqAgRG8geW91IHN0aWxsIHRoaW5rIHRoaXMgcGF0Y2ggbWF5
-IHJlc29sdmUgdGhpcwo+PiBidWc/wqAgSWYgc28sIGlzIHRoZXJlIGEgdmVyc2lvbiBvZiB5b3Vy
-IHBhdGNoIGF2YWlsYWJsZSB0aGF0IHdpbGwgYXBwbHkgdG8gY3VycmVudAo+PiBtYWlubGluZT8K
-Pj4+Cj4+PiBUaGFua3MsCj4+Pgo+Pj4gSm9lCj4+Pgo+Pj4gWzBdIGh0dHBzOi8vYnVncy5mcmVl
-ZGVza3RvcC5vcmcvc2hvd19idWcuY2dpP2lkPTEwMTAyOQo+Pj4gWzFdIGh0dHBzOi8vcGF0Y2h3
-b3JrLmZyZWVkZXNrdG9wLm9yZy9wYXRjaC8xNTczMjcvCj4+PiBbMl0gaHR0cDovL3BhZC5sdi8x
-NzQ3NDYzCj4+Pgo+PiBIaSBBcmluZGFtLAo+Pgo+PiBUaGFua3MgZm9yIHRoZSBmZWVkYmFjay7C
-oCBZZXMsIHRoZSBsYXRlc3QgbWFpbmxpbmUga2VybmVsIHdhcyB0ZXN0ZWQsIGFuZCBpdCBpcwo+
-PiByZXBvcnRlZCB0aGUgYnVnIHN0aWxsIGhhcHBlbnMgaW4gdGhlIFVidW50dSBrZXJuZWwgYnVn
-WzBdLiBJcyB0aGVyZSBhbnkKPj4gc3BlY2lmaWMgZGlhZ25vc3RpYyBpbmZvIHdlIGNhbiBjb2xs
-ZWN0IHRoYXQgbWlnaHQgaGVscD8KPiAKPiBKb2UsIEkgYmVsaWV2ZSBhbGwgdGhlIGluZm9ybWF0
-aW9uIG5lZWRlZCBpcyBhbHJlYWR5IHByb3ZpZGVkIGluIFsyXS4gTGV0IHVzIHdhaXQgZm9yIGlu
-cHV0cyBmcm9tIFRvbSBhbmQgSm9lcmcuCj4gCj4gSSBjb3VsZCB0YWtlIGEgbG9vayBhdCB0aGUg
-aXNzdWUgbG9jYWxseSwgYnV0IGl0IHdpbGwgdGFrZSBtZSBzb21lIHJlYWxseSBsb25nIHRpbWUg
-c2luY2UgSSBhbSBvY2N1cGllZCB3aXRoIG90aGVyIGFzc2lnbm1lbnRzIHJpZ2h0IG5vdy4KCkkg
-ZG9uJ3Qgc2VlIGFueXRoaW5nIGluIHRoZSBidWcgdGhhdCBpbmRpY2F0ZXMgdGhlIGxhdGVzdCBt
-YWlubGluZSBrZXJuZWwKd2FzIHRlc3RlZC4gIFRoZSBwYXRjaGVzL2ZpeGVzIGluIHF1ZXN0aW9u
-IGFyZSBwYXJ0IG9mIHRoZSA0LjEzIGtlcm5lbCwgSQpvbmx5IHNlZSByZWZlcmVuY2VzIHRvIDQu
-MTAga2VybmVscyBzbyBJIHdvdWxkbid0IGV4cGVjdCB0aGUgaXNzdWUgdG8gYmUKcmVzb2x2ZWQg
-dW5sZXNzIHRoZSBwYXRjaGVzIGZyb20gNC4xMyB3ZXJlIGJhY2twb3J0ZWQgdG8gdGhlIFVidW50
-dSA0LjEwCmtlcm5lbC4KClRoYW5rcywKVG9tCgo+IAo+IEJSLAo+IEFyaW5kYW0KPiAKPj4KPj4g
-VGhhbmtzLAo+Pgo+PiBKb2UKPj4KPj4gWzBdIGh0dHA6Ly9wYWQubHYvMTc0NzQ2MwpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwphbWQtZ2Z4IG1haWxpbmcg
-bGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
-dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2FtZC1nZngK
+On Mon, May 14, 2018 at 03:00:50PM -0500, Gary R Hook wrote:
+> This was brought up a few weeks ago in, I believe, version 3 of this patch.
+> That question was discussed (because that's what I did the first time out),
+> and _someone_ _else_ asked about why I didn't just do it the way I've done
+> it here.
+
+You don't have this problem if you put the code in amd_iommu.c in an
+IOMMU_DEBUGFS ifdef.
+
+
+
+	Joerg
