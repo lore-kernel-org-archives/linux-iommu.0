@@ -1,50 +1,45 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 1/6] swiotlb: remove a pointless comment
-Date: Tue, 15 May 2018 20:05:18 +0200
-Message-ID: <20180515180523.3038-2-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 4/6] swiotlb: mark is_swiotlb_buffer static
+Date: Tue, 15 May 2018 20:05:21 +0200
+Message-ID: <20180515180523.3038-5-hch@lst.de>
 References: <20180515180523.3038-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180515180523.3038-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180515180523.3038-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-This comments describes an aspect of the map_sg interface that isn't
-even exploited by swiotlb.
-
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- lib/swiotlb.c | 6 ------
- 1 file changed, 6 deletions(-)
+ include/linux/swiotlb.h | 1 -
+ lib/swiotlb.c           | 2 +-
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 965be92c33b5..7ef541ce8f34 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -121,7 +121,6 @@ static inline unsigned int swiotlb_max_segment(void) { return 0; }
+ #endif
+ 
+ extern void swiotlb_print_info(void);
+-extern int is_swiotlb_buffer(phys_addr_t paddr);
+ extern void swiotlb_set_max_segment(unsigned int);
+ 
+ extern const struct dma_map_ops swiotlb_dma_ops;
 diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-index 16ace0e25d52..721f93677eee 100644
+index 2ebbc7204061..8333277d1cd1 100644
 --- a/lib/swiotlb.c
 +++ b/lib/swiotlb.c
-@@ -927,12 +927,6 @@ swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
-  * appropriate dma address and length.  They are obtained via
-  * sg_dma_{address,length}(SG).
-  *
-- * NOTE: An implementation may be able to use a smaller number of
-- *       DMA address/length pairs than there are SG table elements.
-- *       (for example via virtual mapping capabilities)
-- *       The routine returns the number of addr/length pairs actually
-- *       used, at most nents.
-- *
-  * Device ownership issues as mentioned above for swiotlb_map_page are the
-  * same here.
-  */
+@@ -431,7 +431,7 @@ void __init swiotlb_exit(void)
+ 	max_segment = 0;
+ }
+ 
+-int is_swiotlb_buffer(phys_addr_t paddr)
++static int is_swiotlb_buffer(phys_addr_t paddr)
+ {
+ 	return paddr >= io_tlb_start && paddr < io_tlb_end;
+ }
 -- 
 2.17.0
