@@ -1,15 +1,14 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v2 0/9] iommu/vt-d: Improve PASID id and table management
-Date: Wed, 16 May 2018 08:56:30 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19116ADF6@SHSMSX101.ccr.corp.intel.com>
-References: <1525398084-28815-1-git-send-email-baolu.lu@linux.intel.com>
-	<20180515141101.GF18595@8bytes.org> <5AFBE53C.2070604@linux.intel.com>
+From: Yisheng Xie <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/6] swiotlb: do not panic on mapping failures
+Date: Wed, 16 May 2018 17:24:25 +0800
+Message-ID: <55b7f00e-21ac-6696-9659-62f13f8fbd7f@huawei.com>
+References: <20180515180523.3038-1-hch@lst.de>
+	<20180515180523.3038-3-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5AFBE53C.2070604-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180515180523.3038-3-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,129 +18,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> Sent: Wednesday, May 16, 2018 4:01 PM
-> 
-> Hi Joerg,
-> 
-> Thank you for looking at my patches.
-> 
-> On 05/15/2018 10:11 PM, Joerg Roedel wrote:
-> > On Fri, May 04, 2018 at 09:41:15AM +0800, Lu Baolu wrote:
-> >> PATCH 4~9 implement per domain PASID table. Current per IOMMU
-> >> PASID table implementation is insecure in the cases where
-> >> multiple devices under one single IOMMU unit support PASID
-> >> feature. With per domain PASID table, we can achieve finer
-> >> protection and isolation granularity.
-> >
-> > Hold on, we hat discussions in the past about doing a system-wide pasid
-> > space, so that every mm_struct with devices attached gets the same pasid
-> > across all devices it is talking to. Reason was that some devices (will)
-> > require this to work correctly. This goes into the opposite direction,
-> > so I am a bit confused here. Please explain, is this not longer
-> > necessary?
-> 
-> You are right. System-wide pasid space is necessary, hence PATCH
-> 1~3 implement it. But PATCH 4~9 don't go into the opposite direction,
-> it's designed to address another potential issue.
+Hi Christoph,
 
-one thing you may want to highlight is, even with PATCH 4-9 it's
-still doing system-wide PASID space allocation. Just PASID table
-itself is kept per-device for isolation purpose as you described
-below, i.e. each device can access only those PASIDs which are
-allocated to itself while the allocation happens system-wide...
+On 2018/5/16 2:05, Christoph Hellwig wrote:
+> We now have error handling in map_single/map_page callers (most of them
+> anyway). As swiotlb_tbl_map_single already prints a useful warning
+> when running out of swiotlb pool swace we can also remove swiotlb_full
+                                   ^ space ?
 
-> 
-> With system-wide pasid space, we can use a system-wide pasid table,
-> or just keep what we have now(per iommu unit pasid table). Both
-> system-wide and per iommu unitpasid table mean that two devices
-> might share a single pasid table. That will result in an issue.
-> 
-> For an example, device A is assigned to access the memory space of
-> process A, and device B is assigned to access the memory space of
-> process B. The dma remapping infrastructure looks like:
-> 
->                                                      .------------------.
->                              .----------------.      |                  |
->                              |                |      |                  |
->                              .----------------.      | Paging structure |
->                              |     PASID X    |--|   |  for Process A   |
->                              .----------------.  |   |                  |
->                              |                |  --->'------------------'
->      .----------------.      .----------------.
->      |                |      |     PASID Y    |--|
->      .----------------.      .----------------.  |
->      | Dev_A context  |---|  |                |  |   .------------------.
->      '----------------'   |  .----------------.  |   |                  |
->      |                |   |  |                |  |   |                  |
->      '----------------'   |  .----------------.  |   | Paging structure |
->      | Dev_B context  |   -->|                |  |   |  for Process B   |
->      '----------------'----->'----------------'  |   |                  |
->      |                |         system-wide      v-->'------------------'
->      .----------------.         pasid table
->      |                |
->      '----------------'
->         Intel iommu
->        context table
-> 
-> 
-> Since dev_A and dev_B share a pasid table, the side effect is that a flawed
-> dev_A might access the memory space of process B (with pasid y). Vice
-> versa,
-> a flawed dev_B might access memory space of process A (with pasid x).
-> 
-> What PATCH 4~9 do is to remove such possibility by assigning a pasid table
-> for each pci device. Hence, the remapping infrastructure looks like:
-> 
-> 
->                                                     .------------------.
->                                                     |                  |
->                             .----------------.      |                  |
->                             |                |      | Paging structure |
->                             .----------------.      |  for Process A   |
->                             |     PASID X    |      |                  |
->                             .----------------.----->'------------------'
->                             |                |
->                             .----------------.
->                             |                |
->                             .----------------.
->                             |                |
->                             .----------------.
->    .----------------.       |                |
->    |                |       .----------------.
->    .----------------.       |                |
->    | Dev_A context  |------>'----------------'
->    '----------------'          pasid table
->    |                |          for Dev_A
->    '----------------'
->    | Dev_B context  |-->
->    '----------------'  |    .----------------.
->    |                |  |    |                |      .------------------.
->    .----------------.  |    .----------------.      |                  |
->    |                |  |    |                |      |                  |
->    '----------------'  |    .----------------.      | Paging structure |
->        Intel iommu     |    |                |      |  for Process B   |
->       context table    |    .----------------.      |                  |
->                        |    |     PASID Y    |----->'------------------'
->                        |    .----------------.
->                        |    |                |
->                        |    .----------------.
->                        |    |                |
->                        |    .----------------.
->                        v--->|                |
->                             '----------------'
->                                pasid table
->                                for Dev_B
-> 
-> 
-> With this, dev_A has no means to access memory of process B and vice
-> versa.
-> 
-> Best regards,
-> Lu Baolu
+Thanks
+Yisheng
+> entirely as it serves no purpose now.
