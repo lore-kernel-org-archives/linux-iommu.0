@@ -1,13 +1,14 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 3/3] riscv: add swiotlb support
-Date: Wed, 16 May 2018 16:43:02 +0200
-Message-ID: <20180516144302.823-4-hch@lst.de>
-References: <20180516144302.823-1-hch@lst.de>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
+Date: Wed, 16 May 2018 13:41:50 -0700
+Message-ID: <20180516134150.34fc8857@jacob-builder>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180516144302.823-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180511190641.23008-2-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,83 +18,289 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org
-Cc: linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-All RISC-V platforms today lack an IOMMU. However, legacy PCI devices
-sometimes require DMA-memory to be in the low 32 bits.  To make this work,
-we enable the software-based bounce buffers from swiotlb.  They only impose
-overhead when the device in question cannot address the full 64-bit address
-space, so a perfect fit.
+On Fri, 11 May 2018 20:06:02 +0100
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-This patch assumes that DMA is coherent with the processor and the PCI
-bus.  It also assumes that the processor and devices share a common
-address space. This is true for all RISC-V platforms so far.
+> Shared Virtual Addressing (SVA) provides a way for device drivers to
+> bind process address spaces to devices. This requires the IOMMU to
+> support page table format and features compatible with the CPUs, and
+> usually requires the system to support I/O Page Faults (IOPF) and
+> Process Address Space ID (PASID). When all of these are available,
+> DMA can access virtual addresses of a process. A PASID is allocated
+> for each process, and the device driver programs it into the device
+> in an implementation-specific way.
+> 
+> Add a new API for sharing process page tables with devices. Introduce
+> two IOMMU operations, sva_device_init() and sva_device_shutdown(),
+> that prepare the IOMMU driver for SVA. For example allocate PASID
+> tables and fault queues. Subsequent patches will implement the bind()
+> and unbind() operations.
+> 
+> Support for I/O Page Faults will be added in a later patch using a new
+> feature bit (IOMMU_SVA_FEAT_IOPF). With the current API users must pin
+> down all shared mappings. Other feature bits that may be added in the
+> future are IOMMU_SVA_FEAT_PRIVATE, to support private PASID address
+> spaces, and IOMMU_SVA_FEAT_NO_PASID, to bind the whole device address
+> space to a process.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> 
+> ---
+> v1->v2:
+> * Add sva_param structure to iommu_param
+> * CONFIG option is only selectable by IOMMU drivers
+> ---
+>  drivers/iommu/Kconfig     |   4 ++
+>  drivers/iommu/Makefile    |   1 +
+>  drivers/iommu/iommu-sva.c | 110
+> ++++++++++++++++++++++++++++++++++++++ include/linux/iommu.h     |
+> 32 +++++++++++ 4 files changed, 147 insertions(+)
+>  create mode 100644 drivers/iommu/iommu-sva.c
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 7564237f788d..cca8e06903c7 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -74,6 +74,10 @@ config IOMMU_DMA
+>  	select IOMMU_IOVA
+>  	select NEED_SG_DMA_LENGTH
+>  
+> +config IOMMU_SVA
+> +	bool
+> +	select IOMMU_API
+> +
+>  config FSL_PAMU
+>  	bool "Freescale IOMMU support"
+>  	depends on PCI
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 1fb695854809..1dbcc89ebe4c 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -3,6 +3,7 @@ obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+>  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+> +obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> new file mode 100644
+> index 000000000000..8b4afb7c63ae
+> --- /dev/null
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -0,0 +1,110 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Manage PASIDs and bind process address spaces to devices.
+> + *
+> + * Copyright (C) 2018 ARM Ltd.
+> + */
+> +
+> +#include <linux/iommu.h>
+> +#include <linux/slab.h>
+> +
+> +/**
+> + * iommu_sva_device_init() - Initialize Shared Virtual Addressing
+> for a device
+> + * @dev: the device
+> + * @features: bitmask of features that need to be initialized
+> + * @max_pasid: max PASID value supported by the device
+> + *
+> + * Users of the bind()/unbind() API must call this function to
+> initialize all
+> + * features required for SVA.
+> + *
+> + * The device must support multiple address spaces (e.g. PCI PASID).
+> By default
+> + * the PASID allocated during bind() is limited by the IOMMU
+> capacity, and by
+> + * the device PASID width defined in the PCI capability or in the
+> firmware
+> + * description. Setting @max_pasid to a non-zero value smaller than
+> this limit
+> + * overrides it.
+> + *
+seems the min_pasid never gets used. do you really need it?
+ 
+> + * The device should not be performing any DMA while this function
+> is running,
+> + * otherwise the behavior is undefined.
+> + *
+> + * Return 0 if initialization succeeded, or an error.
+> + */
+> +int iommu_sva_device_init(struct device *dev, unsigned long features,
+> +			  unsigned int max_pasid)
+> +{
+> +	int ret;
+> +	struct iommu_sva_param *param;
+> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +
+> +	if (!domain || !domain->ops->sva_device_init)
+> +		return -ENODEV;
+> +
+> +	if (features)
+> +		return -EINVAL;
+should it be !features?
 
-[changelog stolen from an earlier patch by Palmer Dabbelt that did the
- more complicated swiotlb wireup before the recent consolidation]
+> +
+> +	param = kzalloc(sizeof(*param), GFP_KERNEL);
+> +	if (!param)
+> +		return -ENOMEM;
+> +
+> +	param->features		= features;
+> +	param->max_pasid	= max_pasid;
+> +
+> +	/*
+> +	 * IOMMU driver updates the limits depending on the IOMMU
+> and device
+> +	 * capabilities.
+> +	 */
+> +	ret = domain->ops->sva_device_init(dev, param);
+> +	if (ret)
+> +		goto err_free_param;
+> +
+> +	mutex_lock(&dev->iommu_param->lock);
+> +	if (dev->iommu_param->sva_param)
+> +		ret = -EEXIST;
+> +	else
+> +		dev->iommu_param->sva_param = param;
+> +	mutex_unlock(&dev->iommu_param->lock);
+> +	if (ret)
+> +		goto err_device_shutdown;
+> +
+> +	return 0;
+> +
+> +err_device_shutdown:
+> +	if (domain->ops->sva_device_shutdown)
+> +		domain->ops->sva_device_shutdown(dev, param);
+> +
+> +err_free_param:
+> +	kfree(param);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_device_init);
+> +
+> +/**
+> + * iommu_sva_device_shutdown() - Shutdown Shared Virtual Addressing
+> for a device
+> + * @dev: the device
+> + *
+> + * Disable SVA. Device driver should ensure that the device isn't
+> performing any
+> + * DMA while this function is running.
+> + */
+> +int iommu_sva_device_shutdown(struct device *dev)
+> +{
+> +	struct iommu_sva_param *param;
+> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +
+> +	if (!domain)
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&dev->iommu_param->lock);
+> +	param = dev->iommu_param->sva_param;
+> +	dev->iommu_param->sva_param = NULL;
+> +	mutex_unlock(&dev->iommu_param->lock);
+> +	if (!param)
+> +		return -ENODEV;
+> +
+> +	if (domain->ops->sva_device_shutdown)
+> +		domain->ops->sva_device_shutdown(dev, param);
+seems a little mismatch here, do you need pass the param. I don't think
+there is anything else model specific iommu driver need to do for the
+param.
+> +
+> +	kfree(param);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_sva_device_shutdown);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 0933f726d2e6..2efe7738bedb 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -212,6 +212,12 @@ struct page_response_msg {
+>  	u64 private_data;
+>  };
+>  
+> +struct iommu_sva_param {
+> +	unsigned long features;
+> +	unsigned int min_pasid;
+> +	unsigned int max_pasid;
+> +};
+> +
+>  /**
+>   * struct iommu_ops - iommu ops and capabilities
+>   * @capable: check capability
+> @@ -219,6 +225,8 @@ struct page_response_msg {
+>   * @domain_free: free iommu domain
+>   * @attach_dev: attach device to an iommu domain
+>   * @detach_dev: detach device from an iommu domain
+> + * @sva_device_init: initialize Shared Virtual Adressing for a device
+> + * @sva_device_shutdown: shutdown Shared Virtual Adressing for a
+> device
+>   * @map: map a physically contiguous memory region to an iommu domain
+>   * @unmap: unmap a physically contiguous memory region from an iommu
+> domain
+>   * @map_sg: map a scatter-gather list of physically contiguous
+> memory chunks @@ -256,6 +264,10 @@ struct iommu_ops {
+>  
+>  	int (*attach_dev)(struct iommu_domain *domain, struct device
+> *dev); void (*detach_dev)(struct iommu_domain *domain, struct device
+> *dev);
+> +	int (*sva_device_init)(struct device *dev,
+> +			       struct iommu_sva_param *param);
+> +	void (*sva_device_shutdown)(struct device *dev,
+> +				    struct iommu_sva_param *param);
+>  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+>  		   phys_addr_t paddr, size_t size, int prot);
+>  	size_t (*unmap)(struct iommu_domain *domain, unsigned long
+> iova, @@ -413,6 +425,7 @@ struct iommu_fault_param {
+>   * struct iommu_param - collection of per-device IOMMU data
+>   *
+>   * @fault_param: IOMMU detected device fault reporting data
+> + * @sva_param: SVA parameters
+>   *
+>   * TODO: migrate other per device data pointers under
+> iommu_dev_data, e.g.
+>   *	struct iommu_group	*iommu_group;
+> @@ -421,6 +434,7 @@ struct iommu_fault_param {
+>  struct iommu_param {
+>  	struct mutex lock;
+>  	struct iommu_fault_param *fault_param;
+> +	struct iommu_sva_param *sva_param;
+>  };
+>  
+>  int  iommu_device_register(struct iommu_device *iommu);
+> @@ -920,4 +934,22 @@ static inline int iommu_sva_invalidate(struct
+> iommu_domain *domain, 
+>  #endif /* CONFIG_IOMMU_API */
+>  
+> +#ifdef CONFIG_IOMMU_SVA
+> +extern int iommu_sva_device_init(struct device *dev, unsigned long
+> features,
+> +				 unsigned int max_pasid);
+> +extern int iommu_sva_device_shutdown(struct device *dev);
+> +#else /* CONFIG_IOMMU_SVA */
+> +static inline int iommu_sva_device_init(struct device *dev,
+> +					unsigned long features,
+> +					unsigned int max_pasid)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iommu_sva_device_shutdown(struct device *dev)
+> +{
+> +	return -ENODEV;
+> +}
+> +#endif /* CONFIG_IOMMU_SVA */
+> +
+>  #endif /* __LINUX_IOMMU_H */
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/riscv/Kconfig                   |  1 +
- arch/riscv/include/asm/dma-mapping.h | 15 +++++++++++++++
- arch/riscv/kernel/setup.c            |  2 ++
- 3 files changed, 18 insertions(+)
- create mode 100644 arch/riscv/include/asm/dma-mapping.h
-
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index c4488ce8c2fa..274bc064c41f 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -114,6 +114,7 @@ config ARCH_RV64I
- 	select HAVE_FTRACE_MCOUNT_RECORD
- 	select HAVE_DYNAMIC_FTRACE
- 	select HAVE_DYNAMIC_FTRACE_WITH_REGS
-+	select SWIOTLB
- 
- endchoice
- 
-diff --git a/arch/riscv/include/asm/dma-mapping.h b/arch/riscv/include/asm/dma-mapping.h
-new file mode 100644
-index 000000000000..8facc1c8fa05
---- /dev/null
-+++ b/arch/riscv/include/asm/dma-mapping.h
-@@ -0,0 +1,15 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#ifndef _RISCV_ASM_DMA_MAPPING_H
-+#define _RISCV_ASM_DMA_MAPPING_H 1
-+
-+#ifdef CONFIG_SWIOTLB
-+#include <linux/swiotlb.h>
-+static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
-+{
-+	return &swiotlb_dma_ops;
-+}
-+#else
-+#include <asm-generic/dma-mapping.h>
-+#endif /* CONFIG_SWIOTLB */
-+
-+#endif /* _RISCV_ASM_DMA_MAPPING_H */
-diff --git a/arch/riscv/kernel/setup.c b/arch/riscv/kernel/setup.c
-index c11f40c1b2a8..ee44a48faf79 100644
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -29,6 +29,7 @@
- #include <linux/of_fdt.h>
- #include <linux/of_platform.h>
- #include <linux/sched/task.h>
-+#include <linux/swiotlb.h>
- 
- #include <asm/setup.h>
- #include <asm/sections.h>
-@@ -206,6 +207,7 @@ void __init setup_arch(char **cmdline_p)
- 	setup_bootmem();
- 	paging_init();
- 	unflatten_device_tree();
-+	swiotlb_init(1);
- 
- #ifdef CONFIG_SMP
- 	setup_smp();
--- 
-2.17.0
+[Jacob Pan]
