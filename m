@@ -1,14 +1,14 @@
 From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 02/40] iommu/sva: Bind process address spaces to devices
-Date: Thu, 17 May 2018 14:10:58 +0100
-Message-ID: <20180517141058.00001c76@huawei.com>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Thu, 17 May 2018 15:25:07 +0100
+Message-ID: <20180517150516.000067ca@huawei.com>
 References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-3-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180511190641.23008-3-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180511190641.23008-4-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,245 +22,589 @@ To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 11 May 2018 20:06:03 +0100
+On Fri, 11 May 2018 20:06:04 +0100
 Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-> Add bind() and unbind() operations to the IOMMU API. Bind() returns a
-> PASID that drivers can program in hardware, to let their devices access an
-> mm. This patch only adds skeletons for the device driver API, most of the
-> implementation is still missing.
+> Allocate IOMMU mm structures and binding them to devices. Four operations
+> are added to IOMMU drivers:
 > 
-> IOMMU groups with more than one device aren't supported for SVA at the
-> moment. There may be P2P traffic between devices within a group, which
-> cannot be seen by an IOMMU (note that supporting PASID doesn't add any
-> form of isolation with regard to P2P). Supporting groups would require
-> calling bind() for all bound processes every time a device is added to a
-> group, to perform sanity checks (e.g. ensure that new devices support
-> PASIDs at least as big as those already allocated in the group).
-
-Is it worth adding an explicit comment on this reasoning (or a minimal subset
-of it) at the check for the number of devices in the group?
-It's well laid out here, but might not be so obvious if someone is reading
-the code in the future.
-
->It also
-> means making sure that reserved ranges (IOMMU_RESV_*) of all devices are
-> carved out of processes. This is already tricky with single devices, but
-> becomes very difficult with groups. Since SVA-capable devices are expected
-> to be cleanly isolated, and since we don't have any way to test groups or
-> hot-plug, we only allow singular groups for now.
+> * mm_alloc(): to create an io_mm structure and perform architecture-
+>   specific operations required to grab the process (for instance on ARM,
+>   pin down the CPU ASID so that the process doesn't get assigned a new
+>   ASID on rollover).
+> 
+>   There is a single valid io_mm structure per Linux mm. Future extensions
+>   may also use io_mm for kernel-managed address spaces, populated with
+>   map()/unmap() calls instead of bound to process address spaces. This
+>   patch focuses on "shared" io_mm.
+> 
+> * mm_attach(): attach an mm to a device. The IOMMU driver checks that the
+>   device is capable of sharing an address space, and writes the PASID
+>   table entry to install the pgd.
+> 
+>   Some IOMMU drivers will have a single PASID table per domain, for
+>   convenience. Other can implement it differently but to help these
+>   drivers, mm_attach and mm_detach take 'attach_domain' and
+>   'detach_domain' parameters, that tell whether they need to set and clear
+>   the PASID entry or only send the required TLB invalidations.
+> 
+> * mm_detach(): detach an mm from a device. The IOMMU driver removes the
+>   PASID table entry and invalidates the IOTLBs.
+> 
+> * mm_free(): free a structure allocated by mm_alloc(), and let arch
+>   release the process.
+> 
+> mm_attach and mm_detach operations are serialized with a spinlock. When
+> trying to optimize this code, we should at least prevent concurrent
+> attach()/detach() on the same domain (so multi-level PASID table code can
+> allocate tables lazily). mm_alloc() can sleep, but mm_free must not
+> (because we'll have to call it from call_srcu later on).
+> 
+> At the moment we use an IDR for allocating PASIDs and retrieving contexts.
+> We also use a single spinlock. These can be refined and optimized later (a
+> custom allocator will be needed for top-down PASID allocation).
+> 
+> Keeping track of address spaces requires the use of MMU notifiers.
+> Handling process exit with regard to unbind() is tricky, so it is left for
+> another patch and we explicitly fail mm_alloc() for the moment.
 > 
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 
-Otherwise, looks good to me.
+A few minor bits and bobs inline.  Looks good in general + nice diags!
+
+Thanks,
+
+Jonathan
 
 > 
 > ---
-> v1->v2: remove iommu_sva_bind/unbind_group
+> v1->v2: sanity-check of flags
 > ---
->  drivers/iommu/iommu-sva.c | 27 +++++++++++++
->  drivers/iommu/iommu.c     | 83 +++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h     | 37 +++++++++++++++++
->  3 files changed, 147 insertions(+)
+>  drivers/iommu/iommu-sva.c | 380 +++++++++++++++++++++++++++++++++++++-
+>  drivers/iommu/iommu.c     |   1 +
+>  include/linux/iommu.h     |  28 +++
+>  3 files changed, 406 insertions(+), 3 deletions(-)
 > 
 > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 8b4afb7c63ae..8d98f9c09864 100644
+> index 8d98f9c09864..6ac679c48f3c 100644
 > --- a/drivers/iommu/iommu-sva.c
 > +++ b/drivers/iommu/iommu-sva.c
-> @@ -93,6 +93,8 @@ int iommu_sva_device_shutdown(struct device *dev)
->  	if (!domain)
->  		return -ENODEV;
+> @@ -5,8 +5,298 @@
+>   * Copyright (C) 2018 ARM Ltd.
+>   */
 >  
-> +	__iommu_sva_unbind_dev_all(dev);
-> +
->  	mutex_lock(&dev->iommu_param->lock);
->  	param = dev->iommu_param->sva_param;
->  	dev->iommu_param->sva_param = NULL;
-> @@ -108,3 +110,28 @@ int iommu_sva_device_shutdown(struct device *dev)
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(iommu_sva_device_shutdown);
-> +
-> +int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> +			    int *pasid, unsigned long flags, void *drvdata)
-> +{
-> +	return -ENOSYS; /* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_bind_device);
-> +
-> +int __iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENOSYS; /* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_unbind_device);
+> +#include <linux/idr.h>
+>  #include <linux/iommu.h>
+> +#include <linux/sched/mm.h>
+>  #include <linux/slab.h>
+> +#include <linux/spinlock.h>
 > +
 > +/**
-> + * __iommu_sva_unbind_dev_all() - Detach all address spaces from this device
-> + * @dev: the device
+> + * DOC: io_mm model
 > + *
-> + * When detaching @device from a domain, IOMMU drivers should use this helper.
+> + * The io_mm keeps track of process address spaces shared between CPU and IOMMU.
+> + * The following example illustrates the relation between structures
+> + * iommu_domain, io_mm and iommu_bond. An iommu_bond is a link between io_mm and
+> + * device. A device can have multiple io_mm and an io_mm may be bound to
+> + * multiple devices.
+> + *              ___________________________
+> + *             |  IOMMU domain A           |
+> + *             |  ________________         |
+> + *             | |  IOMMU group   |        +------- io_pgtables
+> + *             | |                |        |
+> + *             | |   dev 00:00.0 ----+------- bond --- io_mm X
+> + *             | |________________|   \    |
+> + *             |                       '----- bond ---.
+> + *             |___________________________|           \
+> + *              ___________________________             \
+> + *             |  IOMMU domain B           |           io_mm Y
+> + *             |  ________________         |           / /
+> + *             | |  IOMMU group   |        |          / /
+> + *             | |                |        |         / /
+> + *             | |   dev 00:01.0 ------------ bond -' /
+> + *             | |   dev 00:01.1 ------------ bond --'
+> + *             | |________________|        |
+> + *             |                           +------- io_pgtables
+> + *             |___________________________|
+> + *
+> + * In this example, device 00:00.0 is in domain A, devices 00:01.* are in domain
+> + * B. All devices within the same domain access the same address spaces. Device
+> + * 00:00.0 accesses address spaces X and Y, each corresponding to an mm_struct.
+> + * Devices 00:01.* only access address space Y. In addition each
+> + * IOMMU_DOMAIN_DMA domain has a private address space, io_pgtable, that is
+> + * managed with iommu_map()/iommu_unmap(), and isn't shared with the CPU MMU.
+> + *
+> + * To obtain the above configuration, users would for instance issue the
+> + * following calls:
+> + *
+> + *     iommu_sva_bind_device(dev 00:00.0, mm X, ...) -> PASID 1
+> + *     iommu_sva_bind_device(dev 00:00.0, mm Y, ...) -> PASID 2
+> + *     iommu_sva_bind_device(dev 00:01.0, mm Y, ...) -> PASID 2
+> + *     iommu_sva_bind_device(dev 00:01.1, mm Y, ...) -> PASID 2
+> + *
+> + * A single Process Address Space ID (PASID) is allocated for each mm. In the
+> + * example, devices use PASID 1 to read/write into address space X and PASID 2
+> + * to read/write into address space Y.
+> + *
+> + * Hardware tables describing this configuration in the IOMMU would typically
+> + * look like this:
+> + *
+> + *                                PASID tables
+> + *                                 of domain A
+> + *                              .->+--------+
+> + *                             / 0 |        |-------> io_pgtable
+> + *                            /    +--------+
+> + *            Device tables  /   1 |        |-------> pgd X
+> + *              +--------+  /      +--------+
+> + *      00:00.0 |      A |-'     2 |        |--.
+> + *              +--------+         +--------+   \
+> + *              :        :       3 |        |    \
+> + *              +--------+         +--------+     --> pgd Y
+> + *      00:01.0 |      B |--.                    /
+> + *              +--------+   \                  |
+> + *      00:01.1 |      B |----+   PASID tables  |
+> + *              +--------+     \   of domain B  |
+> + *                              '->+--------+   |
+> + *                               0 |        |-- | --> io_pgtable
+> + *                                 +--------+   |
+> + *                               1 |        |   |
+> + *                                 +--------+   |
+> + *                               2 |        |---'
+> + *                                 +--------+
+> + *                               3 |        |
+> + *                                 +--------+
+> + *
+> + * With this model, a single call binds all devices in a given domain to an
+> + * address space. Other devices in the domain will get the same bond implicitly.
+> + * However, users must issue one bind() for each device, because IOMMUs may
+> + * implement SVA differently. Furthermore, mandating one bind() per device
+> + * allows the driver to perform sanity-checks on device capabilities.
+> + *
+> + * On Arm and AMD IOMMUs, entry 0 of the PASID table can be used to hold
+> + * non-PASID translations. In this case PASID 0 is reserved and entry 0 points
+> + * to the io_pgtable base. On Intel IOMMU, the io_pgtable base would be held in
+> + * the device table and PASID 0 would be available to the allocator.
 > + */
-> +void __iommu_sva_unbind_dev_all(struct device *dev)
+> +
+> +struct iommu_bond {
+> +	struct io_mm		*io_mm;
+> +	struct device		*dev;
+> +	struct iommu_domain	*domain;
+> +
+> +	struct list_head	mm_head;
+> +	struct list_head	dev_head;
+> +	struct list_head	domain_head;
+> +
+> +	void			*drvdata;
+> +};
+> +
+> +/*
+> + * Because we're using an IDR, PASIDs are limited to 31 bits (the sign bit is
+> + * used for returning errors). In practice implementations will use at most 20
+> + * bits, which is the PCI limit.
+> + */
+> +static DEFINE_IDR(iommu_pasid_idr);
+> +
+> +/*
+> + * For the moment this is an all-purpose lock. It serializes
+> + * access/modifications to bonds, access/modifications to the PASID IDR, and
+> + * changes to io_mm refcount as well.
+> + */
+> +static DEFINE_SPINLOCK(iommu_sva_lock);
+> +
+> +static struct io_mm *
+> +io_mm_alloc(struct iommu_domain *domain, struct device *dev,
+> +	    struct mm_struct *mm, unsigned long flags)
 > +{
-> +	/* TODO */
+> +	int ret;
+> +	int pasid;
+> +	struct io_mm *io_mm;
+> +	struct iommu_sva_param *param = dev->iommu_param->sva_param;
+> +
+> +	if (!domain->ops->mm_alloc || !domain->ops->mm_free)
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	io_mm = domain->ops->mm_alloc(domain, mm, flags);
+> +	if (IS_ERR(io_mm))
+> +		return io_mm;
+> +	if (!io_mm)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	/*
+> +	 * The mm must not be freed until after the driver frees the io_mm
+> +	 * (which may involve unpinning the CPU ASID for instance, requiring a
+> +	 * valid mm struct.)
+> +	 */
+> +	mmgrab(mm);
+> +
+> +	io_mm->flags		= flags;
+> +	io_mm->mm		= mm;
+> +	io_mm->release		= domain->ops->mm_free;
+> +	INIT_LIST_HEAD(&io_mm->devices);
+> +
+> +	idr_preload(GFP_KERNEL);
+> +	spin_lock(&iommu_sva_lock);
+> +	pasid = idr_alloc(&iommu_pasid_idr, io_mm, param->min_pasid,
+> +			  param->max_pasid + 1, GFP_ATOMIC);
+
+I'd expect the IDR cleanup to be in io_mm_free as that would 'match'
+against io_mm_alloc but it's in io_mm_release just before the io_mm_free
+call, perhaps move it or am I missing something?
+
+Hmm. This is reworked in patch 5 to use call rcu to do the free.  I suppose
+we may be burning an idr entry if we take a while to get round to the
+free..  If so a comment to explain this would be great.
+
+> +	io_mm->pasid = pasid;
+> +	spin_unlock(&iommu_sva_lock);
+> +	idr_preload_end();
+> +
+> +	if (pasid < 0) {
+> +		ret = pasid;
+> +		goto err_free_mm;
+> +	}
+> +
+> +	/* TODO: keep track of mm. For the moment, abort. */
+
+>From later patches, I can now see why we didn't init the kref
+here, but perhaps a comment would make that clear rather than
+people checking it is correctly used throughout?  Actually just grab
+the comment from patch 5 and put it in this one and that will
+do the job nicely.
+
+> +	ret = -ENOSYS;
+> +	spin_lock(&iommu_sva_lock);
+> +	idr_remove(&iommu_pasid_idr, io_mm->pasid);
+> +	spin_unlock(&iommu_sva_lock);
+> +
+> +err_free_mm:
+> +	domain->ops->mm_free(io_mm);
+
+Really minor, but you now have io_mm->release set so to keep
+this obviously the same as the io_mm_free path, perhaps call
+that rather than mm_free directly.
+
+> +	mmdrop(mm);
+> +
+> +	return ERR_PTR(ret);
 > +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_unbind_dev_all);
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 9e28d88c8074..bd2819deae5b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2261,3 +2261,86 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
 > +
-> +/**
-> + * iommu_sva_bind_device() - Bind a process address space to a device
-> + * @dev: the device
-> + * @mm: the mm to bind, caller must hold a reference to it
-> + * @pasid: valid address where the PASID will be stored
-> + * @flags: bond properties
-> + * @drvdata: private data passed to the mm exit handler
-> + *
-> + * Create a bond between device and task, allowing the device to access the mm
-> + * using the returned PASID. If unbind() isn't called first, a subsequent bind()
-> + * for the same device and mm fails with -EEXIST.
-> + *
-> + * iommu_sva_device_init() must be called first, to initialize the required SVA
-> + * features. @flags is a subset of these features.
-> + *
-> + * The caller must pin down using get_user_pages*() all mappings shared with the
-> + * device. mlock() isn't sufficient, as it doesn't prevent minor page faults
-> + * (e.g. copy-on-write).
-> + *
-> + * On success, 0 is returned and @pasid contains a valid ID. Otherwise, an error
-> + * is returned.
-> + */
-> +int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
-> +			  unsigned long flags, void *drvdata)
+> +static void io_mm_free(struct io_mm *io_mm)
 > +{
-> +	int ret = -EINVAL;
-> +	struct iommu_group *group;
+> +	struct mm_struct *mm = io_mm->mm;
 > +
-> +	if (!pasid)
+> +	io_mm->release(io_mm);
+> +	mmdrop(mm);
+> +}
+> +
+> +static void io_mm_release(struct kref *kref)
+> +{
+> +	struct io_mm *io_mm;
+> +
+> +	io_mm = container_of(kref, struct io_mm, kref);
+> +	WARN_ON(!list_empty(&io_mm->devices));
+> +
+> +	idr_remove(&iommu_pasid_idr, io_mm->pasid);
+> +
+> +	io_mm_free(io_mm);
+> +}
+> +
+> +/*
+> + * Returns non-zero if a reference to the io_mm was successfully taken.
+> + * Returns zero if the io_mm is being freed and should not be used.
+> + */
+> +static int io_mm_get_locked(struct io_mm *io_mm)
+> +{
+> +	if (io_mm)
+> +		return kref_get_unless_zero(&io_mm->kref);
+> +
+> +	return 0;
+> +}
+> +
+> +static void io_mm_put_locked(struct io_mm *io_mm)
+> +{
+> +	kref_put(&io_mm->kref, io_mm_release);
+> +}
+> +
+> +static void io_mm_put(struct io_mm *io_mm)
+> +{
+> +	spin_lock(&iommu_sva_lock);
+> +	io_mm_put_locked(io_mm);
+> +	spin_unlock(&iommu_sva_lock);
+> +}
+> +
+> +static int io_mm_attach(struct iommu_domain *domain, struct device *dev,
+> +			struct io_mm *io_mm, void *drvdata)
+> +{
+> +	int ret;
+> +	bool attach_domain = true;
+> +	int pasid = io_mm->pasid;
+> +	struct iommu_bond *bond, *tmp;
+> +	struct iommu_sva_param *param = dev->iommu_param->sva_param;
+> +
+> +	if (!domain->ops->mm_attach || !domain->ops->mm_detach)
+> +		return -ENODEV;
+> +
+> +	if (pasid > param->max_pasid || pasid < param->min_pasid)
+> +		return -ERANGE;
+> +
+> +	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
+> +	if (!bond)
+> +		return -ENOMEM;
+> +
+> +	bond->domain		= domain;
+> +	bond->io_mm		= io_mm;
+> +	bond->dev		= dev;
+> +	bond->drvdata		= drvdata;
+> +
+> +	spin_lock(&iommu_sva_lock);
+> +	/*
+> +	 * Check if this io_mm is already bound to the domain. In which case the
+> +	 * IOMMU driver doesn't have to install the PASID table entry.
+> +	 */
+> +	list_for_each_entry(tmp, &domain->mm_list, domain_head) {
+> +		if (tmp->io_mm == io_mm) {
+> +			attach_domain = false;
+> +			break;
+> +		}
+> +	}
+> +
+> +	ret = domain->ops->mm_attach(domain, dev, io_mm, attach_domain);
+> +	if (ret) {
+> +		kfree(bond);
+> +		spin_unlock(&iommu_sva_lock);
+> +		return ret;
+> +	}
+> +
+> +	list_add(&bond->mm_head, &io_mm->devices);
+> +	list_add(&bond->domain_head, &domain->mm_list);
+> +	list_add(&bond->dev_head, &param->mm_list);
+> +	spin_unlock(&iommu_sva_lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static void io_mm_detach_locked(struct iommu_bond *bond)
+> +{
+> +	struct iommu_bond *tmp;
+> +	bool detach_domain = true;
+> +	struct iommu_domain *domain = bond->domain;
+> +
+> +	list_for_each_entry(tmp, &domain->mm_list, domain_head) {
+> +		if (tmp->io_mm == bond->io_mm && tmp->dev != bond->dev) {
+> +			detach_domain = false;
+> +			break;
+> +		}
+> +	}
+> +
+> +	domain->ops->mm_detach(domain, bond->dev, bond->io_mm, detach_domain);
+> +
+
+I can't see an immediate reason to have a different order in her to the reverse of
+the attach above.   So I think you should be detaching after the list_del calls.
+If there is a reason, can we have a comment so I don't ask on v10.
+
+> +	list_del(&bond->mm_head);
+> +	list_del(&bond->domain_head);
+> +	list_del(&bond->dev_head);
+> +	io_mm_put_locked(bond->io_mm);
+> +
+> +	kfree(bond);
+> +}
+>  
+>  /**
+>   * iommu_sva_device_init() - Initialize Shared Virtual Addressing for a device
+> @@ -47,6 +337,7 @@ int iommu_sva_device_init(struct device *dev, unsigned long features,
+>  
+>  	param->features		= features;
+>  	param->max_pasid	= max_pasid;
+> +	INIT_LIST_HEAD(&param->mm_list);
+>  
+>  	/*
+>  	 * IOMMU driver updates the limits depending on the IOMMU and device
+> @@ -114,13 +405,87 @@ EXPORT_SYMBOL_GPL(iommu_sva_device_shutdown);
+>  int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
+>  			    int *pasid, unsigned long flags, void *drvdata)
+>  {
+> -	return -ENOSYS; /* TODO */
+> +	int i, ret = 0;
+> +	struct io_mm *io_mm = NULL;
+> +	struct iommu_domain *domain;
+> +	struct iommu_bond *bond = NULL, *tmp;
+> +	struct iommu_sva_param *param = dev->iommu_param->sva_param;
+> +
+> +	domain = iommu_get_domain_for_dev(dev);
+> +	if (!domain)
 > +		return -EINVAL;
 > +
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return -ENODEV;
+> +	/*
+> +	 * The device driver does not call sva_device_init/shutdown and
+> +	 * bind/unbind concurrently, so no need to take the param lock.
+> +	 */
+> +	if (WARN_ON_ONCE(!param) || (flags & ~param->features))
+> +		return -EINVAL;
 > +
-> +	/* Ensure device count and domain don't change while we're binding */
-> +	mutex_lock(&group->mutex);
-> +	if (iommu_group_device_count(group) != 1)
-> +		goto out_unlock;
+> +	/* If an io_mm already exists, use it */
+> +	spin_lock(&iommu_sva_lock);
+> +	idr_for_each_entry(&iommu_pasid_idr, io_mm, i) {
+> +		if (io_mm->mm == mm && io_mm_get_locked(io_mm)) {
+> +			/* ... Unless it's already bound to this device */
+> +			list_for_each_entry(tmp, &io_mm->devices, mm_head) {
+> +				if (tmp->dev == dev) {
+> +					bond = tmp;
+
+Using bond for this is clear in a sense, but can we not just use ret
+so it is obvious here that we are going to return -EEXIST?
+At first glance I thought you were going to carry on with this bond
+and couldn't work out why it would ever make sense to have two bonds
+between a device an an io_mm (which it doesn't!)
+
+> +					io_mm_put_locked(io_mm);
+> +					break;
+> +				}
+> +			}
+> +			break;
+> +		}
+> +	}
+> +	spin_unlock(&iommu_sva_lock);
 > +
-> +	ret = __iommu_sva_bind_device(dev, mm, pasid, flags, drvdata);
+> +	if (bond)
+> +		return -EEXIST;
 > +
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
+> +	/* Require identical features within an io_mm for now */
+> +	if (io_mm && (flags != io_mm->flags)) {
+> +		io_mm_put(io_mm);
+> +		return -EDOM;
+> +	}
+> +
+> +	if (!io_mm) {
+> +		io_mm = io_mm_alloc(domain, dev, mm, flags);
+> +		if (IS_ERR(io_mm))
+> +			return PTR_ERR(io_mm);
+> +	}
+> +
+> +	ret = io_mm_attach(domain, dev, io_mm, drvdata);
+> +	if (ret)
+> +		io_mm_put(io_mm);
+> +	else
+> +		*pasid = io_mm->pasid;
 > +
 > +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
+>  }
+>  EXPORT_SYMBOL_GPL(__iommu_sva_bind_device);
+>  
+>  int __iommu_sva_unbind_device(struct device *dev, int pasid)
+>  {
+> -	return -ENOSYS; /* TODO */
+> +	int ret = -ESRCH;
+> +	struct iommu_domain *domain;
+> +	struct iommu_bond *bond = NULL;
+> +	struct iommu_sva_param *param = dev->iommu_param->sva_param;
 > +
-> +/**
-> + * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
-> + * @dev: the device
-> + * @pasid: the pasid returned by bind()
-> + *
-> + * Remove bond between device and address space identified by @pasid. Users
-> + * should not call unbind() if the corresponding mm exited (as the PASID might
-> + * have been reallocated for another process).
-> + *
-> + * The device must not be issuing any more transaction for this PASID. All
-> + * outstanding page requests for this PASID must have been flushed to the IOMMU.
-> + *
-> + * Returns 0 on success, or an error value
-> + */
-> +int iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	int ret = -EINVAL;
-> +	struct iommu_group *group;
+> +	domain = iommu_get_domain_for_dev(dev);
+> +	if (!param || WARN_ON(!domain))
+> +		return -EINVAL;
 > +
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return -ENODEV;
-> +
-> +	mutex_lock(&group->mutex);
-> +	ret = __iommu_sva_unbind_device(dev, pasid);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	iommu_group_put(group);
+> +	spin_lock(&iommu_sva_lock);
+> +	list_for_each_entry(bond, &param->mm_list, dev_head) {
+> +		if (bond->io_mm->pasid == pasid) {
+> +			io_mm_detach_locked(bond);
+> +			ret = 0;
+> +			break;
+> +		}
+> +	}
+> +	spin_unlock(&iommu_sva_lock);
 > +
 > +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+>  }
+>  EXPORT_SYMBOL_GPL(__iommu_sva_unbind_device);
+>  
+> @@ -132,6 +497,15 @@ EXPORT_SYMBOL_GPL(__iommu_sva_unbind_device);
+>   */
+>  void __iommu_sva_unbind_dev_all(struct device *dev)
+>  {
+> -	/* TODO */
+> +	struct iommu_sva_param *param;
+> +	struct iommu_bond *bond, *next;
+> +
+> +	param = dev->iommu_param->sva_param;
+> +	if (param) {
+> +		spin_lock(&iommu_sva_lock);
+> +		list_for_each_entry_safe(bond, next, &param->mm_list, dev_head)
+> +			io_mm_detach_locked(bond);
+> +		spin_unlock(&iommu_sva_lock);
+> +	}
+>  }
+>  EXPORT_SYMBOL_GPL(__iommu_sva_unbind_dev_all);
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index bd2819deae5b..333801e1519c 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1463,6 +1463,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>  	domain->type = type;
+>  	/* Assume all sizes by default; the driver may override this later */
+>  	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+> +	INIT_LIST_HEAD(&domain->mm_list);
+>  
+>  	return domain;
+>  }
 > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 2efe7738bedb..da59c20c4f12 100644
+> index da59c20c4f12..d5f21719a5a0 100644
 > --- a/include/linux/iommu.h
 > +++ b/include/linux/iommu.h
-> @@ -613,6 +613,10 @@ void iommu_fwspec_free(struct device *dev);
->  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
->  const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+> @@ -100,6 +100,20 @@ struct iommu_domain {
+>  	void *handler_token;
+>  	struct iommu_domain_geometry geometry;
+>  	void *iova_cookie;
+> +
+> +	struct list_head mm_list;
+> +};
+> +
+> +struct io_mm {
+> +	int			pasid;
+> +	/* IOMMU_SVA_FEAT_* */
+> +	unsigned long		flags;
+> +	struct list_head	devices;
+> +	struct kref		kref;
+> +	struct mm_struct	*mm;
+> +
+> +	/* Release callback for this mm */
+> +	void (*release)(struct io_mm *io_mm);
+>  };
 >  
-> +extern int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> +				int *pasid, unsigned long flags, void *drvdata);
-> +extern int iommu_sva_unbind_device(struct device *dev, int pasid);
-> +
->  #else /* CONFIG_IOMMU_API */
+>  enum iommu_cap {
+> @@ -216,6 +230,7 @@ struct iommu_sva_param {
+>  	unsigned long features;
+>  	unsigned int min_pasid;
+>  	unsigned int max_pasid;
+> +	struct list_head mm_list;
+>  };
 >  
->  struct iommu_ops {};
-> @@ -932,12 +936,29 @@ static inline int iommu_sva_invalidate(struct iommu_domain *domain,
->  	return -EINVAL;
->  }
->  
-> +static inline int iommu_sva_bind_device(struct device *dev,
-> +					struct mm_struct *mm, int *pasid,
-> +					unsigned long flags, void *drvdata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  #endif /* CONFIG_IOMMU_API */
->  
->  #ifdef CONFIG_IOMMU_SVA
->  extern int iommu_sva_device_init(struct device *dev, unsigned long features,
->  				 unsigned int max_pasid);
->  extern int iommu_sva_device_shutdown(struct device *dev);
-> +extern int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> +				   int *pasid, unsigned long flags,
-> +				   void *drvdata);
-> +extern int __iommu_sva_unbind_device(struct device *dev, int pasid);
-> +extern void __iommu_sva_unbind_dev_all(struct device *dev);
->  #else /* CONFIG_IOMMU_SVA */
->  static inline int iommu_sva_device_init(struct device *dev,
->  					unsigned long features,
-> @@ -950,6 +971,22 @@ static inline int iommu_sva_device_shutdown(struct device *dev)
->  {
->  	return -ENODEV;
->  }
-> +
-> +static inline int __iommu_sva_bind_device(struct device *dev,
-> +					  struct mm_struct *mm, int *pasid,
-> +					  unsigned long flags, void *drvdata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int __iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void __iommu_sva_unbind_dev_all(struct device *dev)
-> +{
-> +}
->  #endif /* CONFIG_IOMMU_SVA */
->  
->  #endif /* __LINUX_IOMMU_H */
+>  /**
+> @@ -227,6 +242,11 @@ struct iommu_sva_param {
+>   * @detach_dev: detach device from an iommu domain
+>   * @sva_device_init: initialize Shared Virtual Adressing for a device
+>   * @sva_device_shutdown: shutdown Shared Virtual Adressing for a device
+> + * @mm_alloc: allocate io_mm
+> + * @mm_free: free io_mm
+> + * @mm_attach: attach io_mm to a device. Install PASID entry if necessary
+> + * @mm_detach: detach io_mm from a device. Remove PASID entry and
+> + *             flush associated TLB entries.
+>   * @map: map a physically contiguous memory region to an iommu domain
+>   * @unmap: unmap a physically contiguous memory region from an iommu domain
+>   * @map_sg: map a scatter-gather list of physically contiguous memory chunks
+> @@ -268,6 +288,14 @@ struct iommu_ops {
+>  			       struct iommu_sva_param *param);
+>  	void (*sva_device_shutdown)(struct device *dev,
+>  				    struct iommu_sva_param *param);
+> +	struct io_mm *(*mm_alloc)(struct iommu_domain *domain,
+> +				  struct mm_struct *mm,
+> +				  unsigned long flags);
+> +	void (*mm_free)(struct io_mm *io_mm);
+> +	int (*mm_attach)(struct iommu_domain *domain, struct device *dev,
+> +			 struct io_mm *io_mm, bool attach_domain);
+> +	void (*mm_detach)(struct iommu_domain *domain, struct device *dev,
+> +			  struct io_mm *io_mm, bool detach_domain);
+>  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+>  		   phys_addr_t paddr, size_t size, int prot);
+>  	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
