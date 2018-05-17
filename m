@@ -1,16 +1,15 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 16/40] arm64: mm: Pin down ASIDs for sharing mm with
-	devices
-Date: Thu, 17 May 2018 11:01:55 +0100
-Message-ID: <81662b4f-2210-665f-21cf-7679bfa9f97a@arm.com>
+Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
+Date: Thu, 17 May 2018 11:02:02 +0100
+Message-ID: <96c1e0f0-0aa7-badf-123e-cbb1b05e645e@arm.com>
 References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-17-jean-philippe.brucker@arm.com>
-	<20180515141658.vivrgcyww2pxumye@armageddon.cambridge.arm.com>
+	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
+	<20180516134150.34fc8857@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180515141658.vivrgcyww2pxumye-+1aNUgJU5qkijLcmloz0ER/iLCjYCKR+VpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <20180516134150.34fc8857@jacob-builder>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -21,64 +20,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Cc: bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 15/05/18 15:16, Catalin Marinas wrote:
-> Hi Jean-Philippe,
-> 
-> On Fri, May 11, 2018 at 08:06:17PM +0100, Jean-Philippe Brucker wrote:
->> +unsigned long mm_context_get(struct mm_struct *mm)
->> +{
->> +	unsigned long flags;
->> +	u64 asid;
->> +
->> +	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
->> +
->> +	asid = atomic64_read(&mm->context.id);
->> +
->> +	if (mm->context.pinned) {
->> +		mm->context.pinned++;
->> +		asid &= ~ASID_MASK;
->> +		goto out_unlock;
->> +	}
->> +
->> +	if (nr_pinned_asids >= max_pinned_asids) {
->> +		asid = 0;
->> +		goto out_unlock;
->> +	}
->> +
->> +	if (!asid_gen_match(asid)) {
->> +		/*
->> +		 * We went through one or more rollover since that ASID was
->> +		 * used. Ensure that it is still valid, or generate a new one.
->> +		 * The cpu argument isn't used by new_context.
->> +		 */
->> +		asid = new_context(mm, 0);
->> +		atomic64_set(&mm->context.id, asid);
->> +	}
->> +
->> +	asid &= ~ASID_MASK;
->> +
->> +	nr_pinned_asids++;
->> +	__set_bit(asid2idx(asid), pinned_asid_map);
->> +	mm->context.pinned++;
->> +
->> +out_unlock:
->> +	raw_spin_unlock_irqrestore(&cpu_asid_lock, flags);
->> +
->> +	return asid;
->> +}
-> 
-> With CONFIG_UNMAP_KERNEL_AT_EL0 (a.k.a. KPTI), the hardware ASID has bit
-> 0 set automatically when entering user space (and cleared when getting
-> back to the kernel). If the returned asid value here is going to be used
-> as is in the calling code, you should probably set bit 0 when KPTI is
-> enabled.
-> 
+Hi Jacob,
 
-Oh right, I'll change this
+Thanks for reviewing this
+
+On 16/05/18 21:41, Jacob Pan wrote:
+>> + * The device must support multiple address spaces (e.g. PCI PASID).
+>> By default
+>> + * the PASID allocated during bind() is limited by the IOMMU
+>> capacity, and by
+>> + * the device PASID width defined in the PCI capability or in the
+>> firmware
+>> + * description. Setting @max_pasid to a non-zero value smaller than
+>> this limit
+>> + * overrides it.
+>> + *
+> seems the min_pasid never gets used. do you really need it?
+
+Yes, the SMMU sets it to 1 in patch 28/40, because it needs to reserve
+PASID 0
+
+>> + * The device should not be performing any DMA while this function
+>> is running,
+>> + * otherwise the behavior is undefined.
+>> + *
+>> + * Return 0 if initialization succeeded, or an error.
+>> + */
+>> +int iommu_sva_device_init(struct device *dev, unsigned long features,
+>> +			  unsigned int max_pasid)
+>> +{
+>> +	int ret;
+>> +	struct iommu_sva_param *param;
+>> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>> +
+>> +	if (!domain || !domain->ops->sva_device_init)
+>> +		return -ENODEV;
+>> +
+>> +	if (features)
+>> +		return -EINVAL;
+> should it be !features?
+
+This checks if the user sets any unsupported bit in features. No feature
+is supported right now, but patch 09/40 adds IOMMU_SVA_FEAT_IOPF, and
+changes this line to "features & ~IOMMU_SVA_FEAT_IOPF"
+
+>> +	mutex_lock(&dev->iommu_param->lock);
+>> +	param = dev->iommu_param->sva_param;
+>> +	dev->iommu_param->sva_param = NULL;
+>> +	mutex_unlock(&dev->iommu_param->lock);
+>> +	if (!param)
+>> +		return -ENODEV;
+>> +
+>> +	if (domain->ops->sva_device_shutdown)
+>> +		domain->ops->sva_device_shutdown(dev, param);
+> seems a little mismatch here, do you need pass the param. I don't think
+> there is anything else model specific iommu driver need to do for the
+> param.
+
+SMMU doesn't use it, but maybe it would remind other IOMMU driver which
+features were enabled, so they don't have to keep track of that
+themselves? I can remove it if it isn't useful
 
 Thanks,
 Jean
