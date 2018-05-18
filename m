@@ -1,196 +1,155 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 13/16] drm/msm/a5xx: Support per-instance
- pagetables
-Date: Fri, 18 May 2018 15:34:57 -0600
-Message-ID: <20180518213500.31595-14-jcrouse@codeaurora.org>
-References: <20180518213500.31595-1-jcrouse@codeaurora.org>
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH] iommu/amd - Optimize PPR log handling
+Date: Fri, 18 May 2018 16:51:56 -0500
+Message-ID: <152668031618.108078.8188026193559324640.stgit@wsp141332wss.amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180518213500.31595-1-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-QWRkIHN1cHBvcnQgZm9yIHBlci1pbnN0YW5jZSBwYWdldGFibGVzIGZvciA1WFggdGFyZ2V0cy4g
-Q3JlYXRlIGEgc3VwcG9ydApidWZmZXIgZm9yIHByZWVtcHRpb24gdG8gaG9sZCB0aGUgU01NVSBw
-YWdldGFibGUgaW5mb3JtYXRpb24gZm9yIGEgcHJlZW1wdGVkCnJpbmcsIGVuYWJsZSBUVEJSMSB0
-byBzdXBwb3J0IHNwbGl0IHBhZ2V0YWJsZXMgYW5kIGFkZCB0aGUgbmVjZXNzYXJ5IFBNNApjb21t
-YW5kcyB0byB0cmlnZ2VyIGEgcGFnZXRhYmxlIHN3aXRjaCBhdCB0aGUgYmVnaW5uaW5nIG9mIGEg
-dXNlciBjb21tYW5kLgoKU2lnbmVkLW9mZi1ieTogSm9yZGFuIENyb3VzZSA8amNyb3VzZUBjb2Rl
-YXVyb3JhLm9yZz4KLS0tCiBkcml2ZXJzL2dwdS9kcm0vbXNtL0tjb25maWcgICAgICAgICAgICAg
-ICB8ICAxICsKIGRyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2E1eHhfZ3B1LmMgICAgIHwgNTUg
-KysrKysrKysrKysrKysrKysKIGRyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2E1eHhfZ3B1Lmgg
-ICAgIHwgMTcgKysrKysrCiBkcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVuby9hNXh4X3ByZWVtcHQu
-YyB8IDc0ICsrKysrKysrKysrKysrKysrKystLS0tCiBkcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVu
-by9hZHJlbm9fZ3B1LmMgICB8IDExICsrKysKIGRyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2Fk
-cmVub19ncHUuaCAgIHwgIDUgKysKIGRyaXZlcnMvZ3B1L2RybS9tc20vbXNtX3JpbmdidWZmZXIu
-aCAgICAgIHwgIDEgKwogNyBmaWxlcyBjaGFuZ2VkLCAxNTIgaW5zZXJ0aW9ucygrKSwgMTIgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21zbS9LY29uZmlnIGIvZHJp
-dmVycy9ncHUvZHJtL21zbS9LY29uZmlnCmluZGV4IDM4Y2JkZTk3MWI0OC4uZTY5Y2JmODhiYjNk
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNtL0tjb25maWcKKysrIGIvZHJpdmVycy9n
-cHUvZHJtL21zbS9LY29uZmlnCkBAIC0xNSw2ICsxNSw3IEBAIGNvbmZpZyBEUk1fTVNNCiAJc2Vs
-ZWN0IFNORF9TT0NfSERNSV9DT0RFQyBpZiBTTkRfU09DCiAJc2VsZWN0IFNZTkNfRklMRQogCXNl
-bGVjdCBQTV9PUFAKKwlzZWxlY3QgSU9NTVVfU1ZBCiAJZGVmYXVsdCB5CiAJaGVscAogCSAgRFJN
-L0tNUyBkcml2ZXIgZm9yIE1TTS9zbmFwZHJhZ29uLgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUv
-ZHJtL21zbS9hZHJlbm8vYTV4eF9ncHUuYyBiL2RyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2E1
-eHhfZ3B1LmMKaW5kZXggYjJjMDM3MDA3MmRkLi5mNGJlMjUzNjQ0MWIgMTAwNjQ0Ci0tLSBhL2Ry
-aXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2E1eHhfZ3B1LmMKKysrIGIvZHJpdmVycy9ncHUvZHJt
-L21zbS9hZHJlbm8vYTV4eF9ncHUuYwpAQCAtMTk5LDYgKzE5OSw1OSBAQCBzdGF0aWMgdm9pZCBh
-NXh4X3N1Ym1pdF9pbl9yYihzdHJ1Y3QgbXNtX2dwdSAqZ3B1LCBzdHJ1Y3QgbXNtX2dlbV9zdWJt
-aXQgKnN1Ym1pdAogCW1zbV9ncHVfcmV0aXJlKGdwdSk7CiB9CiAKK3N0YXRpYyB2b2lkIGE1eHhf
-c2V0X3BhZ2V0YWJsZShzdHJ1Y3QgbXNtX2dwdSAqZ3B1LCBzdHJ1Y3QgbXNtX3JpbmdidWZmZXIg
-KnJpbmcsCisJc3RydWN0IG1zbV9maWxlX3ByaXZhdGUgKmN0eCkKK3sKKwl1NjQgdHRicjsKKwl1
-MzIgYXNpZDsKKworCWlmIChtc21faW9tbXVfcGFzaWRfaW5mbyhjdHgtPmFzcGFjZS0+bW11LCAm
-dHRiciwgJmFzaWQpKQorCQlyZXR1cm47CisKKwl0dGJyID0gdHRiciB8ICgodTY0KSBhc2lkKSA8
-PCA0ODsKKworCS8qIFR1cm4gb2ZmIHByb3RlY3RlZCBtb2RlICovCisJT1VUX1BLVDcocmluZywg
-Q1BfU0VUX1BST1RFQ1RFRF9NT0RFLCAxKTsKKwlPVVRfUklORyhyaW5nLCAwKTsKKworCS8qIFR1
-cm4gb24gQVBJViBtb2RlIHRvIGFjY2VzcyBjcml0aWNhbCByZWdpb25zICovCisJT1VUX1BLVDQo
-cmluZywgUkVHX0E1WFhfQ1BfQ05UTCwgMSk7CisJT1VUX1JJTkcocmluZywgMSk7CisKKwkvKiBN
-YWtlIHN1cmUgdGhlIE1FIGlzIHN5bmNocm9uaXplZCBiZWZvcmUgc3RhcmluZyB0aGUgdXBkYXRl
-ICovCisJT1VUX1BLVDcocmluZywgQ1BfV0FJVF9GT1JfTUUsIDApOworCisJLyogRXhlY3V0ZSB0
-aGUgdGFibGUgdXBkYXRlICovCisJT1VUX1BLVDcocmluZywgQ1BfU01NVV9UQUJMRV9VUERBVEUs
-IDMpOworCU9VVF9SSU5HKHJpbmcsIGxvd2VyXzMyX2JpdHModHRicikpOworCU9VVF9SSU5HKHJp
-bmcsIHVwcGVyXzMyX2JpdHModHRicikpOworCU9VVF9SSU5HKHJpbmcsIDApOworCisJLyoKKwkg
-KiBXcml0ZSB0aGUgbmV3IFRUQlIwIHRvIHRoZSBwcmVlbXB0aW9uIHJlY29yZHMgLSB0aGlzIHdp
-bGwgYmUgdXNlZCB0bworCSAqIHJlbG9hZCB0aGUgcGFnZXRhYmxlIGlmIHRoZSBjdXJyZW50IHJp
-bmcgZ2V0cyBwcmVlbXB0ZWQgb3V0LgorCSAqLworCU9VVF9QS1Q3KHJpbmcsIENQX01FTV9XUklU
-RSwgNCk7CisJT1VUX1JJTkcocmluZywgbG93ZXJfMzJfYml0cyhyYm1lbXB0cihyaW5nLCB0dGJy
-MCkpKTsKKwlPVVRfUklORyhyaW5nLCB1cHBlcl8zMl9iaXRzKHJibWVtcHRyKHJpbmcsIHR0YnIw
-KSkpOworCU9VVF9SSU5HKHJpbmcsIGxvd2VyXzMyX2JpdHModHRicikpOworCU9VVF9SSU5HKHJp
-bmcsIHVwcGVyXzMyX2JpdHModHRicikpOworCisJLyogSW52YWxpZGF0ZSB0aGUgZHJhdyBzdGF0
-ZSBzbyB3ZSBzdGFydCBvZmYgZnJlc2ggKi8KKwlPVVRfUEtUNyhyaW5nLCBDUF9TRVRfRFJBV19T
-VEFURSwgMyk7CisJT1VUX1JJTkcocmluZywgMHg0MDAwMCk7CisJT1VUX1JJTkcocmluZywgMSk7
-CisJT1VUX1JJTkcocmluZywgMCk7CisKKwkvKiBUdXJuIG9mZiBBUFJJViAqLworCU9VVF9QS1Q0
-KHJpbmcsIFJFR19BNVhYX0NQX0NOVEwsIDEpOworCU9VVF9SSU5HKHJpbmcsIDApOworCisJLyog
-VHVybiBvZmYgcHJvdGVjdGVkIG1vZGUgKi8KKwlPVVRfUEtUNyhyaW5nLCBDUF9TRVRfUFJPVEVD
-VEVEX01PREUsIDEpOworCU9VVF9SSU5HKHJpbmcsIDEpOworfQorCiBzdGF0aWMgdm9pZCBhNXh4
-X3N1Ym1pdChzdHJ1Y3QgbXNtX2dwdSAqZ3B1LCBzdHJ1Y3QgbXNtX2dlbV9zdWJtaXQgKnN1Ym1p
-dCwKIAlzdHJ1Y3QgbXNtX2ZpbGVfcHJpdmF0ZSAqY3R4KQogewpAQCAtMjE0LDYgKzI2Nyw4IEBA
-IHN0YXRpYyB2b2lkIGE1eHhfc3VibWl0KHN0cnVjdCBtc21fZ3B1ICpncHUsIHN0cnVjdCBtc21f
-Z2VtX3N1Ym1pdCAqc3VibWl0LAogCQlyZXR1cm47CiAJfQogCisJYTV4eF9zZXRfcGFnZXRhYmxl
-KGdwdSwgcmluZywgY3R4KTsKKwogCU9VVF9QS1Q3KHJpbmcsIENQX1BSRUVNUFRfRU5BQkxFX0dM
-T0JBTCwgMSk7CiAJT1VUX1JJTkcocmluZywgMHgwMik7CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-Z3B1L2RybS9tc20vYWRyZW5vL2E1eHhfZ3B1LmggYi9kcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVu
-by9hNXh4X2dwdS5oCmluZGV4IDdkNzE4NjBjNGJlZS4uOTM4N2Q2MDg1NTc2IDEwMDY0NAotLS0g
-YS9kcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVuby9hNXh4X2dwdS5oCisrKyBiL2RyaXZlcnMvZ3B1
-L2RybS9tc20vYWRyZW5vL2E1eHhfZ3B1LmgKQEAgLTQ1LDYgKzQ1LDkgQEAgc3RydWN0IGE1eHhf
-Z3B1IHsKIAogCWF0b21pY190IHByZWVtcHRfc3RhdGU7CiAJc3RydWN0IHRpbWVyX2xpc3QgcHJl
-ZW1wdF90aW1lcjsKKwlzdHJ1Y3QgYTV4eF9zbW11X2luZm8gKnNtbXVfaW5mbzsKKwlzdHJ1Y3Qg
-ZHJtX2dlbV9vYmplY3QgKnNtbXVfaW5mb19ibzsKKwl1aW50NjRfdCBzbW11X2luZm9faW92YTsK
-IH07CiAKICNkZWZpbmUgdG9fYTV4eF9ncHUoeCkgY29udGFpbmVyX29mKHgsIHN0cnVjdCBhNXh4
-X2dwdSwgYmFzZSkKQEAgLTEzMiw2ICsxMzUsMjAgQEAgc3RydWN0IGE1eHhfcHJlZW1wdF9yZWNv
-cmQgewogICovCiAjZGVmaW5lIEE1WFhfUFJFRU1QVF9DT1VOVEVSX1NJWkUgKDE2ICogNCkKIAor
-LyoKKyAqIFRoaXMgaXMgYSBnbG9iYWwgc3RydWN0dXJlIHRoYXQgdGhlIHByZWVtcHRpb24gY29k
-ZSB1c2VzIHRvIHN3aXRjaCBpbiB0aGUKKyAqIHBhZ2V0YWJsZSBmb3IgdGhlIHByZWVtcHRlZCBw
-cm9jZXNzIC0gdGhlIGNvZGUgc3dpdGNoZXMgaW4gd2hhdGV2ZXIgd2UKKyAqIGFmdGVyIHByZWVt
-cHRpbmcgaW4gYSBuZXcgcmluZy4KKyAqLworc3RydWN0IGE1eHhfc21tdV9pbmZvIHsKKwl1aW50
-MzJfdCAgbWFnaWM7CisJdWludDMyX3QgIF9wYWQ0OworCXVpbnQ2NF90ICB0dGJyMDsKKwl1aW50
-MzJfdCAgYXNpZDsKKwl1aW50MzJfdCAgY29udGV4dGlkcjsKK307CisKKyNkZWZpbmUgQTVYWF9T
-TU1VX0lORk9fTUFHSUMgMHgzNjE4Q0RBM1VMCiAKIGludCBhNXh4X3Bvd2VyX2luaXQoc3RydWN0
-IG1zbV9ncHUgKmdwdSk7CiB2b2lkIGE1eHhfZ3BtdV91Y29kZV9pbml0KHN0cnVjdCBtc21fZ3B1
-ICpncHUpOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYTV4eF9wcmVl
-bXB0LmMgYi9kcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVuby9hNXh4X3ByZWVtcHQuYwppbmRleCA5
-NzBjNzk2M2FlMjkuLmQ1ZGJjYmQ0OTRmMyAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL21z
-bS9hZHJlbm8vYTV4eF9wcmVlbXB0LmMKKysrIGIvZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8v
-YTV4eF9wcmVlbXB0LmMKQEAgLTEyLDYgKzEyLDcgQEAKICAqLwogCiAjaW5jbHVkZSAibXNtX2dl
-bS5oIgorI2luY2x1ZGUgIm1zbV9tbXUuaCIKICNpbmNsdWRlICJhNXh4X2dwdS5oIgogCiAvKgpA
-QCAtMTQ1LDYgKzE0NiwxNSBAQCB2b2lkIGE1eHhfcHJlZW1wdF90cmlnZ2VyKHN0cnVjdCBtc21f
-Z3B1ICpncHUpCiAJYTV4eF9ncHUtPnByZWVtcHRbcmluZy0+aWRdLT53cHRyID0gZ2V0X3dwdHIo
-cmluZyk7CiAJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmcmluZy0+bG9jaywgZmxhZ3MpOwogCisJ
-LyogRG8gcmVhZCBiYXJyaWVyIHRvIG1ha2Ugc3VyZSB3ZSBoYXZlIHVwZGF0ZWQgcGFnZXRhYmxl
-IGluZm8gKi8KKwlybWIoKTsKKworCS8qIFNldCB0aGUgU01NVSBpbmZvIGZvciB0aGUgcHJlZW1w
-dGlvbiAqLworCWlmIChhNXh4X2dwdS0+c21tdV9pbmZvKSB7CisJCWE1eHhfZ3B1LT5zbW11X2lu
-Zm8tPnR0YnIwID0gcmluZy0+bWVtcHRycy0+dHRicjA7CisJCWE1eHhfZ3B1LT5zbW11X2luZm8t
-PmNvbnRleHRpZHIgPSAwOworCX0KKwogCS8qIFNldCB0aGUgYWRkcmVzcyBvZiB0aGUgaW5jb21p
-bmcgcHJlZW1wdGlvbiByZWNvcmQgKi8KIAlncHVfd3JpdGU2NChncHUsIFJFR19BNVhYX0NQX0NP
-TlRFWFRfU1dJVENIX1JFU1RPUkVfQUREUl9MTywKIAkJUkVHX0E1WFhfQ1BfQ09OVEVYVF9TV0lU
-Q0hfUkVTVE9SRV9BRERSX0hJLApAQCAtMjE0LDkgKzIyNCwxMCBAQCB2b2lkIGE1eHhfcHJlZW1w
-dF9od19pbml0KHN0cnVjdCBtc21fZ3B1ICpncHUpCiAJCWE1eHhfZ3B1LT5wcmVlbXB0W2ldLT5y
-YmFzZSA9IGdwdS0+cmJbaV0tPmlvdmE7CiAJfQogCi0JLyogV3JpdGUgYSAwIHRvIHNpZ25hbCB0
-aGF0IHdlIGFyZW4ndCBzd2l0Y2hpbmcgcGFnZXRhYmxlcyAqLworCS8qIFRlbGwgdGhlIENQIHdo
-ZXJlIHRvIGZpbmQgdGhlIHNtbXVfaW5mbyBidWZmZXIqLwogCWdwdV93cml0ZTY0KGdwdSwgUkVH
-X0E1WFhfQ1BfQ09OVEVYVF9TV0lUQ0hfU01NVV9JTkZPX0xPLAotCQlSRUdfQTVYWF9DUF9DT05U
-RVhUX1NXSVRDSF9TTU1VX0lORk9fSEksIDApOworCQlSRUdfQTVYWF9DUF9DT05URVhUX1NXSVRD
-SF9TTU1VX0lORk9fSEksCisJCWE1eHhfZ3B1LT5zbW11X2luZm9faW92YSk7CiAKIAkvKiBSZXNl
-dCB0aGUgcHJlZW1wdGlvbiBzdGF0ZSAqLwogCXNldF9wcmVlbXB0X3N0YXRlKGE1eHhfZ3B1LCBQ
-UkVFTVBUX05PTkUpOwpAQCAtMjc1LDggKzI4Niw0MyBAQCB2b2lkIGE1eHhfcHJlZW1wdF9maW5p
-KHN0cnVjdCBtc21fZ3B1ICpncHUpCiAJCWRybV9nZW1fb2JqZWN0X3VucmVmZXJlbmNlKGE1eHhf
-Z3B1LT5wcmVlbXB0X2JvW2ldKTsKIAkJYTV4eF9ncHUtPnByZWVtcHRfYm9baV0gPSBOVUxMOwog
-CX0KKworCWlmIChhNXh4X2dwdS0+c21tdV9pbmZvX2JvKSB7CisJCWlmIChhNXh4X2dwdS0+c21t
-dV9pbmZvX2lvdmEpCisJCQltc21fZ2VtX3B1dF9pb3ZhKGE1eHhfZ3B1LT5zbW11X2luZm9fYm8s
-IGdwdS0+YXNwYWNlKTsKKwkJZHJtX2dlbV9vYmplY3RfdW5yZWZlcmVuY2VfdW5sb2NrZWQoYTV4
-eF9ncHUtPnNtbXVfaW5mb19ibyk7CisJCWE1eHhfZ3B1LT5zbW11X2luZm9fYm8gPSBOVUxMOwor
-CX0KIH0KIAorc3RhdGljIGludCBhNXh4X3NtbXVfaW5mb19pbml0KHN0cnVjdCBtc21fZ3B1ICpn
-cHUpCit7CisJc3RydWN0IGFkcmVub19ncHUgKmFkcmVub19ncHUgPSB0b19hZHJlbm9fZ3B1KGdw
-dSk7CisJc3RydWN0IGE1eHhfZ3B1ICphNXh4X2dwdSA9IHRvX2E1eHhfZ3B1KGFkcmVub19ncHUp
-OworCXN0cnVjdCBhNXh4X3NtbXVfaW5mbyAqcHRyOworCXN0cnVjdCBkcm1fZ2VtX29iamVjdCAq
-Ym87CisJdTY0IGlvdmE7CisKKwlpZiAoIW1zbV9tbXVfaGFzX2ZlYXR1cmUoZ3B1LT5hc3BhY2Ut
-Pm1tdSwKKwkJCU1NVV9GRUFUVVJFX1BFUl9JTlNUQU5DRV9UQUJMRVMpKQorCQlyZXR1cm4gMDsK
-KworCXB0ciA9IG1zbV9nZW1fa2VybmVsX25ldyhncHUtPmRldiwgc2l6ZW9mKHN0cnVjdCBhNXh4
-X3NtbXVfaW5mbyksCisJCU1TTV9CT19VTkNBQ0hFRCwgZ3B1LT5hc3BhY2UsICZibywgJmlvdmEp
-OworCisJaWYgKElTX0VSUihwdHIpKQorCQlyZXR1cm4gUFRSX0VSUihwdHIpOworCisJcHRyLT5t
-YWdpYyA9IEE1WFhfU01NVV9JTkZPX01BR0lDOworCisJYTV4eF9ncHUtPnNtbXVfaW5mb19ibyA9
-IGJvOworCWE1eHhfZ3B1LT5zbW11X2luZm9faW92YSA9IGlvdmE7CisJYTV4eF9ncHUtPnNtbXVf
-aW5mbyA9IHB0cjsKKworCXJldHVybiAwOworfQorCisKIHZvaWQgYTV4eF9wcmVlbXB0X2luaXQo
-c3RydWN0IG1zbV9ncHUgKmdwdSkKIHsKIAlzdHJ1Y3QgYWRyZW5vX2dwdSAqYWRyZW5vX2dwdSA9
-IHRvX2FkcmVub19ncHUoZ3B1KTsKQEAgLTI4OCwxNyArMzM0LDIxIEBAIHZvaWQgYTV4eF9wcmVl
-bXB0X2luaXQoc3RydWN0IG1zbV9ncHUgKmdwdSkKIAkJcmV0dXJuOwogCiAJZm9yIChpID0gMDsg
-aSA8IGdwdS0+bnJfcmluZ3M7IGkrKykgewotCQlpZiAocHJlZW1wdF9pbml0X3JpbmcoYTV4eF9n
-cHUsIGdwdS0+cmJbaV0pKSB7Ci0JCQkvKgotCQkJICogT24gYW55IGZhaWx1cmUgb3VyIGFkdmVu
-dHVyZSBpcyBvdmVyLiBDbGVhbiB1cCBhbmQKLQkJCSAqIHNldCBucl9yaW5ncyB0byAxIHRvIGZv
-cmNlIHByZWVtcHRpb24gb2ZmCi0JCQkgKi8KLQkJCWE1eHhfcHJlZW1wdF9maW5pKGdwdSk7Ci0J
-CQlncHUtPm5yX3JpbmdzID0gMTsKLQotCQkJcmV0dXJuOwotCQl9CisJCWlmIChwcmVlbXB0X2lu
-aXRfcmluZyhhNXh4X2dwdSwgZ3B1LT5yYltpXSkpCisJCQlnb3RvIGZhaWw7CiAJfQogCisJaWYg
-KGE1eHhfc21tdV9pbmZvX2luaXQoZ3B1KSkKKwkJZ290byBmYWlsOworCiAJdGltZXJfc2V0dXAo
-JmE1eHhfZ3B1LT5wcmVlbXB0X3RpbWVyLCBhNXh4X3ByZWVtcHRfdGltZXIsIDApOworCisJcmV0
-dXJuOworZmFpbDoKKwkvKgorCSAqIE9uIGFueSBmYWlsdXJlIG91ciBhZHZlbnR1cmUgaXMgb3Zl
-ci4gQ2xlYW4gdXAgYW5kCisJICogc2V0IG5yX3JpbmdzIHRvIDEgdG8gZm9yY2UgcHJlZW1wdGlv
-biBvZmYKKwkgKi8KKwlhNXh4X3ByZWVtcHRfZmluaShncHUpOworCWdwdS0+bnJfcmluZ3MgPSAx
-OwogfQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYWRyZW5vX2dwdS5j
-IGIvZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYWRyZW5vX2dwdS5jCmluZGV4IDE3ZDA1MDZk
-MDU4Yy4uYjY4MWVkZWM0NTYwIDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNtL2FkcmVu
-by9hZHJlbm9fZ3B1LmMKKysrIGIvZHJpdmVycy9ncHUvZHJtL21zbS9hZHJlbm8vYWRyZW5vX2dw
-dS5jCkBAIC01NTgsNiArNTU4LDE3IEBAIGludCBhZHJlbm9fZ3B1X2luaXQoc3RydWN0IGRybV9k
-ZXZpY2UgKmRybSwgc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldiwKIAlhZHJlbm9fZ3B1X2Nv
-bmZpZy5pb25hbWUgPSAia2dzbF8zZDBfcmVnX21lbW9yeSI7CiAJYWRyZW5vX2dwdV9jb25maWcu
-aXJxbmFtZSA9ICJrZ3NsXzNkMF9pcnEiOwogCisJaWYgKGFkcmVub19pc19hNXh4KGFkcmVub19n
-cHUpKSB7CisJCS8qCisJCSAqIElmIHBvc3NpYmxlIHVzZSB0aGUgVFRCUjEgdmlydHVhbCBhZGRy
-ZXNzIHNwYWNlIGZvciBhbGwgdGhlCisJCSAqICJnbG9iYWwiIGJ1ZmZlciBvYmplY3RzIHdoaWNo
-IGFyZSBzaGFyZWQgYmV0d2VlbiBwcm9jZXNzZXMuCisJCSAqIFRoaXMgbGVhdmVzIHRoZSBsb3dl
-ciB2aXJ0dWFsIGFkZHJlc3Mgc3BhY2Ugb3BlbiBmb3IKKwkJICogcGVyLWluc3RhbmNlIHBhZ2Fi
-bGVzIGlmIHRoZXkgYXJlIGF2YWlsYWJsZQorCQkgKi8KKwkJYWRyZW5vX2dwdV9jb25maWcudmFf
-c3RhcnRfZ2xvYmFsID0gMHhmZmZmZmZmODAwMDAwMDAwVUxMOworCQlhZHJlbm9fZ3B1X2NvbmZp
-Zy52YV9lbmRfZ2xvYmFsID0gMHhmZmZmZmZmOGZmZmZmZmZmVUxMOworCX0KKwogCWFkcmVub19n
-cHVfY29uZmlnLnZhX3N0YXJ0ID0gU1pfMTZNOwogCWFkcmVub19ncHVfY29uZmlnLnZhX2VuZCA9
-IDB4ZmZmZmZmZmY7CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2Fk
-cmVub19ncHUuaCBiL2RyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5vL2FkcmVub19ncHUuaAppbmRl
-eCBkNmIwZTdiODEzZjQuLmRjNGIyMWVhM2U2NSAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJt
-L21zbS9hZHJlbm8vYWRyZW5vX2dwdS5oCisrKyBiL2RyaXZlcnMvZ3B1L2RybS9tc20vYWRyZW5v
-L2FkcmVub19ncHUuaApAQCAtMjAzLDYgKzIwMywxMSBAQCBzdGF0aWMgaW5saW5lIGludCBhZHJl
-bm9faXNfYTUzMChzdHJ1Y3QgYWRyZW5vX2dwdSAqZ3B1KQogCXJldHVybiBncHUtPnJldm4gPT0g
-NTMwOwogfQogCitzdGF0aWMgaW5saW5lIGJvb2wgYWRyZW5vX2lzX2E1eHgoc3RydWN0IGFkcmVu
-b19ncHUgKmdwdSkKK3sKKwlyZXR1cm4gKChncHUtPnJldm4gPj0gNTAwKSAmIChncHUtPnJldm4g
-PCA2MDApKTsKK30KKwogaW50IGFkcmVub19nZXRfcGFyYW0oc3RydWN0IG1zbV9ncHUgKmdwdSwg
-dWludDMyX3QgcGFyYW0sIHVpbnQ2NF90ICp2YWx1ZSk7CiBjb25zdCBzdHJ1Y3QgZmlybXdhcmUg
-KmFkcmVub19yZXF1ZXN0X2Z3KHN0cnVjdCBhZHJlbm9fZ3B1ICphZHJlbm9fZ3B1LAogCQljb25z
-dCBjaGFyICpmd25hbWUpOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fcmlu
-Z2J1ZmZlci5oIGIvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fcmluZ2J1ZmZlci5oCmluZGV4IGNm
-ZmNlMDk0YWVjYi4uZmQ3MTQ4NGQ1ODk0IDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vbXNt
-L21zbV9yaW5nYnVmZmVyLmgKKysrIGIvZHJpdmVycy9ncHUvZHJtL21zbS9tc21fcmluZ2J1ZmZl
-ci5oCkBAIC0yNiw2ICsyNiw3IEBACiBzdHJ1Y3QgbXNtX3JibWVtcHRycyB7CiAJdm9sYXRpbGUg
-dWludDMyX3QgcnB0cjsKIAl2b2xhdGlsZSB1aW50MzJfdCBmZW5jZTsKKwl2b2xhdGlsZSB1aW50
-NjRfdCB0dGJyMDsKIH07CiAKIHN0cnVjdCBtc21fcmluZ2J1ZmZlciB7Ci0tIAoyLjE3LjAKCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBt
-YWlsaW5nIGxpc3QKRnJlZWRyZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
-LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
+Improve the performance of the PPR log polling function (i.e. the
+task of emptying the log) by minimizing MMIO operations and more
+efficiently processing groups of log entries. Cache the head
+pointer, as there's never a reason to read it. Ensure the head
+pointer register is updated every so often, to inform the IOMMU
+that space is available in the log.
+
+Finally, since a single pass may leave logged events unread, use
+an outer loop to repeat until head has caught up to tail.
+
+Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c       |   69 +++++++++++++++++++++------------------
+ drivers/iommu/amd_iommu_init.c  |    1 +
+ drivers/iommu/amd_iommu_types.h |    1 +
+ 3 files changed, 39 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 77c056ae082c..13a550fb7d47 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -660,51 +660,56 @@ static void iommu_handle_ppr_entry(struct amd_iommu *iommu, u64 *raw)
+ 
+ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
+ {
+-	u32 head, tail;
++	u32 tail;
+ 
+ 	if (iommu->ppr_log == NULL)
+ 		return;
+ 
+-	head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 	tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
+ 
+-	while (head != tail) {
+-		volatile u64 *raw;
+-		u64 entry[2];
+-		int i;
++	while (iommu->ppr_log_head != tail) {
++		uint count = PPR_LOG_ENTRIES / 8;
++
++		while (iommu->ppr_log_head != tail && count--) {
++			volatile u64 *raw;
++			u64 entry[2];
++			int i;
++
++			raw = (u64 *)(iommu->ppr_log + iommu->ppr_log_head);
++
++			/*
++			 * Hardware bug: Interrupt may arrive before the
++			 * entry is written to memory. If this happens we
++			 * need to wait for the entry to arrive.
++			 */
++			for (i = 0; i < LOOP_TIMEOUT; ++i) {
++				if (PPR_REQ_TYPE(raw[0]) != 0)
++					break;
++				udelay(1);
++			}
+ 
+-		raw = (u64 *)(iommu->ppr_log + head);
++			/* Avoid memcpy function-call overhead */
++			entry[0] = raw[0];
++			entry[1] = raw[1];
+ 
+-		/*
+-		 * Hardware bug: Interrupt may arrive before the entry is
+-		 * written to memory. If this happens we need to wait for the
+-		 * entry to arrive.
+-		 */
+-		for (i = 0; i < LOOP_TIMEOUT; ++i) {
+-			if (PPR_REQ_TYPE(raw[0]) != 0)
+-				break;
+-			udelay(1);
+-		}
++			/*
++			 * To detect the hardware bug we need to clear the
++			 * entry back to zero.
++			 */
++			raw[0] = raw[1] = 0UL;
+ 
+-		/* Avoid memcpy function-call overhead */
+-		entry[0] = raw[0];
+-		entry[1] = raw[1];
++			/* Handle PPR entry */
++			iommu_handle_ppr_entry(iommu, entry);
+ 
+-		/*
+-		 * To detect the hardware bug we need to clear the entry
+-		 * back to zero.
+-		 */
+-		raw[0] = raw[1] = 0UL;
++			iommu->ppr_log_head += PPR_ENTRY_SIZE;
++			iommu->ppr_log_head %= PPR_LOG_SIZE;
++		}
+ 
+ 		/* Update head pointer of hardware ring-buffer */
+-		head = (head + PPR_ENTRY_SIZE) % PPR_LOG_SIZE;
+-		writel(head, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+-
+-		/* Handle PPR entry */
+-		iommu_handle_ppr_entry(iommu, entry);
++		writel(iommu->ppr_log_head,
++		       iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 
+-		/* Refresh ring-buffer information */
+-		head = readl(iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
++		/* Get the current value of tail */
+ 		tail = readl(iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
+ 	}
+ }
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 904c575d1677..227a9887feb1 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -721,6 +721,7 @@ static void iommu_enable_ppr_log(struct amd_iommu *iommu)
+ 	/* set head and tail to zero manually */
+ 	writel(0x00, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
+ 	writel(0x00, iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
++	iommu->ppr_log_head = 0;
+ 
+ 	iommu_feature_enable(iommu, CONTROL_PPFLOG_EN);
+ 	iommu_feature_enable(iommu, CONTROL_PPR_EN);
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 986cbe0cc189..31afcc54434c 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -548,6 +548,7 @@ struct amd_iommu {
+ 
+ 	/* Base of the PPR log, if present */
+ 	u8 *ppr_log;
++	u32 ppr_log_head;
+ 
+ 	/* Base of the GA log, if present */
+ 	u8 *ga_log;
