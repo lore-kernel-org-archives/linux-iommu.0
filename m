@@ -1,73 +1,124 @@
-From: Gary R Hook <gary.hook@amd.com>
-Subject: Re: [PATCH v7 2/2] iommu/amd: Add basic debugfs infrastructure for
- AMD IOMMU
-Date: Fri, 18 May 2018 16:02:46 -0500
-Message-ID: <3eefbef8-142e-0a29-3e97-536717f63a98@amd.com>
-References: <152631818082.18929.13970142119193316487.stgit@sosxen2.amd.com>
- <152631842907.18929.8819955271544326298.stgit@sosxen2.amd.com>
- <ba2bb6f7-77ea-4431-af0f-d20c19820d5d@infradead.org>
- <5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
- <20180515134603.GD18595@8bytes.org>
- <4041cb33-19a2-5542-4211-1dce51de5e40@amd.com>
- <89a0e3af-8970-cd80-418d-630841795807@infradead.org>
+From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Subject: Re: dma_sync_*_for_cpu and direction=TO_DEVICE (was Re: [PATCH
+	02/20] dma-mapping: provide a generic dma-noncoherent implementation)
+Date: Fri, 18 May 2018 22:33:10 +0100
+Message-ID: <20180518213309.GG17671@n2100.armlinux.org.uk>
+References: <20180511075945.16548-1-hch@lst.de>
+	<20180511075945.16548-3-hch@lst.de>
+	<bad125dff49f6e49c895e818c9d1abb346a46e8e.camel@synopsys.com>
+	<5ac5b1e3-9b96-9c7c-4dfe-f65be45ec179@synopsys.com>
+	<20180518175004.GF17671@n2100.armlinux.org.uk>
+	<182840dedb4890a88c672b1c5d556920bf89a8fb.camel@synopsys.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <89a0e3af-8970-cd80-418d-630841795807@infradead.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <182840dedb4890a88c672b1c5d556920bf89a8fb.camel-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
+Cc: "linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org" <linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org>, "linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org" <linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org>, "Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org" <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org" <linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org>, "openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org" <openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org>, "green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, monstr@mons
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/18/2018 11:49 AM, Randy Dunlap wrote:
-> On 05/18/2018 08:20 AM, Gary R Hook wrote:
->> On 05/15/2018 08:46 AM, Joerg Roedel wrote:
->>> On Mon, May 14, 2018 at 03:00:50PM -0500, Gary R Hook wrote:
->>>> This was brought up a few weeks ago in, I believe, version 3 of this patch.
->>>> That question was discussed (because that's what I did the first time out),
->>>> and _someone_ _else_ asked about why I didn't just do it the way I've done
->>>> it here.
->>>
->>> You don't have this problem if you put the code in amd_iommu.c in an
->>> IOMMU_DEBUGFS ifdef.
->>
->> Of course. My preference, however, is a separate file to avoid size creep. That's why I've done it this way.
->>
->> To whit: there have been threads discussing the advisability/acceptability of using #ifdefs for debug code. My take-away was to avoid them. Perhaps I misunderstood.
->>
->> So: I don't understand your comment. Is this an observation, or is it an imperative statement? I'd like for a maintainer to clearly indicate what is acceptable, and I'll do it.
->>
->>
-> 
-> Hi,
-> I looked back at Robin Murphy's comments on April 17:
-> 
-> <quote>
-> Well, you could do a makefile-level dependency i.e.:
-> 
-> ifeq ($(CONFIG_IOMMU_DEBUG), y)
-> obj-$(CONFIG_AMD_IOMMU) += amd_iommu_debugfs.o
-> obj-$(CONFIG_BLAH_IOMMU) += blah_iommu_debugfs.o
-> ...
-> endif
-> 
-> Or alternatively have an intermediate silent Kconfig option:
-> 
-> config AMD_IOMMU_DEBUG
-> 	def_bool y
-> 	depends on AMD_IOMMU && IOMMU_DEBUG
-> 
-> The makefile option is arguably ugly, but does at least scale better ;)
-> </quote>
-> 
-> 
-> I think the Kconfig option would have been the correct choice.
+On Fri, May 18, 2018 at 07:57:34PM +0000, Alexey Brodkin wrote:
+> Hi Russel,
 
-"Preferred", perhaps. Neither is incorrect. And really, the 
-Makefile/Kconfig choice is somewhat separate from the organization issue.
+That's Russell.
 
-So I've made the changes for this. Now I'm waiting on Joerg to make a 
-decision on the code/file organization. I still prefer a separate file 
-for the debug fs code.
+> On Fri, 2018-05-18 at 18:50 +0100, Russell King - ARM Linux wrote:
+> > It's necessary.  Take a moment to think carefully about this:
+> > 
+> >         dma_map_single(, dir)
+> > 
+> >         dma_sync_single_for_cpu(, dir)
+> > 
+> >         dma_sync_single_for_device(, dir)
+> > 
+> >         dma_unmap_single(, dir)
+> > 
+> > In the case of a DMA-incoherent architecture, the operations done at each
+> > stage depend on the direction argument:
+> > 
+> >         map             for_cpu         for_device      unmap
+> > TO_DEV  writeback       none            writeback       none
+> > TO_CPU  invalidate      invalidate*     invalidate      invalidate*
+> > BIDIR   writeback       invalidate      writeback       invalidate
+> > 
+> > * - only necessary if the CPU speculatively prefetches.
+> 
+> I think invalidation of DMA buffer is required on for_cpu(TO_CPU) even
+> if CPU doesn't preferch - what if we reuse the same buffer for multiple
+> reads from DMA device?
+
+That's fine - for non-coherent DMA, the CPU caches will only end up
+containing data for that memory if:
+- the CPU speculatively fetches data from that memory, or
+- the CPU explicitly touches that memory
+
+> > The multiple invalidations for the TO_CPU case handles different
+> > conditions that can result in data corruption, and for some CPUs, all
+> > four are necessary.
+> 
+> I would agree that map()/unmap() a quite a special cases and so depending
+> on direction we need to execute in them either for_cpu() or for_device()
+> call-backs depending on direction.
+> 
+> As for invalidation in case of for_device(TO_CPU) I still don't see
+> a rationale behind it. Would be interesting to see a real example where
+> we benefit from this.
+
+Yes, you could avoid that, but depending how you structure the
+architecture implementation, it can turn out to be a corner case.
+The above table is precisely how 32-bit ARM is implemented, because
+the way we implement them is based on who owns the memory - the "map"
+and "for_device" operations translate internally to a cpu-to-device
+ownership transition of the buffer.  Similar for "unmap" and "to_cpu".
+It basically avoids having to add additional functions at the lower
+implementation levels.
+
+> > Things get more interesting if the implementation behind the DMA API has
+> > to copy data between the buffer supplied to the mapping and some DMA
+> > accessible buffer:
+> > 
+> >         map             for_cpu         for_device      unmap
+> > TO_DEV  copy to dma     none            copy to dma     none
+> > TO_CPU  none            copy to cpu     none            copy to cpu
+> > BIDIR   copy to dma     copy to cpu     copy to dma     copy to cpu
+> > 
+> > So, in both cases, the value of the direction argument defines what you
+> > need to do in each call.
+> 
+> Interesting enough in your seond table (which describes more complicated
+> case indeed) you set "none" for for_device(TO_CPU) which looks logical
+> to me.
+> 
+> So IMHO that's what make sense:
+> ---------------------------->8-----------------------------
+>         map             for_cpu         for_device      unmap
+> TO_DEV  writeback       none            writeback       none
+> TO_CPU  none            invalidate      none            invalidate*
+> BIDIR   writeback       invalidate      writeback       invalidate*
+> ---------------------------->8-----------------------------
+
+That doesn't make sense for the TO_CPU case.  If the caches contain
+dirty cache lines, and you're DMAing from the device to the system
+RAM, other system activity can cause the dirty cache lines to be
+evicted (written back) to memory which the DMA has already overwritten.
+The result is data corruption.  So, you really can't have "none" in
+the "map" case there.
+
+Given that, the "for_cpu" case becomes dependent on whether the CPU
+speculatively prefetches.
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
+According to speedtest.net: 8.21Mbps down 510kbps up
