@@ -1,64 +1,73 @@
-From: Vineet Gupta <Vineet.Gupta1-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>
-Subject: Re: dma_sync_*_for_cpu and direction=TO_DEVICE (was Re: [PATCH 02/20]
-	dma-mapping: provide a generic dma-noncoherent implementation)
-Date: Fri, 18 May 2018 13:35:08 -0700
-Message-ID: <cecfe6bd-ef1f-1e25-bfcf-992d1f828efb@synopsys.com>
-References: <20180511075945.16548-1-hch@lst.de>
-	<20180511075945.16548-3-hch@lst.de>
-	<bad125dff49f6e49c895e818c9d1abb346a46e8e.camel@synopsys.com>
-	<5ac5b1e3-9b96-9c7c-4dfe-f65be45ec179@synopsys.com>
-	<20180518175004.GF17671@n2100.armlinux.org.uk>
+From: Gary R Hook <gary.hook@amd.com>
+Subject: Re: [PATCH v7 2/2] iommu/amd: Add basic debugfs infrastructure for
+ AMD IOMMU
+Date: Fri, 18 May 2018 16:02:46 -0500
+Message-ID: <3eefbef8-142e-0a29-3e97-536717f63a98@amd.com>
+References: <152631818082.18929.13970142119193316487.stgit@sosxen2.amd.com>
+ <152631842907.18929.8819955271544326298.stgit@sosxen2.amd.com>
+ <ba2bb6f7-77ea-4431-af0f-d20c19820d5d@infradead.org>
+ <5e45f38e-cb45-d4a1-f351-30543f787290@amd.com>
+ <20180515134603.GD18595@8bytes.org>
+ <4041cb33-19a2-5542-4211-1dce51de5e40@amd.com>
+ <89a0e3af-8970-cd80-418d-630841795807@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180518175004.GF17671-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <89a0e3af-8970-cd80-418d-630841795807@infradead.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: "linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alexey Brodkin <Alexey.Brodkin-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org" <linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org>, "linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org" <linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org>, "linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org" <linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org>, "openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org" <openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org>, "green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org" <monst>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Randy Dunlap <rdunlap@infradead.org>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDUvMTgvMjAxOCAxMDo1MCBBTSwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IHdyb3RlOgo+
-IE9uIEZyaSwgTWF5IDE4LCAyMDE4IGF0IDEwOjIwOjAyQU0gLTA3MDAsIFZpbmVldCBHdXB0YSB3
-cm90ZToKPj4gSSBuZXZlciB1bmRlcnN0b29kIHRoZSBuZWVkIGZvciB0aGlzIGRpcmVjdGlvbi4g
-QW5kIGlmIG1lbW9yeSBzZXJ2ZXMgbWUKPj4gcmlnaHQsIGF0IHRoYXQgdGltZSBJIHdhcyBzZWVp
-bmcgdHdpY2UgdGhlIGFtb3VudCBvZiBjYWNoZSBmbHVzaGluZyAhCj4gSXQncyBuZWNlc3Nhcnku
-ICBUYWtlIGEgbW9tZW50IHRvIHRoaW5rIGNhcmVmdWxseSBhYm91dCB0aGlzOgo+Cj4gCWRtYV9t
-YXBfc2luZ2xlKCwgZGlyKQo+Cj4gCWRtYV9zeW5jX3NpbmdsZV9mb3JfY3B1KCwgZGlyKQo+Cj4g
-CWRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlKCwgZGlyKQo+Cj4gCWRtYV91bm1hcF9zaW5nbGUo
-LCBkaXIpCgpBcyBhbiBhc2lkZSwgZG8gdGhlc2UgaW1wbHkgYSBzdGF0ZSBtYWNoaW5lIG9mIHNv
-cnRzIC0gZG9lcyBhIGRyaXZlciBuZWVkcyB0byAKYWx3YXlzIGNhbGwgbWFwX3NpbmdsZSBmaXJz
-dCA/CgpNeSBvcmlnaW5hbCBwb2ludCBvZiBjb250ZW50aW9uL2NvbmZ1c2lvbiBpcyB0aGUgc3Bl
-Y2lmaWMgY29tYmluYXRpb25zIG9mIEFQSSBhbmQgCmRpcmVjdGlvbiwgc3BlY2lmaWNhbGx5IGZv
-cl9jcHUoVE9fREVWKSBhbmQgZm9yX2RldmljZShUT19DUFUpCgpTZW1hbnRpY2FsbHkgd2hhdCBk
-b2VzIGRtYV9zeW5jX3NpbmdsZV9mb3JfY3B1KFRPX0RFVikgZXZlbiBpbXBseSBmb3IgYSBub24g
-ZG1hIApjb2hlcmVudCBhcmNoLgpZb3VyIHRhYmxlcyBiZWxvdyBoYXZlICJub25lIiBmb3IgYm90
-aCwgaW1wbHlpbmcgaXQgaXMgdW5saWtlbHkgdG8gYmUgYSByZWFsIApjb21iaW5hdGlvbiAoZm9y
-IEFSTSBhbmQgQVJDIGF0bGVhc3QpLgoKVGhlIG90aGVyIGNhc2UsIGFjdHVhbGx5IEBkaXIgVE9f
-Q1BVLCBpbmRlcGVuZGVudCBvZiBmb3Jfe2NwdSwgZGV2aWNlfcKgIGltcGxpZXMgCmRyaXZlciBp
-bnRlbmRzIHRvIHRvdWNoIGl0IGFmdGVyIHRoZSBjYWxsLCBzbyBpdCB3b3VsZCBpbnZhbGlkYXRl
-IGFueSBzdHJheSBsaW5lcywgCnVuY29uZGl0aW9uYWxseSAoYW5kIG5vdCBqdXN0IGZvciBzcGVj
-dWxhdGl2ZSBwcmVmZXRjaCBjYXNlKS4KCgo+IEluIHRoZSBjYXNlIG9mIGEgRE1BLWluY29oZXJl
-bnQgYXJjaGl0ZWN0dXJlLCB0aGUgb3BlcmF0aW9ucyBkb25lIGF0IGVhY2gKPiBzdGFnZSBkZXBl
-bmQgb24gdGhlIGRpcmVjdGlvbiBhcmd1bWVudDoKPgo+IAltYXAJCWZvcl9jcHUJCWZvcl9kZXZp
-Y2UJdW5tYXAKPiBUT19ERVYJd3JpdGViYWNrCW5vbmUJCXdyaXRlYmFjawlub25lCj4gVE9fQ1BV
-CWludmFsaWRhdGUJaW52YWxpZGF0ZSoJaW52YWxpZGF0ZQlpbnZhbGlkYXRlKgo+IEJJRElSCXdy
-aXRlYmFjawlpbnZhbGlkYXRlCXdyaXRlYmFjawlpbnZhbGlkYXRlCj4KPiAqIC0gb25seSBuZWNl
-c3NhcnkgaWYgdGhlIENQVSBzcGVjdWxhdGl2ZWx5IHByZWZldGNoZXMuCj4KPiBUaGUgbXVsdGlw
-bGUgaW52YWxpZGF0aW9ucyBmb3IgdGhlIFRPX0NQVSBjYXNlIGhhbmRsZXMgZGlmZmVyZW50Cj4g
-Y29uZGl0aW9ucyB0aGF0IGNhbiByZXN1bHQgaW4gZGF0YSBjb3JydXB0aW9uLCBhbmQgZm9yIHNv
-bWUgQ1BVcywgYWxsCj4gZm91ciBhcmUgbmVjZXNzYXJ5LgoKQ2FuIHlvdSBwbGVhc2UgZXhwbGFp
-biBpbiBzb21lIG1vcmUgZGV0YWlsLCBUT19DUFUgcm93LCB3aHkgaW52YWxpZGF0ZSBpcyAKY29u
-ZGl0aW9uYWwgc29tZXRpbWVzLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+On 05/18/2018 11:49 AM, Randy Dunlap wrote:
+> On 05/18/2018 08:20 AM, Gary R Hook wrote:
+>> On 05/15/2018 08:46 AM, Joerg Roedel wrote:
+>>> On Mon, May 14, 2018 at 03:00:50PM -0500, Gary R Hook wrote:
+>>>> This was brought up a few weeks ago in, I believe, version 3 of this patch.
+>>>> That question was discussed (because that's what I did the first time out),
+>>>> and _someone_ _else_ asked about why I didn't just do it the way I've done
+>>>> it here.
+>>>
+>>> You don't have this problem if you put the code in amd_iommu.c in an
+>>> IOMMU_DEBUGFS ifdef.
+>>
+>> Of course. My preference, however, is a separate file to avoid size creep. That's why I've done it this way.
+>>
+>> To whit: there have been threads discussing the advisability/acceptability of using #ifdefs for debug code. My take-away was to avoid them. Perhaps I misunderstood.
+>>
+>> So: I don't understand your comment. Is this an observation, or is it an imperative statement? I'd like for a maintainer to clearly indicate what is acceptable, and I'll do it.
+>>
+>>
+> 
+> Hi,
+> I looked back at Robin Murphy's comments on April 17:
+> 
+> <quote>
+> Well, you could do a makefile-level dependency i.e.:
+> 
+> ifeq ($(CONFIG_IOMMU_DEBUG), y)
+> obj-$(CONFIG_AMD_IOMMU) += amd_iommu_debugfs.o
+> obj-$(CONFIG_BLAH_IOMMU) += blah_iommu_debugfs.o
+> ...
+> endif
+> 
+> Or alternatively have an intermediate silent Kconfig option:
+> 
+> config AMD_IOMMU_DEBUG
+> 	def_bool y
+> 	depends on AMD_IOMMU && IOMMU_DEBUG
+> 
+> The makefile option is arguably ugly, but does at least scale better ;)
+> </quote>
+> 
+> 
+> I think the Kconfig option would have been the correct choice.
+
+"Preferred", perhaps. Neither is incorrect. And really, the 
+Makefile/Kconfig choice is somewhat separate from the organization issue.
+
+So I've made the changes for this. Now I'm waiting on Joerg to make a 
+decision on the code/file organization. I still prefer a separate file 
+for the debug fs code.
