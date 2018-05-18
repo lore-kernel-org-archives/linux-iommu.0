@@ -1,52 +1,104 @@
-From: Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH 02/20] dma-mapping: provide a generic dma-noncoherent
- implementation
-Date: Fri, 18 May 2018 22:05:51 +0200
-Message-ID: <0c5d27e9-2799-eb38-8b09-47a04c48b5c7@gmx.de>
-References: <20180511075945.16548-1-hch@lst.de>
- <20180511075945.16548-3-hch@lst.de>
- <bad125dff49f6e49c895e818c9d1abb346a46e8e.camel@synopsys.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/6] swiotlb: do not panic on mapping failures
+Date: Fri, 18 May 2018 16:21:52 -0400
+Message-ID: <20180518202152.GH23713@char.us.oracle.com>
+References: <20180515180523.3038-1-hch@lst.de>
+	<20180515180523.3038-3-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-In-Reply-To: <bad125dff49f6e49c895e818c9d1abb346a46e8e.camel@synopsys.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: Alexey Brodkin <Alexey.Brodkin@synopsys.com>, "hch@lst.de" <hch@lst.de>
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "monstr@monstr.eu" <monstr@monstr.eu>, "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>, "linux-c6x-dev@linux-c6x.org" <linux-c6x-dev@linux-c6x.org>, "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>, "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>, "linux-hexagon@vger.kernel.org" <linux-hexagon@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, James Bottomley <James.Bottomley@HansenPartnership.com>, "linux-m68k@lists.linux-m68k.org" <linux-m68k@lists.linux-m68k.org>, "openrisc@lists.librecores.org" <openrisc@lists.librecores.org>, "green.hu@gmail.com" <green.hu@gmail.com>, "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "sparclinux@vger.kernel.org" <sparcl>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180515180523.3038-3-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 18.05.2018 15:03, Alexey Brodkin wrote:
-> But the real fix of my problem is:
-> ---------------------------------------->8------------------------------------
-> --- a/lib/dma-noncoherent.c
-> +++ b/lib/dma-noncoherent.c
-> @@ -35,7 +35,7 @@ static dma_addr_t dma_noncoherent_map_page(struct device *dev, struct page *page
->  
->         addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
->         if (!dma_mapping_error(dev, addr) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> -               arch_sync_dma_for_device(dev, page_to_phys(page), size, dir);
-> +               arch_sync_dma_for_device(dev, page_to_phys(page) + offset, size, dir);
->         return addr;
->  }
-> ---------------------------------------->8------------------------------------
+On Tue, May 15, 2018 at 08:05:19PM +0200, Christoph Hellwig wrote:
+> We now have error handling in map_single/map_page callers (most of them
+
+Which ones are missing? Shouldn't we first fix those before we rip this out?
+
+> anyway). As swiotlb_tbl_map_single already prints a useful warning
+> when running out of swiotlb pool swace we can also remove swiotlb_full
+
+s/swace/so/
+
+> entirely as it serves no purpose now.
 > 
-> You seem to lost an offset in the page so if we happen to have a buffer not aligned to
-> a page boundary then we were obviously corrupting data outside our data :)
-
-Good.
-This patch seems to fix the dma issues I faced on my 32bit B160L parisc box.
-
-So it leaves only one open issue on parisc:
-Now every 32 bit parisc system is unnecessarily non-coherent.
-
-Helge
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>  lib/swiotlb.c | 33 +--------------------------------
+>  1 file changed, 1 insertion(+), 32 deletions(-)
+> 
+> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+> index 721f93677eee..4d36340bc4f9 100644
+> --- a/lib/swiotlb.c
+> +++ b/lib/swiotlb.c
+> @@ -763,34 +763,6 @@ static bool swiotlb_free_buffer(struct device *dev, size_t size,
+>  	return true;
+>  }
+>  
+> -static void
+> -swiotlb_full(struct device *dev, size_t size, enum dma_data_direction dir,
+> -	     int do_panic)
+> -{
+> -	if (swiotlb_force == SWIOTLB_NO_FORCE)
+> -		return;
+> -
+> -	/*
+> -	 * Ran out of IOMMU space for this operation. This is very bad.
+> -	 * Unfortunately the drivers cannot handle this operation properly.
+> -	 * unless they check for dma_mapping_error (most don't)
+> -	 * When the mapping is small enough return a static buffer to limit
+> -	 * the damage, or panic when the transfer is too big.
+> -	 */
+> -	dev_err_ratelimited(dev, "DMA: Out of SW-IOMMU space for %zu bytes\n",
+> -			    size);
+> -
+> -	if (size <= io_tlb_overflow || !do_panic)
+> -		return;
+> -
+> -	if (dir == DMA_BIDIRECTIONAL)
+> -		panic("DMA: Random memory could be DMA accessed\n");
+> -	if (dir == DMA_FROM_DEVICE)
+> -		panic("DMA: Random memory could be DMA written\n");
+> -	if (dir == DMA_TO_DEVICE)
+> -		panic("DMA: Random memory could be DMA read\n");
+> -}
+> -
+>  /*
+>   * Map a single buffer of the indicated size for DMA in streaming mode.  The
+>   * physical address to use is returned.
+> @@ -819,10 +791,8 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+>  
+>  	/* Oh well, have to allocate and map a bounce buffer. */
+>  	map = map_single(dev, phys, size, dir, attrs);
+> -	if (map == SWIOTLB_MAP_ERROR) {
+> -		swiotlb_full(dev, size, dir, 1);
+> +	if (map == SWIOTLB_MAP_ERROR)
+>  		return __phys_to_dma(dev, io_tlb_overflow_buffer);
+> -	}
+>  
+>  	dev_addr = __phys_to_dma(dev, map);
+>  
+> @@ -950,7 +920,6 @@ swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl, int nelems,
+>  			if (map == SWIOTLB_MAP_ERROR) {
+>  				/* Don't panic here, we expect map_sg users
+>  				   to do proper error handling. */
+> -				swiotlb_full(hwdev, sg->length, dir, 0);
+>  				attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+>  				swiotlb_unmap_sg_attrs(hwdev, sgl, i, dir,
+>  						       attrs);
+> -- 
+> 2.17.0
+> 
