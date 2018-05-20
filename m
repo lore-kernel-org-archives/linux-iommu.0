@@ -1,7 +1,7 @@
 From: Nipun Gupta <nipun.gupta@nxp.com>
-Subject: [PATCH 2/7 v5] iommu: of: make of_pci_map_rid() available for other devices too
-Date: Sun, 20 May 2018 19:19:46 +0530
-Message-ID: <1526824191-7000-3-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 4/7 v5] iommu: arm-smmu: Add support for the fsl-mc bus
+Date: Sun, 20 May 2018 19:19:48 +0530
+Message-ID: <1526824191-7000-5-git-send-email-nipun.gupta@nxp.com>
 References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,342 +12,119 @@ To: robin.murphy@arm.com, will.deacon@arm.com, robh+dt@kernel.org, robh@kernel.o
 Cc: hch@lst.de, joro@8bytes.org, m.szyprowski@samsung.com, shawnguo@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, leoyang.li@nxp.com, Nipun Gupta <nipun.gupta@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-iommu-map property is also used by devices with fsl-mc. This
-patch moves the of_pci_map_rid to generic location, so that it
-can be used by other busses too.
-
-'of_pci_map_rid' is renamed here to 'of_map_rid' and there is no
-functional change done in the API.
+Implement bus specific support for the fsl-mc bus including
+registering arm_smmu_ops and bus specific device add operations.
 
 Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- drivers/iommu/of_iommu.c |   5 +--
- drivers/of/base.c        | 102 +++++++++++++++++++++++++++++++++++++++++++++++
- drivers/of/irq.c         |   5 +--
- drivers/pci/of.c         | 101 ----------------------------------------------
- include/linux/of.h       |  11 +++++
- include/linux/of_pci.h   |  10 -----
- 6 files changed, 117 insertions(+), 117 deletions(-)
+ drivers/iommu/arm-smmu.c |  7 +++++++
+ drivers/iommu/iommu.c    | 21 +++++++++++++++++++++
+ include/linux/fsl/mc.h   |  8 ++++++++
+ include/linux/iommu.h    |  2 ++
+ 4 files changed, 38 insertions(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 5c36a8b..811e160 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -149,9 +149,8 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
- 	struct of_phandle_args iommu_spec = { .args_count = 1 };
- 	int err;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 69e7c60..e1d5090 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -52,6 +52,7 @@
+ #include <linux/spinlock.h>
  
--	err = of_pci_map_rid(info->np, alias, "iommu-map",
--			     "iommu-map-mask", &iommu_spec.np,
--			     iommu_spec.args);
-+	err = of_map_rid(info->np, alias, "iommu-map", "iommu-map-mask",
-+			 &iommu_spec.np, iommu_spec.args);
- 	if (err)
- 		return err == -ENODEV ? NO_IOMMU : err;
+ #include <linux/amba/bus.h>
++#include <linux/fsl/mc.h>
  
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index 848f549..c7aac81 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1995,3 +1995,105 @@ int of_find_last_cache_level(unsigned int cpu)
+ #include "io-pgtable.h"
+ #include "arm-smmu-regs.h"
+@@ -1459,6 +1460,8 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
  
- 	return cache_level;
+ 	if (dev_is_pci(dev))
+ 		group = pci_device_group(dev);
++	else if (dev_is_fsl_mc(dev))
++		group = fsl_mc_device_group(dev);
+ 	else
+ 		group = generic_device_group(dev);
+ 
+@@ -2037,6 +2040,10 @@ static void arm_smmu_bus_init(void)
+ 		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+ 	}
+ #endif
++#ifdef CONFIG_FSL_MC_BUS
++	if (!iommu_present(&fsl_mc_bus_type))
++		bus_set_iommu(&fsl_mc_bus_type, &arm_smmu_ops);
++#endif
  }
-+
-+/**
-+ * of_map_rid - Translate a requester ID through a downstream mapping.
-+ * @np: root complex device node.
-+ * @rid: device requester ID to map.
-+ * @map_name: property name of the map to use.
-+ * @map_mask_name: optional property name of the mask to use.
-+ * @target: optional pointer to a target device node.
-+ * @id_out: optional pointer to receive the translated ID.
-+ *
-+ * Given a device requester ID, look up the appropriate implementation-defined
-+ * platform ID and/or the target device which receives transactions on that
-+ * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
-+ * @id_out may be NULL if only the other is required. If @target points to
-+ * a non-NULL device node pointer, only entries targeting that node will be
-+ * matched; if it points to a NULL value, it will receive the device node of
-+ * the first matching target phandle, with a reference held.
-+ *
-+ * Return: 0 on success or a standard error code on failure.
-+ */
-+int of_map_rid(struct device_node *np, u32 rid,
-+	       const char *map_name, const char *map_mask_name,
-+	       struct device_node **target, u32 *id_out)
+ 
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d2aa2320..6d4ce35 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -32,6 +32,7 @@
+ #include <linux/pci.h>
+ #include <linux/bitops.h>
+ #include <linux/property.h>
++#include <linux/fsl/mc.h>
+ #include <trace/events/iommu.h>
+ 
+ static struct kset *iommu_group_kset;
+@@ -987,6 +988,26 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 	return iommu_group_alloc();
+ }
+ 
++/* Get the IOMMU group for device on fsl-mc bus */
++struct iommu_group *fsl_mc_device_group(struct device *dev)
 +{
-+	u32 map_mask, masked_rid;
-+	int map_len;
-+	const __be32 *map = NULL;
++	struct device *cont_dev = fsl_mc_cont_dev(dev);
++	struct iommu_group *group;
 +
-+	if (!np || !map_name || (!target && !id_out))
-+		return -EINVAL;
-+
-+	map = of_get_property(np, map_name, &map_len);
-+	if (!map) {
-+		if (target)
-+			return -ENODEV;
-+		/* Otherwise, no map implies no translation */
-+		*id_out = rid;
-+		return 0;
++	/* Container device is responsible for creating the iommu group */
++	if (fsl_mc_is_cont_dev(dev)) {
++		group = iommu_group_alloc();
++		if (IS_ERR(group))
++			return NULL;
++	} else {
++		get_device(cont_dev);
++		group = iommu_group_get(cont_dev);
++		put_device(cont_dev);
 +	}
 +
-+	if (!map_len || map_len % (4 * sizeof(*map))) {
-+		pr_err("%pOF: Error: Bad %s length: %d\n", np,
-+			map_name, map_len);
-+		return -EINVAL;
-+	}
-+
-+	/* The default is to select all bits. */
-+	map_mask = 0xffffffff;
-+
-+	/*
-+	 * Can be overridden by "{iommu,msi}-map-mask" property.
-+	 * If of_property_read_u32() fails, the default is used.
-+	 */
-+	if (map_mask_name)
-+		of_property_read_u32(np, map_mask_name, &map_mask);
-+
-+	masked_rid = map_mask & rid;
-+	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
-+		struct device_node *phandle_node;
-+		u32 rid_base = be32_to_cpup(map + 0);
-+		u32 phandle = be32_to_cpup(map + 1);
-+		u32 out_base = be32_to_cpup(map + 2);
-+		u32 rid_len = be32_to_cpup(map + 3);
-+
-+		if (rid_base & ~map_mask) {
-+			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
-+				np, map_name, map_name,
-+				map_mask, rid_base);
-+			return -EFAULT;
-+		}
-+
-+		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
-+			continue;
-+
-+		phandle_node = of_find_node_by_phandle(phandle);
-+		if (!phandle_node)
-+			return -ENODEV;
-+
-+		if (target) {
-+			if (*target)
-+				of_node_put(phandle_node);
-+			else
-+				*target = phandle_node;
-+
-+			if (*target != phandle_node)
-+				continue;
-+		}
-+
-+		if (id_out)
-+			*id_out = masked_rid - rid_base + out_base;
-+
-+		pr_debug("%pOF: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
-+			np, map_name, map_mask, rid_base, out_base,
-+			rid_len, rid, masked_rid - rid_base + out_base);
-+		return 0;
-+	}
-+
-+	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
-+		np, map_name, rid, target && *target ? *target : NULL);
-+	return -EFAULT;
++	return group;
 +}
-+EXPORT_SYMBOL_GPL(of_map_rid);
-diff --git a/drivers/of/irq.c b/drivers/of/irq.c
-index 02ad93a..e1f6f39 100644
---- a/drivers/of/irq.c
-+++ b/drivers/of/irq.c
-@@ -22,7 +22,6 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
--#include <linux/of_pci.h>
- #include <linux/string.h>
- #include <linux/slab.h>
- 
-@@ -588,8 +587,8 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
- 	 * "msi-map" property.
- 	 */
- 	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent)
--		if (!of_pci_map_rid(parent_dev->of_node, rid_in, "msi-map",
--				    "msi-map-mask", np, &rid_out))
-+		if (!of_map_rid(parent_dev->of_node, rid_in, "msi-map",
-+				"msi-map-mask", np, &rid_out))
- 			break;
- 	return rid_out;
- }
-diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-index a28355c..d2cebbe 100644
---- a/drivers/pci/of.c
-+++ b/drivers/pci/of.c
-@@ -362,107 +362,6 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
- EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
- #endif /* CONFIG_OF_ADDRESS */
- 
--/**
-- * of_pci_map_rid - Translate a requester ID through a downstream mapping.
-- * @np: root complex device node.
-- * @rid: PCI requester ID to map.
-- * @map_name: property name of the map to use.
-- * @map_mask_name: optional property name of the mask to use.
-- * @target: optional pointer to a target device node.
-- * @id_out: optional pointer to receive the translated ID.
-- *
-- * Given a PCI requester ID, look up the appropriate implementation-defined
-- * platform ID and/or the target device which receives transactions on that
-- * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
-- * @id_out may be NULL if only the other is required. If @target points to
-- * a non-NULL device node pointer, only entries targeting that node will be
-- * matched; if it points to a NULL value, it will receive the device node of
-- * the first matching target phandle, with a reference held.
-- *
-- * Return: 0 on success or a standard error code on failure.
-- */
--int of_pci_map_rid(struct device_node *np, u32 rid,
--		   const char *map_name, const char *map_mask_name,
--		   struct device_node **target, u32 *id_out)
--{
--	u32 map_mask, masked_rid;
--	int map_len;
--	const __be32 *map = NULL;
--
--	if (!np || !map_name || (!target && !id_out))
--		return -EINVAL;
--
--	map = of_get_property(np, map_name, &map_len);
--	if (!map) {
--		if (target)
--			return -ENODEV;
--		/* Otherwise, no map implies no translation */
--		*id_out = rid;
--		return 0;
--	}
--
--	if (!map_len || map_len % (4 * sizeof(*map))) {
--		pr_err("%pOF: Error: Bad %s length: %d\n", np,
--			map_name, map_len);
--		return -EINVAL;
--	}
--
--	/* The default is to select all bits. */
--	map_mask = 0xffffffff;
--
--	/*
--	 * Can be overridden by "{iommu,msi}-map-mask" property.
--	 * If of_property_read_u32() fails, the default is used.
--	 */
--	if (map_mask_name)
--		of_property_read_u32(np, map_mask_name, &map_mask);
--
--	masked_rid = map_mask & rid;
--	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
--		struct device_node *phandle_node;
--		u32 rid_base = be32_to_cpup(map + 0);
--		u32 phandle = be32_to_cpup(map + 1);
--		u32 out_base = be32_to_cpup(map + 2);
--		u32 rid_len = be32_to_cpup(map + 3);
--
--		if (rid_base & ~map_mask) {
--			pr_err("%pOF: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
--				np, map_name, map_name,
--				map_mask, rid_base);
--			return -EFAULT;
--		}
--
--		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
--			continue;
--
--		phandle_node = of_find_node_by_phandle(phandle);
--		if (!phandle_node)
--			return -ENODEV;
--
--		if (target) {
--			if (*target)
--				of_node_put(phandle_node);
--			else
--				*target = phandle_node;
--
--			if (*target != phandle_node)
--				continue;
--		}
--
--		if (id_out)
--			*id_out = masked_rid - rid_base + out_base;
--
--		pr_debug("%pOF: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
--			np, map_name, map_mask, rid_base, out_base,
--			rid_len, rid, masked_rid - rid_base + out_base);
--		return 0;
--	}
--
--	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
--		np, map_name, rid, target && *target ? *target : NULL);
--	return -EFAULT;
--}
--
- #if IS_ENABLED(CONFIG_OF_IRQ)
++
  /**
-  * of_irq_parse_pci - Resolve the interrupt for a PCI device
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 4d25e4f..f4251c3 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -545,6 +545,10 @@ const __be32 *of_prop_next_u32(struct property *prop, const __be32 *cur,
+  * iommu_group_get_for_dev - Find or create the IOMMU group for a device
+  * @dev: target device
+diff --git a/include/linux/fsl/mc.h b/include/linux/fsl/mc.h
+index f27cb14..dddaca1 100644
+--- a/include/linux/fsl/mc.h
++++ b/include/linux/fsl/mc.h
+@@ -351,6 +351,14 @@ struct fsl_mc_io {
+ #define dev_is_fsl_mc(_dev) (0)
+ #endif
  
- extern int of_cpu_node_to_id(struct device_node *np);
- 
-+int of_map_rid(struct device_node *np, u32 rid,
-+	       const char *map_name, const char *map_mask_name,
-+	       struct device_node **target, u32 *id_out);
++/* Macro to check if a device is a container device */
++#define fsl_mc_is_cont_dev(_dev) (to_fsl_mc_device(_dev)->flags & \
++	FSL_MC_IS_DPRC)
 +
- #else /* CONFIG_OF */
- 
- static inline void of_core_init(void)
-@@ -931,6 +935,13 @@ static inline int of_cpu_node_to_id(struct device_node *np)
- 	return -ENODEV;
- }
- 
-+static inline int of_map_rid(struct device_node *np, u32 rid,
-+			     const char *map_name, const char *map_mask_name,
-+			     struct device_node **target, u32 *id_out)
-+{
-+	return -EINVAL;
-+}
++/* Macro to get the container device of a MC device */
++#define fsl_mc_cont_dev(_dev) (fsl_mc_is_cont_dev(_dev) ? \
++	(_dev) : (_dev)->parent)
 +
- #define of_match_ptr(_ptr)	NULL
- #define of_match_node(_matches, _node)	NULL
- #endif /* CONFIG_OF */
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-index 091033a..a23b44a 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -17,9 +17,6 @@ struct device_node *of_pci_find_child_device(struct device_node *parent,
- int of_get_pci_domain_nr(struct device_node *node);
- int of_pci_get_max_link_speed(struct device_node *node);
- void of_pci_check_probe_only(void);
--int of_pci_map_rid(struct device_node *np, u32 rid,
--		   const char *map_name, const char *map_mask_name,
--		   struct device_node **target, u32 *id_out);
- #else
- static inline struct device_node *of_pci_find_child_device(struct device_node *parent,
- 					     unsigned int devfn)
-@@ -44,13 +41,6 @@ static inline int of_pci_get_devfn(struct device_node *np)
- 	return -1;
- }
+ /*
+  * module_fsl_mc_driver() - Helper macro for drivers that don't do
+  * anything special in module init/exit.  This eliminates a lot of
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 19938ee..2981200 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -389,6 +389,8 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
+ extern struct iommu_group *pci_device_group(struct device *dev);
+ /* Generic device grouping function */
+ extern struct iommu_group *generic_device_group(struct device *dev);
++/* FSL-MC device grouping function */
++struct iommu_group *fsl_mc_device_group(struct device *dev);
  
--static inline int of_pci_map_rid(struct device_node *np, u32 rid,
--			const char *map_name, const char *map_mask_name,
--			struct device_node **target, u32 *id_out)
--{
--	return -EINVAL;
--}
--
- static inline int
- of_pci_get_max_link_speed(struct device_node *node)
- {
+ /**
+  * struct iommu_fwspec - per-device IOMMU instance data
 -- 
 1.9.1
