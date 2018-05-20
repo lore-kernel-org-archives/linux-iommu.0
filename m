@@ -1,66 +1,78 @@
 From: Nipun Gupta <nipun.gupta@nxp.com>
-Subject: [PATCH 5/7 v5] bus: fsl-mc: support dma configure for devices on fsl-mc bus
-Date: Sun, 20 May 2018 19:19:49 +0530
-Message-ID: <1526824191-7000-6-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 3/7 v5] iommu: support iommu configuration for fsl-mc devices
+Date: Sun, 20 May 2018 19:19:47 +0530
+Message-ID: <1526824191-7000-4-git-send-email-nipun.gupta@nxp.com>
 References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: robin.murphy@arm.com, will.deacon@arm.com, robh+dt@kernel.org, robh@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, gregkh@linuxfoundation.org, laurentiu.tudor@nxp.com, bhelgaas@google.com
-Cc: hch@lst.de, joro@8bytes.org, m.szyprowski@samsung.com, shawnguo@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, leoyang.li@nxp.com, Nipun Gupta <nipun.gupta@nxp.com>
+Cc: devicetree@vger.kernel.org, stuyoder@gmail.com, bharat.bhushan@nxp.com, shawnguo@kernel.org, joro@8bytes.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, leoyang.li@nxp.com, iommu@lists.linux-foundation.org, Nipun Gupta <nipun.gupta@nxp.com>, linux-pci@vger.kernel.org, frowand.list@gmail.com, hch@lst.de, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds support of dma configuration for devices on fsl-mc
-bus using 'dma_configure' callback for busses. Also, directly calling
-arch_setup_dma_ops is removed from the fsl-mc bus.
+With of_pci_map_rid available for all the busses, use the function
+for configuration of devices on fsl-mc bus
 
 Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
-Reviewed-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 ---
- drivers/bus/fsl-mc/fsl-mc-bus.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/of_iommu.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
-index 5d8266c..fa43c7d 100644
---- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-@@ -127,6 +127,16 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
- 	return 0;
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 811e160..284474d 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -24,6 +24,7 @@
+ #include <linux/of_iommu.h>
+ #include <linux/of_pci.h>
+ #include <linux/slab.h>
++#include <linux/fsl/mc.h>
+ 
+ #define NO_IOMMU	1
+ 
+@@ -159,6 +160,23 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ 	return err;
  }
  
-+static int fsl_mc_dma_configure(struct device *dev)
++static int of_fsl_mc_iommu_init(struct fsl_mc_device *mc_dev,
++				struct device_node *master_np)
 +{
-+	struct device *dma_dev = dev;
++	struct of_phandle_args iommu_spec = { .args_count = 1 };
++	int err;
 +
-+	while (dev_is_fsl_mc(dma_dev))
-+		dma_dev = dma_dev->parent;
++	err = of_map_rid(master_np, mc_dev->icid, "iommu-map",
++			 "iommu-map-mask", &iommu_spec.np,
++			 iommu_spec.args);
++	if (err)
++		return err == -ENODEV ? NO_IOMMU : err;
 +
-+	return of_dma_configure(dev, dma_dev->of_node, 0);
++	err = of_iommu_xlate(&mc_dev->dev, &iommu_spec);
++	of_node_put(iommu_spec.np);
++	return err;
 +}
 +
- static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					   struct device_node *master_np)
  {
-@@ -148,6 +158,7 @@ struct bus_type fsl_mc_bus_type = {
- 	.name = "fsl-mc",
- 	.match = fsl_mc_bus_match,
- 	.uevent = fsl_mc_bus_uevent,
-+	.dma_configure  = fsl_mc_dma_configure,
- 	.dev_groups = fsl_mc_dev_groups,
- };
- EXPORT_SYMBOL_GPL(fsl_mc_bus_type);
-@@ -633,10 +644,6 @@ int fsl_mc_device_add(struct fsl_mc_obj_desc *obj_desc,
- 			goto error_cleanup_dev;
- 	}
+@@ -190,6 +208,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
  
--	/* Objects are coherent, unless 'no shareability' flag set. */
--	if (!(obj_desc->flags & FSL_MC_OBJ_FLAG_NO_MEM_SHAREABILITY))
--		arch_setup_dma_ops(&mc_dev->dev, 0, 0, NULL, true);
--
- 	/*
- 	 * The device-specific probe callback will get invoked by device_add()
- 	 */
+ 		err = pci_for_each_dma_alias(to_pci_dev(dev),
+ 					     of_pci_iommu_init, &info);
++	} else if (dev_is_fsl_mc(dev)) {
++		err = of_fsl_mc_iommu_init(to_fsl_mc_device(dev), master_np);
+ 	} else {
+ 		struct of_phandle_args iommu_spec;
+ 		int idx = 0;
 -- 
 1.9.1
