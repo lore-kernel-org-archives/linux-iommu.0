@@ -1,121 +1,135 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 35/40] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Sat, 19 May 2018 13:25:06 -0400
-Message-ID: <922474e8-0aa5-e022-0502-f1e51b0d4859@codeaurora.org>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-36-jean-philippe.brucker@arm.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [PATCH v4 10/22] iommu: introduce device fault data
+Date: Sun, 20 May 2018 08:17:43 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439BF3E05@SHSMSX104.ccr.corp.intel.com>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1523915351-54415-11-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180511190641.23008-36-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1523915351-54415-11-git-send-email-jacob.jun.pan@linux.intel.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Yi L <yi.l.liu@linux.intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 5/11/2018 3:06 PM, Jean-Philippe Brucker wrote:
-> PCIe devices can implement their own TLB, named Address Translation Cache
-> (ATC). Enable Address Translation Service (ATS) for devices that support
-> it and send them invalidation requests whenever we invalidate the IOTLBs.
-> 
->   Range calculation
->   -----------------
-> 
-> The invalidation packet itself is a bit awkward: range must be naturally
-> aligned, which means that the start address is a multiple of the range
-> size. In addition, the size must be a power of two number of 4k pages. We
-> have a few options to enforce this constraint:
-> 
-> (1) Find the smallest naturally aligned region that covers the requested
->     range. This is simple to compute and only takes one ATC_INV, but it
->     will spill on lots of neighbouring ATC entries.
-> 
-> (2) Align the start address to the region size (rounded up to a power of
->     two), and send a second invalidation for the next range of the same
->     size. Still not great, but reduces spilling.
-> 
-> (3) Cover the range exactly with the smallest number of naturally aligned
->     regions. This would be interesting to implement but as for (2),
->     requires multiple ATC_INV.
-> 
-> As I suspect ATC invalidation packets will be a very scarce resource, I'll
-> go with option (1) for now, and only send one big invalidation. We can
-> move to (2), which is both easier to read and more gentle with the ATC,
-> once we've observed on real systems that we can send multiple smaller
-> Invalidation Requests for roughly the same price as a single big one.
-> 
-> Note that with io-pgtable, the unmap function is called for each page, so
-> this doesn't matter. The problem shows up when sharing page tables with
-> the MMU.
-> 
->   Timeout
->   -------
-> 
-> ATC invalidation is allowed to take up to 90 seconds, according to the
-> PCIe spec, so it is possible to hit the SMMU command queue timeout during
-> normal operations.
-> 
-> Some SMMU implementations will raise a CERROR_ATC_INV_SYNC when a CMD_SYNC
-> fails because of an ATC invalidation. Some will just abort the CMD_SYNC.
-> Others might let CMD_SYNC complete and have an asynchronous IMPDEF
-> mechanism to record the error. When we receive a CERROR_ATC_INV_SYNC, we
-> could retry sending all ATC_INV since last successful CMD_SYNC. When a
-> CMD_SYNC fails without CERROR_ATC_INV_SYNC, we could retry sending *all*
-> commands since last successful CMD_SYNC.
-> 
-> We cannot afford to wait 90 seconds in iommu_unmap, let alone MMU
-> notifiers. So we'd have to introduce a more clever system if this timeout
-> becomes a problem, like keeping hold of mappings and invalidating in the
-> background. Implementing safe delayed invalidations is a very complex
-> problem and deserves a series of its own. We'll assess whether more work
-> is needed to properly handle ATC invalidation timeouts once this code runs
-> on real hardware.
-> 
->   Misc
->   ----
-> 
-> I didn't put ATC and TLB invalidations in the same functions for three
-> reasons:
-> 
-> * TLB invalidation by range is batched and committed with a single sync.
->   Batching ATC invalidation is inconvenient, endpoints limit the number of
->   inflight invalidations. We'd have to count the number of invalidations
->   queued and send a sync periodically. In addition, I suspect we always
->   need a sync between TLB and ATC invalidation for the same page.
-> 
-> * Doing ATC invalidation outside tlb_inv_range also allows to send less
->   requests, since TLB invalidations are done per page or block, while ATC
->   invalidations target IOVA ranges.
-> 
-> * TLB invalidation by context is performed when freeing the domain, at
->   which point there isn't any device attached anymore.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Hi Jacob,
 
+> From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
+> Sent: Tuesday, April 17, 2018 5:49 AM
+>  include/linux/iommu.h | 102
+> +++++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 100 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index e963dbd..8968933 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -49,13 +49,17 @@ struct bus_type;
+>  struct device;
+>  struct iommu_domain;
+>  struct notifier_block;
+> +struct iommu_fault_event;
+> 
+>  /* iommu fault flags */
+> -#define IOMMU_FAULT_READ	0x0
+> -#define IOMMU_FAULT_WRITE	0x1
+> +#define IOMMU_FAULT_READ		(1 << 0)
+> +#define IOMMU_FAULT_WRITE		(1 << 1)
+> +#define IOMMU_FAULT_EXEC		(1 << 2)
+> +#define IOMMU_FAULT_PRIV		(1 << 3)
+> 
+>  typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+>  			struct device *, unsigned long, int, void *);
+> +typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *, void *);
+> 
+>  struct iommu_domain_geometry {
+>  	dma_addr_t aperture_start; /* First address that can be mapped    */
+> @@ -264,6 +268,99 @@ struct iommu_device {
+>  	struct device *dev;
+>  };
+> 
+> +/*  Generic fault types, can be expanded IRQ remapping fault */
+> +enum iommu_fault_type {
+> +	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
+> +	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
+> +};
+> +
+> +enum iommu_fault_reason {
+> +	IOMMU_FAULT_REASON_UNKNOWN = 0,
+> +
+> +	/* IOMMU internal error, no specific reason to report out */
+> +	IOMMU_FAULT_REASON_INTERNAL,
+> +
+> +	/* Could not access the PASID table */
+> +	IOMMU_FAULT_REASON_PASID_FETCH,
+> +
+> +	/*
+> +	 * PASID is out of range (e.g. exceeds the maximum PASID
+> +	 * supported by the IOMMU) or disabled.
+> +	 */
+> +	IOMMU_FAULT_REASON_PASID_INVALID,
+> +
+> +	/* Could not access the page directory (Invalid PASID entry) */
+> +	IOMMU_FAULT_REASON_PGD_FETCH,
+> +
+> +	/* Could not access the page table entry (Bad address) */
+> +	IOMMU_FAULT_REASON_PTE_FETCH,
+> +
+> +	/* Protection flag check failed */
+> +	IOMMU_FAULT_REASON_PERMISSION,
+> +};
+> +
+> +/**
+> + * struct iommu_fault_event - Generic per device fault data
+> + *
+> + * - PCI and non-PCI devices
+> + * - Recoverable faults (e.g. page request), information based on PCI ATS
+> + * and PASID spec.
+> + * - Un-recoverable faults of device interest
+> + * - DMA remapping and IRQ remapping faults
+> +
+> + * @type contains fault type.
+> + * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
+> + *         faults are not reported
+> + * @addr: tells the offending page address
+> + * @pasid: contains process address space ID, used in shared virtual memory(SVM)
+> + * @rid: requestor ID
+> + * @page_req_group_id: page request group index
+> + * @last_req: last request in a page request group
+> + * @pasid_valid: indicates if the PRQ has a valid PASID
+> + * @prot: page access protection flag, e.g. IOMMU_FAULT_READ,
+> IOMMU_FAULT_WRITE
+> + * @device_private: if present, uniquely identify device-specific
+> + *                  private data for an individual page request.
+> + * @iommu_private: used by the IOMMU driver for storing fault-specific
+> + *                 data. Users should not modify this field before
+> + *                 sending the fault response.
+> + */
+> +struct iommu_fault_event {
+> +	enum iommu_fault_type type;
+> +	enum iommu_fault_reason reason;
+> +	u64 addr;
+> +	u32 pasid;
+> +	u32 page_req_group_id;
+> +	u32 last_req : 1;
+> +	u32 pasid_valid : 1;
+> +	u32 prot;
 
-Nothing specific about this patch but just a general observation. Last time I
-looked at the code, it seemed to require both ATS and PRI support from a given
-hardware.
+I think userspace also needs to know the fault type, reason, pasid, addr, goup_id,
+prot. So the definition should be included in uapi/Linux/iommu.h.
 
-I think you can assume that for ATS 1.1 specification but ATS 1.0 specification
-allows a system to have ATS+PASID without PRI. 
+This comment also applies to "struct page_response_msg". Qemu also wants to
+pass the page response to host.
 
-QDF2400 is ATS 1.0 compatible as an example. 
+> +	u64 device_private;
+> +	u64 iommu_private;
 
-Is this an assumption / my misinterpretation?
+These two seems to be in kernel driver specific data. May split the iommu_fault_event
+definition into two parts. One part for the data required by both driver and userspace.
+One part for in kernel driver specific data.
 
-
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+Thanks,
+Yi Liu
