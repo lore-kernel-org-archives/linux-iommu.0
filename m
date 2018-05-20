@@ -1,7 +1,7 @@
 From: Nipun Gupta <nipun.gupta@nxp.com>
-Subject: [PATCH 6/7 v5] bus: fsl-mc: set coherent dma mask for devices on fsl-mc bus
-Date: Sun, 20 May 2018 19:19:50 +0530
-Message-ID: <1526824191-7000-7-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 7/7 v5] arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
+Date: Sun, 20 May 2018 19:19:51 +0530
+Message-ID: <1526824191-7000-8-git-send-email-nipun.gupta@nxp.com>
 References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,25 +12,52 @@ To: robin.murphy@arm.com, will.deacon@arm.com, robh+dt@kernel.org, robh@kernel.o
 Cc: hch@lst.de, joro@8bytes.org, m.szyprowski@samsung.com, shawnguo@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, leoyang.li@nxp.com, Nipun Gupta <nipun.gupta@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-of_dma_configure() API expects coherent_dma_mask to be correctly
-set in the devices. This patch does the needful.
+fsl-mc bus support the new iommu-map property. Comply to this binding
+for fsl_mc bus.
 
 Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
+Reviewed-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 ---
- drivers/bus/fsl-mc/fsl-mc-bus.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
-index fa43c7d..624828b 100644
---- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-+++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-@@ -627,6 +627,7 @@ int fsl_mc_device_add(struct fsl_mc_obj_desc *obj_desc,
- 		mc_dev->icid = parent_mc_dev->icid;
- 		mc_dev->dma_mask = FSL_MC_DEFAULT_DMA_MASK;
- 		mc_dev->dev.dma_mask = &mc_dev->dma_mask;
-+		mc_dev->dev.coherent_dma_mask = mc_dev->dma_mask;
- 		dev_set_msi_domain(&mc_dev->dev,
- 				   dev_get_msi_domain(&parent_mc_dev->dev));
- 	}
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+index 137ef4d..6010505 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+@@ -184,6 +184,7 @@
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+ 		ranges;
++		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
+ 
+ 		clockgen: clocking@1300000 {
+ 			compatible = "fsl,ls2080a-clockgen";
+@@ -357,6 +358,8 @@
+ 			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
+ 			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+ 			msi-parent = <&its>;
++			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
++			dma-coherent;
+ 			#address-cells = <3>;
+ 			#size-cells = <1>;
+ 
+@@ -460,6 +463,8 @@
+ 			compatible = "arm,mmu-500";
+ 			reg = <0 0x5000000 0 0x800000>;
+ 			#global-interrupts = <12>;
++			#iommu-cells = <1>;
++			stream-match-mask = <0x7C00>;
+ 			interrupts = <0 13 4>, /* global secure fault */
+ 				     <0 14 4>, /* combined secure interrupt */
+ 				     <0 15 4>, /* global non-secure fault */
+@@ -502,7 +507,6 @@
+ 				     <0 204 4>, <0 205 4>,
+ 				     <0 206 4>, <0 207 4>,
+ 				     <0 208 4>, <0 209 4>;
+-			mmu-masters = <&fsl_mc 0x300 0>;
+ 		};
+ 
+ 		dspi: dspi@2100000 {
 -- 
 1.9.1
