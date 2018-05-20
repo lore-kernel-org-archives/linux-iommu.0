@@ -1,7 +1,7 @@
 From: Nipun Gupta <nipun.gupta@nxp.com>
-Subject: [PATCH 7/7 v5] arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
-Date: Sun, 20 May 2018 19:19:51 +0530
-Message-ID: <1526824191-7000-8-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 5/7 v5] bus: fsl-mc: support dma configure for devices on fsl-mc bus
+Date: Sun, 20 May 2018 19:19:49 +0530
+Message-ID: <1526824191-7000-6-git-send-email-nipun.gupta@nxp.com>
 References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,52 +12,55 @@ To: robin.murphy@arm.com, will.deacon@arm.com, robh+dt@kernel.org, robh@kernel.o
 Cc: hch@lst.de, joro@8bytes.org, m.szyprowski@samsung.com, shawnguo@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, leoyang.li@nxp.com, Nipun Gupta <nipun.gupta@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-fsl-mc bus support the new iommu-map property. Comply to this binding
-for fsl_mc bus.
+This patch adds support of dma configuration for devices on fsl-mc
+bus using 'dma_configure' callback for busses. Also, directly calling
+arch_setup_dma_ops is removed from the fsl-mc bus.
 
 Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
 Reviewed-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/bus/fsl-mc/fsl-mc-bus.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-index 137ef4d..6010505 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-@@ -184,6 +184,7 @@
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 		ranges;
-+		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
+diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+index 5d8266c..fa43c7d 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -127,6 +127,16 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+ 	return 0;
+ }
  
- 		clockgen: clocking@1300000 {
- 			compatible = "fsl,ls2080a-clockgen";
-@@ -357,6 +358,8 @@
- 			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
- 			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
- 			msi-parent = <&its>;
-+			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
-+			dma-coherent;
- 			#address-cells = <3>;
- 			#size-cells = <1>;
++static int fsl_mc_dma_configure(struct device *dev)
++{
++	struct device *dma_dev = dev;
++
++	while (dev_is_fsl_mc(dma_dev))
++		dma_dev = dma_dev->parent;
++
++	return of_dma_configure(dev, dma_dev->of_node, 0);
++}
++
+ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+@@ -148,6 +158,7 @@ struct bus_type fsl_mc_bus_type = {
+ 	.name = "fsl-mc",
+ 	.match = fsl_mc_bus_match,
+ 	.uevent = fsl_mc_bus_uevent,
++	.dma_configure  = fsl_mc_dma_configure,
+ 	.dev_groups = fsl_mc_dev_groups,
+ };
+ EXPORT_SYMBOL_GPL(fsl_mc_bus_type);
+@@ -633,10 +644,6 @@ int fsl_mc_device_add(struct fsl_mc_obj_desc *obj_desc,
+ 			goto error_cleanup_dev;
+ 	}
  
-@@ -460,6 +463,8 @@
- 			compatible = "arm,mmu-500";
- 			reg = <0 0x5000000 0 0x800000>;
- 			#global-interrupts = <12>;
-+			#iommu-cells = <1>;
-+			stream-match-mask = <0x7C00>;
- 			interrupts = <0 13 4>, /* global secure fault */
- 				     <0 14 4>, /* combined secure interrupt */
- 				     <0 15 4>, /* global non-secure fault */
-@@ -502,7 +507,6 @@
- 				     <0 204 4>, <0 205 4>,
- 				     <0 206 4>, <0 207 4>,
- 				     <0 208 4>, <0 209 4>;
--			mmu-masters = <&fsl_mc 0x300 0>;
- 		};
- 
- 		dspi: dspi@2100000 {
+-	/* Objects are coherent, unless 'no shareability' flag set. */
+-	if (!(obj_desc->flags & FSL_MC_OBJ_FLAG_NO_MEM_SHAREABILITY))
+-		arch_setup_dma_ops(&mc_dev->dev, 0, 0, NULL, true);
+-
+ 	/*
+ 	 * The device-specific probe callback will get invoked by device_add()
+ 	 */
 -- 
 1.9.1
