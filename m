@@ -1,59 +1,42 @@
 From: Huaisheng Ye <yehs2007@gmail.com>
-Subject: [RFC PATCH v2 10/12] mm/zsmalloc: update usage of address zone modifiers
-Date: Mon, 21 May 2018 23:20:31 +0800
-Message-ID: <1526916033-4877-11-git-send-email-yehs2007@gmail.com>
+Subject: [RFC PATCH v2 04/12] drivers/iommu/amd_iommu: update usage of address zone modifiers
+Date: Mon, 21 May 2018 23:20:25 +0800
+Message-ID: <1526916033-4877-5-git-send-email-yehs2007@gmail.com>
 References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: akpm@linux-foundation.org, linux-mm@kvack.org
-Cc: mhocko@suse.com, willy@infradead.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>, Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: mhocko@suse.com, willy@infradead.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Huaisheng Ye <yehs1@lenovo.com>
 
-Use __GFP_ZONE_MOVABLE to replace (__GFP_HIGHMEM | __GFP_MOVABLE).
+Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32).
 
 ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
 bitmasks, the bottom three bits of GFP mask is reserved for storing
 encoded zone number.
-
-__GFP_ZONE_MOVABLE contains encoded ZONE_MOVABLE and __GFP_MOVABLE flag.
-
-With GFP_ZONE_TABLE, __GFP_HIGHMEM ORing __GFP_MOVABLE means gfp_zone
-should return ZONE_MOVABLE. In order to keep that compatible with
-GFP_ZONE_TABLE, replace (__GFP_HIGHMEM | __GFP_MOVABLE) with
-__GFP_ZONE_MOVABLE.
+__GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated by OR.
 
 Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Nitin Gupta <ngupta@vflare.org>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>
 ---
- mm/zsmalloc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
-index c301350..06b2902 100644
---- a/mm/zsmalloc.c
-+++ b/mm/zsmalloc.c
-@@ -343,7 +343,7 @@ static void destroy_cache(struct zs_pool *pool)
- static unsigned long cache_alloc_handle(struct zs_pool *pool, gfp_t gfp)
- {
- 	return (unsigned long)kmem_cache_alloc(pool->handle_cachep,
--			gfp & ~(__GFP_HIGHMEM|__GFP_MOVABLE));
-+			gfp & ~__GFP_ZONE_MOVABLE);
- }
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 74788fd..3921d53 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2614,7 +2614,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 	dma_dom   = to_dma_ops_domain(domain);
+ 	size	  = PAGE_ALIGN(size);
+ 	dma_mask  = dev->coherent_dma_mask;
+-	flag     &= ~(__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32);
++	flag     &= ~__GFP_ZONE_MASK;
+ 	flag     |= __GFP_ZERO;
  
- static void cache_free_handle(struct zs_pool *pool, unsigned long handle)
-@@ -354,7 +354,7 @@ static void cache_free_handle(struct zs_pool *pool, unsigned long handle)
- static struct zspage *cache_alloc_zspage(struct zs_pool *pool, gfp_t flags)
- {
- 	return kmem_cache_alloc(pool->zspage_cachep,
--			flags & ~(__GFP_HIGHMEM|__GFP_MOVABLE));
-+			flags & ~__GFP_ZONE_MOVABLE);
- }
- 
- static void cache_free_zspage(struct zs_pool *pool, struct zspage *zspage)
+ 	page = alloc_pages(flag | __GFP_NOWARN,  get_order(size));
 -- 
 1.8.3.1
