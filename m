@@ -1,54 +1,82 @@
-From: Huaisheng HS1 Ye <yehs1@lenovo.com>
-Subject: [RFC PATCH v2 09/12] mm/vmpressure: update usage of address zone
- modifiers
-Date: Mon, 21 May 2018 18:06:48 +0000
-Message-ID: <HK2PR03MB16849EA4D9CE5C230EB9966492950@HK2PR03MB1684.apcprd03.prod.outlook.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/io-pgtable-arm: Make allocations NUMA-aware
+Date: Mon, 21 May 2018 19:12:40 +0100
+Message-ID: <b745ecc2acd6aad20b5c3776ecd58022a9019c91.1526926225.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: zh-CN
-Sender: linux-kernel-owner@vger.kernel.org
-To: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "willy@infradead.org" <willy@infradead.org>
-Cc: "mhocko@suse.com" <mhocko@suse.com>, "vbabka@suse.cz" <vbabka@suse.cz>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "kstewart@linuxfoundation.org" <kstewart@linuxfoundation.org>, "alexander.levin@verizon.com" <alexander.levin@verizon.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "colyli@suse.de" <colyli@suse.de>, NingTing Cheng <chengnt@lenovo.com>, Ocean HY1 He <hehy1@lenovo.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>, "hch@lst.de" <hch@lst.de>, "zhongjiang@huawei.com" <zhongjiang@huawei.com>, minchan@kernel.o
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use __GFP_ZONE_MOVABLE to replace (__GFP_HIGHMEM | __GFP_MOVABLE).
+We would generally expect pagetables to be read by the IOMMU more than
+written by the CPU, so in NUMA systems it would be preferable to avoid
+the IOMMU making cross-node pagetable walks if possible. We already have
+a handle on the IOMMU device for the sake of coherency management, so
+it's trivial to grab the appropriate NUMA node when allocating new
+pagetable pages.
 
-___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP=20
-bitmasks, the bottom three bits of GFP mask is reserved for storing
-encoded zone number.
+Note that we drop the semantics of alloc_pages_exact(), but that's fine
+since they have never been necessary: the only time we're allocating
+more than one page is for stage 2 top-level concatenation, but since
+that is based on the number of IPA bits, the size is always some exact
+power of two anyway.
 
-__GFP_ZONE_MOVABLE contains encoded ZONE_MOVABLE and __GFP_MOVABLE flag.
-
-With GFP_ZONE_TABLE, __GFP_HIGHMEM ORing __GFP_MOVABLE means gfp_zone
-should return ZONE_MOVABLE. In order to keep that compatible with
-GFP_ZONE_TABLE, replace (__GFP_HIGHMEM | __GFP_MOVABLE) with
-__GFP_ZONE_MOVABLE.
-
-Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: zhongjiang <zhongjiang@huawei.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: David Rientjes <rientjes@google.com>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- mm/vmpressure.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/io-pgtable-arm.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/mm/vmpressure.c b/mm/vmpressure.c
-index 85350ce..30a40e2 100644
---- a/mm/vmpressure.c
-+++ b/mm/vmpressure.c
-@@ -256,7 +256,7 @@ void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bo=
-ol tree,
-         * Indirect reclaim (kswapd) sets sc->gfp_mask to GFP_KERNEL, so
-         * we account it too.
-         */
--       if (!(gfp & (__GFP_HIGHMEM | __GFP_MOVABLE | __GFP_IO | __GFP_FS)))
-+       if (!(gfp & (__GFP_ZONE_MOVABLE | __GFP_IO | __GFP_FS)))
-                return;
-=20
-        /*
---=20
-1.8.3.1
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 39c2a056da21..e80ca386c5b4 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -231,12 +231,16 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 				    struct io_pgtable_cfg *cfg)
+ {
+ 	struct device *dev = cfg->iommu_dev;
++	int order = get_order(size);
++	struct page *p;
+ 	dma_addr_t dma;
+-	void *pages = alloc_pages_exact(size, gfp | __GFP_ZERO);
++	void *pages;
+ 
+-	if (!pages)
++	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
++	if (!p)
+ 		return NULL;
+ 
++	pages = page_address(p);
+ 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
+ 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(dev, dma))
+@@ -256,7 +260,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
+ 	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
+ out_free:
+-	free_pages_exact(pages, size);
++	__free_pages(p, order);
+ 	return NULL;
+ }
+ 
+@@ -266,7 +270,7 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
+ 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
+ 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
+ 				 size, DMA_TO_DEVICE);
+-	free_pages_exact(pages, size);
++	free_pages((unsigned long)pages, get_order(size));
+ }
+ 
+ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
+-- 
+2.17.0.dirty
