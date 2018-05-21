@@ -1,39 +1,50 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [RFC PATCH v2 05/12] include/linux/dma-mapping: update usage
-	of address zone modifiers
-Date: Mon, 21 May 2018 17:30:55 +0200
-Message-ID: <20180521153055.GA18588@lst.de>
-References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
-	<1526916033-4877-6-git-send-email-yehs2007@gmail.com>
+From: Huaisheng HS1 Ye <yehs1@lenovo.com>
+Subject: [RFC PATCH v2 06/12] drivers/xen/swiotlb-xen: update usage of address
+ zone modifiers
+Date: Mon, 21 May 2018 17:58:29 +0000
+Message-ID: <HK2PR03MB1684F5870EE8D64A2B54635692950@HK2PR03MB1684.apcprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1526916033-4877-6-git-send-email-yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Huaisheng Ye <yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, colyli-l3A5Bk7waGM@public.gmane.org, mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, vbabka-AlSwsSmVLrQ@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Language: zh-CN
+Sender: linux-kernel-owner@vger.kernel.org
+To: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "willy@infradead.org" <willy@infradead.org>
+Cc: "mhocko@suse.com" <mhocko@suse.com>, "vbabka@suse.cz" <vbabka@suse.cz>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "kstewart@linuxfoundation.org" <kstewart@linuxfoundation.org>, "alexander.levin@verizon.com" <alexander.levin@verizon.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "colyli@suse.de" <colyli@suse.de>, NingTing Cheng <chengnt@lenovo.com>, Ocean HY1 He <hehy1@lenovo.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>, "hch@lst.de" <hch@lst.de>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>konrad.wilk@or
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 21, 2018 at 11:20:26PM +0800, Huaisheng Ye wrote:
-> From: Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
-> 
-> Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32).
-> 
-> ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
-> bitmasks, the bottom three bits of GFP mask is reserved for storing
-> encoded zone number.
-> __GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated with
->each others by OR.
+Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM).
 
-You have to include me for the whole series, otherwise I have absolutely
-no way to properly review your patch.
+In function xen_swiotlb_alloc_coherent, it is obvious that __GFP_DMA32
+is not the expecting zone type.
+
+___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP=20
+bitmasks, the bottom three bits of GFP mask is reserved for storing
+encoded zone number.
+__GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated with
+each others by OR.=20
+
+Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Juergen Gross <jgross@suse.com>
+---
+ drivers/xen/swiotlb-xen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 5bb72d3..00e8368 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -315,7 +315,7 @@ int __ref xen_swiotlb_init(int verbose, bool early)
+        * machine physical layout.  We can't allocate highmem
+        * because we can't return a pointer to it.=20
+        */
+-       flags &=3D ~(__GFP_DMA | __GFP_HIGHMEM);
++       flags &=3D ~__GFP_ZONE_MASK;
+=20
+        /* On ARM this function returns an ioremap'ped virtual address for=
+=20
+         * which virt_to_phys doesn't return the corresponding physical
+--=20
+1.8.3.1
