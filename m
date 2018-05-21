@@ -1,42 +1,39 @@
-From: Huaisheng Ye <yehs2007@gmail.com>
-Subject: [RFC PATCH v2 04/12] drivers/iommu/amd_iommu: update usage of address zone modifiers
-Date: Mon, 21 May 2018 23:20:25 +0800
-Message-ID: <1526916033-4877-5-git-send-email-yehs2007@gmail.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [RFC PATCH v2 05/12] include/linux/dma-mapping: update usage
+	of address zone modifiers
+Date: Mon, 21 May 2018 17:30:55 +0200
+Message-ID: <20180521153055.GA18588@lst.de>
 References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org, linux-mm@kvack.org
-Cc: mhocko@suse.com, willy@infradead.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, Joerg Roedel <joro@8bytes.org>
+	<1526916033-4877-6-git-send-email-yehs2007@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1526916033-4877-6-git-send-email-yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Huaisheng Ye <yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, colyli-l3A5Bk7waGM@public.gmane.org, mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, vbabka-AlSwsSmVLrQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Huaisheng Ye <yehs1@lenovo.com>
+On Mon, May 21, 2018 at 11:20:26PM +0800, Huaisheng Ye wrote:
+> From: Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
+> 
+> Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32).
+> 
+> ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
+> bitmasks, the bottom three bits of GFP mask is reserved for storing
+> encoded zone number.
+> __GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated with
+>each others by OR.
 
-Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32).
-
-___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
-bitmasks, the bottom three bits of GFP mask is reserved for storing
-encoded zone number.
-__GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated by OR.
-
-Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Joerg Roedel <joro@8bytes.org>
----
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 74788fd..3921d53 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2614,7 +2614,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
- 	dma_dom   = to_dma_ops_domain(domain);
- 	size	  = PAGE_ALIGN(size);
- 	dma_mask  = dev->coherent_dma_mask;
--	flag     &= ~(__GFP_DMA | __GFP_HIGHMEM | __GFP_DMA32);
-+	flag     &= ~__GFP_ZONE_MASK;
- 	flag     |= __GFP_ZERO;
- 
- 	page = alloc_pages(flag | __GFP_NOWARN,  get_order(size));
--- 
-1.8.3.1
+You have to include me for the whole series, otherwise I have absolutely
+no way to properly review your patch.
