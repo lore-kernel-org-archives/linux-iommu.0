@@ -1,22 +1,22 @@
 From: Huaisheng HS1 Ye <yehs1@lenovo.com>
-Subject: [RFC PATCH v2 06/12] drivers/xen/swiotlb-xen: update usage of address
- zone modifiers
-Date: Mon, 21 May 2018 17:58:29 +0000
-Message-ID: <HK2PR03MB1684F5870EE8D64A2B54635692950@HK2PR03MB1684.apcprd03.prod.outlook.com>
+Subject: [RFC PATCH v2 07/12] fs/btrfs/extent_io: update usage of address zone
+ modifiers
+Date: Mon, 21 May 2018 18:01:36 +0000
+Message-ID: <HK2PR03MB16848D9371E00E9029FCC94092950@HK2PR03MB1684.apcprd03.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-btrfs-owner@vger.kernel.org>
 Content-Language: zh-CN
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-btrfs-owner@vger.kernel.org
 To: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "willy@infradead.org" <willy@infradead.org>
-Cc: "mhocko@suse.com" <mhocko@suse.com>, "vbabka@suse.cz" <vbabka@suse.cz>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "kstewart@linuxfoundation.org" <kstewart@linuxfoundation.org>, "alexander.levin@verizon.com" <alexander.levin@verizon.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "colyli@suse.de" <colyli@suse.de>, NingTing Cheng <chengnt@lenovo.com>, Ocean HY1 He <hehy1@lenovo.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>, "hch@lst.de" <hch@lst.de>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>konrad.wilk@or
+Cc: "mhocko@suse.com" <mhocko@suse.com>, "vbabka@suse.cz" <vbabka@suse.cz>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "kstewart@linuxfoundation.org" <kstewart@linuxfoundation.org>, "alexander.levin@verizon.com" <alexander.levin@verizon.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "colyli@suse.de" <colyli@suse.de>, NingTing Cheng <chengnt@lenovo.com>, Ocean HY1 He <hehy1@lenovo.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>, "hch@lst.de" <hch@lst.de>, "clm@fb.com" <clm@fb.com>, "jbacik@fb.com" <jbacik@fb.com>, dster
 List-Id: iommu@lists.linux-foundation.org
 
-Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM).
+Use __GFP_ZONE_MASK to replace (__GFP_DMA32 | __GFP_HIGHMEM).
 
-In function xen_swiotlb_alloc_coherent, it is obvious that __GFP_DMA32
-is not the expecting zone type.
+In function alloc_extent_state, it is obvious that __GFP_DMA is not=20
+the expecting zone type.
 
 ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP=20
 bitmasks, the bottom three bits of GFP mask is reserved for storing
@@ -25,26 +25,26 @@ __GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated with
 each others by OR.=20
 
 Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Juergen Gross <jgross@suse.com>
+Cc: Chris Mason <clm@fb.com>
+Cc: Josef Bacik <jbacik@fb.com>
+Cc: David Sterba <dsterba@suse.com>
 ---
- drivers/xen/swiotlb-xen.c | 2 +-
+ fs/btrfs/extent_io.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 5bb72d3..00e8368 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -315,7 +315,7 @@ int __ref xen_swiotlb_init(int verbose, bool early)
-        * machine physical layout.  We can't allocate highmem
-        * because we can't return a pointer to it.=20
-        */
--       flags &=3D ~(__GFP_DMA | __GFP_HIGHMEM);
-+       flags &=3D ~__GFP_ZONE_MASK;
-=20
-        /* On ARM this function returns an ioremap'ped virtual address for=
-=20
-         * which virt_to_phys doesn't return the corresponding physical
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index dfeb74a..6653e9a 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -220,7 +220,7 @@ static struct extent_state *alloc_extent_state(gfp_t ma=
+sk)
+         * The given mask might be not appropriate for the slab allocator,
+         * drop the unsupported bits
+         */
+-       mask &=3D ~(__GFP_DMA32|__GFP_HIGHMEM);
++       mask &=3D ~__GFP_ZONE_MASK;
+        state =3D kmem_cache_alloc(extent_state_cache, mask);
+        if (!state)
+                return state;
 --=20
 1.8.3.1
