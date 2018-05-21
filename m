@@ -1,51 +1,80 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 35/40] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Mon, 21 May 2018 15:52:39 +0100
-Message-ID: <08f53ea4-bd39-a567-9c79-f4381e5fb461@arm.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-36-jean-philippe.brucker@arm.com>
-	<922474e8-0aa5-e022-0502-f1e51b0d4859@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <922474e8-0aa5-e022-0502-f1e51b0d4859-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
-Cc: "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+From: Huaisheng Ye <yehs2007@gmail.com>
+Subject: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
+Date: Mon, 21 May 2018 23:20:21 +0800
+Message-ID: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: akpm@linux-foundation.org, linux-mm@kvack.org
+Cc: mhocko@suse.com, willy@infradead.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sinan,
+From: Huaisheng Ye <yehs1@lenovo.com>
 
-On 19/05/18 18:25, Sinan Kaya wrote:
-> Nothing specific about this patch but just a general observation. Last time I
-> looked at the code, it seemed to require both ATS and PRI support from a given
-> hardware.
-> 
-> I think you can assume that for ATS 1.1 specification but ATS 1.0 specification
-> allows a system to have ATS+PASID without PRI. 
+Replace GFP_ZONE_TABLE and GFP_ZONE_BAD with encoded zone number.
 
-As far as I know, the latest ATS spec also states that "device that
-supports ATS need not support PRI". I'm referring to the version
-integrated into PCIe v4.0r1.0, which I think corresponds to ATS 1.1.
+Delete ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 from GFP bitmasks,
+the bottom three bits of GFP mask is reserved for storing encoded
+zone number.
 
-> QDF2400 is ATS 1.0 compatible as an example. 
-> 
-> Is this an assumption / my misinterpretation?
+The encoding method is XOR. Get zone number from enum zone_type,
+then encode the number with ZONE_NORMAL by XOR operation.
+The goal is to make sure ZONE_NORMAL can be encoded to zero. So,
+the compatibility can be guaranteed, such as GFP_KERNEL and GFP_ATOMIC
+can be used as before.
 
-In this series you can enable ATS and PASID without PRI. The SMMU
-enables ATS and PASID in add_device() if supported. Then PRI is only
-enabled if users request IOMMU_SVA_FEAT_IOPF in sva_init_device(). If
-the device driver pins all DMA memory, it can use PASID without PRI.
+Reserve __GFP_MOVABLE in bit 3, so that it can continue to be used as
+a flag. Same as before, __GFP_MOVABLE respresents movable migrate type
+for ZONE_DMA, ZONE_DMA32, and ZONE_NORMAL. But when it is enabled with
+__GFP_HIGHMEM, ZONE_MOVABLE shall be returned instead of ZONE_HIGHMEM.
+__GFP_ZONE_MOVABLE is created to realize it.
 
-Thanks,
-Jean
+With this patch, just enabling __GFP_MOVABLE and __GFP_HIGHMEM is not
+enough to get ZONE_MOVABLE from gfp_zone. All callers should use
+GFP_HIGHUSER_MOVABLE or __GFP_ZONE_MOVABLE directly to achieve that.
+
+Decode zone number directly from bottom three bits of flags in gfp_zone.
+The theory of encoding and decoding is,
+        A ^ B ^ B = A
+
+Changes since v1,
+
+v2: Add __GFP_ZONE_MOVABLE and modify GFP_HIGHUSER_MOVABLE to help
+callers to get ZONE_MOVABLE. Add __GFP_ZONE_MASK to mask lowest 3
+bits of GFP bitmasks.
+Modify some callers' gfp flag to update usage of address zone
+modifiers.
+Modify inline function gfp_zone to get better performance according
+to Matthew's suggestion.
+
+Link: https://marc.info/?l=linux-mm&m=152596791931266&w=2
+
+Huaisheng Ye (12):
+  include/linux/gfp.h: get rid of GFP_ZONE_TABLE/BAD
+  arch/x86/kernel/amd_gart_64: update usage of address zone modifiers
+  arch/x86/kernel/pci-calgary_64: update usage of address zone modifiers
+  drivers/iommu/amd_iommu: update usage of address zone modifiers
+  include/linux/dma-mapping: update usage of address zone modifiers
+  drivers/xen/swiotlb-xen: update usage of address zone modifiers
+  fs/btrfs/extent_io: update usage of address zone modifiers
+  drivers/block/zram/zram_drv: update usage of address zone modifiers
+  mm/vmpressure: update usage of address zone modifiers
+  mm/zsmalloc: update usage of address zone modifiers
+  include/linux/highmem: update usage of movableflags
+  arch/x86/include/asm/page.h: update usage of movableflags
+
+ arch/x86/include/asm/page.h      |  3 +-
+ arch/x86/kernel/amd_gart_64.c    |  2 +-
+ arch/x86/kernel/pci-calgary_64.c |  2 +-
+ drivers/block/zram/zram_drv.c    |  6 +--
+ drivers/iommu/amd_iommu.c        |  2 +-
+ drivers/xen/swiotlb-xen.c        |  2 +-
+ fs/btrfs/extent_io.c             |  2 +-
+ include/linux/dma-mapping.h      |  2 +-
+ include/linux/gfp.h              | 98 +++++-----------------------------------
+ include/linux/highmem.h          |  4 +-
+ mm/vmpressure.c                  |  2 +-
+ mm/zsmalloc.c                    |  4 +-
+ 12 files changed, 26 insertions(+), 103 deletions(-)
+
+-- 
+1.8.3.1
