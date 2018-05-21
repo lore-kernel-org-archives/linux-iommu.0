@@ -1,73 +1,30 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Make allocations NUMA-aware
-Date: Mon, 21 May 2018 19:47:17 +0100
-Message-ID: <20180521184717.GA24025@arm.com>
-References: <b745ecc2acd6aad20b5c3776ecd58022a9019c91.1526926225.git.robin.murphy@arm.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Mon, 21 May 2018 16:03:28 -0700
+Message-ID: <20180521160328.02bc9414@jacob-builder>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+        <A2975661238FB949B60364EF0F2C257439BF2537@SHSMSX104.ccr.corp.intel.com>
+        <20180517085909.7470dfb5@jacob-builder>
+        <A2975661238FB949B60364EF0F2C257439BF2B2D@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <b745ecc2acd6aad20b5c3776ecd58022a9019c91.1526926225.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439BF2B2D@SHSMSX104.ccr.corp.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 21, 2018 at 07:12:40PM +0100, Robin Murphy wrote:
-> We would generally expect pagetables to be read by the IOMMU more than
-> written by the CPU, so in NUMA systems it would be preferable to avoid
-> the IOMMU making cross-node pagetable walks if possible. We already have
-> a handle on the IOMMU device for the sake of coherency management, so
-> it's trivial to grab the appropriate NUMA node when allocating new
-> pagetable pages.
+On Thu, 17 May 2018 23:22:43 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
+
+> > So as long as in-kernel PRQ handling can do queuing, there is no
+> > need for queuing in the host reporting path.  
 > 
-> Note that we drop the semantics of alloc_pages_exact(), but that's fine
-> since they have never been necessary: the only time we're allocating
-> more than one page is for stage 2 top-level concatenation, but since
-> that is based on the number of IPA bits, the size is always some exact
-> power of two anyway.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 12 ++++++++----
->  1 file changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 39c2a056da21..e80ca386c5b4 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -231,12 +231,16 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
->  				    struct io_pgtable_cfg *cfg)
->  {
->  	struct device *dev = cfg->iommu_dev;
-> +	int order = get_order(size);
-> +	struct page *p;
->  	dma_addr_t dma;
-> -	void *pages = alloc_pages_exact(size, gfp | __GFP_ZERO);
-> +	void *pages;
->  
-> -	if (!pages)
-> +	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-> +	if (!p)
->  		return NULL;
->  
-> +	pages = page_address(p);
+> Will it affect current interface? Here the handler only get an "evt"
+> per a PRQ IRQ. And I suppose vfio needs not rely on host iommu
+> queuing?
 
-Might be worth checking/masking out __GFP_HIGHMEM if we see it, since we
-could theoretically run into trouble if we got back a highmem mapping here
-and we're losing the check in __get_free_pages afaict.
-
-Other than than, looks good:
-
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-
-Will
+I don't think it needs iommu driver queuing.
