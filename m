@@ -1,52 +1,61 @@
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-Subject: Re: [PATCH] swiotlb: Fix inversed DMA_ATTR_NO_WARN test
-Date: Tue, 22 May 2018 15:13:58 +0200
-Message-ID: <1cbc4e10-96e6-c222-fb1a-fd7847be5755@gmail.com>
-References: <20180501132411.2311-1-michel@daenzer.net>
- <786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
- <CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
- <20180502124151.GA22857@lst.de>
- <1066dfa2-2f78-815d-c65a-9d09eb35458c@daenzer.net>
- <20180502162145.GA26787@lst.de>
- <ba310210-6f3c-f4e6-29e5-5ae6e791ebeb@daenzer.net>
-Reply-To: christian.koenig@amd.com
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: kernel BUG at drivers/iommu/intel-iommu.c:732! , kernel 4.14.39
+Date: Tue, 22 May 2018 08:22:40 -0600
+Message-ID: <20180522082240.7317024b@w520.home>
+References: <CAONWS2ynv6oEnFRLmCCvLLC=XBk9qtFkugkRw6GDvBpfgbMbPw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ba310210-6f3c-f4e6-29e5-5ae6e791ebeb@daenzer.net>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel@daenzer.net>, Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAONWS2ynv6oEnFRLmCCvLLC=XBk9qtFkugkRw6GDvBpfgbMbPw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: plexo rama <plexorama-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Am 02.05.2018 um 18:59 schrieb Michel Dänzer:
-> On 2018-05-02 06:21 PM, Christoph Hellwig wrote:
->> On Wed, May 02, 2018 at 04:31:09PM +0200, Michel Dänzer wrote:
->>>> No.  __GFP_NOWARN (and gfp_t flags in general) are the wrong interface
->>>> for dma allocations and just cause problems.  I actually plan to
->>>> get rid of the gfp_t argument in dma_alloc_attrs sooner, and only
->>>> allow either GFP_KERNEL or GFP_DMA passed in dma_alloc_coherent.
->>> How about GFP_TRANSHUGE_LIGHT? TTM uses that to opportunistically
->>> allocate huge pages (GFP_TRANSHUGE can result in unacceptably long
->>> delays with memory pressure).
->> Well, that is exactly what I don't want drivers to do - same for
->> __GFP_COMP in some drm code.  This very much assumes the page allocator
->> is used to back dma allocations, which very often it actually isn't, and
->> any use of magic gfp flags creates a tight coupling of consumers with a
->> specific implementation.
->>
->> In general I can't think of a good reason not to actually use
->> GFP_TRANSHUGE_LIGHT by default in the dma allocator unless
->> DMA_ATTR_ALLOC_SINGLE_PAGES is set.  Can you prepare a patch for that?
-> I'm afraid I'll have to leave that to somebody else.
+On Tue, 22 May 2018 13:30:20 +0200
+plexo rama <plexorama-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 
-Coming back to this topic once more, sorry for the delay but busy as 
-usual :)
+> Hi all,
+> 
+> 
+> I receive the following kernel dump when trying to load QLogic qede in-tree
+> driver for a dual-port
+> 
+> *QLogic* Corp. FastLinQ QL41000 Series 10/25/40/50GbE Controller (rev 02).
+> One of the ports (45:00.0) is bound to the vfio-pci driver for
+> pci-passthrough to a KVM/QEMU guest. Id like to use the PF of the second
+> port on the host. I've unbound the pci device (45:00.1) from vfio-pci, but when
+> I modprobe qede, I receive this:
 
-What exactly do you mean with "dma allocator" here? The TTM allocator 
-using the dma_alloc_coherent calls? Or the swiotlb implementation of the 
-calls?
+AIUI, this device does not provide a PCIe ACS capability, therefore the
+kernel assumes the functions of the device are not isolated and places
+them in the same IOMMU group.  The vendor has also not indicated that
+the PCIe functions are DMA isolated nor provided quirks to indicate any
+sort of isolation.  vfio-pci requires DMA isolation between users,
+whether they be separate userspace instances or between kernel and
+users.  Via the process above, assuming 45:00.0 is in use by a user
+instance when it occurs, you've compromised the isolation.  Generally
+the response to this is a BUG in the vfio code, but in the case of this
+driver it attempts to map DMA in the probe routine and therefore
+encounters a different BUG where one device within the group has a
+mapping through the IOMMU API and the other is attempting to map
+through the DMA API, where the domains within intel-iommu are
+incompatible.
 
-Christian.
+In short, the device you're using doesn't support the DMA isolation
+necessary for the use case you're trying to impose on it and the kernel
+protects itself by preventing it, harshly.  Perhaps ask QLogic if
+there's actually ACS equivalent isolation provided between PCIe
+functions of the device and we can implement quirks for it.  Otherwise
+you'll need a separate card to use for the host.  Thanks,
+
+Alex
