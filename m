@@ -1,99 +1,254 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
-Date: Tue, 22 May 2018 20:37:28 +0200
-Message-ID: <20180522183728.GB20441@dhcp22.suse.cz>
-References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 07/40] iommu: Add a page fault handler
+Date: Tue, 22 May 2018 16:35:21 -0700
+Message-ID: <20180522163521.413e60c6@jacob-builder>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-8-jean-philippe.brucker@arm.com>
+	<20180518110434.150a0e64@jacob-builder>
+	<8a640794-a6f3-fa01-82a9-06479a6f779a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Huaisheng Ye <yehs2007@gmail.com>
-Cc: akpm@linux-foundation.org, linux-mm@kvack.org, willy@infradead.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <8a640794-a6f3-fa01-82a9-06479a6f779a-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon 21-05-18 23:20:21, Huaisheng Ye wrote:
-> From: Huaisheng Ye <yehs1@lenovo.com>
-> 
-> Replace GFP_ZONE_TABLE and GFP_ZONE_BAD with encoded zone number.
-> 
-> Delete ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 from GFP bitmasks,
-> the bottom three bits of GFP mask is reserved for storing encoded
-> zone number.
-> 
-> The encoding method is XOR. Get zone number from enum zone_type,
-> then encode the number with ZONE_NORMAL by XOR operation.
-> The goal is to make sure ZONE_NORMAL can be encoded to zero. So,
-> the compatibility can be guaranteed, such as GFP_KERNEL and GFP_ATOMIC
-> can be used as before.
-> 
-> Reserve __GFP_MOVABLE in bit 3, so that it can continue to be used as
-> a flag. Same as before, __GFP_MOVABLE respresents movable migrate type
-> for ZONE_DMA, ZONE_DMA32, and ZONE_NORMAL. But when it is enabled with
-> __GFP_HIGHMEM, ZONE_MOVABLE shall be returned instead of ZONE_HIGHMEM.
-> __GFP_ZONE_MOVABLE is created to realize it.
-> 
-> With this patch, just enabling __GFP_MOVABLE and __GFP_HIGHMEM is not
-> enough to get ZONE_MOVABLE from gfp_zone. All callers should use
-> GFP_HIGHUSER_MOVABLE or __GFP_ZONE_MOVABLE directly to achieve that.
-> 
-> Decode zone number directly from bottom three bits of flags in gfp_zone.
-> The theory of encoding and decoding is,
->         A ^ B ^ B = A
+On Mon, 21 May 2018 15:49:40 +0100
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-So why is this any better than the current code. Sure I am not a great
-fan of GFP_ZONE_TABLE because of how it is incomprehensible but this
-doesn't look too much better, yet we are losing a check for incompatible
-gfp flags. The diffstat looks really sound but then you just look and
-see that the large part is the comment that at least explained the gfp
-zone modifiers somehow and the debugging code. So what is the selling
-point?
+> On 18/05/18 19:04, Jacob Pan wrote:
+> >> +struct iopf_context {
+> >> +	struct device			*dev;
+> >> +	struct iommu_fault_event	evt;
+> >> +	struct list_head		head;
+> >> +};
+> >> +
+> >> +struct iopf_group {
+> >> +	struct iopf_context		last_fault;
+> >> +	struct list_head		faults;
+> >> +	struct work_struct		work;
+> >> +};
+> >> +  
+> > All the page requests in the group should belong to the same device,
+> > perhaps struct device tracking should be in iopf_group instead of
+> > iopf_context?  
+> 
+> Right, this is a leftover from when we kept a global list of partial
+> faults. Since the list is now per-device, I can move the dev pointer
+> (I think I should also rename iopf_context to iopf_fault, if that's
+> all right)
+> 
+> >> +static int iopf_complete(struct device *dev, struct
+> >> iommu_fault_event *evt,
+> >> +			 enum page_response_code status)
+> >> +{
+> >> +	struct page_response_msg resp = {
+> >> +		.addr			= evt->addr,
+> >> +		.pasid			= evt->pasid,
+> >> +		.pasid_present		= evt->pasid_valid,
+> >> +		.page_req_group_id	=
+> >> evt->page_req_group_id,
+> >> +		.private_data		= evt->iommu_private,
+> >> +		.resp_code		= status,
+> >> +	};
+> >> +
+> >> +	return iommu_page_response(dev, &resp);
+> >> +}
+> >> +
+> >> +static enum page_response_code
+> >> +iopf_handle_single(struct iopf_context *fault)
+> >> +{
+> >> +	/* TODO */
+> >> +	return -ENODEV;
+> >> +}
+> >> +
+> >> +static void iopf_handle_group(struct work_struct *work)
+> >> +{
+> >> +	struct iopf_group *group;
+> >> +	struct iopf_context *fault, *next;
+> >> +	enum page_response_code status = IOMMU_PAGE_RESP_SUCCESS;
+> >> +
+> >> +	group = container_of(work, struct iopf_group, work);
+> >> +
+> >> +	list_for_each_entry_safe(fault, next, &group->faults,
+> >> head) {
+> >> +		struct iommu_fault_event *evt = &fault->evt;
+> >> +		/*
+> >> +		 * Errors are sticky: don't handle subsequent
+> >> faults in the
+> >> +		 * group if there is an error.
+> >> +		 */  
+> > There might be performance benefit for certain device to continue in
+> > spite of error in that the ATS retry may have less fault. Perhaps a
+> > policy decision for later enhancement.  
+> 
+> Yes I think we should leave it to future work. My current reasoning is
+> that subsequent requests are more likely to fail as well and reporting
+> the error is more urgent, but we need real workloads to confirm this.
+> 
+> >> +		if (status == IOMMU_PAGE_RESP_SUCCESS)
+> >> +			status = iopf_handle_single(fault);
+> >> +
+> >> +		if (!evt->last_req)
+> >> +			kfree(fault);
+> >> +	}
+> >> +
+> >> +	iopf_complete(group->last_fault.dev,
+> >> &group->last_fault.evt, status);
+> >> +	kfree(group);
+> >> +}
+> >> +
+> >> +/**
+> >> + * iommu_queue_iopf - IO Page Fault handler
+> >> + * @evt: fault event
+> >> + * @cookie: struct device, passed to
+> >> iommu_register_device_fault_handler.
+> >> + *
+> >> + * Add a fault to the device workqueue, to be handled by mm.
+> >> + */
+> >> +int iommu_queue_iopf(struct iommu_fault_event *evt, void *cookie)
+> >> +{
+> >> +	struct iopf_group *group;
+> >> +	struct iopf_context *fault, *next;
+> >> +	struct iopf_device_param *iopf_param;
+> >> +
+> >> +	struct device *dev = cookie;
+> >> +	struct iommu_param *param = dev->iommu_param;
+> >> +
+> >> +	if (WARN_ON(!mutex_is_locked(&param->lock)))
+> >> +		return -EINVAL;
+> >> +
+> >> +	if (evt->type != IOMMU_FAULT_PAGE_REQ)
+> >> +		/* Not a recoverable page fault */
+> >> +		return IOMMU_PAGE_RESP_CONTINUE;
+> >> +
+> >> +	/*
+> >> +	 * As long as we're holding param->lock, the queue can't
+> >> be unlinked
+> >> +	 * from the device and therefore cannot disappear.
+> >> +	 */
+> >> +	iopf_param = param->iopf_param;
+> >> +	if (!iopf_param)
+> >> +		return -ENODEV;
+> >> +
+> >> +	if (!evt->last_req) {
+> >> +		fault = kzalloc(sizeof(*fault), GFP_KERNEL);
+> >> +		if (!fault)
+> >> +			return -ENOMEM;
+> >> +
+> >> +		fault->evt = *evt;
+> >> +		fault->dev = dev;
+> >> +
+> >> +		/* Non-last request of a group. Postpone until the
+> >> last one */
+> >> +		list_add(&fault->head, &iopf_param->partial);
+> >> +
+> >> +		return IOMMU_PAGE_RESP_HANDLED;
+> >> +	}
+> >> +
+> >> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
+> >> +	if (!group)
+> >> +		return -ENOMEM;
+> >> +
+> >> +	group->last_fault.evt = *evt;
+> >> +	group->last_fault.dev = dev;
+> >> +	INIT_LIST_HEAD(&group->faults);
+> >> +	list_add(&group->last_fault.head, &group->faults);
+> >> +	INIT_WORK(&group->work, iopf_handle_group);
+> >> +
+> >> +	/* See if we have partial faults for this group */
+> >> +	list_for_each_entry_safe(fault, next,
+> >> &iopf_param->partial, head) {
+> >> +		if (fault->evt.page_req_group_id ==
+> >> evt->page_req_group_id)  
+> > If all 9 bit group index are used, there can be lots of PRGs. For
+> > future enhancement, maybe we can have per group partial list ready
+> > to go when LPIG comes in? I will be less searching.  
+> 
+> Yes, allocating the PRG from the start could be more efficient. I
+> think it's slightly more complicated code so I'd rather see
+> performance numbers before implementing it
+> 
+> >> +			/* Insert *before* the last fault */
+> >> +			list_move(&fault->head, &group->faults);
+> >> +	}
+> >> +  
+> > If you already sorted the group list with last fault at the end,
+> > why do you need a separate entry to track the last fault?  
+> 
+> Not sure I understand your question, sorry. Do you mean why the
+> iopf_group.last_fault? Just to avoid one more kzalloc.
+> 
+kind of :) what i thought was that why can't the last_fault naturally
+be the last entry in your group fault list? then there is no need for
+special treatment in terms of allocation of the last fault. just my
+preference.
+> >> +
+> >> +	queue->flush(queue->flush_arg, dev);
+> >> +
+> >> +	/*
+> >> +	 * No need to clear the partial list. All PRGs containing
+> >> the PASID that
+> >> +	 * needs to be decommissioned are whole (the device driver
+> >> made sure of
+> >> +	 * it before this function was called). They have been
+> >> submitted to the
+> >> +	 * queue by the above flush().
+> >> +	 */  
+> > So you are saying device driver need to make sure LPIG PRQ is
+> > submitted in the flush call above such that partial list is
+> > cleared?  
+> 
+> Not exactly, it's the IOMMU driver that makes sure all LPIG in its
+> queues are submitted by the above flush call. In more details the
+> flow is:
+> 
+> * Either device driver calls unbind()/sva_device_shutdown(), or the
+> process exits.
+> * If the device driver called, then it already told the device to stop
+> using the PASID. Otherwise we use the mm_exit() callback to tell the
+> device driver to stop using the PASID.
+> * In either case, when receiving a stop request from the driver, the
+> device sends the LPIGs to the IOMMU queue.
+> * Then, the flush call above ensures that the IOMMU reports the LPIG
+> with iommu_report_device_fault.
+> * While submitting all LPIGs for this PASID to the work queue,
+> ipof_queue_fault also picked up all partial faults, so the partial
+> list is clean.
+> 
+> Maybe I should improve this comment?
+> 
+thanks for explaining. LPIG submission is done by device asynchronously
+w.r.t. driver stopping/decommission PASID. so if we were to use this
+flow on vt-d, which does not stall page request queue, then we should
+use the iommu model specific flush() callback to ensure LPIG is
+received? There could be queue full condition and retry. I am just
+trying to understand how and where we can make sure LPIG is
+received and all groups are whole.
 
-> Changes since v1,
+> > what if
+> > there are device failures where device needs to reset (either whole
+> > function level or PASID level), should there still be a need to
+> > clear the partial list for all associated PASID/group?  
 > 
-> v2: Add __GFP_ZONE_MOVABLE and modify GFP_HIGHUSER_MOVABLE to help
-> callers to get ZONE_MOVABLE. Add __GFP_ZONE_MASK to mask lowest 3
-> bits of GFP bitmasks.
-> Modify some callers' gfp flag to update usage of address zone
-> modifiers.
-> Modify inline function gfp_zone to get better performance according
-> to Matthew's suggestion.
+> I guess the simplest way out, when resetting the device, is for the
+> device driver to call iommu_sva_device_shutdown(). Both the IOMMU
+> driver's sva_device_shutdown() and remove_device() ops should call
+> iopf_queue_remove_device(), which clears the partial list.
 > 
-> Link: https://marc.info/?l=linux-mm&m=152596791931266&w=2
-> 
-> Huaisheng Ye (12):
->   include/linux/gfp.h: get rid of GFP_ZONE_TABLE/BAD
->   arch/x86/kernel/amd_gart_64: update usage of address zone modifiers
->   arch/x86/kernel/pci-calgary_64: update usage of address zone modifiers
->   drivers/iommu/amd_iommu: update usage of address zone modifiers
->   include/linux/dma-mapping: update usage of address zone modifiers
->   drivers/xen/swiotlb-xen: update usage of address zone modifiers
->   fs/btrfs/extent_io: update usage of address zone modifiers
->   drivers/block/zram/zram_drv: update usage of address zone modifiers
->   mm/vmpressure: update usage of address zone modifiers
->   mm/zsmalloc: update usage of address zone modifiers
->   include/linux/highmem: update usage of movableflags
->   arch/x86/include/asm/page.h: update usage of movableflags
-> 
->  arch/x86/include/asm/page.h      |  3 +-
->  arch/x86/kernel/amd_gart_64.c    |  2 +-
->  arch/x86/kernel/pci-calgary_64.c |  2 +-
->  drivers/block/zram/zram_drv.c    |  6 +--
->  drivers/iommu/amd_iommu.c        |  2 +-
->  drivers/xen/swiotlb-xen.c        |  2 +-
->  fs/btrfs/extent_io.c             |  2 +-
->  include/linux/dma-mapping.h      |  2 +-
->  include/linux/gfp.h              | 98 +++++-----------------------------------
->  include/linux/highmem.h          |  4 +-
->  mm/vmpressure.c                  |  2 +-
->  mm/zsmalloc.c                    |  4 +-
->  12 files changed, 26 insertions(+), 103 deletions(-)
-> 
-> -- 
-> 1.8.3.1
-> 
+yes. I think that should work for functional reset.
+> Thanks,
+> Jean
 
--- 
-Michal Hocko
-SUSE Labs
+[Jacob Pan]
