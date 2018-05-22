@@ -1,11 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2] iommu/io-pgtable-arm: Make allocations NUMA-aware
-Date: Tue, 22 May 2018 12:50:09 +0100
-Message-ID: <b420b4733b5bc939931c11ee573bbb598f72e7b0.1526989635.git.robin.murphy@arm.com>
+From: Huaisheng HS1 Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [External] Re: [RFC PATCH v2 10/12] mm/zsmalloc: update usage of
+	address zone modifiers
+Date: Tue, 22 May 2018 11:51:52 +0000
+Message-ID: <HK2PR03MB16844D405C08B595CD682B6592940@HK2PR03MB1684.apcprd03.prod.outlook.com>
+References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+	<1526916033-4877-11-git-send-email-yehs2007@gmail.com>
+	<20180522112230.GA5412@bombadil.infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180522112230.GA5412-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
+Content-Language: zh-CN
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,73 +21,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "mhocko-IBi9RG/b67k@public.gmane.org" <mhocko-IBi9RG/b67k@public.gmane.org>, Nitin Gupta <ngupta-KNmc09w0p+Ednm+yROfE0A@public.gmane.org>, Sergey Senozhatsky <sergey.senozhatsky.work-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ocean HY1 He <hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Minchan Kim <minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org" <alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, NingTing Cheng <chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "colyli-l3A5Bk7waGM@public.gmane.org" <colyli-l3A5Bk7waGM@public.gmane.org>, "mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org" <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Christoph
 List-Id: iommu@lists.linux-foundation.org
 
-We would generally expect pagetables to be read by the IOMMU more than
-written by the CPU, so in NUMA systems it makes sense to locate them
-close to the former and avoid cross-node pagetable walks if at all
-possible. As it turns out, we already have a handle on the IOMMU device
-for the sake of coherency management, so it's trivial to grab the
-appropriate NUMA node when allocating new pagetable pages.
+From: owner-linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org On Behalf Of Matthew Wilcox
+> 
+> On Mon, May 21, 2018 at 11:20:31PM +0800, Huaisheng Ye wrote:
+> > @@ -343,7 +343,7 @@ static void destroy_cache(struct zs_pool *pool)
+> >  static unsigned long cache_alloc_handle(struct zs_pool *pool, gfp_t gfp)
+> >  {
+> >  	return (unsigned long)kmem_cache_alloc(pool->handle_cachep,
+> > -			gfp & ~(__GFP_HIGHMEM|__GFP_MOVABLE));
+> > +			gfp & ~__GFP_ZONE_MOVABLE);
+> >  }
+> 
+> This should be & ~GFP_ZONEMASK
+> 
+> Actually, we should probably have a function to clear those bits rather
+> than have every driver manipulating the gfp mask like this.  Maybe
+> 
+> #define gfp_normal(gfp)		((gfp) & ~GFP_ZONEMASK)
 
-Note that we drop the semantics of alloc_pages_exact(), but that's fine
-since they have never been necessary: the only time we're allocating
-more than one page is for stage 2 top-level concatenation, but since
-that is based on the number of IPA bits, the size is always some exact
-power of two anyway.
+Good idea!
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+> 
+> 	return (unsigned long)kmem_cache_alloc(pool->handle_cachep,
+> -			gfp & ~(__GFP_HIGHMEM|__GFP_MOVABLE));
+> +			gfp_normal(gfp));
 
-v2: Retain equivalent highmem check
 
- drivers/iommu/io-pgtable-arm.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 39c2a056da21..5194755bba29 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -231,12 +231,17 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- 				    struct io_pgtable_cfg *cfg)
- {
- 	struct device *dev = cfg->iommu_dev;
-+	int order = get_order(size);
-+	struct page *p;
- 	dma_addr_t dma;
--	void *pages = alloc_pages_exact(size, gfp | __GFP_ZERO);
-+	void *pages;
- 
--	if (!pages)
-+	VM_BUG_ON((gfp & __GFP_HIGHMEM));
-+	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
-+	if (!p)
- 		return NULL;
- 
-+	pages = page_address(p);
- 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
- 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
-@@ -256,7 +261,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- 	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
- 	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
- out_free:
--	free_pages_exact(pages, size);
-+	__free_pages(p, order);
- 	return NULL;
- }
- 
-@@ -266,7 +271,7 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
- 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
- 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
- 				 size, DMA_TO_DEVICE);
--	free_pages_exact(pages, size);
-+	free_pages((unsigned long)pages, get_order(size));
- }
- 
- static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
--- 
-2.17.0.dirty
+Sincerely,
+Huaisheng Ye
