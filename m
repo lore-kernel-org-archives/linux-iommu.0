@@ -1,54 +1,52 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Document R-Car V3H and E3 IPMMU DT
-	bindings
-Date: Tue, 22 May 2018 14:50:05 +0200
-Message-ID: <20180522125005.cq7tmiaueoffjuoa@verge.net.au>
-References: <152691369384.29456.13581918319106400529.sendpatchset@little-apple>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+Subject: Re: [PATCH] swiotlb: Fix inversed DMA_ATTR_NO_WARN test
+Date: Tue, 22 May 2018 15:13:58 +0200
+Message-ID: <1cbc4e10-96e6-c222-fb1a-fd7847be5755@gmail.com>
+References: <20180501132411.2311-1-michel@daenzer.net>
+ <786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
+ <CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
+ <20180502124151.GA22857@lst.de>
+ <1066dfa2-2f78-815d-c65a-9d09eb35458c@daenzer.net>
+ <20180502162145.GA26787@lst.de>
+ <ba310210-6f3c-f4e6-29e5-5ae6e791ebeb@daenzer.net>
+Reply-To: christian.koenig@amd.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <152691369384.29456.13581918319106400529.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <ba310210-6f3c-f4e6-29e5-5ae6e791ebeb@daenzer.net>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel@daenzer.net>, Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 21, 2018 at 11:41:33PM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> 
-> Update the IPMMU DT binding documentation to include the compat strings
-> for the IPMMU devices included in the R-Car V3H and E3 SoCs.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Am 02.05.2018 um 18:59 schrieb Michel Dänzer:
+> On 2018-05-02 06:21 PM, Christoph Hellwig wrote:
+>> On Wed, May 02, 2018 at 04:31:09PM +0200, Michel Dänzer wrote:
+>>>> No.  __GFP_NOWARN (and gfp_t flags in general) are the wrong interface
+>>>> for dma allocations and just cause problems.  I actually plan to
+>>>> get rid of the gfp_t argument in dma_alloc_attrs sooner, and only
+>>>> allow either GFP_KERNEL or GFP_DMA passed in dma_alloc_coherent.
+>>> How about GFP_TRANSHUGE_LIGHT? TTM uses that to opportunistically
+>>> allocate huge pages (GFP_TRANSHUGE can result in unacceptably long
+>>> delays with memory pressure).
+>> Well, that is exactly what I don't want drivers to do - same for
+>> __GFP_COMP in some drm code.  This very much assumes the page allocator
+>> is used to back dma allocations, which very often it actually isn't, and
+>> any use of magic gfp flags creates a tight coupling of consumers with a
+>> specific implementation.
+>>
+>> In general I can't think of a good reason not to actually use
+>> GFP_TRANSHUGE_LIGHT by default in the dma allocator unless
+>> DMA_ATTR_ALLOC_SINGLE_PAGES is set.  Can you prepare a patch for that?
+> I'm afraid I'll have to leave that to somebody else.
 
-Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Coming back to this topic once more, sorry for the delay but busy as 
+usual :)
 
-> ---
-> 
->  Developed on top of renesas-drivers-2018-05-15-v4.17-rc5
-> 
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    2 ++
->  1 file changed, 2 insertions(+)
-> 
-> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> +++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2018-05-21 23:37:16.370607110 +0900
-> @@ -20,6 +20,8 @@ Required Properties:
->      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
->      - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
->      - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
-> +    - "renesas,ipmmu-r8a77980" for the R8A77980 (R-Car V3H) IPMMU.
-> +    - "renesas,ipmmu-r8a77990" for the R8A77990 (R-Car E3) IPMMU.
->      - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
->      - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
->  			   IPMMU.
-> 
+What exactly do you mean with "dma allocator" here? The TTM allocator 
+using the dma_alloc_coherent calls? Or the swiotlb implementation of the 
+calls?
+
+Christian.
