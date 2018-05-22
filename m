@@ -1,13 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 12/25] openrisc: remove the sync_single_for_cpu DMA operation
-Date: Tue, 22 May 2018 14:04:17 +0200
-Message-ID: <20180522120430.28709-13-hch@lst.de>
-References: <20180522120430.28709-1-hch@lst.de>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Document R-Car V3H and E3 IPMMU DT
+	bindings
+Date: Tue, 22 May 2018 14:50:05 +0200
+Message-ID: <20180522125005.cq7tmiaueoffjuoa@verge.net.au>
+References: <152691369384.29456.13581918319106400529.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180522120430.28709-1-hch-jcswGhMUV9g@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <152691369384.29456.13581918319106400529.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,53 +19,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-openrisc does all the required cache maintainance at dma map time, and none
-at unmap time.  It thus has to implement sync_single_for_device to match
-the map cace for buffer reuse, but there is no point in doing another
-invalidation in the sync_single_cpu_case, which in terms of cache
-maintainance is equivalent to the unmap case.
+On Mon, May 21, 2018 at 11:41:33PM +0900, Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> 
+> Update the IPMMU DT binding documentation to include the compat strings
+> for the IPMMU devices included in the R-Car V3H and E3 SoCs.
+> 
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/openrisc/kernel/dma.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 
-diff --git a/arch/openrisc/kernel/dma.c b/arch/openrisc/kernel/dma.c
-index ec7fd45704d2..47601274abf7 100644
---- a/arch/openrisc/kernel/dma.c
-+++ b/arch/openrisc/kernel/dma.c
-@@ -208,20 +208,6 @@ or1k_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	}
- }
- 
--static void
--or1k_sync_single_for_cpu(struct device *dev,
--			 dma_addr_t dma_handle, size_t size,
--			 enum dma_data_direction dir)
--{
--	unsigned long cl;
--	dma_addr_t addr = dma_handle;
--	struct cpuinfo_or1k *cpuinfo = &cpuinfo_or1k[smp_processor_id()];
--
--	/* Invalidate the dcache for the requested range */
--	for (cl = addr; cl < addr + size; cl += cpuinfo->dcache_block_size)
--		mtspr(SPR_DCBIR, cl);
--}
--
- static void
- or1k_sync_single_for_device(struct device *dev,
- 			    dma_addr_t dma_handle, size_t size,
-@@ -243,7 +229,6 @@ const struct dma_map_ops or1k_dma_map_ops = {
- 	.unmap_page = or1k_unmap_page,
- 	.map_sg = or1k_map_sg,
- 	.unmap_sg = or1k_unmap_sg,
--	.sync_single_for_cpu = or1k_sync_single_for_cpu,
- 	.sync_single_for_device = or1k_sync_single_for_device,
- };
- EXPORT_SYMBOL(or1k_dma_map_ops);
--- 
-2.17.0
+> ---
+> 
+>  Developed on top of renesas-drivers-2018-05-15-v4.17-rc5
+> 
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> +++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2018-05-21 23:37:16.370607110 +0900
+> @@ -20,6 +20,8 @@ Required Properties:
+>      - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+>      - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+>      - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
+> +    - "renesas,ipmmu-r8a77980" for the R8A77980 (R-Car V3H) IPMMU.
+> +    - "renesas,ipmmu-r8a77990" for the R8A77990 (R-Car E3) IPMMU.
+>      - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
+>      - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
+>  			   IPMMU.
+> 
