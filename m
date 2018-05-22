@@ -1,16 +1,11 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 04/20] arm-nommu: use generic dma_noncoherent_ops
-Date: Tue, 22 May 2018 13:53:20 +0200
-Message-ID: <20180522115320.GA14530@lst.de>
-References: <20180511075945.16548-1-hch@lst.de>
-	<20180511075945.16548-5-hch@lst.de>
-	<20180511091114.GA16141@n2100.armlinux.org.uk>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2] iommu/io-pgtable-arm: Make allocations NUMA-aware
+Date: Tue, 22 May 2018 12:50:09 +0100
+Message-ID: <b420b4733b5bc939931c11ee573bbb598f72e7b0.1526989635.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180511091114.GA16141-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,40 +15,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, Vincent Chen <deanbo422-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 11, 2018 at 10:11:15AM +0100, Russell King - ARM Linux wrote:
-> > +void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
-> > +		size_t size, enum dma_data_direction dir)
-> 
-> Please no.  There is a lot of history of these (__dma_page_cpu_to_dev etc)
-> functions being abused by out of tree drivers, because they think they
-> know better.  This is stopped by making them static and ensuring that
-> drivers have no access to these functions.
-> 
-> Please do not re-expose these to the global kernel.
-> 
-> While it may make things easier for a cross-architecture point of view,
-> it makes it a lot easier for people to abuse these private APIs.
+We would generally expect pagetables to be read by the IOMMU more than
+written by the CPU, so in NUMA systems it makes sense to locate them
+close to the former and avoid cross-node pagetable walks if at all
+possible. As it turns out, we already have a handle on the IOMMU device
+for the sake of coherency management, so it's trivial to grab the
+appropriate NUMA node when allocating new pagetable pages.
 
-The point of this series, which isn't fully archived yet, is to
-consolidate the direct mapping dma code, that is all dma_map_ops
-instances except for iommus.  It is in fact in many ways modelled
-after the ARM code.  For that we need the architectures to supply
-the cache maintainance routines.
+Note that we drop the semantics of alloc_pages_exact(), but that's fine
+since they have never been necessary: the only time we're allocating
+more than one page is for stage 2 top-level concatenation, but since
+that is based on the number of IPA bits, the size is always some exact
+power of two anyway.
 
-However, even if they now appear in dma-noncoherent.h they are NOT
-and will NOT be exported, so using them directly from drivers won't
-easily be possible.
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-I'll drop the arm-nommu patch for now, but I will pester your with this
-again once arm is the last architecture not sharing the common code.
+v2: Retain equivalent highmem check
 
-> 
-> -- 
-> RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 8.8Mbps down 630kbps up
-> According to speedtest.net: 8.21Mbps down 510kbps up
----end quoted text---
+ drivers/iommu/io-pgtable-arm.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 39c2a056da21..5194755bba29 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -231,12 +231,17 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 				    struct io_pgtable_cfg *cfg)
+ {
+ 	struct device *dev = cfg->iommu_dev;
++	int order = get_order(size);
++	struct page *p;
+ 	dma_addr_t dma;
+-	void *pages = alloc_pages_exact(size, gfp | __GFP_ZERO);
++	void *pages;
+ 
+-	if (!pages)
++	VM_BUG_ON((gfp & __GFP_HIGHMEM));
++	p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
++	if (!p)
+ 		return NULL;
+ 
++	pages = page_address(p);
+ 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
+ 		dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(dev, dma))
+@@ -256,7 +261,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
+ 	dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
+ 	dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
+ out_free:
+-	free_pages_exact(pages, size);
++	__free_pages(p, order);
+ 	return NULL;
+ }
+ 
+@@ -266,7 +271,7 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
+ 	if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA))
+ 		dma_unmap_single(cfg->iommu_dev, __arm_lpae_dma_addr(pages),
+ 				 size, DMA_TO_DEVICE);
+-	free_pages_exact(pages, size);
++	free_pages((unsigned long)pages, get_order(size));
+ }
+ 
+ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep,
+-- 
+2.17.0.dirty
