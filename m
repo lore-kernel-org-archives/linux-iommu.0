@@ -1,13 +1,16 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: kernel BUG at drivers/iommu/intel-iommu.c:732! , kernel 4.14.39
-Date: Tue, 22 May 2018 08:22:40 -0600
-Message-ID: <20180522082240.7317024b@w520.home>
-References: <CAONWS2ynv6oEnFRLmCCvLLC=XBk9qtFkugkRw6GDvBpfgbMbPw@mail.gmail.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Tue, 22 May 2018 09:43:34 -0700
+Message-ID: <20180522094334.71f0e36b@jacob-builder>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
+	<20180516163117.622693ea@jacob-builder>
+	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAONWS2ynv6oEnFRLmCCvLLC=XBk9qtFkugkRw6GDvBpfgbMbPw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <de478769-9f7a-d40b-a55e-e2c63ad883e8-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,45 +20,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: plexo rama <plexorama-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 22 May 2018 13:30:20 +0200
-plexo rama <plexorama-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+On Thu, 17 May 2018 11:02:42 +0100
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
 
-> Hi all,
+> On 17/05/18 00:31, Jacob Pan wrote:
+> > On Fri, 11 May 2018 20:06:04 +0100
+> > I am a little confused about domain vs. pasid relationship. If
+> > each domain represents a address space, should there be a domain for
+> > each pasid?  
 > 
+> I don't think there is a formal definition, but from previous
+> discussion the consensus seems to be: domains are a collection of
+> devices that have the same virtual address spaces (one or many).
 > 
-> I receive the following kernel dump when trying to load QLogic qede in-tree
-> driver for a dual-port
+> Keeping that definition makes things easier, in my opinion. Some time
+> ago, I did try to represent PASIDs using "subdomains" (introducing a
+> hierarchy of struct iommu_domain), but it required invasive changes in
+> the IOMMU subsystem and probably all over the tree.
 > 
-> *QLogic* Corp. FastLinQ QL41000 Series 10/25/40/50GbE Controller (rev 02).
-> One of the ports (45:00.0) is bound to the vfio-pci driver for
-> pci-passthrough to a KVM/QEMU guest. Id like to use the PF of the second
-> port on the host. I've unbound the pci device (45:00.1) from vfio-pci, but when
-> I modprobe qede, I receive this:
+> You do need some kind of "root domain" for each device, so that
+> "iommu_get_domain_for_dev()" still makes sense. That root domain
+> doesn't have a single address space but a collection of subdomains.
+> If you need this anyway, representing a PASID with an iommu_domain
+> doesn't seem preferable than using a different structure (io_mm),
+> because they don't have anything in common.
+> 
+My main concern is the PASID table storage. If PASID table storage
+is tied to domain, it is ok to scale up, i.e. multiple devices in a
+domain share a single PASID table. But to scale down, e.g. further
+partition device with VFIO mdev for assignment, each mdev may get its
+own domain via vfio. But there is no IOMMU storage for PASID table at
+mdev device level. Perhaps we do need root domain or some parent-child
+relationship to locate PASID table.
 
-AIUI, this device does not provide a PCIe ACS capability, therefore the
-kernel assumes the functions of the device are not isolated and places
-them in the same IOMMU group.  The vendor has also not indicated that
-the PCIe functions are DMA isolated nor provided quirks to indicate any
-sort of isolation.  vfio-pci requires DMA isolation between users,
-whether they be separate userspace instances or between kernel and
-users.  Via the process above, assuming 45:00.0 is in use by a user
-instance when it occurs, you've compromised the isolation.  Generally
-the response to this is a BUG in the vfio code, but in the case of this
-driver it attempts to map DMA in the probe routine and therefore
-encounters a different BUG where one device within the group has a
-mapping through the IOMMU API and the other is attempting to map
-through the DMA API, where the domains within intel-iommu are
-incompatible.
+> Thanks,
+> Jean
 
-In short, the device you're using doesn't support the DMA isolation
-necessary for the use case you're trying to impose on it and the kernel
-protects itself by preventing it, harshly.  Perhaps ask QLogic if
-there's actually ACS equivalent isolation provided between PCIe
-functions of the device and we can implement quirks for it.  Otherwise
-you'll need a separate card to use for the host.  Thanks,
-
-Alex
+[Jacob Pan]
