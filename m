@@ -1,55 +1,51 @@
 From: Huaisheng Ye <yehs2007@163.com>
-Subject: [RFC PATCH v3 6/9] mm/vmpressure: update usage of zone modifiers
-Date: Wed, 23 May 2018 22:57:51 +0800
-Message-ID: <1527087474-93986-7-git-send-email-yehs2007@163.com>
+Subject: [RFC PATCH v3 3/9] drivers/xen/swiotlb-xen: update usage of zone modifiers
+Date: Wed, 23 May 2018 22:57:48 +0800
+Message-ID: <1527087474-93986-4-git-send-email-yehs2007@163.com>
 References: <1527087474-93986-1-git-send-email-yehs2007@163.com>
-Return-path: <linux-btrfs-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1527087474-93986-1-git-send-email-yehs2007@163.com>
-Sender: linux-btrfs-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: akpm@linux-foundation.org, linux-mm@kvack.org
-Cc: mhocko@suse.com, willy@infradead.org, hch@lst.de, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, zhongjiang <zhongjiang@huawei.com>, Minchan Kim <minchan@kernel.org>, Dan Carpenter <dan.carpenter@oracle.com>, David Rientjes <rientjes@google.com>, Christoph Hellwig <hch@infradead.org>
+Cc: mhocko@suse.com, willy@infradead.org, hch@lst.de, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Juergen Gross <jgross@suse.com>, Christoph Hellwig <hch@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Huaisheng Ye <yehs1@lenovo.com>
 
-Use __GFP_ZONE_MOVABLE to replace (__GFP_HIGHMEM | __GFP_MOVABLE).
+Use __GFP_ZONE_MASK to replace (__GFP_DMA | __GFP_HIGHMEM).
+
+In function xen_swiotlb_alloc_coherent, it is obvious that __GFP_DMA32
+is not the expecting zone type.
 
 ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
 bitmasks, the bottom three bits of GFP mask is reserved for storing
 encoded zone number.
+__GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated with
+each others by OR.
 
-__GFP_ZONE_MOVABLE contains encoded ZONE_MOVABLE and __GFP_MOVABLE flag.
-
-With GFP_ZONE_TABLE, __GFP_HIGHMEM ORing __GFP_MOVABLE means gfp_zone
-should return ZONE_MOVABLE. In order to keep that compatible with
-GFP_ZONE_TABLE, replace (__GFP_HIGHMEM | __GFP_MOVABLE) with
-__GFP_ZONE_MOVABLE.
+Use GFP_NORMAL() to clear bottom 3 bits of GFP bitmaks.
 
 Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: zhongjiang <zhongjiang@huawei.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: David Rientjes <rientjes@google.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: Juergen Gross <jgross@suse.com>
 Cc: Christoph Hellwig <hch@infradead.org>
 ---
- mm/vmpressure.c | 2 +-
+ drivers/xen/swiotlb-xen.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/vmpressure.c b/mm/vmpressure.c
-index 85350ce..30a40e2 100644
---- a/mm/vmpressure.c
-+++ b/mm/vmpressure.c
-@@ -256,7 +256,7 @@ void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,
- 	 * Indirect reclaim (kswapd) sets sc->gfp_mask to GFP_KERNEL, so
- 	 * we account it too.
- 	 */
--	if (!(gfp & (__GFP_HIGHMEM | __GFP_MOVABLE | __GFP_IO | __GFP_FS)))
-+	if (!(gfp & (__GFP_ZONE_MOVABLE | __GFP_IO | __GFP_FS)))
- 		return;
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index e1c6089..3999959 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -301,7 +301,7 @@ int __ref xen_swiotlb_init(int verbose, bool early)
+ 	* machine physical layout.  We can't allocate highmem
+ 	* because we can't return a pointer to it.
+ 	*/
+-	flags &= ~(__GFP_DMA | __GFP_HIGHMEM);
++	flags = GFP_NORMAL(flags);
  
- 	/*
+ 	/* On ARM this function returns an ioremap'ped virtual address for
+ 	 * which virt_to_phys doesn't return the corresponding physical
 -- 
 1.8.3.1
-
-
