@@ -1,93 +1,55 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/dma: fix trival coding style mistake
-Date: Wed, 23 May 2018 13:51:56 +0100
-Message-ID: <b4086d30-035e-ae47-0c2f-b537c5481e9e@arm.com>
-References: <1527055369-13192-1-git-send-email-thunder.leizhen@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1527055369-13192-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Huaisheng Ye <yehs2007@163.com>
+Subject: [RFC PATCH v3 6/9] mm/vmpressure: update usage of zone modifiers
+Date: Wed, 23 May 2018 22:57:51 +0800
+Message-ID: <1527087474-93986-7-git-send-email-yehs2007@163.com>
+References: <1527087474-93986-1-git-send-email-yehs2007@163.com>
+Return-path: <linux-btrfs-owner@vger.kernel.org>
+In-Reply-To: <1527087474-93986-1-git-send-email-yehs2007@163.com>
+Sender: linux-btrfs-owner@vger.kernel.org
+To: akpm@linux-foundation.org, linux-mm@kvack.org
+Cc: mhocko@suse.com, willy@infradead.org, hch@lst.de, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, zhongjiang <zhongjiang@huawei.com>, Minchan Kim <minchan@kernel.org>, Dan Carpenter <dan.carpenter@oracle.com>, David Rientjes <rientjes@google.com>, Christoph Hellwig <hch@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 23/05/18 07:02, Zhen Lei wrote:
-> No functional changes.
+From: Huaisheng Ye <yehs1@lenovo.com>
 
-What's the mistake?
+Use __GFP_ZONE_MOVABLE to replace (__GFP_HIGHMEM | __GFP_MOVABLE).
 
-> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->   drivers/iommu/dma-iommu.c | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index ddcbbdb..4e885f7 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -231,6 +231,9 @@ static int iova_reserve_iommu_regions(struct device *dev,
->   	LIST_HEAD(resv_regions);
->   	int ret = 0;
-> 
-> +	if (!dev)
-> +		return 0;
+___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
+bitmasks, the bottom three bits of GFP mask is reserved for storing
+encoded zone number.
 
-Logically, it makes no sense at all to call this function without a 
-valid device; doing the check in init_domain was a deliberate decision 
-to reflect that. This isn't a cleanup path shared by multiple callers 
-where the "accept NULL for simplicity" argument might apply.
+__GFP_ZONE_MOVABLE contains encoded ZONE_MOVABLE and __GFP_MOVABLE flag.
 
-> +
->   	if (dev_is_pci(dev))
->   		iova_reserve_pci_windows(to_pci_dev(dev), iovad);
-> 
-> @@ -246,11 +249,12 @@ static int iova_reserve_iommu_regions(struct device *dev,
->   		hi = iova_pfn(iovad, region->start + region->length - 1);
->   		reserve_iova(iovad, lo, hi);
-> 
-> -		if (region->type == IOMMU_RESV_MSI)
-> +		if (region->type == IOMMU_RESV_MSI) {
->   			ret = cookie_init_hw_msi_region(cookie, region->start,
->   					region->start + region->length);
-> -		if (ret)
-> -			break;
-> +			if (ret)
-> +				break;
-> +		}
+With GFP_ZONE_TABLE, __GFP_HIGHMEM ORing __GFP_MOVABLE means gfp_zone
+should return ZONE_MOVABLE. In order to keep that compatible with
+GFP_ZONE_TABLE, replace (__GFP_HIGHMEM | __GFP_MOVABLE) with
+__GFP_ZONE_MOVABLE.
 
-Why? ret is already initialised appropriately, and the coding style even 
-says that going beyond 3 levels of indentation is undesirable...
+Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: zhongjiang <zhongjiang@huawei.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Christoph Hellwig <hch@infradead.org>
+---
+ mm/vmpressure.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Robin.
+diff --git a/mm/vmpressure.c b/mm/vmpressure.c
+index 85350ce..30a40e2 100644
+--- a/mm/vmpressure.c
++++ b/mm/vmpressure.c
+@@ -256,7 +256,7 @@ void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,
+ 	 * Indirect reclaim (kswapd) sets sc->gfp_mask to GFP_KERNEL, so
+ 	 * we account it too.
+ 	 */
+-	if (!(gfp & (__GFP_HIGHMEM | __GFP_MOVABLE | __GFP_IO | __GFP_FS)))
++	if (!(gfp & (__GFP_ZONE_MOVABLE | __GFP_IO | __GFP_FS)))
+ 		return;
+ 
+ 	/*
+-- 
+1.8.3.1
 
->   	}
->   	iommu_put_resv_regions(dev, &resv_regions);
-> 
-> @@ -308,8 +312,6 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->   	}
-> 
->   	init_iova_domain(iovad, 1UL << order, base_pfn);
-> -	if (!dev)
-> -		return 0;
-> 
->   	return iova_reserve_iommu_regions(dev, domain);
->   }
-> --
-> 1.8.3
-> 
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+
