@@ -1,7 +1,7 @@
 From: Huaisheng Ye <yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC PATCH v3 4/9] fs/btrfs/extent_io: update usage of zone modifiers
-Date: Thu, 24 May 2018 00:57:19 +0800
-Message-ID: <1527094639-4562-1-git-send-email-yehs2007@gmail.com>
+Subject: [RFC PATCH v3 7/9] mm/zsmalloc: update usage of zone modifiers
+Date: Thu, 24 May 2018 01:07:06 +0800
+Message-ID: <1527095226-5079-1-git-send-email-yehs2007@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,45 +16,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, Josef Bacik <jbacik-b10kYP2dOMg@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, colyli-l3A5Bk7waGM@public.gmane.org, Chris Mason <clm-b10kYP2dOMg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, David Sterba <dsterba-IBi9RG/b67k@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org
+Cc: kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, Sergey Senozhatsky <sergey.senozhatsky.work-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, colyli-l3A5Bk7waGM@public.gmane.org, Minchan Kim <minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, Nitin Gupta <ngupta-KNmc09w0p+Ednm+yROfE0A@public.gmane.org>, mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
 
-Use __GFP_ZONE_MASK to replace (__GFP_DMA32 | __GFP_HIGHMEM).
-
-In function alloc_extent_state, it is obvious that __GFP_DMA is not
-the expecting zone type.
+Use __GFP_ZONE_MOVABLE to replace (__GFP_HIGHMEM | __GFP_MOVABLE).
 
 ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
 bitmasks, the bottom three bits of GFP mask is reserved for storing
 encoded zone number.
-__GFP_DMA, __GFP_HIGHMEM and __GFP_DMA32 should not be operated with
-each others by OR.
 
-Use GFP_NORMAL() to clear bottom 3 bits of GFP bitmaks.
+__GFP_ZONE_MOVABLE contains encoded ZONE_MOVABLE and __GFP_MOVABLE flag.
+
+With GFP_ZONE_TABLE, __GFP_HIGHMEM ORing __GFP_MOVABLE means gfp_zone
+should return ZONE_MOVABLE. In order to keep that compatible with
+GFP_ZONE_TABLE, Use GFP_NORMAL_UNMOVABLE() to clear bottom 4 bits of
+GFP bitmaks.
 
 Signed-off-by: Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
-Cc: Chris Mason <clm-b10kYP2dOMg@public.gmane.org>
-Cc: Josef Bacik <jbacik-b10kYP2dOMg@public.gmane.org>
-Cc: David Sterba <dsterba-IBi9RG/b67k@public.gmane.org>
+Cc: Minchan Kim <minchan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Nitin Gupta <ngupta-KNmc09w0p+Ednm+yROfE0A@public.gmane.org>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 ---
- fs/btrfs/extent_io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ mm/zsmalloc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-index e99b329..f41fc61 100644
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -220,7 +220,7 @@ static struct extent_state *alloc_extent_state(gfp_t mask)
- 	 * The given mask might be not appropriate for the slab allocator,
- 	 * drop the unsupported bits
- 	 */
--	mask &= ~(__GFP_DMA32|__GFP_HIGHMEM);
-+	mask = GFP_NORMAL(mask);
- 	state = kmem_cache_alloc(extent_state_cache, mask);
- 	if (!state)
- 		return state;
+diff --git a/mm/zsmalloc.c b/mm/zsmalloc.c
+index 61cb05d..e250c69 100644
+--- a/mm/zsmalloc.c
++++ b/mm/zsmalloc.c
+@@ -345,7 +345,7 @@ static void destroy_cache(struct zs_pool *pool)
+ static unsigned long cache_alloc_handle(struct zs_pool *pool, gfp_t gfp)
+ {
+ 	return (unsigned long)kmem_cache_alloc(pool->handle_cachep,
+-			gfp & ~(__GFP_HIGHMEM|__GFP_MOVABLE));
++			GFP_NORMAL_UNMOVABLE(gfp));
+ }
+ 
+ static void cache_free_handle(struct zs_pool *pool, unsigned long handle)
+@@ -356,7 +356,7 @@ static void cache_free_handle(struct zs_pool *pool, unsigned long handle)
+ static struct zspage *cache_alloc_zspage(struct zs_pool *pool, gfp_t flags)
+ {
+ 	return kmem_cache_alloc(pool->zspage_cachep,
+-			flags & ~(__GFP_HIGHMEM|__GFP_MOVABLE));
++			GFP_NORMAL_UNMOVABLE(flags));
+ }
+ 
+ static void cache_free_zspage(struct zs_pool *pool, struct zspage *zspage)
 -- 
 1.8.3.1
