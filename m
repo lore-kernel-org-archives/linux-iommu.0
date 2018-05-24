@@ -1,50 +1,89 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
-Date: Thu, 24 May 2018 16:04:39 +0100
-Message-ID: <19e82a74-429a-3f86-119e-32b12082d0ff@arm.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
-	<20180516163117.622693ea@jacob-builder>
-	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
-	<20180522094334.71f0e36b@jacob-builder>
-	<f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
-	<20180524115039.GA10260@apalos>
+From: Matthew Wilcox <willy@infradead.org>
+Subject: Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
+Date: Thu, 24 May 2018 08:18:18 -0700
+Message-ID: <20180524151818.GA21245@bombadil.infradead.org>
+References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+ <20180522183728.GB20441@dhcp22.suse.cz>
+ <20180524051919.GA9819@bombadil.infradead.org>
+ <20180524122323.GH20441@dhcp22.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180524115039.GA10260@apalos>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180524122323.GH20441@dhcp22.suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michal Hocko <mhocko@kernel.org>
+Cc: Huaisheng Ye <yehs2007@gmail.com>, akpm@linux-foundation.org, linux-mm@kvack.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 24/05/18 12:50, Ilias Apalodimas wrote:
->> Interesting, I hadn't thought about this use-case before. At first I
->> thought you were talking about mdev devices assigned to VMs, but I think
->> you're referring to mdevs assigned to userspace drivers instead? Out of
->> curiosity, is it only theoretical or does someone actually need this?
+On Thu, May 24, 2018 at 02:23:23PM +0200, Michal Hocko wrote:
+> > If we had eight ZONEs, we could offer:
 > 
-> There has been some non upstreamed efforts to have mdev and produce userspace
-> drivers. Huawei is using it on what they call "wrapdrive" for crypto devices and
-> we did a proof of concept for ethernet interfaces. At the time we choose not to
-> involve the IOMMU for the reason you mentioned, but having it there would be
-> good.
+> No, please no more zones. What we have is quite a maint. burden on its
+> own. Ideally we should only have lowmem, highmem and special/device
+> zones for directly kernel accessible memory, the one that the kernel
+> cannot or must not use and completely special memory managed out of
+> the page allocator. All the remaining constrains should better be
+> implemented on top.
 
-I'm guessing there were good reasons to do it that way but I wonder, is
-it not simpler to just have the kernel driver create a /dev/foo, with a
-standard ioctl/mmap/poll interface? Here VFIO adds a layer of
-indirection, and since the mediating driver has to implement these
-operations already, what is gained?
+I believe you when you say that they're a maintenance pain.  Is that
+maintenance pain because they're so specialised?  ie if we had more,
+could we solve our pain by making them more generic?
 
-Thanks,
-Jean
+> > ZONE_16M	// 24 bit
+> > ZONE_256M	// 28 bit
+> > ZONE_LOWMEM	// CONFIG_32BIT only
+> > ZONE_4G		// 32 bit
+> > ZONE_64G	// 36 bit
+> > ZONE_1T		// 40 bit
+> > ZONE_ALL	// everything larger
+> > ZONE_MOVABLE	// movable allocations; no physical address guarantees
+> > 
+> > #ifdef CONFIG_64BIT
+> > #define ZONE_NORMAL	ZONE_ALL
+> > #else
+> > #define ZONE_NORMAL	ZONE_LOWMEM
+> > #endif
+> > 
+> > This would cover most driver DMA mask allocations; we could tweak the
+> > offered zones based on analysis of what people need.
+> 
+> But those already do have aproper API, IIUC. So do we really need to
+> make our GFP_*/Zone API more complicated than it already is?
+
+I don't want to change the driver API (setting the DMA mask, etc),
+but we don't actually have a good API to the page allocator for the
+implementation of dma_alloc_foo() to request pages.  More or less,
+architectures do:
+
+	if (mask < 4GB)
+		alloc_page(GFP_DMA)
+	else if (mask < 64EB)
+		alloc_page(GFP_DMA32)
+	else
+		alloc_page(GFP_HIGHMEM)
+
+it more-or-less sucks that the devices with 28-bit DMA limits are forced
+to allocate from the low 16MB when they're perfectly capable of using the
+low 256MB.  Sure, my proposal doesn't help 27 or 26 bit DMA mask devices,
+but those are pretty rare.
+
+I'm sure you don't need reminding what a mess vmalloc_32 is, and the
+implementation of saa7146_vmalloc_build_pgtable() just hurts.
+
+> > #define GFP_HIGHUSER		(GFP_USER | ZONE_ALL)
+> > #define GFP_HIGHUSER_MOVABLE	(GFP_USER | ZONE_MOVABLE)
+> > 
+> > One other thing I want to see is that fallback from zones happens from
+> > highest to lowest normally (ie if you fail to allocate in 1T, then you
+> > try to allocate from 64G), but movable allocations hapen from lowest
+> > to highest.  So ZONE_16M ends up full of page cache pages which are
+> > readily evictable for the rare occasions when we need to allocate memory
+> > below 16MB.
+> > 
+> > I'm sure there are lots of good reasons why this won't work, which is
+> > why I've been hesitant to propose it before now.
+> 
+> I am worried you are playing with a can of worms...
+
+Yes.  Me too.
