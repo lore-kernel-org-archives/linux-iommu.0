@@ -1,51 +1,50 @@
-From: Huaisheng Ye <yehs2007@zoho.com>
-Subject: [RFC PATCH v3 6/9] mm/vmpressure: update usage of zone modifiers
-Date: Thu, 24 May 2018 23:20:53 +0800
-Message-ID: <20180524152053.1248-1-yehs2007@zoho.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org, linux-mm@kvack.org
-Cc: mhocko@suse.com, willy@infradead.org, hch@lst.de, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>, zhongjiang <zhongjiang@huawei.com>, Minchan Kim <minchan@kernel.org>, Dan Carpenter <dan.carpenter@oracle.com>, David Rientjes <rientjes@google.com>, Christoph Hellwig <hch@infradead.org>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2 6/8] iommu: Stop deferring probe at end of initcalls
+Date: Thu, 24 May 2018 12:50:22 -0500
+Message-ID: <20180524175024.19874-7-robh@kernel.org>
+References: <20180524175024.19874-1-robh@kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180524175024.19874-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, boot-architecture-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Huaisheng Ye <yehs1@lenovo.com>
+The IOMMU subsystem has its own mechanism to not defer probe if driver
+support is missing. Now that the driver core supports stopping deferring
+probe if drivers aren't built-in (and probed), use the driver core
+support so the IOMMU specific support can be removed.
 
-Use __GFP_ZONE_MOVABLE to replace (__GFP_HIGHMEM | __GFP_MOVABLE).
-
-___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 have been deleted from GFP
-bitmasks, the bottom three bits of GFP mask is reserved for storing
-encoded zone number.
-
-__GFP_ZONE_MOVABLE contains encoded ZONE_MOVABLE and __GFP_MOVABLE flag.
-
-With GFP_ZONE_TABLE, __GFP_HIGHMEM ORing __GFP_MOVABLE means gfp_zone
-should return ZONE_MOVABLE. In order to keep that compatible with
-GFP_ZONE_TABLE, replace (__GFP_HIGHMEM | __GFP_MOVABLE) with
-__GFP_ZONE_MOVABLE.
-
-Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: zhongjiang <zhongjiang@huawei.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- mm/vmpressure.c | 2 +-
+ drivers/iommu/of_iommu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/vmpressure.c b/mm/vmpressure.c
-index 85350ce..30a40e2 100644
---- a/mm/vmpressure.c
-+++ b/mm/vmpressure.c
-@@ -256,7 +256,7 @@ void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,
- 	 * Indirect reclaim (kswapd) sets sc->gfp_mask to GFP_KERNEL, so
- 	 * we account it too.
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 5c36a8b7656a..2aac8387717c 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -133,7 +133,7 @@ static int of_iommu_xlate(struct device *dev,
+ 	 * a proper probe-ordering dependency mechanism in future.
  	 */
--	if (!(gfp & (__GFP_HIGHMEM | __GFP_MOVABLE | __GFP_IO | __GFP_FS)))
-+	if (!(gfp & (__GFP_ZONE_MOVABLE | __GFP_IO | __GFP_FS)))
- 		return;
+ 	if (!ops)
+-		return -EPROBE_DEFER;
++		return driver_deferred_probe_check_init_done(dev, true);
  
- 	/*
+ 	return ops->of_xlate(dev, iommu_spec);
+ }
 -- 
-1.8.3.1
+2.17.0
