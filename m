@@ -1,93 +1,233 @@
-From: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
-Date: Thu, 24 May 2018 14:23:23 +0200
-Message-ID: <20180524122323.GH20441@dhcp22.suse.cz>
-References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
-	<20180522183728.GB20441@dhcp22.suse.cz>
-	<20180524051919.GA9819@bombadil.infradead.org>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH v4] dt-bindings: mediatek: Add binding for mt2712 IOMMU and SMI
+Date: Thu, 24 May 2018 20:35:31 +0800
+Message-ID: <1527165331-22261-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180524051919.GA9819-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Huaisheng Ye <yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, colyli-l3A5Bk7waGM@public.gmane.org, mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, Yong Wu <yong.wu@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed 23-05-18 22:19:19, Matthew Wilcox wrote:
-> On Tue, May 22, 2018 at 08:37:28PM +0200, Michal Hocko wrote:
-> > So why is this any better than the current code. Sure I am not a great
-> > fan of GFP_ZONE_TABLE because of how it is incomprehensible but this
-> > doesn't look too much better, yet we are losing a check for incompatible
-> > gfp flags. The diffstat looks really sound but then you just look and
-> > see that the large part is the comment that at least explained the gfp
-> > zone modifiers somehow and the debugging code. So what is the selling
-> > point?
-> 
-> I have a plan, but it's not exactly fully-formed yet.
-> 
-> One of the big problems we have today is that we have a lot of users
-> who have constraints on the physical memory they want to allocate,
-> but we have very limited abilities to provide them with what they're
-> asking for.  The various different ZONEs have different meanings on
-> different architectures and are generally a mess.
+This patch adds decriptions for mt2712 IOMMU and SMI.
 
-Agreed.
+In order to balance the bandwidth, mt2712 has two M4Us, two
+smi-commons, 10 smi-larbs. and mt2712 is also MTK IOMMU gen2 which
+uses ARM Short-Descriptor translation table format.
 
-> If we had eight ZONEs, we could offer:
+The mt2712 M4U-SMI HW diagram is as below:
 
-No, please no more zones. What we have is quite a maint. burden on its
-own. Ideally we should only have lowmem, highmem and special/device
-zones for directly kernel accessible memory, the one that the kernel
-cannot or must not use and completely special memory managed out of
-the page allocator. All the remaining constrains should better be
-implemented on top.
+                            EMI
+                             |
+              ------------------------------------
+              |                                  |
+             M4U0                              M4U1
+              |                                  |
+         smi-common0                        smi-common1
+              |                                  |
+  -------------------------       --------------------------------
+  |     |     |     |     |       |         |        |     |     |
+  |     |     |     |     |       |         |        |     |     |
+larb0 larb1 larb2 larb3 larb6    larb4    larb5    larb7 larb8 larb9
+disp0 vdec  cam   venc   jpg  mdp1/disp1 mdp2/disp2 mdp3 vdo/nr tvd
 
-> ZONE_16M	// 24 bit
-> ZONE_256M	// 28 bit
-> ZONE_LOWMEM	// CONFIG_32BIT only
-> ZONE_4G		// 32 bit
-> ZONE_64G	// 36 bit
-> ZONE_1T		// 40 bit
-> ZONE_ALL	// everything larger
-> ZONE_MOVABLE	// movable allocations; no physical address guarantees
-> 
-> #ifdef CONFIG_64BIT
-> #define ZONE_NORMAL	ZONE_ALL
-> #else
-> #define ZONE_NORMAL	ZONE_LOWMEM
-> #endif
-> 
-> This would cover most driver DMA mask allocations; we could tweak the
-> offered zones based on analysis of what people need.
+All the connections are HW fixed, SW can NOT adjust it.
 
-But those already do have aproper API, IIUC. So do we really need to
-make our GFP_*/Zone API more complicated than it already is?
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+change notes:
+v4: change the license of the new file in this patch to SPDX.
 
-> #define GFP_HIGHUSER		(GFP_USER | ZONE_ALL)
-> #define GFP_HIGHUSER_MOVABLE	(GFP_USER | ZONE_MOVABLE)
-> 
-> One other thing I want to see is that fallback from zones happens from
-> highest to lowest normally (ie if you fail to allocate in 1T, then you
-> try to allocate from 64G), but movable allocations hapen from lowest
-> to highest.  So ZONE_16M ends up full of page cache pages which are
-> readily evictable for the rare occasions when we need to allocate memory
-> below 16MB.
-> 
-> I'm sure there are lots of good reasons why this won't work, which is
-> why I've been hesitant to propose it before now.
+v3: http://lists.infradead.org/pipermail/linux-mediatek/2018-May/013279.html
+Add a new ECO port(DISP_RDMA2) in larb0/port7.
 
-I am worried you are playing with a can of worms...
+v2:
+https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023848.html
+
+v1:
+https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023665.html
+---
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  6 +-
+ .../memory-controllers/mediatek,smi-common.txt     |  6 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |  5 +-
+ include/dt-bindings/memory/mt2712-larb-port.h      | 95 ++++++++++++++++++++++
+ 4 files changed, 106 insertions(+), 6 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt2712-larb-port.h
+
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+index 53c20ca..df5db73 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+@@ -40,6 +40,7 @@ video decode local arbiter, all these ports are according to the video HW.
+ Required properties:
+ - compatible : must be one of the following string:
+ 	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
++	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
+ 	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
+ - reg : m4u register base and size.
+ - interrupts : the interrupt of m4u.
+@@ -50,8 +51,9 @@ Required properties:
+ 	according to the local arbiter index, like larb0, larb1, larb2...
+ - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
+ 	Specifies the mtk_m4u_id as defined in
+-	dt-binding/memory/mt2701-larb-port.h for mt2701 and
+-	dt-binding/memory/mt8173-larb-port.h for mt8173
++	dt-binding/memory/mt2701-larb-port.h for mt2701,
++	dt-binding/memory/mt2712-larb-port.h for mt2712, and
++	dt-binding/memory/mt8173-larb-port.h for mt8173.
+ 
+ Example:
+ 	iommu: iommu@10205000 {
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+index aa614b2..615abdd 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+@@ -2,8 +2,9 @@ SMI (Smart Multimedia Interface) Common
+ 
+ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+ 
+-Mediatek SMI have two generations of HW architecture, mt8173 uses the second
+-generation of SMI HW while mt2701 uses the first generation HW of SMI.
++Mediatek SMI have two generations of HW architecture, mt2712 and mt8173 use
++the second generation of SMI HW while mt2701 uses the first generation HW of
++SMI.
+ 
+ There's slight differences between the two SMI, for generation 2, the
+ register which control the iommu port is at each larb's register base. But
+@@ -15,6 +16,7 @@ not needed for SMI generation 2.
+ Required properties:
+ - compatible : must be one of :
+ 	"mediatek,mt2701-smi-common"
++	"mediatek,mt2712-smi-common"
+ 	"mediatek,mt8173-smi-common"
+ - reg : the register and size of the SMI block.
+ - power-domains : a phandle to the power domain of this local arbiter.
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+index ddf46b8..083155c 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+@@ -4,8 +4,9 @@ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+ 
+ Required properties:
+ - compatible : must be one of :
+-		"mediatek,mt8173-smi-larb"
+ 		"mediatek,mt2701-smi-larb"
++		"mediatek,mt2712-smi-larb"
++		"mediatek,mt8173-smi-larb"
+ - reg : the register and size of this local arbiter.
+ - mediatek,smi : a phandle to the smi_common node.
+ - power-domains : a phandle to the power domain of this local arbiter.
+@@ -15,7 +16,7 @@ Required properties:
+ 	    the register.
+   - "smi" : It's the clock for transfer data and command.
+ 
+-Required property for mt2701:
++Required property for mt2701 and mt2712:
+ - mediatek,larb-id :the hardware id of this larb.
+ 
+ Example:
+diff --git a/include/dt-bindings/memory/mt2712-larb-port.h b/include/dt-bindings/memory/mt2712-larb-port.h
+new file mode 100644
+index 0000000..6f9aa73
+--- /dev/null
++++ b/include/dt-bindings/memory/mt2712-larb-port.h
+@@ -0,0 +1,95 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2017 MediaTek Inc.
++ * Author: Yong Wu <yong.wu@mediatek.com>
++ */
++#ifndef __DTS_IOMMU_PORT_MT2712_H
++#define __DTS_IOMMU_PORT_MT2712_H
++
++#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
++
++#define M4U_LARB0_ID			0
++#define M4U_LARB1_ID			1
++#define M4U_LARB2_ID			2
++#define M4U_LARB3_ID			3
++#define M4U_LARB4_ID			4
++#define M4U_LARB5_ID			5
++#define M4U_LARB6_ID			6
++#define M4U_LARB7_ID			7
++#define M4U_LARB8_ID			8
++#define M4U_LARB9_ID			9
++
++/* larb0 */
++#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
++#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
++#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 2)
++#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 3)
++#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 4)
++#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 5)
++#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 6)
++#define M4U_PORT_DISP_RDMA2		MTK_M4U_ID(M4U_LARB0_ID, 7)
++
++/* larb1 */
++#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(M4U_LARB1_ID, 0)
++#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(M4U_LARB1_ID, 1)
++#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(M4U_LARB1_ID, 2)
++#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 3)
++#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(M4U_LARB1_ID, 4)
++#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(M4U_LARB1_ID, 5)
++#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 6)
++#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(M4U_LARB1_ID, 7)
++#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(M4U_LARB1_ID, 8)
++#define M4U_PORT_HW_VDEC_TILE		MTK_M4U_ID(M4U_LARB1_ID, 9)
++#define M4U_PORT_HW_IMG_RESZ_EXT	MTK_M4U_ID(M4U_LARB1_ID, 10)
++
++/* larb2 */
++#define M4U_PORT_CAM_DMA0		MTK_M4U_ID(M4U_LARB2_ID, 0)
++#define M4U_PORT_CAM_DMA1		MTK_M4U_ID(M4U_LARB2_ID, 1)
++#define M4U_PORT_CAM_DMA2		MTK_M4U_ID(M4U_LARB2_ID, 2)
++
++/* larb3 */
++#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
++#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
++#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
++#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
++#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
++#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 5)
++#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 6)
++#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
++#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
++
++/* larb4 */
++#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB4_ID, 0)
++#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 1)
++#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB4_ID, 2)
++#define M4U_PORT_DISP_OD1_R		MTK_M4U_ID(M4U_LARB4_ID, 3)
++#define M4U_PORT_DISP_OD1_W		MTK_M4U_ID(M4U_LARB4_ID, 4)
++#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 5)
++#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB4_ID, 6)
++
++/* larb5 */
++#define M4U_PORT_DISP_OVL2		MTK_M4U_ID(M4U_LARB5_ID, 0)
++#define M4U_PORT_DISP_WDMA2		MTK_M4U_ID(M4U_LARB5_ID, 1)
++#define M4U_PORT_MDP_RDMA2		MTK_M4U_ID(M4U_LARB5_ID, 2)
++#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB5_ID, 3)
++
++/* larb6 */
++#define M4U_PORT_JPGDEC_WDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 0)
++#define M4U_PORT_JPGDEC_WDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 1)
++#define M4U_PORT_JPGDEC_BSDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 2)
++#define M4U_PORT_JPGDEC_BSDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 3)
++
++/* larb7 */
++#define M4U_PORT_MDP_RDMA3		MTK_M4U_ID(M4U_LARB7_ID, 0)
++#define M4U_PORT_MDP_WROT2		MTK_M4U_ID(M4U_LARB7_ID, 1)
++
++/* larb8 */
++#define M4U_PORT_VDO			MTK_M4U_ID(M4U_LARB8_ID, 0)
++#define M4U_PORT_NR			MTK_M4U_ID(M4U_LARB8_ID, 1)
++#define M4U_PORT_WR_CHANNEL0		MTK_M4U_ID(M4U_LARB8_ID, 2)
++
++/* larb9 */
++#define M4U_PORT_TVD			MTK_M4U_ID(M4U_LARB9_ID, 0)
++#define M4U_PORT_WR_CHANNEL1		MTK_M4U_ID(M4U_LARB9_ID, 1)
++
++#endif
 -- 
-Michal Hocko
-SUSE Labs
+1.9.1
