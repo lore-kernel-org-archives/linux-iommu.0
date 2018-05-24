@@ -1,17 +1,17 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
-Date: Thu, 24 May 2018 12:44:25 +0100
-Message-ID: <f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
+Subject: Re: [PATCH v2 07/40] iommu: Add a page fault handler
+Date: Thu, 24 May 2018 12:44:38 +0100
+Message-ID: <bdf9f221-ab97-2168-d072-b7f6a0dba840@arm.com>
 References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
-	<20180516163117.622693ea@jacob-builder>
-	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
-	<20180522094334.71f0e36b@jacob-builder>
+	<20180511190641.23008-8-jean-philippe.brucker@arm.com>
+	<20180518110434.150a0e64@jacob-builder>
+	<8a640794-a6f3-fa01-82a9-06479a6f779a@arm.com>
+	<20180522163521.413e60c6@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180522094334.71f0e36b@jacob-builder>
+In-Reply-To: <20180522163521.413e60c6@jacob-builder>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,82 +23,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Cc: "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/05/18 17:43, Jacob Pan wrote:
-> On Thu, 17 May 2018 11:02:42 +0100
-> Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-> 
->> On 17/05/18 00:31, Jacob Pan wrote:
->>> On Fri, 11 May 2018 20:06:04 +0100
->>> I am a little confused about domain vs. pasid relationship. If
->>> each domain represents a address space, should there be a domain for
->>> each pasid?  
+On 23/05/18 00:35, Jacob Pan wrote:
+>>>> +			/* Insert *before* the last fault */
+>>>> +			list_move(&fault->head, &group->faults);
+>>>> +	}
+>>>> +  
+>>> If you already sorted the group list with last fault at the end,
+>>> why do you need a separate entry to track the last fault?  
 >>
->> I don't think there is a formal definition, but from previous
->> discussion the consensus seems to be: domains are a collection of
->> devices that have the same virtual address spaces (one or many).
+>> Not sure I understand your question, sorry. Do you mean why the
+>> iopf_group.last_fault? Just to avoid one more kzalloc.
 >>
->> Keeping that definition makes things easier, in my opinion. Some time
->> ago, I did try to represent PASIDs using "subdomains" (introducing a
->> hierarchy of struct iommu_domain), but it required invasive changes in
->> the IOMMU subsystem and probably all over the tree.
+> kind of :) what i thought was that why can't the last_fault naturally
+> be the last entry in your group fault list? then there is no need for
+> special treatment in terms of allocation of the last fault. just my
+> preference.
+
+But we need a kzalloc for the last fault anyway, so I thought I'd just
+piggy-back on the group allocation. And if I don't add the last fault at
+the end of group->faults, then it's iopf_handle_group that requires
+special treatment. I'm still not sure I understood your question though,
+could you send me a patch that does it?
+
+>>>> +
+>>>> +	queue->flush(queue->flush_arg, dev);
+>>>> +
+>>>> +	/*
+>>>> +	 * No need to clear the partial list. All PRGs containing
+>>>> the PASID that
+>>>> +	 * needs to be decommissioned are whole (the device driver
+>>>> made sure of
+>>>> +	 * it before this function was called). They have been
+>>>> submitted to the
+>>>> +	 * queue by the above flush().
+>>>> +	 */  
+>>> So you are saying device driver need to make sure LPIG PRQ is
+>>> submitted in the flush call above such that partial list is
+>>> cleared?  
 >>
->> You do need some kind of "root domain" for each device, so that
->> "iommu_get_domain_for_dev()" still makes sense. That root domain
->> doesn't have a single address space but a collection of subdomains.
->> If you need this anyway, representing a PASID with an iommu_domain
->> doesn't seem preferable than using a different structure (io_mm),
->> because they don't have anything in common.
+>> Not exactly, it's the IOMMU driver that makes sure all LPIG in its
+>> queues are submitted by the above flush call. In more details the
+>> flow is:
 >>
-> My main concern is the PASID table storage. If PASID table storage
-> is tied to domain, it is ok to scale up, i.e. multiple devices in a
-> domain share a single PASID table. But to scale down, e.g. further
-> partition device with VFIO mdev for assignment, each mdev may get its
-> own domain via vfio. But there is no IOMMU storage for PASID table at
-> mdev device level. Perhaps we do need root domain or some parent-child
-> relationship to locate PASID table.
+>> * Either device driver calls unbind()/sva_device_shutdown(), or the
+>> process exits.
+>> * If the device driver called, then it already told the device to stop
+>> using the PASID. Otherwise we use the mm_exit() callback to tell the
+>> device driver to stop using the PASID.
+>> * In either case, when receiving a stop request from the driver, the
+>> device sends the LPIGs to the IOMMU queue.
+>> * Then, the flush call above ensures that the IOMMU reports the LPIG
+>> with iommu_report_device_fault.
+>> * While submitting all LPIGs for this PASID to the work queue,
+>> ipof_queue_fault also picked up all partial faults, so the partial
+>> list is clean.
+>>
+>> Maybe I should improve this comment?
+>>
+> thanks for explaining. LPIG submission is done by device asynchronously
+> w.r.t. driver stopping/decommission PASID.
 
-Interesting, I hadn't thought about this use-case before. At first I
-thought you were talking about mdev devices assigned to VMs, but I think
-you're referring to mdevs assigned to userspace drivers instead? Out of
-curiosity, is it only theoretical or does someone actually need this?
+Hmm, it should really be synchronous, otherwise there is no way to know
+when the PASID can be decommissioned. We need a guarantee such as the
+one in 6.20.1 of the PCIe spec, "Managing PASID TLP Prefix Usage":
 
-I don't think mdev for VM assignment are compatible with PASID, at least
-not when the IOMMU is involved. I usually ignore mdev in my reasoning
-because, as far as I know, currently they only affect devices that have
-their own MMU, and IOMMU domains don't come into play. However, if a
-device was backed by the IOMMU, and the device driver wanted to
-partition it into mdevs, then users would be tempted to assign mdev1 to
-VM1 and mdev2 to VM2.
+"When the stop request mechanism indicates completion, the Function has:
+* Completed all Non-Posted Requests associated with this PASID.
+* Flushed to the host all Posted Requests addressing host memory in all
+TCs that were used by the PASID."
 
-It doesn't work with PASID, because the PASID spaces of VM1 and VM2 will
-conflict. If both VM1 and VM2 allocate PASID #1, then the host has to
-somehow arbitrate device accesses, for example scheduling first mdev1
-then mdev2. That's possible if the device driver is in charge of the
-MMU, but not really compatible with the IOMMU.
+That's in combination with "The function shall [...] finish transmitting
+any multi-page Page Request Messages for this PASID (i.e. send the Page
+Request Message with the L bit Set)." from the ATS spec.
 
-So in the IOMMU subsystem, for assigning devices to VMs the only
-model that makes sense is SR-IOV, where each VF/mdev has its own RID and
-its own PASID table. In that case you'd get one IOMMU domain per VF.
+(If I remember correctly a PRI Page Request is a Posted Request.) Only
+after this stop request completes can the driver call unbind(), or
+return from exit_mm(). Then we know that if there was a LPIG for that
+PASID, it is in the IOMMU's PRI queue (or already completed) once we
+call flush().
 
+> so if we were to use this
+> flow on vt-d, which does not stall page request queue, then we should
+> use the iommu model specific flush() callback to ensure LPIG is
+> received? There could be queue full condition and retry. I am just
+> trying to understand how and where we can make sure LPIG is
+> received and all groups are whole.
 
-But considering userspace drivers in the host alone, it might make sense
-to partition a device into mdevs and assign them to multiple processes.
-Interestingly this scheme still doesn't work with the classic MAP/UNMAP
-ioctl: since there is a single device context entry for all mdevs, the
-mediating driver would have to catch all MAP/UNMAP ioctls and reject
-those with IOVAs that overlap those of another mdev. It's doesn't seem
-viable. But when using PASID then each mdev has its own address space,
-and since PASIDs are allocated by the kernel there is no such conflict.
-
-Anyway, I think this use-case can work with the current structures, if
-mediating driver does the bind() instead of VFIO. That's necessary
-because you can't let userspace program the PASID into the device, or
-they would be able to access address spaces owned by other mdevs. Then
-the mediating driver does the bind(), and keeps internal structures to
-associate the process to the given mdev.
+For SMMU in patch 30, the flush() callback waits until the PRI queue is
+empty or, when the PRI thread is running in parallel, until the thread
+has done a full circle (handled as many faults as the queue size). It's
+really unpleasant to implement because the flush() callback takes a lock
+to inspect the hardware state, but I don't think we have a choice.
 
 Thanks,
 Jean
