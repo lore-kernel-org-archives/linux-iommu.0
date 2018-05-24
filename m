@@ -1,86 +1,104 @@
-From: Baruch Siach <baruch@tkos.co.il>
-Subject: Re: [PATCH v6 05/17] media: rkisp1: add Rockchip ISP1 subdev driver
-Date: Thu, 24 May 2018 14:30:12 +0300
-Message-ID: <20180524113012.mt5b2f2vrhfrn3d7@tarshish>
-References: <20180308094807.9443-1-jacob-chen@iotwrt.com>
- <20180308094807.9443-6-jacob-chen@iotwrt.com>
- <20180503090909.o3dyhukzs2y7em5z@tarshish>
- <CAAFQd5CvBv4hkE=PSHBJTYa9Lj0SyggxpMBEAYD=if0=T0uzHw@mail.gmail.com>
- <20180507063814.vweb4p3nfgnoc3td@tarshish>
- <CAAFQd5A7gAK4fXH9YVrobR5_QX_5f8xa272R_56v5YUghV6Sxw@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Thu, 24 May 2018 12:44:25 +0100
+Message-ID: <f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
+	<20180516163117.622693ea@jacob-builder>
+	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
+	<20180522094334.71f0e36b@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAAFQd5A7gAK4fXH9YVrobR5_QX_5f8xa272R_56v5YUghV6Sxw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: Jacob Chen <jacob-chen@iotwrt.com>, ARM/Rockchip SoC <linux-rockchip@lists.infradead.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, Mauro Carvalho Chehab <mchehab@kernel.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, Sakari Ailus <sakari.ailus@linux.intel.com>, Hans Verkuil <hans.verkuil@cisco.com>, Shunqian Zheng <zhengsq@rock-chips.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, =?utf-8?B?6ZKf5Lul5bSH?= <zyc@rock-chips.com>, Eddie Cai <eddie.cai.linux@gmail.com>, Jeffy <jeffy.chen@rock-chips.com>, devicetree@vger.kernel.org, Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>, =?utf-8?B?6ZmI5Z+O?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180522094334.71f0e36b@jacob-builder>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
+On 22/05/18 17:43, Jacob Pan wrote:
+> On Thu, 17 May 2018 11:02:42 +0100
+> Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+> 
+>> On 17/05/18 00:31, Jacob Pan wrote:
+>>> On Fri, 11 May 2018 20:06:04 +0100
+>>> I am a little confused about domain vs. pasid relationship. If
+>>> each domain represents a address space, should there be a domain for
+>>> each pasid?  
+>>
+>> I don't think there is a formal definition, but from previous
+>> discussion the consensus seems to be: domains are a collection of
+>> devices that have the same virtual address spaces (one or many).
+>>
+>> Keeping that definition makes things easier, in my opinion. Some time
+>> ago, I did try to represent PASIDs using "subdomains" (introducing a
+>> hierarchy of struct iommu_domain), but it required invasive changes in
+>> the IOMMU subsystem and probably all over the tree.
+>>
+>> You do need some kind of "root domain" for each device, so that
+>> "iommu_get_domain_for_dev()" still makes sense. That root domain
+>> doesn't have a single address space but a collection of subdomains.
+>> If you need this anyway, representing a PASID with an iommu_domain
+>> doesn't seem preferable than using a different structure (io_mm),
+>> because they don't have anything in common.
+>>
+> My main concern is the PASID table storage. If PASID table storage
+> is tied to domain, it is ok to scale up, i.e. multiple devices in a
+> domain share a single PASID table. But to scale down, e.g. further
+> partition device with VFIO mdev for assignment, each mdev may get its
+> own domain via vfio. But there is no IOMMU storage for PASID table at
+> mdev device level. Perhaps we do need root domain or some parent-child
+> relationship to locate PASID table.
 
-On Mon, May 07, 2018 at 06:41:50AM +0000, Tomasz Figa wrote:
-> On Mon, May 7, 2018 at 3:38 PM Baruch Siach <baruch@tkos.co.il> wrote:
-> > On Mon, May 07, 2018 at 06:13:27AM +0000, Tomasz Figa wrote:
-> > > On Thu, May 3, 2018 at 6:09 PM Baruch Siach <baruch@tkos.co.il> wrote:
-> > > > On Thu, Mar 08, 2018 at 05:47:55PM +0800, Jacob Chen wrote:
-> > > > > +static int rkisp1_isp_sd_s_power(struct v4l2_subdev *sd, int on)
-> > > > > +{
-> > > > > +     struct rkisp1_device *isp_dev = sd_to_isp_dev(sd);
-> > > > > +     int ret;
-> > > > > +
-> > > > > +     v4l2_dbg(1, rkisp1_debug, &isp_dev->v4l2_dev, "s_power: %d\n",
-> > > on);
-> > > > > +
-> > > > > +     if (on) {
-> > > > > +             ret = pm_runtime_get_sync(isp_dev->dev);
-> > > > > +             if (ret < 0)
-> > > > > +                     return ret;
-> > > > > +
-> > > > > +             rkisp1_config_clk(isp_dev);
-> > > > > +     } else {
-> > > > > +             ret = pm_runtime_put(isp_dev->dev);
-> > >
-> > > > I commented this line out to make more than one STREAMON work.
-> Otherwise,
-> > > > the second STREAMON hangs. I guess the bug is not this driver.
-> Probably
-> > > > something in drivers/soc/rockchip/pm_domains.c. Just noting that in
-> case
-> > > > you or someone on Cc would like to investigate it further.
-> > > >
-> > > > I tested v4.16-rc4 on the Tinkerboard.
-> > >
-> > > Looks like that version doesn't include the IOMMU PM and clock handling
-> > > rework [1], which should fix a lot of runtime PM issues. FWIW,
-> linux-next
-> > > seems to already include it.
-> > >
-> > > [1] https://lkml.org/lkml/2018/3/23/44
-> 
-> > Thanks for the reference.
-> 
-> > It looks like the iommu driver part is in Linus' tree already. The DT
-> part is
-> > in the v4.18-armsoc/dts32 branch of Heiko's tree. Am I missing anything?
-> 
-> You're right, most of the series made it in time for 4.17. However, the DT
-> part (precisely, the clocks properties added to IOMMU nodes) is crucial for
-> the fixes to be effective.
-> 
-> > Anyway, I'll take a look.
-> 
-> Thanks for testing. :) (Forgot to mention in my previous email...)
+Interesting, I hadn't thought about this use-case before. At first I
+thought you were talking about mdev devices assigned to VMs, but I think
+you're referring to mdevs assigned to userspace drivers instead? Out of
+curiosity, is it only theoretical or does someone actually need this?
 
-I finally got around to testing. Unfortunately, kernel v4.17-rc6 with 
-cherry-pick of commit c78751f91c0b (ARM: dts: rockchip: add clocks in iommu 
-nodes) from Heiko's tree still exhibit the same problem. STREAMON hangs on 
-second try. The same workaround "fixes" it.
+I don't think mdev for VM assignment are compatible with PASID, at least
+not when the IOMMU is involved. I usually ignore mdev in my reasoning
+because, as far as I know, currently they only affect devices that have
+their own MMU, and IOMMU domains don't come into play. However, if a
+device was backed by the IOMMU, and the device driver wanted to
+partition it into mdevs, then users would be tempted to assign mdev1 to
+VM1 and mdev2 to VM2.
 
-baruch
+It doesn't work with PASID, because the PASID spaces of VM1 and VM2 will
+conflict. If both VM1 and VM2 allocate PASID #1, then the host has to
+somehow arbitrate device accesses, for example scheduling first mdev1
+then mdev2. That's possible if the device driver is in charge of the
+MMU, but not really compatible with the IOMMU.
 
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+So in the IOMMU subsystem, for assigning devices to VMs the only
+model that makes sense is SR-IOV, where each VF/mdev has its own RID and
+its own PASID table. In that case you'd get one IOMMU domain per VF.
+
+
+But considering userspace drivers in the host alone, it might make sense
+to partition a device into mdevs and assign them to multiple processes.
+Interestingly this scheme still doesn't work with the classic MAP/UNMAP
+ioctl: since there is a single device context entry for all mdevs, the
+mediating driver would have to catch all MAP/UNMAP ioctls and reject
+those with IOVAs that overlap those of another mdev. It's doesn't seem
+viable. But when using PASID then each mdev has its own address space,
+and since PASIDs are allocated by the kernel there is no such conflict.
+
+Anyway, I think this use-case can work with the current structures, if
+mediating driver does the bind() instead of VFIO. That's necessary
+because you can't let userspace program the PASID into the device, or
+they would be able to access address spaces owned by other mdevs. Then
+the mediating driver does the bind(), and keeps internal structures to
+associate the process to the given mdev.
+
+Thanks,
+Jean
