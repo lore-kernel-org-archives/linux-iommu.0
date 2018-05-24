@@ -1,54 +1,31 @@
-From: Michal Hocko <mhocko@kernel.org>
-Subject: Re: [External]  Re: [RFC PATCH v2 00/12] get rid of
- GFP_ZONE_TABLE/BAD
-Date: Thu, 24 May 2018 14:18:53 +0200
-Message-ID: <20180524121853.GG20441@dhcp22.suse.cz>
+From: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
+Date: Thu, 24 May 2018 14:23:23 +0200
+Message-ID: <20180524122323.GH20441@dhcp22.suse.cz>
 References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
- <20180522183728.GB20441@dhcp22.suse.cz>
- <HK2PR03MB16847646E90A10E2D48CEA8E926B0@HK2PR03MB1684.apcprd03.prod.outlook.com>
+	<20180522183728.GB20441@dhcp22.suse.cz>
+	<20180524051919.GA9819@bombadil.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <HK2PR03MB16847646E90A10E2D48CEA8E926B0@HK2PR03MB1684.apcprd03.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Huaisheng HS1 Ye <yehs1@lenovo.com>
-Cc: "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "willy@infradead.org" <willy@infradead.org>, "vbabka@suse.cz" <vbabka@suse.cz>, "mgorman@techsingularity.net" <mgorman@techsingularity.net>, "kstewart@linuxfoundation.org" <kstewart@linuxfoundation.org>, "alexander.levin@verizon.com" <alexander.levin@verizon.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "colyli@suse.de" <colyli@suse.de>, NingTing Cheng <chengnt@lenovo.com>, Ocean HY1 He <hehy1@lenovo.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel>
+In-Reply-To: <20180524051919.GA9819-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Huaisheng Ye <yehs2007-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, colyli-l3A5Bk7waGM@public.gmane.org, mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed 23-05-18 16:07:16, Huaisheng HS1 Ye wrote:
-> From: Michal Hocko [mailto:mhocko@kernel.org]
-> Sent: Wednesday, May 23, 2018 2:37 AM
-> > 
-> > On Mon 21-05-18 23:20:21, Huaisheng Ye wrote:
-> > > From: Huaisheng Ye <yehs1@lenovo.com>
-> > >
-> > > Replace GFP_ZONE_TABLE and GFP_ZONE_BAD with encoded zone number.
-> > >
-> > > Delete ___GFP_DMA, ___GFP_HIGHMEM and ___GFP_DMA32 from GFP bitmasks,
-> > > the bottom three bits of GFP mask is reserved for storing encoded
-> > > zone number.
-> > >
-> > > The encoding method is XOR. Get zone number from enum zone_type,
-> > > then encode the number with ZONE_NORMAL by XOR operation.
-> > > The goal is to make sure ZONE_NORMAL can be encoded to zero. So,
-> > > the compatibility can be guaranteed, such as GFP_KERNEL and GFP_ATOMIC
-> > > can be used as before.
-> > >
-> > > Reserve __GFP_MOVABLE in bit 3, so that it can continue to be used as
-> > > a flag. Same as before, __GFP_MOVABLE respresents movable migrate type
-> > > for ZONE_DMA, ZONE_DMA32, and ZONE_NORMAL. But when it is enabled with
-> > > __GFP_HIGHMEM, ZONE_MOVABLE shall be returned instead of ZONE_HIGHMEM.
-> > > __GFP_ZONE_MOVABLE is created to realize it.
-> > >
-> > > With this patch, just enabling __GFP_MOVABLE and __GFP_HIGHMEM is not
-> > > enough to get ZONE_MOVABLE from gfp_zone. All callers should use
-> > > GFP_HIGHUSER_MOVABLE or __GFP_ZONE_MOVABLE directly to achieve that.
-> > >
-> > > Decode zone number directly from bottom three bits of flags in gfp_zone.
-> > > The theory of encoding and decoding is,
-> > >         A ^ B ^ B = A
-> > 
+On Wed 23-05-18 22:19:19, Matthew Wilcox wrote:
+> On Tue, May 22, 2018 at 08:37:28PM +0200, Michal Hocko wrote:
 > > So why is this any better than the current code. Sure I am not a great
 > > fan of GFP_ZONE_TABLE because of how it is incomprehensible but this
 > > doesn't look too much better, yet we are losing a check for incompatible
@@ -57,37 +34,60 @@ On Wed 23-05-18 16:07:16, Huaisheng HS1 Ye wrote:
 > > zone modifiers somehow and the debugging code. So what is the selling
 > > point?
 > 
-> Dear Michal,
+> I have a plan, but it's not exactly fully-formed yet.
 > 
-> Let me try to reply your questions.
-> Exactly, GFP_ZONE_TABLE is too complicated. I think there are two advantages
-> from the series of patches.
+> One of the big problems we have today is that we have a lot of users
+> who have constraints on the physical memory they want to allocate,
+> but we have very limited abilities to provide them with what they're
+> asking for.  The various different ZONEs have different meanings on
+> different architectures and are generally a mess.
+
+Agreed.
+
+> If we had eight ZONEs, we could offer:
+
+No, please no more zones. What we have is quite a maint. burden on its
+own. Ideally we should only have lowmem, highmem and special/device
+zones for directly kernel accessible memory, the one that the kernel
+cannot or must not use and completely special memory managed out of
+the page allocator. All the remaining constrains should better be
+implemented on top.
+
+> ZONE_16M	// 24 bit
+> ZONE_256M	// 28 bit
+> ZONE_LOWMEM	// CONFIG_32BIT only
+> ZONE_4G		// 32 bit
+> ZONE_64G	// 36 bit
+> ZONE_1T		// 40 bit
+> ZONE_ALL	// everything larger
+> ZONE_MOVABLE	// movable allocations; no physical address guarantees
 > 
-> 1. XOR operation is simple and efficient, GFP_ZONE_TABLE/BAD need to do twice
-> shift operations, the first is for getting a zone_type and the second is for
-> checking the to be returned type is a correct or not. But with these patch XOR
-> operation just needs to use once. Because the bottom 3 bits of GFP bitmask have
-> been used to represent the encoded zone number, we can say there is no bad zone
-> number if all callers could use it without buggy way. Of course, the returned
-> zone type in gfp_zone needs to be no more than ZONE_MOVABLE.
+> #ifdef CONFIG_64BIT
+> #define ZONE_NORMAL	ZONE_ALL
+> #else
+> #define ZONE_NORMAL	ZONE_LOWMEM
+> #endif
+> 
+> This would cover most driver DMA mask allocations; we could tweak the
+> offered zones based on analysis of what people need.
 
-But you are losing the ability to check for wrong usage. And it seems
-that the sad reality is that the existing code do screw up.
+But those already do have aproper API, IIUC. So do we really need to
+make our GFP_*/Zone API more complicated than it already is?
 
-> 2. GFP_ZONE_TABLE has limit with the amount of zone types. Current GFP_ZONE_TABLE
-> is 32 bits, in general, there are 4 zone types for most ofX86_64 platform, they
-> are ZONE_DMA, ZONE_DMA32, ZONE_NORMAL and ZONE_MOVABLE. If we want to expand the
-> amount of zone types to larger than 4, the zone shift should be 3.
+> #define GFP_HIGHUSER		(GFP_USER | ZONE_ALL)
+> #define GFP_HIGHUSER_MOVABLE	(GFP_USER | ZONE_MOVABLE)
+> 
+> One other thing I want to see is that fallback from zones happens from
+> highest to lowest normally (ie if you fail to allocate in 1T, then you
+> try to allocate from 64G), but movable allocations hapen from lowest
+> to highest.  So ZONE_16M ends up full of page cache pages which are
+> readily evictable for the rare occasions when we need to allocate memory
+> below 16MB.
+> 
+> I'm sure there are lots of good reasons why this won't work, which is
+> why I've been hesitant to propose it before now.
 
-But we do not want to expand the number of zones IMHO. The existing zoo
-is quite a maint. pain.
- 
-That being said. I am not saying that I am in love with GFP_ZONE_TABLE.
-It always makes my head explode when I look there but it seems to work
-with the current code and it is optimized for it. If you want to change
-this then you should make sure you describe reasons _why_ this is an
-improvement. And I would argue that "we can have more zones" is a
-relevant one.
+I am worried you are playing with a can of worms...
 -- 
 Michal Hocko
 SUSE Labs
