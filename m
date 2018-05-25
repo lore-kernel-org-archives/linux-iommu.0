@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 18/25] MIPS: loongson64: use generic dma noncoherent ops
-Date: Fri, 25 May 2018 11:21:04 +0200
-Message-ID: <20180525092111.18516-19-hch@lst.de>
+Subject: [PATCH 19/25] MIPS: IP32: use generic dma noncoherent ops
+Date: Fri, 25 May 2018 11:21:05 +0200
+Message-ID: <20180525092111.18516-20-hch@lst.de>
 References: <20180525092111.18516-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -25,72 +25,102 @@ Provide phys_to_dma/dma_to_phys helpers, everything else is generic.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/mips/Kconfig                             |  1 +
- .../asm/mach-loongson64/dma-coherence.h       | 69 -------------------
- arch/mips/loongson64/Kconfig                  |  2 -
- arch/mips/loongson64/common/Makefile          |  1 +
- arch/mips/loongson64/common/dma.c             | 16 +++++
- 5 files changed, 18 insertions(+), 71 deletions(-)
- delete mode 100644 arch/mips/include/asm/mach-loongson64/dma-coherence.h
- create mode 100644 arch/mips/loongson64/common/dma.c
+ arch/mips/Kconfig                             |  2 +-
+ .../include/asm/mach-ip32/dma-coherence.h     | 92 -------------------
+ arch/mips/sgi-ip32/Makefile                   |  2 +-
+ arch/mips/sgi-ip32/ip32-dma.c                 | 37 ++++++++
+ 4 files changed, 39 insertions(+), 94 deletions(-)
+ delete mode 100644 arch/mips/include/asm/mach-ip32/dma-coherence.h
+ create mode 100644 arch/mips/sgi-ip32/ip32-dma.c
 
 diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index b39b430c92a3..3140955bc77c 100644
+index 3140955bc77c..bde16399a8fe 100644
 --- a/arch/mips/Kconfig
 +++ b/arch/mips/Kconfig
-@@ -1822,6 +1822,7 @@ config CPU_LOONGSON2
- 	select CPU_SUPPORTS_64BIT_KERNEL
- 	select CPU_SUPPORTS_HIGHMEM
- 	select CPU_SUPPORTS_HUGEPAGES
-+	select ARCH_HAS_PHYS_TO_DMA
+@@ -720,6 +720,7 @@ config SGI_IP28
  
- config CPU_LOONGSON1
- 	bool
-diff --git a/arch/mips/include/asm/mach-loongson64/dma-coherence.h b/arch/mips/include/asm/mach-loongson64/dma-coherence.h
+ config SGI_IP32
+ 	bool "SGI IP32 (O2)"
++	select ARCH_HAS_PHYS_TO_DMA
+ 	select FW_ARC
+ 	select FW_ARC32
+ 	select BOOT_ELF32
+@@ -728,7 +729,6 @@ config SGI_IP32
+ 	select DMA_NONCOHERENT
+ 	select HW_HAS_PCI
+ 	select IRQ_MIPS_CPU
+-	select MIPS_DMA_DEFAULT
+ 	select R5000_CPU_SCACHE
+ 	select RM7000_CPU_SCACHE
+ 	select SYS_HAS_CPU_R5000
+diff --git a/arch/mips/include/asm/mach-ip32/dma-coherence.h b/arch/mips/include/asm/mach-ip32/dma-coherence.h
 deleted file mode 100644
-index 651dd2eb3ee5..000000000000
---- a/arch/mips/include/asm/mach-loongson64/dma-coherence.h
+index 7bdf212587a0..000000000000
+--- a/arch/mips/include/asm/mach-ip32/dma-coherence.h
 +++ /dev/null
-@@ -1,69 +0,0 @@
+@@ -1,92 +0,0 @@
 -/*
 - * This file is subject to the terms and conditions of the GNU General Public
 - * License.  See the file "COPYING" in the main directory of this archive
 - * for more details.
 - *
-- * Copyright (C) 2006, 07  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
-- * Copyright (C) 2007 Lemote, Inc. & Institute of Computing Technology
-- * Author: Fuxin Zhang, zhangfx-h23VmSynlr/QT0dZR+AlfA@public.gmane.org
+- * Copyright (C) 2006  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
 - *
 - */
--#ifndef __ASM_MACH_LOONGSON64_DMA_COHERENCE_H
--#define __ASM_MACH_LOONGSON64_DMA_COHERENCE_H
+-#ifndef __ASM_MACH_IP32_DMA_COHERENCE_H
+-#define __ASM_MACH_IP32_DMA_COHERENCE_H
 -
--#ifdef CONFIG_SWIOTLB
--#include <linux/swiotlb.h>
--#endif
+-#include <asm/ip32/crime.h>
 -
 -struct device;
 -
+-/*
+- * Few notes.
+- * 1. CPU sees memory as two chunks: 0-256M@0x0, and the rest @0x40000000+256M
+- * 2. PCI sees memory as one big chunk @0x0 (or we could use 0x40000000 for
+- *    native-endian)
+- * 3. All other devices see memory as one big chunk at 0x40000000
+- * 4. Non-PCI devices will pass NULL as struct device*
+- *
+- * Thus we translate differently, depending on device.
+- */
+-
+-#define RAM_OFFSET_MASK 0x3fffffffUL
+-
 -static inline dma_addr_t plat_map_dma_mem(struct device *dev, void *addr,
--					  size_t size)
+-	size_t size)
 -{
--	return virt_to_phys(addr) | 0x80000000;
+-	dma_addr_t pa = virt_to_phys(addr) & RAM_OFFSET_MASK;
+-
+-	if (dev == NULL)
+-		pa += CRIME_HI_MEM_BASE;
+-
+-	return pa;
 -}
 -
 -static inline dma_addr_t plat_map_dma_mem_page(struct device *dev,
--					       struct page *page)
+-	struct page *page)
 -{
--	return page_to_phys(page) | 0x80000000;
+-	dma_addr_t pa;
+-
+-	pa = page_to_phys(page) & RAM_OFFSET_MASK;
+-
+-	if (dev == NULL)
+-		pa += CRIME_HI_MEM_BASE;
+-
+-	return pa;
 -}
 -
+-/* This is almost certainly wrong but it's what dma-ip32.c used to use	*/
 -static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
 -	dma_addr_t dma_addr)
 -{
--#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
--	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
--#else
--	return dma_addr & 0x7fffffff;
--#endif
+-	unsigned long addr = dma_addr & RAM_OFFSET_MASK;
+-
+-	if (dma_addr >= 256*1024*1024)
+-		addr += CRIME_HI_MEM_BASE;
+-
+-	return addr;
 -}
 -
 -static inline void plat_unmap_dma_mem(struct device *dev, dma_addr_t dma_addr,
@@ -111,69 +141,68 @@ index 651dd2eb3ee5..000000000000
 -	return 1;
 -}
 -
--static inline int plat_device_is_coherent(struct device *dev)
--{
--	return 0;
--}
--
 -static inline void plat_post_dma_flush(struct device *dev)
 -{
 -}
 -
--#endif /* __ASM_MACH_LOONGSON64_DMA_COHERENCE_H */
-diff --git a/arch/mips/loongson64/Kconfig b/arch/mips/loongson64/Kconfig
-index a785bf8da3f3..c865b4b9b775 100644
---- a/arch/mips/loongson64/Kconfig
-+++ b/arch/mips/loongson64/Kconfig
-@@ -13,7 +13,6 @@ config LEMOTE_FULOONG2E
- 	select CSRC_R4K
- 	select SYS_HAS_CPU_LOONGSON2E
- 	select DMA_NONCOHERENT
--	select MIPS_DMA_DEFAULT
- 	select BOOT_ELF32
- 	select BOARD_SCACHE
- 	select HW_HAS_PCI
-@@ -45,7 +44,6 @@ config LEMOTE_MACH2F
- 	select CS5536
- 	select CSRC_R4K if ! MIPS_EXTERNAL_TIMER
- 	select DMA_NONCOHERENT
--	select MIPS_DMA_DEFAULT
- 	select GENERIC_ISA_DMA_SUPPORT_BROKEN
- 	select HAVE_CLK
- 	select HW_HAS_PCI
-diff --git a/arch/mips/loongson64/common/Makefile b/arch/mips/loongson64/common/Makefile
-index 684624f61f5a..57ee03022941 100644
---- a/arch/mips/loongson64/common/Makefile
-+++ b/arch/mips/loongson64/common/Makefile
-@@ -6,6 +6,7 @@
- obj-y += setup.o init.o cmdline.o env.o time.o reset.o irq.o \
-     bonito-irq.o mem.o machtype.o platform.o serial.o
- obj-$(CONFIG_PCI) += pci.o
-+obj-$(CONFIG_CPU_LOONGSON2) += dma.o
- 
+-static inline int plat_device_is_coherent(struct device *dev)
+-{
+-	return 0;		/* IP32 is non-coherent */
+-}
+-
+-#endif /* __ASM_MACH_IP32_DMA_COHERENCE_H */
+diff --git a/arch/mips/sgi-ip32/Makefile b/arch/mips/sgi-ip32/Makefile
+index 60f0227425e7..4745cd94df11 100644
+--- a/arch/mips/sgi-ip32/Makefile
++++ b/arch/mips/sgi-ip32/Makefile
+@@ -4,4 +4,4 @@
  #
- # Serial port support
-diff --git a/arch/mips/loongson64/common/dma.c b/arch/mips/loongson64/common/dma.c
+ 
+ obj-y	+= ip32-berr.o ip32-irq.o ip32-platform.o ip32-setup.o ip32-reset.o \
+-	   crime.o ip32-memory.o
++	   crime.o ip32-memory.o ip32-dma.o
+diff --git a/arch/mips/sgi-ip32/ip32-dma.c b/arch/mips/sgi-ip32/ip32-dma.c
 new file mode 100644
-index 000000000000..95ede4b0fbbb
+index 000000000000..fa7b17cb5385
 --- /dev/null
-+++ b/arch/mips/loongson64/common/dma.c
-@@ -0,0 +1,16 @@
++++ b/arch/mips/sgi-ip32/ip32-dma.c
+@@ -0,0 +1,37 @@
 +// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2006  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
++ */
 +#include <linux/dma-direct.h>
++#include <asm/ip32/crime.h>
++
++/*
++ * Few notes.
++ * 1. CPU sees memory as two chunks: 0-256M@0x0, and the rest @0x40000000+256M
++ * 2. PCI sees memory as one big chunk @0x0 (or we could use 0x40000000 for
++ *    native-endian)
++ * 3. All other devices see memory as one big chunk at 0x40000000
++ * 4. Non-PCI devices will pass NULL as struct device*
++ *
++ * Thus we translate differently, depending on device.
++ */
++
++#define RAM_OFFSET_MASK 0x3fffffffUL
 +
 +dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
 +{
-+	return paddr | 0x80000000;
++	dma_addr_t dma_addr = paddr & RAM_OFFSET_MASK;
++
++	if (!dev)
++		dma_addr += CRIME_HI_MEM_BASE;
++	return dma_addr;
 +}
 +
 +phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
 +{
-+#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
-+	if (dma_addr > 0x8fffffff)
-+		return dma_addr;
-+#endif
-+	return dma_addr & 0x0fffffff;
++	phys_addr_t paddr = dma_addr & RAM_OFFSET_MASK;
++
++	if (dma_addr >= 256*1024*1024)
++		paddr += CRIME_HI_MEM_BASE;
++	return paddr;
 +}
 -- 
 2.17.0
