@@ -1,62 +1,73 @@
-From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
-Date: Fri, 25 May 2018 09:39:59 +0100
-Message-ID: <20180525093959.000040a7@huawei.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
-	<20180516163117.622693ea@jacob-builder>
-	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
-	<20180522094334.71f0e36b@jacob-builder>
-	<f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
-	<20180524115039.GA10260@apalos>
-	<19e82a74-429a-3f86-119e-32b12082d0ff@arm.com>
-	<20180525063311.GA11605@apalos>
+From: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel@daenzer.net>
+Subject: Re: [PATCH] swiotlb: Fix inversed DMA_ATTR_NO_WARN test
+Date: Fri, 25 May 2018 10:41:29 +0200
+Message-ID: <0a17ab46-2d42-48ae-cf1f-492e17254767@daenzer.net>
+References: <20180501132411.2311-1-michel@daenzer.net>
+ <786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
+ <CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
+ <20180502124151.GA22857@lst.de>
+ <1066dfa2-2f78-815d-c65a-9d09eb35458c@daenzer.net>
+ <20180502162145.GA26787@lst.de>
+ <ba310210-6f3c-f4e6-29e5-5ae6e791ebeb@daenzer.net>
+ <1cbc4e10-96e6-c222-fb1a-fd7847be5755@gmail.com>
+ <20180525084120.GA19063@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180525063311.GA11605@apalos>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20180525084120.GA19063@lst.de>
+Content-Language: en-CA
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Christoph Hellwig <hch@lst.de>, christian.koenig@amd.com
+Cc: iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 List-Id: iommu@lists.linux-foundation.org
 
-+CC Kenneth Lee
-
-On Fri, 25 May 2018 09:33:11 +0300
-Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-
-> On Thu, May 24, 2018 at 04:04:39PM +0100, Jean-Philippe Brucker wrote:
-> > On 24/05/18 12:50, Ilias Apalodimas wrote:  
-> > >> Interesting, I hadn't thought about this use-case before. At first I
-> > >> thought you were talking about mdev devices assigned to VMs, but I think
-> > >> you're referring to mdevs assigned to userspace drivers instead? Out of
-> > >> curiosity, is it only theoretical or does someone actually need this?  
-> > > 
-> > > There has been some non upstreamed efforts to have mdev and produce userspace
-> > > drivers. Huawei is using it on what they call "wrapdrive" for crypto devices and
-> > > we did a proof of concept for ethernet interfaces. At the time we choose not to
-> > > involve the IOMMU for the reason you mentioned, but having it there would be
-> > > good.  
-> > 
-> > I'm guessing there were good reasons to do it that way but I wonder, is
-> > it not simpler to just have the kernel driver create a /dev/foo, with a
-> > standard ioctl/mmap/poll interface? Here VFIO adds a layer of
-> > indirection, and since the mediating driver has to implement these
-> > operations already, what is gained?  
-> The best reason i can come up with is "common code". You already have one API
-> doing that for you so we replicate it in a /dev file?
-> The mdev approach still needs extentions to support what we tried to do (i.e
-> mdev bus might need yo have access on iommu_ops), but as far as i undestand it's
-> a possible case.
-> > 
-> > Thanks,
-> > Jean  
+T24gMjAxOC0wNS0yNSAxMDo0MSBBTSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gT24gVHVl
+LCBNYXkgMjIsIDIwMTggYXQgMDM6MTM6NThQTSArMDIwMCwgQ2hyaXN0aWFuIEvDtm5pZyB3cm90
+ZToKPj4gQW0gMDIuMDUuMjAxOCB1bSAxODo1OSBzY2hyaWViIE1pY2hlbCBEw6RuemVyOgo+Pj4g
+T24gMjAxOC0wNS0wMiAwNjoyMSBQTSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4+Pj4gT24g
+V2VkLCBNYXkgMDIsIDIwMTggYXQgMDQ6MzE6MDlQTSArMDIwMCwgTWljaGVsIETDpG56ZXIgd3Jv
+dGU6Cj4+Pj4+PiBOby4gIF9fR0ZQX05PV0FSTiAoYW5kIGdmcF90IGZsYWdzIGluIGdlbmVyYWwp
+IGFyZSB0aGUgd3JvbmcgaW50ZXJmYWNlCj4+Pj4+PiBmb3IgZG1hIGFsbG9jYXRpb25zIGFuZCBq
+dXN0IGNhdXNlIHByb2JsZW1zLiAgSSBhY3R1YWxseSBwbGFuIHRvCj4+Pj4+PiBnZXQgcmlkIG9m
+IHRoZSBnZnBfdCBhcmd1bWVudCBpbiBkbWFfYWxsb2NfYXR0cnMgc29vbmVyLCBhbmQgb25seQo+
+Pj4+Pj4gYWxsb3cgZWl0aGVyIEdGUF9LRVJORUwgb3IgR0ZQX0RNQSBwYXNzZWQgaW4gZG1hX2Fs
+bG9jX2NvaGVyZW50Lgo+Pj4+PiBIb3cgYWJvdXQgR0ZQX1RSQU5TSFVHRV9MSUdIVD8gVFRNIHVz
+ZXMgdGhhdCB0byBvcHBvcnR1bmlzdGljYWxseQo+Pj4+PiBhbGxvY2F0ZSBodWdlIHBhZ2VzIChH
+RlBfVFJBTlNIVUdFIGNhbiByZXN1bHQgaW4gdW5hY2NlcHRhYmx5IGxvbmcKPj4+Pj4gZGVsYXlz
+IHdpdGggbWVtb3J5IHByZXNzdXJlKS4KPj4+PiBXZWxsLCB0aGF0IGlzIGV4YWN0bHkgd2hhdCBJ
+IGRvbid0IHdhbnQgZHJpdmVycyB0byBkbyAtIHNhbWUgZm9yCj4+Pj4gX19HRlBfQ09NUCBpbiBz
+b21lIGRybSBjb2RlLiAgVGhpcyB2ZXJ5IG11Y2ggYXNzdW1lcyB0aGUgcGFnZSBhbGxvY2F0b3IK
+Pj4+PiBpcyB1c2VkIHRvIGJhY2sgZG1hIGFsbG9jYXRpb25zLCB3aGljaCB2ZXJ5IG9mdGVuIGl0
+IGFjdHVhbGx5IGlzbid0LCBhbmQKPj4+PiBhbnkgdXNlIG9mIG1hZ2ljIGdmcCBmbGFncyBjcmVh
+dGVzIGEgdGlnaHQgY291cGxpbmcgb2YgY29uc3VtZXJzIHdpdGggYQo+Pj4+IHNwZWNpZmljIGlt
+cGxlbWVudGF0aW9uLgo+Pj4+Cj4+Pj4gSW4gZ2VuZXJhbCBJIGNhbid0IHRoaW5rIG9mIGEgZ29v
+ZCByZWFzb24gbm90IHRvIGFjdHVhbGx5IHVzZQo+Pj4+IEdGUF9UUkFOU0hVR0VfTElHSFQgYnkg
+ZGVmYXVsdCBpbiB0aGUgZG1hIGFsbG9jYXRvciB1bmxlc3MKPj4+PiBETUFfQVRUUl9BTExPQ19T
+SU5HTEVfUEFHRVMgaXMgc2V0LiAgQ2FuIHlvdSBwcmVwYXJlIGEgcGF0Y2ggZm9yIHRoYXQ/Cj4+
+PiBJJ20gYWZyYWlkIEknbGwgaGF2ZSB0byBsZWF2ZSB0aGF0IHRvIHNvbWVib2R5IGVsc2UuCj4+
+Cj4+IENvbWluZyBiYWNrIHRvIHRoaXMgdG9waWMgb25jZSBtb3JlLCBzb3JyeSBmb3IgdGhlIGRl
+bGF5IGJ1dCBidXN5IGFzIHVzdWFsIAo+PiA6KQo+Pgo+PiBXaGF0IGV4YWN0bHkgZG8geW91IG1l
+YW4gd2l0aCAiZG1hIGFsbG9jYXRvciIgaGVyZT8gVGhlIFRUTSBhbGxvY2F0b3IgdXNpbmcgCj4+
+IHRoZSBkbWFfYWxsb2NfY29oZXJlbnQgY2FsbHM/IE9yIHRoZSBzd2lvdGxiIGltcGxlbWVudGF0
+aW9uIG9mIHRoZSBjYWxscz8KPiAKPiBkbWEgYWxsb2NhdHIgaW4gdGhpcyBjYXNlOiBiYWNrZW5k
+cyBmb3IgZG1hX2FsbG9jX2NvaGVyZW50Lwo+IGRtYV9hbGxvY19hdHRycy4gIE1vc3QgaW1wb3J0
+YW50bHkgZG1hX2RpcmVjdF9hbGxvYy4KPiAKPiBCdXQgd2hpbGUgd2UncmUgYXQgaXQgSSBjYW4n
+dCBhY3R1YWxseSBzZWUgYW55IEdGUF9UUkFOU0hVR0VfTElHSFQKPiB1c2FnZSBpbiBUVE0sIGp1
+c3QgcGxhaW4gb2xkIEdGUF9UUkFOU0hVR0UuCgpTZWUKaHR0cHM6Ly9naXQua2VybmVsLm9yZy9w
+dWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0L2NvbW1pdC8/aWQ9ZGEy
+OTEzMjBiYWVjOTE0ZjBiYjRlNjVhOWRjY2I4NmJkNmM3MjhmMgouCgoKLS0gCkVhcnRobGluZyBN
+aWNoZWwgRMOkbnplciAgICAgICAgICAgICAgIHwgICAgICAgICAgICAgICBodHRwOi8vd3d3LmFt
+ZC5jb20KTGlicmUgc29mdHdhcmUgZW50aHVzaWFzdCAgICAgICAgICAgICB8ICAgICAgICAgICAg
+IE1lc2EgYW5kIFggZGV2ZWxvcGVyCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVk
+ZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2RyaS1kZXZlbAo=
