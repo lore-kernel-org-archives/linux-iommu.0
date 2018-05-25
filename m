@@ -1,39 +1,110 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH 1/7] core, dma-direct: add a flag 32-bit dma limits
-Date: Fri, 25 May 2018 18:35:32 +0200
-Message-ID: <20180525163532.GA13399@kroah.com>
-References: <20180525143512.1466-1-hch@lst.de>
- <20180525143512.1466-2-hch@lst.de>
- <20180525145012.GA3863@kroah.com>
- <20180525162307.GB28900@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Niklas Cassel <niklas.cassel@linaro.org>
+Subject: [PATCH] iommu/msm: Don't call iommu_device_{,un}link from atomic context
+Date: Fri, 25 May 2018 18:47:05 +0200
+Message-ID: <20180525164705.11620-1-niklas.cassel@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180525162307.GB28900@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, x86@kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org, netdev@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: linux-arm-msm@vger.kernel.org, Niklas Cassel <niklas.cassel@linaro.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 25, 2018 at 06:23:07PM +0200, Christoph Hellwig wrote:
-> On Fri, May 25, 2018 at 04:50:12PM +0200, Greg Kroah-Hartman wrote:
-> > On Fri, May 25, 2018 at 04:35:06PM +0200, Christoph Hellwig wrote:
-> > > Various PCI bridges (VIA PCI, Xilinx PCIe) limit DMA to only 32-bits
-> > > even if the device itself supports more.  Add a single bit flag to
-> > > struct device (to be moved into the dma extension once we around it)
-> > 
-> > "once we around it"?  I don't understand, sorry.
-> 
-> Should be "once we get around it", which in proper grammar should
-> probably be "once we get to it".  Anyway, the point is that right
-> now struct device is bloated with a lot of fields for dma/iommu
-> purposes and we need to clean this up.  It's been on my TODO list
-> for a while.
+Fixes the following splat during boot:
 
-Ah, makes sense, that's fine with me, I'd love to see that get cleaned
-up.
+BUG: sleeping function called from invalid context at kernel/locking/mutex.c:747
+in_atomic(): 1, irqs_disabled(): 128, pid: 77, name: kworker/2:1
+4 locks held by kworker/2:1/77:
+ #0: (ptrval) ((wq_completion)"events"){+.+.}, at: process_one_work+0x1fc/0x8fc
+ #1: (ptrval) (deferred_probe_work){+.+.}, at: process_one_work+0x1fc/0x8fc
+ #2: (ptrval) (&dev->mutex){....}, at: __device_attach+0x40/0x178
+ #3: (ptrval) (msm_iommu_lock){....}, at: msm_iommu_add_device+0x28/0xcc
+irq event stamp: 348
+hardirqs last  enabled at (347): [<c049dc18>] kfree+0xe0/0x3c0
+hardirqs last disabled at (348): [<c0c35cac>] _raw_spin_lock_irqsave+0x2c/0x68
+softirqs last  enabled at (0): [<c0322fd8>] copy_process.part.5+0x280/0x1a68
+softirqs last disabled at (0): [<00000000>]   (null)
+Preemption disabled at:
+[<00000000>]   (null)
+CPU: 2 PID: 77 Comm: kworker/2:1 Not tainted 4.17.0-rc5-wt-ath-01075-gaca0516bb4cf #239
+Hardware name: Generic DT based system
+Workqueue: events deferred_probe_work_func
+[<c0314e00>] (unwind_backtrace) from [<c030fc70>] (show_stack+0x20/0x24)
+[<c030fc70>] (show_stack) from [<c0c16ad8>] (dump_stack+0xa0/0xcc)
+[<c0c16ad8>] (dump_stack) from [<c035a978>] (___might_sleep+0x1f8/0x2d4)
+ath10k_sdio mmc2:0001:1: Direct firmware load for ath10k/QCA9377/hw1.0/board-2.bin failed with error -2
+[<c035a978>] (___might_sleep) from [<c035aac4>] (__might_sleep+0x70/0xa8)
+[<c035aac4>] (__might_sleep) from [<c0c3066c>] (__mutex_lock+0x50/0xb28)
+[<c0c3066c>] (__mutex_lock) from [<c0c31170>] (mutex_lock_nested+0x2c/0x34)
+ath10k_sdio mmc2:0001:1: board_file api 1 bmi_id N/A crc32 544289f7
+[<c0c31170>] (mutex_lock_nested) from [<c052d798>] (kernfs_find_and_get_ns+0x30/0x5c)
+[<c052d798>] (kernfs_find_and_get_ns) from [<c0531cc8>] (sysfs_add_link_to_group+0x28/0x58)
+[<c0531cc8>] (sysfs_add_link_to_group) from [<c07ef75c>] (iommu_device_link+0x50/0xb4)
+[<c07ef75c>] (iommu_device_link) from [<c07f2288>] (msm_iommu_add_device+0xa0/0xcc)
+[<c07f2288>] (msm_iommu_add_device) from [<c07ec6d0>] (add_iommu_group+0x3c/0x64)
+[<c07ec6d0>] (add_iommu_group) from [<c07f9d40>] (bus_for_each_dev+0x84/0xc4)
+[<c07f9d40>] (bus_for_each_dev) from [<c07ec7c8>] (bus_set_iommu+0xd0/0x10c)
+[<c07ec7c8>] (bus_set_iommu) from [<c07f1a68>] (msm_iommu_probe+0x5b8/0x66c)
+[<c07f1a68>] (msm_iommu_probe) from [<c07feaa8>] (platform_drv_probe+0x60/0xbc)
+[<c07feaa8>] (platform_drv_probe) from [<c07fc1fc>] (driver_probe_device+0x30c/0x4cc)
+[<c07fc1fc>] (driver_probe_device) from [<c07fc59c>] (__device_attach_driver+0xac/0x14c)
+[<c07fc59c>] (__device_attach_driver) from [<c07f9e14>] (bus_for_each_drv+0x68/0xc8)
+[<c07f9e14>] (bus_for_each_drv) from [<c07fbd3c>] (__device_attach+0xe4/0x178)
+[<c07fbd3c>] (__device_attach) from [<c07fc698>] (device_initial_probe+0x1c/0x20)
+[<c07fc698>] (device_initial_probe) from [<c07faee8>] (bus_probe_device+0x98/0xa0)
+[<c07faee8>] (bus_probe_device) from [<c07fb4f4>] (deferred_probe_work_func+0x74/0x198)
+[<c07fb4f4>] (deferred_probe_work_func) from [<c0348eb4>] (process_one_work+0x2c4/0x8fc)
+[<c0348eb4>] (process_one_work) from [<c03497b0>] (worker_thread+0x2c4/0x5cc)
+[<c03497b0>] (worker_thread) from [<c0350d10>] (kthread+0x180/0x188)
+[<c0350d10>] (kthread) from [<c03010b4>] (ret_from_fork+0x14/0x20)
 
-thanks,
+Fixes: 42df43b36163 ("iommu/msm: Make use of iommu_device_register interface")
+Signed-off-by: Niklas Cassel <niklas.cassel@linaro.org>
+---
+ drivers/iommu/msm_iommu.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-greg k-h
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 0d3350463a3f..9a95c9b9d0d8 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -395,20 +395,15 @@ static int msm_iommu_add_device(struct device *dev)
+ 	struct msm_iommu_dev *iommu;
+ 	struct iommu_group *group;
+ 	unsigned long flags;
+-	int ret = 0;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-
+ 	iommu = find_iommu_for_dev(dev);
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
+ 	if (iommu)
+ 		iommu_device_link(&iommu->iommu, dev);
+ 	else
+-		ret = -ENODEV;
+-
+-	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+-
+-	if (ret)
+-		return ret;
++		return -ENODEV;
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group))
+@@ -425,13 +420,12 @@ static void msm_iommu_remove_device(struct device *dev)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-
+ 	iommu = find_iommu_for_dev(dev);
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
+ 	if (iommu)
+ 		iommu_device_unlink(&iommu->iommu, dev);
+ 
+-	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+-
+ 	iommu_group_remove_device(dev);
+ }
+ 
+-- 
+2.17.0
