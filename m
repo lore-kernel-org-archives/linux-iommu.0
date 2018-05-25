@@ -1,85 +1,57 @@
-From: Huaisheng Ye <yehs2007@zoho.com>
-Subject: [PATCH v1] arch/x86/kernel/pci-dma: Remove useless parameter of arch_dma_alloc_attrs
-Date: Fri, 25 May 2018 13:00:00 +0800
-Message-ID: <20180525050000.6076-1-yehs2007@zoho.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, x86@kernel.org, chengnt@lenovo.com, Huaisheng Ye <yehs1@lenovo.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tom Lendacky <thomas.lendacky@amd.com>, Kate Stewart <kstewart@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Michal Hocko <mhocko@suse.com>
+From: Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Fri, 25 May 2018 09:33:11 +0300
+Message-ID: <20180525063311.GA11605@apalos>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
+	<20180516163117.622693ea@jacob-builder>
+	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
+	<20180522094334.71f0e36b@jacob-builder>
+	<f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
+	<20180524115039.GA10260@apalos>
+	<19e82a74-429a-3f86-119e-32b12082d0ff@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <19e82a74-429a-3f86-119e-32b12082d0ff-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Huaisheng Ye <yehs1@lenovo.com>
-
-arch_dma_alloc_attrs has parameter gfp which is not used at all.
-Remove it.
-
-Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: Michal Hocko <mhocko@suse.com>
----
- arch/x86/include/asm/dma-mapping.h | 2 +-
- arch/x86/kernel/pci-dma.c          | 2 +-
- include/linux/dma-mapping.h        | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
-index 89ce4bf..ef59747 100644
---- a/arch/x86/include/asm/dma-mapping.h
-+++ b/arch/x86/include/asm/dma-mapping.h
-@@ -33,7 +33,7 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
- int arch_dma_supported(struct device *dev, u64 mask);
- #define arch_dma_supported arch_dma_supported
- 
--bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp);
-+bool arch_dma_alloc_attrs(struct device **dev);
- #define arch_dma_alloc_attrs arch_dma_alloc_attrs
- 
- #endif
-diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-index 77625b6..94d1a49 100644
---- a/arch/x86/kernel/pci-dma.c
-+++ b/arch/x86/kernel/pci-dma.c
-@@ -76,7 +76,7 @@ void __init pci_iommu_alloc(void)
- 	}
- }
- 
--bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp)
-+bool arch_dma_alloc_attrs(struct device **dev)
- {
- 	if (!*dev)
- 		*dev = &x86_dma_fallback_dev;
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f8ab1c0..c80bb09 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -502,7 +502,7 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
- #define dma_get_sgtable(d, t, v, h, s) dma_get_sgtable_attrs(d, t, v, h, s, 0)
- 
- #ifndef arch_dma_alloc_attrs
--#define arch_dma_alloc_attrs(dev, flag)	(true)
-+#define arch_dma_alloc_attrs(dev)	(true)
- #endif
- 
- static inline void *dma_alloc_attrs(struct device *dev, size_t size,
-@@ -521,7 +521,7 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
- 	/* let the implementation decide on the zone to allocate from: */
- 	flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
- 
--	if (!arch_dma_alloc_attrs(&dev, &flag))
-+	if (!arch_dma_alloc_attrs(&dev))
- 		return NULL;
- 	if (!ops->alloc)
- 		return NULL;
--- 
-1.8.3.1
+On Thu, May 24, 2018 at 04:04:39PM +0100, Jean-Philippe Brucker wrote:
+> On 24/05/18 12:50, Ilias Apalodimas wrote:
+> >> Interesting, I hadn't thought about this use-case before. At first I
+> >> thought you were talking about mdev devices assigned to VMs, but I think
+> >> you're referring to mdevs assigned to userspace drivers instead? Out of
+> >> curiosity, is it only theoretical or does someone actually need this?
+> > 
+> > There has been some non upstreamed efforts to have mdev and produce userspace
+> > drivers. Huawei is using it on what they call "wrapdrive" for crypto devices and
+> > we did a proof of concept for ethernet interfaces. At the time we choose not to
+> > involve the IOMMU for the reason you mentioned, but having it there would be
+> > good.
+> 
+> I'm guessing there were good reasons to do it that way but I wonder, is
+> it not simpler to just have the kernel driver create a /dev/foo, with a
+> standard ioctl/mmap/poll interface? Here VFIO adds a layer of
+> indirection, and since the mediating driver has to implement these
+> operations already, what is gained?
+The best reason i can come up with is "common code". You already have one API
+doing that for you so we replicate it in a /dev file?
+The mdev approach still needs extentions to support what we tried to do (i.e
+mdev bus might need yo have access on iommu_ops), but as far as i undestand it's
+a possible case.
+> 
+> Thanks,
+> Jean
