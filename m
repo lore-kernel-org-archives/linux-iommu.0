@@ -1,48 +1,107 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
-Date: Fri, 25 May 2018 05:00:44 -0700
-Message-ID: <20180525120044.GA4649@bombadil.infradead.org>
-References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
- <20180522183728.GB20441@dhcp22.suse.cz>
- <20180524051919.GA9819@bombadil.infradead.org>
- <20180524122323.GH20441@dhcp22.suse.cz>
- <20180524151818.GA21245@bombadil.infradead.org>
- <20180524152943.GA11881@dhcp22.suse.cz>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH] drm/rockchip: vop: fix irq disabled after vop driver probed
+Date: Fri, 25 May 2018 14:14:20 +0200
+Message-ID: <4318500.8KycslRrNH@phil>
+References: <b8eb41e576c4007d40223699eb951db32916b86a.camel@collabora.com> <25470133.K8n9sLBzRS@diego> <8495bffd-2a52-ca85-1bc9-afc3ea0af8e4@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180524152943.GA11881@dhcp22.suse.cz>
+In-Reply-To: <8495bffd-2a52-ca85-1bc9-afc3ea0af8e4@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Hocko <mhocko@kernel.org>
-Cc: Huaisheng Ye <yehs2007@gmail.com>, akpm@linux-foundation.org, linux-mm@kvack.org, vbabka@suse.cz, mgorman@techsingularity.net, kstewart@linuxfoundation.org, alexander.levin@verizon.com, gregkh@linuxfoundation.org, colyli@suse.de, chengnt@lenovo.com, hehy1@lenovo.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, xen-devel@lists.xenproject.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs1@lenovo.com>
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Ezequiel Garcia <ezequiel@collabora.com>, xxm@rock-chips.com, Joerg Roedel <joro@8bytes.org>, Jeffy Chen <jeffy.chen@rock-chips.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Tomeu Vizoso <tomeu.vizoso@collabora.co.uk>, jcliang@chromium.org, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, Enric =?ISO-8859-1?Q?Balletb=F2?= <enric.balletbo@collabora.co.uk>, tfiga@chromium.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 24, 2018 at 05:29:43PM +0200, Michal Hocko wrote:
-> > ie if we had more,
-> > could we solve our pain by making them more generic?
+Hi Marc,
+
+Am Freitag, 25. Mai 2018, 13:07:02 CEST schrieb Marc Zyngier:
+> [Thanks Robin for pointing me to that patch.]
 > 
-> Well, if you have more you will consume more bits in the struct pages,
-> right?
-
-Not necessarily ... the zone number is stored in the struct page
-currently, so either two or three bits are used right now.  In my
-proposal, one can infer the zone of a page from its PFN, except for
-ZONE_MOVABLE.  So we could trim down to just one bit per struct page
-for 32-bit machines while using 3 bits on 64-bit machines, where there
-is plenty of space.
-
-> > it more-or-less sucks that the devices with 28-bit DMA limits are forced
-> > to allocate from the low 16MB when they're perfectly capable of using the
-> > low 256MB.
+> Hi Heiko,
 > 
-> Do we actually care all that much about those? If yes then we should
-> probably follow the ZONE_DMA (x86) path and use a CMA region for them.
-> I mean most devices should be good with very limited addressability or
-> below 4G, no?
+> On 24/05/18 23:06, Heiko Stübner wrote:
+> > From: Sandy Huang <hjc@rock-chips.com>
+> > 
+> > The vop irq is shared between vop and iommu and irq probing in the
+> > iommu driver moved to the probe function recently. This can in some
+> > cases lead to a stall if the irq is triggered while the vop driver
+> > still has it disabled.
+> > 
+> > But there is no real need to disable the irq, as the vop can simply
+> > also track its enabled state and ignore irqs in that case.
+> > 
+> > So remove the enable/disable handling and add appropriate condition
+> > to the irq handler.
+> > 
+> > Signed-off-by: Sandy Huang <hjc@rock-chips.com>
+> > [added an actual commit message]
+> > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> > ---
+> > Hi Ezequiel,
+> > 
+> > this patch came from a discussion I had with Rockchip people over the
+> > iommu changes and resulting issues back in april, but somehow was
+> > forgotten and not posted to the lists. Correcting that now.
+> > 
+> > So removing the enable/disable voodoo on the shared interrupt is
+> > the preferred way.
+> > 
+> >  drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 13 ++++++-------
+> >  1 file changed, 7 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+> > index 510cdf0..61493d4 100644
+> > --- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+> > +++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+> > @@ -549,8 +549,6 @@ static int vop_enable(struct drm_crtc *crtc)
+> >  
+> >  	spin_unlock(&vop->reg_lock);
+> >  
+> > -	enable_irq(vop->irq);
+> > -
+> >  	drm_crtc_vblank_on(crtc);
+> >  
+> >  	return 0;
+> > @@ -596,8 +594,6 @@ static void vop_crtc_atomic_disable(struct drm_crtc *crtc,
+> >  
+> >  	vop_dsp_hold_valid_irq_disable(vop);
+> >  
+> > -	disable_irq(vop->irq);
+> > -
+> >  	vop->is_enabled = false;
+> >  
+> >  	/*
+> > @@ -1168,6 +1164,13 @@ static irqreturn_t vop_isr(int irq, void *data)
+> >  	int ret = IRQ_NONE;
+> >  
+> >  	/*
+> > +	 * since the irq is shared with iommu, iommu irq is enabled before vop
+> > +	 * enable, so before vop enable we do nothing.
+> > +	 */
+> > +	if (!vop->is_enabled)
+> > +		return IRQ_NONE;
+> > +
+> 
+> What guarantee do we have that the IOMMU will actually service that
+> interrupt? Can't we get into a situation where the interrupt gets
+> ignored by both drivers and subsequently disabled by the core irq code
+> as being spurious?
+> 
+> From what I understood of the way things are plugged together on the
+> rockchip platforms, each individual VOP is behind a single IOMMU, hence
+> there there is hardly any point in handling IOMMU interrupts if the VOP
+> is off.
 
-Sure.  One other thing I meant to mention was the media devices
-(TV capture cards and so on) which want a vmalloc_32() allocation.
-On 32-bit machines right now, we allocate from LOWMEM, when we really
-should be allocating from the 1GB-4GB region.  32-bit machines generally
-don't have a ZONE_DMA32 today.
+Yeah, which is probably the reason that patch fell through the cracks
+initially. I resurrected it from the internal discussion because of the issue
+described below.
+
+> But I'm missing the actual reason behind this patch. Could you enlighten me?
+
+Recently the iommu driver moved the irq request from the iommu enablement
+to its probe function. With that change Ezequiel got various stalls, see
+	https://lkml.org/lkml/2018/5/24/1347
+
+
+Heiko
