@@ -1,21 +1,21 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH] swiotlb: Fix inversed DMA_ATTR_NO_WARN test
-Date: Fri, 25 May 2018 10:41:20 +0200
-Message-ID: <20180525084120.GA19063@lst.de>
-References: <20180501132411.2311-1-michel@daenzer.net>
-	<786ca83f-45c4-264b-2aef-d84fb18d3d28@gmail.com>
-	<CAKMK7uH2+v3_UUqXdCjz_8=H4VRt1zB+dgE99PuuPqd+XM2=-w@mail.gmail.com>
-	<20180502124151.GA22857@lst.de>
-	<1066dfa2-2f78-815d-c65a-9d09eb35458c@daenzer.net>
-	<20180502162145.GA26787@lst.de>
-	<ba310210-6f3c-f4e6-29e5-5ae6e791ebeb@daenzer.net>
-	<1cbc4e10-96e6-c222-fb1a-fd7847be5755@gmail.com>
+From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Fri, 25 May 2018 09:39:59 +0100
+Message-ID: <20180525093959.000040a7@huawei.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-4-jean-philippe.brucker@arm.com>
+	<20180516163117.622693ea@jacob-builder>
+	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
+	<20180522094334.71f0e36b@jacob-builder>
+	<f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
+	<20180524115039.GA10260@apalos>
+	<19e82a74-429a-3f86-119e-32b12082d0ff@arm.com>
+	<20180525063311.GA11605@apalos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1cbc4e10-96e6-c222-fb1a-fd7847be5755-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20180525063311.GA11605@apalos>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,44 +25,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: christian.koenig-5C7GfCeVMHo@public.gmane.org
-Cc: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Michel =?iso-8859-1?Q?D=E4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 22, 2018 at 03:13:58PM +0200, Christian K=F6nig wrote:
-> Am 02.05.2018 um 18:59 schrieb Michel D=E4nzer:
->> On 2018-05-02 06:21 PM, Christoph Hellwig wrote:
->>> On Wed, May 02, 2018 at 04:31:09PM +0200, Michel D=E4nzer wrote:
->>>>> No.  __GFP_NOWARN (and gfp_t flags in general) are the wrong interface
->>>>> for dma allocations and just cause problems.  I actually plan to
->>>>> get rid of the gfp_t argument in dma_alloc_attrs sooner, and only
->>>>> allow either GFP_KERNEL or GFP_DMA passed in dma_alloc_coherent.
->>>> How about GFP_TRANSHUGE_LIGHT? TTM uses that to opportunistically
->>>> allocate huge pages (GFP_TRANSHUGE can result in unacceptably long
->>>> delays with memory pressure).
->>> Well, that is exactly what I don't want drivers to do - same for
->>> __GFP_COMP in some drm code.  This very much assumes the page allocator
->>> is used to back dma allocations, which very often it actually isn't, and
->>> any use of magic gfp flags creates a tight coupling of consumers with a
->>> specific implementation.
->>>
->>> In general I can't think of a good reason not to actually use
->>> GFP_TRANSHUGE_LIGHT by default in the dma allocator unless
->>> DMA_ATTR_ALLOC_SINGLE_PAGES is set.  Can you prepare a patch for that?
->> I'm afraid I'll have to leave that to somebody else.
->
-> Coming back to this topic once more, sorry for the delay but busy as usua=
-l =
++CC Kenneth Lee
 
-> :)
->
-> What exactly do you mean with "dma allocator" here? The TTM allocator usi=
-ng =
+On Fri, 25 May 2018 09:33:11 +0300
+Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 
-> the dma_alloc_coherent calls? Or the swiotlb implementation of the calls?
-
-dma allocatr in this case: backends for dma_alloc_coherent/
-dma_alloc_attrs.  Most importantly dma_direct_alloc.
-
-But while we're at it I can't actually see any GFP_TRANSHUGE_LIGHT
-usage in TTM, just plain old GFP_TRANSHUGE.
+> On Thu, May 24, 2018 at 04:04:39PM +0100, Jean-Philippe Brucker wrote:
+> > On 24/05/18 12:50, Ilias Apalodimas wrote:  
+> > >> Interesting, I hadn't thought about this use-case before. At first I
+> > >> thought you were talking about mdev devices assigned to VMs, but I think
+> > >> you're referring to mdevs assigned to userspace drivers instead? Out of
+> > >> curiosity, is it only theoretical or does someone actually need this?  
+> > > 
+> > > There has been some non upstreamed efforts to have mdev and produce userspace
+> > > drivers. Huawei is using it on what they call "wrapdrive" for crypto devices and
+> > > we did a proof of concept for ethernet interfaces. At the time we choose not to
+> > > involve the IOMMU for the reason you mentioned, but having it there would be
+> > > good.  
+> > 
+> > I'm guessing there were good reasons to do it that way but I wonder, is
+> > it not simpler to just have the kernel driver create a /dev/foo, with a
+> > standard ioctl/mmap/poll interface? Here VFIO adds a layer of
+> > indirection, and since the mediating driver has to implement these
+> > operations already, what is gained?  
+> The best reason i can come up with is "common code". You already have one API
+> doing that for you so we replicate it in a /dev file?
+> The mdev approach still needs extentions to support what we tried to do (i.e
+> mdev bus might need yo have access on iommu_ops), but as far as i undestand it's
+> a possible case.
+> > 
+> > Thanks,
+> > Jean  
