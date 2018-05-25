@@ -1,16 +1,15 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] drm/rockchip: vop: fix irq disabled after vop driver
-	probed
-Date: Fri, 25 May 2018 12:07:02 +0100
-Message-ID: <8495bffd-2a52-ca85-1bc9-afc3ea0af8e4@arm.com>
-References: <b8eb41e576c4007d40223699eb951db32916b86a.camel@collabora.com>
-	<25470133.K8n9sLBzRS@diego>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 7/8] iommu: Remove IOMMU_OF_DECLARE
+Date: Fri, 25 May 2018 12:31:05 +0100
+Message-ID: <20180525113104.GA3255@arm.com>
+References: <20180524175024.19874-1-robh@kernel.org>
+	<20180524175024.19874-8-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <25470133.K8n9sLBzRS@diego>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20180524175024.19874-8-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,57 +19,82 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?Q?Enric_Balletb=c3=b2?= <enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, boot-architecture-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-W1RoYW5rcyBSb2JpbiBmb3IgcG9pbnRpbmcgbWUgdG8gdGhhdCBwYXRjaC5dCgpIaSBIZWlrbywK
-Ck9uIDI0LzA1LzE4IDIzOjA2LCBIZWlrbyBTdMO8Ym5lciB3cm90ZToKPiBGcm9tOiBTYW5keSBI
-dWFuZyA8aGpjQHJvY2stY2hpcHMuY29tPgo+IAo+IFRoZSB2b3AgaXJxIGlzIHNoYXJlZCBiZXR3
-ZWVuIHZvcCBhbmQgaW9tbXUgYW5kIGlycSBwcm9iaW5nIGluIHRoZQo+IGlvbW11IGRyaXZlciBt
-b3ZlZCB0byB0aGUgcHJvYmUgZnVuY3Rpb24gcmVjZW50bHkuIFRoaXMgY2FuIGluIHNvbWUKPiBj
-YXNlcyBsZWFkIHRvIGEgc3RhbGwgaWYgdGhlIGlycSBpcyB0cmlnZ2VyZWQgd2hpbGUgdGhlIHZv
-cCBkcml2ZXIKPiBzdGlsbCBoYXMgaXQgZGlzYWJsZWQuCj4gCj4gQnV0IHRoZXJlIGlzIG5vIHJl
-YWwgbmVlZCB0byBkaXNhYmxlIHRoZSBpcnEsIGFzIHRoZSB2b3AgY2FuIHNpbXBseQo+IGFsc28g
-dHJhY2sgaXRzIGVuYWJsZWQgc3RhdGUgYW5kIGlnbm9yZSBpcnFzIGluIHRoYXQgY2FzZS4KPiAK
-PiBTbyByZW1vdmUgdGhlIGVuYWJsZS9kaXNhYmxlIGhhbmRsaW5nIGFuZCBhZGQgYXBwcm9wcmlh
-dGUgY29uZGl0aW9uCj4gdG8gdGhlIGlycSBoYW5kbGVyLgo+IAo+IFNpZ25lZC1vZmYtYnk6IFNh
-bmR5IEh1YW5nIDxoamNAcm9jay1jaGlwcy5jb20+Cj4gW2FkZGVkIGFuIGFjdHVhbCBjb21taXQg
-bWVzc2FnZV0KPiBTaWduZWQtb2ZmLWJ5OiBIZWlrbyBTdHVlYm5lciA8aGVpa29Ac250ZWNoLmRl
-Pgo+IC0tLQo+IEhpIEV6ZXF1aWVsLAo+IAo+IHRoaXMgcGF0Y2ggY2FtZSBmcm9tIGEgZGlzY3Vz
-c2lvbiBJIGhhZCB3aXRoIFJvY2tjaGlwIHBlb3BsZSBvdmVyIHRoZQo+IGlvbW11IGNoYW5nZXMg
-YW5kIHJlc3VsdGluZyBpc3N1ZXMgYmFjayBpbiBhcHJpbCwgYnV0IHNvbWVob3cgd2FzCj4gZm9y
-Z290dGVuIGFuZCBub3QgcG9zdGVkIHRvIHRoZSBsaXN0cy4gQ29ycmVjdGluZyB0aGF0IG5vdy4K
-PiAKPiBTbyByZW1vdmluZyB0aGUgZW5hYmxlL2Rpc2FibGUgdm9vZG9vIG9uIHRoZSBzaGFyZWQg
-aW50ZXJydXB0IGlzCj4gdGhlIHByZWZlcnJlZCB3YXkuCj4gCj4gIGRyaXZlcnMvZ3B1L2RybS9y
-b2NrY2hpcC9yb2NrY2hpcF9kcm1fdm9wLmMgfCAxMyArKysrKystLS0tLS0tCj4gIDEgZmlsZSBj
-aGFuZ2VkLCA3IGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fdm9wLmMgYi9kcml2ZXJzL2dw
-dS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX3ZvcC5jCj4gaW5kZXggNTEwY2RmMC4uNjE0OTNk
-NCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX3Zv
-cC5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV92b3AuYwo+
-IEBAIC01NDksOCArNTQ5LDYgQEAgc3RhdGljIGludCB2b3BfZW5hYmxlKHN0cnVjdCBkcm1fY3J0
-YyAqY3J0YykKPiAgCj4gIAlzcGluX3VubG9jaygmdm9wLT5yZWdfbG9jayk7Cj4gIAo+IC0JZW5h
-YmxlX2lycSh2b3AtPmlycSk7Cj4gLQo+ICAJZHJtX2NydGNfdmJsYW5rX29uKGNydGMpOwo+ICAK
-PiAgCXJldHVybiAwOwo+IEBAIC01OTYsOCArNTk0LDYgQEAgc3RhdGljIHZvaWQgdm9wX2NydGNf
-YXRvbWljX2Rpc2FibGUoc3RydWN0IGRybV9jcnRjICpjcnRjLAo+ICAKPiAgCXZvcF9kc3BfaG9s
-ZF92YWxpZF9pcnFfZGlzYWJsZSh2b3ApOwo+ICAKPiAtCWRpc2FibGVfaXJxKHZvcC0+aXJxKTsK
-PiAtCj4gIAl2b3AtPmlzX2VuYWJsZWQgPSBmYWxzZTsKPiAgCj4gIAkvKgo+IEBAIC0xMTY4LDYg
-KzExNjQsMTMgQEAgc3RhdGljIGlycXJldHVybl90IHZvcF9pc3IoaW50IGlycSwgdm9pZCAqZGF0
-YSkKPiAgCWludCByZXQgPSBJUlFfTk9ORTsKPiAgCj4gIAkvKgo+ICsJICogc2luY2UgdGhlIGly
-cSBpcyBzaGFyZWQgd2l0aCBpb21tdSwgaW9tbXUgaXJxIGlzIGVuYWJsZWQgYmVmb3JlIHZvcAo+
-ICsJICogZW5hYmxlLCBzbyBiZWZvcmUgdm9wIGVuYWJsZSB3ZSBkbyBub3RoaW5nLgo+ICsJICov
-Cj4gKwlpZiAoIXZvcC0+aXNfZW5hYmxlZCkKPiArCQlyZXR1cm4gSVJRX05PTkU7Cj4gKwoKV2hh
-dCBndWFyYW50ZWUgZG8gd2UgaGF2ZSB0aGF0IHRoZSBJT01NVSB3aWxsIGFjdHVhbGx5IHNlcnZp
-Y2UgdGhhdAppbnRlcnJ1cHQ/IENhbid0IHdlIGdldCBpbnRvIGEgc2l0dWF0aW9uIHdoZXJlIHRo
-ZSBpbnRlcnJ1cHQgZ2V0cwppZ25vcmVkIGJ5IGJvdGggZHJpdmVycyBhbmQgc3Vic2VxdWVudGx5
-IGRpc2FibGVkIGJ5IHRoZSBjb3JlIGlycSBjb2RlCmFzIGJlaW5nIHNwdXJpb3VzPwoKRnJvbSB3
-aGF0IEkgdW5kZXJzdG9vZCBvZiB0aGUgd2F5IHRoaW5ncyBhcmUgcGx1Z2dlZCB0b2dldGhlciBv
-biB0aGUKcm9ja2NoaXAgcGxhdGZvcm1zLCBlYWNoIGluZGl2aWR1YWwgVk9QIGlzIGJlaGluZCBh
-IHNpbmdsZSBJT01NVSwgaGVuY2UKdGhlcmUgdGhlcmUgaXMgaGFyZGx5IGFueSBwb2ludCBpbiBo
-YW5kbGluZyBJT01NVSBpbnRlcnJ1cHRzIGlmIHRoZSBWT1AKaXMgb2ZmLgoKQnV0IEknbSBtaXNz
-aW5nIHRoZSBhY3R1YWwgcmVhc29uIGJlaGluZCB0aGlzIHBhdGNoLiBDb3VsZCB5b3UgZW5saWdo
-dGVuIG1lPwoKVGhhbmtzLAoKCU0uCi0tIApKYXp6IGlzIG5vdCBkZWFkLiBJdCBqdXN0IHNtZWxs
-cyBmdW5ueS4uLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
-cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Thu, May 24, 2018 at 12:50:23PM -0500, Rob Herring wrote:
+> Now that we use the driver core to stop deferred probe for missing
+> drivers, IOMMU_OF_DECLARE can be removed.
+> 
+> This is slightly less optimal than having a list of built-in drivers in
+> that we'll now defer probe twice before giving up. This shouldn't have a
+> significant impact on boot times as past discussions about deferred
+> probe have given no evidence of deferred probe having a substantial
+> impact.
+> 
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Cc: Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+> Cc: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c    |  2 --
+>  drivers/iommu/arm-smmu.c       |  7 -------
+>  drivers/iommu/exynos-iommu.c   |  2 --
+>  drivers/iommu/ipmmu-vmsa.c     |  3 ---
+>  drivers/iommu/msm_iommu.c      |  2 --
+>  drivers/iommu/of_iommu.c       | 19 +------------------
+>  drivers/iommu/qcom_iommu.c     |  2 --
+>  drivers/iommu/rockchip-iommu.c |  2 --
+>  include/linux/of_iommu.h       |  4 ----
+>  9 files changed, 1 insertion(+), 42 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 1d647104bccc..22bdabd3d8e0 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2915,8 +2915,6 @@ static struct platform_driver arm_smmu_driver = {
+>  };
+>  module_platform_driver(arm_smmu_driver);
+>  
+> -IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3");
+> -
+>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 69e7c60792a8..9dd7cbaa3b0c 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -2211,13 +2211,6 @@ static struct platform_driver arm_smmu_driver = {
+>  };
+>  module_platform_driver(arm_smmu_driver);
+>  
+> -IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1");
+> -IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2");
+> -IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400");
+> -IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401");
+> -IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500");
+> -IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2");
+> -
+>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
+>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+>  MODULE_LICENSE("GPL v2");
+
+For the SMMU drivers:
+
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+
+Will
