@@ -1,15 +1,19 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH] drm/rockchip: vop: fix irq disabled after vop driver
-	probed
-Date: Fri, 25 May 2018 11:57:37 +0900
-Message-ID: <CAAFQd5DwFiKJ-JyFkFqC-XzTyBeanbQWazw8OqT4XQRmwrNJrA@mail.gmail.com>
-References: <b8eb41e576c4007d40223699eb951db32916b86a.camel@collabora.com>
-	<25470133.K8n9sLBzRS@diego>
+Subject: Re: [PATCH v6 05/17] media: rkisp1: add Rockchip ISP1 subdev driver
+Date: Fri, 25 May 2018 13:35:45 +0900
+Message-ID: <CAAFQd5B8DbnmmkKRb-2M7PFHDAKRFOA1Bnk-si_AZLjfzXOgPg@mail.gmail.com>
+References: <20180308094807.9443-1-jacob-chen@iotwrt.com>
+	<20180308094807.9443-6-jacob-chen@iotwrt.com>
+	<20180503090909.o3dyhukzs2y7em5z@tarshish>
+	<CAAFQd5CvBv4hkE=PSHBJTYa9Lj0SyggxpMBEAYD=if0=T0uzHw@mail.gmail.com>
+	<20180507063814.vweb4p3nfgnoc3td@tarshish>
+	<CAAFQd5A7gAK4fXH9YVrobR5_QX_5f8xa272R_56v5YUghV6Sxw@mail.gmail.com>
+	<20180524113012.mt5b2f2vrhfrn3d7@tarshish>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <25470133.K8n9sLBzRS@diego>
+In-Reply-To: <20180524113012.mt5b2f2vrhfrn3d7@tarshish>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,60 +23,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Jeffy <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, tomeu.vizoso-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org, Ricky Liang <jcliang-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Eddie Cai <eddie.cai.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?B?6ZmI5Z+O?= <cc-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jeffy <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, =?UTF-8?B?6ZKf5Lul5bSH?= <zyc-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jacob Chen <jacob-chen-fyOeoxGR3m/QT0dZR+AlfA@public.gmane.org>, Hans Verkuil <hans.verkuil-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Allon Huang <allon.huang-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSGVpa28sIFNhbmR5LAoKT24gRnJpLCBNYXkgMjUsIDIwMTggYXQgNzowNyBBTSBIZWlrbyBT
-dMO8Ym5lciA8aGVpa29Ac250ZWNoLmRlPiB3cm90ZToKCj4gRnJvbTogU2FuZHkgSHVhbmcgPGhq
-Y0Byb2NrLWNoaXBzLmNvbT4KCj4gVGhlIHZvcCBpcnEgaXMgc2hhcmVkIGJldHdlZW4gdm9wIGFu
-ZCBpb21tdSBhbmQgaXJxIHByb2JpbmcgaW4gdGhlCj4gaW9tbXUgZHJpdmVyIG1vdmVkIHRvIHRo
-ZSBwcm9iZSBmdW5jdGlvbiByZWNlbnRseS4gVGhpcyBjYW4gaW4gc29tZQo+IGNhc2VzIGxlYWQg
-dG8gYSBzdGFsbCBpZiB0aGUgaXJxIGlzIHRyaWdnZXJlZCB3aGlsZSB0aGUgdm9wIGRyaXZlcgo+
-IHN0aWxsIGhhcyBpdCBkaXNhYmxlZC4KCj4gQnV0IHRoZXJlIGlzIG5vIHJlYWwgbmVlZCB0byBk
-aXNhYmxlIHRoZSBpcnEsIGFzIHRoZSB2b3AgY2FuIHNpbXBseQo+IGFsc28gdHJhY2sgaXRzIGVu
-YWJsZWQgc3RhdGUgYW5kIGlnbm9yZSBpcnFzIGluIHRoYXQgY2FzZS4KCj4gU28gcmVtb3ZlIHRo
-ZSBlbmFibGUvZGlzYWJsZSBoYW5kbGluZyBhbmQgYWRkIGFwcHJvcHJpYXRlIGNvbmRpdGlvbgo+
-IHRvIHRoZSBpcnEgaGFuZGxlci4KCj4gU2lnbmVkLW9mZi1ieTogU2FuZHkgSHVhbmcgPGhqY0By
-b2NrLWNoaXBzLmNvbT4KPiBbYWRkZWQgYW4gYWN0dWFsIGNvbW1pdCBtZXNzYWdlXQo+IFNpZ25l
-ZC1vZmYtYnk6IEhlaWtvIFN0dWVibmVyIDxoZWlrb0BzbnRlY2guZGU+Cj4gLS0tCj4gSGkgRXpl
-cXVpZWwsCgo+IHRoaXMgcGF0Y2ggY2FtZSBmcm9tIGEgZGlzY3Vzc2lvbiBJIGhhZCB3aXRoIFJv
-Y2tjaGlwIHBlb3BsZSBvdmVyIHRoZQo+IGlvbW11IGNoYW5nZXMgYW5kIHJlc3VsdGluZyBpc3N1
-ZXMgYmFjayBpbiBhcHJpbCwgYnV0IHNvbWVob3cgd2FzCj4gZm9yZ290dGVuIGFuZCBub3QgcG9z
-dGVkIHRvIHRoZSBsaXN0cy4gQ29ycmVjdGluZyB0aGF0IG5vdy4KCj4gU28gcmVtb3ZpbmcgdGhl
-IGVuYWJsZS9kaXNhYmxlIHZvb2RvbyBvbiB0aGUgc2hhcmVkIGludGVycnVwdCBpcwo+IHRoZSBw
-cmVmZXJyZWQgd2F5LgoKPiAgIGRyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1f
-dm9wLmMgfCAxMyArKysrKystLS0tLS0tCj4gICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25z
-KCspLCA3IGRlbGV0aW9ucygtKQoKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL3JvY2tj
-aGlwL3JvY2tjaGlwX2RybV92b3AuYwpiL2RyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hp
-cF9kcm1fdm9wLmMKPiBpbmRleCA1MTBjZGYwLi42MTQ5M2Q0IDEwMDY0NAo+IC0tLSBhL2RyaXZl
-cnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fdm9wLmMKPiArKysgYi9kcml2ZXJzL2dw
-dS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX3ZvcC5jCj4gQEAgLTU0OSw4ICs1NDksNiBAQCBz
-dGF0aWMgaW50IHZvcF9lbmFibGUoc3RydWN0IGRybV9jcnRjICpjcnRjKQoKPiAgICAgICAgICBz
-cGluX3VubG9jaygmdm9wLT5yZWdfbG9jayk7Cgo+IC0gICAgICAgZW5hYmxlX2lycSh2b3AtPmly
-cSk7Cj4gLQoKV2hpbGUgdGhpcyBvbmUgc2hvdWxkIGJlIG9rYXkgKCsvLSBteSBjb21tZW50IGZv
-ciB2b3BfaXNyKCkpLCBiZWNhdXNlIHRoZQpoYXJkd2FyZSBpcyBhbHJlYWR5IHBvd2VyZWQgb24g
-YW5kIGNsb2NrZWQgYXQgdGhpcyBwb2ludC4uLgoKPiAgICAgICAgICBkcm1fY3J0Y192Ymxhbmtf
-b24oY3J0Yyk7Cgo+ICAgICAgICAgIHJldHVybiAwOwo+IEBAIC01OTYsOCArNTk0LDYgQEAgc3Rh
-dGljIHZvaWQgdm9wX2NydGNfYXRvbWljX2Rpc2FibGUoc3RydWN0IGRybV9jcnRjCipjcnRjLAoK
-PiAgICAgICAgICB2b3BfZHNwX2hvbGRfdmFsaWRfaXJxX2Rpc2FibGUodm9wKTsKCj4gLSAgICAg
-ICBkaXNhYmxlX2lycSh2b3AtPmlycSk7Cj4gLQo+ICAgICAgICAgIHZvcC0+aXNfZW5hYmxlZCA9
-IGZhbHNlOwoKLi4udGhpcyBvbmUgaXMgbW9yZSB0cmlja3kuIFRoZXJlIG1pZ2h0IGJlIGFuIGlu
-dGVycnVwdCBoYW5kbGVyIHN0aWxsCnJ1bm5pbmcgYXQgdGhpcyBwb2ludC4gZGlzYWJsZV9pcnEo
-KSB3YWl0cyBmb3IgYW55IHJ1bm5pbmcgaGFuZGxlciB0bwpjb21wbGV0ZSBiZWZvcmUgZGlzYWJs
-aW5nLCBzbyB3ZSBtaWdodCB3YW50IHRvIGNhbGwgc3luY2hyb25pemVfaXJxKCkgYWZ0ZXIKc2V0
-dGluZyBpc19lbmFibGVkIHRvIGZhbHNlLgoKCj4gICAgICAgICAgLyoKPiBAQCAtMTE2OCw2ICsx
-MTY0LDEzIEBAIHN0YXRpYyBpcnFyZXR1cm5fdCB2b3BfaXNyKGludCBpcnEsIHZvaWQgKmRhdGEp
-Cj4gICAgICAgICAgaW50IHJldCA9IElSUV9OT05FOwoKPiAgICAgICAgICAvKgo+ICsgICAgICAg
-ICogc2luY2UgdGhlIGlycSBpcyBzaGFyZWQgd2l0aCBpb21tdSwgaW9tbXUgaXJxIGlzIGVuYWJs
-ZWQKYmVmb3JlIHZvcAo+ICsgICAgICAgICogZW5hYmxlLCBzbyBiZWZvcmUgdm9wIGVuYWJsZSB3
-ZSBkbyBub3RoaW5nLgo+ICsgICAgICAgICovCj4gKyAgICAgICBpZiAoIXZvcC0+aXNfZW5hYmxl
-ZCkKPiArICAgICAgICAgICAgICAgcmV0dXJuIElSUV9OT05FOwoKVGhpcyBkb2Vzbid0IHNlZW0g
-dG8gYmUgcHJvcGVybHkgc3luY2hyb25pemVkLiBXZSBkb24ndCBldmVuIGNhbGwgaXQgdW5kZXIK
-YSBzcGlubG9jaywgc28gbm8gYmFycmllcnMgYXJlIGlzc3VlZC4gUGVyaGFwcyB3ZSBzaG91bGQg
-bWFrZSB0aGlzIGF0b21pY190PwoKQmVzdCByZWdhcmRzLApUb21hc3oKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, May 24, 2018 at 8:30 PM Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org> wrote:
+
+> Hi Tomasz,
+
+> On Mon, May 07, 2018 at 06:41:50AM +0000, Tomasz Figa wrote:
+> > On Mon, May 7, 2018 at 3:38 PM Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org> wrote:
+> > > On Mon, May 07, 2018 at 06:13:27AM +0000, Tomasz Figa wrote:
+> > > > On Thu, May 3, 2018 at 6:09 PM Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org>
+wrote:
+> > > > > On Thu, Mar 08, 2018 at 05:47:55PM +0800, Jacob Chen wrote:
+> > > > > > +static int rkisp1_isp_sd_s_power(struct v4l2_subdev *sd, int
+on)
+> > > > > > +{
+> > > > > > +     struct rkisp1_device *isp_dev = sd_to_isp_dev(sd);
+> > > > > > +     int ret;
+> > > > > > +
+> > > > > > +     v4l2_dbg(1, rkisp1_debug, &isp_dev->v4l2_dev, "s_power:
+%d\n",
+> > > > on);
+> > > > > > +
+> > > > > > +     if (on) {
+> > > > > > +             ret = pm_runtime_get_sync(isp_dev->dev);
+> > > > > > +             if (ret < 0)
+> > > > > > +                     return ret;
+> > > > > > +
+> > > > > > +             rkisp1_config_clk(isp_dev);
+> > > > > > +     } else {
+> > > > > > +             ret = pm_runtime_put(isp_dev->dev);
+> > > >
+> > > > > I commented this line out to make more than one STREAMON work.
+> > Otherwise,
+> > > > > the second STREAMON hangs. I guess the bug is not this driver.
+> > Probably
+> > > > > something in drivers/soc/rockchip/pm_domains.c. Just noting that
+in
+> > case
+> > > > > you or someone on Cc would like to investigate it further.
+> > > > >
+> > > > > I tested v4.16-rc4 on the Tinkerboard.
+> > > >
+> > > > Looks like that version doesn't include the IOMMU PM and clock
+handling
+> > > > rework [1], which should fix a lot of runtime PM issues. FWIW,
+> > linux-next
+> > > > seems to already include it.
+> > > >
+> > > > [1] https://lkml.org/lkml/2018/3/23/44
+> >
+> > > Thanks for the reference.
+> >
+> > > It looks like the iommu driver part is in Linus' tree already. The DT
+> > part is
+> > > in the v4.18-armsoc/dts32 branch of Heiko's tree. Am I missing
+anything?
+> >
+> > You're right, most of the series made it in time for 4.17. However, the
+DT
+> > part (precisely, the clocks properties added to IOMMU nodes) is crucial
+for
+> > the fixes to be effective.
+> >
+> > > Anyway, I'll take a look.
+> >
+> > Thanks for testing. :) (Forgot to mention in my previous email...)
+
+> I finally got around to testing. Unfortunately, kernel v4.17-rc6 with
+> cherry-pick of commit c78751f91c0b (ARM: dts: rockchip: add clocks in
+iommu
+> nodes) from Heiko's tree still exhibit the same problem. STREAMON hangs on
+> second try. The same workaround "fixes" it.
+
+Thanks for testing. I'm out of ideas, since the same code seems to work
+fine for us in Chrome OS 4.4 kernel. Maybe we could have someone from RK
+take a look.
+
+Best regards,
+Tomasz
