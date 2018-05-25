@@ -1,13 +1,17 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 23/25] MIPS: bmips: use generic dma noncoherent ops
-Date: Fri, 25 May 2018 11:21:09 +0200
-Message-ID: <20180525092111.18516-24-hch@lst.de>
-References: <20180525092111.18516-1-hch@lst.de>
+From: Huaisheng HS1 Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [External]  Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
+Date: Fri, 25 May 2018 09:43:09 +0000
+Message-ID: <HK2PR03MB1684ED6EC6859A88A196DC0C92690@HK2PR03MB1684.apcprd03.prod.outlook.com>
+References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+	<20180522183728.GB20441@dhcp22.suse.cz>
+	<HK2PR03MB16847646E90A10E2D48CEA8E926B0@HK2PR03MB1684.apcprd03.prod.outlook.com>
+	<20180524121853.GG20441@dhcp22.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180525092111.18516-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180524121853.GG20441-2MMpYkNvuYDjFM9bn6wA6Q@public.gmane.org>
+Content-Language: zh-CN
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,193 +21,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>
+To: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ocean HY1 He <hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org" <alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, NingTing Cheng <chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "colyli-l3A5Bk7waGM@public.gmane.org" <colyli-l3A5Bk7waGM@public.gmane.org>, "mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org" <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "vbabka-AlSwsSmVLrQ@public.gmane.org" <vbabka-AlSwsSmVLrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Provide phys_to_dma/dma_to_phys helpers, and the special
-arch_sync_dma_for_cpu_all hook, everything else is generic
+From: Michal Hocko [mailto:mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org]
+Sent: Thursday, May 24, 2018 8:19 PM> 
+> > Let me try to reply your questions.
+> > Exactly, GFP_ZONE_TABLE is too complicated. I think there are two advantages
+> > from the series of patches.
+> >
+> > 1. XOR operation is simple and efficient, GFP_ZONE_TABLE/BAD need to do twice
+> > shift operations, the first is for getting a zone_type and the second is for
+> > checking the to be returned type is a correct or not. But with these patch XOR
+> > operation just needs to use once. Because the bottom 3 bits of GFP bitmask have
+> > been used to represent the encoded zone number, we can say there is no bad zone
+> > number if all callers could use it without buggy way. Of course, the returned
+> > zone type in gfp_zone needs to be no more than ZONE_MOVABLE.
+> 
+> But you are losing the ability to check for wrong usage. And it seems
+> that the sad reality is that the existing code do screw up.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/mips/Kconfig                             |  3 +-
- arch/mips/bmips/dma.c                         | 32 ++++++-----
- arch/mips/include/asm/bmips.h                 | 16 ------
- .../include/asm/mach-bmips/dma-coherence.h    | 54 -------------------
- 4 files changed, 21 insertions(+), 84 deletions(-)
- delete mode 100644 arch/mips/include/asm/mach-bmips/dma-coherence.h
+In my opinion, originally there shouldn't be such many wrong combinations of these bottom 3 bits. For any user, whether or driver and fs, they should make a decision that which zone is they preferred. Matthew's idea is great, because with it the user must offer an unambiguous flag to gfp zone bits.
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 25a3c3262554..9ac3c6260b68 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -209,6 +209,8 @@ config ATH79
- 
- config BMIPS_GENERIC
- 	bool "Broadcom Generic BMIPS kernel"
-+	select ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
-+	select ARCH_HAS_PHYS_TO_DMA
- 	select BOOT_RAW
- 	select NO_EXCEPT_FILL
- 	select USE_OF
-@@ -221,7 +223,6 @@ config BMIPS_GENERIC
- 	select BCM7120_L2_IRQ
- 	select BRCMSTB_L2_IRQ
- 	select IRQ_MIPS_CPU
--	select MIPS_DMA_DEFAULT
- 	select DMA_NONCOHERENT
- 	select SYS_SUPPORTS_32BIT_KERNEL
- 	select SYS_SUPPORTS_LITTLE_ENDIAN
-diff --git a/arch/mips/bmips/dma.c b/arch/mips/bmips/dma.c
-index 04790f4e1805..02ba0e38748d 100644
---- a/arch/mips/bmips/dma.c
-+++ b/arch/mips/bmips/dma.c
-@@ -17,7 +17,7 @@
- #include <linux/printk.h>
- #include <linux/slab.h>
- #include <linux/types.h>
--#include <dma-coherence.h>
-+#include <asm/bmips.h>
- 
- /*
-  * BCM338x has configurable address translation windows which allow the
-@@ -40,7 +40,7 @@ static struct bmips_dma_range *bmips_dma_ranges;
- 
- #define FLUSH_RAC		0x100
- 
--static dma_addr_t bmips_phys_to_dma(struct device *dev, phys_addr_t pa)
-+dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t pa)
- {
- 	struct bmips_dma_range *r;
- 
-@@ -52,17 +52,7 @@ static dma_addr_t bmips_phys_to_dma(struct device *dev, phys_addr_t pa)
- 	return pa;
- }
- 
--dma_addr_t plat_map_dma_mem(struct device *dev, void *addr, size_t size)
--{
--	return bmips_phys_to_dma(dev, virt_to_phys(addr));
--}
--
--dma_addr_t plat_map_dma_mem_page(struct device *dev, struct page *page)
--{
--	return bmips_phys_to_dma(dev, page_to_phys(page));
--}
--
--unsigned long plat_dma_addr_to_phys(struct device *dev, dma_addr_t dma_addr)
-+phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
- {
- 	struct bmips_dma_range *r;
- 
-@@ -74,6 +64,22 @@ unsigned long plat_dma_addr_to_phys(struct device *dev, dma_addr_t dma_addr)
- 	return dma_addr;
- }
- 
-+void arch_sync_dma_for_cpu_all(struct device *dev)
-+{
-+	void __iomem *cbr = BMIPS_GET_CBR();
-+	u32 cfg;
-+
-+	if (boot_cpu_type() != CPU_BMIPS3300 &&
-+	    boot_cpu_type() != CPU_BMIPS4350 &&
-+	    boot_cpu_type() != CPU_BMIPS4380)
-+		return;
-+
-+	/* Flush stale data out of the readahead cache */
-+	cfg = __raw_readl(cbr + BMIPS_RAC_CONFIG);
-+	__raw_writel(cfg | 0x100, cbr + BMIPS_RAC_CONFIG);
-+	__raw_readl(cbr + BMIPS_RAC_CONFIG);
-+}
-+
- static int __init bmips_init_dma_ranges(void)
- {
- 	struct device_node *np =
-diff --git a/arch/mips/include/asm/bmips.h b/arch/mips/include/asm/bmips.h
-index b3e2975f83d3..bf6a8afd7ad2 100644
---- a/arch/mips/include/asm/bmips.h
-+++ b/arch/mips/include/asm/bmips.h
-@@ -123,22 +123,6 @@ static inline void bmips_write_zscm_reg(unsigned int offset, unsigned long data)
- 	barrier();
- }
- 
--static inline void bmips_post_dma_flush(struct device *dev)
--{
--	void __iomem *cbr = BMIPS_GET_CBR();
--	u32 cfg;
--
--	if (boot_cpu_type() != CPU_BMIPS3300 &&
--	    boot_cpu_type() != CPU_BMIPS4350 &&
--	    boot_cpu_type() != CPU_BMIPS4380)
--		return;
--
--	/* Flush stale data out of the readahead cache */
--	cfg = __raw_readl(cbr + BMIPS_RAC_CONFIG);
--	__raw_writel(cfg | 0x100, cbr + BMIPS_RAC_CONFIG);
--	__raw_readl(cbr + BMIPS_RAC_CONFIG);
--}
--
- #endif /* !defined(__ASSEMBLY__) */
- 
- #endif /* _ASM_BMIPS_H */
-diff --git a/arch/mips/include/asm/mach-bmips/dma-coherence.h b/arch/mips/include/asm/mach-bmips/dma-coherence.h
-deleted file mode 100644
-index d29781f02285..000000000000
---- a/arch/mips/include/asm/mach-bmips/dma-coherence.h
-+++ /dev/null
-@@ -1,54 +0,0 @@
--/*
-- * Copyright (C) 2006 Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
-- * Copyright (C) 2009 Broadcom Corporation
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-- * GNU General Public License for more details.
-- */
--
--#ifndef __ASM_MACH_BMIPS_DMA_COHERENCE_H
--#define __ASM_MACH_BMIPS_DMA_COHERENCE_H
--
--#include <asm/bmips.h>
--#include <asm/cpu-type.h>
--#include <asm/cpu.h>
--
--struct device;
--
--extern dma_addr_t plat_map_dma_mem(struct device *dev, void *addr, size_t size);
--extern dma_addr_t plat_map_dma_mem_page(struct device *dev, struct page *page);
--extern unsigned long plat_dma_addr_to_phys(struct device *dev,
--	dma_addr_t dma_addr);
--
--static inline void plat_unmap_dma_mem(struct device *dev, dma_addr_t dma_addr,
--	size_t size, enum dma_data_direction direction)
--{
--}
--
--static inline int plat_dma_supported(struct device *dev, u64 mask)
--{
--	/*
--	 * we fall back to GFP_DMA when the mask isn't all 1s,
--	 * so we can't guarantee allocations that must be
--	 * within a tighter range than GFP_DMA..
--	 */
--	if (mask < DMA_BIT_MASK(24))
--		return 0;
--
--	return 1;
--}
--
--static inline int plat_device_is_coherent(struct device *dev)
--{
--	return 0;
--}
--
--#define plat_post_dma_flush	bmips_post_dma_flush
--
--#endif /* __ASM_MACH_BMIPS_DMA_COHERENCE_H */
--- 
-2.17.0
+Ideally, before any user wants to modify the address zone modifier, they should clear it firstly, then ORing the GFP zone flag which comes from the zone they prefer.
+With these patches, we can loudly announce that, the bottom 3 bits of zone mask couldn't accept internal ORing operations.
+The operations like __GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM is illegal. The current GFP_ZONE_TABLE is precisely the root of this problem, that is __GFP_DMA, __GFP_DMA32 and __GFP_HIGHMEM are formatted as 0x1, 0x2 and 0x4.
+
+> 
+> > 2. GFP_ZONE_TABLE has limit with the amount of zone types. Current GFP_ZONE_TABLE
+> > is 32 bits, in general, there are 4 zone types for most ofX86_64 platform, they
+> > are ZONE_DMA, ZONE_DMA32, ZONE_NORMAL and ZONE_MOVABLE. If we want to expand the
+> > amount of zone types to larger than 4, the zone shift should be 3.
+> 
+> But we do not want to expand the number of zones IMHO. The existing zoo
+> is quite a maint. pain.
+> 
+> That being said. I am not saying that I am in love with GFP_ZONE_TABLE.
+> It always makes my head explode when I look there but it seems to work
+> with the current code and it is optimized for it. If you want to change
+> this then you should make sure you describe reasons _why_ this is an
+> improvement. And I would argue that "we can have more zones" is a
+> relevant one.
+
+Yes, GFP_ZONE_TABLE is too complicated. The patches have 4 advantages as below.
+
+* The address zone modifiers have new operation method, that is, user should decide which zone is preferred at first, then give the encoded zone number to bottom 3 bits in GFP mask. That is much direct and clear than before.
+
+* No bad zone combination, because user should choose just one address zone modifier always.
+* Better performance and efficiency, current gfp_zone has to take shifting operation twice for GFP_ZONE_TABLE and GFP_ZONE_BAD. With these patches, gfp_zone() just needs one XOR.
+* Up to 8 zones can be used. At least it isn't a disadvantage, right?
+
+Sincerely,
+Huaisheng Ye
