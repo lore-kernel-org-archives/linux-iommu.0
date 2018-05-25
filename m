@@ -1,107 +1,85 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v6 05/17] media: rkisp1: add Rockchip ISP1 subdev driver
-Date: Fri, 25 May 2018 13:35:45 +0900
-Message-ID: <CAAFQd5B8DbnmmkKRb-2M7PFHDAKRFOA1Bnk-si_AZLjfzXOgPg@mail.gmail.com>
-References: <20180308094807.9443-1-jacob-chen@iotwrt.com>
-	<20180308094807.9443-6-jacob-chen@iotwrt.com>
-	<20180503090909.o3dyhukzs2y7em5z@tarshish>
-	<CAAFQd5CvBv4hkE=PSHBJTYa9Lj0SyggxpMBEAYD=if0=T0uzHw@mail.gmail.com>
-	<20180507063814.vweb4p3nfgnoc3td@tarshish>
-	<CAAFQd5A7gAK4fXH9YVrobR5_QX_5f8xa272R_56v5YUghV6Sxw@mail.gmail.com>
-	<20180524113012.mt5b2f2vrhfrn3d7@tarshish>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180524113012.mt5b2f2vrhfrn3d7@tarshish>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Eddie Cai <eddie.cai.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, =?UTF-8?B?6ZmI5Z+O?= <cc-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Jeffy <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, =?UTF-8?B?6ZKf5Lul5bSH?= <zyc-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jacob Chen <jacob-chen-fyOeoxGR3m/QT0dZR+AlfA@public.gmane.org>, Hans Verkuil <hans.verkuil-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Allon Huang <allon.huang-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Mauro Carvalho Chehab <mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Huaisheng Ye <yehs2007@zoho.com>
+Subject: [PATCH v1] arch/x86/kernel/pci-dma: Remove useless parameter of arch_dma_alloc_attrs
+Date: Fri, 25 May 2018 13:00:00 +0800
+Message-ID: <20180525050000.6076-1-yehs2007@zoho.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, chengnt@lenovo.com, Huaisheng Ye <yehs1@lenovo.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tom Lendacky <thomas.lendacky@amd.com>, Kate Stewart <kstewart@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Michal Hocko <mhocko@suse.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, May 24, 2018 at 8:30 PM Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org> wrote:
+From: Huaisheng Ye <yehs1@lenovo.com>
 
-> Hi Tomasz,
+arch_dma_alloc_attrs has parameter gfp which is not used at all.
+Remove it.
 
-> On Mon, May 07, 2018 at 06:41:50AM +0000, Tomasz Figa wrote:
-> > On Mon, May 7, 2018 at 3:38 PM Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org> wrote:
-> > > On Mon, May 07, 2018 at 06:13:27AM +0000, Tomasz Figa wrote:
-> > > > On Thu, May 3, 2018 at 6:09 PM Baruch Siach <baruch-NswTu9S1W3P6gbPvEgmw2w@public.gmane.org>
-wrote:
-> > > > > On Thu, Mar 08, 2018 at 05:47:55PM +0800, Jacob Chen wrote:
-> > > > > > +static int rkisp1_isp_sd_s_power(struct v4l2_subdev *sd, int
-on)
-> > > > > > +{
-> > > > > > +     struct rkisp1_device *isp_dev = sd_to_isp_dev(sd);
-> > > > > > +     int ret;
-> > > > > > +
-> > > > > > +     v4l2_dbg(1, rkisp1_debug, &isp_dev->v4l2_dev, "s_power:
-%d\n",
-> > > > on);
-> > > > > > +
-> > > > > > +     if (on) {
-> > > > > > +             ret = pm_runtime_get_sync(isp_dev->dev);
-> > > > > > +             if (ret < 0)
-> > > > > > +                     return ret;
-> > > > > > +
-> > > > > > +             rkisp1_config_clk(isp_dev);
-> > > > > > +     } else {
-> > > > > > +             ret = pm_runtime_put(isp_dev->dev);
-> > > >
-> > > > > I commented this line out to make more than one STREAMON work.
-> > Otherwise,
-> > > > > the second STREAMON hangs. I guess the bug is not this driver.
-> > Probably
-> > > > > something in drivers/soc/rockchip/pm_domains.c. Just noting that
-in
-> > case
-> > > > > you or someone on Cc would like to investigate it further.
-> > > > >
-> > > > > I tested v4.16-rc4 on the Tinkerboard.
-> > > >
-> > > > Looks like that version doesn't include the IOMMU PM and clock
-handling
-> > > > rework [1], which should fix a lot of runtime PM issues. FWIW,
-> > linux-next
-> > > > seems to already include it.
-> > > >
-> > > > [1] https://lkml.org/lkml/2018/3/23/44
-> >
-> > > Thanks for the reference.
-> >
-> > > It looks like the iommu driver part is in Linus' tree already. The DT
-> > part is
-> > > in the v4.18-armsoc/dts32 branch of Heiko's tree. Am I missing
-anything?
-> >
-> > You're right, most of the series made it in time for 4.17. However, the
-DT
-> > part (precisely, the clocks properties added to IOMMU nodes) is crucial
-for
-> > the fixes to be effective.
-> >
-> > > Anyway, I'll take a look.
-> >
-> > Thanks for testing. :) (Forgot to mention in my previous email...)
+Signed-off-by: Huaisheng Ye <yehs1@lenovo.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Michal Hocko <mhocko@suse.com>
+---
+ arch/x86/include/asm/dma-mapping.h | 2 +-
+ arch/x86/kernel/pci-dma.c          | 2 +-
+ include/linux/dma-mapping.h        | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-> I finally got around to testing. Unfortunately, kernel v4.17-rc6 with
-> cherry-pick of commit c78751f91c0b (ARM: dts: rockchip: add clocks in
-iommu
-> nodes) from Heiko's tree still exhibit the same problem. STREAMON hangs on
-> second try. The same workaround "fixes" it.
-
-Thanks for testing. I'm out of ideas, since the same code seems to work
-fine for us in Chrome OS 4.4 kernel. Maybe we could have someone from RK
-take a look.
-
-Best regards,
-Tomasz
+diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+index 89ce4bf..ef59747 100644
+--- a/arch/x86/include/asm/dma-mapping.h
++++ b/arch/x86/include/asm/dma-mapping.h
+@@ -33,7 +33,7 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+ int arch_dma_supported(struct device *dev, u64 mask);
+ #define arch_dma_supported arch_dma_supported
+ 
+-bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp);
++bool arch_dma_alloc_attrs(struct device **dev);
+ #define arch_dma_alloc_attrs arch_dma_alloc_attrs
+ 
+ #endif
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index 77625b6..94d1a49 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -76,7 +76,7 @@ void __init pci_iommu_alloc(void)
+ 	}
+ }
+ 
+-bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp)
++bool arch_dma_alloc_attrs(struct device **dev)
+ {
+ 	if (!*dev)
+ 		*dev = &x86_dma_fallback_dev;
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index f8ab1c0..c80bb09 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -502,7 +502,7 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
+ #define dma_get_sgtable(d, t, v, h, s) dma_get_sgtable_attrs(d, t, v, h, s, 0)
+ 
+ #ifndef arch_dma_alloc_attrs
+-#define arch_dma_alloc_attrs(dev, flag)	(true)
++#define arch_dma_alloc_attrs(dev)	(true)
+ #endif
+ 
+ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
+@@ -521,7 +521,7 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
+ 	/* let the implementation decide on the zone to allocate from: */
+ 	flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
+ 
+-	if (!arch_dma_alloc_attrs(&dev, &flag))
++	if (!arch_dma_alloc_attrs(&dev))
+ 		return NULL;
+ 	if (!ops->alloc)
+ 		return NULL;
+-- 
+1.8.3.1
