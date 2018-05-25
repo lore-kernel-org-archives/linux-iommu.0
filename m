@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 3/7] ia64: remove iommu_dma_supported
-Date: Fri, 25 May 2018 16:35:08 +0200
-Message-ID: <20180525143512.1466-4-hch@lst.de>
+Subject: [PATCH 4/7] x86: remove a stray reference to pci-nommu.c
+Date: Fri, 25 May 2018 16:35:09 +0200
+Message-ID: <20180525143512.1466-5-hch@lst.de>
 References: <20180525143512.1466-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,59 +21,30 @@ To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar 
 Cc: netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The generic dma_direct_supported helper already used by intel-iommu on
-x86 does a better job than the ia64 reimplementation.
+This is just the minimal workaround.  The file file is mostly either stale
+and/or duplicative of Documentation/admin-guide/kernel-parameters.txt,
+but that is much more work than I'm willing to do right now.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/ia64/kernel/pci-dma.c  | 13 -------------
- drivers/iommu/intel-iommu.c |  2 --
- 2 files changed, 15 deletions(-)
+ Documentation/x86/x86_64/boot-options.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
-index 50b6ad282a90..3c2884bef3d4 100644
---- a/arch/ia64/kernel/pci-dma.c
-+++ b/arch/ia64/kernel/pci-dma.c
-@@ -51,18 +51,6 @@ iommu_dma_init(void)
- 	return;
- }
+diff --git a/Documentation/x86/x86_64/boot-options.txt b/Documentation/x86/x86_64/boot-options.txt
+index b297c48389b9..153b3a57fba2 100644
+--- a/Documentation/x86/x86_64/boot-options.txt
++++ b/Documentation/x86/x86_64/boot-options.txt
+@@ -187,9 +187,9 @@ PCI
  
--int iommu_dma_supported(struct device *dev, u64 mask)
--{
--	/* Copied from i386. Doesn't make much sense, because it will
--	   only work for pci_alloc_coherent.
--	   The caller just has to use GFP_DMA in this case. */
--	if (mask < DMA_BIT_MASK(24))
--		return 0;
--
--	return 1;
--}
--EXPORT_SYMBOL(iommu_dma_supported);
--
- void __init pci_iommu_alloc(void)
- {
- 	dma_ops = &intel_dma_ops;
-@@ -71,7 +59,6 @@ void __init pci_iommu_alloc(void)
- 	intel_dma_ops.sync_sg_for_cpu = machvec_dma_sync_sg;
- 	intel_dma_ops.sync_single_for_device = machvec_dma_sync_single;
- 	intel_dma_ops.sync_sg_for_device = machvec_dma_sync_sg;
--	intel_dma_ops.dma_supported = iommu_dma_supported;
+ IOMMU (input/output memory management unit)
  
- 	/*
- 	 * The order of these functions is important for
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 749d8f235346..5e0bef3754d1 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3841,9 +3841,7 @@ const struct dma_map_ops intel_dma_ops = {
- 	.map_page = intel_map_page,
- 	.unmap_page = intel_unmap_page,
- 	.mapping_error = intel_mapping_error,
--#ifdef CONFIG_X86
- 	.dma_supported = dma_direct_supported,
--#endif
- };
+- Currently four x86-64 PCI-DMA mapping implementations exist:
++ Multiple x86-64 PCI-DMA mapping implementations exist, for example:
  
- static inline int iommu_domain_cache_init(void)
+-   1. <arch/x86_64/kernel/pci-nommu.c>: use no hardware/software IOMMU at all
++   1. <lib/dma-direct.c>: use no hardware/software IOMMU at all
+       (e.g. because you have < 3 GB memory).
+       Kernel boot message: "PCI-DMA: Disabling IOMMU"
+ 
 -- 
 2.17.0
