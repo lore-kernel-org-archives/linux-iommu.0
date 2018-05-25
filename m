@@ -1,7 +1,8 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 20/25] MIPS: ath25: use generic dma noncoherent ops
-Date: Fri, 25 May 2018 11:21:06 +0200
-Message-ID: <20180525092111.18516-21-hch@lst.de>
+Subject: [PATCH 21/25] MIPS: jazz: split dma mapping operations from
+	dma-default
+Date: Fri, 25 May 2018 11:21:07 +0200
+Message-ID: <20180525092111.18516-22-hch@lst.de>
 References: <20180525092111.18516-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,107 +22,98 @@ To: Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, James Hogan <jh
 Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Provide phys_to_dma/dma_to_phys helpers only if PCI support is
-enabled, everything else is generic.
+Jazz actually has a very basic IOMMU, so split the ops into a separate
+implementation from the generic default support (which is about to go
+away anyway).
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/mips/Kconfig                             |  1 -
- arch/mips/ath25/Kconfig                       |  1 +
- .../include/asm/mach-ath25/dma-coherence.h    | 71 -------------------
- arch/mips/pci/pci-ar2315.c                    | 24 +++++++
- 4 files changed, 25 insertions(+), 72 deletions(-)
- delete mode 100644 arch/mips/include/asm/mach-ath25/dma-coherence.h
+ arch/mips/include/asm/dma-mapping.h           |   5 +-
+ .../include/asm/mach-jazz/dma-coherence.h     |  60 --------
+ arch/mips/jazz/Kconfig                        |   3 -
+ arch/mips/jazz/jazzdma.c                      | 141 +++++++++++++++++-
+ 4 files changed, 144 insertions(+), 65 deletions(-)
+ delete mode 100644 arch/mips/include/asm/mach-jazz/dma-coherence.h
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index bde16399a8fe..25a3c3262554 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -176,7 +176,6 @@ config ATH25
- 	select DMA_NONCOHERENT
- 	select IRQ_MIPS_CPU
- 	select IRQ_DOMAIN
--	select MIPS_DMA_DEFAULT
- 	select SYS_HAS_CPU_MIPS32_R1
- 	select SYS_SUPPORTS_BIG_ENDIAN
- 	select SYS_SUPPORTS_32BIT_KERNEL
-diff --git a/arch/mips/ath25/Kconfig b/arch/mips/ath25/Kconfig
-index 7070b4bcd01d..2c1dfd06c366 100644
---- a/arch/mips/ath25/Kconfig
-+++ b/arch/mips/ath25/Kconfig
-@@ -12,6 +12,7 @@ config SOC_AR2315
- config PCI_AR2315
- 	bool "Atheros AR2315 PCI controller support"
- 	depends on SOC_AR2315
-+	select ARCH_HAS_PHYS_TO_DMA
- 	select HW_HAS_PCI
- 	select PCI
- 	default y
-diff --git a/arch/mips/include/asm/mach-ath25/dma-coherence.h b/arch/mips/include/asm/mach-ath25/dma-coherence.h
+diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
+index e32a7b439816..caf97f739897 100644
+--- a/arch/mips/include/asm/dma-mapping.h
++++ b/arch/mips/include/asm/dma-mapping.h
+@@ -10,12 +10,15 @@
+ #include <dma-coherence.h>
+ #endif
+ 
++extern const struct dma_map_ops jazz_dma_ops;
+ extern const struct dma_map_ops mips_default_dma_map_ops;
+ extern const struct dma_map_ops mips_swiotlb_ops;
+ 
+ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+ {
+-#ifdef CONFIG_SWIOTLB
++#if defined(CONFIG_MACH_JAZZ)
++	return &jazz_dma_ops;
++#elif defined(CONFIG_SWIOTLB)
+ 	return &mips_swiotlb_ops;
+ #elif defined(CONFIG_MIPS_DMA_DEFAULT)
+ 	return &mips_default_dma_map_ops;
+diff --git a/arch/mips/include/asm/mach-jazz/dma-coherence.h b/arch/mips/include/asm/mach-jazz/dma-coherence.h
 deleted file mode 100644
-index 124755d4f079..000000000000
---- a/arch/mips/include/asm/mach-ath25/dma-coherence.h
+index dc347c25c343..000000000000
+--- a/arch/mips/include/asm/mach-jazz/dma-coherence.h
 +++ /dev/null
-@@ -1,71 +0,0 @@
+@@ -1,60 +0,0 @@
 -/*
 - * This file is subject to the terms and conditions of the GNU General Public
 - * License.  See the file "COPYING" in the main directory of this archive
 - * for more details.
 - *
 - * Copyright (C) 2006  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
-- * Copyright (C) 2007  Felix Fietkau <nbd-p3rKhJxN3npAfugRpC6u6w@public.gmane.org>
-- *
 - */
--#ifndef __ASM_MACH_ATH25_DMA_COHERENCE_H
--#define __ASM_MACH_ATH25_DMA_COHERENCE_H
+-#ifndef __ASM_MACH_JAZZ_DMA_COHERENCE_H
+-#define __ASM_MACH_JAZZ_DMA_COHERENCE_H
 -
--#include <linux/device.h>
+-#include <asm/jazzdma.h>
 -
--/*
-- * We need some arbitrary non-zero value to be programmed to the BAR1 register
-- * of PCI host controller to enable DMA. The same value should be used as the
-- * offset to calculate the physical address of DMA buffer for PCI devices.
-- */
--#define AR2315_PCI_HOST_SDRAM_BASEADDR	0x20000000
+-struct device;
 -
--static inline dma_addr_t ath25_dev_offset(struct device *dev)
+-static inline dma_addr_t plat_map_dma_mem(struct device *dev, void *addr, size_t size)
 -{
--#ifdef CONFIG_PCI
--	extern struct bus_type pci_bus_type;
--
--	if (dev && dev->bus == &pci_bus_type)
--		return AR2315_PCI_HOST_SDRAM_BASEADDR;
--#endif
--	return 0;
+-	return vdma_alloc(virt_to_phys(addr), size);
 -}
 -
--static inline dma_addr_t
--plat_map_dma_mem(struct device *dev, void *addr, size_t size)
+-static inline dma_addr_t plat_map_dma_mem_page(struct device *dev,
+-	struct page *page)
 -{
--	return virt_to_phys(addr) + ath25_dev_offset(dev);
+-	return vdma_alloc(page_to_phys(page), PAGE_SIZE);
 -}
 -
--static inline dma_addr_t
--plat_map_dma_mem_page(struct device *dev, struct page *page)
+-static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
+-	dma_addr_t dma_addr)
 -{
--	return page_to_phys(page) + ath25_dev_offset(dev);
+-	return vdma_log2phys(dma_addr);
 -}
 -
--static inline unsigned long
--plat_dma_addr_to_phys(struct device *dev, dma_addr_t dma_addr)
+-static inline void plat_unmap_dma_mem(struct device *dev, dma_addr_t dma_addr,
+-	size_t size, enum dma_data_direction direction)
 -{
--	return dma_addr - ath25_dev_offset(dev);
--}
--
--static inline void
--plat_unmap_dma_mem(struct device *dev, dma_addr_t dma_addr, size_t size,
--		   enum dma_data_direction direction)
--{
+-	vdma_free(dma_addr);
 -}
 -
 -static inline int plat_dma_supported(struct device *dev, u64 mask)
 -{
+-	/*
+-	 * we fall back to GFP_DMA when the mask isn't all 1s,
+-	 * so we can't guarantee allocations that must be
+-	 * within a tighter range than GFP_DMA..
+-	 */
+-	if (mask < DMA_BIT_MASK(24))
+-		return 0;
+-
 -	return 1;
+-}
+-
+-static inline void plat_post_dma_flush(struct device *dev)
+-{
 -}
 -
 -static inline int plat_device_is_coherent(struct device *dev)
@@ -129,52 +121,197 @@ index 124755d4f079..000000000000
 -	return 0;
 -}
 -
--static inline void plat_post_dma_flush(struct device *dev)
--{
--}
--
--#endif /* __ASM_MACH_ATH25_DMA_COHERENCE_H */
-diff --git a/arch/mips/pci/pci-ar2315.c b/arch/mips/pci/pci-ar2315.c
-index b4fa6413c4e5..c539d0d2b0cf 100644
---- a/arch/mips/pci/pci-ar2315.c
-+++ b/arch/mips/pci/pci-ar2315.c
-@@ -149,6 +149,13 @@
- #define AR2315_PCI_HOST_SLOT	3
- #define AR2315_PCI_HOST_DEVID	((0xff18 << 16) | PCI_VENDOR_ID_ATHEROS)
+-#endif /* __ASM_MACH_JAZZ_DMA_COHERENCE_H */
+diff --git a/arch/mips/jazz/Kconfig b/arch/mips/jazz/Kconfig
+index d3ae3e0356f6..06838f80a5d7 100644
+--- a/arch/mips/jazz/Kconfig
++++ b/arch/mips/jazz/Kconfig
+@@ -3,7 +3,6 @@ config ACER_PICA_61
+ 	bool "Support for Acer PICA 1 chipset"
+ 	depends on MACH_JAZZ
+ 	select DMA_NONCOHERENT
+-	select MIPS_DMA_DEFAULT
+ 	select SYS_SUPPORTS_LITTLE_ENDIAN
+ 	help
+ 	  This is a machine with a R4400 133/150 MHz CPU. To compile a Linux
+@@ -15,7 +14,6 @@ config MIPS_MAGNUM_4000
+ 	bool "Support for MIPS Magnum 4000"
+ 	depends on MACH_JAZZ
+ 	select DMA_NONCOHERENT
+-	select MIPS_DMA_DEFAULT
+ 	select SYS_SUPPORTS_BIG_ENDIAN
+ 	select SYS_SUPPORTS_LITTLE_ENDIAN
+ 	help
+@@ -28,7 +26,6 @@ config OLIVETTI_M700
+ 	bool "Support for Olivetti M700-10"
+ 	depends on MACH_JAZZ
+ 	select DMA_NONCOHERENT
+-	select MIPS_DMA_DEFAULT
+ 	select SYS_SUPPORTS_LITTLE_ENDIAN
+ 	help
+ 	  This is a machine with a R4000 100 MHz CPU. To compile a Linux
+diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
+index d626a9a391cc..446fc8c92e1e 100644
+--- a/arch/mips/jazz/jazzdma.c
++++ b/arch/mips/jazz/jazzdma.c
+@@ -16,6 +16,8 @@
+ #include <linux/bootmem.h>
+ #include <linux/spinlock.h>
+ #include <linux/gfp.h>
++#include <linux/dma-direct.h>
++#include <linux/dma-noncoherent.h>
+ #include <asm/mipsregs.h>
+ #include <asm/jazz.h>
+ #include <asm/io.h>
+@@ -86,6 +88,7 @@ static int __init vdma_init(void)
+ 	printk(KERN_INFO "VDMA: R4030 DMA pagetables initialized.\n");
+ 	return 0;
+ }
++arch_initcall(vdma_init);
  
-+/*
-+ * We need some arbitrary non-zero value to be programmed to the BAR1 register
-+ * of PCI host controller to enable DMA. The same value should be used as the
-+ * offset to calculate the physical address of DMA buffer for PCI devices.
-+ */
-+#define AR2315_PCI_HOST_SDRAM_BASEADDR	0x20000000
-+
- /* ??? access BAR */
- #define AR2315_PCI_HOST_MBAR0		0x10000000
- /* RAM access BAR */
-@@ -167,6 +174,23 @@ struct ar2315_pci_ctrl {
- 	struct resource io_res;
- };
+ /*
+  * Allocate DMA pagetables using a simple first-fit algorithm
+@@ -556,4 +559,140 @@ int vdma_get_enable(int channel)
+ 	return enable;
+ }
  
-+static inline dma_addr_t ar2315_dev_offset(struct device *dev)
+-arch_initcall(vdma_init);
++static void *jazz_dma_alloc(struct device *dev, size_t size,
++		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
 +{
-+	if (dev && dev_is_pci(dev))
-+		return AR2315_PCI_HOST_SDRAM_BASEADDR;
-+	return 0;
++	void *ret;
++
++	ret = dma_direct_alloc(dev, size, dma_handle, gfp, attrs);
++	if (!ret)
++		return NULL;
++
++	*dma_handle = vdma_alloc(virt_to_phys(ret), size);
++	if (*dma_handle == VDMA_ERROR) {
++		dma_direct_free(dev, size, ret, *dma_handle, attrs);
++		return NULL;
++	}
++
++	if (!(attrs & DMA_ATTR_NON_CONSISTENT)) {
++		dma_cache_wback_inv((unsigned long)ret, size);
++		ret = UNCAC_ADDR(ret);
++	}
++	return ret;
 +}
 +
-+dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
++static void jazz_dma_free(struct device *dev, size_t size, void *vaddr,
++		dma_addr_t dma_handle, unsigned long attrs)
 +{
-+	return paddr + ar2315_dev_offset(dev);
++	vdma_free(dma_handle);
++	if (!(attrs & DMA_ATTR_NON_CONSISTENT))
++		vaddr = (void *)CAC_ADDR((unsigned long)vaddr);
++	return dma_direct_free(dev, size, vaddr, dma_handle, attrs);
 +}
 +
-+phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++static dma_addr_t jazz_dma_map_page(struct device *dev, struct page *page,
++		unsigned long offset, size_t size, enum dma_data_direction dir,
++		unsigned long attrs)
 +{
-+	return dma_addr - ar2315_dev_offset(dev);
++	phys_addr_t phys = page_to_phys(page) + offset;
++
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++		arch_sync_dma_for_device(dev, phys, size, dir);
++	return vdma_alloc(phys, size);
 +}
 +
- static inline struct ar2315_pci_ctrl *ar2315_pci_bus_to_apc(struct pci_bus *bus)
- {
- 	struct pci_controller *hose = bus->sysdata;
++static void jazz_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
++		size_t size, enum dma_data_direction dir, unsigned long attrs)
++{
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++		arch_sync_dma_for_cpu(dev, vdma_log2phys(dma_addr), size, dir);
++	vdma_free(dma_addr);
++}
++
++static int jazz_dma_map_sg(struct device *dev, struct scatterlist *sglist,
++		int nents, enum dma_data_direction dir, unsigned long attrs)
++{
++	int i;
++	struct scatterlist *sg;
++
++	for_each_sg(sglist, sg, nents, i) {
++		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++			arch_sync_dma_for_device(dev, sg_phys(sg), sg->length,
++				dir);
++		sg->dma_address = vdma_alloc(sg_phys(sg), sg->length);
++		if (sg->dma_address == VDMA_ERROR)
++			return 0;
++		sg_dma_len(sg) = sg->length;
++	}
++
++	return nents;
++}
++
++static void jazz_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
++		int nents, enum dma_data_direction dir, unsigned long attrs)
++{
++	int i;
++	struct scatterlist *sg;
++
++	for_each_sg(sglist, sg, nents, i) {
++		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
++			arch_sync_dma_for_cpu(dev, sg_phys(sg), sg->length,
++				dir);
++		vdma_free(sg->dma_address);
++	}
++}
++
++static void jazz_dma_sync_single_for_device(struct device *dev,
++		dma_addr_t addr, size_t size, enum dma_data_direction dir)
++{
++	arch_sync_dma_for_device(dev, vdma_log2phys(addr), size, dir);
++}
++
++static void jazz_dma_sync_single_for_cpu(struct device *dev,
++		dma_addr_t addr, size_t size, enum dma_data_direction dir)
++{
++	arch_sync_dma_for_cpu(dev, vdma_log2phys(addr), size, dir);
++}
++
++static void jazz_dma_sync_sg_for_device(struct device *dev,
++		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
++{
++	struct scatterlist *sg;
++	int i;
++
++	for_each_sg(sgl, sg, nents, i)
++		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
++}
++
++static void jazz_dma_sync_sg_for_cpu(struct device *dev,
++		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
++{
++	struct scatterlist *sg;
++	int i;
++
++	for_each_sg(sgl, sg, nents, i)
++		arch_sync_dma_for_cpu(dev, sg_phys(sg), sg->length, dir);
++}
++
++static int jazz_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
++{
++	return dma_addr == VDMA_ERROR;
++}
++
++const struct dma_map_ops jazz_dma_ops = {
++	.alloc			= jazz_dma_alloc,
++	.free			= jazz_dma_free,
++	.mmap			= arch_dma_mmap,
++	.map_page		= jazz_dma_map_page,
++	.unmap_page		= jazz_dma_unmap_page,
++	.map_sg			= jazz_dma_map_sg,
++	.unmap_sg		= jazz_dma_unmap_sg,
++	.sync_single_for_cpu	= jazz_dma_sync_single_for_cpu,
++	.sync_single_for_device	= jazz_dma_sync_single_for_device,
++	.sync_sg_for_cpu	= jazz_dma_sync_sg_for_cpu,
++	.sync_sg_for_device	= jazz_dma_sync_sg_for_device,
++	.dma_supported		= dma_direct_supported,
++	.cache_sync		= arch_dma_cache_sync,
++	.mapping_error		= jazz_dma_mapping_error,
++};
++EXPORT_SYMBOL(jazz_dma_ops);
 -- 
 2.17.0
