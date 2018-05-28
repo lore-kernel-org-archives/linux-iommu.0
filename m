@@ -1,14 +1,14 @@
 From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH 5/7] x86: remove the experimental forcesac boot option
-Date: Mon, 28 May 2018 08:07:57 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1805280807180.1585@nanos.tec.linutronix.de>
+Subject: Re: [PATCH 6/7] x86: remove the explicit nodac and allowdac option
+Date: Mon, 28 May 2018 08:08:19 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1805280808030.1585@nanos.tec.linutronix.de>
 References: <20180525143512.1466-1-hch@lst.de>
-	<20180525143512.1466-6-hch@lst.de>
+	<20180525143512.1466-7-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180525143512.1466-6-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180525143512.1466-7-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,11 +28,13 @@ x86/pci-dma: ...
 
 Please
 
-> Limiting the dma mask to avoid PCI (pre-PCIe) DAC cycles while paying
-> the huge overhead of an IOMMU is rather pointless, and this seriously
-> gets in the way of dma mapping work.
+> This is something drivers should decide (modulo chipset quirks like
+> for VIA), which as far as I can tell is how things have been handled
+> for the last 15 years.
+> 
+> Note that we keep the usedac option for now, as it is used in the wild
+> to override the too generic VIA quirk.
 > 
 > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
 Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
- 
