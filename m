@@ -1,17 +1,14 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [RFC PATCH] m68k: set dma and coherent masks for Macintosh
-	SONIC based ethernet
-Date: Mon, 28 May 2018 07:33:38 +0200
-Message-ID: <20180528053338.GA3195@lst.de>
-References: <1527378785-13326-1-git-send-email-linux@roeck-us.net>
-	<alpine.LNX.2.21.1805271212480.9@nippy.intranet>
-	<20180527041505.GB31985@roeck-us.net>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH 5/7] x86: remove the experimental forcesac boot option
+Date: Mon, 28 May 2018 08:07:57 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1805280807180.1585@nanos.tec.linutronix.de>
+References: <20180525143512.1466-1-hch@lst.de>
+	<20180525143512.1466-6-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180527041505.GB31985-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+In-Reply-To: <20180525143512.1466-6-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,14 +18,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Finn Thain <fthain-PnMVE5gNl/W9dxLkCovUHLpzq4S04n8Q@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Greg Ungerer <gerg-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Joshua Thompson <funaho-E7XWuSn13XjYtjvyW6yDsg@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, May 26, 2018 at 09:15:05PM -0700, Guenter Roeck wrote:
-> Good point. Maybe it would be better to limit the warning to SMP systems
-> instead of (unnecessarily) fixing drivers all over the place ?
+On Fri, 25 May 2018, Christoph Hellwig wrote:
 
-No.  The coherent_dma_mask is the mask used for dma_alloc_coherent and
-dma_alloc_attrs.  It has nothing to do with cache coherent in SMP
-systems.
+x86/pci-dma: ...
+
+Please
+
+> Limiting the dma mask to avoid PCI (pre-PCIe) DAC cycles while paying
+> the huge overhead of an IOMMU is rather pointless, and this seriously
+> gets in the way of dma mapping work.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+
+Reviewed-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+ 
