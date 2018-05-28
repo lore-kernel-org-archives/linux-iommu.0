@@ -1,51 +1,61 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH 7/7] x86: switch the VIA 32-bit DMA quirk to use the
-	struct device flag
-Date: Mon, 28 May 2018 10:34:49 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1805281034150.1578@nanos.tec.linutronix.de>
-References: <20180525143512.1466-1-hch@lst.de>
-	<20180525143512.1466-8-hch@lst.de>
-	<alpine.DEB.2.21.1805280808280.1585@nanos.tec.linutronix.de>
-	<20180528061859.GA4145@lst.de>
-	<alpine.DEB.2.21.1805280817310.1585@nanos.tec.linutronix.de>
-	<20180528062725.GA4309@lst.de>
-	<alpine.DEB.2.21.1805280823240.1585@nanos.tec.linutronix.de>
-	<20180528083931.GA7169@lst.de>
+From: Michal Hocko <mhocko@kernel.org>
+Subject: Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
+Date: Mon, 28 May 2018 15:33:22 +0200
+Message-ID: <20180528133322.GE27180@dhcp22.suse.cz>
+References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+ <20180522183728.GB20441@dhcp22.suse.cz>
+ <20180524051919.GA9819@bombadil.infradead.org>
+ <20180524122323.GH20441@dhcp22.suse.cz>
+ <20180524151818.GA21245@bombadil.infradead.org>
+ <20180524152943.GA11881@dhcp22.suse.cz>
+ <20180525120044.GA4649@bombadil.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180528083931.GA7169-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+Content-Disposition: inline
+In-Reply-To: <20180525120044.GA4649@bombadil.infradead.org>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: kstewart@linuxfoundation.org, Huaisheng Ye <yehs1@lenovo.com>, hehy1@lenovo.com, gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, alexander.levin@verizon.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linux-btrfs@vger.kernel.org, Huaisheng Ye <yehs2007@gmail.com>, chengnt@lenovo.com, xen-devel@lists.xenproject.org, akpm@linux-foundation.org, colyli@suse.de, mgorman@techsingularity.net, vbabka@suse.cz
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 28 May 2018, Christoph Hellwig wrote:
-> On Mon, May 28, 2018 at 08:23:35AM +0200, Thomas Gleixner wrote:
-> > > > They remove the commandline switch before having the replacement in place
-> > > > unless I'm misreading something.
-> > > 
-> > > The command line switch to force 32-bit dma is removed without
-> > > replacement.   The PCI quirk for force the 32-bit dma for VIA bridges
-> > > is kept in place, and switch to a different mechanism in this patch.
-> > 
-> > Fair enough
-> 
-> Thanks.  Do you want me to repost them for the x86 tree, or should
-> just pull the changes with the commit logs fixed to the dma-mapping
-> tree?
-
-Just take them through your tree. There is nothing conflicting in tip.
-
-Thanks,
-
-	tglx
+T24gRnJpIDI1LTA1LTE4IDA1OjAwOjQ0LCBNYXR0aGV3IFdpbGNveCB3cm90ZToKPiBPbiBUaHUs
+IE1heSAyNCwgMjAxOCBhdCAwNToyOTo0M1BNICswMjAwLCBNaWNoYWwgSG9ja28gd3JvdGU6Cj4g
+PiA+IGllIGlmIHdlIGhhZCBtb3JlLAo+ID4gPiBjb3VsZCB3ZSBzb2x2ZSBvdXIgcGFpbiBieSBt
+YWtpbmcgdGhlbSBtb3JlIGdlbmVyaWM/Cj4gPiAKPiA+IFdlbGwsIGlmIHlvdSBoYXZlIG1vcmUg
+eW91IHdpbGwgY29uc3VtZSBtb3JlIGJpdHMgaW4gdGhlIHN0cnVjdCBwYWdlcywKPiA+IHJpZ2h0
+Pwo+IAo+IE5vdCBuZWNlc3NhcmlseSAuLi4gdGhlIHpvbmUgbnVtYmVyIGlzIHN0b3JlZCBpbiB0
+aGUgc3RydWN0IHBhZ2UKPiBjdXJyZW50bHksIHNvIGVpdGhlciB0d28gb3IgdGhyZWUgYml0cyBh
+cmUgdXNlZCByaWdodCBub3cuICBJbiBteQo+IHByb3Bvc2FsLCBvbmUgY2FuIGluZmVyIHRoZSB6
+b25lIG9mIGEgcGFnZSBmcm9tIGl0cyBQRk4sIGV4Y2VwdCBmb3IKPiBaT05FX01PVkFCTEUuICBT
+byB3ZSBjb3VsZCB0cmltIGRvd24gdG8ganVzdCBvbmUgYml0IHBlciBzdHJ1Y3QgcGFnZQo+IGZv
+ciAzMi1iaXQgbWFjaGluZXMgd2hpbGUgdXNpbmcgMyBiaXRzIG9uIDY0LWJpdCBtYWNoaW5lcywg
+d2hlcmUgdGhlcmUKPiBpcyBwbGVudHkgb2Ygc3BhY2UuCgpKdXN0IGJlIHdhcm5lZCB0aGF0IHBh
+Z2Vfem9uZSBpcyBjYWxsZWQgZnJvbSBtYW55IGhvdCBwYXRocy4gSSBhbSBub3QKc3VyZSBhZGRp
+bmcgc29tZXRoaW5nIG1vcmUgY29tcGxleCB0aGVyZSBpcyBnb2luZyB0byBmbHkuCgo+ID4gPiBp
+dCBtb3JlLW9yLWxlc3Mgc3Vja3MgdGhhdCB0aGUgZGV2aWNlcyB3aXRoIDI4LWJpdCBETUEgbGlt
+aXRzIGFyZSBmb3JjZWQKPiA+ID4gdG8gYWxsb2NhdGUgZnJvbSB0aGUgbG93IDE2TUIgd2hlbiB0
+aGV5J3JlIHBlcmZlY3RseSBjYXBhYmxlIG9mIHVzaW5nIHRoZQo+ID4gPiBsb3cgMjU2TUIuCj4g
+PiAKPiA+IERvIHdlIGFjdHVhbGx5IGNhcmUgYWxsIHRoYXQgbXVjaCBhYm91dCB0aG9zZT8gSWYg
+eWVzIHRoZW4gd2Ugc2hvdWxkCj4gPiBwcm9iYWJseSBmb2xsb3cgdGhlIFpPTkVfRE1BICh4ODYp
+IHBhdGggYW5kIHVzZSBhIENNQSByZWdpb24gZm9yIHRoZW0uCj4gPiBJIG1lYW4gbW9zdCBkZXZp
+Y2VzIHNob3VsZCBiZSBnb29kIHdpdGggdmVyeSBsaW1pdGVkIGFkZHJlc3NhYmlsaXR5IG9yCj4g
+PiBiZWxvdyA0Rywgbm8/Cj4gCj4gU3VyZS4gIE9uZSBvdGhlciB0aGluZyBJIG1lYW50IHRvIG1l
+bnRpb24gd2FzIHRoZSBtZWRpYSBkZXZpY2VzCj4gKFRWIGNhcHR1cmUgY2FyZHMgYW5kIHNvIG9u
+KSB3aGljaCB3YW50IGEgdm1hbGxvY18zMigpIGFsbG9jYXRpb24uCj4gT24gMzItYml0IG1hY2hp
+bmVzIHJpZ2h0IG5vdywgd2UgYWxsb2NhdGUgZnJvbSBMT1dNRU0sIHdoZW4gd2UgcmVhbGx5Cj4g
+c2hvdWxkIGJlIGFsbG9jYXRpbmcgZnJvbSB0aGUgMUdCLTRHQiByZWdpb24uICAzMi1iaXQgbWFj
+aGluZXMgZ2VuZXJhbGx5Cj4gZG9uJ3QgaGF2ZSBhIFpPTkVfRE1BMzIgdG9kYXkuCgpXZWxsLCBf
+SV8gdGhpbmsgdGhhdCB2bWFsbG9jIG9uIDMyYiBpcyBqdXN0IGxvc3QgY2FzZS4uLgoKLS0gCk1p
+Y2hhbCBIb2NrbwpTVVNFIExhYnMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fClhlbi1kZXZlbCBtYWlsaW5nIGxpc3QKWGVuLWRldmVsQGxpc3RzLnhlbnBy
+b2plY3Qub3JnCmh0dHBzOi8vbGlzdHMueGVucHJvamVjdC5vcmcvbWFpbG1hbi9saXN0aW5mby94
+ZW4tZGV2ZWw=
