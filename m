@@ -1,132 +1,56 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v5 15/23] iommu: handle page response timeout
-Date: Tue, 29 May 2018 09:20:58 -0700
-Message-ID: <20180529092058.1942b223@jacob-builder>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1526072055-86990-16-git-send-email-jacob.jun.pan@linux.intel.com>
-        <5AF93E3A.2040902@linux.intel.com>
+From: Gary R Hook <ghook-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd - Optimize PPR log handling
+Date: Tue, 29 May 2018 12:28:54 -0500
+Message-ID: <223930b9-3df9-813a-6676-68072e4e1bb6@amd.com>
+References: <152668031618.108078.8188026193559324640.stgit@wsp141332wss.amd.com>
+	<20180529145405.GN18595@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5AF93E3A.2040902@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, jacob.jun.pan@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180529145405.GN18595-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 May 2018 15:43:54 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On 05/29/2018 09:54 AM, Joerg Roedel wrote:
+> Hey Gary,
+> 
+> On Fri, May 18, 2018 at 04:51:56PM -0500, Gary R Hook wrote:
+>> Improve the performance of the PPR log polling function (i.e. the
+>> task of emptying the log) by minimizing MMIO operations and more
+>> efficiently processing groups of log entries. Cache the head
+>> pointer, as there's never a reason to read it. Ensure the head
+>> pointer register is updated every so often, to inform the IOMMU
+>> that space is available in the log.
+>>
+>> Finally, since a single pass may leave logged events unread, use
+>> an outer loop to repeat until head has caught up to tail.
+>>
+>> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+> 
+> Do you have numbers for the performance improvement? How did you test
+> this patch?
 
-> Hi,
-> 
-> On 05/12/2018 04:54 AM, Jacob Pan wrote:
-> > When IO page faults are reported outside IOMMU subsystem, the page
-> > request handler may fail for various reasons. E.g. a guest received
-> > page requests but did not have a chance to run for a long time. The
-> > irresponsive behavior could hold off limited resources on the
-> > pending device.
-> > There can be hardware or credit based software solutions as
-> > suggested in the PCI ATS Ch-4. To provide a basic safty net this
-> > patch introduces a per device deferrable timer which monitors the
-> > longest pending page fault that requires a response. Proper action
-> > such as sending failure response code could be taken when timer
-> > expires but not included in this patch. We need to consider the
-> > life cycle of page groupd ID to prevent confusion with reused group
-> > ID by a device. For now, a warning message provides clue of such
-> > failure.
-> >
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> > ---
-> >  drivers/iommu/iommu.c | 53
-> > +++++++++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/iommu.h |  4 ++++ 2 files changed, 57 insertions(+)
-> >
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 02fed3e..1f2f49e 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -827,6 +827,37 @@ int iommu_group_unregister_notifier(struct
-> > iommu_group *group, }
-> >  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
-> >  
-> > +static void iommu_dev_fault_timer_fn(struct timer_list *t)
-> > +{
-> > +	struct iommu_fault_param *fparam = from_timer(fparam, t,
-> > timer);
-> > +	struct iommu_fault_event *evt;
-> > +
-> > +	u64 now;
-> > +
-> > +	now = get_jiffies_64();
-> > +
-> > +	/* The goal is to ensure driver or guest page fault
-> > handler(via vfio)
-> > +	 * send page response on time. Otherwise, limited queue
-> > resources
-> > +	 * may be occupied by some irresponsive guests or drivers.
-> > +	 * When per device pending fault list is not empty, we
-> > periodically checks
-> > +	 * if any anticipated page response time has expired.
-> > +	 *
-> > +	 * TODO:
-> > +	 * We could do the following if response time expires:
-> > +	 * 1. send page response code FAILURE to all pending PRQ
-> > +	 * 2. inform device driver or vfio
-> > +	 * 3. drain in-flight page requests and responses for this
-> > device
-> > +	 * 4. clear pending fault list such that driver can
-> > unregister fault
-> > +	 *    handler(otherwise blocked when pending faults are
-> > present).
-> > +	 */
-> > +	list_for_each_entry(evt, &fparam->faults, list) {
-> > +		if (time_after64(now, evt->expire))
-> > +			pr_err("Page response time expired!, pasid
-> > %d gid %d exp %llu now %llu\n",
-> > +				evt->pasid,
-> > evt->page_req_group_id, evt->expire, now);
-> > +	}
-> > +	mod_timer(t, now + prq_timeout);
-> > +}
-> > +  
-> 
-> This timer scheme is very rough.
-> 
-yes, the timer is a rough safety net for misbehaved PRQ handlers such
-as a guest.
-> The timer expires every 10 seconds (by default).
-> 
-> 0                   10                 20
-> 30                 40
-> +---------------+---------------+---------------+---------------+ ^
-> ^   ^  ^                        ^ |   |     |
-> |                         | F0 F1  F2 F3
-> (F1,F2,F3 will not be handled until here!)
-> 
-> F0, F1, F2, F3 are four page faults happens during [0, 10s) time
-> window. F1, F2, F3 timeout won't be handled until the timer expires
-> again at 20s. That means a fault might be pending there until about
-> (2 * prq_timeout) seconds later.
-> 
-correct. it could be 2x for the worst case. I should explain in
-comments.
-> Out of curiosity, Why not adding a timer in iommu_fault_event,
-> starting it in iommu_report_device_fault() and removing it in
-> iommu_page_response()?
-> 
-I thought about that also but since we are just trying to have a broad
-and rough safety net (in addition to potential HW mechanism or credit
-based solution), my thought was that having a per device timer is more
-economical than per event.
-Thanks for the in-depth check!
+No, no numbers. We're still working out how best to test this, and 
+suggestions/strategies are welcome.
 
-> Best regards,
-> Lu Baolu
-> 
-> 
->  [...]  
-> 
+The change is modeled after the function iommu_poll_events(), which is 
+much cleaner. The GA log handling should be changed, as well (there are 
+superfluous writes in the loop), but I figured, "one thing at a time". 
+This is admittedly a minor optimization, but discussions with Tom 
+Lendacky have led us down this path.
 
-[Jacob Pan]
+Your feedback is appreciated.
+
+Gary
