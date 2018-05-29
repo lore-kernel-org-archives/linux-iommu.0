@@ -1,13 +1,20 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 3/3] nds32: use generic dma_noncoherent_ops
-Date: Tue, 29 May 2018 11:48:14 +0200
-Message-ID: <20180529094814.17644-4-hch@lst.de>
-References: <20180529094814.17644-1-hch@lst.de>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 07/40] iommu: Add a page fault handler
+Date: Tue, 29 May 2018 11:00:21 +0100
+Message-ID: <6bd83326-2da0-1250-3dfc-7d6fbf58d701@arm.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-8-jean-philippe.brucker@arm.com>
+	<20180518110434.150a0e64@jacob-builder>
+	<8a640794-a6f3-fa01-82a9-06479a6f779a@arm.com>
+	<20180522163521.413e60c6@jacob-builder>
+	<bdf9f221-ab97-2168-d072-b7f6a0dba840@arm.com>
+	<20180525173544.05638510@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180529094814.17644-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180525173544.05638510@jacob-builder>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,242 +24,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greentime Hu <green.hu-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Switch to the generic noncoherent direct mapping implementation.
+On 26/05/18 01:35, Jacob Pan wrote:
+>>>> Not exactly, it's the IOMMU driver that makes sure all LPIG in its
+>>>> queues are submitted by the above flush call. In more details the
+>>>> flow is:
+>>>>
+>>>> * Either device driver calls unbind()/sva_device_shutdown(), or the
+>>>> process exits.
+>>>> * If the device driver called, then it already told the device to
+>>>> stop using the PASID. Otherwise we use the mm_exit() callback to
+>>>> tell the device driver to stop using the PASID.
+> Sorry I still need more clarification. For the PASID termination
+> initiated by vfio unbind, I don't see device driver given a chance to
+> stop PASID. Seems just call __iommu_sva_unbind_device() which already
+> assume device stopped issuing DMA with the PASID.
+> So it is the vfio unbind caller responsible for doing driver callback
+> to stop DMA on a given PASID?
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/nds32/Kconfig                   |   3 +
- arch/nds32/include/asm/Kbuild        |   1 +
- arch/nds32/include/asm/dma-mapping.h |  14 ----
- arch/nds32/kernel/dma.c              | 113 +++------------------------
- 4 files changed, 15 insertions(+), 116 deletions(-)
- delete mode 100644 arch/nds32/include/asm/dma-mapping.h
+Yes, but I don't know how to implement this. Since PCI doesn't formalize
+the PASID stop mechanism and the device doesn't have a kernel driver,
+VFIO would need help from the userspace driver for stopping PASID
+(notify the userspace driver when an other process exits).
 
-diff --git a/arch/nds32/Kconfig b/arch/nds32/Kconfig
-index 249f38d3388f..67d0ac0a989c 100644
---- a/arch/nds32/Kconfig
-+++ b/arch/nds32/Kconfig
-@@ -5,10 +5,13 @@
- 
- config NDS32
-         def_bool y
-+	select ARCH_HAS_SYNC_DMA_FOR_CPU
-+	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_WANT_FRAME_POINTERS if FTRACE
- 	select CLKSRC_MMIO
- 	select CLONE_BACKWARDS
- 	select COMMON_CLK
-+	select DMA_NONCOHERENT_OPS
- 	select GENERIC_ATOMIC64
- 	select GENERIC_CPU_DEVICES
- 	select GENERIC_CLOCKEVENTS
-diff --git a/arch/nds32/include/asm/Kbuild b/arch/nds32/include/asm/Kbuild
-index 06bdf8167f5a..b3e951f805f8 100644
---- a/arch/nds32/include/asm/Kbuild
-+++ b/arch/nds32/include/asm/Kbuild
-@@ -13,6 +13,7 @@ generic-y += cputime.h
- generic-y += device.h
- generic-y += div64.h
- generic-y += dma.h
-+generic-y += dma-mapping.h
- generic-y += emergency-restart.h
- generic-y += errno.h
- generic-y += exec.h
-diff --git a/arch/nds32/include/asm/dma-mapping.h b/arch/nds32/include/asm/dma-mapping.h
-deleted file mode 100644
-index 2dd47d245c25..000000000000
---- a/arch/nds32/include/asm/dma-mapping.h
-+++ /dev/null
-@@ -1,14 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--// Copyright (C) 2005-2017 Andes Technology Corporation
--
--#ifndef ASMNDS32_DMA_MAPPING_H
--#define ASMNDS32_DMA_MAPPING_H
--
--extern struct dma_map_ops nds32_dma_ops;
--
--static inline struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
--{
--	return &nds32_dma_ops;
--}
--
--#endif
-diff --git a/arch/nds32/kernel/dma.c b/arch/nds32/kernel/dma.c
-index b9973317c734..d0dbd4fe9645 100644
---- a/arch/nds32/kernel/dma.c
-+++ b/arch/nds32/kernel/dma.c
-@@ -3,17 +3,14 @@
- 
- #include <linux/types.h>
- #include <linux/mm.h>
--#include <linux/export.h>
- #include <linux/string.h>
--#include <linux/scatterlist.h>
--#include <linux/dma-mapping.h>
-+#include <linux/dma-noncoherent.h>
- #include <linux/io.h>
- #include <linux/cache.h>
- #include <linux/highmem.h>
- #include <linux/slab.h>
- #include <asm/cacheflush.h>
- #include <asm/tlbflush.h>
--#include <asm/dma-mapping.h>
- #include <asm/proc-fns.h>
- 
- /*
-@@ -119,10 +116,8 @@ static struct arch_vm_region *vm_region_find(struct arch_vm_region *head,
- 	return c;
- }
- 
--/* FIXME: attrs is not used. */
--static void *nds32_dma_alloc_coherent(struct device *dev, size_t size,
--				      dma_addr_t * handle, gfp_t gfp,
--				      unsigned long attrs)
-+void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
-+		gfp_t gfp, unsigned long attrs)
- {
- 	struct page *page;
- 	struct arch_vm_region *c;
-@@ -227,8 +222,8 @@ static void *nds32_dma_alloc_coherent(struct device *dev, size_t size,
- 	return NULL;
- }
- 
--static void nds32_dma_free(struct device *dev, size_t size, void *cpu_addr,
--			   dma_addr_t handle, unsigned long attrs)
-+void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
-+		dma_addr_t handle, unsigned long attrs)
- {
- 	struct arch_vm_region *c;
- 	unsigned long flags, addr;
-@@ -365,118 +360,32 @@ static inline void cache_op(phys_addr_t paddr, size_t size,
- 	} while (left);
- }
- 
--static void
--nds32_dma_sync_single_for_device(struct device *dev, dma_addr_t handle,
--				 size_t size, enum dma_data_direction dir)
-+void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
-+		size_t size, enum dma_data_direction dir)
- {
- 	switch (dir) {
- 	case DMA_FROM_DEVICE:
- 		break;
- 	case DMA_TO_DEVICE:
- 	case DMA_BIDIRECTIONAL:
--		cache_op(handle, size, cpu_dma_wb_range);
-+		cache_op(paddr, size, cpu_dma_wb_range);
- 		break;
- 	default:
- 		BUG();
- 	}
- }
- 
--static void
--nds32_dma_sync_single_for_cpu(struct device *dev, dma_addr_t handle,
--			      size_t size, enum dma_data_direction dir)
-+void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
-+		size_t size, enum dma_data_direction dir)
- {
- 	switch (dir) {
- 	case DMA_TO_DEVICE:
- 		break;
- 	case DMA_FROM_DEVICE:
- 	case DMA_BIDIRECTIONAL:
--		cache_op(handle, size, cpu_dma_inval_range);
-+		cache_op(paddr, size, cpu_dma_inval_range);
- 		break;
- 	default:
- 		BUG();
- 	}
- }
--
--static dma_addr_t nds32_dma_map_page(struct device *dev, struct page *page,
--				     unsigned long offset, size_t size,
--				     enum dma_data_direction dir,
--				     unsigned long attrs)
--{
--	dma_addr_t dma_addr = page_to_phys(page) + offset;
--
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
--		nds32_dma_sync_single_for_device(dev, handle, size, dir);
--	return dma_addr;
--}
--
--static void nds32_dma_unmap_page(struct device *dev, dma_addr_t handle,
--				 size_t size, enum dma_data_direction dir,
--				 unsigned long attrs)
--{
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
--		nds32_dma_sync_single_for_cpu(dev, handle, size, dir);
--}
--
--static void
--nds32_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
--			     int nents, enum dma_data_direction dir)
--{
--	int i;
--
--	for (i = 0; i < nents; i++, sg++) {
--		nds32_dma_sync_single_for_device(dev, sg_dma_address(sg),
--				sg->length, dir);
--	}
--}
--
--static void
--nds32_dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg, int nents,
--			  enum dma_data_direction dir)
--{
--	int i;
--
--	for (i = 0; i < nents; i++, sg++) {
--		nds32_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
--				sg->length, dir);
--	}
--}
--
--static int nds32_dma_map_sg(struct device *dev, struct scatterlist *sg,
--			    int nents, enum dma_data_direction dir,
--			    unsigned long attrs)
--{
--	int i;
--
--	for (i = 0; i < nents; i++, sg++) {
--		nds32_dma_sync_single_for_device(dev, sg_dma_address(sg),
--				sg->length, dir);
--	}
--	return nents;
--}
--
--static void nds32_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
--			       int nhwentries, enum dma_data_direction dir,
--			       unsigned long attrs)
--{
--	int i;
--
--	for (i = 0; i < nhwentries; i++, sg++) {
--		nds32_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
--				sg->length, dir);
--	}
--}
--
--struct dma_map_ops nds32_dma_ops = {
--	.alloc = nds32_dma_alloc_coherent,
--	.free = nds32_dma_free,
--	.map_page = nds32_dma_map_page,
--	.unmap_page = nds32_dma_unmap_page,
--	.map_sg = nds32_dma_map_sg,
--	.unmap_sg = nds32_dma_unmap_sg,
--	.sync_single_for_device = nds32_dma_sync_single_for_device,
--	.sync_single_for_cpu = nds32_dma_sync_single_for_cpu,
--	.sync_sg_for_cpu = nds32_dma_sync_sg_for_cpu,
--	.sync_sg_for_device = nds32_dma_sync_sg_for_device,
--};
--
--EXPORT_SYMBOL(nds32_dma_ops);
--- 
-2.17.0
+
+>>>> * In either case, when receiving a stop request from the driver,
+>>>> the device sends the LPIGs to the IOMMU queue.
+>>>> * Then, the flush call above ensures that the IOMMU reports the
+>>>> LPIG with iommu_report_device_fault.
+>>>> * While submitting all LPIGs for this PASID to the work queue,
+>>>> ipof_queue_fault also picked up all partial faults, so the partial
+>>>> list is clean.
+>>>>
+>>>> Maybe I should improve this comment?
+>>>>  
+>>> thanks for explaining. LPIG submission is done by device
+>>> asynchronously w.r.t. driver stopping/decommission PASID.  
+>>
+>> Hmm, it should really be synchronous, otherwise there is no way to
+>> know when the PASID can be decommissioned. We need a guarantee such
+>> as the one in 6.20.1 of the PCIe spec, "Managing PASID TLP Prefix
+>> Usage":
+>>
+>> "When the stop request mechanism indicates completion, the Function
+>> has:
+>> * Completed all Non-Posted Requests associated with this PASID.
+>> * Flushed to the host all Posted Requests addressing host memory in
+>> all TCs that were used by the PASID."
+>>
+>> That's in combination with "The function shall [...] finish
+>> transmitting any multi-page Page Request Messages for this PASID
+>> (i.e. send the Page Request Message with the L bit Set)." from the
+>> ATS spec.
+>>
+> I am not contesting on the device side, what I meant was from the
+> host IOMMU driver perspective, LPIG is received via IOMMU host queue,
+> therefore asynchronous. Not sure about ARM, but on VT-d LPIG submission
+> could meet queue full condition. So per VT-d spec, iommu will generate a
+> successful auto response to the device. At this point, assume we
+> already stopped the given PASID on the device, there might not be
+> another LPIG sent for the device. Therefore, you could have a partial
+> list. I think we can just drop the requests in the partial list for
+> that PASID until the PASID gets re-allocated.
+
+Indeed, I'll add this in next version. For a complete solution to the
+queue-full condition (which seems to behave the same way on ARM) I was
+thinking the IOMMU driver should also have a method for removing all
+partial faults when detecting a queue overflow. Since it doesn't know
+which PRGs did receive an auto-response, all it can do is remove all
+partial faults, for all devices using this queue. But freeing the stuck
+partial faults in flush() and remove_device() should be good enough
+
+Thanks,
+Jean
