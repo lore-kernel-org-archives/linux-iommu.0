@@ -1,11 +1,14 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH] dma-direct: don't crash on device without dma_mask
-Date: Tue, 29 May 2018 16:15:12 +0200
-Message-ID: <20180529141512.28546-1-hch@lst.de>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd - Optimize PPR log handling
+Date: Tue, 29 May 2018 16:54:05 +0200
+Message-ID: <20180529145405.GN18595@8bytes.org>
+References: <152668031618.108078.8188026193559324640.stgit@wsp141332wss.amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <152668031618.108078.8188026193559324640.stgit-ztPFugr8rmfEhiLOc2DLklaTQe2KTcn/@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,35 +18,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Finn Thain <fthain-PnMVE5gNl/W9dxLkCovUHLpzq4S04n8Q@public.gmane.org>
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Print a useful warning instead.
+Hey Gary,
 
-Reported-by: Finn Thain <fthain-PnMVE5gNl/W9dxLkCovUHLpzq4S04n8Q@public.gmane.org>
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- lib/dma-direct.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Fri, May 18, 2018 at 04:51:56PM -0500, Gary R Hook wrote:
+> Improve the performance of the PPR log polling function (i.e. the
+> task of emptying the log) by minimizing MMIO operations and more
+> efficiently processing groups of log entries. Cache the head
+> pointer, as there's never a reason to read it. Ensure the head
+> pointer register is updated every so often, to inform the IOMMU
+> that space is available in the log.
+> 
+> Finally, since a single pass may leave logged events unread, use
+> an outer loop to repeat until head has caught up to tail.
+> 
+> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
 
-diff --git a/lib/dma-direct.c b/lib/dma-direct.c
-index a48f94eff62e..8be8106270c2 100644
---- a/lib/dma-direct.c
-+++ b/lib/dma-direct.c
-@@ -34,6 +34,13 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
- 		const char *caller)
- {
- 	if (unlikely(dev && !dma_capable(dev, dma_addr, size))) {
-+		if (!dev->dma_mask) {
-+			dev_err(dev,
-+				"%s: call on device without dma_mask\n",
-+				caller);
-+			return false;
-+		}
-+
- 		if (*dev->dma_mask >= DMA_BIT_MASK(32)) {
- 			dev_err(dev,
- 				"%s: overflow %pad+%zu of device mask %llx\n",
--- 
-2.17.0
+Do you have numbers for the performance improvement? How did you test
+this patch?
+
+
+Regards,
+
+	Joerg
