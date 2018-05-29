@@ -1,22 +1,11 @@
-From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
-Date: Tue, 29 May 2018 20:24:28 +0800
-Message-ID: <5B0D467C.90206@huawei.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
-	<5B0536A3.1000304@huawei.com>
-	<cd13f60d-b282-3804-4ca7-2d34476c597f@arm.com>
-	<5B06B17C.1090809@huawei.com>
-	<205c1729-8026-3efe-c363-d37d7150d622@arm.com>
-	<5B077765.30703@huawei.com>
-	<fea420ff-e738-e2ed-ab1e-a3f4dde4b6ef@arm.com>
-	<5B08DA21.3070507@huawei.com>
-	<99ff4f89-86ef-a251-894c-8aa8a47d2a69@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] dma-direct: don't crash on device without dma_mask
+Date: Tue, 29 May 2018 16:15:12 +0200
+Message-ID: <20180529141512.28546-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <99ff4f89-86ef-a251-894c-8aa8a47d2a69-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,64 +15,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
-Cc: "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Finn Thain <fthain-PnMVE5gNl/W9dxLkCovUHLpzq4S04n8Q@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAyMDE4LzUvMjkgMTk6NTUsIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciB3cm90ZToKPiAo
-SWYgcG9zc2libGUsIHBsZWFzZSByZXBseSBpbiBwbGFpbiB0ZXh0IHRvIHRoZSBsaXN0LiBSZWFk
-aW5nIHRoaXMgaW4gYQo+IHRleHQtb25seSByZWFkZXIgaXMgY29uZnVzaW5nLCBiZWNhdXNlIGFs
-bCBxdW90ZXMgaGF2ZSB0aGUgc2FtZSBsZXZlbCkKU29ycnkgZm9yIHRoYXTvvIwgSSBoYXZlIHJl
-c2V0IHRoZSB0aHVuZGVyYmlyZCwgOikgdGhhbmtzLgo+IE9uIDI2LzA1LzE4IDA0OjUzLCBYdSBa
-YWlibyB3cm90ZToKPj4gSSBndWVzcyB0aGVyZSBtYXkgYmUgc29tZSBtaXN1bmRlcnN0YW5kaW5n
-cyA6KS4KPj4KPj4gIEZyb20gdGhlIGN1cnJlbnQgcGF0Y2hlcywgJ2lvbW11X3N2YV9kZXZpY2Vf
-c2h1dGRvd24nIGlzIGNhbGxlZCBieSAndmZpb19pb21tdV9zdmFfc2h1dGRvd24nLCB3aGljaAo+
-PiBpcyBtYWlubHkgdXNlZCBieSAndmZpb19pb21tdV90eXBlMV9kZXRhY2hfZ3JvdXAnIHRoYXQg
-aXMgZmluYWxseSBjYWxsZWQgYnkgcHJvY2Vzc2VzJyByZWxlYXNlIG9mIHZmaW8gZmFjaWxpdGl5
-Cj4+IGF1dG9tYXRpY2FsbHkgb3IgY2FsbGVkIGJ5ICdWRklPX0dST1VQX1VOU0VUX0NPTlRBSU5F
-UicgbWFudWFsbHkgaW4gdGhlIHByb2Nlc3Nlcy4KPj4KPj4gU28sIGp1c3QgaW1hZ2UgdGhhdCAy
-IHByb2Nlc3NlcyBpcyB3b3JraW5nIG9uIHRoZSBkZXZpY2Ugd2l0aCBJT1BGIGZlYXR1cmUsIGFu
-ZCB0aGUgMiBkbyB0aGUgZm9sbG93aW5nIHRvIGVuYWJsZSBTVkE6Cj4+Cj4+ICAgICAgMS5vcGVu
-KCIvZGV2L3ZmaW8vdmZpbyIpIDsKPj4KPj4gICAgIDIub3BlbiB0aGUgZ3JvdXAgb2YgdGhlIGRl
-dmNpZSBieSBjYWxsaW5nIG9wZW4oIi9kZXYvdmZpby94IiksIGJ1dCBub3csCj4+ICAgICAgIEkg
-dGhpbmsgdGhlIHNlY29uZCBwcm9jZXNzZXMgd2lsbCBmYWlsIHRvIG9wZW4gdGhlIGdyb3VwIGJl
-Y2F1c2UgY3VycmVudCBWRklPIHRoaW5rcyB0aGF0IG9uZSBncm91cCBvbmx5IGNhbiBiZSB1c2Vk
-IGJ5IG9uZSBwcm9jZXNzL3ZtLAo+PiAgICAgICBhdCBwcmVzZW50LCBJIHVzZSBtZWRpYXRlZCBk
-ZXZpY2UgdG8gY3JlYXRlIG1vcmUgZ3JvdXBzIG9uIHRoZSBwYXJlbnQgZGV2aWNlIHRvIHN1cHBv
-cnQgbXVsdGlwbGUgcHJvY2Vzc2VzOwo+Pgo+PiAgICAgIDMuVkZJT19HUk9VUF9TRVRfQ09OVEFJ
-TkVSOwo+Pgo+PiAgICAgIDQuVkZJT19TRVRfSU9NTVU7Cj4+Cj4+ICAgICAgNS5WRklPX0lPTU1V
-X0JJTkQ7Cj4gSSBoYXZlIGEgY29uY2VybiByZWdhcmRpbmcgeW91ciBkcml2ZXIuIFdpdGggbWRl
-diB5b3UgY2FuJ3QgYWxsb3cKPiBwcm9jZXNzZXMgdG8gcHJvZ3JhbSB0aGUgUEFTSUQgdGhlbXNl
-bHZlcywgc2luY2UgdGhlIHBhcmVudCBkZXZpY2UgaGFzIGEKPiBzaW5nbGUgUEFTSUQgdGFibGUu
-IFlvdSBsb3NlIGFsbCBpc29sYXRpb24gc2luY2UgcHJvY2Vzc2VzIGNvdWxkIHdyaXRlCj4gYW55
-IHZhbHVlIGluIHRoZSBQQVNJRCBmaWVsZCBhbmQgYWNjZXNzIGFkZHJlc3Mgc3BhY2VzIG9mIG90
-aGVyCj4gcHJvY2Vzc2VzIGJvdW5kIHRvIHRoaXMgcGFyZW50IGRldmljZSAoZXZlbiBpZiB0aGUg
-QklORCBjYWxsIHdhcyBmb3IKPiBvdGhlciBtZGV2cykuClllcywgaWYgd3JhcGRyaXZlIGRvIG5v
-dGhpbmcgb24gdGhpcyBQQVNJRCBzZXR0aW5nIHByb2NlZHVyZSBpbiBrZXJuZWwgCnNwYWNlLCBJ
-IHRoaW5rCnRoZXJlIGRlZmluaXRlbHkgZXhpc3RzIHRoaXMgc2VjdXJpdHkgcmlzay4KPiBUaGUg
-d3JhcCBkcml2ZXIgaGFzIHRvIG1lZGlhdGUgY2FsbHMgdG8gYmluZCgpLCBhbmQgZWl0aGVyIHBy
-b2dyYW0gdGhlCj4gUEFTSUQgaW50byB0aGUgZGV2aWNlIGl0c2VsZiwgb3IgYXQgbGVhc3QgY2hl
-Y2sgdGhhdCwgd2hlbiByZWNlaXZpbmcgYQo+IFNFVF9QQVNJRCBpb2N0bCBmcm9tIGEgcHJvY2Vz
-cywgdGhlIGdpdmVuIFBBU0lEIHdhcyBhY3R1YWxseSBhbGxvY2F0ZWQKPiB0byB0aGUgcHJvY2Vz
-cy4KWWVzLCBnb29kIGFkdmljZSwgdGhhbmtzLgo+Cj4+ICAgICAgNi5EbyBzb21lIHdvcmtzIHdp
-dGggdGhlIGhhcmR3YXJlIHdvcmtpbmcgdW5pdCBmaWxsZWQgYnkgUEFTSUQgb24gdGhlIGRldmlj
-ZTsKPj4KPj4gICAgIDcuVkZJT19JT01NVV9VTkJJTkQ7Cj4+Cj4+ICAgICAgOC5WRklPX0dST1VQ
-X1VOU0VUX0NPTlRBSU5FUjstLS1oZXJlLCBoYXZlIHRvIHNsZWVwIHRvIHdhaXQgYW5vdGhlciBw
-cm9jZXNzIHRvIGZpbmlzaCB3b3JrcyBvZiB0aGUgc3RlcCA2Owo+Pgo+PiAgICAgIDkuIGNsb3Nl
-KGdyb3VwKTsgY2xvc2UoY29udGFpbm5lcik7Cj4+Cj4+Cj4+IFNvLCBteSBpZGVhIGlzOiBJZiBp
-dCBpcyBwb3NzaWJsZSB0byBqdXN0IHJlbGVhc2UgdGhlIHBhcmFtcyBvciBmYWNpbGl0aWVzIHRo
-YXQgb25seSBiZWxvbmcgdG8gdGhlIGN1cnJlbnQgcHJvY2VzcyB3aGlsZSB0aGUgcHJvY2VzcyBz
-aHV0ZG93biB0aGUgZGV2aWNlLAo+PiBhbmQgd2hpbGUgdGhlIGxhc3QgcHJvY2VzcyByZWxlYXNl
-cyB0aGVtIGFsbC4gVGhlbiwgYXMgaW4gdGhlIGFib3ZlIHN0ZXAgOCwgd2UKPj4gZG9uJ3QgbmVl
-ZCB0byB3YWl0LCBvciBtYXliZSB3YWl0IGZvciBhIHZlcnkgbG9uZyB0aW1lIGlmIHRoZSBvdGhl
-ciBwcm9jZXNzIGlzIGRvaW5nIGxvdHMgb2Ygd29yayBvbiB0aGUgZGV2aWNlLgo+IEdpdmVuIHRo
-YXQgeW91IG5lZWQgdG8gbm90aWZ5IHRoZSBtZWRpYXRpbmcgZHJpdmVyIG9mIElPTU1VX0JJTkQg
-Y2FsbHMKPiBhcyBleHBsYWluZWQgYWJvdmUsIHlvdSBjb3VsZCBkbyBzb21ldGhpbmcgc2ltaWxh
-ciBmb3Igc2h1dGRvd246IGZyb20KPiB0aGUgbWRldiBkcml2ZXIsIGNhbGwgaW9tbXVfc3ZhX3No
-dXRkb3duX2RldmljZSgpIG9ubHkgZm9yIHRoZSBsYXN0IG1kZXYuCkN1cnJlbnRseSwgSSBhZGQg
-YW4gQVBJIHRvIGNoZWNrIGlmIGl0IGlzIHRoZSBsYXN0IG1kZXYgaW4gd3JhcGRyaXZlLCBhcyAK
-dmZpbyBzaHV0ZG93bnMgdGhlIGRldmljZSwKaXQgY2FsbCB0aGUgQVBJIHRvIGRvIHRoZSBjaGVj
-ayBhdCBmaXJzdC4KClRoYW5rcwpaYWlibwoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+Print a useful warning instead.
+
+Reported-by: Finn Thain <fthain-PnMVE5gNl/W9dxLkCovUHLpzq4S04n8Q@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ lib/dma-direct.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/lib/dma-direct.c b/lib/dma-direct.c
+index a48f94eff62e..8be8106270c2 100644
+--- a/lib/dma-direct.c
++++ b/lib/dma-direct.c
+@@ -34,6 +34,13 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
+ 		const char *caller)
+ {
+ 	if (unlikely(dev && !dma_capable(dev, dma_addr, size))) {
++		if (!dev->dma_mask) {
++			dev_err(dev,
++				"%s: call on device without dma_mask\n",
++				caller);
++			return false;
++		}
++
+ 		if (*dev->dma_mask >= DMA_BIT_MASK(32)) {
+ 			dev_err(dev,
+ 				"%s: overflow %pad+%zu of device mask %llx\n",
+-- 
+2.17.0
