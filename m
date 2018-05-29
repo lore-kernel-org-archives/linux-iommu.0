@@ -1,117 +1,130 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v5 14/23] iommu: introduce page response function
-Date: Tue, 29 May 2018 09:13:19 -0700
-Message-ID: <20180529091319.544d2e57@jacob-builder>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v5 15/23] iommu: handle page response timeout
+Date: Tue, 29 May 2018 09:20:58 -0700
+Message-ID: <20180529092058.1942b223@jacob-builder>
 References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-15-git-send-email-jacob.jun.pan@linux.intel.com>
-	<5AF92F37.3050404@linux.intel.com>
+        <1526072055-86990-16-git-send-email-jacob.jun.pan@linux.intel.com>
+        <5AF93E3A.2040902@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5AF92F37.3050404-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5AF93E3A.2040902@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 May 2018 14:39:51 +0800
-Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+On Mon, 14 May 2018 15:43:54 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
 
 > Hi,
 > 
 > On 05/12/2018 04:54 AM, Jacob Pan wrote:
-> > IO page faults can be handled outside IOMMU subsystem. For an
-> > example, when nested translation is turned on and guest owns the
-> > first level page tables, device page request can be forwared
-> > to the guest for handling faults. As the page response returns
-> > by the guest, IOMMU driver on the host need to process the
-> > response which informs the device and completes the page request
-> > transaction.
+> > When IO page faults are reported outside IOMMU subsystem, the page
+> > request handler may fail for various reasons. E.g. a guest received
+> > page requests but did not have a chance to run for a long time. The
+> > irresponsive behavior could hold off limited resources on the
+> > pending device.
+> > There can be hardware or credit based software solutions as
+> > suggested in the PCI ATS Ch-4. To provide a basic safty net this
+> > patch introduces a per device deferrable timer which monitors the
+> > longest pending page fault that requires a response. Proper action
+> > such as sending failure response code could be taken when timer
+> > expires but not included in this patch. We need to consider the
+> > life cycle of page groupd ID to prevent confusion with reused group
+> > ID by a device. For now, a warning message provides clue of such
+> > failure.
 > >
-> > This patch introduces generic API function for page response
-> > passing from the guest or other in-kernel users. The definitions of
-> > the generic data is based on PCI ATS specification not limited to
-> > any vendor.
-> >
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> > Link: https://lkml.org/lkml/2017/12/7/1725
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
 > > ---
-> >  drivers/iommu/iommu.c | 45
-> > +++++++++++++++++++++++++++++++++++++++++++++ include/linux/iommu.h
-> > | 43 +++++++++++++++++++++++++++++++++++++++++++ 2 files changed,
-> > 88 insertions(+)
+> >  drivers/iommu/iommu.c | 53
+> > +++++++++++++++++++++++++++++++++++++++++++++++++++
+> > include/linux/iommu.h |  4 ++++ 2 files changed, 57 insertions(+)
 > >
 > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index b3f9daf..02fed3e 100644
+> > index 02fed3e..1f2f49e 100644
 > > --- a/drivers/iommu/iommu.c
 > > +++ b/drivers/iommu/iommu.c
-> > @@ -1533,6 +1533,51 @@ int iommu_sva_invalidate(struct iommu_domain
-> > *domain, }
-> >  EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
+> > @@ -827,6 +827,37 @@ int iommu_group_unregister_notifier(struct
+> > iommu_group *group, }
+> >  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
 > >  
-> > +int iommu_page_response(struct device *dev,
-> > +			struct page_response_msg *msg)
+> > +static void iommu_dev_fault_timer_fn(struct timer_list *t)
 > > +{
-> > +	struct iommu_param *param = dev->iommu_param;
-> > +	int ret = -EINVAL;
+> > +	struct iommu_fault_param *fparam = from_timer(fparam, t,
+> > timer);
 > > +	struct iommu_fault_event *evt;
-> > +	struct iommu_domain *domain =
-> > iommu_get_domain_for_dev(dev); +
-> > +	if (!domain || !domain->ops->page_response)
-> > +		return -ENODEV;
 > > +
-> > +	/*
-> > +	 * Device iommu_param should have been allocated when
-> > device is
-> > +	 * added to its iommu_group.
+> > +	u64 now;
+> > +
+> > +	now = get_jiffies_64();
+> > +
+> > +	/* The goal is to ensure driver or guest page fault
+> > handler(via vfio)
+> > +	 * send page response on time. Otherwise, limited queue
+> > resources
+> > +	 * may be occupied by some irresponsive guests or drivers.
+> > +	 * When per device pending fault list is not empty, we
+> > periodically checks
+> > +	 * if any anticipated page response time has expired.
+> > +	 *
+> > +	 * TODO:
+> > +	 * We could do the following if response time expires:
+> > +	 * 1. send page response code FAILURE to all pending PRQ
+> > +	 * 2. inform device driver or vfio
+> > +	 * 3. drain in-flight page requests and responses for this
+> > device
+> > +	 * 4. clear pending fault list such that driver can
+> > unregister fault
+> > +	 *    handler(otherwise blocked when pending faults are
+> > present).
 > > +	 */
-> > +	if (!param || !param->fault_param)
-> > +		return -EINVAL;
-> > +
-> > +	/* Only send response if there is a fault report pending */
-> > +	mutex_lock(&param->fault_param->lock);
-> > +	if (list_empty(&param->fault_param->faults)) {
-> > +		pr_warn("no pending PRQ, drop response\n");
-> > +		goto done_unlock;
+> > +	list_for_each_entry(evt, &fparam->faults, list) {
+> > +		if (time_after64(now, evt->expire))
+> > +			pr_err("Page response time expired!, pasid
+> > %d gid %d exp %llu now %llu\n",
+> > +				evt->pasid,
+> > evt->page_req_group_id, evt->expire, now);
 > > +	}
-> > +	/*
-> > +	 * Check if we have a matching page request pending to
-> > respond,
-> > +	 * otherwise return -EINVAL
-> > +	 */
-> > +	list_for_each_entry(evt, &param->fault_param->faults,
-> > list) {
-> > +		if (evt->pasid == msg->pasid &&
-> > +		    msg->page_req_group_id ==
-> > evt->page_req_group_id) {
-> > +			msg->private_data = evt->iommu_private;
-> > +			ret = domain->ops->page_response(dev, msg);
-> > +			list_del(&evt->list);
-> > +			kfree(evt);
-> > +			break;
-> > +		}
-> > +	}  
+> > +	mod_timer(t, now + prq_timeout);
+> > +}
+> > +  
 > 
-> Are above two checks duplicated? We won't find a matching
-> request if the list is empty. And we need to  printk a message
-> if we can't find the matching request.
+> This timer scheme is very rough.
 > 
-sorry about the delay. I am not sure which two checks, we only search
-for pending page request if the list is not empty.
-Yes, it is a good idea to print out warning if the page response has no
-match request.
+yes, the timer is a rough safety net for misbehaved PRQ handlers such
+as a guest.
+> The timer expires every 10 seconds (by default).
+> 
+> 0                   10                 20
+> 30                 40
+> +---------------+---------------+---------------+---------------+ ^
+> ^   ^  ^                        ^ |   |     |
+> |                         | F0 F1  F2 F3
+> (F1,F2,F3 will not be handled until here!)
+> 
+> F0, F1, F2, F3 are four page faults happens during [0, 10s) time
+> window. F1, F2, F3 timeout won't be handled until the timer expires
+> again at 20s. That means a fault might be pending there until about
+> (2 * prq_timeout) seconds later.
+> 
+correct. it could be 2x for the worst case. I should explain in
+comments.
+> Out of curiosity, Why not adding a timer in iommu_fault_event,
+> starting it in iommu_report_device_fault() and removing it in
+> iommu_page_response()?
+> 
+I thought about that also but since we are just trying to have a broad
+and rough safety net (in addition to potential HW mechanism or credit
+based solution), my thought was that having a per device timer is more
+economical than per event.
+Thanks for the in-depth check!
+
 > Best regards,
 > Lu Baolu
+> 
 > 
 >  [...]  
 > 
