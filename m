@@ -1,8 +1,7 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 1/2] ARM: dma-mapping: Set proper DMA ops in
-	arm_iommu_detach_device()
-Date: Wed, 30 May 2018 16:06:24 +0200
-Message-ID: <20180530140625.21247-2-thierry.reding@gmail.com>
+Subject: [PATCH v4 2/2] drm/nouveau: tegra: Detach from ARM DMA/IOMMU mapping
+Date: Wed, 30 May 2018 16:06:25 +0200
+Message-ID: <20180530140625.21247-3-thierry.reding@gmail.com>
 References: <20180530140625.21247-1-thierry.reding@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,53 +23,69 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 
-Instead of setting the DMA ops pointer to NULL, set the correct,
-non-IOMMU ops depending on the device's coherency setting.
+Depending on the kernel configuration, early ARM architecture setup code
+may have attached the GPU to a DMA/IOMMU mapping that transparently uses
+the IOMMU to back the DMA API. Tegra requires special handling for IOMMU
+backed buffers (a special bit in the GPU's MMU page tables indicates the
+memory path to take: via the SMMU or directly to the memory controller).
+Transparently backing DMA memory with an IOMMU prevents Nouveau from
+properly handling such memory accesses and causes memory access faults.
+
+As a side-note: buffers other than those allocated in instance memory
+don't need to be physically contiguous from the GPU's perspective since
+the GPU can map them into contiguous buffers using its own MMU. Mapping
+these buffers through the IOMMU is unnecessary and will even lead to
+performance degradation because of the additional translation. One
+exception to this are compressible buffers which need large pages. In
+order to enable these large pages, multiple small pages will have to be
+combined into one large (I/O virtually contiguous) mapping via the
+IOMMU. However, that is a topic outside the scope of this fix and isn't
+currently supported. An implementation will want to explicitly create
+these large pages in the Nouveau driver, so detaching from a DMA/IOMMU
+mapping would still be required.
 
 Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
 Changes in v4:
-- new patch to fix existing arm_iommu_detach_device() to do what we need
+- use existing APIs to detach from a DMA/IOMMU mapping
 
- arch/arm/mm/dma-mapping.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Changes in v3:
+- clarify the use of IOMMU mapping for compressible buffers
+- squash multiple patches into this
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index af27f1c22d93..87a0037574e4 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1151,6 +1151,11 @@ int arm_dma_supported(struct device *dev, u64 mask)
- 	return __dma_supported(dev, mask, false);
- }
+ drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+index 78597da6313a..0e372a190d3f 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+@@ -23,6 +23,10 @@
+ #ifdef CONFIG_NOUVEAU_PLATFORM_DRIVER
+ #include "priv.h"
  
-+static const struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
-+{
-+	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
-+}
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++#include <asm/dma-iommu.h>
++#endif
 +
- #ifdef CONFIG_ARM_DMA_USE_IOMMU
- 
- static int __dma_info_to_prot(enum dma_data_direction dir, unsigned long attrs)
-@@ -2296,7 +2301,7 @@ void arm_iommu_detach_device(struct device *dev)
- 	iommu_detach_device(mapping->domain, dev);
- 	kref_put(&mapping->kref, release_iommu_mapping);
- 	to_dma_iommu_mapping(dev) = NULL;
--	set_dma_ops(dev, NULL);
-+	set_dma_ops(dev, arm_get_dma_map_ops(dev->archdata.dma_coherent));
- 
- 	pr_debug("Detached IOMMU controller from %s device.\n", dev_name(dev));
- }
-@@ -2357,11 +2362,6 @@ static void arm_teardown_iommu_dma_ops(struct device *dev) { }
- 
- #endif	/* CONFIG_ARM_DMA_USE_IOMMU */
- 
--static const struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
--{
--	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
--}
--
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 			const struct iommu_ops *iommu, bool coherent)
+ static int
+ nvkm_device_tegra_power_up(struct nvkm_device_tegra *tdev)
  {
+@@ -105,6 +109,15 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
+ 	unsigned long pgsize_bitmap;
+ 	int ret;
+ 
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++	if (dev->archdata.mapping) {
++		struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
++
++		arm_iommu_detach_device(dev);
++		arm_iommu_release_mapping(mapping);
++	}
++#endif
++
+ 	if (!tdev->func->iommu_bit)
+ 		return;
+ 
 -- 
 2.17.0
