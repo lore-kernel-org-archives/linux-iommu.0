@@ -1,73 +1,60 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: [PATCH v3 2/2] drm/nouveau: tegra: Detach from ARM DMA/IOMMU mapping
-Date: Wed, 30 May 2018 10:03:45 +0200
-Message-ID: <20180530080345.2353-3-thierry.reding@gmail.com>
-References: <20180530080345.2353-1-thierry.reding@gmail.com>
+From: Huaisheng HS1 Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [External]  Re: [RFC PATCH v2 00/12] get rid of GFP_ZONE_TABLE/BAD
+Date: Wed, 30 May 2018 09:02:13 +0000
+Message-ID: <HK2PR03MB1684C44F2408F3927B1A21BC926C0@HK2PR03MB1684.apcprd03.prod.outlook.com>
+References: <1526916033-4877-1-git-send-email-yehs2007@gmail.com>
+	<20180522183728.GB20441@dhcp22.suse.cz>
+	<HK2PR03MB16847646E90A10E2D48CEA8E926B0@HK2PR03MB1684.apcprd03.prod.outlook.com>
+	<20180524121853.GG20441@dhcp22.suse.cz>
+	<HK2PR03MB1684ED6EC6859A88A196DC0C92690@HK2PR03MB1684.apcprd03.prod.outlook.com>
+	<20180528133733.GF27180@dhcp22.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180530080345.2353-1-thierry.reding@gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Ben Skeggs <bskeggs@redhat.com>, Christoph Hellwig <hch@infradead.org>, Russell King <linux@armlinux.org.uk>
-Cc: nouveau@lists.freedesktop.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org, Jordan Crouse <jcrouse@codeaurora.org>, Daniel Vetter <daniel@ffwll.ch>, linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180528133733.GF27180-2MMpYkNvuYDjFM9bn6wA6Q@public.gmane.org>
+Content-Language: zh-CN
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <kstewart-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Ocean HY1 He <hehy1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org" <alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-btrfs-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, NingTing Cheng <chengnt-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, "xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org" <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "colyli-l3A5Bk7waGM@public.gmane.org" <colyli-l3A5Bk7waGM@public.gmane.org>, "mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org" <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "vbabka-AlSwsSmVLrQ@public.gmane.org" <vbabka-AlSwsSmVLrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: owner-linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org [mailto:owner-linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org] On Behalf Of Michal Hocko
+Sent: Monday, May 28, 2018 9:38 PM
+> > In my opinion, originally there shouldn't be such many wrong
+> > combinations of these bottom 3 bits. For any user, whether or
+> > driver and fs, they should make a decision that which zone is they
+> > preferred. Matthew's idea is great, because with it the user must
+> > offer an unambiguous flag to gfp zone bits.
+> 
+> Well, I would argue that those shouldn't really care about any zones at
+> all. All they should carea bout is whether they really need a low mem
+> zone (aka directly accessible to the kernel), highmem or they are the
+> allocation is generally movable. Mixing zones into the picture just
+> makes the whole thing more complicated and error prone.
 
-Depending on the kernel configuration, early ARM architecture setup code
-may have attached the GPU to a DMA/IOMMU mapping that transparently uses
-the IOMMU to back the DMA API. Tegra requires special handling for IOMMU
-backed buffers (a special bit in the GPU's MMU page tables indicates the
-memory path to take: via the SMMU or directly to the memory controller).
-Transparently backing DMA memory with an IOMMU prevents Nouveau from
-properly handling such memory accesses and causes memory access faults.
+Dear Michal,
 
-As a side-note: buffers other than those allocated in instance memory
-don't need to be physically contiguous from the GPU's perspective since
-the GPU can map them into contiguous buffers using its own MMU. Mapping
-these buffers through the IOMMU is unnecessary and will even lead to
-performance degradation because of the additional translation. One
-exception to this are compressible buffers which need large pages. In
-order to enable these large pages, multiple small pages will have to be
-combined into one large (I/O virtually contiguous) mapping via the
-IOMMU. However, that is a topic outside the scope of this fix and isn't
-currently supported. An implementation will want to explicitly create
-these large pages in the Nouveau driver, so detaching from a DMA/IOMMU
-mapping would still be required.
+I don't quite understand that. I think those, mostly drivers, need to
+get the correct zone they want. ZONE_DMA32 is an example, if drivers can be
+satisfied with a low mem zone, why they mark the gfp flags as
+'GFP_KERNEL|__GFP_DMA32'?
+GFP_KERNEL is enough to make sure a directly accessible low mem, but it is
+obvious that they want to get a DMA accessible zone below 4G.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
-Changes in v3:
-- clarify the use of IOMMU mapping for compressible buffers
-- squash multiple patches into this
+> This should be a part of the changelog. Please note that you should
+> provide some number if you claim performance benefits. The complexity
+> will always be subjective.
 
- drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Sure, I will post them to changelog with next version of patches.
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-index 78597da6313a..d0538af1b967 100644
---- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
-@@ -105,6 +105,11 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
- 	unsigned long pgsize_bitmap;
- 	int ret;
- 
-+#if IS_ENABLED(CONFIG_ARM)
-+	/* make sure we can use the IOMMU exclusively */
-+	arm_dma_iommu_detach_device(dev);
-+#endif
-+
- 	if (!tdev->func->iommu_bit)
- 		return;
- 
--- 
-2.17.0
+Sincerely,
+Huaisheng Ye
