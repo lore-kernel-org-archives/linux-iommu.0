@@ -1,23 +1,15 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 04/22] iommu/vt-d: add bind_pasid_table function
-Date: Wed, 30 May 2018 12:53:53 +0100
-Message-ID: <a07a0a0a-ebdd-c81a-7ed6-cff19e6078d7@arm.com>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1523915351-54415-5-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20180417131047.0a9c310f@w520.home>
-	<AM4PR0802MB2369F739C91B630CA99B3D3BA3B40@AM4PR0802MB2369.eurprd08.prod.outlook.com>
-	<20180420164251.5245f822@jacob-builder>
-	<20180529140915.1f174689@w520.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D1911E59C4@SHSMSX101.ccr.corp.intel.com>
-	<20180529211746.74f1dd23@w520.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D1911E5F06@SHSMSX101.ccr.corp.intel.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 1/2] ARM: dma-mapping: Implement
+	arm_dma_iommu_detach_device()
+Date: Wed, 30 May 2018 14:54:46 +0200
+Message-ID: <20180530125446.GA1595@ulmo>
+References: <20180530080345.2353-1-thierry.reding@gmail.com>
+	<20180530080345.2353-2-thierry.reding@gmail.com>
+	<eee02391-aa25-da84-f98a-b5fed6c69599@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============9088189861595639827=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1911E5F06-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <eee02391-aa25-da84-f98a-b5fed6c69599-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,145 +19,157 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
-	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/05/18 04:45, Tian, Kevin wrote:
->>>>>> On SMMUv3 the minimum alignment for base_ptr is 64 bytes, so a
->>>> guest
->>>>>> under a vSMMU might pass a pointer that's not aligned on 4k.
->>>>>>
->>>>> PASID table pointer for VT-d is 4K aligned.
->>>>>> Maybe this information could be part of the data passed to
->> userspace
->>>>>> about IOMMU table formats and features? They're not part of this
->>>>>> series, but I think we wanted to communicate IOMMU-specific
->> features
->>>>>> via sysfs.
->>>>>>
->>>>> Agreed, I believe Yi Liu is working on a sysfs interface such that QEMU
->>>>> can match IOMMU model and features.
->>>>
->>>> Digging this up again since v5 still has this issue.  The IOMMU API is
->>>> a kernel internal abstraction of the IOMMU.  sysfs is a userspace
->>>> interface.  Are we suggesting that the /only/ way to make use of the
->>>> internal IOMMU API here is to have a user provided opaque pasid table
->>>> that we can't even do minimal compatibility sanity testing on and we
->>>> simply hope that hardware covers all the fault conditions without
->>>> taking the host down with it?  I guess we have to assume the latter
->>>> since the user has full control of the table, but I have a hard time
->>>> getting past lack of internal ability to use the interface and no
->>>> ability to provide even the slimmest sanity testing.  Thanks,
->>>>
->>>
->>> checking size, alignment, ... is OK, which I think is already considered
->>> by vendor IOMMU driver. However sanity testing table format might
->>> be difficult. The initial table provided by guest is likely just all ZEROs.
->>> whatever format violation may be caught only when a PASID entry
->>> is updated...
->>
->> There's sanity testing the actual contents of the table, which I agree
->> would be difficult and would likely require some sort of shadowing at
->> additional overhead, but what about even basic consistency checking?
->> For example, is it possible that due to hardware variations a user
->> might generate a table which works on some systems but not others?
->> What
->> if two table formats are sufficiently similar that the IOMMU driver
->> puts an incompatible table in place but it continuously generates
->> faults, how do we debug that?  As an intermediary in this whole process
->> I'd really rather be able to identify that the user claims to be
->> providing a TypeA table but the IOMMU only supports TypeB, so clearly
->> this won't work.  I don't see that we have that capability.  Thanks,
->
-> I remember we ever discussed to define some vendor/model ID,
-> which can be retrieved by user space and then passed back when
-> doing table binding. Then above simple model matching check can
-> be done accordingly. It is actually a basic requirement when using 
-> virtio-iommu, same driver expecting to work on all vendor IOMMUs.
-> 
-> However I don't remember whether/where that logic is implemented
-> in this series (especially when there are two tracks moving in parallel).
-> I'll leave to Jacob/Jean to further comment.
 
-For Arm we do need some form of sanity checking. As each architecture
-version brings a new set of features that may be supported and enabled
-individually, we need to communicate fine-grained features to users.
-They describes the general capability of the physical IOMMU, and also
-which fields are available in the PASID table (entries are 512-bits and
-leave some space for future extensions).
+--===============9088189861595639827==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cNdxnHkX5QqsyA0e"
+Content-Disposition: inline
 
-In the past I briefly tried using a ioctl-based interface through VFIO
-only, but it seemed more complicated to extend than sysfs for this kind
-of probing.
 
-Note that the following is from my own prototype. I'm not sure how much
-Yi Liu's implementation differs but I think this was roughly what we
-agreed on last time. In sysfs an IOMMU device is described with:
+--cNdxnHkX5QqsyA0e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-* A model number, for example intel-vtd=1, arm-smmu-v3=2.
-* Properties and features, describing in detail what the pIOMMU device
-  and driver support.
+On Wed, May 30, 2018 at 10:59:30AM +0100, Robin Murphy wrote:
+> On 30/05/18 09:03, Thierry Reding wrote:
+> > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> >=20
+> > Implement this function to enable drivers from detaching from any IOMMU
+> > domains that architecture code might have attached them to so that they
+> > can take exclusive control of the IOMMU via the IOMMU API.
+> >=20
+> > Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> > ---
+> > Changes in v3:
+> > - make API 32-bit ARM specific
+> > - avoid extra local variable
+> >=20
+> > Changes in v2:
+> > - fix compilation
+> >=20
+> >   arch/arm/include/asm/dma-mapping.h |  3 +++
+> >   arch/arm/mm/dma-mapping-nommu.c    |  4 ++++
+> >   arch/arm/mm/dma-mapping.c          | 16 ++++++++++++++++
+> >   3 files changed, 23 insertions(+)
+> >=20
+> > diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/=
+dma-mapping.h
+> > index 8436f6ade57d..5960e9f3a9d0 100644
+> > --- a/arch/arm/include/asm/dma-mapping.h
+> > +++ b/arch/arm/include/asm/dma-mapping.h
+> > @@ -103,6 +103,9 @@ extern void arch_setup_dma_ops(struct device *dev, =
+u64 dma_base, u64 size,
+> >   #define arch_teardown_dma_ops arch_teardown_dma_ops
+> >   extern void arch_teardown_dma_ops(struct device *dev);
+> > +#define arm_dma_iommu_detach_device arm_dma_iommu_detach_device
+> > +extern void arm_dma_iommu_detach_device(struct device *dev);
+> > +
+> >   /* do not use this function in a driver */
+> >   static inline bool is_device_dma_coherent(struct device *dev)
+> >   {
+> > diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-=
+nommu.c
+> > index f448a0663b10..eb781369377b 100644
+> > --- a/arch/arm/mm/dma-mapping-nommu.c
+> > +++ b/arch/arm/mm/dma-mapping-nommu.c
+> > @@ -241,3 +241,7 @@ void arch_setup_dma_ops(struct device *dev, u64 dma=
+_base, u64 size,
+> >   void arch_teardown_dma_ops(struct device *dev)
+> >   {
+> >   }
+> > +
+> > +void arm_dma_iommu_detach_device(struct device *dev)
+> > +{
+> > +}
+> > diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> > index af27f1c22d93..6d8af08b3e7d 100644
+> > --- a/arch/arm/mm/dma-mapping.c
+> > +++ b/arch/arm/mm/dma-mapping.c
+> > @@ -2400,3 +2400,19 @@ void arch_teardown_dma_ops(struct device *dev)
+> >   	arm_teardown_iommu_dma_ops(dev);
+> >   }
+> > +
+> > +void arm_dma_iommu_detach_device(struct device *dev)
+> > +{
+> > +#ifdef CONFIG_ARM_DMA_USE_IOMMU
+> > +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
+> > +
+> > +	if (!mapping)
+> > +		return;
+> > +
+> > +	arm_iommu_release_mapping(mapping);
+>=20
+> Potentially freeing the mapping before you try to operate on it is never =
+the
+> best idea. Plus arm_iommu_detach_device() already releases a reference
+> appropriately anyway, so it's a double-free.
 
-/sys/class/iommu/<iommu-dev>/<model>/<property>
+But the reference released by arm_iommu_detach_device() is to balance
+out the reference acquired by arm_iommu_attach_device(), isn't it? In
+the above, the arm_iommu_release_mapping() is supposed to drop the
+final reference which was obtained by arm_iommu_create_mapping(). The
+mapping shouldn't go away irrespective of the order in which these
+will be called.
 
-For example an SMMUv3:
+> > +	arm_iommu_detach_device(dev);
+> > +
+> > +	set_dma_ops(dev, arm_get_dma_map_ops(dev->archdata.dma_coherent));
+> > +#endif
+> > +}
+> > +EXPORT_SYMBOL(arm_dma_iommu_detach_device);
+>=20
+> I really don't see why we need an extra function that essentially just
+> duplicates arm_iommu_detach_device(). The only real difference here is th=
+at
+> here you reset the DMA ops more appropriately, but I think the existing
+> function should be fixed to do that anyway, since set_dma_ops(dev, NULL) =
+now
+> just behaves as an unconditional fallback to the noncoherent arm_dma_ops,
+> which clearly isn't always right.
 
-The model number is described as a property
-/sys/class/iommu/smmu.0x00000000e0600000/arm-smmu-v3/model = 2
+The idea behind making this an extra function is that we can call it
+unconditionally and it will do the right things. Granted, that already
+doesn't quite work as elegantly anymore as I had hoped since this is
+now an ARM specific function, so we need an #ifdef guard anyway.
 
-A few feature bits and values:
-.../arm-smmu-v3/asid_bits	// max address space ID bits, %d
-.../arm-smmu-v3/ssid_bits	// max substream ID (PASID) bits, %d
-.../arm-smmu-v3/input_bits	// max input address size, %d
-.../arm-smmu-v3/output_bits	// max output address size, %d
-.../arm-smmu-v3/btm		// broadcast TLB maintenance, enabled/disabled
-.../arm-smmu-v3/httu		// Hardware table update, access+dirty/access/none
-.../arm-smmu-v3/stall		// transaction stalling, enabled/disabled/force
+I don't care very strongly either way, so if you and Christoph can both
+agree that we just want arm_iommu_detach_device() to call the proper
+variant of set_dma_ops(), that's fine with me, too.
 
-(Note that the base pointer alignment previously discussed could be
-implied by the model number, or added explicitly here.)
+Thierry
 
-Which page table formats are supported:
-.../arm-smmu-v3/pgtable_format/lpae-64
-.../arm-smmu-v3/pgtable_format/v7s
-I'm not sure yet what values these will have, they might simply contain
-arbitrary format numbers because fields available in the page tables can
-be deduced from the above features bits. (Out of laziness, in my
-prototype I just describe a preferred format in a pgtable_format file)
+--cNdxnHkX5QqsyA0e
+Content-Type: application/pgp-signature; name="signature.asc"
 
-As you can imagine I'd rather not pass the fine details back to the
-kernel in bind_pasid_table. The list of features is growing, and
-describing them is a pain. It could be done for debugging purpose, but
-all we'd be achieving is telling the kernel that userspace has read the
-values, not that the guest intends to use them. The guest selects
-features by writing PASID table entries, which aren't read by the host.
+-----BEGIN PGP SIGNATURE-----
 
-If the guest writes invalid values in the PASID table then yes, we have
-to rely on the hardware to contain the fault and not bring the host down
-with it. If the IOMMU cannot do that, then the driver really shouldn't
-implement bind_pasid_table... Otherwise, a fault while reading the PASID
-table can be injected into the guest as an unrecoverable fault
-(IOMMU_FAULT_REASON_PASID_INVALID or IOMMU_FAULT_REASON_PGD_FETCH in
-patch 10) or printed by the host when debugging.
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsOnxMACgkQ3SOs138+
+s6GE2A//dfsRFRDkGJeKcLMXf4TFhfseAUT1M6c5Fm5cxwQwqWDiMbsZOXdMBloM
+o437ndD8QbfaraVHFTscD3uOsp3OHfVqpYyJCGHhihp4nqslBXsy/i8Qv9ej4ENi
+eEP8Dn3WEeNTobl70Rvsy40ERt1G+BKp2HSDV/wbRkGLHj0LyqVjaWOPxGcbIe4q
+opKibSGoOU1T5kdq2OcX8IZz/lV2VUu1wLVn9k+AYdRq8ID4hPbXjGL1RjciMB6Y
+VHvW4GM8wZm+ZpguE8iUEcKlXFRF/AbAI18D841m8CHY0USo/TdmOMgBEsJdn+iM
+ZaqAiqiUpXD05DpGhbUXcXC6Ynup6qjMRkTdvaJax5RgTKevRzWvfDvVL8y8y+A2
+9spYEqWgByhnnZXPeaqERX9Tn6+Pk8tveG6WFsudyFKKp3i0ZgbbpGS5lsfJsQVV
+6zmG8mscuX9eBwB490VLbFXA/mWEzgh2nD90oPQhE8FHV2vduEfgk1hzlmzlcOTb
+ohLKBzxiwYVj9KIPVhnCpfRE0XC8Nt3DYngYQwbRoe5xAHLi+5F4PaeDmH2tlSc+
+o0+BowVO6K+5VuKmEm/xuqrzlftt95uLlQYmn7OlmPutPQizRlg40yFVE8UC2Nn0
+jIsJq7FYlcsIif5NTMD/rRgMc6nrP7TeoncewfImdkWrpUayVTs=
+=seGm
+-----END PGP SIGNATURE-----
 
-However I think the model number should be added to pasid_table_config.
-For one thing it gives us a simple sanity-check, but it also tells which
-other fields are valid in pasid_table_config. Arm-smmu-v3 needs at least
-two additional 8-bit fields describing the PASID table format (number of
-levels and PASID0 behaviour), which are written to device context tables
-when installing the PASID table pointer.
+--cNdxnHkX5QqsyA0e--
 
-Compatibility: new optional features are easy to add to a given model,
-just add a new sysfs file. If in the future, the host describes a new
-feature that is mandatory, or implements a different PASID table format,
-how does it ensure that user understands it? Perhaps use a new model
-number for this, e.g. "arm-smmu-v3-a=3", with similar features. I think
-it would be the same if the host stops supporting a feature for a given
-model, because they are ABI. But we can also define default values from
-the start, for example "if ssid_bits file isn't present, default value
-is 0 - PASID not supported"
+--===============9088189861595639827==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Thanks,
-Jean
+
+--===============9088189861595639827==--
