@@ -1,15 +1,15 @@
 From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 1/2] ARM: dma-mapping: Implement
-	arm_dma_iommu_detach_device()
-Date: Wed, 30 May 2018 14:54:46 +0200
-Message-ID: <20180530125446.GA1595@ulmo>
+Subject: Re: [PATCH v3 2/2] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
+	mapping
+Date: Wed, 30 May 2018 15:00:45 +0200
+Message-ID: <20180530130045.GB1595@ulmo>
 References: <20180530080345.2353-1-thierry.reding@gmail.com>
-	<20180530080345.2353-2-thierry.reding@gmail.com>
-	<eee02391-aa25-da84-f98a-b5fed6c69599@arm.com>
+	<20180530080345.2353-3-thierry.reding@gmail.com>
+	<7960e4fc-f680-f8d1-0c5a-3ff1e13b3154@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============9088189861595639827=="
+Content-Type: multipart/mixed; boundary="===============2598149410454806083=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <eee02391-aa25-da84-f98a-b5fed6c69599-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <7960e4fc-f680-f8d1-0c5a-3ff1e13b3154-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,152 +24,118 @@ Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <lin
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============9088189861595639827==
+--===============2598149410454806083==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cNdxnHkX5QqsyA0e"
+	protocol="application/pgp-signature"; boundary="St7VIuEGZ6dlpu13"
 Content-Disposition: inline
 
 
---cNdxnHkX5QqsyA0e
+--St7VIuEGZ6dlpu13
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 30, 2018 at 10:59:30AM +0100, Robin Murphy wrote:
+On Wed, May 30, 2018 at 11:30:25AM +0100, Robin Murphy wrote:
 > On 30/05/18 09:03, Thierry Reding wrote:
 > > From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > >=20
-> > Implement this function to enable drivers from detaching from any IOMMU
-> > domains that architecture code might have attached them to so that they
-> > can take exclusive control of the IOMMU via the IOMMU API.
+> > Depending on the kernel configuration, early ARM architecture setup code
+> > may have attached the GPU to a DMA/IOMMU mapping that transparently uses
+> > the IOMMU to back the DMA API. Tegra requires special handling for IOMMU
+> > backed buffers (a special bit in the GPU's MMU page tables indicates the
+> > memory path to take: via the SMMU or directly to the memory controller).
+> > Transparently backing DMA memory with an IOMMU prevents Nouveau from
+> > properly handling such memory accesses and causes memory access faults.
 > >=20
+> > As a side-note: buffers other than those allocated in instance memory
+> > don't need to be physically contiguous from the GPU's perspective since
+> > the GPU can map them into contiguous buffers using its own MMU. Mapping
+> > these buffers through the IOMMU is unnecessary and will even lead to
+> > performance degradation because of the additional translation. One
+> > exception to this are compressible buffers which need large pages. In
+> > order to enable these large pages, multiple small pages will have to be
+> > combined into one large (I/O virtually contiguous) mapping via the
+> > IOMMU. However, that is a topic outside the scope of this fix and isn't
+> > currently supported. An implementation will want to explicitly create
+> > these large pages in the Nouveau driver, so detaching from a DMA/IOMMU
+> > mapping would still be required.
+>=20
+> I wonder if it might make sense to have a hook in iommu_attach_device() to
+> notify the arch DMA API code when moving devices between unmanaged and DMA
+> ops domains? That seems like it might be the most low-impact way to addre=
+ss
+> the overall problem long-term.
+>=20
 > > Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 > > ---
 > > Changes in v3:
-> > - make API 32-bit ARM specific
-> > - avoid extra local variable
+> > - clarify the use of IOMMU mapping for compressible buffers
+> > - squash multiple patches into this
 > >=20
-> > Changes in v2:
-> > - fix compilation
+> >   drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 5 +++++
+> >   1 file changed, 5 insertions(+)
 > >=20
-> >   arch/arm/include/asm/dma-mapping.h |  3 +++
-> >   arch/arm/mm/dma-mapping-nommu.c    |  4 ++++
-> >   arch/arm/mm/dma-mapping.c          | 16 ++++++++++++++++
-> >   3 files changed, 23 insertions(+)
-> >=20
-> > diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/=
-dma-mapping.h
-> > index 8436f6ade57d..5960e9f3a9d0 100644
-> > --- a/arch/arm/include/asm/dma-mapping.h
-> > +++ b/arch/arm/include/asm/dma-mapping.h
-> > @@ -103,6 +103,9 @@ extern void arch_setup_dma_ops(struct device *dev, =
-u64 dma_base, u64 size,
-> >   #define arch_teardown_dma_ops arch_teardown_dma_ops
-> >   extern void arch_teardown_dma_ops(struct device *dev);
-> > +#define arm_dma_iommu_detach_device arm_dma_iommu_detach_device
-> > +extern void arm_dma_iommu_detach_device(struct device *dev);
-> > +
-> >   /* do not use this function in a driver */
-> >   static inline bool is_device_dma_coherent(struct device *dev)
-> >   {
-> > diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-=
-nommu.c
-> > index f448a0663b10..eb781369377b 100644
-> > --- a/arch/arm/mm/dma-mapping-nommu.c
-> > +++ b/arch/arm/mm/dma-mapping-nommu.c
-> > @@ -241,3 +241,7 @@ void arch_setup_dma_ops(struct device *dev, u64 dma=
-_base, u64 size,
-> >   void arch_teardown_dma_ops(struct device *dev)
-> >   {
-> >   }
-> > +
-> > +void arm_dma_iommu_detach_device(struct device *dev)
-> > +{
-> > +}
-> > diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> > index af27f1c22d93..6d8af08b3e7d 100644
-> > --- a/arch/arm/mm/dma-mapping.c
-> > +++ b/arch/arm/mm/dma-mapping.c
-> > @@ -2400,3 +2400,19 @@ void arch_teardown_dma_ops(struct device *dev)
-> >   	arm_teardown_iommu_dma_ops(dev);
-> >   }
-> > +
-> > +void arm_dma_iommu_detach_device(struct device *dev)
-> > +{
-> > +#ifdef CONFIG_ARM_DMA_USE_IOMMU
-> > +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
-> > +
-> > +	if (!mapping)
-> > +		return;
-> > +
-> > +	arm_iommu_release_mapping(mapping);
+> > diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drive=
+rs/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+> > index 78597da6313a..d0538af1b967 100644
+> > --- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+> > +++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+> > @@ -105,6 +105,11 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_t=
+egra *tdev)
+> >   	unsigned long pgsize_bitmap;
+> >   	int ret;
+> > +#if IS_ENABLED(CONFIG_ARM)
 >=20
-> Potentially freeing the mapping before you try to operate on it is never =
-the
-> best idea. Plus arm_iommu_detach_device() already releases a reference
-> appropriately anyway, so it's a double-free.
+> Wouldn't CONFIG_ARM_DMA_USE_IOMMU be even more appropriate?
 
-But the reference released by arm_iommu_detach_device() is to balance
-out the reference acquired by arm_iommu_attach_device(), isn't it? In
-the above, the arm_iommu_release_mapping() is supposed to drop the
-final reference which was obtained by arm_iommu_create_mapping(). The
-mapping shouldn't go away irrespective of the order in which these
-will be called.
+Not necessarily. arm_dma_iommu_detach_device() is always defined on ARM,
+only with CONFIG_ARM_DMA_USE_IOMMU=3Dn it will be empty. So this check is
+a guard to make sure we don't call the function when it isn't available,
+but it may still not do anything.
 
-> > +	arm_iommu_detach_device(dev);
-> > +
-> > +	set_dma_ops(dev, arm_get_dma_map_ops(dev->archdata.dma_coherent));
-> > +#endif
-> > +}
-> > +EXPORT_SYMBOL(arm_dma_iommu_detach_device);
 >=20
-> I really don't see why we need an extra function that essentially just
-> duplicates arm_iommu_detach_device(). The only real difference here is th=
-at
-> here you reset the DMA ops more appropriately, but I think the existing
-> function should be fixed to do that anyway, since set_dma_ops(dev, NULL) =
-now
-> just behaves as an unconditional fallback to the noncoherent arm_dma_ops,
-> which clearly isn't always right.
+> > +	/* make sure we can use the IOMMU exclusively */
+> > +	arm_dma_iommu_detach_device(dev);
+>=20
+> As before, I would just use the existing infrastructure the same way the
+> Exynos DRM driver currently does in __exynos_iommu_attach() (albeit witho=
+ut
+> then reattaching to another DMA ops mapping).
 
-The idea behind making this an extra function is that we can call it
-unconditionally and it will do the right things. Granted, that already
-doesn't quite work as elegantly anymore as I had hoped since this is
-now an ARM specific function, so we need an #ifdef guard anyway.
-
-I don't care very strongly either way, so if you and Christoph can both
-agree that we just want arm_iommu_detach_device() to call the proper
-variant of set_dma_ops(), that's fine with me, too.
+That's pretty much what I initially did and which was shot down by
+Christoph. As I said earlier, at this point I don't really care what
+color the shed will be. Can you and Christoph come to an agreement
+on what it should be?
 
 Thierry
 
---cNdxnHkX5QqsyA0e
+--St7VIuEGZ6dlpu13
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsOnxMACgkQ3SOs138+
-s6GE2A//dfsRFRDkGJeKcLMXf4TFhfseAUT1M6c5Fm5cxwQwqWDiMbsZOXdMBloM
-o437ndD8QbfaraVHFTscD3uOsp3OHfVqpYyJCGHhihp4nqslBXsy/i8Qv9ej4ENi
-eEP8Dn3WEeNTobl70Rvsy40ERt1G+BKp2HSDV/wbRkGLHj0LyqVjaWOPxGcbIe4q
-opKibSGoOU1T5kdq2OcX8IZz/lV2VUu1wLVn9k+AYdRq8ID4hPbXjGL1RjciMB6Y
-VHvW4GM8wZm+ZpguE8iUEcKlXFRF/AbAI18D841m8CHY0USo/TdmOMgBEsJdn+iM
-ZaqAiqiUpXD05DpGhbUXcXC6Ynup6qjMRkTdvaJax5RgTKevRzWvfDvVL8y8y+A2
-9spYEqWgByhnnZXPeaqERX9Tn6+Pk8tveG6WFsudyFKKp3i0ZgbbpGS5lsfJsQVV
-6zmG8mscuX9eBwB490VLbFXA/mWEzgh2nD90oPQhE8FHV2vduEfgk1hzlmzlcOTb
-ohLKBzxiwYVj9KIPVhnCpfRE0XC8Nt3DYngYQwbRoe5xAHLi+5F4PaeDmH2tlSc+
-o0+BowVO6K+5VuKmEm/xuqrzlftt95uLlQYmn7OlmPutPQizRlg40yFVE8UC2Nn0
-jIsJq7FYlcsIif5NTMD/rRgMc6nrP7TeoncewfImdkWrpUayVTs=
-=seGm
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlsOoH0ACgkQ3SOs138+
+s6GRBg/+Ogz8BxRhhVCk21cYAQzAuP/DkdOxJ8+ylTzJmd8yma5xJrBbDx4dJlUT
+VJgt+1vbWJIgsMeFZDzQ0V6+AXhDpn7k7zInZONBfYJEqx9rjow3iMRE0wJnc51m
+GUos+e/LSdbUqyaHvkbaa/XVPY1BGhUoaH3lLguNmw6VirAMM6wU4d/WlFZ2IIeX
+c80FEeNl+Ejx1YdjDmhTfNBUY5ZcGgqmQa3wcFg+dHKLEl7jZ2C5CkPIsV8QieRO
+gZwX4tENqxyARu3xrpfb+j+h7FHfl2cyl4hupYCJ3UBrfVg0+PvtmCC9+ooQvzjI
+sUmM6pf2lif0bQDa7dU4HkxGwHywEuXfxUku7BTVmIhjkSW0g86WXksHo3aoEklm
+vX0RRAyDNC1lmAsVmXysBZSl6LDeUQa2+MYeA44hNOz2t9TIxqxMVtYGAkKrNoFz
+caNgSXrnnKa5KX+ErEqnrZkuPQAvVE9AR09WhYLIHjldTZGbs6PqrTFWMGi3OAAI
+Nnf2+d5M0CSI5l2uHDGZXRn1EpciLnS2rOV0JESlHURRBcvDzWTtqVbrUBWuYT3W
+QQiLhBNxqSBIiJZR5NGfJZ57oBRnWFTs0smRS9npQd0Xr1pY1V77UFmbG6A+739T
+4ioF4kRNlSrXpjSblBuBEJVAwtwrnPEB905VlUJG01Bc1CSPU7A=
+=IXl0
 -----END PGP SIGNATURE-----
 
---cNdxnHkX5QqsyA0e--
+--St7VIuEGZ6dlpu13--
 
---===============9088189861595639827==
+--===============2598149410454806083==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============9088189861595639827==--
+--===============2598149410454806083==--
