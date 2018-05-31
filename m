@@ -1,42 +1,108 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 05/25] MIPS: Octeon: refactor swiotlb code
-Date: Thu, 31 May 2018 18:38:59 +0200
-Message-ID: <20180531163859.GA31181@lst.de>
-References: <20180525092111.18516-1-hch@lst.de>
-	<20180525092111.18516-6-hch@lst.de>
-	<20180530232552.4rqnoo3652mabrqq@pburton-laptop>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/2] dma-coherent: Add one parameter to save available
+ coherent memory
+Date: Thu, 31 May 2018 18:25:01 +0100
+Message-ID: <1d02b2e1-dd1c-af2a-e980-29aef4aa0c00@arm.com>
+References: <c5765cf69bf222757463ba2653ac760b42b785e6.1527745258.git.baolin.wang@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180530232552.4rqnoo3652mabrqq@pburton-laptop>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <c5765cf69bf222757463ba2653ac760b42b785e6.1527745258.git.baolin.wang@linaro.org>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Baolin Wang <baolin.wang@linaro.org>, hch@lst.de, m.szyprowski@samsung.com
+Cc: gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, arnd@arndb.de, broonie@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 30, 2018 at 04:25:52PM -0700, Paul Burton wrote:
-> > +static const struct octeon_dma_map_ops octeon_gen2_ops = {
-> > +	.phys_to_dma	= octeon_hole_phys_to_dma,
-> > +	.dma_to_phys	= octeon_hole_dma_to_phys,
-> > +};
+On 31/05/18 06:55, Baolin Wang wrote:
+> It is incorrect to use mem->size to valid if there are enough coherent
+> memory to allocate in __dma_alloc_from_coherent(), since some devices
+> may mark some occupied coherent memory by dma_mark_declared_memory_occupied().
 > 
-> These are pointers to functions of the wrong type, right? phys_to_dma &
-> dma_to_phys have the struct device * argument but the octeon_hole_*
-> functions do not. I'd expect we either need to restore the
-> octeon_gen2_* wrappers that you remove below or change the definition of
-> the octeon_hole_* functions.
+> So we can introduce one 'avail' parameter to save the available device
+> coherent memory, to valid if we have enough coherent memory for the device
+> to allocate.
 
-That is true.  I have no idea how that passed the buildbot, which
-reported all kinds of other issues in the original octeon conversion.
+We already have dma_mem->size stored for other reasons, so there's 
+little harm in using it for a rough sanity check to short-circuit the 
+odd allocation which cannot possibly succeed, but adding machinery 
+purely for the sake an ever-so-slightly more accurate, but still far 
+from exhaustive, check doesn't really seem worth it.
 
-I'll fix this for the next respin.
+Even if size <= dma_mem->avail there's still no guarantee that the 
+allocation will actually succeed, so what benefit does the explicit 
+accounting provide?
+
+Robin.
+
+> Signed-off-by: Baolin Wang <baolin.wang@linaro.org>
+> ---
+>   drivers/base/dma-coherent.c |   11 +++++++++--
+>   1 file changed, 9 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/base/dma-coherent.c b/drivers/base/dma-coherent.c
+> index 597d408..ce19832 100644
+> --- a/drivers/base/dma-coherent.c
+> +++ b/drivers/base/dma-coherent.c
+> @@ -18,6 +18,7 @@ struct dma_coherent_mem {
+>   	unsigned long	*bitmap;
+>   	spinlock_t	spinlock;
+>   	bool		use_dev_dma_pfn_offset;
+> +	int		avail;
+>   };
+>   
+>   static struct dma_coherent_mem *dma_coherent_default_memory __ro_after_init;
+> @@ -73,6 +74,7 @@ static int dma_init_coherent_memory(
+>   	dma_mem->device_base = device_addr;
+>   	dma_mem->pfn_base = PFN_DOWN(phys_addr);
+>   	dma_mem->size = pages;
+> +	dma_mem->avail = pages;
+>   	dma_mem->flags = flags;
+>   	spin_lock_init(&dma_mem->spinlock);
+>   
+> @@ -141,6 +143,7 @@ void *dma_mark_declared_memory_occupied(struct device *dev,
+>   					dma_addr_t device_addr, size_t size)
+>   {
+>   	struct dma_coherent_mem *mem = dev->dma_mem;
+> +	int order = get_order(size);
+>   	unsigned long flags;
+>   	int pos, err;
+>   
+> @@ -151,7 +154,9 @@ void *dma_mark_declared_memory_occupied(struct device *dev,
+>   
+>   	spin_lock_irqsave(&mem->spinlock, flags);
+>   	pos = PFN_DOWN(device_addr - dma_get_device_base(dev, mem));
+> -	err = bitmap_allocate_region(mem->bitmap, pos, get_order(size));
+> +	err = bitmap_allocate_region(mem->bitmap, pos, order);
+> +	if (!err)
+> +		mem->avail -= 1 << order;
+>   	spin_unlock_irqrestore(&mem->spinlock, flags);
+>   
+>   	if (err != 0)
+> @@ -170,7 +175,7 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+>   
+>   	spin_lock_irqsave(&mem->spinlock, flags);
+>   
+> -	if (unlikely(size > (mem->size << PAGE_SHIFT)))
+> +	if (unlikely(size > (mem->avail << PAGE_SHIFT)))
+>   		goto err;
+>   
+>   	pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
+> @@ -182,6 +187,7 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
+>   	 */
+>   	*dma_handle = mem->device_base + (pageno << PAGE_SHIFT);
+>   	ret = mem->virt_base + (pageno << PAGE_SHIFT);
+> +	mem->avail -= 1 << order;
+>   	spin_unlock_irqrestore(&mem->spinlock, flags);
+>   	memset(ret, 0, size);
+>   	return ret;
+> @@ -244,6 +250,7 @@ static int __dma_release_from_coherent(struct dma_coherent_mem *mem,
+>   
+>   		spin_lock_irqsave(&mem->spinlock, flags);
+>   		bitmap_release_region(mem->bitmap, page, order);
+> +		mem->avail += 1 << order;
+>   		spin_unlock_irqrestore(&mem->spinlock, flags);
+>   		return 1;
+>   	}
+> 
