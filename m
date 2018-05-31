@@ -1,67 +1,102 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 1/2] ARM: dma-mapping: Set proper DMA ops in
- arm_iommu_detach_device()
-Date: Thu, 31 May 2018 18:52:48 +0100
-Message-ID: <a898aeae-e277-928b-9b97-474ebab50f7d@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 2/2] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
+	mapping
+Date: Thu, 31 May 2018 18:56:53 +0100
+Message-ID: <412f15b5-6beb-3980-1ea4-7a9719786006@arm.com>
 References: <20180530140625.21247-1-thierry.reding@gmail.com>
- <20180530140625.21247-2-thierry.reding@gmail.com>
+	<20180530140625.21247-3-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20180530140625.21247-2-thierry.reding@gmail.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180530140625.21247-3-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>, Christoph Hellwig <hch@infradead.org>, Russell King <linux@armlinux.org.uk>
-Cc: nouveau@lists.freedesktop.org, iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMzAvMDUvMTggMTU6MDYsIFRoaWVycnkgUmVkaW5nIHdyb3RlOgo+IEZyb206IFRoaWVycnkg
-UmVkaW5nIDx0cmVkaW5nQG52aWRpYS5jb20+Cj4gCj4gSW5zdGVhZCBvZiBzZXR0aW5nIHRoZSBE
-TUEgb3BzIHBvaW50ZXIgdG8gTlVMTCwgc2V0IHRoZSBjb3JyZWN0LAo+IG5vbi1JT01NVSBvcHMg
-ZGVwZW5kaW5nIG9uIHRoZSBkZXZpY2UncyBjb2hlcmVuY3kgc2V0dGluZy4KCkl0IGxvb2tzIGxp
-a2UgaXQncyBwcm9iYWJseSBiZWVuIDQgb3IgNSB5ZWFycyBzaW5jZSB0aGF0IGJlY2FtZSBzdWJ0
-bHkgCndyb25nIGJ5IHZpcnR1ZSBvZiB0aGUgbGFuZHNjYXBlIGNoYW5naW5nIGFyb3VuZCBpdCwg
-YnV0IGl0J3MgY2xlYXJseSAKbm90IGVub3VnaCBvZiBhIHByb2JsZW0gdG8gY29uc2lkZXIgc3Rh
-YmxlIGJhY2twb3J0cyA6KQoKUmV2aWV3ZWQtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5
-QGFybS5jb20+Cgo+IFNpZ25lZC1vZmYtYnk6IFRoaWVycnkgUmVkaW5nIDx0cmVkaW5nQG52aWRp
-YS5jb20+Cj4gLS0tCj4gQ2hhbmdlcyBpbiB2NDoKPiAtIG5ldyBwYXRjaCB0byBmaXggZXhpc3Rp
-bmcgYXJtX2lvbW11X2RldGFjaF9kZXZpY2UoKSB0byBkbyB3aGF0IHdlIG5lZWQKPiAKPiAgIGFy
-Y2gvYXJtL21tL2RtYS1tYXBwaW5nLmMgfCAxMiArKysrKystLS0tLS0KPiAgIDEgZmlsZSBjaGFu
-Z2VkLCA2IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2Fy
-Y2gvYXJtL21tL2RtYS1tYXBwaW5nLmMgYi9hcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jCj4gaW5k
-ZXggYWYyN2YxYzIyZDkzLi44N2EwMDM3NTc0ZTQgMTAwNjQ0Cj4gLS0tIGEvYXJjaC9hcm0vbW0v
-ZG1hLW1hcHBpbmcuYwo+ICsrKyBiL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMKPiBAQCAtMTE1
-MSw2ICsxMTUxLDExIEBAIGludCBhcm1fZG1hX3N1cHBvcnRlZChzdHJ1Y3QgZGV2aWNlICpkZXYs
-IHU2NCBtYXNrKQo+ICAgCXJldHVybiBfX2RtYV9zdXBwb3J0ZWQoZGV2LCBtYXNrLCBmYWxzZSk7
-Cj4gICB9Cj4gICAKPiArc3RhdGljIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqYXJtX2dldF9k
-bWFfbWFwX29wcyhib29sIGNvaGVyZW50KQo+ICt7Cj4gKwlyZXR1cm4gY29oZXJlbnQgPyAmYXJt
-X2NvaGVyZW50X2RtYV9vcHMgOiAmYXJtX2RtYV9vcHM7Cj4gK30KPiArCj4gICAjaWZkZWYgQ09O
-RklHX0FSTV9ETUFfVVNFX0lPTU1VCj4gICAKPiAgIHN0YXRpYyBpbnQgX19kbWFfaW5mb190b19w
-cm90KGVudW0gZG1hX2RhdGFfZGlyZWN0aW9uIGRpciwgdW5zaWduZWQgbG9uZyBhdHRycykKPiBA
-QCAtMjI5Niw3ICsyMzAxLDcgQEAgdm9pZCBhcm1faW9tbXVfZGV0YWNoX2RldmljZShzdHJ1Y3Qg
-ZGV2aWNlICpkZXYpCj4gICAJaW9tbXVfZGV0YWNoX2RldmljZShtYXBwaW5nLT5kb21haW4sIGRl
-dik7Cj4gICAJa3JlZl9wdXQoJm1hcHBpbmctPmtyZWYsIHJlbGVhc2VfaW9tbXVfbWFwcGluZyk7
-Cj4gICAJdG9fZG1hX2lvbW11X21hcHBpbmcoZGV2KSA9IE5VTEw7Cj4gLQlzZXRfZG1hX29wcyhk
-ZXYsIE5VTEwpOwo+ICsJc2V0X2RtYV9vcHMoZGV2LCBhcm1fZ2V0X2RtYV9tYXBfb3BzKGRldi0+
-YXJjaGRhdGEuZG1hX2NvaGVyZW50KSk7Cj4gICAKPiAgIAlwcl9kZWJ1ZygiRGV0YWNoZWQgSU9N
-TVUgY29udHJvbGxlciBmcm9tICVzIGRldmljZS5cbiIsIGRldl9uYW1lKGRldikpOwo+ICAgfQo+
-IEBAIC0yMzU3LDExICsyMzYyLDYgQEAgc3RhdGljIHZvaWQgYXJtX3RlYXJkb3duX2lvbW11X2Rt
-YV9vcHMoc3RydWN0IGRldmljZSAqZGV2KSB7IH0KPiAgIAo+ICAgI2VuZGlmCS8qIENPTkZJR19B
-Uk1fRE1BX1VTRV9JT01NVSAqLwo+ICAgCj4gLXN0YXRpYyBjb25zdCBzdHJ1Y3QgZG1hX21hcF9v
-cHMgKmFybV9nZXRfZG1hX21hcF9vcHMoYm9vbCBjb2hlcmVudCkKPiAtewo+IC0JcmV0dXJuIGNv
-aGVyZW50ID8gJmFybV9jb2hlcmVudF9kbWFfb3BzIDogJmFybV9kbWFfb3BzOwo+IC19Cj4gLQo+
-ICAgdm9pZCBhcmNoX3NldHVwX2RtYV9vcHMoc3RydWN0IGRldmljZSAqZGV2LCB1NjQgZG1hX2Jh
-c2UsIHU2NCBzaXplLAo+ICAgCQkJY29uc3Qgc3RydWN0IGlvbW11X29wcyAqaW9tbXUsIGJvb2wg
-Y29oZXJlbnQpCj4gICB7Cj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNr
-dG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2Ry
-aS1kZXZlbAo=
+On 30/05/18 15:06, Thierry Reding wrote:
+> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> 
+> Depending on the kernel configuration, early ARM architecture setup code
+> may have attached the GPU to a DMA/IOMMU mapping that transparently uses
+> the IOMMU to back the DMA API. Tegra requires special handling for IOMMU
+> backed buffers (a special bit in the GPU's MMU page tables indicates the
+> memory path to take: via the SMMU or directly to the memory controller).
+> Transparently backing DMA memory with an IOMMU prevents Nouveau from
+> properly handling such memory accesses and causes memory access faults.
+> 
+> As a side-note: buffers other than those allocated in instance memory
+> don't need to be physically contiguous from the GPU's perspective since
+> the GPU can map them into contiguous buffers using its own MMU. Mapping
+> these buffers through the IOMMU is unnecessary and will even lead to
+> performance degradation because of the additional translation. One
+> exception to this are compressible buffers which need large pages. In
+> order to enable these large pages, multiple small pages will have to be
+> combined into one large (I/O virtually contiguous) mapping via the
+> IOMMU. However, that is a topic outside the scope of this fix and isn't
+> currently supported. An implementation will want to explicitly create
+> these large pages in the Nouveau driver, so detaching from a DMA/IOMMU
+> mapping would still be required.
+> 
+> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+> Changes in v4:
+> - use existing APIs to detach from a DMA/IOMMU mapping
+> 
+> Changes in v3:
+> - clarify the use of IOMMU mapping for compressible buffers
+> - squash multiple patches into this
+> 
+>   drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 13 +++++++++++++
+>   1 file changed, 13 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+> index 78597da6313a..0e372a190d3f 100644
+> --- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+> +++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+> @@ -23,6 +23,10 @@
+>   #ifdef CONFIG_NOUVEAU_PLATFORM_DRIVER
+>   #include "priv.h"
+>   
+> +#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
+> +#include <asm/dma-iommu.h>
+> +#endif
+> +
+>   static int
+>   nvkm_device_tegra_power_up(struct nvkm_device_tegra *tdev)
+>   {
+> @@ -105,6 +109,15 @@ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
+>   	unsigned long pgsize_bitmap;
+>   	int ret;
+>   
+> +#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
+> +	if (dev->archdata.mapping) {
+> +		struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
+
+Nit: there's arguably little point using the helper here after you've 
+already shattered the illusion by poking dev->archdata.mapping directly, 
+but I guess this disappears again anyway once the refcounting gets 
+sorted out and the mapping releases itself properly, so:
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+> +
+> +		arm_iommu_detach_device(dev);
+> +		arm_iommu_release_mapping(mapping);
+> +	}
+> +#endif
+> +
+>   	if (!tdev->func->iommu_bit)
+>   		return;
+>   
+> 
