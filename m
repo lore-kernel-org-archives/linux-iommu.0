@@ -1,220 +1,108 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 3/7] iommu: prepare for the non-strict mode support
-Date: Thu, 31 May 2018 15:42:45 +0800
-Message-ID: <1527752569-18020-4-git-send-email-thunder.leizhen@huawei.com>
-References: <1527752569-18020-1-git-send-email-thunder.leizhen@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 04/22] iommu/vt-d: add bind_pasid_table function
+Date: Thu, 31 May 2018 10:09:46 +0100
+Message-ID: <1c1094e8-ecbb-7731-910c-59e4de1e5c70@arm.com>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1523915351-54415-5-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20180417131047.0a9c310f@w520.home>
+	<AM4PR0802MB2369F739C91B630CA99B3D3BA3B40@AM4PR0802MB2369.eurprd08.prod.outlook.com>
+	<20180420164251.5245f822@jacob-builder>
+	<20180529140915.1f174689@w520.home>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1911E59C4@SHSMSX101.ccr.corp.intel.com>
+	<20180529211746.74f1dd23@w520.home>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1911E5F06@SHSMSX101.ccr.corp.intel.com>
+	<a07a0a0a-ebdd-c81a-7ed6-cff19e6078d7@arm.com>
+	<20180530125240.34e0e80c@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1527752569-18020-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Joerg Roedel <joro@8bytes.org>, linux-mediatek <linux-mediatek@lists.infradead.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Xinwei Hu <huxinwei@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180530125240.34e0e80c@jacob-builder>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Wysocki,
+	Rafael J" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In common, a IOMMU unmap operation follow the below steps:
-1. remove the mapping in page table of the specified iova range
-2. execute tlbi command to invalid the mapping which is cached in TLB
-3. wait for the above tlbi operation to be finished
-4. free the IOVA resource
-5. free the physical memory resource
+On 30/05/18 20:52, Jacob Pan wrote:
+>> However I think the model number should be added to
+>> pasid_table_config. For one thing it gives us a simple sanity-check,
+>> but it also tells which other fields are valid in pasid_table_config.
+>> Arm-smmu-v3 needs at least two additional 8-bit fields describing the
+>> PASID table format (number of levels and PASID0 behaviour), which are
+>> written to device context tables when installing the PASID table
+>> pointer.
+>>
+> We had model number field in v2 of this patchset. My thought was that
+> since the config info is meant to be generic, we shouldn't include
+> model info. But I also think a simple sanity check can be useful,
+> would that be sufficient to address Alex's concern? Of course we still
+> need sysfs for more specific IOMMU features.
+> 
+> Would this work?
+> enum pasid_table_model {
+> 	PASID_TABLE_FORMAT_HOST,
+> 	PASID_TABLE_FORMAT_ARM_1LVL,
+> 	PASID_TABLE_FORMAT_ARM_2LVL,
 
-This maybe a problem when unmap is very frequently, the combination of tlbi
-and wait operation will consume a lot of time. A feasible method is put off
-tlbi and iova-free operation, when accumulating to a certain number or
-reaching a specified time, execute only one tlbi_all command to clean up
-TLB, then free the backup IOVAs. Mark as non-strict mode.
+I'd rather use a single PASID_TABLE_FORMAT_ARM, because "2LVL" may be
+further split into 2LVL_4k or 2LVL_64k leaf tables... I think it's best
+if I add an arch-specific field in pasid_table_config for that, and for
+the PASID0 configuration, when adding FORMAT_ARM in a future patch
 
-But it must be noted that, although the mapping has already been removed in
-the page table, it maybe still exist in TLB. And the freed physical memory
-may also be reused for others. So a attacker can persistent access to memory
-based on the just freed IOVA, to obtain sensible data or corrupt memory. So
-the VFIO should always choose the strict mode.
+> 	PASID_TABLE_FORMAT_AMD,
+> 	PASID_TABLE_FORMAT_INTEL,
+> };
+> 
+> /**
+>  * PASID table data used to bind guest PASID table to the host IOMMU. This will
+>  * enable guest managed first level page tables.
+>  * @version: for future extensions and identification of the data format
+>  * @bytes: size of this structure
+>  * @model: PASID table format for different IOMMU models
+>  * @base_ptr:	PASID table pointer
+>  * @pasid_bits:	number of bits supported in the guest PASID table, must be less
+>  *		or equal than the host supported PASID size.
+>  */
+> struct pasid_table_config {
+> 	__u32 version;
+> #define PASID_TABLE_CFG_VERSION_1 1
+> 	__u32 bytes;
 
-This patch just add a new parameter for the unmap operation, to help the
-upper functions capable choose which mode to be applied.
+"bytes" could be passed by VFIO as argument to bind_pasid_table, since
+it can deduce it from argsz
 
-No functional changes.
+Thanks,
+Jean
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c        | 2 +-
- drivers/iommu/arm-smmu.c           | 2 +-
- drivers/iommu/io-pgtable-arm-v7s.c | 6 +++---
- drivers/iommu/io-pgtable-arm.c     | 6 +++---
- drivers/iommu/io-pgtable.h         | 2 +-
- drivers/iommu/ipmmu-vmsa.c         | 2 +-
- drivers/iommu/msm_iommu.c          | 2 +-
- drivers/iommu/mtk_iommu.c          | 2 +-
- drivers/iommu/qcom_iommu.c         | 2 +-
- include/linux/iommu.h              | 2 ++
- 10 files changed, 15 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4402187..59b3387 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1767,7 +1767,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	if (!ops)
- 		return 0;
- 
--	return ops->unmap(ops, iova, size);
-+	return ops->unmap(ops, iova, size, IOMMU_STRICT);
- }
- 
- static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 69e7c60..253e807 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1249,7 +1249,7 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	if (!ops)
- 		return 0;
- 
--	return ops->unmap(ops, iova, size);
-+	return ops->unmap(ops, iova, size, IOMMU_STRICT);
- }
- 
- static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 10e4a3d..799eced 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -658,7 +658,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
- }
- 
- static size_t arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
--			    size_t size)
-+			    size_t size, int strict)
- {
- 	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 
-@@ -883,7 +883,7 @@ static int __init arm_v7s_do_selftests(void)
- 	size = 1UL << __ffs(cfg.pgsize_bitmap);
- 	while (i < loopnr) {
- 		iova_start = i * SZ_16M;
--		if (ops->unmap(ops, iova_start + size, size) != size)
-+		if (ops->unmap(ops, iova_start + size, size, IOMMU_STRICT) != size)
- 			return __FAIL(ops);
- 
- 		/* Remap of partial unmap */
-@@ -902,7 +902,7 @@ static int __init arm_v7s_do_selftests(void)
- 	while (i != BITS_PER_LONG) {
- 		size = 1UL << i;
- 
--		if (ops->unmap(ops, iova, size) != size)
-+		if (ops->unmap(ops, iova, size, IOMMU_STRICT) != size)
- 			return __FAIL(ops);
- 
- 		if (ops->iova_to_phys(ops, iova + 42))
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 39c2a05..e0f52db 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -624,7 +624,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- }
- 
- static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
--			     size_t size)
-+			     size_t size, int strict)
- {
- 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 	arm_lpae_iopte *ptep = data->pgd;
-@@ -1108,7 +1108,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 
- 		/* Partial unmap */
- 		size = 1UL << __ffs(cfg->pgsize_bitmap);
--		if (ops->unmap(ops, SZ_1G + size, size) != size)
-+		if (ops->unmap(ops, SZ_1G + size, size, IOMMU_STRICT) != size)
- 			return __FAIL(ops, i);
- 
- 		/* Remap of partial unmap */
-@@ -1124,7 +1124,7 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 		while (j != BITS_PER_LONG) {
- 			size = 1UL << j;
- 
--			if (ops->unmap(ops, iova, size) != size)
-+			if (ops->unmap(ops, iova, size, IOMMU_STRICT) != size)
- 				return __FAIL(ops, i);
- 
- 			if (ops->iova_to_phys(ops, iova + 42))
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 2df7909..2908806 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -120,7 +120,7 @@ struct io_pgtable_ops {
- 	int (*map)(struct io_pgtable_ops *ops, unsigned long iova,
- 		   phys_addr_t paddr, size_t size, int prot);
- 	size_t (*unmap)(struct io_pgtable_ops *ops, unsigned long iova,
--			size_t size);
-+			size_t size, int strict);
- 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
- 				    unsigned long iova);
- };
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 40ae6e8..e6d9e11 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -716,7 +716,7 @@ static size_t ipmmu_unmap(struct iommu_domain *io_domain, unsigned long iova,
- {
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
- 
--	return domain->iop->unmap(domain->iop, iova, size);
-+	return domain->iop->unmap(domain->iop, iova, size, IOMMU_STRICT);
- }
- 
- static void ipmmu_iotlb_sync(struct iommu_domain *io_domain)
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 0d33504..180fa3d 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -532,7 +532,7 @@ static size_t msm_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&priv->pgtlock, flags);
--	len = priv->iop->unmap(priv->iop, iova, len);
-+	len = priv->iop->unmap(priv->iop, iova, len, IOMMU_STRICT);
- 	spin_unlock_irqrestore(&priv->pgtlock, flags);
- 
- 	return len;
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index f2832a1..54661ed 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -386,7 +386,7 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
- 	size_t unmapsz;
- 
- 	spin_lock_irqsave(&dom->pgtlock, flags);
--	unmapsz = dom->iop->unmap(dom->iop, iova, size);
-+	unmapsz = dom->iop->unmap(dom->iop, iova, size, IOMMU_STRICT);
- 	spin_unlock_irqrestore(&dom->pgtlock, flags);
- 
- 	return unmapsz;
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 65b9c99..90abde1 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -444,7 +444,7 @@ static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	 */
- 	pm_runtime_get_sync(qcom_domain->iommu->dev);
- 	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
--	ret = ops->unmap(ops, iova, size);
-+	ret = ops->unmap(ops, iova, size, IOMMU_STRICT);
- 	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
- 	pm_runtime_put_sync(qcom_domain->iommu->dev);
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee..39b3150 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -86,6 +86,8 @@ struct iommu_domain_geometry {
- #define IOMMU_DOMAIN_DMA	(__IOMMU_DOMAIN_PAGING |	\
- 				 __IOMMU_DOMAIN_DMA_API)
- 
-+#define IOMMU_STRICT		1
-+
- struct iommu_domain {
- 	unsigned type;
- 	const struct iommu_ops *ops;
--- 
-1.8.3
+> 	enum pasid_table_model model;
+> 	__u64 base_ptr;
+> 	__u8 pasid_bits;
+> };
+> 
+> 
+> 
+>> Compatibility: new optional features are easy to add to a given model,
+>> just add a new sysfs file. If in the future, the host describes a new
+>> feature that is mandatory, or implements a different PASID table
+>> format, how does it ensure that user understands it? Perhaps use a
+>> new model number for this, e.g. "arm-smmu-v3-a=3", with similar
+>> features. I think it would be the same if the host stops supporting a
+>> feature for a given model, because they are ABI. But we can also
+>> define default values from the start, for example "if ssid_bits file
+>> isn't present, default value is 0 - PASID not supported"
+>>
+>> Thanks,
+>> Jean
+> 
+> [Jacob Pan]
+> 
