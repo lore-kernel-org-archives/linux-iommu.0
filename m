@@ -1,74 +1,41 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/7] add non-strict mode support for arm-smmu-v3
-Date: Thu, 31 May 2018 15:25:20 +0100
-Message-ID: <92b240f5-596e-87a9-863a-b18475042cce@arm.com>
-References: <1527752569-18020-1-git-send-email-thunder.leizhen@huawei.com>
- <d65f87a4-db61-3cd2-1a6f-0322025840a8@arm.com>
- <96cc25b9-b21f-6067-384d-f52e6b8b25e7@huawei.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH v4 2/2] drm/nouveau: tegra: Detach from ARM DMA/IOMMU
+ mapping
+Date: Thu, 31 May 2018 09:12:47 -0700
+Message-ID: <20180531161247.GA10203@infradead.org>
+References: <20180530140625.21247-1-thierry.reding@gmail.com>
+ <20180530140625.21247-3-thierry.reding@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <96cc25b9-b21f-6067-384d-f52e6b8b25e7@huawei.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Joerg Roedel <joro@8bytes.org>, linux-mediatek <linux-mediatek@lists.infradead.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Libin <huawei.libin@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Xinwei Hu <huxinwei@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20180530140625.21247-3-thierry.reding@gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: nouveau@lists.freedesktop.org, Joerg Roedel <joro@8bytes.org>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>, Jordan Crouse <jcrouse@codeaurora.org>, iommu@lists.linux-foundation.org, Ben Skeggs <bskeggs@redhat.com>, Daniel Vetter <daniel@ffwll.ch>, linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 31/05/18 14:49, Hanjun Guo wrote:
-> Hi Robin,
-> 
-> On 2018/5/31 19:24, Robin Murphy wrote:
->> On 31/05/18 08:42, Zhen Lei wrote:
->>> In common, a IOMMU unmap operation follow the below steps:
->>> 1. remove the mapping in page table of the specified iova range
->>> 2. execute tlbi command to invalid the mapping which is cached in TLB
->>> 3. wait for the above tlbi operation to be finished
->>> 4. free the IOVA resource
->>> 5. free the physical memory resource
->>>
->>> This maybe a problem when unmap is very frequently, the combination of tlbi
->>> and wait operation will consume a lot of time. A feasible method is put off
->>> tlbi and iova-free operation, when accumulating to a certain number or
->>> reaching a specified time, execute only one tlbi_all command to clean up
->>> TLB, then free the backup IOVAs. Mark as non-strict mode.
->>>
->>> But it must be noted that, although the mapping has already been removed in
->>> the page table, it maybe still exist in TLB. And the freed physical memory
->>> may also be reused for others. So a attacker can persistent access to memory
->>> based on the just freed IOVA, to obtain sensible data or corrupt memory. So
->>> the VFIO should always choose the strict mode.
->>>
->>> Some may consider put off physical memory free also, that will still follow
->>> strict mode. But for the map_sg cases, the memory allocation is not controlled
->>> by IOMMU APIs, so it is not enforceable.
->>>
->>> Fortunately, Intel and AMD have already applied the non-strict mode, and put
->>> queue_iova() operation into the common file dma-iommu.c., and my work is based
->>> on it. The difference is that arm-smmu-v3 driver will call IOMMU common APIs to
->>> unmap, but Intel and AMD IOMMU drivers are not.
->>>
->>> Below is the performance data of strict vs non-strict for NVMe device:
->>> Randomly Read  IOPS: 146K(strict) vs 573K(non-strict)
->>> Randomly Write IOPS: 143K(strict) vs 513K(non-strict)
->>
->> What hardware is this on? If it's SMMUv3 without MSIs (e.g. D05), then you'll still be using the rubbish globally-blocking sync implementation. If that is the case, I'd be very interested to see how much there is to gain from just improving that - I've had a patch kicking around for a while[1] (also on a rebased branch at [2]), but don't have the means for serious performance testing.
-> 
-> The hardware is the new D06 which the SMMU with MSIs,
+> +#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
+> +	if (dev->archdata.mapping) {
+> +		struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
+> +
+> +		arm_iommu_detach_device(dev);
+> +		arm_iommu_release_mapping(mapping);
+> +	}
+> +#endif
 
-Cool! Now that profiling is fairly useful since we got rid of most of 
-the locks, are you able to get an idea of how the overhead in the normal 
-case is distributed between arm_smmu_cmdq_insert_cmd() and 
-__arm_smmu_sync_poll_msi()? We're always trying to improve our 
-understanding of where command-queue-related overheads turn out to be in 
-practice, and there's still potentially room to do nicer things than 
-TLBI_NH_ALL ;)
+Having this hidden in a helper would be nicer, but anything that
+doesn't directly expose the dma_map_ops to a driver is fine with me.
 
-Robin.
+So from the dma-mapping POV:
 
-> it's not D05 :)
-> 
-> Thanks
-> Hanjun
-> 
+Acked-by: Christoph Hellwig <hch@lst.de>
