@@ -1,15 +1,14 @@
 From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 5/7] iommu/dma: add support for non-strict mode
-Date: Mon, 4 Jun 2018 20:04:28 +0800
-Message-ID: <5B152ACC.1080709@huawei.com>
-References: <1527752569-18020-1-git-send-email-thunder.leizhen@huawei.com>
-	<1527752569-18020-6-git-send-email-thunder.leizhen@huawei.com>
-	<65cfe2f9-eb23-d81c-270e-ae80e96b6009@arm.com>
+Date: Mon, 4 Jun 2018 20:19:25 +0800
+Message-ID: <5B152E4D.4040205@huawei.com>
+References: <1527752569-18020-6-git-send-email-thunder.leizhen@huawei.com>
+	<201806020106.eRUp2Ehc%fengguang.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <65cfe2f9-eb23-d81c-270e-ae80e96b6009-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <201806020106.eRUp2Ehc%fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,153 +18,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-mediatek <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Guozhu Li <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Guozhu Li <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, linux-mediatek <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, kbuild-all-JC7UmRfGjtg@public.gmane.org, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 2018/5/31 21:04, Robin Murphy wrote:
-> On 31/05/18 08:42, Zhen Lei wrote:
->> 1. Save the related domain pointer in struct iommu_dma_cookie, make iovad
->>     capable call domain->ops->flush_iotlb_all to flush TLB.
->> 2. Define a new iommu capable: IOMMU_CAP_NON_STRICT, which used to indicate
->>     that the iommu domain support non-strict mode.
->> 3. During the iommu domain initialization phase, call capable() to check
->>     whether it support non-strcit mode. If so, call init_iova_flush_queue
->>     to register iovad->flush_cb callback.
->> 4. All unmap(contains iova-free) APIs will finally invoke __iommu_dma_unmap
->>     -->iommu_dma_free_iova. Use iovad->flush_cb to check whether its related
->>     iommu support non-strict mode or not, and call IOMMU_DOMAIN_IS_STRICT to
->>     make sure the IOMMU_DOMAIN_UNMANAGED domain always follow strict mode.
+On 2018/6/2 1:51, kbuild test robot wrote:
+> Hi Zhen,
 > 
-> Once again, this is a whole load of complexity for a property which could just be statically encoded at allocation, e.g. in the cookie type.
-That's right. Pass domain to the static function iommu_dma_free_iova will be better.
+> Thank you for the patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on linus/master]
+> [also build test WARNING on v4.17-rc7 next-20180601]
+> [cannot apply to iommu/next]
+> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Zhen-Lei/add-non-strict-mode-support-for-arm-smmu-v3/20180602-000418
+> config: x86_64-randconfig-x008-201821 (attached as .config)
+> compiler: gcc-7 (Debian 7.3.0-16) 7.3.0
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=x86_64 
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    drivers//iommu/amd_iommu.c: In function 'amd_iommu_capable':
+>>> drivers//iommu/amd_iommu.c:3053:2: warning: enumeration value 'IOMMU_CAP_NON_STRICT' not handled in switch [-Wswitch]
+>      switch (cap) {
+>      ^~~~~~
+> 
+> vim +/IOMMU_CAP_NON_STRICT +3053 drivers//iommu/amd_iommu.c
+> 
+> 645c4c8d arch/x86/kernel/amd_iommu.c Joerg Roedel 2008-12-02  3050  
+> ab636481 drivers/iommu/amd_iommu.c   Joerg Roedel 2014-09-05  3051  static bool amd_iommu_capable(enum iommu_cap cap)
+> dbb9fd86 arch/x86/kernel/amd_iommu.c Sheng Yang   2009-03-18  3052  {
+> 80a506b8 arch/x86/kernel/amd_iommu.c Joerg Roedel 2010-07-27 @3053  	switch (cap) {
+> 80a506b8 arch/x86/kernel/amd_iommu.c Joerg Roedel 2010-07-27  3054  	case IOMMU_CAP_CACHE_COHERENCY:
+> ab636481 drivers/iommu/amd_iommu.c   Joerg Roedel 2014-09-05  3055  		return true;
+> bdddadcb drivers/iommu/amd_iommu.c   Joerg Roedel 2012-07-02  3056  	case IOMMU_CAP_INTR_REMAP:
+> ab636481 drivers/iommu/amd_iommu.c   Joerg Roedel 2014-09-05  3057  		return (irq_remapping_enabled == 1);
+> cfdeec22 drivers/iommu/amd_iommu.c   Will Deacon  2014-10-27  3058  	case IOMMU_CAP_NOEXEC:
+It seems that it's better to change this to 'default'.
 
+> cfdeec22 drivers/iommu/amd_iommu.c   Will Deacon  2014-10-27  3059  		return false;
+> 80a506b8 arch/x86/kernel/amd_iommu.c Joerg Roedel 2010-07-27  3060  	}
+> 80a506b8 arch/x86/kernel/amd_iommu.c Joerg Roedel 2010-07-27  3061  
+> ab636481 drivers/iommu/amd_iommu.c   Joerg Roedel 2014-09-05  3062  	return false;
+> dbb9fd86 arch/x86/kernel/amd_iommu.c Sheng Yang   2009-03-18  3063  }
+> dbb9fd86 arch/x86/kernel/amd_iommu.c Sheng Yang   2009-03-18  3064  
 > 
->> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>   drivers/iommu/dma-iommu.c | 29 ++++++++++++++++++++++++++---
->>   include/linux/iommu.h     |  3 +++
->>   2 files changed, 29 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 4e885f7..2e116d9 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -55,6 +55,7 @@ struct iommu_dma_cookie {
->>       };
->>       struct list_head        msi_page_list;
->>       spinlock_t            msi_lock;
->> +    struct iommu_domain        *domain;
->>   };
->>     static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
->> @@ -64,7 +65,8 @@ static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
->>       return PAGE_SIZE;
->>   }
->>   -static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
->> +static struct iommu_dma_cookie *cookie_alloc(struct iommu_domain *domain,
->> +                         enum iommu_dma_cookie_type type)
->>   {
->>       struct iommu_dma_cookie *cookie;
->>   @@ -73,6 +75,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
->>           spin_lock_init(&cookie->msi_lock);
->>           INIT_LIST_HEAD(&cookie->msi_page_list);
->>           cookie->type = type;
->> +        cookie->domain = domain;
->>       }
->>       return cookie;
->>   }
->> @@ -94,7 +97,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
->>       if (domain->iova_cookie)
->>           return -EEXIST;
->>   -    domain->iova_cookie = cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
->> +    domain->iova_cookie = cookie_alloc(domain, IOMMU_DMA_IOVA_COOKIE);
->>       if (!domain->iova_cookie)
->>           return -ENOMEM;
->>   @@ -124,7 +127,7 @@ int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
->>       if (domain->iova_cookie)
->>           return -EEXIST;
->>   -    cookie = cookie_alloc(IOMMU_DMA_MSI_COOKIE);
->> +    cookie = cookie_alloc(domain, IOMMU_DMA_MSI_COOKIE);
->>       if (!cookie)
->>           return -ENOMEM;
->>   @@ -261,6 +264,17 @@ static int iova_reserve_iommu_regions(struct device *dev,
->>       return ret;
->>   }
->>   +static void iova_flush_iotlb_all(struct iova_domain *iovad)
+> :::::: The code at line 3053 was first introduced by commit
+> :::::: 80a506b8fdcfa868bb53eb740f928217d0966fc1 x86/amd-iommu: Export cache-coherency capability
 > 
-> iommu_dma_flush...
-OK
-
+> :::::: TO: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
+> :::::: CC: Joerg Roedel <joerg.roedel-5C7GfCeVMHo@public.gmane.org>
 > 
->> +{
->> +    struct iommu_dma_cookie *cookie;
->> +    struct iommu_domain *domain;
->> +
->> +    cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
->> +    domain = cookie->domain;
->> +
->> +    domain->ops->flush_iotlb_all(domain);
->> +}
->> +
->>   /**
->>    * iommu_dma_init_domain - Initialise a DMA mapping domain
->>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
->> @@ -276,6 +290,7 @@ static int iova_reserve_iommu_regions(struct device *dev,
->>   int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>           u64 size, struct device *dev)
->>   {
->> +    const struct iommu_ops *ops = domain->ops;
->>       struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>       struct iova_domain *iovad = &cookie->iovad;
->>       unsigned long order, base_pfn, end_pfn;
->> @@ -313,6 +328,11 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>         init_iova_domain(iovad, 1UL << order, base_pfn);
->>   +    if (ops->capable && ops->capable(IOMMU_CAP_NON_STRICT)) {
->> +        BUG_ON(!ops->flush_iotlb_all);
->> +        init_iova_flush_queue(iovad, iova_flush_iotlb_all, NULL);
->> +    }
->> +
->>       return iova_reserve_iommu_regions(dev, domain);
->>   }
->>   EXPORT_SYMBOL(iommu_dma_init_domain);
->> @@ -392,6 +412,9 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
->>       /* The MSI case is only ever cleaning up its most recent allocation */
->>       if (cookie->type == IOMMU_DMA_MSI_COOKIE)
->>           cookie->msi_iova -= size;
->> +    else if (!IOMMU_DOMAIN_IS_STRICT(cookie->domain) && iovad->flush_cb)
->> +        queue_iova(iovad, iova_pfn(iovad, iova),
->> +                size >> iova_shift(iovad), 0);
->>       else
->>           free_iova_fast(iovad, iova_pfn(iovad, iova),
->>                   size >> iova_shift(iovad));
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 39b3150..01ff569 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -87,6 +87,8 @@ struct iommu_domain_geometry {
->>                    __IOMMU_DOMAIN_DMA_API)
->>     #define IOMMU_STRICT        1
->> +#define IOMMU_DOMAIN_IS_STRICT(domain)    \
->> +        (domain->type == IOMMU_DOMAIN_UNMANAGED)
->>     struct iommu_domain {
->>       unsigned type;
->> @@ -103,6 +105,7 @@ enum iommu_cap {
->>                          transactions */
->>       IOMMU_CAP_INTR_REMAP,        /* IOMMU supports interrupt isolation */
->>       IOMMU_CAP_NOEXEC,        /* IOMMU_NOEXEC flag */
->> +    IOMMU_CAP_NON_STRICT,        /* IOMMU supports non-strict mode */
-> 
-> This isn't a property of the IOMMU, it depends purely on the driver implementation. I think it also doesn't matter anyway - if a caller asks for lazy unmapping on their domain but the IOMMU driver just does strict unmaps anyway because that's all it supports, there's no actual harm done.
-> 
-> Robin.
-> 
->>   };
->>     /*
->>
-> 
-> .
+> ---
+> 0-DAY kernel test infrastructure                Open Source Technology Center
+> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 > 
 
 -- 
