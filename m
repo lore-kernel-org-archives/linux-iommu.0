@@ -1,58 +1,128 @@
-From: Baolin Wang <baolin.wang-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] dma-coherent: Add one parameter to save available
-	coherent memory
-Date: Sun, 3 Jun 2018 10:12:17 +0800
-Message-ID: <CAMz4kuLHigZJhk8E53v8k8DR59EARvC6CdkQ0+oAwTRjYKu=cw@mail.gmail.com>
-References: <c5765cf69bf222757463ba2653ac760b42b785e6.1527745258.git.baolin.wang@linaro.org>
-	<1d02b2e1-dd1c-af2a-e980-29aef4aa0c00@arm.com>
+From: Ganapatrao Kulkarni <gklkml16@gmail.com>
+Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
+ fails to get any free IOVA
+Date: Mon, 4 Jun 2018 09:36:04 +0530
+Message-ID: <CAKTKpr694WntjTB+pbXN--wthH+sw1mrr=JWjDfddG4bHdLwjw@mail.gmail.com>
+References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
+ <c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com> <CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
+ <CAKTKpr4skf3=Aw1YJNPppSjUT7w7_CF6QhefeHZDQXzENCfm5g@mail.gmail.com> <CAKTKpr7BmaR-rwqf=z8JiNpaoQNhpSXuUp8sZogUgSLpfcCe0A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1d02b2e1-dd1c-af2a-e980-29aef4aa0c00-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAKTKpr7BmaR-rwqf=z8JiNpaoQNhpSXuUp8sZogUgSLpfcCe0A@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert Richter <Robert.Richter@cavium.com>, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 1 June 2018 at 01:25, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 31/05/18 06:55, Baolin Wang wrote:
->>
->> It is incorrect to use mem->size to valid if there are enough coherent
->> memory to allocate in __dma_alloc_from_coherent(), since some devices
->> may mark some occupied coherent memory by
->> dma_mark_declared_memory_occupied().
->>
->> So we can introduce one 'avail' parameter to save the available device
->> coherent memory, to valid if we have enough coherent memory for the device
->> to allocate.
->
->
-> We already have dma_mem->size stored for other reasons, so there's little
-> harm in using it for a rough sanity check to short-circuit the odd
-> allocation which cannot possibly succeed, but adding machinery purely for
-> the sake an ever-so-slightly more accurate, but still far from exhaustive,
-> check doesn't really seem worth it.
->
-> Even if size <= dma_mem->avail there's still no guarantee that the
-> allocation will actually succeed, so what benefit does the explicit
-> accounting provide?
->
+ping??
 
-Yes, it can not guarantee one successful allocation, but it can avoid
-some redundant bitmap operation and reducing the preempt-disable time
-if we have not enough memory by checking the actual available coherent
-memory. By the way, I think we should also add check in
-dma_mark_declared_memory_occupied() and __dma_mmap_from_coherent().
-
--- 
-Baolin.wang
-Best Regards
+On Mon, May 21, 2018 at 6:45 AM, Ganapatrao Kulkarni <gklkml16@gmail.com> wrote:
+> On Thu, Apr 26, 2018 at 3:15 PM, Ganapatrao Kulkarni <gklkml16@gmail.com> wrote:
+>> Hi Robin,
+>>
+>> On Mon, Apr 23, 2018 at 11:11 PM, Ganapatrao Kulkarni
+>> <gklkml16@gmail.com> wrote:
+>>> On Mon, Apr 23, 2018 at 10:07 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+>>>> On 19/04/18 18:12, Ganapatrao Kulkarni wrote:
+>>>>>
+>>>>> The performance drop is observed with long hours iperf testing using 40G
+>>>>> cards. This is mainly due to long iterations in finding the free iova
+>>>>> range in 32bit address space.
+>>>>>
+>>>>> In current implementation for 64bit PCI devices, there is always first
+>>>>> attempt to allocate iova from 32bit(SAC preferred over DAC) address
+>>>>> range. Once we run out 32bit range, there is allocation from higher range,
+>>>>> however due to cached32_node optimization it does not suppose to be
+>>>>> painful. cached32_node always points to recently allocated 32-bit node.
+>>>>> When address range is full, it will be pointing to last allocated node
+>>>>> (leaf node), so walking rbtree to find the available range is not
+>>>>> expensive affair. However this optimization does not behave well when
+>>>>> one of the middle node is freed. In that case cached32_node is updated
+>>>>> to point to next iova range. The next iova allocation will consume free
+>>>>> range and again update cached32_node to itself. From now on, walking
+>>>>> over 32-bit range is more expensive.
+>>>>>
+>>>>> This patch adds fix to update cached node to leaf node when there are no
+>>>>> iova free range left, which avoids unnecessary long iterations.
+>>>>
+>>>>
+>>>> The only trouble with this is that "allocation failed" doesn't uniquely mean
+>>>> "space full". Say that after some time the 32-bit space ends up empty except
+>>>> for one page at 0x1000 and one at 0x80000000, then somebody tries to
+>>>> allocate 2GB. If we move the cached node down to the leftmost entry when
+>>>> that fails, all subsequent allocation attempts are now going to fail despite
+>>>> the space being 99.9999% free!
+>>>>
+>>>> I can see a couple of ways to solve that general problem of free space above
+>>>> the cached node getting lost, but neither of them helps with the case where
+>>>> there is genuinely insufficient space (and if anything would make it even
+>>>> slower). In terms of the optimisation you want here, i.e. fail fast when an
+>>>> allocation cannot possibly succeed, the only reliable idea which comes to
+>>>> mind is free-PFN accounting. I might give that a go myself to see how ugly
+>>>> it looks.
+>>
+>> For this testing, dual port intel 40G card(XL710) used and both ports
+>> were connected in loop-back. Ran iperf server and clients on both
+>> ports(used NAT to route packets out on intended ports).There were 10
+>> iperf clients invoked every 60 seconds in loop for hours for each
+>> port. Initially the performance on both ports is seen close to line
+>> rate, however after test ran about 4 to 6 hours, the performance
+>> started dropping  to very low (to few hundred Mbps) on both
+>> connections.
+>>
+>> IMO,  this is common bug and should happen on any other platforms too
+>> and needs to be fixed at the earliest.
+>> Please let me know if you have better way to fix this,  i am happy to
+>> test your patch!
+>
+> any update on this issue?
+>>
+>>>
+>>> i see 2 problems in current implementation,
+>>> 1. We don't replenish the 32 bits range, until first attempt of second
+>>> allocation(64 bit) fails.
+>>> 2. Having  per cpu cache might not yield good hit on platforms with
+>>> more number of CPUs.
+>>>
+>>> however irrespective of current issues, It makes sense to update
+>>> cached node as done in this patch , when there is failure to get iova
+>>> range using current cached pointer which is forcing for the
+>>> unnecessary time consuming do-while iterations until any replenish
+>>> happens!
+>>>
+>>> thanks
+>>> Ganapat
+>>>
+>>>>
+>>>> Robin.
+>>>>
+>>>>
+>>>>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>>>>> ---
+>>>>>   drivers/iommu/iova.c | 6 ++++++
+>>>>>   1 file changed, 6 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>>>>> index 83fe262..e6ee2ea 100644
+>>>>> --- a/drivers/iommu/iova.c
+>>>>> +++ b/drivers/iommu/iova.c
+>>>>> @@ -201,6 +201,12 @@ static int __alloc_and_insert_iova_range(struct
+>>>>> iova_domain *iovad,
+>>>>>         } while (curr && new_pfn <= curr_iova->pfn_hi);
+>>>>>         if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+>>>>> +               /* No more cached node points to free hole, update to leaf
+>>>>> node.
+>>>>> +                */
+>>>>> +               struct iova *prev_iova;
+>>>>> +
+>>>>> +               prev_iova = rb_entry(prev, struct iova, node);
+>>>>> +               __cached_rbnode_insert_update(iovad, prev_iova);
+>>>>>                 spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>>>>>                 return -ENOMEM;
+>>>>>         }
+>>>>>
+>>>>
+>>
+>> thanks
+>> Ganapat
