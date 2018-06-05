@@ -1,16 +1,16 @@
 From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v7 1/2] iommu - Enable debugfs exposure of IOMMU driver
-	internals
-Date: Tue, 5 Jun 2018 11:48:44 -0500
-Message-ID: <68d7f040-fc7a-5eb3-342f-687fc6e591f2@amd.com>
-References: <152631818082.18929.13970142119193316487.stgit@sosxen2.amd.com>
-	<152631842046.18929.1205439632866632871.stgit@sosxen2.amd.com>
-	<20180524091807.GA18148@kroah.com>
+Subject: Re: [PATCH v8 2/2] iommu/amd: Add basic debugfs infrastructure for
+	AMD IOMMU
+Date: Tue, 5 Jun 2018 11:58:13 -0500
+Message-ID: <f0780139-5322-a028-0091-3255e0596eff@amd.com>
+References: <152761784341.2654.8609366076331539902.stgit@sosgrh1.amd.com>
+	<152761820371.2654.4551405686504157036.stgit@sosgrh1.amd.com>
+	<20180529183917.GA10618@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180524091807.GA18148-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20180529183917.GA10618-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,171 +25,131 @@ To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/24/2018 04:18 AM, Greg KH wrote:
-> On Mon, May 14, 2018 at 12:20:20PM -0500, Gary R Hook wrote:
->> Provide base enablement for using debugfs to expose internal data of an
->> IOMMU driver. When called, create the /sys/kernel/debug/iommu directory.
->>
->> Emit a strong warning at boot time to indicate that this feature is
+On 05/29/2018 01:39 PM, Greg KH wrote:
+> On Tue, May 29, 2018 at 01:23:23PM -0500, Gary R Hook wrote:
+>> Implement a skeleton framework for debugfs support in the
+>> AMD IOMMU. Add a hidden boolean to Kconfig that is defined
+>> for the AMD IOMMU when general IOMMY DebugFS support is
 >> enabled.
->>
->> This function is called from iommu_init, and creates the initial DebugFS
->> directory. Drivers may then call iommu_debugfs_new_driver_dir() to
->> instantiate a device-specific directory to expose internal data.
->> It will return a pointer to the new dentry structure created in
->> /sys/kernel/debug/iommu, or NULL in the event of a failure.
->>
->> Since the IOMMU driver can not be removed from the running system, there
->> is no need for an "off" function.
 >>
 >> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
 >> ---
->>   drivers/iommu/Kconfig         |   10 ++++++
->>   drivers/iommu/Makefile        |    1 +
->>   drivers/iommu/iommu-debugfs.c |   72 +++++++++++++++++++++++++++++++++++++++++
->>   drivers/iommu/iommu.c         |    2 +
->>   include/linux/iommu.h         |   11 ++++++
->>   5 files changed, 96 insertions(+)
->>   create mode 100644 drivers/iommu/iommu-debugfs.c
+>>   drivers/iommu/Kconfig             |    4 ++++
+>>   drivers/iommu/Makefile            |    1 +
+>>   drivers/iommu/amd_iommu_debugfs.c |   39 +++++++++++++++++++++++++++++++++++++
+>>   drivers/iommu/amd_iommu_init.c    |    6 ++++--
+>>   drivers/iommu/amd_iommu_proto.h   |    6 ++++++
+>>   drivers/iommu/amd_iommu_types.h   |    5 +++++
+>>   6 files changed, 59 insertions(+), 2 deletions(-)
+>>   create mode 100644 drivers/iommu/amd_iommu_debugfs.c
 >>
 >> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index f3a21343e636..2eab6a849a0a 100644
+>> index f9af25ac409f..ec223f6f4ad4 100644
 >> --- a/drivers/iommu/Kconfig
 >> +++ b/drivers/iommu/Kconfig
->> @@ -60,6 +60,16 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+>> @@ -137,6 +137,10 @@ config AMD_IOMMU
+>>   	  your BIOS for an option to enable it or if you have an IVRS ACPI
+>>   	  table.
 >>   
->>   endmenu
->>   
->> +config IOMMU_DEBUGFS
->> +	bool "Export IOMMU internals in DebugFS"
->> +	depends on DEBUG_FS
->> +	help
->> +	  Allows exposure of IOMMU device internals. This option enables
->> +	  the use of debugfs by IOMMU drivers as required. Devices can,
->> +	  at initialization time, cause the IOMMU code to create a top-level
->> +	  debug/iommu directory, and then populate a subdirectory with
->> +	  entries as required.
+>> +config AMD_IOMMU_DEBUGFS
+>> +	def_bool y
 > 
-> You need a big "DO NOT ENABLE THIS OPTION UNLESS YOU REALLY REALLY KNOW
-> WHAT YOU ARE DOING!!!" line here.  To match up with your crazy kernel
-> log warning.
+> Why default y?  Can you not boot a box without this?  If not, it should
+> not be Y.
+
+Again, apologies for not seeing this sooner.
+
+Yes, the system can boot without this. The idea of a hidden option was 
+surfaced by Robin, and after my first approach was shot down, I tried this.
+
+Logic: If the over-arching IOMMU debugfs option is enabled, then 
+AMD_IOMMU_DEBUGFS gets defined, and AMD IOMMU code gets included.
+
+This issue was discussed a few weeks ago. No single approach appears to 
+satisfy everyone. I like this because it depends upon one switch: Do you 
+want DebugFS support enabled in the IOMMU driver, period? 
+Vendor-specific code can then choose to implement support or not, and a 
+builder doesn't have to worry about enabling/disabling multiple Kconfig 
+options.
+
+At least, that was my line of reasoning.
+
+I'm not married to any approach, and I don't find clever use of Kconfig 
+options too terribly challenging. And I'm not defending, I'm just 
+explaining.
+
+
+
 > 
-> Otherwise distros will turn this on, I guarantee it.
-
-Apologies for not seeing this. Notes from Greg have been going to junk 
-mail >:-(
-
-I will add this text to the Kconfig item.
-
-> 
+>> +	depends on AMD_IOMMU && IOMMU_DEBUGFS
 >> +
->>   config IOMMU_IOVA
->>   	tristate
->>   
+>>   config AMD_IOMMU_V2
+>>   	tristate "AMD IOMMU Version 2 driver"
+>>   	depends on AMD_IOMMU
 >> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
->> index 1fb695854809..74cfbc392862 100644
+>> index 74cfbc392862..47fd6ea9de2d 100644
 >> --- a/drivers/iommu/Makefile
 >> +++ b/drivers/iommu/Makefile
->> @@ -2,6 +2,7 @@
->>   obj-$(CONFIG_IOMMU_API) += iommu.o
->>   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->>   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
->> +obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
->>   obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
->>   obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
->>   obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
->> diff --git a/drivers/iommu/iommu-debugfs.c b/drivers/iommu/iommu-debugfs.c
+>> @@ -11,6 +11,7 @@ obj-$(CONFIG_IOMMU_IOVA) += iova.o
+>>   obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+>>   obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+>>   obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
+>> +obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
+>>   obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
+>>   obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
+>>   obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+>> diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
 >> new file mode 100644
->> index 000000000000..bb1bf2d0ac51
+>> index 000000000000..6dff98552969
 >> --- /dev/null
->> +++ b/drivers/iommu/iommu-debugfs.c
->> @@ -0,0 +1,72 @@
+>> +++ b/drivers/iommu/amd_iommu_debugfs.c
+>> @@ -0,0 +1,39 @@
 >> +// SPDX-License-Identifier: GPL-2.0
 >> +/*
->> + * IOMMU debugfs core infrastructure
+>> + * AMD IOMMU driver
 >> + *
 >> + * Copyright (C) 2018 Advanced Micro Devices, Inc.
 >> + *
 >> + * Author: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
 >> + */
 >> +
->> +#include <linux/pci.h>
->> +#include <linux/iommu.h>
 >> +#include <linux/debugfs.h>
+>> +#include <linux/iommu.h>
+>> +#include <linux/pci.h>
+>> +#include "amd_iommu_proto.h"
+>> +#include "amd_iommu_types.h"
 >> +
->> +static struct dentry *iommu_debugfs_dir;
+>> +static struct dentry *amd_iommu_debugfs;
+>> +static DEFINE_MUTEX(amd_iommu_debugfs_lock);
 >> +
->> +/**
->> + * iommu_debugfs_setup - create the top-level iommu directory in debugfs
->> + *
->> + * Provide base enablement for using debugfs to expose internal data of an
->> + * IOMMU driver. When called, this function creates the
->> + * /sys/kernel/debug/iommu directory.
->> + *
->> + * Emit a strong warning at boot time to indicate that this feature is
->> + * enabled.
->> + *
->> + * This function is called from iommu_init; drivers may then call
->> + * iommu_debugfs_new_driver_dir() to instantiate a vendor-specific
->> + * directory to be used to expose internal data.
->> + */
->> +void iommu_debugfs_setup(void)
+>> +#define	MAX_NAME_LEN	20
+>> +
+>> +void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
 >> +{
->> +	if (!iommu_debugfs_dir) {
->> +		iommu_debugfs_dir = debugfs_create_dir("iommu", NULL);
->> +		if (iommu_debugfs_dir) {
-> 
-> No need to care about the return value, just keep going.  Nothing you
-> should, or should not, do depending on the return value of a debugfs
-> call.
-
-Sorry. Some habits are hard to break. It just seemed that if there's no 
-iommu debugfs directory, nothing else needed to be done. But plowing 
-ahead works for me. Thank you.
-
-> 
->> +			pr_warn("\n");
->> +			pr_warn("*************************************************************\n");
->> +			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("**  IOMMU DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL  **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("** This means that this kernel is built to expose internal **\n");
->> +			pr_warn("** IOMMU data structures, which may compromise security on **\n");
->> +			pr_warn("** your system.                                            **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("** If you see this message and you are not debugging the   **\n");
->> +			pr_warn("** kernel, report this immediately to your vendor!         **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
->> +			pr_warn("*************************************************************\n");
->> +		}
->> +	}
->> +}
+>> +	char name[MAX_NAME_LEN + 1];
 >> +
->> +/**
->> + * iommu_debugfs_new_driver_dir - create a vendor directory under debugfs/iommu
->> + * @vendor: name of the vendor-specific subdirectory to create
->> + *
->> + * This function is called by an IOMMU driver to create the top-level debugfs
->> + * directory for that driver.
->> + *
->> + * Return: upon success, a pointer to the dentry for the new directory.
->> + *         NULL in case of failure.
->> + */
->> +struct dentry *iommu_debugfs_new_driver_dir(const char *vendor)
->> +{
->> +	struct dentry *d_new;
+>> +	mutex_lock(&amd_iommu_debugfs_lock);
+>> +	if (!amd_iommu_debugfs)
+>> +		amd_iommu_debugfs = iommu_debugfs_new_driver_dir("amd");
+>> +	mutex_unlock(&amd_iommu_debugfs_lock);
 >> +
->> +	d_new = debugfs_create_dir(vendor, iommu_debugfs_dir);
->> +
->> +	return d_new;
+>> +	if (amd_iommu_debugfs) {
 > 
-> This function can be reduced to 1 line.  But really, why do you need it
-> at all?
+> Do not test this.
 
-My intention was to not expose the base dentry. Which means that drivers 
-need to call in to this file to create a vendor-specific subdirectory. 
-At least, that was my take-away from the discussion. But you dislike 
-this approach to the code, so I'm open to suggestions. At the very 
-least, it's now a one liner.
+Okay, noted. I'll stop worrying about this.
+
+> 
+>> +		snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
+>> +		iommu->debugfs = debugfs_create_dir(name,
+>> +						    amd_iommu_debugfs);
+>> +		if (!iommu->debugfs) {
+> 
+> No, you don't care about the return value of any debugfs call.  Just
+> save the directory and move on.  If it's not correct, find, nothing is
+> wrong, just keep going.
+
+Roger.
+
+Thank you,
+Gary
