@@ -1,187 +1,77 @@
-From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v8 1/2] iommu - Enable debugfs exposure of IOMMU driver
-	internals
-Date: Tue, 5 Jun 2018 12:01:41 -0500
-Message-ID: <3249cc11-09d8-2078-28a6-efd3078ca0e9@amd.com>
-References: <152761784341.2654.8609366076331539902.stgit@sosgrh1.amd.com>
-	<152761819480.2654.5371070582955429468.stgit@sosgrh1.amd.com>
-	<20180529184101.GB10618@kroah.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v6 0/7] vfio/type1: Add support for valid iova list
+ management
+Date: Tue, 5 Jun 2018 11:03:04 -0600
+Message-ID: <20180605110304.33e14b0d@w520.home>
+References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
+        <20180524122032.724676b9@w520.home>
+        <5FC3163CFD30C246ABAA99954A238FA8386EE591@FRAEML521-MBX.china.huawei.com>
+        <20180525145408.2938a9ec@w520.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180529184101.GB10618-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180525145408.2938a9ec@w520.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, "pmorel@linux.vnet.ibm.com" <pmorel@linux.vnet.ibm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Linuxarm <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>, "xuwei (O)" <xuwei5@huawei.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/29/2018 01:41 PM, Greg KH wrote:
-> On Tue, May 29, 2018 at 01:23:14PM -0500, Gary R Hook wrote:
->> Provide base enablement for using debugfs to expose internal data of an
->> IOMMU driver. When called, create the /sys/kernel/debug/iommu directory.
->>
->> Emit a strong warning at boot time to indicate that this feature is
->> enabled.
->>
->> This function is called from iommu_init, and creates the initial DebugFS
->> directory. Drivers may then call iommu_debugfs_new_driver_dir() to
->> instantiate a device-specific directory to expose internal data.
->> It will return a pointer to the new dentry structure created in
->> /sys/kernel/debug/iommu, or NULL in the event of a failure.
->>
->> Since the IOMMU driver can not be removed from the running system, there
->> is no need for an "off" function.
->>
->> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
->> ---
->>   drivers/iommu/Kconfig         |   10 ++++++
->>   drivers/iommu/Makefile        |    1 +
->>   drivers/iommu/iommu-debugfs.c |   72 +++++++++++++++++++++++++++++++++++++++++
->>   drivers/iommu/iommu.c         |    2 +
->>   include/linux/iommu.h         |   11 ++++++
->>   5 files changed, 96 insertions(+)
->>   create mode 100644 drivers/iommu/iommu-debugfs.c
->>
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index c76157e57f6b..f9af25ac409f 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -60,6 +60,16 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
->>   
->>   endmenu
->>   
->> +config IOMMU_DEBUGFS
->> +	bool "Export IOMMU internals in DebugFS"
->> +	depends on DEBUG_FS
->> +	help
->> +	  Allows exposure of IOMMU device internals. This option enables
->> +	  the use of debugfs by IOMMU drivers as required. Devices can,
->> +	  at initialization time, cause the IOMMU code to create a top-level
->> +	  debug/iommu directory, and then populate a subdirectory with
->> +	  entries as required.
-> 
-> You didn't put a big enough warning here, like I asked last time :(
+[Cc +dwmw2]
 
-As I noted a few moments ago, I didn't see these until now. Very 
-annoying, that.
+On Fri, 25 May 2018 14:54:08 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
+> On Fri, 25 May 2018 08:45:36 +0000
+> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com> wrote:
 > 
->> +
->>   config IOMMU_IOVA
->>   	tristate
->>   
->> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
->> index 1fb695854809..74cfbc392862 100644
->> --- a/drivers/iommu/Makefile
->> +++ b/drivers/iommu/Makefile
->> @@ -2,6 +2,7 @@
->>   obj-$(CONFIG_IOMMU_API) += iommu.o
->>   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->>   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
->> +obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
->>   obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
->>   obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
->>   obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
->> diff --git a/drivers/iommu/iommu-debugfs.c b/drivers/iommu/iommu-debugfs.c
->> new file mode 100644
->> index 000000000000..bb1bf2d0ac51
->> --- /dev/null
->> +++ b/drivers/iommu/iommu-debugfs.c
->> @@ -0,0 +1,72 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * IOMMU debugfs core infrastructure
->> + *
->> + * Copyright (C) 2018 Advanced Micro Devices, Inc.
->> + *
->> + * Author: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
->> + */
->> +
->> +#include <linux/pci.h>
->> +#include <linux/iommu.h>
->> +#include <linux/debugfs.h>
->> +
->> +static struct dentry *iommu_debugfs_dir;
->> +
->> +/**
->> + * iommu_debugfs_setup - create the top-level iommu directory in debugfs
->> + *
->> + * Provide base enablement for using debugfs to expose internal data of an
->> + * IOMMU driver. When called, this function creates the
->> + * /sys/kernel/debug/iommu directory.
->> + *
->> + * Emit a strong warning at boot time to indicate that this feature is
->> + * enabled.
->> + *
->> + * This function is called from iommu_init; drivers may then call
->> + * iommu_debugfs_new_driver_dir() to instantiate a vendor-specific
->> + * directory to be used to expose internal data.
->> + */
->> +void iommu_debugfs_setup(void)
->> +{
->> +	if (!iommu_debugfs_dir) {
->> +		iommu_debugfs_dir = debugfs_create_dir("iommu", NULL);
->> +		if (iommu_debugfs_dir) {
+> > Yes, the above changes related to list empty cases looks fine to me.   
 > 
-> Again, no, never test a return value from a debugfs call.  You do not
-> care, you should do the same exact thing if it is enabled or disabled or
-> somehow failing.  Just keep moving on.
+> Thanks Shameer, applied to my next branch with the discussed fixes for
+> v4.18 (modulo patch 4/7 which Joerg already pushed for v4.17).  Thanks,
 
-Yes, noted.
+Hi Shameer,
 
-> 
->> +			pr_warn("\n");
->> +			pr_warn("*************************************************************\n");
->> +			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("**  IOMMU DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL  **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("** This means that this kernel is built to expose internal **\n");
->> +			pr_warn("** IOMMU data structures, which may compromise security on **\n");
->> +			pr_warn("** your system.                                            **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("** If you see this message and you are not debugging the   **\n");
->> +			pr_warn("** kernel, report this immediately to your vendor!         **\n");
->> +			pr_warn("**                                                         **\n");
->> +			pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\n");
->> +			pr_warn("*************************************************************\n");
->> +		}
->> +	}
->> +}
->> +
->> +/**
->> + * iommu_debugfs_new_driver_dir - create a vendor directory under debugfs/iommu
->> + * @vendor: name of the vendor-specific subdirectory to create
->> + *
->> + * This function is called by an IOMMU driver to create the top-level debugfs
->> + * directory for that driver.
->> + *
->> + * Return: upon success, a pointer to the dentry for the new directory.
->> + *         NULL in case of failure.
->> + */
->> +struct dentry *iommu_debugfs_new_driver_dir(const char *vendor)
->> +{
->> +	struct dentry *d_new;
->> +
->> +	d_new = debugfs_create_dir(vendor, iommu_debugfs_dir);
->> +
->> +	return d_new;
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_debugfs_new_driver_dir);
-> 
-> Why are you wrapping a debugfs call?  Why not just export
-> iommu_debugfs_dir instead?
+We're still hitting issues with this.  VT-d marks reserved regions for
+any RMRR ranges, which are IOVA ranges that the BIOS requests to be
+identity mapped for a device.  These are indicated by these sorts of
+log entries on boot:
 
-It was a choice, as I stated in my other post. It is not a requirement.
-If you resolutely reject this approach, that's fine. I'll change it, no 
-worries.
+ DMAR: Setting RMRR:
+ DMAR: Setting identity map for device 0000:00:02.0 [0xbf800000 - 0xcf9fffff]
+ DMAR: Setting identity map for device 0000:00:1a.0 [0xbe8d1000 - 0xbe8dffff]
+ DMAR: Setting identity map for device 0000:00:1d.0 [0xbe8d1000 - 0xbe8dffff]
+
+So while for an unaffected device, I see very usable ranges for QEMU,
+such as:
+
+	00: 0000000000000000 - 00000000fedfffff
+	01: 00000000fef00000 - 01ffffffffffffff
+
+If I try to assign the previously assignable 00:02.0 IGD graphics
+device, I get:
+
+	00: 0000000000000000 - 00000000bf7fffff
+	01: 00000000cfa00000 - 00000000fedfffff
+	02: 00000000fef00000 - 01ffffffffffffff
+
+And we get a fault when QEMU tries the following mapping:
+
+vfio_dma_map(0x55f790421a20, 0x100000, 0xbff00000, 0x7ff163f00000)
+
+bff00000 clearly extends into the gap starting at bf800000.  VT-d is
+rather split-brained about RMRRs, typically we'd exclude devices from
+assignment at all for relying on RMRRs and these reserved ranges
+would be a welcome mechanism to avoid conflicts with those ranges, but
+for RMRR ranges covering IGD and USB devices we've decided that we
+don't need to honor the RMRR (see device_is_rmrr_locked()), but it's
+still listed as a reserved range and bites us here.
+
+Unless we can get VT-d to exclude RMRRs from reserved regions where
+we've already seen fit to allow the devices to participate in the IOMMU
+API, this would introduce a functional regression for assignment of
+these devices.  David, should we skip GFX and USB devices with RMRRs in
+intel_iommu_get_resv_regions() just as we do in
+device_is_rmrr_locked()?  Thanks,
+
+Alex
