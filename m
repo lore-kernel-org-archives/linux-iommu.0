@@ -1,77 +1,95 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v6 0/7] vfio/type1: Add support for valid iova list
- management
-Date: Tue, 5 Jun 2018 11:03:04 -0600
-Message-ID: <20180605110304.33e14b0d@w520.home>
-References: <20180418114045.7968-1-shameerali.kolothum.thodi@huawei.com>
-        <20180524122032.724676b9@w520.home>
-        <5FC3163CFD30C246ABAA99954A238FA8386EE591@FRAEML521-MBX.china.huawei.com>
-        <20180525145408.2938a9ec@w520.home>
+From: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v8 2/2] iommu/amd: Add basic debugfs infrastructure for
+	AMD IOMMU
+Date: Tue, 5 Jun 2018 19:06:24 +0200
+Message-ID: <20180605170624.GB10834@kroah.com>
+References: <152761784341.2654.8609366076331539902.stgit@sosgrh1.amd.com>
+	<152761820371.2654.4551405686504157036.stgit@sosgrh1.amd.com>
+	<20180529183917.GA10618@kroah.com>
+	<f0780139-5322-a028-0091-3255e0596eff@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180525145408.2938a9ec@w520.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "eric.auger@redhat.com" <eric.auger@redhat.com>, "pmorel@linux.vnet.ibm.com" <pmorel@linux.vnet.ibm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Linuxarm <linuxarm@huawei.com>, John Garry <john.garry@huawei.com>, "xuwei (O)" <xuwei5@huawei.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <f0780139-5322-a028-0091-3255e0596eff-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[Cc +dwmw2]
-
-On Fri, 25 May 2018 14:54:08 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
-
-> On Fri, 25 May 2018 08:45:36 +0000
-> Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com> wrote:
+On Tue, Jun 05, 2018 at 11:58:13AM -0500, Gary R Hook wrote:
+> On 05/29/2018 01:39 PM, Greg KH wrote:
+> > On Tue, May 29, 2018 at 01:23:23PM -0500, Gary R Hook wrote:
+> > > Implement a skeleton framework for debugfs support in the
+> > > AMD IOMMU. Add a hidden boolean to Kconfig that is defined
+> > > for the AMD IOMMU when general IOMMY DebugFS support is
+> > > enabled.
+> > > 
+> > > Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+> > > ---
+> > >   drivers/iommu/Kconfig             |    4 ++++
+> > >   drivers/iommu/Makefile            |    1 +
+> > >   drivers/iommu/amd_iommu_debugfs.c |   39 +++++++++++++++++++++++++++++++++++++
+> > >   drivers/iommu/amd_iommu_init.c    |    6 ++++--
+> > >   drivers/iommu/amd_iommu_proto.h   |    6 ++++++
+> > >   drivers/iommu/amd_iommu_types.h   |    5 +++++
+> > >   6 files changed, 59 insertions(+), 2 deletions(-)
+> > >   create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+> > > 
+> > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > index f9af25ac409f..ec223f6f4ad4 100644
+> > > --- a/drivers/iommu/Kconfig
+> > > +++ b/drivers/iommu/Kconfig
+> > > @@ -137,6 +137,10 @@ config AMD_IOMMU
+> > >   	  your BIOS for an option to enable it or if you have an IVRS ACPI
+> > >   	  table.
+> > > +config AMD_IOMMU_DEBUGFS
+> > > +	def_bool y
+> > 
+> > Why default y?  Can you not boot a box without this?  If not, it should
+> > not be Y.
 > 
-> > Yes, the above changes related to list empty cases looks fine to me.   
+> Again, apologies for not seeing this sooner.
 > 
-> Thanks Shameer, applied to my next branch with the discussed fixes for
-> v4.18 (modulo patch 4/7 which Joerg already pushed for v4.17).  Thanks,
+> Yes, the system can boot without this. The idea of a hidden option was
+> surfaced by Robin, and after my first approach was shot down, I tried this.
+> 
+> Logic: If the over-arching IOMMU debugfs option is enabled, then
+> AMD_IOMMU_DEBUGFS gets defined, and AMD IOMMU code gets included.
+> 
+> This issue was discussed a few weeks ago. No single approach appears to
+> satisfy everyone. I like this because it depends upon one switch: Do you
+> want DebugFS support enabled in the IOMMU driver, period? Vendor-specific
+> code can then choose to implement support or not, and a builder doesn't have
+> to worry about enabling/disabling multiple Kconfig options.
+> 
+> At least, that was my line of reasoning.
+> 
+> I'm not married to any approach, and I don't find clever use of Kconfig
+> options too terribly challenging. And I'm not defending, I'm just
+> explaining.
 
-Hi Shameer,
+The issue is, no one sets Kconfig options except a very tiny subset of
+kernel developers.  Distros allways enable everything, as they have to
+do that.
 
-We're still hitting issues with this.  VT-d marks reserved regions for
-any RMRR ranges, which are IOVA ranges that the BIOS requests to be
-identity mapped for a device.  These are indicated by these sorts of
-log entries on boot:
+If you are creating something here that is so dangerous that you spam
+the kernel log with big warning messages, you should not be making it
+easy to enable, let alone be enabled by default :)
 
- DMAR: Setting RMRR:
- DMAR: Setting identity map for device 0000:00:02.0 [0xbf800000 - 0xcf9fffff]
- DMAR: Setting identity map for device 0000:00:1a.0 [0xbe8d1000 - 0xbe8dffff]
- DMAR: Setting identity map for device 0000:00:1d.0 [0xbe8d1000 - 0xbe8dffff]
+Just make it an option, have it rely on the kernel debugging option, and
+say "DO NOT ENABLE THIS UNLESS YOU REALLY REALLY REALLY KNOW WHAT YOU
+ARE DOING!"
 
-So while for an unaffected device, I see very usable ranges for QEMU,
-such as:
+thanks,
 
-	00: 0000000000000000 - 00000000fedfffff
-	01: 00000000fef00000 - 01ffffffffffffff
-
-If I try to assign the previously assignable 00:02.0 IGD graphics
-device, I get:
-
-	00: 0000000000000000 - 00000000bf7fffff
-	01: 00000000cfa00000 - 00000000fedfffff
-	02: 00000000fef00000 - 01ffffffffffffff
-
-And we get a fault when QEMU tries the following mapping:
-
-vfio_dma_map(0x55f790421a20, 0x100000, 0xbff00000, 0x7ff163f00000)
-
-bff00000 clearly extends into the gap starting at bf800000.  VT-d is
-rather split-brained about RMRRs, typically we'd exclude devices from
-assignment at all for relying on RMRRs and these reserved ranges
-would be a welcome mechanism to avoid conflicts with those ranges, but
-for RMRR ranges covering IGD and USB devices we've decided that we
-don't need to honor the RMRR (see device_is_rmrr_locked()), but it's
-still listed as a reserved range and bites us here.
-
-Unless we can get VT-d to exclude RMRRs from reserved regions where
-we've already seen fit to allow the devices to participate in the IOMMU
-API, this would introduce a functional regression for assignment of
-these devices.  David, should we skip GFX and USB devices with RMRRs in
-intel_iommu_get_resv_regions() just as we do in
-device_is_rmrr_locked()?  Thanks,
-
-Alex
+greg k-h
