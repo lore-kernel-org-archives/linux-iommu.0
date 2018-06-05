@@ -1,95 +1,107 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v4 04/22] iommu/vt-d: add bind_pasid_table function
-Date: Tue, 5 Jun 2018 10:32:53 -0700
-Message-ID: <20180605103253.634ef8fd@jacob-builder>
-References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1523915351-54415-5-git-send-email-jacob.jun.pan@linux.intel.com>
-        <20180417131047.0a9c310f@w520.home>
-        <AM4PR0802MB2369F739C91B630CA99B3D3BA3B40@AM4PR0802MB2369.eurprd08.prod.outlook.com>
-        <20180420164251.5245f822@jacob-builder>
-        <20180529140915.1f174689@w520.home>
-        <AADFC41AFE54684AB9EE6CBC0274A5D1911E59C4@SHSMSX101.ccr.corp.intel.com>
-        <20180529211746.74f1dd23@w520.home>
-        <AADFC41AFE54684AB9EE6CBC0274A5D1911E5F06@SHSMSX101.ccr.corp.intel.com>
-        <a07a0a0a-ebdd-c81a-7ed6-cff19e6078d7@arm.com>
-        <20180530125240.34e0e80c@jacob-builder>
-        <1c1094e8-ecbb-7731-910c-59e4de1e5c70@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC PATCH] iommu/vt-d: Exclude known RMRRs from reserved ranges
+Date: Tue, 05 Jun 2018 13:06:54 -0600
+Message-ID: <20180605190400.22732.2998.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1c1094e8-ecbb-7731-910c-59e4de1e5c70@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Yi L <yi.l.liu@linux.intel.com>, Auger Eric <eric.auger@redhat.com>, jacob.jun.pan@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 31 May 2018 10:09:46 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+device_is_rmrr_locked() allows graphics and USB devices to participate
+in the IOMMU API despite, and ignoring their RMRR association, however
+intel_iommu_get_resv_regions() still includes the RMRRs as unavailable
+IOVA space for the device.  Are we ignoring the RMRR for these devices
+or are we not?  If vfio starts consuming reserved regions, perhaps we
+no longer need to consider devices with RMRRs excluded from the IOMMU
+API interface, but we have a transitional problem that these allowed
+devices still impose incompatible IOVA restrictions per the reserved
+region reporting.  Dive further down the rabbit hole by also ignoring
+RMRRs for "known" devices in the reserved region reporting.
 
-> On 30/05/18 20:52, Jacob Pan wrote:
-> >> However I think the model number should be added to
-> >> pasid_table_config. For one thing it gives us a simple
-> >> sanity-check, but it also tells which other fields are valid in
-> >> pasid_table_config. Arm-smmu-v3 needs at least two additional
-> >> 8-bit fields describing the PASID table format (number of levels
-> >> and PASID0 behaviour), which are written to device context tables
-> >> when installing the PASID table pointer.
-> >>  
-> > We had model number field in v2 of this patchset. My thought was
-> > that since the config info is meant to be generic, we shouldn't
-> > include model info. But I also think a simple sanity check can be
-> > useful, would that be sufficient to address Alex's concern? Of
-> > course we still need sysfs for more specific IOMMU features.
-> > 
-> > Would this work?
-> > enum pasid_table_model {
-> > 	PASID_TABLE_FORMAT_HOST,
-> > 	PASID_TABLE_FORMAT_ARM_1LVL,
-> > 	PASID_TABLE_FORMAT_ARM_2LVL,  
-> 
-> I'd rather use a single PASID_TABLE_FORMAT_ARM, because "2LVL" may be
-> further split into 2LVL_4k or 2LVL_64k leaf tables... I think it's
-> best if I add an arch-specific field in pasid_table_config for that,
-> and for the PASID0 configuration, when adding FORMAT_ARM in a future
-> patch
-> 
-sounds good. will only use PASID_TABLE_FORMAT_ARM.
-> > 	PASID_TABLE_FORMAT_AMD,
-> > 	PASID_TABLE_FORMAT_INTEL,
-> > };
-> > 
-> > /**
-> >  * PASID table data used to bind guest PASID table to the host
-> > IOMMU. This will
-> >  * enable guest managed first level page tables.
-> >  * @version: for future extensions and identification of the data
-> > format
-> >  * @bytes: size of this structure
-> >  * @model: PASID table format for different IOMMU models
-> >  * @base_ptr:	PASID table pointer
-> >  * @pasid_bits:	number of bits supported in the guest PASID
-> > table, must be less
-> >  *		or equal than the host supported PASID size.
-> >  */
-> > struct pasid_table_config {
-> > 	__u32 version;
-> > #define PASID_TABLE_CFG_VERSION_1 1
-> > 	__u32 bytes;  
-> 
-> "bytes" could be passed by VFIO as argument to bind_pasid_table, since
-> it can deduce it from argsz
-> 
-Are you suggesting we wrap this struct in a vfio struct with argsz? or
-we directly use this struct?
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c |   35 +++++++++++++++++++++--------------
+ 1 file changed, 21 insertions(+), 14 deletions(-)
 
-I need to clarify how vfio will use this.
-- User program:
-struct pasid_table_config ptc = { .bytes = sizeof(ptc) };
-ptc.version = 1;
-ioctl(device, VFIO_DEVICE_BIND_PASID_TABLE, &ptc);
+If this is the approach we want to take, I could pull this in via the
+vfio tree, along with Shameer's patches which expose an IOVA list and
+enforce it to userspace, otherwise I'm afraid Shameer's patches will
+be blocked a while longer.  Thanks,
 
-- Kernel:
-minsz = offsetofend(struct pasid_table_config, pasid_bits);
-if (ptc.bytes < minsz)
-	return -EINVAL;
+Alex
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 749d8f235346..f312f93199c5 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2864,19 +2864,24 @@ static bool device_has_rmrr(struct device *dev)
+  * any use of the RMRR regions will be torn down before assigning the device
+  * to a guest.
+  */
+-static bool device_is_rmrr_locked(struct device *dev)
++static bool rmrr_is_ignored(struct device *dev)
+ {
+-	if (!device_has_rmrr(dev))
+-		return false;
+-
+ 	if (dev_is_pci(dev)) {
+ 		struct pci_dev *pdev = to_pci_dev(dev);
+ 
+ 		if (IS_USB_DEVICE(pdev) || IS_GFX_DEVICE(pdev))
+-			return false;
++			return true;
+ 	}
+ 
+-	return true;
++	return false;
++}
++
++static bool device_is_rmrr_locked(struct device *dev)
++{
++	if (!device_has_rmrr(dev))
++		return false;
++
++	return !rmrr_is_ignored(dev);
+ }
+ 
+ static int iommu_should_identity_map(struct device *dev, int startup)
+@@ -5141,17 +5146,19 @@ static void intel_iommu_get_resv_regions(struct device *device,
+ 	struct device *i_dev;
+ 	int i;
+ 
+-	rcu_read_lock();
+-	for_each_rmrr_units(rmrr) {
+-		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
+-					  i, i_dev) {
+-			if (i_dev != device)
+-				continue;
++	if (!rmrr_is_ignored(device)) {
++		rcu_read_lock();
++		for_each_rmrr_units(rmrr) {
++			for_each_active_dev_scope(rmrr->devices,
++						  rmrr->devices_cnt, i, i_dev) {
++				if (i_dev != device)
++					continue;
+ 
+-			list_add_tail(&rmrr->resv->list, head);
++				list_add_tail(&rmrr->resv->list, head);
++			}
+ 		}
++		rcu_read_unlock();
+ 	}
+-	rcu_read_unlock();
+ 
+ 	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+ 				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
