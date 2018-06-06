@@ -1,109 +1,191 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH 2/2] iommu/vt-d: fix dev iotlb pfsid use
-Date: Wed,  6 Jun 2018 13:18:00 -0700
-Message-ID: <1528316280-24307-3-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1528316280-24307-1-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v4 04/22] iommu/vt-d: add bind_pasid_table function
+Date: Wed, 6 Jun 2018 14:22:04 -0700
+Message-ID: <20180606142204.529adec5@jacob-builder>
+References: <1523915351-54415-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1523915351-54415-5-git-send-email-jacob.jun.pan@linux.intel.com>
+        <20180417131047.0a9c310f@w520.home>
+        <AM4PR0802MB2369F739C91B630CA99B3D3BA3B40@AM4PR0802MB2369.eurprd08.prod.outlook.com>
+        <20180420164251.5245f822@jacob-builder>
+        <20180529140915.1f174689@w520.home>
+        <AADFC41AFE54684AB9EE6CBC0274A5D1911E59C4@SHSMSX101.ccr.corp.intel.com>
+        <20180529211746.74f1dd23@w520.home>
+        <AADFC41AFE54684AB9EE6CBC0274A5D1911E5F06@SHSMSX101.ccr.corp.intel.com>
+        <a07a0a0a-ebdd-c81a-7ed6-cff19e6078d7@arm.com>
+        <20180530125240.34e0e80c@jacob-builder>
+        <1c1094e8-ecbb-7731-910c-59e4de1e5c70@arm.com>
+        <20180605103253.634ef8fd@jacob-builder>
+        <2831caf1-d40b-58c3-313c-afb7262e1861@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1528316280-24307-1-git-send-email-jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2831caf1-d40b-58c3-313c-afb7262e1861@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Yi L <yi.l.liu@linux.intel.com>, Auger Eric <eric.auger@redhat.com>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-PFSID should be used in the invalidation descriptor for flushing
-device IOTLBs on SRIOV VFs.
+On Wed, 6 Jun 2018 12:20:51 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/iommu/dmar.c        |  6 +++---
- drivers/iommu/intel-iommu.c | 16 +++++++++++++++-
- include/linux/intel-iommu.h |  5 ++---
- 3 files changed, 20 insertions(+), 7 deletions(-)
+> On 05/06/18 18:32, Jacob Pan wrote:
+> >> "bytes" could be passed by VFIO as argument to bind_pasid_table,
+> >> since it can deduce it from argsz
+> >>  
+> > Are you suggesting we wrap this struct in a vfio struct with argsz?
+> > or we directly use this struct?
+> > 
+> > I need to clarify how vfio will use this.  
+> 
+> Right, I think we've diverged a bit since the last discussion :)
+> 
+> > - User program:
+> > struct pasid_table_config ptc = { .bytes = sizeof(ptc) };
+> > ptc.version = 1;
+> > ioctl(device, VFIO_DEVICE_BIND_PASID_TABLE, &ptc);  
+> 
+> Any reason to do the ioctl on device instead of container? As we're
+> binding address spaces we probably want a consistent view for the
+> whole container, like the MAP/UNMAP ioctls do.
+> 
+I was thinking the pasid table storage is per device, it would be
+more secure if the pasid table is contained within the device. We
+should have one device per container in most cases.
+in case of two or more devices in the same container shares the same
+pasid table, isolation may not be good in that the second device can
+dma with pasids it does not own but in the shared pasid table.
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 460bed4..7852678 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1339,8 +1339,8 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	qi_submit_sync(&desc, iommu);
- }
- 
--void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
--			u64 addr, unsigned mask)
-+void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+			u16 qdep, u64 addr, unsigned mask)
- {
- 	struct qi_desc desc;
- 
-@@ -1355,7 +1355,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
- 		qdep = 0;
- 
- 	desc.low = QI_DEV_IOTLB_SID(sid) | QI_DEV_IOTLB_QDEP(qdep) |
--		   QI_DIOTLB_TYPE;
-+		   QI_DIOTLB_TYPE | QI_DEV_IOTLB_PFSID(pfsid);
- 
- 	qi_submit_sync(&desc, iommu);
- }
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3d77d61..e0e80c3 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1503,6 +1503,19 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 		return;
- 
- 	pdev = to_pci_dev(info->dev);
-+	/* For IOMMU that supports device IOTLB throttling (DIT), we assign
-+	 * PFSID to the invalidation desc of a VF such that IOMMU HW can gauge
-+	 * queue depth at PF level. If DIT is not set, PFSID will be treated as
-+	 * reserved, which should be set to 0.
-+	 */
-+	if (!ecap_dit(info->iommu->ecap))
-+		info->pfsid = 0;
-+	else if (pdev && pdev->is_virtfn) {
-+		if (ecap_dit(info->iommu->ecap))
-+			dev_warn(&pdev->dev, "SRIOV VF device IOTLB enabled without flow control\n");
-+		info->pfsid = PCI_DEVID(pdev->physfn->bus->number, pdev->physfn->devfn);
-+	} else
-+		info->pfsid = PCI_DEVID(info->bus, info->devfn);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	/* The PCIe spec, in its wisdom, declares that the behaviour of
-@@ -1568,7 +1581,8 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 
- 		sid = info->bus << 8 | info->devfn;
- 		qdep = info->ats_qdep;
--		qi_flush_dev_iotlb(info->iommu, sid, qdep, addr, mask);
-+		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
-+				qdep, addr, mask);
- 	}
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- }
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index af1c05f..7fd9fbae 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -456,9 +456,8 @@ extern void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid,
- 			     u8 fm, u64 type);
- extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 			  unsigned int size_order, u64 type);
--extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 qdep,
--			       u64 addr, unsigned mask);
--
-+extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-+			u16 qdep, u64 addr, unsigned mask);
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
- 
- extern int dmar_ir_support(void);
--- 
-2.7.4
+> As I remember it the userspace interface would use a VFIO header and
+> the BIND ioctl. I can't find the email in my archive though, so I
+> might be imagining it. This is what I remember, on the user side:
+> 
+> struct {
+> 	struct vfio_iommu_type1_bind	hdr;
+> 	struct pasid_table_config	cfg;
+> } bind = {
+> 	.hdr.argsz	= sizeof(bind),
+> 	.hdr.flags	= VFIO_IOMMU_BIND_PASID_TABLE,
+> 	/* cfg data here */
+> };
+> 
+> ioctl(container, VFIO_DEVICE_BIND, &bind);
+> 
+or maybe just use your VFIO_IOMMU_BIND command and vfio_iommu_type1_bind
+with a new flag and PTC as the data. there can be future extensions,
+bind pasid table can be too narrow. And i agree below using argsz and
+flags are more flexible.
+
+i.e.
+/* takes pasid_table_config as data for flag VFIO_IOMMU_BIND_PASIDTBL */
+struct vfio_iommu_type1_bind {
+	__u32	argsz;
+	__u32	flags;
+#define VFIO_IOMMU_BIND_PROCESS		(1 << 0)
+#define VFIO_IOMMU_BIND_PASIDTBL	(1 << 1)
+	__u8	data[];
+};
+
+pseudo code in kernel:
+	switch (bind.flags) {
+	case VFIO_IOMMU_BIND_PROCESS:
+		return vfio_iommu_type1_bind_process(iommu, (void *)arg,
+						     &bind);
+	case VFIO_IOMMU_BIND_PASIDTBL:
+		return vfio_iommu_type1_bind_pasid_tbl(iommu, &bind);
+}
+
+vfio_iommu_type1_bind_pasid_tbl(iommu, bind)
+{
+	/* loop through domain list, group, device */
+	struct pasid_table_cfg *ptc = bind->data;
+	iommu_bind_pasid_table(domain, device, ptc);
+}
+
+
+> 
+> But I don't feel strongly about the interface. However I'd suggest to
+> keep incremental versioning like the rest of VFIO, with argsz and
+> flags, instead of version numbers, because it's more flexible.
+> 
+> Initially the PTC struct would look like:
+> struct pasid_table_config {
+>   u32 argsz;		/* sizeof(pasid_table_config) */
+>   u32 flags;		/* Should be zero */
+>   u64 base_ptr;
+>   u8 model;
+>   u8 pasid_bits;
+> };
+> 
+> (Even though it doesn't use a version field let's call this version 1
+> for the sake of the example)
+> 
+> ------
+> If someone wants to add a new field to the structure, then they also
+> add a flag (let's call this version 2):
+> 
+> struct pasid_table_config {
+>   u32 argsz;
+> #define PASID_TABLE_CONFIG_EXTN (1 << 0)
+>   u32 flags;
+>   u64 base_ptr;
+>   u8 model;
+>   u8 pasid_bits;
+>   u64 some_extension;
+> };
+> 
+> * Assume user has a version 2 header and kernel has a version 1
+> header.
+>   * If user doesn't want the extension, it doesn't set the EXTN flag.
+>     The ioctl succeeds because the kernel checks that argsz >=
+>     offsetofend(pasid_bits) and that (flags == 0).
+>   * If user wants to use the extension, it sets the EXTN flag. The
+> ioctl fails because the kernel doesn't recognize the flag.
+> * Assume user has version 1 and kernel has version 2.
+>   * User doesn't use the extension. The kernel still checks that
+>     argsz >= offsetofend(pasid_bits), but also that (flags &
+>     ~PASID_TABLE_CONFIG_EXTN), which succeeds.
+>   * User wants the extension, sets PASID_TABLE_CONFIG_EXTN. When
+>     seeing the flag, the kernel additionally checks that argsz >=
+>     offsetofend(some_extension), which succeeds.
+> 
+> ------
+> Adding model-specific fields is a bit more complicated, because I
+> think they should always stay at the end of the struct. One solution
+> is to add padding for common extensions:
+> 
+> struct pasid_table_config {
+>   u32 argsz;
+>   u32 flags;
+>   u64 base_ptr;
+>   u8 model;
+>   u8 pasid_bits;
+>   u8 padding[64];
+> 
+>   union {
+>     struct {
+>       u8 s1dss;
+>       u8 s1fmt;
+>     } model_arm;
+>     struct {
+>       u64 foo;
+>     } model_bar;
+>   };
+> };
+> 
+> (we might call this version 3, but can be added before or after
+> version 2, it doesn't matter)
+> 
+> A subsequent extension can still add the "some_extension" field and a
+> flag. If the kernel sees model "ARM", then it checks argsz >=
+> offsetofend(model_arm). If it sees model "BAR" then it checks argsz >=
+> offsetofend(model_bar). A model could also have flags to make the
+> model-specific structure extensible.
+> 
+> The problem is when we run out of space in the padding area, but we
+> might not need much extensibility in the common part.
+> 
+> Thanks,
+> Jean
+
+[Jacob Pan]
