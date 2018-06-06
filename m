@@ -1,13 +1,14 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH] iommu/vt-d: Exclude known RMRRs from reserved ranges
-Date: Tue, 5 Jun 2018 21:27:42 -0700
-Message-ID: <20180605212742.2cb5882a@jacob-builder>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC PATCH] iommu/vt-d: Exclude known RMRRs from reserved ranges
+Date: Wed, 6 Jun 2018 05:29:58 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1911F88AD@SHSMSX101.ccr.corp.intel.com>
 References: <20180605190400.22732.2998.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <20180605190400.22732.2998.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,13 +18,13 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 05 Jun 2018 13:06:54 -0600
-Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-
+> From: Alex Williamson
+> Sent: Wednesday, June 6, 2018 3:07 AM
+> 
 > device_is_rmrr_locked() allows graphics and USB devices to participate
 > in the IOMMU API despite, and ignoring their RMRR association, however
 > intel_iommu_get_resv_regions() still includes the RMRRs as unavailable
@@ -34,34 +35,31 @@ Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 > devices still impose incompatible IOVA restrictions per the reserved
 > region reporting.  Dive further down the rabbit hole by also ignoring
 > RMRRs for "known" devices in the reserved region reporting.
+
+intel_iommu_get_resv_regions is used not just for IOMMU API. I'm
+afraid doing so will make RMRR completely ignored, even in normal
+DMA API path...
+
 > 
 > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/intel-iommu.c |   35
-> +++++++++++++++++++++-------------- 1 file changed, 21 insertions(+),
-> 14 deletions(-)
+>  drivers/iommu/intel-iommu.c |   35 +++++++++++++++++++++--------------
+>  1 file changed, 21 insertions(+), 14 deletions(-)
 > 
 > If this is the approach we want to take, I could pull this in via the
 > vfio tree, along with Shameer's patches which expose an IOVA list and
 > enforce it to userspace, otherwise I'm afraid Shameer's patches will
 > be blocked a while longer.  Thanks,
 > 
-I think this patch makes sense in that it makes IOVA reserved range
-check consistent.
-
-Thanks,
-
-Jacob
 > Alex
 > 
 > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
 > index 749d8f235346..f312f93199c5 100644
 > --- a/drivers/iommu/intel-iommu.c
 > +++ b/drivers/iommu/intel-iommu.c
-> @@ -2864,19 +2864,24 @@ static bool device_has_rmrr(struct device
-> *dev)
->   * any use of the RMRR regions will be torn down before assigning
-> the device
+> @@ -2864,19 +2864,24 @@ static bool device_has_rmrr(struct device *dev)
+>   * any use of the RMRR regions will be torn down before assigning the
+> device
 >   * to a guest.
 >   */
 > -static bool device_is_rmrr_locked(struct device *dev)
@@ -72,12 +70,12 @@ Jacob
 > -
 >  	if (dev_is_pci(dev)) {
 >  		struct pci_dev *pdev = to_pci_dev(dev);
->  
+> 
 >  		if (IS_USB_DEVICE(pdev) || IS_GFX_DEVICE(pdev))
 > -			return false;
 > +			return true;
 >  	}
->  
+> 
 > -	return true;
 > +	return false;
 > +}
@@ -89,16 +87,17 @@ Jacob
 > +
 > +	return !rmrr_is_ignored(dev);
 >  }
->  
+> 
 >  static int iommu_should_identity_map(struct device *dev, int startup)
 > @@ -5141,17 +5146,19 @@ static void
-> intel_iommu_get_resv_regions(struct device *device, struct device
-> *i_dev; int i;
->  
+> intel_iommu_get_resv_regions(struct device *device,
+>  	struct device *i_dev;
+>  	int i;
+> 
 > -	rcu_read_lock();
 > -	for_each_rmrr_units(rmrr) {
-> -		for_each_active_dev_scope(rmrr->devices,
-> rmrr->devices_cnt,
+> -		for_each_active_dev_scope(rmrr->devices, rmrr-
+> >devices_cnt,
 > -					  i, i_dev) {
 > -			if (i_dev != device)
 > -				continue;
@@ -106,27 +105,19 @@ Jacob
 > +		rcu_read_lock();
 > +		for_each_rmrr_units(rmrr) {
 > +			for_each_active_dev_scope(rmrr->devices,
-> +						  rmrr->devices_cnt,
-> i, i_dev) {
+> +						  rmrr->devices_cnt, i, i_dev)
+> {
 > +				if (i_dev != device)
 > +					continue;
->  
+> 
 > -			list_add_tail(&rmrr->resv->list, head);
-> +				list_add_tail(&rmrr->resv->list,
-> head);
+> +				list_add_tail(&rmrr->resv->list, head);
 > +			}
 >  		}
 > +		rcu_read_unlock();
 >  	}
 > -	rcu_read_unlock();
->  
+> 
 >  	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
 >  				      IOAPIC_RANGE_END -
 > IOAPIC_RANGE_START + 1,
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-[Jacob Pan]
