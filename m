@@ -1,39 +1,132 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 1/1] iommu/amd: make sure TLB to be flushed before IOVA freed
-Date: Wed, 6 Jun 2018 10:18:46 +0800
-Message-ID: <1528251526-11408-1-git-send-email-thunder.leizhen@huawei.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC PATCH] iommu/vt-d: Exclude known RMRRs from reserved ranges
+Date: Tue, 5 Jun 2018 21:27:42 -0700
+Message-ID: <20180605212742.2cb5882a@jacob-builder>
+References: <20180605190400.22732.2998.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, Robin Murphy <robin.murphy@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180605190400.22732.2998.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Although the mapping has already been removed in the page table, it maybe
-still exist in TLB. Suppose the freed IOVAs is reused by others before the
-flush operation completed, the new user can not correctly access to its
-meomory.
+On Tue, 05 Jun 2018 13:06:54 -0600
+Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> device_is_rmrr_locked() allows graphics and USB devices to participate
+> in the IOMMU API despite, and ignoring their RMRR association, however
+> intel_iommu_get_resv_regions() still includes the RMRRs as unavailable
+> IOVA space for the device.  Are we ignoring the RMRR for these devices
+> or are we not?  If vfio starts consuming reserved regions, perhaps we
+> no longer need to consider devices with RMRRs excluded from the IOMMU
+> API interface, but we have a transitional problem that these allowed
+> devices still impose incompatible IOVA restrictions per the reserved
+> region reporting.  Dive further down the rabbit hole by also ignoring
+> RMRRs for "known" devices in the reserved region reporting.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c |   35
+> +++++++++++++++++++++-------------- 1 file changed, 21 insertions(+),
+> 14 deletions(-)
+> 
+> If this is the approach we want to take, I could pull this in via the
+> vfio tree, along with Shameer's patches which expose an IOVA list and
+> enforce it to userspace, otherwise I'm afraid Shameer's patches will
+> be blocked a while longer.  Thanks,
+> 
+I think this patch makes sense in that it makes IOVA reserved range
+check consistent.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 8fb8c73..93aa389 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2402,9 +2402,9 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
- 	}
+Thanks,
 
- 	if (amd_iommu_unmap_flush) {
--		dma_ops_free_iova(dma_dom, dma_addr, pages);
- 		domain_flush_tlb(&dma_dom->domain);
- 		domain_flush_complete(&dma_dom->domain);
-+		dma_ops_free_iova(dma_dom, dma_addr, pages);
- 	} else {
- 		pages = __roundup_pow_of_two(pages);
- 		queue_iova(&dma_dom->iovad, dma_addr >> PAGE_SHIFT, pages, 0);
---
-1.8.3
+Jacob
+> Alex
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 749d8f235346..f312f93199c5 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2864,19 +2864,24 @@ static bool device_has_rmrr(struct device
+> *dev)
+>   * any use of the RMRR regions will be torn down before assigning
+> the device
+>   * to a guest.
+>   */
+> -static bool device_is_rmrr_locked(struct device *dev)
+> +static bool rmrr_is_ignored(struct device *dev)
+>  {
+> -	if (!device_has_rmrr(dev))
+> -		return false;
+> -
+>  	if (dev_is_pci(dev)) {
+>  		struct pci_dev *pdev = to_pci_dev(dev);
+>  
+>  		if (IS_USB_DEVICE(pdev) || IS_GFX_DEVICE(pdev))
+> -			return false;
+> +			return true;
+>  	}
+>  
+> -	return true;
+> +	return false;
+> +}
+> +
+> +static bool device_is_rmrr_locked(struct device *dev)
+> +{
+> +	if (!device_has_rmrr(dev))
+> +		return false;
+> +
+> +	return !rmrr_is_ignored(dev);
+>  }
+>  
+>  static int iommu_should_identity_map(struct device *dev, int startup)
+> @@ -5141,17 +5146,19 @@ static void
+> intel_iommu_get_resv_regions(struct device *device, struct device
+> *i_dev; int i;
+>  
+> -	rcu_read_lock();
+> -	for_each_rmrr_units(rmrr) {
+> -		for_each_active_dev_scope(rmrr->devices,
+> rmrr->devices_cnt,
+> -					  i, i_dev) {
+> -			if (i_dev != device)
+> -				continue;
+> +	if (!rmrr_is_ignored(device)) {
+> +		rcu_read_lock();
+> +		for_each_rmrr_units(rmrr) {
+> +			for_each_active_dev_scope(rmrr->devices,
+> +						  rmrr->devices_cnt,
+> i, i_dev) {
+> +				if (i_dev != device)
+> +					continue;
+>  
+> -			list_add_tail(&rmrr->resv->list, head);
+> +				list_add_tail(&rmrr->resv->list,
+> head);
+> +			}
+>  		}
+> +		rcu_read_unlock();
+>  	}
+> -	rcu_read_unlock();
+>  
+>  	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+>  				      IOAPIC_RANGE_END -
+> IOAPIC_RANGE_START + 1,
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+[Jacob Pan]
