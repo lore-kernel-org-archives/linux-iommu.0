@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2 5/5] iommu/arm-smmu-v3: add support for non-strict mode
-Date: Sun, 10 Jun 2018 19:07:23 +0800
-Message-ID: <1528628843-10280-6-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v2 3/5] iommu/amd: use default branch to deal with all non-supported capabilities
+Date: Sun, 10 Jun 2018 19:07:21 +0800
+Message-ID: <1528628843-10280-4-git-send-email-thunder.leizhen@huawei.com>
 References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,44 +12,33 @@ To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joer
 Cc: Zhen Lei <thunder.leizhen@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Xinwei Hu <huxinwei@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-1. Add IOMMU_CAP_NON_STRICT capability.
-2. Dynamic choose strict or non-strict mode base on the iommu domain type.
+Avoid below warning when new capabilities added:
+
+drivers/iommu/amd_iommu.c: In function 'amd_iommu_capable':
+drivers/iommu/amd_iommu.c:3053:2: warning: enumeration value 'IOMMU_CAP_NON_STRICT' not handled in switch [-Wswitch]
+     switch (cap) {
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4402187..4a198a0 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1440,6 +1440,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 1912e91..8b0ba6d 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3059,11 +3059,9 @@ static bool amd_iommu_capable(enum iommu_cap cap)
  		return true;
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
-+	case IOMMU_CAP_NON_STRICT:
-+		return true;
- 	default:
+ 	case IOMMU_CAP_INTR_REMAP:
+ 		return (irq_remapping_enabled == 1);
+-	case IOMMU_CAP_NOEXEC:
++	default:
  		return false;
  	}
-@@ -1767,7 +1769,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
- 	if (!ops)
- 		return 0;
-
--	return ops->unmap(ops, iova, size);
-+	return ops->unmap(ops, iova | IOMMU_DOMAIN_STRICT_MODE(domain), size);
+-
+-	return false;
  }
 
- static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
-@@ -1782,7 +1784,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
- {
- 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-
--	if (smmu)
-+	if (smmu && (IOMMU_DOMAIN_STRICT_MODE(domain) == IOMMU_STRICT))
- 		__arm_smmu_tlb_sync(smmu);
- }
-
+ static void amd_iommu_get_resv_regions(struct device *dev,
 --
 1.8.3
