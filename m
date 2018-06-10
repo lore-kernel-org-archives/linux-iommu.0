@@ -1,136 +1,131 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Updates for Linux v4.18
-Date: Fri, 8 Jun 2018 17:03:14 +0200
-Message-ID: <20180608150309.esh35cutnhpf5ry4@8bytes.org>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 4/5] iommu/io-pgtable-arm: add support for non-strict mode
+Date: Sun, 10 Jun 2018 19:07:22 +0800
+Message-ID: <1528628843-10280-5-git-send-email-thunder.leizhen@huawei.com>
+References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="p6fvj5zx4uwog74f"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1528628843-10280-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Guozhu Li <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+To support the non-strict mode, now we only tlbi and sync for the strict
+mode. But for the non-leaf case, always follow strict mode.
 
---p6fvj5zx4uwog74f
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Use the lowest bit of the iova parameter to pass the strict mode:
+0, IOMMU_STRICT;
+1, IOMMU_NON_STRICT;
+Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+other IOMMUs which still use strict mode.
 
-Hi Linus,
+Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-The following changes since commit b04e217704b7f879c6b91222b066983a44a7a09f:
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 010a254..9234db3 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
 
-  Linux 4.17-rc7 (2018-05-27 13:01:47 -0700)
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, int lvl,
+-			       arm_lpae_iopte *ptep);
++			       arm_lpae_iopte *ptep, int strict);
 
-are available in the git repository at:
+ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 				phys_addr_t paddr, arm_lpae_iopte prot,
+@@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.18
+ 		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+-		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
++		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
+ 			return -EINVAL;
+ 	}
 
-for you to fetch changes up to 1f568357117cafb48aafb10413cbd1567dc015b1:
+@@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 				       unsigned long iova, size_t size,
+ 				       arm_lpae_iopte blk_pte, int lvl,
+-				       arm_lpae_iopte *ptep)
++				       arm_lpae_iopte *ptep, int strict)
+ {
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	arm_lpae_iopte pte, *tablep;
+@@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 	}
 
-  Merge branches 'arm/io-pgtable', 'arm/qcom', 'arm/tegra', 'x86/vt-d', 'x86/amd' and 'core' into next (2018-05-29 16:58:17 +0200)
+ 	if (unmap_idx < 0)
+-		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
++		return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
 
-----------------------------------------------------------------
-IOMMU Updates for Linux v4.18
+ 	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
++	if (!strict)
++		io_pgtable_tlb_sync(&data->iop);
++
+ 	return size;
+ }
 
-Nothing big this time. In particular:
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, int lvl,
+-			       arm_lpae_iopte *ptep)
++			       arm_lpae_iopte *ptep, int strict)
+ {
+ 	arm_lpae_iopte pte;
+ 	struct io_pgtable *iop = &data->iop;
+@@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			io_pgtable_tlb_sync(iop);
+ 			ptep = iopte_deref(pte, data);
+ 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+-		} else {
++		} else if (strict) {
+ 			io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+ 		}
 
-	- Debugging code for Tegra-GART
+@@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 		 * minus the part we want to unmap
+ 		 */
+ 		return arm_lpae_split_blk_unmap(data, iova, size, pte,
+-						lvl + 1, ptep);
++						lvl + 1, ptep, strict);
+ 	}
 
-	- Improvement in Intel VT-d fault printing to prevent
-	  soft-lockups when on fault storms
+ 	/* Keep on walkin' */
+ 	ptep = iopte_deref(pte, data);
+-	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
++	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+ }
 
-	- Improvements in AMD IOMMU event reporting
+ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 			     size_t size)
+ {
++	int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+ 	int lvl = ARM_LPAE_START_LVL(data);
 
-	- NUMA aware allocation in io-pgtable code for ARM
++	iova &= ~IOMMU_STRICT_MODE_MASK;
+ 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+ 		return 0;
 
-	- Various other small fixes and cleanups all over the place
+-	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
++	return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+ }
 
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      iommu: Remove extra NULL check when call strtobool()
-
-Anna-Maria Gleixner (2):
-      iommu/amd: Fix grammar of comments
-      iommu/amd: Prevent possible null pointer dereference and infinite loop
-
-Dmitry Osipenko (2):
-      iommu/tegra: gart: Add debugging facility
-      iommu/tegra: gart: Fix gart_iommu_unmap()
-
-Dmitry Safonov (1):
-      iommu/vt-d: Ratelimit each dmar fault printing
-
-Gary R Hook (2):
-      iommu/amd: Update the PASID information printed to the system log
-      iommu/amd: Update logging information for new event type
-
-Geert Uytterhoeven (1):
-      iommu: Remove depends on HAS_DMA in case of platform dependency
-
-Joerg Roedel (1):
-      Merge branches 'arm/io-pgtable', 'arm/qcom', 'arm/tegra', 'x86/vt-d', 'x86/amd' and 'core' into next
-
-Lu Baolu (4):
-      iommu/vt-d: Clean up unused variable in find_or_alloc_domain
-      iommu/vt-d: Clean up pasid quirk for pre-production devices
-      iommu/vt-d: Remove unnecessary parentheses
-      iommu: Clean up the comments for iommu_group_alloc
-
-Peter Xu (2):
-      iommu/vt-d: Introduce __mapping_notify_one()
-      iommu/vt-d: Fix iotlb psi missing for mappings
-
-Robin Murphy (1):
-      iommu/io-pgtable-arm: Make allocations NUMA-aware
-
-Wolfram Sang (1):
-      iommu/qcom: Simplify getting .drvdata
-
-YueHaibing (1):
-      iommu/io-pgtable-arm: Use for_each_set_bit to simplify code
-
- drivers/iommu/Kconfig              |   5 +-
- drivers/iommu/amd_iommu.c          |  69 ++++++++++++-------------
- drivers/iommu/amd_iommu_types.h    |   1 +
- drivers/iommu/dmar.c               |   8 ++-
- drivers/iommu/intel-iommu.c        | 101 ++++++++++++++++++-------------------
- drivers/iommu/intel-svm.c          |   2 +-
- drivers/iommu/io-pgtable-arm-v7s.c |   5 +-
- drivers/iommu/io-pgtable-arm.c     |  18 ++++---
- drivers/iommu/iommu.c              |   7 +--
- drivers/iommu/qcom_iommu.c         |   6 +--
- drivers/iommu/tegra-gart.c         |  15 +++++-
- include/linux/intel-iommu.h        |   1 -
- 12 files changed, 122 insertions(+), 116 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---p6fvj5zx4uwog74f
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJbGpqtAAoJECvwRC2XARrjD/IQANukc6nV57m4V1r1n3z0RSsE
-h4hR2/vZdYDKOFVOVfP6x6fRaLTfcPOVYsFPAhzuT1I94QTN/pj5r1Xb+EbpUe7S
-NvLPXez9m3oZWm+fReRma/szbymvq1kDham5S6UsVmSdi79pI++A+gDBq2aJymar
-ovsj4tTmLo9lVa9orKfSGHrTVo6DC5FOJi6RYwSCbMVqgsO8a5FH7yWEIvVmTo0u
-vGdq9WuCvXEFFcln0Um+ZQSWItJ9FUhjjF0VCkzReq4wdLcZqB8qBSu54xr8iBqA
-aukdfzLmtlb26+/lCmrSIuYkArghSun20tezcmQZCNUSxEt4tn/bfPbvozpngiaG
-ly9ruJoWTfSP/y8nwL1nq8qmHJRNtkkbQFYABFAXkaW6U8qM/6pt0htAKgEIucdz
-+1Up6eHVk7TtP95cXK1Mz0M49TFc3cZjxRp+mWo9i9/6ksIHSLyitE240RoKKDbG
-YHDYsjUFeea/MRNjYirvsKutV4IHdghbnYTL4Gj2AkqJqrMmi4H+IxOCq+NovioR
-zCqZ+FQ8eUkhcIMBiA1V0vh6T2LW8vYJ7t8vJpwsPnB227lSe/0mwbq6NvoGMLwU
-b4TpWAny67HwNkhqy5r/U+fyi2KsurZUBIs9xegBXa4YYDzq8SuSW7b9Gl7FarGx
-xkGb6wDOk1Sbwr+9T9/g
-=PuDY
------END PGP SIGNATURE-----
-
---p6fvj5zx4uwog74f--
+ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+--
+1.8.3
