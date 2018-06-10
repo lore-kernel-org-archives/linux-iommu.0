@@ -1,131 +1,42 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v2 2/5] iommu/dma: add support for non-strict mode
-Date: Sun, 10 Jun 2018 19:07:20 +0800
-Message-ID: <1528628843-10280-3-git-send-email-thunder.leizhen@huawei.com>
-References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v2 0/5] add non-strict mode support for arm-smmu-v3
+Date: Sun, 10 Jun 2018 19:07:18 +0800
+Message-ID: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1528628843-10280-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Guozhu Li <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Xinwei Hu <huxinwei@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-1. Save the related domain pointer in struct iommu_dma_cookie, make iovad
-   capable call domain->ops->flush_iotlb_all to flush TLB.
-2. Add a new iommu capability: IOMMU_CAP_NON_STRICT, which used to indicate
-   that the iommu domain support non-strict mode.
-3. During the iommu domain initialization phase, call capable() to check
-   whether it support non-strcit mode. If so, call init_iova_flush_queue
-   to register iovad->flush_cb callback.
-4. All unmap(contains iova-free) APIs will finally invoke __iommu_dma_unmap
-   -->iommu_dma_free_iova. If the domain is non-strict, call queue_iova to
-   put off iova freeing.
+v1 -> v2:
+Use the lowest bit of the io_pgtable_ops.unmap's iova parameter to pass the strict mode:
+0, IOMMU_STRICT;
+1, IOMMU_NON_STRICT;
+Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+other IOMMUs which still use strict mode. In other words, this patch series
+will not impact other IOMMU drivers. I tried add a new quirk IO_PGTABLE_QUIRK_NON_STRICT
+in io_pgtable_cfg.quirks, but it can not pass the strict mode of the domain from SMMUv3
+driver to io-pgtable module. 
 
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/dma-iommu.c | 25 +++++++++++++++++++++++++
- include/linux/iommu.h     |  7 +++++++
- 2 files changed, 32 insertions(+)
+Add a new member domain_non_strict in struct iommu_dma_cookie, this member will only be
+initialized when the related domain and IOMMU driver support non-strict mode.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index ddcbbdb..9f0c77a 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -55,6 +55,7 @@ struct iommu_dma_cookie {
- 	};
- 	struct list_head		msi_page_list;
- 	spinlock_t			msi_lock;
-+	struct iommu_domain		*domain_non_strict;
- };
+Zhen Lei (5):
+  iommu/arm-smmu-v3: fix the implementation of flush_iotlb_all hook
+  iommu/dma: add support for non-strict mode
+  iommu/amd: use default branch to deal with all non-supported
+    capabilities
+  iommu/io-pgtable-arm: add support for non-strict mode
+  iommu/arm-smmu-v3: add support for non-strict mode
 
- static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
-@@ -257,6 +258,17 @@ static int iova_reserve_iommu_regions(struct device *dev,
- 	return ret;
- }
+ drivers/iommu/amd_iommu.c      |  4 +---
+ drivers/iommu/arm-smmu-v3.c    | 16 +++++++++++++---
+ drivers/iommu/dma-iommu.c      | 25 +++++++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
+ include/linux/iommu.h          |  7 +++++++
+ 5 files changed, 60 insertions(+), 15 deletions(-)
 
-+static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
-+{
-+	struct iommu_dma_cookie *cookie;
-+	struct iommu_domain *domain;
-+
-+	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
-+	domain = cookie->domain_non_strict;
-+
-+	domain->ops->flush_iotlb_all(domain);
-+}
-+
- /**
-  * iommu_dma_init_domain - Initialise a DMA mapping domain
-  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
-@@ -272,6 +284,7 @@ static int iova_reserve_iommu_regions(struct device *dev,
- int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		u64 size, struct device *dev)
- {
-+	const struct iommu_ops *ops = domain->ops;
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	unsigned long order, base_pfn, end_pfn;
-@@ -308,6 +321,15 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	}
-
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
-+
-+	if ((ops->capable && ops->capable(IOMMU_CAP_NON_STRICT)) &&
-+	    (IOMMU_DOMAIN_STRICT_MODE(domain) == IOMMU_NON_STRICT)) {
-+		BUG_ON(!ops->flush_iotlb_all);
-+
-+		cookie->domain_non_strict = domain;
-+		init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all, NULL);
-+	}
-+
- 	if (!dev)
- 		return 0;
-
-@@ -390,6 +412,9 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
- 	/* The MSI case is only ever cleaning up its most recent allocation */
- 	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
- 		cookie->msi_iova -= size;
-+	else if (cookie->domain_non_strict)
-+		queue_iova(iovad, iova_pfn(iovad, iova),
-+				size >> iova_shift(iovad), 0);
- 	else
- 		free_iova_fast(iovad, iova_pfn(iovad, iova),
- 				size >> iova_shift(iovad));
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee..82ed979 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -86,6 +86,12 @@ struct iommu_domain_geometry {
- #define IOMMU_DOMAIN_DMA	(__IOMMU_DOMAIN_PAGING |	\
- 				 __IOMMU_DOMAIN_DMA_API)
-
-+#define IOMMU_STRICT		0
-+#define IOMMU_NON_STRICT	1
-+#define IOMMU_STRICT_MODE_MASK	1UL
-+#define IOMMU_DOMAIN_STRICT_MODE(domain)	\
-+		(domain->type != IOMMU_DOMAIN_UNMANAGED)
-+
- struct iommu_domain {
- 	unsigned type;
- 	const struct iommu_ops *ops;
-@@ -101,6 +107,7 @@ enum iommu_cap {
- 					   transactions */
- 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
- 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
-+	IOMMU_CAP_NON_STRICT,		/* IOMMU supports non-strict mode */
- };
-
- /*
---
+-- 
 1.8.3
