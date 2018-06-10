@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v2 3/5] iommu/amd: use default branch to deal with all non-supported capabilities
-Date: Sun, 10 Jun 2018 19:07:21 +0800
-Message-ID: <1528628843-10280-4-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v2 1/5] iommu/arm-smmu-v3: fix the implementation of flush_iotlb_all hook
+Date: Sun, 10 Jun 2018 19:07:19 +0800
+Message-ID: <1528628843-10280-2-git-send-email-thunder.leizhen@huawei.com>
 References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,33 +12,41 @@ To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joer
 Cc: Zhen Lei <thunder.leizhen@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Xinwei Hu <huxinwei@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Avoid below warning when new capabilities added:
-
-drivers/iommu/amd_iommu.c: In function 'amd_iommu_capable':
-drivers/iommu/amd_iommu.c:3053:2: warning: enumeration value 'IOMMU_CAP_NON_STRICT' not handled in switch [-Wswitch]
-     switch (cap) {
+.flush_iotlb_all can not just wait for previous tlbi operations to be
+completed, but should also invalid all TLBs of the related domain.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/amd_iommu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1912e91..8b0ba6d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3059,11 +3059,9 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- 		return true;
- 	case IOMMU_CAP_INTR_REMAP:
- 		return (irq_remapping_enabled == 1);
--	case IOMMU_CAP_NOEXEC:
-+	default:
- 		return false;
- 	}
--
--	return false;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 1d64710..4402187 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1770,6 +1770,14 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 	return ops->unmap(ops, iova, size);
  }
 
- static void amd_iommu_get_resv_regions(struct device *dev,
++static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (smmu_domain->smmu)
++		arm_smmu_tlb_inv_context(smmu_domain);
++}
++
+ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+@@ -1998,7 +2006,7 @@ static void arm_smmu_put_resv_regions(struct device *dev,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
+ 	.map_sg			= default_iommu_map_sg,
+-	.flush_iotlb_all	= arm_smmu_iotlb_sync,
++	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+ 	.iotlb_sync		= arm_smmu_iotlb_sync,
+ 	.iova_to_phys		= arm_smmu_iova_to_phys,
+ 	.add_device		= arm_smmu_add_device,
 --
 1.8.3
