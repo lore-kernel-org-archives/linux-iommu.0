@@ -1,14 +1,22 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 0/5] add non-strict mode support for arm-smmu-v3
-Date: Mon, 11 Jun 2018 12:05:30 +0100
-Message-ID: <d6f46de0-f8c3-2c9e-4de3-5949db0cf7b5@arm.com>
-References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
+From: Kenneth Lee <Kenneth-Lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Tue, 12 Jun 2018 00:10:55 +0800
+Message-ID: <24416.1759772853$1528733367@news.gmane.org>
+References: <20180511190641.23008-4-jean-philippe.brucker@arm.com>
+	<20180516163117.622693ea@jacob-builder>
+	<de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
+	<20180522094334.71f0e36b@jacob-builder>
+	<f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
+	<20180524115039.GA10260@apalos>
+	<19e82a74-429a-3f86-119e-32b12082d0ff@arm.com>
+	<20180525063311.GA11605@apalos>
+	<20180525093959.000040a7@huawei.com> <20180526022445.GA6069@kllp05>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1528628843-10280-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180526022445.GA6069@kllp05>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,53 +26,125 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Guozhu Li <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Zhen Lei,
-
-On 10/06/18 12:07, Zhen Lei wrote:
-> v1 -> v2:
-> Use the lowest bit of the io_pgtable_ops.unmap's iova parameter to pass the strict mode:
-> 0, IOMMU_STRICT;
-> 1, IOMMU_NON_STRICT;
-> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
-> other IOMMUs which still use strict mode. In other words, this patch series
-> will not impact other IOMMU drivers. I tried add a new quirk IO_PGTABLE_QUIRK_NON_STRICT
-> in io_pgtable_cfg.quirks, but it can not pass the strict mode of the domain from SMMUv3
-> driver to io-pgtable module. 
+On Sat, May 26, 2018 at 10:24:45AM +0800, Kenneth Lee wrote:
+> Date: Sat, 26 May 2018 10:24:45 +0800
+> From: Kenneth Lee <Kenneth-Lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>
+> To: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> Cc: Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker
+>  <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org"
+>  <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>,
+>  "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>,
+>  "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon
+>  <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>,
+>  "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org"
+>  <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>,
+>  "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>,
+>  "robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org"
+>  <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org"
+>  <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "liudongdong3-hv44wF8Li93QT0dZR+AlfA@public.gmane.org"
+>  <liudongdong3-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>,
+>  "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>,
+>  "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jacob Pan
+>  <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org"
+>  <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>,
+>  "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>,
+>  "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org"
+>  <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org"
+>  <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org"
+>  <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>,
+>  "jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>,
+>  "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+>  Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org"
+>  <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org"
+>  <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org"
+>  <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org
+> Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+> Message-ID: <20180526022445.GA6069@kllp05>
 > 
-> Add a new member domain_non_strict in struct iommu_dma_cookie, this member will only be
-> initialized when the related domain and IOMMU driver support non-strict mode.
+> On Fri, May 25, 2018 at 09:39:59AM +0100, Jonathan Cameron wrote:
+> > Date: Fri, 25 May 2018 09:39:59 +0100
+> > From: Jonathan Cameron <Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > To: Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> > CC: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>,
+> >  "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org"
+> >  <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org"
+> >  <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>,
+> >  Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org"
+> >  <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>,
+> >  "yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org"
+> >  <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>,
+> >  "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org"
+> >  <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>,
+> >  "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>,
+> >  "liudongdong3-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liudongdong3-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org"
+> >  <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org"
+> >  <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org"
+> >  <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>,
+> >  "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>,
+> >  "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org"
+> >  <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org"
+> >  <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org"
+> >  <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org"
+> >  <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>,
+> >  "jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>,
+> >  "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+> >  Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org"
+> >  <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org"
+> >  <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org"
+> >  <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org,
+> >  kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org
+> > Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+> > Message-ID: <20180525093959.000040a7-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+> > 
+> > +CC Kenneth Lee
+> > 
+> > On Fri, 25 May 2018 09:33:11 +0300
+> > Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> > 
+> > > On Thu, May 24, 2018 at 04:04:39PM +0100, Jean-Philippe Brucker wrote:
+> > > > On 24/05/18 12:50, Ilias Apalodimas wrote:  
+> > > > >> Interesting, I hadn't thought about this use-case before. At first I
+> > > > >> thought you were talking about mdev devices assigned to VMs, but I think
+> > > > >> you're referring to mdevs assigned to userspace drivers instead? Out of
+> > > > >> curiosity, is it only theoretical or does someone actually need this?  
+> > > > > 
+> > > > > There has been some non upstreamed efforts to have mdev and produce userspace
+> > > > > drivers. Huawei is using it on what they call "wrapdrive" for crypto devices and
+> > > > > we did a proof of concept for ethernet interfaces. At the time we choose not to
+> > > > > involve the IOMMU for the reason you mentioned, but having it there would be
+> > > > > good.  
+> > > > 
+> > > > I'm guessing there were good reasons to do it that way but I wonder, is
+> > > > it not simpler to just have the kernel driver create a /dev/foo, with a
+> > > > standard ioctl/mmap/poll interface? Here VFIO adds a layer of
+> > > > indirection, and since the mediating driver has to implement these
+> > > > operations already, what is gained?  
+> > > The best reason i can come up with is "common code". You already have one API
+> > > doing that for you so we replicate it in a /dev file?
+> > > The mdev approach still needs extentions to support what we tried to do (i.e
+> > > mdev bus might need yo have access on iommu_ops), but as far as i undestand it's
+> > > a possible case.
+> 
+> Hi, Jean, Please allow me to share my understanding here:
+> https://zhuanlan.zhihu.com/p/35489035
+> 
+> The reason we do not use the /dev/foo scheme is that the devices to be
+> shared are programmable accelerators. We cannot fix up the kernel driver for them.
+> > > > 
+> > > > Thanks,
+> > > > Jean  
+> > 
+> > 
+> 
+> -- 
+> 			-Kenneth Lee (Hisilicon)
 
-It's not obvious from the commit messages or comments what the
-non-strict mode involves exactly. Could you add a description, and point
-out the trade-off associated with it?
+I just found this mail was missed in the mailing list. I tried it once
+again.
 
-In this mode you don't send an invalidate commands when removing a leaf
-entry, but instead send invalidate-all commands at regular interval.
-This improves performance but introduces a vulnerability window, which
-should be pointed out to users.
-
-IOVA allocation isn't the only problem, I'm concerned about the page
-allocator. If unmap() returns early, the TLB entry is still valid after
-the kernel reallocate the page. The device can then perform a
-use-after-free (instead of getting a translation fault), so a buggy
-device will corrupt memory and an untrusted one will access arbitrary data.
-
-Or is there a way in mm to ensure that the page isn't reallocated until
-the invalidation succeeds? Could dma-iommu help with this? Having
-support from the mm would also help consolidate ATS, mark a page stale
-when an ATC invalidation times out. But last time I checked it seemed
-quite difficult to implement, and ATS is inherently insecure so I didn't
-bother.
-
-At the very least I think it might be worth warning users in dmesg about
-this pitfall (and add_taint?). Tell them that an IOMMU in this mode is
-good for scatter-gather performance but lacks full isolation. The
-"non-strict" name seems somewhat harmless, and people should know what
-they're getting into before enabling this.
-
-Thanks,
-Jean
+-- 
+			-Kenneth Lee (Hisilicon)
