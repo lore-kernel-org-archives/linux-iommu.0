@@ -1,109 +1,70 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH 0/7] add non-strict mode support for arm-smmu-v3
-Date: Sun, 10 Jun 2018 19:13:13 +0800
-Message-ID: <5B1D07C9.6090507@huawei.com>
-References: <1527752569-18020-1-git-send-email-thunder.leizhen@huawei.com>
- <d65f87a4-db61-3cd2-1a6f-0322025840a8@arm.com>
- <96cc25b9-b21f-6067-384d-f52e6b8b25e7@huawei.com>
- <92b240f5-596e-87a9-863a-b18475042cce@arm.com> <5B10ECBB.209@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/5] add non-strict mode support for arm-smmu-v3
+Date: Mon, 11 Jun 2018 12:05:30 +0100
+Message-ID: <d6f46de0-f8c3-2c9e-4de3-5949db0cf7b5@arm.com>
+References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5B10ECBB.209@huawei.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>, Hanjun Guo <guohanjun@huawei.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Joerg Roedel <joro@8bytes.org>, linux-mediatek <linux-mediatek@lists.infradead.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Xinwei Hu <huxinwei@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Libin <huawei.libin@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1528628843-10280-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Guozhu Li <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Zhen Lei,
 
+On 10/06/18 12:07, Zhen Lei wrote:
+> v1 -> v2:
+> Use the lowest bit of the io_pgtable_ops.unmap's iova parameter to pass the strict mode:
+> 0, IOMMU_STRICT;
+> 1, IOMMU_NON_STRICT;
+> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+> other IOMMUs which still use strict mode. In other words, this patch series
+> will not impact other IOMMU drivers. I tried add a new quirk IO_PGTABLE_QUIRK_NON_STRICT
+> in io_pgtable_cfg.quirks, but it can not pass the strict mode of the domain from SMMUv3
+> driver to io-pgtable module. 
+> 
+> Add a new member domain_non_strict in struct iommu_dma_cookie, this member will only be
+> initialized when the related domain and IOMMU driver support non-strict mode.
 
-On 2018/6/1 14:50, Leizhen (ThunderTown) wrote:
-> 
-> 
-> On 2018/5/31 22:25, Robin Murphy wrote:
->> On 31/05/18 14:49, Hanjun Guo wrote:
->>> Hi Robin,
->>>
->>> On 2018/5/31 19:24, Robin Murphy wrote:
->>>> On 31/05/18 08:42, Zhen Lei wrote:
->>>>> In common, a IOMMU unmap operation follow the below steps:
->>>>> 1. remove the mapping in page table of the specified iova range
->>>>> 2. execute tlbi command to invalid the mapping which is cached in TLB
->>>>> 3. wait for the above tlbi operation to be finished
->>>>> 4. free the IOVA resource
->>>>> 5. free the physical memory resource
->>>>>
->>>>> This maybe a problem when unmap is very frequently, the combination of tlbi
->>>>> and wait operation will consume a lot of time. A feasible method is put off
->>>>> tlbi and iova-free operation, when accumulating to a certain number or
->>>>> reaching a specified time, execute only one tlbi_all command to clean up
->>>>> TLB, then free the backup IOVAs. Mark as non-strict mode.
->>>>>
->>>>> But it must be noted that, although the mapping has already been removed in
->>>>> the page table, it maybe still exist in TLB. And the freed physical memory
->>>>> may also be reused for others. So a attacker can persistent access to memory
->>>>> based on the just freed IOVA, to obtain sensible data or corrupt memory. So
->>>>> the VFIO should always choose the strict mode.
->>>>>
->>>>> Some may consider put off physical memory free also, that will still follow
->>>>> strict mode. But for the map_sg cases, the memory allocation is not controlled
->>>>> by IOMMU APIs, so it is not enforceable.
->>>>>
->>>>> Fortunately, Intel and AMD have already applied the non-strict mode, and put
->>>>> queue_iova() operation into the common file dma-iommu.c., and my work is based
->>>>> on it. The difference is that arm-smmu-v3 driver will call IOMMU common APIs to
->>>>> unmap, but Intel and AMD IOMMU drivers are not.
->>>>>
->>>>> Below is the performance data of strict vs non-strict for NVMe device:
->>>>> Randomly Read  IOPS: 146K(strict) vs 573K(non-strict)
->>>>> Randomly Write IOPS: 143K(strict) vs 513K(non-strict)
->>>>
->>>> What hardware is this on? If it's SMMUv3 without MSIs (e.g. D05), then you'll still be using the rubbish globally-blocking sync implementation. If that is the case, I'd be very interested to see how much there is to gain from just improving that - I've had a patch kicking around for a while[1] (also on a rebased branch at [2]), but don't have the means for serious performance testing.
-> I will try your patch to see how much it can improve. I think the best way
-Hi Robin,
+It's not obvious from the commit messages or comments what the
+non-strict mode involves exactly. Could you add a description, and point
+out the trade-off associated with it?
 
-I applied your patch and got below improvemnet.
+In this mode you don't send an invalidate commands when removing a leaf
+entry, but instead send invalidate-all commands at regular interval.
+This improves performance but introduces a vulnerability window, which
+should be pointed out to users.
 
-Randomly Read  IOPS: 146K --> 214K
-Randomly Write IOPS: 143K --> 212K
+IOVA allocation isn't the only problem, I'm concerned about the page
+allocator. If unmap() returns early, the TLB entry is still valid after
+the kernel reallocate the page. The device can then perform a
+use-after-free (instead of getting a translation fault), so a buggy
+device will corrupt memory and an untrusted one will access arbitrary data.
 
-> to resovle the globally-blocking sync is that the hardware provide 64bits
-> CONS regitster, so that it can never be wrapped, and the spinlock can also
-> be removed.
-> 
->>>
->>> The hardware is the new D06 which the SMMU with MSIs,
->>
->> Cool! Now that profiling is fairly useful since we got rid of most of the locks, are you able to get an idea of how the overhead in the normal case is distributed between arm_smmu_cmdq_insert_cmd() and __arm_smmu_sync_poll_msi()? We're always trying to improve our understanding of where command-queue-related overheads turn out to be in practice, and there's still potentially room to do nicer things than TLBI_NH_ALL ;)
-> Even if the software has no overhead, there may still be a problem, because
-> the smmu need to execute the commands in sequence, especially before
-> globally-blocking sync has been removed. Base on the actually execute time
-> of single tlbi and sync, we can get the upper limit in theory.
-> 
-> BTW, I will reply the reset of mail next week. I'm busy with other things now.
-> 
->>
->> Robin.
->>
->>> it's not D05 :)
->>>
->>> Thanks
->>> Hanjun
->>>
->>
->> .
->>
-> 
+Or is there a way in mm to ensure that the page isn't reallocated until
+the invalidation succeeds? Could dma-iommu help with this? Having
+support from the mm would also help consolidate ATS, mark a page stale
+when an ATC invalidation times out. But last time I checked it seemed
+quite difficult to implement, and ATS is inherently insecure so I didn't
+bother.
 
--- 
-Thanks!
-BestRegards
+At the very least I think it might be worth warning users in dmesg about
+this pitfall (and add_taint?). Tell them that an IOMMU in this mode is
+good for scatter-gather performance but lacks full isolation. The
+"non-strict" name seems somewhat harmless, and people should know what
+they're getting into before enabling this.
+
+Thanks,
+Jean
