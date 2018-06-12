@@ -1,110 +1,98 @@
-From: Niklas Cassel <niklas.cassel@linaro.org>
-Subject: [PATCH RESEND] iommu/msm: Don't call iommu_device_{,un}link from atomic context
-Date: Tue, 12 Jun 2018 16:06:10 +0200
-Message-ID: <20180612140610.31190-1-niklas.cassel@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: linux-arm-msm@vger.kernel.org, Niklas Cassel <niklas.cassel@linaro.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v8 2/2] iommu/amd: Add basic debugfs infrastructure for
+	AMD IOMMU
+Date: Tue, 12 Jun 2018 13:37:43 -0500
+Message-ID: <bd3d0561-3326-1468-a7c0-cee601c275a6@amd.com>
+References: <152761784341.2654.8609366076331539902.stgit@sosgrh1.amd.com>
+	<152761820371.2654.4551405686504157036.stgit@sosgrh1.amd.com>
+	<20180529183917.GA10618@kroah.com>
+	<f0780139-5322-a028-0091-3255e0596eff@amd.com>
+	<20180605170624.GB10834@kroah.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180605170624.GB10834-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fixes the following splat during boot:
+On 06/05/2018 12:06 PM, Greg KH wrote:
+> On Tue, Jun 05, 2018 at 11:58:13AM -0500, Gary R Hook wrote:
+>> On 05/29/2018 01:39 PM, Greg KH wrote:
+>>> On Tue, May 29, 2018 at 01:23:23PM -0500, Gary R Hook wrote:
+>>>> Implement a skeleton framework for debugfs support in the
+>>>> AMD IOMMU. Add a hidden boolean to Kconfig that is defined
+>>>> for the AMD IOMMU when general IOMMY DebugFS support is
+>>>> enabled.
+>>>>
+>>>> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+>>>> ---
+>>>>    drivers/iommu/Kconfig             |    4 ++++
+>>>>    drivers/iommu/Makefile            |    1 +
+>>>>    drivers/iommu/amd_iommu_debugfs.c |   39 +++++++++++++++++++++++++++++++++++++
+>>>>    drivers/iommu/amd_iommu_init.c    |    6 ++++--
+>>>>    drivers/iommu/amd_iommu_proto.h   |    6 ++++++
+>>>>    drivers/iommu/amd_iommu_types.h   |    5 +++++
+>>>>    6 files changed, 59 insertions(+), 2 deletions(-)
+>>>>    create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+>>>>
+>>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>>>> index f9af25ac409f..ec223f6f4ad4 100644
+>>>> --- a/drivers/iommu/Kconfig
+>>>> +++ b/drivers/iommu/Kconfig
+>>>> @@ -137,6 +137,10 @@ config AMD_IOMMU
+>>>>    	  your BIOS for an option to enable it or if you have an IVRS ACPI
+>>>>    	  table.
+>>>> +config AMD_IOMMU_DEBUGFS
+>>>> +	def_bool y
+>>>
+>>> Why default y?  Can you not boot a box without this?  If not, it should
+>>> not be Y.
+>>
+>> Again, apologies for not seeing this sooner.
+>>
+>> Yes, the system can boot without this. The idea of a hidden option was
+>> surfaced by Robin, and after my first approach was shot down, I tried this.
+>>
+>> Logic: If the over-arching IOMMU debugfs option is enabled, then
+>> AMD_IOMMU_DEBUGFS gets defined, and AMD IOMMU code gets included.
+>>
+>> This issue was discussed a few weeks ago. No single approach appears to
+>> satisfy everyone. I like this because it depends upon one switch: Do you
+>> want DebugFS support enabled in the IOMMU driver, period? Vendor-specific
+>> code can then choose to implement support or not, and a builder doesn't have
+>> to worry about enabling/disabling multiple Kconfig options.
+>>
+>> At least, that was my line of reasoning.
+>>
+>> I'm not married to any approach, and I don't find clever use of Kconfig
+>> options too terribly challenging. And I'm not defending, I'm just
+>> explaining.
+> 
+> The issue is, no one sets Kconfig options except a very tiny subset of
+> kernel developers.  Distros allways enable everything, as they have to
+> do that.
+> 
+> If you are creating something here that is so dangerous that you spam
+> the kernel log with big warning messages, you should not be making it
+> easy to enable, let alone be enabled by default :)
 
-BUG: sleeping function called from invalid context at kernel/locking/mutex.c:747
-in_atomic(): 1, irqs_disabled(): 128, pid: 77, name: kworker/2:1
-4 locks held by kworker/2:1/77:
- #0: (ptrval) ((wq_completion)"events"){+.+.}, at: process_one_work+0x1fc/0x8fc
- #1: (ptrval) (deferred_probe_work){+.+.}, at: process_one_work+0x1fc/0x8fc
- #2: (ptrval) (&dev->mutex){....}, at: __device_attach+0x40/0x178
- #3: (ptrval) (msm_iommu_lock){....}, at: msm_iommu_add_device+0x28/0xcc
-irq event stamp: 348
-hardirqs last  enabled at (347): [<c049dc18>] kfree+0xe0/0x3c0
-hardirqs last disabled at (348): [<c0c35cac>] _raw_spin_lock_irqsave+0x2c/0x68
-softirqs last  enabled at (0): [<c0322fd8>] copy_process.part.5+0x280/0x1a68
-softirqs last disabled at (0): [<00000000>]   (null)
-Preemption disabled at:
-[<00000000>]   (null)
-CPU: 2 PID: 77 Comm: kworker/2:1 Not tainted 4.17.0-rc5-wt-ath-01075-gaca0516bb4cf #239
-Hardware name: Generic DT based system
-Workqueue: events deferred_probe_work_func
-[<c0314e00>] (unwind_backtrace) from [<c030fc70>] (show_stack+0x20/0x24)
-[<c030fc70>] (show_stack) from [<c0c16ad8>] (dump_stack+0xa0/0xcc)
-[<c0c16ad8>] (dump_stack) from [<c035a978>] (___might_sleep+0x1f8/0x2d4)
-ath10k_sdio mmc2:0001:1: Direct firmware load for ath10k/QCA9377/hw1.0/board-2.bin failed with error -2
-[<c035a978>] (___might_sleep) from [<c035aac4>] (__might_sleep+0x70/0xa8)
-[<c035aac4>] (__might_sleep) from [<c0c3066c>] (__mutex_lock+0x50/0xb28)
-[<c0c3066c>] (__mutex_lock) from [<c0c31170>] (mutex_lock_nested+0x2c/0x34)
-ath10k_sdio mmc2:0001:1: board_file api 1 bmi_id N/A crc32 544289f7
-[<c0c31170>] (mutex_lock_nested) from [<c052d798>] (kernfs_find_and_get_ns+0x30/0x5c)
-[<c052d798>] (kernfs_find_and_get_ns) from [<c0531cc8>] (sysfs_add_link_to_group+0x28/0x58)
-[<c0531cc8>] (sysfs_add_link_to_group) from [<c07ef75c>] (iommu_device_link+0x50/0xb4)
-[<c07ef75c>] (iommu_device_link) from [<c07f2288>] (msm_iommu_add_device+0xa0/0xcc)
-[<c07f2288>] (msm_iommu_add_device) from [<c07ec6d0>] (add_iommu_group+0x3c/0x64)
-[<c07ec6d0>] (add_iommu_group) from [<c07f9d40>] (bus_for_each_dev+0x84/0xc4)
-[<c07f9d40>] (bus_for_each_dev) from [<c07ec7c8>] (bus_set_iommu+0xd0/0x10c)
-[<c07ec7c8>] (bus_set_iommu) from [<c07f1a68>] (msm_iommu_probe+0x5b8/0x66c)
-[<c07f1a68>] (msm_iommu_probe) from [<c07feaa8>] (platform_drv_probe+0x60/0xbc)
-[<c07feaa8>] (platform_drv_probe) from [<c07fc1fc>] (driver_probe_device+0x30c/0x4cc)
-[<c07fc1fc>] (driver_probe_device) from [<c07fc59c>] (__device_attach_driver+0xac/0x14c)
-[<c07fc59c>] (__device_attach_driver) from [<c07f9e14>] (bus_for_each_drv+0x68/0xc8)
-[<c07f9e14>] (bus_for_each_drv) from [<c07fbd3c>] (__device_attach+0xe4/0x178)
-[<c07fbd3c>] (__device_attach) from [<c07fc698>] (device_initial_probe+0x1c/0x20)
-[<c07fc698>] (device_initial_probe) from [<c07faee8>] (bus_probe_device+0x98/0xa0)
-[<c07faee8>] (bus_probe_device) from [<c07fb4f4>] (deferred_probe_work_func+0x74/0x198)
-[<c07fb4f4>] (deferred_probe_work_func) from [<c0348eb4>] (process_one_work+0x2c4/0x8fc)
-[<c0348eb4>] (process_one_work) from [<c03497b0>] (worker_thread+0x2c4/0x5cc)
-[<c03497b0>] (worker_thread) from [<c0350d10>] (kthread+0x180/0x188)
-[<c0350d10>] (kthread) from [<c03010b4>] (ret_from_fork+0x14/0x20)
+Okay, I get that. Totally understand.
 
-Fixes: 42df43b36163 ("iommu/msm: Make use of iommu_device_register interface")
-Signed-off-by: Niklas Cassel <niklas.cassel@linaro.org>
----
- drivers/iommu/msm_iommu.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+> Just make it an option, have it rely on the kernel debugging option, and
+> say "DO NOT ENABLE THIS UNLESS YOU REALLY REALLY REALLY KNOW WHAT YOU
+> ARE DOING!"
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 0d3350463a3f..9a95c9b9d0d8 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -395,20 +395,15 @@ static int msm_iommu_add_device(struct device *dev)
- 	struct msm_iommu_dev *iommu;
- 	struct iommu_group *group;
- 	unsigned long flags;
--	int ret = 0;
- 
- 	spin_lock_irqsave(&msm_iommu_lock, flags);
--
- 	iommu = find_iommu_for_dev(dev);
-+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
-+
- 	if (iommu)
- 		iommu_device_link(&iommu->iommu, dev);
- 	else
--		ret = -ENODEV;
--
--	spin_unlock_irqrestore(&msm_iommu_lock, flags);
--
--	if (ret)
--		return ret;
-+		return -ENODEV;
- 
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
-@@ -425,13 +420,12 @@ static void msm_iommu_remove_device(struct device *dev)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&msm_iommu_lock, flags);
--
- 	iommu = find_iommu_for_dev(dev);
-+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
-+
- 	if (iommu)
- 		iommu_device_unlink(&iommu->iommu, dev);
- 
--	spin_unlock_irqrestore(&msm_iommu_lock, flags);
--
- 	iommu_group_remove_device(dev);
- }
- 
--- 
-2.17.1
+Nah, Randy voted for separate options per device, on top of the IOMMU 
+option. So I'll go with that. With loud messages, of course.
