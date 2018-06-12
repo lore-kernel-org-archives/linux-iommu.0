@@ -1,118 +1,94 @@
-From: Kenneth Lee <liguozhu@hisilicon.com>
-Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
-Date: Tue, 12 Jun 2018 00:32:10 +0800
-Message-ID: <20180611163210.GA55075@Turing-Arch-b>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
- <20180511190641.23008-4-jean-philippe.brucker@arm.com>
- <20180516163117.622693ea@jacob-builder>
- <de478769-9f7a-d40b-a55e-e2c63ad883e8@arm.com>
- <20180522094334.71f0e36b@jacob-builder>
- <f73b4a0e-669e-8483-88d7-1b2c8a2b9934@arm.com>
- <20180524115039.GA10260@apalos>
- <19e82a74-429a-3f86-119e-32b12082d0ff@arm.com>
- <20180525063311.GA11605@apalos>
- <20180525093959.000040a7@huawei.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v2 0/5] add non-strict mode support for arm-smmu-v3
+Date: Tue, 12 Jun 2018 20:35:40 +0800
+Message-ID: <5B1FBE1C.3060205@huawei.com>
+References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
+ <d6f46de0-f8c3-2c9e-4de3-5949db0cf7b5@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20180525093959.000040a7@huawei.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "liubo95@huawei.com" <liubo95@huawei.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "xuzaibo@huawei.com" <xuzaibo@huawei.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "tn@semihalf.com" <tn@semihalf.com>, "joro@8bytes.org" <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "bharatku@xilinx.com" <bharatku@xilinx.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "liudongdong3@huawei.com" <liudongdong3@huawei.com>, "rfranz@cavium.com" <rfranz@cavium.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <d6f46de0-f8c3-2c9e-4de3-5949db0cf7b5@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Xinwei Hu <huxinwei@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Libin <huawei.libin@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 25, 2018 at 09:39:59AM +0100, Jonathan Cameron wrote:
-> Date: Fri, 25 May 2018 09:39:59 +0100
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> To: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-> CC: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
->  "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "kvm@vger.kernel.org"
->  <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org"
->  <linux-pci@vger.kernel.org>, "xuzaibo@huawei.com" <xuzaibo@huawei.com>,
->  Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org"
->  <okaya@codeaurora.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>,
->  "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "ashok.raj@intel.com"
->  <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>,
->  "joro@8bytes.org" <joro@8bytes.org>, "robdclark@gmail.com"
->  <robdclark@gmail.com>, "bharatku@xilinx.com" <bharatku@xilinx.com>,
->  "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
->  "liudongdong3@huawei.com" <liudongdong3@huawei.com>, "rfranz@cavium.com"
->  <rfranz@cavium.com>, "devicetree@vger.kernel.org"
->  <devicetree@vger.kernel.org>, "kevin.tian@intel.com"
->  <kevin.tian@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
->  "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
->  "rgummal@xilinx.com" <rgummal@xilinx.com>, "thunder.leizhen@huawei.com"
->  <thunder.leizhen@huawei.com>, "linux-arm-kernel@lists.infradead.org"
->  <linux-arm-kernel@lists.infradead.org>, "shunyong.yang@hxt-semitech.com"
->  <shunyong.yang@hxt-semitech.com>, "dwmw2@infradead.org"
->  <dwmw2@infradead.org>, "liubo95@huawei.com" <liubo95@huawei.com>,
->  "jcrouse@codeaurora.org" <jcrouse@codeaurora.org>,
->  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
->  Robin Murphy <Robin.Murphy@arm.com>, "christian.koenig@amd.com"
->  <christian.koenig@amd.com>, "nwatters@codeaurora.org"
->  <nwatters@codeaurora.org>, "baolu.lu@linux.intel.com"
->  <baolu.lu@linux.intel.com>, liguozhu@hisilicon.com,
->  kenneth-lee-2012@foxmail.com
-> Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
-> Message-ID: <20180525093959.000040a7@huawei.com>
-> Organization: Huawei
-> X-Mailer: Claws Mail 3.15.0 (GTK+ 2.24.31; x86_64-w64-mingw32)
-> 
-> +CC Kenneth Lee
-> 
-> On Fri, 25 May 2018 09:33:11 +0300
-> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-> 
-> > On Thu, May 24, 2018 at 04:04:39PM +0100, Jean-Philippe Brucker wrote:
-> > > On 24/05/18 12:50, Ilias Apalodimas wrote:  
-> > > >> Interesting, I hadn't thought about this use-case before. At first I
-> > > >> thought you were talking about mdev devices assigned to VMs, but I think
-> > > >> you're referring to mdevs assigned to userspace drivers instead? Out of
-> > > >> curiosity, is it only theoretical or does someone actually need this?  
-> > > > 
-> > > > There has been some non upstreamed efforts to have mdev and produce userspace
-> > > > drivers. Huawei is using it on what they call "wrapdrive" for crypto devices and
-> > > > we did a proof of concept for ethernet interfaces. At the time we choose not to
-> > > > involve the IOMMU for the reason you mentioned, but having it there would be
-> > > > good.  
-> > > 
-> > > I'm guessing there were good reasons to do it that way but I wonder, is
-> > > it not simpler to just have the kernel driver create a /dev/foo, with a
-> > > standard ioctl/mmap/poll interface? Here VFIO adds a layer of
-> > > indirection, and since the mediating driver has to implement these
-> > > operations already, what is gained?  
-> > The best reason i can come up with is "common code". You already have one API
-> > doing that for you so we replicate it in a /dev file?
-> > The mdev approach still needs extentions to support what we tried to do (i.e
-> > mdev bus might need yo have access on iommu_ops), but as far as i undestand it's
-> > a possible case.
 
-Hi, Jean, Please allow me to share my understanding here:
-https://zhuanlan.zhihu.com/p/35489035
 
-The reason we do not use the /dev/foo scheme is that the devices to be
-shared are programmable accelerators. We cannot fix up the kernel driver for
-them.
-
-> > > 
-> > > Thanks,
-> > > Jean  
+On 2018/6/11 19:05, Jean-Philippe Brucker wrote:
+> Hi Zhen Lei,
 > 
+> On 10/06/18 12:07, Zhen Lei wrote:
+>> v1 -> v2:
+>> Use the lowest bit of the io_pgtable_ops.unmap's iova parameter to pass the strict mode:
+>> 0, IOMMU_STRICT;
+>> 1, IOMMU_NON_STRICT;
+>> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+>> other IOMMUs which still use strict mode. In other words, this patch series
+>> will not impact other IOMMU drivers. I tried add a new quirk IO_PGTABLE_QUIRK_NON_STRICT
+>> in io_pgtable_cfg.quirks, but it can not pass the strict mode of the domain from SMMUv3
+>> driver to io-pgtable module. 
+>>
+>> Add a new member domain_non_strict in struct iommu_dma_cookie, this member will only be
+>> initialized when the related domain and IOMMU driver support non-strict mode.
 > 
+> It's not obvious from the commit messages or comments what the
+> non-strict mode involves exactly. Could you add a description, and point
+> out the trade-off associated with it?
 
-(p.s. I sent this mail on May 26 from my public email count. But it
-seems the email server is blocked. I resent it from my company count until my
-colleague told me just now. Sorry for inconvenience)
+Sorry, I described it in V1, but remove it in V2.
+https://lkml.org/lkml/2018/5/31/131
+
+> 
+> In this mode you don't send an invalidate commands when removing a leaf
+> entry, but instead send invalidate-all commands at regular interval.
+> This improves performance but introduces a vulnerability window, which
+> should be pointed out to users.
+> 
+> IOVA allocation isn't the only problem, I'm concerned about the page
+> allocator. If unmap() returns early, the TLB entry is still valid after
+> the kernel reallocate the page. The device can then perform a
+> use-after-free (instead of getting a translation fault), so a buggy
+> device will corrupt memory and an untrusted one will access arbitrary data.
+
+I have constrained VFIO to still use strict mode, so all other devices will only
+access memory in the kernel state, these related drivers are unlikely to attack
+kernel. The devices as part of the commercial product, the probability of such a
+bug is very low, at least the bug will not be reserved for the purpose of the
+attack. But the attackers may replace it as illegal devices on the spot.
+
+Take a step back, IOMMU disabled is also supported, non-strict mode is better
+than disabled. So maybe we should add a boot option, allowing the admin choose
+which mode to be used.
+
+
+> 
+> Or is there a way in mm to ensure that the page isn't reallocated until
+> the invalidation succeeds? Could dma-iommu help with this? Having
+
+It's too hard. In some cases the memory is allocated by non dma-iommu API.
+
+> support from the mm would also help consolidate ATS, mark a page stale
+> when an ATC invalidation times out. But last time I checked it seemed
+> quite difficult to implement, and ATS is inherently insecure so I didn't
+> bother.
+> 
+> At the very least I think it might be worth warning users in dmesg about
+> this pitfall (and add_taint?). Tell them that an IOMMU in this mode is
+> good for scatter-gather performance but lacks full isolation. The
+> "non-strict" name seems somewhat harmless, and people should know what
+> they're getting into before enabling this.
+
+Yes, warning or add comments in source code will be better.
+
+> 
+> Thanks,
+> Jean
+> 
+> .
+> 
 
 -- 
-			-Kenneth(Hisilicon)
+Thanks!
+BestRegards
