@@ -1,18 +1,17 @@
 From: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v8 1/2] iommu - Enable debugfs exposure of IOMMU driver
-	internals
-Date: Tue, 12 Jun 2018 13:39:04 -0500
-Message-ID: <bfee19e5-7953-7bda-2c46-9dbb4d002512@amd.com>
+Subject: Re: [PATCH v8 2/2] iommu/amd: Add basic debugfs infrastructure for
+	AMD IOMMU
+Date: Tue, 12 Jun 2018 13:40:14 -0500
+Message-ID: <da1b355b-d40f-222c-5daf-c91a6ca41eda@amd.com>
 References: <152761784341.2654.8609366076331539902.stgit@sosgrh1.amd.com>
-	<152761819480.2654.5371070582955429468.stgit@sosgrh1.amd.com>
-	<20180529184101.GB10618@kroah.com>
-	<3249cc11-09d8-2078-28a6-efd3078ca0e9@amd.com>
-	<20180605170824.GA11965@kroah.com>
+	<152761820371.2654.4551405686504157036.stgit@sosgrh1.amd.com>
+	<20180529183917.GA10618@kroah.com>
+	<9713a0b2-1450-7783-712f-ba27f8a09b2b@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180605170824.GA11965-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <9713a0b2-1450-7783-712f-ba27f8a09b2b-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,47 +22,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+To: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg KH <greg-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/05/2018 12:08 PM, Greg KH wrote:
-> On Tue, Jun 05, 2018 at 12:01:41PM -0500, Gary R Hook wrote:
->>>> +/**
->>>> + * iommu_debugfs_new_driver_dir - create a vendor directory under debugfs/iommu
->>>> + * @vendor: name of the vendor-specific subdirectory to create
->>>> + *
->>>> + * This function is called by an IOMMU driver to create the top-level debugfs
->>>> + * directory for that driver.
->>>> + *
->>>> + * Return: upon success, a pointer to the dentry for the new directory.
->>>> + *         NULL in case of failure.
->>>> + */
->>>> +struct dentry *iommu_debugfs_new_driver_dir(const char *vendor)
->>>> +{
->>>> +	struct dentry *d_new;
->>>> +
->>>> +	d_new = debugfs_create_dir(vendor, iommu_debugfs_dir);
->>>> +
->>>> +	return d_new;
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_debugfs_new_driver_dir);
+On 06/04/2018 08:23 PM, Randy Dunlap wrote:
+> On 05/29/2018 11:39 AM, Greg KH wrote:
+>> On Tue, May 29, 2018 at 01:23:23PM -0500, Gary R Hook wrote:
+>>> Implement a skeleton framework for debugfs support in the
+>>> AMD IOMMU. Add a hidden boolean to Kconfig that is defined
+>>> for the AMD IOMMU when general IOMMY DebugFS support is
+>>> enabled.
 >>>
->>> Why are you wrapping a debugfs call?  Why not just export
->>> iommu_debugfs_dir instead?
+>>> Signed-off-by: Gary R Hook <gary.hook-5C7GfCeVMHo@public.gmane.org>
+>>> ---
+>>>   drivers/iommu/Kconfig             |    4 ++++
+>>>   drivers/iommu/Makefile            |    1 +
+>>>   drivers/iommu/amd_iommu_debugfs.c |   39 +++++++++++++++++++++++++++++++++++++
+>>>   drivers/iommu/amd_iommu_init.c    |    6 ++++--
+>>>   drivers/iommu/amd_iommu_proto.h   |    6 ++++++
+>>>   drivers/iommu/amd_iommu_types.h   |    5 +++++
+>>>   6 files changed, 59 insertions(+), 2 deletions(-)
+>>>   create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+>>>
+>>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>>> index f9af25ac409f..ec223f6f4ad4 100644
+>>> --- a/drivers/iommu/Kconfig
+>>> +++ b/drivers/iommu/Kconfig
+>>> @@ -137,6 +137,10 @@ config AMD_IOMMU
+>>>   	  your BIOS for an option to enable it or if you have an IVRS ACPI
+>>>   	  table.
+>>>   
+>>> +config AMD_IOMMU_DEBUGFS
+>>> +	def_bool y
 >>
->> It was a choice, as I stated in my other post. It is not a requirement.
->> If you resolutely reject this approach, that's fine. I'll change it, no
->> worries.
+>> Why default y?  Can you not boot a box without this?  If not, it should
+>> not be Y.
+>>
+>>> +	depends on AMD_IOMMU && IOMMU_DEBUGFS
+>>> +
+>>>   config AMD_IOMMU_V2
+>>>   	tristate "AMD IOMMU Version 2 driver"
+>>>   	depends on AMD_IOMMU
 > 
-> Either is fine, but if it stays, it should stay a single line function
-> :)
+> Gary,
 > 
-> thanks,
+> By far, most driver-debugfs additions are optional and include a user Kconfig prompt
+> so that user's can choose whether to enable it or not.
 > 
-> greg k-h
-> 
+> I suggest that the way forward is to fix Greg's debugfs_() api comments
+> and to add a prompt string to AMD_IOMMU_DEBUGFS.
 
-Then I shall leave it as a black-box function. Single line, of course.
+Roger. I think we have that all worked out. Will send another version soon.
 
-Thank you.
+Thanks.
