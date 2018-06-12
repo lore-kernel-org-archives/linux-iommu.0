@@ -1,94 +1,110 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v2 0/5] add non-strict mode support for arm-smmu-v3
-Date: Tue, 12 Jun 2018 20:35:40 +0800
-Message-ID: <5B1FBE1C.3060205@huawei.com>
-References: <1528628843-10280-1-git-send-email-thunder.leizhen@huawei.com>
- <d6f46de0-f8c3-2c9e-4de3-5949db0cf7b5@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Niklas Cassel <niklas.cassel@linaro.org>
+Subject: [PATCH RESEND] iommu/msm: Don't call iommu_device_{,un}link from atomic context
+Date: Tue, 12 Jun 2018 16:06:10 +0200
+Message-ID: <20180612140610.31190-1-niklas.cassel@linaro.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d6f46de0-f8c3-2c9e-4de3-5949db0cf7b5@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Xinwei Hu <huxinwei@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Guozhu Li <liguozhu@hisilicon.com>, Libin <huawei.libin@huawei.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: linux-arm-msm@vger.kernel.org, Niklas Cassel <niklas.cassel@linaro.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+Fixes the following splat during boot:
 
+BUG: sleeping function called from invalid context at kernel/locking/mutex.c:747
+in_atomic(): 1, irqs_disabled(): 128, pid: 77, name: kworker/2:1
+4 locks held by kworker/2:1/77:
+ #0: (ptrval) ((wq_completion)"events"){+.+.}, at: process_one_work+0x1fc/0x8fc
+ #1: (ptrval) (deferred_probe_work){+.+.}, at: process_one_work+0x1fc/0x8fc
+ #2: (ptrval) (&dev->mutex){....}, at: __device_attach+0x40/0x178
+ #3: (ptrval) (msm_iommu_lock){....}, at: msm_iommu_add_device+0x28/0xcc
+irq event stamp: 348
+hardirqs last  enabled at (347): [<c049dc18>] kfree+0xe0/0x3c0
+hardirqs last disabled at (348): [<c0c35cac>] _raw_spin_lock_irqsave+0x2c/0x68
+softirqs last  enabled at (0): [<c0322fd8>] copy_process.part.5+0x280/0x1a68
+softirqs last disabled at (0): [<00000000>]   (null)
+Preemption disabled at:
+[<00000000>]   (null)
+CPU: 2 PID: 77 Comm: kworker/2:1 Not tainted 4.17.0-rc5-wt-ath-01075-gaca0516bb4cf #239
+Hardware name: Generic DT based system
+Workqueue: events deferred_probe_work_func
+[<c0314e00>] (unwind_backtrace) from [<c030fc70>] (show_stack+0x20/0x24)
+[<c030fc70>] (show_stack) from [<c0c16ad8>] (dump_stack+0xa0/0xcc)
+[<c0c16ad8>] (dump_stack) from [<c035a978>] (___might_sleep+0x1f8/0x2d4)
+ath10k_sdio mmc2:0001:1: Direct firmware load for ath10k/QCA9377/hw1.0/board-2.bin failed with error -2
+[<c035a978>] (___might_sleep) from [<c035aac4>] (__might_sleep+0x70/0xa8)
+[<c035aac4>] (__might_sleep) from [<c0c3066c>] (__mutex_lock+0x50/0xb28)
+[<c0c3066c>] (__mutex_lock) from [<c0c31170>] (mutex_lock_nested+0x2c/0x34)
+ath10k_sdio mmc2:0001:1: board_file api 1 bmi_id N/A crc32 544289f7
+[<c0c31170>] (mutex_lock_nested) from [<c052d798>] (kernfs_find_and_get_ns+0x30/0x5c)
+[<c052d798>] (kernfs_find_and_get_ns) from [<c0531cc8>] (sysfs_add_link_to_group+0x28/0x58)
+[<c0531cc8>] (sysfs_add_link_to_group) from [<c07ef75c>] (iommu_device_link+0x50/0xb4)
+[<c07ef75c>] (iommu_device_link) from [<c07f2288>] (msm_iommu_add_device+0xa0/0xcc)
+[<c07f2288>] (msm_iommu_add_device) from [<c07ec6d0>] (add_iommu_group+0x3c/0x64)
+[<c07ec6d0>] (add_iommu_group) from [<c07f9d40>] (bus_for_each_dev+0x84/0xc4)
+[<c07f9d40>] (bus_for_each_dev) from [<c07ec7c8>] (bus_set_iommu+0xd0/0x10c)
+[<c07ec7c8>] (bus_set_iommu) from [<c07f1a68>] (msm_iommu_probe+0x5b8/0x66c)
+[<c07f1a68>] (msm_iommu_probe) from [<c07feaa8>] (platform_drv_probe+0x60/0xbc)
+[<c07feaa8>] (platform_drv_probe) from [<c07fc1fc>] (driver_probe_device+0x30c/0x4cc)
+[<c07fc1fc>] (driver_probe_device) from [<c07fc59c>] (__device_attach_driver+0xac/0x14c)
+[<c07fc59c>] (__device_attach_driver) from [<c07f9e14>] (bus_for_each_drv+0x68/0xc8)
+[<c07f9e14>] (bus_for_each_drv) from [<c07fbd3c>] (__device_attach+0xe4/0x178)
+[<c07fbd3c>] (__device_attach) from [<c07fc698>] (device_initial_probe+0x1c/0x20)
+[<c07fc698>] (device_initial_probe) from [<c07faee8>] (bus_probe_device+0x98/0xa0)
+[<c07faee8>] (bus_probe_device) from [<c07fb4f4>] (deferred_probe_work_func+0x74/0x198)
+[<c07fb4f4>] (deferred_probe_work_func) from [<c0348eb4>] (process_one_work+0x2c4/0x8fc)
+[<c0348eb4>] (process_one_work) from [<c03497b0>] (worker_thread+0x2c4/0x5cc)
+[<c03497b0>] (worker_thread) from [<c0350d10>] (kthread+0x180/0x188)
+[<c0350d10>] (kthread) from [<c03010b4>] (ret_from_fork+0x14/0x20)
 
-On 2018/6/11 19:05, Jean-Philippe Brucker wrote:
-> Hi Zhen Lei,
-> 
-> On 10/06/18 12:07, Zhen Lei wrote:
->> v1 -> v2:
->> Use the lowest bit of the io_pgtable_ops.unmap's iova parameter to pass the strict mode:
->> 0, IOMMU_STRICT;
->> 1, IOMMU_NON_STRICT;
->> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
->> other IOMMUs which still use strict mode. In other words, this patch series
->> will not impact other IOMMU drivers. I tried add a new quirk IO_PGTABLE_QUIRK_NON_STRICT
->> in io_pgtable_cfg.quirks, but it can not pass the strict mode of the domain from SMMUv3
->> driver to io-pgtable module. 
->>
->> Add a new member domain_non_strict in struct iommu_dma_cookie, this member will only be
->> initialized when the related domain and IOMMU driver support non-strict mode.
-> 
-> It's not obvious from the commit messages or comments what the
-> non-strict mode involves exactly. Could you add a description, and point
-> out the trade-off associated with it?
+Fixes: 42df43b36163 ("iommu/msm: Make use of iommu_device_register interface")
+Signed-off-by: Niklas Cassel <niklas.cassel@linaro.org>
+---
+ drivers/iommu/msm_iommu.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-Sorry, I described it in V1, but remove it in V2.
-https://lkml.org/lkml/2018/5/31/131
-
-> 
-> In this mode you don't send an invalidate commands when removing a leaf
-> entry, but instead send invalidate-all commands at regular interval.
-> This improves performance but introduces a vulnerability window, which
-> should be pointed out to users.
-> 
-> IOVA allocation isn't the only problem, I'm concerned about the page
-> allocator. If unmap() returns early, the TLB entry is still valid after
-> the kernel reallocate the page. The device can then perform a
-> use-after-free (instead of getting a translation fault), so a buggy
-> device will corrupt memory and an untrusted one will access arbitrary data.
-
-I have constrained VFIO to still use strict mode, so all other devices will only
-access memory in the kernel state, these related drivers are unlikely to attack
-kernel. The devices as part of the commercial product, the probability of such a
-bug is very low, at least the bug will not be reserved for the purpose of the
-attack. But the attackers may replace it as illegal devices on the spot.
-
-Take a step back, IOMMU disabled is also supported, non-strict mode is better
-than disabled. So maybe we should add a boot option, allowing the admin choose
-which mode to be used.
-
-
-> 
-> Or is there a way in mm to ensure that the page isn't reallocated until
-> the invalidation succeeds? Could dma-iommu help with this? Having
-
-It's too hard. In some cases the memory is allocated by non dma-iommu API.
-
-> support from the mm would also help consolidate ATS, mark a page stale
-> when an ATC invalidation times out. But last time I checked it seemed
-> quite difficult to implement, and ATS is inherently insecure so I didn't
-> bother.
-> 
-> At the very least I think it might be worth warning users in dmesg about
-> this pitfall (and add_taint?). Tell them that an IOMMU in this mode is
-> good for scatter-gather performance but lacks full isolation. The
-> "non-strict" name seems somewhat harmless, and people should know what
-> they're getting into before enabling this.
-
-Yes, warning or add comments in source code will be better.
-
-> 
-> Thanks,
-> Jean
-> 
-> .
-> 
-
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 0d3350463a3f..9a95c9b9d0d8 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -395,20 +395,15 @@ static int msm_iommu_add_device(struct device *dev)
+ 	struct msm_iommu_dev *iommu;
+ 	struct iommu_group *group;
+ 	unsigned long flags;
+-	int ret = 0;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-
+ 	iommu = find_iommu_for_dev(dev);
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
+ 	if (iommu)
+ 		iommu_device_link(&iommu->iommu, dev);
+ 	else
+-		ret = -ENODEV;
+-
+-	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+-
+-	if (ret)
+-		return ret;
++		return -ENODEV;
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group))
+@@ -425,13 +420,12 @@ static void msm_iommu_remove_device(struct device *dev)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&msm_iommu_lock, flags);
+-
+ 	iommu = find_iommu_for_dev(dev);
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
+ 	if (iommu)
+ 		iommu_device_unlink(&iommu->iommu, dev);
+ 
+-	spin_unlock_irqrestore(&msm_iommu_lock, flags);
+-
+ 	iommu_group_remove_device(dev);
+ }
+ 
 -- 
-Thanks!
-BestRegards
+2.17.1
