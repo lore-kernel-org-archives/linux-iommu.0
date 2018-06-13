@@ -1,61 +1,69 @@
-From: Julien Thierry <julien.thierry@arm.com>
-Subject: Re: [RFC PATCH 03/23] genirq: Introduce IRQF_DELIVER_AS_NMI
-Date: Wed, 13 Jun 2018 11:25:18 +0100
-Message-ID: <5c52d916-e405-e689-8fa1-d2dfb28ab3fd@arm.com>
+From: Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 12/23] kernel/watchdog: Introduce a struct for NMI
+	watchdog operations
+Date: Wed, 13 Jun 2018 21:52:25 +1000
+Message-ID: <20180613215225.2a938abc@roar.ozlabs.ibm.com>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
- <1528851463-21140-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
- <20180613083419.GS12258@hirez.programming.kicks-ass.net>
- <26687332-ab8f-7f6d-909a-f0918dbfea86@arm.com>
- <alpine.DEB.2.21.1806131104570.2280@nanos.tec.linutronix.de>
- <344b838e-81e3-97d8-f90d-315fed7879c1@arm.com>
- <alpine.DEB.2.21.1806131149410.2280@nanos.tec.linutronix.de>
+	<1528851463-21140-13-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<20180613174141.539fc6c1@roar.ozlabs.ibm.com>
+	<20180613084219.GT12258@hirez.programming.kicks-ass.net>
+	<alpine.DEB.2.21.1806131121180.2280@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.21.1806131149410.2280@nanos.tec.linutronix.de>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, "Levin, Alexander (Sasha Levin)" <alexander.levin@verizon.com>, Randy Dunlap <rdunlap@infradead.org>, Masami Hiramatsu <mhiramat@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, Bartosz Golaszewski <brg>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.21.1806131121180.2280-ecDvlHI5BZPZikZi3RtOZ1XZhhPuCNm+@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mathieu Desnoyers <mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Philippe Ombredanne <pombred>
 List-Id: iommu@lists.linux-foundation.org
 
+On Wed, 13 Jun 2018 11:26:49 +0200 (CEST)
+Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org> wrote:
 
+> On Wed, 13 Jun 2018, Peter Zijlstra wrote:
+> > On Wed, Jun 13, 2018 at 05:41:41PM +1000, Nicholas Piggin wrote:  
+> > > On Tue, 12 Jun 2018 17:57:32 -0700
+> > > Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> > >   
+> > > > Instead of exposing individual functions for the operations of the NMI
+> > > > watchdog, define a common interface that can be used across multiple
+> > > > implementations.
+> > > > 
+> > > > The struct nmi_watchdog_ops is defined for such operations. These initial
+> > > > definitions include the enable, disable, start, stop, and cleanup
+> > > > operations.
+> > > > 
+> > > > Only a single NMI watchdog can be used in the system. The operations of
+> > > > this NMI watchdog are accessed via the new variable nmi_wd_ops. This
+> > > > variable is set to point the operations of the first NMI watchdog that
+> > > > initializes successfully. Even though at this moment, the only available
+> > > > NMI watchdog is the perf-based hardlockup detector. More implementations
+> > > > can be added in the future.  
+> > > 
+> > > Cool, this looks pretty nice at a quick glance. sparc and powerpc at
+> > > least have their own NMI watchdogs, it would be good to have those
+> > > converted as well.  
+> > 
+> > Yeah, agreed, this looks like half a patch.  
+> 
+> Though I'm not seeing the advantage of it. That kind of NMI watchdogs are
+> low level architecture details so having yet another 'ops' data structure
+> with a gazillion of callbacks, checks and indirections does not provide
+> value over the currently available weak stubs.
 
-On 13/06/18 10:57, Thomas Gleixner wrote:
-> On Wed, 13 Jun 2018, Julien Thierry wrote:
->> On 13/06/18 10:20, Thomas Gleixner wrote:
->>> Adding NMI delivery support at low level architecture irq chip level is
->>> perfectly fine, but the exposure of that needs to be restricted very
->>> much. Adding it to the generic interrupt control interfaces is not going to
->>> happen. That's doomed to begin with and a complete abuse of the interface
->>> as the handler can not ever be used for that.
->>>
->>
->> Understood, however the need would be to provide a way for a driver to request
->> an interrupt to be delivered as an NMI (if irqchip supports it).
-> 
-> s/driver/specialized code written by people who know what they are doing/
-> 
->> But from your response this would be out of the question (in the
->> interrupt/irq/irqchip definitions).
-> 
-> Adding some magic to the irq chip is fine, because that's where the low
-> level integration needs to be done, but exposing it through the generic
-> interrupt subsystem is a NONO for obvious reasons.
-> 
->> Or somehow the concerned irqchip informs the arch it supports NMI delivery and
->> it is up to the interested drivers to query the arch whether NMI delivery is
->> supported by the system?
-> 
-> Yes, we need some infrastructure for that, but that needs to be separate
-> and with very limited exposure.
-> 
-
-Right, makes sense. I'll check with Marc how such an infrastructure 
-should be introduced.
+The other way to go of course is librify the perf watchdog and make an
+x86 watchdog that selects between perf and hpet... I also probably
+prefer that for code such as this, but I wouldn't strongly object to
+ops struct if I'm not writing the code. It's not that bad is it?
 
 Thanks,
-
--- 
-Julien Thierry
+Nick
