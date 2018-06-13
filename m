@@ -1,45 +1,83 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH 20/23] watchdog/hardlockup/hpet: Rotate interrupt
- among all monitored CPUs
-Date: Wed, 13 Jun 2018 11:48:09 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1806131140560.2280@nanos.tec.linutronix.de>
-References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com> <1528851463-21140-21-git-send-email-ricardo.neri-calderon@linux.intel.com>
+From: Julien Thierry <julien.thierry-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 03/23] genirq: Introduce IRQF_DELIVER_AS_NMI
+Date: Wed, 13 Jun 2018 10:49:05 +0100
+Message-ID: <f2172062-c13d-837f-fb75-31da50853cc6@arm.com>
+References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1528851463-21140-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<20180613083419.GS12258@hirez.programming.kicks-ass.net>
+	<26687332-ab8f-7f6d-909a-f0918dbfea86@arm.com>
+	<alpine.DEB.2.21.1806131104570.2280@nanos.tec.linutronix.de>
+	<344b838e-81e3-97d8-f90d-315fed7879c1@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1528851463-21140-21-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Cc: Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Don Zickus <dzickus@redhat.com>, Nicholas Piggin <npiggin@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Alexei Starovoitov <ast@kernel.org>, Babu Moger <babu.moger@oracle.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Masami Hiramatsu <mhiramat@kernel.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <344b838e-81e3-97d8-f90d-315fed7879c1-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Doug Berger <opendmb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Bartosz Golaszewski <brgl-ARrdPY/1zhM@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Levin,
+	Alexander (Sasha Levin)" <alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linuxppc-dev-uLR06cmDAlaKREJ1Ck/qmQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 12 Jun 2018, Ricardo Neri wrote:
-> +	/* There are no CPUs to monitor. */
-> +	if (!cpumask_weight(&hdata->monitored_mask))
-> +		return NMI_HANDLED;
-> +
->  	inspect_for_hardlockups(regs);
->  
-> +	/*
-> +	 * Target a new CPU. Keep trying until we find a monitored CPU. CPUs
-> +	 * are addded and removed to this mask at cpu_up() and cpu_down(),
-> +	 * respectively. Thus, the interrupt should be able to be moved to
-> +	 * the next monitored CPU.
-> +	 */
-> +	spin_lock(&hld_data->lock);
-
-Yuck. Taking a spinlock from NMI ... 
-
-> +	for_each_cpu_wrap(cpu, &hdata->monitored_mask, smp_processor_id() + 1) {
-> +		if (!irq_set_affinity(hld_data->irq, cpumask_of(cpu)))
-> +			break;
-
-... and then calling into generic interrupt code which will take even more
-locks is completely broken.
-
-Guess what happens when the NMI hits a section where one of those locks is
-held? Then you need another watchdog to decode the lockup you just ran into.
-
-Thanks,
-
-	tglx
+CgpPbiAxMy8wNi8xOCAxMDozNiwgSnVsaWVuIFRoaWVycnkgd3JvdGU6Cj4gCj4gCj4gT24gMTMv
+MDYvMTggMTA6MjAsIFRob21hcyBHbGVpeG5lciB3cm90ZToKPj4gT24gV2VkLCAxMyBKdW4gMjAx
+OCwgSnVsaWVuIFRoaWVycnkgd3JvdGU6Cj4+PiBPbiAxMy8wNi8xOCAwOTozNCwgUGV0ZXIgWmlq
+bHN0cmEgd3JvdGU6Cj4+Pj4gT24gVHVlLCBKdW4gMTIsIDIwMTggYXQgMDU6NTc6MjNQTSAtMDcw
+MCwgUmljYXJkbyBOZXJpIHdyb3RlOgo+Pj4+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9p
+bnRlcnJ1cHQuaCBiL2luY2x1ZGUvbGludXgvaW50ZXJydXB0LmgKPj4+Pj4gaW5kZXggNTQyNjYy
+Ny4uZGJjNWUwMiAxMDA2NDQKPj4+Pj4gLS0tIGEvaW5jbHVkZS9saW51eC9pbnRlcnJ1cHQuaAo+
+Pj4+PiArKysgYi9pbmNsdWRlL2xpbnV4L2ludGVycnVwdC5oCj4+Pj4+IEBAIC02MSw2ICs2MSw4
+IEBACj4+Pj4+IMKgwqDCoCAqwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVw
+dCBoYW5kbGVyIGFmdGVyIHN1c3BlbmRpbmcgaW50ZXJydXB0cy4gCj4+Pj4+IEZvcgo+Pj4+PiBz
+eXN0ZW0KPj4+Pj4gwqDCoMKgICrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgd2FrZXVw
+IGRldmljZXMgdXNlcnMgbmVlZCB0byBpbXBsZW1lbnQgd2FrZXVwCj4+Pj4+IGRldGVjdGlvbiBp
+bgo+Pj4+PiDCoMKgwqAgKsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB0aGVpciBpbnRl
+cnJ1cHQgaGFuZGxlcnMuCj4+Pj4+ICsgKiBJUlFGX0RFTElWRVJfQVNfTk1JIC0gQ29uZmlndXJl
+IGludGVycnVwdCB0byBiZSBkZWxpdmVyZWQgYXMKPj4+Pj4gbm9uLW1hc2thYmxlLCBpZgo+Pj4+
+PiArICrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3VwcG9ydGVkIGJ5IHRoZSBjaGlw
+Lgo+Pj4+PiDCoMKgwqAgKi8KPj4+Pgo+Pj4+IE5BSyBvbiB0aGUgZmlyc3QgNiBwYXRjaGVzLiBZ
+b3UgcmVhbGx5IF9SRUFMTFlfIGRvbid0IHdhbnQgdG8gZXhwb3NlCj4+Pj4gTk1JcyB0byB0aGlz
+IGxldmVsLgo+Pj4+Cj4+Pgo+Pj4gSSd2ZSBiZWVuIHdvcmtpbmcgb24gc29tZXRoaW5nIHNpbWls
+YXIgb24gYXJtNjQgc2lkZSwgYW5kIGVmZmVjdGl2ZWx5IAo+Pj4gdGhlIG9uZQo+Pj4gdGhpbmcg
+dGhhdCBtaWdodCBiZSBjb21tb24gdG8gYXJtNjQgYW5kIGludGVsIGlzIHRoZSBpbnRlcmZhY2Ug
+dG8gc2V0IGFuCj4+PiBpbnRlcnJ1cHQgYXMgTk1JLiBTbyBJIGd1ZXNzIGl0IHdvdWxkIGJlIG5p
+Y2UgdG8gYWdyZWUgb24gdGhlIHJpZ2h0IAo+Pj4gYXBwcm9hY2gKPj4+IGZvciB0aGlzLgo+Pj4K
+Pj4+IFRoZSB3YXkgSSBkaWQgaXQgd2FzIGJ5IGludHJvZHVjaW5nIGEgbmV3IGlycV9zdGF0ZSBh
+bmQgbGV0IHRoZSAKPj4+IGlycWNoaXAgZHJpdmVyCj4+PiBoYW5kbGUgbW9zdCBvZiB0aGUgd29y
+ayAoaWYgaXQgc3VwcG9ydHMgdGhhdCBzdGF0ZSk6Cj4+Pgo+Pj4gaHR0cHM6Ly9sa21sLm9yZy9s
+a21sLzIwMTgvNS8yNS8xODEKPj4+Cj4+PiBUaGlzIGhhcyBub3QgYmVlbiBBQ0tlZCBub3IgTkFL
+ZWQuIFNvIEkgYW0ganVzdCBhc2tpbmcgd2hldGhlciB0aGlzIAo+Pj4gaXMgYSBtb3JlCj4+PiBz
+dWl0YWJsZSBhcHByb2FjaCwgYW5kIGlmIG5vdCwgaXMgdGhlcmUgYW55IHN1Z2dlc3Rpb25zIG9u
+IGhvdyB0byBkbyAKPj4+IHRoaXM/Cj4+Cj4+IEkgcmVhbGx5IGRpZG4ndCBwYXkgYXR0ZW50aW9u
+IHRvIHRoYXQgYXMgaXQncyBidXJyaWVkIGluIHRoZSBHSUMvQVJNIAo+PiBzZXJpZXMKPj4gd2hp
+Y2ggaXMgdXN1YWxseSBNYXJjJ3MgcGxheWdyb3VuZC4KPj4KPj4gQWRkaW5nIE5NSSBkZWxpdmVy
+eSBzdXBwb3J0IGF0IGxvdyBsZXZlbCBhcmNoaXRlY3R1cmUgaXJxIGNoaXAgbGV2ZWwgaXMKPj4g
+cGVyZmVjdGx5IGZpbmUsIGJ1dCB0aGUgZXhwb3N1cmUgb2YgdGhhdCBuZWVkcyB0byBiZSByZXN0
+cmljdGVkIHZlcnkKPj4gbXVjaC4gQWRkaW5nIGl0IHRvIHRoZSBnZW5lcmljIGludGVycnVwdCBj
+b250cm9sIGludGVyZmFjZXMgaXMgbm90IAo+PiBnb2luZyB0bwo+PiBoYXBwZW4uIFRoYXQncyBk
+b29tZWQgdG8gYmVnaW4gd2l0aCBhbmQgYSBjb21wbGV0ZSBhYnVzZSBvZiB0aGUgaW50ZXJmYWNl
+Cj4+IGFzIHRoZSBoYW5kbGVyIGNhbiBub3QgZXZlciBiZSB1c2VkIGZvciB0aGF0Lgo+Pgo+IAo+
+IFVuZGVyc3Rvb2QsIGhvd2V2ZXIgdGhlIG5lZWQgd291bGQgYmUgdG8gcHJvdmlkZSBhIHdheSBm
+b3IgYSBkcml2ZXIgdG8gCj4gcmVxdWVzdCBhbiBpbnRlcnJ1cHQgdG8gYmUgZGVsaXZlcmVkIGFz
+IGFuIE5NSSAoaWYgaXJxY2hpcCBzdXBwb3J0cyBpdCkuCj4gCj4gQnV0IGZyb20geW91ciByZXNw
+b25zZSB0aGlzIHdvdWxkIGJlIG91dCBvZiB0aGUgcXVlc3Rpb24gKGluIHRoZSAKPiBpbnRlcnJ1
+cHQvaXJxL2lycWNoaXAgZGVmaW5pdGlvbnMpLgo+IAo+IE9yIHNvbWVob3cgdGhlIGNvbmNlcm5l
+ZCBpcnFjaGlwIGluZm9ybXMgdGhlIGFyY2ggaXQgc3VwcG9ydHMgTk1JIAo+IGRlbGl2ZXJ5IGFu
+ZCBpdCBpcyB1cCB0byB0aGUgaW50ZXJlc3RlZCBkcml2ZXJzIHRvIHF1ZXJ5IHRoZSBhcmNoIAo+
+IHdoZXRoZXIgTk1JIGRlbGl2ZXJ5IGlzIHN1cHBvcnRlZCBieSB0aGUgc3lzdGVtPwoKQWN0dWFs
+bHkgc2NyYXRjaCB0aGF0IGxhc3QgcGFydCwgaXQgaXMgYWxzbyBtaXNzaW5nIGEgd2F5IGZvciB0
+aGUgZHJpdmVyIAp0byBhY3R1YWxseSBjb21tdW5pY2F0ZSB0byB0aGUgaXJxY2hpcCB0aGF0IGl0
+cyBpbnRlcnJ1cHQgc2hvdWxkIGJlIAp0cmVhdGVkIGFzIGFuIE5NSSwgc28gaXQgd291bGRuJ3Qg
+d29yay4uLgoKLS0gCkp1bGllbiBUaGllcnJ5Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
