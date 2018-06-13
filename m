@@ -1,7 +1,7 @@
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [RFC PATCH 20/23] watchdog/hardlockup/hpet: Rotate interrupt among all monitored CPUs
-Date: Tue, 12 Jun 2018 17:57:40 -0700
-Message-ID: <1528851463-21140-21-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH 23/23] watchdog/hardlockup: Activate the HPET-based lockup detector
+Date: Tue, 12 Jun 2018 17:57:43 -0700
+Message-ID: <1528851463-21140-24-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
@@ -10,19 +10,9 @@ To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Pe
 Cc: Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Don Zickus <dzickus@redhat.com>, Nicholas Piggin <npiggin@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Alexei Starovoitov <ast@kernel.org>, Babu Moger <babu.moger@oracle.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Masami Hiramatsu <mhiramat@kernel.org>, Peter Zijlstra <peterz@infra>
 List-Id: iommu@lists.linux-foundation.org
 
-In order to detect hardlockups in all the monitored CPUs, move the
-interrupt to the next monitored CPU when handling the NMI interrupt; wrap
-around when reaching the highest CPU in the mask. This rotation is achieved
-by setting the affinity mask to only contain the next CPU to monitor.
-
-In order to prevent our interrupt to be reassigned to another CPU, flag
-it as IRQF_NONBALANCING.
-
-The cpumask monitored_mask keeps track of the CPUs that the watchdog
-should monitor. This structure is updated when the NMI watchdog is
-enabled or disabled in a specific CPU. As this mask can change
-concurrently as CPUs are put online or offline and the watchdog is
-disabled or enabled, a lock is required to protect the monitored_mask.
+Now that the implementation of the HPET-based hardlockup detector is
+complete, enable it. It will be used only if it can be initialized
+successfully. Otherwise, the perf-based detector will be used.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
@@ -59,77 +49,34 @@ Cc: x86@kernel.org
 Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- kernel/watchdog_hld_hpet.c | 28 ++++++++++++++++++++++++----
- 1 file changed, 24 insertions(+), 4 deletions(-)
+ kernel/watchdog.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/kernel/watchdog_hld_hpet.c b/kernel/watchdog_hld_hpet.c
-index 857e051..c40acfd 100644
---- a/kernel/watchdog_hld_hpet.c
-+++ b/kernel/watchdog_hld_hpet.c
-@@ -10,6 +10,7 @@
- #include <linux/nmi.h>
- #include <linux/hpet.h>
- #include <asm/hpet.h>
-+#include <asm/cpumask.h>
- #include <asm/irq_remapping.h>
- 
- #undef pr_fmt
-@@ -199,8 +200,8 @@ static irqreturn_t hardlockup_detector_irq_handler(int irq, void *data)
-  * @regs:	Register values as seen when the NMI was asserted
-  *
-  * When an NMI is issued, look for hardlockups. If the timer is not periodic,
-- * kick it. The interrupt is always handled when if delivered via the
-- * Front-Side Bus.
-+ * kick it. Move the interrupt to the next monitored CPU. The interrupt is
-+ * always handled when if delivered via the Front-Side Bus.
-  *
-  * Returns:
-  *
-@@ -211,7 +212,7 @@ static int hardlockup_detector_nmi_handler(unsigned int val,
- 					   struct pt_regs *regs)
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index b5ce6e4..e2cc6c0 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -149,6 +149,21 @@ int __weak __init watchdog_nmi_probe(void)
  {
- 	struct hpet_hld_data *hdata = hld_data;
--	unsigned int use_fsb;
-+	unsigned int use_fsb, cpu;
- 
- 	/*
- 	 * If FSB delivery mode is used, the timer interrupt is programmed as
-@@ -222,8 +223,27 @@ static int hardlockup_detector_nmi_handler(unsigned int val,
- 	if (!use_fsb && !is_hpet_wdt_interrupt(hdata))
- 		return NMI_DONE;
- 
-+	/* There are no CPUs to monitor. */
-+	if (!cpumask_weight(&hdata->monitored_mask))
-+		return NMI_HANDLED;
-+
- 	inspect_for_hardlockups(regs);
+ 	int ret = -ENODEV;
  
 +	/*
-+	 * Target a new CPU. Keep trying until we find a monitored CPU. CPUs
-+	 * are addded and removed to this mask at cpu_up() and cpu_down(),
-+	 * respectively. Thus, the interrupt should be able to be moved to
-+	 * the next monitored CPU.
++	 * Try first with the HPET hardlockup detector. It will only
++	 * succeed if selected at build time and the nmi_watchdog
++	 * command-line parameter is configured. This ensure that the
++	 * perf-based detector is used by default, if selected at
++	 * build time.
 +	 */
-+	spin_lock(&hld_data->lock);
-+	for_each_cpu_wrap(cpu, &hdata->monitored_mask, smp_processor_id() + 1) {
-+		if (!irq_set_affinity(hld_data->irq, cpumask_of(cpu)))
-+			break;
-+		pr_err("Could not assign interrupt to CPU %d. Trying with next present CPU.\n",
-+		       cpu);
-+	}
-+	spin_unlock(&hld_data->lock);
++	if (IS_ENABLED(CONFIG_HARDLOCKUP_DETECTOR_HPET))
++		ret = hardlockup_detector_hpet_ops.init();
 +
- 	if (!(hdata->flags & HPET_DEV_PERI_CAP))
- 		kick_timer(hdata);
++	if (!ret) {
++		nmi_wd_ops = &hardlockup_detector_hpet_ops;
++		return ret;
++	}
++
+ 	if (IS_ENABLED(CONFIG_HARDLOCKUP_DETECTOR_PERF))
+ 		ret = hardlockup_detector_perf_ops.init();
  
-@@ -336,7 +356,7 @@ static int setup_hpet_irq(struct hpet_hld_data *hdata)
- 	 * Request an interrupt to activate the irq in all the needed domains.
- 	 */
- 	ret = request_irq(hwirq, hardlockup_detector_irq_handler,
--			  IRQF_TIMER | IRQF_DELIVER_AS_NMI,
-+			  IRQF_TIMER | IRQF_DELIVER_AS_NMI | IRQF_NOBALANCING,
- 			  "hpet_hld", hdata);
- 	if (ret)
- 		unregister_nmi_handler(NMI_LOCAL, "hpet_hld");
 -- 
 2.7.4
