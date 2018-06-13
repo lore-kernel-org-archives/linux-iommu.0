@@ -1,168 +1,146 @@
-From: Gary R Hook <gary.hook@amd.com>
-Subject: [PATCH v9 2/2] iommu/amd: Add basic debugfs infrastructure for AMD
- IOMMU
-Date: Tue, 12 Jun 2018 16:41:30 -0500
-Message-ID: <152883969032.1936.15155267369758178246.stgit@taos>
-References: <152883965482.1936.13657625103232933481.stgit@taos>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH 03/23] genirq: Introduce IRQF_DELIVER_AS_NMI
+Date: Tue, 12 Jun 2018 17:57:23 -0700
+Message-ID: <1528851463-21140-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
+References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <152883965482.1936.13657625103232933481.stgit@taos>
+In-Reply-To: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>
+Cc: Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Jacob Pan <jacob.jun.pan@intel.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, "Levin, Alexander (Sasha Levin)" <alexander.levin@verizon.com>, Randy Dunlap <rdunlap@infradead.org>, Masami Hiramatsu <mhiramat@kernel.org>, Marc Zyngier <marc.zyngier@arm.com>, Bartosz Golaszewski <brgl@bgdev.pl>, Doug Berger <opendmb@gmail.com>, Palmer Dabbelt <palmer@sifive.com>, iommu@lists.linux-found
 List-Id: iommu@lists.linux-foundation.org
 
-Implement a skeleton framework for debugfs support in the AMD
-IOMMU.  Add an AMD-specific Kconfig boolean that depends upon
-general enablement of DebugFS in the IOMMU.
+Certain interrupt controllers (such as APIC) are capable of delivering
+interrupts as non-maskable. Likewise, drivers or subsystems (e.g., the
+hardlockup detector) might be interested in requesting a non-maskable
+interrupt. The new flag IRQF_DELIVER_AS_NMI serves this purpose.
 
-Signed-off-by: Gary R Hook <gary.hook@amd.com>
+When setting up an interrupt, non-maskable delivery will be set in the
+interrupt state data only if supported by the underlying interrupt
+controller chips.
+
+Interrupt controller chips can declare that they support non-maskable
+delivery by using the new flag IRQCHIP_CAN_DELIVER_AS_NMI.
+
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Andi Kleen <andi.kleen@intel.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Jacob Pan <jacob.jun.pan@intel.com>
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: "Levin, Alexander (Sasha Levin)" <alexander.levin@verizon.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+Cc: Doug Berger <opendmb@gmail.com>
+Cc: Palmer Dabbelt <palmer@sifive.com>
+Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+Cc: x86@kernel.org
+Cc: iommu@lists.linux-foundation.org
+Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- drivers/iommu/Kconfig             |   12 ++++++++++++
- drivers/iommu/Makefile            |    1 +
- drivers/iommu/amd_iommu_debugfs.c |   33 +++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_init.c    |    6 ++++--
- drivers/iommu/amd_iommu_proto.h   |    6 ++++++
- drivers/iommu/amd_iommu_types.h   |    5 +++++
- 6 files changed, 61 insertions(+), 2 deletions(-)
- create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+ include/linux/interrupt.h |  3 +++
+ include/linux/irq.h       |  3 +++
+ kernel/irq/manage.c       | 22 +++++++++++++++++++++-
+ 3 files changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f9af25ac409f..5a9cef113763 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -146,6 +146,18 @@ config AMD_IOMMU_V2
- 	  hardware. Select this option if you want to use devices that support
- 	  the PCI PRI and PASID interface.
- 
-+config AMD_IOMMU_DEBUGFS
-+	bool "Enable AMD IOMMU internals in DebugFS"
-+	depends on AMD_IOMMU && IOMMU_DEBUGFS
-+	---help---
-+	  !!!WARNING!!!  !!!WARNING!!!  !!!WARNING!!!  !!!WARNING!!!
-+
-+	  DO NOT ENABLE THIS OPTION UNLESS YOU REALLY, -REALLY- KNOW WHAT YOU ARE DOING!!!
-+	  Exposes AMD IOMMU device internals in DebugFS.
-+
-+	  This option is -NOT- intended for production environments, and should
-+	  not generally be enabled.
-+
- # Intel IOMMU support
- config DMAR_TABLE
- 	bool
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 74cfbc392862..47fd6ea9de2d 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -11,6 +11,7 @@ obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
-+obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
- obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
- obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
-diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd_iommu_debugfs.c
-new file mode 100644
-index 000000000000..c6a5c737ef09
---- /dev/null
-+++ b/drivers/iommu/amd_iommu_debugfs.c
-@@ -0,0 +1,33 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AMD IOMMU driver
-+ *
-+ * Copyright (C) 2018 Advanced Micro Devices, Inc.
-+ *
-+ * Author: Gary R Hook <gary.hook@amd.com>
-+ */
-+
-+#include <linux/debugfs.h>
-+#include <linux/iommu.h>
-+#include <linux/pci.h>
-+#include "amd_iommu_proto.h"
-+#include "amd_iommu_types.h"
-+
-+static struct dentry *amd_iommu_debugfs;
-+static DEFINE_MUTEX(amd_iommu_debugfs_lock);
-+
-+#define	MAX_NAME_LEN	20
-+
-+void amd_iommu_debugfs_setup(struct amd_iommu *iommu)
-+{
-+	char name[MAX_NAME_LEN + 1];
-+
-+	mutex_lock(&amd_iommu_debugfs_lock);
-+	if (!amd_iommu_debugfs)
-+		amd_iommu_debugfs = debugfs_create_dir("amd",
-+						       iommu_debugfs_dir);
-+	mutex_unlock(&amd_iommu_debugfs_lock);
-+
-+	snprintf(name, MAX_NAME_LEN, "iommu%02d", iommu->index);
-+	iommu->debugfs = debugfs_create_dir(name, amd_iommu_debugfs);
-+}
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 904c575d1677..031e6dbb8345 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2721,6 +2721,7 @@ int __init amd_iommu_enable_faulting(void)
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index 5426627..dbc5e02 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -61,6 +61,8 @@
+  *                interrupt handler after suspending interrupts. For system
+  *                wakeup devices users need to implement wakeup detection in
+  *                their interrupt handlers.
++ * IRQF_DELIVER_AS_NMI - Configure interrupt to be delivered as non-maskable, if
++ *                supported by the chip.
   */
- static int __init amd_iommu_init(void)
- {
-+	struct amd_iommu *iommu;
- 	int ret;
+ #define IRQF_SHARED		0x00000080
+ #define IRQF_PROBE_SHARED	0x00000100
+@@ -74,6 +76,7 @@
+ #define IRQF_NO_THREAD		0x00010000
+ #define IRQF_EARLY_RESUME	0x00020000
+ #define IRQF_COND_SUSPEND	0x00040000
++#define IRQF_DELIVER_AS_NMI	0x00080000
  
- 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
-@@ -2730,14 +2731,15 @@ static int __init amd_iommu_init(void)
- 			disable_iommus();
- 			free_iommu_resources();
- 		} else {
--			struct amd_iommu *iommu;
--
- 			uninit_device_table_dma();
- 			for_each_iommu(iommu)
- 				iommu_flush_all_caches(iommu);
- 		}
- 	}
+ #define IRQF_TIMER		(__IRQF_TIMER | IRQF_NO_SUSPEND | IRQF_NO_THREAD)
  
-+	for_each_iommu(iommu)
-+		amd_iommu_debugfs_setup(iommu);
-+
- 	return ret;
- }
- 
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 640c286a0ab9..a8cd0296fb16 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -33,6 +33,12 @@ extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
- extern int amd_iommu_init_api(void);
- 
-+#ifdef CONFIG_AMD_IOMMU_DEBUGFS
-+void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
-+#else
-+static inline void amd_iommu_debugfs_setup(struct amd_iommu *iommu) {}
-+#endif
-+
- /* Needed for interrupt remapping */
- extern int amd_iommu_prepare(void);
- extern int amd_iommu_enable(void);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 986cbe0cc189..cfac9d842b0f 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -594,6 +594,11 @@ struct amd_iommu {
- 
- 	u32 flags;
- 	volatile u64 __aligned(8) cmd_sem;
-+
-+#ifdef CONFIG_AMD_IOMMU_DEBUGFS
-+	/* DebugFS Info */
-+	struct dentry *debugfs;
-+#endif
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index 7271a2c..d2520ae 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -515,6 +515,8 @@ struct irq_chip {
+  * IRQCHIP_SKIP_SET_WAKE:	Skip chip.irq_set_wake(), for this irq chip
+  * IRQCHIP_ONESHOT_SAFE:	One shot does not require mask/unmask
+  * IRQCHIP_EOI_THREADED:	Chip requires eoi() on unmask in threaded mode
++ * IRQCHIP_CAN_DELIVER_AS_NMI	Chip can deliver interrupts it receives as non-
++ *				maskable.
+  */
+ enum {
+ 	IRQCHIP_SET_TYPE_MASKED		= (1 <<  0),
+@@ -524,6 +526,7 @@ enum {
+ 	IRQCHIP_SKIP_SET_WAKE		= (1 <<  4),
+ 	IRQCHIP_ONESHOT_SAFE		= (1 <<  5),
+ 	IRQCHIP_EOI_THREADED		= (1 <<  6),
++	IRQCHIP_CAN_DELIVER_AS_NMI	= (1 <<  7),
  };
  
- static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
+ #include <linux/irqdesc.h>
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index e3336d9..d058aa8 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -1137,7 +1137,7 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ {
+ 	struct irqaction *old, **old_ptr;
+ 	unsigned long flags, thread_mask = 0;
+-	int ret, nested, shared = 0;
++	int ret, nested, shared = 0, deliver_as_nmi = 0;
+ 
+ 	if (!desc)
+ 		return -EINVAL;
+@@ -1156,6 +1156,16 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ 	if (!(new->flags & IRQF_TRIGGER_MASK))
+ 		new->flags |= irqd_get_trigger_type(&desc->irq_data);
+ 
++	/* Only deliver as non-maskable interrupt if supported by chip. */
++	if (new->flags & IRQF_DELIVER_AS_NMI) {
++		if (desc->irq_data.chip->flags & IRQCHIP_CAN_DELIVER_AS_NMI) {
++			irqd_set_deliver_as_nmi(&desc->irq_data);
++			deliver_as_nmi = 1;
++		} else {
++			return -EINVAL;
++		}
++	}
++
+ 	/*
+ 	 * Check whether the interrupt nests into another interrupt
+ 	 * thread.
+@@ -1166,6 +1176,13 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ 			ret = -EINVAL;
+ 			goto out_mput;
+ 		}
++
++		/* Don't allow nesting if interrupt will be delivered as NMI. */
++		if (deliver_as_nmi) {
++			ret = -EINVAL;
++			goto out_mput;
++		}
++
+ 		/*
+ 		 * Replace the primary handler which was provided from
+ 		 * the driver for non nested interrupt handling by the
+@@ -1186,6 +1203,9 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ 	 * thread.
+ 	 */
+ 	if (new->thread_fn && !nested) {
++		if (deliver_as_nmi)
++			goto out_mput;
++
+ 		ret = setup_irq_thread(new, irq, false);
+ 		if (ret)
+ 			goto out_mput;
+-- 
+2.7.4
