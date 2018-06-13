@@ -1,46 +1,41 @@
-From: Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [RFC PATCH 12/23] kernel/watchdog: Introduce a struct for NMI
- watchdog operations
-Date: Wed, 13 Jun 2018 17:41:41 +1000
-Message-ID: <20180613174141.539fc6c1@roar.ozlabs.ibm.com>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [RFC PATCH 03/23] genirq: Introduce IRQF_DELIVER_AS_NMI
+Date: Wed, 13 Jun 2018 10:34:19 +0200
+Message-ID: <20180613083419.GS12258@hirez.programming.kicks-ass.net>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-        <1528851463-21140-13-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1528851463-21140-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1528851463-21140-13-git-send-email-ricardo.neri-calderon@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, Don Zickus <dzickus@redhat.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Masami
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1528851463-21140-4-git-send-email-ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Daniel Lezcano <daniel.lezcano-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Doug Berger <opendmb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Bartosz Golaszewski <brgl-ARrdPY/1zhM@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Levin,
+	Alexander (Sasha Levin)" <alexander.levin-H+0wwilmMs1BDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 12 Jun 2018 17:57:32 -0700
-Ricardo Neri <ricardo.neri-calderon@linux.intel.com> wrote:
+On Tue, Jun 12, 2018 at 05:57:23PM -0700, Ricardo Neri wrote:
+> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+> index 5426627..dbc5e02 100644
+> --- a/include/linux/interrupt.h
+> +++ b/include/linux/interrupt.h
+> @@ -61,6 +61,8 @@
+>   *                interrupt handler after suspending interrupts. For system
+>   *                wakeup devices users need to implement wakeup detection in
+>   *                their interrupt handlers.
+> + * IRQF_DELIVER_AS_NMI - Configure interrupt to be delivered as non-maskable, if
+> + *                supported by the chip.
+>   */
 
-> Instead of exposing individual functions for the operations of the NMI
-> watchdog, define a common interface that can be used across multiple
-> implementations.
-> 
-> The struct nmi_watchdog_ops is defined for such operations. These initial
-> definitions include the enable, disable, start, stop, and cleanup
-> operations.
-> 
-> Only a single NMI watchdog can be used in the system. The operations of
-> this NMI watchdog are accessed via the new variable nmi_wd_ops. This
-> variable is set to point the operations of the first NMI watchdog that
-> initializes successfully. Even though at this moment, the only available
-> NMI watchdog is the perf-based hardlockup detector. More implementations
-> can be added in the future.
-
-Cool, this looks pretty nice at a quick glance. sparc and powerpc at
-least have their own NMI watchdogs, it would be good to have those
-converted as well.
-
-Is hpet a cross platform thing, or just x86? We should avoid
-proliferation of files under kernel/ I think, so with these watchdog
-driver structs then maybe implementations could go in drivers/ or
-arch/
-
-Thanks,
-Nick
+NAK on the first 6 patches. You really _REALLY_ don't want to expose
+NMIs to this level.
