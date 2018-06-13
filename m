@@ -1,184 +1,221 @@
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [RFC PATCH 01/23] x86/apic: Add a parameter for the APIC delivery mode
-Date: Tue, 12 Jun 2018 17:57:21 -0700
-Message-ID: <1528851463-21140-2-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH 11/23] x86/hpet: Configure the timer used by the hardlockup detector
+Date: Tue, 12 Jun 2018 17:57:31 -0700
+Message-ID: <1528851463-21140-12-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>
-Cc: Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Jacob Pan <jacob.jun.pan@intel.com>, Joerg Roedel <joro@8bytes.org>, Juergen Gross <jgross@suse.com>, Bjorn Helgaas <bhelgaas@google.com>, Wincy Van <fanwenyi0529@gmail.com>, Kate Stewart <kstewart@linuxfoundation.org>, Philippe Ombredanne <pombredanne@nexb.com>, "Eric W. Biederman" <ebiederm@xmission.com>, Baoquan He <bhe@redhat.com>, Dou Liyang <douly.fnst@cn.fujitsu.com>, Jan Kiszka <jan.kiszka@siemens.com>, iommu@lis
+Cc: Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Jacob Pan <jacob.jun.pan@intel.com>, Clemens Ladisch <clemens@ladisch.de>, Arnd Bergmann <arnd@arndb.de>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Until now, the delivery mode of APIC interrupts is set to the default
-mode set in the APIC driver. However, there are no restrictions in hardware
-to configure each interrupt with a different delivery mode. Specifying the
-delivery mode per interrupt is useful when one is interested in changing
-the delivery mode of a particular interrupt. For instance, this can be used
-to deliver an interrupt as non-maskable.
+Implement the initial configuration of the timer to be used by the
+hardlockup detector. The main focus of this configuration is to provide an
+interrupt for the timer.
 
-Add a new member, delivery_mode, to struct irq_cfg. Also, update the
-configuration of the delivery mode in the IO APIC, the MSI APIC and the
-Intel interrupt remapping driver to use this new per-interrupt member to
-configure their respective interrupt tables.
+Two types of interrupt can be assigned to the timer. First, attempt to
+assign a message-signaled interrupt. This implies creating the HPET MSI
+domain; only if it was not created when HPET timers are used for event
+timers. The data structures needed to allocate the MSI interrupt in the
+domain are also created.
 
-In order to keep the current behavior, initialize the delivery mode of
-each interrupt with the with the delivery mode of the APIC driver in use
-when the interrupt data is allocated.
+If message-signaled interrupts cannot be used, assign a legacy IO APIC
+interrupt via the ACPI Global System Interrupts.
+
+The resulting interrupt configuration, along with the timer instance, and
+frequency are then made available to the hardlockup detector in a struct
+via the new function hpet_hardlockup_detector_assign_timer().
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
 Cc: Tony Luck <tony.luck@intel.com>
 Cc: Borislav Petkov <bp@suse.de>
 Cc: Jacob Pan <jacob.jun.pan@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Juergen Gross <jgross@suse.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Wincy Van <fanwenyi0529@gmail.com>
-Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: Clemens Ladisch <clemens@ladisch.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
 Cc: Philippe Ombredanne <pombredanne@nexb.com>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Baoquan He <bhe@redhat.com>
-Cc: Dou Liyang <douly.fnst@cn.fujitsu.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Kate Stewart <kstewart@linuxfoundation.org>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
 Cc: x86@kernel.org
 Cc: iommu@lists.linux-foundation.org
-
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- arch/x86/include/asm/hw_irq.h       |  5 +++--
- arch/x86/include/asm/msidef.h       |  3 +++
- arch/x86/kernel/apic/io_apic.c      |  2 +-
- arch/x86/kernel/apic/msi.c          |  2 +-
- arch/x86/kernel/apic/vector.c       |  8 ++++++++
- arch/x86/platform/uv/uv_irq.c       |  2 +-
- drivers/iommu/intel_irq_remapping.c | 10 +++++-----
- 7 files changed, 22 insertions(+), 10 deletions(-)
+ arch/x86/include/asm/hpet.h |  16 +++++++
+ arch/x86/kernel/hpet.c      | 112 +++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 127 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/hw_irq.h b/arch/x86/include/asm/hw_irq.h
-index 32e666e..c024e59 100644
---- a/arch/x86/include/asm/hw_irq.h
-+++ b/arch/x86/include/asm/hw_irq.h
-@@ -117,8 +117,9 @@ struct irq_alloc_info {
- };
+diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
+index 9fd112a..33309b7 100644
+--- a/arch/x86/include/asm/hpet.h
++++ b/arch/x86/include/asm/hpet.h
+@@ -118,6 +118,22 @@ extern void hpet_unregister_irq_handler(rtc_irq_handler handler);
  
- struct irq_cfg {
--	unsigned int		dest_apicid;
--	unsigned int		vector;
-+	unsigned int				dest_apicid;
-+	unsigned int				vector;
-+	enum ioapic_irq_destination_types	delivery_mode;
- };
+ #endif /* CONFIG_HPET_EMULATE_RTC */
  
- extern struct irq_cfg *irq_cfg(unsigned int irq);
-diff --git a/arch/x86/include/asm/msidef.h b/arch/x86/include/asm/msidef.h
-index ee2f8cc..6aef434 100644
---- a/arch/x86/include/asm/msidef.h
-+++ b/arch/x86/include/asm/msidef.h
-@@ -16,6 +16,9 @@
- 					 MSI_DATA_VECTOR_MASK)
- 
- #define MSI_DATA_DELIVERY_MODE_SHIFT	8
-+#define MSI_DATA_DELIVERY_MODE_MASK	0x00000700
-+#define MSI_DATA_DELIVERY_MODE(dm)	(((dm) << MSI_DATA_DELIVERY_MODE_SHIFT) & \
-+					 MSI_DATA_DELIVERY_MODE_MASK)
- #define  MSI_DATA_DELIVERY_FIXED	(0 << MSI_DATA_DELIVERY_MODE_SHIFT)
- #define  MSI_DATA_DELIVERY_LOWPRI	(1 << MSI_DATA_DELIVERY_MODE_SHIFT)
- 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 7553819..10a20f8 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2887,8 +2887,8 @@ static void mp_setup_entry(struct irq_cfg *cfg, struct mp_chip_data *data,
- 			   struct IO_APIC_route_entry *entry)
- {
- 	memset(entry, 0, sizeof(*entry));
--	entry->delivery_mode = apic->irq_delivery_mode;
- 	entry->dest_mode     = apic->irq_dest_mode;
-+	entry->delivery_mode = cfg->delivery_mode;
- 	entry->dest	     = cfg->dest_apicid;
- 	entry->vector	     = cfg->vector;
- 	entry->trigger	     = data->trigger;
-diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-index ce503c9..12202ac 100644
---- a/arch/x86/kernel/apic/msi.c
-+++ b/arch/x86/kernel/apic/msi.c
-@@ -45,7 +45,7 @@ static void irq_msi_compose_msg(struct irq_data *data, struct msi_msg *msg)
- 	msg->data =
- 		MSI_DATA_TRIGGER_EDGE |
- 		MSI_DATA_LEVEL_ASSERT |
--		MSI_DATA_DELIVERY_FIXED |
-+		MSI_DATA_DELIVERY_MODE(cfg->delivery_mode) |
- 		MSI_DATA_VECTOR(cfg->vector);
- }
- 
-diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-index bb6f7a2..dfe0a2a 100644
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -547,6 +547,14 @@ static int x86_vector_alloc_irqs(struct irq_domain *domain, unsigned int virq,
- 		irqd->chip_data = apicd;
- 		irqd->hwirq = virq + i;
- 		irqd_set_single_target(irqd);
++#ifdef CONFIG_HARDLOCKUP_DETECTOR_HPET
++struct hpet_hld_data {
++	u32		num;
++	u32		irq;
++	u32		flags;
++	u64		ticks_per_second;
++};
 +
-+		/*
-+		 * Initialize the delivery mode of this irq to match
-+		 * the default delivery mode of the APIC. This could be
-+		 * changed later when the interrupt is activated.
-+		 */
-+		 apicd->hw_irq_cfg.delivery_mode = apic->irq_delivery_mode;
++extern struct hpet_hld_data *hpet_hardlockup_detector_assign_timer(void);
++#else
++static inline struct hpet_hld_data *hpet_hardlockup_detector_assign_timer(void)
++{
++	return NULL;
++}
++#endif /* CONFIG_HARDLOCKUP_DETECTOR_HPET */
 +
- 		/*
- 		 * Legacy vectors are already assigned when the IOAPIC
- 		 * takes them over. They stay on the same vector. This is
-diff --git a/arch/x86/platform/uv/uv_irq.c b/arch/x86/platform/uv/uv_irq.c
-index e4cb9f4..c88508b 100644
---- a/arch/x86/platform/uv/uv_irq.c
-+++ b/arch/x86/platform/uv/uv_irq.c
-@@ -35,7 +35,7 @@ static void uv_program_mmr(struct irq_cfg *cfg, struct uv_irq_2_mmr_pnode *info)
- 	mmr_value = 0;
- 	entry = (struct uv_IO_APIC_route_entry *)&mmr_value;
- 	entry->vector		= cfg->vector;
--	entry->delivery_mode	= apic->irq_delivery_mode;
-+	entry->delivery_mode	= cfg->delivery_mode;
- 	entry->dest_mode	= apic->irq_dest_mode;
- 	entry->polarity		= 0;
- 	entry->trigger		= 0;
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 3062a15..9f3a04d 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -1045,7 +1045,7 @@ static int reenable_irq_remapping(int eim)
- 	return -1;
- }
+ #else /* CONFIG_HPET_TIMER */
  
--static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
-+static void prepare_irte(struct irte *irte, struct irq_cfg *irq_cfg)
+ static inline int hpet_enable(void) { return 0; }
+diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
+index 99d4972..fda6e19 100644
+--- a/arch/x86/kernel/hpet.c
++++ b/arch/x86/kernel/hpet.c
+@@ -5,6 +5,7 @@
+ #include <linux/delay.h>
+ #include <linux/errno.h>
+ #include <linux/i8253.h>
++#include <linux/acpi.h>
+ #include <linux/slab.h>
+ #include <linux/hpet.h>
+ #include <linux/init.h>
+@@ -36,6 +37,7 @@ bool					hpet_msi_disable;
+ 
+ #ifdef CONFIG_PCI_MSI
+ static unsigned int			hpet_num_timers;
++static struct irq_domain		*hpet_domain;
+ #endif
+ static void __iomem			*hpet_virt_address;
+ 
+@@ -177,6 +179,115 @@ do {								\
+ 		_hpet_print_config(__func__, __LINE__);	\
+ } while (0)
+ 
++#ifdef CONFIG_HARDLOCKUP_DETECTOR_HPET
++static
++int hpet_hardlockup_detector_assign_legacy_irq(struct hpet_hld_data *hdata)
++{
++	unsigned long v;
++	int gsi, hwirq;
++
++	/* Obtain interrupt pins that can be used by this timer. */
++	v = hpet_readq(HPET_Tn_CFG(HPET_WD_TIMER_NR));
++	v = (v & Tn_INT_ROUTE_CAP_MASK) >> Tn_INT_ROUTE_CAP_SHIFT;
++
++	/*
++	 * In PIC mode, skip IRQ0-4, IRQ6-9, IRQ12-15 which is always used by
++	 * legacy device. In IO APIC mode, we skip all the legacy IRQS.
++	 */
++	if (acpi_irq_model == ACPI_IRQ_MODEL_PIC)
++		v &= ~0xf3df;
++	else
++		v &= ~0xffff;
++
++	for_each_set_bit(hwirq, &v, HPET_MAX_IRQ) {
++		if (hwirq >= NR_IRQS) {
++			hwirq = HPET_MAX_IRQ;
++			break;
++		}
++
++		gsi = acpi_register_gsi(NULL, hwirq, ACPI_LEVEL_SENSITIVE,
++					ACPI_ACTIVE_LOW);
++		if (gsi > 0)
++			break;
++	}
++
++	if (hwirq >= HPET_MAX_IRQ)
++		return -ENODEV;
++
++	hdata->irq = hwirq;
++	return 0;
++}
++
++static int hpet_hardlockup_detector_assign_msi_irq(struct hpet_hld_data *hdata)
++{
++	struct hpet_dev *hdev;
++	int hwirq;
++
++	if (hpet_msi_disable)
++		return -ENODEV;
++
++	hdev = kzalloc(sizeof(*hdev), GFP_KERNEL);
++	if (!hdev)
++		return -ENOMEM;
++
++	hdev->flags |= HPET_DEV_FSB_CAP;
++	hdev->num = hdata->num;
++	sprintf(hdev->name, "hpet_hld");
++
++	/* Domain may exist if CPU does not have Always-Running APIC Timers. */
++	if (!hpet_domain) {
++		hpet_domain = hpet_create_irq_domain(hpet_blockid);
++		if (!hpet_domain)
++			return -EPERM;
++	}
++
++	hwirq = hpet_assign_irq(hpet_domain, hdev, hdev->num);
++	if (hwirq <= 0) {
++		kfree(hdev);
++		return -ENODEV;
++	}
++
++	hdata->irq = hwirq;
++	hdata->flags |= HPET_DEV_FSB_CAP;
++
++	hdev->irq = hwirq;
++
++	return 0;
++}
++
++struct hpet_hld_data *hpet_hardlockup_detector_assign_timer(void)
++{
++	struct hpet_hld_data *hdata;
++	int ret = -ENODEV;
++	unsigned int cfg;
++
++	hdata = kzalloc(sizeof(*hdata), GFP_KERNEL);
++	if (!hdata)
++		return NULL;
++
++	hdata->num = HPET_WD_TIMER_NR;
++
++	cfg = hpet_readl(HPET_Tn_CFG(HPET_WD_TIMER_NR));
++
++	hdata->ticks_per_second = hpet_get_ticks_per_sec(hpet_readq(HPET_ID));
++
++	/* Try first an MSI interrupt or fallback to IO APIC. */
++	if (cfg & HPET_TN_FSB_CAP)
++		ret = hpet_hardlockup_detector_assign_msi_irq(hdata);
++
++	if (!ret)
++		return hdata;
++
++	ret = hpet_hardlockup_detector_assign_legacy_irq(hdata);
++	if (ret) {
++		kfree(hdata);
++		return NULL;
++	}
++
++	return hdata;
++}
++#endif /* CONFIG_HARDLOCKUP_DETECTOR_HPET */
++
+ /*
+  * When the hpet driver (/dev/hpet) is enabled, we need to reserve
+  * timer 0 and timer 1 in case of RTC emulation. Timer 2 is reserved in case
+@@ -450,7 +561,6 @@ static struct clock_event_device hpet_clockevent = {
+ 
+ static DEFINE_PER_CPU(struct hpet_dev *, cpu_hpet_dev);
+ static struct hpet_dev	*hpet_devs;
+-static struct irq_domain *hpet_domain;
+ 
+ void hpet_msi_unmask(struct irq_data *data)
  {
- 	memset(irte, 0, sizeof(*irte));
- 
-@@ -1059,9 +1059,9 @@ static void prepare_irte(struct irte *irte, int vector, unsigned int dest)
- 	 * irq migration in the presence of interrupt-remapping.
- 	*/
- 	irte->trigger_mode = 0;
--	irte->dlvry_mode = apic->irq_delivery_mode;
--	irte->vector = vector;
--	irte->dest_id = IRTE_DEST(dest);
-+	irte->dlvry_mode = irq_cfg->delivery_mode;
-+	irte->vector = irq_cfg->vector;
-+	irte->dest_id = IRTE_DEST(irq_cfg->dest_apicid);
- 	irte->redir_hint = 1;
- }
- 
-@@ -1238,7 +1238,7 @@ static void intel_irq_remapping_prepare_irte(struct intel_ir_data *data,
- 	struct irte *irte = &data->irte_entry;
- 	struct msi_msg *msg = &data->msi_entry;
- 
--	prepare_irte(irte, irq_cfg->vector, irq_cfg->dest_apicid);
-+	prepare_irte(irte, irq_cfg);
- 	switch (info->type) {
- 	case X86_IRQ_ALLOC_TYPE_IOAPIC:
- 		/* Set source-id of interrupt request */
 -- 
 2.7.4
