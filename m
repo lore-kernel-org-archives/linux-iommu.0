@@ -1,7 +1,7 @@
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Subject: [RFC PATCH 10/23] x86/hpet: Relocate flag definitions to a header file
-Date: Tue, 12 Jun 2018 17:57:30 -0700
-Message-ID: <1528851463-21140-11-git-send-email-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH 08/23] x86/hpet: Calculate ticks-per-second in a separate function
+Date: Tue, 12 Jun 2018 17:57:28 -0700
+Message-ID: <1528851463-21140-9-git-send-email-ricardo.neri-calderon@linux.intel.com>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
@@ -10,9 +10,13 @@ To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Pe
 Cc: Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Jacob Pan <jacob.jun.pan@intel.com>, Clemens Ladisch <clemens@ladisch.de>, Arnd Bergmann <arnd@arndb.de>, Philippe Ombredanne <pombredanne@nexb.com>, Kate Stewart <kstewart@linuxfoundation.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Users of HPET timers (such as the hardlockup detector) need the definitions
-of these flags to interpret the configuration of a timer as passed by
-platform code.
+It is easier to compute the expiration times of an HPET timer by using
+its frequency (i.e., the number of times it ticks in a second) than its
+period, as given in the capabilities register.
+
+In addition to the HPET char driver, the HPET-based hardlockup detector
+will also need to know the timer's frequency. Thus, create a common
+function that both can use.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Andi Kleen <andi.kleen@intel.com>
@@ -29,43 +33,83 @@ Cc: x86@kernel.org
 Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 ---
- arch/x86/include/asm/hpet.h | 6 ++++++
- arch/x86/kernel/hpet.c      | 6 ------
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/char/hpet.c  | 31 +++++++++++++++++++++++++------
+ include/linux/hpet.h |  1 +
+ 2 files changed, 26 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/include/asm/hpet.h b/arch/x86/include/asm/hpet.h
-index 3266796..9fd112a 100644
---- a/arch/x86/include/asm/hpet.h
-+++ b/arch/x86/include/asm/hpet.h
-@@ -64,6 +64,12 @@
- /* Timer used for the hardlockup detector */
- #define HPET_WD_TIMER_NR 2
+diff --git a/drivers/char/hpet.c b/drivers/char/hpet.c
+index be426eb..1c9584a 100644
+--- a/drivers/char/hpet.c
++++ b/drivers/char/hpet.c
+@@ -838,6 +838,29 @@ static unsigned long hpet_calibrate(struct hpets *hpetp)
+ 	return ret;
+ }
  
-+#define HPET_DEV_USED_BIT		2
-+#define HPET_DEV_USED			(1 << HPET_DEV_USED_BIT)
-+#define HPET_DEV_VALID			0x8
-+#define HPET_DEV_FSB_CAP		0x1000
-+#define HPET_DEV_PERI_CAP		0x2000
++u64 hpet_get_ticks_per_sec(u64 hpet_caps)
++{
++	u64 ticks_per_sec, period;
 +
- /* hpet memory map physical address */
- extern unsigned long hpet_address;
- extern unsigned long force_hpet_address;
-diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index b03faee..99d4972 100644
---- a/arch/x86/kernel/hpet.c
-+++ b/arch/x86/kernel/hpet.c
-@@ -24,12 +24,6 @@
-    NSEC = 10^-9 */
- #define FSEC_PER_NSEC			1000000L
++	period = (hpet_caps & HPET_COUNTER_CLK_PERIOD_MASK) >>
++		 HPET_COUNTER_CLK_PERIOD_SHIFT; /* fs, 10^-15 */
++
++	/*
++	 * The frequency is the reciprocal of the period. The period is given
++	 * femtoseconds per second. Thus, prepare a dividend to obtain the
++	 * frequency in ticks per second.
++	 */
++
++	/* 10^15 femtoseconds per second */
++	ticks_per_sec = 1000000000000000uLL;
++	ticks_per_sec += period >> 1; /* round */
++
++	/* The quotient is put in the dividend. We drop the remainder. */
++	do_div(ticks_per_sec, period);
++
++	return ticks_per_sec;
++}
++
+ int hpet_alloc(struct hpet_data *hdp)
+ {
+ 	u64 cap, mcfg;
+@@ -847,7 +870,6 @@ int hpet_alloc(struct hpet_data *hdp)
+ 	size_t siz;
+ 	struct hpet __iomem *hpet;
+ 	static struct hpets *last;
+-	unsigned long period;
+ 	unsigned long long temp;
+ 	u32 remainder;
  
--#define HPET_DEV_USED_BIT		2
--#define HPET_DEV_USED			(1 << HPET_DEV_USED_BIT)
--#define HPET_DEV_VALID			0x8
--#define HPET_DEV_FSB_CAP		0x1000
--#define HPET_DEV_PERI_CAP		0x2000
--
- #define HPET_MIN_CYCLES			128
- #define HPET_MIN_PROG_DELTA		(HPET_MIN_CYCLES + (HPET_MIN_CYCLES >> 1))
+@@ -883,6 +905,8 @@ int hpet_alloc(struct hpet_data *hdp)
  
+ 	cap = readq(&hpet->hpet_cap);
+ 
++	temp = hpet_get_ticks_per_sec(cap);
++
+ 	ntimer = ((cap & HPET_NUM_TIM_CAP_MASK) >> HPET_NUM_TIM_CAP_SHIFT) + 1;
+ 
+ 	if (hpetp->hp_ntimer != ntimer) {
+@@ -899,11 +923,6 @@ int hpet_alloc(struct hpet_data *hdp)
+ 
+ 	last = hpetp;
+ 
+-	period = (cap & HPET_COUNTER_CLK_PERIOD_MASK) >>
+-		HPET_COUNTER_CLK_PERIOD_SHIFT; /* fs, 10^-15 */
+-	temp = 1000000000000000uLL; /* 10^15 femtoseconds per second */
+-	temp += period >> 1; /* round */
+-	do_div(temp, period);
+ 	hpetp->hp_tick_freq = temp; /* ticks per second */
+ 
+ 	printk(KERN_INFO "hpet%d: at MMIO 0x%lx, IRQ%s",
+diff --git a/include/linux/hpet.h b/include/linux/hpet.h
+index 8604564..e7b36bcf4 100644
+--- a/include/linux/hpet.h
++++ b/include/linux/hpet.h
+@@ -107,5 +107,6 @@ static inline void hpet_reserve_timer(struct hpet_data *hd, int timer)
+ }
+ 
+ int hpet_alloc(struct hpet_data *);
++u64 hpet_get_ticks_per_sec(u64 hpet_caps);
+ 
+ #endif				/* !__HPET__ */
 -- 
 2.7.4
