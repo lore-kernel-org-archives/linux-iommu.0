@@ -1,146 +1,33 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH RESEND] iommu/msm: Don't call iommu_device_{, un}link from
-	atomic context
-Date: Thu, 14 Jun 2018 12:37:11 +0530
-Message-ID: <CAFp+6iEFwY3e2js2fabTsOC=R9H1Eeetas83-fxDRop2KXWzbw@mail.gmail.com>
-References: <20180612140610.31190-1-niklas.cassel@linaro.org>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [RFC PATCH 12/23] kernel/watchdog: Introduce a struct for NMI
+ watchdog operations
+Date: Thu, 14 Jun 2018 10:32:00 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1806141029070.1581@nanos.tec.linutronix.de>
+References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com> <1528851463-21140-13-git-send-email-ricardo.neri-calderon@linux.intel.com> <20180613174141.539fc6c1@roar.ozlabs.ibm.com> <20180613084219.GT12258@hirez.programming.kicks-ass.net>
+ <alpine.DEB.2.21.1806131121180.2280@nanos.tec.linutronix.de> <20180613215225.2a938abc@roar.ozlabs.ibm.com> <20180614013117.GC22652@voyager> <20180614123250.230667f6@roar.ozlabs.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180612140610.31190-1-niklas.cassel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Niklas Cassel <niklas.cassel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180614123250.230667f6@roar.ozlabs.ibm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicholas Piggin <npiggin@gmail.com>
+Cc: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, Don Zickus <dzickus@redhat.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Math
 List-Id: iommu@lists.linux-foundation.org
 
-Hi NIklas,
+On Thu, 14 Jun 2018, Nicholas Piggin wrote:
+> On Wed, 13 Jun 2018 18:31:17 -0700
+> > I could look into creating the library for
+> > common code and relocate the hpet watchdog into arch/x86 for the hpet-
+> > specific parts.
+> 
+> If you can investigate that approach, that would be appreciated. I hope
+> I did not misunderstand you there, Thomas.
 
-On Tue, Jun 12, 2018 at 7:36 PM, Niklas Cassel <niklas.cassel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> Fixes the following splat during boot:
->
-> BUG: sleeping function called from invalid context at kernel/locking/mutex.c:747
-> in_atomic(): 1, irqs_disabled(): 128, pid: 77, name: kworker/2:1
-> 4 locks held by kworker/2:1/77:
->  #0: (ptrval) ((wq_completion)"events"){+.+.}, at: process_one_work+0x1fc/0x8fc
->  #1: (ptrval) (deferred_probe_work){+.+.}, at: process_one_work+0x1fc/0x8fc
->  #2: (ptrval) (&dev->mutex){....}, at: __device_attach+0x40/0x178
->  #3: (ptrval) (msm_iommu_lock){....}, at: msm_iommu_add_device+0x28/0xcc
-> irq event stamp: 348
-> hardirqs last  enabled at (347): [<c049dc18>] kfree+0xe0/0x3c0
-> hardirqs last disabled at (348): [<c0c35cac>] _raw_spin_lock_irqsave+0x2c/0x68
-> softirqs last  enabled at (0): [<c0322fd8>] copy_process.part.5+0x280/0x1a68
-> softirqs last disabled at (0): [<00000000>]   (null)
-> Preemption disabled at:
-> [<00000000>]   (null)
-> CPU: 2 PID: 77 Comm: kworker/2:1 Not tainted 4.17.0-rc5-wt-ath-01075-gaca0516bb4cf #239
-> Hardware name: Generic DT based system
-> Workqueue: events deferred_probe_work_func
-> [<c0314e00>] (unwind_backtrace) from [<c030fc70>] (show_stack+0x20/0x24)
-> [<c030fc70>] (show_stack) from [<c0c16ad8>] (dump_stack+0xa0/0xcc)
-> [<c0c16ad8>] (dump_stack) from [<c035a978>] (___might_sleep+0x1f8/0x2d4)
-> ath10k_sdio mmc2:0001:1: Direct firmware load for ath10k/QCA9377/hw1.0/board-2.bin failed with error -2
-> [<c035a978>] (___might_sleep) from [<c035aac4>] (__might_sleep+0x70/0xa8)
-> [<c035aac4>] (__might_sleep) from [<c0c3066c>] (__mutex_lock+0x50/0xb28)
-> [<c0c3066c>] (__mutex_lock) from [<c0c31170>] (mutex_lock_nested+0x2c/0x34)
-> ath10k_sdio mmc2:0001:1: board_file api 1 bmi_id N/A crc32 544289f7
-> [<c0c31170>] (mutex_lock_nested) from [<c052d798>] (kernfs_find_and_get_ns+0x30/0x5c)
-> [<c052d798>] (kernfs_find_and_get_ns) from [<c0531cc8>] (sysfs_add_link_to_group+0x28/0x58)
-> [<c0531cc8>] (sysfs_add_link_to_group) from [<c07ef75c>] (iommu_device_link+0x50/0xb4)
-> [<c07ef75c>] (iommu_device_link) from [<c07f2288>] (msm_iommu_add_device+0xa0/0xcc)
-> [<c07f2288>] (msm_iommu_add_device) from [<c07ec6d0>] (add_iommu_group+0x3c/0x64)
-> [<c07ec6d0>] (add_iommu_group) from [<c07f9d40>] (bus_for_each_dev+0x84/0xc4)
-> [<c07f9d40>] (bus_for_each_dev) from [<c07ec7c8>] (bus_set_iommu+0xd0/0x10c)
-> [<c07ec7c8>] (bus_set_iommu) from [<c07f1a68>] (msm_iommu_probe+0x5b8/0x66c)
-> [<c07f1a68>] (msm_iommu_probe) from [<c07feaa8>] (platform_drv_probe+0x60/0xbc)
-> [<c07feaa8>] (platform_drv_probe) from [<c07fc1fc>] (driver_probe_device+0x30c/0x4cc)
-> [<c07fc1fc>] (driver_probe_device) from [<c07fc59c>] (__device_attach_driver+0xac/0x14c)
-> [<c07fc59c>] (__device_attach_driver) from [<c07f9e14>] (bus_for_each_drv+0x68/0xc8)
-> [<c07f9e14>] (bus_for_each_drv) from [<c07fbd3c>] (__device_attach+0xe4/0x178)
-> [<c07fbd3c>] (__device_attach) from [<c07fc698>] (device_initial_probe+0x1c/0x20)
-> [<c07fc698>] (device_initial_probe) from [<c07faee8>] (bus_probe_device+0x98/0xa0)
-> [<c07faee8>] (bus_probe_device) from [<c07fb4f4>] (deferred_probe_work_func+0x74/0x198)
-> [<c07fb4f4>] (deferred_probe_work_func) from [<c0348eb4>] (process_one_work+0x2c4/0x8fc)
-> [<c0348eb4>] (process_one_work) from [<c03497b0>] (worker_thread+0x2c4/0x5cc)
-> [<c03497b0>] (worker_thread) from [<c0350d10>] (kthread+0x180/0x188)
-> [<c0350d10>] (kthread) from [<c03010b4>] (ret_from_fork+0x14/0x20)
->
-> Fixes: 42df43b36163 ("iommu/msm: Make use of iommu_device_register interface")
-> Signed-off-by: Niklas Cassel <niklas.cassel-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> ---
+I'm not against cleanups and consolidation, quite the contrary.
 
-Thanks for the patch.
-Reviewed-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+But this stuff just adds new infrastructure w/o showing that it's actually
+a cleanup and consolidation.
 
-Best regards
-Vivek
+Thanks,
 
->  drivers/iommu/msm_iommu.c | 16 +++++-----------
->  1 file changed, 5 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index 0d3350463a3f..9a95c9b9d0d8 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -395,20 +395,15 @@ static int msm_iommu_add_device(struct device *dev)
->         struct msm_iommu_dev *iommu;
->         struct iommu_group *group;
->         unsigned long flags;
-> -       int ret = 0;
->
->         spin_lock_irqsave(&msm_iommu_lock, flags);
-> -
->         iommu = find_iommu_for_dev(dev);
-> +       spin_unlock_irqrestore(&msm_iommu_lock, flags);
-> +
->         if (iommu)
->                 iommu_device_link(&iommu->iommu, dev);
->         else
-> -               ret = -ENODEV;
-> -
-> -       spin_unlock_irqrestore(&msm_iommu_lock, flags);
-> -
-> -       if (ret)
-> -               return ret;
-> +               return -ENODEV;
->
->         group = iommu_group_get_for_dev(dev);
->         if (IS_ERR(group))
-> @@ -425,13 +420,12 @@ static void msm_iommu_remove_device(struct device *dev)
->         unsigned long flags;
->
->         spin_lock_irqsave(&msm_iommu_lock, flags);
-> -
->         iommu = find_iommu_for_dev(dev);
-> +       spin_unlock_irqrestore(&msm_iommu_lock, flags);
-> +
->         if (iommu)
->                 iommu_device_unlink(&iommu->iommu, dev);
->
-> -       spin_unlock_irqrestore(&msm_iommu_lock, flags);
-> -
->         iommu_group_remove_device(dev);
->  }
->
-> --
-> 2.17.1
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
-
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+	tglx
