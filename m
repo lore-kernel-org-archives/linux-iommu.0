@@ -1,58 +1,40 @@
-From: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 16/23] watchdog/hardlockup: Add an HPET-based
-	hardlockup detector
-Date: Wed, 13 Jun 2018 18:00:54 -0700
-Message-ID: <20180614010054.GB22358@voyager>
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [RFC PATCH 14/23] watchdog/hardlockup: Decouple the hardlockup
+ detector from perf
+Date: Wed, 13 Jun 2018 18:19:01 -0700
+Message-ID: <20180614011901.GA22652@voyager>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1528851463-21140-17-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1e5bc136-4123-328a-2d2e-e6f2faef5bf4@infradead.org>
+ <1528851463-21140-15-git-send-email-ricardo.neri-calderon@linux.intel.com>
+ <20180613084324.GU12258@hirez.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1e5bc136-4123-328a-2d2e-e6f2faef5bf4-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20180613084324.GU12258@hirez.programming.kicks-ass.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, Don Zickus <dzickus@redhat.com>, Nicholas Piggin <npiggin@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Mathieu Desnoyers <mat>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 12, 2018 at 10:23:47PM -0700, Randy Dunlap wrote:
-> Hi,
-
-Hi Randy,
-
+On Wed, Jun 13, 2018 at 10:43:24AM +0200, Peter Zijlstra wrote:
+> On Tue, Jun 12, 2018 at 05:57:34PM -0700, Ricardo Neri wrote:
+> > The current default implementation of the hardlockup detector assumes that
+> > it is implemented using perf events.
 > 
-> On 06/12/2018 05:57 PM, Ricardo Neri wrote:
-> > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> > index c40c7b7..6e79833 100644
-> > --- a/lib/Kconfig.debug
-> > +++ b/lib/Kconfig.debug
-> > @@ -828,6 +828,16 @@ config HARDLOCKUP_DETECTOR_PERF
-> >  	bool
-> >  	select SOFTLOCKUP_DETECTOR
-> >  
-> > +config HARDLOCKUP_DETECTOR_HPET
-> > +	bool "Use HPET Timer for Hard Lockup Detection"
-> > +	select SOFTLOCKUP_DETECTOR
-> > +	select HARDLOCKUP_DETECTOR
-> > +	depends on HPET_TIMER && HPET
-> > +	help
-> > +	  Say y to enable a hardlockup detector that is driven by an High-Precision
-> > +	  Event Timer. In addition to selecting this option, the command-line
-> > +	  parameter nmi_watchdog option. See Documentation/admin-guide/kernel-parameters.rst
-> 
-> The "In addition ..." thing is a broken (incomplete) sentence.
+> The sparc and powerpc things are very much not using perf.
 
-Oops. I apologize. I missed this I will fix it in my next version.
+Isn't it true that the current hardlockup detector
+(under kernel/watchdog_hld.c) is based on perf? As far as I understand,
+this hardlockup detector is constructed using perf events for architectures
+that don't provide an NMI watchdog. Perhaps I can be more specific and say
+that this synthetized detector is based on perf.
+
+On a side note, I saw that powerpc might use a perf-based hardlockup
+detector if it has perf events [1].
+
+Please let me know if my understanding is not correct.
 
 Thanks and BR,
 Ricardo
+
+[1]. https://elixir.bootlin.com/linux/v4.17/source/arch/powerpc/Kconfig#L218
