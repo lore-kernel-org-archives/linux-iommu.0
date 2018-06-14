@@ -1,7 +1,7 @@
 From: Jacopo Mondi <jacopo+renesas@jmondi.org>
-Subject: [RESEND 1/6] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-Date: Thu, 14 Jun 2018 12:48:21 +0200
-Message-ID: <1528973306-7962-2-git-send-email-jacopo+renesas@jmondi.org>
+Subject: [RESEND 6/6] iommu/ipmmu-vmsa: Document R-Car V3H and E3 IPMMU DT bindings
+Date: Thu, 14 Jun 2018 12:48:26 +0200
+Message-ID: <1528973306-7962-7-git-send-email-jacopo+renesas@jmondi.org>
 References: <1528973306-7962-1-git-send-email-jacopo+renesas@jmondi.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1528973306-7962-1-git-send-email-jacopo+renesas@jmondi.org>
@@ -12,63 +12,29 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas@opensource.se>
 
-Bump up the maximum numbers of micro-TLBS to 48.
-
-Each IPMMU device instance get micro-TLB assignment via
-the "iommus" property in DT. Older SoCs tend to use a
-maximum number of 32 micro-TLBs per IPMMU instance however
-newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
-
-At this point no SoC specific handling is done to validate
-the maximum number of micro-TLBs, and because of that the
-DT information is assumed to be within correct range for
-each particular SoC.
-
-If needed in the future SoC specific feature flags can be
-added to handle the maximum number of micro-TLBs without
-requiring DT changes, however at this point this does not
-seem necessary.
+Update the IPMMU DT binding documentation to include the compat strings
+for the IPMMU devices included in the R-Car V3H and E3 SoCs.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+Acked-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/iommu/ipmmu-vmsa.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 40ae6e8..5c1ade7 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -194,7 +194,9 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
- #define IMPMBA(n)			(0x0280 + ((n) * 4))
- #define IMPMBD(n)			(0x02c0 + ((n) * 4))
- 
--#define IMUCTR(n)			(0x0300 + ((n) * 16))
-+#define IMUCTR(n)			((n) < 32 ? IMUCTR0(n) : IMUCTR32(n))
-+#define IMUCTR0(n)			(0x0300 + ((n) * 16))
-+#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))
- #define IMUCTR_FIXADDEN			(1 << 31)
- #define IMUCTR_FIXADD_MASK		(0xff << 16)
- #define IMUCTR_FIXADD_SHIFT		16
-@@ -204,7 +206,9 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
- #define IMUCTR_FLUSH			(1 << 1)
- #define IMUCTR_MMUEN			(1 << 0)
- 
--#define IMUASID(n)			(0x0308 + ((n) * 16))
-+#define IMUASID(n)			((n) < 32 ? IMUASID0(n) : IMUASID32(n))
-+#define IMUASID0(n)			(0x0308 + ((n) * 16))
-+#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))
- #define IMUASID_ASID8_MASK		(0xff << 8)
- #define IMUASID_ASID8_SHIFT		8
- #define IMUASID_ASID0_MASK		(0xff << 0)
-@@ -955,7 +959,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 	}
- 
- 	mmu->dev = &pdev->dev;
--	mmu->num_utlbs = 32;
-+	mmu->num_utlbs = 48;
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
- 	mmu->features = of_device_get_match_data(&pdev->dev);
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+index 8d145a4..c6e2d85 100644
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+@@ -21,6 +21,8 @@ Required Properties:
+     - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+     - "renesas,ipmmu-r8a77965" for the R8A77965 (R-Car M3-N) IPMMU.
+     - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
++    - "renesas,ipmmu-r8a77980" for the R8A77980 (R-Car V3H) IPMMU.
++    - "renesas,ipmmu-r8a77990" for the R8A77990 (R-Car E3) IPMMU.
+     - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
+     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
+ 			   IPMMU.
 -- 
 2.7.4
