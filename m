@@ -1,20 +1,18 @@
-From: Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH 12/23] kernel/watchdog: Introduce a struct for NMI
-	watchdog operations
-Date: Thu, 14 Jun 2018 12:32:50 +1000
-Message-ID: <20180614123250.230667f6@roar.ozlabs.ibm.com>
+From: Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [RFC PATCH 22/23] watchdog/hardlockup/hpet: Only enable the HPET
+	watchdog via a boot parameter
+Date: Wed, 13 Jun 2018 20:30:00 -0700
+Message-ID: <2cde62b1-5218-0169-4f9d-1139f83a25c1@infradead.org>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1528851463-21140-13-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<20180613174141.539fc6c1@roar.ozlabs.ibm.com>
-	<20180613084219.GT12258@hirez.programming.kicks-ass.net>
-	<alpine.DEB.2.21.1806131121180.2280@nanos.tec.linutronix.de>
-	<20180613215225.2a938abc@roar.ozlabs.ibm.com>
-	<20180614013117.GC22652@voyager>
+	<1528851463-21140-23-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<c2edf778-79cf-009d-6617-13e54ad8b93b@infradead.org>
+	<20180614005839.GA22358@voyager>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180614013117.GC22652@voyager>
+In-Reply-To: <20180614005839.GA22358@voyager>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,69 +23,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mathieu Desnoyers <mathieu.desnoyers-vg+e7yoeK/dWk0Htik3J/w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Babu Moger <babu.moger-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jacob Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 13 Jun 2018 18:31:17 -0700
-Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-
-> On Wed, Jun 13, 2018 at 09:52:25PM +1000, Nicholas Piggin wrote:
-> > On Wed, 13 Jun 2018 11:26:49 +0200 (CEST)
-> > Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org> wrote:
-> >   
-> > > On Wed, 13 Jun 2018, Peter Zijlstra wrote:  
-> > > > On Wed, Jun 13, 2018 at 05:41:41PM +1000, Nicholas Piggin wrote:    
-> > > > > On Tue, 12 Jun 2018 17:57:32 -0700
-> > > > > Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-> > > > >     
-> > > > > > Instead of exposing individual functions for the operations of the NMI
-> > > > > > watchdog, define a common interface that can be used across multiple
-> > > > > > implementations.
-> > > > > > 
-> > > > > > The struct nmi_watchdog_ops is defined for such operations. These initial
-> > > > > > definitions include the enable, disable, start, stop, and cleanup
-> > > > > > operations.
-> > > > > > 
-> > > > > > Only a single NMI watchdog can be used in the system. The operations of
-> > > > > > this NMI watchdog are accessed via the new variable nmi_wd_ops. This
-> > > > > > variable is set to point the operations of the first NMI watchdog that
-> > > > > > initializes successfully. Even though at this moment, the only available
-> > > > > > NMI watchdog is the perf-based hardlockup detector. More implementations
-> > > > > > can be added in the future.    
-> > > > > 
-> > > > > Cool, this looks pretty nice at a quick glance. sparc and powerpc at
-> > > > > least have their own NMI watchdogs, it would be good to have those
-> > > > > converted as well.    
-> > > > 
-> > > > Yeah, agreed, this looks like half a patch.    
-> > > 
-> > > Though I'm not seeing the advantage of it. That kind of NMI watchdogs are
-> > > low level architecture details so having yet another 'ops' data structure
-> > > with a gazillion of callbacks, checks and indirections does not provide
-> > > value over the currently available weak stubs.  
-> > 
-> > The other way to go of course is librify the perf watchdog and make an
-> > x86 watchdog that selects between perf and hpet... I also probably
-> > prefer that for code such as this, but I wouldn't strongly object to
-> > ops struct if I'm not writing the code. It's not that bad is it?  
+On 06/13/2018 05:58 PM, Ricardo Neri wrote:
+> On Tue, Jun 12, 2018 at 10:26:57PM -0700, Randy Dunlap wrote:
+>> On 06/12/2018 05:57 PM, Ricardo Neri wrote:
+>>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+>>> index f2040d4..a8833c7 100644
+>>> --- a/Documentation/admin-guide/kernel-parameters.txt
+>>> +++ b/Documentation/admin-guide/kernel-parameters.txt
+>>> @@ -2577,7 +2577,7 @@
+>>>  			Format: [state][,regs][,debounce][,die]
+>>>  
+>>>  	nmi_watchdog=	[KNL,BUGS=X86] Debugging features for SMP kernels
+>>> -			Format: [panic,][nopanic,][num]
+>>> +			Format: [panic,][nopanic,][num,][hpet]
+>>>  			Valid num: 0 or 1
+>>>  			0 - turn hardlockup detector in nmi_watchdog off
+>>>  			1 - turn hardlockup detector in nmi_watchdog on
+>>
+>> This says that I can use "nmi_watchdog=hpet" without using 0 or 1.
+>> Is that correct?
 > 
-> My motivation to add the ops was that the hpet and perf watchdog share
-> significant portions of code.
+> Yes, this what I meant. In my view, if you set nmi_watchdog=hpet it
+> implies that you want to activate the NMI watchdog. In this case, perf.
+> 
+> I can see how this will be ambiguous for the case of perf and arch NMI
+> watchdogs.
+> 
+> Alternative, a new parameter could be added; such as nmi_watchdog_type. I
+> didn't want to add it in this patchset as I think that a single parameter
+> can handle the enablement and type of the NMI watchdog.
+> 
+> What do you think?
 
-Right, a good motivation.
+I think it's OK like it is.
 
-> I could look into creating the library for
-> common code and relocate the hpet watchdog into arch/x86 for the hpet-
-> specific parts.
-
-If you can investigate that approach, that would be appreciated. I hope
-I did not misunderstand you there, Thomas.
-
-Basically you would have perf infrastructure and hpet infrastructure,
-and then the x86 watchdog driver will use one or the other of those. The
-generic watchdog driver will be just a simple shim that uses the perf
-infrastructure. Then hopefully the powerpc driver would require almost
-no change.
-
-Thanks,
-Nick
+thanks,
+-- 
+~Randy
