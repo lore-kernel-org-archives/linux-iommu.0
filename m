@@ -1,33 +1,49 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH 12/23] kernel/watchdog: Introduce a struct for NMI
- watchdog operations
-Date: Thu, 14 Jun 2018 10:32:00 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1806141029070.1581@nanos.tec.linutronix.de>
-References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com> <1528851463-21140-13-git-send-email-ricardo.neri-calderon@linux.intel.com> <20180613174141.539fc6c1@roar.ozlabs.ibm.com> <20180613084219.GT12258@hirez.programming.kicks-ass.net>
- <alpine.DEB.2.21.1806131121180.2280@nanos.tec.linutronix.de> <20180613215225.2a938abc@roar.ozlabs.ibm.com> <20180614013117.GC22652@voyager> <20180614123250.230667f6@roar.ozlabs.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+From: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Subject: [RESEND 0/6] iommu: ipmmu-vmsa: Add more Gen3 SoCs support
+Date: Thu, 14 Jun 2018 12:48:20 +0200
+Message-ID: <1528973306-7962-1-git-send-email-jacopo+renesas@jmondi.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180614123250.230667f6@roar.ozlabs.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicholas Piggin <npiggin@gmail.com>
-Cc: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, Don Zickus <dzickus@redhat.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Babu Moger <babu.moger@oracle.com>, "David S. Miller" <davem@davemloft.net>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Math
+To: geert@linux-m68k.org, horms@verge.net.au, magnus.damm@gmail.com, yoshihiro.shimoda.uh@renesas.com, joro@8bytes.org
+Cc: linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 14 Jun 2018, Nicholas Piggin wrote:
-> On Wed, 13 Jun 2018 18:31:17 -0700
-> > I could look into creating the library for
-> > common code and relocate the hpet watchdog into arch/x86 for the hpet-
-> > specific parts.
-> 
-> If you can investigate that approach, that would be appreciated. I hope
-> I did not misunderstand you there, Thomas.
+Hello,
+   this series collects patches sent to mailing lists in late 2017 to add
+support for a number of R-Car Gen3 SoCs to the ipmmu-vmsa driver.
 
-I'm not against cleanups and consolidation, quite the contrary.
+Part of the series these patches were part of went in through Alex Williamson
+tree and are now included in v4.17.
 
-But this stuff just adds new infrastructure w/o showing that it's actually
-a cleanup and consolidation.
+These patches have not yet been collected, and need to be rebased on v4.17,
+and this what this series serves for.
 
-Thanks,
+The series:
+- Increses the micro-TLB size to 48bits to accomodate newer SoCs
+- Adds support for M3-N, M3-W, V3-M and E3 to ipmmu-vmsa driver
+- Documents M3-N, V3H and E3 device tree bindings
 
-	tglx
+All patches have been acked/reviewed by, if nothing big happens they should
+be ready to be collected.
+
+Thanks
+   j
+
+Jacopo Mondi (2):
+  dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N (R8A77965)
+  iommu/ipmmu-vmsa: Hook up R8A77965 DT matching code
+
+Magnus Damm (3):
+  iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+  iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+  iommu/ipmmu-vmsa: Document R-Car V3H and E3 IPMMU DT bindings
+
+Simon Horman (1):
+  iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT matching code
+
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  3 ++
+ drivers/iommu/ipmmu-vmsa.c                         | 38 ++++++++++++++++++----
+ 2 files changed, 34 insertions(+), 7 deletions(-)
+
+--
+2.7.4
