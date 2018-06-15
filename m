@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 05/25] MIPS: Octeon: refactor swiotlb code
-Date: Fri, 15 Jun 2018 13:08:34 +0200
-Message-ID: <20180615110854.19253-6-hch@lst.de>
+Subject: [PATCH 14/25] MIPS: use dma_direct_ops for coherent I/O
+Date: Fri, 15 Jun 2018 13:08:43 +0200
+Message-ID: <20180615110854.19253-15-hch@lst.de>
 References: <20180615110854.19253-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,266 +21,152 @@ To: Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, James Hogan <jh
 Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Share a common set of swiotlb operations, and to instead branch out in
-__phys_to_dma/__dma_to_phys for the PCI vs non-PCI case.  Also use const
-structures for the PCI methods so that attackers can't use them as
-exploit vectors.
+Switch the simple cache coherent architectures that don't require any
+DMA address translation to dma_direct_ops.
+
+We'll soon use at least parts of the direct DMA ops implementation for
+all platforms, so select the symbol globally.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/mips/cavium-octeon/dma-octeon.c          | 161 ++++++++----------
- .../asm/mach-cavium-octeon/dma-coherence.h    |   2 -
- arch/mips/pci/pci-octeon.c                    |   2 -
- 3 files changed, 71 insertions(+), 94 deletions(-)
+ arch/mips/Kconfig                   | 15 +--------------
+ arch/mips/include/asm/dma-mapping.h |  2 +-
+ 2 files changed, 2 insertions(+), 15 deletions(-)
 
-diff --git a/arch/mips/cavium-octeon/dma-octeon.c b/arch/mips/cavium-octeon/dma-octeon.c
-index e5d00c79bd26..7f0c9f926b6e 100644
---- a/arch/mips/cavium-octeon/dma-octeon.c
-+++ b/arch/mips/cavium-octeon/dma-octeon.c
-@@ -23,10 +23,16 @@
- #include <asm/octeon/octeon.h>
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index aae92a7b6a9c..6247bb7f8244 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -16,6 +16,7 @@ config MIPS
+ 	select BUILDTIME_EXTABLE_SORT
+ 	select CLONE_BACKWARDS
+ 	select CPU_PM if CPU_IDLE
++	select DMA_DIRECT_OPS
+ 	select GENERIC_ATOMIC64 if !64BIT
+ 	select GENERIC_CLOCKEVENTS
+ 	select GENERIC_CMOS_UPDATE
+@@ -568,7 +569,6 @@ config NEC_MARKEINS
+ 	bool "NEC EMMA2RH Mark-eins board"
+ 	select SOC_EMMA2RH
+ 	select HW_HAS_PCI
+-	select MIPS_DMA_DEFAULT
+ 	help
+ 	  This enables support for the NEC Electronics Mark-eins boards.
  
- #ifdef CONFIG_PCI
-+#include <linux/pci.h>
- #include <asm/octeon/pci-octeon.h>
- #include <asm/octeon/cvmx-npi-defs.h>
- #include <asm/octeon/cvmx-pci-defs.h>
+@@ -582,14 +582,12 @@ config MACH_VR41XX
  
-+struct octeon_dma_map_ops {
-+	dma_addr_t (*phys_to_dma)(struct device *dev, phys_addr_t paddr);
-+	phys_addr_t (*dma_to_phys)(struct device *dev, dma_addr_t daddr);
-+};
-+
- static dma_addr_t octeon_hole_phys_to_dma(phys_addr_t paddr)
- {
- 	if (paddr >= CVMX_PCIE_BAR1_PHYS_BASE && paddr < (CVMX_PCIE_BAR1_PHYS_BASE + CVMX_PCIE_BAR1_PHYS_SIZE))
-@@ -60,6 +66,11 @@ static phys_addr_t octeon_gen1_dma_to_phys(struct device *dev, dma_addr_t daddr)
- 	return daddr;
- }
+ config NXP_STB220
+ 	bool "NXP STB220 board"
+-	select MIPS_DMA_DEFAULT
+ 	select SOC_PNX833X
+ 	help
+ 	 Support for NXP Semiconductors STB220 Development Board.
  
-+static const struct octeon_dma_map_ops octeon_gen1_ops = {
-+	.phys_to_dma	= octeon_gen1_phys_to_dma,
-+	.dma_to_phys	= octeon_gen1_dma_to_phys,
-+};
-+
- static dma_addr_t octeon_gen2_phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
- 	return octeon_hole_phys_to_dma(paddr);
-@@ -70,6 +81,11 @@ static phys_addr_t octeon_gen2_dma_to_phys(struct device *dev, dma_addr_t daddr)
- 	return octeon_hole_dma_to_phys(daddr);
- }
- 
-+static const struct octeon_dma_map_ops octeon_gen2_ops = {
-+	.phys_to_dma	= octeon_gen2_phys_to_dma,
-+	.dma_to_phys	= octeon_gen2_dma_to_phys,
-+};
-+
- static dma_addr_t octeon_big_phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
- 	if (paddr >= 0x410000000ull && paddr < 0x420000000ull)
-@@ -92,6 +108,11 @@ static phys_addr_t octeon_big_dma_to_phys(struct device *dev, dma_addr_t daddr)
- 	return daddr;
- }
- 
-+static const struct octeon_dma_map_ops octeon_big_ops = {
-+	.phys_to_dma	= octeon_big_phys_to_dma,
-+	.dma_to_phys	= octeon_big_dma_to_phys,
-+};
-+
- static dma_addr_t octeon_small_phys_to_dma(struct device *dev,
- 					   phys_addr_t paddr)
- {
-@@ -120,6 +141,32 @@ static phys_addr_t octeon_small_dma_to_phys(struct device *dev,
- 	return daddr;
- }
- 
-+static const struct octeon_dma_map_ops octeon_small_ops = {
-+	.phys_to_dma	= octeon_small_phys_to_dma,
-+	.dma_to_phys	= octeon_small_dma_to_phys,
-+};
-+
-+static const struct octeon_dma_map_ops *octeon_pci_dma_ops;
-+
-+void __init octeon_pci_dma_init(void)
-+{
-+	switch (octeon_dma_bar_type) {
-+	case OCTEON_DMA_BAR_TYPE_PCIE:
-+		octeon_pci_dma_ops = &octeon_gen1_ops;
-+		break;
-+	case OCTEON_DMA_BAR_TYPE_PCIE2:
-+		octeon_pci_dma_ops = &octeon_gen2_ops;
-+		break;
-+	case OCTEON_DMA_BAR_TYPE_BIG:
-+		octeon_pci_dma_ops = &octeon_big_ops;
-+		break;
-+	case OCTEON_DMA_BAR_TYPE_SMALL:
-+		octeon_pci_dma_ops = &octeon_small_ops;
-+		break;
-+	default:
-+		BUG();
-+	}
-+}
- #endif /* CONFIG_PCI */
- 
- static dma_addr_t octeon_dma_map_page(struct device *dev, struct page *page,
-@@ -165,57 +212,37 @@ static void *octeon_dma_alloc_coherent(struct device *dev, size_t size,
- 	return ret;
- }
- 
--static dma_addr_t octeon_unity_phys_to_dma(struct device *dev, phys_addr_t paddr)
--{
--	return paddr;
--}
--
--static phys_addr_t octeon_unity_dma_to_phys(struct device *dev, dma_addr_t daddr)
--{
--	return daddr;
--}
--
--struct octeon_dma_map_ops {
--	const struct dma_map_ops dma_map_ops;
--	dma_addr_t (*phys_to_dma)(struct device *dev, phys_addr_t paddr);
--	phys_addr_t (*dma_to_phys)(struct device *dev, dma_addr_t daddr);
--};
--
- dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
--	struct octeon_dma_map_ops *ops = container_of(get_dma_ops(dev),
--						      struct octeon_dma_map_ops,
--						      dma_map_ops);
--
--	return ops->phys_to_dma(dev, paddr);
-+#ifdef CONFIG_PCI
-+	if (dev && dev_is_pci(dev))
-+		return octeon_pci_dma_ops->phys_to_dma(dev, paddr);
-+#endif
-+	return paddr;
- }
- 
- phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
- {
--	struct octeon_dma_map_ops *ops = container_of(get_dma_ops(dev),
--						      struct octeon_dma_map_ops,
--						      dma_map_ops);
--
--	return ops->dma_to_phys(dev, daddr);
-+#ifdef CONFIG_PCI
-+	if (dev && dev_is_pci(dev))
-+		return octeon_pci_dma_ops->dma_to_phys(dev, daddr);
-+#endif
-+	return daddr;
- }
- 
--static struct octeon_dma_map_ops octeon_linear_dma_map_ops = {
--	.dma_map_ops = {
--		.alloc = octeon_dma_alloc_coherent,
--		.free = swiotlb_free,
--		.map_page = octeon_dma_map_page,
--		.unmap_page = swiotlb_unmap_page,
--		.map_sg = octeon_dma_map_sg,
--		.unmap_sg = swiotlb_unmap_sg_attrs,
--		.sync_single_for_cpu = swiotlb_sync_single_for_cpu,
--		.sync_single_for_device = octeon_dma_sync_single_for_device,
--		.sync_sg_for_cpu = swiotlb_sync_sg_for_cpu,
--		.sync_sg_for_device = octeon_dma_sync_sg_for_device,
--		.mapping_error = swiotlb_dma_mapping_error,
--		.dma_supported = swiotlb_dma_supported
--	},
--	.phys_to_dma = octeon_unity_phys_to_dma,
--	.dma_to_phys = octeon_unity_dma_to_phys
-+static const struct dma_map_ops octeon_swiotlb_ops = {
-+	.alloc			= octeon_dma_alloc_coherent,
-+	.free			= swiotlb_free,
-+	.map_page		= octeon_dma_map_page,
-+	.unmap_page		= swiotlb_unmap_page,
-+	.map_sg			= octeon_dma_map_sg,
-+	.unmap_sg		= swiotlb_unmap_sg_attrs,
-+	.sync_single_for_cpu	= swiotlb_sync_single_for_cpu,
-+	.sync_single_for_device	= octeon_dma_sync_single_for_device,
-+	.sync_sg_for_cpu	= swiotlb_sync_sg_for_cpu,
-+	.sync_sg_for_device	= octeon_dma_sync_sg_for_device,
-+	.mapping_error		= swiotlb_dma_mapping_error,
-+	.dma_supported		= swiotlb_dma_supported
- };
- 
- char *octeon_swiotlb;
-@@ -281,51 +308,5 @@ void __init plat_swiotlb_setup(void)
- 	if (swiotlb_init_with_tbl(octeon_swiotlb, swiotlb_nslabs, 1) == -ENOMEM)
- 		panic("Cannot allocate SWIOTLB buffer");
- 
--	mips_dma_map_ops = &octeon_linear_dma_map_ops.dma_map_ops;
-+	mips_dma_map_ops = &octeon_swiotlb_ops;
- }
--
--#ifdef CONFIG_PCI
--static struct octeon_dma_map_ops _octeon_pci_dma_map_ops = {
--	.dma_map_ops = {
--		.alloc = octeon_dma_alloc_coherent,
--		.free = swiotlb_free,
--		.map_page = octeon_dma_map_page,
--		.unmap_page = swiotlb_unmap_page,
--		.map_sg = octeon_dma_map_sg,
--		.unmap_sg = swiotlb_unmap_sg_attrs,
--		.sync_single_for_cpu = swiotlb_sync_single_for_cpu,
--		.sync_single_for_device = octeon_dma_sync_single_for_device,
--		.sync_sg_for_cpu = swiotlb_sync_sg_for_cpu,
--		.sync_sg_for_device = octeon_dma_sync_sg_for_device,
--		.mapping_error = swiotlb_dma_mapping_error,
--		.dma_supported = swiotlb_dma_supported
--	},
--};
--
--const struct dma_map_ops *octeon_pci_dma_map_ops;
--
--void __init octeon_pci_dma_init(void)
--{
--	switch (octeon_dma_bar_type) {
--	case OCTEON_DMA_BAR_TYPE_PCIE2:
--		_octeon_pci_dma_map_ops.phys_to_dma = octeon_gen2_phys_to_dma;
--		_octeon_pci_dma_map_ops.dma_to_phys = octeon_gen2_dma_to_phys;
--		break;
--	case OCTEON_DMA_BAR_TYPE_PCIE:
--		_octeon_pci_dma_map_ops.phys_to_dma = octeon_gen1_phys_to_dma;
--		_octeon_pci_dma_map_ops.dma_to_phys = octeon_gen1_dma_to_phys;
--		break;
--	case OCTEON_DMA_BAR_TYPE_BIG:
--		_octeon_pci_dma_map_ops.phys_to_dma = octeon_big_phys_to_dma;
--		_octeon_pci_dma_map_ops.dma_to_phys = octeon_big_dma_to_phys;
--		break;
--	case OCTEON_DMA_BAR_TYPE_SMALL:
--		_octeon_pci_dma_map_ops.phys_to_dma = octeon_small_phys_to_dma;
--		_octeon_pci_dma_map_ops.dma_to_phys = octeon_small_dma_to_phys;
--		break;
--	default:
--		BUG();
--	}
--	octeon_pci_dma_map_ops = &_octeon_pci_dma_map_ops.dma_map_ops;
--}
--#endif /* CONFIG_PCI */
-diff --git a/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h b/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
-index 6eb1ee548b11..c5cdeea495f8 100644
---- a/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
-+++ b/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
-@@ -72,8 +72,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr);
- phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr);
- 
--struct dma_map_ops;
--extern const struct dma_map_ops *octeon_pci_dma_map_ops;
- extern char *octeon_swiotlb;
- 
- #endif /* __ASM_MACH_CAVIUM_OCTEON_DMA_COHERENCE_H */
-diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
-index 3e92a06fa772..a20697df3539 100644
---- a/arch/mips/pci/pci-octeon.c
-+++ b/arch/mips/pci/pci-octeon.c
-@@ -166,8 +166,6 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
- 		pci_write_config_dword(dev, pos + PCI_ERR_ROOT_STATUS, dconfig);
- 	}
- 
--	dev->dev.dma_ops = octeon_pci_dma_map_ops;
--
- 	return 0;
+ config NXP_STB225
+ 	bool "NXP 225 board"
+-	select MIPS_DMA_DEFAULT
+ 	select SOC_PNX833X
+ 	select SOC_PNX8335
+ 	help
+@@ -767,7 +765,6 @@ config SGI_IP32
+ config SIBYTE_CRHINE
+ 	bool "Sibyte BCM91120C-CRhine"
+ 	select BOOT_ELF32
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_BCM1120
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -777,7 +774,6 @@ config SIBYTE_CRHINE
+ config SIBYTE_CARMEL
+ 	bool "Sibyte BCM91120x-Carmel"
+ 	select BOOT_ELF32
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_BCM1120
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -787,7 +783,6 @@ config SIBYTE_CARMEL
+ config SIBYTE_CRHONE
+ 	bool "Sibyte BCM91125C-CRhone"
+ 	select BOOT_ELF32
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_BCM1125
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -798,7 +793,6 @@ config SIBYTE_CRHONE
+ config SIBYTE_RHONE
+ 	bool "Sibyte BCM91125E-Rhone"
+ 	select BOOT_ELF32
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_BCM1125H
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -809,7 +803,6 @@ config SIBYTE_SWARM
+ 	bool "Sibyte BCM91250A-SWARM"
+ 	select BOOT_ELF32
+ 	select HAVE_PATA_PLATFORM
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_SB1250
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -822,7 +815,6 @@ config SIBYTE_LITTLESUR
+ 	bool "Sibyte BCM91250C2-LittleSur"
+ 	select BOOT_ELF32
+ 	select HAVE_PATA_PLATFORM
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_SB1250
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -833,7 +825,6 @@ config SIBYTE_LITTLESUR
+ config SIBYTE_SENTOSA
+ 	bool "Sibyte BCM91250E-Sentosa"
+ 	select BOOT_ELF32
+-	select MIPS_DMA_DEFAULT
+ 	select SIBYTE_SB1250
+ 	select SWAP_IO_SPACE
+ 	select SYS_HAS_CPU_SB1
+@@ -843,7 +834,6 @@ config SIBYTE_SENTOSA
+ config SIBYTE_BIGSUR
+ 	bool "Sibyte BCM91480B-BigSur"
+ 	select BOOT_ELF32
+-	select MIPS_DMA_DEFAULT
+ 	select NR_CPUS_DEFAULT_4
+ 	select SIBYTE_BCM1x80
+ 	select SWAP_IO_SPACE
+@@ -964,7 +954,6 @@ config NLM_XLR_BOARD
+ 	select SYS_HAS_CPU_XLR
+ 	select SYS_SUPPORTS_SMP
+ 	select HW_HAS_PCI
+-	select MIPS_DMA_DEFAULT
+ 	select SWAP_IO_SPACE
+ 	select SYS_SUPPORTS_32BIT_KERNEL
+ 	select SYS_SUPPORTS_64BIT_KERNEL
+@@ -991,7 +980,6 @@ config NLM_XLP_BOARD
+ 	select SYS_HAS_CPU_XLP
+ 	select SYS_SUPPORTS_SMP
+ 	select HW_HAS_PCI
+-	select MIPS_DMA_DEFAULT
+ 	select SYS_SUPPORTS_32BIT_KERNEL
+ 	select SYS_SUPPORTS_64BIT_KERNEL
+ 	select PHYS_ADDR_T_64BIT
+@@ -1017,7 +1005,6 @@ config MIPS_PARAVIRT
+ 	bool "Para-Virtualized guest system"
+ 	select CEVT_R4K
+ 	select CSRC_R4K
+-	select MIPS_DMA_DEFAULT
+ 	select SYS_SUPPORTS_64BIT_KERNEL
+ 	select SYS_SUPPORTS_32BIT_KERNEL
+ 	select SYS_SUPPORTS_BIG_ENDIAN
+diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
+index eaf3d9054104..7c0d4f0ccaa0 100644
+--- a/arch/mips/include/asm/dma-mapping.h
++++ b/arch/mips/include/asm/dma-mapping.h
+@@ -20,7 +20,7 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+ #elif defined(CONFIG_MIPS_DMA_DEFAULT)
+ 	return &mips_default_dma_map_ops;
+ #else
+-	return NULL;
++	return &dma_direct_ops;
+ #endif
  }
  
 -- 
