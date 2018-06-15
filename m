@@ -1,7 +1,8 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 06/25] MIPS: loongson: remove loongson_dma_supported
-Date: Fri, 15 Jun 2018 13:08:35 +0200
-Message-ID: <20180615110854.19253-7-hch@lst.de>
+Subject: [PATCH 11/25] MIPS: Octeon: move swiotlb declarations out of
+	dma-coherence.h
+Date: Fri, 15 Jun 2018 13:08:40 +0200
+Message-ID: <20180615110854.19253-12-hch@lst.de>
 References: <20180615110854.19253-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,44 +22,78 @@ To: Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, James Hogan <jh
 Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-swiotlb_dma_supported will always return true for a mask large enough to
-cover the DMA addresses for all physical memory, which is the right
-thing to do for swiotlb based dma ops.  This function returned false
-if the mask was bigger than a firmware set dma_mask_bits that apparently
-can be either 32 or 64, and which seems completely buggys if it actually
-is not 64, as the false return negates the whole point of swiotlb.
+No need to pull them into a global header.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/mips/loongson64/common/dma-swiotlb.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ .../asm/mach-cavium-octeon/dma-coherence.h     | 18 ------------------
+ arch/mips/include/asm/octeon/pci-octeon.h      |  3 +++
+ arch/mips/pci/pci-octeon.c                     |  2 --
+ arch/mips/pci/pcie-octeon.c                    |  2 --
+ 4 files changed, 3 insertions(+), 22 deletions(-)
+ delete mode 100644 arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
 
-diff --git a/arch/mips/loongson64/common/dma-swiotlb.c b/arch/mips/loongson64/common/dma-swiotlb.c
-index 6a739f8ae110..a5e50f2ec301 100644
---- a/arch/mips/loongson64/common/dma-swiotlb.c
-+++ b/arch/mips/loongson64/common/dma-swiotlb.c
-@@ -56,13 +56,6 @@ static void loongson_dma_sync_sg_for_device(struct device *dev,
- 	mb();
- }
- 
--static int loongson_dma_supported(struct device *dev, u64 mask)
--{
--	if (mask > DMA_BIT_MASK(loongson_sysconf.dma_mask_bits))
--		return 0;
--	return swiotlb_dma_supported(dev, mask);
--}
+diff --git a/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h b/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
+deleted file mode 100644
+index 66eee98b8b8d..000000000000
+--- a/arch/mips/include/asm/mach-cavium-octeon/dma-coherence.h
++++ /dev/null
+@@ -1,18 +0,0 @@
+-/*
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
+- *
+- * Copyright (C) 2006  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
+- */
+-#ifndef __ASM_MACH_CAVIUM_OCTEON_DMA_COHERENCE_H
+-#define __ASM_MACH_CAVIUM_OCTEON_DMA_COHERENCE_H
 -
- dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
- 	long nid;
-@@ -99,7 +92,7 @@ static const struct dma_map_ops loongson_dma_map_ops = {
- 	.sync_sg_for_cpu = swiotlb_sync_sg_for_cpu,
- 	.sync_sg_for_device = loongson_dma_sync_sg_for_device,
- 	.mapping_error = swiotlb_dma_mapping_error,
--	.dma_supported = loongson_dma_supported,
-+	.dma_supported = swiotlb_dma_supported,
- };
+-#include <linux/bug.h>
+-
+-struct device;
+-
+-extern void octeon_pci_dma_init(void);
+-extern char *octeon_swiotlb;
+-
+-#endif /* __ASM_MACH_CAVIUM_OCTEON_DMA_COHERENCE_H */
+diff --git a/arch/mips/include/asm/octeon/pci-octeon.h b/arch/mips/include/asm/octeon/pci-octeon.h
+index 1884609741a8..b12d9a3fbfb6 100644
+--- a/arch/mips/include/asm/octeon/pci-octeon.h
++++ b/arch/mips/include/asm/octeon/pci-octeon.h
+@@ -63,4 +63,7 @@ enum octeon_dma_bar_type {
+  */
+ extern enum octeon_dma_bar_type octeon_dma_bar_type;
  
- void __init plat_swiotlb_setup(void)
++void octeon_pci_dma_init(void);
++extern char *octeon_swiotlb;
++
+ #endif
+diff --git a/arch/mips/pci/pci-octeon.c b/arch/mips/pci/pci-octeon.c
+index a20697df3539..5017d5843c5a 100644
+--- a/arch/mips/pci/pci-octeon.c
++++ b/arch/mips/pci/pci-octeon.c
+@@ -21,8 +21,6 @@
+ #include <asm/octeon/cvmx-pci-defs.h>
+ #include <asm/octeon/pci-octeon.h>
+ 
+-#include <dma-coherence.h>
+-
+ #define USE_OCTEON_INTERNAL_ARBITER
+ 
+ /*
+diff --git a/arch/mips/pci/pcie-octeon.c b/arch/mips/pci/pcie-octeon.c
+index 87ba86bd8696..9cc5905860ef 100644
+--- a/arch/mips/pci/pcie-octeon.c
++++ b/arch/mips/pci/pcie-octeon.c
+@@ -94,8 +94,6 @@ union cvmx_pcie_address {
+ 
+ static int cvmx_pcie_rc_initialize(int pcie_port);
+ 
+-#include <dma-coherence.h>
+-
+ /**
+  * Return the Core virtual base address for PCIe IO access. IOs are
+  * read/written as an offset from this address.
 -- 
 2.17.1
