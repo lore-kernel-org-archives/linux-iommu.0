@@ -1,101 +1,89 @@
-From: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 17/23] watchdog/hardlockup/hpet: Convert the timer's
-	interrupt to NMI
-Date: Thu, 14 Jun 2018 19:07:38 -0700
-Message-ID: <20180615020738.GB11625@voyager>
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [RFC PATCH 03/23] genirq: Introduce IRQF_DELIVER_AS_NMI
+Date: Thu, 14 Jun 2018 19:12:13 -0700
+Message-ID: <20180615021213.GC11625@voyager>
 References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1528851463-21140-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<20180613090720.GV12258@hirez.programming.kicks-ass.net>
+ <1528851463-21140-4-git-send-email-ricardo.neri-calderon@linux.intel.com>
+ <20180613083419.GS12258@hirez.programming.kicks-ass.net>
+ <26687332-ab8f-7f6d-909a-f0918dbfea86@arm.com>
+ <alpine.DEB.2.21.1806131104570.2280@nanos.tec.linutronix.de>
+ <c000699c-7859-74ec-7944-ec484e887f60@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180613090720.GV12258-Nxj+rRp3nVydTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Byungchul Park <byungchul.park-ntMhUJTgEBQ@public.gmane.org>
+In-Reply-To: <c000699c-7859-74ec-7944-ec484e887f60@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Julien Thierry <julien.thierry@arm.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, Daniel Lezcano <daniel.lezcano@linaro.org>, Andrew Morton <akpm@linux-foundation.org>, "Levin, Alexander (Sasha Levin)" <alexander.levin@verizon.com>, Randy Dunlap <rdunlap@infradead.org>, Masami Hiramatsu <mhiramat@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 13, 2018 at 11:07:20AM +0200, Peter Zijlstra wrote:
-> On Tue, Jun 12, 2018 at 05:57:37PM -0700, Ricardo Neri wrote:
+On Wed, Jun 13, 2018 at 11:06:25AM +0100, Marc Zyngier wrote:
+> On 13/06/18 10:20, Thomas Gleixner wrote:
+> > On Wed, 13 Jun 2018, Julien Thierry wrote:
+> >> On 13/06/18 09:34, Peter Zijlstra wrote:
+> >>> On Tue, Jun 12, 2018 at 05:57:23PM -0700, Ricardo Neri wrote:
+> >>>> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+> >>>> index 5426627..dbc5e02 100644
+> >>>> --- a/include/linux/interrupt.h
+> >>>> +++ b/include/linux/interrupt.h
+> >>>> @@ -61,6 +61,8 @@
+> >>>>    *                interrupt handler after suspending interrupts. For
+> >>>> system
+> >>>>    *                wakeup devices users need to implement wakeup
+> >>>> detection in
+> >>>>    *                their interrupt handlers.
+> >>>> + * IRQF_DELIVER_AS_NMI - Configure interrupt to be delivered as
+> >>>> non-maskable, if
+> >>>> + *                supported by the chip.
+> >>>>    */
+> >>>
+> >>> NAK on the first 6 patches. You really _REALLY_ don't want to expose
+> >>> NMIs to this level.
+> >>>
+> >>
+> >> I've been working on something similar on arm64 side, and effectively the one
+> >> thing that might be common to arm64 and intel is the interface to set an
+> >> interrupt as NMI. So I guess it would be nice to agree on the right approach
+> >> for this.
+> >>
+> >> The way I did it was by introducing a new irq_state and let the irqchip driver
+> >> handle most of the work (if it supports that state):
+> >>
+> >> https://lkml.org/lkml/2018/5/25/181
+> >>
+> >> This has not been ACKed nor NAKed. So I am just asking whether this is a more
+> >> suitable approach, and if not, is there any suggestions on how to do this?
+> > 
+> > I really didn't pay attention to that as it's burried in the GIC/ARM series
+> > which is usually Marc's playground.
 > 
-> +static bool is_hpet_wdt_interrupt(struct hpet_hld_data *hdata)
-> +{
-> +       unsigned long this_isr;
-> +       unsigned int lvl_trig;
-> +
-> +       this_isr = hpet_readl(HPET_STATUS) & BIT(hdata->num);
-> +
-> +       lvl_trig = hpet_readl(HPET_Tn_CFG(hdata->num)) & HPET_TN_LEVEL;
-> +
-> +       if (lvl_trig && this_isr)
-> +               return true;
-> +
-> +       return false;
-> +}
+> I'm working my way through it ATM now that I have some brain cycles back.
 > 
-> > +static int hardlockup_detector_nmi_handler(unsigned int val,
-> > +					   struct pt_regs *regs)
-> > +{
-> > +	struct hpet_hld_data *hdata = hld_data;
-> > +	unsigned int use_fsb;
-> > +
-> > +	/*
-> > +	 * If FSB delivery mode is used, the timer interrupt is programmed as
-> > +	 * edge-triggered and there is no need to check the ISR register.
-> > +	 */
-> > +	use_fsb = hdata->flags & HPET_DEV_FSB_CAP;
+> > Adding NMI delivery support at low level architecture irq chip level is
+> > perfectly fine, but the exposure of that needs to be restricted very
+> > much. Adding it to the generic interrupt control interfaces is not going to
+> > happen. That's doomed to begin with and a complete abuse of the interface
+> > as the handler can not ever be used for that.
 > 
-> Please do explain.. That FSB thing basically means MSI. But there's only
-> a single NMI vector. How do we know this NMI came from the HPET?
+> I can only agree with that. Allowing random driver to use request_irq()
+> to make anything an NMI ultimately turns it into a complete mess ("hey,
+> NMI is *faster*, let's use that"), and a potential source of horrible
+> deadlocks.
+> 
+> What I'd find more palatable is a way for an irqchip to be able to
+> prioritize some interrupts based on a set of architecturally-defined
+> requirements, and a separate NMI requesting/handling framework that is
+> separate from the IRQ API, as the overall requirements are likely to
+> completely different.
+> 
+> It shouldn't have to be nearly as complex as the IRQ API, and require
+> much stricter requirements in terms of what you can do there (flow
+> handling should definitely be different).
 
-Indeed, I see now that this is wrong. There is no way to know. The only way
-is to use an IO APIC interrupt and read the HPET status register.
-
-> 
-> > +
-> > +	if (!use_fsb && !is_hpet_wdt_interrupt(hdata))
-> 
-> So you add _2_ HPET reads for every single NMI that gets triggered...
-> and IIRC HPET reads are _sllooooowwwwww_.
-
-
-Since the trigger mode of the HPET timer is not expected to change, 
-perhaps is_hpet_wdt_interrupt() can only need the interrupt status
-register. This would reduce the reads to one. Furthermore, the hardlockup
-detector can skip an X number of NMIs and reduce further the frequency
-of reads. Does this make sense?
-
-> 
-> > +		return NMI_DONE;
-> > +
-> > +	inspect_for_hardlockups(regs);
-> > +
-> > +	if (!(hdata->flags & HPET_DEV_PERI_CAP))
-> > +		kick_timer(hdata);
-> > +
-> > +	/* Acknowledge interrupt if in level-triggered mode */
-> > +	if (!use_fsb)
-> > +		hpet_writel(BIT(hdata->num), HPET_STATUS);
-> > +
-> > +	return NMI_HANDLED;
-> 
-> So if I read this right, when in FSB/MSI mode, we'll basically _always_
-> claim every single NMI as handled?
-> 
-> That's broken.
-
-Yes, this is not correct. I will drop the functionality to use
-FSB/MSI mode.
+Marc, Julien, do you plan to actively work on this? Would you mind keeping
+me in the loop? I also need this work for this watchdog. In the meantime,
+I will go through Julien's patches and try to adapt it to my work.
 
 Thanks and BR,
 Ricardo
