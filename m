@@ -1,91 +1,202 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [RFC PATCH 20/23] watchdog/hardlockup/hpet: Rotate interrupt
- among all monitored CPUs
-Date: Fri, 15 Jun 2018 12:29:06 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1806151122070.2079@nanos.tec.linutronix.de>
-References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com> <1528851463-21140-21-git-send-email-ricardo.neri-calderon@linux.intel.com> <alpine.DEB.2.21.1806131140560.2280@nanos.tec.linutronix.de> <20180615021629.GD11625@voyager>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
+Date: Fri, 15 Jun 2018 16:23:29 +0530
+Message-ID: <20180615105329.26800-1-vivek.gautam@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180615021629.GD11625@voyager>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Cc: Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Don Zickus <dzickus@redhat.com>, Nicholas Piggin <npiggin@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Alexei Starovoitov <ast@kernel.org>, Babu Moger <babu.moger@oracle.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Masami Hiramatsu <mhiramat@kernel.org>
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, pdaly@codeaurora.org, Vivek Gautam <vivek.gautam@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 14 Jun 2018, Ricardo Neri wrote:
-> On Wed, Jun 13, 2018 at 11:48:09AM +0200, Thomas Gleixner wrote:
-> > On Tue, 12 Jun 2018, Ricardo Neri wrote:
-> > > +	/* There are no CPUs to monitor. */
-> > > +	if (!cpumask_weight(&hdata->monitored_mask))
-> > > +		return NMI_HANDLED;
-> > > +
-> > >  	inspect_for_hardlockups(regs);
-> > >  
-> > > +	/*
-> > > +	 * Target a new CPU. Keep trying until we find a monitored CPU. CPUs
-> > > +	 * are addded and removed to this mask at cpu_up() and cpu_down(),
-> > > +	 * respectively. Thus, the interrupt should be able to be moved to
-> > > +	 * the next monitored CPU.
-> > > +	 */
-> > > +	spin_lock(&hld_data->lock);
-> > 
-> > Yuck. Taking a spinlock from NMI ...
-> 
-> I am sorry. I will look into other options for locking. Do you think rcu_lock
-> would help in this case? I need this locking because the CPUs being monitored
-> changes as CPUs come online and offline.
+Qualcomm SoCs have an additional level of cache called as
+System cache or Last level cache[1]. This cache sits right
+before the DDR, and is tightly coupled with the memory
+controller.
+The cache is available to all the clients present in the
+SoC system. The clients request their slices from this system
+cache, make it active, and can then start using it. For these
+clients with smmu, to start using the system cache for
+dma buffers and related page tables [2], few of the memory
+attributes need to be set accordingly.
+This change makes the related memory Outer-Shareable, and
+updates the MAIR with necessary protection.
 
-Sure, but you _cannot_ take any locks in NMI context which are also taken
-in !NMI context. And RCU will not help either. How so? The NMI can hit
-exactly before the CPU bit is cleared and then the CPU goes down. So RCU
-_cannot_ protect anything.
+The MAIR attribute requirements are:
+    Inner Cacheablity = 0
+    Outer Cacheablity = 1, Write-Back Write Allocate
+    Outer Shareablity = 1
 
-All you can do there is make sure that the TIMn_CONF is only ever accessed
-in !NMI code. Then you can stop the timer _before_ a CPU goes down and make
-sure that the eventually on the fly NMI is finished. After that you can
-fiddle with the CPU mask and restart the timer. Be aware that this is going
-to be more corner case handling that actual functionality.
+This change is a realisation of following changes
+from downstream msm-4.9:
+iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT
+iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT
 
-> > > +	for_each_cpu_wrap(cpu, &hdata->monitored_mask, smp_processor_id() + 1) {
-> > > +		if (!irq_set_affinity(hld_data->irq, cpumask_of(cpu)))
-> > > +			break;
-> > 
-> > ... and then calling into generic interrupt code which will take even more
-> > locks is completely broken.
-> 
-> I will into reworking how the destination of the interrupt is set.
+[1] https://patchwork.kernel.org/patch/10422531/
+[2] https://patchwork.kernel.org/patch/10302791/
 
-You have to consider two cases:
+Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+---
+ drivers/iommu/arm-smmu.c       | 14 ++++++++++++++
+ drivers/iommu/io-pgtable-arm.c | 24 +++++++++++++++++++-----
+ drivers/iommu/io-pgtable.h     |  4 ++++
+ include/linux/iommu.h          |  4 ++++
+ 4 files changed, 41 insertions(+), 5 deletions(-)
 
- 1) !remapped mode:
-
-    That's reasonably simple because you just have to deal with the HPET
-    TIMERn_PROCMSG_ROUT register. But then you need to do this directly and
-    not through any of the existing interrupt facilities.
-
- 2) remapped mode:
-
-    That's way more complex as you _cannot_ ever do anything which touches
-    the IOMMU and the related tables.
-
-    So you'd need to reserve an IOMMU remapping entry for each CPU upfront,
-    store the resulting value for the HPET TIMERn_PROCMSG_ROUT register in
-    per cpu storage and just modify that one from NMI.
-
-    Though there might be subtle side effects involved, which are related to
-    the acknowledge part. You need to talk to the IOMMU wizards first.
-
-All in all, the idea itself is interesting, but the envisioned approach of
-round robin and no fast accessible NMI reason detection is going to create
-more problems than it solves.
-
-This all could have been avoided if Intel hadn't decided to reuse the APIC
-timer registers for the TSC deadline timer. If both would be available we'd
-have a CPU local fast accessible watchdog timer when TSC deadline is used
-for general timer purposes. But why am I complaining? I've resigned to the
-fact that timers are designed^Wcobbled together by janitors long ago.
-
-Thanks,
-
-	tglx
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index f7a96bcf94a6..8058e7205034 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -249,6 +249,7 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+ 	struct iommu_domain		domain;
++	bool				has_sys_cache;
+ };
+ 
+ struct arm_smmu_option_prop {
+@@ -862,6 +863,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 
+ 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+ 		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
++	if (smmu_domain->has_sys_cache)
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_SYS_CACHE;
+ 
+ 	smmu_domain->smmu = smmu;
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+@@ -1477,6 +1480,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ 	case DOMAIN_ATTR_NESTING:
+ 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+ 		return 0;
++	case DOMAIN_ATTR_USE_SYS_CACHE:
++		*((int *)data) = smmu_domain->has_sys_cache;
++		return 0;
+ 	default:
+ 		return -ENODEV;
+ 	}
+@@ -1506,6 +1512,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 
+ 		break;
++	case DOMAIN_ATTR_USE_SYS_CACHE:
++		if (smmu_domain->smmu) {
++			ret = -EPERM;
++			goto out_unlock;
++		}
++		if (*((int *)data))
++			smmu_domain->has_sys_cache = true;
++		break;
+ 	default:
+ 		ret = -ENODEV;
+ 	}
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 010a254305dd..b2aee1828524 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -169,9 +169,11 @@
+ #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
+ #define ARM_LPAE_MAIR_ATTR_NC		0x44
+ #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
++#define ARM_LPAE_MAIR_ATTR_SYS_CACHE	0xf4
+ #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
+ #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
+ #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
++#define ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE	3
+ 
+ /* IOPTE accessors */
+ #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+@@ -442,6 +444,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 		else if (prot & IOMMU_CACHE)
+ 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+ 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++		else if (prot & IOMMU_SYS_CACHE)
++			pte |= (ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++
+ 	} else {
+ 		pte = ARM_LPAE_PTE_HAP_FAULT;
+ 		if (prot & IOMMU_READ)
+@@ -771,7 +777,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	u64 reg;
+ 	struct arm_lpae_io_pgtable *data;
+ 
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
++			    IO_PGTABLE_QUIRK_SYS_CACHE))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -779,9 +786,14 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 		return NULL;
+ 
+ 	/* TCR */
+-	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+-	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+-	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
++	if (cfg->quirks & IO_PGTABLE_QUIRK_SYS_CACHE) {
++		reg = (ARM_LPAE_TCR_SH_OS << ARM_LPAE_TCR_SH0_SHIFT) |
++		      (ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT);
++	} else {
++		reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
++		      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT);
++	}
++	reg |= (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+ 
+ 	switch (ARM_LPAE_GRANULE(data)) {
+ 	case SZ_4K:
+@@ -833,7 +845,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	      (ARM_LPAE_MAIR_ATTR_WBRWA
+ 	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
+ 	      (ARM_LPAE_MAIR_ATTR_DEVICE
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
++	      (ARM_LPAE_MAIR_ATTR_SYS_CACHE
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE));
+ 
+ 	cfg->arm_lpae_s1_cfg.mair[0] = reg;
+ 	cfg->arm_lpae_s1_cfg.mair[1] = 0;
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index 2df79093cad9..b5a398380e9f 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -71,12 +71,16 @@ struct io_pgtable_cfg {
+ 	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
+ 	 *	software-emulated IOMMU), such that pagetable updates need not
+ 	 *	be treated as explicit DMA data.
++	 *
++	 * IO_PGTABLE_QUIRK_SYS_CACHE: Override the attributes set in TCR for
++	 *	the page table walker when using system cache.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+ 	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
+ 	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
++	#define IO_PGTABLE_QUIRK_SYS_CACHE	BIT(5)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 19938ee6eb31..dacb9648e9b3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -41,6 +41,9 @@
+  * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
++/* Use last level cache available with few architectures */
++#define IOMMU_SYS_CACHE	(1 << 6)
++
+ 
+ struct iommu_ops;
+ struct iommu_group;
+@@ -124,6 +127,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
++	DOMAIN_ATTR_USE_SYS_CACHE,
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
