@@ -1,78 +1,93 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v9 2/2] iommu/amd: Add basic debugfs infrastructure for
- AMD IOMMU
-Date: Thu, 14 Jun 2018 16:56:53 -0700
-Message-ID: <ae7f8610-de9a-1c0f-478f-3f7f1c6956c4@infradead.org>
-References: <152883965482.1936.13657625103232933481.stgit@taos>
- <152883969032.1936.15155267369758178246.stgit@taos>
+From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+Subject: Re: [RFC PATCH 17/23] watchdog/hardlockup/hpet: Convert the timer's
+ interrupt to NMI
+Date: Thu, 14 Jun 2018 19:03:14 -0700
+Message-ID: <20180615020314.GA11625@voyager>
+References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+ <1528851463-21140-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
+ <alpine.DEB.2.21.1806131128570.2280@nanos.tec.linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <152883969032.1936.15155267369758178246.stgit@taos>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.1806131128570.2280@nanos.tec.linutronix.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Gary R Hook <gary.hook@amd.com>, iommu@lists.linux-foundation.org
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andi Kleen <andi.kleen@intel.com>, Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>, "Ravi V. Shankar" <ravi.v.shankar@intel.com>, x86@kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@intel.com>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Don Zickus <dzickus@redhat.com>, Nicholas Piggin <npiggin@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, Frederic Weisbecker <frederic@kernel.org>, Alexei Starovoitov <ast@kernel.org>, Babu Moger <babu.moger@oracle.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Masami Hiramatsu <mhiramat@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/12/2018 02:41 PM, Gary R Hook wrote:
-> Implement a skeleton framework for debugfs support in the AMD
-> IOMMU.  Add an AMD-specific Kconfig boolean that depends upon
-> general enablement of DebugFS in the IOMMU.
+On Wed, Jun 13, 2018 at 11:40:00AM +0200, Thomas Gleixner wrote:
+> On Tue, 12 Jun 2018, Ricardo Neri wrote:
+> > @@ -183,6 +184,8 @@ static irqreturn_t hardlockup_detector_irq_handler(int irq, void *data)
+> >  	if (!(hdata->flags & HPET_DEV_PERI_CAP))
+> >  		kick_timer(hdata);
+> >  
+> > +	pr_err("This interrupt should not have happened. Ensure delivery mode is NMI.\n");
 > 
-> Signed-off-by: Gary R Hook <gary.hook@amd.com>
+> Eeew.
 
-Gary,
-
-Looks good to me.  Thanks.
-
-> ---
->  drivers/iommu/Kconfig             |   12 ++++++++++++
->  drivers/iommu/Makefile            |    1 +
->  drivers/iommu/amd_iommu_debugfs.c |   33 +++++++++++++++++++++++++++++++++
->  drivers/iommu/amd_iommu_init.c    |    6 ++++--
->  drivers/iommu/amd_iommu_proto.h   |    6 ++++++
->  drivers/iommu/amd_iommu_types.h   |    5 +++++
->  6 files changed, 61 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/iommu/amd_iommu_debugfs.c
+If you don't mind me asking. What is the problem with this error message?
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index f9af25ac409f..5a9cef113763 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -146,6 +146,18 @@ config AMD_IOMMU_V2
->  	  hardware. Select this option if you want to use devices that support
->  	  the PCI PRI and PASID interface.
->  
-> +config AMD_IOMMU_DEBUGFS
-> +	bool "Enable AMD IOMMU internals in DebugFS"
-> +	depends on AMD_IOMMU && IOMMU_DEBUGFS
-> +	---help---
-> +	  !!!WARNING!!!  !!!WARNING!!!  !!!WARNING!!!  !!!WARNING!!!
-> +
-> +	  DO NOT ENABLE THIS OPTION UNLESS YOU REALLY, -REALLY- KNOW WHAT YOU ARE DOING!!!
-> +	  Exposes AMD IOMMU device internals in DebugFS.
-> +
-> +	  This option is -NOT- intended for production environments, and should
-> +	  not generally be enabled.
-> +
->  # Intel IOMMU support
->  config DMAR_TABLE
->  	bool
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 74cfbc392862..47fd6ea9de2d 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -11,6 +11,7 @@ obj-$(CONFIG_IOMMU_IOVA) += iova.o
->  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
->  obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
->  obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
-> +obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
->  obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
->  obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
->  obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+> >  /**
+> > + * hardlockup_detector_nmi_handler() - NMI Interrupt handler
+> > + * @val:	Attribute associated with the NMI. Not used.
+> > + * @regs:	Register values as seen when the NMI was asserted
+> > + *
+> > + * When an NMI is issued, look for hardlockups. If the timer is not periodic,
+> > + * kick it. The interrupt is always handled when if delivered via the
+> > + * Front-Side Bus.
+> > + *
+> > + * Returns:
+> > + *
+> > + * NMI_DONE if the HPET timer did not cause the interrupt. NMI_HANDLED
+> > + * otherwise.
+> > + */
+> > +static int hardlockup_detector_nmi_handler(unsigned int val,
+> > +					   struct pt_regs *regs)
+> > +{
+> > +	struct hpet_hld_data *hdata = hld_data;
+> > +	unsigned int use_fsb;
+> > +
+> > +	/*
+> > +	 * If FSB delivery mode is used, the timer interrupt is programmed as
+> > +	 * edge-triggered and there is no need to check the ISR register.
+> > +	 */
+> > +	use_fsb = hdata->flags & HPET_DEV_FSB_CAP;
+> > +
+> > +	if (!use_fsb && !is_hpet_wdt_interrupt(hdata))
+> > +		return NMI_DONE;
+> 
+> So for 'use_fsb == True' every single NMI will fall through into the
+> watchdog code below.
+> 
+> > +	inspect_for_hardlockups(regs);
+> > +
+> > +	if (!(hdata->flags & HPET_DEV_PERI_CAP))
+> > +		kick_timer(hdata);
+> 
+> And in case that the HPET does not support periodic mode this reprogramms
+> the timer on every NMI which means that while perf is running the watchdog
+> will never ever detect anything.
 
+Yes. I see that this is wrong. With MSI interrupts, as far as I can
+see, there is not a way to make sure that the HPET timer caused the NMI
+perhaps the only option is to use an IO APIC interrupt and read the
+interrupt status register.
 
--- 
-~Randy
+> 
+> Aside of that, reading TWO HPET registers for every NMI is insane. HPET
+> access is horribly slow, so any high frequency perf monitoring will take a
+> massive performance hit.
+
+If an IO APIC interrupt is used, only HPET register (the status register)
+would need to be read for every NMI. Would that be more acceptable? Otherwise,
+there is no way to determine if the HPET cause the NMI.
+
+Alternatively, there could be a counter that skips reading the HPET status
+register (and the detection of hardlockups) for every X NMIs. This would
+reduce the overall frequency of HPET register reads.
+
+Is that more acceptable?
+
+Thanks and BR,
+Ricardo
