@@ -1,99 +1,167 @@
-From: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 17/23] watchdog/hardlockup/hpet: Convert the timer's
-	interrupt to NMI
-Date: Fri, 15 Jun 2018 17:51:03 -0700
-Message-ID: <20180616005103.GC6659@voyager>
-References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1528851463-21140-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<alpine.DEB.2.21.1806131128570.2280@nanos.tec.linutronix.de>
-	<20180615020314.GA11625@voyager>
-	<alpine.DEB.2.21.1806151029210.2079@nanos.tec.linutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.1806151029210.2079-ecDvlHI5BZPZikZi3RtOZ1XZhhPuCNm+@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Lianbo Jiang <lijiang@redhat.com>
+Subject: [PATCH 0/4 V3] Support kdump for AMD secure memory encryption(SME)
+Date: Sat, 16 Jun 2018 16:27:10 +0800
+Message-ID: <20180616082714.32035-1-lijiang@redhat.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, kexec@lists.infradead.org, thomas.lendacky@amd.com, dyoung@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 15, 2018 at 11:19:09AM +0200, Thomas Gleixner wrote:
-> On Thu, 14 Jun 2018, Ricardo Neri wrote:
-> > On Wed, Jun 13, 2018 at 11:40:00AM +0200, Thomas Gleixner wrote:
-> > > On Tue, 12 Jun 2018, Ricardo Neri wrote:
-> > > > @@ -183,6 +184,8 @@ static irqreturn_t hardlockup_detector_irq_handler(int irq, void *data)
-> > > >  	if (!(hdata->flags & HPET_DEV_PERI_CAP))
-> > > >  		kick_timer(hdata);
-> > > >  
-> > > > +	pr_err("This interrupt should not have happened. Ensure delivery mode is NMI.\n");
-> > > 
-> > > Eeew.
-> > 
-> > If you don't mind me asking. What is the problem with this error message?
-> 
-> The problem is not the error message. The problem is the abuse of
-> request_irq() and the fact that this irq handler function exists in the
-> first place for something which is NMI based.
+It is convenient to remap the old memory encrypted to the second kernel by
+calling ioremap_encrypted().
 
-I wanted to add this handler in case the interrupt was not configured correctly
-to be delivered as NMI (e.g., not supported by the hardware). I see your point.
-Perhaps this is not needed. There is code in place to complain when an interrupt
-that nobody was expecting happens.
+When sme enabled on AMD server, we also need to support kdump. Because
+the memory is encrypted in the first kernel, we will remap the old memory
+encrypted to the second kernel(crash kernel), and sme is also enabled in
+the second kernel, otherwise the old memory encrypted can not be decrypted.
+Because simply changing the value of a C-bit on a page will not
+automatically encrypt the existing contents of a page, and any data in the
+page prior to the C-bit modification will become unintelligible. A page of
+memory that is marked encrypted will be automatically decrypted when read
+from DRAM and will be automatically encrypted when written to DRAM.
 
-> 
-> > > And in case that the HPET does not support periodic mode this reprogramms
-> > > the timer on every NMI which means that while perf is running the watchdog
-> > > will never ever detect anything.
-> > 
-> > Yes. I see that this is wrong. With MSI interrupts, as far as I can
-> > see, there is not a way to make sure that the HPET timer caused the NMI
-> > perhaps the only option is to use an IO APIC interrupt and read the
-> > interrupt status register.
-> > 
-> > > Aside of that, reading TWO HPET registers for every NMI is insane. HPET
-> > > access is horribly slow, so any high frequency perf monitoring will take a
-> > > massive performance hit.
-> > 
-> > If an IO APIC interrupt is used, only HPET register (the status register)
-> > would need to be read for every NMI. Would that be more acceptable? Otherwise,
-> > there is no way to determine if the HPET cause the NMI.
-> 
-> You need level trigger for the HPET status register to be useful at all
-> because in edge mode the interrupt status bits read always 0.
+For the kdump, it is necessary to distinguish whether the memory is
+encrypted. Furthermore, we should also know which part of the memory is
+encrypted or decrypted. We will appropriately remap the memory according
+to the specific situation in order to tell cpu how to deal with the
+data(encrypted or decrypted). For example, when sme enabled, if the old
+memory is encrypted, we will remap the old memory in encrypted way, which
+will automatically decrypt the old memory encrypted when we read those data
+from the remapping address.
 
-Indeed.
+ ----------------------------------------------
+| first-kernel | second-kernel | kdump support |
+|      (mem_encrypt=on|off)    |   (yes|no)    |
+|--------------+---------------+---------------|
+|     on       |     on        |     yes       |
+|     off      |     off       |     yes       |
+|     on       |     off       |     no        |
+|     off      |     on        |     no        |
+|______________|_______________|_______________|
 
-> 
-> That means you have to fiddle with the IOAPIC acknowledge magic from NMI
-> context. Brilliant idea. If the NMI hits in the middle of a regular
-> io_apic_read() then the interrupted code will endup with the wrong index
-> register. Not to talk about the fun which the affinity rotation from NMI
-> context would bring.
-> 
-> Do not even think about using IOAPIC and level for this.
+This patch is only for SME kdump, it is not support SEV kdump.
 
-OK. I will stay away of it and focus on MSI.
-> 
-> > Alternatively, there could be a counter that skips reading the HPET status
-> > register (and the detection of hardlockups) for every X NMIs. This would
-> > reduce the overall frequency of HPET register reads.
-> 
-> Great plan. So if the watchdog is the only NMI (because perf is off) then
-> you delay the watchdog detection by that count.
+Test tools:
+makedumpfile[v1.6.3]: https://github.com/LianboJ/makedumpfile
+commit e1de103eca8f (A draft for kdump vmcore about AMD SME)
+Author: Lianbo Jiang <lijiang@redhat.com>
+Date:   Mon May 14 17:02:40 2018 +0800
+Note: This patch can only dump vmcore in the case of SME enabled.
 
-OK. This was a bad idea. Then, is it acceptable to have an read to an HPET
-register per NMI just to check in the status register if the HPET timer
-caused the NMI?
+crash-7.2.1: https://github.com/crash-utility/crash.git
+commit 1e1bd9c4c1be (Fix for the "bpf" command display on Linux 4.17-rc1)
+Author: Dave Anderson <anderson@redhat.com>
+Date:   Fri May 11 15:54:32 2018 -0400
 
-Thanks and BR,
-Ricardo
+Test environment:
+HP ProLiant DL385Gen10 AMD EPYC 7251
+8-Core Processor
+32768 MB memory
+600 GB disk space
+
+Linux 4.17-rc7:
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+commit b04e217704b7 ("Linux 4.17-rc7")
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun May 27 13:01:47 2018 -0700
+
+Reference:
+AMD64 Architecture Programmer's Manual
+https://support.amd.com/TechDocs/24593.pdf
+
+Some changes:
+1. remove the sme_active() check in __ioremap_caller().
+2. remove the '#ifdef' stuff throughout this patch.
+3. put some logic into the early_memremap_pgprot_adjust() and clean the
+previous unnecessary changes, for example: arch/x86/include/asm/dmi.h,
+arch/x86/kernel/acpi/boot.c, drivers/acpi/tables.c.
+4. add a new file and modify Makefile.
+5. clean compile warning in copy_device_table() and some compile error.
+6. split the original patch into four patches, it will be better for
+review.
+
+Some known issues:
+1. about SME
+Upstream kernel doesn't work when we use kexec in the follow command. The
+system will hang.
+(This issue doesn't matter with the kdump patch.)
+
+Reproduce steps:
+ # kexec -l /boot/vmlinuz-4.17.0-rc7+ --initrd=/boot/initramfs-4.17.0-rc7+.img --command-line="root=/dev/mapper/rhel_hp--dl385g10--03-root ro mem_encrypt=on rd.lvm.lv=rhel_hp-dl385g10-03/root rd.lvm.lv=rhel_hp-dl385g10-03/swap console=ttyS0,115200n81 LANG=en_US.UTF-8 earlyprintk=serial debug nokaslr"
+ # kexec -e (or reboot)
+
+The system will hang:
+[ 1248.932239] kexec_core: Starting new kernel
+early console in extract_kernel
+input_data: 0x000000087e91c3b4
+input_len: 0x000000000067fcbd
+output: 0x000000087d400000
+output_len: 0x0000000001b6fa90
+kernel_total_size: 0x0000000001a9d000
+trampoline_32bit: 0x0000000000099000
+
+Decompressing Linux...
+Parsing ELF...        [-here the system will hang]
+
+2. about SEV
+Upstream kernel(Host OS) doesn't work in host side, some drivers about
+SEV always go wrong in host side. We can't boot SEV Guest OS to test
+kdump patch. Maybe it is more reasonable to improve SEV in another
+patch. When some drivers can work in host side and it can also boot
+Virtual Machine(SEV Guest OS), it will be suitable to fix SEV for kdump.
+
+[  369.426131] INFO: task systemd-udevd:865 blocked for more than 120 seconds.
+[  369.433177]       Not tainted 4.17.0-rc5+ #60
+[  369.437585] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  369.445783] systemd-udevd   D    0   865    813 0x80000004
+[  369.451323] Call Trace:
+[  369.453815]  ? __schedule+0x290/0x870
+[  369.457523]  schedule+0x32/0x80
+[  369.460714]  __sev_do_cmd_locked+0x1f6/0x2a0 [ccp]
+[  369.465556]  ? cleanup_uevent_env+0x10/0x10
+[  369.470084]  ? remove_wait_queue+0x60/0x60
+[  369.474219]  ? 0xffffffffc0247000
+[  369.477572]  __sev_platform_init_locked+0x2b/0x70 [ccp]
+[  369.482843]  sev_platform_init+0x1d/0x30 [ccp]
+[  369.487333]  psp_pci_init+0x40/0xe0 [ccp]
+[  369.491380]  ? 0xffffffffc0247000
+[  369.494936]  sp_mod_init+0x18/0x1000 [ccp]
+[  369.499071]  do_one_initcall+0x4e/0x1d4
+[  369.502944]  ? _cond_resched+0x15/0x30
+[  369.506728]  ? kmem_cache_alloc_trace+0xae/0x1d0
+[  369.511386]  ? do_init_module+0x22/0x220
+[  369.515345]  do_init_module+0x5a/0x220
+[  369.519444]  load_module+0x21cb/0x2a50
+[  369.523227]  ? m_show+0x1c0/0x1c0
+[  369.526571]  ? security_capable+0x3f/0x60
+[  369.530611]  __do_sys_finit_module+0x94/0xe0
+[  369.534915]  do_syscall_64+0x5b/0x180
+[  369.538607]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  369.543698] RIP: 0033:0x7f708e6311b9
+[  369.547536] RSP: 002b:00007ffff9d32aa8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+[  369.555162] RAX: ffffffffffffffda RBX: 000055602a04c2d0 RCX: 00007f708e6311b9
+[  369.562346] RDX: 0000000000000000 RSI: 00007f708ef52039 RDI: 0000000000000008
+[  369.569801] RBP: 00007f708ef52039 R08: 0000000000000000 R09: 000055602a048b20
+[  369.576988] R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
+[  369.584177] R13: 000055602a075260 R14: 0000000000020000 R15: 0000000000000000
+
+Lianbo Jiang (4):
+  Add a function(ioremap_encrypted) for kdump when AMD sme enabled
+  Allocate pages for kdump without encryption when SME is enabled
+  Remap the device table of IOMMU in encrypted manner for kdump
+  Help to dump the old memory encrypted into vmcore file
+
+ arch/x86/include/asm/io.h            |  3 ++
+ arch/x86/kernel/Makefile             |  1 +
+ arch/x86/kernel/crash_dump_encrypt.c | 53 ++++++++++++++++++++++++++++++++++++
+ arch/x86/mm/ioremap.c                | 28 +++++++++++++------
+ drivers/iommu/amd_iommu_init.c       | 15 +++++++++-
+ fs/proc/vmcore.c                     | 20 ++++++++++----
+ include/linux/crash_dump.h           | 11 ++++++++
+ kernel/kexec_core.c                  | 12 ++++++++
+ 8 files changed, 128 insertions(+), 15 deletions(-)
+ create mode 100644 arch/x86/kernel/crash_dump_encrypt.c
+
+-- 
+2.9.5
