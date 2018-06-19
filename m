@@ -1,156 +1,101 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH 2/2] iommu/amd: Fallback to dma_direct_ops when fail to enable IOMMU
-Date: Tue, 19 Jun 2018 11:45:34 -0500
-Message-ID: <1529426734-20639-3-git-send-email-suravee.suthikulpanit@amd.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH 1/2] iommu: Introduce interface for unsetting bus IOMMU
+Date: Tue, 19 Jun 2018 11:45:33 -0500
+Message-ID: <1529426734-20639-2-git-send-email-suravee.suthikulpanit@amd.com>
 References: <1529426734-20639-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1529426734-20639-1-git-send-email-suravee.suthikulpanit@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: joro@8bytes.org, gregkh@linuxfoundation.org, rafael.j.wysocki@intel.com, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1529426734-20639-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In case the AMD IOMMU driver fails to enable interrupt, it currently
-results in failure to boot due to invalid dma_ops for buses and devices
-previously set when they were added to the IOMMU.
+This interface allows removal of IOMMU from a bus if needed.
+For example, when the IOMMU driver fails to initialize, it should
+unassociate itself from the bus (i.e. removing IOMMU groups and
+unregister bus notifier block).
 
-Therefore, fix this by unsetting the bus's iommu, and setup end-point
-devices to use dma_direct_ops.
-
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 14 +++++++++++++-
- drivers/iommu/amd_iommu_init.c  | 19 +++++++++++++++++--
- drivers/iommu/amd_iommu_proto.h |  2 ++
- 3 files changed, 32 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c  | 22 ++++++++++++++++++++++
+ include/linux/device.h |  1 +
+ include/linux/iommu.h  |  1 +
+ 3 files changed, 24 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 5337fb2..3446763 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -381,6 +381,9 @@ static bool check_device(struct device *dev)
- {
- 	int devid;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d2aa2320..56691ab 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1165,6 +1165,7 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+ 	if (err)
+ 		goto out_err;
  
-+	if (amd_iommu_failed_initialize())
-+		return false;
-+
- 	if (!dev || !dev->dma_mask)
- 		return false;
++	bus->iommu_nb = nb;
  
-@@ -486,7 +489,7 @@ static void iommu_uninit_device(struct device *dev)
- 	iommu_group_remove_device(dev);
- 
- 	/* Remove dma-ops */
--	dev->dma_ops = NULL;
-+	dev->dma_ops = &dma_direct_ops;
- 
- 	/*
- 	 * We keep dev_data around for unplugged devices and reuse it when the
-@@ -2722,6 +2725,15 @@ static int init_reserved_iova_ranges(void)
  	return 0;
+ 
+@@ -1179,6 +1180,27 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+ 	return err;
  }
  
-+void __init amd_iommu_uninit_api(void)
++void bus_unset_iommu(struct bus_type *bus, const struct iommu_ops *ops)
 +{
-+	bus_unset_iommu(&pci_bus_type, &amd_iommu_ops);
-+#ifdef CONFIG_ARM_AMBA
-+	bus_unset_iommu(&amba_bustype, &amd_iommu_ops);
-+#endif
-+	bus_unset_iommu(&platform_bus_type, &amd_iommu_ops);
-+}
++	struct iommu_callback_data cb = {
++		.ops = ops,
++	};
 +
- int __init amd_iommu_init_api(void)
- {
- 	int ret, err = 0;
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 09d271e..d3f9cb3 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -245,6 +245,7 @@ enum iommu_init_state {
- 	IOMMU_INITIALIZED,
- 	IOMMU_NOT_FOUND,
- 	IOMMU_INIT_ERROR,
-+	IOMMU_RESOURCE_FREE,
- 	IOMMU_CMDLINE_DISABLED,
- };
- 
-@@ -307,6 +308,11 @@ int amd_iommu_get_num_iommus(void)
- 	return amd_iommus_present;
- }
- 
-+bool amd_iommu_failed_initialize(void)
-+{
-+	return init_state == IOMMU_RESOURCE_FREE;
-+}
++	if (!bus->iommu_ops)
++		return;
 +
- /* Access to l1 and l2 indexed register spaces */
++	bus_for_each_dev(bus, NULL, &cb, remove_iommu_group);
++
++	if (bus->iommu_nb) {
++		bus_unregister_notifier(bus, bus->iommu_nb);
++		kfree(bus->iommu_nb);
++		bus->iommu_nb = NULL;
++	}
++
++	bus->iommu_ops = NULL;
++}
++EXPORT_SYMBOL_GPL(bus_unset_iommu);
++
+ /**
+  * bus_set_iommu - set iommu-callbacks for the bus
+  * @bus: bus.
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 4779569..cac7baf 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -133,6 +133,7 @@ struct bus_type {
+ 	const struct dev_pm_ops *pm;
  
- static u32 iommu_read_l1(struct amd_iommu *iommu, u16 l1, u8 address)
-@@ -2331,10 +2337,14 @@ static void __init free_iommu_resources(void)
+ 	const struct iommu_ops *iommu_ops;
++	struct notifier_block *iommu_nb;
  
- 	free_iommu_all();
+ 	struct subsys_private *p;
+ 	struct lock_class_key lock_key;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 19938ee..65f998e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -287,6 +287,7 @@ static inline struct iommu_device *dev_to_iommu_device(struct device *dev)
+ #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
  
-+	/*
-+	 * We failed to initialize the AMD IOMMU driver,
-+	 * and all resources are freed.
-+	 */
-+	init_state = IOMMU_RESOURCE_FREE;
- #ifdef CONFIG_GART_IOMMU
- 	/*
--	 * We failed to initialize the AMD IOMMU - try fallback to GART
--	 * if possible.
-+	 * try fallback to GART if possible.
- 	 */
- 	gart_iommu_init();
- 
-@@ -2583,6 +2593,8 @@ static int amd_iommu_enable_interrupts(void)
- 	}
- 
- out:
-+	if (ret)
-+		pr_err("AMD-Vi: Failed to enable IOMMU interrupts.\n");
- 	return ret;
- }
- 
-@@ -2665,6 +2677,7 @@ static int __init state_next(void)
- 		break;
- 	case IOMMU_NOT_FOUND:
- 	case IOMMU_INIT_ERROR:
-+	case IOMMU_RESOURCE_FREE:
- 	case IOMMU_CMDLINE_DISABLED:
- 		/* Error states => do nothing */
- 		ret = -EINVAL;
-@@ -2684,6 +2697,7 @@ static int __init iommu_go_to_state(enum iommu_init_state state)
- 	while (init_state != state) {
- 		if (init_state == IOMMU_NOT_FOUND         ||
- 		    init_state == IOMMU_INIT_ERROR        ||
-+		    init_state == IOMMU_RESOURCE_FREE     ||
- 		    init_state == IOMMU_CMDLINE_DISABLED)
- 			break;
- 		ret = state_next();
-@@ -2747,6 +2761,7 @@ static int __init amd_iommu_init(void)
- 
- 	ret = iommu_go_to_state(IOMMU_INITIALIZED);
- 	if (ret) {
-+		amd_iommu_uninit_api();
- 		free_dma_resources();
- 		if (!irq_remapping_enabled) {
- 			disable_iommus();
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 640c286..7d81254 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -32,6 +32,8 @@ extern int amd_iommu_init_devices(void);
- extern void amd_iommu_uninit_devices(void);
- extern void amd_iommu_init_notifier(void);
- extern int amd_iommu_init_api(void);
-+extern void amd_iommu_uninit_api(void);
-+extern bool amd_iommu_failed_initialize(void);
- 
- /* Needed for interrupt remapping */
- extern int amd_iommu_prepare(void);
+ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
++extern void bus_unset_iommu(struct bus_type *bus, const struct iommu_ops *ops);
+ extern bool iommu_present(struct bus_type *bus);
+ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
 -- 
 2.7.4
