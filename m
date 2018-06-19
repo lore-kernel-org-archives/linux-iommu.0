@@ -1,229 +1,110 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 4/9] iommu/vt-d: Move device_domain_info to header
-Date: Tue, 19 Jun 2018 13:17:24 +0800
-Message-ID: <1529385449-25649-5-git-send-email-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v3 2/9] iommu/vt-d: Avoid using idr_for_each_entry()
+Date: Tue, 19 Jun 2018 13:17:22 +0800
+Message-ID: <1529385449-25649-3-git-send-email-baolu.lu@linux.intel.com>
 References: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1529385449-25649-1-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This allows the per device iommu data and some helpers to be
-used in other files.
+idr_for_each_entry() is used to iteratte over idr elements
+of a given type. It isn't suitable for the globle pasid idr
+since the pasid idr consumer could specify different types
+of pointers to bind with a pasid.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Liu Yi L <yi.l.liu@intel.com>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Reviewed-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 62 +++--------------------------------------
- include/linux/intel-iommu.h | 68 +++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 72 insertions(+), 58 deletions(-)
+ drivers/iommu/intel-svm.c   | 14 ++++++++++----
+ include/linux/intel-iommu.h |  1 +
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3653ebc..d9a8222 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -381,60 +381,6 @@ static int hw_pass_through = 1;
- 	for (idx = 0; idx < g_num_of_iommus; idx++)		\
- 		if (domain->iommu_refcnt[idx])
- 
--struct dmar_domain {
--	int	nid;			/* node id */
--
--	unsigned	iommu_refcnt[DMAR_UNITS_SUPPORTED];
--					/* Refcount of devices per iommu */
--
--
--	u16		iommu_did[DMAR_UNITS_SUPPORTED];
--					/* Domain ids per IOMMU. Use u16 since
--					 * domain ids are 16 bit wide according
--					 * to VT-d spec, section 9.3 */
--
--	bool has_iotlb_device;
--	struct list_head devices;	/* all devices' list */
--	struct iova_domain iovad;	/* iova's that belong to this domain */
--
--	struct dma_pte	*pgd;		/* virtual address */
--	int		gaw;		/* max guest address width */
--
--	/* adjusted guest address width, 0 is level 2 30-bit */
--	int		agaw;
--
--	int		flags;		/* flags to find out type of domain */
--
--	int		iommu_coherency;/* indicate coherency of iommu access */
--	int		iommu_snooping; /* indicate snooping control feature*/
--	int		iommu_count;	/* reference count of iommu */
--	int		iommu_superpage;/* Level of superpages supported:
--					   0 == 4KiB (no superpages), 1 == 2MiB,
--					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
--	u64		max_addr;	/* maximum mapped address */
--
--	struct iommu_domain domain;	/* generic domain data structure for
--					   iommu core */
--};
--
--/* PCI domain-device relationship */
--struct device_domain_info {
--	struct list_head link;	/* link to domain siblings */
--	struct list_head global; /* link to global list */
--	u8 bus;			/* PCI bus number */
--	u8 devfn;		/* PCI devfn number */
--	u8 pasid_supported:3;
--	u8 pasid_enabled:1;
--	u8 pri_supported:1;
--	u8 pri_enabled:1;
--	u8 ats_supported:1;
--	u8 ats_enabled:1;
--	u8 ats_qdep;
--	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
--	struct intel_iommu *iommu; /* IOMMU used by this device */
--	struct dmar_domain *domain; /* pointer to domain */
--};
--
- struct dmar_rmrr_unit {
- 	struct list_head list;		/* list of rmrr units	*/
- 	struct acpi_dmar_header *hdr;	/* ACPI header		*/
-@@ -603,7 +549,7 @@ static void set_iommu_domain(struct intel_iommu *iommu, u16 did,
- 		domains[did & 0xff] = domain;
- }
- 
--static inline void *alloc_pgtable_page(int node)
-+void *alloc_pgtable_page(int node)
- {
- 	struct page *page;
- 	void *vaddr = NULL;
-@@ -614,7 +560,7 @@ static inline void *alloc_pgtable_page(int node)
- 	return vaddr;
- }
- 
--static inline void free_pgtable_page(void *vaddr)
-+void free_pgtable_page(void *vaddr)
- {
- 	free_page((unsigned long)vaddr);
- }
-@@ -697,7 +643,7 @@ int iommu_calculate_agaw(struct intel_iommu *iommu)
- }
- 
- /* This functionin only returns single iommu in a domain */
--static struct intel_iommu *domain_get_iommu(struct dmar_domain *domain)
-+struct intel_iommu *domain_get_iommu(struct dmar_domain *domain)
- {
- 	int iommu_id;
- 
-@@ -3512,7 +3458,7 @@ static unsigned long intel_alloc_iova(struct device *dev,
- 	return iova_pfn;
- }
- 
--static struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
-+struct dmar_domain *get_valid_domain_for_dev(struct device *dev)
- {
- 	struct dmar_domain *domain, *tmp;
- 	struct dmar_rmrr_unit *rmrr;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 0cfac9d..3598dc0f 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -31,6 +31,7 @@
- #include <linux/list.h>
- #include <linux/iommu.h>
- #include <linux/io-64-nonatomic-lo-hi.h>
-+#include <linux/dmar.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
-@@ -384,6 +385,50 @@ struct pasid_entry;
- struct pasid_state_entry;
- struct page_req_dsc;
- 
-+struct dmar_domain {
-+	int	nid;			/* node id */
-+
-+	unsigned int	iommu_refcnt[DMAR_UNITS_SUPPORTED];
-+					/* Refcount of devices per iommu */
-+
-+	u16		iommu_did[DMAR_UNITS_SUPPORTED];
-+					/*
-+					 * Domain ids per IOMMU. Use u16 since
-+					 * domain ids are 16 bit wide according
-+					 * to VT-d spec, section 9.3
-+					 */
-+
-+	bool has_iotlb_device;
-+	struct list_head devices;	/* all devices' list */
-+	struct iova_domain iovad;	/* iova's that belong to this domain */
-+
-+	struct dma_pte	*pgd;		/* virtual address */
-+	int		gaw;		/* max guest address width */
-+
-+	int		agaw;		/*
-+					 * adjusted guest address width,
-+					 * 0 is level 2 30-bit
-+					 */
-+
-+	int		flags;		/* flags to find out type of domain */
-+
-+	int		iommu_coherency;/* indicate coherency of iommu access */
-+	int		iommu_snooping; /* indicate snooping control feature*/
-+	int		iommu_count;	/* reference count of iommu */
-+	int		iommu_superpage;/*
-+					 * Level of superpages supported:
-+					 *  0 == 4KiB (no superpages),
-+					 *  1 == 2MiB, 2 == 1GiB,
-+					 *  3 == 512GiB, 4 == 1TiB
-+					 */
-+	u64		max_addr;	/* maximum mapped address */
-+
-+	struct iommu_domain domain;	/*
-+					 * generic domain data structure for
-+					 * iommu core
-+					 */
-+};
-+
- struct intel_iommu {
- 	void __iomem	*reg; /* Pointer to hardware regs, virtual addr */
- 	u64 		reg_phys; /* physical address of hw register set */
-@@ -432,6 +477,24 @@ struct intel_iommu {
- 	u32		flags;      /* Software defined flags */
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 2cc0aac..36cc1d1 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -298,6 +298,7 @@ static const struct mmu_notifier_ops intel_mmuops = {
  };
  
-+/* PCI domain-device relationship */
-+struct device_domain_info {
-+	struct list_head link;	/* link to domain siblings */
-+	struct list_head global; /* link to global list */
-+	u8 bus;			/* PCI bus number */
-+	u8 devfn;		/* PCI devfn number */
-+	u8 pasid_supported:3;
-+	u8 pasid_enabled:1;
-+	u8 pri_supported:1;
-+	u8 pri_enabled:1;
-+	u8 ats_supported:1;
-+	u8 ats_enabled:1;
-+	u8 ats_qdep;
-+	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
-+	struct intel_iommu *iommu; /* IOMMU used by this device */
-+	struct dmar_domain *domain; /* pointer to domain */
-+};
-+
- static inline void __iommu_flush_cache(
- 	struct intel_iommu *iommu, void *addr, int size)
+ static DEFINE_MUTEX(pasid_mutex);
++static LIST_HEAD(global_svm_list);
+ 
+ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
  {
-@@ -458,6 +521,11 @@ extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
+@@ -329,13 +330,13 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
  
- extern int dmar_ir_support(void);
+ 	mutex_lock(&pasid_mutex);
+ 	if (pasid && !(flags & SVM_FLAG_PRIVATE_PASID)) {
+-		int i;
++		struct intel_svm *t;
  
-+struct dmar_domain *get_valid_domain_for_dev(struct device *dev);
-+void *alloc_pgtable_page(int node);
-+void free_pgtable_page(void *vaddr);
-+struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
+-		idr_for_each_entry(&iommu->pasid_idr, svm, i) {
+-			if (svm->mm != mm ||
+-			    (svm->flags & SVM_FLAG_PRIVATE_PASID))
++		list_for_each_entry(t, &global_svm_list, list) {
++			if (t->mm != mm || (t->flags & SVM_FLAG_PRIVATE_PASID))
+ 				continue;
+ 
++			svm = t;
+ 			if (svm->pasid >= pasid_max) {
+ 				dev_warn(dev,
+ 					 "Limited PASID width. Cannot use existing PASID %d\n",
+@@ -404,6 +405,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 		svm->mm = mm;
+ 		svm->flags = flags;
+ 		INIT_LIST_HEAD_RCU(&svm->devs);
++		INIT_LIST_HEAD(&svm->list);
+ 		ret = -ENOMEM;
+ 		if (mm) {
+ 			ret = mmu_notifier_register(&svm->notifier, mm);
+@@ -430,6 +432,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 		 */
+ 		if (cap_caching_mode(iommu->cap))
+ 			intel_flush_pasid_dev(svm, sdev, svm->pasid);
 +
- #ifdef CONFIG_INTEL_IOMMU_SVM
- extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
- extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
++		list_add_tail(&svm->list, &global_svm_list);
+ 	}
+ 	list_add_rcu(&sdev->list, &svm->devs);
+ 
+@@ -485,6 +489,8 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 					if (svm->mm)
+ 						mmu_notifier_unregister(&svm->notifier, svm->mm);
+ 
++					list_del(&svm->list);
++
+ 					/* We mandate that no page faults may be outstanding
+ 					 * for the PASID when intel_svm_unbind_mm() is called.
+ 					 * If that is not obeyed, subtle errors will happen.
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 1df9401..06f04e2 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -485,6 +485,7 @@ struct intel_svm {
+ 	int flags;
+ 	int pasid;
+ 	struct list_head devs;
++	struct list_head list;
+ };
+ 
+ extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
 -- 
 2.7.4
