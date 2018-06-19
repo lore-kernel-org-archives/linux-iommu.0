@@ -1,13 +1,11 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v3 2/9] iommu/vt-d: Avoid using idr_for_each_entry()
-Date: Tue, 19 Jun 2018 13:17:22 +0800
-Message-ID: <1529385449-25649-3-git-send-email-baolu.lu@linux.intel.com>
-References: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] nios2: use generic dma_noncoherent_ops
+Date: Tue, 19 Jun 2018 09:01:37 +0200
+Message-ID: <20180619070137.25841-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1529385449-25649-1-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,94 +15,254 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org
+Cc: nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-idr_for_each_entry() is used to iteratte over idr elements
-of a given type. It isn't suitable for the globle pasid idr
-since the pasid idr consumer could specify different types
-of pointers to bind with a pasid.
+Switch to the generic noncoherent direct mapping implementation.
 
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Reviewed-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- drivers/iommu/intel-svm.c   | 14 ++++++++++----
- include/linux/intel-iommu.h |  1 +
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ arch/nios2/Kconfig                   |   3 +
+ arch/nios2/include/asm/Kbuild        |   1 +
+ arch/nios2/include/asm/dma-mapping.h |  20 ----
+ arch/nios2/mm/dma-mapping.c          | 139 +++------------------------
+ 4 files changed, 17 insertions(+), 146 deletions(-)
+ delete mode 100644 arch/nios2/include/asm/dma-mapping.h
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 2cc0aac..36cc1d1 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -298,6 +298,7 @@ static const struct mmu_notifier_ops intel_mmuops = {
- };
+diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
+index 3d4ec88f1db1..92035042cf62 100644
+--- a/arch/nios2/Kconfig
++++ b/arch/nios2/Kconfig
+@@ -1,6 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config NIOS2
+ 	def_bool y
++	select ARCH_HAS_SYNC_DMA_FOR_CPU
++	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select DMA_NONCOHERENT_OPS
+ 	select TIMER_OF
+ 	select GENERIC_ATOMIC64
+ 	select GENERIC_CLOCKEVENTS
+diff --git a/arch/nios2/include/asm/Kbuild b/arch/nios2/include/asm/Kbuild
+index 64ed3d656956..8fde4fa2c34f 100644
+--- a/arch/nios2/include/asm/Kbuild
++++ b/arch/nios2/include/asm/Kbuild
+@@ -9,6 +9,7 @@ generic-y += current.h
+ generic-y += device.h
+ generic-y += div64.h
+ generic-y += dma.h
++generic-y += dma-mapping.h
+ generic-y += emergency-restart.h
+ generic-y += exec.h
+ generic-y += extable.h
+diff --git a/arch/nios2/include/asm/dma-mapping.h b/arch/nios2/include/asm/dma-mapping.h
+deleted file mode 100644
+index 6ceb92251da0..000000000000
+--- a/arch/nios2/include/asm/dma-mapping.h
++++ /dev/null
+@@ -1,20 +0,0 @@
+-/*
+- * Copyright (C) 2011 Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
+- * Copyright (C) 2009 Wind River Systems Inc
+- *
+- * This file is subject to the terms and conditions of the GNU General
+- * Public License.  See the file COPYING in the main directory of this
+- * archive for more details.
+- */
+-
+-#ifndef _ASM_NIOS2_DMA_MAPPING_H
+-#define _ASM_NIOS2_DMA_MAPPING_H
+-
+-extern const struct dma_map_ops nios2_dma_ops;
+-
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+-{
+-	return &nios2_dma_ops;
+-}
+-
+-#endif /* _ASM_NIOS2_DMA_MAPPING_H */
+diff --git a/arch/nios2/mm/dma-mapping.c b/arch/nios2/mm/dma-mapping.c
+index 4be815519dd4..4af9e5b5ba1c 100644
+--- a/arch/nios2/mm/dma-mapping.c
++++ b/arch/nios2/mm/dma-mapping.c
+@@ -12,18 +12,18 @@
  
- static DEFINE_MUTEX(pasid_mutex);
-+static LIST_HEAD(global_svm_list);
+ #include <linux/types.h>
+ #include <linux/mm.h>
+-#include <linux/export.h>
+ #include <linux/string.h>
+-#include <linux/scatterlist.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/io.h>
+ #include <linux/cache.h>
+ #include <asm/cacheflush.h>
  
- int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
+-static inline void __dma_sync_for_device(void *vaddr, size_t size,
+-			      enum dma_data_direction direction)
++void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
++		size_t size, enum dma_data_direction dir)
  {
-@@ -329,13 +330,13 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 
- 	mutex_lock(&pasid_mutex);
- 	if (pasid && !(flags & SVM_FLAG_PRIVATE_PASID)) {
--		int i;
-+		struct intel_svm *t;
- 
--		idr_for_each_entry(&iommu->pasid_idr, svm, i) {
--			if (svm->mm != mm ||
--			    (svm->flags & SVM_FLAG_PRIVATE_PASID))
-+		list_for_each_entry(t, &global_svm_list, list) {
-+			if (t->mm != mm || (t->flags & SVM_FLAG_PRIVATE_PASID))
- 				continue;
- 
-+			svm = t;
- 			if (svm->pasid >= pasid_max) {
- 				dev_warn(dev,
- 					 "Limited PASID width. Cannot use existing PASID %d\n",
-@@ -404,6 +405,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		svm->mm = mm;
- 		svm->flags = flags;
- 		INIT_LIST_HEAD_RCU(&svm->devs);
-+		INIT_LIST_HEAD(&svm->list);
- 		ret = -ENOMEM;
- 		if (mm) {
- 			ret = mmu_notifier_register(&svm->notifier, mm);
-@@ -430,6 +432,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		 */
- 		if (cap_caching_mode(iommu->cap))
- 			intel_flush_pasid_dev(svm, sdev, svm->pasid);
+-	switch (direction) {
++	void *vaddr = phys_to_virt(paddr);
 +
-+		list_add_tail(&svm->list, &global_svm_list);
++	switch (dir) {
+ 	case DMA_FROM_DEVICE:
+ 		invalidate_dcache_range((unsigned long)vaddr,
+ 			(unsigned long)(vaddr + size));
+@@ -42,10 +42,12 @@ static inline void __dma_sync_for_device(void *vaddr, size_t size,
  	}
- 	list_add_rcu(&sdev->list, &svm->devs);
+ }
  
-@@ -485,6 +489,8 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 					if (svm->mm)
- 						mmu_notifier_unregister(&svm->notifier, svm->mm);
- 
-+					list_del(&svm->list);
+-static inline void __dma_sync_for_cpu(void *vaddr, size_t size,
+-			      enum dma_data_direction direction)
++void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
++		size_t size, enum dma_data_direction dir)
+ {
+-	switch (direction) {
++	void *vaddr = phys_to_virt(paddr);
 +
- 					/* We mandate that no page faults may be outstanding
- 					 * for the PASID when intel_svm_unbind_mm() is called.
- 					 * If that is not obeyed, subtle errors will happen.
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 1df9401..06f04e2 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -485,6 +485,7 @@ struct intel_svm {
- 	int flags;
- 	int pasid;
- 	struct list_head devs;
-+	struct list_head list;
- };
++	switch (dir) {
+ 	case DMA_BIDIRECTIONAL:
+ 	case DMA_FROM_DEVICE:
+ 		invalidate_dcache_range((unsigned long)vaddr,
+@@ -58,8 +60,8 @@ static inline void __dma_sync_for_cpu(void *vaddr, size_t size,
+ 	}
+ }
  
- extern int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev);
+-static void *nios2_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
++void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
++		gfp_t gfp, unsigned long attrs)
+ {
+ 	void *ret;
+ 
+@@ -80,125 +82,10 @@ static void *nios2_dma_alloc(struct device *dev, size_t size,
+ 	return ret;
+ }
+ 
+-static void nios2_dma_free(struct device *dev, size_t size, void *vaddr,
++void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 		dma_addr_t dma_handle, unsigned long attrs)
+ {
+ 	unsigned long addr = (unsigned long) CAC_ADDR((unsigned long) vaddr);
+ 
+ 	free_pages(addr, get_order(size));
+ }
+-
+-static int nios2_dma_map_sg(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction direction,
+-		unsigned long attrs)
+-{
+-	int i;
+-
+-	for_each_sg(sg, sg, nents, i) {
+-		void *addr = sg_virt(sg);
+-
+-		if (!addr)
+-			continue;
+-
+-		sg->dma_address = sg_phys(sg);
+-
+-		if (attrs & DMA_ATTR_SKIP_CPU_SYNC)
+-			continue;
+-
+-		__dma_sync_for_device(addr, sg->length, direction);
+-	}
+-
+-	return nents;
+-}
+-
+-static dma_addr_t nios2_dma_map_page(struct device *dev, struct page *page,
+-			unsigned long offset, size_t size,
+-			enum dma_data_direction direction,
+-			unsigned long attrs)
+-{
+-	void *addr = page_address(page) + offset;
+-
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		__dma_sync_for_device(addr, size, direction);
+-
+-	return page_to_phys(page) + offset;
+-}
+-
+-static void nios2_dma_unmap_page(struct device *dev, dma_addr_t dma_address,
+-		size_t size, enum dma_data_direction direction,
+-		unsigned long attrs)
+-{
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		__dma_sync_for_cpu(phys_to_virt(dma_address), size, direction);
+-}
+-
+-static void nios2_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+-		int nhwentries, enum dma_data_direction direction,
+-		unsigned long attrs)
+-{
+-	void *addr;
+-	int i;
+-
+-	if (direction == DMA_TO_DEVICE)
+-		return;
+-
+-	if (attrs & DMA_ATTR_SKIP_CPU_SYNC)
+-		return;
+-
+-	for_each_sg(sg, sg, nhwentries, i) {
+-		addr = sg_virt(sg);
+-		if (addr)
+-			__dma_sync_for_cpu(addr, sg->length, direction);
+-	}
+-}
+-
+-static void nios2_dma_sync_single_for_cpu(struct device *dev,
+-		dma_addr_t dma_handle, size_t size,
+-		enum dma_data_direction direction)
+-{
+-	__dma_sync_for_cpu(phys_to_virt(dma_handle), size, direction);
+-}
+-
+-static void nios2_dma_sync_single_for_device(struct device *dev,
+-		dma_addr_t dma_handle, size_t size,
+-		enum dma_data_direction direction)
+-{
+-	__dma_sync_for_device(phys_to_virt(dma_handle), size, direction);
+-}
+-
+-static void nios2_dma_sync_sg_for_cpu(struct device *dev,
+-		struct scatterlist *sg, int nelems,
+-		enum dma_data_direction direction)
+-{
+-	int i;
+-
+-	/* Make sure that gcc doesn't leave the empty loop body.  */
+-	for_each_sg(sg, sg, nelems, i)
+-		__dma_sync_for_cpu(sg_virt(sg), sg->length, direction);
+-}
+-
+-static void nios2_dma_sync_sg_for_device(struct device *dev,
+-		struct scatterlist *sg, int nelems,
+-		enum dma_data_direction direction)
+-{
+-	int i;
+-
+-	/* Make sure that gcc doesn't leave the empty loop body.  */
+-	for_each_sg(sg, sg, nelems, i)
+-		__dma_sync_for_device(sg_virt(sg), sg->length, direction);
+-
+-}
+-
+-const struct dma_map_ops nios2_dma_ops = {
+-	.alloc			= nios2_dma_alloc,
+-	.free			= nios2_dma_free,
+-	.map_page		= nios2_dma_map_page,
+-	.unmap_page		= nios2_dma_unmap_page,
+-	.map_sg			= nios2_dma_map_sg,
+-	.unmap_sg		= nios2_dma_unmap_sg,
+-	.sync_single_for_device	= nios2_dma_sync_single_for_device,
+-	.sync_single_for_cpu	= nios2_dma_sync_single_for_cpu,
+-	.sync_sg_for_cpu	= nios2_dma_sync_sg_for_cpu,
+-	.sync_sg_for_device	= nios2_dma_sync_sg_for_device,
+-};
+-EXPORT_SYMBOL(nios2_dma_ops);
 -- 
-2.7.4
+2.17.1
