@@ -1,13 +1,15 @@
-From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Subject: Re: [GIT PULL] dma-mapping file renames for Linux 4.18
-Date: Wed, 20 Jun 2018 07:52:53 +0900
-Message-ID: <CA+55aFwEZHzxXDdUGwwuw5HYZB9R5CfTv3XKbft46+ai7C_Q7w@mail.gmail.com>
-References: <20180619044358.snyej666melspv46@infradead.org>
+From: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+Subject: Re: [PATCH 18/25] MIPS: loongson64: use generic dma noncoherent ops
+Date: Tue, 19 Jun 2018 16:19:25 -0700
+Message-ID: <20180619231925.mgbgc7lfvjqumr7a@pburton-laptop>
+References: <20180615110854.19253-1-hch@lst.de>
+	<20180615110854.19253-19-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180619044358.snyej666melspv46-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180615110854.19253-19-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,25 +19,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 19, 2018 at 1:44 PM Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> below is a rename of the assorted dma-mapping files to that they live
-> under kernel/dma and lose their dma-* prefixes.  If there is any time
-> to do this it is right after -rc1, so let me know if this is something
-> you'd take.
+Hi Christoph,
 
-I iwas going to take it, but then I noticed that it's an unsigned tag
-from a random site.
+On Fri, Jun 15, 2018 at 01:08:47PM +0200, Christoph Hellwig wrote:
+> -static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
+> -	dma_addr_t dma_addr)
+> -{
+> -#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
+> -	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
+> -#else
+> -	return dma_addr & 0x7fffffff;
+> -#endif
+> -}
 
-Yeah, yeah, I have pulled such things in the past, but  I'm really
-trying to convince people to use signed tags.
+...
 
-I prefer signed tags even on kernel.org, where I know the security is
-tight. On other sites, I really want that warm fuzzy feeling of
-knowing that yeah, you actually put that code there.
+> +phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
+> +{
+> +#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
+> +	if (dma_addr > 0x8fffffff)
+> +		return dma_addr;
+> +#endif
+> +	return dma_addr & 0x0fffffff;
+> +}
 
-             Linus
+Thanks for putting in the work here - I've applied patches 1-17 to
+mips-next so far, but I'm struggling to convince myself that the above
+is correct.
+
+In the original code we have 3 distinct cases:
+
+  64b Loongson2F, dma_addr > 0x8fffffff  -> dma_addr
+  64b Loongson2F, dma_addr <= 0x8fffffff -> dma_addr & 0x0fffffff
+  Everything else                        -> dma_addr & 0x7fffffff
+
+In the new __dma_to_phys() though only the first case remains the same.
+
+Is this intentional or a mixup?
+
+Thanks,
+    Paul
