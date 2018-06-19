@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 7/9] iommu/vt-d: Allocate and free pasid table
-Date: Tue, 19 Jun 2018 13:17:27 +0800
-Message-ID: <1529385449-25649-8-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 5/9] iommu/vt-d: Add for_each_device_domain() helper
+Date: Tue, 19 Jun 2018 13:17:25 +0800
+Message-ID: <1529385449-25649-6-git-send-email-baolu.lu@linux.intel.com>
 References: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,9 +10,10 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch allocates a PASID table for a PCI device at the time
-when the dmar dev_info is attached to dev->archdata.iommu, and
-free it in the opposite case.
+This adds a helper named for_each_device_domain() to iterate
+over the elements in device_domain_list and invoke a callback
+against each element. This allows to search the device_domain
+list in other source files.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -21,36 +22,54 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Liu Yi L <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/intel-iommu.c | 21 +++++++++++++++++++++
+ include/linux/intel-iommu.h |  2 ++
+ 2 files changed, 23 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 44ce77a..43bf151 100644
+index d9a8222..aea182d 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2494,6 +2494,15 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	list_add(&info->global, &device_domain_list);
- 	if (dev)
- 		dev->archdata.iommu = info;
+@@ -448,6 +448,27 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
+ static DEFINE_SPINLOCK(device_domain_lock);
+ static LIST_HEAD(device_domain_list);
+ 
++/*
++ * Iterate over elements in device_domain_list and call the specified
++ * callback @fn against each element. This helper should only be used
++ * in the context where the device_domain_lock has already been holden.
++ */
++int for_each_device_domain(int (*fn)(struct device_domain_info *info,
++				     void *data), void *data)
++{
++	int ret = 0;
++	struct device_domain_info *info;
 +
-+	if (dev && dev_is_pci(dev) && info->pasid_supported) {
-+		ret = intel_pasid_alloc_table(dev);
-+		if (ret) {
-+			__dmar_remove_one_dev_info(info);
-+			spin_unlock_irqrestore(&device_domain_lock, flags);
-+			return NULL;
-+		}
++	assert_spin_locked(&device_domain_lock);
++	list_for_each_entry(info, &device_domain_list, global) {
++		ret = fn(info, data);
++		if (ret)
++			return ret;
 +	}
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	return 0;
++}
++
+ const struct iommu_ops intel_iommu_ops;
  
- 	if (dev && domain_context_mapping(domain, dev)) {
-@@ -4828,6 +4837,7 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
- 	if (info->dev) {
- 		iommu_disable_dev_iotlb(info);
- 		domain_context_clear(iommu, info->dev);
-+		intel_pasid_free_table(info->dev);
- 	}
+ static bool translation_pre_enabled(struct intel_iommu *iommu)
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 3598dc0f..d52013e 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -525,6 +525,8 @@ struct dmar_domain *get_valid_domain_for_dev(struct device *dev);
+ void *alloc_pgtable_page(int node);
+ void free_pgtable_page(void *vaddr);
+ struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
++int for_each_device_domain(int (*fn)(struct device_domain_info *info,
++				     void *data), void *data);
  
- 	unlink_domain_info(info);
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
 -- 
 2.7.4
