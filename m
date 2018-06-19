@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 9/9] iommu/vt-d: Remove the obsolete per iommu pasid tables
-Date: Tue, 19 Jun 2018 13:17:29 +0800
-Message-ID: <1529385449-25649-10-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 7/9] iommu/vt-d: Allocate and free pasid table
+Date: Tue, 19 Jun 2018 13:17:27 +0800
+Message-ID: <1529385449-25649-8-git-send-email-baolu.lu@linux.intel.com>
 References: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1529385449-25649-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,8 +10,9 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The obsolete per iommu pasid tables are no longer used. Hence,
-clean up them.
+This patch allocates a PASID table for a PCI device at the time
+when the dmar dev_info is attached to dev->archdata.iommu, and
+free it in the opposite case.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -20,109 +21,36 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Liu Yi L <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel-iommu.c |  6 +++---
- drivers/iommu/intel-svm.c   | 17 ++---------------
- include/linux/intel-iommu.h |  5 ++---
- 3 files changed, 7 insertions(+), 21 deletions(-)
+ drivers/iommu/intel-iommu.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b0651a2..0703ca3 100644
+index 44ce77a..43bf151 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1741,7 +1741,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	if (pasid_enabled(iommu)) {
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
--		intel_svm_free_pasid_tables(iommu);
-+		intel_svm_exit(iommu);
+@@ -2494,6 +2494,15 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	list_add(&info->global, &device_domain_list);
+ 	if (dev)
+ 		dev->archdata.iommu = info;
++
++	if (dev && dev_is_pci(dev) && info->pasid_supported) {
++		ret = intel_pasid_alloc_table(dev);
++		if (ret) {
++			__dmar_remove_one_dev_info(info);
++			spin_unlock_irqrestore(&device_domain_lock, flags);
++			return NULL;
++		}
++	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
+ 	if (dev && domain_context_mapping(domain, dev)) {
+@@ -4828,6 +4837,7 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
+ 	if (info->dev) {
+ 		iommu_disable_dev_iotlb(info);
+ 		domain_context_clear(iommu, info->dev);
++		intel_pasid_free_table(info->dev);
  	}
- #endif
- }
-@@ -3322,7 +3322,7 @@ static int __init init_dmars(void)
- 			hw_pass_through = 0;
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 		if (pasid_enabled(iommu))
--			intel_svm_alloc_pasid_tables(iommu);
-+			intel_svm_init(iommu);
- #endif
- 	}
  
-@@ -4285,7 +4285,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	if (pasid_enabled(iommu))
--		intel_svm_alloc_pasid_tables(iommu);
-+		intel_svm_init(iommu);
- #endif
- 
- 	if (dmaru->ignored) {
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index a253cde..eb30836 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -38,7 +38,7 @@ struct pasid_state_entry {
- 	u64 val;
- };
- 
--int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
-+int intel_svm_init(struct intel_iommu *iommu)
- {
- 	struct page *pages;
- 	int order;
-@@ -63,15 +63,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- 		iommu->pasid_max = 0x20000;
- 
- 	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
--	if (!pages) {
--		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
--			iommu->name);
--		return -ENOMEM;
--	}
--	iommu->pasid_table = page_address(pages);
--	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
--
- 	if (ecap_dis(iommu->ecap)) {
- 		/* Just making it explicit... */
- 		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
-@@ -86,14 +77,10 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- 	return 0;
- }
- 
--int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-+int intel_svm_exit(struct intel_iommu *iommu)
- {
- 	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
- 
--	if (iommu->pasid_table) {
--		free_pages((unsigned long)iommu->pasid_table, order);
--		iommu->pasid_table = NULL;
--	}
- 	if (iommu->pasid_state_table) {
- 		free_pages((unsigned long)iommu->pasid_state_table, order);
- 		iommu->pasid_state_table = NULL;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 8ec22b3..8051bc5 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -458,7 +458,6 @@ struct intel_iommu {
- 	 * devices away to userspace processes (e.g. for DPDK) and don't
- 	 * want to trust that userspace will use *only* the PASID it was
- 	 * told to. But while it's all driver-arbitrated, we're fine. */
--	struct pasid_entry *pasid_table;
- 	struct pasid_state_entry *pasid_state_table;
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-@@ -531,8 +530,8 @@ int for_each_device_domain(int (*fn)(struct device_domain_info *info,
- 				     void *data), void *data);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
--extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
--extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+int intel_svm_init(struct intel_iommu *iommu);
-+int intel_svm_exit(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
- 
+ 	unlink_domain_info(info);
 -- 
 2.7.4
