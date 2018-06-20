@@ -1,15 +1,21 @@
-From: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-Subject: Re: [PATCH 18/25] MIPS: loongson64: use generic dma noncoherent ops
-Date: Tue, 19 Jun 2018 16:19:25 -0700
-Message-ID: <20180619231925.mgbgc7lfvjqumr7a@pburton-laptop>
-References: <20180615110854.19253-1-hch@lst.de>
-	<20180615110854.19253-19-hch@lst.de>
+From: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC PATCH 17/23] watchdog/hardlockup/hpet: Convert the timer's
+	interrupt to NMI
+Date: Tue, 19 Jun 2018 17:15:35 -0700
+Message-ID: <20180620001535.GA27531@voyager>
+References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1528851463-21140-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<alpine.DEB.2.21.1806131128570.2280@nanos.tec.linutronix.de>
+	<20180615020314.GA11625@voyager>
+	<alpine.DEB.2.21.1806151029210.2079@nanos.tec.linutronix.de>
+	<20180616005103.GC6659@voyager>
+	<alpine.DEB.2.21.1806161517050.1582@nanos.tec.linutronix.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180615110854.19253-19-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.21.1806161517050.1582-ecDvlHI5BZPZikZi3RtOZ1XZhhPuCNm+@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,47 +25,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+On Sat, Jun 16, 2018 at 03:24:49PM +0200, Thomas Gleixner wrote:
+> On Fri, 15 Jun 2018, Ricardo Neri wrote:
+> > On Fri, Jun 15, 2018 at 11:19:09AM +0200, Thomas Gleixner wrote:
+> > > On Thu, 14 Jun 2018, Ricardo Neri wrote:
+> > > > Alternatively, there could be a counter that skips reading the HPET status
+> > > > register (and the detection of hardlockups) for every X NMIs. This would
+> > > > reduce the overall frequency of HPET register reads.
+> > > 
+> > > Great plan. So if the watchdog is the only NMI (because perf is off) then
+> > > you delay the watchdog detection by that count.
+> > 
+> > OK. This was a bad idea. Then, is it acceptable to have an read to an HPET
+> > register per NMI just to check in the status register if the HPET timer
+> > caused the NMI?
+> 
+> The status register is useless in case of MSI. MSI is edge triggered ....
+> 
+> The only register which gives you proper information is the counter
+> register itself. That adds an massive overhead to each NMI, because the
+> counter register access is synchronized to the HPET clock with hardware
+> magic. Plus on larger systems, the HPET access is cross node and even
+> slower.
 
-On Fri, Jun 15, 2018 at 01:08:47PM +0200, Christoph Hellwig wrote:
-> -static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
-> -	dma_addr_t dma_addr)
-> -{
-> -#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
-> -	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
-> -#else
-> -	return dma_addr & 0x7fffffff;
-> -#endif
-> -}
+It starts to sound that the HPET is too slow to drive the hardlockup detector.
 
-...
+Would it be possible to envision a variant of this implementation? In this
+variant, the HPET only targets a single CPU. The actual hardlockup detector
+is implemented by this single CPU sending interprocessor interrupts to the
+rest of the CPUs.
 
-> +phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-> +{
-> +#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
-> +	if (dma_addr > 0x8fffffff)
-> +		return dma_addr;
-> +#endif
-> +	return dma_addr & 0x0fffffff;
-> +}
+In this manner only one CPU has to deal with the slowness of the HPET; the
+rest of the CPUs don't have to read or write any HPET registers. A sysfs
+entry could be added to configure which CPU will have to deal with the HPET
+timer. However, profiling could not be done accurately on such CPU.
 
-Thanks for putting in the work here - I've applied patches 1-17 to
-mips-next so far, but I'm struggling to convince myself that the above
-is correct.
-
-In the original code we have 3 distinct cases:
-
-  64b Loongson2F, dma_addr > 0x8fffffff  -> dma_addr
-  64b Loongson2F, dma_addr <= 0x8fffffff -> dma_addr & 0x0fffffff
-  Everything else                        -> dma_addr & 0x7fffffff
-
-In the new __dma_to_phys() though only the first case remains the same.
-
-Is this intentional or a mixup?
-
-Thanks,
-    Paul
+Thanks and BR,
+Ricardo
