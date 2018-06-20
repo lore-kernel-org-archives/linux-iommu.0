@@ -1,21 +1,14 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [RFC PATCH 17/23] watchdog/hardlockup/hpet: Convert the timer's
-	interrupt to NMI
-Date: Wed, 20 Jun 2018 09:47:53 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1806200940210.10546@nanos.tec.linutronix.de>
-References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<1528851463-21140-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
-	<alpine.DEB.2.21.1806131128570.2280@nanos.tec.linutronix.de>
-	<20180615020314.GA11625@voyager>
-	<alpine.DEB.2.21.1806151029210.2079@nanos.tec.linutronix.de>
-	<20180616005103.GC6659@voyager>
-	<alpine.DEB.2.21.1806161517050.1582@nanos.tec.linutronix.de>
-	<20180620001535.GA27531@voyager>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [RESEND 0/6] iommu: ipmmu-vmsa: Add more Gen3 SoCs support
+Date: Wed, 20 Jun 2018 13:29:14 +0200
+Message-ID: <20180620112909.gzbdpj2kwcehebnx@verge.net.au>
+References: <1528973306-7962-1-git-send-email-jacopo+renesas@jmondi.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180620001535.GA27531@voyager>
+Content-Disposition: inline
+In-Reply-To: <1528973306-7962-1-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,32 +18,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 19 Jun 2018, Ricardo Neri wrote:
-> On Sat, Jun 16, 2018 at 03:24:49PM +0200, Thomas Gleixner wrote:
-> > The status register is useless in case of MSI. MSI is edge triggered ....
-> > 
-> > The only register which gives you proper information is the counter
-> > register itself. That adds an massive overhead to each NMI, because the
-> > counter register access is synchronized to the HPET clock with hardware
-> > magic. Plus on larger systems, the HPET access is cross node and even
-> > slower.
+[CC Alex Williamson]
+
+On Thu, Jun 14, 2018 at 12:48:20PM +0200, Jacopo Mondi wrote:
+> Hello,
+>    this series collects patches sent to mailing lists in late 2017 to add
+> support for a number of R-Car Gen3 SoCs to the ipmmu-vmsa driver.
 > 
-> It starts to sound that the HPET is too slow to drive the hardlockup detector.
+> Part of the series these patches were part of went in through Alex Williamson
+> tree and are now included in v4.17.
 > 
-> Would it be possible to envision a variant of this implementation? In this
-> variant, the HPET only targets a single CPU. The actual hardlockup detector
-> is implemented by this single CPU sending interprocessor interrupts to the
-> rest of the CPUs.
+> These patches have not yet been collected, and need to be rebased on v4.17,
+> and this what this series serves for.
+> 
+> The series:
+> - Increses the micro-TLB size to 48bits to accomodate newer SoCs
+> - Adds support for M3-N, M3-W, V3-M and E3 to ipmmu-vmsa driver
+> - Documents M3-N, V3H and E3 device tree bindings
+> 
+> All patches have been acked/reviewed by, if nothing big happens they should
+> be ready to be collected.
 
-And these IPIs must be NMIs which need to have a software based indicator
-that the watchdog needs to be checked, which is going to create yet another
-can of race conditions and in the worst case 'unknown NMI' splats. Not
-pretty either.
+All patches:
 
-Thanks,
+Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 
-	tglx
+Joerg, Alex,
+
+I'd be most grateful if we could find a way for these patches to progress
+into mainline.
+
+> 
+> Thanks
+>    j
+> 
+> Jacopo Mondi (2):
+>   dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N (R8A77965)
+>   iommu/ipmmu-vmsa: Hook up R8A77965 DT matching code
+> 
+> Magnus Damm (3):
+>   iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+>   iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+>   iommu/ipmmu-vmsa: Document R-Car V3H and E3 IPMMU DT bindings
+> 
+> Simon Horman (1):
+>   iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT matching code
+> 
+>  .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  3 ++
+>  drivers/iommu/ipmmu-vmsa.c                         | 38 ++++++++++++++++++----
+>  2 files changed, 34 insertions(+), 7 deletions(-)
+> 
+> --
+> 2.7.4
+> 
