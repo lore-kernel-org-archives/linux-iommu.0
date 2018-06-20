@@ -1,14 +1,16 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [RESEND 0/6] iommu: ipmmu-vmsa: Add more Gen3 SoCs support
-Date: Wed, 20 Jun 2018 13:29:14 +0200
-Message-ID: <20180620112909.gzbdpj2kwcehebnx@verge.net.au>
-References: <1528973306-7962-1-git-send-email-jacopo+renesas@jmondi.org>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 1/4 V3] Add a function(ioremap_encrypted) for kdump when
+	AMD sme enabled
+Date: Wed, 20 Jun 2018 11:00:52 -0500
+Message-ID: <e5bb19b7-7db4-1c1c-d8bd-cc44d6b7bebb@amd.com>
+References: <20180616082714.32035-1-lijiang@redhat.com>
+	<20180616082714.32035-2-lijiang@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1528973306-7962-1-git-send-email-jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20180616082714.32035-2-lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,60 +20,150 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+To: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[CC Alex Williamson]
+On 6/16/2018 3:27 AM, Lianbo Jiang wrote:
+> It is convenient to remap the old memory encrypted to the second
+> kernel by calling ioremap_encrypted().
+> 
+> Signed-off-by: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+> Some changes:
+> 1. remove the sme_active() check in __ioremap_caller().
+> 2. put some logic into the early_memremap_pgprot_adjust() for
+> early memremap.
+> 
+>  arch/x86/include/asm/io.h |  3 +++
+>  arch/x86/mm/ioremap.c     | 28 ++++++++++++++++++++--------
+>  2 files changed, 23 insertions(+), 8 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+> index f6e5b93..989d60b 100644
+> --- a/arch/x86/include/asm/io.h
+> +++ b/arch/x86/include/asm/io.h
+> @@ -192,6 +192,9 @@ extern void __iomem *ioremap_cache(resource_size_t offset, unsigned long size);
+>  #define ioremap_cache ioremap_cache
+>  extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size, unsigned long prot_val);
+>  #define ioremap_prot ioremap_prot
+> +extern void __iomem *ioremap_encrypted(resource_size_t phys_addr,
+> +					unsigned long size);
+> +#define ioremap_encrypted ioremap_encrypted
+>  
+>  /**
+>   * ioremap     -   map bus memory into CPU space
+> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+> index c63a545..e365fc4 100644
+> --- a/arch/x86/mm/ioremap.c
+> +++ b/arch/x86/mm/ioremap.c
+> @@ -24,6 +24,7 @@
+>  #include <asm/pgalloc.h>
+>  #include <asm/pat.h>
+>  #include <asm/setup.h>
+> +#include <linux/crash_dump.h>
+>  
+>  #include "physaddr.h"
+>  
+> @@ -131,7 +132,8 @@ static void __ioremap_check_mem(resource_size_t addr, unsigned long size,
+>   * caller shouldn't need to know that small detail.
+>   */
+>  static void __iomem *__ioremap_caller(resource_size_t phys_addr,
+> -		unsigned long size, enum page_cache_mode pcm, void *caller)
+> +		unsigned long size, enum page_cache_mode pcm,
+> +		void *caller, bool encrypted)
+>  {
+>  	unsigned long offset, vaddr;
+>  	resource_size_t last_addr;
+> @@ -199,7 +201,7 @@ static void __iomem *__ioremap_caller(resource_size_t phys_addr,
+>  	 * resulting mapping.
+>  	 */
+>  	prot = PAGE_KERNEL_IO;
+> -	if (sev_active() && mem_flags.desc_other)
+> +	if ((sev_active() && mem_flags.desc_other) || encrypted)
+>  		prot = pgprot_encrypted(prot);
+>  
+>  	switch (pcm) {
+> @@ -291,7 +293,7 @@ void __iomem *ioremap_nocache(resource_size_t phys_addr, unsigned long size)
+>  	enum page_cache_mode pcm = _PAGE_CACHE_MODE_UC_MINUS;
+>  
+>  	return __ioremap_caller(phys_addr, size, pcm,
+> -				__builtin_return_address(0));
+> +				__builtin_return_address(0), false);
+>  }
+>  EXPORT_SYMBOL(ioremap_nocache);
+>  
+> @@ -324,7 +326,7 @@ void __iomem *ioremap_uc(resource_size_t phys_addr, unsigned long size)
+>  	enum page_cache_mode pcm = _PAGE_CACHE_MODE_UC;
+>  
+>  	return __ioremap_caller(phys_addr, size, pcm,
+> -				__builtin_return_address(0));
+> +				__builtin_return_address(0), false);
+>  }
+>  EXPORT_SYMBOL_GPL(ioremap_uc);
+>  
+> @@ -341,7 +343,7 @@ EXPORT_SYMBOL_GPL(ioremap_uc);
+>  void __iomem *ioremap_wc(resource_size_t phys_addr, unsigned long size)
+>  {
+>  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WC,
+> -					__builtin_return_address(0));
+> +					__builtin_return_address(0), false);
+>  }
+>  EXPORT_SYMBOL(ioremap_wc);
+>  
+> @@ -358,14 +360,21 @@ EXPORT_SYMBOL(ioremap_wc);
+>  void __iomem *ioremap_wt(resource_size_t phys_addr, unsigned long size)
+>  {
+>  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WT,
+> -					__builtin_return_address(0));
+> +					__builtin_return_address(0), false);
+>  }
+>  EXPORT_SYMBOL(ioremap_wt);
+>  
+> +void __iomem *ioremap_encrypted(resource_size_t phys_addr, unsigned long size)
+> +{
+> +	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WB,
+> +				__builtin_return_address(0), true);
+> +}
+> +EXPORT_SYMBOL(ioremap_encrypted);
+> +
+>  void __iomem *ioremap_cache(resource_size_t phys_addr, unsigned long size)
+>  {
+>  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WB,
+> -				__builtin_return_address(0));
+> +				__builtin_return_address(0), false);
+>  }
+>  EXPORT_SYMBOL(ioremap_cache);
+>  
+> @@ -374,7 +383,7 @@ void __iomem *ioremap_prot(resource_size_t phys_addr, unsigned long size,
+>  {
+>  	return __ioremap_caller(phys_addr, size,
+>  				pgprot2cachemode(__pgprot(prot_val)),
+> -				__builtin_return_address(0));
+> +				__builtin_return_address(0), false);
+>  }
+>  EXPORT_SYMBOL(ioremap_prot);
+>  
+> @@ -688,6 +697,9 @@ pgprot_t __init early_memremap_pgprot_adjust(resource_size_t phys_addr,
+>  	if (encrypted_prot && memremap_should_map_decrypted(phys_addr, size))
+>  		encrypted_prot = false;
+>  
+> +	if (sme_active() && is_kdump_kernel())
+> +		encrypted_prot = false;
+> +
 
-On Thu, Jun 14, 2018 at 12:48:20PM +0200, Jacopo Mondi wrote:
-> Hello,
->    this series collects patches sent to mailing lists in late 2017 to add
-> support for a number of R-Car Gen3 SoCs to the ipmmu-vmsa driver.
-> 
-> Part of the series these patches were part of went in through Alex Williamson
-> tree and are now included in v4.17.
-> 
-> These patches have not yet been collected, and need to be rebased on v4.17,
-> and this what this series serves for.
-> 
-> The series:
-> - Increses the micro-TLB size to 48bits to accomodate newer SoCs
-> - Adds support for M3-N, M3-W, V3-M and E3 to ipmmu-vmsa driver
-> - Documents M3-N, V3H and E3 device tree bindings
-> 
-> All patches have been acked/reviewed by, if nothing big happens they should
-> be ready to be collected.
+This change doesn't seem to go with the patch description.  Maybe it
+should be a separate patch?  Or provide more detail in the description
+for this change.
 
-All patches:
+What is this change addressing?  What early_memremap() calls were failing
+that required this?  If this truly is required, you can probably move it
+up into the "if (sme_active())" block a few lines higher in the function.
 
-Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Thanks,
+Tom
 
-Joerg, Alex,
-
-I'd be most grateful if we could find a way for these patches to progress
-into mainline.
-
-> 
-> Thanks
->    j
-> 
-> Jacopo Mondi (2):
->   dt-bindings: iommu/ipmmu-vmsa: Add R-Car M3-N (R8A77965)
->   iommu/ipmmu-vmsa: Hook up R8A77965 DT matching code
-> 
-> Magnus Damm (3):
->   iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
->   iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
->   iommu/ipmmu-vmsa: Document R-Car V3H and E3 IPMMU DT bindings
-> 
-> Simon Horman (1):
->   iommu/ipmmu-vmsa: Hook up r8a779(70|95) DT matching code
-> 
->  .../bindings/iommu/renesas,ipmmu-vmsa.txt          |  3 ++
->  drivers/iommu/ipmmu-vmsa.c                         | 38 ++++++++++++++++++----
->  2 files changed, 34 insertions(+), 7 deletions(-)
-> 
-> --
-> 2.7.4
+>  	return encrypted_prot ? pgprot_encrypted(prot)
+>  			      : pgprot_decrypted(prot);
+>  }
 > 
