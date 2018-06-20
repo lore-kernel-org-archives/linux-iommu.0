@@ -1,15 +1,15 @@
 From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH 1/4 V3] Add a function(ioremap_encrypted) for kdump when
-	AMD sme enabled
-Date: Wed, 20 Jun 2018 11:00:52 -0500
-Message-ID: <e5bb19b7-7db4-1c1c-d8bd-cc44d6b7bebb@amd.com>
+Subject: Re: [PATCH 3/4 V3] Remap the device table of IOMMU in encrypted
+	manner for kdump
+Date: Wed, 20 Jun 2018 11:42:16 -0500
+Message-ID: <60c6f00e-0eb3-d39c-6a1e-8a1dc1e095af@amd.com>
 References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180616082714.32035-2-lijiang@redhat.com>
+	<20180616082714.32035-4-lijiang@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180616082714.32035-2-lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20180616082714.32035-4-lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,145 +25,60 @@ Cc: dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3
 List-Id: iommu@lists.linux-foundation.org
 
 On 6/16/2018 3:27 AM, Lianbo Jiang wrote:
-> It is convenient to remap the old memory encrypted to the second
-> kernel by calling ioremap_encrypted().
+> In kdump mode, it will copy the device table of IOMMU from the old
+> device table, which is encrypted when SME is enabled in the first
+> kernel. So we must remap it in encrypted manner in order to be
+> automatically decrypted when we read.
 > 
 > Signed-off-by: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
 > Some changes:
-> 1. remove the sme_active() check in __ioremap_caller().
-> 2. put some logic into the early_memremap_pgprot_adjust() for
-> early memremap.
+> 1. add some comments
+> 2. clean compile warning.
 > 
->  arch/x86/include/asm/io.h |  3 +++
->  arch/x86/mm/ioremap.c     | 28 ++++++++++++++++++++--------
->  2 files changed, 23 insertions(+), 8 deletions(-)
+>  drivers/iommu/amd_iommu_init.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-> index f6e5b93..989d60b 100644
-> --- a/arch/x86/include/asm/io.h
-> +++ b/arch/x86/include/asm/io.h
-> @@ -192,6 +192,9 @@ extern void __iomem *ioremap_cache(resource_size_t offset, unsigned long size);
->  #define ioremap_cache ioremap_cache
->  extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size, unsigned long prot_val);
->  #define ioremap_prot ioremap_prot
-> +extern void __iomem *ioremap_encrypted(resource_size_t phys_addr,
-> +					unsigned long size);
-> +#define ioremap_encrypted ioremap_encrypted
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 904c575..a20af4c 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -889,11 +889,24 @@ static bool copy_device_table(void)
+>  	}
 >  
->  /**
->   * ioremap     -   map bus memory into CPU space
-> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-> index c63a545..e365fc4 100644
-> --- a/arch/x86/mm/ioremap.c
-> +++ b/arch/x86/mm/ioremap.c
-> @@ -24,6 +24,7 @@
->  #include <asm/pgalloc.h>
->  #include <asm/pat.h>
->  #include <asm/setup.h>
-> +#include <linux/crash_dump.h>
->  
->  #include "physaddr.h"
->  
-> @@ -131,7 +132,8 @@ static void __ioremap_check_mem(resource_size_t addr, unsigned long size,
->   * caller shouldn't need to know that small detail.
->   */
->  static void __iomem *__ioremap_caller(resource_size_t phys_addr,
-> -		unsigned long size, enum page_cache_mode pcm, void *caller)
-> +		unsigned long size, enum page_cache_mode pcm,
-> +		void *caller, bool encrypted)
->  {
->  	unsigned long offset, vaddr;
->  	resource_size_t last_addr;
-> @@ -199,7 +201,7 @@ static void __iomem *__ioremap_caller(resource_size_t phys_addr,
->  	 * resulting mapping.
->  	 */
->  	prot = PAGE_KERNEL_IO;
-> -	if (sev_active() && mem_flags.desc_other)
-> +	if ((sev_active() && mem_flags.desc_other) || encrypted)
->  		prot = pgprot_encrypted(prot);
->  
->  	switch (pcm) {
-> @@ -291,7 +293,7 @@ void __iomem *ioremap_nocache(resource_size_t phys_addr, unsigned long size)
->  	enum page_cache_mode pcm = _PAGE_CACHE_MODE_UC_MINUS;
->  
->  	return __ioremap_caller(phys_addr, size, pcm,
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_nocache);
->  
-> @@ -324,7 +326,7 @@ void __iomem *ioremap_uc(resource_size_t phys_addr, unsigned long size)
->  	enum page_cache_mode pcm = _PAGE_CACHE_MODE_UC;
->  
->  	return __ioremap_caller(phys_addr, size, pcm,
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL_GPL(ioremap_uc);
->  
-> @@ -341,7 +343,7 @@ EXPORT_SYMBOL_GPL(ioremap_uc);
->  void __iomem *ioremap_wc(resource_size_t phys_addr, unsigned long size)
->  {
->  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WC,
-> -					__builtin_return_address(0));
-> +					__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_wc);
->  
-> @@ -358,14 +360,21 @@ EXPORT_SYMBOL(ioremap_wc);
->  void __iomem *ioremap_wt(resource_size_t phys_addr, unsigned long size)
->  {
->  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WT,
-> -					__builtin_return_address(0));
-> +					__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_wt);
->  
-> +void __iomem *ioremap_encrypted(resource_size_t phys_addr, unsigned long size)
-> +{
-> +	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WB,
-> +				__builtin_return_address(0), true);
-> +}
-> +EXPORT_SYMBOL(ioremap_encrypted);
+>  	old_devtb_phys = entry & PAGE_MASK;
 > +
->  void __iomem *ioremap_cache(resource_size_t phys_addr, unsigned long size)
->  {
->  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WB,
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_cache);
->  
-> @@ -374,7 +383,7 @@ void __iomem *ioremap_prot(resource_size_t phys_addr, unsigned long size,
->  {
->  	return __ioremap_caller(phys_addr, size,
->  				pgprot2cachemode(__pgprot(prot_val)),
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_prot);
->  
-> @@ -688,6 +697,9 @@ pgprot_t __init early_memremap_pgprot_adjust(resource_size_t phys_addr,
->  	if (encrypted_prot && memremap_should_map_decrypted(phys_addr, size))
->  		encrypted_prot = false;
->  
-> +	if (sme_active() && is_kdump_kernel())
-> +		encrypted_prot = false;
+> +	/*
+> +	 *  When sme enable in the first kernel, old_devtb_phys includes the
+> +	 *  memory encryption mask(sme_me_mask), we must remove the memory
+> +	 *  encryption mask to obtain the true physical address in kdump mode.
+> +	 */
+> +	if (mem_encrypt_active() && is_kdump_kernel())
+> +		old_devtb_phys = __sme_clr(old_devtb_phys);
 > +
 
-This change doesn't seem to go with the patch description.  Maybe it
-should be a separate patch?  Or provide more detail in the description
-for this change.
+You can probably just use "if (is_kdump_kernel())" here, since memory
+encryption is either on in both the first and second kernel or off in
+both the first and second kernel.  At which point __sme_clr() will do
+the proper thing.
 
-What is this change addressing?  What early_memremap() calls were failing
-that required this?  If this truly is required, you can probably move it
-up into the "if (sme_active())" block a few lines higher in the function.
+Actually, this needs to be done no matter what.  When doing either the
+ioremap_encrypted() or the memremap(), the physical address should not
+include the encryption bit/mask.
 
 Thanks,
 Tom
 
->  	return encrypted_prot ? pgprot_encrypted(prot)
->  			      : pgprot_decrypted(prot);
->  }
+>  	if (old_devtb_phys >= 0x100000000ULL) {
+>  		pr_err("The address of old device table is above 4G, not trustworthy!\n");
+>  		return false;
+>  	}
+> -	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
+> +	old_devtb = (mem_encrypt_active() && is_kdump_kernel())
+> +		    ? (__force void *)ioremap_encrypted(old_devtb_phys,
+> +							dev_table_size)
+> +		    : memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);> +
+>  	if (!old_devtb)
+>  		return false;
+>  
 > 
