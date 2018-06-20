@@ -1,16 +1,21 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 18/25] MIPS: loongson64: use generic dma noncoherent ops
-Date: Wed, 20 Jun 2018 09:23:28 +0200
-Message-ID: <20180620072328.GA1675@lst.de>
-References: <20180615110854.19253-1-hch@lst.de>
-	<20180615110854.19253-19-hch@lst.de>
-	<20180619231925.mgbgc7lfvjqumr7a@pburton-laptop>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [RFC PATCH 17/23] watchdog/hardlockup/hpet: Convert the timer's
+	interrupt to NMI
+Date: Wed, 20 Jun 2018 09:47:53 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1806200940210.10546@nanos.tec.linutronix.de>
+References: <1528851463-21140-1-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<1528851463-21140-18-git-send-email-ricardo.neri-calderon@linux.intel.com>
+	<alpine.DEB.2.21.1806131128570.2280@nanos.tec.linutronix.de>
+	<20180615020314.GA11625@voyager>
+	<alpine.DEB.2.21.1806151029210.2079@nanos.tec.linutronix.de>
+	<20180616005103.GC6659@voyager>
+	<alpine.DEB.2.21.1806161517050.1582@nanos.tec.linutronix.de>
+	<20180620001535.GA27531@voyager>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180619231925.mgbgc7lfvjqumr7a@pburton-laptop>
+In-Reply-To: <20180620001535.GA27531@voyager>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,215 +25,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexei Starovoitov <ast-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kai-Heng Feng <kai.heng.feng-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoffer Dall <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Davidlohr Bueso <dave-h16yJtLeMjHk1uMJSBkQmQ@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Andi Kleen <andi.kleen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Masami Hiramatsu <mhiramat-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Don Zickus <dzickus-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Ravi V. Shankar" <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Frederic Weisbecker <frederic-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicholas Piggin <npiggin-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 19, 2018 at 04:19:25PM -0700, Paul Burton wrote:
-> Hi Christoph,
+On Tue, 19 Jun 2018, Ricardo Neri wrote:
+> On Sat, Jun 16, 2018 at 03:24:49PM +0200, Thomas Gleixner wrote:
+> > The status register is useless in case of MSI. MSI is edge triggered ....
+> > 
+> > The only register which gives you proper information is the counter
+> > register itself. That adds an massive overhead to each NMI, because the
+> > counter register access is synchronized to the HPET clock with hardware
+> > magic. Plus on larger systems, the HPET access is cross node and even
+> > slower.
 > 
-> On Fri, Jun 15, 2018 at 01:08:47PM +0200, Christoph Hellwig wrote:
-> > -static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
-> > -	dma_addr_t dma_addr)
-> > -{
-> > -#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
-> > -	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
-> > -#else
-> > -	return dma_addr & 0x7fffffff;
-> > -#endif
-> > -}
+> It starts to sound that the HPET is too slow to drive the hardlockup detector.
 > 
-> ...
-> 
-> > +phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-> > +{
-> > +#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
-> > +	if (dma_addr > 0x8fffffff)
-> > +		return dma_addr;
-> > +#endif
-> > +	return dma_addr & 0x0fffffff;
-> > +}
-> 
-> Thanks for putting in the work here - I've applied patches 1-17 to
-> mips-next so far, but I'm struggling to convince myself that the above
-> is correct.
-> 
-> In the original code we have 3 distinct cases:
-> 
->   64b Loongson2F, dma_addr > 0x8fffffff  -> dma_addr
->   64b Loongson2F, dma_addr <= 0x8fffffff -> dma_addr & 0x0fffffff
->   Everything else                        -> dma_addr & 0x7fffffff
-> 
-> In the new __dma_to_phys() though only the first case remains the same.
-> 
-> Is this intentional or a mixup?
+> Would it be possible to envision a variant of this implementation? In this
+> variant, the HPET only targets a single CPU. The actual hardlockup detector
+> is implemented by this single CPU sending interprocessor interrupts to the
+> rest of the CPUs.
 
-No, this is a mixup.  I hadn't noticed one case was 0x0fffffff and
-the other 0x7fffffff.
+And these IPIs must be NMIs which need to have a software based indicator
+that the watchdog needs to be checked, which is going to create yet another
+can of race conditions and in the worst case 'unknown NMI' splats. Not
+pretty either.
 
-Below is the minimal fixup that keeps things as much as it was before.
+Thanks,
 
----
->From 174213f535c07774cdbbccd42c76164893729cf5 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Date: Wed, 20 Jun 2018 09:11:15 +0200
-Subject: MIPS: loongson64: use generic dma noncoherent ops
-
-Provide phys_to_dma/dma_to_phys helpers, everything else is generic.
-
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- arch/mips/Kconfig                             |  1 +
- .../asm/mach-loongson64/dma-coherence.h       | 69 -------------------
- arch/mips/loongson64/Kconfig                  |  2 -
- arch/mips/loongson64/common/Makefile          |  1 +
- arch/mips/loongson64/common/dma.c             | 18 +++++
- 5 files changed, 20 insertions(+), 71 deletions(-)
- delete mode 100644 arch/mips/include/asm/mach-loongson64/dma-coherence.h
- create mode 100644 arch/mips/loongson64/common/dma.c
-
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 326bd73bc5bf..e192e484b1b8 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -1827,6 +1827,7 @@ config CPU_LOONGSON2
- 	select CPU_SUPPORTS_64BIT_KERNEL
- 	select CPU_SUPPORTS_HIGHMEM
- 	select CPU_SUPPORTS_HUGEPAGES
-+	select ARCH_HAS_PHYS_TO_DMA
- 
- config CPU_LOONGSON1
- 	bool
-diff --git a/arch/mips/include/asm/mach-loongson64/dma-coherence.h b/arch/mips/include/asm/mach-loongson64/dma-coherence.h
-deleted file mode 100644
-index 651dd2eb3ee5..000000000000
---- a/arch/mips/include/asm/mach-loongson64/dma-coherence.h
-+++ /dev/null
-@@ -1,69 +0,0 @@
--/*
-- * This file is subject to the terms and conditions of the GNU General Public
-- * License.  See the file "COPYING" in the main directory of this archive
-- * for more details.
-- *
-- * Copyright (C) 2006, 07  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
-- * Copyright (C) 2007 Lemote, Inc. & Institute of Computing Technology
-- * Author: Fuxin Zhang, zhangfx-h23VmSynlr/QT0dZR+AlfA@public.gmane.org
-- *
-- */
--#ifndef __ASM_MACH_LOONGSON64_DMA_COHERENCE_H
--#define __ASM_MACH_LOONGSON64_DMA_COHERENCE_H
--
--#ifdef CONFIG_SWIOTLB
--#include <linux/swiotlb.h>
--#endif
--
--struct device;
--
--static inline dma_addr_t plat_map_dma_mem(struct device *dev, void *addr,
--					  size_t size)
--{
--	return virt_to_phys(addr) | 0x80000000;
--}
--
--static inline dma_addr_t plat_map_dma_mem_page(struct device *dev,
--					       struct page *page)
--{
--	return page_to_phys(page) | 0x80000000;
--}
--
--static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
--	dma_addr_t dma_addr)
--{
--#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
--	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
--#else
--	return dma_addr & 0x7fffffff;
--#endif
--}
--
--static inline void plat_unmap_dma_mem(struct device *dev, dma_addr_t dma_addr,
--	size_t size, enum dma_data_direction direction)
--{
--}
--
--static inline int plat_dma_supported(struct device *dev, u64 mask)
--{
--	/*
--	 * we fall back to GFP_DMA when the mask isn't all 1s,
--	 * so we can't guarantee allocations that must be
--	 * within a tighter range than GFP_DMA..
--	 */
--	if (mask < DMA_BIT_MASK(24))
--		return 0;
--
--	return 1;
--}
--
--static inline int plat_device_is_coherent(struct device *dev)
--{
--	return 0;
--}
--
--static inline void plat_post_dma_flush(struct device *dev)
--{
--}
--
--#endif /* __ASM_MACH_LOONGSON64_DMA_COHERENCE_H */
-diff --git a/arch/mips/loongson64/Kconfig b/arch/mips/loongson64/Kconfig
-index a785bf8da3f3..c865b4b9b775 100644
---- a/arch/mips/loongson64/Kconfig
-+++ b/arch/mips/loongson64/Kconfig
-@@ -13,7 +13,6 @@ config LEMOTE_FULOONG2E
- 	select CSRC_R4K
- 	select SYS_HAS_CPU_LOONGSON2E
- 	select DMA_NONCOHERENT
--	select MIPS_DMA_DEFAULT
- 	select BOOT_ELF32
- 	select BOARD_SCACHE
- 	select HW_HAS_PCI
-@@ -45,7 +44,6 @@ config LEMOTE_MACH2F
- 	select CS5536
- 	select CSRC_R4K if ! MIPS_EXTERNAL_TIMER
- 	select DMA_NONCOHERENT
--	select MIPS_DMA_DEFAULT
- 	select GENERIC_ISA_DMA_SUPPORT_BROKEN
- 	select HAVE_CLK
- 	select HW_HAS_PCI
-diff --git a/arch/mips/loongson64/common/Makefile b/arch/mips/loongson64/common/Makefile
-index 684624f61f5a..57ee03022941 100644
---- a/arch/mips/loongson64/common/Makefile
-+++ b/arch/mips/loongson64/common/Makefile
-@@ -6,6 +6,7 @@
- obj-y += setup.o init.o cmdline.o env.o time.o reset.o irq.o \
-     bonito-irq.o mem.o machtype.o platform.o serial.o
- obj-$(CONFIG_PCI) += pci.o
-+obj-$(CONFIG_CPU_LOONGSON2) += dma.o
- 
- #
- # Serial port support
-diff --git a/arch/mips/loongson64/common/dma.c b/arch/mips/loongson64/common/dma.c
-new file mode 100644
-index 000000000000..48f04126bde2
---- /dev/null
-+++ b/arch/mips/loongson64/common/dma.c
-@@ -0,0 +1,18 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/dma-direct.h>
-+
-+dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
-+{
-+	return paddr | 0x80000000;
-+}
-+
-+phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
-+{
-+#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
-+	if (dma_addr > 0x8fffffff)
-+		return dma_addr;
-+	return dma_addr & 0x0fffffff;
-+#else
-+	return dma_addr & 0x7fffffff;
-+#endif
-+}
--- 
-2.17.1
+	tglx
