@@ -1,18 +1,16 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 4/4 V3] Help to dump the old memory encrypted into vmcore
-	file
-Date: Wed, 20 Jun 2018 12:50:11 +0800
-Message-ID: <fc5aac1f-eb97-1df5-dfda-54ff0c2f514e@redhat.com>
-References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180616082714.32035-5-lijiang@redhat.com>
-	<20180619031653.GA7101@dhcp-128-65.nay.redhat.com>
-	<ca71214f-0a96-32cc-301a-34e31029bfe6@redhat.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 18/25] MIPS: loongson64: use generic dma noncoherent ops
+Date: Wed, 20 Jun 2018 09:23:28 +0200
+Message-ID: <20180620072328.GA1675@lst.de>
+References: <20180615110854.19253-1-hch@lst.de>
+	<20180615110854.19253-19-hch@lst.de>
+	<20180619231925.mgbgc7lfvjqumr7a@pburton-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ca71214f-0a96-32cc-301a-34e31029bfe6-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180619231925.mgbgc7lfvjqumr7a@pburton-laptop>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,180 +20,215 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Daney <david.daney-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, James Hogan <jhogan-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tom Bogendoerfer <tsbogend-I1c7kopa9pxLokYuJOExCg@public.gmane.org>, Jiaxun Yang <jiaxun.yang-nEvAom26CKtBDgjK7y7TUQ@public.gmane.org>, Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwNuaciDE55pelIDIyOjQ2LCBsaWppYW5nIOWGmemBkzoKPiDlnKggMjAxOOW5
-tDA25pyIMTnml6UgMTE6MTYsIERhdmUgWW91bmcg5YaZ6YGTOgo+PiBPbiAwNi8xNi8xOCBhdCAw
-NDoyN3BtLCBMaWFuYm8gSmlhbmcgd3JvdGU6Cj4+PiBJbiBrZHVtcCBtb2RlLCB3ZSBuZWVkIHRv
-IGR1bXAgdGhlIG9sZCBtZW1vcnkgaW50byB2bWNvcmUgZmlsZSwKPj4+IGlmIFNNRSBpcyBlbmFi
-bGVkIGluIHRoZSBmaXJzdCBrZXJuZWwsIHdlIG11c3QgcmVtYXAgdGhlIG9sZAo+Pj4gbWVtb3J5
-IGluIGVuY3J5cHRlZCBtYW5uZXIsIHdoaWNoIHdpbGwgYmUgYXV0b21hdGljYWxseSBkZWNyeXB0
-ZWQKPj4+IHdoZW4gd2UgcmVhZCBmcm9tIERSQU0uIEl0IGhlbHBzIHRvIHBhcnNlIHRoZSB2bWNv
-cmUgZm9yIHNvbWUgdG9vbHMuCj4+Pgo+Pj4gU2lnbmVkLW9mZi1ieTogTGlhbmJvIEppYW5nIDxs
-aWppYW5nQHJlZGhhdC5jb20+Cj4+PiAtLS0KPj4+IFNvbWUgY2hhbmdlczoKPj4+IDEuIGFkZCBh
-IG5ldyBmaWxlIGFuZCBtb2RpZnkgTWFrZWZpbGUuCj4+PiAyLiByZW1vdmUgc29tZSBjb2RlIGlu
-IHNldl9hY3RpdmUoKS4KPj4+Cj4+PiAgYXJjaC94ODYva2VybmVsL01ha2VmaWxlICAgICAgICAg
-ICAgIHwgIDEgKwo+Pj4gIGFyY2gveDg2L2tlcm5lbC9jcmFzaF9kdW1wX2VuY3J5cHQuYyB8IDUz
-ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwo+Pj4gIGZzL3Byb2Mvdm1jb3Jl
-LmMgICAgICAgICAgICAgICAgICAgICB8IDIwICsrKysrKysrKystLS0tCj4+PiAgaW5jbHVkZS9s
-aW51eC9jcmFzaF9kdW1wLmggICAgICAgICAgIHwgMTEgKysrKysrKysKPj4+ICA0IGZpbGVzIGNo
-YW5nZWQsIDc5IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCj4+PiAgY3JlYXRlIG1vZGUg
-MTAwNjQ0IGFyY2gveDg2L2tlcm5lbC9jcmFzaF9kdW1wX2VuY3J5cHQuYwo+Pj4KPj4+IGRpZmYg
-LS1naXQgYS9hcmNoL3g4Ni9rZXJuZWwvTWFrZWZpbGUgYi9hcmNoL3g4Ni9rZXJuZWwvTWFrZWZp
-bGUKPj4+IGluZGV4IDAyZDZmNWMuLmFmYjViYWQgMTAwNjQ0Cj4+PiAtLS0gYS9hcmNoL3g4Ni9r
-ZXJuZWwvTWFrZWZpbGUKPj4+ICsrKyBiL2FyY2gveDg2L2tlcm5lbC9NYWtlZmlsZQo+Pj4gQEAg
-LTk2LDYgKzk2LDcgQEAgb2JqLSQoQ09ORklHX0tFWEVDX0NPUkUpCSs9IG1hY2hpbmVfa2V4ZWNf
-JChCSVRTKS5vCj4+PiAgb2JqLSQoQ09ORklHX0tFWEVDX0NPUkUpCSs9IHJlbG9jYXRlX2tlcm5l
-bF8kKEJJVFMpLm8gY3Jhc2gubwo+Pj4gIG9iai0kKENPTkZJR19LRVhFQ19GSUxFKQkrPSBrZXhl
-Yy1iemltYWdlNjQubwo+Pj4gIG9iai0kKENPTkZJR19DUkFTSF9EVU1QKQkrPSBjcmFzaF9kdW1w
-XyQoQklUUykubwo+Pj4gK29iai0kKENPTkZJR19BTURfTUVNX0VOQ1JZUFQpCSs9IGNyYXNoX2R1
-bXBfZW5jcnlwdC5vCj4+PiAgb2JqLXkJCQkJKz0ga3Byb2Jlcy8KPj4+ICBvYmotJChDT05GSUdf
-TU9EVUxFUykJCSs9IG1vZHVsZS5vCj4+PiAgb2JqLSQoQ09ORklHX0RPVUJMRUZBVUxUKQkrPSBk
-b3VibGVmYXVsdC5vCj4+PiBkaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVsL2NyYXNoX2R1bXBf
-ZW5jcnlwdC5jIGIvYXJjaC94ODYva2VybmVsL2NyYXNoX2R1bXBfZW5jcnlwdC5jCj4+PiBuZXcg
-ZmlsZSBtb2RlIDEwMDY0NAo+Pj4gaW5kZXggMDAwMDAwMC4uZTQ0ZWYzMwo+Pj4gLS0tIC9kZXYv
-bnVsbAo+Pj4gKysrIGIvYXJjaC94ODYva2VybmVsL2NyYXNoX2R1bXBfZW5jcnlwdC5jCj4+PiBA
-QCAtMCwwICsxLDUzIEBACj4+PiArLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAK
-Pj4+ICsvKgo+Pj4gKyAqCU1lbW9yeSBwcmVzZXJ2aW5nIHJlYm9vdCByZWxhdGVkIGNvZGUuCj4+
-PiArICoKPj4+ICsgKglDcmVhdGVkIGJ5OiBMaWFuYm8gSmlhbmcgKGxpamlhbmdAcmVkaGF0LmNv
-bSkKPj4+ICsgKglDb3B5cmlnaHQgKEMpIFJlZEhhdCBDb3Jwb3JhdGlvbiwgMjAxOC4gQWxsIHJp
-Z2h0cyByZXNlcnZlZAo+Pj4gKyAqLwo+Pj4gKwo+Pj4gKyNpbmNsdWRlIDxsaW51eC9lcnJuby5o
-Pgo+Pj4gKyNpbmNsdWRlIDxsaW51eC9jcmFzaF9kdW1wLmg+Cj4+PiArI2luY2x1ZGUgPGxpbnV4
-L3VhY2Nlc3MuaD4KPj4+ICsjaW5jbHVkZSA8bGludXgvaW8uaD4KPj4+ICsKPj4+ICsvKioKPj4+
-ICsgKiBjb3B5X29sZG1lbV9wYWdlX2VuY3J5cHRlZCAtIGNvcHkgb25lIHBhZ2UgZnJvbSAib2xk
-bWVtIGVuY3J5cHRlZCIKPj4+ICsgKiBAcGZuOiBwYWdlIGZyYW1lIG51bWJlciB0byBiZSBjb3Bp
-ZWQKPj4+ICsgKiBAYnVmOiB0YXJnZXQgbWVtb3J5IGFkZHJlc3MgZm9yIHRoZSBjb3B5OyB0aGlz
-IGNhbiBiZSBpbiBrZXJuZWwgYWRkcmVzcwo+Pj4gKyAqCXNwYWNlIG9yIHVzZXIgYWRkcmVzcyBz
-cGFjZSAoc2VlIEB1c2VyYnVmKQo+Pj4gKyAqIEBjc2l6ZTogbnVtYmVyIG9mIGJ5dGVzIHRvIGNv
-cHkKPj4+ICsgKiBAb2Zmc2V0OiBvZmZzZXQgaW4gYnl0ZXMgaW50byB0aGUgcGFnZSAoYmFzZWQg
-b24gcGZuKSB0byBiZWdpbiB0aGUgY29weQo+Pj4gKyAqIEB1c2VyYnVmOiBpZiBzZXQsIEBidWYg
-aXMgaW4gdXNlciBhZGRyZXNzIHNwYWNlLCB1c2UgY29weV90b191c2VyKCksCj4+PiArICoJb3Ro
-ZXJ3aXNlIEBidWYgaXMgaW4ga2VybmVsIGFkZHJlc3Mgc3BhY2UsIHVzZSBtZW1jcHkoKS4KPj4+
-ICsgKgo+Pj4gKyAqIENvcHkgYSBwYWdlIGZyb20gIm9sZG1lbSBlbmNyeXB0ZWQiLiBGb3IgdGhp
-cyBwYWdlLCB0aGVyZSBpcyBubyBwdGUKPj4+ICsgKiBtYXBwZWQgaW4gdGhlIGN1cnJlbnQga2Vy
-bmVsLiBXZSBzdGl0Y2ggdXAgYSBwdGUsIHNpbWlsYXIgdG8KPj4+ICsgKiBrbWFwX2F0b21pYy4K
-Pj4+ICsgKi8KPj4+ICsKPj4+ICtzc2l6ZV90IGNvcHlfb2xkbWVtX3BhZ2VfZW5jcnlwdGVkKHVu
-c2lnbmVkIGxvbmcgcGZuLCBjaGFyICpidWYsCj4+PiArCQlzaXplX3QgY3NpemUsIHVuc2lnbmVk
-IGxvbmcgb2Zmc2V0LCBpbnQgdXNlcmJ1ZikKPj4+ICt7Cj4+PiArCXZvaWQgICp2YWRkcjsKPj4+
-ICsKPj4+ICsJaWYgKCFjc2l6ZSkKPj4+ICsJCXJldHVybiAwOwo+Pj4gKwo+Pj4gKwl2YWRkciA9
-IChfX2ZvcmNlIHZvaWQgKilpb3JlbWFwX2VuY3J5cHRlZChwZm4gPDwgUEFHRV9TSElGVCwKPj4+
-ICsJCQkJCQkgIFBBR0VfU0laRSk7Cj4+PiArCWlmICghdmFkZHIpCj4+PiArCQlyZXR1cm4gLUVO
-T01FTTsKPj4+ICsKPj4+ICsJaWYgKHVzZXJidWYpIHsKPj4+ICsJCWlmIChjb3B5X3RvX3VzZXIo
-KHZvaWQgX191c2VyICopYnVmLCB2YWRkciArIG9mZnNldCwgY3NpemUpKSB7Cj4+PiArCQkJaW91
-bm1hcCgodm9pZCBfX2lvbWVtICopdmFkZHIpOwo+Pj4gKwkJCXJldHVybiAtRUZBVUxUOwo+Pj4g
-KwkJfQo+Pj4gKwl9IGVsc2UKPj4+ICsJCW1lbWNweShidWYsIHZhZGRyICsgb2Zmc2V0LCBjc2l6
-ZSk7Cj4+PiArCj4+PiArCXNldF9pb3VubWFwX25vbmxhenkoKTsKPj4+ICsJaW91bm1hcCgodm9p
-ZCBfX2lvbWVtICopdmFkZHIpOwo+Pj4gKwlyZXR1cm4gY3NpemU7Cj4+PiArfQo+Pj4gZGlmZiAt
-LWdpdCBhL2ZzL3Byb2Mvdm1jb3JlLmMgYi9mcy9wcm9jL3ZtY29yZS5jCj4+PiBpbmRleCBhNDVm
-MGFmLi41MjAwMjY2IDEwMDY0NAo+Pj4gLS0tIGEvZnMvcHJvYy92bWNvcmUuYwo+Pj4gKysrIGIv
-ZnMvcHJvYy92bWNvcmUuYwo+Pj4gQEAgLTI1LDYgKzI1LDggQEAKPj4+ICAjaW5jbHVkZSA8bGlu
-dXgvdWFjY2Vzcy5oPgo+Pj4gICNpbmNsdWRlIDxhc20vaW8uaD4KPj4+ICAjaW5jbHVkZSAiaW50
-ZXJuYWwuaCIKPj4+ICsjaW5jbHVkZSA8bGludXgvbWVtX2VuY3J5cHQuaD4KPj4+ICsjaW5jbHVk
-ZSA8YXNtL3BndGFibGUuaD4KPj4+ICAKPj4+ICAvKiBMaXN0IHJlcHJlc2VudGluZyBjaHVua3Mg
-b2YgY29udGlndW91cyBtZW1vcnkgYXJlYXMgYW5kIHRoZWlyIG9mZnNldHMgaW4KPj4+ICAgKiB2
-bWNvcmUgZmlsZS4KPj4+IEBAIC04Niw3ICs4OCw4IEBAIHN0YXRpYyBpbnQgcGZuX2lzX3JhbSh1
-bnNpZ25lZCBsb25nIHBmbikKPj4+ICAKPj4+ICAvKiBSZWFkcyBhIHBhZ2UgZnJvbSB0aGUgb2xk
-bWVtIGRldmljZSBmcm9tIGdpdmVuIG9mZnNldC4gKi8KPj4+ICBzdGF0aWMgc3NpemVfdCByZWFk
-X2Zyb21fb2xkbWVtKGNoYXIgKmJ1Ziwgc2l6ZV90IGNvdW50LAo+Pj4gLQkJCQl1NjQgKnBwb3Ms
-IGludCB1c2VyYnVmKQo+Pj4gKwkJCQl1NjQgKnBwb3MsIGludCB1c2VyYnVmLAo+Pj4gKwkJCQli
-b29sIGVuY3J5cHRlZCkKPj4+ICB7Cj4+PiAgCXVuc2lnbmVkIGxvbmcgcGZuLCBvZmZzZXQ7Cj4+
-PiAgCXNpemVfdCBucl9ieXRlczsKPj4+IEBAIC0xMDgsOCArMTExLDExIEBAIHN0YXRpYyBzc2l6
-ZV90IHJlYWRfZnJvbV9vbGRtZW0oY2hhciAqYnVmLCBzaXplX3QgY291bnQsCj4+PiAgCQlpZiAo
-cGZuX2lzX3JhbShwZm4pID09IDApCj4+PiAgCQkJbWVtc2V0KGJ1ZiwgMCwgbnJfYnl0ZXMpOwo+
-Pj4gIAkJZWxzZSB7Cj4+PiAtCQkJdG1wID0gY29weV9vbGRtZW1fcGFnZShwZm4sIGJ1ZiwgbnJf
-Ynl0ZXMsCj4+PiAtCQkJCQkJb2Zmc2V0LCB1c2VyYnVmKTsKPj4+ICsJCQl0bXAgPSBlbmNyeXB0
-ZWQgPyBjb3B5X29sZG1lbV9wYWdlX2VuY3J5cHRlZChwZm4sCj4+PiArCQkJCQkgICAgYnVmLCBu
-cl9ieXRlcywgb2Zmc2V0LCB1c2VyYnVmKQo+Pj4gKwkJCQkJOiBjb3B5X29sZG1lbV9wYWdlKHBm
-biwgYnVmLCBucl9ieXRlcywKPj4+ICsJCQkJCQkJICAgb2Zmc2V0LCB1c2VyYnVmKTsKPj4+ICsK
-Pj4+ICAJCQlpZiAodG1wIDwgMCkKPj4+ICAJCQkJcmV0dXJuIHRtcDsKPj4+ICAJCX0KPj4+IEBA
-IC0xNDMsNyArMTQ5LDcgQEAgdm9pZCBfX3dlYWsgZWxmY29yZWhkcl9mcmVlKHVuc2lnbmVkIGxv
-bmcgbG9uZyBhZGRyKQo+Pj4gICAqLwo+Pj4gIHNzaXplX3QgX193ZWFrIGVsZmNvcmVoZHJfcmVh
-ZChjaGFyICpidWYsIHNpemVfdCBjb3VudCwgdTY0ICpwcG9zKQo+Pj4gIHsKPj4+IC0JcmV0dXJu
-IHJlYWRfZnJvbV9vbGRtZW0oYnVmLCBjb3VudCwgcHBvcywgMCk7Cj4+PiArCXJldHVybiByZWFk
-X2Zyb21fb2xkbWVtKGJ1ZiwgY291bnQsIHBwb3MsIDAsIGZhbHNlKTsKPj4KPj4gVGhlIGVsZiBo
-ZWFkZXIgYWN0dWFsbHkgc3RheXMgaW4ga2R1bXAga2VybmVsIHJlc2VydmVkIG1lbW9yeSBzbyBp
-dCBpcwo+PiBub3QgIm9sZG1lbSIsIHRoZSBvcmlnaW5hbCBmdW5jdGlvbiBpcyBtaXNsZWFkaW5n
-IGFuZCBkb2luZyB1bm5lY2Vzc2FyeQo+PiB0aGluZ3MuICBCdXQgYXMgZm9yIHlvdXIgcGF0Y2gg
-bWF5YmUgdXNpbmcgaXQgYXMgaXMgaXMgZ29vZCBmb3IgdGhlIHRpbWUKPj4gYmVpbmcgYW5kIGFk
-ZCBhIGNvZGUgY29tbWVudCB3aHkgdGhlIGVuY3J5cHRlZCBpcyAiZmFsc2UiLgo+Pgo+IFRoYW5r
-IHlvdSwgRGF2ZS4gSXQgaXMgYSBnb29kIGlkZWEgdG8gYWRkIHNvbWUgY29tbWVudHMgZm9yIHRo
-ZSBjb2RlLgo+IEkgcmVjaGVja2VkIHRoZSBjb2RlLCB0aGUgZWxmIGhlYWRlciBzaG91bGQgYmUg
-c3RpbGwgdGhlIG9sZCBtZW1vcnkgaW4gdGhlIGZpcnN0IGtlcm5lbCwKPiBidXQgd2h5IGlzIHRo
-ZSBvbGQgbWVtb3J5IHVuZW5jcnlwdGVkPyBCZWNhdXNlIGl0IGNvcGllcyB0aGUgZWxmIGhlYWRl
-ciBmcm9tIHRoZSBtZW1vcnkKPiBlbmNyeXB0ZWQodXNlciBzcGFjZSkgdG8gdGhlIG1lbW9yeSB1
-bmVuY3J5cHRlZChrZXJuZWwgc3BhY2UpIHdoZW4gU01FIGlzIGFjdGl2YXRlZCBpbiB0aGUKPiBm
-aXJzdCBrZXJuZWwsIHRoaXMgb3BlcmF0aW9uIGp1c3QgbGVhZHMgdG8gZGVjcnlwdGlvbi4KPiAK
-SSBqdXN0IGtub3cgeW91ciBtZWFucywgd2UgYWxsb2NhdGVkIHRoZSBtZW1vcnkgdW5lbmNyeXB0
-ZWQoa2VybmVsIHNwYWNlKSBpbiByZXNlcnZlZApjcmFzaCBtZW1vcnksIGZyb20gdGhpcyBwb2lu
-dCBvZiB2aWV3LCBpdCBpcyBub3QgIm9sZG1lbSIuIFRoYW5rcyBmb3IgeW91ciBjb21tZW50cy4K
-ClRoYW5rcy4KTGlhbmJvCgo+IFRoYW5rcy4KPiBMaWFuYm8KPj4gCS8qIGVsZmNvcmVoZHIgc3Rh
-eXMgaW4ga2R1bXAga2VybmVsIG1lbW9yeSBhbmQgaXQgaXMgbm90IGVuY3J5cHRlZC4gKi8KPj4g
-CXJldHVybiByZWFkX2Zyb21fb2xkbWVtKGJ1ZiwgY291bnQsIHBwb3MsIDAsIGZhbHNlKTsKPj4K
-Pj4KPj4gSSdtIHRoaW5raW5nIHRvIG1vdmUgdGhlIGZ1bmN0aW9uIHRvIHNvbWV0aGluZyBsaWtl
-IGJlbG93LCBzdGlsbCBub3Qgc3VyZQo+PiBtZW1yZW1hcCB3b3JrcyBvbiBldmVyeSBhcmNoZXMg
-b3Igbm90LCBzdGlsbCBuZWVkIG1vcmUgdGVzdAo+Pgo+PiBkaWZmIC0tZ2l0IGEvZnMvcHJvYy92
-bWNvcmUuYyBiL2ZzL3Byb2Mvdm1jb3JlLmMKPj4gaW5kZXggY2ZiNjY3NDMzMWZkLi40MGMwMWNj
-NDJiMzggMTAwNjQ0Cj4+IC0tLSBhL2ZzL3Byb2Mvdm1jb3JlLmMKPj4gKysrIGIvZnMvcHJvYy92
-bWNvcmUuYwo+PiBAQCAtMTM2LDYgKzEzNiwyNCBAQCBzdGF0aWMgc3NpemVfdCByZWFkX2Zyb21f
-b2xkbWVtKGNoYXIgKmJ1Ziwgc2l6ZV90IGNvdW50LAo+PiAgCXJldHVybiByZWFkOwo+PiAgfQo+
-PiAgCj4+ICtzdGF0aWMgc3NpemVfdCByZWFkX2Zyb21fbWVtKGNoYXIgKmJ1Ziwgc2l6ZV90IGNv
-dW50LCB1NjQgKnBwb3MpCj4+ICt7Cj4+ICsJcmVzb3VyY2Vfc2l6ZV90IG9mZnNldCA9IChyZXNv
-dXJjZV9zaXplX3QpKnBwb3M7Cj4+ICsJY2hhciAqa2J1ZjsKPj4gKwo+PiArCWlmICghY291bnQp
-Cj4+ICsJCXJldHVybiAwOwo+PiArCj4+ICsJa2J1ZiA9IG1lbXJlbWFwKG9mZnNldCwgY291bnQs
-IE1FTVJFTUFQX1dCKTsKPj4gKwlpZiAoIWtidWYpCj4+ICsJCXJldHVybiAwOwo+PiArCj4+ICsJ
-bWVtY3B5KGJ1Ziwga2J1ZiwgY291bnQpOwo+PiArCW1lbXVubWFwKGtidWYpOwo+PiArCj4+ICsJ
-cmV0dXJuIGNvdW50Owo+PiArfQo+PiArCj4+ICAvKgo+PiAgICogQXJjaGl0ZWN0dXJlcyBtYXkg
-b3ZlcnJpZGUgdGhpcyBmdW5jdGlvbiB0byBhbGxvY2F0ZSBFTEYgaGVhZGVyIGluIDJuZCBrZXJu
-ZWwKPj4gICAqLwo+PiBAQCAtMTU1LDcgKzE3Myw3IEBAIHZvaWQgX193ZWFrIGVsZmNvcmVoZHJf
-ZnJlZSh1bnNpZ25lZCBsb25nIGxvbmcgYWRkcikKPj4gICAqLwo+PiAgc3NpemVfdCBfX3dlYWsg
-ZWxmY29yZWhkcl9yZWFkKGNoYXIgKmJ1Ziwgc2l6ZV90IGNvdW50LCB1NjQgKnBwb3MpCj4+ICB7
-Cj4+IC0JcmV0dXJuIHJlYWRfZnJvbV9vbGRtZW0oYnVmLCBjb3VudCwgcHBvcywgMCk7Cj4+ICsJ
-cmV0dXJuIHJlYWRfZnJvbV9tZW0oYnVmLCBjb3VudCwgcHBvcyk7Cj4+ICB9Cj4+ICAKPj4gIC8q
-Cj4+ICAKPj4KPj4+ICB9Cj4+PiAgCj4+PiAgLyoKPj4+IEBAIC0xNTEsNyArMTU3LDcgQEAgc3Np
-emVfdCBfX3dlYWsgZWxmY29yZWhkcl9yZWFkKGNoYXIgKmJ1Ziwgc2l6ZV90IGNvdW50LCB1NjQg
-KnBwb3MpCj4+PiAgICovCj4+PiAgc3NpemVfdCBfX3dlYWsgZWxmY29yZWhkcl9yZWFkX25vdGVz
-KGNoYXIgKmJ1Ziwgc2l6ZV90IGNvdW50LCB1NjQgKnBwb3MpCj4+PiAgewo+Pj4gLQlyZXR1cm4g
-cmVhZF9mcm9tX29sZG1lbShidWYsIGNvdW50LCBwcG9zLCAwKTsKPj4+ICsJcmV0dXJuIHJlYWRf
-ZnJvbV9vbGRtZW0oYnVmLCBjb3VudCwgcHBvcywgMCwgc21lX2FjdGl2ZSgpKTsKPj4+ICB9Cj4+
-PiAgCj4+PiAgLyoKPj4+IEBAIC0xNjEsNiArMTY3LDcgQEAgaW50IF9fd2VhayByZW1hcF9vbGRt
-ZW1fcGZuX3JhbmdlKHN0cnVjdCB2bV9hcmVhX3N0cnVjdCAqdm1hLAo+Pj4gIAkJCQkgIHVuc2ln
-bmVkIGxvbmcgZnJvbSwgdW5zaWduZWQgbG9uZyBwZm4sCj4+PiAgCQkJCSAgdW5zaWduZWQgbG9u
-ZyBzaXplLCBwZ3Byb3RfdCBwcm90KQo+Pj4gIHsKPj4+ICsJcHJvdCA9IHBncHJvdF9lbmNyeXB0
-ZWQocHJvdCk7Cj4+PiAgCXJldHVybiByZW1hcF9wZm5fcmFuZ2Uodm1hLCBmcm9tLCBwZm4sIHNp
-emUsIHByb3QpOwo+Pj4gIH0KPj4+ICAKPj4+IEBAIC0yMzUsNyArMjQyLDggQEAgc3RhdGljIHNz
-aXplX3QgX19yZWFkX3ZtY29yZShjaGFyICpidWZmZXIsIHNpemVfdCBidWZsZW4sIGxvZmZfdCAq
-ZnBvcywKPj4+ICAJCQkJCSAgICBtLT5vZmZzZXQgKyBtLT5zaXplIC0gKmZwb3MsCj4+PiAgCQkJ
-CQkgICAgYnVmbGVuKTsKPj4+ICAJCQlzdGFydCA9IG0tPnBhZGRyICsgKmZwb3MgLSBtLT5vZmZz
-ZXQ7Cj4+PiAtCQkJdG1wID0gcmVhZF9mcm9tX29sZG1lbShidWZmZXIsIHRzeiwgJnN0YXJ0LCB1
-c2VyYnVmKTsKPj4+ICsJCQl0bXAgPSByZWFkX2Zyb21fb2xkbWVtKGJ1ZmZlciwgdHN6LCAmc3Rh
-cnQsIHVzZXJidWYsCj4+PiArCQkJCQkJc21lX2FjdGl2ZSgpKTsKPj4+ICAJCQlpZiAodG1wIDwg
-MCkKPj4+ICAJCQkJcmV0dXJuIHRtcDsKPj4+ICAJCQlidWZsZW4gLT0gdHN6Owo+Pj4gZGlmZiAt
-LWdpdCBhL2luY2x1ZGUvbGludXgvY3Jhc2hfZHVtcC5oIGIvaW5jbHVkZS9saW51eC9jcmFzaF9k
-dW1wLmgKPj4+IGluZGV4IGY3YWMyYWEuLmYzNDE0ZmYgMTAwNjQ0Cj4+PiAtLS0gYS9pbmNsdWRl
-L2xpbnV4L2NyYXNoX2R1bXAuaAo+Pj4gKysrIGIvaW5jbHVkZS9saW51eC9jcmFzaF9kdW1wLmgK
-Pj4+IEBAIC0yNSw2ICsyNSwxNyBAQCBleHRlcm4gaW50IHJlbWFwX29sZG1lbV9wZm5fcmFuZ2Uo
-c3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEsCj4+PiAgCj4+PiAgZXh0ZXJuIHNzaXplX3QgY29w
-eV9vbGRtZW1fcGFnZSh1bnNpZ25lZCBsb25nLCBjaGFyICosIHNpemVfdCwKPj4+ICAJCQkJCQl1
-bnNpZ25lZCBsb25nLCBpbnQpOwo+Pj4gKyNpZmRlZiBDT05GSUdfQU1EX01FTV9FTkNSWVBUCj4+
-PiArZXh0ZXJuIHNzaXplX3QgY29weV9vbGRtZW1fcGFnZV9lbmNyeXB0ZWQodW5zaWduZWQgbG9u
-ZyBwZm4sIGNoYXIgKmJ1ZiwKPj4+ICsJCQkJCSAgIHNpemVfdCBjc2l6ZSwgdW5zaWduZWQgbG9u
-ZyBvZmZzZXQsCj4+PiArCQkJCQkgICBpbnQgdXNlcmJ1Zik7Cj4+PiArI2Vsc2UKPj4+ICtzdGF0
-aWMgaW5saW5lIHNzaXplX3QgY29weV9vbGRtZW1fcGFnZV9lbmNyeXB0ZWQodW5zaWduZWQgbG9u
-ZyBwZm4sIGNoYXIgKmJ1ZiwKPj4+ICsJCQkJCXNpemVfdCBjc2l6ZSwgdW5zaWduZWQgbG9uZyBv
-ZmZzZXQsCj4+PiArCQkJCQlpbnQgdXNlcmJ1Zikgewo+Pgo+PiBQZXJzb25hbGx5IEkgcHJlZmVy
-IGJlbG93IGJlY2F1c2UgaXQgaXMgdG9vIGxvbmc6Cj4+Cj4+IHN0YXRpYyBpbmxpbmUKPj4gc3Np
-emVfdCBjb3B5X29sZG1lbV9wYWdlX2VuY3J5cHRlZCh1bnNpZ25lZCBsb25nIHBmbiwgY2hhciAq
-YnVmLCBzaXplX3QgY3NpemUsCj4+IAkJCQkgICB1bnNpZ25lZCBsb25nIG9mZnNldCwgaW50IHVz
-ZXJidWYpCj4+IHsKPj4gCXJldHVybiAwOwo+PiB9Cj4+IAkJCQo+Pgo+Pj4gKwlyZXR1cm4gY3Np
-emU7Cj4+Cj4+IEFzIGFib3ZlIGl0IHNob3VsZCBiZSByZXR1cm4gMDsKPj4KR3JlYXQsIFRoYW5r
-IHlvdSwgRGF2ZS4KCkxpYW5ibwo+Pj4gK30KPj4+ICsjZW5kaWYKPj4+ICB2b2lkIHZtY29yZV9j
-bGVhbnVwKHZvaWQpOwo+Pj4gIAo+Pj4gIC8qIEFyY2hpdGVjdHVyZSBjb2RlIGRlZmluZXMgdGhp
-cyBpZiB0aGVyZSBhcmUgb3RoZXIgcG9zc2libGUgRUxGCj4+PiAtLSAKPj4+IDIuOS41Cj4+Pgo+
-Pj4KPj4+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+
-PiBrZXhlYyBtYWlsaW5nIGxpc3QKPj4+IGtleGVjQGxpc3RzLmluZnJhZGVhZC5vcmcKPj4+IGh0
-dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8va2V4ZWMKPj4KPj4gVGhh
-bmtzCj4+IERhdmUKPj4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Tue, Jun 19, 2018 at 04:19:25PM -0700, Paul Burton wrote:
+> Hi Christoph,
+> 
+> On Fri, Jun 15, 2018 at 01:08:47PM +0200, Christoph Hellwig wrote:
+> > -static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
+> > -	dma_addr_t dma_addr)
+> > -{
+> > -#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
+> > -	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
+> > -#else
+> > -	return dma_addr & 0x7fffffff;
+> > -#endif
+> > -}
+> 
+> ...
+> 
+> > +phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
+> > +{
+> > +#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
+> > +	if (dma_addr > 0x8fffffff)
+> > +		return dma_addr;
+> > +#endif
+> > +	return dma_addr & 0x0fffffff;
+> > +}
+> 
+> Thanks for putting in the work here - I've applied patches 1-17 to
+> mips-next so far, but I'm struggling to convince myself that the above
+> is correct.
+> 
+> In the original code we have 3 distinct cases:
+> 
+>   64b Loongson2F, dma_addr > 0x8fffffff  -> dma_addr
+>   64b Loongson2F, dma_addr <= 0x8fffffff -> dma_addr & 0x0fffffff
+>   Everything else                        -> dma_addr & 0x7fffffff
+> 
+> In the new __dma_to_phys() though only the first case remains the same.
+> 
+> Is this intentional or a mixup?
+
+No, this is a mixup.  I hadn't noticed one case was 0x0fffffff and
+the other 0x7fffffff.
+
+Below is the minimal fixup that keeps things as much as it was before.
+
+---
+>From 174213f535c07774cdbbccd42c76164893729cf5 Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Date: Wed, 20 Jun 2018 09:11:15 +0200
+Subject: MIPS: loongson64: use generic dma noncoherent ops
+
+Provide phys_to_dma/dma_to_phys helpers, everything else is generic.
+
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ arch/mips/Kconfig                             |  1 +
+ .../asm/mach-loongson64/dma-coherence.h       | 69 -------------------
+ arch/mips/loongson64/Kconfig                  |  2 -
+ arch/mips/loongson64/common/Makefile          |  1 +
+ arch/mips/loongson64/common/dma.c             | 18 +++++
+ 5 files changed, 20 insertions(+), 71 deletions(-)
+ delete mode 100644 arch/mips/include/asm/mach-loongson64/dma-coherence.h
+ create mode 100644 arch/mips/loongson64/common/dma.c
+
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 326bd73bc5bf..e192e484b1b8 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -1827,6 +1827,7 @@ config CPU_LOONGSON2
+ 	select CPU_SUPPORTS_64BIT_KERNEL
+ 	select CPU_SUPPORTS_HIGHMEM
+ 	select CPU_SUPPORTS_HUGEPAGES
++	select ARCH_HAS_PHYS_TO_DMA
+ 
+ config CPU_LOONGSON1
+ 	bool
+diff --git a/arch/mips/include/asm/mach-loongson64/dma-coherence.h b/arch/mips/include/asm/mach-loongson64/dma-coherence.h
+deleted file mode 100644
+index 651dd2eb3ee5..000000000000
+--- a/arch/mips/include/asm/mach-loongson64/dma-coherence.h
++++ /dev/null
+@@ -1,69 +0,0 @@
+-/*
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
+- *
+- * Copyright (C) 2006, 07  Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>
+- * Copyright (C) 2007 Lemote, Inc. & Institute of Computing Technology
+- * Author: Fuxin Zhang, zhangfx-h23VmSynlr/QT0dZR+AlfA@public.gmane.org
+- *
+- */
+-#ifndef __ASM_MACH_LOONGSON64_DMA_COHERENCE_H
+-#define __ASM_MACH_LOONGSON64_DMA_COHERENCE_H
+-
+-#ifdef CONFIG_SWIOTLB
+-#include <linux/swiotlb.h>
+-#endif
+-
+-struct device;
+-
+-static inline dma_addr_t plat_map_dma_mem(struct device *dev, void *addr,
+-					  size_t size)
+-{
+-	return virt_to_phys(addr) | 0x80000000;
+-}
+-
+-static inline dma_addr_t plat_map_dma_mem_page(struct device *dev,
+-					       struct page *page)
+-{
+-	return page_to_phys(page) | 0x80000000;
+-}
+-
+-static inline unsigned long plat_dma_addr_to_phys(struct device *dev,
+-	dma_addr_t dma_addr)
+-{
+-#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
+-	return (dma_addr > 0x8fffffff) ? dma_addr : (dma_addr & 0x0fffffff);
+-#else
+-	return dma_addr & 0x7fffffff;
+-#endif
+-}
+-
+-static inline void plat_unmap_dma_mem(struct device *dev, dma_addr_t dma_addr,
+-	size_t size, enum dma_data_direction direction)
+-{
+-}
+-
+-static inline int plat_dma_supported(struct device *dev, u64 mask)
+-{
+-	/*
+-	 * we fall back to GFP_DMA when the mask isn't all 1s,
+-	 * so we can't guarantee allocations that must be
+-	 * within a tighter range than GFP_DMA..
+-	 */
+-	if (mask < DMA_BIT_MASK(24))
+-		return 0;
+-
+-	return 1;
+-}
+-
+-static inline int plat_device_is_coherent(struct device *dev)
+-{
+-	return 0;
+-}
+-
+-static inline void plat_post_dma_flush(struct device *dev)
+-{
+-}
+-
+-#endif /* __ASM_MACH_LOONGSON64_DMA_COHERENCE_H */
+diff --git a/arch/mips/loongson64/Kconfig b/arch/mips/loongson64/Kconfig
+index a785bf8da3f3..c865b4b9b775 100644
+--- a/arch/mips/loongson64/Kconfig
++++ b/arch/mips/loongson64/Kconfig
+@@ -13,7 +13,6 @@ config LEMOTE_FULOONG2E
+ 	select CSRC_R4K
+ 	select SYS_HAS_CPU_LOONGSON2E
+ 	select DMA_NONCOHERENT
+-	select MIPS_DMA_DEFAULT
+ 	select BOOT_ELF32
+ 	select BOARD_SCACHE
+ 	select HW_HAS_PCI
+@@ -45,7 +44,6 @@ config LEMOTE_MACH2F
+ 	select CS5536
+ 	select CSRC_R4K if ! MIPS_EXTERNAL_TIMER
+ 	select DMA_NONCOHERENT
+-	select MIPS_DMA_DEFAULT
+ 	select GENERIC_ISA_DMA_SUPPORT_BROKEN
+ 	select HAVE_CLK
+ 	select HW_HAS_PCI
+diff --git a/arch/mips/loongson64/common/Makefile b/arch/mips/loongson64/common/Makefile
+index 684624f61f5a..57ee03022941 100644
+--- a/arch/mips/loongson64/common/Makefile
++++ b/arch/mips/loongson64/common/Makefile
+@@ -6,6 +6,7 @@
+ obj-y += setup.o init.o cmdline.o env.o time.o reset.o irq.o \
+     bonito-irq.o mem.o machtype.o platform.o serial.o
+ obj-$(CONFIG_PCI) += pci.o
++obj-$(CONFIG_CPU_LOONGSON2) += dma.o
+ 
+ #
+ # Serial port support
+diff --git a/arch/mips/loongson64/common/dma.c b/arch/mips/loongson64/common/dma.c
+new file mode 100644
+index 000000000000..48f04126bde2
+--- /dev/null
++++ b/arch/mips/loongson64/common/dma.c
+@@ -0,0 +1,18 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/dma-direct.h>
++
++dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
++{
++	return paddr | 0x80000000;
++}
++
++phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dma_addr)
++{
++#if defined(CONFIG_CPU_LOONGSON2F) && defined(CONFIG_64BIT)
++	if (dma_addr > 0x8fffffff)
++		return dma_addr;
++	return dma_addr & 0x0fffffff;
++#else
++	return dma_addr & 0x7fffffff;
++#endif
++}
+-- 
+2.17.1
