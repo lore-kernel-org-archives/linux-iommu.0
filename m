@@ -1,68 +1,82 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/4 V3] Allocate pages for kdump without encryption when
-	SME is enabled
-Date: Thu, 21 Jun 2018 13:06:05 +0800
-Message-ID: <e74e94b6-97dc-23d9-6262-44a7ae8d63bd@redhat.com>
+From: lijiang <lijiang@redhat.com>
+Subject: Re: [PATCH 3/4 V3] Remap the device table of IOMMU in encrypted
+ manner for kdump
+Date: Thu, 21 Jun 2018 13:42:24 +0800
+Message-ID: <c591dec2-2135-2e96-8ace-87cbf4b055bf@redhat.com>
 References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180616082714.32035-3-lijiang@redhat.com>
-	<20180621015306.GG29979@MiWiFi-R3L-srv>
+ <20180616082714.32035-4-lijiang@redhat.com>
+ <60c6f00e-0eb3-d39c-6a1e-8a1dc1e095af@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180621015306.GG29979@MiWiFi-R3L-srv>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <60c6f00e-0eb3-d39c-6a1e-8a1dc1e095af@amd.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>, linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, kexec@lists.infradead.org, dyoung@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwNuaciDIx5pelIDA5OjUzLCBCYW9xdWFuIEhlIOWGmemBkzoKPiBPbiAwNi8x
-Ni8xOCBhdCAwNDoyN3BtLCBMaWFuYm8gSmlhbmcgd3JvdGU6Cj4+IFdoZW4gU01FIGlzIGVuYWJs
-ZWQgaW4gdGhlIGZpcnN0IGtlcm5lbCwgd2Ugd2lsbCBhbGxvY2F0ZSBwYWdlcwo+PiBmb3Iga2R1
-bXAgd2l0aG91dCBlbmNyeXB0aW9uIGluIG9yZGVyIHRvIGJlIGFibGUgdG8gYm9vdCB0aGUKPj4g
-c2Vjb25kIGtlcm5lbCBpbiB0aGUgc2FtZSBtYW5uZXIgYXMga2V4ZWMsIHdoaWNoIGhlbHBzIHRv
-IGtlZXAKPj4gdGhlIHNhbWUgY29kZSBzdHlsZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTGlhbmJv
-IEppYW5nIDxsaWppYW5nQHJlZGhhdC5jb20+Cj4+IC0tLQo+PiAga2VybmVsL2tleGVjX2NvcmUu
-YyB8IDEyICsrKysrKysrKysrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKykK
-Pj4KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9rZXhlY19jb3JlLmMgYi9rZXJuZWwva2V4ZWNfY29y
-ZS5jCj4+IGluZGV4IDIwZmVmMWEuLjNjMjJhOWIgMTAwNjQ0Cj4+IC0tLSBhL2tlcm5lbC9rZXhl
-Y19jb3JlLmMKPj4gKysrIGIva2VybmVsL2tleGVjX2NvcmUuYwo+PiBAQCAtNDcxLDYgKzQ3MSwx
-NiBAQCBzdGF0aWMgc3RydWN0IHBhZ2UgKmtpbWFnZV9hbGxvY19jcmFzaF9jb250cm9sX3BhZ2Vz
-KHN0cnVjdCBraW1hZ2UgKmltYWdlLAo+PiAgCQl9Cj4+ICAJfQo+PiAgCj4+ICsJaWYgKHBhZ2Vz
-KSB7Cj4+ICsJCXVuc2lnbmVkIGludCBjb3VudCwgaTsKPj4gKwo+PiArCQlwYWdlcy0+bWFwcGlu
-ZyA9IE5VTEw7Cj4+ICsJCXNldF9wYWdlX3ByaXZhdGUocGFnZXMsIG9yZGVyKTsKPj4gKwkJY291
-bnQgPSAxIDw8IG9yZGVyOwo+PiArCQlmb3IgKGkgPSAwOyBpIDwgY291bnQ7IGkrKykKPj4gKwkJ
-CVNldFBhZ2VSZXNlcnZlZChwYWdlcyArIGkpOwo+IAo+IEkgZ3Vlc3MgeW91IG1pZ2h0IGltaXRh
-dGUgdGhlIGtleGVjIGNhc2UsIGhvd2V2ZXIga2V4ZWMgZ2V0IHBhZ2VzIGZyb20KPiBidWRkeS4g
-Q3Jhc2ggcGFnZXMgYXJlIHJlc2VydmVkIGluIG1lbWJsb2NrLCB0aGVzZSBjb2RlcyBtaWdodCBt
-YWtlIG5vIHNlbnNlLgo+IApUaGFua3MgZm9yIHlvdXIgY29tbWVudHMuCldlIGhhdmUgY2hhbmdl
-ZCB0aGUgYXR0cmlidXRlIG9mIHBhZ2VzLCBzbyB0aGUgb3JpZ2luYWwgYXR0cmlidXRlIG9mIHBh
-Z2VzIHdpbGwgYmUKcmVzdG9yZWQgd2hlbiB0aGV5IGZyZWUuCgpUaGFua3MuCkxpYW5ibwo+PiAr
-CQlhcmNoX2tleGVjX3Bvc3RfYWxsb2NfcGFnZXMocGFnZV9hZGRyZXNzKHBhZ2VzKSwgMSA8PCBv
-cmRlciwgMCk7Cj4+ICsJfQo+PiAgCXJldHVybiBwYWdlczsKPj4gIH0KPj4gIAo+PiBAQCAtODY1
-LDYgKzg3NSw3IEBAIHN0YXRpYyBpbnQga2ltYWdlX2xvYWRfY3Jhc2hfc2VnbWVudChzdHJ1Y3Qg
-a2ltYWdlICppbWFnZSwKPj4gIAkJCXJlc3VsdCAgPSAtRU5PTUVNOwo+PiAgCQkJZ290byBvdXQ7
-Cj4+ICAJCX0KPj4gKwkJYXJjaF9rZXhlY19wb3N0X2FsbG9jX3BhZ2VzKHBhZ2VfYWRkcmVzcyhw
-YWdlKSwgMSwgMCk7Cj4+ICAJCXB0ciA9IGttYXAocGFnZSk7Cj4+ICAJCXB0ciArPSBtYWRkciAm
-IH5QQUdFX01BU0s7Cj4+ICAJCW1jaHVuayA9IG1pbl90KHNpemVfdCwgbWJ5dGVzLAo+PiBAQCAt
-ODgyLDYgKzg5Myw3IEBAIHN0YXRpYyBpbnQga2ltYWdlX2xvYWRfY3Jhc2hfc2VnbWVudChzdHJ1
-Y3Qga2ltYWdlICppbWFnZSwKPj4gIAkJCXJlc3VsdCA9IGNvcHlfZnJvbV91c2VyKHB0ciwgYnVm
-LCB1Y2h1bmspOwo+PiAgCQlrZXhlY19mbHVzaF9pY2FjaGVfcGFnZShwYWdlKTsKPj4gIAkJa3Vu
-bWFwKHBhZ2UpOwo+PiArCQlhcmNoX2tleGVjX3ByZV9mcmVlX3BhZ2VzKHBhZ2VfYWRkcmVzcyhw
-YWdlKSwgMSk7Cj4+ICAJCWlmIChyZXN1bHQpIHsKPj4gIAkJCXJlc3VsdCA9IC1FRkFVTFQ7Cj4+
-ICAJCQlnb3RvIG91dDsKPj4gLS0gCj4+IDIuOS41Cj4+Cj4+Cj4+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+IGtleGVjIG1haWxpbmcgbGlzdAo+PiBr
-ZXhlY0BsaXN0cy5pbmZyYWRlYWQub3JnCj4+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
-aWxtYW4vbGlzdGluZm8va2V4ZWMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+在 2018年06月21日 00:42, Tom Lendacky 写道:
+> On 6/16/2018 3:27 AM, Lianbo Jiang wrote:
+>> In kdump mode, it will copy the device table of IOMMU from the old
+>> device table, which is encrypted when SME is enabled in the first
+>> kernel. So we must remap it in encrypted manner in order to be
+>> automatically decrypted when we read.
+>>
+>> Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
+>> ---
+>> Some changes:
+>> 1. add some comments
+>> 2. clean compile warning.
+>>
+>>  drivers/iommu/amd_iommu_init.c | 15 ++++++++++++++-
+>>  1 file changed, 14 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+>> index 904c575..a20af4c 100644
+>> --- a/drivers/iommu/amd_iommu_init.c
+>> +++ b/drivers/iommu/amd_iommu_init.c
+>> @@ -889,11 +889,24 @@ static bool copy_device_table(void)
+>>  	}
+>>  
+>>  	old_devtb_phys = entry & PAGE_MASK;
+>> +
+>> +	/*
+>> +	 *  When sme enable in the first kernel, old_devtb_phys includes the
+>> +	 *  memory encryption mask(sme_me_mask), we must remove the memory
+>> +	 *  encryption mask to obtain the true physical address in kdump mode.
+>> +	 */
+>> +	if (mem_encrypt_active() && is_kdump_kernel())
+>> +		old_devtb_phys = __sme_clr(old_devtb_phys);
+>> +
+> 
+> You can probably just use "if (is_kdump_kernel())" here, since memory
+> encryption is either on in both the first and second kernel or off in
+> both the first and second kernel.  At which point __sme_clr() will do
+> the proper thing.
+> 
+> Actually, this needs to be done no matter what.  When doing either the
+> ioremap_encrypted() or the memremap(), the physical address should not
+> include the encryption bit/mask.
+> 
+> Thanks,
+> Tom
+> 
+Thanks for your comments. If we don't remove the memory encryption mask, it will
+return false because the 'old_devtb_phys >= 0x100000000ULL' may become true.
+
+Lianbo
+>>  	if (old_devtb_phys >= 0x100000000ULL) {
+>>  		pr_err("The address of old device table is above 4G, not trustworthy!\n");
+>>  		return false;
+>>  	}
+>> -	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
+>> +	old_devtb = (mem_encrypt_active() && is_kdump_kernel())
+>> +		    ? (__force void *)ioremap_encrypted(old_devtb_phys,
+>> +							dev_table_size)
+>> +		    : memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);> +
+>>  	if (!old_devtb)
+>>  		return false;
+>>  
+>>
