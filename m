@@ -1,14 +1,13 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/4 V3] Support kdump for AMD secure memory encryption(SME)
-Date: Thu, 21 Jun 2018 11:18:58 +0800
-Message-ID: <c9531007-4452-a8e1-a96a-3ec7dfb0cba0@redhat.com>
-References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180621012116.GF29979@MiWiFi-R3L-srv>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [PATCH 0/7 v5] Support for fsl-mc bus and its devices in SMMU
+Date: Thu, 21 Jun 2018 03:59:27 +0000
+Message-ID: <HE1PR0401MB24250CEFBC0B7CC919C4388AE6760@HE1PR0401MB2425.eurprd04.prod.outlook.com>
+References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180621012116.GF29979@MiWiFi-R3L-srv>
+In-Reply-To: <1526824191-7000-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -19,163 +18,86 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwNuaciDIx5pelIDA5OjIxLCBCYW9xdWFuIEhlIOWGmemBkzoKPiBPbiAwNi8x
-Ni8xOCBhdCAwNDoyN3BtLCBMaWFuYm8gSmlhbmcgd3JvdGU6Cj4+IEl0IGlzIGNvbnZlbmllbnQg
-dG8gcmVtYXAgdGhlIG9sZCBtZW1vcnkgZW5jcnlwdGVkIHRvIHRoZSBzZWNvbmQga2VybmVsIGJ5
-Cj4+IGNhbGxpbmcgaW9yZW1hcF9lbmNyeXB0ZWQoKS4KPj4KPj4gV2hlbiBzbWUgZW5hYmxlZCBv
-biBBTUQgc2VydmVyLCB3ZSBhbHNvIG5lZWQgdG8gc3VwcG9ydCBrZHVtcC4gQmVjYXVzZQo+PiB0
-aGUgbWVtb3J5IGlzIGVuY3J5cHRlZCBpbiB0aGUgZmlyc3Qga2VybmVsLCB3ZSB3aWxsIHJlbWFw
-IHRoZSBvbGQgbWVtb3J5Cj4+IGVuY3J5cHRlZCB0byB0aGUgc2Vjb25kIGtlcm5lbChjcmFzaCBr
-ZXJuZWwpLCBhbmQgc21lIGlzIGFsc28gZW5hYmxlZCBpbgo+PiB0aGUgc2Vjb25kIGtlcm5lbCwg
-b3RoZXJ3aXNlIHRoZSBvbGQgbWVtb3J5IGVuY3J5cHRlZCBjYW4gbm90IGJlIGRlY3J5cHRlZC4K
-Pj4gQmVjYXVzZSBzaW1wbHkgY2hhbmdpbmcgdGhlIHZhbHVlIG9mIGEgQy1iaXQgb24gYSBwYWdl
-IHdpbGwgbm90Cj4+IGF1dG9tYXRpY2FsbHkgZW5jcnlwdCB0aGUgZXhpc3RpbmcgY29udGVudHMg
-b2YgYSBwYWdlLCBhbmQgYW55IGRhdGEgaW4gdGhlCj4+IHBhZ2UgcHJpb3IgdG8gdGhlIEMtYml0
-IG1vZGlmaWNhdGlvbiB3aWxsIGJlY29tZSB1bmludGVsbGlnaWJsZS4gQSBwYWdlIG9mCj4+IG1l
-bW9yeSB0aGF0IGlzIG1hcmtlZCBlbmNyeXB0ZWQgd2lsbCBiZSBhdXRvbWF0aWNhbGx5IGRlY3J5
-cHRlZCB3aGVuIHJlYWQKPj4gZnJvbSBEUkFNIGFuZCB3aWxsIGJlIGF1dG9tYXRpY2FsbHkgZW5j
-cnlwdGVkIHdoZW4gd3JpdHRlbiB0byBEUkFNLgo+Pgo+PiBGb3IgdGhlIGtkdW1wLCBpdCBpcyBu
-ZWNlc3NhcnkgdG8gZGlzdGluZ3Vpc2ggd2hldGhlciB0aGUgbWVtb3J5IGlzCj4+IGVuY3J5cHRl
-ZC4gRnVydGhlcm1vcmUsIHdlIHNob3VsZCBhbHNvIGtub3cgd2hpY2ggcGFydCBvZiB0aGUgbWVt
-b3J5IGlzCj4+IGVuY3J5cHRlZCBvciBkZWNyeXB0ZWQuIFdlIHdpbGwgYXBwcm9wcmlhdGVseSBy
-ZW1hcCB0aGUgbWVtb3J5IGFjY29yZGluZwo+PiB0byB0aGUgc3BlY2lmaWMgc2l0dWF0aW9uIGlu
-IG9yZGVyIHRvIHRlbGwgY3B1IGhvdyB0byBkZWFsIHdpdGggdGhlCj4+IGRhdGEoZW5jcnlwdGVk
-IG9yIGRlY3J5cHRlZCkuIEZvciBleGFtcGxlLCB3aGVuIHNtZSBlbmFibGVkLCBpZiB0aGUgb2xk
-Cj4+IG1lbW9yeSBpcyBlbmNyeXB0ZWQsIHdlIHdpbGwgcmVtYXAgdGhlIG9sZCBtZW1vcnkgaW4g
-ZW5jcnlwdGVkIHdheSwgd2hpY2gKPj4gd2lsbCBhdXRvbWF0aWNhbGx5IGRlY3J5cHQgdGhlIG9s
-ZCBtZW1vcnkgZW5jcnlwdGVkIHdoZW4gd2UgcmVhZCB0aG9zZSBkYXRhCj4+IGZyb20gdGhlIHJl
-bWFwcGluZyBhZGRyZXNzLgo+Pgo+PiAgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLQo+PiB8IGZpcnN0LWtlcm5lbCB8IHNlY29uZC1rZXJuZWwgfCBrZHVtcCBz
-dXBwb3J0IHwKPj4gfCAgICAgIChtZW1fZW5jcnlwdD1vbnxvZmYpICAgIHwgICAoeWVzfG5vKSAg
-ICB8Cj4+IHwtLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tfAo+
-PiB8ICAgICBvbiAgICAgICB8ICAgICBvbiAgICAgICAgfCAgICAgeWVzICAgICAgIHwKPj4gfCAg
-ICAgb2ZmICAgICAgfCAgICAgb2ZmICAgICAgIHwgICAgIHllcyAgICAgICB8Cj4+IHwgICAgIG9u
-ICAgICAgIHwgICAgIG9mZiAgICAgICB8ICAgICBubyAgICAgICAgfAo+IAo+IAo+PiB8ICAgICBv
-ZmYgICAgICB8ICAgICBvbiAgICAgICAgfCAgICAgbm8gICAgICAgIHwKPiAKPiBJdCdzIG5vdCBj
-bGVhciB0byBtZSBoZXJlLiBJZiAxc3Qga2VybmVsIHNtZSBpcyBvZmYsIGluIDJuZCBrZXJuZWws
-IHdoZW4KPiB5b3UgcmVtYXAgdGhlIG9sZCBtZW1vcnkgd2l0aCBub24tc21lIG1vZGUsIHdoeSBk
-aWQgaXQgZmFpbD8KPiAKVGhhbmsgeW91LCBCYW9xdWFuLgpGb3Iga2R1bXAsIHRoZXJlIGFyZSB0
-d28gY2FzZXMgdGhhdCBkb2Vzbid0IG5lZWQgdG8gc3VwcG9ydDoKCjEuIFNNRSBvbihmaXJzdCBr
-ZXJuZWwpLCBidXQgU01FIG9mZihzZWNvbmQga2VybmVsKS4KQmVjYXVzZSB0aGUgb2xkIG1lbW9y
-eSBpcyBlbmNyeXB0ZWQsIHdlIGNhbid0IGRlY3J5cHQgdGhlIG9sZCBtZW1vcnkgaWYgU01FIGlz
-IG9mZgppbiB0aGUgc2Vjb25kIGtlcm5lbChpbiBrZHVtcCBtb2RlKS4KCjIuIFNNRSBvZmYoZmly
-c3Qga2VybmVsKSwgYnV0IFNNRSBvbihzZWNvbmQga2VybmVsKQpNYXliZSB0aGlzIHNpdHVhdGlv
-biBkb2Vzbid0IGhhdmUgc2lnbmlmaWNhbmNlIGluIGFjdHVhbCBkZXBsb3ltZW50LCBmdXJ0aGVy
-bW9yZSwgaXQKd2lsbCBhbHNvIGluY3JlYXNlIHRoZSBjb21wbGV4aXR5IG9mIHRoZSBjb2RlLiBJ
-dCdzIGp1c3QgZm9yIHRlc3RpbmcsIG1heWJlIGl0IGlzCnVubmVjZXNzYXJ5IHRvIHN1cHBvcnQg
-aXQsIGJlY2F1c2UgdGhlIG9sZCBtZW1vcnkgaXMgdW5lbmNyeXB0ZWQuCgpUaGFua3MuCkxpYW5i
-bwo+IEFuZCBwbGVhc2UgcnVuIHNjcmlwdHMvZ2V0X21haW50YWluZXIucGwgYW5kIGFkZCBtYWlu
-dGFpbmVycyBvZgo+IGNvbXBvbmVudCB3aGljaCBpcyBhZmZlY3RlZCBpbiBwYXRjaCB0byBDQyBs
-aXN0LgpHcmVhdCEgSSBmb3Jnb3QgQ0MgbWFpbnRhaW5lcnMsIHRoYW5rcyBmb3IgeW91ciByZW1p
-bmRlci4KCkxpYW5ibwo+IAo+PiB8X19fX19fX19fX19fX198X19fX19fX19fX19fX19ffF9fX19f
-X19fX19fX19fX3wKPj4KPj4gVGhpcyBwYXRjaCBpcyBvbmx5IGZvciBTTUUga2R1bXAsIGl0IGlz
-IG5vdCBzdXBwb3J0IFNFViBrZHVtcC4KPj4KPj4gVGVzdCB0b29sczoKPj4gbWFrZWR1bXBmaWxl
-W3YxLjYuM106IGh0dHBzOi8vZ2l0aHViLmNvbS9MaWFuYm9KL21ha2VkdW1wZmlsZQo+PiBjb21t
-aXQgZTFkZTEwM2VjYThmIChBIGRyYWZ0IGZvciBrZHVtcCB2bWNvcmUgYWJvdXQgQU1EIFNNRSkK
-Pj4gQXV0aG9yOiBMaWFuYm8gSmlhbmcgPGxpamlhbmdAcmVkaGF0LmNvbT4KPj4gRGF0ZTogICBN
-b24gTWF5IDE0IDE3OjAyOjQwIDIwMTggKzA4MDAKPj4gTm90ZTogVGhpcyBwYXRjaCBjYW4gb25s
-eSBkdW1wIHZtY29yZSBpbiB0aGUgY2FzZSBvZiBTTUUgZW5hYmxlZC4KPj4KPj4gY3Jhc2gtNy4y
-LjE6IGh0dHBzOi8vZ2l0aHViLmNvbS9jcmFzaC11dGlsaXR5L2NyYXNoLmdpdAo+PiBjb21taXQg
-MWUxYmQ5YzRjMWJlIChGaXggZm9yIHRoZSAiYnBmIiBjb21tYW5kIGRpc3BsYXkgb24gTGludXgg
-NC4xNy1yYzEpCj4+IEF1dGhvcjogRGF2ZSBBbmRlcnNvbiA8YW5kZXJzb25AcmVkaGF0LmNvbT4K
-Pj4gRGF0ZTogICBGcmkgTWF5IDExIDE1OjU0OjMyIDIwMTggLTA0MDAKPj4KPj4gVGVzdCBlbnZp
-cm9ubWVudDoKPj4gSFAgUHJvTGlhbnQgREwzODVHZW4xMCBBTUQgRVBZQyA3MjUxCj4+IDgtQ29y
-ZSBQcm9jZXNzb3IKPj4gMzI3NjggTUIgbWVtb3J5Cj4+IDYwMCBHQiBkaXNrIHNwYWNlCj4+Cj4+
-IExpbnV4IDQuMTctcmM3Ogo+PiBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tl
-cm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0Cj4+IGNvbW1pdCBiMDRlMjE3NzA0YjcgKCJMaW51
-eCA0LjE3LXJjNyIpCj4+IEF1dGhvcjogTGludXMgVG9ydmFsZHMgPHRvcnZhbGRzQGxpbnV4LWZv
-dW5kYXRpb24ub3JnPgo+PiBEYXRlOiAgIFN1biBNYXkgMjcgMTM6MDE6NDcgMjAxOCAtMDcwMAo+
-Pgo+PiBSZWZlcmVuY2U6Cj4+IEFNRDY0IEFyY2hpdGVjdHVyZSBQcm9ncmFtbWVyJ3MgTWFudWFs
-Cj4+IGh0dHBzOi8vc3VwcG9ydC5hbWQuY29tL1RlY2hEb2NzLzI0NTkzLnBkZgo+Pgo+PiBTb21l
-IGNoYW5nZXM6Cj4+IDEuIHJlbW92ZSB0aGUgc21lX2FjdGl2ZSgpIGNoZWNrIGluIF9faW9yZW1h
-cF9jYWxsZXIoKS4KPj4gMi4gcmVtb3ZlIHRoZSAnI2lmZGVmJyBzdHVmZiB0aHJvdWdob3V0IHRo
-aXMgcGF0Y2guCj4+IDMuIHB1dCBzb21lIGxvZ2ljIGludG8gdGhlIGVhcmx5X21lbXJlbWFwX3Bn
-cHJvdF9hZGp1c3QoKSBhbmQgY2xlYW4gdGhlCj4+IHByZXZpb3VzIHVubmVjZXNzYXJ5IGNoYW5n
-ZXMsIGZvciBleGFtcGxlOiBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9kbWkuaCwKPj4gYXJjaC94ODYv
-a2VybmVsL2FjcGkvYm9vdC5jLCBkcml2ZXJzL2FjcGkvdGFibGVzLmMuCj4+IDQuIGFkZCBhIG5l
-dyBmaWxlIGFuZCBtb2RpZnkgTWFrZWZpbGUuCj4+IDUuIGNsZWFuIGNvbXBpbGUgd2FybmluZyBp
-biBjb3B5X2RldmljZV90YWJsZSgpIGFuZCBzb21lIGNvbXBpbGUgZXJyb3IuCj4+IDYuIHNwbGl0
-IHRoZSBvcmlnaW5hbCBwYXRjaCBpbnRvIGZvdXIgcGF0Y2hlcywgaXQgd2lsbCBiZSBiZXR0ZXIg
-Zm9yCj4+IHJldmlldy4KPj4KPj4gU29tZSBrbm93biBpc3N1ZXM6Cj4+IDEuIGFib3V0IFNNRQo+
-PiBVcHN0cmVhbSBrZXJuZWwgZG9lc24ndCB3b3JrIHdoZW4gd2UgdXNlIGtleGVjIGluIHRoZSBm
-b2xsb3cgY29tbWFuZC4gVGhlCj4+IHN5c3RlbSB3aWxsIGhhbmcuCj4+IChUaGlzIGlzc3VlIGRv
-ZXNuJ3QgbWF0dGVyIHdpdGggdGhlIGtkdW1wIHBhdGNoLikKPj4KPj4gUmVwcm9kdWNlIHN0ZXBz
-Ogo+PiAgIyBrZXhlYyAtbCAvYm9vdC92bWxpbnV6LTQuMTcuMC1yYzcrIC0taW5pdHJkPS9ib290
-L2luaXRyYW1mcy00LjE3LjAtcmM3Ky5pbWcgLS1jb21tYW5kLWxpbmU9InJvb3Q9L2Rldi9tYXBw
-ZXIvcmhlbF9ocC0tZGwzODVnMTAtLTAzLXJvb3Qgcm8gbWVtX2VuY3J5cHQ9b24gcmQubHZtLmx2
-PXJoZWxfaHAtZGwzODVnMTAtMDMvcm9vdCByZC5sdm0ubHY9cmhlbF9ocC1kbDM4NWcxMC0wMy9z
-d2FwIGNvbnNvbGU9dHR5UzAsMTE1MjAwbjgxIExBTkc9ZW5fVVMuVVRGLTggZWFybHlwcmludGs9
-c2VyaWFsIGRlYnVnIG5va2FzbHIiCj4+ICAjIGtleGVjIC1lIChvciByZWJvb3QpCj4+Cj4+IFRo
-ZSBzeXN0ZW0gd2lsbCBoYW5nOgo+PiBbIDEyNDguOTMyMjM5XSBrZXhlY19jb3JlOiBTdGFydGlu
-ZyBuZXcga2VybmVsCj4+IGVhcmx5IGNvbnNvbGUgaW4gZXh0cmFjdF9rZXJuZWwKPj4gaW5wdXRf
-ZGF0YTogMHgwMDAwMDAwODdlOTFjM2I0Cj4+IGlucHV0X2xlbjogMHgwMDAwMDAwMDAwNjdmY2Jk
-Cj4+IG91dHB1dDogMHgwMDAwMDAwODdkNDAwMDAwCj4+IG91dHB1dF9sZW46IDB4MDAwMDAwMDAw
-MWI2ZmE5MAo+PiBrZXJuZWxfdG90YWxfc2l6ZTogMHgwMDAwMDAwMDAxYTlkMDAwCj4+IHRyYW1w
-b2xpbmVfMzJiaXQ6IDB4MDAwMDAwMDAwMDA5OTAwMAo+Pgo+PiBEZWNvbXByZXNzaW5nIExpbnV4
-Li4uCj4+IFBhcnNpbmcgRUxGLi4uICAgICAgICBbLWhlcmUgdGhlIHN5c3RlbSB3aWxsIGhhbmdd
-Cj4+Cj4+IDIuIGFib3V0IFNFVgo+PiBVcHN0cmVhbSBrZXJuZWwoSG9zdCBPUykgZG9lc24ndCB3
-b3JrIGluIGhvc3Qgc2lkZSwgc29tZSBkcml2ZXJzIGFib3V0Cj4+IFNFViBhbHdheXMgZ28gd3Jv
-bmcgaW4gaG9zdCBzaWRlLiBXZSBjYW4ndCBib290IFNFViBHdWVzdCBPUyB0byB0ZXN0Cj4+IGtk
-dW1wIHBhdGNoLiBNYXliZSBpdCBpcyBtb3JlIHJlYXNvbmFibGUgdG8gaW1wcm92ZSBTRVYgaW4g
-YW5vdGhlcgo+PiBwYXRjaC4gV2hlbiBzb21lIGRyaXZlcnMgY2FuIHdvcmsgaW4gaG9zdCBzaWRl
-IGFuZCBpdCBjYW4gYWxzbyBib290Cj4+IFZpcnR1YWwgTWFjaGluZShTRVYgR3Vlc3QgT1MpLCBp
-dCB3aWxsIGJlIHN1aXRhYmxlIHRvIGZpeCBTRVYgZm9yIGtkdW1wLgo+Pgo+PiBbICAzNjkuNDI2
-MTMxXSBJTkZPOiB0YXNrIHN5c3RlbWQtdWRldmQ6ODY1IGJsb2NrZWQgZm9yIG1vcmUgdGhhbiAx
-MjAgc2Vjb25kcy4KPj4gWyAgMzY5LjQzMzE3N10gICAgICAgTm90IHRhaW50ZWQgNC4xNy4wLXJj
-NSsgIzYwCj4+IFsgIDM2OS40Mzc1ODVdICJlY2hvIDAgPiAvcHJvYy9zeXMva2VybmVsL2h1bmdf
-dGFza190aW1lb3V0X3NlY3MiIGRpc2FibGVzIHRoaXMgbWVzc2FnZS4KPj4gWyAgMzY5LjQ0NTc4
-M10gc3lzdGVtZC11ZGV2ZCAgIEQgICAgMCAgIDg2NSAgICA4MTMgMHg4MDAwMDAwNAo+PiBbICAz
-NjkuNDUxMzIzXSBDYWxsIFRyYWNlOgo+PiBbICAzNjkuNDUzODE1XSAgPyBfX3NjaGVkdWxlKzB4
-MjkwLzB4ODcwCj4+IFsgIDM2OS40NTc1MjNdICBzY2hlZHVsZSsweDMyLzB4ODAKPj4gWyAgMzY5
-LjQ2MDcxNF0gIF9fc2V2X2RvX2NtZF9sb2NrZWQrMHgxZjYvMHgyYTAgW2NjcF0KPj4gWyAgMzY5
-LjQ2NTU1Nl0gID8gY2xlYW51cF91ZXZlbnRfZW52KzB4MTAvMHgxMAo+PiBbICAzNjkuNDcwMDg0
-XSAgPyByZW1vdmVfd2FpdF9xdWV1ZSsweDYwLzB4NjAKPj4gWyAgMzY5LjQ3NDIxOV0gID8gMHhm
-ZmZmZmZmZmMwMjQ3MDAwCj4+IFsgIDM2OS40Nzc1NzJdICBfX3Nldl9wbGF0Zm9ybV9pbml0X2xv
-Y2tlZCsweDJiLzB4NzAgW2NjcF0KPj4gWyAgMzY5LjQ4Mjg0M10gIHNldl9wbGF0Zm9ybV9pbml0
-KzB4MWQvMHgzMCBbY2NwXQo+PiBbICAzNjkuNDg3MzMzXSAgcHNwX3BjaV9pbml0KzB4NDAvMHhl
-MCBbY2NwXQo+PiBbICAzNjkuNDkxMzgwXSAgPyAweGZmZmZmZmZmYzAyNDcwMDAKPj4gWyAgMzY5
-LjQ5NDkzNl0gIHNwX21vZF9pbml0KzB4MTgvMHgxMDAwIFtjY3BdCj4+IFsgIDM2OS40OTkwNzFd
-ICBkb19vbmVfaW5pdGNhbGwrMHg0ZS8weDFkNAo+PiBbICAzNjkuNTAyOTQ0XSAgPyBfY29uZF9y
-ZXNjaGVkKzB4MTUvMHgzMAo+PiBbICAzNjkuNTA2NzI4XSAgPyBrbWVtX2NhY2hlX2FsbG9jX3Ry
-YWNlKzB4YWUvMHgxZDAKPj4gWyAgMzY5LjUxMTM4Nl0gID8gZG9faW5pdF9tb2R1bGUrMHgyMi8w
-eDIyMAo+PiBbICAzNjkuNTE1MzQ1XSAgZG9faW5pdF9tb2R1bGUrMHg1YS8weDIyMAo+PiBbICAz
-NjkuNTE5NDQ0XSAgbG9hZF9tb2R1bGUrMHgyMWNiLzB4MmE1MAo+PiBbICAzNjkuNTIzMjI3XSAg
-PyBtX3Nob3crMHgxYzAvMHgxYzAKPj4gWyAgMzY5LjUyNjU3MV0gID8gc2VjdXJpdHlfY2FwYWJs
-ZSsweDNmLzB4NjAKPj4gWyAgMzY5LjUzMDYxMV0gIF9fZG9fc3lzX2Zpbml0X21vZHVsZSsweDk0
-LzB4ZTAKPj4gWyAgMzY5LjUzNDkxNV0gIGRvX3N5c2NhbGxfNjQrMHg1Yi8weDE4MAo+PiBbICAz
-NjkuNTM4NjA3XSAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQo+PiBb
-ICAzNjkuNTQzNjk4XSBSSVA6IDAwMzM6MHg3ZjcwOGU2MzExYjkKPj4gWyAgMzY5LjU0NzUzNl0g
-UlNQOiAwMDJiOjAwMDA3ZmZmZjlkMzJhYTggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAw
-MDAwMDAwMDAwMDEzOQo+PiBbICAzNjkuNTU1MTYyXSBSQVg6IGZmZmZmZmZmZmZmZmZmZGEgUkJY
-OiAwMDAwNTU2MDJhMDRjMmQwIFJDWDogMDAwMDdmNzA4ZTYzMTFiOQo+PiBbICAzNjkuNTYyMzQ2
-XSBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiAwMDAwN2Y3MDhlZjUyMDM5IFJESTogMDAwMDAw
-MDAwMDAwMDAwOAo+PiBbICAzNjkuNTY5ODAxXSBSQlA6IDAwMDA3ZjcwOGVmNTIwMzkgUjA4OiAw
-MDAwMDAwMDAwMDAwMDAwIFIwOTogMDAwMDU1NjAyYTA0OGIyMAo+PiBbICAzNjkuNTc2OTg4XSBS
-MTA6IDAwMDAwMDAwMDAwMDAwMDggUjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDAwMDAw
-MDAwMDAwMAo+PiBbICAzNjkuNTg0MTc3XSBSMTM6IDAwMDA1NTYwMmEwNzUyNjAgUjE0OiAwMDAw
-MDAwMDAwMDIwMDAwIFIxNTogMDAwMDAwMDAwMDAwMDAwMAo+Pgo+PiBMaWFuYm8gSmlhbmcgKDQp
-Ogo+PiAgIEFkZCBhIGZ1bmN0aW9uKGlvcmVtYXBfZW5jcnlwdGVkKSBmb3Iga2R1bXAgd2hlbiBB
-TUQgc21lIGVuYWJsZWQKPj4gICBBbGxvY2F0ZSBwYWdlcyBmb3Iga2R1bXAgd2l0aG91dCBlbmNy
-eXB0aW9uIHdoZW4gU01FIGlzIGVuYWJsZWQKPj4gICBSZW1hcCB0aGUgZGV2aWNlIHRhYmxlIG9m
-IElPTU1VIGluIGVuY3J5cHRlZCBtYW5uZXIgZm9yIGtkdW1wCj4+ICAgSGVscCB0byBkdW1wIHRo
-ZSBvbGQgbWVtb3J5IGVuY3J5cHRlZCBpbnRvIHZtY29yZSBmaWxlCj4+Cj4+ICBhcmNoL3g4Ni9p
-bmNsdWRlL2FzbS9pby5oICAgICAgICAgICAgfCAgMyArKwo+PiAgYXJjaC94ODYva2VybmVsL01h
-a2VmaWxlICAgICAgICAgICAgIHwgIDEgKwo+PiAgYXJjaC94ODYva2VybmVsL2NyYXNoX2R1bXBf
-ZW5jcnlwdC5jIHwgNTMgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+ICBh
-cmNoL3g4Ni9tbS9pb3JlbWFwLmMgICAgICAgICAgICAgICAgfCAyOCArKysrKysrKysrKysrLS0t
-LS0tCj4+ICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgICAgICAgfCAxNSArKysrKysr
-KystCj4+ICBmcy9wcm9jL3ZtY29yZS5jICAgICAgICAgICAgICAgICAgICAgfCAyMCArKysrKysr
-KysrLS0tLQo+PiAgaW5jbHVkZS9saW51eC9jcmFzaF9kdW1wLmggICAgICAgICAgIHwgMTEgKysr
-KysrKysKPj4gIGtlcm5lbC9rZXhlY19jb3JlLmMgICAgICAgICAgICAgICAgICB8IDEyICsrKysr
-KysrCj4+ICA4IGZpbGVzIGNoYW5nZWQsIDEyOCBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMo
-LSkKPj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL3g4Ni9rZXJuZWwvY3Jhc2hfZHVtcF9lbmNy
-eXB0LmMKPj4KPj4gLS0gCj4+IDIuOS41Cj4+Cj4+Cj4+IF9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCj4+IGtleGVjIG1haWxpbmcgbGlzdAo+PiBrZXhlY0Bs
-aXN0cy5pbmZyYWRlYWQub3JnCj4+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
-bGlzdGluZm8va2V4ZWMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Robin/Greg k-h,
+
+Will this patch-set be taken for the next kernel release (and via which tree)?
+
+Thanks,
+Nipun
+
+> -----Original Message-----
+> From: Nipun Gupta
+> Sent: Sunday, May 20, 2018 7:20 PM
+> To: robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
+> robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org; catalin.marinas-5wv7dgnIgG8@public.gmane.org;
+> gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>;
+> bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+> Cc: hch-jcswGhMUV9g@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
+> shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
+> pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>;
+> stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>; Nipun Gupta
+> <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> Subject: [PATCH 0/7 v5] Support for fsl-mc bus and its devices in SMMU
+> 
+> This patchset defines IOMMU DT binding for fsl-mc bus and adds
+> support in SMMU for fsl-mc bus.
+> 
+> The patch series is based on top of dma-mapping tree (for-next branch):
+> http://git.infradead.org/users/hch/dma-mapping.git
+> 
+> These patches
+>   - Define property 'iommu-map' for fsl-mc bus (patch 1)
+>   - Integrates the fsl-mc bus with the SMMU using this
+>     IOMMU binding (patch 2,3,4)
+>   - Adds the dma configuration support for fsl-mc bus (patch 5, 6)
+>   - Updates the fsl-mc device node with iommu/dma related changes (patch 7)
+> 
+> Changes in v2:
+>   - use iommu-map property for fsl-mc bus
+>   - rebase over patchset https://patchwork.kernel.org/patch/10317337/
+>     and make corresponding changes for dma configuration of devices on
+>     fsl-mc bus
+> 
+> Changes in v3:
+>   - move of_map_rid in drivers/of/address.c
+> 
+> Changes in v4:
+>   - move of_map_rid in drivers/of/base.c
+> 
+> Changes in v5:
+>   - break patch 5 in two separate patches (now patch 5/7 and patch 6/7)
+>   - add changelog text in patch 3/7 and patch 5/7
+>   - typo fix
+> 
+> Nipun Gupta (7):
+>   Docs: dt: add fsl-mc iommu-map device-tree binding
+>   iommu: of: make of_pci_map_rid() available for other devices too
+>   iommu: support iommu configuration for fsl-mc devices
+>   iommu: arm-smmu: Add support for the fsl-mc bus
+>   bus: fsl-mc: support dma configure for devices on fsl-mc bus
+>   bus: fsl-mc: set coherent dma mask for devices on fsl-mc bus
+>   arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
+> 
+>  .../devicetree/bindings/misc/fsl,qoriq-mc.txt      |  39 ++++++++
+>  arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |   6 +-
+>  drivers/bus/fsl-mc/fsl-mc-bus.c                    |  16 +++-
+>  drivers/iommu/arm-smmu.c                           |   7 ++
+>  drivers/iommu/iommu.c                              |  21 +++++
+>  drivers/iommu/of_iommu.c                           |  25 ++++-
+>  drivers/of/base.c                                  | 102 +++++++++++++++++++++
+>  drivers/of/irq.c                                   |   5 +-
+>  drivers/pci/of.c                                   | 101 --------------------
+>  include/linux/fsl/mc.h                             |   8 ++
+>  include/linux/iommu.h                              |   2 +
+>  include/linux/of.h                                 |  11 +++
+>  include/linux/of_pci.h                             |  10 --
+>  13 files changed, 231 insertions(+), 122 deletions(-)
+> 
+> --
+> 1.9.1
