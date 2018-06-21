@@ -1,18 +1,24 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/4 V3] Allocate pages for kdump without encryption when
-	SME is enabled
-Date: Thu, 21 Jun 2018 18:23:21 +0800
-Message-ID: <20180621102321.GK29979@MiWiFi-R3L-srv>
-References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180616082714.32035-3-lijiang@redhat.com>
-	<20180621015306.GG29979@MiWiFi-R3L-srv>
-	<e74e94b6-97dc-23d9-6262-44a7ae8d63bd@redhat.com>
+From: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: usb HC busted?
+Date: Thu, 21 Jun 2018 14:01:30 +0300
+Message-ID: <2b4fe87a-3706-0aa8-2b61-a9c1d1352a7a@linux.intel.com>
+References: <6790b352-add3-5531-115c-15db6c9c744d@intel.com>
+	<20180518130458.v73syr3fltdzdzzi@debian>
+	<881d576b-c7c1-ef74-c6bc-68b81371e7e0@intel.com>
+	<20180523212956.n4ztasdffg2aeaku@debian>
+	<80eace7a-976d-65a5-a353-54a2b18edd06@linux.intel.com>
+	<20180604152848.db3msouyi4ektvv6@debian>
+	<06226ecb-baad-cc36-e9e3-797dabb0aa5e@linux.intel.com>
+	<42ec4ab07d96b4302b875ac9c5eb76675bf85690.camel@linux.intel.com>
+	<20180606164524.n4vb7xre6rykzxih@debian>
+	<2e8829c2-850d-6bca-5f0c-58a809dc9499@linux.intel.com>
+	<20180621005332.5uy74tkjoel6w4xy@debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <e74e94b6-97dc-23d9-6262-44a7ae8d63bd-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20180621005332.5uy74tkjoel6w4xy@debian>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,55 +28,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDYvMjEvMTggYXQgMDE6MDZwbSwgbGlqaWFuZyB3cm90ZToKPiDlnKggMjAxOOW5tDA25pyI
-MjHml6UgMDk6NTMsIEJhb3F1YW4gSGUg5YaZ6YGTOgo+ID4gT24gMDYvMTYvMTggYXQgMDQ6Mjdw
-bSwgTGlhbmJvIEppYW5nIHdyb3RlOgo+ID4+IFdoZW4gU01FIGlzIGVuYWJsZWQgaW4gdGhlIGZp
-cnN0IGtlcm5lbCwgd2Ugd2lsbCBhbGxvY2F0ZSBwYWdlcwo+ID4+IGZvciBrZHVtcCB3aXRob3V0
-IGVuY3J5cHRpb24gaW4gb3JkZXIgdG8gYmUgYWJsZSB0byBib290IHRoZQo+ID4+IHNlY29uZCBr
-ZXJuZWwgaW4gdGhlIHNhbWUgbWFubmVyIGFzIGtleGVjLCB3aGljaCBoZWxwcyB0byBrZWVwCj4g
-Pj4gdGhlIHNhbWUgY29kZSBzdHlsZS4KPiA+Pgo+ID4+IFNpZ25lZC1vZmYtYnk6IExpYW5ibyBK
-aWFuZyA8bGlqaWFuZ0ByZWRoYXQuY29tPgo+ID4+IC0tLQo+ID4+ICBrZXJuZWwva2V4ZWNfY29y
-ZS5jIHwgMTIgKysrKysrKysrKysrCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25z
-KCspCj4gPj4KPiA+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2tleGVjX2NvcmUuYyBiL2tlcm5lbC9r
-ZXhlY19jb3JlLmMKPiA+PiBpbmRleCAyMGZlZjFhLi4zYzIyYTliIDEwMDY0NAo+ID4+IC0tLSBh
-L2tlcm5lbC9rZXhlY19jb3JlLmMKPiA+PiArKysgYi9rZXJuZWwva2V4ZWNfY29yZS5jCj4gPj4g
-QEAgLTQ3MSw2ICs0NzEsMTYgQEAgc3RhdGljIHN0cnVjdCBwYWdlICpraW1hZ2VfYWxsb2NfY3Jh
-c2hfY29udHJvbF9wYWdlcyhzdHJ1Y3Qga2ltYWdlICppbWFnZSwKPiA+PiAgCQl9Cj4gPj4gIAl9
-Cj4gPj4gIAo+ID4+ICsJaWYgKHBhZ2VzKSB7Cj4gPj4gKwkJdW5zaWduZWQgaW50IGNvdW50LCBp
-Owo+ID4+ICsKPiA+PiArCQlwYWdlcy0+bWFwcGluZyA9IE5VTEw7Cj4gPj4gKwkJc2V0X3BhZ2Vf
-cHJpdmF0ZShwYWdlcywgb3JkZXIpOwo+ID4+ICsJCWNvdW50ID0gMSA8PCBvcmRlcjsKPiA+PiAr
-CQlmb3IgKGkgPSAwOyBpIDwgY291bnQ7IGkrKykKPiA+PiArCQkJU2V0UGFnZVJlc2VydmVkKHBh
-Z2VzICsgaSk7Cj4gPiAKPiA+IEkgZ3Vlc3MgeW91IG1pZ2h0IGltaXRhdGUgdGhlIGtleGVjIGNh
-c2UsIGhvd2V2ZXIga2V4ZWMgZ2V0IHBhZ2VzIGZyb20KPiA+IGJ1ZGR5LiBDcmFzaCBwYWdlcyBh
-cmUgcmVzZXJ2ZWQgaW4gbWVtYmxvY2ssIHRoZXNlIGNvZGVzIG1pZ2h0IG1ha2Ugbm8gc2Vuc2Uu
-Cj4gPiAKPiBUaGFua3MgZm9yIHlvdXIgY29tbWVudHMuCj4gV2UgaGF2ZSBjaGFuZ2VkIHRoZSBh
-dHRyaWJ1dGUgb2YgcGFnZXMsIHNvIHRoZSBvcmlnaW5hbCBhdHRyaWJ1dGUgb2YgcGFnZXMgd2ls
-bCBiZQo+IHJlc3RvcmVkIHdoZW4gdGhleSBmcmVlLgoKSG1tLCB5b3UgY2FuIGNoZWNrIHdoYXQg
-a2ltYWdlX2ZyZWUoKSBpcyBkb2luZywgYW5kIHdoZXJlCmtpbWFnZS0+Y29udHJvbF9wYWdlcywg
-ZGVzdF9wYWdlcywgdW51c2FibGVfcGFnZXMgaXMgYXNzaWduZWQuIERvIHlvdQprbm93IHdoZXJl
-IHRoZXNlIG9yaWdpbmFsIGF0dHJpYnV0ZSBvZiBwYWdlcyBjb21lcyBmcm9tIGFuZCB0aGV5IGFy
-ZQp1c2VkL25lZWRlZCBpbiBDUkFTSCBjYXNlLCBpZiB5b3UgY2FyZSBhYm91dCB0aGVtPwoKPiAK
-PiA+PiArCQlhcmNoX2tleGVjX3Bvc3RfYWxsb2NfcGFnZXMocGFnZV9hZGRyZXNzKHBhZ2VzKSwg
-MSA8PCBvcmRlciwgMCk7Cj4gPj4gKwl9Cj4gPj4gIAlyZXR1cm4gcGFnZXM7Cj4gPj4gIH0KPiA+
-PiAgCj4gPj4gQEAgLTg2NSw2ICs4NzUsNyBAQCBzdGF0aWMgaW50IGtpbWFnZV9sb2FkX2NyYXNo
-X3NlZ21lbnQoc3RydWN0IGtpbWFnZSAqaW1hZ2UsCj4gPj4gIAkJCXJlc3VsdCAgPSAtRU5PTUVN
-Owo+ID4+ICAJCQlnb3RvIG91dDsKPiA+PiAgCQl9Cj4gPj4gKwkJYXJjaF9rZXhlY19wb3N0X2Fs
-bG9jX3BhZ2VzKHBhZ2VfYWRkcmVzcyhwYWdlKSwgMSwgMCk7Cj4gPj4gIAkJcHRyID0ga21hcChw
-YWdlKTsKPiA+PiAgCQlwdHIgKz0gbWFkZHIgJiB+UEFHRV9NQVNLOwo+ID4+ICAJCW1jaHVuayA9
-IG1pbl90KHNpemVfdCwgbWJ5dGVzLAo+ID4+IEBAIC04ODIsNiArODkzLDcgQEAgc3RhdGljIGlu
-dCBraW1hZ2VfbG9hZF9jcmFzaF9zZWdtZW50KHN0cnVjdCBraW1hZ2UgKmltYWdlLAo+ID4+ICAJ
-CQlyZXN1bHQgPSBjb3B5X2Zyb21fdXNlcihwdHIsIGJ1ZiwgdWNodW5rKTsKPiA+PiAgCQlrZXhl
-Y19mbHVzaF9pY2FjaGVfcGFnZShwYWdlKTsKPiA+PiAgCQlrdW5tYXAocGFnZSk7Cj4gPj4gKwkJ
-YXJjaF9rZXhlY19wcmVfZnJlZV9wYWdlcyhwYWdlX2FkZHJlc3MocGFnZSksIDEpOwo+ID4+ICAJ
-CWlmIChyZXN1bHQpIHsKPiA+PiAgCQkJcmVzdWx0ID0gLUVGQVVMVDsKPiA+PiAgCQkJZ290byBv
-dXQ7Cj4gPj4gLS0gCj4gPj4gMi45LjUKPiA+Pgo+ID4+Cj4gPj4gX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPiA+PiBrZXhlYyBtYWlsaW5nIGxpc3QKPiA+
-PiBrZXhlY0BsaXN0cy5pbmZyYWRlYWQub3JnCj4gPj4gaHR0cDovL2xpc3RzLmluZnJhZGVhZC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9rZXhlYwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+On 21.06.2018 03:53, Sudip Mukherjee wrote:
+> Hi Mathias, Andy,
+> 
+> On Thu, Jun 07, 2018 at 10:40:03AM +0300, Mathias Nyman wrote:
+>> On 06.06.2018 19:45, Sudip Mukherjee wrote:
+>>> Hi Andy,
+>>>
+>>> And we meet again. :)
+>>>
+>>> On Wed, Jun 06, 2018 at 06:36:35PM +0300, Andy Shevchenko wrote:
+>>>> On Wed, 2018-06-06 at 17:12 +0300, Mathias Nyman wrote:
+>>>>> On 04.06.2018 18:28, Sudip Mukherjee wrote:
+>>>>>> On Thu, May 24, 2018 at 04:35:34PM +0300, Mathias Nyman wrote:
+>>>>>>>
+>>>>
+>>>>> Odd and unlikely, but to me this looks like some issue in allocating
+>>>>> dma memory
+>>>>> from pool using dma_pool_zalloc()
+>>>>>
+>>>>>
+>>>>> Here's the story:
+>>>>> Sudip sees usb issues on a Intel Atom based board with 4.14.2 kernel.
+>>>>> All tracing points to dma_pool_zalloc() returning the same dma address
+>>>>> block on
+>>>>> consecutive calls.
+>>>>>
+>>>>> In the failing case dma_pool_zalloc() is called 3 - 6us apart.
+>>>>>
+>>>>> <...>-26362 [002] ....  1186.756739: xhci_ring_mem_detail: MATTU
+>>>>> xhci_segment_alloc dma @ 0x000000002d92b000
+>>>>> <...>-26362 [002] ....  1186.756745: xhci_ring_mem_detail: MATTU
+>>>>> xhci_segment_alloc dma @ 0x000000002d92b000
+>>>>> <...>-26362 [002] ....  1186.756748: xhci_ring_mem_detail: MATTU
+>>>>> xhci_segment_alloc dma @ 0x000000002d92b000
+>>>>>
+>>>>> dma_pool_zalloc() is called from xhci_segment_alloc() in
+>>>>> drivers/usb/host/xhci-mem.c
+>>>>> see:
+>>>>> https://elixir.bootlin.com/linux/v4.14.2/source/drivers/usb/host/xhci-
+>>>>> mem.c#L52
+>>>>>
+>>>>> prints above are custom traces added right after dma_pool_zalloc()
+>>>>
+>>>> For better understanding it would be good to have dma_pool_free() calls
+>>>> debugged as well.
+>>>
+>>
+>> Sudip has a full (394M unpacked) trace at:
+>> https://drive.google.com/open?id=1h-3r-1lfjg8oblBGkzdRIq8z3ZNgGZx-
+>>
+> 
+> <snip>
+> 
+>> But then it gets stuck, for the whole ring2 dma_pool_zalloc() just returns the same dma address as the last segment for
+>> ring1:0x2d92b000. Last part of trace snippet is just another ring being freed.
+> 
+> A gentle ping on this. Any idea on what the problem might be and any
+> possible fix?
+> 
+
+I tried to reproduce it by quickly hacking xhci to allocate and free 50 segments each time
+we normally allocate one segment from dmapool.
+I let it run for 3 days on a Atom based platform, but could not reproduce it.
+
+xhci testhack can be found here:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git dmapool-test
+https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=dmapool-test
+
+Tested by just leaving the following running for a few days:
+
+while true; do echo 0 > authorized; sleep 3; echo 1 > authorized; sleep 3; done;
+For some usb device (for example: /sys/bus/usb/devices/1-8)
+
+Then grep logs for "MATTU dmatest match! "
+
+Can you share a bit more details on the platform you are using, and what types of test you are running.
+Does my test above trigger the case? (show "MATTU dmatest match!")
+
+-Mathias
