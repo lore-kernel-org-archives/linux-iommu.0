@@ -1,215 +1,181 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH 4/4 V3] Help to dump the old memory encrypted into vmcore
- file
-Date: Thu, 21 Jun 2018 10:47:13 +0800
-Message-ID: <20180621024713.GI29979@MiWiFi-R3L-srv>
+From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/4 V3] Support kdump for AMD secure memory encryption(SME)
+Date: Thu, 21 Jun 2018 11:18:58 +0800
+Message-ID: <c9531007-4452-a8e1-a96a-3ec7dfb0cba0@redhat.com>
 References: <20180616082714.32035-1-lijiang@redhat.com>
- <20180616082714.32035-5-lijiang@redhat.com>
+	<20180621012116.GF29979@MiWiFi-R3L-srv>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180616082714.32035-5-lijiang@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lianbo Jiang <lijiang@redhat.com>
-Cc: linux-kernel@vger.kernel.org, thomas.lendacky@amd.com, iommu@lists.linux-foundation.org, dyoung@redhat.com, kexec@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180621012116.GF29979@MiWiFi-R3L-srv>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/16/18 at 04:27pm, Lianbo Jiang wrote:
-> In kdump mode, we need to dump the old memory into vmcore file,
-> if SME is enabled in the first kernel, we must remap the old
-> memory in encrypted manner, which will be automatically decrypted
-> when we read from DRAM. It helps to parse the vmcore for some tools.
-
-It implies 2nd kernel is sme enabled, right?
-
-Then what if 1st kernel has no sme enabled?
-
-> 
-> Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
-> ---
-> Some changes:
-> 1. add a new file and modify Makefile.
-> 2. remove some code in sev_active().
-> 
->  arch/x86/kernel/Makefile             |  1 +
->  arch/x86/kernel/crash_dump_encrypt.c | 53 ++++++++++++++++++++++++++++++++++++
->  fs/proc/vmcore.c                     | 20 ++++++++++----
->  include/linux/crash_dump.h           | 11 ++++++++
->  4 files changed, 79 insertions(+), 6 deletions(-)
->  create mode 100644 arch/x86/kernel/crash_dump_encrypt.c
-> 
-> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-> index 02d6f5c..afb5bad 100644
-> --- a/arch/x86/kernel/Makefile
-> +++ b/arch/x86/kernel/Makefile
-> @@ -96,6 +96,7 @@ obj-$(CONFIG_KEXEC_CORE)	+= machine_kexec_$(BITS).o
->  obj-$(CONFIG_KEXEC_CORE)	+= relocate_kernel_$(BITS).o crash.o
->  obj-$(CONFIG_KEXEC_FILE)	+= kexec-bzimage64.o
->  obj-$(CONFIG_CRASH_DUMP)	+= crash_dump_$(BITS).o
-> +obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= crash_dump_encrypt.o
->  obj-y				+= kprobes/
->  obj-$(CONFIG_MODULES)		+= module.o
->  obj-$(CONFIG_DOUBLEFAULT)	+= doublefault.o
-> diff --git a/arch/x86/kernel/crash_dump_encrypt.c b/arch/x86/kernel/crash_dump_encrypt.c
-> new file mode 100644
-> index 0000000..e44ef33
-> --- /dev/null
-> +++ b/arch/x86/kernel/crash_dump_encrypt.c
-> @@ -0,0 +1,53 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + *	Memory preserving reboot related code.
-> + *
-> + *	Created by: Lianbo Jiang (lijiang@redhat.com)
-> + *	Copyright (C) RedHat Corporation, 2018. All rights reserved
-> + */
-> +
-> +#include <linux/errno.h>
-> +#include <linux/crash_dump.h>
-> +#include <linux/uaccess.h>
-> +#include <linux/io.h>
-> +
-> +/**
-> + * copy_oldmem_page_encrypted - copy one page from "oldmem encrypted"
-> + * @pfn: page frame number to be copied
-> + * @buf: target memory address for the copy; this can be in kernel address
-> + *	space or user address space (see @userbuf)
-> + * @csize: number of bytes to copy
-> + * @offset: offset in bytes into the page (based on pfn) to begin the copy
-> + * @userbuf: if set, @buf is in user address space, use copy_to_user(),
-> + *	otherwise @buf is in kernel address space, use memcpy().
-> + *
-> + * Copy a page from "oldmem encrypted". For this page, there is no pte
-> + * mapped in the current kernel. We stitch up a pte, similar to
-> + * kmap_atomic.
-> + */
-> +
-> +ssize_t copy_oldmem_page_encrypted(unsigned long pfn, char *buf,
-> +		size_t csize, unsigned long offset, int userbuf)
-> +{
-> +	void  *vaddr;
-> +
-> +	if (!csize)
-> +		return 0;
-> +
-> +	vaddr = (__force void *)ioremap_encrypted(pfn << PAGE_SHIFT,
-> +						  PAGE_SIZE);
-> +	if (!vaddr)
-> +		return -ENOMEM;
-> +
-> +	if (userbuf) {
-> +		if (copy_to_user((void __user *)buf, vaddr + offset, csize)) {
-> +			iounmap((void __iomem *)vaddr);
-> +			return -EFAULT;
-> +		}
-> +	} else
-> +		memcpy(buf, vaddr + offset, csize);
-> +
-> +	set_iounmap_nonlazy();
-> +	iounmap((void __iomem *)vaddr);
-> +	return csize;
-> +}
-> diff --git a/fs/proc/vmcore.c b/fs/proc/vmcore.c
-> index a45f0af..5200266 100644
-> --- a/fs/proc/vmcore.c
-> +++ b/fs/proc/vmcore.c
-> @@ -25,6 +25,8 @@
->  #include <linux/uaccess.h>
->  #include <asm/io.h>
->  #include "internal.h"
-> +#include <linux/mem_encrypt.h>
-> +#include <asm/pgtable.h>
->  
->  /* List representing chunks of contiguous memory areas and their offsets in
->   * vmcore file.
-> @@ -86,7 +88,8 @@ static int pfn_is_ram(unsigned long pfn)
->  
->  /* Reads a page from the oldmem device from given offset. */
->  static ssize_t read_from_oldmem(char *buf, size_t count,
-> -				u64 *ppos, int userbuf)
-> +				u64 *ppos, int userbuf,
-> +				bool encrypted)
->  {
->  	unsigned long pfn, offset;
->  	size_t nr_bytes;
-> @@ -108,8 +111,11 @@ static ssize_t read_from_oldmem(char *buf, size_t count,
->  		if (pfn_is_ram(pfn) == 0)
->  			memset(buf, 0, nr_bytes);
->  		else {
-> -			tmp = copy_oldmem_page(pfn, buf, nr_bytes,
-> -						offset, userbuf);
-> +			tmp = encrypted ? copy_oldmem_page_encrypted(pfn,
-> +					    buf, nr_bytes, offset, userbuf)
-> +					: copy_oldmem_page(pfn, buf, nr_bytes,
-> +							   offset, userbuf);
-> +
->  			if (tmp < 0)
->  				return tmp;
->  		}
-> @@ -143,7 +149,7 @@ void __weak elfcorehdr_free(unsigned long long addr)
->   */
->  ssize_t __weak elfcorehdr_read(char *buf, size_t count, u64 *ppos)
->  {
-> -	return read_from_oldmem(buf, count, ppos, 0);
-> +	return read_from_oldmem(buf, count, ppos, 0, false);
->  }
->  
->  /*
-> @@ -151,7 +157,7 @@ ssize_t __weak elfcorehdr_read(char *buf, size_t count, u64 *ppos)
->   */
->  ssize_t __weak elfcorehdr_read_notes(char *buf, size_t count, u64 *ppos)
->  {
-> -	return read_from_oldmem(buf, count, ppos, 0);
-> +	return read_from_oldmem(buf, count, ppos, 0, sme_active());
->  }
->  
->  /*
-> @@ -161,6 +167,7 @@ int __weak remap_oldmem_pfn_range(struct vm_area_struct *vma,
->  				  unsigned long from, unsigned long pfn,
->  				  unsigned long size, pgprot_t prot)
->  {
-> +	prot = pgprot_encrypted(prot);
->  	return remap_pfn_range(vma, from, pfn, size, prot);
->  }
->  
-> @@ -235,7 +242,8 @@ static ssize_t __read_vmcore(char *buffer, size_t buflen, loff_t *fpos,
->  					    m->offset + m->size - *fpos,
->  					    buflen);
->  			start = m->paddr + *fpos - m->offset;
-> -			tmp = read_from_oldmem(buffer, tsz, &start, userbuf);
-> +			tmp = read_from_oldmem(buffer, tsz, &start, userbuf,
-> +						sme_active());
->  			if (tmp < 0)
->  				return tmp;
->  			buflen -= tsz;
-> diff --git a/include/linux/crash_dump.h b/include/linux/crash_dump.h
-> index f7ac2aa..f3414ff 100644
-> --- a/include/linux/crash_dump.h
-> +++ b/include/linux/crash_dump.h
-> @@ -25,6 +25,17 @@ extern int remap_oldmem_pfn_range(struct vm_area_struct *vma,
->  
->  extern ssize_t copy_oldmem_page(unsigned long, char *, size_t,
->  						unsigned long, int);
-> +#ifdef CONFIG_AMD_MEM_ENCRYPT
-> +extern ssize_t copy_oldmem_page_encrypted(unsigned long pfn, char *buf,
-> +					   size_t csize, unsigned long offset,
-> +					   int userbuf);
-> +#else
-> +static inline ssize_t copy_oldmem_page_encrypted(unsigned long pfn, char *buf,
-> +					size_t csize, unsigned long offset,
-> +					int userbuf) {
-> +	return csize;
-> +}
-> +#endif
->  void vmcore_cleanup(void);
->  
->  /* Architecture code defines this if there are other possible ELF
-> -- 
-> 2.9.5
-> 
-> 
-> _______________________________________________
-> kexec mailing list
-> kexec@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/kexec
+5ZyoIDIwMTjlubQwNuaciDIx5pelIDA5OjIxLCBCYW9xdWFuIEhlIOWGmemBkzoKPiBPbiAwNi8x
+Ni8xOCBhdCAwNDoyN3BtLCBMaWFuYm8gSmlhbmcgd3JvdGU6Cj4+IEl0IGlzIGNvbnZlbmllbnQg
+dG8gcmVtYXAgdGhlIG9sZCBtZW1vcnkgZW5jcnlwdGVkIHRvIHRoZSBzZWNvbmQga2VybmVsIGJ5
+Cj4+IGNhbGxpbmcgaW9yZW1hcF9lbmNyeXB0ZWQoKS4KPj4KPj4gV2hlbiBzbWUgZW5hYmxlZCBv
+biBBTUQgc2VydmVyLCB3ZSBhbHNvIG5lZWQgdG8gc3VwcG9ydCBrZHVtcC4gQmVjYXVzZQo+PiB0
+aGUgbWVtb3J5IGlzIGVuY3J5cHRlZCBpbiB0aGUgZmlyc3Qga2VybmVsLCB3ZSB3aWxsIHJlbWFw
+IHRoZSBvbGQgbWVtb3J5Cj4+IGVuY3J5cHRlZCB0byB0aGUgc2Vjb25kIGtlcm5lbChjcmFzaCBr
+ZXJuZWwpLCBhbmQgc21lIGlzIGFsc28gZW5hYmxlZCBpbgo+PiB0aGUgc2Vjb25kIGtlcm5lbCwg
+b3RoZXJ3aXNlIHRoZSBvbGQgbWVtb3J5IGVuY3J5cHRlZCBjYW4gbm90IGJlIGRlY3J5cHRlZC4K
+Pj4gQmVjYXVzZSBzaW1wbHkgY2hhbmdpbmcgdGhlIHZhbHVlIG9mIGEgQy1iaXQgb24gYSBwYWdl
+IHdpbGwgbm90Cj4+IGF1dG9tYXRpY2FsbHkgZW5jcnlwdCB0aGUgZXhpc3RpbmcgY29udGVudHMg
+b2YgYSBwYWdlLCBhbmQgYW55IGRhdGEgaW4gdGhlCj4+IHBhZ2UgcHJpb3IgdG8gdGhlIEMtYml0
+IG1vZGlmaWNhdGlvbiB3aWxsIGJlY29tZSB1bmludGVsbGlnaWJsZS4gQSBwYWdlIG9mCj4+IG1l
+bW9yeSB0aGF0IGlzIG1hcmtlZCBlbmNyeXB0ZWQgd2lsbCBiZSBhdXRvbWF0aWNhbGx5IGRlY3J5
+cHRlZCB3aGVuIHJlYWQKPj4gZnJvbSBEUkFNIGFuZCB3aWxsIGJlIGF1dG9tYXRpY2FsbHkgZW5j
+cnlwdGVkIHdoZW4gd3JpdHRlbiB0byBEUkFNLgo+Pgo+PiBGb3IgdGhlIGtkdW1wLCBpdCBpcyBu
+ZWNlc3NhcnkgdG8gZGlzdGluZ3Vpc2ggd2hldGhlciB0aGUgbWVtb3J5IGlzCj4+IGVuY3J5cHRl
+ZC4gRnVydGhlcm1vcmUsIHdlIHNob3VsZCBhbHNvIGtub3cgd2hpY2ggcGFydCBvZiB0aGUgbWVt
+b3J5IGlzCj4+IGVuY3J5cHRlZCBvciBkZWNyeXB0ZWQuIFdlIHdpbGwgYXBwcm9wcmlhdGVseSBy
+ZW1hcCB0aGUgbWVtb3J5IGFjY29yZGluZwo+PiB0byB0aGUgc3BlY2lmaWMgc2l0dWF0aW9uIGlu
+IG9yZGVyIHRvIHRlbGwgY3B1IGhvdyB0byBkZWFsIHdpdGggdGhlCj4+IGRhdGEoZW5jcnlwdGVk
+IG9yIGRlY3J5cHRlZCkuIEZvciBleGFtcGxlLCB3aGVuIHNtZSBlbmFibGVkLCBpZiB0aGUgb2xk
+Cj4+IG1lbW9yeSBpcyBlbmNyeXB0ZWQsIHdlIHdpbGwgcmVtYXAgdGhlIG9sZCBtZW1vcnkgaW4g
+ZW5jcnlwdGVkIHdheSwgd2hpY2gKPj4gd2lsbCBhdXRvbWF0aWNhbGx5IGRlY3J5cHQgdGhlIG9s
+ZCBtZW1vcnkgZW5jcnlwdGVkIHdoZW4gd2UgcmVhZCB0aG9zZSBkYXRhCj4+IGZyb20gdGhlIHJl
+bWFwcGluZyBhZGRyZXNzLgo+Pgo+PiAgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLQo+PiB8IGZpcnN0LWtlcm5lbCB8IHNlY29uZC1rZXJuZWwgfCBrZHVtcCBz
+dXBwb3J0IHwKPj4gfCAgICAgIChtZW1fZW5jcnlwdD1vbnxvZmYpICAgIHwgICAoeWVzfG5vKSAg
+ICB8Cj4+IHwtLS0tLS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0tLS0tfAo+
+PiB8ICAgICBvbiAgICAgICB8ICAgICBvbiAgICAgICAgfCAgICAgeWVzICAgICAgIHwKPj4gfCAg
+ICAgb2ZmICAgICAgfCAgICAgb2ZmICAgICAgIHwgICAgIHllcyAgICAgICB8Cj4+IHwgICAgIG9u
+ICAgICAgIHwgICAgIG9mZiAgICAgICB8ICAgICBubyAgICAgICAgfAo+IAo+IAo+PiB8ICAgICBv
+ZmYgICAgICB8ICAgICBvbiAgICAgICAgfCAgICAgbm8gICAgICAgIHwKPiAKPiBJdCdzIG5vdCBj
+bGVhciB0byBtZSBoZXJlLiBJZiAxc3Qga2VybmVsIHNtZSBpcyBvZmYsIGluIDJuZCBrZXJuZWws
+IHdoZW4KPiB5b3UgcmVtYXAgdGhlIG9sZCBtZW1vcnkgd2l0aCBub24tc21lIG1vZGUsIHdoeSBk
+aWQgaXQgZmFpbD8KPiAKVGhhbmsgeW91LCBCYW9xdWFuLgpGb3Iga2R1bXAsIHRoZXJlIGFyZSB0
+d28gY2FzZXMgdGhhdCBkb2Vzbid0IG5lZWQgdG8gc3VwcG9ydDoKCjEuIFNNRSBvbihmaXJzdCBr
+ZXJuZWwpLCBidXQgU01FIG9mZihzZWNvbmQga2VybmVsKS4KQmVjYXVzZSB0aGUgb2xkIG1lbW9y
+eSBpcyBlbmNyeXB0ZWQsIHdlIGNhbid0IGRlY3J5cHQgdGhlIG9sZCBtZW1vcnkgaWYgU01FIGlz
+IG9mZgppbiB0aGUgc2Vjb25kIGtlcm5lbChpbiBrZHVtcCBtb2RlKS4KCjIuIFNNRSBvZmYoZmly
+c3Qga2VybmVsKSwgYnV0IFNNRSBvbihzZWNvbmQga2VybmVsKQpNYXliZSB0aGlzIHNpdHVhdGlv
+biBkb2Vzbid0IGhhdmUgc2lnbmlmaWNhbmNlIGluIGFjdHVhbCBkZXBsb3ltZW50LCBmdXJ0aGVy
+bW9yZSwgaXQKd2lsbCBhbHNvIGluY3JlYXNlIHRoZSBjb21wbGV4aXR5IG9mIHRoZSBjb2RlLiBJ
+dCdzIGp1c3QgZm9yIHRlc3RpbmcsIG1heWJlIGl0IGlzCnVubmVjZXNzYXJ5IHRvIHN1cHBvcnQg
+aXQsIGJlY2F1c2UgdGhlIG9sZCBtZW1vcnkgaXMgdW5lbmNyeXB0ZWQuCgpUaGFua3MuCkxpYW5i
+bwo+IEFuZCBwbGVhc2UgcnVuIHNjcmlwdHMvZ2V0X21haW50YWluZXIucGwgYW5kIGFkZCBtYWlu
+dGFpbmVycyBvZgo+IGNvbXBvbmVudCB3aGljaCBpcyBhZmZlY3RlZCBpbiBwYXRjaCB0byBDQyBs
+aXN0LgpHcmVhdCEgSSBmb3Jnb3QgQ0MgbWFpbnRhaW5lcnMsIHRoYW5rcyBmb3IgeW91ciByZW1p
+bmRlci4KCkxpYW5ibwo+IAo+PiB8X19fX19fX19fX19fX198X19fX19fX19fX19fX19ffF9fX19f
+X19fX19fX19fX3wKPj4KPj4gVGhpcyBwYXRjaCBpcyBvbmx5IGZvciBTTUUga2R1bXAsIGl0IGlz
+IG5vdCBzdXBwb3J0IFNFViBrZHVtcC4KPj4KPj4gVGVzdCB0b29sczoKPj4gbWFrZWR1bXBmaWxl
+W3YxLjYuM106IGh0dHBzOi8vZ2l0aHViLmNvbS9MaWFuYm9KL21ha2VkdW1wZmlsZQo+PiBjb21t
+aXQgZTFkZTEwM2VjYThmIChBIGRyYWZ0IGZvciBrZHVtcCB2bWNvcmUgYWJvdXQgQU1EIFNNRSkK
+Pj4gQXV0aG9yOiBMaWFuYm8gSmlhbmcgPGxpamlhbmdAcmVkaGF0LmNvbT4KPj4gRGF0ZTogICBN
+b24gTWF5IDE0IDE3OjAyOjQwIDIwMTggKzA4MDAKPj4gTm90ZTogVGhpcyBwYXRjaCBjYW4gb25s
+eSBkdW1wIHZtY29yZSBpbiB0aGUgY2FzZSBvZiBTTUUgZW5hYmxlZC4KPj4KPj4gY3Jhc2gtNy4y
+LjE6IGh0dHBzOi8vZ2l0aHViLmNvbS9jcmFzaC11dGlsaXR5L2NyYXNoLmdpdAo+PiBjb21taXQg
+MWUxYmQ5YzRjMWJlIChGaXggZm9yIHRoZSAiYnBmIiBjb21tYW5kIGRpc3BsYXkgb24gTGludXgg
+NC4xNy1yYzEpCj4+IEF1dGhvcjogRGF2ZSBBbmRlcnNvbiA8YW5kZXJzb25AcmVkaGF0LmNvbT4K
+Pj4gRGF0ZTogICBGcmkgTWF5IDExIDE1OjU0OjMyIDIwMTggLTA0MDAKPj4KPj4gVGVzdCBlbnZp
+cm9ubWVudDoKPj4gSFAgUHJvTGlhbnQgREwzODVHZW4xMCBBTUQgRVBZQyA3MjUxCj4+IDgtQ29y
+ZSBQcm9jZXNzb3IKPj4gMzI3NjggTUIgbWVtb3J5Cj4+IDYwMCBHQiBkaXNrIHNwYWNlCj4+Cj4+
+IExpbnV4IDQuMTctcmM3Ogo+PiBnaXQ6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tl
+cm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0Cj4+IGNvbW1pdCBiMDRlMjE3NzA0YjcgKCJMaW51
+eCA0LjE3LXJjNyIpCj4+IEF1dGhvcjogTGludXMgVG9ydmFsZHMgPHRvcnZhbGRzQGxpbnV4LWZv
+dW5kYXRpb24ub3JnPgo+PiBEYXRlOiAgIFN1biBNYXkgMjcgMTM6MDE6NDcgMjAxOCAtMDcwMAo+
+Pgo+PiBSZWZlcmVuY2U6Cj4+IEFNRDY0IEFyY2hpdGVjdHVyZSBQcm9ncmFtbWVyJ3MgTWFudWFs
+Cj4+IGh0dHBzOi8vc3VwcG9ydC5hbWQuY29tL1RlY2hEb2NzLzI0NTkzLnBkZgo+Pgo+PiBTb21l
+IGNoYW5nZXM6Cj4+IDEuIHJlbW92ZSB0aGUgc21lX2FjdGl2ZSgpIGNoZWNrIGluIF9faW9yZW1h
+cF9jYWxsZXIoKS4KPj4gMi4gcmVtb3ZlIHRoZSAnI2lmZGVmJyBzdHVmZiB0aHJvdWdob3V0IHRo
+aXMgcGF0Y2guCj4+IDMuIHB1dCBzb21lIGxvZ2ljIGludG8gdGhlIGVhcmx5X21lbXJlbWFwX3Bn
+cHJvdF9hZGp1c3QoKSBhbmQgY2xlYW4gdGhlCj4+IHByZXZpb3VzIHVubmVjZXNzYXJ5IGNoYW5n
+ZXMsIGZvciBleGFtcGxlOiBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9kbWkuaCwKPj4gYXJjaC94ODYv
+a2VybmVsL2FjcGkvYm9vdC5jLCBkcml2ZXJzL2FjcGkvdGFibGVzLmMuCj4+IDQuIGFkZCBhIG5l
+dyBmaWxlIGFuZCBtb2RpZnkgTWFrZWZpbGUuCj4+IDUuIGNsZWFuIGNvbXBpbGUgd2FybmluZyBp
+biBjb3B5X2RldmljZV90YWJsZSgpIGFuZCBzb21lIGNvbXBpbGUgZXJyb3IuCj4+IDYuIHNwbGl0
+IHRoZSBvcmlnaW5hbCBwYXRjaCBpbnRvIGZvdXIgcGF0Y2hlcywgaXQgd2lsbCBiZSBiZXR0ZXIg
+Zm9yCj4+IHJldmlldy4KPj4KPj4gU29tZSBrbm93biBpc3N1ZXM6Cj4+IDEuIGFib3V0IFNNRQo+
+PiBVcHN0cmVhbSBrZXJuZWwgZG9lc24ndCB3b3JrIHdoZW4gd2UgdXNlIGtleGVjIGluIHRoZSBm
+b2xsb3cgY29tbWFuZC4gVGhlCj4+IHN5c3RlbSB3aWxsIGhhbmcuCj4+IChUaGlzIGlzc3VlIGRv
+ZXNuJ3QgbWF0dGVyIHdpdGggdGhlIGtkdW1wIHBhdGNoLikKPj4KPj4gUmVwcm9kdWNlIHN0ZXBz
+Ogo+PiAgIyBrZXhlYyAtbCAvYm9vdC92bWxpbnV6LTQuMTcuMC1yYzcrIC0taW5pdHJkPS9ib290
+L2luaXRyYW1mcy00LjE3LjAtcmM3Ky5pbWcgLS1jb21tYW5kLWxpbmU9InJvb3Q9L2Rldi9tYXBw
+ZXIvcmhlbF9ocC0tZGwzODVnMTAtLTAzLXJvb3Qgcm8gbWVtX2VuY3J5cHQ9b24gcmQubHZtLmx2
+PXJoZWxfaHAtZGwzODVnMTAtMDMvcm9vdCByZC5sdm0ubHY9cmhlbF9ocC1kbDM4NWcxMC0wMy9z
+d2FwIGNvbnNvbGU9dHR5UzAsMTE1MjAwbjgxIExBTkc9ZW5fVVMuVVRGLTggZWFybHlwcmludGs9
+c2VyaWFsIGRlYnVnIG5va2FzbHIiCj4+ICAjIGtleGVjIC1lIChvciByZWJvb3QpCj4+Cj4+IFRo
+ZSBzeXN0ZW0gd2lsbCBoYW5nOgo+PiBbIDEyNDguOTMyMjM5XSBrZXhlY19jb3JlOiBTdGFydGlu
+ZyBuZXcga2VybmVsCj4+IGVhcmx5IGNvbnNvbGUgaW4gZXh0cmFjdF9rZXJuZWwKPj4gaW5wdXRf
+ZGF0YTogMHgwMDAwMDAwODdlOTFjM2I0Cj4+IGlucHV0X2xlbjogMHgwMDAwMDAwMDAwNjdmY2Jk
+Cj4+IG91dHB1dDogMHgwMDAwMDAwODdkNDAwMDAwCj4+IG91dHB1dF9sZW46IDB4MDAwMDAwMDAw
+MWI2ZmE5MAo+PiBrZXJuZWxfdG90YWxfc2l6ZTogMHgwMDAwMDAwMDAxYTlkMDAwCj4+IHRyYW1w
+b2xpbmVfMzJiaXQ6IDB4MDAwMDAwMDAwMDA5OTAwMAo+Pgo+PiBEZWNvbXByZXNzaW5nIExpbnV4
+Li4uCj4+IFBhcnNpbmcgRUxGLi4uICAgICAgICBbLWhlcmUgdGhlIHN5c3RlbSB3aWxsIGhhbmdd
+Cj4+Cj4+IDIuIGFib3V0IFNFVgo+PiBVcHN0cmVhbSBrZXJuZWwoSG9zdCBPUykgZG9lc24ndCB3
+b3JrIGluIGhvc3Qgc2lkZSwgc29tZSBkcml2ZXJzIGFib3V0Cj4+IFNFViBhbHdheXMgZ28gd3Jv
+bmcgaW4gaG9zdCBzaWRlLiBXZSBjYW4ndCBib290IFNFViBHdWVzdCBPUyB0byB0ZXN0Cj4+IGtk
+dW1wIHBhdGNoLiBNYXliZSBpdCBpcyBtb3JlIHJlYXNvbmFibGUgdG8gaW1wcm92ZSBTRVYgaW4g
+YW5vdGhlcgo+PiBwYXRjaC4gV2hlbiBzb21lIGRyaXZlcnMgY2FuIHdvcmsgaW4gaG9zdCBzaWRl
+IGFuZCBpdCBjYW4gYWxzbyBib290Cj4+IFZpcnR1YWwgTWFjaGluZShTRVYgR3Vlc3QgT1MpLCBp
+dCB3aWxsIGJlIHN1aXRhYmxlIHRvIGZpeCBTRVYgZm9yIGtkdW1wLgo+Pgo+PiBbICAzNjkuNDI2
+MTMxXSBJTkZPOiB0YXNrIHN5c3RlbWQtdWRldmQ6ODY1IGJsb2NrZWQgZm9yIG1vcmUgdGhhbiAx
+MjAgc2Vjb25kcy4KPj4gWyAgMzY5LjQzMzE3N10gICAgICAgTm90IHRhaW50ZWQgNC4xNy4wLXJj
+NSsgIzYwCj4+IFsgIDM2OS40Mzc1ODVdICJlY2hvIDAgPiAvcHJvYy9zeXMva2VybmVsL2h1bmdf
+dGFza190aW1lb3V0X3NlY3MiIGRpc2FibGVzIHRoaXMgbWVzc2FnZS4KPj4gWyAgMzY5LjQ0NTc4
+M10gc3lzdGVtZC11ZGV2ZCAgIEQgICAgMCAgIDg2NSAgICA4MTMgMHg4MDAwMDAwNAo+PiBbICAz
+NjkuNDUxMzIzXSBDYWxsIFRyYWNlOgo+PiBbICAzNjkuNDUzODE1XSAgPyBfX3NjaGVkdWxlKzB4
+MjkwLzB4ODcwCj4+IFsgIDM2OS40NTc1MjNdICBzY2hlZHVsZSsweDMyLzB4ODAKPj4gWyAgMzY5
+LjQ2MDcxNF0gIF9fc2V2X2RvX2NtZF9sb2NrZWQrMHgxZjYvMHgyYTAgW2NjcF0KPj4gWyAgMzY5
+LjQ2NTU1Nl0gID8gY2xlYW51cF91ZXZlbnRfZW52KzB4MTAvMHgxMAo+PiBbICAzNjkuNDcwMDg0
+XSAgPyByZW1vdmVfd2FpdF9xdWV1ZSsweDYwLzB4NjAKPj4gWyAgMzY5LjQ3NDIxOV0gID8gMHhm
+ZmZmZmZmZmMwMjQ3MDAwCj4+IFsgIDM2OS40Nzc1NzJdICBfX3Nldl9wbGF0Zm9ybV9pbml0X2xv
+Y2tlZCsweDJiLzB4NzAgW2NjcF0KPj4gWyAgMzY5LjQ4Mjg0M10gIHNldl9wbGF0Zm9ybV9pbml0
+KzB4MWQvMHgzMCBbY2NwXQo+PiBbICAzNjkuNDg3MzMzXSAgcHNwX3BjaV9pbml0KzB4NDAvMHhl
+MCBbY2NwXQo+PiBbICAzNjkuNDkxMzgwXSAgPyAweGZmZmZmZmZmYzAyNDcwMDAKPj4gWyAgMzY5
+LjQ5NDkzNl0gIHNwX21vZF9pbml0KzB4MTgvMHgxMDAwIFtjY3BdCj4+IFsgIDM2OS40OTkwNzFd
+ICBkb19vbmVfaW5pdGNhbGwrMHg0ZS8weDFkNAo+PiBbICAzNjkuNTAyOTQ0XSAgPyBfY29uZF9y
+ZXNjaGVkKzB4MTUvMHgzMAo+PiBbICAzNjkuNTA2NzI4XSAgPyBrbWVtX2NhY2hlX2FsbG9jX3Ry
+YWNlKzB4YWUvMHgxZDAKPj4gWyAgMzY5LjUxMTM4Nl0gID8gZG9faW5pdF9tb2R1bGUrMHgyMi8w
+eDIyMAo+PiBbICAzNjkuNTE1MzQ1XSAgZG9faW5pdF9tb2R1bGUrMHg1YS8weDIyMAo+PiBbICAz
+NjkuNTE5NDQ0XSAgbG9hZF9tb2R1bGUrMHgyMWNiLzB4MmE1MAo+PiBbICAzNjkuNTIzMjI3XSAg
+PyBtX3Nob3crMHgxYzAvMHgxYzAKPj4gWyAgMzY5LjUyNjU3MV0gID8gc2VjdXJpdHlfY2FwYWJs
+ZSsweDNmLzB4NjAKPj4gWyAgMzY5LjUzMDYxMV0gIF9fZG9fc3lzX2Zpbml0X21vZHVsZSsweDk0
+LzB4ZTAKPj4gWyAgMzY5LjUzNDkxNV0gIGRvX3N5c2NhbGxfNjQrMHg1Yi8weDE4MAo+PiBbICAz
+NjkuNTM4NjA3XSAgZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQo+PiBb
+ICAzNjkuNTQzNjk4XSBSSVA6IDAwMzM6MHg3ZjcwOGU2MzExYjkKPj4gWyAgMzY5LjU0NzUzNl0g
+UlNQOiAwMDJiOjAwMDA3ZmZmZjlkMzJhYTggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAw
+MDAwMDAwMDAwMDEzOQo+PiBbICAzNjkuNTU1MTYyXSBSQVg6IGZmZmZmZmZmZmZmZmZmZGEgUkJY
+OiAwMDAwNTU2MDJhMDRjMmQwIFJDWDogMDAwMDdmNzA4ZTYzMTFiOQo+PiBbICAzNjkuNTYyMzQ2
+XSBSRFg6IDAwMDAwMDAwMDAwMDAwMDAgUlNJOiAwMDAwN2Y3MDhlZjUyMDM5IFJESTogMDAwMDAw
+MDAwMDAwMDAwOAo+PiBbICAzNjkuNTY5ODAxXSBSQlA6IDAwMDA3ZjcwOGVmNTIwMzkgUjA4OiAw
+MDAwMDAwMDAwMDAwMDAwIFIwOTogMDAwMDU1NjAyYTA0OGIyMAo+PiBbICAzNjkuNTc2OTg4XSBS
+MTA6IDAwMDAwMDAwMDAwMDAwMDggUjExOiAwMDAwMDAwMDAwMDAwMjQ2IFIxMjogMDAwMDAwMDAw
+MDAwMDAwMAo+PiBbICAzNjkuNTg0MTc3XSBSMTM6IDAwMDA1NTYwMmEwNzUyNjAgUjE0OiAwMDAw
+MDAwMDAwMDIwMDAwIFIxNTogMDAwMDAwMDAwMDAwMDAwMAo+Pgo+PiBMaWFuYm8gSmlhbmcgKDQp
+Ogo+PiAgIEFkZCBhIGZ1bmN0aW9uKGlvcmVtYXBfZW5jcnlwdGVkKSBmb3Iga2R1bXAgd2hlbiBB
+TUQgc21lIGVuYWJsZWQKPj4gICBBbGxvY2F0ZSBwYWdlcyBmb3Iga2R1bXAgd2l0aG91dCBlbmNy
+eXB0aW9uIHdoZW4gU01FIGlzIGVuYWJsZWQKPj4gICBSZW1hcCB0aGUgZGV2aWNlIHRhYmxlIG9m
+IElPTU1VIGluIGVuY3J5cHRlZCBtYW5uZXIgZm9yIGtkdW1wCj4+ICAgSGVscCB0byBkdW1wIHRo
+ZSBvbGQgbWVtb3J5IGVuY3J5cHRlZCBpbnRvIHZtY29yZSBmaWxlCj4+Cj4+ICBhcmNoL3g4Ni9p
+bmNsdWRlL2FzbS9pby5oICAgICAgICAgICAgfCAgMyArKwo+PiAgYXJjaC94ODYva2VybmVsL01h
+a2VmaWxlICAgICAgICAgICAgIHwgIDEgKwo+PiAgYXJjaC94ODYva2VybmVsL2NyYXNoX2R1bXBf
+ZW5jcnlwdC5jIHwgNTMgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+ICBh
+cmNoL3g4Ni9tbS9pb3JlbWFwLmMgICAgICAgICAgICAgICAgfCAyOCArKysrKysrKysrKysrLS0t
+LS0tCj4+ICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgICAgICAgfCAxNSArKysrKysr
+KystCj4+ICBmcy9wcm9jL3ZtY29yZS5jICAgICAgICAgICAgICAgICAgICAgfCAyMCArKysrKysr
+KysrLS0tLQo+PiAgaW5jbHVkZS9saW51eC9jcmFzaF9kdW1wLmggICAgICAgICAgIHwgMTEgKysr
+KysrKysKPj4gIGtlcm5lbC9rZXhlY19jb3JlLmMgICAgICAgICAgICAgICAgICB8IDEyICsrKysr
+KysrCj4+ICA4IGZpbGVzIGNoYW5nZWQsIDEyOCBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMo
+LSkKPj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL3g4Ni9rZXJuZWwvY3Jhc2hfZHVtcF9lbmNy
+eXB0LmMKPj4KPj4gLS0gCj4+IDIuOS41Cj4+Cj4+Cj4+IF9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCj4+IGtleGVjIG1haWxpbmcgbGlzdAo+PiBrZXhlY0Bs
+aXN0cy5pbmZyYWRlYWQub3JnCj4+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4v
+bGlzdGluZm8va2V4ZWMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
