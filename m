@@ -1,13 +1,16 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH 0/7 v5] Support for fsl-mc bus and its devices in SMMU
-Date: Thu, 21 Jun 2018 03:59:27 +0000
-Message-ID: <HE1PR0401MB24250CEFBC0B7CC919C4388AE6760@HE1PR0401MB2425.eurprd04.prod.outlook.com>
-References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
+From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/4 V3] Allocate pages for kdump without encryption when
+	SME is enabled
+Date: Thu, 21 Jun 2018 13:06:05 +0800
+Message-ID: <e74e94b6-97dc-23d9-6262-44a7ae8d63bd@redhat.com>
+References: <20180616082714.32035-1-lijiang@redhat.com>
+	<20180616082714.32035-3-lijiang@redhat.com>
+	<20180621015306.GG29979@MiWiFi-R3L-srv>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526824191-7000-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+In-Reply-To: <20180621015306.GG29979@MiWiFi-R3L-srv>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,86 +21,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin/Greg k-h,
-
-Will this patch-set be taken for the next kernel release (and via which tree)?
-
-Thanks,
-Nipun
-
-> -----Original Message-----
-> From: Nipun Gupta
-> Sent: Sunday, May 20, 2018 7:20 PM
-> To: robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org;
-> robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org; catalin.marinas-5wv7dgnIgG8@public.gmane.org;
-> gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org; Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>;
-> bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
-> Cc: hch-jcswGhMUV9g@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
-> shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org; frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; linux-
-> pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>;
-> stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>; Nipun Gupta
-> <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> Subject: [PATCH 0/7 v5] Support for fsl-mc bus and its devices in SMMU
-> 
-> This patchset defines IOMMU DT binding for fsl-mc bus and adds
-> support in SMMU for fsl-mc bus.
-> 
-> The patch series is based on top of dma-mapping tree (for-next branch):
-> http://git.infradead.org/users/hch/dma-mapping.git
-> 
-> These patches
->   - Define property 'iommu-map' for fsl-mc bus (patch 1)
->   - Integrates the fsl-mc bus with the SMMU using this
->     IOMMU binding (patch 2,3,4)
->   - Adds the dma configuration support for fsl-mc bus (patch 5, 6)
->   - Updates the fsl-mc device node with iommu/dma related changes (patch 7)
-> 
-> Changes in v2:
->   - use iommu-map property for fsl-mc bus
->   - rebase over patchset https://patchwork.kernel.org/patch/10317337/
->     and make corresponding changes for dma configuration of devices on
->     fsl-mc bus
-> 
-> Changes in v3:
->   - move of_map_rid in drivers/of/address.c
-> 
-> Changes in v4:
->   - move of_map_rid in drivers/of/base.c
-> 
-> Changes in v5:
->   - break patch 5 in two separate patches (now patch 5/7 and patch 6/7)
->   - add changelog text in patch 3/7 and patch 5/7
->   - typo fix
-> 
-> Nipun Gupta (7):
->   Docs: dt: add fsl-mc iommu-map device-tree binding
->   iommu: of: make of_pci_map_rid() available for other devices too
->   iommu: support iommu configuration for fsl-mc devices
->   iommu: arm-smmu: Add support for the fsl-mc bus
->   bus: fsl-mc: support dma configure for devices on fsl-mc bus
->   bus: fsl-mc: set coherent dma mask for devices on fsl-mc bus
->   arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
-> 
->  .../devicetree/bindings/misc/fsl,qoriq-mc.txt      |  39 ++++++++
->  arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |   6 +-
->  drivers/bus/fsl-mc/fsl-mc-bus.c                    |  16 +++-
->  drivers/iommu/arm-smmu.c                           |   7 ++
->  drivers/iommu/iommu.c                              |  21 +++++
->  drivers/iommu/of_iommu.c                           |  25 ++++-
->  drivers/of/base.c                                  | 102 +++++++++++++++++++++
->  drivers/of/irq.c                                   |   5 +-
->  drivers/pci/of.c                                   | 101 --------------------
->  include/linux/fsl/mc.h                             |   8 ++
->  include/linux/iommu.h                              |   2 +
->  include/linux/of.h                                 |  11 +++
->  include/linux/of_pci.h                             |  10 --
->  13 files changed, 231 insertions(+), 122 deletions(-)
-> 
-> --
-> 1.9.1
+5ZyoIDIwMTjlubQwNuaciDIx5pelIDA5OjUzLCBCYW9xdWFuIEhlIOWGmemBkzoKPiBPbiAwNi8x
+Ni8xOCBhdCAwNDoyN3BtLCBMaWFuYm8gSmlhbmcgd3JvdGU6Cj4+IFdoZW4gU01FIGlzIGVuYWJs
+ZWQgaW4gdGhlIGZpcnN0IGtlcm5lbCwgd2Ugd2lsbCBhbGxvY2F0ZSBwYWdlcwo+PiBmb3Iga2R1
+bXAgd2l0aG91dCBlbmNyeXB0aW9uIGluIG9yZGVyIHRvIGJlIGFibGUgdG8gYm9vdCB0aGUKPj4g
+c2Vjb25kIGtlcm5lbCBpbiB0aGUgc2FtZSBtYW5uZXIgYXMga2V4ZWMsIHdoaWNoIGhlbHBzIHRv
+IGtlZXAKPj4gdGhlIHNhbWUgY29kZSBzdHlsZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTGlhbmJv
+IEppYW5nIDxsaWppYW5nQHJlZGhhdC5jb20+Cj4+IC0tLQo+PiAga2VybmVsL2tleGVjX2NvcmUu
+YyB8IDEyICsrKysrKysrKysrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKykK
+Pj4KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9rZXhlY19jb3JlLmMgYi9rZXJuZWwva2V4ZWNfY29y
+ZS5jCj4+IGluZGV4IDIwZmVmMWEuLjNjMjJhOWIgMTAwNjQ0Cj4+IC0tLSBhL2tlcm5lbC9rZXhl
+Y19jb3JlLmMKPj4gKysrIGIva2VybmVsL2tleGVjX2NvcmUuYwo+PiBAQCAtNDcxLDYgKzQ3MSwx
+NiBAQCBzdGF0aWMgc3RydWN0IHBhZ2UgKmtpbWFnZV9hbGxvY19jcmFzaF9jb250cm9sX3BhZ2Vz
+KHN0cnVjdCBraW1hZ2UgKmltYWdlLAo+PiAgCQl9Cj4+ICAJfQo+PiAgCj4+ICsJaWYgKHBhZ2Vz
+KSB7Cj4+ICsJCXVuc2lnbmVkIGludCBjb3VudCwgaTsKPj4gKwo+PiArCQlwYWdlcy0+bWFwcGlu
+ZyA9IE5VTEw7Cj4+ICsJCXNldF9wYWdlX3ByaXZhdGUocGFnZXMsIG9yZGVyKTsKPj4gKwkJY291
+bnQgPSAxIDw8IG9yZGVyOwo+PiArCQlmb3IgKGkgPSAwOyBpIDwgY291bnQ7IGkrKykKPj4gKwkJ
+CVNldFBhZ2VSZXNlcnZlZChwYWdlcyArIGkpOwo+IAo+IEkgZ3Vlc3MgeW91IG1pZ2h0IGltaXRh
+dGUgdGhlIGtleGVjIGNhc2UsIGhvd2V2ZXIga2V4ZWMgZ2V0IHBhZ2VzIGZyb20KPiBidWRkeS4g
+Q3Jhc2ggcGFnZXMgYXJlIHJlc2VydmVkIGluIG1lbWJsb2NrLCB0aGVzZSBjb2RlcyBtaWdodCBt
+YWtlIG5vIHNlbnNlLgo+IApUaGFua3MgZm9yIHlvdXIgY29tbWVudHMuCldlIGhhdmUgY2hhbmdl
+ZCB0aGUgYXR0cmlidXRlIG9mIHBhZ2VzLCBzbyB0aGUgb3JpZ2luYWwgYXR0cmlidXRlIG9mIHBh
+Z2VzIHdpbGwgYmUKcmVzdG9yZWQgd2hlbiB0aGV5IGZyZWUuCgpUaGFua3MuCkxpYW5ibwo+PiAr
+CQlhcmNoX2tleGVjX3Bvc3RfYWxsb2NfcGFnZXMocGFnZV9hZGRyZXNzKHBhZ2VzKSwgMSA8PCBv
+cmRlciwgMCk7Cj4+ICsJfQo+PiAgCXJldHVybiBwYWdlczsKPj4gIH0KPj4gIAo+PiBAQCAtODY1
+LDYgKzg3NSw3IEBAIHN0YXRpYyBpbnQga2ltYWdlX2xvYWRfY3Jhc2hfc2VnbWVudChzdHJ1Y3Qg
+a2ltYWdlICppbWFnZSwKPj4gIAkJCXJlc3VsdCAgPSAtRU5PTUVNOwo+PiAgCQkJZ290byBvdXQ7
+Cj4+ICAJCX0KPj4gKwkJYXJjaF9rZXhlY19wb3N0X2FsbG9jX3BhZ2VzKHBhZ2VfYWRkcmVzcyhw
+YWdlKSwgMSwgMCk7Cj4+ICAJCXB0ciA9IGttYXAocGFnZSk7Cj4+ICAJCXB0ciArPSBtYWRkciAm
+IH5QQUdFX01BU0s7Cj4+ICAJCW1jaHVuayA9IG1pbl90KHNpemVfdCwgbWJ5dGVzLAo+PiBAQCAt
+ODgyLDYgKzg5Myw3IEBAIHN0YXRpYyBpbnQga2ltYWdlX2xvYWRfY3Jhc2hfc2VnbWVudChzdHJ1
+Y3Qga2ltYWdlICppbWFnZSwKPj4gIAkJCXJlc3VsdCA9IGNvcHlfZnJvbV91c2VyKHB0ciwgYnVm
+LCB1Y2h1bmspOwo+PiAgCQlrZXhlY19mbHVzaF9pY2FjaGVfcGFnZShwYWdlKTsKPj4gIAkJa3Vu
+bWFwKHBhZ2UpOwo+PiArCQlhcmNoX2tleGVjX3ByZV9mcmVlX3BhZ2VzKHBhZ2VfYWRkcmVzcyhw
+YWdlKSwgMSk7Cj4+ICAJCWlmIChyZXN1bHQpIHsKPj4gIAkJCXJlc3VsdCA9IC1FRkFVTFQ7Cj4+
+ICAJCQlnb3RvIG91dDsKPj4gLS0gCj4+IDIuOS41Cj4+Cj4+Cj4+IF9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+IGtleGVjIG1haWxpbmcgbGlzdAo+PiBr
+ZXhlY0BsaXN0cy5pbmZyYWRlYWQub3JnCj4+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21h
+aWxtYW4vbGlzdGluZm8va2V4ZWMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
