@@ -1,19 +1,12 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/4 V3] Allocate pages for kdump without encryption when
-	SME is enabled
-Date: Thu, 21 Jun 2018 21:27:23 +0800
-Message-ID: <49706f0e-03b6-8c43-c35f-c0b0338a17bd@redhat.com>
-References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180616082714.32035-3-lijiang@redhat.com>
-	<20180621015306.GG29979@MiWiFi-R3L-srv>
-	<e74e94b6-97dc-23d9-6262-44a7ae8d63bd@redhat.com>
-	<20180621102321.GK29979@MiWiFi-R3L-srv>
+From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [RFC 0/3] iommu/iova: Unsafe locking in find_iova()
+Date: Thu, 21 Jun 2018 19:08:20 +0100
+Message-ID: <20180621180823.805-1-dima@arista.com>
+Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180621102321.GK29979@MiWiFi-R3L-srv>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,62 +16,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Dmitry Safonov <0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwNuaciDIx5pelIDE4OjIzLCBCYW9xdWFuIEhlIOWGmemBkzoKPiBPbiAwNi8y
-MS8xOCBhdCAwMTowNnBtLCBsaWppYW5nIHdyb3RlOgo+PiDlnKggMjAxOOW5tDA25pyIMjHml6Ug
-MDk6NTMsIEJhb3F1YW4gSGUg5YaZ6YGTOgo+Pj4gT24gMDYvMTYvMTggYXQgMDQ6MjdwbSwgTGlh
-bmJvIEppYW5nIHdyb3RlOgo+Pj4+IFdoZW4gU01FIGlzIGVuYWJsZWQgaW4gdGhlIGZpcnN0IGtl
-cm5lbCwgd2Ugd2lsbCBhbGxvY2F0ZSBwYWdlcwo+Pj4+IGZvciBrZHVtcCB3aXRob3V0IGVuY3J5
-cHRpb24gaW4gb3JkZXIgdG8gYmUgYWJsZSB0byBib290IHRoZQo+Pj4+IHNlY29uZCBrZXJuZWwg
-aW4gdGhlIHNhbWUgbWFubmVyIGFzIGtleGVjLCB3aGljaCBoZWxwcyB0byBrZWVwCj4+Pj4gdGhl
-IHNhbWUgY29kZSBzdHlsZS4KPj4+Pgo+Pj4+IFNpZ25lZC1vZmYtYnk6IExpYW5ibyBKaWFuZyA8
-bGlqaWFuZ0ByZWRoYXQuY29tPgo+Pj4+IC0tLQo+Pj4+ICBrZXJuZWwva2V4ZWNfY29yZS5jIHwg
-MTIgKysrKysrKysrKysrCj4+Pj4gIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspCj4+
-Pj4KPj4+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2tleGVjX2NvcmUuYyBiL2tlcm5lbC9rZXhlY19j
-b3JlLmMKPj4+PiBpbmRleCAyMGZlZjFhLi4zYzIyYTliIDEwMDY0NAo+Pj4+IC0tLSBhL2tlcm5l
-bC9rZXhlY19jb3JlLmMKPj4+PiArKysgYi9rZXJuZWwva2V4ZWNfY29yZS5jCj4+Pj4gQEAgLTQ3
-MSw2ICs0NzEsMTYgQEAgc3RhdGljIHN0cnVjdCBwYWdlICpraW1hZ2VfYWxsb2NfY3Jhc2hfY29u
-dHJvbF9wYWdlcyhzdHJ1Y3Qga2ltYWdlICppbWFnZSwKPj4+PiAgCQl9Cj4+Pj4gIAl9Cj4+Pj4g
-IAo+Pj4+ICsJaWYgKHBhZ2VzKSB7Cj4+Pj4gKwkJdW5zaWduZWQgaW50IGNvdW50LCBpOwo+Pj4+
-ICsKPj4+PiArCQlwYWdlcy0+bWFwcGluZyA9IE5VTEw7Cj4+Pj4gKwkJc2V0X3BhZ2VfcHJpdmF0
-ZShwYWdlcywgb3JkZXIpOwo+Pj4+ICsJCWNvdW50ID0gMSA8PCBvcmRlcjsKPj4+PiArCQlmb3Ig
-KGkgPSAwOyBpIDwgY291bnQ7IGkrKykKPj4+PiArCQkJU2V0UGFnZVJlc2VydmVkKHBhZ2VzICsg
-aSk7Cj4+Pgo+Pj4gSSBndWVzcyB5b3UgbWlnaHQgaW1pdGF0ZSB0aGUga2V4ZWMgY2FzZSwgaG93
-ZXZlciBrZXhlYyBnZXQgcGFnZXMgZnJvbQo+Pj4gYnVkZHkuIENyYXNoIHBhZ2VzIGFyZSByZXNl
-cnZlZCBpbiBtZW1ibG9jaywgdGhlc2UgY29kZXMgbWlnaHQgbWFrZSBubyBzZW5zZS4KPj4+Cj4+
-IFRoYW5rcyBmb3IgeW91ciBjb21tZW50cy4KPj4gV2UgaGF2ZSBjaGFuZ2VkIHRoZSBhdHRyaWJ1
-dGUgb2YgcGFnZXMsIHNvIHRoZSBvcmlnaW5hbCBhdHRyaWJ1dGUgb2YgcGFnZXMgd2lsbCBiZQo+
-PiByZXN0b3JlZCB3aGVuIHRoZXkgZnJlZS4KPiAKPiBIbW0sIHlvdSBjYW4gY2hlY2sgd2hhdCBr
-aW1hZ2VfZnJlZSgpIGlzIGRvaW5nLCBhbmQgd2hlcmUKPiBraW1hZ2UtPmNvbnRyb2xfcGFnZXMs
-IGRlc3RfcGFnZXMsIHVudXNhYmxlX3BhZ2VzIGlzIGFzc2lnbmVkLiBEbyB5b3UKPiBrbm93IHdo
-ZXJlIHRoZXNlIG9yaWdpbmFsIGF0dHJpYnV0ZSBvZiBwYWdlcyBjb21lcyBmcm9tIGFuZCB0aGV5
-IGFyZQo+IHVzZWQvbmVlZGVkIGluIENSQVNIIGNhc2UsIGlmIHlvdSBjYXJlIGFib3V0IHRoZW0/
-Cj4gCk9yaWdpbmFsbHksIHdlIHdhbnQgdG8gaGF2ZSBhbiBvcHBvcnR1bml0eSB0byByZXN0b3Jl
-IHRoZSBwcmV2aW91cyBhdHRyaWJ1dGUgb2YgcGFnZXMsIHRoYXQKc2hvdWxkIGJlIG1vcmUgYmV0
-dGVyIGlmIHRoZSBwYWdlcyBhcmUgcmVtZW1iZXJlZCBpbiAnaW1hZ2UtPmNvbnRyb2xfcGFnZXMn
-LgpJZiB3ZSByZW1vdmUgdGhlc2UgY29kZXMsIGl0IGlzIGFsc28gaGFybWxlc3MgZm9yIGtkdW1w
-LCBidXQgaXQgd2lsbCBiZWNvbWUgc3RyYW5nZSwgbWF5YmUKc29tZW9uZSBjb3VsZCBhc2sgd2hl
-cmUgdG8gcmVzdG9yZSB0aGUgcHJldmlvdXMgYXR0cmlidXRlIG9mIHBhZ2VzLgoKVGhhbmtzLgo+
-Pgo+Pj4+ICsJCWFyY2hfa2V4ZWNfcG9zdF9hbGxvY19wYWdlcyhwYWdlX2FkZHJlc3MocGFnZXMp
-LCAxIDw8IG9yZGVyLCAwKTsKPj4+PiArCX0KPj4+PiAgCXJldHVybiBwYWdlczsKPj4+PiAgfQo+
-Pj4+ICAKPj4+PiBAQCAtODY1LDYgKzg3NSw3IEBAIHN0YXRpYyBpbnQga2ltYWdlX2xvYWRfY3Jh
-c2hfc2VnbWVudChzdHJ1Y3Qga2ltYWdlICppbWFnZSwKPj4+PiAgCQkJcmVzdWx0ICA9IC1FTk9N
-RU07Cj4+Pj4gIAkJCWdvdG8gb3V0Owo+Pj4+ICAJCX0KPj4+PiArCQlhcmNoX2tleGVjX3Bvc3Rf
-YWxsb2NfcGFnZXMocGFnZV9hZGRyZXNzKHBhZ2UpLCAxLCAwKTsKPj4+PiAgCQlwdHIgPSBrbWFw
-KHBhZ2UpOwo+Pj4+ICAJCXB0ciArPSBtYWRkciAmIH5QQUdFX01BU0s7Cj4+Pj4gIAkJbWNodW5r
-ID0gbWluX3Qoc2l6ZV90LCBtYnl0ZXMsCj4+Pj4gQEAgLTg4Miw2ICs4OTMsNyBAQCBzdGF0aWMg
-aW50IGtpbWFnZV9sb2FkX2NyYXNoX3NlZ21lbnQoc3RydWN0IGtpbWFnZSAqaW1hZ2UsCj4+Pj4g
-IAkJCXJlc3VsdCA9IGNvcHlfZnJvbV91c2VyKHB0ciwgYnVmLCB1Y2h1bmspOwo+Pj4+ICAJCWtl
-eGVjX2ZsdXNoX2ljYWNoZV9wYWdlKHBhZ2UpOwo+Pj4+ICAJCWt1bm1hcChwYWdlKTsKPj4+PiAr
-CQlhcmNoX2tleGVjX3ByZV9mcmVlX3BhZ2VzKHBhZ2VfYWRkcmVzcyhwYWdlKSwgMSk7Cj4+Pj4g
-IAkJaWYgKHJlc3VsdCkgewo+Pj4+ICAJCQlyZXN1bHQgPSAtRUZBVUxUOwo+Pj4+ICAJCQlnb3Rv
-IG91dDsKPj4+PiAtLSAKPj4+PiAyLjkuNQo+Pj4+Cj4+Pj4KPj4+PiBfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+Pj4+IGtleGVjIG1haWxpbmcgbGlzdAo+
-Pj4+IGtleGVjQGxpc3RzLmluZnJhZGVhZC5vcmcKPj4+PiBodHRwOi8vbGlzdHMuaW5mcmFkZWFk
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2tleGVjCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+find_iova() looks to be using a bad locking practice: it locks the
+returned iova only for the search time.
+And looking in code, the element can be removed from the tree and freed
+under rbtree lock. That happens during memory hot-unplug and cleanup on
+module removal.
+Here I cleanup users of the function and delete it.
+
+Dmitry Safonov (3):
+  iommu/iova: Find and split iova under rbtree's lock
+  iommu/iova: Make free_iova() atomic
+  iommu/iova: Remove find_iova()
+
+ drivers/iommu/intel-iommu.c | 14 +++----------
+ drivers/iommu/iova.c        | 48 +++++++++++++++++----------------------------
+ include/linux/iova.h        | 17 ++++------------
+ 3 files changed, 25 insertions(+), 54 deletions(-)
+
+-- 
+2.13.6
