@@ -1,47 +1,84 @@
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH 0/3] iommu/amd: Enable x2APIC support
-Date: Fri, 22 Jun 2018 12:02:04 -0500
-Message-ID: <1529686927-7665-1-git-send-email-suravee.suthikulpanit@amd.com>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH 2/3] iommu/amd: Add support for higher 64-bit IOMMU Control Register
+Date: Fri, 22 Jun 2018 12:02:06 -0500
+Message-ID: <1529686927-7665-3-git-send-email-suravee.suthikulpanit@amd.com>
+References: <1529686927-7665-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1529686927-7665-1-git-send-email-suravee.suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, x86@kernel.org, linux-kernel@vger.kernel.org
+Cc: joro@8bytes.org, jroedel@suse.de, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This series enable x2APIC support for AMD platform by enabling
-AMD IOMMU XT mode to allow interrupt remapping with 32-bit
-destination APIC ID.
+Currently, the driver only supports lower 32-bit of IOMMU Control register.
+However, newer AMD IOMMU specification has extended this register
+to 64-bit. Therefore, replace the accessing API with the 64-bit version.
 
-For full x2APIC support, the following patches are also required
-(already available in v4.18-rc1)
-  * 6c4f5abaf356 ("x86/CPU: Modify detect_extended_topology() to return result")
-  * 3986a0a805e6 ("x86/CPU/AMD: Derive CPU topology from CPUID function 0xB when available")
+Cc: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+---
+ drivers/iommu/amd_iommu_init.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Thanks,
-Suravee
-
-Suravee Suthikulpanit (3):
-  x86: irq_remapping: Move irq remapping mode enum
-  iommu/amd: Add support for higher 64-bit IOMMU Control Register
-  iommu/amd: Add support for IOMMU XT mode
-
- arch/x86/include/asm/irq_remapping.h |  5 ++++
- drivers/iommu/amd_iommu.c            | 21 +++++++++++----
- drivers/iommu/amd_iommu_init.c       | 51 +++++++++++++++++++++++++-----------
- drivers/iommu/amd_iommu_types.h      | 17 +++++++-----
- include/linux/dmar.h                 |  5 ----
- 5 files changed, 68 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 904c575..7d494f2 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -280,9 +280,9 @@ static void clear_translation_pre_enabled(struct amd_iommu *iommu)
+ 
+ static void init_translation_status(struct amd_iommu *iommu)
+ {
+-	u32 ctrl;
++	u64 ctrl;
+ 
+-	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
++	ctrl = readq(iommu->mmio_base + MMIO_CONTROL_OFFSET);
+ 	if (ctrl & (1<<CONTROL_IOMMU_EN))
+ 		iommu->flags |= AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
+ }
+@@ -386,30 +386,30 @@ static void iommu_set_device_table(struct amd_iommu *iommu)
+ /* Generic functions to enable/disable certain features of the IOMMU. */
+ static void iommu_feature_enable(struct amd_iommu *iommu, u8 bit)
+ {
+-	u32 ctrl;
++	u64 ctrl;
+ 
+-	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
+-	ctrl |= (1 << bit);
+-	writel(ctrl, iommu->mmio_base + MMIO_CONTROL_OFFSET);
++	ctrl = readq(iommu->mmio_base +  MMIO_CONTROL_OFFSET);
++	ctrl |= (1ULL << bit);
++	writeq(ctrl, iommu->mmio_base +  MMIO_CONTROL_OFFSET);
+ }
+ 
+ static void iommu_feature_disable(struct amd_iommu *iommu, u8 bit)
+ {
+-	u32 ctrl;
++	u64 ctrl;
+ 
+-	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
+-	ctrl &= ~(1 << bit);
+-	writel(ctrl, iommu->mmio_base + MMIO_CONTROL_OFFSET);
++	ctrl = readq(iommu->mmio_base + MMIO_CONTROL_OFFSET);
++	ctrl &= ~(1ULL << bit);
++	writeq(ctrl, iommu->mmio_base + MMIO_CONTROL_OFFSET);
+ }
+ 
+ static void iommu_set_inv_tlb_timeout(struct amd_iommu *iommu, int timeout)
+ {
+-	u32 ctrl;
++	u64 ctrl;
+ 
+-	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
++	ctrl = readq(iommu->mmio_base + MMIO_CONTROL_OFFSET);
+ 	ctrl &= ~CTRL_INV_TO_MASK;
+ 	ctrl |= (timeout << CONTROL_INV_TIMEOUT) & CTRL_INV_TO_MASK;
+-	writel(ctrl, iommu->mmio_base + MMIO_CONTROL_OFFSET);
++	writeq(ctrl, iommu->mmio_base + MMIO_CONTROL_OFFSET);
+ }
+ 
+ /* Function to enable the hardware */
 -- 
 2.7.4
