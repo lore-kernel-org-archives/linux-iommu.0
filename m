@@ -1,20 +1,23 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 3/4 V3] Remap the device table of IOMMU in encrypted
-	manner for kdump
-Date: Fri, 22 Jun 2018 10:52:35 +0800
-Message-ID: <20180622025235.GN29979@MiWiFi-R3L-srv>
-References: <20180616082714.32035-1-lijiang@redhat.com>
-	<20180616082714.32035-4-lijiang@redhat.com>
-	<60c6f00e-0eb3-d39c-6a1e-8a1dc1e095af@amd.com>
-	<c591dec2-2135-2e96-8ace-87cbf4b055bf@redhat.com>
-	<20180621083915.GE3815@MiWiFi-R3L-srv>
-	<4c71ac2a-5c53-f1b1-8de6-4b7b944d5d06@amd.com>
+From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
+Subject: Re: WARN_ON(irqs_disabled()) in dma_free_attrs?
+Date: Fri, 22 Jun 2018 16:56:05 +0200
+Message-ID: <20180622145603.GA17701@localhost.localdomain>
+References: <20180303082234.GB24991@localhost.localdomain>
+	<20180303161249.GA9516@lst.de>
+	<20180303181904.GA19076@localhost.localdomain>
+	<20180305151010.GA15965@lst.de>
+	<20180311180124.GA27731@localhost.localdomain>
+	<5696e17e-e0f4-4e6c-7783-4eeea0ff7a5e@arm.com>
+	<20180313131745.GC6260@lst.de>
+	<d0659e5e-4be7-9a1e-fb8e-b418962d74de@arm.com>
+	<20180315075831.GB12136@lst.de>
+	<dfc5505e-9ab9-2d81-2fc5-623730a68ba9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <4c71ac2a-5c53-f1b1-8de6-4b7b944d5d06-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <dfc5505e-9ab9-2d81-2fc5-623730a68ba9-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,78 +27,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, "Maciej W. Rozycki" <macro-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, =?utf-8?Q?J=C3=BCrgen?= Urban <JuergenUrban-Mmb7MZpHnFY@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDYvMjEvMTggYXQgMDg6MTJhbSwgVG9tIExlbmRhY2t5IHdyb3RlOgo+IE9uIDYvMjEvMjAx
-OCAzOjM5IEFNLCBCYW9xdWFuIEhlIHdyb3RlOgo+ID4gT24gMDYvMjEvMTggYXQgMDE6NDJwbSwg
-bGlqaWFuZyB3cm90ZToKPiA+PiDlnKggMjAxOOW5tDA25pyIMjHml6UgMDA6NDIsIFRvbSBMZW5k
-YWNreSDlhpnpgZM6Cj4gPj4+IE9uIDYvMTYvMjAxOCAzOjI3IEFNLCBMaWFuYm8gSmlhbmcgd3Jv
-dGU6Cj4gPj4+PiBJbiBrZHVtcCBtb2RlLCBpdCB3aWxsIGNvcHkgdGhlIGRldmljZSB0YWJsZSBv
-ZiBJT01NVSBmcm9tIHRoZSBvbGQKPiA+Pj4+IGRldmljZSB0YWJsZSwgd2hpY2ggaXMgZW5jcnlw
-dGVkIHdoZW4gU01FIGlzIGVuYWJsZWQgaW4gdGhlIGZpcnN0Cj4gPj4+PiBrZXJuZWwuIFNvIHdl
-IG11c3QgcmVtYXAgaXQgaW4gZW5jcnlwdGVkIG1hbm5lciBpbiBvcmRlciB0byBiZQo+ID4+Pj4g
-YXV0b21hdGljYWxseSBkZWNyeXB0ZWQgd2hlbiB3ZSByZWFkLgo+ID4+Pj4KPiA+Pj4+IFNpZ25l
-ZC1vZmYtYnk6IExpYW5ibyBKaWFuZyA8bGlqaWFuZ0ByZWRoYXQuY29tPgo+ID4+Pj4gLS0tCj4g
-Pj4+PiBTb21lIGNoYW5nZXM6Cj4gPj4+PiAxLiBhZGQgc29tZSBjb21tZW50cwo+ID4+Pj4gMi4g
-Y2xlYW4gY29tcGlsZSB3YXJuaW5nLgo+ID4+Pj4KPiA+Pj4+ICBkcml2ZXJzL2lvbW11L2FtZF9p
-b21tdV9pbml0LmMgfCAxNSArKysrKysrKysrKysrKy0KPiA+Pj4+ICAxIGZpbGUgY2hhbmdlZCwg
-MTQgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+ID4+Pj4KPiA+Pj4+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21t
-dV9pbml0LmMKPiA+Pj4+IGluZGV4IDkwNGM1NzUuLmEyMGFmNGMgMTAwNjQ0Cj4gPj4+PiAtLS0g
-YS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMKPiA+Pj4+ICsrKyBiL2RyaXZlcnMvaW9t
-bXUvYW1kX2lvbW11X2luaXQuYwo+ID4+Pj4gQEAgLTg4OSwxMSArODg5LDI0IEBAIHN0YXRpYyBi
-b29sIGNvcHlfZGV2aWNlX3RhYmxlKHZvaWQpCj4gPj4+PiAgCX0KPiA+Pj4+ICAKPiA+Pj4+ICAJ
-b2xkX2RldnRiX3BoeXMgPSBlbnRyeSAmIFBBR0VfTUFTSzsKPiA+Pj4+ICsKPiA+Pj4+ICsJLyoK
-PiA+Pj4+ICsJICogIFdoZW4gc21lIGVuYWJsZSBpbiB0aGUgZmlyc3Qga2VybmVsLCBvbGRfZGV2
-dGJfcGh5cyBpbmNsdWRlcyB0aGUKPiA+Pj4+ICsJICogIG1lbW9yeSBlbmNyeXB0aW9uIG1hc2so
-c21lX21lX21hc2spLCB3ZSBtdXN0IHJlbW92ZSB0aGUgbWVtb3J5Cj4gPj4+PiArCSAqICBlbmNy
-eXB0aW9uIG1hc2sgdG8gb2J0YWluIHRoZSB0cnVlIHBoeXNpY2FsIGFkZHJlc3MgaW4ga2R1bXAg
-bW9kZS4KPiA+Pj4+ICsJICovCj4gPj4+PiArCWlmIChtZW1fZW5jcnlwdF9hY3RpdmUoKSAmJiBp
-c19rZHVtcF9rZXJuZWwoKSkKPiA+Pj4+ICsJCW9sZF9kZXZ0Yl9waHlzID0gX19zbWVfY2xyKG9s
-ZF9kZXZ0Yl9waHlzKTsKPiA+Pj4+ICsKPiA+Pj4KPiA+Pj4gWW91IGNhbiBwcm9iYWJseSBqdXN0
-IHVzZSAiaWYgKGlzX2tkdW1wX2tlcm5lbCgpKSIgaGVyZSwgc2luY2UgbWVtb3J5Cj4gPj4+IGVu
-Y3J5cHRpb24gaXMgZWl0aGVyIG9uIGluIGJvdGggdGhlIGZpcnN0IGFuZCBzZWNvbmQga2VybmVs
-IG9yIG9mZiBpbgo+ID4+PiBib3RoIHRoZSBmaXJzdCBhbmQgc2Vjb25kIGtlcm5lbC4gIEF0IHdo
-aWNoIHBvaW50IF9fc21lX2NscigpIHdpbGwgZG8KPiA+Pj4gdGhlIHByb3BlciB0aGluZy4KPiA+
-Pj4KPiA+Pj4gQWN0dWFsbHksIHRoaXMgbmVlZHMgdG8gYmUgZG9uZSBubyBtYXR0ZXIgd2hhdC4g
-IFdoZW4gZG9pbmcgZWl0aGVyIHRoZQo+ID4+PiBpb3JlbWFwX2VuY3J5cHRlZCgpIG9yIHRoZSBt
-ZW1yZW1hcCgpLCB0aGUgcGh5c2ljYWwgYWRkcmVzcyBzaG91bGQgbm90Cj4gPj4+IGluY2x1ZGUg
-dGhlIGVuY3J5cHRpb24gYml0L21hc2suCj4gPj4+Cj4gPj4+IFRoYW5rcywKPiA+Pj4gVG9tCj4g
-Pj4+Cj4gPj4gVGhhbmtzIGZvciB5b3VyIGNvbW1lbnRzLiBJZiB3ZSBkb24ndCByZW1vdmUgdGhl
-IG1lbW9yeSBlbmNyeXB0aW9uIG1hc2ssIGl0IHdpbGwKPiA+PiByZXR1cm4gZmFsc2UgYmVjYXVz
-ZSB0aGUgJ29sZF9kZXZ0Yl9waHlzID49IDB4MTAwMDAwMDAwVUxMJyBtYXkgYmVjb21lIHRydWUu
-Cj4gPiAKPiA+IExpYW5ibywgeW91IG1heSBub3QgZ2V0IHdoYXQgVG9tIHN1Z2dlc3RlZC4gVG9t
-IG1lYW5zIG5vIG1hdHRlciB3aGF0IGl0Cj4gPiBpcywgZW5jcnlwdGVkIG9yIG5vdCBpbiAxc3Qg
-a2VybmVsLCB3ZSBuZWVkIGdldCBwdXJlIHBoeXNpY2FsbCBhZGRyZXNzLAo+ID4gYW5kIHVzaW5n
-IGJlbG93IGNvZGUgaXMgYWx3YXlzIHJpZ2h0IGZvciBib3RoIGNhc2VzLgo+ID4gCj4gPiAJaWYg
-KGlzX2tkdW1wX2tlcm5lbCgpKQo+ID4gCQlvbGRfZGV2dGJfcGh5cyA9IF9fc21lX2NscihvbGRf
-ZGV2dGJfcGh5cyk7Cj4gPiAKPiA+IEFuZCB0aGlzIGlzIHNpbXBsZXIuIFlvdSBldmVuIGNhbiBh
-ZGQgb25lIGxpbmUgb2YgY29kZSBjb21tZW50IHRvIHNheQo+ID4gbGlrZSAiUGh5c2ljYWwgYWRk
-cmVzcyB3L28gZW5jcnlwdGlvbiBtYXNrIGlzIG5lZWRlZCBoZXJlLiIKPiAKPiBFdmVuIHNpbXBs
-ZXIsIHRoZXJlJ3Mgbm8gbmVlZCB0byBldmVuIGNoZWNrIGZvciBpc19rZHVtcF9rZXJuZWwoKS4g
-IFRoZQo+IF9fc21lX2NscigpIHNob3VsZCBhbHdheXMgYmUgZG9uZSBpZiB0aGUgcGh5c2ljYWwg
-YWRkcmVzcyBpcyBnb2luZyB0byBiZQo+IHVzZWQgZm9yIHNvbWUgZm9ybSBvZiBpbyBvciBtZW1v
-cnkgcmVtYXBwaW5nLgo+IAo+IFNvIHlvdSBjb3VsZCBqdXN0IGNoYW5nZSB0aGUgZXhpc3Rpbmc6
-Cj4gCj4gCW9sZF9kZXZ0Yl9waHlzID0gZW50cnkgJiBQQUdFX01BU0s7Cj4gCj4gdG86Cj4gCj4g
-CW9sZF9kZXZ0Yl9waHlzID0gX19zbWVfY2xyKGVudHJ5KSAmIFBBR0VfTUFTSzsKCkFncmVlLCB0
-aGlzIGlzIGV2ZW4gYmV0dGVyLgoKPiAKPiA+Pgo+ID4+IExpYW5ibwo+ID4+Pj4gIAlpZiAob2xk
-X2RldnRiX3BoeXMgPj0gMHgxMDAwMDAwMDBVTEwpIHsKPiA+Pj4+ICAJCXByX2VycigiVGhlIGFk
-ZHJlc3Mgb2Ygb2xkIGRldmljZSB0YWJsZSBpcyBhYm92ZSA0Rywgbm90IHRydXN0d29ydGh5IVxu
-Iik7Cj4gPj4+PiAgCQlyZXR1cm4gZmFsc2U7Cj4gPj4+PiAgCX0KPiA+Pj4+IC0Jb2xkX2RldnRi
-ID0gbWVtcmVtYXAob2xkX2RldnRiX3BoeXMsIGRldl90YWJsZV9zaXplLCBNRU1SRU1BUF9XQik7
-Cj4gPj4+PiArCW9sZF9kZXZ0YiA9IChtZW1fZW5jcnlwdF9hY3RpdmUoKSAmJiBpc19rZHVtcF9r
-ZXJuZWwoKSkKPiA+Pj4+ICsJCSAgICA/IChfX2ZvcmNlIHZvaWQgKilpb3JlbWFwX2VuY3J5cHRl
-ZChvbGRfZGV2dGJfcGh5cywKPiA+Pj4+ICsJCQkJCQkJZGV2X3RhYmxlX3NpemUpCj4gPj4+PiAr
-CQkgICAgOiBtZW1yZW1hcChvbGRfZGV2dGJfcGh5cywgZGV2X3RhYmxlX3NpemUsIE1FTVJFTUFQ
-X1dCKTs+ICsKPiA+Pj4+ICAJaWYgKCFvbGRfZGV2dGIpCj4gPj4+PiAgCQlyZXR1cm4gZmFsc2U7
-Cj4gPj4+PiAgCj4gPj4+Pgo+ID4+Cj4gPj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KPiA+PiBrZXhlYyBtYWlsaW5nIGxpc3QKPiA+PiBrZXhlY0BsaXN0
-cy5pbmZyYWRlYWQub3JnCj4gPj4gaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9rZXhlYwo+IAo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCj4ga2V4ZWMgbWFpbGluZyBsaXN0Cj4ga2V4ZWNAbGlzdHMuaW5mcmFkZWFkLm9y
-Zwo+IGh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8va2V4ZWMKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Robin, Christoph,
+
+On Thu, Mar 15, 2018 at 01:11:03PM +0000, Robin Murphy wrote:
+> On 15/03/18 07:58, Christoph Hellwig wrote:
+> > On Wed, Mar 14, 2018 at 05:43:46PM +0000, Robin Murphy wrote:
+> > > > So maybe for now the quick fix is to move the sleep check as suggested
+> > > > earlier in this thread, but in the long run we probably need to do some
+> > > > major rework of how dma_declare_coherent_memory and friends work.
+> > > 
+> > > Maybe; I do think the specific hcd_alloc_coherent() case could still be
+> > > fixed within the scope of the existing code, but it's not quite as clean
+> > > and straightforward as I first thought, and the practical impact of
+> > > tweaking the WARN should be effectively zero despite the theoretical edge
+> > > cases it opens up. Do you want me to write it up as a proper patch?
+> > 
+> > Yes.  Including a proper comment on why the might_sleep is placed there.
+> 
+> OK, will do.
+
+How is to going with moving the sleep check?
+
+Another regression triggered by the OHCI turned up in v4.16 with commit
+205e1b7f51e4af26 "dma-mapping: warn when there is no coherent_dma_mask"
+by Christoph Hellwig:
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 62 at ./include/linux/dma-mapping.h:516 ohci_setup+0x41c/0x424 [ohci_hcd]
+Modules linked in: ohci_ps2(+) ohci_hcd usbcore usb_common sd_mod iop iop_fio iop_module iop_memory sif
+CPU: 0 PID: 62 Comm: modprobe Not tainted 4.16.0+ #1533
+Stack : 00000000 00000000 80747392 00000037 81c6eb0c 804f32e7 80493b24 0000003e
+        80743498 00000204 00000001 c01c0000 802a2fa0 10058c00 81ea5a68 804facc0
+        00000000 00000000 80740000 00000007 00000000 00000060 00000000 00000000
+        3a6d6d6f 00000000 0000005f 646f6d20 80000000 00000000 c01e66e8 c01e813c
+        00000009 00000204 00000001 c01c0000 00000018 80278fe0 0007579f 00000001
+        ...
+Call Trace:
+[<8001d6e4>] show_stack+0x74/0x104
+[<800323a8>] __warn+0x118/0x120
+[<8003246c>] warn_slowpath_null+0x44/0x58
+[<c01e66e8>] ohci_setup+0x41c/0x424 [ohci_hcd]
+[<c01f209c>] ohci_ps2_reset+0x30/0x70 [ohci_ps2]
+[<c01a8aec>] usb_add_hcd+0x2d4/0x89c [usbcore]
+[<c01f2360>] ohci_hcd_ps2_probe+0x284/0x2a4 [ohci_ps2]
+[<802a8a74>] platform_drv_probe+0x2c/0x68
+[<802a70b4>] driver_probe_device+0x22c/0x2e4
+[<802a71f0>] __driver_attach+0x84/0xc8
+[<802a53fc>] bus_for_each_dev+0x60/0x90
+[<802a6580>] bus_add_driver+0x1b8/0x200
+[<802a7980>] driver_register+0xc0/0x100
+[<800106bc>] do_one_initcall+0x17c/0x190
+[<800841f4>] do_init_module+0x74/0x1f0
+[<80082f30>] load_module+0x1680/0x2044
+[<80083adc>] SyS_finit_module+0xa0/0xb8
+[<8002190c>] syscall_common+0x34/0x58
+---[ end trace e71738b5fa6bf9aa ]---
+
+Fredrik
