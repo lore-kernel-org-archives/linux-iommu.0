@@ -1,35 +1,42 @@
-From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH 3/3] iommu/amd: Add support for IOMMU XT mode
-Date: Sat, 23 Jun 2018 12:01:04 +0800
-Message-ID: <201806231014.Os3JIL8Q%fengguang.wu@intel.com>
-References: <1529686927-7665-4-git-send-email-suravee.suthikulpanit@amd.com>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH] dma-mapping: make variable max_segment static
+Date: Sat, 23 Jun 2018 22:28:39 +0100
+Message-ID: <20180623212839.5038-1-colin.king@canonical.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1529686927-7665-4-git-send-email-suravee.suthikulpanit@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: kbuild-all@01.org, iommu@lists.linux-foundation.org, x86@kernel.org, linux-kernel@vger.kernel.org, joro@8bytes.org, jroedel@suse.de, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suravee,
+From: Colin Ian King <colin.king@canonical.com>
 
-I love your patch! Perhaps something to improve:
+The variable max_segment is local to the source and
+does not need to be in global scope, so make it static.
 
-[auto build test WARNING on iommu/next]
-[also build test WARNING on v4.18-rc1 next-20180622]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+Cleans up sparse warning:
+kernel/dma/swiotlb.c:91:14: warning: symbol 'max_segment' was not
+declared. Should it be static?
 
-url:    https://github.com/0day-ci/linux/commits/Suravee-Suthikulpanit/iommu-amd-Enable-x2APIC-support/20180623-032902
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-reproduce:
-        # apt-get install sparse
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF=-D__CHECK_ENDIAN__
-
-
-Please review and possibly fold the followup patch.
-
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ kernel/dma/swiotlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 04b68d9dffac..c95376d53c47 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -88,7 +88,7 @@ static unsigned int io_tlb_index;
+  * Max segment that we can provide which (if pages are contingous) will
+  * not be bounced (unless SWIOTLB_FORCE is set).
+  */
+-unsigned int max_segment;
++static unsigned int max_segment;
+ 
+ /*
+  * We need to save away the original address corresponding to a mapped entry
+-- 
+2.17.0
