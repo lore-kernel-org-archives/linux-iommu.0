@@ -1,60 +1,93 @@
-From: Benjamin Herrenschmidt <benh@au1.ibm.com>
-Subject: DMA mappings and crossing boundaries
-Date: Sun, 24 Jun 2018 17:32:50 +1000
-Message-ID: <2d752386b82481bc53080fcee1a3dcd474dbeef2.camel@au1.ibm.com>
-Reply-To: benh@au1.ibm.com
+From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: usb HC busted?
+Date: Mon, 25 Jun 2018 17:15:00 +0100
+Message-ID: <20180625161500.dbyxd4b434jh5jhj@debian>
+References: <881d576b-c7c1-ef74-c6bc-68b81371e7e0@intel.com>
+	<20180523212956.n4ztasdffg2aeaku@debian>
+	<80eace7a-976d-65a5-a353-54a2b18edd06@linux.intel.com>
+	<20180604152848.db3msouyi4ektvv6@debian>
+	<06226ecb-baad-cc36-e9e3-797dabb0aa5e@linux.intel.com>
+	<42ec4ab07d96b4302b875ac9c5eb76675bf85690.camel@linux.intel.com>
+	<20180606164524.n4vb7xre6rykzxih@debian>
+	<2e8829c2-850d-6bca-5f0c-58a809dc9499@linux.intel.com>
+	<20180621005332.5uy74tkjoel6w4xy@debian>
+	<2b4fe87a-3706-0aa8-2b61-a9c1d1352a7a@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Russell Currey <ruscur@au1.ibm.com>, Jens Axboe <jens.axboe@oracle.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <2b4fe87a-3706-0aa8-2b61-a9c1d1352a7a-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Folks !
+Hi Mathias,
 
-So due work around issues with devices having to strict limitations in
-DMA address bits (GPUs ugh....) on POWER, we've been playing with a
-mechanism that does dynamic mapping in the IOMMU but using a very large
-IOMMU page size (256M on POWER8 and 1G on POWER9) for performances.
+On Thu, Jun 21, 2018 at 02:01:30PM +0300, Mathias Nyman wrote:
+> On 21.06.2018 03:53, Sudip Mukherjee wrote:
+> > Hi Mathias, Andy,
+> > 
+> > On Thu, Jun 07, 2018 at 10:40:03AM +0300, Mathias Nyman wrote:
+> > > On 06.06.2018 19:45, Sudip Mukherjee wrote:
+<snip>
+> 
+> git://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git dmapool-test
+> https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git/log/?h=dmapool-test
+> 
+> Tested by just leaving the following running for a few days:
+> 
+> while true; do echo 0 > authorized; sleep 3; echo 1 > authorized; sleep 3; done;
+> For some usb device (for example: /sys/bus/usb/devices/1-8)
+> 
+> Then grep logs for "MATTU dmatest match! "
+> 
+> Can you share a bit more details on the platform you are using, and what types of test you are running.
 
-Now, with such page size, we can't just pop out new entries for every
-DMA map, we need to try to re-use entries for mappings in the same
-"area". 
+Sorry for the delayed reply, I was in Tokyo for the OSS.
 
-We've prototypes something using refcounts on the entires. It does
-imply some locking which is potentially problematic, and we'll be
-looking at options there long run, but it works... so far.
+It is a board based on "Intel(R) Atom(TM) CPU  E3840  @ 1.91GHz".
+The usb device in question is a bluetooth device:
 
-My worry is that it will fail if we ever get a mapping request (or
-coherent allocation request) that spawns one of those giant pages
-boundaries. At least our current implementation.
+Bus 001 Device 012: ID 8087:07dc Intel Corp.
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               2.00
+  bDeviceClass          224 Wireless
+  bDeviceSubClass         1 Radio Frequency
+  bDeviceProtocol         1 Bluetooth
+  bMaxPacketSize0        64
+  idVendor           0x8087 Intel Corp.
+  idProduct          0x07dc
+  bcdDevice            0.01
+  iManufacturer           0
+  iProduct                0
+  iSerial                 0
+  bNumConfigurations      1
 
-AFAIK, dma_alloc_coherent() is defined (Documentation/DMA-API-
-HOWTO.txt) as always allocating to the next power-of-2 order, so we
-should never have the problem unless we allocate a single chunk larger
-than the IOMMU page size.
+And the problem that we are seeing is with phone calls via bluetooth.
 
-For dma_map_sg() however, if a request that has a single "entry"
-spawning such a boundary, we need to ensure that the result mapping is
-2 contiguous "large" iommu pages as well.
+> Does my test above trigger the case? (show "MATTU dmatest match!")
 
-However, that doesn't fit well with us re-using existing mappings since
-they may already exist and either not be contiguous, or partially exist
-with no free hole around them.
+I have kept it for tonight, will see the results tomorrow morning.
+And I am using that same device in the usb script to change "authrized".
 
-Now, we *could* possibly construe a way to solve this by detecting this
-case and just allocating another "pair" (or set if we cross even more
-pages) of IOMMU pages elsewhere, thus partially breaking our re-use
-scheme.
+But looking at the code for dma_pool_alloc(), it seems 'dma' can have
+same value again only if "*(int *)(page->vaddr + offset)" gets a value
+of 0 in pool_initialise_page(). But I can't think of anyway how it
+can be 0. I have also added some more debugs in the kernel to see what
+might be going wrong there.
 
-But while doable, this introduce some serious complexity in the
-implementation, which I would very much like to avoid.
-
-So I was wondering if you guys thought that was ever likely to happen ?
-Do you see reasonable cases where dma_map_sg() would be called with a
-list in which a single entry crosses a 256M or 1G boundary ?
-
-Cheers,
-Ben.
+--
+Regards
+Sudip
