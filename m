@@ -1,59 +1,68 @@
-From: Rob Herring <robh@kernel.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v2 1/5] dt-bindings: virtio: Specify #iommu-cells value
 	for a virtio-iommu
-Date: Mon, 25 Jun 2018 13:27:53 -0600
-Message-ID: <20180625192753.GA22351@rob-hp-laptop>
+Date: Tue, 26 Jun 2018 18:58:58 +0100
+Message-ID: <89d31865-ee35-ef8c-f7b3-f3acf2bbd30e@arm.com>
 References: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
 	<20180621190655.56391-2-jean-philippe.brucker@arm.com>
+	<20180625192753.GA22351@rob-hp-laptop>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-Content-Disposition: inline
-In-Reply-To: <20180621190655.56391-2-jean-philippe.brucker@arm.com>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Sender: virtualization-bounces@lists.linux-foundation.org
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, jayachandran.nair@cavium.com, lorenzo.pieralisi@arm.com, tnowicki@caviumnetworks.com, kvm@vger.kernel.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com, will.deacon@arm.com, virtualization@lists.linux-foundation.org, marc.zyngier@arm.com, iommu@lists.linux-foundation.org, eric.auger@redhat.com, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180625192753.GA22351@rob-hp-laptop>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>, "jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 21, 2018 at 08:06:51PM +0100, Jean-Philippe Brucker wrote:
-> A virtio-mmio node may represent a virtio-iommu device. This is discovered
-> by the virtio driver at probe time, but the DMA topology isn't
-> discoverable and must be described by firmware. For DT the standard IOMMU
-> description is used, as specified in bindings/iommu/iommu.txt and
-> bindings/pci/pci-iommu.txt. Like many other IOMMUs, virtio-iommu
-> distinguishes masters by their endpoint IDs, which requires one IOMMU cell
-> in the "iommus" property.
+On 25/06/18 20:27, Rob Herring wrote:
+> On Thu, Jun 21, 2018 at 08:06:51PM +0100, Jean-Philippe Brucker wrote:
+>> A virtio-mmio node may represent a virtio-iommu device. This is discovered
+>> by the virtio driver at probe time, but the DMA topology isn't
+>> discoverable and must be described by firmware. For DT the standard IOMMU
+>> description is used, as specified in bindings/iommu/iommu.txt and
+>> bindings/pci/pci-iommu.txt. Like many other IOMMUs, virtio-iommu
+>> distinguishes masters by their endpoint IDs, which requires one IOMMU cell
+>> in the "iommus" property.
+>>
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  Documentation/devicetree/bindings/virtio/mmio.txt | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/virtio/mmio.txt b/Documentation/devicetree/bindings/virtio/mmio.txt
+>> index 5069c1b8e193..337da0e3a87f 100644
+>> --- a/Documentation/devicetree/bindings/virtio/mmio.txt
+>> +++ b/Documentation/devicetree/bindings/virtio/mmio.txt
+>> @@ -8,6 +8,14 @@ Required properties:
+>>  - reg:		control registers base address and size including configuration space
+>>  - interrupts:	interrupt generated by the device
+>>  
+>> +Required properties for virtio-iommu:
+>> +
+>> +- #iommu-cells:	When the node describes a virtio-iommu device, it is
+>> +		linked to DMA masters using the "iommus" property as
+>> +		described in devicetree/bindings/iommu/iommu.txt. For
+>> +		virtio-iommu #iommu-cells must be 1, each cell describing
+>> +		a single endpoint ID.
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->  Documentation/devicetree/bindings/virtio/mmio.txt | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/virtio/mmio.txt b/Documentation/devicetree/bindings/virtio/mmio.txt
-> index 5069c1b8e193..337da0e3a87f 100644
-> --- a/Documentation/devicetree/bindings/virtio/mmio.txt
-> +++ b/Documentation/devicetree/bindings/virtio/mmio.txt
-> @@ -8,6 +8,14 @@ Required properties:
->  - reg:		control registers base address and size including configuration space
->  - interrupts:	interrupt generated by the device
->  
-> +Required properties for virtio-iommu:
-> +
-> +- #iommu-cells:	When the node describes a virtio-iommu device, it is
-> +		linked to DMA masters using the "iommus" property as
-> +		described in devicetree/bindings/iommu/iommu.txt. For
-> +		virtio-iommu #iommu-cells must be 1, each cell describing
-> +		a single endpoint ID.
+> The iommus property should also be documented for the client side.
 
-The iommus property should also be documented for the client side.
+Isn't section "IOMMU master node" of iommu.txt sufficient? Since the
+iommus property applies to any DMA master, not only virtio-mmio devices,
+the canonical description in iommu.txt seems the best place for it, and
+I'm not sure what to add in this file. Maybe a short example below the
+virtio_block one?
 
-Rob
+Thanks,
+Jean
