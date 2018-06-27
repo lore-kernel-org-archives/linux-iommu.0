@@ -1,16 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
-Date: Wed, 27 Jun 2018 17:37:50 +0100
-Message-ID: <20180627163749.GA8729@arm.com>
-References: <20180615105329.26800-1-vivek.gautam@codeaurora.org>
-	<20180615165232.GE2202@arm.com>
-	<CAFp+6iFm29ufb2Pr7Gb-2O_aN3GQLH4rcyWhbQGZ3QiwCC8vPg@mail.gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/5] dt-bindings: virtio: Specify #iommu-cells value
+	for a virtio-iommu
+Date: Wed, 27 Jun 2018 11:46:32 -0600
+Message-ID: <CAL_JsqLdahF+2VsH9h658z9guO0XmqHM75QLaHApZLNP8twUNA@mail.gmail.com>
+References: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
+	<20180621190655.56391-2-jean-philippe.brucker@arm.com>
+	<20180625192753.GA22351@rob-hp-laptop>
+	<89d31865-ee35-ef8c-f7b3-f3acf2bbd30e@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAFp+6iFm29ufb2Pr7Gb-2O_aN3GQLH4rcyWhbQGZ3QiwCC8vPg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <89d31865-ee35-ef8c-f7b3-f3acf2bbd30e-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,80 +21,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <Mark.Rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jayachandran.nair-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vivek,
-
-On Tue, Jun 19, 2018 at 02:04:44PM +0530, Vivek Gautam wrote:
-> On Fri, Jun 15, 2018 at 10:22 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Fri, Jun 15, 2018 at 04:23:29PM +0530, Vivek Gautam wrote:
-> >> Qualcomm SoCs have an additional level of cache called as
-> >> System cache or Last level cache[1]. This cache sits right
-> >> before the DDR, and is tightly coupled with the memory
-> >> controller.
-> >> The cache is available to all the clients present in the
-> >> SoC system. The clients request their slices from this system
-> >> cache, make it active, and can then start using it. For these
-> >> clients with smmu, to start using the system cache for
-> >> dma buffers and related page tables [2], few of the memory
-> >> attributes need to be set accordingly.
-> >> This change makes the related memory Outer-Shareable, and
-> >> updates the MAIR with necessary protection.
+On Tue, Jun 26, 2018 at 11:59 AM Jean-Philippe Brucker
+<jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+> On 25/06/18 20:27, Rob Herring wrote:
+> > On Thu, Jun 21, 2018 at 08:06:51PM +0100, Jean-Philippe Brucker wrote:
+> >> A virtio-mmio node may represent a virtio-iommu device. This is discovered
+> >> by the virtio driver at probe time, but the DMA topology isn't
+> >> discoverable and must be described by firmware. For DT the standard IOMMU
+> >> description is used, as specified in bindings/iommu/iommu.txt and
+> >> bindings/pci/pci-iommu.txt. Like many other IOMMUs, virtio-iommu
+> >> distinguishes masters by their endpoint IDs, which requires one IOMMU cell
+> >> in the "iommus" property.
 > >>
-> >> The MAIR attribute requirements are:
-> >>     Inner Cacheablity = 0
-> >>     Outer Cacheablity = 1, Write-Back Write Allocate
-> >>     Outer Shareablity = 1
+> >> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> >> ---
+> >>  Documentation/devicetree/bindings/virtio/mmio.txt | 8 ++++++++
+> >>  1 file changed, 8 insertions(+)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/virtio/mmio.txt b/Documentation/devicetree/bindings/virtio/mmio.txt
+> >> index 5069c1b8e193..337da0e3a87f 100644
+> >> --- a/Documentation/devicetree/bindings/virtio/mmio.txt
+> >> +++ b/Documentation/devicetree/bindings/virtio/mmio.txt
+> >> @@ -8,6 +8,14 @@ Required properties:
+> >>  - reg:              control registers base address and size including configuration space
+> >>  - interrupts:       interrupt generated by the device
+> >>
+> >> +Required properties for virtio-iommu:
+> >> +
+> >> +- #iommu-cells:     When the node describes a virtio-iommu device, it is
+> >> +            linked to DMA masters using the "iommus" property as
+> >> +            described in devicetree/bindings/iommu/iommu.txt. For
+> >> +            virtio-iommu #iommu-cells must be 1, each cell describing
+> >> +            a single endpoint ID.
 > >
-> > Hmm, so is this cache coherent with the CPU or not?
-> 
-> Thanks for reviewing.
-> Yes, this LLC is cache coherent with CPU, so we mark for Outer-cacheable.
-> The different masters such as GPU as able to allocated and activate a slice
-> in this Last Level Cache.
+> > The iommus property should also be documented for the client side.
+>
+> Isn't section "IOMMU master node" of iommu.txt sufficient? Since the
+> iommus property applies to any DMA master, not only virtio-mmio devices,
+> the canonical description in iommu.txt seems the best place for it, and
+> I'm not sure what to add in this file. Maybe a short example below the
+> virtio_block one?
 
-What I mean is, for example, if the CPU writes some data using Normal, Inner
-Shareable, Inner/Outer Cacheable, Inner/Outer Write-back, Non-transient
-Read/Write-allocate and a device reads that data using your MAIR encoding
-above, is the device guaranteed to see the CPU writes after the CPU has
-executed a DSB instruction?
+No, because somewhere we have to capture if 'iommus' is valid for
+'virtio-mmio' or not. Hopefully soon we'll actually be able to
+validate that.
 
-I don't think so, because the ARM ARM would say that there's a mismatch on
-the Inner Cacheability attribute.
-
-> > Why don't normal
-> > non-cacheable mappings allocated in the LLC by default?
-> 
-> Sorry, I couldn't fully understand your question here.
-> Few of the masters on qcom socs are not io-coherent, so for them
-> the IC has to be marked as 0.
-
-By IC you mean Inner Cacheability? In your MAIR encoding above, it is zero
-so I don't understand the problem. What goes wrong if non-coherent devices
-use your MAIR encoding for their DMA buffers?
-
-> But they are able to use the LLC with OC marked as 1.
-
-The issue here is that whatever attributes we put in the SMMU need to align
-with the attributes used by the CPU in order to avoid introducing mismatched
-aliases. Currently, we support three types of mapping in the SMMU:
-
-1. DMA non-coherent (e.g. "dma-coherent" is not set on the device)
-	Normal, Inner Shareable, Inner/Outer Non-Cacheable
-
-2. DMA coherent (e.g. "dma-coherent" is set on the device) [IOMMU_CACHE]
-	Normal, Inner Shareable, Inner/Outer Cacheable, Inner/Outer
-	Write-back, Non-transient Read/Write-allocate
-
-3. MMIO (e.g. MSI doorbell) [IOMMU_MMIO]
-	Device-nGnRE (Outer Shareable)
-
-So either you override one of these types (I was suggesting (1)) or you need
-to create a new memory type, along with the infrastructure for it to be
-recognised on a per-device basis and used by the DMA API so that we don't
-get mismatched aliases on the CPU.
-
-Will
+Rob
