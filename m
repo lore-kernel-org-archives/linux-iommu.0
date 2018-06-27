@@ -1,11 +1,13 @@
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v2 0/3] iommu/amd: Enable x2APIC support
-Date: Wed, 27 Jun 2018 10:31:19 -0500
-Message-ID: <1530113482-85632-1-git-send-email-suravee.suthikulpanit@amd.com>
+Subject: [PATCH v2 1/3] x86: irq_remapping: Move irq remapping mode enum
+Date: Wed, 27 Jun 2018 10:31:20 -0500
+Message-ID: <1530113482-85632-2-git-send-email-suravee.suthikulpanit@amd.com>
+References: <1530113482-85632-1-git-send-email-suravee.suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1530113482-85632-1-git-send-email-suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,35 +18,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This series enable x2APIC support for AMD platform by enabling
-AMD IOMMU XT mode to allow interrupt remapping with 32-bit
-destination APIC ID.
+The enum is currently defined in Intel-specific DMAR header file,
+but it is also used by APIC common code. Therefore, move it to
+a more appropriate interrupt-remapping common header file.
+This will also be used by subsequent patches.
 
-For full x2APIC support, the following patches are also required
-(already available in v4.18-rc1)
-  * 6c4f5abaf356 ("x86/CPU: Modify detect_extended_topology() to return result")
-  * 3986a0a805e6 ("x86/CPU/AMD: Derive CPU topology from CPUID function 0xB when available")
+Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ arch/x86/include/asm/irq_remapping.h | 5 +++++
+ include/linux/dmar.h                 | 5 -----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Thanks,
-Suravee
-
-Changes from V1 (https://lkml.org/lkml/2018/6/22/645):
-  * 3/3: Declare the variable amd_iommu_xt_mode as static (per kbuild test robot)
-
-Suravee Suthikulpanit (3):
-  x86: irq_remapping: Move irq remapping mode enum
-  iommu/amd: Add support for higher 64-bit IOMMU Control Register
-  iommu/amd: Add support for IOMMU XT mode
-
- arch/x86/include/asm/irq_remapping.h |  5 ++++
- drivers/iommu/amd_iommu.c            | 21 +++++++++++----
- drivers/iommu/amd_iommu_init.c       | 51 +++++++++++++++++++++++++-----------
- drivers/iommu/amd_iommu_types.h      | 17 +++++++-----
- include/linux/dmar.h                 |  5 ----
- 5 files changed, 68 insertions(+), 31 deletions(-)
-
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 023b4a9..5f26962 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -33,6 +33,11 @@ enum irq_remap_cap {
+ 	IRQ_POSTING_CAP = 0,
+ };
+ 
++enum {
++	IRQ_REMAP_XAPIC_MODE,
++	IRQ_REMAP_X2APIC_MODE,
++};
++
+ struct vcpu_data {
+ 	u64 pi_desc_addr;	/* Physical address of PI Descriptor */
+ 	u32 vector;		/* Guest vector of the interrupt */
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index e2433bc..843a41b 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -265,11 +265,6 @@ static inline void dmar_copy_shared_irte(struct irte *dst, struct irte *src)
+ #define PDA_LOW_BIT    26
+ #define PDA_HIGH_BIT   32
+ 
+-enum {
+-	IRQ_REMAP_XAPIC_MODE,
+-	IRQ_REMAP_X2APIC_MODE,
+-};
+-
+ /* Can't use the common MSI interrupt functions
+  * since DMAR is not a pci device
+  */
 -- 
 2.7.4
