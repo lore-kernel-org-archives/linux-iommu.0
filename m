@@ -1,7 +1,7 @@
 From: Lianbo Jiang <lijiang@redhat.com>
-Subject: [PATCH 3/5 V4] Remap the device table of IOMMU in encrypted manner for kdump
-Date: Thu, 28 Jun 2018 16:58:04 +0800
-Message-ID: <20180628085806.9280-4-lijiang@redhat.com>
+Subject: [PATCH 4/5 V4] Adjust some permanent mappings in unencrypted ways for kdump when SME is enabled.
+Date: Thu, 28 Jun 2018 16:58:05 +0800
+Message-ID: <20180628085806.9280-5-lijiang@redhat.com>
 References: <20180628085806.9280-1-lijiang@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180628085806.9280-1-lijiang@redhat.com>
@@ -10,49 +10,40 @@ To: linux-kernel@vger.kernel.org
 Cc: mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, dyoung@redhat.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, bhe@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-In kdump mode, it will copy the device table of IOMMU from the old
-device table, which is encrypted when SME is enabled in the first
-kernel. So we must remap it in encrypted manner in order to be
-automatically decrypted when we read.
+For kdump, the acpi table and dmi table will need to be remapped in
+unencrypted ways during early init, they have just a simple wrapper
+around early_memremap(), but the early_memremap() remaps the memory
+in encrypted ways by default when SME is enabled, so we put some logic
+into the early_memremap_pgprot_adjust(), which will have an opportunity
+to adjust it.
 
 Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
 ---
-Some changes:
-1. add some comments
-2. clean compile warning.
-3. remove unnecessary code when we clear sme mask bit.
+ arch/x86/mm/ioremap.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
- drivers/iommu/amd_iommu_init.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 904c575..4cebb00 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -888,12 +888,22 @@ static bool copy_device_table(void)
- 		}
- 	}
+diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+index e01e6c6..3c1c8c4 100644
+--- a/arch/x86/mm/ioremap.c
++++ b/arch/x86/mm/ioremap.c
+@@ -689,8 +689,17 @@ pgprot_t __init early_memremap_pgprot_adjust(resource_size_t phys_addr,
+ 	encrypted_prot = true;
  
--	old_devtb_phys = entry & PAGE_MASK;
-+	/*
-+	 * When SME is enabled in the first kernel, the entry includes the
-+	 * memory encryption mask(sme_me_mask), we must remove the memory
-+	 * encryption mask to obtain the true physical address in kdump mode.
-+	 */
-+	old_devtb_phys = __sme_clr(entry) & PAGE_MASK;
-+
- 	if (old_devtb_phys >= 0x100000000ULL) {
- 		pr_err("The address of old device table is above 4G, not trustworthy!\n");
- 		return false;
+ 	if (sme_active()) {
++		/*
++		 * In kdump mode, the acpi table and dmi table will need to
++		 * be remapped in unencrypted ways during early init when
++		 * SME is enabled. They have just a simple wrapper around
++		 * early_memremap(), but the early_memremap() remaps the
++		 * memory in encrypted ways by default when SME is enabled,
++		 * so we must adjust it.
++		 */
+ 		if (early_memremap_is_setup_data(phys_addr, size) ||
+-		    memremap_is_efi_data(phys_addr, size))
++		    memremap_is_efi_data(phys_addr, size) ||
++		    is_kdump_kernel())
+ 			encrypted_prot = false;
  	}
--	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-+	old_devtb = (sme_active() && is_kdump_kernel())
-+		    ? (__force void *)ioremap_encrypted(old_devtb_phys,
-+							dev_table_size)
-+		    : memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-+
- 	if (!old_devtb)
- 		return false;
  
 -- 
 2.9.5
