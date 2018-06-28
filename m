@@ -1,106 +1,207 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v2 0/5] Add virtio-iommu driver
-Date: Wed, 27 Jun 2018 22:59:39 +0300
-Message-ID: <20180627224801-mutt-send-email-mst@kernel.org>
-References: <20180621190655.56391-1-jean-philippe.brucker@arm.com>
- <20180626210132-mutt-send-email-mst@kernel.org>
- <2bcda195-d2c6-fbf0-322e-d91756fc3547@arm.com>
+From: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 0/5 V4] Support kdump for AMD secure memory encryption(SME)
+Date: Thu, 28 Jun 2018 16:58:01 +0800
+Message-ID: <20180628085806.9280-1-lijiang@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <virtio-dev-return-4586-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-Content-Disposition: inline
-In-Reply-To: <2bcda195-d2c6-fbf0-322e-d91756fc3547@arm.com>
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, "jasowang@redhat.com" <jasowang@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "peterx@redhat.com" <peterx@redhat.com>, bharat.bhushan@
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 27, 2018 at 07:04:46PM +0100, Jean-Philippe Brucker wrote:
-> On 26/06/18 19:07, Michael S. Tsirkin wrote:
-> > So as I pointed out new virtio 0 device isn't really welcome ;)
-> 
-> Agreed, virtio-iommu is expected to be implemented on virtio 1 and
-> later. I'll remove the two legacy-related paragraph from the spec and
-> add a check in the driver as you suggested, to avoid giving the wrong idea.
-> 
-> > No one bothered implementing virtio 1 in MMIO for all the work
-> > that was put in defining it.
-> 
-> That is curious, given that the virtio_mmio driver supports virtio 1 and
-> from my own experience, porting the MMIO transport to virtio 1 only
-> requires updating a few registers, when ANY_LAYOUT, modern virtqueue and
-> status are already implemented.
-> 
-> > The fact that the MMIO part of the
-> > spec doesn't seem to allow for transitional devices might
-> > or might not have something to do with this.
-> 
-> Sorry, which part do you have in mind? The spec does provide both a
-> legacy and modern register layout, with version numbers to differentiate
-> them.
+When sme enabled on AMD server, we also need to support kdump. Because
+the memory is encrypted in the first kernel, we will remap the old memory
+encrypted to the second kernel(crash kernel), and sme is also enabled in
+the second kernel, otherwise the old memory encrypted can not be decrypted.
+Because simply changing the value of a C-bit on a page will not
+automatically encrypt the existing contents of a page, and any data in the
+page prior to the C-bit modification will become unintelligible. A page of
+memory that is marked encrypted will be automatically decrypted when read
+from DRAM and will be automatically encrypted when written to DRAM.
 
-Yes but there's no way to implement a transitional virtio mmio
-device. The version is either "legacy" or "modern".
+For the kdump, it is necessary to distinguish whether the memory is
+encrypted. Furthermore, we should also know which part of the memory is
+encrypted or decrypted. We will appropriately remap the memory according
+to the specific situation in order to tell cpu how to deal with the
+data(encrypted or decrypted). For example, when sme enabled, if the old
+memory is encrypted, we will remap the old memory in encrypted way, which
+will automatically decrypt the old memory encrypted when we read those data
+from the remapping address.
 
-So if you implement a modern device old guests won't work with it.
+ ----------------------------------------------
+| first-kernel | second-kernel | kdump support |
+|      (mem_encrypt=on|off)    |   (yes|no)    |
+|--------------+---------------+---------------|
+|     on       |     on        |     yes       |
+|     off      |     off       |     yes       |
+|     on       |     off       |     no        |
+|     off      |     on        |     no        |
+|______________|_______________|_______________|
 
-> > So why make it an MMIO device at all? A system with an IOMMU
-> > will have a PCI bus, won't it? And it's pretty common to
-> > have the IOMMU be a PCI device on the root bus.
-> Having the IOMMU outside PCI seems more common though. On Arm and Intel
-> the IOMMU doesn't have a PCI config space, BARs or capabilities, just a
-> plain MMIO region and a static number of interrupts. However the AMD
-> IOMMU appears as a PCI device with additional MMIO registers. I would be
-> interested in implementing virtio-iommu as a PCI dev at some point, at
-> least so that we can use MSI-X.
-> 
-> The problem is that it requires invasive changes in the firmware
-> interfaces and drivers. They need to describe relationship between IOMMU
-> and endpoint, and DT or ACPI IORT don't expect the programming interface
-> to be inside the PCI bus that the IOMMU manages.
+This patch is only for SME kdump, it is not support SEV kdump.
 
-They don't particularly care IMHO.
+For kdump(SME), there are two cases that doesn't support:
+1. SME is enabled in the first kernel, but SME is disabled in the
+second kernel
+Because the old memory is encrypted, we can't decrypt the old memory
+if SME is off in the second kernel.
 
-> Describing it as a
-> peripheral is more natural. For AMD it is implemented in their driver
-> using IVHD tables that can't be reused. Right now I don't expect any
-> success in proposing changes to firmware interfaces or drivers, because
-> the device is new and paravirtualized, and works out of the box with
-> MMIO. Hopefully that will change in the future, perhaps when someone
-> supports DT for AMD IOMMU (they do describe bindings at the end of the
-> spec, but I don't think it can work in Linux with the existing
-> infrastructure)
+2. SME is disabled in the first kernel, but SME is enabled in the
+second kernel
+Maybe it is unnecessary to support this case, because the old memory
+is unencrypted, the old memory can be dumped as usual, we don't need
+to enable sme in the second kernel, furthermore the requirement is
+rare in actual deployment. Another, If we must support the scenario,
+it will increase the complexity of the code, we will have to consider
+how to transfer the sme flag from the first kernel to the second kernel,
+in order to let the second kernel know that whether the old memory is
+encrypted.
+There are two manners to tranfer the SME flag to the second kernel, the
+first way is to modify the assembly code, which includes some common
+code and the path is too long. The second way is to use kexec tool,
+which could require the sme flag to be exported in the first kernel
+by "proc" or "sysfs", kexec will read the sme flag from "proc" or
+"sysfs" when we use kexec tool to load image, subsequently the sme flag
+will be saved in boot_params, we can properly remap the old memory
+according to the previously saved sme flag. Although we can fix this
+issue, maybe it is too expensive to do this. By the way, we won't fix
+the problem unless someone thinks it is necessary to do it.
 
-That's a bit abstract, I don't really understand the issues involved.
-ACPI is formatted by QEMU, so firmware does not need to care.
-And is there even a DT for intel?
+Test tools:
+makedumpfile[v1.6.3]: https://github.com/LianboJ/makedumpfile
+commit e1de103eca8f (A draft for kdump vmcore about AMD SME)
+Author: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Date:   Mon May 14 17:02:40 2018 +0800
+Note: This patch can only dump vmcore in the case of SME enabled.
 
-> Another reason to keep the MMIO transport option is that one
-> virtio-iommu can manage DMA from endpoints on multiple PCI domains at
-> the same time, as well as platform devices. Some VMMs might want that,
-> in which case the IOMMU would be a separate platform device.
+crash-7.2.1: https://github.com/crash-utility/crash.git
+commit 1e1bd9c4c1be (Fix for the "bpf" command display on Linux 4.17-rc1)
+Author: Dave Anderson <anderson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Date:   Fri May 11 15:54:32 2018 -0400
 
-Which buses are managed by the IOMMU is separate from the bus
-on which it's programming interface resides.
+Test environment:
+HP ProLiant DL385Gen10 AMD EPYC 7251
+8-Core Processor
+32768 MB memory
+600 GB disk space
 
-> > Will remove need to bother with dt bindings etc.
-> That's handled by the firmware drivers and IOMMU layer, there shouldn't
-> be any special treatment at the virtio layer. In general removal of an
-> IOMMU needs to be done after removal of all endpoints connected to it,
-> which should be described using device_link from the driver core. DT or
-> ACPI is only used to tell drivers where to find resources, and to
-> describe the DMA topology.
-> 
-> Thanks,
-> Jean
+Linux 4.18-rc2:
+git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+commit 7daf201d7fe8 ("Linux 4.18-rc2")
+Author: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Date:   Sun Jun 24 20:54:29 2018 +0800
 
-My point was virtio mmio isn't widely used outside of ARM.
-Rather than try to make everyone use it, IMHO it's better
-to start with PCI.
+Reference:
+AMD64 Architecture Programmer's Manual
+https://support.amd.com/TechDocs/24593.pdf
+
+Some changes:
+1. remove the sme_active() check in __ioremap_caller().
+2. remove the '#ifdef' stuff throughout this patch.
+3. put some logic into the early_memremap_pgprot_adjust() and clean the
+previous unnecessary changes, for example: arch/x86/include/asm/dmi.h,
+arch/x86/kernel/acpi/boot.c, drivers/acpi/tables.c.
+4. add a new file and modify Makefile.
+5. clean compile warning in copy_device_table() and some compile error.
+6. split the original patch into five patches, it will be better for
+review.
+7. modify elfcorehdr_read().
+8. add some comments.
+
+Some known issues:
+1. about SME
+Upstream kernel doesn't work when we use kexec in the follow command. The
+system will hang on 'HP ProLiant DL385Gen10 AMD EPYC 7251'. But it can't
+reproduce on speedway.
+(This issue doesn't matter with the kdump patch.)
+
+Reproduce steps:
+ # kexec -l /boot/vmlinuz-4.18.0-rc2+ --initrd=/boot/initramfs-4.18.0-rc2+.img --command-line="root=/dev/mapper/rhel_hp--dl385g10--03-root ro mem_encrypt=on rd.lvm.lv=rhel_hp-dl385g10-03/root rd.lvm.lv=rhel_hp-dl385g10-03/swap console=ttyS0,115200n81 LANG=en_US.UTF-8 earlyprintk=serial debug nokaslr"
+ # kexec -e (or reboot)
+
+The system will hang:
+[ 1248.932239] kexec_core: Starting new kernel
+early console in extract_kernel
+input_data: 0x000000087e91c3b4
+input_len: 0x000000000067fcbd
+output: 0x000000087d400000
+output_len: 0x0000000001b6fa90
+kernel_total_size: 0x0000000001a9d000
+trampoline_32bit: 0x0000000000099000
+
+Decompressing Linux...
+Parsing ELF...        [-here the system will hang]
+
+2. about SEV
+Upstream kernel(Host OS) doesn't work in host side, some drivers about
+SEV always go wrong in host side. We can't boot SEV Guest OS to test
+kdump patch. Maybe it is more reasonable to improve SEV in another
+patch. When some drivers can work in host side and it can also boot
+Virtual Machine(SEV Guest OS), it will be suitable to fix SEV for kdump.
+
+[  369.426131] INFO: task systemd-udevd:865 blocked for more than 120 seconds.
+[  369.433177]       Not tainted 4.17.0-rc5+ #60
+[  369.437585] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  369.445783] systemd-udevd   D    0   865    813 0x80000004
+[  369.451323] Call Trace:
+[  369.453815]  ? __schedule+0x290/0x870
+[  369.457523]  schedule+0x32/0x80
+[  369.460714]  __sev_do_cmd_locked+0x1f6/0x2a0 [ccp]
+[  369.465556]  ? cleanup_uevent_env+0x10/0x10
+[  369.470084]  ? remove_wait_queue+0x60/0x60
+[  369.474219]  ? 0xffffffffc0247000
+[  369.477572]  __sev_platform_init_locked+0x2b/0x70 [ccp]
+[  369.482843]  sev_platform_init+0x1d/0x30 [ccp]
+[  369.487333]  psp_pci_init+0x40/0xe0 [ccp]
+[  369.491380]  ? 0xffffffffc0247000
+[  369.494936]  sp_mod_init+0x18/0x1000 [ccp]
+[  369.499071]  do_one_initcall+0x4e/0x1d4
+[  369.502944]  ? _cond_resched+0x15/0x30
+[  369.506728]  ? kmem_cache_alloc_trace+0xae/0x1d0
+[  369.511386]  ? do_init_module+0x22/0x220
+[  369.515345]  do_init_module+0x5a/0x220
+[  369.519444]  load_module+0x21cb/0x2a50
+[  369.523227]  ? m_show+0x1c0/0x1c0
+[  369.526571]  ? security_capable+0x3f/0x60
+[  369.530611]  __do_sys_finit_module+0x94/0xe0
+[  369.534915]  do_syscall_64+0x5b/0x180
+[  369.538607]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  369.543698] RIP: 0033:0x7f708e6311b9
+[  369.547536] RSP: 002b:00007ffff9d32aa8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+[  369.555162] RAX: ffffffffffffffda RBX: 000055602a04c2d0 RCX: 00007f708e6311b9
+[  369.562346] RDX: 0000000000000000 RSI: 00007f708ef52039 RDI: 0000000000000008
+[  369.569801] RBP: 00007f708ef52039 R08: 0000000000000000 R09: 000055602a048b20
+[  369.576988] R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000000
+[  369.584177] R13: 000055602a075260 R14: 0000000000020000 R15: 0000000000000000
+
+Lianbo Jiang (5):
+  Add a function(ioremap_encrypted) for kdump when AMD sme enabled
+  Allocate pages for kdump without encryption when SME is enabled
+  Remap the device table of IOMMU in encrypted manner for kdump
+  Adjust some permanent mappings in unencrypted ways for kdump when SME
+    is enabled.
+  Help to dump the old memory encrypted into vmcore file
+
+ arch/x86/include/asm/io.h            |  3 ++
+ arch/x86/kernel/Makefile             |  1 +
+ arch/x86/kernel/crash_dump_encrypt.c | 53 ++++++++++++++++++++++++++++++++++++
+ arch/x86/mm/ioremap.c                | 36 ++++++++++++++++++------
+ drivers/iommu/amd_iommu_init.c       | 14 ++++++++--
+ fs/proc/vmcore.c                     | 45 +++++++++++++++++++++++++-----
+ include/linux/crash_dump.h           | 12 ++++++++
+ kernel/kexec_core.c                  | 12 ++++++++
+ 8 files changed, 158 insertions(+), 18 deletions(-)
+ create mode 100644 arch/x86/kernel/crash_dump_encrypt.c
 
 -- 
-MST
+2.9.5
