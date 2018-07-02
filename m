@@ -1,134 +1,94 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 1/2] ARM: dma-mapping: Set proper DMA ops
- in arm_iommu_detach_device()
-Date: Mon, 2 Jul 2018 13:53:17 +0200
-Message-ID: <20180702115317.GB5280@ulmo>
-References: <20180530140625.21247-1-thierry.reding@gmail.com>
- <20180530140625.21247-2-thierry.reding@gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: DMA mappings and crossing boundaries
+Date: Mon, 2 Jul 2018 14:06:02 +0100
+Message-ID: <82688fc5-c294-1db3-9a05-fecf9b9b5e17@arm.com>
+References: <2d752386b82481bc53080fcee1a3dcd474dbeef2.camel@au1.ibm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2113506574=="
-Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180530140625.21247-2-thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/nouveau>
-List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2d752386b82481bc53080fcee1a3dcd474dbeef2.camel-8fk3Idey6ehBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: benh-8fk3Idey6ehBDgjK7y7TUQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Russell Currey <ruscur-8fk3Idey6ehBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jens Axboe <jens.axboe-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Ben,
 
---===============2113506574==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="6sX45UoQRIJXqkqR"
-Content-Disposition: inline
+On 24/06/18 08:32, Benjamin Herrenschmidt wrote:
+> Hi Folks !
+> 
+> So due work around issues with devices having to strict limitations in
+> DMA address bits (GPUs ugh....) on POWER, we've been playing with a
+> mechanism that does dynamic mapping in the IOMMU but using a very large
+> IOMMU page size (256M on POWER8 and 1G on POWER9) for performances.
+> 
+> Now, with such page size, we can't just pop out new entries for every
+> DMA map, we need to try to re-use entries for mappings in the same
+> "area".
+> 
+> We've prototypes something using refcounts on the entires. It does
+> imply some locking which is potentially problematic, and we'll be
+> looking at options there long run, but it works... so far.
+> 
+> My worry is that it will fail if we ever get a mapping request (or
+> coherent allocation request) that spawns one of those giant pages
+> boundaries. At least our current implementation.
+> 
+> AFAIK, dma_alloc_coherent() is defined (Documentation/DMA-API-
+> HOWTO.txt) as always allocating to the next power-of-2 order, so we
+> should never have the problem unless we allocate a single chunk larger
+> than the IOMMU page size.
 
+(and even then it's not *that* much of a problem, since it comes down to 
+just finding n > 1 consecutive unused IOMMU entries for exclusive use by 
+that new chunk)
 
---6sX45UoQRIJXqkqR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> For dma_map_sg() however, if a request that has a single "entry"
+> spawning such a boundary, we need to ensure that the result mapping is
+> 2 contiguous "large" iommu pages as well.
+> 
+> However, that doesn't fit well with us re-using existing mappings since
+> they may already exist and either not be contiguous, or partially exist
+> with no free hole around them.
+> 
+> Now, we *could* possibly construe a way to solve this by detecting this
+> case and just allocating another "pair" (or set if we cross even more
+> pages) of IOMMU pages elsewhere, thus partially breaking our re-use
+> scheme.
+> 
+> But while doable, this introduce some serious complexity in the
+> implementation, which I would very much like to avoid.
+> 
+> So I was wondering if you guys thought that was ever likely to happen ?
+> Do you see reasonable cases where dma_map_sg() would be called with a
+> list in which a single entry crosses a 256M or 1G boundary ?
 
-On Wed, May 30, 2018 at 04:06:24PM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
->=20
-> Instead of setting the DMA ops pointer to NULL, set the correct,
-> non-IOMMU ops depending on the device's coherency setting.
->=20
-> Signed-off-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-> ---
-> Changes in v4:
-> - new patch to fix existing arm_iommu_detach_device() to do what we need
->=20
->  arch/arm/mm/dma-mapping.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+For streaming mappings of buffers cobbled together out of any old CPU 
+pages (e.g. user memory), you may well happen to get two 
+physically-adjacent pages falling either side of an IOMMU boundary, 
+which comprise all or part of a single request - note that whilst it's 
+probably less likely than the scatterlist case, this could technically 
+happen for dma_map_{page, single}() calls too.
 
-Christoph, Russell,
+Conceptually it looks pretty easy to extend the allocation constraints 
+to cope with that - even the pathological worst case would have an 
+absolute upper bound of 3 IOMMU entries for any one physical region - 
+but if in practice it's a case of mapping arbitrary CPU pages to 32-bit 
+DMA addresses having only 4 1GB slots to play with, I can't really see a 
+way to make that practical :(
 
-could either of you provide an Acked-by for this? I think it makes the
-most sense for Ben to pick this up into the Nouveau tree along with
-patch 2/2.
+Maybe the best compromise would be some sort of hybrid scheme which 
+makes sure that one of the IOMMU entries always covers the SWIOTLB 
+buffer, and invokes software bouncing for the awkward cases.
 
-Thierry
-
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index af27f1c22d93..87a0037574e4 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1151,6 +1151,11 @@ int arm_dma_supported(struct device *dev, u64 mask)
->  	return __dma_supported(dev, mask, false);
->  }
-> =20
-> +static const struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
-> +{
-> +	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
-> +}
-> +
->  #ifdef CONFIG_ARM_DMA_USE_IOMMU
-> =20
->  static int __dma_info_to_prot(enum dma_data_direction dir, unsigned long=
- attrs)
-> @@ -2296,7 +2301,7 @@ void arm_iommu_detach_device(struct device *dev)
->  	iommu_detach_device(mapping->domain, dev);
->  	kref_put(&mapping->kref, release_iommu_mapping);
->  	to_dma_iommu_mapping(dev) =3D NULL;
-> -	set_dma_ops(dev, NULL);
-> +	set_dma_ops(dev, arm_get_dma_map_ops(dev->archdata.dma_coherent));
-> =20
->  	pr_debug("Detached IOMMU controller from %s device.\n", dev_name(dev));
->  }
-> @@ -2357,11 +2362,6 @@ static void arm_teardown_iommu_dma_ops(struct devi=
-ce *dev) { }
-> =20
->  #endif	/* CONFIG_ARM_DMA_USE_IOMMU */
-> =20
-> -static const struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
-> -{
-> -	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
-> -}
-> -
->  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  			const struct iommu_ops *iommu, bool coherent)
->  {
-> --=20
-> 2.17.0
->=20
-
---6sX45UoQRIJXqkqR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAls6Ei0ACgkQ3SOs138+
-s6GLKg/9EtxOidIWFfV0JMYDi5/VjIp9Wpb0c3kTEkd1vvvwRvTIDeyr004XGRxf
-TxEhQKwwGVOCQkAevC+OgWmpFxBpbYvJ7Ps4kGTqjoJWFH53VCoVWbHqGcBqdW3A
-gV99iJyR8YyIRMVtsRJIqD/3w9J/JfM2fGHj/gUxqbuiAhLK+heAt+sLXJGD4gDv
-NQp3iCEGvaM8mfMHcgxwKulhmbRbznJ5YIvc7cDQZDVVoijyQqbA7sGWVV26oAkE
-zvFeu0v/Dkl+ht2Y0rKayMgf7nqbhYM1zvMAaDZvoVrj/KuL0+4Gv8RSEsMVoNIg
-akWPRj81i3+hzc+p0T/HmDbzkS+NT5eV3qy9OdZ3h3EDAR/IG0gxqxS40Cz8dlbu
-ai7gDy0lwqLZ/0+qknCH0U4+ep6j+B4oyOSRm7gG2B3a+3MH0lnEAXb+LcM+0Hs/
-t6yMwc4xIg6jAM01G9ov7/szUvaWyJMAmE8/dwZZOTR/iD5l8TGHVb+UM9BR7Wek
-2xLDORkTNVYav8oweu0LEeuihbDRTkX8jJqSPI5Au1qodihqEwzNPf23hr1/w8Hr
-9TCoKI+2OentXk0cYk+1H4nCnEQxThP1TNJIo353TbqXOJgwdaPKbdGizh7BhM19
-2/PwWVPtZpm0uirIxldz0N5mKf7HouYwch9qtl9X3AOQMAn/Mis=
-=wTHr
------END PGP SIGNATURE-----
-
---6sX45UoQRIJXqkqR--
-
---===============2113506574==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTm91dmVhdSBt
-YWlsaW5nIGxpc3QKTm91dmVhdUBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
-cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9ub3V2ZWF1Cg==
-
---===============2113506574==--
+Robin.
