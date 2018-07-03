@@ -1,111 +1,232 @@
-From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] dma-mapping: Relax warnings for per-device areas
-Date: Tue, 3 Jul 2018 18:47:51 +0200
-Message-ID: <20180703164750.GB17378@localhost.localdomain>
-References: <1f8262d206c6886072d04cc93454f6e3f812bd20.1530623284.git.robin.murphy@arm.com>
+From: Walter Harms <wharms@bfs.de>
+Subject: Re: [PATCH] iommu/amd: fix missing tag from dev_err message
+Date: Tue, 3 Jul 2018 18:57:06 +0200 (CEST)
+Message-ID: <1540588259.84011.1530637026831@ox-groupware.bfs.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1f8262d206c6886072d04cc93454f6e3f812bd20.1530623284.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Maciej W. Rozycki" <macro-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, JuergenUrban-Mmb7MZpHnFY@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joe Perches <joe@perches.com>, "Hook, Gary" <ghook@amd.com>, Colin Ian King <colin.king@canonical.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thank you Robin,
 
-On Tue, Jul 03, 2018 at 02:08:30PM +0100, Robin Murphy wrote:
-> The reasons why dma_free_attrs() should not be called from IRQ context
-> are not necessarily obvious and somewhat buried in the development
-> history, so let's start by documenting the warning itself to help anyone
-> who does happen to hit it and wonder what the deal is.
+
+Am 03.07.2018 18:38, schrieb Joe Perches:
+> On Tue, 2018-07-03 at 11:27 -0500, Hook, Gary wrote:
+>> On 7/3/2018 11:24 AM, Colin Ian King wrote:
+>>> On 03/07/18 17:21, Hook, Gary wrote:
+>>>> On 7/3/2018 10:55 AM, Joe Perches wrote:
+>>>>> On Tue, 2018-07-03 at 07:56 -0500, Gary R Hook wrote:
+>>>>>> On 07/03/2018 05:07 AM, Joe Perches wrote:
+>>>>>>> On Tue, 2018-07-03 at 07:40 +0100, Colin King wrote:
+>>>>>>>> Currently tag is being assigned but not used, it is missing from
+>>>>>>>> the dev_err message, so add it in.
+>>>>>>>>
+>>>>>>>> Cleans up clang warning:
+>>>>>>>> warning: variable 'tag' set but not used [-Wunused-but-set-variable]
+>>>>>>>
+>>>>>>> []
+>>>>>>>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>>>>>>>
+>>>>>>> []
+>>>>>>>> @@ -616,9 +616,9 @@ static void iommu_print_event(struct amd_iommu
+>>>>>>>> *iommu, void *__evt)
+>>>>>>>>             pasid = ((event[0] >> 16) & 0xFFFF)
+>>>>>>>>                 | ((event[1] << 6) & 0xF0000);
+>>>>>>>>             tag = event[1] & 0x03FF;
+>>>>>>>> -        dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x
+>>>>>>>> pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+>>>>>>>> +        dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x
+>>>>>>>> pasid=0x%05x address=0x%016llx flags=0x%04x tag=0x%03x]\n",
+>>>>>>>>                 PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>>>>>>>> -            pasid, address, flags);
+>>>>>>>> +            pasid, address, flags, tag);
+>>>>>>>
+>>>>>>> Seems to have a superfluous ] that should be removed.
+>>>>>>
+>>>>>> Yeah, I pretty much messed up all of the log messages in that function.
+>>>>>> My apologies. I'll create a patch for that problem; it shouldn't be
+>>>>>> fixed here.
+>>>>
+>>>> Well, no, I misremembered. The extraneous square brace has been there
+>>>> forever. Needs fixin', though.
+>>>>
+>>>
+>>> The opening square bracket is much earlier:
+>>>
+>>> dev_err(dev, "AMD-Vi: Event logged [");
+>>>
+>>> ..and all the subsequent dev_err messages have the trailing square bracket.
+>>
+>> Gah! Mystery solved. I'd forgotten about that.
+>>
+>> "Never mind."
+>>
+
+It is only cosmetics but even the author got lost about the loose bracket.
+I would suggest to remove all the brackets or if needed to move the [ in the
+message. We have enought memory this days.
+
+> -               printk(KERN_ERR "AMD-Vi: Event logged [");
+> +               dev_err(dev, "AMD-Vi: Event logged [");
+
+just my 2 cents,
+
+re,
+ wh
+
 > 
-> However, this check turns out to be slightly over-restrictive for the
-> way that per-device memory has been spliced into the general API, since
-> for that case we know that dma_declare_coherent_memory() has created an
-> appropriate CPU mapping for the entire area and nothing dynamic should
-> be happening. Given that the usage model for per-device memory is often
-> more akin to streaming DMA than 'real' coherent DMA (e.g. allocating and
-> freeing space to copy short-lived packets in and out), it is also
-> somewhat more reasonable for those operations to happen in IRQ handlers
-> for such devices.
+> It stems from the misconversion from printk to dev_err
 > 
-> A somewhat similar line of reasoning also applies at the other end for
-> the mask check in dma_alloc_attrs() too - indeed, a device which cannot
-> access anything other than its own local memory probably *shouldn't*
-> have a valid mask for the general coherent DMA API.
+> The initial dev_err is fine but all the dev_err uses
+> in the switch/case should use pr_cont, not dev_err
 > 
-> Therefore, let's move the per-device area hooks up ahead of the assorted
-> checks, so that they get a chance to resolve the request before we get
-> as far as definite "you're doing it wrong" territory.
-
-I have tested this patch and it corrects both problems with the PS2 OHCI
-driver. I believe there is a fair chance that drivers/usb/host/ohci-sm501.c
-and drivers/usb/host/ohci-tmio.c are fixed as well, since they are similar.
-
-Tested-by: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
-
-Fredrik
-
-> Reported-by: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> (there's a suggested patch below this commit reference)
+> 
 > ---
->  include/linux/dma-mapping.h | 19 +++++++++++++------
->  1 file changed, 13 insertions(+), 6 deletions(-)
+>>From 90ca3859f5ea90050d00e695355934b37357e7bb Mon Sep 17 00:00:00 2001
+> From: Gary R Hook <gary.hook@amd.com>
+> Date: Thu, 8 Mar 2018 18:34:41 -0600
+> Subject: [PATCH] iommu/amd: Use dev_err to send events to the system log
 > 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index f9cc309507d9..ffeca3ab59c0 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -512,12 +512,12 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
->  	const struct dma_map_ops *ops = get_dma_ops(dev);
->  	void *cpu_addr;
+> Remove printk and use a more preferable error logging function.
+> 
+> Signed-off-by: Gary R Hook <gary.hook@amd.com>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/iommu/amd_iommu.c | 55
+> ++++++++++++++++++++++++++++---------------------------
+>  1 file changed, 28 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 997a947ddc3b..4cd19f93ca15 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -547,6 +547,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16
+> domain_id,
 >  
-> -	BUG_ON(!ops);
-> -	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
-> -
->  	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
->  		return cpu_addr;
->  
-> +	BUG_ON(!ops);
-> +	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
-> +
->  	/* let the implementation decide on the zone to allocate from: */
->  	flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
->  
-> @@ -537,12 +537,19 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
+>  static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
 >  {
->  	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +       struct device *dev = iommu->iommu.dev;
+>         int type, devid, domid, flags;
+>         volatile u32 *event = __evt;
+>         int count = 0;
+> @@ -573,53 +574,53 @@ static void iommu_print_event(struct amd_iommu *iommu,
+> void *__evt)
+>                 amd_iommu_report_page_fault(devid, domid, address, flags);
+>                 return;
+>         } else {
+> -               printk(KERN_ERR "AMD-Vi: Event logged [");
+> +               dev_err(dev, "AMD-Vi: Event logged [");
+>         }
 >  
-> -	BUG_ON(!ops);
-> -	WARN_ON(irqs_disabled());
-> -
->  	if (dma_release_from_dev_coherent(dev, get_order(size), cpu_addr))
+>         switch (type) {
+>         case EVENT_TYPE_ILL_DEV:
+> -               printk("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+> -                      "address=0x%016llx flags=0x%04x]\n",
+> -                      PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> -                      address, flags);
+> +               dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+> +                       "address=0x%016llx flags=0x%04x]\n",
+> +                       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> +                       address, flags);
+> 
+> etc...
+> 
+> so this could be:
+> 
+> ---
+>  drivers/iommu/amd_iommu.c | 23 +++++++++++------------
+>  1 file changed, 11 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 596b95c50051..f78cfa094301 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -572,43 +572,42 @@ static void iommu_print_event(struct amd_iommu *iommu,
+> void *__evt)
+>  	if (type == EVENT_TYPE_IO_FAULT) {
+>  		amd_iommu_report_page_fault(devid, pasid, address, flags);
 >  		return;
+> -	} else {
+> -		dev_err(dev, "AMD-Vi: Event logged [");
+>  	}
 >  
-> +	BUG_ON(!ops);
-> +	/*
-> +	 * On non-coherent platforms which implement DMA-coherent buffers via
-> +	 * non-cacheable remaps, ops->free() may call vunmap(). Thus arriving
-> +	 * here in IRQ context is a) at risk of a BUG_ON() or trying to sleep
-> +	 * on some machines, and b) an indication that the driver is probably
-> +	 * misusing the coherent API anyway.
-> +	 */
-> +	WARN_ON(irqs_disabled());
+> +	dev_err(dev, "AMD-Vi: Event logged [");
 > +
->  	if (!ops->free || !cpu_addr)
->  		return;
+>  	switch (type) {
+>  	case EVENT_TYPE_ILL_DEV:
+> -		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x
+> address=0x%016llx flags=0x%04x]\n",
+> +		pr_cont("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x
+> address=0x%016llx flags=0x%04x]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			pasid, address, flags);
+>  		dump_dte_entry(devid);
+>  		break;
+>  	case EVENT_TYPE_DEV_TAB_ERR:
+> -		dev_err(dev, "DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+> -			"address=0x%016llx flags=0x%04x]\n",
+> +		pr_cont("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x address=0x%016llx
+> flags=0x%04x]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			address, flags);
+>  		break;
+>  	case EVENT_TYPE_PAGE_TAB_ERR:
+> -		dev_err(dev, "PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x
+> address=0x%016llx flags=0x%04x]\n",
+> +		pr_cont("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x
+> address=0x%016llx flags=0x%04x]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			pasid, address, flags);
+>  		break;
+>  	case EVENT_TYPE_ILL_CMD:
+> -		dev_err(dev, "ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+> +		pr_cont("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+>  		dump_command(address);
+>  		break;
+>  	case EVENT_TYPE_CMD_HARD_ERR:
+> -		dev_err(dev, "COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
+> +		pr_cont("COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
+>  			address, flags);
+>  		break;
+>  	case EVENT_TYPE_IOTLB_INV_TO:
+> -		dev_err(dev, "IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
+> +		pr_cont("IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			address);
+>  		break;
+>  	case EVENT_TYPE_INV_DEV_REQ:
+> -		dev_err(dev, "INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x
+> address=0x%016llx flags=0x%04x]\n",
+> +		pr_cont("INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x
+> address=0x%016llx flags=0x%04x]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			pasid, address, flags);
+>  		break;
+> @@ -616,12 +615,12 @@ static void iommu_print_event(struct amd_iommu *iommu,
+> void *__evt)
+>  		pasid = ((event[0] >> 16) & 0xFFFF)
+>  			| ((event[1] << 6) & 0xF0000);
+>  		tag = event[1] & 0x03FF;
+> -		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x
+> address=0x%016llx flags=0x%04x]\n",
+> +		pr_cont("INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x
+> address=0x%016llx flags=0x%04x]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			pasid, address, flags);
+>  		break;
+>  	default:
+> -		dev_err(dev, "UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x
+> event[3]=0x%08x\n",
+> +		pr_cont("UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x
+> event[3]=0x%08x\n",
+>  			event[0], event[1], event[2], event[3]);
+>  	}
 >  
-> -- 
-> 2.17.1.dirty
+> --
+> To unsubscribe from this list: send the line "unsubscribe kernel-janitors" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
