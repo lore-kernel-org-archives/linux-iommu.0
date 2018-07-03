@@ -1,19 +1,16 @@
-From: "Hook, Gary" <ghook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: fix missing tag from dev_err message
-Date: Tue, 3 Jul 2018 11:27:25 -0500
-Message-ID: <dc5d5fc0-0c4b-3728-2dba-987840e7c1fc@amd.com>
-References: <20180703064005.18908-1-colin.king@canonical.com>
-	<6763ec382f8d629f5f356f4cc023f20c2f76b26a.camel@perches.com>
-	<d27fe634-89cf-7d9a-3e3d-a2baafabf0be@amd.com>
-	<d93bfa0f52d8907019b16336645986cd339ebf75.camel@perches.com>
-	<f3e15437-68c1-58eb-bc34-93fa70e50dc9@amd.com>
-	<6fbcf273-bc0a-5dbd-fa0e-a7f656c4ccbc@canonical.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 7/7 v5] arm64: dts: ls208xa: comply with the iommu map
+	binding for fsl_mc
+Date: Tue, 3 Jul 2018 17:35:42 +0100
+Message-ID: <88626adc-6f5b-86df-88a0-620d258f8053@arm.com>
+References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
+	<1526824191-7000-8-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6fbcf273-bc0a-5dbd-fa0e-a7f656c4ccbc-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1526824191-7000-8-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,45 +20,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Colin Ian King <colin.king-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, laurentiu.tudor-3arQi8VN3Tc@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gNy8zLzIwMTggMTE6MjQgQU0sIENvbGluIElhbiBLaW5nIHdyb3RlOgo+IE9uIDAzLzA3LzE4
-IDE3OjIxLCBIb29rLCBHYXJ5IHdyb3RlOgo+PiBPbiA3LzMvMjAxOCAxMDo1NSBBTSwgSm9lIFBl
-cmNoZXMgd3JvdGU6Cj4+PiBPbiBUdWUsIDIwMTgtMDctMDMgYXQgMDc6NTYgLTA1MDAsIEdhcnkg
-UiBIb29rIHdyb3RlOgo+Pj4+IE9uIDA3LzAzLzIwMTggMDU6MDcgQU0sIEpvZSBQZXJjaGVzIHdy
-b3RlOgo+Pj4+PiBPbiBUdWUsIDIwMTgtMDctMDMgYXQgMDc6NDAgKzAxMDAsIENvbGluIEtpbmcg
-d3JvdGU6Cj4+Pj4+PiBDdXJyZW50bHkgdGFnIGlzIGJlaW5nIGFzc2lnbmVkIGJ1dCBub3QgdXNl
-ZCwgaXQgaXMgbWlzc2luZyBmcm9tCj4+Pj4+PiB0aGUgZGV2X2VyciBtZXNzYWdlLCBzbyBhZGQg
-aXQgaW4uCj4+Pj4+Pgo+Pj4+Pj4gQ2xlYW5zIHVwIGNsYW5nIHdhcm5pbmc6Cj4+Pj4+PiB3YXJu
-aW5nOiB2YXJpYWJsZSAndGFnJyBzZXQgYnV0IG5vdCB1c2VkIFstV3VudXNlZC1idXQtc2V0LXZh
-cmlhYmxlXQo+Pj4+Pgo+Pj4+PiBbXQo+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUv
-YW1kX2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jCj4+Pj4+Cj4+Pj4+IFtdCj4+
-Pj4+PiBAQCAtNjE2LDkgKzYxNiw5IEBAIHN0YXRpYyB2b2lkIGlvbW11X3ByaW50X2V2ZW50KHN0
-cnVjdCBhbWRfaW9tbXUKPj4+Pj4+ICppb21tdSwgdm9pZCAqX19ldnQpCj4+Pj4+PiAgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgcGFzaWQgPSAoKGV2ZW50WzBdID4+IDE2KSAmIDB4RkZGRikKPj4+Pj4+
-ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHwgKChldmVudFsxXSA8PCA2KSAmIDB4RjAw
-MDApOwo+Pj4+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgIHRhZyA9IGV2ZW50WzFdICYgMHgwM0ZG
-Owo+Pj4+Pj4gLcKgwqDCoMKgwqDCoMKgIGRldl9lcnIoZGV2LCAiSU5WQUxJRF9QUFJfUkVRVUVT
-VCBkZXZpY2U9JTAyeDolMDJ4LiV4Cj4+Pj4+PiBwYXNpZD0weCUwNXggYWRkcmVzcz0weCUwMTZs
-bHggZmxhZ3M9MHglMDR4XVxuIiwKPj4+Pj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKGRldiwg
-IklOVkFMSURfUFBSX1JFUVVFU1QgZGV2aWNlPSUwMng6JTAyeC4leAo+Pj4+Pj4gcGFzaWQ9MHgl
-MDV4IGFkZHJlc3M9MHglMDE2bGx4IGZsYWdzPTB4JTA0eCB0YWc9MHglMDN4XVxuIiwKPj4+Pj4+
-ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIFBDSV9CVVNfTlVNKGRldmlkKSwgUENJX1NM
-T1QoZGV2aWQpLCBQQ0lfRlVOQyhkZXZpZCksCj4+Pj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBwYXNpZCwgYWRkcmVzcywgZmxhZ3MpOwo+Pj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-cGFzaWQsIGFkZHJlc3MsIGZsYWdzLCB0YWcpOwo+Pj4+Pgo+Pj4+PiBTZWVtcyB0byBoYXZlIGEg
-c3VwZXJmbHVvdXMgXSB0aGF0IHNob3VsZCBiZSByZW1vdmVkLgo+Pj4+Cj4+Pj4gWWVhaCwgSSBw
-cmV0dHkgbXVjaCBtZXNzZWQgdXAgYWxsIG9mIHRoZSBsb2cgbWVzc2FnZXMgaW4gdGhhdCBmdW5j
-dGlvbi4KPj4+PiBNeSBhcG9sb2dpZXMuIEknbGwgY3JlYXRlIGEgcGF0Y2ggZm9yIHRoYXQgcHJv
-YmxlbTsgaXQgc2hvdWxkbid0IGJlCj4+Pj4gZml4ZWQgaGVyZS4KPj4KPj4gV2VsbCwgbm8sIEkg
-bWlzcmVtZW1iZXJlZC4gVGhlIGV4dHJhbmVvdXMgc3F1YXJlIGJyYWNlIGhhcyBiZWVuIHRoZXJl
-Cj4+IGZvcmV2ZXIuIE5lZWRzIGZpeGluJywgdGhvdWdoLgo+Pgo+IAo+IFRoZSBvcGVuaW5nIHNx
-dWFyZSBicmFja2V0IGlzIG11Y2ggZWFybGllcjoKPiAKPiBkZXZfZXJyKGRldiwgIkFNRC1WaTog
-RXZlbnQgbG9nZ2VkIFsiKTsKPiAKPiAuLmFuZCBhbGwgdGhlIHN1YnNlcXVlbnQgZGV2X2VyciBt
-ZXNzYWdlcyBoYXZlIHRoZSB0cmFpbGluZyBzcXVhcmUgYnJhY2tldC4KCkdhaCEgTXlzdGVyeSBz
-b2x2ZWQuIEknZCBmb3Jnb3R0ZW4gYWJvdXQgdGhhdC4KCiJOZXZlciBtaW5kLiIKCgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 20/05/18 14:49, Nipun Gupta wrote:
+> fsl-mc bus support the new iommu-map property. Comply to this binding
+> for fsl_mc bus.
+> 
+> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> Reviewed-by: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+> ---
+>   arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+> index 137ef4d..6010505 100644
+> --- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
+> @@ -184,6 +184,7 @@
+>   		#address-cells = <2>;
+>   		#size-cells = <2>;
+>   		ranges;
+> +		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
+>   
+>   		clockgen: clocking@1300000 {
+>   			compatible = "fsl,ls2080a-clockgen";
+> @@ -357,6 +358,8 @@
+>   			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
+>   			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+>   			msi-parent = <&its>;
+> +			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
+> +			dma-coherent;
+>   			#address-cells = <3>;
+>   			#size-cells = <1>;
+>   
+> @@ -460,6 +463,8 @@
+>   			compatible = "arm,mmu-500";
+>   			reg = <0 0x5000000 0 0x800000>;
+>   			#global-interrupts = <12>;
+> +			#iommu-cells = <1>;
+> +			stream-match-mask = <0x7C00>;
+>   			interrupts = <0 13 4>, /* global secure fault */
+>   				     <0 14 4>, /* combined secure interrupt */
+>   				     <0 15 4>, /* global non-secure fault */
+> @@ -502,7 +507,6 @@
+>   				     <0 204 4>, <0 205 4>,
+>   				     <0 206 4>, <0 207 4>,
+>   				     <0 208 4>, <0 209 4>;
+> -			mmu-masters = <&fsl_mc 0x300 0>;
+
+Since we're in here, is the SMMU itself also coherent? If it is, you 
+probably want to say so and avoid the overhead of pointlessly cleaning 
+cache lines on every page table update.
+
+Robin.
+
+>   		};
+>   
+>   		dspi: dspi@2100000 {
+> 
