@@ -1,87 +1,51 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/7 v5] iommu: support iommu configuration for fsl-mc
-	devices
-Date: Tue, 3 Jul 2018 16:30:35 +0100
-Message-ID: <947a6e16-98ff-9389-b15c-d3025b7be4be@arm.com>
-References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
-	<1526824191-7000-4-git-send-email-nipun.gupta@nxp.com>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [PATCH] iommu/amd: fix missing tag from dev_err message
+Date: Tue, 03 Jul 2018 08:55:40 -0700
+Message-ID: <d93bfa0f52d8907019b16336645986cd339ebf75.camel@perches.com>
+References: <20180703064005.18908-1-colin.king@canonical.com>
+         <6763ec382f8d629f5f356f4cc023f20c2f76b26a.camel@perches.com>
+         <d27fe634-89cf-7d9a-3e3d-a2baafabf0be@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526824191-7000-4-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, laurentiu.tudor-3arQi8VN3Tc@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <d27fe634-89cf-7d9a-3e3d-a2baafabf0be@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Gary R Hook <ghook@amd.com>, Colin King <colin.king@canonical.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/05/18 14:49, Nipun Gupta wrote:
-> With of_pci_map_rid available for all the busses, use the function
-> for configuration of devices on fsl-mc bus
-
-FWIW I had a quick hack at factoring out the commonality with 
-of_pci_iommu_init(), at which point I reckon this change is easier to 
-follow as-is for the moment, so:
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> ---
->   drivers/iommu/of_iommu.c | 20 ++++++++++++++++++++
->   1 file changed, 20 insertions(+)
+On Tue, 2018-07-03 at 07:56 -0500, Gary R Hook wrote:
+> On 07/03/2018 05:07 AM, Joe Perches wrote:
+> > On Tue, 2018-07-03 at 07:40 +0100, Colin King wrote:
+> > > Currently tag is being assigned but not used, it is missing from
+> > > the dev_err message, so add it in.
+> > > 
+> > > Cleans up clang warning:
+> > > warning: variable 'tag' set but not used [-Wunused-but-set-variable]
+> > 
+> > []
+> > > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > 
+> > []
+> > > @@ -616,9 +616,9 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+> > >   		pasid = ((event[0] >> 16) & 0xFFFF)
+> > >   			| ((event[1] << 6) & 0xF0000);
+> > >   		tag = event[1] & 0x03FF;
+> > > -		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+> > > +		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x tag=0x%03x]\n",
+> > >   			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> > > -			pasid, address, flags);
+> > > +			pasid, address, flags, tag);
+> > 
+> > Seems to have a superfluous ] that should be removed.
 > 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 811e160..284474d 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -24,6 +24,7 @@
->   #include <linux/of_iommu.h>
->   #include <linux/of_pci.h>
->   #include <linux/slab.h>
-> +#include <linux/fsl/mc.h>
->   
->   #define NO_IOMMU	1
->   
-> @@ -159,6 +160,23 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
->   	return err;
->   }
->   
-> +static int of_fsl_mc_iommu_init(struct fsl_mc_device *mc_dev,
-> +				struct device_node *master_np)
-> +{
-> +	struct of_phandle_args iommu_spec = { .args_count = 1 };
-> +	int err;
-> +
-> +	err = of_map_rid(master_np, mc_dev->icid, "iommu-map",
-> +			 "iommu-map-mask", &iommu_spec.np,
-> +			 iommu_spec.args);
-> +	if (err)
-> +		return err == -ENODEV ? NO_IOMMU : err;
-> +
-> +	err = of_iommu_xlate(&mc_dev->dev, &iommu_spec);
-> +	of_node_put(iommu_spec.np);
-> +	return err;
-> +}
-> +
->   const struct iommu_ops *of_iommu_configure(struct device *dev,
->   					   struct device_node *master_np)
->   {
-> @@ -190,6 +208,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->   
->   		err = pci_for_each_dma_alias(to_pci_dev(dev),
->   					     of_pci_iommu_init, &info);
-> +	} else if (dev_is_fsl_mc(dev)) {
-> +		err = of_fsl_mc_iommu_init(to_fsl_mc_device(dev), master_np);
->   	} else {
->   		struct of_phandle_args iommu_spec;
->   		int idx = 0;
-> 
+> Yeah, I pretty much messed up all of the log messages in that function. 
+> My apologies. I'll create a patch for that problem; it shouldn't be 
+> fixed here.
+
+I also wonder why event is declared volatile and then
+dereferenced with [<constant>] multiple times.
+
+Maybe each array dereference should be stored as a
+local variable instead.
