@@ -1,83 +1,57 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Borislav Petkov <bp@alien8.de>
 Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
-	AMD sme enabled
-Date: Tue, 3 Jul 2018 18:58:14 +0800
-Message-ID: <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
+ AMD sme enabled
+Date: Tue, 3 Jul 2018 13:14:28 +0200
+Message-ID: <20180703111428.GB5748@zn.tnic>
 References: <20180702072639.10110-1-lijiang@redhat.com>
-	<20180702072639.10110-2-lijiang@redhat.com>
-	<20180702101451.GB28730@zn.tnic>
-	<4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+ <20180702072639.10110-2-lijiang@redhat.com>
+ <20180702101451.GB28730@zn.tnic>
+ <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+ <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: lijiang <lijiang@redhat.com>
+Cc: linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, dyoung@redhat.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, bhe@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwN+aciDAz5pelIDEwOjE3LCBsaWppYW5nIOWGmemBkzoKPiDlnKggMjAxOOW5
-tDA35pyIMDLml6UgMTg6MTQsIEJvcmlzbGF2IFBldGtvdiDlhpnpgZM6Cj4+IE9uIE1vbiwgSnVs
-IDAyLCAyMDE4IGF0IDAzOjI2OjM1UE0gKzA4MDAsIExpYW5ibyBKaWFuZyB3cm90ZToKPj4+IEBA
-IC0xMzEsNyArMTMyLDggQEAgc3RhdGljIHZvaWQgX19pb3JlbWFwX2NoZWNrX21lbShyZXNvdXJj
-ZV9zaXplX3QgYWRkciwgdW5zaWduZWQgbG9uZyBzaXplLAo+Pj4gICAqIGNhbGxlciBzaG91bGRu
-J3QgbmVlZCB0byBrbm93IHRoYXQgc21hbGwgZGV0YWlsLgo+Pj4gICAqLwo+Pj4gIHN0YXRpYyB2
-b2lkIF9faW9tZW0gKl9faW9yZW1hcF9jYWxsZXIocmVzb3VyY2Vfc2l6ZV90IHBoeXNfYWRkciwK
-Pj4+IC0JCXVuc2lnbmVkIGxvbmcgc2l6ZSwgZW51bSBwYWdlX2NhY2hlX21vZGUgcGNtLCB2b2lk
-ICpjYWxsZXIpCj4+PiArCQl1bnNpZ25lZCBsb25nIHNpemUsIGVudW0gcGFnZV9jYWNoZV9tb2Rl
-IHBjbSwKPj4+ICsJCXZvaWQgKmNhbGxlciwgYm9vbCBlbmNyeXB0ZWQpCj4+Cj4+IFNvIGluc3Rl
-YWQgb2Ygc3ByaW5rbGluZyB0aGF0IEBlbmNyeXB0ZWQgYXJndW1lbnQgZXZlcnl3aGVyZSBhbmQg
-dGhlbgo+PiBzZXR0aW5nIGl0IGJhc2VkIG9uIHNtZV9hY3RpdmUoKSAuLi4KPj4KPj4+ICB7Cj4+
-PiAgCXVuc2lnbmVkIGxvbmcgb2Zmc2V0LCB2YWRkcjsKPj4+ICAJcmVzb3VyY2Vfc2l6ZV90IGxh
-c3RfYWRkcjsKPj4+IEBAIC0xOTksNyArMjAxLDcgQEAgc3RhdGljIHZvaWQgX19pb21lbSAqX19p
-b3JlbWFwX2NhbGxlcihyZXNvdXJjZV9zaXplX3QgcGh5c19hZGRyLAo+Pj4gIAkgKiByZXN1bHRp
-bmcgbWFwcGluZy4KPj4+ICAJICovCj4+PiAgCXByb3QgPSBQQUdFX0tFUk5FTF9JTzsKPj4+IC0J
-aWYgKHNldl9hY3RpdmUoKSAmJiBtZW1fZmxhZ3MuZGVzY19vdGhlcikKPj4+ICsJaWYgKChzZXZf
-YWN0aXZlKCkgJiYgbWVtX2ZsYWdzLmRlc2Nfb3RoZXIpIHx8IGVuY3J5cHRlZCkKPj4KPj4gLi4u
-IHdoeSBjYW4ndCB5b3Ugc2ltcGx5IGRvIHlvdXIgY2hlY2tzOgo+Pgo+PiAJc21lX2FjdGl2ZSgp
-ICYmIGlzX2tkdW1wX2tlcm5lbCgpCj4+Cj4+IGhlcmUgc28gdGhhdCBfX2lvcmVtYXBfY2FsbGVy
-KCkgY2FuIGF1dG9tYXRpY2FsbHkgY2hvb3NlIHRoZSBwcm9wZXIKPj4gcGdwcm90IHZhbHVlIHdo
-ZW4gaW9yZW1hcHBpbmcgdGhlIG1lbW9yeSBpbiB0aGUga2R1bXAga2VybmVsPwo+Pgo+PiBBbmQg
-dGhpcyB3YXkgdGhlIGNhbGxlcnMgZG9uJ3QgZXZlbiBoYXZlIHRvIGNhcmUgd2hldGhlciB0aGUg
-bWVtb3J5IGlzCj4+IGVuY3J5cHRlZCBvciBub3Q/Cj4+Cj4gVGhhbmsgeW91LCBCb3Jpcy4gSSdt
-IHZlcnkgZ2xhZCB0byByZWFkIHlvdXIgY29tbWVudHMuIFRoYXQncyBhIGdvb2QgaWRlYSwgYnV0
-IGl0IGhhcyBzb21lCj4gdW5lbmNyeXB0ZWQgbWVtb3J5IGluIGtkdW1wIG1vZGUsIGZvciBleGFt
-cGxlLCB0aGUgZWxmY29yZWhkci4gSW4gZmFjdCwgdGhlIGVsZmNvcmVoZHIgYW5kCj4gbm90ZXMg
-Y2FsbCB0aGUgc2FtZSBmdW5jdGlvbihyZWFkX2Zyb21fb2xkbWVtLT5pb3JlbWFwX2NhY2hlKSwg
-aW4gdGhpcyBjYXNlLCBpdCBpcyB2ZXJ5Cj4gZGlmZmljdWx0IHRvIHByb3Blcmx5IHJlbWFwIHRo
-ZSBtZW1vcnkgaWYgdGhlIGNhbGxlciBkb24ndCBjYXJlIHdoZXRoZXIgdGhlIG1lbW9yeSBpcyBl
-bmNyeXB0ZWQuCj4gCkhpLCBCb3JpcywKQWJvdXQgdGhpcywgbWF5YmUgSSBzaG91bGQgZGVzY3Jp
-YmUgdGhlIG1vcmUgZGV0YWlscy4KRm9yIGtkdW1wLCB0aGUgZWxmIGhlYWRlciBmaW5hbGx5IHVz
-ZSB0aGUgY3Jhc2gga2VybmVsIHJlc2VydmVkIG1lbW9yeSwgaXQgaXMgbm90IGFuIG9sZCBtZW1v
-cnkuCldoZW4gd2UgbG9hZCB0aGUgY3Jhc2gga2VybmVsIGltYWdlLCBrZXhlYyB0b29scyB3aWxs
-IGNvcHkgdGhlIGVsZiBoZWFkZXIgZnJvbSBlbmNyeXB0ZWQgbWVtb3J5CnJlZ2lvbiB0byB1bmVu
-Y3J5cHRlZCBtZW1vcnkgcmVnaW9uLCB3ZSBrbm93IHRoYXQgYSBwYWdlIG9mIG1lbW9yeSB0aGF0
-IGlzIG1hcmtlZCBlbmNyeXB0ZWQgd2lsbApiZSBhdXRvbWF0aWNhbGx5IGRlY3J5cHRlZCB3aGVu
-IHJlYWQgZnJvbSBEUkFNIGlmIFNNRSBpcyBlbmFibGVkLiBUaGlzIG9wZXJhdGlvbiBtYWtlIHVz
-IGdldCB0aGUKcGxhaW50ZXh0LCB0aGF0IGlzIHRvIHNheSwgaXQgYmVjb21lcyB1bmVuY3J5cHRl
-ZCBkYXRhLCBzbyB3ZSBuZWVkIHRvIHJlbWFwIHRoZSBlbGZjb3JlaGRyIGluIHVuLQplbmNyeXB0
-ZWQgbWFubmVycyBpbiBrZHVtcCBrZXJuZWwsIGJ1dCBlbGYgbm90ZXMgdXNlIGFuIG9sZCBtZW1v
-cnksIGl0IGlzIGVuY3J5cHRlZC4gVGhhdCBpcyB0aGUKcmVhbCByZWFzb24gd2h5IHdlIG5lZWQg
-dG8gdXNlIHRoZSBkaWZmZXJlbnQgZnVuY3Rpb25zKGlvcmVtYXBfY2FjaGUvaW9yZW1hcF9lbmNy
-eXB0ZWQpLgpJZiB0aGUgZWxmIGNvcmUgaGVhZGVyIGlzIHNldCB0byBiZSBlbmNyeXB0ZWQsIHdl
-IGNvdWxkIG5lZWQgdG8ga25vdyB3aGljaCBwYXJ0IG9mIG1lbW9yeSBpcwphbGxvY2F0ZWQgZm9y
-IHRoZSBlbGZjb3JlaGRyIGluIGtlcm5lbCBzcGFjZSBhbmQgY2hhbmdlIHRoZSBwYWdlIGF0dHJp
-YnV0ZSwgbWF5YmUgd2hpY2ggd2lsbCBoYXZlCnRvIG1vZGlmeSBhbm90aGVyIGNvbW1vbiBjb2Rl
-cyBhbmQga2V4ZWMtdG9vbHMuCgpJZiB5b3UgYWdyZWUgd2l0aCBteSBleHBsYW5hdGlvbiwgaSB3
-aWxsIGFkZCB0aGVtIHRvIHBhdGNoIGxvZyBhbmQgYWxzbyBwb3N0IGl0IGFnYWluLgpXZWxjb21l
-IHRvIHJldmlldyBteSBwYXRjaGVzIGFnYWluLgoKVGhhbmtzLgpMaWFuYm8KCj4gUmVnYXJkcywK
-PiBMaWFuYm8+Pj4gIAkJcHJvdCA9IHBncHJvdF9lbmNyeXB0ZWQocHJvdCk7Cj4+PiAgCj4+PiAg
-CXN3aXRjaCAocGNtKSB7Cj4+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+On Tue, Jul 03, 2018 at 06:58:14PM +0800, lijiang wrote:
+> For kdump, the elf header finally use the crash kernel reserved memory, it is not an old memory.
+
+Lamme repeat my suggestion:
+
+So beef up the logic in __ioremap_caller() to figure out based on the
+address whether to access the memory encrypted or not. In general, you
+can deduce, based on the region you're mapping, whether you need to map
+in encrypted or decrypted.
+
+For example:
+
+        addr = elfcorehdr_addr;
+
+        /* Read Elf header */
+        rc = elfcorehdr_read((char *)&ehdr, sizeof(Elf64_Ehdr), &addr);
+        if (rc < 0)
+                return rc;
+
+elfcorehdr_addr has that elfcorehdr address. So you can check which address
+you're mapping and do:
+
+__ioremap_caller:
+
+...
+	prot = __ioremap_compute_prot(...);
+
+and that __ioremap_compute_prot() function which you will add will have
+all that logic to determine encrypted or not by comparing addresses etc.
+
+Does that make more sense?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
