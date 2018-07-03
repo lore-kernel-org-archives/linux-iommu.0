@@ -1,60 +1,50 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
-	AMD sme enabled
-Date: Tue, 3 Jul 2018 10:17:19 +0800
-Message-ID: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
-References: <20180702072639.10110-1-lijiang@redhat.com>
-	<20180702072639.10110-2-lijiang@redhat.com>
-	<20180702101451.GB28730@zn.tnic>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH] iommu/amd: fix missing tag from dev_err message
+Date: Tue,  3 Jul 2018 07:40:05 +0100
+Message-ID: <20180703064005.18908-1-colin.king@canonical.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180702101451.GB28730-Jj63ApZU6fQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwN+aciDAy5pelIDE4OjE0LCBCb3Jpc2xhdiBQZXRrb3Yg5YaZ6YGTOgo+IE9u
-IE1vbiwgSnVsIDAyLCAyMDE4IGF0IDAzOjI2OjM1UE0gKzA4MDAsIExpYW5ibyBKaWFuZyB3cm90
-ZToKPj4gQEAgLTEzMSw3ICsxMzIsOCBAQCBzdGF0aWMgdm9pZCBfX2lvcmVtYXBfY2hlY2tfbWVt
-KHJlc291cmNlX3NpemVfdCBhZGRyLCB1bnNpZ25lZCBsb25nIHNpemUsCj4+ICAgKiBjYWxsZXIg
-c2hvdWxkbid0IG5lZWQgdG8ga25vdyB0aGF0IHNtYWxsIGRldGFpbC4KPj4gICAqLwo+PiAgc3Rh
-dGljIHZvaWQgX19pb21lbSAqX19pb3JlbWFwX2NhbGxlcihyZXNvdXJjZV9zaXplX3QgcGh5c19h
-ZGRyLAo+PiAtCQl1bnNpZ25lZCBsb25nIHNpemUsIGVudW0gcGFnZV9jYWNoZV9tb2RlIHBjbSwg
-dm9pZCAqY2FsbGVyKQo+PiArCQl1bnNpZ25lZCBsb25nIHNpemUsIGVudW0gcGFnZV9jYWNoZV9t
-b2RlIHBjbSwKPj4gKwkJdm9pZCAqY2FsbGVyLCBib29sIGVuY3J5cHRlZCkKPiAKPiBTbyBpbnN0
-ZWFkIG9mIHNwcmlua2xpbmcgdGhhdCBAZW5jcnlwdGVkIGFyZ3VtZW50IGV2ZXJ5d2hlcmUgYW5k
-IHRoZW4KPiBzZXR0aW5nIGl0IGJhc2VkIG9uIHNtZV9hY3RpdmUoKSAuLi4KPiAKPj4gIHsKPj4g
-IAl1bnNpZ25lZCBsb25nIG9mZnNldCwgdmFkZHI7Cj4+ICAJcmVzb3VyY2Vfc2l6ZV90IGxhc3Rf
-YWRkcjsKPj4gQEAgLTE5OSw3ICsyMDEsNyBAQCBzdGF0aWMgdm9pZCBfX2lvbWVtICpfX2lvcmVt
-YXBfY2FsbGVyKHJlc291cmNlX3NpemVfdCBwaHlzX2FkZHIsCj4+ICAJICogcmVzdWx0aW5nIG1h
-cHBpbmcuCj4+ICAJICovCj4+ICAJcHJvdCA9IFBBR0VfS0VSTkVMX0lPOwo+PiAtCWlmIChzZXZf
-YWN0aXZlKCkgJiYgbWVtX2ZsYWdzLmRlc2Nfb3RoZXIpCj4+ICsJaWYgKChzZXZfYWN0aXZlKCkg
-JiYgbWVtX2ZsYWdzLmRlc2Nfb3RoZXIpIHx8IGVuY3J5cHRlZCkKPiAKPiAuLi4gd2h5IGNhbid0
-IHlvdSBzaW1wbHkgZG8geW91ciBjaGVja3M6Cj4gCj4gCXNtZV9hY3RpdmUoKSAmJiBpc19rZHVt
-cF9rZXJuZWwoKQo+IAo+IGhlcmUgc28gdGhhdCBfX2lvcmVtYXBfY2FsbGVyKCkgY2FuIGF1dG9t
-YXRpY2FsbHkgY2hvb3NlIHRoZSBwcm9wZXIKPiBwZ3Byb3QgdmFsdWUgd2hlbiBpb3JlbWFwcGlu
-ZyB0aGUgbWVtb3J5IGluIHRoZSBrZHVtcCBrZXJuZWw/Cj4gCj4gQW5kIHRoaXMgd2F5IHRoZSBj
-YWxsZXJzIGRvbid0IGV2ZW4gaGF2ZSB0byBjYXJlIHdoZXRoZXIgdGhlIG1lbW9yeSBpcwo+IGVu
-Y3J5cHRlZCBvciBub3Q/Cj4gClRoYW5rIHlvdSwgQm9yaXMuIEknbSB2ZXJ5IGdsYWQgdG8gcmVh
-ZCB5b3VyIGNvbW1lbnRzLiBUaGF0J3MgYSBnb29kIGlkZWEsIGJ1dCBpdCBoYXMgc29tZQp1bmVu
-Y3J5cHRlZCBtZW1vcnkgaW4ga2R1bXAgbW9kZSwgZm9yIGV4YW1wbGUsIHRoZSBlbGZjb3JlaGRy
-LiBJbiBmYWN0LCB0aGUgZWxmY29yZWhkciBhbmQKbm90ZXMgY2FsbCB0aGUgc2FtZSBmdW5jdGlv
-bihyZWFkX2Zyb21fb2xkbWVtLT5pb3JlbWFwX2NhY2hlKSwgaW4gdGhpcyBjYXNlLCBpdCBpcyB2
-ZXJ5CmRpZmZpY3VsdCB0byBwcm9wZXJseSByZW1hcCB0aGUgbWVtb3J5IGlmIHRoZSBjYWxsZXIg
-ZG9uJ3QgY2FyZSB3aGV0aGVyIHRoZSBtZW1vcnkgaXMgZW5jcnlwdGVkLgoKUmVnYXJkcywKTGlh
-bmJvCj4+ICAJCXByb3QgPSBwZ3Byb3RfZW5jcnlwdGVkKHByb3QpOwo+PiAgCj4+ICAJc3dpdGNo
-IChwY20pIHsKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+From: Colin Ian King <colin.king@canonical.com>
+
+Currently tag is being assigned but not used, it is missing from
+the dev_err message, so add it in.
+
+Cleans up clang warning:
+warning: variable 'tag' set but not used [-Wunused-but-set-variable]
+
+Fixes: e7f63ffc1bf1 ("iommu/amd: Update logging information for new event type")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+
+---
+This is a re-working of an earlier incorrect fix that I posted
+yesterday ("iommu/amd: remove redundant variable tag")
+
+---
+ drivers/iommu/amd_iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 596b95c50051..6adab2690793 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -616,9 +616,9 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 		pasid = ((event[0] >> 16) & 0xFFFF)
+ 			| ((event[1] << 6) & 0xF0000);
+ 		tag = event[1] & 0x03FF;
+-		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x tag=0x%03x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+-			pasid, address, flags);
++			pasid, address, flags, tag);
+ 		break;
+ 	default:
+ 		dev_err(dev, "UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+-- 
+2.17.1
