@@ -1,82 +1,204 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 7/7 v5] arm64: dts: ls208xa: comply with the iommu map
-	binding for fsl_mc
-Date: Tue, 3 Jul 2018 17:35:42 +0100
-Message-ID: <88626adc-6f5b-86df-88a0-620d258f8053@arm.com>
-References: <1526824191-7000-1-git-send-email-nipun.gupta@nxp.com>
-	<1526824191-7000-8-git-send-email-nipun.gupta@nxp.com>
+From: Joe Perches <joe@perches.com>
+Subject: Re: [PATCH] iommu/amd: fix missing tag from dev_err message
+Date: Tue, 03 Jul 2018 09:38:27 -0700
+Message-ID: <4b05b03ac6c3537d06754562efd477ba75413b62.camel@perches.com>
+References: <20180703064005.18908-1-colin.king@canonical.com>
+         <6763ec382f8d629f5f356f4cc023f20c2f76b26a.camel@perches.com>
+         <d27fe634-89cf-7d9a-3e3d-a2baafabf0be@amd.com>
+         <d93bfa0f52d8907019b16336645986cd339ebf75.camel@perches.com>
+         <f3e15437-68c1-58eb-bc34-93fa70e50dc9@amd.com>
+         <6fbcf273-bc0a-5dbd-fa0e-a7f656c4ccbc@canonical.com>
+         <dc5d5fc0-0c4b-3728-2dba-987840e7c1fc@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1526824191-7000-8-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, laurentiu.tudor-3arQi8VN3Tc@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <dc5d5fc0-0c4b-3728-2dba-987840e7c1fc@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Hook, Gary" <ghook@amd.com>, Colin Ian King <colin.king@canonical.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/05/18 14:49, Nipun Gupta wrote:
-> fsl-mc bus support the new iommu-map property. Comply to this binding
-> for fsl_mc bus.
+On Tue, 2018-07-03 at 11:27 -0500, Hook, Gary wrote:
+> On 7/3/2018 11:24 AM, Colin Ian King wrote:
+> > On 03/07/18 17:21, Hook, Gary wrote:
+> > > On 7/3/2018 10:55 AM, Joe Perches wrote:
+> > > > On Tue, 2018-07-03 at 07:56 -0500, Gary R Hook wrote:
+> > > > > On 07/03/2018 05:07 AM, Joe Perches wrote:
+> > > > > > On Tue, 2018-07-03 at 07:40 +0100, Colin King wrote:
+> > > > > > > Currently tag is being assigned but not used, it is missing from
+> > > > > > > the dev_err message, so add it in.
+> > > > > > > 
+> > > > > > > Cleans up clang warning:
+> > > > > > > warning: variable 'tag' set but not used [-Wunused-but-set-variable]
+> > > > > > 
+> > > > > > []
+> > > > > > > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> > > > > > 
+> > > > > > []
+> > > > > > > @@ -616,9 +616,9 @@ static void iommu_print_event(struct amd_iommu
+> > > > > > > *iommu, void *__evt)
+> > > > > > >             pasid = ((event[0] >> 16) & 0xFFFF)
+> > > > > > >                 | ((event[1] << 6) & 0xF0000);
+> > > > > > >             tag = event[1] & 0x03FF;
+> > > > > > > -        dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x
+> > > > > > > pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+> > > > > > > +        dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x
+> > > > > > > pasid=0x%05x address=0x%016llx flags=0x%04x tag=0x%03x]\n",
+> > > > > > >                 PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+> > > > > > > -            pasid, address, flags);
+> > > > > > > +            pasid, address, flags, tag);
+> > > > > > 
+> > > > > > Seems to have a superfluous ] that should be removed.
+> > > > > 
+> > > > > Yeah, I pretty much messed up all of the log messages in that function.
+> > > > > My apologies. I'll create a patch for that problem; it shouldn't be
+> > > > > fixed here.
+> > > 
+> > > Well, no, I misremembered. The extraneous square brace has been there
+> > > forever. Needs fixin', though.
+> > > 
+> > 
+> > The opening square bracket is much earlier:
+> > 
+> > dev_err(dev, "AMD-Vi: Event logged [");
+> > 
+> > ..and all the subsequent dev_err messages have the trailing square bracket.
 > 
-> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> Reviewed-by: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
-> ---
->   arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
+> Gah! Mystery solved. I'd forgotten about that.
 > 
-> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-> index 137ef4d..6010505 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-> @@ -184,6 +184,7 @@
->   		#address-cells = <2>;
->   		#size-cells = <2>;
->   		ranges;
-> +		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
->   
->   		clockgen: clocking@1300000 {
->   			compatible = "fsl,ls2080a-clockgen";
-> @@ -357,6 +358,8 @@
->   			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
->   			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
->   			msi-parent = <&its>;
-> +			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
-> +			dma-coherent;
->   			#address-cells = <3>;
->   			#size-cells = <1>;
->   
-> @@ -460,6 +463,8 @@
->   			compatible = "arm,mmu-500";
->   			reg = <0 0x5000000 0 0x800000>;
->   			#global-interrupts = <12>;
-> +			#iommu-cells = <1>;
-> +			stream-match-mask = <0x7C00>;
->   			interrupts = <0 13 4>, /* global secure fault */
->   				     <0 14 4>, /* combined secure interrupt */
->   				     <0 15 4>, /* global non-secure fault */
-> @@ -502,7 +507,6 @@
->   				     <0 204 4>, <0 205 4>,
->   				     <0 206 4>, <0 207 4>,
->   				     <0 208 4>, <0 209 4>;
-> -			mmu-masters = <&fsl_mc 0x300 0>;
-
-Since we're in here, is the SMMU itself also coherent? If it is, you 
-probably want to say so and avoid the overhead of pointlessly cleaning 
-cache lines on every page table update.
-
-Robin.
-
->   		};
->   
->   		dspi: dspi@2100000 {
+> "Never mind."
 > 
+
+It stems from the misconversion from printk to dev_err
+
+The initial dev_err is fine but all the dev_err uses
+in the switch/case should use pr_cont, not dev_err
+
+(there's a suggested patch below this commit reference)
+
+---
+>From 90ca3859f5ea90050d00e695355934b37357e7bb Mon Sep 17 00:00:00 2001
+From: Gary R Hook <gary.hook@amd.com>
+Date: Thu, 8 Mar 2018 18:34:41 -0600
+Subject: [PATCH] iommu/amd: Use dev_err to send events to the system log
+
+Remove printk and use a more preferable error logging function.
+
+Signed-off-by: Gary R Hook <gary.hook@amd.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/amd_iommu.c | 55 ++++++++++++++++++++++++++++---------------------------
+ 1 file changed, 28 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 997a947ddc3b..4cd19f93ca15 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -547,6 +547,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+ 
+ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ {
++       struct device *dev = iommu->iommu.dev;
+        int type, devid, domid, flags;
+        volatile u32 *event = __evt;
+        int count = 0;
+@@ -573,53 +574,53 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+                amd_iommu_report_page_fault(devid, domid, address, flags);
+                return;
+        } else {
+-               printk(KERN_ERR "AMD-Vi: Event logged [");
++               dev_err(dev, "AMD-Vi: Event logged [");
+        }
+ 
+        switch (type) {
+        case EVENT_TYPE_ILL_DEV:
+-               printk("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
+-                      "address=0x%016llx flags=0x%04x]\n",
+-                      PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+-                      address, flags);
++               dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x "
++                       "address=0x%016llx flags=0x%04x]\n",
++                       PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
++                       address, flags);
+
+etc...
+
+so this could be:
+
+---
+ drivers/iommu/amd_iommu.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 596b95c50051..f78cfa094301 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -572,43 +572,42 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 	if (type == EVENT_TYPE_IO_FAULT) {
+ 		amd_iommu_report_page_fault(devid, pasid, address, flags);
+ 		return;
+-	} else {
+-		dev_err(dev, "AMD-Vi: Event logged [");
+ 	}
+ 
++	dev_err(dev, "AMD-Vi: Event logged [");
++
+ 	switch (type) {
+ 	case EVENT_TYPE_ILL_DEV:
+-		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		pr_cont("ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+-		dev_err(dev, "DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+-			"address=0x%016llx flags=0x%04x]\n",
++		pr_cont("DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+-		dev_err(dev, "PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x address=0x%016llx flags=0x%04x]\n",
++		pr_cont("PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+-		dev_err(dev, "ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
++		pr_cont("ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+-		dev_err(dev, "COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
++		pr_cont("COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+-		dev_err(dev, "IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
++		pr_cont("IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+-		dev_err(dev, "INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		pr_cont("INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+@@ -616,12 +615,12 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 		pasid = ((event[0] >> 16) & 0xFFFF)
+ 			| ((event[1] << 6) & 0xF0000);
+ 		tag = event[1] & 0x03FF;
+-		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		pr_cont("INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+ 	default:
+-		dev_err(dev, "UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
++		pr_cont("UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+ 			event[0], event[1], event[2], event[3]);
+ 	}
+ 
