@@ -1,57 +1,55 @@
-From: Borislav Petkov <bp@alien8.de>
+From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
- AMD sme enabled
-Date: Tue, 3 Jul 2018 13:14:28 +0200
-Message-ID: <20180703111428.GB5748@zn.tnic>
+	AMD sme enabled
+Date: Tue, 3 Jul 2018 19:25:21 +0800
+Message-ID: <55b86851-4978-9289-8a1f-012c6114ec9e@redhat.com>
 References: <20180702072639.10110-1-lijiang@redhat.com>
- <20180702072639.10110-2-lijiang@redhat.com>
- <20180702101451.GB28730@zn.tnic>
- <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
- <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
+	<20180702072639.10110-2-lijiang@redhat.com>
+	<20180702101451.GB28730@zn.tnic>
+	<4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+	<20180703093924.GA5748@zn.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: lijiang <lijiang@redhat.com>
-Cc: linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, dyoung@redhat.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, bhe@redhat.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180703093924.GA5748-Jj63ApZU6fQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 03, 2018 at 06:58:14PM +0800, lijiang wrote:
-> For kdump, the elf header finally use the crash kernel reserved memory, it is not an old memory.
-
-Lamme repeat my suggestion:
-
-So beef up the logic in __ioremap_caller() to figure out based on the
-address whether to access the memory encrypted or not. In general, you
-can deduce, based on the region you're mapping, whether you need to map
-in encrypted or decrypted.
-
-For example:
-
-        addr = elfcorehdr_addr;
-
-        /* Read Elf header */
-        rc = elfcorehdr_read((char *)&ehdr, sizeof(Elf64_Ehdr), &addr);
-        if (rc < 0)
-                return rc;
-
-elfcorehdr_addr has that elfcorehdr address. So you can check which address
-you're mapping and do:
-
-__ioremap_caller:
-
-...
-	prot = __ioremap_compute_prot(...);
-
-and that __ioremap_compute_prot() function which you will add will have
-all that logic to determine encrypted or not by comparing addresses etc.
-
-Does that make more sense?
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+5ZyoIDIwMTjlubQwN+aciDAz5pelIDE3OjM5LCBCb3Jpc2xhdiBQZXRrb3Yg5YaZ6YGTOgo+IE9u
+IFR1ZSwgSnVsIDAzLCAyMDE4IGF0IDEwOjE3OjE5QU0gKzA4MDAsIGxpamlhbmcgd3JvdGU6Cj4+
+IGZvciBleGFtcGxlLCB0aGUgZWxmY29yZWhkci4gSW4gZmFjdCwgdGhlIGVsZmNvcmVoZHIgYW5k
+IG5vdGVzCj4gCj4gWW91IG1lYW4gdGhpcz8KPiAKPiAgc3NpemVfdCBfX3dlYWsgZWxmY29yZWhk
+cl9yZWFkX25vdGVzKGNoYXIgKmJ1Ziwgc2l6ZV90IGNvdW50LCB1NjQgKnBwb3MpCj4gIHsKPiAt
+ICAgICAgIHJldHVybiByZWFkX2Zyb21fb2xkbWVtKGJ1ZiwgY291bnQsIHBwb3MsIDApOwo+ICsg
+ICAgICAgcmV0dXJuIHJlYWRfZnJvbV9vbGRtZW0oYnVmLCBjb3VudCwgcHBvcywgMCwgc21lX2Fj
+dGl2ZSgpKTsKPiAKPiBUaGF0IGxvb2tzIGVuY3J5cHRlZCB0byBtZS4KPiAKVGhlIGVsZiBub3Rl
+cyBpcyBhbiBvbGQgbWVtb3J5LCBpdCBpcyBlbmNyeXB0ZWQuCgpCdXQgdGhlIGVsZiBoZWFkZXIg
+aXMgYSBjcmFzaCBrZXJuZWwgcmVzZXJ2ZWQgbWVtb3J5LCB3aGljaCBpcyB1bmVuY3J5cHRlZC4K
+IHNzaXplX3QgX193ZWFrIGVsZmNvcmVoZHJfcmVhZChjaGFyICpidWYsIHNpemVfdCBjb3VudCwg
+dTY0ICpwcG9zKQogewotCXJldHVybiByZWFkX2Zyb21fb2xkbWVtKGJ1ZiwgY291bnQsIHBwb3Ms
+IDApOworCXJldHVybiByZWFkX2Zyb21fb2xkbWVtKGJ1ZiwgY291bnQsIHBwb3MsIDAsIGZhbHNl
+KTsKIH0KClRoZXkgY2FsbCB0aGUgc2FtZSBmdW5jdGlvbihyZWFkX2Zyb21fb2xkbWVtLT5pb3Jl
+bWFwX2NhY2hlKSwgc28gaXQgaXMgaGFyZCB0bwpwcm9wZXJseSByZW1hcCB0aGUgbWVtb3J5IGlm
+IHdlIGRvbid0IHVzZSB0aGUgcGFyYW1ldGVyIHRvIGRpc3Rpbmd1aXNoLiAKClJlZ2FyZHMsCkxp
+YW5ibwo+PiBjYWxsIHRoZSBzYW1lIGZ1bmN0aW9uKHJlYWRfZnJvbV9vbGRtZW0tPmlvcmVtYXBf
+Y2FjaGUpLCBpbiB0aGlzIGNhc2UsCj4+IGl0IGlzIHZlcnkgZGlmZmljdWx0IHRvIHByb3Blcmx5
+IHJlbWFwIHRoZSBtZW1vcnkgaWYgdGhlIGNhbGxlciBkb24ndAo+PiBjYXJlIHdoZXRoZXIgdGhl
+IG1lbW9yeSBpcyBlbmNyeXB0ZWQuCj4gCj4gU28gYmVlZiB1cCB0aGUgbG9naWMgaW4gX19pb3Jl
+bWFwX2NhbGxlcigpIHRvIGZpZ3VyZSBvdXQgYmFzZWQgb24gdGhlCj4gYWRkcmVzcyB3aGV0aGVy
+IHRvIGFjY2VzcyB0aGUgbWVtb3J5IGVuY3J5cHRlZCBvciBub3QuIFlvdSBjYW4gZmluZCBvdXQK
+PiB0aGUgZWxmY29yZWhkciBhZGRyZXNzIGluIHRoZSBjYXB0dXJlIGtlcm5lbC4KPiAKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
