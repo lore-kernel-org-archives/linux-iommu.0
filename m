@@ -1,13 +1,16 @@
-From: Gary R Hook <ghook-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: remove redundant variable tag
-Date: Mon, 2 Jul 2018 15:21:28 -0500
-Message-ID: <57a38891-d811-17af-a544-cfeea9476160@amd.com>
-References: <20180702163752.16418-1-colin.king@canonical.com>
+From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
+	AMD sme enabled
+Date: Tue, 3 Jul 2018 10:17:19 +0800
+Message-ID: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+References: <20180702072639.10110-1-lijiang@redhat.com>
+	<20180702072639.10110-2-lijiang@redhat.com>
+	<20180702101451.GB28730@zn.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180702163752.16418-1-colin.king-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
+In-Reply-To: <20180702101451.GB28730-Jj63ApZU6fQ@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,46 +21,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Colin King <colin.king-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/02/2018 11:37 AM, Colin King wrote:
-> From: Colin Ian King <colin.king-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-> 
-> Variable tag is being assigned but is never used hence it is
-> redundant and can be removed.
-> 
-> Cleans up clang warning:
-> warning: variable 'tag' set but not used [-Wunused-but-set-variable]
-> 
-> Signed-off-by: Colin Ian King <colin.king-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>
-> ---
->   drivers/iommu/amd_iommu.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 596b95c50051..c6aed1b088e9 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -547,7 +547,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
->   static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
->   {
->   	struct device *dev = iommu->iommu.dev;
-> -	int type, devid, pasid, flags, tag;
-> +	int type, devid, pasid, flags;
->   	volatile u32 *event = __evt;
->   	int count = 0;
->   	u64 address;
-> @@ -615,7 +615,6 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
->   	case EVENT_TYPE_INV_PPR_REQ:
->   		pasid = ((event[0] >> 16) & 0xFFFF)
->   			| ((event[1] << 6) & 0xF0000);
-> -		tag = event[1] & 0x03FF;
->   		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
->   			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
->   			pasid, address, flags);
-> 
-
-If it's all the same to you, the intent was to print the tag as well. 
-Could we add that to the message, rather than removing the variable, please?
+5ZyoIDIwMTjlubQwN+aciDAy5pelIDE4OjE0LCBCb3Jpc2xhdiBQZXRrb3Yg5YaZ6YGTOgo+IE9u
+IE1vbiwgSnVsIDAyLCAyMDE4IGF0IDAzOjI2OjM1UE0gKzA4MDAsIExpYW5ibyBKaWFuZyB3cm90
+ZToKPj4gQEAgLTEzMSw3ICsxMzIsOCBAQCBzdGF0aWMgdm9pZCBfX2lvcmVtYXBfY2hlY2tfbWVt
+KHJlc291cmNlX3NpemVfdCBhZGRyLCB1bnNpZ25lZCBsb25nIHNpemUsCj4+ICAgKiBjYWxsZXIg
+c2hvdWxkbid0IG5lZWQgdG8ga25vdyB0aGF0IHNtYWxsIGRldGFpbC4KPj4gICAqLwo+PiAgc3Rh
+dGljIHZvaWQgX19pb21lbSAqX19pb3JlbWFwX2NhbGxlcihyZXNvdXJjZV9zaXplX3QgcGh5c19h
+ZGRyLAo+PiAtCQl1bnNpZ25lZCBsb25nIHNpemUsIGVudW0gcGFnZV9jYWNoZV9tb2RlIHBjbSwg
+dm9pZCAqY2FsbGVyKQo+PiArCQl1bnNpZ25lZCBsb25nIHNpemUsIGVudW0gcGFnZV9jYWNoZV9t
+b2RlIHBjbSwKPj4gKwkJdm9pZCAqY2FsbGVyLCBib29sIGVuY3J5cHRlZCkKPiAKPiBTbyBpbnN0
+ZWFkIG9mIHNwcmlua2xpbmcgdGhhdCBAZW5jcnlwdGVkIGFyZ3VtZW50IGV2ZXJ5d2hlcmUgYW5k
+IHRoZW4KPiBzZXR0aW5nIGl0IGJhc2VkIG9uIHNtZV9hY3RpdmUoKSAuLi4KPiAKPj4gIHsKPj4g
+IAl1bnNpZ25lZCBsb25nIG9mZnNldCwgdmFkZHI7Cj4+ICAJcmVzb3VyY2Vfc2l6ZV90IGxhc3Rf
+YWRkcjsKPj4gQEAgLTE5OSw3ICsyMDEsNyBAQCBzdGF0aWMgdm9pZCBfX2lvbWVtICpfX2lvcmVt
+YXBfY2FsbGVyKHJlc291cmNlX3NpemVfdCBwaHlzX2FkZHIsCj4+ICAJICogcmVzdWx0aW5nIG1h
+cHBpbmcuCj4+ICAJICovCj4+ICAJcHJvdCA9IFBBR0VfS0VSTkVMX0lPOwo+PiAtCWlmIChzZXZf
+YWN0aXZlKCkgJiYgbWVtX2ZsYWdzLmRlc2Nfb3RoZXIpCj4+ICsJaWYgKChzZXZfYWN0aXZlKCkg
+JiYgbWVtX2ZsYWdzLmRlc2Nfb3RoZXIpIHx8IGVuY3J5cHRlZCkKPiAKPiAuLi4gd2h5IGNhbid0
+IHlvdSBzaW1wbHkgZG8geW91ciBjaGVja3M6Cj4gCj4gCXNtZV9hY3RpdmUoKSAmJiBpc19rZHVt
+cF9rZXJuZWwoKQo+IAo+IGhlcmUgc28gdGhhdCBfX2lvcmVtYXBfY2FsbGVyKCkgY2FuIGF1dG9t
+YXRpY2FsbHkgY2hvb3NlIHRoZSBwcm9wZXIKPiBwZ3Byb3QgdmFsdWUgd2hlbiBpb3JlbWFwcGlu
+ZyB0aGUgbWVtb3J5IGluIHRoZSBrZHVtcCBrZXJuZWw/Cj4gCj4gQW5kIHRoaXMgd2F5IHRoZSBj
+YWxsZXJzIGRvbid0IGV2ZW4gaGF2ZSB0byBjYXJlIHdoZXRoZXIgdGhlIG1lbW9yeSBpcwo+IGVu
+Y3J5cHRlZCBvciBub3Q/Cj4gClRoYW5rIHlvdSwgQm9yaXMuIEknbSB2ZXJ5IGdsYWQgdG8gcmVh
+ZCB5b3VyIGNvbW1lbnRzLiBUaGF0J3MgYSBnb29kIGlkZWEsIGJ1dCBpdCBoYXMgc29tZQp1bmVu
+Y3J5cHRlZCBtZW1vcnkgaW4ga2R1bXAgbW9kZSwgZm9yIGV4YW1wbGUsIHRoZSBlbGZjb3JlaGRy
+LiBJbiBmYWN0LCB0aGUgZWxmY29yZWhkciBhbmQKbm90ZXMgY2FsbCB0aGUgc2FtZSBmdW5jdGlv
+bihyZWFkX2Zyb21fb2xkbWVtLT5pb3JlbWFwX2NhY2hlKSwgaW4gdGhpcyBjYXNlLCBpdCBpcyB2
+ZXJ5CmRpZmZpY3VsdCB0byBwcm9wZXJseSByZW1hcCB0aGUgbWVtb3J5IGlmIHRoZSBjYWxsZXIg
+ZG9uJ3QgY2FyZSB3aGV0aGVyIHRoZSBtZW1vcnkgaXMgZW5jcnlwdGVkLgoKUmVnYXJkcywKTGlh
+bmJvCj4+ICAJCXByb3QgPSBwZ3Byb3RfZW5jcnlwdGVkKHByb3QpOwo+PiAgCj4+ICAJc3dpdGNo
+IChwY20pIHsKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
