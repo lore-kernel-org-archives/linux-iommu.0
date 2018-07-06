@@ -1,50 +1,73 @@
-From: Dmitry Safonov <dima@arista.com>
-Subject: Re: [RFC 0/3] iommu/iova: Unsafe locking in find_iova()
-Date: Fri, 06 Jul 2018 15:10:47 +0100
-Message-ID: <1530886247.3205.53.camel@arista.com>
-References: <20180621180823.805-1-dima@arista.com>
-         <20180706131611.h3w2kdinmjguikgo@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 1/2] dma-mapping: Clean up dma_set_*mask() hooks
+Date: Fri, 6 Jul 2018 15:20:34 +0100
+Message-ID: <33175bb1-d198-a9fd-ff37-e8c4132f47f8@arm.com>
+References: <55ac9550c311f056dcfeed9b2c8265375f17b155.1530726467.git.robin.murphy@arm.com>
+	<20180705193738.GB28905@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180706131611.h3w2kdinmjguikgo@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, Dmitry Safonov <0x7f454c46@gmail.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180705193738.GB28905-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2018-07-06 at 15:16 +0200, Joerg Roedel wrote:
-> On Thu, Jun 21, 2018 at 07:08:20PM +0100, Dmitry Safonov wrote:
-> > find_iova() looks to be using a bad locking practice: it locks the
-> > returned iova only for the search time.  And looking in code, the
-> > element can be removed from the tree and freed under rbtree lock.
-> > That
-> > happens during memory hot-unplug and cleanup on module
-> > removal.  Here
-> > I cleanup users of the function and delete it.
+On 05/07/18 20:37, Christoph Hellwig wrote:
+> On Wed, Jul 04, 2018 at 06:50:11PM +0100, Robin Murphy wrote:
+>> Arch-specific implementions for dma_set_{coherent_,}mask() currently
+>> rely on an inconsistent mix of arch-defined Kconfig symbols and macro
+>> overrides. Now that we have a nice centralised home for DMA API gubbins,
+>> let's consolidate these loose ends under consistent config options.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>
+>> Here's hoping the buildbot comes by to point out what I've inevitably
+>> missed, although I did check a cursory cross-compile of ppc64_defconfig
+>> to iron out the obvious howlers.
 > 
-> But this is only a problem if more than one code-path uses tries to
-> handle a given iova at the same time, no?
+> The patch looks sensible to me, although I was hoping to get rid of these
+> hooks in this or the next merge window as they are a horrible bad idea.
+> 
+>> The motivation here is that I'm looking at adding set_mask overrides
+>> for arm64, and having discovered a bit of a mess it seemed prudent to
+>> clean up before ingraining it any more.
+> 
+> What are you trying to do?  I really don't want to see more users of
+> the hooks as they are are a horribly bad idea.
 
-Yes, as far as I can see, there are code-paths which may try to handle
-it at the same time:
-o memory notifiers for hot-unplug (intel-iommu.c)
-o drivers unloading calls free_iova(), which in the result calls
-  find_iova()
-o I see at least one driver that frees iova during it's normal work
-  too: scif_rma.c:scif_free_window_offset()
+I really need to fix the ongoing problem we have where, due to funky 
+integrations, devices suffer some downstream addressing limit (described 
+by DT dma-ranges or ACPI IORT/_DMA) which we carefully set up in 
+dma_configure(), but then just gets lost when the driver probes and 
+innocently calls dma_set_mask() with something wider. I think it's 
+effectively the generalised case of the VIA 32-bit quirk, if I 
+understand that one correctly.
 
-So, I decided to fix the interface while it's not widely used instead
-of all callers.
-Looks worth for me even as it's all corner-cases like unplugging the
-memory.
+The approach that seemed to me to be safest is largely based on the one 
+proposed in a thread from ages ago[1]; namely to make dma_configure() 
+better at distinguishing firmware-specified masks from bus defaults, 
+capture the firmware mask in dev->archdata during arch_setup_dma_ops(), 
+then use the custom set_mask routines to ensure any subsequent updates 
+never exceed that. It doesn't seem possible to make this work robustly 
+without storing *some* additional per-device data, and for that archdata 
+is a lesser evil than struct device itself. Plus even though it's not 
+actually an arch-specific issue it feels like there's such a risk of 
+breaking other platforms that I'm reticent to even try handling it 
+entirely in generic code.
 
-Anyway, just found it while some college wrote a debug sysfs interface
-for iovas and used find_iova().
-So, if you think it's not worth to change - that's fine for me, but I
-thought I'll nip this in the bud, preventing other people to misuse it.
+Robin.
 
--- 
-Thanks,
-             Dmitry
+[1] 
+https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306507.html
