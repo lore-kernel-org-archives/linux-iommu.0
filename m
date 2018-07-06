@@ -1,16 +1,16 @@
-From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] dma-mapping: Relax warnings for per-device areas
-Date: Fri, 6 Jul 2018 16:19:28 +0200
-Message-ID: <20180706141926.GA2313@localhost.localdomain>
-References: <1f8262d206c6886072d04cc93454f6e3f812bd20.1530623284.git.robin.murphy@arm.com>
-	<20180705193613.GA28905@lst.de>
-	<5811ebe5-b2bd-efc1-bf54-a8f05432c4f8@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC 0/3] iommu/iova: Unsafe locking in find_iova()
+Date: Fri, 6 Jul 2018 17:13:21 +0200
+Message-ID: <20180706151321.sq25kc7otgjo3xvn@8bytes.org>
+References: <20180621180823.805-1-dima@arista.com>
+	<20180706131611.h3w2kdinmjguikgo@8bytes.org>
+	<1530886247.3205.53.camel@arista.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5811ebe5-b2bd-efc1-bf54-a8f05432c4f8-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1530886247.3205.53.camel-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,76 +20,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: JuergenUrban-Mmb7MZpHnFY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "Maciej W. Rozycki" <macro-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Cc: Dmitry Safonov <0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Fri, Jul 06, 2018 at 03:10:47PM +0100, Dmitry Safonov wrote:
+> Yes, as far as I can see, there are code-paths which may try to handle
+> it at the same time:
+> o memory notifiers for hot-unplug (intel-iommu.c)
+> o drivers unloading calls free_iova(), which in the result calls
+>   find_iova()
+> o I see at least one driver that frees iova during it's normal work
+>   too: scif_rma.c:scif_free_window_offset()
 
-On Fri, Jul 06, 2018 at 12:57:11PM +0100, Robin Murphy wrote:
-> On 05/07/18 20:36, Christoph Hellwig wrote:
-> > > -	BUG_ON(!ops);
-> > > -	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
-> > > -
-> > >   	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
-> > >   		return cpu_addr;
-> > > +	BUG_ON(!ops);
-> > > +	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
-> > 
-> > I think doing dma on a device without ops is completely broken no matter
-> > what you think of it, so I very much disagree with that part of the change.
-> > 
-> > Also while I don't think not having a dma mask is a good idea even for
-> > a driver purely using dma coherent pools.  If the pools really are on
-> > the device itself I can see why it might not matter, but for the case
-> > commonly used on some ARM SOCs where we just reserve memory for certain
-> > devices from a system pool it very much does matter.
-> > 
-> > There really is no good excuse to not set a coherent mask in the drivers.
-> 
-> Right, I was rather on the fence about this - on the one hand it is
-> objectively wrong per the API for drivers to call dma_alloc_coherent()
-> without a prior successful dma_set_coherent_mask() call, but then I thought
-> that in the case when they're *only* using it as a proxy for
-> dma_alloc_from_dev_coherent() and explicitly don't want regular allocations
-> from kernel memory to ever happen, then maybe it might be somewhat
-> reasonable. But indeed I hadn't really given enough thought to the
-> reserved-memory carveout case, where we definitely don't want to let a
-> legitimate warning be hidden on a developer's machine but hit by users with
-> different system configurations.
-> 
-> Fredrik, are you happy to fix up your driver to initialise a suitable mask
-> at probe time?
+Yeah, but the IOVAs freed in the memory notifiers are just the ones for
+the direct-mapped RMRR regions requested by firmware, not the IOVAs
+allocated by any driver, so I think this shouldn't be a problem.
 
-The driver currently only uses dma_declare_coherent_memory and
-dma_release_declared_memory. It allocates 256 KiB of DMA memory from the IOP
-(a MIPS R3000 I/O processor that is separate from the main MIPS R5900) with
 
-	iop_dma_addr = iop_alloc(size);
+Regards,
 
-and then declares it with
-
-	dma_declare_coherent_memory(dev,
-		iop_bus_to_phys(iop_dma_addr),
-		iop_dma_addr, size, flags);
-
-where iop_bus_to_phys is:
-
-#define IOP_MEMORY_BASE_ADDRESS 0x1c000000
-phys_addr_t iop_bus_to_phys(iop_addr_t baddr)
-{
-	return (u32)baddr + IOP_MEMORY_BASE_ADDRESS;
-}
-
-Does dma_set_coherent_mask want a device object representing the IOP? Such
-a thing is currently not implemented, but can certainly be done.
-
-As you noted, the kernel cannot and must not allocate any kind of normal
-memory for this device. Typical DMA addresses 0-0x200000 are mapped to
-0x1c000000-0x1c200000 and is memory managed exclusively by the IOP. What
-would be a suitable mask for that?
-
-drivers/usb/host/ohci-sm501.c and drivers/usb/host/ohci-tmio.c are similar,
-so I suppose they need to be fixed as well?
-
-Fredrik
+	Joerg
