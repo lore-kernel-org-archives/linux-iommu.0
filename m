@@ -1,17 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 2/2] dma-mapping: Clean up dma_get_required_mask()
-	hooks
-Date: Fri, 6 Jul 2018 15:22:16 +0100
-Message-ID: <531f0a51-a58c-ab56-d05d-843f25f6dfdc@arm.com>
-References: <55ac9550c311f056dcfeed9b2c8265375f17b155.1530726467.git.robin.murphy@arm.com>
-	<08256121f325ceed7f6b88c1a5d3cf949698787d.1530726467.git.robin.murphy@arm.com>
-	<20180705193846.GC28905@lst.de>
+From: Fredrik Noring <noring-zgYzP9v7iJcdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] dma-mapping: Relax warnings for per-device areas
+Date: Fri, 6 Jul 2018 16:19:28 +0200
+Message-ID: <20180706141926.GA2313@localhost.localdomain>
+References: <1f8262d206c6886072d04cc93454f6e3f812bd20.1530623284.git.robin.murphy@arm.com>
+	<20180705193613.GA28905@lst.de>
+	<5811ebe5-b2bd-efc1-bf54-a8f05432c4f8@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180705193846.GC28905-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <5811ebe5-b2bd-efc1-bf54-a8f05432c4f8-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,25 +20,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: JuergenUrban-Mmb7MZpHnFY@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "Maciej W. Rozycki" <macro-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/07/18 20:38, Christoph Hellwig wrote:
-> On Wed, Jul 04, 2018 at 06:50:12PM +0100, Robin Murphy wrote:
->> As for the other mask-related hooks, standardise the arch override into
->> a Kconfig option, and also pull the generic implementation into the DMA
->> mapping code rather than having it hide away in the platform bus code.
-> 
-> Heh, I have a somewhat similar patch in my queue.  I didn't want it out
-> because dma_get_required_mask is rather ill defined at the moment and
-> I wanted to clean that up first.  But I guess I could apply this first
-> and clean up later.
-> 
-> I just fear you might be wanting to add an arm64 user, so I'd really like
-> to understand why and how.
+Hi Robin,
 
-Nah, this guy is just pure cleanup since it also fell out of my 'git 
-grep ARCH_HAS_DMA'
+On Fri, Jul 06, 2018 at 12:57:11PM +0100, Robin Murphy wrote:
+> On 05/07/18 20:36, Christoph Hellwig wrote:
+> > > -	BUG_ON(!ops);
+> > > -	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
+> > > -
+> > >   	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
+> > >   		return cpu_addr;
+> > > +	BUG_ON(!ops);
+> > > +	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
+> > 
+> > I think doing dma on a device without ops is completely broken no matter
+> > what you think of it, so I very much disagree with that part of the change.
+> > 
+> > Also while I don't think not having a dma mask is a good idea even for
+> > a driver purely using dma coherent pools.  If the pools really are on
+> > the device itself I can see why it might not matter, but for the case
+> > commonly used on some ARM SOCs where we just reserve memory for certain
+> > devices from a system pool it very much does matter.
+> > 
+> > There really is no good excuse to not set a coherent mask in the drivers.
+> 
+> Right, I was rather on the fence about this - on the one hand it is
+> objectively wrong per the API for drivers to call dma_alloc_coherent()
+> without a prior successful dma_set_coherent_mask() call, but then I thought
+> that in the case when they're *only* using it as a proxy for
+> dma_alloc_from_dev_coherent() and explicitly don't want regular allocations
+> from kernel memory to ever happen, then maybe it might be somewhat
+> reasonable. But indeed I hadn't really given enough thought to the
+> reserved-memory carveout case, where we definitely don't want to let a
+> legitimate warning be hidden on a developer's machine but hit by users with
+> different system configurations.
+> 
+> Fredrik, are you happy to fix up your driver to initialise a suitable mask
+> at probe time?
 
-Robin.
+The driver currently only uses dma_declare_coherent_memory and
+dma_release_declared_memory. It allocates 256 KiB of DMA memory from the IOP
+(a MIPS R3000 I/O processor that is separate from the main MIPS R5900) with
+
+	iop_dma_addr = iop_alloc(size);
+
+and then declares it with
+
+	dma_declare_coherent_memory(dev,
+		iop_bus_to_phys(iop_dma_addr),
+		iop_dma_addr, size, flags);
+
+where iop_bus_to_phys is:
+
+#define IOP_MEMORY_BASE_ADDRESS 0x1c000000
+phys_addr_t iop_bus_to_phys(iop_addr_t baddr)
+{
+	return (u32)baddr + IOP_MEMORY_BASE_ADDRESS;
+}
+
+Does dma_set_coherent_mask want a device object representing the IOP? Such
+a thing is currently not implemented, but can certainly be done.
+
+As you noted, the kernel cannot and must not allocate any kind of normal
+memory for this device. Typical DMA addresses 0-0x200000 are mapped to
+0x1c000000-0x1c200000 and is memory managed exclusively by the IOP. What
+would be a suitable mask for that?
+
+drivers/usb/host/ohci-sm501.c and drivers/usb/host/ohci-tmio.c are similar,
+so I suppose they need to be fixed as well?
+
+Fredrik
