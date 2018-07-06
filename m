@@ -1,28 +1,28 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/amd: Argument page_size could be uninitialized
-Date: Fri, 6 Jul 2018 13:18:40 +0200
-Message-ID: <20180706111839.wwgnewib2r6xf4jd@8bytes.org>
-References: <1527877815-11132-1-git-send-email-yzhai003@ucr.edu>
+Subject: Re: [PATCH 1/1] iommu/amd: make sure TLB to be flushed before IOVA
+ freed
+Date: Fri, 6 Jul 2018 13:21:54 +0200
+Message-ID: <20180706112154.hslaptjtlsj5whgy@8bytes.org>
+References: <1528251526-11408-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1527877815-11132-1-git-send-email-yzhai003@ucr.edu>
+In-Reply-To: <1528251526-11408-1-git-send-email-thunder.leizhen@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "yzhai003@ucr.edu" <yzhai003@ucr.edu>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, csong@cs.ucr.edu, zhiyunq@cs.ucr.edu
+To: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 01, 2018 at 11:30:14AM -0700, yzhai003@ucr.edu wrote:
-> Argument "page_size" passing to function "fetch_pte" could be
-> uninitialized if the function returns NULL
+On Wed, Jun 06, 2018 at 10:18:46AM +0800, Zhen Lei wrote:
+> Although the mapping has already been removed in the page table, it maybe
+> still exist in TLB. Suppose the freed IOVAs is reused by others before the
+> flush operation completed, the new user can not correctly access to its
+> meomory.
 > 
-> The caller "iommu_unmap_page" checks the return value but the page_size is
-> used outside the if block.
-> 
-> Signed-off-by: yzhai003@ucr.edu <yzhai003@ucr.edu>
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 > ---
->  drivers/iommu/amd_iommu.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/iommu/amd_iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Applied, thanks.
