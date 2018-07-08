@@ -1,121 +1,172 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v12 4/4] iommu/arm-smmu: Add support for qcom,
- smmu-v2 variant
-Date: Sun,  8 Jul 2018 23:04:13 +0530
-Message-ID: <20180708173413.1965-5-vivek.gautam@codeaurora.org>
-References: <20180708173413.1965-1-vivek.gautam@codeaurora.org>
+From: =?UTF-8?Q?=22J=C3=BCrgen_Urban=22?= <JuergenUrban@gmx.de>
+Subject: Aw: Re: [PATCH] dma-mapping: Relax warnings for per-device areas
+Date: Sun, 8 Jul 2018 22:47:57 +0200
+Message-ID: <trinity-f2bb439e-d617-4cee-b21b-234ed0b602c8-1531082877666@3c-app-gmx-bs33>
+References: <1f8262d206c6886072d04cc93454f6e3f812bd20.1530623284.git.robin.murphy@arm.com>
+ <20180705193613.GA28905@lst.de>
+ <5811ebe5-b2bd-efc1-bf54-a8f05432c4f8@arm.com>
+ <20180706141926.GA2313@localhost.localdomain>
+ <bd63815c-260e-078f-4184-561c8e54e636@arm.com>
+ <20180706205449.GB2313@localhost.localdomain>
+ <trinity-b6608404-d325-4007-9480-1cb7947516b2-1530920102234@3c-app-gmx-bs19>
+ <20180707063240.GA14409@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180708173413.1965-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180707063240.GA14409@localhost.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fredrik Noring <noring@nocrew.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, "Maciej W. Rozycki" <macro@linux-mips.org>
 List-Id: iommu@lists.linux-foundation.org
 
-cWNvbSxzbW11LXYyIGlzIGFuIGFybSxzbW11LXYyIGltcGxlbWVudGF0aW9uIHdpdGggc3BlY2lm
-aWMKY2xvY2sgYW5kIHBvd2VyIHJlcXVpcmVtZW50cy4gVGhpcyBzbW11IGNvcmUgaXMgdXNlZCB3
-aXRoCm11bHRpcGxlIG1hc3RlcnMgb24gbXNtODk5Niwgdml6LiBtZHNzLCB2aWRlbywgZXRjLgpB
-ZGQgYmluZGluZ3MgZm9yIHRoZSBzYW1lLgoKU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2
-aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+ClJldmlld2VkLWJ5OiBSb2IgSGVycmluZyA8cm9i
-aEBrZXJuZWwub3JnPgpSZXZpZXdlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9y
-Zz4KLS0tCgogLSBObyBjaGFuZ2Ugc2luY2UgdjExLgoKIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L2lvbW11L2FybSxzbW11LnR4dCAgICAgICAgIHwgNDIgKysrKysrKysrKysrKysrKysrKysrKwog
-ZHJpdmVycy9pb21tdS9hcm0tc21tdS5jICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxNCAr
-KysrKysrKwogMiBmaWxlcyBjaGFuZ2VkLCA1NiBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEv
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dCBiL0Rv
-Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQKaW5kZXgg
-OGE2ZmZjZTEyYWY1Li43YzcxYTZlZDQ2NWEgMTAwNjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2
-aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQKKysrIGIvRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dApAQCAtMTcsMTAgKzE3LDE5IEBA
-IGNvbmRpdGlvbnMuCiAgICAgICAgICAgICAgICAgICAgICAgICAiYXJtLG1tdS00MDEiCiAgICAg
-ICAgICAgICAgICAgICAgICAgICAiYXJtLG1tdS01MDAiCiAgICAgICAgICAgICAgICAgICAgICAg
-ICAiY2F2aXVtLHNtbXUtdjIiCisgICAgICAgICAgICAgICAgICAgICAgICAicWNvbSw8c29jPi1z
-bW11LXYyIiwgInFjb20sc21tdS12MiIKIAogICAgICAgICAgICAgICAgICAgZGVwZW5kaW5nIG9u
-IHRoZSBwYXJ0aWN1bGFyIGltcGxlbWVudGF0aW9uIGFuZC9vciB0aGUKICAgICAgICAgICAgICAg
-ICAgIHZlcnNpb24gb2YgdGhlIGFyY2hpdGVjdHVyZSBpbXBsZW1lbnRlZC4KIAorICAgICAgICAg
-ICAgICAgICAgQSBudW1iZXIgb2YgUWNvbSBTb0NzIHVzZSBxY29tLHNtbXUtdjIgdmVyc2lvbiBv
-ZiB0aGUgSVAuCisgICAgICAgICAgICAgICAgICAicWNvbSw8c29jPi1zbW11LXYyIiByZXByZXNl
-bnRzIGEgc29jIHNwZWNpZmljIGNvbXBhdGlibGUKKyAgICAgICAgICAgICAgICAgIHN0cmluZyB0
-aGF0IHNob3VsZCBiZSBwcmVzZW50IGFsb25nIHdpdGggdGhlICJxY29tLHNtbXUtdjIiCisgICAg
-ICAgICAgICAgICAgICB0byBmYWNpbGl0YXRlIFNvQyBzcGVjaWZpYyBjbG9ja3MvcG93ZXIgY29u
-bmVjdGlvbnMgYW5kIHRvCisgICAgICAgICAgICAgICAgICBhZGRyZXNzIHNwZWNpZmljIGJ1ZyBm
-aXhlcy4KKyAgICAgICAgICAgICAgICAgIEFuIGV4YW1wbGUgc3RyaW5nIHdvdWxkIGJlIC0KKyAg
-ICAgICAgICAgICAgICAgICJxY29tLG1zbTg5OTYtc21tdS12MiIsICJxY29tLHNtbXUtdjIiLgor
-CiAtIHJlZyAgICAgICAgICAgOiBCYXNlIGFkZHJlc3MgYW5kIHNpemUgb2YgdGhlIFNNTVUuCiAK
-IC0gI2dsb2JhbC1pbnRlcnJ1cHRzIDogVGhlIG51bWJlciBvZiBnbG9iYWwgaW50ZXJydXB0cyBl
-eHBvc2VkIGJ5IHRoZQpAQCAtNzEsNiArODAsMjIgQEAgY29uZGl0aW9ucy4KICAgICAgICAgICAg
-ICAgICAgIG9yIHVzaW5nIHN0cmVhbSBtYXRjaGluZyB3aXRoICNpb21tdS1jZWxscyA9IDwyPiwg
-YW5kCiAgICAgICAgICAgICAgICAgICBtYXkgYmUgaWdub3JlZCBpZiBwcmVzZW50IGluIHN1Y2gg
-Y2FzZXMuCiAKKy0gY2xvY2stbmFtZXM6ICAgIExpc3Qgb2YgdGhlIG5hbWVzIG9mIGNsb2NrcyBp
-bnB1dCB0byB0aGUgZGV2aWNlLiBUaGUKKyAgICAgICAgICAgICAgICAgIHJlcXVpcmVkIGxpc3Qg
-ZGVwZW5kcyBvbiBwYXJ0aWN1bGFyIGltcGxlbWVudGF0aW9uIGFuZAorICAgICAgICAgICAgICAg
-ICAgaXMgYXMgZm9sbG93czoKKyAgICAgICAgICAgICAgICAgIC0gZm9yICJxY29tLHNtbXUtdjIi
-OgorICAgICAgICAgICAgICAgICAgICAtICJidXMiOiBjbG9jayByZXF1aXJlZCBmb3IgZG93bnN0
-cmVhbSBidXMgYWNjZXNzIGFuZAorICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmb3IgdGhl
-IHNtbXUgcHR3LAorICAgICAgICAgICAgICAgICAgICAtICJpZmFjZSI6IGNsb2NrIHJlcXVpcmVk
-IHRvIGFjY2VzcyBzbW11J3MgcmVnaXN0ZXJzCisgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgdGhyb3VnaCB0aGUgVENVJ3MgcHJvZ3JhbW1pbmcgaW50ZXJmYWNlLgorICAgICAgICAgICAg
-ICAgICAgLSB1bnNwZWNpZmllZCBmb3Igb3RoZXIgaW1wbGVtZW50YXRpb25zLgorCistIGNsb2Nr
-czogICAgICAgICBTcGVjaWZpZXJzIGZvciBhbGwgY2xvY2tzIGxpc3RlZCBpbiB0aGUgY2xvY2st
-bmFtZXMgcHJvcGVydHksCisgICAgICAgICAgICAgICAgICBhcyBwZXIgZ2VuZXJpYyBjbG9jayBi
-aW5kaW5ncy4KKworLSBwb3dlci1kb21haW5zOiAgU3BlY2lmaWVycyBmb3IgcG93ZXIgZG9tYWlu
-cyByZXF1aXJlZCB0byBiZSBwb3dlcmVkIG9uIGZvcgorICAgICAgICAgICAgICAgICAgdGhlIFNN
-TVUgdG8gb3BlcmF0ZSwgYXMgcGVyIGdlbmVyaWMgcG93ZXIgZG9tYWluIGJpbmRpbmdzLgorCiAq
-KiBEZXByZWNhdGVkIHByb3BlcnRpZXM6CiAKIC0gbW11LW1hc3RlcnMgKGRlcHJlY2F0ZWQgaW4g
-ZmF2b3VyIG9mIHRoZSBnZW5lcmljICJpb21tdXMiIGJpbmRpbmcpIDoKQEAgLTEzNywzICsxNjIs
-MjAgQEAgY29uZGl0aW9ucy4KICAgICAgICAgICAgICAgICBpb21tdS1tYXAgPSA8MCAmc21tdTMg
-MCAweDQwMD47CiAgICAgICAgICAgICAgICAgLi4uCiAgICAgICAgIH07CisKKwkvKiBRY29tJ3Mg
-YXJtLHNtbXUtdjIgaW1wbGVtZW50YXRpb24gKi8KKwlzbW11NDogaW9tbXUgeworCQljb21wYXRp
-YmxlID0gInFjb20sbXNtODk5Ni1zbW11LXYyIiwgInFjb20sc21tdS12MiI7CisJCXJlZyA9IDww
-eGQwMDAwMCAweDEwMDAwPjsKKworCQkjZ2xvYmFsLWludGVycnVwdHMgPSA8MT47CisJCWludGVy
-cnVwdHMgPSA8R0lDX1NQSSA3MyBJUlFfVFlQRV9MRVZFTF9ISUdIPiwKKwkJCSAgICAgPEdJQ19T
-UEkgMzIwIElSUV9UWVBFX0xFVkVMX0hJR0g+LAorCQkJICAgICA8R0lDX1NQSSAzMjEgSVJRX1RZ
-UEVfTEVWRUxfSElHSD47CisJCSNpb21tdS1jZWxscyA9IDwxPjsKKwkJcG93ZXItZG9tYWlucyA9
-IDwmbW1jYyBNRFNTX0dEU0M+OworCisJCWNsb2NrcyA9IDwmbW1jYyBTTU1VX01EUF9BWElfQ0xL
-PiwKKwkJCSA8Jm1tY2MgU01NVV9NRFBfQUhCX0NMSz47CisJCWNsb2NrLW5hbWVzID0gImJ1cyIs
-ICJpZmFjZSI7CisJfTsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2Ry
-aXZlcnMvaW9tbXUvYXJtLXNtbXUuYwppbmRleCA5MTZjZGU0OTU0ZDIuLmE5ZWRiMTdmMDliZiAx
-MDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUv
-YXJtLXNtbXUuYwpAQCAtMTE5LDYgKzExOSw3IEBAIGVudW0gYXJtX3NtbXVfaW1wbGVtZW50YXRp
-b24gewogCUdFTkVSSUNfU01NVSwKIAlBUk1fTU1VNTAwLAogCUNBVklVTV9TTU1VVjIsCisJUUNP
-TV9TTU1VVjIsCiB9OwogCiBzdHJ1Y3QgYXJtX3NtbXVfczJjciB7CkBAIC0xOTgwLDYgKzE5ODEs
-MTcgQEAgQVJNX1NNTVVfTUFUQ0hfREFUQShhcm1fbW11NDAxLCBBUk1fU01NVV9WMV82NEssIEdF
-TkVSSUNfU01NVSk7CiBBUk1fU01NVV9NQVRDSF9EQVRBKGFybV9tbXU1MDAsIEFSTV9TTU1VX1Yy
-LCBBUk1fTU1VNTAwKTsKIEFSTV9TTU1VX01BVENIX0RBVEEoY2F2aXVtX3NtbXV2MiwgQVJNX1NN
-TVVfVjIsIENBVklVTV9TTU1VVjIpOwogCitzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0IHFjb21f
-c21tdXYyX2Nsa3NbXSA9IHsKKwkiYnVzIiwgImlmYWNlIiwKK307CisKK3N0YXRpYyBjb25zdCBz
-dHJ1Y3QgYXJtX3NtbXVfbWF0Y2hfZGF0YSBxY29tX3NtbXV2MiA9IHsKKwkudmVyc2lvbiA9IEFS
-TV9TTU1VX1YyLAorCS5tb2RlbCA9IFFDT01fU01NVVYyLAorCS5jbGtzID0gcWNvbV9zbW11djJf
-Y2xrcywKKwkubnVtX2Nsa3MgPSBBUlJBWV9TSVpFKHFjb21fc21tdXYyX2Nsa3MpLAorfTsKKwog
-c3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYXJtX3NtbXVfb2ZfbWF0Y2hbXSA9IHsK
-IAl7IC5jb21wYXRpYmxlID0gImFybSxzbW11LXYxIiwgLmRhdGEgPSAmc21tdV9nZW5lcmljX3Yx
-IH0sCiAJeyAuY29tcGF0aWJsZSA9ICJhcm0sc21tdS12MiIsIC5kYXRhID0gJnNtbXVfZ2VuZXJp
-Y192MiB9LApAQCAtMTk4Nyw2ICsxOTk5LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZp
-Y2VfaWQgYXJtX3NtbXVfb2ZfbWF0Y2hbXSA9IHsKIAl7IC5jb21wYXRpYmxlID0gImFybSxtbXUt
-NDAxIiwgLmRhdGEgPSAmYXJtX21tdTQwMSB9LAogCXsgLmNvbXBhdGlibGUgPSAiYXJtLG1tdS01
-MDAiLCAuZGF0YSA9ICZhcm1fbW11NTAwIH0sCiAJeyAuY29tcGF0aWJsZSA9ICJjYXZpdW0sc21t
-dS12MiIsIC5kYXRhID0gJmNhdml1bV9zbW11djIgfSwKKwl7IC5jb21wYXRpYmxlID0gInFjb20s
-c21tdS12MiIsIC5kYXRhID0gJnFjb21fc21tdXYyIH0sCiAJeyB9LAogfTsKIE1PRFVMRV9ERVZJ
-Q0VfVEFCTEUob2YsIGFybV9zbW11X29mX21hdGNoKTsKQEAgLTIzNjEsNiArMjM3NCw3IEBAIElP
-TU1VX09GX0RFQ0xBUkUoYXJtX21tdTQwMCwgImFybSxtbXUtNDAwIik7CiBJT01NVV9PRl9ERUNM
-QVJFKGFybV9tbXU0MDEsICJhcm0sbW11LTQwMSIpOwogSU9NTVVfT0ZfREVDTEFSRShhcm1fbW11
-NTAwLCAiYXJtLG1tdS01MDAiKTsKIElPTU1VX09GX0RFQ0xBUkUoY2F2aXVtX3NtbXV2MiwgImNh
-dml1bSxzbW11LXYyIik7CitJT01NVV9PRl9ERUNMQVJFKHFjb21fc21tdXYyLCAicWNvbSxzbW11
-LXYyIik7CiAKIE1PRFVMRV9ERVNDUklQVElPTigiSU9NTVUgQVBJIGZvciBBUk0gYXJjaGl0ZWN0
-ZWQgU01NVSBpbXBsZW1lbnRhdGlvbnMiKTsKIE1PRFVMRV9BVVRIT1IoIldpbGwgRGVhY29uIDx3
-aWxsLmRlYWNvbkBhcm0uY29tPiIpOwotLSAKUVVBTENPTU0gSU5ESUEsIG9uIGJlaGFsZiBvZiBR
-dWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBhIG1lbWJlcgpvZiBDb2RlIEF1cm9y
-YSBGb3J1bSwgaG9zdGVkIGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZy
-ZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+Hello Fredrik,
+
+> Gesendet: Samstag, 07. Juli 2018 um 08:32 Uhr
+> Von: "Fredrik Noring" <noring@nocrew.org>
+> An: "Jürgen Urban" <JuergenUrban@gmx.de>, "Robin Murphy" <robin.murphy@arm.com>
+> Cc: "Christoph Hellwig" <hch@lst.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, "Maciej W. Rozycki" <macro@linux-mips.org>
+> Betreff: Re: [PATCH] dma-mapping: Relax warnings for per-device areas
+>
+> Hi Jürgen, Robin,
+> 
+> > Don't forget that the SIF DMA packets are limited and the kernel will
+> > block/reschedule when it is out of SIF DMA packets. The allocation is
+> > implemented inside the SBIOS. You may easily get a deadlock or a livelock
+> > when you just let it run without thinking about the design. When you use
+> > the old CDVD driver on IOP, the RPC code inside SBIOS tries to simulate
+> > the interface like the new CDVD driver. The problem is that this is done
+> > by a busy loop waiting for a free SIF DMA packet. This would block the
+> > complete Linux kernel for an unknown time.
+> >
+> > As I understand you, you wanted to move the SBIOS code inside the Linux
+> > kernel. I am not sure whether you already have done it. When you do this,
+> > it is easier to fix the CDVD problem, but you need to think about booting
+> > using the official RTE disc from Sony for Linux, because it loads
+> > different modules and a different SBIOS. As this is the official way to
+> > start Linux on the PS2 which is supported by Sony, we should also support
+> > this in the official Linux kernel. Kernelloader can partially simulate it,
+> > but you need the files from the RTE disc.
+> 
+> The kernel no longer needs or uses the SBIOS, partly due to the issues
+> with having binary blobs of code that do kernel services. SBIOS memory is
+> reclaimed, so the SBIOS does not even exist when the kernel is running.
+> 
+> DMA is therefore only limited by the hardware design, which supports both
+> multiple simultaneously interconnected DMA controllers via memory or FIFOs,
+> and chained (scatter-gather) transfers.
+> 
+> Robin, does the kernel DMA subsystem support interconnected DMA controllers?
+> That involves arbitration of hardware FIFO resources (for example the SIF).
+> 
+> The Kernelloader boot program is not needed either, for any service, because 
+> the IOP is reset and initialised by the kernel itself. Booting the kernel is
+> much faster and reliable without using the Kernelloader which frequently
+> crashes or refuses to load IOP modules.
+> 
+> The Kernelloader can still be used, if one wishes, but it's optional and not
+> a requirement.
+> 
+> > At least on some models I think you can desolder the RAM and replace it by
+> > a larger memory up to 4GB, because the 1394 Lead Vehicle Manual lists a
+> > feature:
+> >
+> > "Hardware generated response to received read or write requests in a
+> > designated 4GB address range without CPU involvment."
+> >
+> > The 1394 Lead Vehicle is not used in the PS2, but it is very similar to
+> > the IOP and it is the only manual we have about IOP. So I think the DMA
+> > mask for the device must be at least 32 Bits, because the device is able
+> > to access full 32 Bit. The EE where Linux is running may only be able to
+> > access a part of it directly. I think SIF DMA is always able to access it
+> > completely, as this is an official feature which is documented. The
+> > mapping at 0x1c000000-0x1c200000 seems just to be good luck, because it is
+> > not documented. As this is no official interface Sony is able to remove
+> > this mapping at any time in a new model. I don't know where the border of
+> > the mapping is, but in my experiements I have seen some hints that it can
+> > be different depending on which hardware or software is used. It looks
+> > like the more stuff is integrated into one single chip, the lower is the
+> > border, because I have seen strange behaviour and exceptions when
+> > accessing this memory on newer PS2 model. I limited the memory to 256KB
+> > for USB OHCI because of this strange behaviour on some models, but I
+> > wasn't able to figure out what was the real cause of the problem. I just
+> > recognized that it was stable with the 256KB limit.
+> 
+> Perhaps we need to invent a memory map zone within the IOP. I hope that we
+> can make full use of the DMA hardware, because DMA is by a wide margin the
+> most efficient kind of transfer.
+> 
+> > So the question is: What is the purpose of the DMA mask in Linux? Is it
+> > the area which can be accessed by the device? Or is it the area which can
+> > be accessed by the CPU? For the device it is 32 Bit. For the CPU it
+> > depends on the software and hardware and can be 0, because nothing may be
+> > shared with the CPU.
+> 
+> That's a good question. The DMA mapping updates that cause regressions need
+> some kind of mask, but I agree, it's unclear what that mask actually means.
+> Especially considering that the kernel cannot allocate normal memory for IOP
+> DMA anyway, so what is the purpose of the mask then?
+> 
+> > Even with DMA mask 0, the SIF DMA is still able to access the full 32 Bit.
+> > Each memory access by the OHCI driver can't be done directly and needs
+> > first to be transferred to IOP memory via SIF DMA before it can be
+> > accessed by OHCI DMA. This is what you called linked DMA transfer.
+> 
+> Right. So the IOP has DMA controllers that are also capable of simultaneously
+> interconnected (linked) transfers such as device<->memory<->SIF? That would
+> be very fortunate. A slight complication is that the SIF eventually needs
+> arbitration to support simultaneous transfers for multiple devices such as
+> the OHIC, ATA, iLink, Ethernet, etc.
+> 
+> Are you aware of any documentation describing the IOP DMA controllers?
+
+"EE's User Manual" describe the EE side and the IOP side is basically the same.
+
+As the IOP is very similar to the PS1, many stuff of the PS1 documentation is matching. The main difference is the graphic as the graphic is emulated by the EE in PS1 mode of the PS2.
+http://hwdocs.webs.com/ps1
+
+> > As far as I remember the USB sub-system and the OHCI driver was not
+> > written to handle memory which can't be written by the CPU at all. So I
+> > assume that you first need to allocate some temporary memory which is used
+> > to copy the data to or from the IOP DMA memory.
+> 
+> Exactly, that OHCI design is still used. Also important, we need to
+> investigate why OHCI interrupts sometimes are lost. Do you have any idea?
+> 
+> > Then I think you can increase the 256KB limit without getting an unstable
+> > system.
+> 
+> I would like to learn more about the source of this problem. I'm considering
+> making an IOP device driver, so that it can be examined more easily.
+> 
+> > I heard someone talking about problems in the SMMU which were fixed by
+> > increasing the DMA mask. This lets me believe that the DMA mask is
+> > something which is required by SMMU and therefore 32 Bit should be
+> > correct. But when a hardware designer tries to add an IOMMU to the PS2,
+> > there would be at least 3 different IOMMUs needed, because we have 3
+> > different buses (for EE, IOP and GS).
+> 
+> I'm not sure what you mean with SMMU, since this is not ARM hardware?
+
+It seems that the DMA mask was introduced for the SMMU. I.e. we need to define the DMA mask in a way how it would be done when a SMMU would have been used in the PS2. 
+
+> Also, the Graphics Synthesizer (GS) is a serial interface and not really as bus,
+> isn't it?
+
+You can't directly access the GS memory. There is always a DMA transfer needed. This means that there must be some bus behind the serial interface.
+You can see this also in the document "Sony's Emotionally Charged Chip" at:
+http://hwdocs.webs.com/ps2
+PCIe is also just a serial interface, but we call it PCI bus. The advantage of PCI is that it is transparent for the CPU and that you are not forced to use DMA.
+
+> > The original approach for USB OHCI in Linux 2.4 was that IOP memory is
+> > handled as PCI memory. I.e. the driver was "thinking" that it allocates
+> > PCI memory, but indeed there was IOP memory allocated. All DMA ops where
+> > implemented in the PCI ops and so it was just working like a PCI card with
+> > device local memory.
+> 
+> Is PCI a good or valid model for the IOP?
+
+In the new kernel PCI is declared as bus and I think that IOP should also be declared as a bus. Same can be done for GS. As the kernel has generic code for handling a bus, this can help getting stuff working like the DMA chain. As in some cases there are different paths from the source bus to the destination bus, the kernel may have already some mechanism implemented to do load balancing of the bus. This would help to improve the graphic performance.
+
+Best regards
+Jürgen Urban
