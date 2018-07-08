@@ -1,12 +1,12 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [GIT PULL] dma-mapping revert for Linux 4.18
-Date: Sat, 7 Jul 2018 17:26:26 -0700
-Message-ID: <20180708002626.GA2490@infradead.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 1/1] Revert "iommu/vt-d: Clean up pasid quirk for
+	pre-production devices"
+Date: Sun,  8 Jul 2018 14:23:21 +0800
+Message-ID: <1531031001-5783-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,29 +16,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The following changes since commit 06c85639897cf3ea6a11c5cb6929fb0d9d7efea5:
-
-  Merge tag 'acpi-4.18-rc4' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm (2018-07-05 09:52:30 -0700)
-
-are available in the Git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.18-3
-
-for you to fetch changes up to 7ec916f82c48dcfc115eee2e3e0e6d400e310fc5:
-
-  Revert "iommu/intel-iommu: Enable CONFIG_DMA_DIRECT_OPS=y and clean up intel_{alloc,free}_coherent()" (2018-07-05 13:32:06 -0600)
-
-----------------------------------------------------------------
-Revert an incorrect dma-mapping commit for 4.18-rc
-
-----------------------------------------------------------------
-Christoph Hellwig (1):
-      Revert "iommu/intel-iommu: Enable CONFIG_DMA_DIRECT_OPS=y and clean up intel_{alloc,free}_coherent()"
-
- drivers/iommu/Kconfig       |  1 -
- drivers/iommu/intel-iommu.c | 62 +++++++++++++++++++++++++++++++++------------
- 2 files changed, 46 insertions(+), 17 deletions(-)
+VGhpcyByZXZlcnRzIGNvbW1pdCBhYjk2NzQ2YWFhMzQ0ZmI3MjBhMTk4MjQ1YTgzN2UyNjZmYWQz
+YjYyLgoKVGhlIGNvbW1pdCBhYjk2NzQ2YWFhMzQgKCJpb21tdS92dC1kOiBDbGVhbiB1cCBwYXNp
+ZCBxdWlyayBmb3IKcHJlLXByb2R1Y3Rpb24gZGV2aWNlcyIpIHRyaWdnZXJzIEVDUyBtb2RlIG9u
+IHNvbWUgcGxhdGZvcm1zCndoaWNoIGhhdmUgYnJva2VuIEVDUyBzdXBwb3J0LiBBcyB0aGUgcmVz
+dWx0LCBncmFwaGljIGRldmljZQp3aWxsIGJlIGlub3BlcmFibGUgb24gYm9vdC4KCkJ1Z3ppbGxh
+OiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD0xMDcwMTcKCkNj
+OiBBc2hvayBSYWogPGFzaG9rLnJhakBpbnRlbC5jb20+ClNpZ25lZC1vZmYtYnk6IEx1IEJhb2x1
+IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9pbnRlbC1pb21t
+dS5jIHwgMzIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0KIGluY2x1ZGUvbGludXgv
+aW50ZWwtaW9tbXUuaCB8ICAxICsKIDIgZmlsZXMgY2hhbmdlZCwgMzEgaW5zZXJ0aW9ucygrKSwg
+MiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMg
+Yi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKaW5kZXggYjM0NGE4OC4uMTE1ZmYyNiAxMDA2
+NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUv
+aW50ZWwtaW9tbXUuYwpAQCAtNDg0LDE0ICs0ODQsMzcgQEAgc3RhdGljIGludCBkbWFyX2ZvcmNl
+ZGFjOwogc3RhdGljIGludCBpbnRlbF9pb21tdV9zdHJpY3Q7CiBzdGF0aWMgaW50IGludGVsX2lv
+bW11X3N1cGVycGFnZSA9IDE7CiBzdGF0aWMgaW50IGludGVsX2lvbW11X2VjcyA9IDE7CitzdGF0
+aWMgaW50IGludGVsX2lvbW11X3Bhc2lkMjg7CiBzdGF0aWMgaW50IGlvbW11X2lkZW50aXR5X21h
+cHBpbmc7CiAKICNkZWZpbmUgSURFTlRNQVBfQUxMCQkxCiAjZGVmaW5lIElERU5UTUFQX0dGWAkJ
+MgogI2RlZmluZSBJREVOVE1BUF9BWkFMSUEJCTQKIAotI2RlZmluZSBlY3NfZW5hYmxlZChpb21t
+dSkJKGludGVsX2lvbW11X2VjcyAmJiBlY2FwX2Vjcyhpb21tdS0+ZWNhcCkpCi0jZGVmaW5lIHBh
+c2lkX2VuYWJsZWQoaW9tbXUpCShlY3NfZW5hYmxlZChpb21tdSkgJiYgZWNhcF9wYXNpZChpb21t
+dS0+ZWNhcCkpCisvKiBCcm9hZHdlbGwgYW5kIFNreWxha2UgaGF2ZSBicm9rZW4gRUNTIHN1cHBv
+cnQg4oCUIG5vcm1hbCBzby1jYWxsZWQgInNlY29uZAorICogbGV2ZWwiIHRyYW5zbGF0aW9uIG9m
+IERNQSByZXF1ZXN0cy13aXRob3V0LVBBU0lEIGRvZXNuJ3QgYWN0dWFsbHkgaGFwcGVuCisgKiB1
+bmxlc3MgeW91IGFsc28gc2V0IHRoZSBORVNURSBiaXQgaW4gYW4gZXh0ZW5kZWQgY29udGV4dC1l
+bnRyeS4gV2hpY2ggb2YKKyAqIGNvdXJzZSBtZWFucyB0aGF0IFNWTSBkb2Vzbid0IHdvcmsgYmVj
+YXVzZSBpdCdzIHRyeWluZyB0byBkbyBuZXN0ZWQKKyAqIHRyYW5zbGF0aW9uIG9mIHRoZSBwaHlz
+aWNhbCBhZGRyZXNzZXMgaXQgZmluZHMgaW4gdGhlIHByb2Nlc3MgcGFnZSB0YWJsZXMsCisgKiB0
+aHJvdWdoIHRoZSBJT1ZBLT5waHlzIG1hcHBpbmcgZm91bmQgaW4gdGhlICJzZWNvbmQgbGV2ZWwi
+IHBhZ2UgdGFibGVzLgorICoKKyAqIFRoZSBWVC1kIHNwZWNpZmljYXRpb24gd2FzIHJldHJvYWN0
+aXZlbHkgY2hhbmdlZCB0byBjaGFuZ2UgdGhlIGRlZmluaXRpb24KKyAqIG9mIHRoZSBjYXBhYmls
+aXR5IGJpdHMgYW5kIHByZXRlbmQgdGhhdCBCcm9hZHdlbGwvU2t5bGFrZSBuZXZlciBoYXBwZW5l
+ZC4uLgorICogYnV0IHVuZm9ydHVuYXRlbHkgdGhlIHdyb25nIGJpdCB3YXMgY2hhbmdlZC4gSXQn
+cyBFQ1Mgd2hpY2ggaXMgYnJva2VuLCBidXQKKyAqIGZvciBzb21lIHJlYXNvbiBpdCB3YXMgdGhl
+IFBBU0lEIGNhcGFiaWxpdHkgYml0IHdoaWNoIHdhcyByZWRlZmluZWQgKGZyb20KKyAqIGJpdCAy
+OCBvbiBCRFcvU0tMIHRvIGJpdCA0MCBpbiBmdXR1cmUpLgorICoKKyAqIFNvIG91ciB0ZXN0IGZv
+ciBFQ1MgbmVlZHMgdG8gZXNjaGV3IHRob3NlIGltcGxlbWVudGF0aW9ucyB3aGljaCBzZXQgdGhl
+IG9sZAorICogUEFTSUQgY2FwYWJpaXR5IGJpdCAyOCwgc2luY2UgdGhvc2UgYXJlIHRoZSBvbmVz
+IG9uIHdoaWNoIEVDUyBpcyBicm9rZW4uCisgKiBVbmxlc3Mgd2UgYXJlIHdvcmtpbmcgYXJvdW5k
+IHRoZSAncGFzaWQyOCcgbGltaXRhdGlvbnMsIHRoYXQgaXMsIGJ5IHB1dHRpbmcKKyAqIHRoZSBk
+ZXZpY2UgaW50byBwYXNzdGhyb3VnaCBtb2RlIGZvciBub3JtYWwgRE1BIGFuZCB0aHVzIG1hc2tp
+bmcgdGhlIGJ1Zy4KKyAqLworI2RlZmluZSBlY3NfZW5hYmxlZChpb21tdSkgKGludGVsX2lvbW11
+X2VjcyAmJiBlY2FwX2Vjcyhpb21tdS0+ZWNhcCkgJiYgXAorCQkJICAgIChpbnRlbF9pb21tdV9w
+YXNpZDI4IHx8ICFlY2FwX2Jyb2tlbl9wYXNpZChpb21tdS0+ZWNhcCkpKQorLyogUEFTSUQgc3Vw
+cG9ydCBpcyB0aHVzIGVuYWJsZWQgaWYgRUNTIGlzIGVuYWJsZWQgYW5kICplaXRoZXIqIG9mIHRo
+ZSBvbGQKKyAqIG9yIG5ldyBjYXBhYmlsaXR5IGJpdHMgYXJlIHNldC4gKi8KKyNkZWZpbmUgcGFz
+aWRfZW5hYmxlZChpb21tdSkgKGVjc19lbmFibGVkKGlvbW11KSAmJgkJCVwKKwkJCSAgICAgIChl
+Y2FwX3Bhc2lkKGlvbW11LT5lY2FwKSB8fCBlY2FwX2Jyb2tlbl9wYXNpZChpb21tdS0+ZWNhcCkp
+KQogCiBpbnQgaW50ZWxfaW9tbXVfZ2Z4X21hcHBlZDsKIEVYUE9SVF9TWU1CT0xfR1BMKGludGVs
+X2lvbW11X2dmeF9tYXBwZWQpOwpAQCAtNTU0LDYgKzU3NywxMSBAQCBzdGF0aWMgaW50IF9faW5p
+dCBpbnRlbF9pb21tdV9zZXR1cChjaGFyICpzdHIpCiAJCQlwcmludGsoS0VSTl9JTkZPCiAJCQkJ
+IkludGVsLUlPTU1VOiBkaXNhYmxlIGV4dGVuZGVkIGNvbnRleHQgdGFibGUgc3VwcG9ydFxuIik7
+CiAJCQlpbnRlbF9pb21tdV9lY3MgPSAwOworCQl9IGVsc2UgaWYgKCFzdHJuY21wKHN0ciwgInBh
+c2lkMjgiLCA3KSkgeworCQkJcHJpbnRrKEtFUk5fSU5GTworCQkJCSJJbnRlbC1JT01NVTogZW5h
+YmxlIHByZS1wcm9kdWN0aW9uIFBBU0lEIHN1cHBvcnRcbiIpOworCQkJaW50ZWxfaW9tbXVfcGFz
+aWQyOCA9IDE7CisJCQlpb21tdV9pZGVudGl0eV9tYXBwaW5nIHw9IElERU5UTUFQX0dGWDsKIAkJ
+fSBlbHNlIGlmICghc3RybmNtcChzdHIsICJ0Ym9vdF9ub2ZvcmNlIiwgMTMpKSB7CiAJCQlwcmlu
+dGsoS0VSTl9JTkZPCiAJCQkJIkludGVsLUlPTU1VOiBub3QgZm9yY2luZyBvbiBhZnRlciB0Ym9v
+dC4gVGhpcyBjb3VsZCBleHBvc2Ugc2VjdXJpdHkgcmlzayBmb3IgdGJvb3RcbiIpOwpkaWZmIC0t
+Z2l0IGEvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pbnRlbC1p
+b21tdS5oCmluZGV4IDFkZjk0MDEuLmVmMTY5ZDYgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgv
+aW50ZWwtaW9tbXUuaAorKysgYi9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgKQEAgLTEyMSw2
+ICsxMjEsNyBAQAogI2RlZmluZSBlY2FwX3NycyhlKQkJKChlID4+IDMxKSAmIDB4MSkKICNkZWZp
+bmUgZWNhcF9lcnMoZSkJCSgoZSA+PiAzMCkgJiAweDEpCiAjZGVmaW5lIGVjYXBfcHJzKGUpCQko
+KGUgPj4gMjkpICYgMHgxKQorI2RlZmluZSBlY2FwX2Jyb2tlbl9wYXNpZChlKQkoKGUgPj4gMjgp
+ICYgMHgxKQogI2RlZmluZSBlY2FwX2RpcyhlKQkJKChlID4+IDI3KSAmIDB4MSkKICNkZWZpbmUg
+ZWNhcF9uZXN0KGUpCQkoKGUgPj4gMjYpICYgMHgxKQogI2RlZmluZSBlY2FwX210cyhlKQkJKChl
+ID4+IDI1KSAmIDB4MSkKLS0gCjIuNy40CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
