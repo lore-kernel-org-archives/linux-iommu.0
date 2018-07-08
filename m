@@ -1,16 +1,12 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 3/4] iommu/vt-d: Clean up pasid quirk for pre-production
-	devices
-Date: Sat, 7 Jul 2018 15:21:25 +0800
-Message-ID: <5B4069F5.1020303@linux.intel.com>
-References: <1525410499-18632-1-git-send-email-baolu.lu@linux.intel.com>
-	<1525410499-18632-4-git-send-email-baolu.lu@linux.intel.com>
-	<153094688126.17577.10340360451966114779@cwilso3-mobl.ger.corp.intel.com>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [GIT PULL] dma-mapping revert for Linux 4.18
+Date: Sat, 7 Jul 2018 17:26:26 -0700
+Message-ID: <20180708002626.GA2490@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <153094688126.17577.10340360451966114779-3P6wQCRdEoTT/jhqYwntd7KMmGWinSIL2HeeBUIffwg@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,27 +16,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Chris Wilson <chris-Y6uKTt2uX1cEflXRtASbqLVCufUGDwFn@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Balestrieri, Francesco" <francesco.balestrieri-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Chris,
+The following changes since commit 06c85639897cf3ea6a11c5cb6929fb0d9d7efea5:
 
-On 07/07/2018 03:01 PM, Chris Wilson wrote:
-> Quoting Lu Baolu (2018-05-04 06:08:18)
->> The pasid28 quirk is needed only for some pre-production devices.
->> Remove it to make the code concise.
-> Every skylake mixing iommu and i915 is now inoperable on boot. Reads
-> by the GPU from iommu map pages return zero, writes disappear into the
-> void, no errors flagged.
->
-> Please revert until the matter is resolved.
+  Merge tag 'acpi-4.18-rc4' of git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm (2018-07-05 09:52:30 -0700)
 
-Yes. I also got reports about the i915 issue.
+are available in the Git repository at:
 
-I will submit a revert patch as soon as possible.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.18-3
 
-I am sorry for the inconvenience.
+for you to fetch changes up to 7ec916f82c48dcfc115eee2e3e0e6d400e310fc5:
 
-Best regards,
-Lu Baolu
+  Revert "iommu/intel-iommu: Enable CONFIG_DMA_DIRECT_OPS=y and clean up intel_{alloc,free}_coherent()" (2018-07-05 13:32:06 -0600)
+
+----------------------------------------------------------------
+Revert an incorrect dma-mapping commit for 4.18-rc
+
+----------------------------------------------------------------
+Christoph Hellwig (1):
+      Revert "iommu/intel-iommu: Enable CONFIG_DMA_DIRECT_OPS=y and clean up intel_{alloc,free}_coherent()"
+
+ drivers/iommu/Kconfig       |  1 -
+ drivers/iommu/intel-iommu.c | 62 +++++++++++++++++++++++++++++++++------------
+ 2 files changed, 46 insertions(+), 17 deletions(-)
