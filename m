@@ -1,64 +1,80 @@
 From: Nipun Gupta <nipun.gupta@nxp.com>
-Subject: [PATCH 7/7 v6] arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
-Date: Mon,  9 Jul 2018 16:48:23 +0530
-Message-ID: <1531135103-10699-8-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 3/7 v6] iommu/of: support iommu configuration for fsl-mc
+ devices
+Date: Mon,  9 Jul 2018 16:48:19 +0530
+Message-ID: <1531135103-10699-4-git-send-email-nipun.gupta@nxp.com>
 References: <1531135103-10699-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1531135103-10699-1-git-send-email-nipun.gupta@nxp.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: robin.murphy@arm.com, will.deacon@arm.com, robh+dt@kernel.org, robh@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, gregkh@linuxfoundation.org, laurentiu.tudor@nxp.com, bhelgaas@google.com, hch@lst.de
-Cc: joro@8bytes.org, m.szyprowski@samsung.com, shawnguo@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, leoyang.li@nxp.com, Nipun Gupta <nipun.gupta@nxp.com>
+Cc: devicetree@vger.kernel.org, stuyoder@gmail.com, bharat.bhushan@nxp.com, shawnguo@kernel.org, joro@8bytes.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, leoyang.li@nxp.com, iommu@lists.linux-foundation.org, Nipun Gupta <nipun.gupta@nxp.com>, linux-pci@vger.kernel.org, frowand.list@gmail.com, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-fsl-mc bus support the new iommu-map property. Comply to this binding
-for fsl_mc bus.
+With of_pci_map_rid available for all the busses, use the function
+for configuration of devices on fsl-mc bus
 
 Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
-Reviewed-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/of_iommu.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-index 137ef4d..3d5e049 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi
-@@ -184,6 +184,7 @@
- 		#address-cells = <2>;
- 		#size-cells = <2>;
- 		ranges;
-+		dma-ranges = <0x0 0x0 0x0 0x0 0x10000 0x00000000>;
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 811e160..284474d 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -24,6 +24,7 @@
+ #include <linux/of_iommu.h>
+ #include <linux/of_pci.h>
+ #include <linux/slab.h>
++#include <linux/fsl/mc.h>
  
- 		clockgen: clocking@1300000 {
- 			compatible = "fsl,ls2080a-clockgen";
-@@ -357,6 +358,8 @@
- 			reg = <0x00000008 0x0c000000 0 0x40>,	 /* MC portal base */
- 			      <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
- 			msi-parent = <&its>;
-+			iommu-map = <0 &smmu 0 0>;	/* This is fixed-up by u-boot */
-+			dma-coherent;
- 			#address-cells = <3>;
- 			#size-cells = <1>;
+ #define NO_IOMMU	1
  
-@@ -460,6 +463,9 @@
- 			compatible = "arm,mmu-500";
- 			reg = <0 0x5000000 0 0x800000>;
- 			#global-interrupts = <12>;
-+			#iommu-cells = <1>;
-+			stream-match-mask = <0x7C00>;
-+			dma-coherent;
- 			interrupts = <0 13 4>, /* global secure fault */
- 				     <0 14 4>, /* combined secure interrupt */
- 				     <0 15 4>, /* global non-secure fault */
-@@ -502,7 +508,6 @@
- 				     <0 204 4>, <0 205 4>,
- 				     <0 206 4>, <0 207 4>,
- 				     <0 208 4>, <0 209 4>;
--			mmu-masters = <&fsl_mc 0x300 0>;
- 		};
+@@ -159,6 +160,23 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
+ 	return err;
+ }
  
- 		dspi: dspi@2100000 {
++static int of_fsl_mc_iommu_init(struct fsl_mc_device *mc_dev,
++				struct device_node *master_np)
++{
++	struct of_phandle_args iommu_spec = { .args_count = 1 };
++	int err;
++
++	err = of_map_rid(master_np, mc_dev->icid, "iommu-map",
++			 "iommu-map-mask", &iommu_spec.np,
++			 iommu_spec.args);
++	if (err)
++		return err == -ENODEV ? NO_IOMMU : err;
++
++	err = of_iommu_xlate(&mc_dev->dev, &iommu_spec);
++	of_node_put(iommu_spec.np);
++	return err;
++}
++
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					   struct device_node *master_np)
+ {
+@@ -190,6 +208,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 
+ 		err = pci_for_each_dma_alias(to_pci_dev(dev),
+ 					     of_pci_iommu_init, &info);
++	} else if (dev_is_fsl_mc(dev)) {
++		err = of_fsl_mc_iommu_init(to_fsl_mc_device(dev), master_np);
+ 	} else {
+ 		struct of_phandle_args iommu_spec;
+ 		int idx = 0;
 -- 
 1.9.1
