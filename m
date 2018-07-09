@@ -1,15 +1,17 @@
-From: =?UTF-8?Q?Micha=C5=82_Nazarewicz?= <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
-	cma_alloc()
-Date: Mon, 9 Jul 2018 15:23:38 +0100
-Message-ID: <CA+pa1O2H-rbTqgKgtSzD9jdnyxkD5w62b0Q=o5FX5Y85hCGVnA@mail.gmail.com>
-References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
-	<20180709121956.20200-1-m.szyprowski@samsung.com>
-	<20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 1/2] dma-mapping: Clean up dma_set_*mask() hooks
+Date: Mon, 9 Jul 2018 15:53:50 +0100
+Message-ID: <3ce04634-a467-ec6b-7b90-6cd916d9b532@arm.com>
+References: <55ac9550c311f056dcfeed9b2c8265375f17b155.1530726467.git.robin.murphy@arm.com>
+	<20180705193738.GB28905@lst.de>
+	<33175bb1-d198-a9fd-ff37-e8c4132f47f8@arm.com>
+	<20180708150708.GA14418@lst.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1179940451339019588=="
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j-PmokGAFL9ItqW5MlFJXMulaTQe2KTcn/@public.gmane.org>
+In-Reply-To: <20180708150708.GA14418-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,100 +21,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============1179940451339019588==
-Content-Type: multipart/alternative; boundary="000000000000277366057091c3be"
+On 08/07/18 16:07, Christoph Hellwig wrote:
+> On Fri, Jul 06, 2018 at 03:20:34PM +0100, Robin Murphy wrote:
+>>> What are you trying to do?  I really don't want to see more users of
+>>> the hooks as they are are a horribly bad idea.
+>>
+>> I really need to fix the ongoing problem we have where, due to funky
+>> integrations, devices suffer some downstream addressing limit (described by
+>> DT dma-ranges or ACPI IORT/_DMA) which we carefully set up in
+>> dma_configure(), but then just gets lost when the driver probes and
+>> innocently calls dma_set_mask() with something wider. I think it's
+>> effectively the generalised case of the VIA 32-bit quirk, if I understand
+>> that one correctly.
+> 
+> I'd much rather fix this in generic code.  How funky are your limitations?
+> In fact when I did the 32-bit quirk (which will also be used by a Xiling
+> PCIe root port usable on a lot of architectures) I did initially consider
+> adding a bus_dma_mask or similar to struct device, but opted for the
+> most simple implementation for now.  I'd be happy to chanfe this.
+> 
+> Especially these days where busses and IP blocks are generally not tied
+> to a specific cpu instruction set I really believe that having any
+> more architecture code than absolutely required is a bad idea.
 
---000000000000277366057091c3be
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Oh, for sure, the generic fix would be the longer-term goal, this was 
+just an expedient compromise because I want to get *something* landed 
+for 4.19. Since in practice this is predominantly affecting arm64, doing 
+the arch-specific fix to appease affected customers then working to 
+generalise it afterwards seemed to carry the lowest risk.
 
-On Mon, 9 Jul 2018 13:20 Marek Szyprowski, <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote=
-:
+That said, I think I can see a relatively safe and clean alternative 
+approach based on converting dma_32bit_limit to a mask, so I'll spin 
+some patches around that idea ASAP to continue the discussion.
 
-> cma_alloc() function doesn't really support gfp flags other than
-> __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
->
-> This will help to avoid giving false feeling that this function supports
-> standard gfp flags and callers can pass __GFP_ZERO to get zeroed buffer,
-> what has already been an issue: see commit dd65a941f6ba ("arm64:
-> dma-mapping: clear buffers allocated with FORCE_CONTIGUOUS flag").
->
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->
+>> The approach that seemed to me to be safest is largely based on the one
+>> proposed in a thread from ages ago[1]; namely to make dma_configure()
+>> better at distinguishing firmware-specified masks from bus defaults,
+>> capture the firmware mask in dev->archdata during arch_setup_dma_ops(),
+>> then use the custom set_mask routines to ensure any subsequent updates
+>> never exceed that. It doesn't seem possible to make this work robustly
+>> without storing *some* additional per-device data, and for that archdata is
+>> a lesser evil than struct device itself. Plus even though it's not actually
+>> an arch-specific issue it feels like there's such a risk of breaking other
+>> platforms that I'm reticent to even try handling it entirely in generic
+>> code.
+> 
+> My plan for a few merge windows from now is that dma_mask and
+> coherent_mask are 100% in device control and dma_set_mask will never
+> fail.  It will be up to the dma ops to make sure things are addressible.
 
-Acked-by: Micha=C5=82 Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
+It's entirely possible to plug an old PCI soundcard via a bridge adapter 
+into a modern board where the card's 24-bit DMA mask reaches nothing but 
+the SoC's boot flash, and no IOMMU is available (e.g. some of the 
+smaller NXP Layercape stuff); I still think there should be an error in 
+such rare cases when DMA is utterly impossible, but otherwise I agree it 
+would be much nicer for drivers to just provide their preferred mask and 
+let the ops massage it as necessary.
 
-(Adding Acked-by on a phone is surprisingly hard).
-
----
->  arch/powerpc/kvm/book3s_hv_builtin.c       | 2 +-
->  drivers/s390/char/vmcp.c                   | 2 +-
->  drivers/staging/android/ion/ion_cma_heap.c | 2 +-
->  include/linux/cma.h                        | 2 +-
->  kernel/dma/contiguous.c                    | 3 ++-
->  mm/cma.c                                   | 8 ++++----
->  mm/cma_debug.c                             | 2 +-
->  7 files changed, 11 insertions(+), 10 deletions(-)
->
-
---000000000000277366057091c3be
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"auto"><div><div class=3D"gmail_quote"><div dir=3D"ltr">On Mon, =
-9 Jul 2018 13:20 Marek Szyprowski, &lt;<a href=3D"mailto:m.szyprowski@samsu=
-ng.com" target=3D"_blank" rel=3D"noreferrer">m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org</a>&g=
-t; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 =
-.8ex;border-left:1px #ccc solid;padding-left:1ex">cma_alloc() function does=
-n&#39;t really support gfp flags other than<br>
-__GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.<b=
-r>
-<br>
-This will help to avoid giving false feeling that this function supports<br=
->
-standard gfp flags and callers can pass __GFP_ZERO to get zeroed buffer,<br=
->
-what has already been an issue: see commit dd65a941f6ba (&quot;arm64:<br>
-dma-mapping: clear buffers allocated with FORCE_CONTIGUOUS flag&quot;).<br>
-<br>
-Signed-off-by: Marek Szyprowski &lt;<a href=3D"mailto:m.szyprowski@samsung.=
-com" rel=3D"noreferrer noreferrer" target=3D"_blank">m.szyprowski@samsung.c=
-om</a>&gt;<br></blockquote></div></div><div dir=3D"auto"><br></div><div dir=
-=3D"auto">Acked-by: Micha=C5=82 Nazarewicz &lt;<a href=3D"mailto:mina86@min=
-a86.com" target=3D"_blank" rel=3D"noreferrer">mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org</a>&gt;</di=
-v><div dir=3D"auto"><br></div><div dir=3D"auto">(Adding Acked-by on a phone=
- is surprisingly hard).=C2=A0</div><div dir=3D"auto"><br></div><div dir=3D"=
-auto"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D=
-"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
----<br>
-=C2=A0arch/powerpc/kvm/book3s_hv_builtin.c=C2=A0 =C2=A0 =C2=A0 =C2=A0| 2 +-=
-<br>
-=C2=A0drivers/s390/char/vmcp.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0| 2 +-<br>
-=C2=A0drivers/staging/android/ion/ion_cma_heap.c | 2 +-<br>
-=C2=A0include/linux/cma.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 | 2 +-<br>
-=C2=A0kernel/dma/contiguous.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 | 3 ++-<br>
-=C2=A0mm/cma.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 8 ++++-=
----<br>
-=C2=A0mm/cma_debug.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 2 +-<br>
-=C2=A07 files changed, 11 insertions(+), 10 deletions(-)<br></blockquote></=
-div></div></div>
-
---000000000000277366057091c3be--
-
---===============1179940451339019588==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1179940451339019588==--
+Robin.
