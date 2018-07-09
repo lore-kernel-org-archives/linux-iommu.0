@@ -1,8 +1,7 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] iommu/ipmmu-vmsa: IMUCTRn.TTSEL needs a special usage on
-	R-Car Gen3
-Date: Mon,  9 Jul 2018 11:53:31 +0900
-Message-ID: <1531104811-23417-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v4 0/9] iommu/vt-d: Improve PASID id and table management
+Date: Mon,  9 Jul 2018 13:22:49 +0800
+Message-ID: <1531113778-28238-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,61 +15,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The TTSEL bit of IMUCTRn register of R-Car Gen3 needs to be set
-unused MMU context number even if uTLBs are disabled
-(The MMUEN bit of IMUCTRn register = 0).
-Since initial values of IMUCTRn.TTSEL on all IPMMU-domains are 0,
-this patch adds a new feature "reserved_context" to reserve IPMMU
-context number 0 as the unused MMU context.
+Hi,
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/ipmmu-vmsa.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+This patch set improves the PASID id and PASID table management
+for Intel IOMMU driver.
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 6a0e714..6cbd2bd 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -47,6 +47,7 @@ struct ipmmu_features {
- 	unsigned int number_of_contexts;
- 	bool setup_imbuscr;
- 	bool twobit_imttbcr_sl0;
-+	bool reserved_context;
- };
- 
- struct ipmmu_vmsa_device {
-@@ -925,6 +926,7 @@ static void ipmmu_device_reset(struct ipmmu_vmsa_device *mmu)
- 	.number_of_contexts = 1, /* software only tested with one context */
- 	.setup_imbuscr = true,
- 	.twobit_imttbcr_sl0 = false,
-+	.reserved_context = false,
- };
- 
- static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
-@@ -933,6 +935,7 @@ static void ipmmu_device_reset(struct ipmmu_vmsa_device *mmu)
- 	.number_of_contexts = 8,
- 	.setup_imbuscr = false,
- 	.twobit_imttbcr_sl0 = true,
-+	.reserved_context = true,
- };
- 
- static const struct of_device_id ipmmu_of_ids[] = {
-@@ -1038,6 +1041,11 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		}
- 
- 		ipmmu_device_reset(mmu);
-+
-+		if (mmu->features->reserved_context) {
-+			dev_info(&pdev->dev, "IPMMU context 0 is reserved\n");
-+			set_bit(0, mmu->ctx);
-+		}
- 	}
- 
- 	/*
+PATCH 1~3 replace per IOMMU idr name space with a global one.
+Current per IOMMU idr doesn't work in some cases where one
+application (associated with a PASID) might talk to two physical
+devices simultaneously while the two devices could reside behind
+two different IOMMU units.
+
+PATCH 4~9 implement per device PASID table. Current per IOMMU
+PASID table implementation is insecure in the cases where
+multiple devices under one single IOMMU unit support PASID
+feature. With per domain PASID table, we can achieve finer
+protection and isolation granularity. This has been discussed
+at https://lkml.org/lkml/2018/5/16/154.
+
+Best regards,
+Lu Baolu
+
+Change log:
+v1->v2:
+  - Patches have been reviewed by "Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>".
+  - An error case handling was added in PATCH 6/9.
+  - Some commit messages are refined to be more accurate.
+v2->v3:
+  - Patches rebased on top of v4.18-rc1.
+  - Replace per-domain with per-device pasid table.
+v3->v4:
+  - Patches rebased on top of Joerg's x86/vt-d branch.
+
+Lu Baolu (9):
+  iommu/vt-d: Global PASID name space
+  iommu/vt-d: Avoid using idr_for_each_entry()
+  iommu/vt-d: Apply global PASID in SVA
+  iommu/vt-d: Move device_domain_info to header
+  iommu/vt-d: Add for_each_device_domain() helper
+  iommu/vt-d: Per PCI device pasid table interfaces
+  iommu/vt-d: Allocate and free pasid table
+  iommu/vt-d: Apply per pci device pasid table in SVA
+  iommu/vt-d: Remove the obsolete per iommu pasid tables
+
+ drivers/iommu/Makefile      |   2 +-
+ drivers/iommu/intel-iommu.c | 143 ++++++++++++--------------
+ drivers/iommu/intel-pasid.c | 238 ++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel-pasid.h |  39 ++++++++
+ drivers/iommu/intel-svm.c   |  79 ++++++---------
+ include/linux/intel-iommu.h |  72 +++++++++++++-
+ 6 files changed, 440 insertions(+), 133 deletions(-)
+ create mode 100644 drivers/iommu/intel-pasid.c
+ create mode 100644 drivers/iommu/intel-pasid.h
+
 -- 
-1.9.1
+2.7.4
