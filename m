@@ -1,13 +1,17 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v4 5/6] iommu: Remove IOMMU_OF_DECLARE
-Date: Mon,  9 Jul 2018 09:41:52 -0600
-Message-ID: <20180709154153.15742-6-robh@kernel.org>
-References: <20180709154153.15742-1-robh@kernel.org>
+From: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
+	cma_alloc()
+Date: Mon, 9 Jul 2018 10:27:31 -0700
+Message-ID: <32c180a0-271a-3d8f-0402-87b76484cea6@redhat.com>
+References: <20180709121956.20200-1-m.szyprowski@samsung.com>
+	<CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
+	<20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180709154153.15742-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j-PmokGAFL9ItqW5MlFJXMulaTQe2KTcn/@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,216 +21,150 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Bjorn Andersson <bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Alexander Graf <agraf-l3A5Bk7waGM@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, boot-architecture-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we use the driver core to stop deferred probe for missing
-drivers, IOMMU_OF_DECLARE can be removed.
+On 07/09/2018 05:19 AM, Marek Szyprowski wrote:
+> cma_alloc() function doesn't really support gfp flags other than
+> __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
+> 
+> This will help to avoid giving false feeling that this function supports
+> standard gfp flags and callers can pass __GFP_ZERO to get zeroed buffer,
+> what has already been an issue: see commit dd65a941f6ba ("arm64:
+> dma-mapping: clear buffers allocated with FORCE_CONTIGUOUS flag").
+> 
 
-This is slightly less optimal than having a list of built-in drivers in
-that we'll now defer probe twice before giving up. This shouldn't have a
-significant impact on boot times as past discussions about deferred
-probe have given no evidence of deferred probe having a substantial
-impact.
+For Ion,
 
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Signed-off-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c       |  2 --
- drivers/iommu/arm-smmu.c          |  7 -------
- drivers/iommu/exynos-iommu.c      |  2 --
- drivers/iommu/ipmmu-vmsa.c        |  3 ---
- drivers/iommu/msm_iommu.c         |  2 --
- drivers/iommu/of_iommu.c          | 19 +------------------
- drivers/iommu/qcom_iommu.c        |  2 --
- drivers/iommu/rockchip-iommu.c    |  2 --
- include/asm-generic/vmlinux.lds.h |  2 --
- include/linux/of_iommu.h          |  4 ----
- 10 files changed, 1 insertion(+), 44 deletions(-)
+Acked-by: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 1d647104bccc..22bdabd3d8e0 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2915,8 +2915,6 @@ static struct platform_driver arm_smmu_driver = {
- };
- module_platform_driver(arm_smmu_driver);
- 
--IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3");
--
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index f7a96bcf94a6..c73cfce1ccc0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -2211,13 +2211,6 @@ static struct platform_driver arm_smmu_driver = {
- };
- module_platform_driver(arm_smmu_driver);
- 
--IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1");
--IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2");
--IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400");
--IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401");
--IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500");
--IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2");
--
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 85879cfec52f..b128cb4372d3 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1390,5 +1390,3 @@ static int __init exynos_iommu_init(void)
- 	return ret;
- }
- core_initcall(exynos_iommu_init);
--
--IOMMU_OF_DECLARE(exynos_iommu_of, "samsung,exynos-sysmmu");
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 40ae6e87cb88..f026aa16d5f1 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1108,9 +1108,6 @@ static void __exit ipmmu_exit(void)
- subsys_initcall(ipmmu_init);
- module_exit(ipmmu_exit);
- 
--IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa");
--IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795");
--
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
- MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 0d3350463a3f..27377742600d 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -877,7 +877,5 @@ static void __exit msm_iommu_driver_exit(void)
- subsys_initcall(msm_iommu_driver_init);
- module_exit(msm_iommu_driver_exit);
- 
--IOMMU_OF_DECLARE(msm_iommu_of, "qcom,apq8064-iommu");
--
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>");
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 78ddf47dd67a..f7787e757244 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -27,9 +27,6 @@
- 
- #define NO_IOMMU	1
- 
--static const struct of_device_id __iommu_of_table_sentinel
--	__used __section(__iommu_of_table_end);
--
- /**
-  * of_get_dma_window - Parse *dma-window property and returns 0 if found.
-  *
-@@ -98,19 +95,6 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
- 
--static bool of_iommu_driver_present(struct device_node *np)
--{
--	/*
--	 * If the IOMMU still isn't ready by the time we reach init, assume
--	 * it never will be. We don't want to defer indefinitely, nor attempt
--	 * to dereference __iommu_of_table after it's been freed.
--	 */
--	if (system_state >= SYSTEM_RUNNING)
--		return false;
--
--	return of_match_node(&__iommu_of_table, np);
--}
--
- static int of_iommu_xlate(struct device *dev,
- 			  struct of_phandle_args *iommu_spec)
- {
-@@ -120,8 +104,7 @@ static int of_iommu_xlate(struct device *dev,
- 
- 	ops = iommu_ops_from_fwnode(fwnode);
- 	if ((ops && !ops->of_xlate) ||
--	    !of_device_is_available(iommu_spec->np) ||
--	    (!ops && !of_iommu_driver_present(iommu_spec->np)))
-+	    !of_device_is_available(iommu_spec->np))
- 		return NO_IOMMU;
- 
- 	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index fe88a4880d3a..b48aee82d14b 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -945,7 +945,5 @@ static void __exit qcom_iommu_exit(void)
- module_init(qcom_iommu_init);
- module_exit(qcom_iommu_exit);
- 
--IOMMU_OF_DECLARE(qcom_iommu_dev, "qcom,msm-iommu-v1");
--
- MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
- MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 054cd2c8e9c8..de8d3bf91b23 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1284,8 +1284,6 @@ static int __init rk_iommu_init(void)
- }
- subsys_initcall(rk_iommu_init);
- 
--IOMMU_OF_DECLARE(rk_iommu_of, "rockchip,iommu");
--
- MODULE_DESCRIPTION("IOMMU API for Rockchip");
- MODULE_AUTHOR("Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org> and Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>");
- MODULE_ALIAS("platform:rockchip-iommu");
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index e373e2e10f6a..f173b5f30dbe 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -218,7 +218,6 @@
- #define TIMER_OF_TABLES()	OF_TABLE(CONFIG_TIMER_OF, timer)
- #define IRQCHIP_OF_MATCH_TABLE() OF_TABLE(CONFIG_IRQCHIP, irqchip)
- #define CLK_OF_TABLES()		OF_TABLE(CONFIG_COMMON_CLK, clk)
--#define IOMMU_OF_TABLES()	OF_TABLE(CONFIG_OF_IOMMU, iommu)
- #define RESERVEDMEM_OF_TABLES()	OF_TABLE(CONFIG_OF_RESERVED_MEM, reservedmem)
- #define CPU_METHOD_OF_TABLES()	OF_TABLE(CONFIG_SMP, cpu_method)
- #define CPUIDLE_METHOD_OF_TABLES() OF_TABLE(CONFIG_CPU_IDLE, cpuidle_method)
-@@ -601,7 +600,6 @@
- 	CLK_OF_TABLES()							\
- 	RESERVEDMEM_OF_TABLES()						\
- 	TIMER_OF_TABLES()						\
--	IOMMU_OF_TABLES()						\
- 	CPU_METHOD_OF_TABLES()						\
- 	CPUIDLE_METHOD_OF_TABLES()					\
- 	KERNEL_DTB()							\
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 4fa654e4b5a9..f3d40dd7bb66 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -32,8 +32,4 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
- 
- #endif	/* CONFIG_OF_IOMMU */
- 
--extern struct of_device_id __iommu_of_table;
--
--#define IOMMU_OF_DECLARE(name, compat)	OF_DECLARE_1(iommu, name, compat, NULL)
--
- #endif /* __OF_IOMMU_H */
--- 
-2.17.1
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>   arch/powerpc/kvm/book3s_hv_builtin.c       | 2 +-
+>   drivers/s390/char/vmcp.c                   | 2 +-
+>   drivers/staging/android/ion/ion_cma_heap.c | 2 +-
+>   include/linux/cma.h                        | 2 +-
+>   kernel/dma/contiguous.c                    | 3 ++-
+>   mm/cma.c                                   | 8 ++++----
+>   mm/cma_debug.c                             | 2 +-
+>   7 files changed, 11 insertions(+), 10 deletions(-)
+> 
+> diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
+> index d4a3f4da409b..fc6bb9630a9c 100644
+> --- a/arch/powerpc/kvm/book3s_hv_builtin.c
+> +++ b/arch/powerpc/kvm/book3s_hv_builtin.c
+> @@ -77,7 +77,7 @@ struct page *kvm_alloc_hpt_cma(unsigned long nr_pages)
+>   	VM_BUG_ON(order_base_2(nr_pages) < KVM_CMA_CHUNK_ORDER - PAGE_SHIFT);
+>   
+>   	return cma_alloc(kvm_cma, nr_pages, order_base_2(HPT_ALIGN_PAGES),
+> -			 GFP_KERNEL);
+> +			 false);
+>   }
+>   EXPORT_SYMBOL_GPL(kvm_alloc_hpt_cma);
+>   
+> diff --git a/drivers/s390/char/vmcp.c b/drivers/s390/char/vmcp.c
+> index 948ce82a7725..0fa1b6b1491a 100644
+> --- a/drivers/s390/char/vmcp.c
+> +++ b/drivers/s390/char/vmcp.c
+> @@ -68,7 +68,7 @@ static void vmcp_response_alloc(struct vmcp_session *session)
+>   	 * anymore the system won't work anyway.
+>   	 */
+>   	if (order > 2)
+> -		page = cma_alloc(vmcp_cma, nr_pages, 0, GFP_KERNEL);
+> +		page = cma_alloc(vmcp_cma, nr_pages, 0, false);
+>   	if (page) {
+>   		session->response = (char *)page_to_phys(page);
+>   		session->cma_alloc = 1;
+> diff --git a/drivers/staging/android/ion/ion_cma_heap.c b/drivers/staging/android/ion/ion_cma_heap.c
+> index 49718c96bf9e..3fafd013d80a 100644
+> --- a/drivers/staging/android/ion/ion_cma_heap.c
+> +++ b/drivers/staging/android/ion/ion_cma_heap.c
+> @@ -39,7 +39,7 @@ static int ion_cma_allocate(struct ion_heap *heap, struct ion_buffer *buffer,
+>   	if (align > CONFIG_CMA_ALIGNMENT)
+>   		align = CONFIG_CMA_ALIGNMENT;
+>   
+> -	pages = cma_alloc(cma_heap->cma, nr_pages, align, GFP_KERNEL);
+> +	pages = cma_alloc(cma_heap->cma, nr_pages, align, false);
+>   	if (!pages)
+>   		return -ENOMEM;
+>   
+> diff --git a/include/linux/cma.h b/include/linux/cma.h
+> index bf90f0bb42bd..190184b5ff32 100644
+> --- a/include/linux/cma.h
+> +++ b/include/linux/cma.h
+> @@ -33,7 +33,7 @@ extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+>   					const char *name,
+>   					struct cma **res_cma);
+>   extern struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
+> -			      gfp_t gfp_mask);
+> +			      bool no_warn);
+>   extern bool cma_release(struct cma *cma, const struct page *pages, unsigned int count);
+>   
+>   extern int cma_for_each_area(int (*it)(struct cma *cma, void *data), void *data);
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index d987dcd1bd56..19ea5d70150c 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -191,7 +191,8 @@ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+>   	if (align > CONFIG_CMA_ALIGNMENT)
+>   		align = CONFIG_CMA_ALIGNMENT;
+>   
+> -	return cma_alloc(dev_get_cma_area(dev), count, align, gfp_mask);
+> +	return cma_alloc(dev_get_cma_area(dev), count, align,
+> +			 gfp_mask & __GFP_NOWARN);
+>   }
+>   
+>   /**
+> diff --git a/mm/cma.c b/mm/cma.c
+> index 5809bbe360d7..4cb76121a3ab 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -395,13 +395,13 @@ static inline void cma_debug_show_areas(struct cma *cma) { }
+>    * @cma:   Contiguous memory region for which the allocation is performed.
+>    * @count: Requested number of pages.
+>    * @align: Requested alignment of pages (in PAGE_SIZE order).
+> - * @gfp_mask:  GFP mask to use during compaction
+> + * @no_warn: Avoid printing message about failed allocation
+>    *
+>    * This function allocates part of contiguous memory on specific
+>    * contiguous memory area.
+>    */
+>   struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
+> -		       gfp_t gfp_mask)
+> +		       bool no_warn)
+>   {
+>   	unsigned long mask, offset;
+>   	unsigned long pfn = -1;
+> @@ -447,7 +447,7 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
+>   		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
+>   		mutex_lock(&cma_mutex);
+>   		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
+> -					 gfp_mask);
+> +				     GFP_KERNEL | (no_warn ? __GFP_NOWARN : 0));
+>   		mutex_unlock(&cma_mutex);
+>   		if (ret == 0) {
+>   			page = pfn_to_page(pfn);
+> @@ -466,7 +466,7 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
+>   
+>   	trace_cma_alloc(pfn, page, count, align);
+>   
+> -	if (ret && !(gfp_mask & __GFP_NOWARN)) {
+> +	if (ret && !no_warn) {
+>   		pr_err("%s: alloc failed, req-size: %zu pages, ret: %d\n",
+>   			__func__, count, ret);
+>   		cma_debug_show_areas(cma);
+> diff --git a/mm/cma_debug.c b/mm/cma_debug.c
+> index f23467291cfb..ad6723e9d110 100644
+> --- a/mm/cma_debug.c
+> +++ b/mm/cma_debug.c
+> @@ -139,7 +139,7 @@ static int cma_alloc_mem(struct cma *cma, int count)
+>   	if (!mem)
+>   		return -ENOMEM;
+>   
+> -	p = cma_alloc(cma, count, 0, GFP_KERNEL);
+> +	p = cma_alloc(cma, count, 0, false);
+>   	if (!p) {
+>   		kfree(mem);
+>   		return -ENOMEM;
+> 
