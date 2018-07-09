@@ -1,23 +1,15 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
-	AMD sme enabled
-Date: Mon, 9 Jul 2018 21:55:35 +0800
-Message-ID: <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
-References: <20180702072639.10110-1-lijiang@redhat.com>
-	<20180702072639.10110-2-lijiang@redhat.com>
-	<20180702101451.GB28730@zn.tnic>
-	<4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
-	<895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
-	<20180703111428.GB5748@zn.tnic>
-	<4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
-	<e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
-	<20180709092901.GA22182@nazgul.tnic>
+From: =?UTF-8?Q?Micha=C5=82_Nazarewicz?= <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
+	cma_alloc()
+Date: Mon, 9 Jul 2018 15:23:38 +0100
+Message-ID: <CA+pa1O2H-rbTqgKgtSzD9jdnyxkD5w62b0Q=o5FX5Y85hCGVnA@mail.gmail.com>
+References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
+	<20180709121956.20200-1-m.szyprowski@samsung.com>
+	<20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============1179940451339019588=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180709092901.GA22182-K5JNixvcfoxupOikMc4+xw@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j-PmokGAFL9ItqW5MlFJXMulaTQe2KTcn/@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,49 +19,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwN+aciDA55pelIDE3OjI5LCBCb3Jpc2xhdiBQZXRrb3Yg5YaZ6YGTOgo+IE9u
-IE1vbiwgSnVsIDA5LCAyMDE4IGF0IDAyOjI4OjExUE0gKzA4MDAsIGxpamlhbmcgd3JvdGU6Cj4+
-IExhc3Qgd2VlaywgSSBoYWQgdHJpZWQgbWFueSB3YXlzIHRvIGRvIHRoaXMgd29yaywgYnV0IGl0
-IGxvb2tzCj4+IGxpa2UgdGhhdCB0aGUgd2F5cyBvZiBkZWR1Y2luZyBhZGRyZXNzIGlzIG5vdCBz
-dWl0YWJsZSB0byBhbm90aGVyCj4+IHNjZW5hcmlvcywgc3VjaCBhcyBtYXBwaW5nIHNvbWUgZGV2
-aWNlcyBtbWlvIHNwYWNlLCB3aGljaCBhcmUKPj4gdW5lbmNyeXB0ZWQsIGFuZCB0aGUgZGV2aWNl
-IG1taW8gc3BhY2UgaXMgb3V0c2lkZSBrZHVtcCBrZXJuZWwgbGlrZQo+PiB0aGUgb2xkIG1lbW9y
-eSwgYnV0IHRoZSBvbGQgbWVtb3J5IGlzIGVuY3J5cHRlZCwgd2UgY2FuJ3QgZmluZCB0aGUKPj4g
-Z2VuZXJhbCBydWxlcyB0byBkZWNpZGUgd2hlbiB0byBlbmNyeXB0IG9yIG5vdC4KPiAKPiBJZiB3
-ZSBjYW4ndCBmaW5kIHRoZSAiZ2VuZXJhbCBydWxlcyIgaG93IGlzIHRoZSBjYWxsZXIgc3VwcG9z
-ZWQgdG8ga25vdwo+IGhvdyB0byBhY2Nlc3MgdGhlIG1lbW9yeT8KPiAKQWJvdXQgdGhpcyBpc3N1
-ZSwgaSB3YW50IHRvIHVzZSBhbiBleGFtcGxlIHRvIGRlc2NyaWJlIGl0LgovKiBkcml2ZXJzL2lv
-bW11L2FtZF9pb21tdV9pbml0LmMgKi8Kc3RhdGljIHU4IF9faW9tZW0gKiBfX2luaXQgaW9tbXVf
-bWFwX21taW9fc3BhY2UodTY0IGFkZHJlc3MsIHU2NCBlbmQpCnsKICAgICAgICBpZiAoIXJlcXVl
-c3RfbWVtX3JlZ2lvbihhZGRyZXNzLCBlbmQsICJhbWRfaW9tbXUiKSkgewogICAgICAgICAgICAg
-ICAgcHJfZXJyKCJBTUQtVmk6IENhbiBub3QgcmVzZXJ2ZSBtZW1vcnkgcmVnaW9uICVsbHgtJWxs
-eCBmb3IgbW1pb1xuIiwKICAgICAgICAgICAgICAgICAgICAgICAgYWRkcmVzcywgZW5kKTsKICAg
-ICAgICAgICAgICAgIHByX2VycigiQU1ELVZpOiBUaGlzIGlzIGEgQklPUyBidWcuIFBsZWFzZSBj
-b250YWN0IHlvdXIgaGFyZHdhcmUgdmVuZG9yXG4iKTsKICAgICAgICAgICAgICAgIHJldHVybiBO
-VUxMOwogICAgICAgIH0KCiAgICAgICAgcmV0dXJuICh1OCBfX2lvbWVtICopaW9yZW1hcF9ub2Nh
-Y2hlKGFkZHJlc3MsIGVuZCk7Cn0KCltyb290QGhwLWRsMzg1ZzEwLTAzIGxpbnV4XSMgY2F0IC9w
-cm9jL2lvbWVtIHxncmVwIC1pIGNyYXNoCiAgN2ZhMDAwMDAwLTg3OWZmZmZmZiA6IENyYXNoIGtl
-cm5lbApbcm9vdEBocC1kbDM4NWcxMC0wMyBsaW51eF0jIGNhdCAvcHJvYy9pb21lbSB8Z3JlcCBh
-bWRfaW9tbXUKICA5YzgwMDAwMC05Yzg3ZmZmZiA6IGFtZF9pb21tdQogIGE5ODAwMDAwLWE5ODdm
-ZmZmIDogYW1kX2lvbW11CiAgYjY4MDAwMDAtYjY4N2ZmZmYgOiBhbWRfaW9tbXUKICBjMzgwMDAw
-MC1jMzg3ZmZmZiA6IGFtZF9pb21tdQogIGQwODAwMDAwLWQwODdmZmZmIDogYW1kX2lvbW11CiAg
-ZGQ4MDAwMDAtZGQ4N2ZmZmYgOiBhbWRfaW9tbXUKICBlYTgwMDAwMC1lYTg3ZmZmZiA6IGFtZF9p
-b21tdQogIGZkODAwMDAwLWZkODdmZmZmIDogYW1kX2lvbW11CgpPYnZpb3VzbHksIHRoZSBpb21t
-dSBtbWlvIHNwYWNlIGlzIG5vdCBlbmNyeXB0ZWQsIGFuZCB0aGUgZGV2aWNlIG1taW8gc3BhY2Ug
-aXMgb3V0c2lkZSBrZHVtcAprZXJuZWwuIFdlIGtub3cgdGhhdCB0aGUgb2xkIG1lbW9yeSBpcyBl
-bmNyeXB0ZWQsIGFuZCB0aGUgb2xkIG1lbW9yeSBpcyBhbHNvIG91dHNpZGUga2R1bXAKa2VybmVs
-LiBGb3IgdGhlIGN1cnJlbnQgY2FzZSwgZTgyMF9fZ2V0X2VudHJ5X3R5cGUoKSBhbmQgd2Fsa19p
-b21lbV9yZXNfZGVzYygpIGNhbid0IGdldCB0aGUKZGVzaXJlZCByZXN1bHQsIHNvIHdlIGNhbid0
-IGFsc28gZGVjaWRlIHdoZXRoZXIgZW5jcnlwdGlvbiBvciBub3QgYWNjb3JkaW5nIHRvIHRoaXMg
-cmVzdWx0KHJ1bGVzKS4KSWYgd2Ugd2FudCB0byBrbm93IHdoZXRoZXIgZW5jcnlwdGlvbiBvciBu
-b3QgYnkgZGVkdWNpbmcgdGhlIGFkZHJlc3MsIHdlIHdpbGwgbmVlZCB0byByZWFkCnRoZSBjb250
-ZW50IG9mIG1lbW9yeSBhbmQgaGF2ZSBhIHJlZmVyZW5jZSB2YWx1ZSBmb3IgY29tcGFyaXNvbiwg
-dGhlbiB3aGF0J3MgYSByZWZlcmVuY2UgdmFsdWU/ClNvbWV0aW1lcyB3ZSBkb24ndCBrbm93IHRo
-YXQuCgpSZWdhcmRzLApMaWFuYm8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+--===============1179940451339019588==
+Content-Type: multipart/alternative; boundary="000000000000277366057091c3be"
+
+--000000000000277366057091c3be
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, 9 Jul 2018 13:20 Marek Szyprowski, <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote=
+:
+
+> cma_alloc() function doesn't really support gfp flags other than
+> __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
+>
+> This will help to avoid giving false feeling that this function supports
+> standard gfp flags and callers can pass __GFP_ZERO to get zeroed buffer,
+> what has already been an issue: see commit dd65a941f6ba ("arm64:
+> dma-mapping: clear buffers allocated with FORCE_CONTIGUOUS flag").
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>
+
+Acked-by: Micha=C5=82 Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>
+
+(Adding Acked-by on a phone is surprisingly hard).
+
+---
+>  arch/powerpc/kvm/book3s_hv_builtin.c       | 2 +-
+>  drivers/s390/char/vmcp.c                   | 2 +-
+>  drivers/staging/android/ion/ion_cma_heap.c | 2 +-
+>  include/linux/cma.h                        | 2 +-
+>  kernel/dma/contiguous.c                    | 3 ++-
+>  mm/cma.c                                   | 8 ++++----
+>  mm/cma_debug.c                             | 2 +-
+>  7 files changed, 11 insertions(+), 10 deletions(-)
+>
+
+--000000000000277366057091c3be
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"auto"><div><div class=3D"gmail_quote"><div dir=3D"ltr">On Mon, =
+9 Jul 2018 13:20 Marek Szyprowski, &lt;<a href=3D"mailto:m.szyprowski@samsu=
+ng.com" target=3D"_blank" rel=3D"noreferrer">m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org</a>&g=
+t; wrote:<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 =
+.8ex;border-left:1px #ccc solid;padding-left:1ex">cma_alloc() function does=
+n&#39;t really support gfp flags other than<br>
+__GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.<b=
+r>
+<br>
+This will help to avoid giving false feeling that this function supports<br=
+>
+standard gfp flags and callers can pass __GFP_ZERO to get zeroed buffer,<br=
+>
+what has already been an issue: see commit dd65a941f6ba (&quot;arm64:<br>
+dma-mapping: clear buffers allocated with FORCE_CONTIGUOUS flag&quot;).<br>
+<br>
+Signed-off-by: Marek Szyprowski &lt;<a href=3D"mailto:m.szyprowski@samsung.=
+com" rel=3D"noreferrer noreferrer" target=3D"_blank">m.szyprowski@samsung.c=
+om</a>&gt;<br></blockquote></div></div><div dir=3D"auto"><br></div><div dir=
+=3D"auto">Acked-by: Micha=C5=82 Nazarewicz &lt;<a href=3D"mailto:mina86@min=
+a86.com" target=3D"_blank" rel=3D"noreferrer">mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org</a>&gt;</di=
+v><div dir=3D"auto"><br></div><div dir=3D"auto">(Adding Acked-by on a phone=
+ is surprisingly hard).=C2=A0</div><div dir=3D"auto"><br></div><div dir=3D"=
+auto"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D=
+"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+---<br>
+=C2=A0arch/powerpc/kvm/book3s_hv_builtin.c=C2=A0 =C2=A0 =C2=A0 =C2=A0| 2 +-=
+<br>
+=C2=A0drivers/s390/char/vmcp.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0| 2 +-<br>
+=C2=A0drivers/staging/android/ion/ion_cma_heap.c | 2 +-<br>
+=C2=A0include/linux/cma.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 | 2 +-<br>
+=C2=A0kernel/dma/contiguous.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 | 3 ++-<br>
+=C2=A0mm/cma.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 8 ++++-=
+---<br>
+=C2=A0mm/cma_debug.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 2 +-<br>
+=C2=A07 files changed, 11 insertions(+), 10 deletions(-)<br></blockquote></=
+div></div></div>
+
+--000000000000277366057091c3be--
+
+--===============1179940451339019588==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1179940451339019588==--
