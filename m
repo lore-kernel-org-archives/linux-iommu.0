@@ -1,50 +1,27 @@
-From: Dmitry Safonov via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [RFC 0/3] iommu/iova: Unsafe locking in find_iova()
-Date: Mon, 09 Jul 2018 18:57:49 +0100
-Message-ID: <1531159069.3205.63.camel@arista.com>
-References: <20180621180823.805-1-dima@arista.com>
-	<20180706131611.h3w2kdinmjguikgo@8bytes.org>
-	<1530886247.3205.53.camel@arista.com>
-	<20180706151321.sq25kc7otgjo3xvn@8bytes.org>
-Reply-To: Dmitry Safonov <dima-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+From: Joonsoo Kim <js1304@gmail.com>
+Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from cma_alloc()
+Date: Tue, 10 Jul 2018 16:19:32 +0900
+Message-ID: <CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
+References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
+ <20180709121956.20200-1-m.szyprowski@samsung.com> <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180706151321.sq25kc7otgjo3xvn-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Dmitry Safonov <0x7f454c46-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Linux Memory Management List <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>, Michal Nazarewicz <mina86@mina86.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Christoph Hellwig <hch@lst.de>, Michal Hocko <mhocko@suse.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chris Zankel <chris@zankel.net>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Joerg Roedel <joro@8bytes.org>Sumit Semwal <s>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2018-07-06 at 17:13 +0200, Joerg Roedel wrote:
-> On Fri, Jul 06, 2018 at 03:10:47PM +0100, Dmitry Safonov wrote:
-> > Yes, as far as I can see, there are code-paths which may try to
-> > handle
-> > it at the same time:
-> > o memory notifiers for hot-unplug (intel-iommu.c)
-> > o drivers unloading calls free_iova(), which in the result calls
-> >   find_iova()
-> > o I see at least one driver that frees iova during it's normal work
-> >   too: scif_rma.c:scif_free_window_offset()
-> 
-> Yeah, but the IOVAs freed in the memory notifiers are just the ones
-> for
-> the direct-mapped RMRR regions requested by firmware, not the IOVAs
-> allocated by any driver, so I think this shouldn't be a problem.
+Hello, Marek.
 
-Ok, than drop it, please.
-I thought that safer API + nice diffstat can justify the change, but
-whatever %)
+2018-07-09 21:19 GMT+09:00 Marek Szyprowski <m.szyprowski@samsung.com>:
+> cma_alloc() function doesn't really support gfp flags other than
+> __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
 
--- 
-Thanks,
-             Dmitry
+Although gfp_mask isn't used in cma_alloc() except no_warn, it can be used
+in alloc_contig_range(). For example, if passed gfp mask has no __GFP_FS,
+compaction(isolation) would work differently. Do you have considered
+such a case?
+
+Thanks.
