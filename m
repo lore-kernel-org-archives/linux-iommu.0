@@ -1,18 +1,11 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [RFC PATCH 2/2] dma-mapping: Clean up dma_get_required_mask()
-	hooks
-Date: Tue, 10 Jul 2018 17:08:24 +0200
-Message-ID: <20180710150824.GA12274@lst.de>
-References: <55ac9550c311f056dcfeed9b2c8265375f17b155.1530726467.git.robin.murphy@arm.com>
-	<08256121f325ceed7f6b88c1a5d3cf949698787d.1530726467.git.robin.murphy@arm.com>
-	<20180710113908.GB32688@lst.de>
-	<3b8a23b6-6015-3e8e-07f0-b75920a1e264@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFC PATCH 0/4] Stop losing firmware-set DMA masks
+Date: Tue, 10 Jul 2018 18:17:15 +0100
+Message-ID: <cover.1531239284.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <3b8a23b6-6015-3e8e-07f0-b75920a1e264-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,50 +15,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 10, 2018 at 01:29:20PM +0100, Robin Murphy wrote:
->> What I've done is to:
->>
->>   1) provide the get_required_mask unconditionally in struct dma_map_ops
->>   2) default to what is the current dma_get_required_mask implementation
->>      if nothing else is specified.
->
-> Yeah, there's already 17 pointers in dma_map_ops of which about half are 
-> optional, so these awkward #ifdefs to save one more probably aren't worth 
-> the inconsistency they bring. It feels like this guy mostly goes 
-> hand-in-hand with dma_supported, so ack to giving it the same look and 
-> feel.
+Whilst the common firmware code invoked by dma_configure() initialises
+devices' DMA masks according to limitations described by the respective
+properties ("dma-ranges" for OF and _DMA/IORT for ACPI), the nature of
+the dma_set_mask() API leads to that information getting lost when
+well-behaved drivers probe and set a 64-bit mask, since in general
+there's no way to tell the difference between a firmware-described mask
+(which should be respected) and whatever default may have come from the
+bus code (which should be replaced outright). This can break DMA on
+systems with certain IOMMU topologies (e.g. [1]) where the IOMMU driver
+only knows its maximum supported address size, not how many of those
+address bits might actually be wired up between any of its input
+interfaces and the associated DMA master devices. Similarly, some PCIe
+root complexes only have a 32-bit native interface on their host bridge,
+which leads to the same DMA-address-truncation problem in systems with a
+larger physical memory map and RAM above 4GB (e.g. [2]).
 
-This whole area needs a major refactoring - we currentl have three
-different APIs to deal with addressability: dma_get_required_mask,
-dma_capable/dma_set_mask and dma_capable from dma-direct.h, and there
-is plenty of unexplainable mismatches between them.
+These patches attempt to deal with this in the simplest way possible by
+generalising the specific quirk for 32-bit bridges into an arbitrary
+mask which can then also be plumbed into the firmware code. In the
+interest of being minimally invasive, I've only included a point fix
+for the IOMMU issue as seen on arm64 - there may be further tweaks
+needed in DMA ops to catch all possible incarnations of this problem,
+but this initial RFC is mostly about the impact beyond the dma-mapping
+subsystem itself.
 
-Sorting this out has been on my TODO list, but I think it can only
-effectively be done once the direct mapping implementations are
-reasonably consolidated.
+Robin.
 
->> What I still had on my todo list but not done yet:
->>
->>   3) go through all instances and check if the current default
->>      makes sense, at it based on direct addressability.  For most
->>      iommu instances it seems like we should just return a 64-bit mask.
->
-> That's reasonable, although in many cases we should know the effective 
-> IOMMU input address size which would be even neater.
 
-Sure.  Maybe I just need to steps 1 and 2 and let maintainers fill
-in.
+[1] http://lists.infradead.org/pipermail/linux-arm-kernel/2018-May/580804.html
+[2] http://lists.infradead.org/pipermail/linux-arm-kernel/2016-December/474443.html
 
->>   4) figure out how to take the dma offsets into account for it
->
-> AFAICS it might boil down to simply:
->
-> 	mask = roundup_pow_of_two(phys_to_dma(dev, PFN_PHYS(max_pfn))) - 1;
+Robin Murphy (4):
+  dma-mapping: Generalise dma_32bit_limit flag
+  ACPI/IORT: Set bus DMA mask as appropriate
+  of/device: Set bus DMA mask as appropriate
+  iommu/dma: Respect bus DMA limit for IOVAs
 
-That looks way to sensible.  Which reminds me that I need to research
-the history behind the low_totalram/high_totalram magic in
-dma_get_required_mask.
+ arch/x86/kernel/pci-dma.c | 2 +-
+ drivers/acpi/arm64/iort.c | 1 +
+ drivers/iommu/dma-iommu.c | 3 +++
+ drivers/of/device.c       | 1 +
+ include/linux/device.h    | 6 +++---
+ kernel/dma/direct.c       | 2 +-
+ 6 files changed, 10 insertions(+), 5 deletions(-)
+
+-- 
+2.17.1.dirty
