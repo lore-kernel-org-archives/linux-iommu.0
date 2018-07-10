@@ -1,18 +1,16 @@
-From: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
-	cma_alloc()
-Date: Tue, 10 Jul 2018 11:50:56 +0200
-Message-ID: <20180710095056.GE14284@dhcp22.suse.cz>
-References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
-	<20180709121956.20200-1-m.szyprowski@samsung.com>
-	<20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
-	<CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [RFC PATCH 2/2] dma-mapping: Clean up dma_get_required_mask()
+	hooks
+Date: Tue, 10 Jul 2018 13:39:08 +0200
+Message-ID: <20180710113908.GB32688@lst.de>
+References: <55ac9550c311f056dcfeed9b2c8265375f17b155.1530726467.git.robin.murphy@arm.com>
+	<08256121f325ceed7f6b88c1a5d3cf949698787d.1530726467.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <08256121f325ceed7f6b88c1a5d3cf949698787d.1530726467.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,23 +20,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joonsoo Kim <js1304-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, Linux Memory Management List <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue 10-07-18 16:19:32, Joonsoo Kim wrote:
-> Hello, Marek.
-> 
-> 2018-07-09 21:19 GMT+09:00 Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>:
-> > cma_alloc() function doesn't really support gfp flags other than
-> > __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
-> 
-> Although gfp_mask isn't used in cma_alloc() except no_warn, it can be used
-> in alloc_contig_range(). For example, if passed gfp mask has no __GFP_FS,
-> compaction(isolation) would work differently. Do you have considered
-> such a case?
+On Wed, Jul 04, 2018 at 06:50:12PM +0100, Robin Murphy wrote:
+> As for the other mask-related hooks, standardise the arch override into
+> a Kconfig option, and also pull the generic implementation into the DMA
+> mapping code rather than having it hide away in the platform bus code.
 
-Does any of cma_alloc users actually care about GFP_NO{FS,IO}?
--- 
-Michal Hocko
-SUSE Labs
+I compared this a bit to what I had around against an older kernel,
+and I think we should probably go with something more like the
+version I had, which I can dust off again.
+
+What I've done is to:
+
+ 1) provide the get_required_mask unconditionally in struct dma_map_ops
+ 2) default to what is the current dma_get_required_mask implementation
+    if nothing else is specified.
+
+What I still had on my todo list but not done yet:
+
+ 3) go through all instances and check if the current default
+    makes sense, at it based on direct addressability.  For most
+    iommu instances it seems like we should just return a 64-bit mask.
+ 4) figure out how to take the dma offsets into account for it
+ 5) move the function to the dma-direct code, as that is where it
+    belongs
+ 5) figure out if there is a better name for the method, as with
+    swiotlb & co it isn't really the required mask, but more something
+    like the optimal mask
+ 6) document the whole thing..
+ 7) sort out the powerpc indirection mess.
+
+Do you agree with that general plan?  If so I can dust off my old
+patch.
