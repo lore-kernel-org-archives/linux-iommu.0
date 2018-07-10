@@ -1,54 +1,64 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [RFC PATCH 4/4] iommu/dma: Respect bus DMA limit for IOVAs
-Date: Tue, 10 Jul 2018 18:17:19 +0100
-Message-ID: <2c0d7437ee7ccdd58da25faa283bd3c3148b961b.1531239284.git.robin.murphy@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [RFC PATCH 0/4] Stop losing firmware-set DMA masks
+Date: Tue, 10 Jul 2018 20:02:32 +0200
+Message-ID: <20180710180232.GA26285@lst.de>
 References: <cover.1531239284.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <cover.1531239284.git.robin.murphy@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org
-Cc: devicetree@vger.kernel.org, lorenzo.pieralisi@arm.com, gregkh@linuxfoundation.org, joro@8bytes.org, x86@kernel.org, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, robh+dt@kernel.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, frowand.list@gmail.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <cover.1531239284.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>, sudeep.holla-5wv7dgnIgG8@public.gmane.org, linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Take the new bus limit into account (when present) for IOVA allocations,
-to accommodate those SoCs which integrate off-the-shelf IP blocks with
-narrower interconnects such that the link between a device output and an
-IOMMU input can truncate DMA addresses to even fewer bits than the
-native size of either block's interface would imply.
+> These patches attempt to deal with this in the simplest way possible by
+> generalising the specific quirk for 32-bit bridges into an arbitrary
+> mask which can then also be plumbed into the firmware code. In the
+> interest of being minimally invasive, I've only included a point fix
+> for the IOMMU issue as seen on arm64 - there may be further tweaks
+> needed in DMA ops to catch all possible incarnations of this problem,
+> but this initial RFC is mostly about the impact beyond the dma-mapping
+> subsystem itself.
 
-Eventually it might make sense for the DMA core to apply this constraint
-up-front in dma_set_mask() and friends, but for now this seems like the
-least risky approach.
+Thanks, this looks very nice to me.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/dma-iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+In fact it probably solves the RISC-V/Xiling problem as well if we can
+just add the dma-ranges property to the device tree for the affected
+systems.  Palmer, do you know how easily the DT could be updated for
+that case?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index ddcbbdb5d658..511ff9a1d6d9 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -367,6 +367,9 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
- 		iova_len = roundup_pow_of_two(iova_len);
- 
-+	if (dev->bus_dma_mask)
-+		dma_limit &= dev->bus_dma_mask;
-+
- 	if (domain->geometry.force_aperture)
- 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
- 
--- 
-2.17.1.dirty
+> 
+> Robin.
+> 
+> 
+> [1] http://lists.infradead.org/pipermail/linux-arm-kernel/2018-May/580804.html
+> [2] http://lists.infradead.org/pipermail/linux-arm-kernel/2016-December/474443.html
+> 
+> Robin Murphy (4):
+>   dma-mapping: Generalise dma_32bit_limit flag
+>   ACPI/IORT: Set bus DMA mask as appropriate
+>   of/device: Set bus DMA mask as appropriate
+>   iommu/dma: Respect bus DMA limit for IOVAs
+> 
+>  arch/x86/kernel/pci-dma.c | 2 +-
+>  drivers/acpi/arm64/iort.c | 1 +
+>  drivers/iommu/dma-iommu.c | 3 +++
+>  drivers/of/device.c       | 1 +
+>  include/linux/device.h    | 6 +++---
+>  kernel/dma/direct.c       | 2 +-
+>  6 files changed, 10 insertions(+), 5 deletions(-)
+> 
+> -- 
+> 2.17.1.dirty
+---end quoted text---
