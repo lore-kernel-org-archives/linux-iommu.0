@@ -1,46 +1,280 @@
-From: Rob Herring <rob.herring@linaro.org>
-Subject: Re: [RFC PATCH 0/4] Stop losing firmware-set DMA masks
-Date: Wed, 11 Jul 2018 08:40:30 -0600
-Message-ID: <CABGGisxVqLMu3TUpbJGWnUFgzUor-8tdyV8KJeU0YT7y=BHrAQ@mail.gmail.com>
-References: <cover.1531239284.git.robin.murphy@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH] nios2: use generic dma_noncoherent_ops
+Date: Wed, 11 Jul 2018 17:32:52 +0200
+Message-ID: <20180711153252.GA31946@lst.de>
+References: <20180619070137.25841-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1531239284.git.robin.murphy@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, linux-acpi@vger.kernel.org, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, hanjun.guo@linaro.org, Sudeep Holla <sudeep.holla@arm.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, joro@8bytes.org, x86@kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180619070137.25841-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org
+Cc: nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 10, 2018 at 12:43 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Whilst the common firmware code invoked by dma_configure() initialises
-> devices' DMA masks according to limitations described by the respective
-> properties ("dma-ranges" for OF and _DMA/IORT for ACPI), the nature of
-> the dma_set_mask() API leads to that information getting lost when
-> well-behaved drivers probe and set a 64-bit mask, since in general
-> there's no way to tell the difference between a firmware-described mask
-> (which should be respected) and whatever default may have come from the
-> bus code (which should be replaced outright). This can break DMA on
-> systems with certain IOMMU topologies (e.g. [1]) where the IOMMU driver
-> only knows its maximum supported address size, not how many of those
-> address bits might actually be wired up between any of its input
-> interfaces and the associated DMA master devices. Similarly, some PCIe
-> root complexes only have a 32-bit native interface on their host bridge,
-> which leads to the same DMA-address-truncation problem in systems with a
-> larger physical memory map and RAM above 4GB (e.g. [2]).
->
-> These patches attempt to deal with this in the simplest way possible by
-> generalising the specific quirk for 32-bit bridges into an arbitrary
-> mask which can then also be plumbed into the firmware code. In the
-> interest of being minimally invasive, I've only included a point fix
-> for the IOMMU issue as seen on arm64 - there may be further tweaks
-> needed in DMA ops to catch all possible incarnations of this problem,
-> but this initial RFC is mostly about the impact beyond the dma-mapping
-> subsystem itself.
+ping?  Any comments?
 
-Couldn't you set and use the device's parent's dma_mask instead. At
-least for DT, we should always have a parent device representing the
-bus. That would avoid further bloating of struct device.
-
-Rob
+On Tue, Jun 19, 2018 at 09:01:37AM +0200, Christoph Hellwig wrote:
+> Switch to the generic noncoherent direct mapping implementation.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>  arch/nios2/Kconfig                   |   3 +
+>  arch/nios2/include/asm/Kbuild        |   1 +
+>  arch/nios2/include/asm/dma-mapping.h |  20 ----
+>  arch/nios2/mm/dma-mapping.c          | 139 +++------------------------
+>  4 files changed, 17 insertions(+), 146 deletions(-)
+>  delete mode 100644 arch/nios2/include/asm/dma-mapping.h
+> 
+> diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
+> index 3d4ec88f1db1..92035042cf62 100644
+> --- a/arch/nios2/Kconfig
+> +++ b/arch/nios2/Kconfig
+> @@ -1,6 +1,9 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  config NIOS2
+>  	def_bool y
+> +	select ARCH_HAS_SYNC_DMA_FOR_CPU
+> +	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+> +	select DMA_NONCOHERENT_OPS
+>  	select TIMER_OF
+>  	select GENERIC_ATOMIC64
+>  	select GENERIC_CLOCKEVENTS
+> diff --git a/arch/nios2/include/asm/Kbuild b/arch/nios2/include/asm/Kbuild
+> index 64ed3d656956..8fde4fa2c34f 100644
+> --- a/arch/nios2/include/asm/Kbuild
+> +++ b/arch/nios2/include/asm/Kbuild
+> @@ -9,6 +9,7 @@ generic-y += current.h
+>  generic-y += device.h
+>  generic-y += div64.h
+>  generic-y += dma.h
+> +generic-y += dma-mapping.h
+>  generic-y += emergency-restart.h
+>  generic-y += exec.h
+>  generic-y += extable.h
+> diff --git a/arch/nios2/include/asm/dma-mapping.h b/arch/nios2/include/asm/dma-mapping.h
+> deleted file mode 100644
+> index 6ceb92251da0..000000000000
+> --- a/arch/nios2/include/asm/dma-mapping.h
+> +++ /dev/null
+> @@ -1,20 +0,0 @@
+> -/*
+> - * Copyright (C) 2011 Tobias Klauser <tklauser-93Khv+1bN0NyDzI6CaY1VQ@public.gmane.org>
+> - * Copyright (C) 2009 Wind River Systems Inc
+> - *
+> - * This file is subject to the terms and conditions of the GNU General
+> - * Public License.  See the file COPYING in the main directory of this
+> - * archive for more details.
+> - */
+> -
+> -#ifndef _ASM_NIOS2_DMA_MAPPING_H
+> -#define _ASM_NIOS2_DMA_MAPPING_H
+> -
+> -extern const struct dma_map_ops nios2_dma_ops;
+> -
+> -static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+> -{
+> -	return &nios2_dma_ops;
+> -}
+> -
+> -#endif /* _ASM_NIOS2_DMA_MAPPING_H */
+> diff --git a/arch/nios2/mm/dma-mapping.c b/arch/nios2/mm/dma-mapping.c
+> index 4be815519dd4..4af9e5b5ba1c 100644
+> --- a/arch/nios2/mm/dma-mapping.c
+> +++ b/arch/nios2/mm/dma-mapping.c
+> @@ -12,18 +12,18 @@
+>  
+>  #include <linux/types.h>
+>  #include <linux/mm.h>
+> -#include <linux/export.h>
+>  #include <linux/string.h>
+> -#include <linux/scatterlist.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/io.h>
+>  #include <linux/cache.h>
+>  #include <asm/cacheflush.h>
+>  
+> -static inline void __dma_sync_for_device(void *vaddr, size_t size,
+> -			      enum dma_data_direction direction)
+> +void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
+> +		size_t size, enum dma_data_direction dir)
+>  {
+> -	switch (direction) {
+> +	void *vaddr = phys_to_virt(paddr);
+> +
+> +	switch (dir) {
+>  	case DMA_FROM_DEVICE:
+>  		invalidate_dcache_range((unsigned long)vaddr,
+>  			(unsigned long)(vaddr + size));
+> @@ -42,10 +42,12 @@ static inline void __dma_sync_for_device(void *vaddr, size_t size,
+>  	}
+>  }
+>  
+> -static inline void __dma_sync_for_cpu(void *vaddr, size_t size,
+> -			      enum dma_data_direction direction)
+> +void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
+> +		size_t size, enum dma_data_direction dir)
+>  {
+> -	switch (direction) {
+> +	void *vaddr = phys_to_virt(paddr);
+> +
+> +	switch (dir) {
+>  	case DMA_BIDIRECTIONAL:
+>  	case DMA_FROM_DEVICE:
+>  		invalidate_dcache_range((unsigned long)vaddr,
+> @@ -58,8 +60,8 @@ static inline void __dma_sync_for_cpu(void *vaddr, size_t size,
+>  	}
+>  }
+>  
+> -static void *nios2_dma_alloc(struct device *dev, size_t size,
+> -		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+> +void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> +		gfp_t gfp, unsigned long attrs)
+>  {
+>  	void *ret;
+>  
+> @@ -80,125 +82,10 @@ static void *nios2_dma_alloc(struct device *dev, size_t size,
+>  	return ret;
+>  }
+>  
+> -static void nios2_dma_free(struct device *dev, size_t size, void *vaddr,
+> +void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+>  		dma_addr_t dma_handle, unsigned long attrs)
+>  {
+>  	unsigned long addr = (unsigned long) CAC_ADDR((unsigned long) vaddr);
+>  
+>  	free_pages(addr, get_order(size));
+>  }
+> -
+> -static int nios2_dma_map_sg(struct device *dev, struct scatterlist *sg,
+> -		int nents, enum dma_data_direction direction,
+> -		unsigned long attrs)
+> -{
+> -	int i;
+> -
+> -	for_each_sg(sg, sg, nents, i) {
+> -		void *addr = sg_virt(sg);
+> -
+> -		if (!addr)
+> -			continue;
+> -
+> -		sg->dma_address = sg_phys(sg);
+> -
+> -		if (attrs & DMA_ATTR_SKIP_CPU_SYNC)
+> -			continue;
+> -
+> -		__dma_sync_for_device(addr, sg->length, direction);
+> -	}
+> -
+> -	return nents;
+> -}
+> -
+> -static dma_addr_t nios2_dma_map_page(struct device *dev, struct page *page,
+> -			unsigned long offset, size_t size,
+> -			enum dma_data_direction direction,
+> -			unsigned long attrs)
+> -{
+> -	void *addr = page_address(page) + offset;
+> -
+> -	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> -		__dma_sync_for_device(addr, size, direction);
+> -
+> -	return page_to_phys(page) + offset;
+> -}
+> -
+> -static void nios2_dma_unmap_page(struct device *dev, dma_addr_t dma_address,
+> -		size_t size, enum dma_data_direction direction,
+> -		unsigned long attrs)
+> -{
+> -	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> -		__dma_sync_for_cpu(phys_to_virt(dma_address), size, direction);
+> -}
+> -
+> -static void nios2_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+> -		int nhwentries, enum dma_data_direction direction,
+> -		unsigned long attrs)
+> -{
+> -	void *addr;
+> -	int i;
+> -
+> -	if (direction == DMA_TO_DEVICE)
+> -		return;
+> -
+> -	if (attrs & DMA_ATTR_SKIP_CPU_SYNC)
+> -		return;
+> -
+> -	for_each_sg(sg, sg, nhwentries, i) {
+> -		addr = sg_virt(sg);
+> -		if (addr)
+> -			__dma_sync_for_cpu(addr, sg->length, direction);
+> -	}
+> -}
+> -
+> -static void nios2_dma_sync_single_for_cpu(struct device *dev,
+> -		dma_addr_t dma_handle, size_t size,
+> -		enum dma_data_direction direction)
+> -{
+> -	__dma_sync_for_cpu(phys_to_virt(dma_handle), size, direction);
+> -}
+> -
+> -static void nios2_dma_sync_single_for_device(struct device *dev,
+> -		dma_addr_t dma_handle, size_t size,
+> -		enum dma_data_direction direction)
+> -{
+> -	__dma_sync_for_device(phys_to_virt(dma_handle), size, direction);
+> -}
+> -
+> -static void nios2_dma_sync_sg_for_cpu(struct device *dev,
+> -		struct scatterlist *sg, int nelems,
+> -		enum dma_data_direction direction)
+> -{
+> -	int i;
+> -
+> -	/* Make sure that gcc doesn't leave the empty loop body.  */
+> -	for_each_sg(sg, sg, nelems, i)
+> -		__dma_sync_for_cpu(sg_virt(sg), sg->length, direction);
+> -}
+> -
+> -static void nios2_dma_sync_sg_for_device(struct device *dev,
+> -		struct scatterlist *sg, int nelems,
+> -		enum dma_data_direction direction)
+> -{
+> -	int i;
+> -
+> -	/* Make sure that gcc doesn't leave the empty loop body.  */
+> -	for_each_sg(sg, sg, nelems, i)
+> -		__dma_sync_for_device(sg_virt(sg), sg->length, direction);
+> -
+> -}
+> -
+> -const struct dma_map_ops nios2_dma_ops = {
+> -	.alloc			= nios2_dma_alloc,
+> -	.free			= nios2_dma_free,
+> -	.map_page		= nios2_dma_map_page,
+> -	.unmap_page		= nios2_dma_unmap_page,
+> -	.map_sg			= nios2_dma_map_sg,
+> -	.unmap_sg		= nios2_dma_unmap_sg,
+> -	.sync_single_for_device	= nios2_dma_sync_single_for_device,
+> -	.sync_single_for_cpu	= nios2_dma_sync_single_for_cpu,
+> -	.sync_sg_for_cpu	= nios2_dma_sync_sg_for_cpu,
+> -	.sync_sg_for_device	= nios2_dma_sync_sg_for_device,
+> -};
+> -EXPORT_SYMBOL(nios2_dma_ops);
+> -- 
+> 2.17.1
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+---end quoted text---
