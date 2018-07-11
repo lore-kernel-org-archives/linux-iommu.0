@@ -1,15 +1,16 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v4 1/9] iommu/vt-d: Global PASID name space
-Date: Wed, 11 Jul 2018 14:32:44 +0800
-Message-ID: <5B45A48C.7040300@linux.intel.com>
+Subject: Re: [PATCH v4 9/9] iommu/vt-d: Remove the obsolete per iommu pasid
+	tables
+Date: Wed, 11 Jul 2018 14:43:51 +0800
+Message-ID: <5B45A727.3080801@linux.intel.com>
 References: <1531113778-28238-1-git-send-email-baolu.lu@linux.intel.com>
-	<1531113778-28238-2-git-send-email-baolu.lu@linux.intel.com>
-	<20180711024843.GC2359@xz-mi>
+	<1531113778-28238-10-git-send-email-baolu.lu@linux.intel.com>
+	<20180711024506.GB2359@xz-mi>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180711024843.GC2359@xz-mi>
+In-Reply-To: <20180711024506.GB2359@xz-mi>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,41 +26,108 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Peter,
 
-Thanks for looking into my patches.
+On 07/11/2018 10:45 AM, Peter Xu wrote:
+> On Mon, Jul 09, 2018 at 01:22:58PM +0800, Lu Baolu wrote:
+>> The obsolete per iommu pasid tables are no longer used. Hence,
+>> clean up them.
+>>
+>> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Reviewed-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> ---
+>>  drivers/iommu/intel-iommu.c |  6 +++---
+>>  drivers/iommu/intel-svm.c   | 17 ++---------------
+>>  include/linux/intel-iommu.h |  5 ++---
+>>  3 files changed, 7 insertions(+), 21 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>> index f8609b5..9a88081 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -1755,7 +1755,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+>>  	if (pasid_enabled(iommu)) {
+>>  		if (ecap_prs(iommu->ecap))
+>>  			intel_svm_finish_prq(iommu);
+>> -		intel_svm_free_pasid_tables(iommu);
+>> +		intel_svm_exit(iommu);
+>>  	}
+>>  #endif
+>>  }
+>> @@ -3336,7 +3336,7 @@ static int __init init_dmars(void)
+>>  			hw_pass_through = 0;
+>>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>>  		if (pasid_enabled(iommu))
+>> -			intel_svm_alloc_pasid_tables(iommu);
+>> +			intel_svm_init(iommu);
+>>  #endif
+>>  	}
+>>  
+>> @@ -4330,7 +4330,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+>>  
+>>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>>  	if (pasid_enabled(iommu))
+>> -		intel_svm_alloc_pasid_tables(iommu);
+>> +		intel_svm_init(iommu);
+>>  #endif
+>>  
+>>  	if (dmaru->ignored) {
+>> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+>> index a253cde..eb30836 100644
+>> --- a/drivers/iommu/intel-svm.c
+>> +++ b/drivers/iommu/intel-svm.c
+>> @@ -38,7 +38,7 @@ struct pasid_state_entry {
+>>  	u64 val;
+>>  };
+>>  
+>> -int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>> +int intel_svm_init(struct intel_iommu *iommu)
+>>  {
+>>  	struct page *pages;
+>>  	int order;
+>> @@ -63,15 +63,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>>  		iommu->pasid_max = 0x20000;
+>>  
+>>  	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+>> -	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+>> -	if (!pages) {
+>> -		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
+>> -			iommu->name);
+>> -		return -ENOMEM;
+>> -	}
+>> -	iommu->pasid_table = page_address(pages);
+>> -	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
+>> -
+>>  	if (ecap_dis(iommu->ecap)) {
+>>  		/* Just making it explicit... */
+>>  		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
+> Then do we still need the so-called pasid state table?  I tried to
+> find out what it did before but I failed since I see that the bit 27
+> of the extended cap is marked as reserved now in the latest vt-d spec
+> (then ecap_dis could be meaningless too).
+>
+> Asked since if we don't need both the per-iommu pasid table and the
+> pasid state table, then maybe we don't need intel_svm_init() at all?
+>
+>> @@ -86,14 +77,10 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>>  	return 0;
+>>  }
+>>  
+>> -int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
+>> +int intel_svm_exit(struct intel_iommu *iommu)
+> Same thing applies to this exit() function - after we removed the
+> per-iommu idr, per-iommu pasid table, and (possibly obsolete)
+> per-iommu pasid state table, do we need that at all?
+>
+> Thanks,
+>
 
-On 07/11/2018 10:48 AM, Peter Xu wrote:
-> On Mon, Jul 09, 2018 at 01:22:50PM +0800, Lu Baolu wrote:
->
-> [...]
->
->> +#ifndef __INTEL_PASID_H
->> +#define __INTEL_PASID_H
->> +
->> +#define PASID_MIN			0x1
->> +#define PASID_MAX			0x20000
-> Could I ask whether there's a reason to explicitly use 0x20000 for the
-> max value?  Asked since I saw that the example in the spec gave 20
-> bits for PASID (please refer to spec ver 3.0 section 3.4.3 figure
-> 3-8).  Also I believe that's what I was told by Kevin.
->
-> I saw that the old per-iommu max value is set to 0x20000, though I'm
-> not sure whether that's still needed since if we're going to have
-> two-level pasid table then AFAIU we don't need physically continuous
-> memory any more (though I saw that we don't yet have two-level pasid
-> table implemented):
->
-> 	/* Eventually I'm promised we will get a multi-level PASID table
-> 	 * and it won't have to be physically contiguous. Until then,
-> 	 * limit the size because 8MiB contiguous allocations can be hard
-> 	 * to come by. The limit of 0x20000, which is 1MiB for each of
-> 	 * the PASID and PASID-state tables, is somewhat arbitrary. */
-> 	if (iommu->pasid_max > 0x20000)
-> 		iommu->pasid_max = 0x20000;
+Good eyes!
 
-You are right.
-
-With the scalable mode defined in vt-d v3.0, wecould use the full 20 bit
-pasid. Previous max pasid was intended to save contiguous physical memory.
+Yes, we will cleanup this with a following patch series which enables
+features defined in the vt-d v3.0.
 
 Best regards,
 Lu Baolu
