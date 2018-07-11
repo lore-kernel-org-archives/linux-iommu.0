@@ -1,12 +1,15 @@
-From: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH] swiotlb: Clean up reporting
-Date: Tue, 10 Jul 2018 16:22:22 -0700
-Message-ID: <20180710232222.GA32002@beast>
+From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 6/9] iommu/vt-d: Per PCI device pasid table interfaces
+Date: Wed, 11 Jul 2018 10:18:26 +0800
+Message-ID: <20180711021826.GA2359@xz-mi>
+References: <1531113778-28238-1-git-send-email-baolu.lu@linux.intel.com>
+	<1531113778-28238-7-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
+In-Reply-To: <1531113778-28238-7-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,79 +19,333 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This removes needless use of '%p', and refactors the printk calls to
-use pr_*() helpers instead.
+On Mon, Jul 09, 2018 at 01:22:55PM +0800, Lu Baolu wrote:
+> This patch adds the interfaces for per PCI device pasid
+> table management. Currently we allocate one pasid table
+> for all PCI devices under the scope of an IOMMU. It's
+> insecure in some cases where multiple devices under one
+> single IOMMU unit support PASID features. With per PCI
+> device pasid table, we can achieve finer protection and
+> isolation granularity.
+> 
+> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Suggested-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Reviewed-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/intel-iommu.c |   1 +
+>  drivers/iommu/intel-pasid.c | 178 ++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/intel-pasid.h |  18 +++++
+>  drivers/iommu/intel-svm.c   |   4 -
+>  include/linux/intel-iommu.h |   2 +
+>  5 files changed, 199 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 3d802c5..a930918 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2450,6 +2450,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>  	info->dev = dev;
+>  	info->domain = domain;
+>  	info->iommu = iommu;
+> +	info->pasid_table = NULL;
+>  
+>  	if (dev && dev_is_pci(dev)) {
+>  		struct pci_dev *pdev = to_pci_dev(info->dev);
+> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+> index e918fe0..1b61942 100644
+> --- a/drivers/iommu/intel-pasid.c
+> +++ b/drivers/iommu/intel-pasid.c
+> @@ -13,6 +13,8 @@
+>  #include <linux/intel-iommu.h>
+>  #include <linux/iommu.h>
+>  #include <linux/memory.h>
+> +#include <linux/pci.h>
+> +#include <linux/pci-ats.h>
+>  #include <linux/spinlock.h>
+>  
+>  #include "intel-pasid.h"
+> @@ -58,3 +60,179 @@ void *intel_pasid_lookup_id(int pasid)
+>  
+>  	return p;
+>  }
+> +
+> +/*
+> + * Per device pasid table management:
+> + */
+> +static inline void
+> +device_attach_pasid_table(struct device_domain_info *info,
+> +			  struct pasid_table *pasid_table)
+> +{
+> +	info->pasid_table = pasid_table;
+> +	list_add(&info->table, &pasid_table->dev);
+> +}
+> +
+> +static inline void
+> +device_detach_pasid_table(struct device_domain_info *info,
+> +			  struct pasid_table *pasid_table)
+> +{
+> +	info->pasid_table = NULL;
+> +	list_del(&info->table);
+> +}
+> +
+> +struct pasid_table_opaque {
+> +	struct pasid_table	**pasid_table;
+> +	int			segment;
+> +	int			bus;
+> +	int			devfn;
+> +};
+> +
+> +static int search_pasid_table(struct device_domain_info *info, void *opaque)
+> +{
+> +	struct pasid_table_opaque *data = opaque;
+> +
+> +	if (info->iommu->segment == data->segment &&
+> +	    info->bus == data->bus &&
+> +	    info->devfn == data->devfn &&
+> +	    info->pasid_table) {
+> +		*data->pasid_table = info->pasid_table;
+> +		return 1;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int get_alias_pasid_table(struct pci_dev *pdev, u16 alias, void *opaque)
+> +{
+> +	struct pasid_table_opaque *data = opaque;
+> +
+> +	data->segment = pci_domain_nr(pdev->bus);
+> +	data->bus = PCI_BUS_NUM(alias);
+> +	data->devfn = alias & 0xff;
+> +
+> +	return for_each_device_domain(&search_pasid_table, data);
+> +}
+> +
+> +int intel_pasid_alloc_table(struct device *dev)
+> +{
+> +	struct device_domain_info *info;
+> +	struct pasid_table *pasid_table;
+> +	struct pasid_table_opaque data;
+> +	struct page *pages;
+> +	size_t size, count;
+> +	int ret, order;
+> +
+> +	info = dev->archdata.iommu;
+> +	if (WARN_ON(!info || !dev_is_pci(dev) ||
+> +		    !info->pasid_supported || info->pasid_table))
+> +		return -EINVAL;
+> +
+> +	/* DMA alias device already has a pasid table, use it: */
+> +	data.pasid_table = &pasid_table;
+> +	ret = pci_for_each_dma_alias(to_pci_dev(dev),
+> +				     &get_alias_pasid_table, &data);
+> +	if (ret)
+> +		goto attach_out;
+> +
+> +	pasid_table = kzalloc(sizeof(*pasid_table), GFP_ATOMIC);
 
-Signed-off-by: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
----
- kernel/dma/swiotlb.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+Do we need to take some lock here (e.g., the pasid lock)?  Otherwise
+what if two devices (that are sharing the same DMA alias) call the
+function intel_pasid_alloc_table() concurrently, then could it
+possible that we create one table for each of the device while AFAIU
+we should let them share a single pasid table?
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 904541055792..4f8a6dbf0b60 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -17,6 +17,8 @@
-  * 08/12/11 beckyb	Add highmem support
-  */
- 
-+#define pr_fmt(fmt) "software IO TLB: " fmt
-+
- #include <linux/cache.h>
- #include <linux/dma-direct.h>
- #include <linux/mm.h>
-@@ -162,20 +164,16 @@ static bool no_iotlb_memory;
- void swiotlb_print_info(void)
- {
- 	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
--	unsigned char *vstart, *vend;
- 
- 	if (no_iotlb_memory) {
--		pr_warn("software IO TLB: No low mem\n");
-+		pr_warn("No low mem\n");
- 		return;
- 	}
- 
--	vstart = phys_to_virt(io_tlb_start);
--	vend = phys_to_virt(io_tlb_end);
--
--	printk(KERN_INFO "software IO TLB [mem %#010llx-%#010llx] (%luMB) mapped at [%p-%p]\n",
-+	pr_info("mapped [mem %#010llx-%#010llx] (%luMB)\n",
- 	       (unsigned long long)io_tlb_start,
- 	       (unsigned long long)io_tlb_end,
--	       bytes >> 20, vstart, vend - 1);
-+	       bytes >> 20);
- }
- 
- /*
-@@ -275,7 +273,7 @@ swiotlb_init(int verbose)
- 	if (io_tlb_start)
- 		memblock_free_early(io_tlb_start,
- 				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
--	pr_warn("Cannot allocate SWIOTLB buffer");
-+	pr_warn("Cannot allocate buffer");
- 	no_iotlb_memory = true;
- }
- 
-@@ -317,8 +315,8 @@ swiotlb_late_init_with_default_size(size_t default_size)
- 		return -ENOMEM;
- 	}
- 	if (order != get_order(bytes)) {
--		printk(KERN_WARNING "Warning: only able to allocate %ld MB "
--		       "for software IO TLB\n", (PAGE_SIZE << order) >> 20);
-+		pr_warn("only able to allocate %ld MB\n",
-+			(PAGE_SIZE << order) >> 20);
- 		io_tlb_nslabs = SLABS_PER_PAGE << order;
- 	}
- 	rc = swiotlb_late_init_with_tbl(vstart, io_tlb_nslabs);
+> +	if (!pasid_table)
+> +		return -ENOMEM;
+> +	INIT_LIST_HEAD(&pasid_table->dev);
+> +
+> +	size = sizeof(struct pasid_entry);
+> +	count = min_t(int, pci_max_pasids(to_pci_dev(dev)), intel_pasid_max_id);
+> +	order = get_order(size * count);
+> +	pages = alloc_pages_node(info->iommu->node,
+> +				 GFP_ATOMIC | __GFP_ZERO,
+> +				 order);
+> +	if (!pages)
+> +		return -ENOMEM;
+> +
+> +	pasid_table->table = page_address(pages);
+> +	pasid_table->order = order;
+> +	pasid_table->max_pasid = count;
+> +
+> +attach_out:
+> +	device_attach_pasid_table(info, pasid_table);
+> +
+> +	return 0;
+> +}
+> +
+> +void intel_pasid_free_table(struct device *dev)
+> +{
+> +	struct device_domain_info *info;
+> +	struct pasid_table *pasid_table;
+> +
+> +	info = dev->archdata.iommu;
+> +	if (!info || !dev_is_pci(dev) ||
+> +	    !info->pasid_supported || !info->pasid_table)
+> +		return;
+> +
+> +	pasid_table = info->pasid_table;
+> +	device_detach_pasid_table(info, pasid_table);
+> +
+> +	if (!list_empty(&pasid_table->dev))
+> +		return;
+
+Same question to here: do we need a lock?
+
+> +
+> +	free_pages((unsigned long)pasid_table->table, pasid_table->order);
+> +	kfree(pasid_table);
+> +}
+> +
+> +struct pasid_table *intel_pasid_get_table(struct device *dev)
+> +{
+> +	struct device_domain_info *info;
+> +
+> +	info = dev->archdata.iommu;
+> +	if (!info)
+> +		return NULL;
+> +
+> +	return info->pasid_table;
+> +}
+> +
+> +int intel_pasid_get_dev_max_id(struct device *dev)
+> +{
+> +	struct device_domain_info *info;
+> +
+> +	info = dev->archdata.iommu;
+> +	if (!info || !info->pasid_table)
+> +		return 0;
+> +
+> +	return info->pasid_table->max_pasid;
+> +}
+> +
+> +struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid)
+> +{
+> +	struct pasid_table *pasid_table;
+> +	struct pasid_entry *entries;
+> +
+> +	pasid_table = intel_pasid_get_table(dev);
+> +	if (WARN_ON(!pasid_table || pasid < 0 ||
+> +		    pasid >= intel_pasid_get_dev_max_id(dev)))
+> +		return NULL;
+> +
+> +	entries = pasid_table->table;
+> +
+> +	return &entries[pasid];
+> +}
+> +
+> +/*
+> + * Interfaces for PASID table entry manipulation:
+> + */
+> +static void sm_pasid_clear_entry(struct pasid_entry *pe)
+> +{
+> +	memset(pe, 0, sizeof(struct pasid_entry));
+
+[1]
+
+> +}
+> +
+> +void intel_pasid_clear_entry(struct device *dev, int pasid)
+> +{
+> +	struct pasid_entry *pe;
+> +
+> +	pe = intel_pasid_get_entry(dev, pasid);
+> +	if (WARN_ON(!pe))
+> +		return;
+> +
+> +	sm_pasid_clear_entry(pe);
+> +
+> +	/* Make sure the entry update is visible before translation. */
+> +	wmb();
+
+Pure question: AFAIU wmb only orders write operation, then do we
+really need it here?  Instead from the comment I feel like what we
+really need is a WRITE_ONCE() at [1].  Am I wrong somewhere?
+
+Thanks,
+
+> +}
+> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+> index d5feb3d..1fb5e12 100644
+> --- a/drivers/iommu/intel-pasid.h
+> +++ b/drivers/iommu/intel-pasid.h
+> @@ -13,9 +13,27 @@
+>  #define PASID_MIN			0x1
+>  #define PASID_MAX			0x20000
+>  
+> +struct pasid_entry {
+> +	u64 val;
+> +};
+> +
+> +/* The representative of a PASID table */
+> +struct pasid_table {
+> +	void			*table;		/* pasid table pointer */
+> +	int			order;		/* page order of pasid table */
+> +	int			max_pasid;	/* max pasid */
+> +	struct list_head	dev;		/* device list */
+> +};
+> +
+>  extern u32 intel_pasid_max_id;
+>  int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
+>  void intel_pasid_free_id(int pasid);
+>  void *intel_pasid_lookup_id(int pasid);
+> +int intel_pasid_alloc_table(struct device *dev);
+> +void intel_pasid_free_table(struct device *dev);
+> +struct pasid_table *intel_pasid_get_table(struct device *dev);
+> +int intel_pasid_get_dev_max_id(struct device *dev);
+> +struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
+> +void intel_pasid_clear_entry(struct device *dev, int pasid);
+>  
+>  #endif /* __INTEL_PASID_H */
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 56e65d0..9b5dc72 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -34,10 +34,6 @@
+>  
+>  static irqreturn_t prq_event_thread(int irq, void *d);
+>  
+> -struct pasid_entry {
+> -	u64 val;
+> -};
+> -
+>  struct pasid_state_entry {
+>  	u64 val;
+>  };
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 4fd4c6f..e7901d4 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -476,6 +476,7 @@ struct intel_iommu {
+>  struct device_domain_info {
+>  	struct list_head link;	/* link to domain siblings */
+>  	struct list_head global; /* link to global list */
+> +	struct list_head table;	/* link to pasid table */
+>  	u8 bus;			/* PCI bus number */
+>  	u8 devfn;		/* PCI devfn number */
+>  	u16 pfsid;		/* SRIOV physical function source ID */
+> @@ -489,6 +490,7 @@ struct device_domain_info {
+>  	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+>  	struct intel_iommu *iommu; /* IOMMU used by this device */
+>  	struct dmar_domain *domain; /* pointer to domain */
+> +	struct pasid_table *pasid_table; /* pasid table */
+>  };
+>  
+>  static inline void __iommu_flush_cache(
+> -- 
+> 2.7.4
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
 -- 
-2.17.1
-
-
--- 
-Kees Cook
-Pixel Security
+Peter Xu
