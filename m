@@ -1,73 +1,55 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v4 6/9] iommu/vt-d: Per PCI device pasid table interfaces
-Date: Wed, 11 Jul 2018 15:39:32 +0800
-Message-ID: <20180711073932.GA15615@xz-mi>
-References: <1531113778-28238-1-git-send-email-baolu.lu@linux.intel.com>
-	<1531113778-28238-7-git-send-email-baolu.lu@linux.intel.com>
-	<20180711021826.GA2359@xz-mi> <5B45B11D.1080405@linux.intel.com>
+From: Michal Hocko <mhocko@kernel.org>
+Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
+ cma_alloc()
+Date: Wed, 11 Jul 2018 10:54:07 +0200
+Message-ID: <20180711085407.GB20050@dhcp22.suse.cz>
+References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
+ <20180709121956.20200-1-m.szyprowski@samsung.com>
+ <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
+ <CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
+ <20180710095056.GE14284@dhcp22.suse.cz>
+ <CAAmzW4P1m_T77DfQzDD6ysGaOF46++-0gwRaOajmo6ef=VYp=A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5B45B11D.1080405-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+In-Reply-To: <CAAmzW4P1m_T77DfQzDD6ysGaOF46++-0gwRaOajmo6ef=VYp=A@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joonsoo Kim <js1304@gmail.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Linux Memory Management List <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>, Michal Nazarewicz <mina86@mina86.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Christoph Hellwig <hch@lst.de>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chris Zankel <chris@zankel.net>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 11, 2018 at 03:26:21PM +0800, Lu Baolu wrote:
-
-[...]
-
-> >> +int intel_pasid_alloc_table(struct device *dev)
-> >> +{
-> >> +	struct device_domain_info *info;
-> >> +	struct pasid_table *pasid_table;
-> >> +	struct pasid_table_opaque data;
-> >> +	struct page *pages;
-> >> +	size_t size, count;
-> >> +	int ret, order;
-> >> +
-> >> +	info = dev->archdata.iommu;
-> >> +	if (WARN_ON(!info || !dev_is_pci(dev) ||
-> >> +		    !info->pasid_supported || info->pasid_table))
-> >> +		return -EINVAL;
-> >> +
-> >> +	/* DMA alias device already has a pasid table, use it: */
-> >> +	data.pasid_table = &pasid_table;
-> >> +	ret = pci_for_each_dma_alias(to_pci_dev(dev),
-> >> +				     &get_alias_pasid_table, &data);
-> >> +	if (ret)
-> >> +		goto attach_out;
-> >> +
-> >> +	pasid_table = kzalloc(sizeof(*pasid_table), GFP_ATOMIC);
-> > Do we need to take some lock here (e.g., the pasid lock)?  Otherwise
-> > what if two devices (that are sharing the same DMA alias) call the
-> > function intel_pasid_alloc_table() concurrently, then could it
-> > possible that we create one table for each of the device while AFAIU
-> > we should let them share a single pasid table?
+On Wed 11-07-18 16:35:28, Joonsoo Kim wrote:
+> 2018-07-10 18:50 GMT+09:00 Michal Hocko <mhocko@kernel.org>:
+> > On Tue 10-07-18 16:19:32, Joonsoo Kim wrote:
+> >> Hello, Marek.
+> >>
+> >> 2018-07-09 21:19 GMT+09:00 Marek Szyprowski <m.szyprowski@samsung.com>:
+> >> > cma_alloc() function doesn't really support gfp flags other than
+> >> > __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
+> >>
+> >> Although gfp_mask isn't used in cma_alloc() except no_warn, it can be used
+> >> in alloc_contig_range(). For example, if passed gfp mask has no __GFP_FS,
+> >> compaction(isolation) would work differently. Do you have considered
+> >> such a case?
+> >
+> > Does any of cma_alloc users actually care about GFP_NO{FS,IO}?
 > 
-> The only place where this function is called is in a single-thread context
-> (protected by a spinlock of device_domain_lock with local interrupt disabled).
-> 
-> So we don't need an extra lock here. But anyway, I should put a comment
-> here.
+> I don't know. My guess is that cma_alloc() is used for DMA allocation so
+> block device would use it, too. If fs/block subsystem initiates the
+> request for the device,
+> it would be possible that cma_alloc() is called with such a flag.
+> Again, I don't know
+> much about those subsystem so I would be wrong.
 
-Yeah, that would be nice too!  Or add a comment for both of the
-functions:
+The patch converts existing users and none of them really tries to use
+anything other than GFP_KERNEL [|__GFP_NOWARN] so this doesn't seem to
+be the case. Should there be a new user requiring more restricted
+gfp_mask we should carefuly re-evaluate and think how to support it.
 
-  /* Must be with device_domain_lock held */
-
-Regards,
-
+Until then I would simply stick with the proposed approach because my
+experience tells me that a wrong gfp mask usage is way too easy so the
+simpler the api is the less likely we will see an abuse.
 -- 
-Peter Xu
+Michal Hocko
+SUSE Labs
