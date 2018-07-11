@@ -1,15 +1,14 @@
-From: Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] xtensa: use generic dma_noncoherent_ops
-Date: Wed, 11 Jul 2018 11:06:33 -0700
-Message-ID: <CAMo8BfLe6YDfkYQ6HCR4xy9Refbs6zWx5KLemHnKMNP24j_z-Q@mail.gmail.com>
-References: <20180619070316.26327-1-hch@lst.de>
-	<CAMo8BfKzV6fhANk=ymsWFWoVtsYq3wXh559==rfjG2FimEC3+g@mail.gmail.com>
-	<20180711180040.GA4262@lst.de>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] swiotlb: Clean up reporting
+Date: Wed, 11 Jul 2018 15:16:11 -0400
+Message-ID: <20180711191610.GC29513@char.US.ORACLE.com>
+References: <20180710232222.GA32002@beast>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180711180040.GA4262-jcswGhMUV9g@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180710232222.GA32002@beast>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,26 +18,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org
+To: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 11, 2018 at 11:00 AM, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
-> On Wed, Jul 11, 2018 at 10:57:30AM -0700, Max Filippov wrote:
->> >  config XTENSA
->> >         def_bool y
->> >         select ARCH_NO_COHERENT_DMA_MMAP if !MMU
->> > +       select ARCH_HAS_SYNC_DMA_FOR_CPU
->> > +       select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->>
->> This breaks alphabetical order of selects. Otherwise LGTM.
->> Sorry for the delay.
->> Acked-by: Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>
->> Will you submit it further or should I take it into the xtensa tree?
->
-> Either way is fine with me, just let me know which way you prefer.
+On Tue, Jul 10, 2018 at 04:22:22PM -0700, Kees Cook wrote:
+> This removes needless use of '%p', and refactors the printk calls to
+> use pr_*() helpers instead.
+> 
+> Signed-off-by: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
-I'll take it then. Thank you!
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
--- Max
+Christoph, volunteered to pick this patch up in his tree. Thank you!
+> ---
+>  kernel/dma/swiotlb.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 904541055792..4f8a6dbf0b60 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -17,6 +17,8 @@
+>   * 08/12/11 beckyb	Add highmem support
+>   */
+>  
+> +#define pr_fmt(fmt) "software IO TLB: " fmt
+> +
+>  #include <linux/cache.h>
+>  #include <linux/dma-direct.h>
+>  #include <linux/mm.h>
+> @@ -162,20 +164,16 @@ static bool no_iotlb_memory;
+>  void swiotlb_print_info(void)
+>  {
+>  	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+> -	unsigned char *vstart, *vend;
+>  
+>  	if (no_iotlb_memory) {
+> -		pr_warn("software IO TLB: No low mem\n");
+> +		pr_warn("No low mem\n");
+>  		return;
+>  	}
+>  
+> -	vstart = phys_to_virt(io_tlb_start);
+> -	vend = phys_to_virt(io_tlb_end);
+> -
+> -	printk(KERN_INFO "software IO TLB [mem %#010llx-%#010llx] (%luMB) mapped at [%p-%p]\n",
+> +	pr_info("mapped [mem %#010llx-%#010llx] (%luMB)\n",
+>  	       (unsigned long long)io_tlb_start,
+>  	       (unsigned long long)io_tlb_end,
+> -	       bytes >> 20, vstart, vend - 1);
+> +	       bytes >> 20);
+>  }
+>  
+>  /*
+> @@ -275,7 +273,7 @@ swiotlb_init(int verbose)
+>  	if (io_tlb_start)
+>  		memblock_free_early(io_tlb_start,
+>  				    PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT));
+> -	pr_warn("Cannot allocate SWIOTLB buffer");
+> +	pr_warn("Cannot allocate buffer");
+>  	no_iotlb_memory = true;
+>  }
+>  
+> @@ -317,8 +315,8 @@ swiotlb_late_init_with_default_size(size_t default_size)
+>  		return -ENOMEM;
+>  	}
+>  	if (order != get_order(bytes)) {
+> -		printk(KERN_WARNING "Warning: only able to allocate %ld MB "
+> -		       "for software IO TLB\n", (PAGE_SIZE << order) >> 20);
+> +		pr_warn("only able to allocate %ld MB\n",
+> +			(PAGE_SIZE << order) >> 20);
+>  		io_tlb_nslabs = SLABS_PER_PAGE << order;
+>  	}
+>  	rc = swiotlb_late_init_with_tbl(vstart, io_tlb_nslabs);
+> -- 
+> 2.17.1
+> 
+> 
+> -- 
+> Kees Cook
+> Pixel Security
