@@ -1,77 +1,75 @@
-From: Olof Johansson <olof@lixom.net>
-Subject: [PATCH 2/2] iommu: add sysfs attribyte for domain type
-Date: Wed, 11 Jul 2018 13:59:36 -0700
-Message-ID: <20180711205936.18614-2-olof@lixom.net>
+From: "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>
+Subject: Re: [PATCH 1/2] iommu: Add config option to set passthrough as
+ default
+Date: Thu, 12 Jul 2018 02:04:41 +0000
+Message-ID: <1531361076.3757.5.camel@hxt-semitech.com>
 References: <20180711205936.18614-1-olof@lixom.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180711205936.18614-1-olof@lixom.net>
+Content-Language: en-US
+Content-ID: <2EE053A278DDBF47A54CBBFD73706F5C@hxt-semitech.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Olof Johansson <olof@lixom.net>
+To: "joro@8bytes.org" <joro@8bytes.org>, "olof@lixom.net" <olof@lixom.net>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-While we could print it at setup time, this is an easier way to match
-each device to their default IOMMU allocation type.
+Hi, Olof,
 
-Signed-off-by: Olof Johansson <olof@lixom.net>
----
- drivers/iommu/iommu.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+Tired of changing command line. I like this patch.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ab8fc54467e0..53164107620c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -298,11 +298,39 @@ static ssize_t iommu_group_show_resv_regions(struct iommu_group *group,
- 	return (str - buf);
- }
- 
-+static ssize_t iommu_group_show_type(struct iommu_group *group,
-+				     char *buf)
-+{
-+	char *type = "unknown\n";
-+
-+	if (group->default_domain) {
-+		switch (group->default_domain->type) {
-+		case IOMMU_DOMAIN_BLOCKED:
-+			type = "blocked\n";
-+			break;
-+		case IOMMU_DOMAIN_IDENTITY:
-+			type = "identity\n";
-+			break;
-+		case IOMMU_DOMAIN_UNMANAGED:
-+			type = "unmanaged\n";
-+			break;
-+		case IOMMU_DOMAIN_DMA:
-+			type = "DMA";
-+			break;
-+		}
-+	}
-+	strcpy(buf, type);
-+
-+	return strlen(type);
-+}
-+
- static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
- 
- static IOMMU_GROUP_ATTR(reserved_regions, 0444,
- 			iommu_group_show_resv_regions, NULL);
- 
-+static IOMMU_GROUP_ATTR(type, 0444, iommu_group_show_type, NULL);
-+
- static void iommu_group_release(struct kobject *kobj)
- {
- 	struct iommu_group *group = to_iommu_group(kobj);
-@@ -384,6 +412,10 @@ struct iommu_group *iommu_group_alloc(void)
- 	if (ret)
- 		return ERR_PTR(ret);
- 
-+	ret = iommu_group_create_file(group, &iommu_group_attr_type);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
- 	pr_debug("Allocated group %d\n", group->id);
- 
- 	return group;
--- 
-2.11.0
+Thanks.
+Shunyong. 
+
+On Wed, 2018-07-11 at 13:59 -0700, Olof Johansson wrote:
+> This allows the default behavior to be controlled by a kernel config
+> option instead of changing the commandline for the kernel to include
+> "iommu.passthrough=on" on machines where this is desired.
+> 
+> Signed-off-by: Olof Johansson <olof@lixom.net>
+> ---
+>  drivers/iommu/Kconfig | 10 ++++++++++
+>  drivers/iommu/iommu.c |  4 ++++
+>  2 files changed, 14 insertions(+)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 689ffe538370..a9bb1a5b5e43 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -60,6 +60,16 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
+>  
+>  endmenu
+>  
+> +config IOMMU_DEFAULT_PASSTHROUGH
+> +	bool "IOMMU passthrough by default"
+> +	depends on IOMMU_API
+> +        help
+> +	  Enable passthrough by default (removing the need to pass
+> in
+> +	  iommu.passthrough=on through command line). If this is
+> enabled,
+> +	  you can still disable with iommu.passthrough=off
+> +
+> +	  If unsure, say N here.
+> +
+>  config IOMMU_IOVA
+>  	tristate
+>  
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 63b37563db7e..ab8fc54467e0 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -36,7 +36,11 @@
+>  
+>  static struct kset *iommu_group_kset;
+>  static DEFINE_IDA(iommu_group_ida);
+> +#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
+> +static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
+> +#else
+>  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+> +#endif
+>  
+>  struct iommu_callback_data {
+>  	const struct iommu_ops *ops;
