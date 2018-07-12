@@ -1,65 +1,122 @@
-From: Joonsoo Kim <js1304-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
-	cma_alloc()
-Date: Thu, 12 Jul 2018 11:48:47 +0900
-Message-ID: <CAAmzW4M3KADCZD9+B2h7=WsYksGtg-GzYRCJjbqK5Scceynrrg@mail.gmail.com>
-References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
-	<20180709121956.20200-1-m.szyprowski@samsung.com>
-	<20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
-	<CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
-	<20180710095056.GE14284@dhcp22.suse.cz>
-	<CAAmzW4P1m_T77DfQzDD6ysGaOF46++-0gwRaOajmo6ef=VYp=A@mail.gmail.com>
-	<20180711085407.GB20050@dhcp22.suse.cz>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict mode
+Date: Thu, 12 Jul 2018 14:18:30 +0800
+Message-ID: <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180711085407.GB20050-2MMpYkNvuYDjFM9bn6wA6Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, Linux Memory Management List <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-2018-07-11 17:54 GMT+09:00 Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
-> On Wed 11-07-18 16:35:28, Joonsoo Kim wrote:
->> 2018-07-10 18:50 GMT+09:00 Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
->> > On Tue 10-07-18 16:19:32, Joonsoo Kim wrote:
->> >> Hello, Marek.
->> >>
->> >> 2018-07-09 21:19 GMT+09:00 Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>:
->> >> > cma_alloc() function doesn't really support gfp flags other than
->> >> > __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
->> >>
->> >> Although gfp_mask isn't used in cma_alloc() except no_warn, it can be used
->> >> in alloc_contig_range(). For example, if passed gfp mask has no __GFP_FS,
->> >> compaction(isolation) would work differently. Do you have considered
->> >> such a case?
->> >
->> > Does any of cma_alloc users actually care about GFP_NO{FS,IO}?
->>
->> I don't know. My guess is that cma_alloc() is used for DMA allocation so
->> block device would use it, too. If fs/block subsystem initiates the
->> request for the device,
->> it would be possible that cma_alloc() is called with such a flag.
->> Again, I don't know
->> much about those subsystem so I would be wrong.
->
-> The patch converts existing users and none of them really tries to use
-> anything other than GFP_KERNEL [|__GFP_NOWARN] so this doesn't seem to
-> be the case. Should there be a new user requiring more restricted
-> gfp_mask we should carefuly re-evaluate and think how to support it.
+To support the non-strict mode, now we only tlbi and sync for the strict
+mode. But for the non-leaf case, always follow strict mode.
 
-One of existing user is general DMA layer and it takes gfp flags that is
-provided by user. I don't check all the DMA allocation sites but how do
-you convince that none of them try to use anything other
-than GFP_KERNEL [|__GFP_NOWARN]?
+Use the lowest bit of the iova parameter to pass the strict mode:
+0, IOMMU_STRICT;
+1, IOMMU_NON_STRICT;
+Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+other IOMMUs which still use strict mode.
 
-Thanks.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 010a254..9234db3 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+ 
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, int lvl,
+-			       arm_lpae_iopte *ptep);
++			       arm_lpae_iopte *ptep, int strict);
+ 
+ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 				phys_addr_t paddr, arm_lpae_iopte prot,
+@@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+ 
+ 		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+-		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
++		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
+ 			return -EINVAL;
+ 	}
+ 
+@@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 				       unsigned long iova, size_t size,
+ 				       arm_lpae_iopte blk_pte, int lvl,
+-				       arm_lpae_iopte *ptep)
++				       arm_lpae_iopte *ptep, int strict)
+ {
+ 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+ 	arm_lpae_iopte pte, *tablep;
+@@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 	}
+ 
+ 	if (unmap_idx < 0)
+-		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
++		return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
+ 
+ 	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
++	if (!strict)
++		io_pgtable_tlb_sync(&data->iop);
++
+ 	return size;
+ }
+ 
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, int lvl,
+-			       arm_lpae_iopte *ptep)
++			       arm_lpae_iopte *ptep, int strict)
+ {
+ 	arm_lpae_iopte pte;
+ 	struct io_pgtable *iop = &data->iop;
+@@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			io_pgtable_tlb_sync(iop);
+ 			ptep = iopte_deref(pte, data);
+ 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+-		} else {
++		} else if (strict) {
+ 			io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+ 		}
+ 
+@@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 		 * minus the part we want to unmap
+ 		 */
+ 		return arm_lpae_split_blk_unmap(data, iova, size, pte,
+-						lvl + 1, ptep);
++						lvl + 1, ptep, strict);
+ 	}
+ 
+ 	/* Keep on walkin' */
+ 	ptep = iopte_deref(pte, data);
+-	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
++	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+ }
+ 
+ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 			     size_t size)
+ {
++	int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+ 	int lvl = ARM_LPAE_START_LVL(data);
+ 
++	iova &= ~IOMMU_STRICT_MODE_MASK;
+ 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+ 		return 0;
+ 
+-	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
++	return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+ }
+ 
+ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+-- 
+1.8.3
