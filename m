@@ -1,53 +1,120 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 3/6] iommu/amd: use default branch to deal with all
-	non-supported capabilities
-Date: Thu, 12 Jul 2018 14:18:29 +0800
-Message-ID: <1531376312-2192-4-git-send-email-thunder.leizhen@huawei.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v3 6/6] iommu/arm-smmu-v3: add bootup option "iommu_strict_mode"
+Date: Thu, 12 Jul 2018 14:18:32 +0800
+Message-ID: <1531376312-2192-7-git-send-email-thunder.leizhen@huawei.com>
 References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1531376312-2192-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Avoid below warning when new capabilities added:
+Because the non-strict mode introduces a vulnerability window, so add a
+bootup option to make the manager can choose which mode to be used. The
+default mode is IOMMU_STRICT.
 
-drivers/iommu/amd_iommu.c: In function 'amd_iommu_capable':
-drivers/iommu/amd_iommu.c:3053:2: warning: enumeration value 'IOMMU_CAP_NON_STRICT' not handled in switch [-Wswitch]
-     switch (cap) {
-
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/amd_iommu.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt | 12 ++++++++++
+ drivers/iommu/arm-smmu-v3.c                     | 32 ++++++++++++++++++++++---
+ 2 files changed, 41 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 596b95c..b619e5c 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3085,11 +3085,9 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index efc7aa7..0cc80bc 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1720,6 +1720,18 @@
+ 		nobypass	[PPC/POWERNV]
+ 			Disable IOMMU bypass, using IOMMU for PCI devices.
+ 
++	iommu_strict_mode=	[arm-smmu-v3]
++		0 - strict mode
++		    Make sure all related TLBs to be invalidated before the
++		    memory released.
++		1 - non-strict mode
++		    Put off TLBs invalidation and release memory first. This mode
++		    introduces a vlunerability window, an untrusted device can
++		    access the reused memory because the TLBs may still valid.
++		    Please take full consideration before choosing this mode.
++		    Note that, VFIO is always use strict mode.
++		others - strict mode
++
+ 	iommu.passthrough=
+ 			[ARM64] Configure DMA to bypass the IOMMU by default.
+ 			Format: { "0" | "1" }
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4a198a0..9b72fc4 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -631,6 +631,24 @@ struct arm_smmu_option_prop {
+ 	{ 0, NULL},
+ };
+ 
++static u32 iommu_strict_mode __read_mostly = IOMMU_STRICT;
++
++static int __init setup_iommu_strict_mode(char *str)
++{
++	u32 strict_mode = IOMMU_STRICT;
++
++	get_option(&str, &strict_mode);
++	if (strict_mode == IOMMU_NON_STRICT) {
++		iommu_strict_mode = strict_mode;
++		pr_warn("WARNING: iommu non-strict mode is chose.\n"
++			"It's good for scatter-gather performance but lacks full isolation\n");
++		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
++	}
++
++	return 0;
++}
++early_param("iommu_strict_mode", setup_iommu_strict_mode);
++
+ static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+ 						 struct arm_smmu_device *smmu)
+ {
+@@ -1441,7 +1459,7 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	case IOMMU_CAP_NOEXEC:
  		return true;
- 	case IOMMU_CAP_INTR_REMAP:
- 		return (irq_remapping_enabled == 1);
--	case IOMMU_CAP_NOEXEC:
-+	default:
+ 	case IOMMU_CAP_NON_STRICT:
+-		return true;
++		return (iommu_strict_mode == IOMMU_NON_STRICT) ? true : false;
+ 	default:
  		return false;
  	}
--
--	return false;
+@@ -1750,6 +1768,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	return ret;
  }
  
- static void amd_iommu_get_resv_regions(struct device *dev,
++static u32 arm_smmu_strict_mode(struct iommu_domain *domain)
++{
++	if (iommu_strict_mode == IOMMU_NON_STRICT)
++		return IOMMU_DOMAIN_STRICT_MODE(domain);
++
++	return IOMMU_STRICT;
++}
++
+ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 			phys_addr_t paddr, size_t size, int prot)
+ {
+@@ -1769,7 +1795,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+ 	if (!ops)
+ 		return 0;
+ 
+-	return ops->unmap(ops, iova | IOMMU_DOMAIN_STRICT_MODE(domain), size);
++	return ops->unmap(ops, iova | arm_smmu_strict_mode(domain), size);
+ }
+ 
+ static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
+@@ -1784,7 +1810,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+ 
+-	if (smmu && (IOMMU_DOMAIN_STRICT_MODE(domain) == IOMMU_STRICT))
++	if (smmu && (arm_smmu_strict_mode(domain) == IOMMU_STRICT))
+ 		__arm_smmu_tlb_sync(smmu);
+ }
+ 
 -- 
 1.8.3
