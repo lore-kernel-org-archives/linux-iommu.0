@@ -1,75 +1,65 @@
-From: "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>
-Subject: Re: [PATCH 1/2] iommu: Add config option to set passthrough as
- default
-Date: Thu, 12 Jul 2018 02:04:41 +0000
-Message-ID: <1531361076.3757.5.camel@hxt-semitech.com>
-References: <20180711205936.18614-1-olof@lixom.net>
+From: Joonsoo Kim <js1304-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from
+	cma_alloc()
+Date: Thu, 12 Jul 2018 11:48:47 +0900
+Message-ID: <CAAmzW4M3KADCZD9+B2h7=WsYksGtg-GzYRCJjbqK5Scceynrrg@mail.gmail.com>
+References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
+	<20180709121956.20200-1-m.szyprowski@samsung.com>
+	<20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
+	<CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
+	<20180710095056.GE14284@dhcp22.suse.cz>
+	<CAAmzW4P1m_T77DfQzDD6ysGaOF46++-0gwRaOajmo6ef=VYp=A@mail.gmail.com>
+	<20180711085407.GB20050@dhcp22.suse.cz>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180711205936.18614-1-olof@lixom.net>
-Content-Language: en-US
-Content-ID: <2EE053A278DDBF47A54CBBFD73706F5C@hxt-semitech.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>, "olof@lixom.net" <olof@lixom.net>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180711085407.GB20050-2MMpYkNvuYDjFM9bn6wA6Q@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, Linux Memory Management List <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linuxppc-dev <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Olof,
+2018-07-11 17:54 GMT+09:00 Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
+> On Wed 11-07-18 16:35:28, Joonsoo Kim wrote:
+>> 2018-07-10 18:50 GMT+09:00 Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
+>> > On Tue 10-07-18 16:19:32, Joonsoo Kim wrote:
+>> >> Hello, Marek.
+>> >>
+>> >> 2018-07-09 21:19 GMT+09:00 Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>:
+>> >> > cma_alloc() function doesn't really support gfp flags other than
+>> >> > __GFP_NOWARN, so convert gfp_mask parameter to boolean no_warn parameter.
+>> >>
+>> >> Although gfp_mask isn't used in cma_alloc() except no_warn, it can be used
+>> >> in alloc_contig_range(). For example, if passed gfp mask has no __GFP_FS,
+>> >> compaction(isolation) would work differently. Do you have considered
+>> >> such a case?
+>> >
+>> > Does any of cma_alloc users actually care about GFP_NO{FS,IO}?
+>>
+>> I don't know. My guess is that cma_alloc() is used for DMA allocation so
+>> block device would use it, too. If fs/block subsystem initiates the
+>> request for the device,
+>> it would be possible that cma_alloc() is called with such a flag.
+>> Again, I don't know
+>> much about those subsystem so I would be wrong.
+>
+> The patch converts existing users and none of them really tries to use
+> anything other than GFP_KERNEL [|__GFP_NOWARN] so this doesn't seem to
+> be the case. Should there be a new user requiring more restricted
+> gfp_mask we should carefuly re-evaluate and think how to support it.
 
-Tired of changing command line. I like this patch.
+One of existing user is general DMA layer and it takes gfp flags that is
+provided by user. I don't check all the DMA allocation sites but how do
+you convince that none of them try to use anything other
+than GFP_KERNEL [|__GFP_NOWARN]?
 
 Thanks.
-Shunyong. 
-
-On Wed, 2018-07-11 at 13:59 -0700, Olof Johansson wrote:
-> This allows the default behavior to be controlled by a kernel config
-> option instead of changing the commandline for the kernel to include
-> "iommu.passthrough=on" on machines where this is desired.
-> 
-> Signed-off-by: Olof Johansson <olof@lixom.net>
-> ---
->  drivers/iommu/Kconfig | 10 ++++++++++
->  drivers/iommu/iommu.c |  4 ++++
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 689ffe538370..a9bb1a5b5e43 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -60,6 +60,16 @@ config IOMMU_IO_PGTABLE_ARMV7S_SELFTEST
->  
->  endmenu
->  
-> +config IOMMU_DEFAULT_PASSTHROUGH
-> +	bool "IOMMU passthrough by default"
-> +	depends on IOMMU_API
-> +        help
-> +	  Enable passthrough by default (removing the need to pass
-> in
-> +	  iommu.passthrough=on through command line). If this is
-> enabled,
-> +	  you can still disable with iommu.passthrough=off
-> +
-> +	  If unsure, say N here.
-> +
->  config IOMMU_IOVA
->  	tristate
->  
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 63b37563db7e..ab8fc54467e0 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -36,7 +36,11 @@
->  
->  static struct kset *iommu_group_kset;
->  static DEFINE_IDA(iommu_group_ida);
-> +#ifdef CONFIG_IOMMU_DEFAULT_PASSTHROUGH
-> +static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
-> +#else
->  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
-> +#endif
->  
->  struct iommu_callback_data {
->  	const struct iommu_ops *ops;
