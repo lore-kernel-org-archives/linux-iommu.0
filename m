@@ -1,89 +1,52 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v12 3/4] iommu/arm-smmu: Add the device_link
- between masters and smmu
-Date: Thu, 12 Jul 2018 18:11:42 +0530
-Message-ID: <CAFp+6iFTgEhPLYQEyBX_Fb0k3n0OzGhKuSoBNV5XzpD01+V8qw@mail.gmail.com>
-References: <20180708173413.1965-1-vivek.gautam@codeaurora.org>
- <20180708173413.1965-4-vivek.gautam@codeaurora.org>
- <5179668.PHK6S3sxLu@aspire.rjw.lan>
- <741cc78b-59a7-5289-e42f-1511ebedb15d@codeaurora.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: prevent any devices access to
+ memory without registration
+Date: Thu, 12 Jul 2018 18:01:21 +0100
+Message-ID: <20180712170120.GC26935@arm.com>
+References: <1531387723-3592-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <741cc78b-59a7-5289-e42f-1511ebedb15d-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>"list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1531387723-3592-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUmFmYWVsLAoKCk9uIFdlZCwgSnVsIDExLCAyMDE4IGF0IDQ6MDYgUE0sIFZpdmVrIEdhdXRh
-bQo8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiBIaSBSYWZhZWwsCj4KPgo+
-Cj4gT24gNy8xMS8yMDE4IDM6MjMgUE0sIFJhZmFlbCBKLiBXeXNvY2tpIHdyb3RlOgo+Pgo+PiBP
-biBTdW5kYXksIEp1bHkgOCwgMjAxOCA3OjM0OjEyIFBNIENFU1QgVml2ZWsgR2F1dGFtIHdyb3Rl
-Ogo+Pj4KPj4+IEZyb206IFNyaWNoYXJhbiBSIDxzcmljaGFyYW5AY29kZWF1cm9yYS5vcmc+Cj4+
-Pgo+Pj4gRmluYWxseSBhZGQgdGhlIGRldmljZSBsaW5rIGJldHdlZW4gdGhlIG1hc3RlciBkZXZp
-Y2UgYW5kCj4+PiBzbW11LCBzbyB0aGF0IHRoZSBzbW11IGdldHMgcnVudGltZSBlbmFibGVkL2Rp
-c2FibGVkIG9ubHkgd2hlbiB0aGUKPj4+IG1hc3RlciBuZWVkcyBpdC4gVGhpcyBpcyBkb25lIGZy
-b20gYWRkX2RldmljZSBjYWxsYmFjayB3aGljaCBnZXRzCj4+PiBjYWxsZWQgb25jZSB3aGVuIHRo
-ZSBtYXN0ZXIgaXMgYWRkZWQgdG8gdGhlIHNtbXUuCj4+Pgo+Pj4gU2lnbmVkLW9mZi1ieTogU3Jp
-Y2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPj4+IFNpZ25lZC1vZmYtYnk6IFZp
-dmVrIEdhdXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPgo+Pj4gUmV2aWV3ZWQtYnk6
-IFRvbWFzeiBGaWdhIDx0ZmlnYUBjaHJvbWl1bS5vcmc+Cj4+PiBDYzogUmFmYWVsIEouIFd5c29j
-a2kgPHJqd0Byand5c29ja2kubmV0Pgo+Pj4gQ2M6IEx1a2FzIFd1bm5lciA8bHVrYXNAd3VubmVy
-LmRlPgo+Pj4gLS0tCj4+Pgo+Pj4gICAtIENoYW5nZSBzaW5jZSB2MTEKPj4+ICAgICAqIFJlcGxh
-Y2VkIERMX0ZMQUdfQVVUT1JFTU9WRSBmbGFnIHdpdGggRExfRkxBR19BVVRPUkVNT1ZFX1NVUFBM
-SUVSLgo+Pj4KPj4+ICAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgMTIgKysrKysrKysrKysr
-Cj4+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspCj4+Pgo+Pj4gZGlmZiAtLWdp
-dCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+
-Pj4gaW5kZXggMDkyNjVlMjA2ZTJkLi45MTZjZGU0OTU0ZDIgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2
-ZXJzL2lvbW11L2FybS1zbW11LmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+
-Pj4gQEAgLTE0NjEsOCArMTQ2MSwyMCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2FkZF9kZXZpY2Uo
-c3RydWN0IGRldmljZSAqZGV2KQo+Pj4gICAgICAgICBpb21tdV9kZXZpY2VfbGluaygmc21tdS0+
-aW9tbXUsIGRldik7Cj4+PiAgICsgICAgIGlmIChwbV9ydW50aW1lX2VuYWJsZWQoc21tdS0+ZGV2
-KSAmJgo+Pgo+PiBXaHkgZG9lcyB0aGUgY3JlYXRpb24gb2YgdGhlIGxpbmsgZGVwZW5kIG9uIHdo
-ZXRoZXIgb3Igbm90IHJ1bnRpbWUgUE0KPj4gaXMgZW5hYmxlZCBmb3IgdGhlIE1NVSBkZXZpY2U/
-Cj4KPgo+IFRoZSBtYWluIHB1cnBvc2Ugb2YgdGhpcyBkZXZpY2UgbGluayBpcyB0byBoYW5kbGUg
-dGhlIHJ1bnRpbWUgUE0KPiBzeW5jaHJvbml6YXRpb24KPiBiZXR3ZWVuIHRoZSBzdXBwbGllciAo
-aW9tbXUpIGFuZCBjb25zdW1lciAoY2xpZW50IGRldmljZXMsIHN1Y2ggYXMKPiBHUFUvZGlzcGxh
-eSkuCj4gTW9yZW92ZXIsIHRoZSBydW50aW1lIHBtIGlzIGNvbmRpdGlvbmFsbHkgZW5hYmxlZCBm
-b3Igc21tdSBkZXZpY2VzIHRoYXQKPiBzdXBwb3J0Cj4gc3VjaCBbMV0uCgpJcyB0aGVyZSBzb21l
-dGhpbmcgeW91IHdvdWxkIGxpa2UgbWUgdG8gbW9kaWZ5IGluIHRoaXMgcGF0Y2g/CgpCZXN0IHJl
-Z2FyZHMKVml2ZWsKCj4+Cj4+Cj4+IFdoYXQgYWJvdXQgc3lzdGVtLXdpZGUgUE0gYW5kIHN5c3Rl
-bSBzaHV0ZG93bj8gIEFyZSB0aGV5IGFsd2F5cyBndWFyYW50ZWVkCj4+IHRvIGhhcHBlbiBpbiB0
-aGUgcmlnaHQgb3JkZXIgd2l0aG91dCB0aGUgbGluaz8KPgo+Cj4gV2hlbiB0aGVyZSdzIG5vIHJ1
-bnRpbWUgUE0sIHRoZXJlJ3Mgbm8gY2xvY2tzLCBhbmQgb3RoZXIgcmVzb3VyY2VzIHRvIGJlCj4g
-aGFuZGxlZC4KPiBTbywgd2UgZG9uJ3QgbmVlZCBkZXZpY2UgbGluayBmb3Igc3lzdGVtLXdpZGUg
-UE0gYW5kIHN5c3RlbSBzaHV0ZG93biB0byB3b3JrCj4gY29ycmVjdGx5Lgo+IFRoYXQncyB0aGUg
-Y2FzZSB3aXRoIGN1cnJlbnQgYXJtLXNtbXUgZHJpdmVyLgo+IElzIGl0IHNvbWV0aGluZyB0aGF0
-IGkgYW0gbWlzc2luZyBoZXJlPwo+Cj4gWzFdIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE4LzMv
-OC83NzUKPgo+IFRoYW5rcwo+IFZpdmVrCj4+Pgo+Pj4gKyAgICAgICAgICAgIWRldmljZV9saW5r
-X2FkZChkZXYsIHNtbXUtPmRldiwKPj4+ICsgICAgICAgICAgICAgICAgICAgICAgIERMX0ZMQUdf
-UE1fUlVOVElNRSB8Cj4+PiBETF9GTEFHX0FVVE9SRU1PVkVfU1VQUExJRVIpKSB7Cj4+PiArICAg
-ICAgICAgICAgICAgZGV2X2VycihzbW11LT5kZXYsICJVbmFibGUgdG8gYWRkIGxpbmsgdG8gdGhl
-IGNvbnN1bWVyCj4+PiAlc1xuIiwKPj4+ICsgICAgICAgICAgICAgICAgICAgICAgIGRldl9uYW1l
-KGRldikpOwo+Pj4gKyAgICAgICAgICAgICAgIHJldCA9IC1FTk9ERVY7Cj4+PiArICAgICAgICAg
-ICAgICAgZ290byBvdXRfdW5saW5rOwo+Pj4gKyAgICAgICB9Cj4+PiArCj4+PiAgICAgICAgIHJl
-dHVybiAwOwo+Pj4gICArb3V0X3VubGluazoKPj4+ICsgICAgICAgaW9tbXVfZGV2aWNlX3VubGlu
-aygmc21tdS0+aW9tbXUsIGRldik7Cj4+PiArICAgICAgIGFybV9zbW11X21hc3Rlcl9mcmVlX3Nt
-ZXMoZndzcGVjKTsKPj4+ICAgb3V0X2NmZ19mcmVlOgo+Pj4gICAgICAgICBrZnJlZShjZmcpOwo+
-Pj4gICBvdXRfZnJlZToKPj4+Cj4+Cj4KPiAtLQo+IFRvIHVuc3Vic2NyaWJlIGZyb20gdGhpcyBs
-aXN0OiBzZW5kIHRoZSBsaW5lICJ1bnN1YnNjcmliZSBsaW51eC1hcm0tbXNtIiBpbgo+IHRoZSBi
-b2R5IG9mIGEgbWVzc2FnZSB0byBtYWpvcmRvbW9Admdlci5rZXJuZWwub3JnCj4gTW9yZSBtYWpv
-cmRvbW8gaW5mbyBhdCAgaHR0cDovL3ZnZXIua2VybmVsLm9yZy9tYWpvcmRvbW8taW5mby5odG1s
-CgoKCi0tIApRVUFMQ09NTSBJTkRJQSwgb24gYmVoYWxmIG9mIFF1YWxjb21tIElubm92YXRpb24g
-Q2VudGVyLCBJbmMuIGlzIGEgbWVtYmVyCm9mIENvZGUgQXVyb3JhIEZvcnVtLCBob3N0ZWQgYnkg
-VGhlIExpbnV4IEZvdW5kYXRpb24KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
-ZnJlZWRyZW5vCg==
+On Thu, Jul 12, 2018 at 05:28:43PM +0800, Zhen Lei wrote:
+> Stream bypass is not security. A malicious device can be hot plugged
+> without match any drivers, but it can access to any memory. So change to
+> disable bypass by default.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Whilst this sounds nice, I *bet* you it will break some systems. In
+particular, those where the SMMU is described but the toplogical information
+is either incorrect or incomplete.
+
+I guess we could put it into next and see if anybody complains. What do
+others think?
+
+Will
+
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 1d64710..b0ec28d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -366,7 +366,7 @@
+>  #define MSI_IOVA_BASE			0x8000000
+>  #define MSI_IOVA_LENGTH			0x100000
+> 
+> -static bool disable_bypass;
+> +static bool disable_bypass = 1;
+>  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+>  MODULE_PARM_DESC(disable_bypass,
+>  	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+> --
+> 1.8.3
+> 
+> 
