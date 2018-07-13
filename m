@@ -1,59 +1,167 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
- AMD sme enabled
-Date: Fri, 13 Jul 2018 19:08:57 +0200
-Message-ID: <20180713170857.GB17896@nazgul.tnic>
-References: <20180702072639.10110-1-lijiang@redhat.com>
- <20180702072639.10110-2-lijiang@redhat.com>
- <20180702101451.GB28730@zn.tnic>
- <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
- <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
- <20180703111428.GB5748@zn.tnic>
- <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
- <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
- <20180709092901.GA22182@nazgul.tnic>
- <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/3] arm64: dts: stratix10: Add SMMU Node
+Date: Fri, 13 Jul 2018 19:09:08 +0100
+Message-ID: <2d17b3b1-96a1-8a0a-521e-134de9df72d0@arm.com>
+References: <1531499278-32132-1-git-send-email-thor.thayer@linux.intel.com>
+	<1531499278-32132-4-git-send-email-thor.thayer@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: lijiang <lijiang@redhat.com>
-Cc: linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, dyoung@redhat.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, bhe@redhat.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1531499278-32132-4-git-send-email-thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, dinguyen-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 09, 2018 at 09:55:35PM +0800, lijiang wrote:
-> About this issue, i want to use an example to describe it.
-> /* drivers/iommu/amd_iommu_init.c */
-> static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
+On 13/07/18 17:27, thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org wrote:
+> From: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> 
+> Add the SMMU node and IOMMU parameters to the
+> Stratix10 Device Tree.
+> 
+> Signed-off-by: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> ---
+>   arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 44 +++++++++++++++++++++++
+>   1 file changed, 44 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+> index ca67ecb5866e..9b6ead87ae70 100644
+> --- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+> +++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+> @@ -162,6 +162,8 @@
+>   			reset-names = "stmmaceth", "stmmaceth-ocp";
+>   			clocks = <&clkmgr STRATIX10_EMAC0_CLK>;
+>   			clock-names = "stmmaceth";
+> +			#stream-id-cells = <1>;
 
-Those addresses come from the IVHD header which is an ACPI table. So the
-dump kernel can find that out too.
+The #stream-id-cells property is part of the deprecated mmu-masters 
+binding, so you don't need to add these.
 
-> Obviously, the iommu mmio space is not encrypted, and the device
-> mmio space is outside kdump kernel. We know that the old memory is
-> encrypted, and the old memory is also outside kdump kernel. For the
-> current case, e820__get_entry_type() and walk_iomem_res_desc() can't
-> get the desired result, so we can't also decide whether encryption
-> or not according to this result(rules). If we want to know whether
-> encryption or not by deducing the address, we will need to read the
-> content of memory and have a reference value for comparison, then
-> what's a reference value? Sometimes we don't know that.
+> +			iommus = <&smmu 1>;
+>   			status = "disabled";
+>   		};
+>   
+> @@ -175,6 +177,8 @@
+>   			reset-names = "stmmaceth", "stmmaceth-ocp";
+>   			clocks = <&clkmgr STRATIX10_EMAC1_CLK>;
+>   			clock-names = "stmmaceth";
+> +			#stream-id-cells = <1>;
+> +			iommus = <&smmu 2>;
+>   			status = "disabled";
+>   		};
+>   
+> @@ -188,6 +192,8 @@
+>   			reset-names = "stmmaceth", "stmmaceth-ocp";
+>   			clocks = <&clkmgr STRATIX10_EMAC2_CLK>;
+>   			clock-names = "stmmaceth";
+> +			#stream-id-cells = <1>;
+> +			iommus = <&smmu 3>;
+>   			status = "disabled";
+>   		};
+>   
+> @@ -298,6 +304,8 @@
+>   			clocks = <&clkmgr STRATIX10_L4_MP_CLK>,
+>   				 <&clkmgr STRATIX10_SDMMC_CLK>;
+>   			clock-names = "biu", "ciu";
+> +			#stream-id-cells = <1>;
+> +			iommus = <&smmu 5>;
+>   			status = "disabled";
+>   		};
+>   
+> @@ -323,6 +331,8 @@
+>   			#dma-requests = <32>;
+>   			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
+>   			clock-names = "apb_pclk";
+> +			#stream-id-cells = <1>;
+> +			iommus = <&smmu 8>;
 
-Again, if we don't know that how is the *caller* supposed to know
-whether the memory is encrypted or not? Because
+Just to double-check, all the channel threads and the manager thread 
+share the one stream ID? (I'm accustomed to seeing DMA-330 integrated 
+with an SMMU by tapping the AxID outputs off to the stream ID input.)
 
-"we" == "caller"
+>   		};
+>   
+>   		rst: rstmgr@ffd11000 {
+> @@ -332,6 +342,36 @@
+>   			altr,modrst-offset = <0x20>;
+>   		};
+>   
+> +		smmu: iommu@fa000000 {
+> +			compatible = "arm,mmu-500", "arm,smmu-v2";
+> +			reg = <0xfa000000 0x40000>;
+> +			#global-interrupts = <9>;
+> +			#iommu-cells = <1>;
+> +			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
+> +			clock-names = "smmu_clk";
+> +			interrupt-parent = <&intc>;
+> +			interrupts = <0 128 4>,	/* Global Secure Fault */
+> +				<0 129 4>, /* Global Non-secure Fault */
+> +				<0 130 4>, /* FPGA Performance Counter */
+> +				<0 131 4>, /* DMA Performance Counter */
+> +				<0 132 4>, /* EMAC Performance Counter */
+> +				<0 133 4>, /* IO Performance Counter */
+> +				<0 134 4>, /* SDM Performance Counter */
 
-in the kdump kernel.
+Note that there isn't much benefit to adding the secure or PMU 
+interrupts here other than to document the hardware - FWIW I have 
+actually been working on a PMU driver, and needless to say it turns out 
+not to be sufficient just having those munged into the SMMU global fault 
+handler.
 
-And the more important question is, why are we dumping MMIO space of the
-previous kernel *at* *all*? That doesn't make any sense to me.
+> +				<0 136 4>, /* Non-secure Combined Interrupt */
+> +				<0 137 4>, /* Secure Combined Interrupt */
 
--- 
-Regards/Gruss,
-    Boris.
+Similarly the combined interrupt; that's literally just all these other 
+interrupt lines ORed together at the SMMU end, and would generally only 
+be useful if you *didn't* have the individual lines wired up. As it 
+stands with everything listed, any event will also generate a spurious 
+global fault IRQ, which isn't ideal (not that you should get many 
+interrupts during normal operation, but still...)
 
-ECO tip #101: Trim your mails when you reply.
---
+Robin.
+
+> +				/* Non-secure Context Interrupts (32) */
+> +				<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
+> +				<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
+> +				<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
+> +				<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
+> +				<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
+> +				<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
+> +				<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
+> +				<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
+> +			stream-match-mask = <0x7ff0>;
+> +			status = "disabled";
+> +		};
+> +
+>   		spi0: spi@ffda4000 {
+>   			compatible = "snps,dw-apb-ssi";
+>   			#address-cells = <1>;
+> @@ -439,6 +479,8 @@
+>   			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
+>   			reset-names = "dwc2", "dwc2-ecc";
+>   			clocks = <&clkmgr STRATIX10_USB_CLK>;
+> +			#stream-id-cells = <1>;
+> +			iommus = <&smmu 6>;
+>   			status = "disabled";
+>   		};
+>   
+> @@ -451,6 +493,8 @@
+>   			resets = <&rst USB1_RESET>, <&rst USB1_OCP_RESET>;
+>   			reset-names = "dwc2", "dwc2-ecc";
+>   			clocks = <&clkmgr STRATIX10_USB_CLK>;
+> +			#stream-id-cells = <1>;
+> +			iommus = <&smmu 7>;
+>   			status = "disabled";
+>   		};
+>   
+> 
