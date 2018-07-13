@@ -1,40 +1,50 @@
-From: Joonsoo Kim <js1304@gmail.com>
-Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from cma_alloc()
-Date: Fri, 13 Jul 2018 15:29:29 +0900
-Message-ID: <CAAmzW4MNuZOZRP1fHt7E42Mm6+-CLkYYA1Ju2Cfe0ik4Ynb4Lw@mail.gmail.com>
-References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
- <20180709121956.20200-1-m.szyprowski@samsung.com> <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
- <CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
- <20180710095056.GE14284@dhcp22.suse.cz> <CAAmzW4P1m_T77DfQzDD6ysGaOF46++-0gwRaOajmo6ef=VYp=A@mail.gmail.com>
- <20180711085407.GB20050@dhcp22.suse.cz> <CAAmzW4M3KADCZD9+B2h7=WsYksGtg-GzYRCJjbqK5Scceynrrg@mail.gmail.com>
- <20180712071536.GA15506@lst.de>
+From: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+Subject: Re: convert parisc to the generic dma-noncoherent code
+Date: Fri, 13 Jul 2018 10:14:38 +0200
+Message-ID: <e2b653d8-cc04-7a81-89a0-9d286c5cc0ca@gmx.de>
+References: <20180619070455.26624-1-hch@lst.de> <20180711153445.GC31946@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180712071536.GA15506@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Michal Hocko <mhocko@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Linux Memory Management List <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>, Michal Nazarewicz <mina86@mina86.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chris Zankel <chris@zankel.net>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180711153445.GC31946-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-2018-07-12 16:15 GMT+09:00 Christoph Hellwig <hch@lst.de>:
-> On Thu, Jul 12, 2018 at 11:48:47AM +0900, Joonsoo Kim wrote:
->> One of existing user is general DMA layer and it takes gfp flags that is
->> provided by user. I don't check all the DMA allocation sites but how do
->> you convince that none of them try to use anything other
->> than GFP_KERNEL [|__GFP_NOWARN]?
->
-> They use a few others things still like __GFP_COMP, __GPF_DMA or
-> GFP_HUGEPAGE.  But all these are bogus as we have various implementations
-> that can't respect them.  I plan to get rid of the gfp_t argument
-> in the dma_map_ops alloc method in a few merge windows because of that,
-> but it needs further implementation consolidation first.
+On 11.07.2018 17:34, Christoph Hellwig wrote:
+> ping?  Any comments?
 
-Okay. If those flags are all, this change would be okay.
+I applied those 3 patches on top of git head, and booted the
+32-bit kernel on a HP 715/64 (PCX-L) and a HP B160L (PCX-L2).
+On both machines I had problems with those drivers which use
+DMA (I checked specifically the lasi NIC card, which is the 
+main onboard NIC card in both machines).
+Getting IP via DHCP was unreliable, pings on the same network 
+to both machines gave lost packets, login via ssh sometimes failed
+and so on.
 
-For the remind of this gfp flag introduction in cma_alloc(), see the
-following link.
+So, there is definitively some cache-flush missing in this patchset.
 
-https://marc.info/?l=linux-mm&m=148431452118407
+I'm happy to test any further patches, but I'l be blocked at least
+until end of next week. It would be good if James could do some 
+testing on his PCX-machine too, since that machine is different
+than mine.
 
-Thanks.
+Thanks for your efforts to clean that up!
+Helge
+
+> On Tue, Jun 19, 2018 at 09:04:52AM +0200, Christoph Hellwig wrote:
+>> This should address all the comments raised last time.
+For the record: Here is the link to the patchbundle:
+https://patchwork.kernel.org/bundle/helge/DMA_OP/
