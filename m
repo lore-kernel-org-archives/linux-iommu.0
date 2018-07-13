@@ -1,56 +1,44 @@
-From: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: prevent any devices access to
-	memory without registration
-Date: Fri, 13 Jul 2018 10:22:51 +0800
-Message-ID: <8067f5d2-b241-d5f2-42f6-466913f04e04@huawei.com>
-References: <1531387723-3592-1-git-send-email-thunder.leizhen@huawei.com>
-	<20180712170120.GC26935@arm.com> <5B4804D6.4050508@huawei.com>
+From: Peter Xu <peterx@redhat.com>
+Subject: Re: [PATCH v4 9/9] iommu/vt-d: Remove the obsolete per iommu pasid
+ tables
+Date: Fri, 13 Jul 2018 13:00:03 +0800
+Message-ID: <20180713050003.GA2379@xz-mi>
+References: <1531113778-28238-1-git-send-email-baolu.lu@linux.intel.com>
+ <1531113778-28238-10-git-send-email-baolu.lu@linux.intel.com>
+ <20180711024506.GB2359@xz-mi>
+ <5B4801A6.1090200@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5B4804D6.4050508-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5B4801A6.1090200@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018/7/13 9:48, Leizhen (ThunderTown) wrote:
+On Fri, Jul 13, 2018 at 09:34:30AM +0800, Lu Baolu wrote:
+> Hi Peter,
 > 
-> 
-> On 2018/7/13 1:01, Will Deacon wrote:
->> On Thu, Jul 12, 2018 at 05:28:43PM +0800, Zhen Lei wrote:
->>> Stream bypass is not security. A malicious device can be hot plugged
->>> without match any drivers, but it can access to any memory. So change to
->>> disable bypass by default.
->>>
->>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>> ---
->>>  drivers/iommu/arm-smmu-v3.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> Whilst this sounds nice, I *bet* you it will break some systems. In
->> particular, those where the SMMU is described but the toplogical information
->> is either incorrect or incomplete.
-> 
-> Suppose this scene exists, maybe we should consider updating IORT specification,
-> to indicate whether a smmu treats all unregistered devices as stream bypass or not, --- global control
-> to indicate whether a single device default use stream bypass or not, --- local control
-> that will be more flexible. But we still disable bypass by default.
+> Do you have further comments for this series? I will work out a
+> new version if there are no ones.
 
-IORT (or dts) is about the hardware feature, if it's only
-about the wrong topological information of devices and
-SMMU, I think IORT is not the right place to describe such
-information, we need correct that information instead.
+Not for now.  Though since you mentioned about the work to remove the
+pasid state table, not sure whether it'll be nice to put that into
+this series, or even put more patches that are directly related
+(e.g. including the two-level pasid table work and anything related)
+so the series could be more complete.
 
-Thanks
-Hanjun
+> 
+> Thank you for reviewing my patches. Do you allow me to add your
+> reviewed-by to the patches which you've reviewed?
+
+I'm glad to read your work.  I didn't leave r-bs because I'm not that
+familiar with the codes so I'm not confident to leave any, just to
+raise the questions.  Please feel free to post a new version as you
+wish, I'll try to leave r-b there if possible.
+
+Thanks,
+
+-- 
+Peter Xu
