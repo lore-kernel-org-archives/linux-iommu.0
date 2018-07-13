@@ -1,14 +1,11 @@
-From: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
-Subject: Re: convert parisc to the generic dma-noncoherent code
-Date: Fri, 13 Jul 2018 10:14:38 +0200
-Message-ID: <e2b653d8-cc04-7a81-89a0-9d286c5cc0ca@gmx.de>
-References: <20180619070455.26624-1-hch@lst.de> <20180711153445.GC31946@lst.de>
+From: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Subject: [PATCH 0/3] SOCFPGA Stratix10 SMMU Support
+Date: Fri, 13 Jul 2018 11:27:55 -0500
+Message-ID: <1531499278-32132-1-git-send-email-thor.thayer@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180711153445.GC31946-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,33 +15,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dinguyen-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11.07.2018 17:34, Christoph Hellwig wrote:
-> ping?  Any comments?
+From: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-I applied those 3 patches on top of git head, and booted the
-32-bit kernel on a HP 715/64 (PCX-L) and a HP B160L (PCX-L2).
-On both machines I had problems with those drivers which use
-DMA (I checked specifically the lasi NIC card, which is the 
-main onboard NIC card in both machines).
-Getting IP via DHCP was unreliable, pings on the same network 
-to both machines gave lost packets, login via ssh sometimes failed
-and so on.
+This patch series adds SMMU support to the SOCFPGA Stratix10 family
+of parts. The addition of a clock parameter was required to ungate
+the SMMU clock.
 
-So, there is definitively some cache-flush missing in this patchset.
+Thor Thayer (3):
+  Docs: dt: arm-smmu: Add optional clock parameter
+  iommu/arm-smmu: Add optional SMMU clock
+  arm64: dts: stratix10: Add SMMU Node
 
-I'm happy to test any further patches, but I'l be blocked at least
-until end of next week. It would be good if James could do some 
-testing on his PCX-machine too, since that machine is different
-than mine.
+ .../devicetree/bindings/iommu/arm,smmu.txt         | 16 ++++++++
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi  | 44 ++++++++++++++++++++++
+ drivers/iommu/arm-smmu.c                           | 17 +++++++++
+ 3 files changed, 77 insertions(+)
 
-Thanks for your efforts to clean that up!
-Helge
-
-> On Tue, Jun 19, 2018 at 09:04:52AM +0200, Christoph Hellwig wrote:
->> This should address all the comments raised last time.
-For the record: Here is the link to the patchbundle:
-https://patchwork.kernel.org/bundle/helge/DMA_OP/
+-- 
+2.7.4
