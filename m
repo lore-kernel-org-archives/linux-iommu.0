@@ -1,44 +1,40 @@
-From: Peter Xu <peterx@redhat.com>
-Subject: Re: [PATCH v4 9/9] iommu/vt-d: Remove the obsolete per iommu pasid
- tables
-Date: Fri, 13 Jul 2018 13:00:03 +0800
-Message-ID: <20180713050003.GA2379@xz-mi>
-References: <1531113778-28238-1-git-send-email-baolu.lu@linux.intel.com>
- <1531113778-28238-10-git-send-email-baolu.lu@linux.intel.com>
- <20180711024506.GB2359@xz-mi>
- <5B4801A6.1090200@linux.intel.com>
+From: Joonsoo Kim <js1304@gmail.com>
+Subject: Re: [PATCH 1/2] mm/cma: remove unsupported gfp_mask parameter from cma_alloc()
+Date: Fri, 13 Jul 2018 15:29:29 +0900
+Message-ID: <CAAmzW4MNuZOZRP1fHt7E42Mm6+-CLkYYA1Ju2Cfe0ik4Ynb4Lw@mail.gmail.com>
+References: <CGME20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29@eucas1p2.samsung.com>
+ <20180709121956.20200-1-m.szyprowski@samsung.com> <20180709122019eucas1p2340da484acfcc932537e6014f4fd2c29~-sqTPJKij2939229392eucas1p2j@eucas1p2.samsung.com>
+ <CAAmzW4PPNYhUj_MeZox+ddq8MjXqnJs_AJ3xkayf710udD1pSg@mail.gmail.com>
+ <20180710095056.GE14284@dhcp22.suse.cz> <CAAmzW4P1m_T77DfQzDD6ysGaOF46++-0gwRaOajmo6ef=VYp=A@mail.gmail.com>
+ <20180711085407.GB20050@dhcp22.suse.cz> <CAAmzW4M3KADCZD9+B2h7=WsYksGtg-GzYRCJjbqK5Scceynrrg@mail.gmail.com>
+ <20180712071536.GA15506@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5B4801A6.1090200@linux.intel.com>
+In-Reply-To: <20180712071536.GA15506@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com
+To: Christoph Hellwig <hch@lst.de>
+Cc: Michal Hocko <mhocko@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Linux Memory Management List <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>, linux-arm-kernel@lists.infradead.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>, Michal Nazarewicz <mina86@mina86.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Paul Mackerras <paulus@ozlabs.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Chris Zankel <chris@zankel.net>, Martin Schwidefsky <schwidefsky@de.ibm.com>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 13, 2018 at 09:34:30AM +0800, Lu Baolu wrote:
-> Hi Peter,
-> 
-> Do you have further comments for this series? I will work out a
-> new version if there are no ones.
+2018-07-12 16:15 GMT+09:00 Christoph Hellwig <hch@lst.de>:
+> On Thu, Jul 12, 2018 at 11:48:47AM +0900, Joonsoo Kim wrote:
+>> One of existing user is general DMA layer and it takes gfp flags that is
+>> provided by user. I don't check all the DMA allocation sites but how do
+>> you convince that none of them try to use anything other
+>> than GFP_KERNEL [|__GFP_NOWARN]?
+>
+> They use a few others things still like __GFP_COMP, __GPF_DMA or
+> GFP_HUGEPAGE.  But all these are bogus as we have various implementations
+> that can't respect them.  I plan to get rid of the gfp_t argument
+> in the dma_map_ops alloc method in a few merge windows because of that,
+> but it needs further implementation consolidation first.
 
-Not for now.  Though since you mentioned about the work to remove the
-pasid state table, not sure whether it'll be nice to put that into
-this series, or even put more patches that are directly related
-(e.g. including the two-level pasid table work and anything related)
-so the series could be more complete.
+Okay. If those flags are all, this change would be okay.
 
-> 
-> Thank you for reviewing my patches. Do you allow me to add your
-> reviewed-by to the patches which you've reviewed?
+For the remind of this gfp flag introduction in cma_alloc(), see the
+following link.
 
-I'm glad to read your work.  I didn't leave r-bs because I'm not that
-familiar with the codes so I'm not confident to leave any, just to
-raise the questions.  Please feel free to post a new version as you
-wish, I'll try to leave r-b there if possible.
+https://marc.info/?l=linux-mm&m=148431452118407
 
-Thanks,
-
--- 
-Peter Xu
+Thanks.
