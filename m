@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 6/9] iommu/vt-d: Per PCI device pasid table interfaces
-Date: Sat, 14 Jul 2018 15:46:59 +0800
-Message-ID: <1531554422-6874-7-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH v5 7/9] iommu/vt-d: Allocate and free pasid table
+Date: Sat, 14 Jul 2018 15:47:00 +0800
+Message-ID: <1531554422-6874-8-git-send-email-baolu.lu@linux.intel.com>
 References: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,301 +10,47 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the interfaces for per PCI device pasid
-table management. Currently we allocate one pasid table
-for all PCI devices under the scope of an IOMMU. It's
-insecure in some cases where multiple devices under one
-single IOMMU unit support PASID features. With per PCI
-device pasid table, we can achieve finer protection and
-isolation granularity.
+This patch allocates a PASID table for a PCI device at the time
+when the dmar dev_info is attached to dev->archdata.iommu, and
+free it in the opposite case.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
 Cc: Liu Yi L <yi.l.liu@intel.com>
-Suggested-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Liu Yi L <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel-iommu.c |   1 +
- drivers/iommu/intel-pasid.c | 179 ++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h |  18 +++++
- drivers/iommu/intel-svm.c   |   4 -
- include/linux/intel-iommu.h |   2 +
- 5 files changed, 200 insertions(+), 4 deletions(-)
+ drivers/iommu/intel-iommu.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3d802c5..a930918 100644
+index a930918..baad27a 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2450,6 +2450,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	info->dev = dev;
- 	info->domain = domain;
- 	info->iommu = iommu;
-+	info->pasid_table = NULL;
- 
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index e918fe0..fe95c9b 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -13,6 +13,8 @@
- #include <linux/intel-iommu.h>
- #include <linux/iommu.h>
- #include <linux/memory.h>
-+#include <linux/pci.h>
-+#include <linux/pci-ats.h>
- #include <linux/spinlock.h>
- 
- #include "intel-pasid.h"
-@@ -58,3 +60,180 @@ void *intel_pasid_lookup_id(int pasid)
- 
- 	return p;
- }
+@@ -2508,6 +2508,15 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	list_add(&info->global, &device_domain_list);
+ 	if (dev)
+ 		dev->archdata.iommu = info;
 +
-+/*
-+ * Per device pasid table management:
-+ */
-+static inline void
-+device_attach_pasid_table(struct device_domain_info *info,
-+			  struct pasid_table *pasid_table)
-+{
-+	info->pasid_table = pasid_table;
-+	list_add(&info->table, &pasid_table->dev);
-+}
-+
-+static inline void
-+device_detach_pasid_table(struct device_domain_info *info,
-+			  struct pasid_table *pasid_table)
-+{
-+	info->pasid_table = NULL;
-+	list_del(&info->table);
-+}
-+
-+struct pasid_table_opaque {
-+	struct pasid_table	**pasid_table;
-+	int			segment;
-+	int			bus;
-+	int			devfn;
-+};
-+
-+static int search_pasid_table(struct device_domain_info *info, void *opaque)
-+{
-+	struct pasid_table_opaque *data = opaque;
-+
-+	if (info->iommu->segment == data->segment &&
-+	    info->bus == data->bus &&
-+	    info->devfn == data->devfn &&
-+	    info->pasid_table) {
-+		*data->pasid_table = info->pasid_table;
-+		return 1;
++	if (dev && dev_is_pci(dev) && info->pasid_supported) {
++		ret = intel_pasid_alloc_table(dev);
++		if (ret) {
++			__dmar_remove_one_dev_info(info);
++			spin_unlock_irqrestore(&device_domain_lock, flags);
++			return NULL;
++		}
 +	}
-+
-+	return 0;
-+}
-+
-+static int get_alias_pasid_table(struct pci_dev *pdev, u16 alias, void *opaque)
-+{
-+	struct pasid_table_opaque *data = opaque;
-+
-+	data->segment = pci_domain_nr(pdev->bus);
-+	data->bus = PCI_BUS_NUM(alias);
-+	data->devfn = alias & 0xff;
-+
-+	return for_each_device_domain(&search_pasid_table, data);
-+}
-+
-+/*
-+ * Allocate a pasid table for @dev. It should be called in a
-+ * single-thread context.
-+ */
-+int intel_pasid_alloc_table(struct device *dev)
-+{
-+	struct device_domain_info *info;
-+	struct pasid_table *pasid_table;
-+	struct pasid_table_opaque data;
-+	struct page *pages;
-+	size_t size, count;
-+	int ret, order;
-+
-+	info = dev->archdata.iommu;
-+	if (WARN_ON(!info || !dev_is_pci(dev) ||
-+		    !info->pasid_supported || info->pasid_table))
-+		return -EINVAL;
-+
-+	/* DMA alias device already has a pasid table, use it: */
-+	data.pasid_table = &pasid_table;
-+	ret = pci_for_each_dma_alias(to_pci_dev(dev),
-+				     &get_alias_pasid_table, &data);
-+	if (ret)
-+		goto attach_out;
-+
-+	pasid_table = kzalloc(sizeof(*pasid_table), GFP_ATOMIC);
-+	if (!pasid_table)
-+		return -ENOMEM;
-+	INIT_LIST_HEAD(&pasid_table->dev);
-+
-+	size = sizeof(struct pasid_entry);
-+	count = min_t(int, pci_max_pasids(to_pci_dev(dev)), intel_pasid_max_id);
-+	order = get_order(size * count);
-+	pages = alloc_pages_node(info->iommu->node,
-+				 GFP_ATOMIC | __GFP_ZERO,
-+				 order);
-+	if (!pages)
-+		return -ENOMEM;
-+
-+	pasid_table->table = page_address(pages);
-+	pasid_table->order = order;
-+	pasid_table->max_pasid = count;
-+
-+attach_out:
-+	device_attach_pasid_table(info, pasid_table);
-+
-+	return 0;
-+}
-+
-+void intel_pasid_free_table(struct device *dev)
-+{
-+	struct device_domain_info *info;
-+	struct pasid_table *pasid_table;
-+
-+	info = dev->archdata.iommu;
-+	if (!info || !dev_is_pci(dev) ||
-+	    !info->pasid_supported || !info->pasid_table)
-+		return;
-+
-+	pasid_table = info->pasid_table;
-+	device_detach_pasid_table(info, pasid_table);
-+
-+	if (!list_empty(&pasid_table->dev))
-+		return;
-+
-+	free_pages((unsigned long)pasid_table->table, pasid_table->order);
-+	kfree(pasid_table);
-+}
-+
-+struct pasid_table *intel_pasid_get_table(struct device *dev)
-+{
-+	struct device_domain_info *info;
-+
-+	info = dev->archdata.iommu;
-+	if (!info)
-+		return NULL;
-+
-+	return info->pasid_table;
-+}
-+
-+int intel_pasid_get_dev_max_id(struct device *dev)
-+{
-+	struct device_domain_info *info;
-+
-+	info = dev->archdata.iommu;
-+	if (!info || !info->pasid_table)
-+		return 0;
-+
-+	return info->pasid_table->max_pasid;
-+}
-+
-+struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid)
-+{
-+	struct pasid_table *pasid_table;
-+	struct pasid_entry *entries;
-+
-+	pasid_table = intel_pasid_get_table(dev);
-+	if (WARN_ON(!pasid_table || pasid < 0 ||
-+		    pasid >= intel_pasid_get_dev_max_id(dev)))
-+		return NULL;
-+
-+	entries = pasid_table->table;
-+
-+	return &entries[pasid];
-+}
-+
-+/*
-+ * Interfaces for PASID table entry manipulation:
-+ */
-+static inline void pasid_clear_entry(struct pasid_entry *pe)
-+{
-+	WRITE_ONCE(pe->val, 0);
-+}
-+
-+void intel_pasid_clear_entry(struct device *dev, int pasid)
-+{
-+	struct pasid_entry *pe;
-+
-+	pe = intel_pasid_get_entry(dev, pasid);
-+	if (WARN_ON(!pe))
-+		return;
-+
-+	pasid_clear_entry(pe);
-+}
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index b1c5296..1c05ed6 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -13,9 +13,27 @@
- #define PASID_MIN			0x1
- #define PASID_MAX			0x100000
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
  
-+struct pasid_entry {
-+	u64 val;
-+};
-+
-+/* The representative of a PASID table */
-+struct pasid_table {
-+	void			*table;		/* pasid table pointer */
-+	int			order;		/* page order of pasid table */
-+	int			max_pasid;	/* max pasid */
-+	struct list_head	dev;		/* device list */
-+};
-+
- extern u32 intel_pasid_max_id;
- int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
- void intel_pasid_free_id(int pasid);
- void *intel_pasid_lookup_id(int pasid);
-+int intel_pasid_alloc_table(struct device *dev);
-+void intel_pasid_free_table(struct device *dev);
-+struct pasid_table *intel_pasid_get_table(struct device *dev);
-+int intel_pasid_get_dev_max_id(struct device *dev);
-+struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
-+void intel_pasid_clear_entry(struct device *dev, int pasid);
+ 	if (dev && domain_context_mapping(domain, dev)) {
+@@ -4873,6 +4882,7 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
+ 	if (info->dev) {
+ 		iommu_disable_dev_iotlb(info);
+ 		domain_context_clear(iommu, info->dev);
++		intel_pasid_free_table(info->dev);
+ 	}
  
- #endif /* __INTEL_PASID_H */
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 56e65d0..9b5dc72 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -34,10 +34,6 @@
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--struct pasid_entry {
--	u64 val;
--};
--
- struct pasid_state_entry {
- 	u64 val;
- };
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 4fd4c6f..e7901d4 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -476,6 +476,7 @@ struct intel_iommu {
- struct device_domain_info {
- 	struct list_head link;	/* link to domain siblings */
- 	struct list_head global; /* link to global list */
-+	struct list_head table;	/* link to pasid table */
- 	u8 bus;			/* PCI bus number */
- 	u8 devfn;		/* PCI devfn number */
- 	u16 pfsid;		/* SRIOV physical function source ID */
-@@ -489,6 +490,7 @@ struct device_domain_info {
- 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
- 	struct intel_iommu *iommu; /* IOMMU used by this device */
- 	struct dmar_domain *domain; /* pointer to domain */
-+	struct pasid_table *pasid_table; /* pasid table */
- };
- 
- static inline void __iommu_flush_cache(
+ 	unlink_domain_info(info);
 -- 
 2.7.4
