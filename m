@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 9/9] iommu/vt-d: Remove the obsolete per iommu pasid tables
-Date: Sat, 14 Jul 2018 15:47:02 +0800
-Message-ID: <1531554422-6874-10-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH v5 1/9] iommu/vt-d: Global PASID name space
+Date: Sat, 14 Jul 2018 15:46:54 +0800
+Message-ID: <1531554422-6874-2-git-send-email-baolu.lu@linux.intel.com>
 References: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,119 +10,166 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The obsolete per iommu pasid tables are no longer used. Hence,
-clean up them.
+This adds the system wide PASID name space for the PASID
+allocation. Currently we are using per IOMMU PASID name
+spaces which are not suitable for some use cases. For an
+example, one application (associated with a PASID) might
+talk to two physical devices simultaneously while the two
+devices could reside behind two different IOMMU units.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
 Cc: Liu Yi L <yi.l.liu@intel.com>
+Suggested-by: Ashok Raj <ashok.raj@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Liu Yi L <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel-iommu.c |  6 +++---
- drivers/iommu/intel-svm.c   | 17 ++---------------
- include/linux/intel-iommu.h |  5 ++---
- 3 files changed, 7 insertions(+), 21 deletions(-)
+ drivers/iommu/Makefile      |  2 +-
+ drivers/iommu/intel-iommu.c | 13 ++++++++++
+ drivers/iommu/intel-pasid.c | 60 +++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel-pasid.h | 21 ++++++++++++++++
+ 4 files changed, 95 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/intel-pasid.c
+ create mode 100644 drivers/iommu/intel-pasid.h
 
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 1fb6958..0a190b4 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -14,7 +14,7 @@ obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
+ obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
+ obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+ obj-$(CONFIG_DMAR_TABLE) += dmar.o
+-obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o
++obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o intel-pasid.o
+ obj-$(CONFIG_INTEL_IOMMU_SVM) += intel-svm.o
+ obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
+ obj-$(CONFIG_IRQ_REMAP) += intel_irq_remapping.o irq_remapping.o
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f8609b5..9a88081 100644
+index 869321c..dd5a617 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1755,7 +1755,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	if (pasid_enabled(iommu)) {
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
--		intel_svm_free_pasid_tables(iommu);
-+		intel_svm_exit(iommu);
- 	}
- #endif
- }
-@@ -3336,7 +3336,7 @@ static int __init init_dmars(void)
- 			hw_pass_through = 0;
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 		if (pasid_enabled(iommu))
--			intel_svm_alloc_pasid_tables(iommu);
-+			intel_svm_init(iommu);
- #endif
+@@ -52,6 +52,7 @@
+ #include <asm/iommu.h>
+ 
+ #include "irq_remapping.h"
++#include "intel-pasid.h"
+ 
+ #define ROOT_SIZE		VTD_PAGE_SIZE
+ #define CONTEXT_SIZE		VTD_PAGE_SIZE
+@@ -3292,6 +3293,18 @@ static int __init init_dmars(void)
  	}
  
-@@ -4330,7 +4330,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+ 	for_each_active_iommu(iommu, drhd) {
++		/*
++		 * Find the max pasid size of all IOMMU's in the system.
++		 * We need to ensure the system pasid table is no bigger
++		 * than the smallest supported.
++		 */
++		if (pasid_enabled(iommu)) {
++			u32 temp = 2 << ecap_pss(iommu->ecap);
++
++			intel_pasid_max_id = min_t(u32, temp,
++						   intel_pasid_max_id);
++		}
++
+ 		g_iommus[iommu->seq_id] = iommu;
  
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	if (pasid_enabled(iommu))
--		intel_svm_alloc_pasid_tables(iommu);
-+		intel_svm_init(iommu);
- #endif
- 
- 	if (dmaru->ignored) {
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index a253cde..eb30836 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -38,7 +38,7 @@ struct pasid_state_entry {
- 	u64 val;
- };
- 
--int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
-+int intel_svm_init(struct intel_iommu *iommu)
- {
- 	struct page *pages;
- 	int order;
-@@ -63,15 +63,6 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- 		iommu->pasid_max = 0x20000;
- 
- 	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
--	if (!pages) {
--		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
--			iommu->name);
--		return -ENOMEM;
--	}
--	iommu->pasid_table = page_address(pages);
--	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
--
- 	if (ecap_dis(iommu->ecap)) {
- 		/* Just making it explicit... */
- 		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
-@@ -86,14 +77,10 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
- 	return 0;
- }
- 
--int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-+int intel_svm_exit(struct intel_iommu *iommu)
- {
- 	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
- 
--	if (iommu->pasid_table) {
--		free_pages((unsigned long)iommu->pasid_table, order);
--		iommu->pasid_table = NULL;
--	}
- 	if (iommu->pasid_state_table) {
- 		free_pages((unsigned long)iommu->pasid_state_table, order);
- 		iommu->pasid_state_table = NULL;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index e7901d4..3c43882 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -453,7 +453,6 @@ struct intel_iommu {
- 	 * devices away to userspace processes (e.g. for DPDK) and don't
- 	 * want to trust that userspace will use *only* the PASID it was
- 	 * told to. But while it's all driver-arbitrated, we're fine. */
--	struct pasid_entry *pasid_table;
- 	struct pasid_state_entry *pasid_state_table;
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-@@ -526,8 +525,8 @@ int for_each_device_domain(int (*fn)(struct device_domain_info *info,
- 				     void *data), void *data);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
--extern int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu);
--extern int intel_svm_free_pasid_tables(struct intel_iommu *iommu);
-+int intel_svm_init(struct intel_iommu *iommu);
-+int intel_svm_exit(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
- 
+ 		intel_iommu_init_qi(iommu);
+diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+new file mode 100644
+index 0000000..e918fe0
+--- /dev/null
++++ b/drivers/iommu/intel-pasid.c
+@@ -0,0 +1,60 @@
++// SPDX-License-Identifier: GPL-2.0
++/**
++ * intel-pasid.c - PASID idr, table and entry manipulation
++ *
++ * Copyright (C) 2018 Intel Corporation
++ *
++ * Author: Lu Baolu <baolu.lu@linux.intel.com>
++ */
++
++#define pr_fmt(fmt)	"DMAR: " fmt
++
++#include <linux/dmar.h>
++#include <linux/intel-iommu.h>
++#include <linux/iommu.h>
++#include <linux/memory.h>
++#include <linux/spinlock.h>
++
++#include "intel-pasid.h"
++
++/*
++ * Intel IOMMU system wide PASID name space:
++ */
++static DEFINE_SPINLOCK(pasid_lock);
++u32 intel_pasid_max_id = PASID_MAX;
++static DEFINE_IDR(pasid_idr);
++
++int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp)
++{
++	int ret, min, max;
++
++	min = max_t(int, start, PASID_MIN);
++	max = min_t(int, end, intel_pasid_max_id);
++
++	WARN_ON(in_interrupt());
++	idr_preload(gfp);
++	spin_lock(&pasid_lock);
++	ret = idr_alloc(&pasid_idr, ptr, min, max, GFP_ATOMIC);
++	spin_unlock(&pasid_lock);
++	idr_preload_end();
++
++	return ret;
++}
++
++void intel_pasid_free_id(int pasid)
++{
++	spin_lock(&pasid_lock);
++	idr_remove(&pasid_idr, pasid);
++	spin_unlock(&pasid_lock);
++}
++
++void *intel_pasid_lookup_id(int pasid)
++{
++	void *p;
++
++	spin_lock(&pasid_lock);
++	p = idr_find(&pasid_idr, pasid);
++	spin_unlock(&pasid_lock);
++
++	return p;
++}
+diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+new file mode 100644
+index 0000000..b1c5296
+--- /dev/null
++++ b/drivers/iommu/intel-pasid.h
+@@ -0,0 +1,21 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * intel-pasid.h - PASID idr, table and entry header
++ *
++ * Copyright (C) 2018 Intel Corporation
++ *
++ * Author: Lu Baolu <baolu.lu@linux.intel.com>
++ */
++
++#ifndef __INTEL_PASID_H
++#define __INTEL_PASID_H
++
++#define PASID_MIN			0x1
++#define PASID_MAX			0x100000
++
++extern u32 intel_pasid_max_id;
++int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
++void intel_pasid_free_id(int pasid);
++void *intel_pasid_lookup_id(int pasid);
++
++#endif /* __INTEL_PASID_H */
 -- 
 2.7.4
