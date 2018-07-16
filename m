@@ -1,254 +1,126 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v4] dt-bindings: mediatek: Add binding for mt2712 IOMMU
- and SMI
-Date: Mon, 16 Jul 2018 15:28:14 +0200
-Message-ID: <d3d34d21-1a38-d3b7-1448-bd9e4c6afc6e@gmail.com>
-References: <1527165331-22261-1-git-send-email-yong.wu@mediatek.com>
- <1529562433.22229.2.camel@mhfsdcap03>
+From: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 3/3] arm64: dts: stratix10: Add SMMU Node
+Date: Mon, 16 Jul 2018 13:56:23 -0500
+Message-ID: <847f8f94-5108-47a3-bb08-c5f50b64e6e6@linux.intel.com>
+References: <1531499278-32132-1-git-send-email-thor.thayer@linux.intel.com>
+	<1531499278-32132-4-git-send-email-thor.thayer@linux.intel.com>
+	<2d17b3b1-96a1-8a0a-521e-134de9df72d0@arm.com>
+Reply-To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1529562433.22229.2.camel@mhfsdcap03>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2d17b3b1-96a1-8a0a-521e-134de9df72d0-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, dinguyen-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 21/06/18 08:27, Yong Wu wrote:
-> Hi Matthias,
-> 
->       A gentle ping on this.
-> 
-> On Thu, 2018-05-24 at 20:35 +0800, Yong Wu wrote:
->> This patch adds decriptions for mt2712 IOMMU and SMI.
->>
->> In order to balance the bandwidth, mt2712 has two M4Us, two
->> smi-commons, 10 smi-larbs. and mt2712 is also MTK IOMMU gen2 which
->> uses ARM Short-Descriptor translation table format.
->>
->> The mt2712 M4U-SMI HW diagram is as below:
->>
->>                             EMI
->>                              |
->>               ------------------------------------
->>               |                                  |
->>              M4U0                              M4U1
->>               |                                  |
->>          smi-common0                        smi-common1
->>               |                                  |
->>   -------------------------       --------------------------------
->>   |     |     |     |     |       |         |        |     |     |
->>   |     |     |     |     |       |         |        |     |     |
->> larb0 larb1 larb2 larb3 larb6    larb4    larb5    larb7 larb8 larb9
->> disp0 vdec  cam   venc   jpg  mdp1/disp1 mdp2/disp2 mdp3 vdo/nr tvd
->>
->> All the connections are HW fixed, SW can NOT adjust it.
->>
->> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->> Acked-by: Rob Herring <robh@kernel.org>
->> ---
->> change notes:
->> v4: change the license of the new file in this patch to SPDX.
->>
->> v3: http://lists.infradead.org/pipermail/linux-mediatek/2018-May/013279.html
->> Add a new ECO port(DISP_RDMA2) in larb0/port7.
->>
->> v2:
->> https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023848.html
->>
->> v1:
->> https://lists.linuxfoundation.org/pipermail/iommu/2017-August/023665.html
->> ---
->>  .../devicetree/bindings/iommu/mediatek,iommu.txt   |  6 +-
->>  .../memory-controllers/mediatek,smi-common.txt     |  6 +-
->>  .../memory-controllers/mediatek,smi-larb.txt       |  5 +-
->>  include/dt-bindings/memory/mt2712-larb-port.h      | 95 ++++++++++++++++++++++
->>  4 files changed, 106 insertions(+), 6 deletions(-)
->>  create mode 100644 include/dt-bindings/memory/mt2712-larb-port.h
->>
-
-Joerg, will you take this through your tree, or would you mind to provide a
-Acked-By?
-
-Thanks,
-Matthias
-
->> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
->> index 53c20ca..df5db73 100644
->> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
->> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
->> @@ -40,6 +40,7 @@ video decode local arbiter, all these ports are according to the video HW.
->>  Required properties:
->>  - compatible : must be one of the following string:
->>  	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
->> +	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
->>  	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
->>  - reg : m4u register base and size.
->>  - interrupts : the interrupt of m4u.
->> @@ -50,8 +51,9 @@ Required properties:
->>  	according to the local arbiter index, like larb0, larb1, larb2...
->>  - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
->>  	Specifies the mtk_m4u_id as defined in
->> -	dt-binding/memory/mt2701-larb-port.h for mt2701 and
->> -	dt-binding/memory/mt8173-larb-port.h for mt8173
->> +	dt-binding/memory/mt2701-larb-port.h for mt2701,
->> +	dt-binding/memory/mt2712-larb-port.h for mt2712, and
->> +	dt-binding/memory/mt8173-larb-port.h for mt8173.
->>  
->>  Example:
->>  	iommu: iommu@10205000 {
->> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
->> index aa614b2..615abdd 100644
->> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
->> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
->> @@ -2,8 +2,9 @@ SMI (Smart Multimedia Interface) Common
->>  
->>  The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
->>  
->> -Mediatek SMI have two generations of HW architecture, mt8173 uses the second
->> -generation of SMI HW while mt2701 uses the first generation HW of SMI.
->> +Mediatek SMI have two generations of HW architecture, mt2712 and mt8173 use
->> +the second generation of SMI HW while mt2701 uses the first generation HW of
->> +SMI.
->>  
->>  There's slight differences between the two SMI, for generation 2, the
->>  register which control the iommu port is at each larb's register base. But
->> @@ -15,6 +16,7 @@ not needed for SMI generation 2.
->>  Required properties:
->>  - compatible : must be one of :
->>  	"mediatek,mt2701-smi-common"
->> +	"mediatek,mt2712-smi-common"
->>  	"mediatek,mt8173-smi-common"
->>  - reg : the register and size of the SMI block.
->>  - power-domains : a phandle to the power domain of this local arbiter.
->> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
->> index ddf46b8..083155c 100644
->> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
->> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
->> @@ -4,8 +4,9 @@ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
->>  
->>  Required properties:
->>  - compatible : must be one of :
->> -		"mediatek,mt8173-smi-larb"
->>  		"mediatek,mt2701-smi-larb"
->> +		"mediatek,mt2712-smi-larb"
->> +		"mediatek,mt8173-smi-larb"
->>  - reg : the register and size of this local arbiter.
->>  - mediatek,smi : a phandle to the smi_common node.
->>  - power-domains : a phandle to the power domain of this local arbiter.
->> @@ -15,7 +16,7 @@ Required properties:
->>  	    the register.
->>    - "smi" : It's the clock for transfer data and command.
->>  
->> -Required property for mt2701:
->> +Required property for mt2701 and mt2712:
->>  - mediatek,larb-id :the hardware id of this larb.
->>  
->>  Example:
->> diff --git a/include/dt-bindings/memory/mt2712-larb-port.h b/include/dt-bindings/memory/mt2712-larb-port.h
->> new file mode 100644
->> index 0000000..6f9aa73
->> --- /dev/null
->> +++ b/include/dt-bindings/memory/mt2712-larb-port.h
->> @@ -0,0 +1,95 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/*
->> + * Copyright (c) 2017 MediaTek Inc.
->> + * Author: Yong Wu <yong.wu@mediatek.com>
->> + */
->> +#ifndef __DTS_IOMMU_PORT_MT2712_H
->> +#define __DTS_IOMMU_PORT_MT2712_H
->> +
->> +#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
->> +
->> +#define M4U_LARB0_ID			0
->> +#define M4U_LARB1_ID			1
->> +#define M4U_LARB2_ID			2
->> +#define M4U_LARB3_ID			3
->> +#define M4U_LARB4_ID			4
->> +#define M4U_LARB5_ID			5
->> +#define M4U_LARB6_ID			6
->> +#define M4U_LARB7_ID			7
->> +#define M4U_LARB8_ID			8
->> +#define M4U_LARB9_ID			9
->> +
->> +/* larb0 */
->> +#define M4U_PORT_DISP_OVL0		MTK_M4U_ID(M4U_LARB0_ID, 0)
->> +#define M4U_PORT_DISP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 1)
->> +#define M4U_PORT_DISP_WDMA0		MTK_M4U_ID(M4U_LARB0_ID, 2)
->> +#define M4U_PORT_DISP_OD_R		MTK_M4U_ID(M4U_LARB0_ID, 3)
->> +#define M4U_PORT_DISP_OD_W		MTK_M4U_ID(M4U_LARB0_ID, 4)
->> +#define M4U_PORT_MDP_RDMA0		MTK_M4U_ID(M4U_LARB0_ID, 5)
->> +#define M4U_PORT_MDP_WDMA		MTK_M4U_ID(M4U_LARB0_ID, 6)
->> +#define M4U_PORT_DISP_RDMA2		MTK_M4U_ID(M4U_LARB0_ID, 7)
->> +
->> +/* larb1 */
->> +#define M4U_PORT_HW_VDEC_MC_EXT		MTK_M4U_ID(M4U_LARB1_ID, 0)
->> +#define M4U_PORT_HW_VDEC_PP_EXT		MTK_M4U_ID(M4U_LARB1_ID, 1)
->> +#define M4U_PORT_HW_VDEC_UFO_EXT	MTK_M4U_ID(M4U_LARB1_ID, 2)
->> +#define M4U_PORT_HW_VDEC_VLD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 3)
->> +#define M4U_PORT_HW_VDEC_VLD2_EXT	MTK_M4U_ID(M4U_LARB1_ID, 4)
->> +#define M4U_PORT_HW_VDEC_AVC_MV_EXT	MTK_M4U_ID(M4U_LARB1_ID, 5)
->> +#define M4U_PORT_HW_VDEC_PRED_RD_EXT	MTK_M4U_ID(M4U_LARB1_ID, 6)
->> +#define M4U_PORT_HW_VDEC_PRED_WR_EXT	MTK_M4U_ID(M4U_LARB1_ID, 7)
->> +#define M4U_PORT_HW_VDEC_PPWRAP_EXT	MTK_M4U_ID(M4U_LARB1_ID, 8)
->> +#define M4U_PORT_HW_VDEC_TILE		MTK_M4U_ID(M4U_LARB1_ID, 9)
->> +#define M4U_PORT_HW_IMG_RESZ_EXT	MTK_M4U_ID(M4U_LARB1_ID, 10)
->> +
->> +/* larb2 */
->> +#define M4U_PORT_CAM_DMA0		MTK_M4U_ID(M4U_LARB2_ID, 0)
->> +#define M4U_PORT_CAM_DMA1		MTK_M4U_ID(M4U_LARB2_ID, 1)
->> +#define M4U_PORT_CAM_DMA2		MTK_M4U_ID(M4U_LARB2_ID, 2)
->> +
->> +/* larb3 */
->> +#define M4U_PORT_VENC_RCPU		MTK_M4U_ID(M4U_LARB3_ID, 0)
->> +#define M4U_PORT_VENC_REC		MTK_M4U_ID(M4U_LARB3_ID, 1)
->> +#define M4U_PORT_VENC_BSDMA		MTK_M4U_ID(M4U_LARB3_ID, 2)
->> +#define M4U_PORT_VENC_SV_COMV		MTK_M4U_ID(M4U_LARB3_ID, 3)
->> +#define M4U_PORT_VENC_RD_COMV		MTK_M4U_ID(M4U_LARB3_ID, 4)
->> +#define M4U_PORT_VENC_CUR_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 5)
->> +#define M4U_PORT_VENC_REF_CHROMA	MTK_M4U_ID(M4U_LARB3_ID, 6)
->> +#define M4U_PORT_VENC_CUR_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 7)
->> +#define M4U_PORT_VENC_REF_LUMA		MTK_M4U_ID(M4U_LARB3_ID, 8)
->> +
->> +/* larb4 */
->> +#define M4U_PORT_DISP_OVL1		MTK_M4U_ID(M4U_LARB4_ID, 0)
->> +#define M4U_PORT_DISP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 1)
->> +#define M4U_PORT_DISP_WDMA1		MTK_M4U_ID(M4U_LARB4_ID, 2)
->> +#define M4U_PORT_DISP_OD1_R		MTK_M4U_ID(M4U_LARB4_ID, 3)
->> +#define M4U_PORT_DISP_OD1_W		MTK_M4U_ID(M4U_LARB4_ID, 4)
->> +#define M4U_PORT_MDP_RDMA1		MTK_M4U_ID(M4U_LARB4_ID, 5)
->> +#define M4U_PORT_MDP_WROT1		MTK_M4U_ID(M4U_LARB4_ID, 6)
->> +
->> +/* larb5 */
->> +#define M4U_PORT_DISP_OVL2		MTK_M4U_ID(M4U_LARB5_ID, 0)
->> +#define M4U_PORT_DISP_WDMA2		MTK_M4U_ID(M4U_LARB5_ID, 1)
->> +#define M4U_PORT_MDP_RDMA2		MTK_M4U_ID(M4U_LARB5_ID, 2)
->> +#define M4U_PORT_MDP_WROT0		MTK_M4U_ID(M4U_LARB5_ID, 3)
->> +
->> +/* larb6 */
->> +#define M4U_PORT_JPGDEC_WDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 0)
->> +#define M4U_PORT_JPGDEC_WDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 1)
->> +#define M4U_PORT_JPGDEC_BSDMA_0		MTK_M4U_ID(M4U_LARB6_ID, 2)
->> +#define M4U_PORT_JPGDEC_BSDMA_1		MTK_M4U_ID(M4U_LARB6_ID, 3)
->> +
->> +/* larb7 */
->> +#define M4U_PORT_MDP_RDMA3		MTK_M4U_ID(M4U_LARB7_ID, 0)
->> +#define M4U_PORT_MDP_WROT2		MTK_M4U_ID(M4U_LARB7_ID, 1)
->> +
->> +/* larb8 */
->> +#define M4U_PORT_VDO			MTK_M4U_ID(M4U_LARB8_ID, 0)
->> +#define M4U_PORT_NR			MTK_M4U_ID(M4U_LARB8_ID, 1)
->> +#define M4U_PORT_WR_CHANNEL0		MTK_M4U_ID(M4U_LARB8_ID, 2)
->> +
->> +/* larb9 */
->> +#define M4U_PORT_TVD			MTK_M4U_ID(M4U_LARB9_ID, 0)
->> +#define M4U_PORT_WR_CHANNEL1		MTK_M4U_ID(M4U_LARB9_ID, 1)
->> +
->> +#endif
-> 
-> 
+SGkgUm9iaW4sCgpPbiAwNy8xMy8yMDE4IDAxOjA5IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4g
+T24gMTMvMDcvMTggMTc6MjcsIHRob3IudGhheWVyQGxpbnV4LmludGVsLmNvbSB3cm90ZToKPj4g
+RnJvbTogVGhvciBUaGF5ZXIgPHRob3IudGhheWVyQGxpbnV4LmludGVsLmNvbT4KPj4KPj4gQWRk
+IHRoZSBTTU1VIG5vZGUgYW5kIElPTU1VIHBhcmFtZXRlcnMgdG8gdGhlCj4+IFN0cmF0aXgxMCBE
+ZXZpY2UgVHJlZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogVGhvciBUaGF5ZXIgPHRob3IudGhheWVy
+QGxpbnV4LmludGVsLmNvbT4KPj4gLS0tCj4+IMKgIGFyY2gvYXJtNjQvYm9vdC9kdHMvYWx0ZXJh
+L3NvY2ZwZ2Ffc3RyYXRpeDEwLmR0c2kgfCA0NCAKPj4gKysrKysrKysrKysrKysrKysrKysrKysK
+Pj4gwqAgMSBmaWxlIGNoYW5nZWQsIDQ0IGluc2VydGlvbnMoKykKPj4KPj4gZGlmZiAtLWdpdCBh
+L2FyY2gvYXJtNjQvYm9vdC9kdHMvYWx0ZXJhL3NvY2ZwZ2Ffc3RyYXRpeDEwLmR0c2kgCj4+IGIv
+YXJjaC9hcm02NC9ib290L2R0cy9hbHRlcmEvc29jZnBnYV9zdHJhdGl4MTAuZHRzaQo+PiBpbmRl
+eCBjYTY3ZWNiNTg2NmUuLjliNmVhZDg3YWU3MCAxMDA2NDQKPj4gLS0tIGEvYXJjaC9hcm02NC9i
+b290L2R0cy9hbHRlcmEvc29jZnBnYV9zdHJhdGl4MTAuZHRzaQo+PiArKysgYi9hcmNoL2FybTY0
+L2Jvb3QvZHRzL2FsdGVyYS9zb2NmcGdhX3N0cmF0aXgxMC5kdHNpCj4+IEBAIC0xNjIsNiArMTYy
+LDggQEAKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVzZXQtbmFtZXMgPSAic3RtbWFj
+ZXRoIiwgInN0bW1hY2V0aC1vY3AiOwo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9j
+a3MgPSA8JmNsa21nciBTVFJBVElYMTBfRU1BQzBfQ0xLPjsKPj4gwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgY2xvY2stbmFtZXMgPSAic3RtbWFjZXRoIjsKPj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgI3N0cmVhbS1pZC1jZWxscyA9IDwxPjsKPiAKPiBUaGUgI3N0cmVhbS1pZC1jZWxscyBw
+cm9wZXJ0eSBpcyBwYXJ0IG9mIHRoZSBkZXByZWNhdGVkIG1tdS1tYXN0ZXJzIAo+IGJpbmRpbmcs
+IHNvIHlvdSBkb24ndCBuZWVkIHRvIGFkZCB0aGVzZS4KPiAKT0suIFRoYW5rIHlvdS4KCj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlvbW11cyA9IDwmc21tdSAxPjsKPj4gwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgc3RhdHVzID0gImRpc2FibGVkIjsKPj4gwqDCoMKgwqDCoMKgwqDCoMKg
+IH07Cgo8U05JUD4KCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0YXR1cyA9ICJkaXNh
+YmxlZCI7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9Owo+PiBAQCAtMzIzLDYgKzMzMSw4IEBACj4+
+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNkbWEtcmVxdWVzdHMgPSA8MzI+Owo+PiDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9ja3MgPSA8JmNsa21nciBTVFJBVElYMTBfTDRfTUFJ
+Tl9DTEs+Owo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbG9jay1uYW1lcyA9ICJhcGJf
+cGNsayI7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICNzdHJlYW0taWQtY2VsbHMgPSA8MT47
+Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlvbW11cyA9IDwmc21tdSA4PjsKPiAKPiBKdXN0
+IHRvIGRvdWJsZS1jaGVjaywgYWxsIHRoZSBjaGFubmVsIHRocmVhZHMgYW5kIHRoZSBtYW5hZ2Vy
+IHRocmVhZCAKPiBzaGFyZSB0aGUgb25lIHN0cmVhbSBJRD8gKEknbSBhY2N1c3RvbWVkIHRvIHNl
+ZWluZyBETUEtMzMwIGludGVncmF0ZWQgCj4gd2l0aCBhbiBTTU1VIGJ5IHRhcHBpbmcgdGhlIEF4
+SUQgb3V0cHV0cyBvZmYgdG8gdGhlIHN0cmVhbSBJRCBpbnB1dC4pCj4gClllcywgd2UgaGF2ZSBv
+bmx5IG9uZSBzdHJlYW0gSUQgZm9yIHRoZSBETUEuIEknbGwgZm9yd2FyZCB0aGUgCmRpZmZlcmVu
+Y2VzIHlvdSBub3RlZCB0byBvdXIgYXJjaGl0ZWN0dXJlIHRlYW0gYXMgc29tZXRoaW5nIHRvIGNv
+bnNpZGVyIApmb3IgZnV0dXJlIGNoaXBzLgoKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIH07Cj4+IMKg
+wqDCoMKgwqDCoMKgwqDCoCByc3Q6IHJzdG1nckBmZmQxMTAwMCB7Cj4+IEBAIC0zMzIsNiArMzQy
+LDM2IEBACj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFsdHIsbW9kcnN0LW9mZnNldCA9
+IDwweDIwPjsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIH07Cj4+ICvCoMKgwqDCoMKgwqDCoCBzbW11
+OiBpb21tdUBmYTAwMDAwMCB7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNvbXBhdGlibGUg
+PSAiYXJtLG1tdS01MDAiLCAiYXJtLHNtbXUtdjIiOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCByZWcgPSA8MHhmYTAwMDAwMCAweDQwMDAwPjsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+I2dsb2JhbC1pbnRlcnJ1cHRzID0gPDk+Owo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAjaW9t
+bXUtY2VsbHMgPSA8MT47Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNsb2NrcyA9IDwmY2xr
+bWdyIFNUUkFUSVgxMF9MNF9NQUlOX0NMSz47Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNs
+b2NrLW5hbWVzID0gInNtbXVfY2xrIjsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW50ZXJy
+dXB0LXBhcmVudCA9IDwmaW50Yz47Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGludGVycnVw
+dHMgPSA8MCAxMjggND4swqDCoMKgIC8qIEdsb2JhbCBTZWN1cmUgRmF1bHQgKi8KPj4gK8KgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8MCAxMjkgND4sIC8qIEdsb2JhbCBOb24tc2VjdXJl
+IEZhdWx0ICovCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMTMwIDQ+LCAv
+KiBGUEdBIFBlcmZvcm1hbmNlIENvdW50ZXIgKi8KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCA8MCAxMzEgND4sIC8qIERNQSBQZXJmb3JtYW5jZSBDb3VudGVyICovCj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMTMyIDQ+LCAvKiBFTUFDIFBlcmZvcm1hbmNl
+IENvdW50ZXIgKi8KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8MCAxMzMgND4s
+IC8qIElPIFBlcmZvcm1hbmNlIENvdW50ZXIgKi8KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCA8MCAxMzQgND4sIC8qIFNETSBQZXJmb3JtYW5jZSBDb3VudGVyICovCj4gCj4gTm90
+ZSB0aGF0IHRoZXJlIGlzbid0IG11Y2ggYmVuZWZpdCB0byBhZGRpbmcgdGhlIHNlY3VyZSBvciBQ
+TVUgCj4gaW50ZXJydXB0cyBoZXJlIG90aGVyIHRoYW4gdG8gZG9jdW1lbnQgdGhlIGhhcmR3YXJl
+IC0gRldJVyBJIGhhdmUgCj4gYWN0dWFsbHkgYmVlbiB3b3JraW5nIG9uIGEgUE1VIGRyaXZlciwg
+YW5kIG5lZWRsZXNzIHRvIHNheSBpdCB0dXJucyBvdXQgCj4gbm90IHRvIGJlIHN1ZmZpY2llbnQg
+anVzdCBoYXZpbmcgdGhvc2UgbXVuZ2VkIGludG8gdGhlIFNNTVUgZ2xvYmFsIGZhdWx0IAo+IGhh
+bmRsZXIuCj4gClRoYW5rcyBmb3IgcG9pbnRpbmcgdGhpcyBvdXQuIEkgd2FzIGZvbGxvd2luZyBv
+dGhlciBTTU1VLTUwMCBkZXZpY2UgCnRyZWVzLiBKdXN0IHRvIGNsYXJpZnksIGhvdyBzaG91bGQg
+SSBzaW1wbGlmeSB0aGlzPyBTaG91bGQgSSByZXBsYWNlIGFsbCAKdGhlIGFib3ZlIHdpdGggdGhl
+IGZvbGxvd2luZz8KCgk8MCAxMjkgND4sIC8qIEdsb2JhbCBOb24tc2VjdXJlIEZhdWx0ICovCgpP
+ciB3aWxsIHlvdXIgdXBjb21pbmcgUE1VIGRyaXZlciBuZWVkIHRoZSBQTVUgdW5pdHM/IEl0IHNv
+dW5kZWQgbGlrZSAKdXNpbmcgdGhlIGp1c3QgR2xvYmFsIGZhdWx0IHdhcyBub3Qgc3VmZmljaWVu
+dC4KCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMTM2IDQ+LCAvKiBOb24t
+c2VjdXJlIENvbWJpbmVkIEludGVycnVwdCAqLwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIDwwIDEzNyA0PiwgLyogU2VjdXJlIENvbWJpbmVkIEludGVycnVwdCAqLwo+IAo+IFNp
+bWlsYXJseSB0aGUgY29tYmluZWQgaW50ZXJydXB0OyB0aGF0J3MgbGl0ZXJhbGx5IGp1c3QgYWxs
+IHRoZXNlIG90aGVyIAo+IGludGVycnVwdCBsaW5lcyBPUmVkIHRvZ2V0aGVyIGF0IHRoZSBTTU1V
+IGVuZCwgYW5kIHdvdWxkIGdlbmVyYWxseSBvbmx5IAo+IGJlIHVzZWZ1bCBpZiB5b3UgKmRpZG4n
+dCogaGF2ZSB0aGUgaW5kaXZpZHVhbCBsaW5lcyB3aXJlZCB1cC4gQXMgaXQgCj4gc3RhbmRzIHdp
+dGggZXZlcnl0aGluZyBsaXN0ZWQsIGFueSBldmVudCB3aWxsIGFsc28gZ2VuZXJhdGUgYSBzcHVy
+aW91cyAKPiBnbG9iYWwgZmF1bHQgSVJRLCB3aGljaCBpc24ndCBpZGVhbCAobm90IHRoYXQgeW91
+IHNob3VsZCBnZXQgbWFueSAKPiBpbnRlcnJ1cHRzIGR1cmluZyBub3JtYWwgb3BlcmF0aW9uLCBi
+dXQgc3RpbGwuLi4pCj4gCkFuZCBJJ2QgcmVtb3ZlIGJvdGggb2YgdGhlc2UgdGhlbiwgcmlnaHQ/
+CgpUaGFua3MgZm9yIHRoZSByZXZpZXcgYW5kIGhlbHBmdWwgY29tbWVudHMgKGFuZCBhbHNvIHBv
+aW50aW5nIG91dCB0aGUgCmV4aXN0aW5nIGNsb2NrIHBhdGNoIGluIG15IHBhdGNoIHNlcmllcyBz
+dW1tYXJ5KSEKClRob3IKCj4gUm9iaW4uCj4gCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgLyogTm9uLXNlY3VyZSBDb250ZXh0IEludGVycnVwdHMgKDMyKSAqLwo+PiArwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwwIDEzOCA0PiwgPDAgMTM5IDQ+LCA8MCAxNDAgND4s
+IDwwIDE0MSA0PiwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8MCAxNDIgND4s
+IDwwIDE0MyA0PiwgPDAgMTQ0IDQ+LCA8MCAxNDUgND4sCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgPDAgMTQ2IDQ+LCA8MCAxNDcgND4sIDwwIDE0OCA0PiwgPDAgMTQ5IDQ+LAo+
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwwIDE1MCA0PiwgPDAgMTUxIDQ+LCA8
+MCAxNTIgND4sIDwwIDE1MyA0PiwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8
+MCAxNTQgND4sIDwwIDE1NSA0PiwgPDAgMTU2IDQ+LCA8MCAxNTcgND4sCj4+ICvCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMTU4IDQ+LCA8MCAxNTkgND4sIDwwIDE2MCA0PiwgPDAg
+MTYxIDQ+LAo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwwIDE2MiA0PiwgPDAg
+MTYzIDQ+LCA8MCAxNjQgND4sIDwwIDE2NSA0PiwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCA8MCAxNjYgND4sIDwwIDE2NyA0PiwgPDAgMTY4IDQ+LCA8MCAxNjkgND47Cj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cmVhbS1tYXRjaC1tYXNrID0gPDB4N2ZmMD47Cj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4+ICvCoMKgwqDCoMKg
+wqDCoCB9Owo+PiArCjxzbmlwPgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
