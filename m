@@ -1,13 +1,15 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: Borken IOMMU+i915
-Date: Mon, 16 Jul 2018 09:21:21 +0800
-Message-ID: <5B4BF311.5020500@linux.intel.com>
-References: <84fu0kaomw.wl-Peter.Chubb@data61.csiro.au>
+From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 1/9] iommu/vt-d: Global PASID name space
+Date: Mon, 16 Jul 2018 13:28:15 +0800
+Message-ID: <20180716052815.GA20520@xz-mi>
+References: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
+	<1531554422-6874-2-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <84fu0kaomw.wl-Peter.Chubb-RgbkMxAV74wUb6iz2VnApA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1531554422-6874-2-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,35 +19,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter.Chubb-RgbkMxAV74wUb6iz2VnApA@public.gmane.org, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Peter,
+On Sat, Jul 14, 2018 at 03:46:54PM +0800, Lu Baolu wrote:
+> This adds the system wide PASID name space for the PASID
+> allocation. Currently we are using per IOMMU PASID name
+> spaces which are not suitable for some use cases. For an
+> example, one application (associated with a PASID) might
+> talk to two physical devices simultaneously while the two
+> devices could reside behind two different IOMMU units.
+> 
+> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Suggested-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Reviewed-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Reviewed-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-There is already a patch to revert that broken patch.
+Reviewed-by: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-https://patchwork.kernel.org/patch/10513017/
-
-Best regards,
-Lu Baolu
-
-On 07/15/2018 04:29 PM, Peter.Chubb-RgbkMxAV74wUb6iz2VnApA@public.gmane.org wrote:
-> Hi Lu,
-> 	In recent kernels, i915 graphics with intel_iommu=on has been
-> 	giving me a blank screen.
->
-> 	git bisect points at your patch ab96746aaa34
-> 	"iommu/vt-d: Clean up pasid quirk for pre-production devices"
->
-> 	Either one of the pre-production devices made it into my Dell
-> 	laptop, or there's something else wrong with the patch.
->
-> 	Reverting that patch gives me text console and X11 graphics;
-> 	keeping it in yields a blank screen on boot.
->
-> 	My laptop is a Dell  Inc. Precision 7710/0PMJX2, BIOS 1.15.4 12/08/2017
-> 	CPU is  Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz
-> 	(family: 0x6, model: 0x5e, stepping: 0x3)
->
-> Peter C
+-- 
+Peter Xu
