@@ -1,14 +1,11 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 1/1] Revert "iommu/vt-d: Clean up pasid quirk for
-	pre-production devices"
-Date: Mon, 16 Jul 2018 14:02:12 +0800
-Message-ID: <5B4C34E4.30004@linux.intel.com>
-References: <1531031001-5783-1-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH 00/10] iommu/vt-d: Add scalable mode support
+Date: Mon, 16 Jul 2018 14:49:43 +0800
+Message-ID: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1531031001-5783-1-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,83 +16,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Zhenyu Wang <zhenyuw-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSm9lcmcsCgpUaGUgZ3JhcGhpYyBndXlzIGFyZSBsb29raW5nIGZvcndhcmQgdG8gaGF2aW5n
-IHRoaXMgaW4gNC4xOC4KSXMgaXQgcG9zc2libGUgdG8gdGFrZSBpdCBpbiB0aGUgZm9sbG93aW5n
-IHJjcz8KCkJlc3QgcmVnYXJkcywKTHUgQmFvbHUKCk9uIDA3LzA4LzIwMTggMDI6MjMgUE0sIEx1
-IEJhb2x1IHdyb3RlOgo+IFRoaXMgcmV2ZXJ0cyBjb21taXQgYWI5Njc0NmFhYTM0NGZiNzIwYTE5
-ODI0NWE4MzdlMjY2ZmFkM2I2Mi4KPgo+IFRoZSBjb21taXQgYWI5Njc0NmFhYTM0ICgiaW9tbXUv
-dnQtZDogQ2xlYW4gdXAgcGFzaWQgcXVpcmsgZm9yCj4gcHJlLXByb2R1Y3Rpb24gZGV2aWNlcyIp
-IHRyaWdnZXJzIEVDUyBtb2RlIG9uIHNvbWUgcGxhdGZvcm1zCj4gd2hpY2ggaGF2ZSBicm9rZW4g
-RUNTIHN1cHBvcnQuIEFzIHRoZSByZXN1bHQsIGdyYXBoaWMgZGV2aWNlCj4gd2lsbCBiZSBpbm9w
-ZXJhYmxlIG9uIGJvb3QuCj4KPiBCdWd6aWxsYTogaHR0cHM6Ly9idWdzLmZyZWVkZXNrdG9wLm9y
-Zy9zaG93X2J1Zy5jZ2k/aWQ9MTA3MDE3Cj4KPiBDYzogQXNob2sgUmFqIDxhc2hvay5yYWpAaW50
-ZWwuY29tPgo+IFNpZ25lZC1vZmYtYnk6IEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5j
-b20+Cj4gLS0tCj4gIGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyB8IDMyICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKy0tCj4gIGluY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaCB8ICAx
-ICsKPiAgMiBmaWxlcyBjaGFuZ2VkLCAzMSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+
-Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMvaW9t
-bXUvaW50ZWwtaW9tbXUuYwo+IGluZGV4IGIzNDRhODguLjExNWZmMjYgMTAwNjQ0Cj4gLS0tIGEv
-ZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1p
-b21tdS5jCj4gQEAgLTQ4NCwxNCArNDg0LDM3IEBAIHN0YXRpYyBpbnQgZG1hcl9mb3JjZWRhYzsK
-PiAgc3RhdGljIGludCBpbnRlbF9pb21tdV9zdHJpY3Q7Cj4gIHN0YXRpYyBpbnQgaW50ZWxfaW9t
-bXVfc3VwZXJwYWdlID0gMTsKPiAgc3RhdGljIGludCBpbnRlbF9pb21tdV9lY3MgPSAxOwo+ICtz
-dGF0aWMgaW50IGludGVsX2lvbW11X3Bhc2lkMjg7Cj4gIHN0YXRpYyBpbnQgaW9tbXVfaWRlbnRp
-dHlfbWFwcGluZzsKPiAgCj4gICNkZWZpbmUgSURFTlRNQVBfQUxMCQkxCj4gICNkZWZpbmUgSURF
-TlRNQVBfR0ZYCQkyCj4gICNkZWZpbmUgSURFTlRNQVBfQVpBTElBCQk0Cj4gIAo+IC0jZGVmaW5l
-IGVjc19lbmFibGVkKGlvbW11KQkoaW50ZWxfaW9tbXVfZWNzICYmIGVjYXBfZWNzKGlvbW11LT5l
-Y2FwKSkKPiAtI2RlZmluZSBwYXNpZF9lbmFibGVkKGlvbW11KQkoZWNzX2VuYWJsZWQoaW9tbXUp
-ICYmIGVjYXBfcGFzaWQoaW9tbXUtPmVjYXApKQo+ICsvKiBCcm9hZHdlbGwgYW5kIFNreWxha2Ug
-aGF2ZSBicm9rZW4gRUNTIHN1cHBvcnQg4oCUIG5vcm1hbCBzby1jYWxsZWQgInNlY29uZAo+ICsg
-KiBsZXZlbCIgdHJhbnNsYXRpb24gb2YgRE1BIHJlcXVlc3RzLXdpdGhvdXQtUEFTSUQgZG9lc24n
-dCBhY3R1YWxseSBoYXBwZW4KPiArICogdW5sZXNzIHlvdSBhbHNvIHNldCB0aGUgTkVTVEUgYml0
-IGluIGFuIGV4dGVuZGVkIGNvbnRleHQtZW50cnkuIFdoaWNoIG9mCj4gKyAqIGNvdXJzZSBtZWFu
-cyB0aGF0IFNWTSBkb2Vzbid0IHdvcmsgYmVjYXVzZSBpdCdzIHRyeWluZyB0byBkbyBuZXN0ZWQK
-PiArICogdHJhbnNsYXRpb24gb2YgdGhlIHBoeXNpY2FsIGFkZHJlc3NlcyBpdCBmaW5kcyBpbiB0
-aGUgcHJvY2VzcyBwYWdlIHRhYmxlcywKPiArICogdGhyb3VnaCB0aGUgSU9WQS0+cGh5cyBtYXBw
-aW5nIGZvdW5kIGluIHRoZSAic2Vjb25kIGxldmVsIiBwYWdlIHRhYmxlcy4KPiArICoKPiArICog
-VGhlIFZULWQgc3BlY2lmaWNhdGlvbiB3YXMgcmV0cm9hY3RpdmVseSBjaGFuZ2VkIHRvIGNoYW5n
-ZSB0aGUgZGVmaW5pdGlvbgo+ICsgKiBvZiB0aGUgY2FwYWJpbGl0eSBiaXRzIGFuZCBwcmV0ZW5k
-IHRoYXQgQnJvYWR3ZWxsL1NreWxha2UgbmV2ZXIgaGFwcGVuZWQuLi4KPiArICogYnV0IHVuZm9y
-dHVuYXRlbHkgdGhlIHdyb25nIGJpdCB3YXMgY2hhbmdlZC4gSXQncyBFQ1Mgd2hpY2ggaXMgYnJv
-a2VuLCBidXQKPiArICogZm9yIHNvbWUgcmVhc29uIGl0IHdhcyB0aGUgUEFTSUQgY2FwYWJpbGl0
-eSBiaXQgd2hpY2ggd2FzIHJlZGVmaW5lZCAoZnJvbQo+ICsgKiBiaXQgMjggb24gQkRXL1NLTCB0
-byBiaXQgNDAgaW4gZnV0dXJlKS4KPiArICoKPiArICogU28gb3VyIHRlc3QgZm9yIEVDUyBuZWVk
-cyB0byBlc2NoZXcgdGhvc2UgaW1wbGVtZW50YXRpb25zIHdoaWNoIHNldCB0aGUgb2xkCj4gKyAq
-IFBBU0lEIGNhcGFiaWl0eSBiaXQgMjgsIHNpbmNlIHRob3NlIGFyZSB0aGUgb25lcyBvbiB3aGlj
-aCBFQ1MgaXMgYnJva2VuLgo+ICsgKiBVbmxlc3Mgd2UgYXJlIHdvcmtpbmcgYXJvdW5kIHRoZSAn
-cGFzaWQyOCcgbGltaXRhdGlvbnMsIHRoYXQgaXMsIGJ5IHB1dHRpbmcKPiArICogdGhlIGRldmlj
-ZSBpbnRvIHBhc3N0aHJvdWdoIG1vZGUgZm9yIG5vcm1hbCBETUEgYW5kIHRodXMgbWFza2luZyB0
-aGUgYnVnLgo+ICsgKi8KPiArI2RlZmluZSBlY3NfZW5hYmxlZChpb21tdSkgKGludGVsX2lvbW11
-X2VjcyAmJiBlY2FwX2Vjcyhpb21tdS0+ZWNhcCkgJiYgXAo+ICsJCQkgICAgKGludGVsX2lvbW11
-X3Bhc2lkMjggfHwgIWVjYXBfYnJva2VuX3Bhc2lkKGlvbW11LT5lY2FwKSkpCj4gKy8qIFBBU0lE
-IHN1cHBvcnQgaXMgdGh1cyBlbmFibGVkIGlmIEVDUyBpcyBlbmFibGVkIGFuZCAqZWl0aGVyKiBv
-ZiB0aGUgb2xkCj4gKyAqIG9yIG5ldyBjYXBhYmlsaXR5IGJpdHMgYXJlIHNldC4gKi8KPiArI2Rl
-ZmluZSBwYXNpZF9lbmFibGVkKGlvbW11KSAoZWNzX2VuYWJsZWQoaW9tbXUpICYmCQkJXAo+ICsJ
-CQkgICAgICAoZWNhcF9wYXNpZChpb21tdS0+ZWNhcCkgfHwgZWNhcF9icm9rZW5fcGFzaWQoaW9t
-bXUtPmVjYXApKSkKPiAgCj4gIGludCBpbnRlbF9pb21tdV9nZnhfbWFwcGVkOwo+ICBFWFBPUlRf
-U1lNQk9MX0dQTChpbnRlbF9pb21tdV9nZnhfbWFwcGVkKTsKPiBAQCAtNTU0LDYgKzU3NywxMSBA
-QCBzdGF0aWMgaW50IF9faW5pdCBpbnRlbF9pb21tdV9zZXR1cChjaGFyICpzdHIpCj4gIAkJCXBy
-aW50ayhLRVJOX0lORk8KPiAgCQkJCSJJbnRlbC1JT01NVTogZGlzYWJsZSBleHRlbmRlZCBjb250
-ZXh0IHRhYmxlIHN1cHBvcnRcbiIpOwo+ICAJCQlpbnRlbF9pb21tdV9lY3MgPSAwOwo+ICsJCX0g
-ZWxzZSBpZiAoIXN0cm5jbXAoc3RyLCAicGFzaWQyOCIsIDcpKSB7Cj4gKwkJCXByaW50ayhLRVJO
-X0lORk8KPiArCQkJCSJJbnRlbC1JT01NVTogZW5hYmxlIHByZS1wcm9kdWN0aW9uIFBBU0lEIHN1
-cHBvcnRcbiIpOwo+ICsJCQlpbnRlbF9pb21tdV9wYXNpZDI4ID0gMTsKPiArCQkJaW9tbXVfaWRl
-bnRpdHlfbWFwcGluZyB8PSBJREVOVE1BUF9HRlg7Cj4gIAkJfSBlbHNlIGlmICghc3RybmNtcChz
-dHIsICJ0Ym9vdF9ub2ZvcmNlIiwgMTMpKSB7Cj4gIAkJCXByaW50ayhLRVJOX0lORk8KPiAgCQkJ
-CSJJbnRlbC1JT01NVTogbm90IGZvcmNpbmcgb24gYWZ0ZXIgdGJvb3QuIFRoaXMgY291bGQgZXhw
-b3NlIHNlY3VyaXR5IHJpc2sgZm9yIHRib290XG4iKTsKPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
-aW51eC9pbnRlbC1pb21tdS5oIGIvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCj4gaW5kZXgg
-MWRmOTQwMS4uZWYxNjlkNiAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11
-LmgKPiArKysgYi9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgKPiBAQCAtMTIxLDYgKzEyMSw3
-IEBACj4gICNkZWZpbmUgZWNhcF9zcnMoZSkJCSgoZSA+PiAzMSkgJiAweDEpCj4gICNkZWZpbmUg
-ZWNhcF9lcnMoZSkJCSgoZSA+PiAzMCkgJiAweDEpCj4gICNkZWZpbmUgZWNhcF9wcnMoZSkJCSgo
-ZSA+PiAyOSkgJiAweDEpCj4gKyNkZWZpbmUgZWNhcF9icm9rZW5fcGFzaWQoZSkJKChlID4+IDI4
-KSAmIDB4MSkKPiAgI2RlZmluZSBlY2FwX2RpcyhlKQkJKChlID4+IDI3KSAmIDB4MSkKPiAgI2Rl
-ZmluZSBlY2FwX25lc3QoZSkJCSgoZSA+PiAyNikgJiAweDEpCj4gICNkZWZpbmUgZWNhcF9tdHMo
-ZSkJCSgoZSA+PiAyNSkgJiAweDEpCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+Hi,
+
+Intel vt-d rev3.0 [1] introduces a new translation mode called
+'scalable mode', which enables PASID-granular translations for
+first level, second level, nested and pass-through modes. The
+vt-d scalable mode is the key ingredient to enable Scalable I/O
+Virtualization (Scalable IOV) [2] [3], which allows sharing a
+device in minimal possible granularity (ADI - Assignable Device
+Interface). It also includes all the capabilities required to
+enable Shared Virtual Addressing (SVA). As a result, previous
+Extended Context (ECS) mode is deprecated (no production ever
+implements ECS).
+
+Each scalable mode pasid table entry is 64 bytes in length, with
+fields point to the first level page table and the second level
+page table. The PGTT (Pasid Granular Translation Type) field is
+used by hardware to determine the translation type.
+
+
+          A Scalable Mode            .-------------.
+           PASID Entry             .-|             |
+       .------------------.      .-| | 1st Level   |
+      7|                  |      | | | Page Table  |
+       .------------------.      | | |             |
+      6|                  |      | | |             |
+       '------------------'      | | '-------------'
+      5|                  |      | '-------------'
+       '------------------'      '-------------'
+      4|                  |    ^
+       '------------------'   /
+      3|                  |  /       .-------------.
+       .----.-------.-----. /      .-|             |
+      2|    | FLPTR |     |/     .-| | 2nd Level   |
+       .----'-------'-----.      | | | Page Table  |
+      1|                  |      | | |             |
+       .-.-------..------..      | | |             |
+      0| | SLPTR || PGTT ||----> | | '-------------'
+       '-'-------''------''      | '-------------'
+       6             |    0      '-------------'
+       3             v
+             .------------------------------------.
+             | PASID Granular Translation Type    |
+             |                                    |
+             | 001b: 1st level translation only   |
+             | 101b: 2nd level translation only   |
+             | 011b: Nested translation           |
+             | 100b: Pass through                 |
+             '------------------------------------'
+
+This patch series adds the scalable mode support in the Intel
+IOMMU driver. It will make all the Intel IOMMU features work
+in scalable mode. The changes are all constrained within the
+Intel IOMMU driver, as it's purely internal format change.
+
+This patch series depends on a patch set titled ("iommu/vt-d:
+Improve PASID id and table management") post here [4] which
+implements global pasid namespace and per-device pasid table
+APIs.
+
+References:
+[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+[4] https://lkml.org/lkml/2018/7/14/69
+
+Best regards,
+Lu Baolu
+
+Lu Baolu (10):
+  iommu/vt-d: Enumerate the scalable mode capability
+  iommu/vt-d: Manage scalalble mode PASID tables
+  iommu/vt-d: Move page table helpers into header
+  iommu/vt-d: Add second level page table interface
+  iommu/vt-d: Setup pasid entry for RID2PASID support
+  iommu/vt-d: Pass pasid table to context mapping
+  iommu/vt-d: Setup context and enable RID2PASID support
+  iommu/vt-d: Add first level page table interface
+  iommu/vt-d: Shared virtual address in scalable mode
+  iommu/vt-d: Remove deferred invalidation
+
+ drivers/iommu/intel-iommu.c   | 252 +++++++++++++++++++-----------------
+ drivers/iommu/intel-pasid.c   | 295 ++++++++++++++++++++++++++++++++++++++++--
+ drivers/iommu/intel-pasid.h   |  20 ++-
+ drivers/iommu/intel-svm.c     |  74 +----------
+ include/linux/dma_remapping.h |   9 +-
+ include/linux/intel-iommu.h   |  54 ++++++--
+ 6 files changed, 485 insertions(+), 219 deletions(-)
+
+-- 
+2.7.4
