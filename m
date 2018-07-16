@@ -1,15 +1,13 @@
-From: John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>
-Subject: Re: convert parisc to the generic dma-noncoherent code
-Date: Sun, 15 Jul 2018 12:29:37 -0400
-Message-ID: <e29f9140-0d47-e074-1609-d6ae8f8869b3@bell.net>
-References: <20180619070455.26624-1-hch@lst.de> <20180711153445.GC31946@lst.de>
-	<e2b653d8-cc04-7a81-89a0-9d286c5cc0ca@gmx.de>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: Borken IOMMU+i915
+Date: Mon, 16 Jul 2018 09:21:21 +0800
+Message-ID: <5B4BF311.5020500@linux.intel.com>
+References: <84fu0kaomw.wl-Peter.Chubb@data61.csiro.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e2b653d8-cc04-7a81-89a0-9d286c5cc0ca-Mmb7MZpHnFY@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <84fu0kaomw.wl-Peter.Chubb-RgbkMxAV74wUb6iz2VnApA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,25 +17,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peter.Chubb-RgbkMxAV74wUb6iz2VnApA@public.gmane.org, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxOC0wNy0xMyA0OjE0IEFNLCBIZWxnZSBEZWxsZXIgd3JvdGU6Cj4gT24gMTEuMDcuMjAx
-OCAxNzozNCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4+IHBpbmc/ICBBbnkgY29tbWVudHM/
-Cj4gSSBhcHBsaWVkIHRob3NlIDMgcGF0Y2hlcyBvbiB0b3Agb2YgZ2l0IGhlYWQsIGFuZCBib290
-ZWQgdGhlCj4gMzItYml0IGtlcm5lbCBvbiBhIEhQIDcxNS82NCAoUENYLUwpIGFuZCBhIEhQIEIx
-NjBMIChQQ1gtTDIpLgo+IE9uIGJvdGggbWFjaGluZXMgSSBoYWQgcHJvYmxlbXMgd2l0aCB0aG9z
-ZSBkcml2ZXJzIHdoaWNoIHVzZQo+IERNQSAoSSBjaGVja2VkIHNwZWNpZmljYWxseSB0aGUgbGFz
-aSBOSUMgY2FyZCwgd2hpY2ggaXMgdGhlCj4gbWFpbiBvbmJvYXJkIE5JQyBjYXJkIGluIGJvdGgg
-bWFjaGluZXMpLgo+IEdldHRpbmcgSVAgdmlhIERIQ1Agd2FzIHVucmVsaWFibGUsIHBpbmdzIG9u
-IHRoZSBzYW1lIG5ldHdvcmsKPiB0byBib3RoIG1hY2hpbmVzIGdhdmUgbG9zdCBwYWNrZXRzLCBs
-b2dpbiB2aWEgc3NoIHNvbWV0aW1lcyBmYWlsZWQKPiBhbmQgc28gb24uCj4KPiBTbywgdGhlcmUg
-aXMgZGVmaW5pdGl2ZWx5IHNvbWUgY2FjaGUtZmx1c2ggbWlzc2luZyBpbiB0aGlzIHBhdGNoc2V0
-LgpQb3NzaWJseSwgdGhlIGNvZGUgc2hvdWxkIHVzZSBmbHVzaF9rZXJuZWxfdm1hcF9yYW5nZSgp
-IGFzIGl0IHB1cmdlcyB0aGUgClRMQiBlbnRyaWVzIHVzZWQKZm9yIHRoZSBjYWNoZSBmbHVzaC7C
-oCBTb21lIG9mIHRoZSByb3V0aW5lcyBpbiBwY2ktZG1hLmMgY3VycmVudGx5IHVzZSBpdC4KCkRh
-dmUKCi0tIApKb2huIERhdmlkIEFuZ2xpbiAgZGF2ZS5hbmdsaW5AYmVsbC5uZXQKCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
-dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Peter,
+
+There is already a patch to revert that broken patch.
+
+https://patchwork.kernel.org/patch/10513017/
+
+Best regards,
+Lu Baolu
+
+On 07/15/2018 04:29 PM, Peter.Chubb-RgbkMxAV74wUb6iz2VnApA@public.gmane.org wrote:
+> Hi Lu,
+> 	In recent kernels, i915 graphics with intel_iommu=on has been
+> 	giving me a blank screen.
+>
+> 	git bisect points at your patch ab96746aaa34
+> 	"iommu/vt-d: Clean up pasid quirk for pre-production devices"
+>
+> 	Either one of the pre-production devices made it into my Dell
+> 	laptop, or there's something else wrong with the patch.
+>
+> 	Reverting that patch gives me text console and X11 graphics;
+> 	keeping it in yields a blank screen on boot.
+>
+> 	My laptop is a Dell  Inc. Precision 7710/0PMJX2, BIOS 1.15.4 12/08/2017
+> 	CPU is  Intel(R) Core(TM) i7-6920HQ CPU @ 2.90GHz
+> 	(family: 0x6, model: 0x5e, stepping: 0x3)
+>
+> Peter C
