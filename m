@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 05/10] iommu/vt-d: Setup pasid entry for RID2PASID support
-Date: Mon, 16 Jul 2018 14:49:48 +0800
-Message-ID: <1531723793-14607-6-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH 06/10] iommu/vt-d: Pass pasid table to context mapping
+Date: Mon, 16 Jul 2018 14:49:49 +0800
+Message-ID: <1531723793-14607-7-git-send-email-baolu.lu@linux.intel.com>
 References: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,69 +10,74 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-when the scalable mode is enabled, there is no second level
-page translation pointer in the context entry any more (for
-DMA request without PASID). Instead, a new RID2PASID field
-is introduced in the context entry. Software can choose any
-PASID value to set RID2PASID and then setup the translation
-in the corresponding PASID entry. Upon receiving a DMA request
-without PASID, hardware will firstly look at this RID2PASID
-field and then treat this request as a request with a pasid
-value specified in RID2PASID field.
-
-Though software is allowed to use any PASID for the RID2PASID,
-we will always use the PASID 0 as a sort of design decision.
+So that the pasid related info, such as the pasid table and the
+maximum of pasid could be used during setting up scalable mode
+context.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
 Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 10 ++++++++++
- drivers/iommu/intel-pasid.h |  1 +
- 2 files changed, 11 insertions(+)
+ drivers/iommu/intel-iommu.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a139a45..62e9579 100644
+index 62e9579..add7e3e 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2421,12 +2421,22 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 		dev->archdata.iommu = info;
+@@ -1918,6 +1918,7 @@ static void domain_exit(struct dmar_domain *domain)
  
- 	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
-+		bool pass_through;
+ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 				      struct intel_iommu *iommu,
++				      struct pasid_table *table,
+ 				      u8 bus, u8 devfn)
+ {
+ 	u16 did = domain->iommu_did[iommu->seq_id];
+@@ -2040,6 +2041,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ struct domain_context_mapping_data {
+ 	struct dmar_domain *domain;
+ 	struct intel_iommu *iommu;
++	struct pasid_table *table;
+ };
+ 
+ static int domain_context_mapping_cb(struct pci_dev *pdev,
+@@ -2048,25 +2050,31 @@ static int domain_context_mapping_cb(struct pci_dev *pdev,
+ 	struct domain_context_mapping_data *data = opaque;
+ 
+ 	return domain_context_mapping_one(data->domain, data->iommu,
+-					  PCI_BUS_NUM(alias), alias & 0xff);
++					  data->table, PCI_BUS_NUM(alias),
++					  alias & 0xff);
+ }
+ 
+ static int
+ domain_context_mapping(struct dmar_domain *domain, struct device *dev)
+ {
++	struct domain_context_mapping_data data;
++	struct pasid_table *table;
+ 	struct intel_iommu *iommu;
+ 	u8 bus, devfn;
+-	struct domain_context_mapping_data data;
+ 
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
++	table = intel_pasid_get_table(dev);
 +
- 		ret = intel_pasid_alloc_table(dev);
- 		if (ret) {
- 			__dmar_remove_one_dev_info(info);
- 			spin_unlock_irqrestore(&device_domain_lock, flags);
- 			return NULL;
- 		}
-+
-+		/* Setup the PASID entry for requests without PASID: */
-+		pass_through = hw_pass_through && domain_type_is_si(domain);
-+		spin_lock(&iommu->lock);
-+		intel_pasid_setup_second_level(iommu, domain, dev,
-+					       PASID_RID2PASID,
-+					       pass_through);
-+		spin_unlock(&iommu->lock);
- 	}
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 	if (!dev_is_pci(dev))
+-		return domain_context_mapping_one(domain, iommu, bus, devfn);
++		return domain_context_mapping_one(domain, iommu, table,
++						  bus, devfn);
  
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 2fe40ff..80fc88e 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -10,6 +10,7 @@
- #ifndef __INTEL_PASID_H
- #define __INTEL_PASID_H
+ 	data.domain = domain;
+ 	data.iommu = iommu;
++	data.table = table;
  
-+#define PASID_RID2PASID			0x0
- #define PASID_MIN			0x1
- #define PASID_MAX			0x100000
- #define PASID_PTE_MASK			0x3F
+ 	return pci_for_each_dma_alias(to_pci_dev(dev),
+ 				      &domain_context_mapping_cb, &data);
 -- 
 2.7.4
