@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 04/10] iommu/vt-d: Add second level page table interface
-Date: Mon, 16 Jul 2018 14:49:47 +0800
-Message-ID: <1531723793-14607-5-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH 05/10] iommu/vt-d: Setup pasid entry for RID2PASID support
+Date: Mon, 16 Jul 2018 14:49:48 +0800
+Message-ID: <1531723793-14607-6-git-send-email-baolu.lu@linux.intel.com>
 References: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,9 +10,18 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds an interface to setup the structures for second
-level page table translation type. This includes the types
-of second level translation only and pass through.
+when the scalable mode is enabled, there is no second level
+page translation pointer in the context entry any more (for
+DMA request without PASID). Instead, a new RID2PASID field
+is introduced in the context entry. Software can choose any
+PASID value to set RID2PASID and then setup the translation
+in the corresponding PASID entry. Upon receiving a DMA request
+without PASID, hardware will firstly look at this RID2PASID
+field and then treat this request as a request with a pasid
+value specified in RID2PASID field.
+
+Though software is allowed to use any PASID for the RID2PASID,
+we will always use the PASID 0 as a sort of design decision.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -22,209 +31,48 @@ Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/intel-pasid.c | 158 ++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h |   4 ++
- include/linux/intel-iommu.h |   1 +
- 3 files changed, 163 insertions(+)
+ drivers/iommu/intel-iommu.c | 10 ++++++++++
+ drivers/iommu/intel-pasid.h |  1 +
+ 2 files changed, 11 insertions(+)
 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index d6e90cd..da504576 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -9,6 +9,7 @@
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a139a45..62e9579 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2421,12 +2421,22 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 		dev->archdata.iommu = info;
  
- #define pr_fmt(fmt)	"DMAR: " fmt
+ 	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
++		bool pass_through;
++
+ 		ret = intel_pasid_alloc_table(dev);
+ 		if (ret) {
+ 			__dmar_remove_one_dev_info(info);
+ 			spin_unlock_irqrestore(&device_domain_lock, flags);
+ 			return NULL;
+ 		}
++
++		/* Setup the PASID entry for requests without PASID: */
++		pass_through = hw_pass_through && domain_type_is_si(domain);
++		spin_lock(&iommu->lock);
++		intel_pasid_setup_second_level(iommu, domain, dev,
++					       PASID_RID2PASID,
++					       pass_through);
++		spin_unlock(&iommu->lock);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
  
-+#include <linux/bitops.h>
- #include <linux/dmar.h>
- #include <linux/intel-iommu.h>
- #include <linux/iommu.h>
-@@ -291,3 +292,160 @@ void intel_pasid_clear_entry(struct device *dev, int pasid)
- 
- 	pasid_clear_entry(pe);
- }
-+
-+static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
-+{
-+	u64 old;
-+
-+	old = READ_ONCE(*ptr);
-+	WRITE_ONCE(*ptr, (old & ~mask) | bits);
-+}
-+
-+/*
-+ * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
-+ * PASID entry.
-+ */
-+static inline void
-+pasid_set_domain_id(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[1], GENMASK_ULL(15, 0), value);
-+}
-+
-+/*
-+ * Setup the SLPTPTR(Second Level Page Table Pointer) field (Bit 12~63)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_address_root(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[0], VTD_PAGE_MASK, value);
-+}
-+
-+/*
-+ * Setup the AW(Address Width) field (Bit 2~4) of a scalable mode PASID
-+ * entry.
-+ */
-+static inline void
-+pasid_set_address_width(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[0], GENMASK_ULL(4, 2), value << 2);
-+}
-+
-+/*
-+ * Setup the PGTT(PASID Granular Translation Type) field (Bit 6~8)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_translation_type(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[0], GENMASK_ULL(8, 6), value << 6);
-+}
-+
-+/*
-+ * Enable fault processing by clearing the FPD(Fault Processing
-+ * Disable) field (Bit 1) of a scalable mode PASID entry.
-+ */
-+static inline void pasid_set_fault_enable(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[0], 1 << 1, 0);
-+}
-+
-+/*
-+ * Setup the SRE(Supervisor Request Enable) field (Bit 128) of a
-+ * scalable mode PASID entry.
-+ */
-+static inline void pasid_set_sre(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 0, 1);
-+}
-+
-+/*
-+ * Setup the P(Present) field (Bit 0) of a scalable mode PASID
-+ * entry.
-+ */
-+static inline void pasid_set_present(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[0], 1 << 0, 1);
-+}
-+
-+/*
-+ * Setup Page Walk Snoop bit (Bit 87) of a scalable mode PASID
-+ * entry.
-+ */
-+static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
-+{
-+	pasid_set_bits(&pe->val[1], 1 << 23, value);
-+}
-+
-+static inline void
-+flush_pasid_cache(struct intel_iommu *iommu, int did, int pasid)
-+{
-+	struct qi_desc desc;
-+
-+	desc.high = 0;
-+	desc.low = QI_PC_DID(did) | QI_PC_PASID_SEL | QI_PC_PASID(pasid);
-+
-+	qi_submit_sync(&desc, iommu);
-+}
-+
-+/*
-+ * Set up the scalable mode pasid table entry for second only or
-+ * passthrough translation type.
-+ */
-+void intel_pasid_setup_second_level(struct intel_iommu *iommu,
-+				    struct dmar_domain *domain,
-+				    struct device *dev, int pasid,
-+				    bool pass_through)
-+{
-+	u16 did = domain->iommu_did[iommu->seq_id];
-+	struct pasid_entry *pte;
-+	struct dma_pte *pgd;
-+	u64 pgd_val;
-+	int agaw;
-+
-+	/*
-+	 * Skip top levels of page tables for iommu which has less agaw
-+	 * than default.  Unnecessary for PT mode.
-+	 */
-+	pgd = domain->pgd;
-+	if (!pass_through) {
-+		for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-+			pgd = phys_to_virt(dma_pte_addr(pgd));
-+			if (!dma_pte_present(pgd)) {
-+				dev_err(dev, "Invalid domain page table\n");
-+				return;
-+			}
-+		}
-+	}
-+	pgd_val = pass_through ? 0 : virt_to_phys(pgd);
-+
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (!pte) {
-+		dev_err(dev, "Failed to get pasid entry of PASID %d\n", pasid);
-+		return;
-+	}
-+
-+	pasid_clear_entry(pte);
-+	pasid_set_domain_id(pte, did);
-+
-+	if (!pass_through)
-+		pasid_set_address_root(pte, pgd_val);
-+
-+	pasid_set_address_width(pte, iommu->agaw);
-+	pasid_set_translation_type(pte, pass_through ? 4 : 2);
-+	pasid_set_fault_enable(pte);
-+	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+
-+	/*
-+	 * Since it is a second level only translation setup, we should
-+	 * set SRE bit as well (addresses are expected to be GPAs).
-+	 */
-+	pasid_set_sre(pte);
-+	pasid_set_present(pte);
-+
-+	if (!ecap_coherent(iommu->ecap))
-+		clflush_cache_range(pte, sizeof(*pte));
-+
-+	if (cap_caching_mode(iommu->cap))
-+		flush_pasid_cache(iommu, did, pasid);
-+}
 diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 12f480c..2fe40ff 100644
+index 2fe40ff..80fc88e 100644
 --- a/drivers/iommu/intel-pasid.h
 +++ b/drivers/iommu/intel-pasid.h
-@@ -43,5 +43,9 @@ struct pasid_table *intel_pasid_get_table(struct device *dev);
- int intel_pasid_get_dev_max_id(struct device *dev);
- struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
- void intel_pasid_clear_entry(struct device *dev, int pasid);
-+void intel_pasid_setup_second_level(struct intel_iommu *iommu,
-+				    struct dmar_domain *domain,
-+				    struct device *dev, int pasid,
-+				    bool pass_through);
+@@ -10,6 +10,7 @@
+ #ifndef __INTEL_PASID_H
+ #define __INTEL_PASID_H
  
- #endif /* __INTEL_PASID_H */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 7818b1c..a20ebca 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -115,6 +115,7 @@
-  * Extended Capability Register
-  */
- 
-+#define ecap_smpwc(e)		(((e) >> 48) & 0x1)
- #define ecap_smts(e)		(((e) >> 43) & 0x1)
- #define ecap_dit(e)		((e >> 41) & 0x1)
- #define ecap_pasid(e)		((e >> 40) & 0x1)
++#define PASID_RID2PASID			0x0
+ #define PASID_MIN			0x1
+ #define PASID_MAX			0x100000
+ #define PASID_PTE_MASK			0x3F
 -- 
 2.7.4
