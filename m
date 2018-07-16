@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 08/10] iommu/vt-d: Add first level page table interface
-Date: Mon, 16 Jul 2018 14:49:51 +0800
-Message-ID: <1531723793-14607-9-git-send-email-baolu.lu@linux.intel.com>
+Subject: [PATCH 09/10] iommu/vt-d: Shared virtual address in scalable mode
+Date: Mon, 16 Jul 2018 14:49:52 +0800
+Message-ID: <1531723793-14607-10-git-send-email-baolu.lu@linux.intel.com>
 References: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,8 +10,8 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds an interface to setup the structures for first
-level page table translation type.
+This patch enables the current SVA (Shared Virtual Address)
+implementation to work in the scalable mode.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -21,127 +21,139 @@ Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/intel-pasid.c | 65 +++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h |  4 +++
- drivers/iommu/intel-svm.c   |  1 -
- 3 files changed, 69 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c   | 38 --------------------------------------
+ drivers/iommu/intel-svm.c     | 24 ++----------------------
+ include/linux/dma_remapping.h |  9 +--------
+ 3 files changed, 3 insertions(+), 68 deletions(-)
 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index da504576..1195c2a 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -10,6 +10,7 @@
- #define pr_fmt(fmt)	"DMAR: " fmt
- 
- #include <linux/bitops.h>
-+#include <linux/cpufeature.h>
- #include <linux/dmar.h>
- #include <linux/intel-iommu.h>
- #include <linux/iommu.h>
-@@ -377,6 +378,26 @@ static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
- 	pasid_set_bits(&pe->val[1], 1 << 23, value);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 13f3d17..88ec860 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5228,18 +5228,6 @@ static void intel_iommu_put_resv_regions(struct device *dev,
  }
  
-+/*
-+ * Setup the First Level Page table Pointer field (Bit 140~191)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_flptr(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[2], VTD_PAGE_MASK, value);
-+}
-+
-+/*
-+ * Setup the First Level Paging Mode field (Bit 130~131) of a
-+ * scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_flpm(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
-+}
-+
- static inline void
- flush_pasid_cache(struct intel_iommu *iommu, int did, int pasid)
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+-static inline unsigned long intel_iommu_get_pts(struct device *dev)
+-{
+-	int pts, max_pasid;
+-
+-	max_pasid = intel_pasid_get_dev_max_id(dev);
+-	pts = find_first_bit((unsigned long *)&max_pasid, MAX_NR_PASID_BITS);
+-	if (pts < 5)
+-		return 0;
+-
+-	return pts - 5;
+-}
+-
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
  {
-@@ -389,6 +410,50 @@ flush_pasid_cache(struct intel_iommu *iommu, int did, int pasid)
- }
+ 	struct device_domain_info *info;
+@@ -5271,33 +5259,7 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sd
+ 	sdev->sid = PCI_DEVID(info->bus, info->devfn);
  
- /*
-+ * Set up the scalable mode pasid table entry for first only
-+ * translation type.
-+ */
-+void intel_pasid_setup_first_level(struct intel_iommu *iommu,
-+				   struct mm_struct *mm,
-+				   struct device *dev,
-+				   int pasid)
-+{
-+	struct pasid_entry *pte;
-+
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (WARN_ON(!pte))
-+		return;
-+
-+	pasid_clear_entry(pte);
-+
-+	/* Setup the first level page table pointer: */
-+	if (mm) {
-+		pasid_set_flptr(pte, (u64)__pa(mm->pgd));
-+	} else {
-+		pasid_set_sre(pte);
-+		pasid_set_flptr(pte, (u64)__pa(init_mm.pgd));
-+	}
-+
-+#ifdef CONFIG_X86
-+	if (cpu_feature_enabled(X86_FEATURE_LA57))
-+		pasid_set_flpm(pte, 1);
-+#endif /* CONFIG_X86 */
-+
-+	pasid_set_address_width(pte, iommu->agaw);
-+	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+
-+	/* Setup Present and PASID Granular Transfer Type: */
-+	pasid_set_translation_type(pte, 1);
-+	pasid_set_present(pte);
-+
-+	if (!ecap_coherent(iommu->ecap))
-+		clflush_cache_range(pte, sizeof(*pte));
-+
-+	if (cap_caching_mode(iommu->cap))
-+		flush_pasid_cache(iommu, 0, pasid);
-+}
-+
-+/*
-  * Set up the scalable mode pasid table entry for second only or
-  * passthrough translation type.
-  */
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 80d4667..518df72 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -45,6 +45,10 @@ struct pasid_table *intel_pasid_get_table(struct device *dev);
- int intel_pasid_get_dev_max_id(struct device *dev);
- struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
- void intel_pasid_clear_entry(struct device *dev, int pasid);
-+void intel_pasid_setup_first_level(struct intel_iommu *iommu,
-+				   struct mm_struct *mm,
-+				   struct device *dev,
-+				   int pasid);
- void intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 				    struct dmar_domain *domain,
- 				    struct device *dev, int pasid,
+ 	if (!(ctx_lo & CONTEXT_PASIDE)) {
+-		if (iommu->pasid_state_table)
+-			context[1].hi = (u64)virt_to_phys(iommu->pasid_state_table);
+-		context[1].lo = (u64)virt_to_phys(info->pasid_table->table) |
+-			intel_iommu_get_pts(sdev->dev);
+-
+-		wmb();
+-		/* CONTEXT_TT_MULTI_LEVEL and CONTEXT_TT_DEV_IOTLB are both
+-		 * extended to permit requests-with-PASID if the PASIDE bit
+-		 * is set. which makes sense. For CONTEXT_TT_PASS_THROUGH,
+-		 * however, the PASIDE bit is ignored and requests-with-PASID
+-		 * are unconditionally blocked. Which makes less sense.
+-		 * So convert from CONTEXT_TT_PASS_THROUGH to one of the new
+-		 * "guest mode" translation types depending on whether ATS
+-		 * is available or not. Annoyingly, we can't use the new
+-		 * modes *unless* PASIDE is set. */
+-		if ((ctx_lo & CONTEXT_TT_MASK) == (CONTEXT_TT_PASS_THROUGH << 2)) {
+-			ctx_lo &= ~CONTEXT_TT_MASK;
+-			if (info->ats_supported)
+-				ctx_lo |= CONTEXT_TT_PT_PASID_DEV_IOTLB << 2;
+-			else
+-				ctx_lo |= CONTEXT_TT_PT_PASID << 2;
+-		}
+ 		ctx_lo |= CONTEXT_PASIDE;
+-		if (iommu->pasid_state_table)
+-			ctx_lo |= CONTEXT_DINVE;
+-		if (info->pri_supported)
+-			ctx_lo |= CONTEXT_PRS;
+ 		context[0].lo = ctx_lo;
+ 		wmb();
+ 		iommu->flush.flush_context(iommu, sdev->did, sdev->sid,
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 5d250cf..8d4a911 100644
+index 8d4a911..a16a421 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -29,7 +29,6 @@
+@@ -28,9 +28,6 @@
+ 
  #include "intel-pasid.h"
  
- #define PASID_ENTRY_P		BIT_ULL(0)
--#define PASID_ENTRY_FLPM_5LP	BIT_ULL(9)
- #define PASID_ENTRY_SRE		BIT_ULL(11)
- 
+-#define PASID_ENTRY_P		BIT_ULL(0)
+-#define PASID_ENTRY_SRE		BIT_ULL(11)
+-
  static irqreturn_t prq_event_thread(int irq, void *d);
+ 
+ struct pasid_state_entry {
+@@ -280,11 +277,9 @@ static LIST_HEAD(global_svm_list);
+ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
+ {
+ 	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
+-	struct pasid_entry *entry;
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_svm *svm = NULL;
+ 	struct mm_struct *mm = NULL;
+-	u64 pasid_entry_val;
+ 	int pasid_max;
+ 	int ret;
+ 
+@@ -393,23 +388,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 				kfree(sdev);
+ 				goto out;
+ 			}
+-			pasid_entry_val = (u64)__pa(mm->pgd) | PASID_ENTRY_P;
+-		} else
+-			pasid_entry_val = (u64)__pa(init_mm.pgd) |
+-					  PASID_ENTRY_P | PASID_ENTRY_SRE;
+-		if (cpu_feature_enabled(X86_FEATURE_LA57))
+-			pasid_entry_val |= PASID_ENTRY_FLPM_5LP;
+-
+-		entry = intel_pasid_get_entry(dev, svm->pasid);
+-		WRITE_ONCE(entry->val[0], pasid_entry_val);
+-
+-		/*
+-		 * Flush PASID cache when a PASID table entry becomes
+-		 * present.
+-		 */
+-		if (cap_caching_mode(iommu->cap))
+-			intel_flush_pasid_dev(svm, sdev, svm->pasid);
+-
++		}
++		intel_pasid_setup_first_level(iommu, mm, dev, svm->pasid);
+ 		list_add_tail(&svm->list, &global_svm_list);
+ 	}
+ 	list_add_rcu(&sdev->list, &svm->devs);
+diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
+index 21b3e7d..6f01e54 100644
+--- a/include/linux/dma_remapping.h
++++ b/include/linux/dma_remapping.h
+@@ -21,14 +21,7 @@
+ #define CONTEXT_TT_MULTI_LEVEL	0
+ #define CONTEXT_TT_DEV_IOTLB	1
+ #define CONTEXT_TT_PASS_THROUGH 2
+-/* Extended context entry types */
+-#define CONTEXT_TT_PT_PASID	4
+-#define CONTEXT_TT_PT_PASID_DEV_IOTLB 5
+-#define CONTEXT_TT_MASK (7ULL << 2)
+-
+-#define CONTEXT_DINVE		(1ULL << 8)
+-#define CONTEXT_PRS		(1ULL << 9)
+-#define CONTEXT_PASIDE		(1ULL << 11)
++#define CONTEXT_PASIDE		BIT_ULL(3)
+ 
+ struct intel_iommu;
+ struct dmar_domain;
 -- 
 2.7.4
