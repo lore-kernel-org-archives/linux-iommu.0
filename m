@@ -1,17 +1,13 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 2/2] dma: remove unsupported gfp_mask parameter from
-	dma_alloc_from_contiguous()
-Date: Tue, 17 Jul 2018 17:08:32 +0200
-Message-ID: <20180717150832.GB22408@lst.de>
-References: <20180709121956.20200-1-m.szyprowski@samsung.com>
-	<CGME20180709122020eucas1p21a71b092975cb4a3b9954ffc63f699d1@eucas1p2.samsung.com>
-	<20180709122020eucas1p21a71b092975cb4a3b9954ffc63f699d1~-sqUFoa-h2939329393eucas1p2Y@eucas1p2.samsung.com>
+From: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+Subject: Re: usb HC busted?
+Date: Tue, 17 Jul 2018 11:08:45 -0400 (EDT)
+Message-ID: <Pine.LNX.4.44L0.1807171106340.1689-100000@iolanthe.rowland.org>
+References: <20180717144918.7ymzbhijxfcc3fhb@debian>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180709122020eucas1p21a71b092975cb4a3b9954ffc63f699d1~-sqUFoa-h2939329393eucas1p2Y-PmokGAFL9ItqW5MlFJXMulaTQe2KTcn/@public.gmane.org>
+In-Reply-To: <20180717144918.7ymzbhijxfcc3fhb@debian>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,10 +17,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Paul Mackerras <paulus-mnsaURCQ41sdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Sumit Semwal <sumit.semwal-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Martin Schwidefsky <schwidefsky-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Looks good,
+On Tue, 17 Jul 2018, Sudip Mukherjee wrote:
 
-Reviewed-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> On Tue, Jul 17, 2018 at 03:40:22PM +0100, Sudip Mukherjee wrote:
+> > Hi Alan,
+> > 
+> > On Tue, Jul 17, 2018 at 10:28:14AM -0400, Alan Stern wrote:
+> > > On Tue, 17 Jul 2018, Sudip Mukherjee wrote:
+> > > 
+> > > > I did some more debugging. Tested with a KASAN enabled kernel and that
+> > > > shows the problem. The report is attached.
+> > > > 
+> > > > To my understanding:
+> > > > 
+> > > > btusb_work() is calling usb_set_interface() with alternate = 0. which
+> > > > again calls usb_hcd_alloc_bandwidth() and that frees the rings by
+> > > > xhci_free_endpoint_ring().
+> > > 
+> > > That doesn't sound like the right thing to do.  The rings shouldn't be 
+> > > freed until xhci_endpoint_disable() is called.  
+> > > 
+> > > On the other hand, there doesn't appear to be any 
+> > > xhci_endpoint_disable() routine, although a comment refers to it.  
+> > > Maybe this is the real problem?
+> > 
+> > one of your old mail might help :)
+> > 
+> > https://www.spinics.net/lists/linux-usb/msg98123.html
+
+That message seems to say the same thing as what I just wrote, more or 
+less.
+
+> Wrote too soon.
+> 
+> Is it the one you are looking for -
+> usb_disable_endpoint() is in drivers/usb/core/message.c
+
+No, I'm talking about xhci_endpoint_disable(), which would be called by 
+usb_hcd_disable_endpoint() if it existed.  Of course, 
+usb_hcd_disable_endpoint() is called by usb_disable_endpoint().
+
+Alan Stern
