@@ -1,17 +1,15 @@
-From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 Subject: Re: usb HC busted?
-Date: Tue, 17 Jul 2018 16:10:17 +0100
-Message-ID: <20180717151017.yk5d4glzwqcrxpqc@debian>
-References: <20180717114104.irgdb5rmg2qxclgp@debian>
-	<Pine.LNX.4.44L0.1807171022001.1689-100000@iolanthe.rowland.org>
-	<20180717144022.4wabhdhysori3mvg@debian>
-	<20180717144918.7ymzbhijxfcc3fhb@debian>
+Date: Tue, 17 Jul 2018 17:52:59 +0200
+Message-ID: <20180717155259.GB2416@kroah.com>
+References: <20180717120411.GB28592@kroah.com>
+	<Pine.LNX.4.44L0.1807171029310.1689-100000@iolanthe.rowland.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180717144918.7ymzbhijxfcc3fhb@debian>
+In-Reply-To: <Pine.LNX.4.44L0.1807171029310.1689-100000-IYeN2dnnYyZXsRXLowluHWD2FQJk+8+b@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,68 +19,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alan, Greg,
-
-On Tue, Jul 17, 2018 at 03:49:18PM +0100, Sudip Mukherjee wrote:
-> On Tue, Jul 17, 2018 at 03:40:22PM +0100, Sudip Mukherjee wrote:
-> > Hi Alan,
-> > 
-> > On Tue, Jul 17, 2018 at 10:28:14AM -0400, Alan Stern wrote:
-> > > On Tue, 17 Jul 2018, Sudip Mukherjee wrote:
-> > > 
-> > > > I did some more debugging. Tested with a KASAN enabled kernel and that
-> > > > shows the problem. The report is attached.
-> > > > 
-> > > > To my understanding:
-> > > > 
-> > > > btusb_work() is calling usb_set_interface() with alternate = 0. which
-> > > > again calls usb_hcd_alloc_bandwidth() and that frees the rings by
-> > > > xhci_free_endpoint_ring().
-> > > 
-> > > That doesn't sound like the right thing to do.  The rings shouldn't be 
-> > > freed until xhci_endpoint_disable() is called.  
-> > > 
-> > > On the other hand, there doesn't appear to be any 
-> > > xhci_endpoint_disable() routine, although a comment refers to it.  
-> > > Maybe this is the real problem?
-> > 
-> > one of your old mail might help :)
-> > 
-> > https://www.spinics.net/lists/linux-usb/msg98123.html
+On Tue, Jul 17, 2018 at 10:31:38AM -0400, Alan Stern wrote:
+> On Tue, 17 Jul 2018, Greg KH wrote:
 > 
-> Wrote too soon.
+> > > From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > > Date: Tue, 10 Jul 2018 09:50:00 +0100
+> > > Subject: [PATCH] hacky solution to mem-corruption
+> > > 
+> > > Signed-off-by: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > > ---
+> > >  drivers/usb/core/message.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+> > > index 7cd4ec33dbf4..7fdf7a27611d 100644
+> > > --- a/drivers/usb/core/message.c
+> > > +++ b/drivers/usb/core/message.c
+> > > @@ -1398,7 +1398,8 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate)
+> > >  		remove_intf_ep_devs(iface);
+> > >  		usb_remove_sysfs_intf_files(iface);
+> > >  	}
+> > > -	usb_disable_interface(dev, iface, true);
+> > > +	if (!(iface->cur_altsetting && alt))
+> > > +		usb_disable_interface(dev, iface, true);
+> > 
+> > 
+> > 
+> > This feels like a "correct" patch anyway, why would a driver keep
+> > calling set_interface to an interface that it was already set to?
+> > 
+> > But can't we check for this higher up in the function?  This hack will
+> > just not disable an interface but it will do all of the other stuff
+> > being asked for.  Does the patch below also solve this for you?  It's
+> > not a good solution of course, but it might work around the problem a
+> > bit better.
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> > 
+> > diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+> > index 1a15392326fc..0f718f1a1ca3 100644
+> > --- a/drivers/usb/core/message.c
+> > +++ b/drivers/usb/core/message.c
+> > @@ -1376,6 +1376,14 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > +	if (iface->cur_altsetting == alt) {
+> > +		/*
+> > +		 * foolish bluetooth stack, don't try to set a setting you are
+> > +		 * already set to...
+> > +		 */
+> > +		return 0;
+> > +	}
+> > +
+> >  	/* Make sure we have enough bandwidth for this alternate interface.
+> >  	 * Remove the current alt setting and add the new alt setting.
+> >  	 */
 > 
-> Is it the one you are looking for -
-> usb_disable_endpoint() is in drivers/usb/core/message.c
+> No, neither of these is right.  It's possible to use 
+> usb_set_interface() as a kind of "soft" reset.  Even when the new 
+> altsetting is specified to be the same as the current one, we still 
+> have to tell the lower-layer drivers and hardware about it.
 
-I think now I understand what the problem is.
-usb_set_interface() calls usb_disable_interface() which again calls
-usb_disable_endpoint(). This usb_disable_endpoint() gets the pointer
-to 'ep', marks it as NULL and sends the pointer to usb_hcd_flush_endpoint().
-After flushing the endpoints usb_disable_endpoint() calls
-usb_hcd_disable_endpoint() which tries to do:
-	if (hcd->driver->endpoint_disable)
-		hcd->driver->endpoint_disable(hcd, ep);
-but there is no endpoint_disable() callback in xhci, so the endpoint is
-never marked as disabled. So, next time usb_hcd_flush_endpoint() is
-called I get this corruption. 
-And this is exactly where I used to see the problem happening.
+You are right, it's a hacky soft reset, I was just trying to figure out
+what the bluetooth driver was trying to do.  I wouldn't expect it to be
+calling that function a lot, but I guess it does :(
 
-And, my hacky patch worked as I prevented it from calling
-usb_disable_interface() in this particular case.
+thanks,
 
-Greg - answering your question here. My hacky patch was based on the
-fact that usb_hcd_alloc_bandwidth() is calling hcd->driver->drop_endpoint()
-and hcd->driver->add_endpoint() if (cur_alt && new_alt). So, I prevented
-usb_disable_interface() to be called for that same condition. And that
-worked as the call to usb_hcd_flush_endpoint() was not executed.
-I know it is not correct and I might be having memory leaks for this, but
-I have the system working till we get the actual fix.
-
---
-Regards
-Sudip
+greg k-h
