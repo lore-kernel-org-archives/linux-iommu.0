@@ -1,121 +1,218 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 04/16] iommu: sva: Add support for private
- PASIDs
-Date: Tue, 17 Jul 2018 12:21:03 +0100
-Message-ID: <c87ae21f-ac02-17fe-6d11-48d2840911e1@arm.com>
-References: <20180518213500.31595-1-jcrouse@codeaurora.org>
- <20180518213500.31595-5-jcrouse@codeaurora.org>
+From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: usb HC busted?
+Date: Tue, 17 Jul 2018 12:41:04 +0100
+Message-ID: <20180717114104.irgdb5rmg2qxclgp@debian>
+References: <06226ecb-baad-cc36-e9e3-797dabb0aa5e@linux.intel.com>
+	<42ec4ab07d96b4302b875ac9c5eb76675bf85690.camel@linux.intel.com>
+	<20180606164524.n4vb7xre6rykzxih@debian>
+	<2e8829c2-850d-6bca-5f0c-58a809dc9499@linux.intel.com>
+	<20180621005332.5uy74tkjoel6w4xy@debian>
+	<2b4fe87a-3706-0aa8-2b61-a9c1d1352a7a@linux.intel.com>
+	<20180625161500.dbyxd4b434jh5jhj@debian>
+	<20180627115948.ww534mkoovkt3uwb@debian>
+	<4b269009-7593-a41f-9f0f-203ee174b52e@linux.intel.com>
+	<20180630210704.vzkt2poh5qr3hpff@debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180518213500.31595-5-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-Cc: "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org" <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: multipart/mixed; boundary="o4q3pocf7gj746x4"
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180630210704.vzkt2poh5qr3hpff@debian>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSm9yZGFuLAoKVGhhbmtzIGZvciB0aGUgcGF0Y2hlcywgSSBmaW5hbGx5IGdvdCBhcm91bmQg
-dGVzdGluZyB0aGVtIHdpdGggU01NVXYzLgpJdCdzIGFuIGltcG9ydGFudCBmZWF0dXJlLCBhcmd1
-YWJseSBtb3JlIHRoYW4gU1ZBIGl0c2VsZi4gSSBjb3VsZCBwaWNrCnRoaXMgb25lIGFzIHBhcnQg
-b2YgdGhlIFNWQSBzZXJpZXMsIHdoYXQgZG8geW91IHRoaW5rPwoKQWx0aG91Z2ggSSBwcm9iYWJs
-eSB3b3VsZCBoYXZlIGRvbmUgdGhlIHNhbWUsIEkgZGlzbGlrZSB0aGUgaW50ZXJmYWNlCmJlY2F1
-c2UgaXQgZm9yY2VzIHVzIHRvIGR1cGxpY2F0ZSBmdW5jdGlvbnMgYW5kIElPTU1VIG9wcy4gVGhl
-IGxpc3QgaXMKc21hbGwgYnV0IGdyb3dpbmc6Cgppb21tdV9tYXAKaW9tbXVfbWFwX3NnCmlvbW11
-X3VubWFwCmlvbW11X3VubWFwX2Zhc3QKaW9tbXVfaW92YV90b19waHlzCmlvbW11X3RsYl9yYW5n
-ZV9hZGQKaW9tbXVfZmx1c2hfdGxiX2FsbAoKRWFjaCBvZiB0aGVzZSBhbmQgdGhlaXIgYXNzb2Np
-YXRlZCBJT01NVSBvcCB3aWxsIGhhdmUgYW4gaW9tbXVfc3ZhX1gKY291bnRlcnBhcnQgdGhhdCB0
-YWtlcyBvbmUgZGlmZmVyZW50IGFyZ3VtZW50LiBNb2RpZnlpbmcgdGhlc2UgZnVuY3Rpb25zCnRv
-IHRha2UgYm90aCBhIGRvbWFpbiBhbmQgYSBQQVNJRCBhcmd1bWVudCB3b3VsZCBiZSBtb3JlIGVs
-ZWdhbnQuIE9yIGFzCmFuIGludGVybWVkaWF0ZSBzb2x1dGlvbiwgcGVyaGFwcyB3ZSBjb3VsZCBv
-bmx5IGNoYW5nZSB0aGUgSU9NTVUgb3BzIHRvCnRha2UgYW4gYWRkaXRpb25hbCBhcmd1bWVudCwg
-bGlrZSB5b3UgZGlkIGZvciBtYXBfc2c/CgpJbiBhbnkgY2FzZSBpdCByZXF1aXJlcyBpbnZhc2l2
-ZSBjaGFuZ2VzIGluIGxvdHMgb2YgZHJpdmVycyBhbmQgd2UgY2FuCmFsd2F5cyB0aWR5IHVwIGxh
-dGVyLCBzbyB1bmxlc3MgSm9lcmcgaGFzIGEgcHJlZmVyZW5jZSBJJ2Qga2VlcCB0aGUKZHVwbGlj
-YXRlcyBmb3Igbm93LgoKSG93ZXZlciwgaGF2aW5nIHRvIGxvb2t1cCBwYXNpZC10by1pb19tbSBv
-biBldmVyeSBtYXAvdW5tYXAgY2FsbCBpcwpjdW1iZXJzb21lLCBlc3BlY2lhbGx5IHNpbmNlIG1h
-cC91bm1hcCBhcmUgc3VwcG9zZWQgdG8gYmUgYXMgZmFzdCBhcwpwb3NzaWJsZS4gaW9tbXVfc3Zh
-X2FsbG9jX3Bhc2lkIHNob3VsZCByZXR1cm4gYSBzdHJ1Y3R1cmUgcmVwcmVzZW50aW5nCnRoZSBQ
-QVNJRCBpbnN0ZWFkIG9mIHRoZSB2YWx1ZSBhbG9uZS4gVGhlIGlvX21tIHN0cnVjdHVyZSBzZWVt
-cyBsaWtlIGEKZ29vZCBmaXQsIGFuZCB0aGUgZGV2aWNlIGRyaXZlciBjYW4gYWNjZXNzIGlvX21t
-LT5wYXNpZCBkaXJlY3RseSBvciB2aWEKYW4gaW9fbW1fZ2V0X3Bhc2lkKCkgZnVuY3Rpb24uCgpU
-aGUgbmV3IGZ1bmN0aW9ucyB3b3VsZCB0aGVuIGJlOgoKc3RydWN0IGlvX21tICppb21tdV9zdmFf
-YWxsb2NfcGFzaWQoZG9tYWluLCBkZXYpCnZvaWQgaW9tbXVfc3ZhX2ZyZWVfcGFzaWQoZG9tYWlu
-LCBpb19tbSkKCmludCBpb21tdV9zdmFfbWFwKGlvX21tLCBpb3ZhLCBwYWRkciwgc2l6ZSwgcHJv
-dCkKc2l6ZV90IGlvbW11X21hcF9zZyhpb19tbSwgaW92YSwgc2csIG5lbnRzLCBwcm90KQpzaXpl
-X3QgaW9tbXVfc3ZhX3VubWFwKGlvX21tLCBpb3ZhLCBzaXplKQpzaXplX3QgaW9tbXVfc3ZhX3Vu
-bWFwX2Zhc3QoaW9fbW0sIGlvdmEsIHNpemUpCnBoeXNfYWRkcl90IGlvbW11X3N2YV9pb3ZhX3Rv
-X3BoeXMoaW9fbW0sIGlvdmEpCnZvaWQgaW9tbXVfc3ZhX2ZsdXNoX3RsYl9hbGwoaW9fbW0pCnZv
-aWQgaW9tbXVfc3ZhX3RsYl9yYW5nZV9hZGQoaW9fbW0sIGlvdmEsIHNpemUpCgpBIGZldyBtb3Jl
-IGNvbW1lbnRzIGlubGluZQoKT24gMTgvMDUvMTggMjI6MzQsIEpvcmRhbiBDcm91c2Ugd3JvdGU6
-Cj4gU29tZSBvbGRlciBTTU1VIGltcGxlbWVudGF0aW9ucyB0aGF0IGRvIG5vdCBoYXZlIGEgZnVs
-bHkgZmVhdHVyZWQKPiBoYXJkd2FyZSBQQVNJRCBmZWF0dXJlcyBoYXZlIGFsdGVybmF0ZSB3b3Jr
-YXJvdW5kcyBmb3IgdXNpbmcgbXVsdGlwbGUKPiBwYWdldGFibGVzLiBGb3IgZXhhbXBsZSwgTVNN
-IEdQVXMgaGF2ZSBsb2dpYyB0byBhdXRvbWF0aWNhbGx5IHN3aXRjaCB0aGUKPiB1c2VyIHBhZ2V0
-YWJsZSBmcm9tIGhhcmR3YXJlIGJ5IHdyaXRpbmcgdGhlIGNvbnRleHQgYmFuayBkaXJlY3RseS4K
-ClRoZSBjb21tZW50IG1heSBiZSBhIGJpdCB0b28gc3BlY2lmaWMsIHN2YV9tYXAvc3ZhX3VubWFw
-IGlzIGFsc28gdXNlZnVsCmZvciBQQVNJRC1jYXBhYmxlIElPTU1VcwoKPiBTdXBwb3J0IHByaXZh
-dGUgUEFTSURzIGJ5IGNyZWF0aW5nIGEgbmV3IGlvLXBndGFibGUgaW5zdGFuY2UgbWFwIGl0Cj4g
-dG8gYSBQQVNJRCBhbmQgcHJvdmlkZSB0aGUgQVBJcyBmb3IgZHJpdmVycyB0byBwb3B1bGF0ZSBp
-dCBtYW51YWxseS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBKb3JkYW4gQ3JvdXNlIDxqY3JvdXNlQGNv
-ZGVhdXJvcmEub3JnPgo+IC0tLQpbLi4uXQo+ICtpbnQgaW9tbXVfc3ZhX2FsbG9jX3Bhc2lkKHN0
-cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgc3RydWN0IGRldmljZSAqZGV2KQo+ICt7Cj4gKwlp
-bnQgcmV0LCBwYXNpZDsKPiArCXN0cnVjdCBpb19tbSAqaW9fbW07Cj4gKwlzdHJ1Y3QgaW9tbXVf
-c3ZhX3BhcmFtICpwYXJhbSA9IGRldi0+aW9tbXVfcGFyYW0tPnN2YV9wYXJhbTsKCldlIG5lZWQg
-YSBOVUxMIGNoZWNrIG9uIHRoZSBwYXJhbSwgdG8gZW5zdXJlIHRoYXQgdGhlIGRyaXZlciBjYWxs
-ZWQKc3ZhX2RldmljZV9pbml0IGZpcnN0LgoKPiArCj4gKwlpZiAoIWRvbWFpbi0+b3BzLT5tbV9h
-dHRhY2ggfHwgIWRvbWFpbi0+b3BzLT5tbV9kZXRhY2gpCj4gKwkJcmV0dXJuIC1FTk9ERVY7Cj4g
-Kwo+ICsJaWYgKGRvbWFpbi0+b3BzLT5tbV9hbGxvYykKCkknZCByYXRoZXIgbWFrZSBtbV9hbGxv
-YyBhbmQgbW1fZnJlZSBtYW5kYXRvcnksIGJ1dCBpZiB3ZSBkbyBtYWtlIHRoZW0Kb3B0aW9uYWws
-IHRoZW4gd2UgbmVlZCB0byBjaGVjayB0aGF0IGJvdGggbW1fYWxsb2MgYW5kIG1tX2ZyZWUgYXJl
-CnByZXNlbnQsIG9yIGJvdGggYWJzZW50LgoKPiArCQlpb19tbSA9IGRvbWFpbi0+b3BzLT5tbV9h
-bGxvYyhkb21haW4sIE5VTEwsIDApOwo+ICsJZWxzZQo+ICsJCWlvX21tID0ga3phbGxvYyhzaXpl
-b2YoKmlvX21tKSwgR0ZQX0tFUk5FTCk7Cj4gKwo+ICsJaWYgKElTX0VSUihpb19tbSkpCj4gKwkJ
-cmV0dXJuIFBUUl9FUlIoaW9fbW0pOwo+ICsJaWYgKCFpb19tbSkKPiArCQlyZXR1cm4gLUVOT01F
-TTsKPiArCj4gKwlpb19tbS0+ZG9tYWluID0gZG9tYWluOwo+ICsJaW9fbW0tPnR5cGUgPSBJT19U
-WVBFX1BSSVZBVEU7CgpUaGlzIGNvdWxkIGJlIGEgSU9NTVVfU1ZBX0ZFQVRfUFJJVkFURSBmbGFn
-Cgo+ICsKPiArCWlkcl9wcmVsb2FkKEdGUF9LRVJORUwpOwo+ICsJc3Bpbl9sb2NrKCZpb21tdV9z
-dmFfbG9jayk7Cj4gKwlwYXNpZCA9IGlkcl9hbGxvY19jeWNsaWMoJmlvbW11X3Bhc2lkX2lkciwg
-aW9fbW0sIHBhcmFtLT5taW5fcGFzaWQsCj4gKwkJcGFyYW0tPm1heF9wYXNpZCArIDEsIEdGUF9B
-VE9NSUMpOwo+ICsJaW9fbW0tPnBhc2lkID0gcGFzaWQ7Cj4gKwlzcGluX3VubG9jaygmaW9tbXVf
-c3ZhX2xvY2spOwo+ICsJaWRyX3ByZWxvYWRfZW5kKCk7Cj4gKwo+ICsJaWYgKHBhc2lkIDwgMCkg
-ewo+ICsJCWtmcmVlKGlvX21tKTsKPiArCQlyZXR1cm4gcGFzaWQ7Cj4gKwl9Cj4gKwo+ICsJcmV0
-ID0gZG9tYWluLT5vcHMtPm1tX2F0dGFjaChkb21haW4sIGRldiwgaW9fbW0sIGZhbHNlKTsKCmF0
-dGFjaF9kb21haW4gc2hvdWxkIGJlIHRydWUsIG90aGVyd2lzZSB0aGUgU01NVXYzIGRyaXZlciB3
-b24ndCB3cml0ZQp0aGUgUEFTSUQgdGFibGUuIEJ1dCB3ZSBzaG91bGQgcHJvYmFibHkgZ28gdGhy
-b3VnaCBpb19tbV9hdHRhY2ggaGVyZSwgdG8KbWFrZSBzdXJlIHRoYXQgUEFTSUQgY29udGV4dHMg
-YXJlIGFkZGVkIHRvIHRoZSBtbSBsaXN0IGFuZCBjbGVhbmVkIHVwIGJ5CnVuYmluZF9kZXZfYWxs
-KCkKCj4gK3NpemVfdCBpb21tdV9zdmFfdW5tYXAoaW50IHBhc2lkLCB1bnNpZ25lZCBsb25nIGlv
-dmEsIHNpemVfdCBzaXplKQo+ICt7Cj4gKwlzdHJ1Y3QgaW9fbW0gKmlvX21tID0gZ2V0X2lvX21t
-KHBhc2lkKTsKPiArCj4gKwlpZiAoIWlvX21tIHx8IGlvX21tLT50eXBlICE9IElPX1RZUEVfUFJJ
-VkFURSkKPiArCQlyZXR1cm4gLUVOT0RFVjsKPiArCj4gKwlyZXR1cm4gX19pb21tdV91bm1hcChp
-b19tbS0+ZG9tYWluLCAmcGFzaWQsIGlvdmEsIHNpemUsIGZhbHNlKTsKCnN5bmMgbXVzdCBiZSB0
-cnVlIGhlcmUsIGFuZCBmYWxzZSBpbiB0aGUgdW5tYXBfZmFzdCgpIHZhcmlhbnQKCj4gK30KPiAr
-RVhQT1JUX1NZTUJPTF9HUEwoaW9tbXVfc3ZhX3VubWFwKTsKPiArCj4gK3ZvaWQgaW9tbXVfc3Zh
-X2ZyZWVfcGFzaWQoaW50IHBhc2lkLCBzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gK3sKPiArCXN0cnVj
-dCBpb19tbSAqaW9fbW0gPSBnZXRfaW9fbW0ocGFzaWQpOwo+ICsJc3RydWN0IGlvbW11X2RvbWFp
-biAqZG9tYWluOwo+ICsKPiArCWlmICghaW9fbW0gfHwgaW9fbW0tPnR5cGUgIT0gSU9fVFlQRV9Q
-UklWQVRFKQo+ICsJCXJldHVybjsKPiArCj4gKwlkb21haW4gPSBpb19tbS0+ZG9tYWluOwo+ICsK
-PiArCWRvbWFpbi0+b3BzLT5tbV9kZXRhY2goZG9tYWluLCBkZXYsIGlvX21tLCBmYWxzZSk7CgpI
-ZXJlIHRvbyBkZXRhY2hfZG9tYWluIHNob3VsZCBiZSB0cnVlCgo+IEBAIC0xODQxLDE2ICsxODU0
-LDIzIEBAIGludCBpb21tdV9tYXAoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCB1bnNpZ25l
-ZCBsb25nIGlvdmEsCj4gIAo+ICAJLyogdW5yb2xsIG1hcHBpbmcgaW4gY2FzZSBzb21ldGhpbmcg
-d2VudCB3cm9uZyAqLwo+ICAJaWYgKHJldCkKPiAtCQlpb21tdV91bm1hcChkb21haW4sIG9yaWdf
-aW92YSwgb3JpZ19zaXplIC0gc2l6ZSk7Cj4gKwkJX19pb21tdV91bm1hcChkb21haW4sIHBhc2lk
-LCBvcmlnX2lvdmEsIG9yaWdfc2l6ZSAtIHNpemUsCj4gKwkJCXBhc2lkID8gZmFsc2UgOiB0cnVl
-KTsKCnN5bmMgc2hvdWxkIGJlIHRydWUKCj4gLQlpZiAodW5saWtlbHkob3BzLT51bm1hcCA9PSBO
-VUxMIHx8Cj4gLQkJICAgICBkb21haW4tPnBnc2l6ZV9iaXRtYXAgPT0gMFVMKSkKPiAtCQlyZXR1
-cm4gMDsKPiArCWlmICh1bmxpa2VseShkb21haW4tPnBnc2l6ZV9iaXRtYXAgPT0gMFVMKSkKPiAr
-CQlyZXR1cm4gLTA7CgpzcHVyaW91cyAnLScKClRoYW5rcywKSmVhbgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZy
-ZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+
+--o4q3pocf7gj746x4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Mathias,
+
+On Sat, Jun 30, 2018 at 10:07:04PM +0100, Sudip Mukherjee wrote:
+> Hi Mathias,
+> 
+> On Fri, Jun 29, 2018 at 02:41:13PM +0300, Mathias Nyman wrote:
+> > On 27.06.2018 14:59, Sudip Mukherjee wrote:
+> > > > > Can you share a bit more details on the platform you are using, and what types of test you are running.
+> > > > 
+<snip>
+> Then to track what is going on, I added the slub debugging and :(
+> I have attached part of dmesg for you to check.
+> Will appreciate your help in finding out the problem.
+
+I did some more debugging. Tested with a KASAN enabled kernel and that
+shows the problem. The report is attached.
+
+To my understanding:
+
+btusb_work() is calling usb_set_interface() with alternate = 0. which
+again calls usb_hcd_alloc_bandwidth() and that frees the rings by
+xhci_free_endpoint_ring(). But then usb_set_interface() continues and
+calls usb_disable_interface() -> usb_hcd_flush_endpoint()->unlink1()->
+xhci_urb_dequeue() which at the end gives the command to stop endpoint.
+
+In all the cycles I have tested I see that only in the fail case
+handle_cmd_completion() gets called, but in the cycles where the error
+is not there handle_cmd_completion() is not called with that command.
+
+I am not sure what is happening, and you are the best person to understand
+what is happening. :)
+
+But for now (untill you are back from holiday and suggest a proper solution),
+I made a hacky patch (attached) which is working and I donot get any
+corruption after that. Both KASAN and slub debug are also happy.
+
+So, now waiting for you to analyze what is going on and suggest a proper
+fix.
+
+Thanks in advance.
+
+--
+Regards
+Sudip
+
+--o4q3pocf7gj746x4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=usb_kasan
+
+[  236.814156] ==================================================================
+[  236.814187] BUG: KASAN: use-after-free in xhci_trb_virt_to_dma+0x2e/0x74 [xhci_hcd]
+[  236.814193] Read of size 8 at addr ffff8800789329c8 by task weston/138
+
+[  236.814203] CPU: 0 PID: 138 Comm: weston Tainted: G     U  W  O    4.14.47-20180606+ #7
+[  236.814206] Hardware name: xxx, BIOS 2017.01-00087-g43e04de 08/30/2017
+[  236.814209] Call Trace:
+[  236.814214]  <IRQ>
+[  236.814226]  dump_stack+0x46/0x59
+[  236.814238]  print_address_description+0x6b/0x23b
+[  236.814255]  ? xhci_trb_virt_to_dma+0x2e/0x74 [xhci_hcd]
+[  236.814262]  kasan_report+0x220/0x246
+[  236.814278]  xhci_trb_virt_to_dma+0x2e/0x74 [xhci_hcd]
+[  236.814294]  trb_in_td+0x3b/0x1cd [xhci_hcd]
+[  236.814311]  handle_cmd_completion+0x1181/0x2c9b [xhci_hcd]
+[  236.814329]  ? xhci_queue_new_dequeue_state+0x5d9/0x5d9 [xhci_hcd]
+[  236.814337]  ? drm_handle_vblank+0x4ec/0x590
+[  236.814352]  xhci_irq+0x529/0x3294 [xhci_hcd]
+[  236.814362]  ? __accumulate_pelt_segments+0x24/0x33
+[  236.814378]  ? finish_td.isra.40+0x223/0x223 [xhci_hcd]
+[  236.814384]  ? __accumulate_pelt_segments+0x24/0x33
+[  236.814390]  ? __accumulate_pelt_segments+0x24/0x33
+[  236.814405]  ? xhci_irq+0x3294/0x3294 [xhci_hcd]
+[  236.814412]  __handle_irq_event_percpu+0x149/0x3db
+[  236.814421]  handle_irq_event_percpu+0x65/0x109
+[  236.814428]  ? __handle_irq_event_percpu+0x3db/0x3db
+[  236.814436]  ? ttwu_do_wakeup.isra.18+0x3a2/0x3ce
+[  236.814442]  handle_irq_event+0xa8/0x10a
+[  236.814449]  handle_edge_irq+0x4b2/0x538
+[  236.814458]  handle_irq+0x3e/0x45
+[  236.814465]  do_IRQ+0x5c/0x126
+[  236.814474]  common_interrupt+0x7a/0x7a
+[  236.814478]  </IRQ>
+[  236.814483] RIP: 0023:0xf79d3d82
+[  236.814486] RSP: 002b:00000000ffc588e8 EFLAGS: 00200282 ORIG_RAX: ffffffffffffffdc
+[  236.814493] RAX: 0000000000000000 RBX: 00000000f7bebd5c RCX: 0000000000000000
+[  236.814496] RDX: 0000000008d4197c RSI: 0000000000000000 RDI: 00000000f746c020
+[  236.814499] RBP: 00000000ffc588e8 R08: 0000000000000000 R09: 0000000000000000
+[  236.814503] R10: 0000000000000000 R11: 0000000000200206 R12: 0000000000000000
+[  236.814506] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+[  236.814513] Allocated by task 2082:
+[  236.814521]  kasan_kmalloc.part.1+0x51/0xc7
+[  236.814526]  kmem_cache_alloc_trace+0x178/0x187
+[  236.814540]  xhci_segment_alloc.isra.11+0x9d/0x3bf [xhci_hcd]
+[  236.814553]  xhci_alloc_segments_for_ring+0x9e/0x176 [xhci_hcd]
+[  236.814566]  xhci_ring_alloc.constprop.16+0x197/0x4ba [xhci_hcd]
+[  236.814579]  xhci_endpoint_init+0x77a/0x9ba [xhci_hcd]
+[  236.814592]  xhci_add_endpoint+0x3bc/0x43b [xhci_hcd]
+[  236.814615]  usb_hcd_alloc_bandwidth+0x7ef/0x857 [usbcore]
+[  236.814637]  usb_set_interface+0x294/0x681 [usbcore]
+[  236.814645]  btusb_work+0x2e6/0x981 [btusb]
+[  236.814651]  process_one_work+0x579/0x9e9
+[  236.814656]  worker_thread+0x68f/0x804
+[  236.814662]  kthread+0x31c/0x32b
+[  236.814668]  ret_from_fork+0x35/0x40
+
+[  236.814672] Freed by task 1533:
+[  236.814678]  kasan_slab_free+0xb3/0x15e
+[  236.814683]  kfree+0x103/0x1a9
+[  236.814696]  xhci_ring_free+0x205/0x286 [xhci_hcd]
+[  236.814709]  xhci_free_endpoint_ring+0x4d/0x83 [xhci_hcd]
+[  236.814722]  xhci_check_bandwidth+0x57b/0x65a [xhci_hcd]
+[  236.814743]  usb_hcd_alloc_bandwidth+0x665/0x857 [usbcore]
+[  236.814765]  usb_set_interface+0x294/0x681 [usbcore]
+[  236.814772]  btusb_work+0x664/0x981 [btusb]
+[  236.814777]  process_one_work+0x579/0x9e9
+[  236.814782]  worker_thread+0x68f/0x804
+[  236.814788]  kthread+0x31c/0x32b
+[  236.814793]  ret_from_fork+0x35/0x40
+
+[  236.814799] The buggy address belongs to the object at ffff8800789329c8
+ which belongs to the cache kmalloc-64 of size 64
+[  236.814804] The buggy address is located 0 bytes inside of
+ 64-byte region [ffff8800789329c8, ffff880078932a08)
+[  236.814806] The buggy address belongs to the page:
+[  236.814812] page:ffffea0001e24c80 count:1 mapcount:0 mapping:          (null) index:0x0 compound_mapcount: 0
+[  236.825813] flags: 0x4000000000008100(slab|head)
+[  236.830981] raw: 4000000000008100 0000000000000000 0000000000000000 0000000100130013
+[  236.830988] raw: ffffea0000cfbaa0 ffffea00010ddf20 ffff88013b80f640 0000000000000000
+[  236.830990] page dumped because: kasan: bad access detected
+
+[  236.830993] Memory state around the buggy address:
+[  236.830999]  ffff880078932880: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  236.831004]  ffff880078932900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  236.831008] >ffff880078932980: fc fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb
+[  236.831011]                                               ^
+[  236.831015]  ffff880078932a00: fb fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  236.831019]  ffff880078932a80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  236.831021] ==================================================================
+[  236.831024] Disabling lock debugging due to kernel taint
+
+--o4q3pocf7gj746x4
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="0001-test.patch"
+
+>From cbbe6dc59ac90a4f2c358de56e58e254320171e0 Mon Sep 17 00:00:00 2001
+From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Date: Tue, 10 Jul 2018 09:50:00 +0100
+Subject: [PATCH] hacky solution to mem-corruption
+
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/usb/core/message.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+index 7cd4ec33dbf4..7fdf7a27611d 100644
+--- a/drivers/usb/core/message.c
++++ b/drivers/usb/core/message.c
+@@ -1398,7 +1398,8 @@ int usb_set_interface(struct usb_device *dev, int interface, int alternate)
+ 		remove_intf_ep_devs(iface);
+ 		usb_remove_sysfs_intf_files(iface);
+ 	}
+-	usb_disable_interface(dev, iface, true);
++	if (!(iface->cur_altsetting && alt))
++		usb_disable_interface(dev, iface, true);
+ 
+ 	iface->cur_altsetting = alt;
+ 
+-- 
+2.11.0
+
+
+--o4q3pocf7gj746x4
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--o4q3pocf7gj746x4--
