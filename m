@@ -1,52 +1,59 @@
-From: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH] x86/pci: Some buggy virtual functions incorrectly report
- 1 for intx.
-Date: Mon, 16 Jul 2018 15:13:52 -0700
-Message-ID: <20180716221352.GA43385@otc-nc-03>
-References: <1531773745-41876-1-git-send-email-ashok.raj@intel.com>
- <20180716151757.28206fae@t450s.home>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH 00/10] iommu/vt-d: Add scalable mode support
+Date: Tue, 17 Jul 2018 01:47:42 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439C9DAB8@SHSMSX104.ccr.corp.intel.com>
+References: <1531723793-14607-1-git-send-email-baolu.lu@linux.intel.com>
+	<07fe2e3f-4f4a-58db-ee2a-2620183d93b2@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180716151757.28206fae@t450s.home>
-Sender: stable-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <helgaas@kernel.org>, Gage Eads <gage.eads@intel.com>, Ashok Raj <ashok.raj@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <07fe2e3f-4f4a-58db-ee2a-2620183d93b2-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex
+Hi Jean,
 
-On Mon, Jul 16, 2018 at 03:17:57PM -0600, Alex Williamson wrote:
-> >  static bool vfio_pci_nointx(struct pci_dev *pdev)
-> >  {
-> > +	/*
-> > +	 * Per PCI, no VF's should have INTx
-> > +	 * Simply disable it here
-> > +	 */
-> > +	if (pdev->is_virtfn)
-> > +		return true;
-> > +
-> >  	switch (pdev->vendor) {
-> >  	case PCI_VENDOR_ID_INTEL:
-> >  		switch (pdev->device) {
+> From: Jean-Philippe Brucker
+> Sent: Monday, July 16, 2018 6:52 PM
+> On 16/07/18 07:49, Lu Baolu wrote:
+> > Intel vt-d rev3.0 [1] introduces a new translation mode called
+> > 'scalable mode', which enables PASID-granular translations for first
+> > level, second level, nested and pass-through modes. The vt-d scalable
+> > mode is the key ingredient to enable Scalable I/O Virtualization
+> > (Scalable IOV) [2] [3], which allows sharing a device in minimal
+> > possible granularity (ADI - Assignable Device Interface). It also
+> > includes all the capabilities required to enable Shared Virtual
+> > Addressing (SVA). As a result, previous Extended Context (ECS) mode is
+> > deprecated (no production ever implements ECS).
+> >
+> > Each scalable mode pasid table entry is 64 bytes in length, with
+> > fields point to the first level page table and the second level page
+> > table. The PGTT (Pasid Granular Translation Type) field is used by
+> > hardware to determine the translation type.
 > 
-> Nak, this is not what vfio_pci_nointx() is meant for, it's been tried
-> before and it was broken:
+> Looks promising! Since the 2nd level page tables are in the PASID entry, the
+> hypervisor traps guest accesses to the PASID tables instead of passing through the
+> whole PASID directory? Are you still planning to use the VFIO BIND_PASID_TABLE
+> interface in this mode, or a slightly different one for individual PASIDs?
 
-That seems to make sense. I'll spin a new patch and have that tested
-before reposting with the following suggestions.
+You are right. For Intel VT-d, we don't need to give the access to the whole guest
+PASID table in Scalable Mode. However, VFIO BIND_PASID_TABLE may still needed
+for other vendor. So it may still in the proposed list. This would be covered in the
+new vSVA patchset from Jacob and me.
 
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/vfio/pci/vfio_pci.c?id=834814e80268c818f354c8f402e0c6604ed75589
-> 
-> This would cause *every* VF to print:
-> 
-> 	dev_info(&pdev->dev, "Masking broken INTx support\n");
-> 
-> If the device is incapable of generating INTx then it's probably better
-> to drop it at vfio_pci_get_irq_count().  Please also note the subject is
-> misidentified, this is a "vfio/pci" patch, not an "x86/pci" patch.
-> kvm@vger is the official list for vfio patches.  Thanks,
-> 
-> Alex
+Thanks,
+Yi Liu
