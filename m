@@ -1,10 +1,9 @@
 From: Paul Menzel <pmenzel+linux-iommu@molgen.mpg.de>
-Subject: MSI B350M MORTAR: `AMD-Vi: Unable to write to IOMMU perf counter.`
- and `pci 0000:00:00.2: can't derive routing for PCI INT A`
-Date: Tue, 17 Jul 2018 18:02:07 +0200
-Message-ID: <605ca165-0071-eb7f-4c0d-b1e76ddd0e05@molgen.mpg.de>
+Subject: AMD-Vi: Decrease time of enabling lazy IO/TLB flushing
+Date: Tue, 17 Jul 2018 18:07:07 +0200
+Message-ID: <f7edc791-7e30-6fce-02ff-a5d2b52d2a69@molgen.mpg.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms050300030201080500000901"
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256; boundary="------------ms040903000309000306070105"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
@@ -13,21 +12,23 @@ List-Id: iommu@lists.linux-foundation.org
 
 This is a cryptographically signed message in MIME format.
 
---------------ms050300030201080500000901
+--------------ms040903000309000306070105
 Content-Type: multipart/mixed;
- boundary="------------BC9328AFB3770F75E58835DB"
+ boundary="------------3D38C6F0213900B657FE0B9A"
 Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------BC9328AFB3770F75E58835DB
+--------------3D38C6F0213900B657FE0B9A
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
 Dear Linux folks,
 
 
-On a MSI B350M MORTAR with Linux 4.18-rc5+ and Debian Sid/unstable the
-three error messages below is shown.
+On a MSI B350M MORTAR with AMD Ryzen 3 2200g (Raven) with Linux 4.18-rc5+=
+
+and Debian Sid/unstable `pci_iommu_init` takes 40 ms according to
+`initcall_debug`.
 
 ```
 $ git log --oneline -1
@@ -83,7 +84,10 @@ ecs
 [=E2=80=A6]
 ```
 
-Is that a firmware problem, or can this be fixed in GNU/Linux?
+It=E2=80=99d be great if the time could be decreased to a few millisecond=
+s, so
+that the system can start almost instantly (LUKS passphrase for example).=
+
 
 
 
@@ -161,7 +165,7 @@ Device [1022:15df]
 TA Controller [AHCI mode] [1022:7901] (rev 61)
 ```
 
---------------BC9328AFB3770F75E58835DB
+--------------3D38C6F0213900B657FE0B9A
 Content-Type: text/plain; charset=UTF-8;
  name="=?UTF-8?Q?20180717=e2=80=93linux=5f4.18-rc5+=e2=80=93dmesg.txt?="
 Content-Transfer-Encoding: base64
@@ -2913,9 +2917,9 @@ bmsgYmVjb21lcyByZWFkeQpbICAgNDIuMTY5NDEyXSBjYWxsaW5nICBmdXNlX2luaXQrMHgw
 LzB4MWE2IFtmdXNlXSBAIDkzOApbICAgNDIuMTY5NDE0XSBmdXNlIGluaXQgKEFQSSB2ZXJz
 aW9uIDcuMjcpClsgICA0Mi4xNjk2MTNdIGluaXRjYWxsIGZ1c2VfaW5pdCsweDAvMHgxYTYg
 W2Z1c2VdIHJldHVybmVkIDAgYWZ0ZXIgMTg3IHVzZWNzCg==
---------------BC9328AFB3770F75E58835DB--
+--------------3D38C6F0213900B657FE0B9A--
 
---------------ms050300030201080500000901
+--------------ms040903000309000306070105
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -3003,18 +3007,18 @@ fndPkrXx6XWDdU3S1LyKgHlLIFtarLFm2Hb5zAUR33h+26cN6ohcGqGEEzgIG8tXS8gztEaj
 EwJERTEPMA0GA1UECAwGQmF5ZXJuMREwDwYDVQQHDAhNdWVuY2hlbjEgMB4GA1UECgwXTWF4
 LVBsYW5jay1HZXNlbGxzY2hhZnQxFTATBgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzF
 RvyiMA0GCWCGSAFlAwQCAQUAoIIB8TAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-SIb3DQEJBTEPFw0xODA3MTcxNjAyMDdaMC8GCSqGSIb3DQEJBDEiBCAJXlaYNjmOcWgdKn8C
-BhkMEbOP4YuHPJGO7bvVYdnhbzBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglg
+SIb3DQEJBTEPFw0xODA3MTcxNjA3MDdaMC8GCSqGSIb3DQEJBDEiBCC640ZuOiEGcQVXEgHU
+oJGH9SLcHmEQPbx9kLACHR4iQDBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEAQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcG
 BSsOAwIHMA0GCCqGSIb3DQMCAgEoMIGJBgkrBgEEAYI3EAQxfDB6MGoxCzAJBgNVBAYTAkRF
 MQ8wDQYDVQQIDAZCYXllcm4xETAPBgNVBAcMCE11ZW5jaGVuMSAwHgYDVQQKDBdNYXgtUGxh
 bmNrLUdlc2VsbHNjaGFmdDEVMBMGA1UEAwwMTVBHIENBIC0gRzAyAgweKlJIhfynPMVG/KIw
 gYsGCyqGSIb3DQEJEAILMXygejBqMQswCQYDVQQGEwJERTEPMA0GA1UECAwGQmF5ZXJuMREw
 DwYDVQQHDAhNdWVuY2hlbjEgMB4GA1UECgwXTWF4LVBsYW5jay1HZXNlbGxzY2hhZnQxFTAT
-BgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzFRvyiMA0GCSqGSIb3DQEBAQUABIIBAC2V
-FE3jjbVjzNEY5bu9pey/BG5sXNka8FPN2xo7lZAWFO546BF47UdCesDDuvXEq9fHHGP+UqNK
-0uqNQy8uIwa1vTtHIOSBBJJTMa9L+YPZg17K9/GnHRPZlKgqG+3+7JRF6ngC4qi1rJ2DtN0H
-A4wxW9mYnDw5Y4gzfO/z+Y5bS+DEPqU8eN18mUxo1kLJCZ60Iy8Huwx4EcpeH9KML7A2vOTY
-5rVWiD6+ME4UdUgbP1XzFnU/+zNUIuPQfCMwOX97wkfwalRBTCAKfo0lHZWZHkgtqPjeXN1C
-T9XsMDuTuiahr8iTx0e3KHrckXMGjvrHc2vTaktU3rPFYKkv8QkAAAAAAAA=
---------------ms050300030201080500000901--
+BgNVBAMMDE1QRyBDQSAtIEcwMgIMHipSSIX8pzzFRvyiMA0GCSqGSIb3DQEBAQUABIIBAIV6
+BJZphSQ+2QThQpqxKPKM+NhXSXgHCPqvTiv6D5Kv7toND+VSEbLprl4TkPtwkFh2ymWnOWKf
+CBri28YTc16s2L31xasS8gjnEtZbae6tlkOcyBFQnK68DtJQs0k4n0B5Tzns3TR8yZrwlB2o
+FdCsqxfenIW44+azgfF1WXZk+gYU4Y75vcEm8xwtoT01Ye/d7MZDkneB/PgaZEqW6yCpLkFe
+ACOd+WZsI+zbNakhZIPbZQXM/J+AM/LpGpoxLDZnqSCituQxTCa/5ASOxq4UQHVUbZWoq+Xv
+qtywXsBVB34cdllFbrWVOEtkNFkQLeIFptM2PPg5SgU3cPOb1ZIAAAAAAAA=
+--------------ms040903000309000306070105--
