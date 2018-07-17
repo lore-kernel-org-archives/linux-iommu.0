@@ -1,60 +1,43 @@
-From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: usb HC busted?
-Date: Tue, 17 Jul 2018 15:49:18 +0100
-Message-ID: <20180717144918.7ymzbhijxfcc3fhb@debian>
-References: <20180717114104.irgdb5rmg2qxclgp@debian>
-	<Pine.LNX.4.44L0.1807171022001.1689-100000@iolanthe.rowland.org>
-	<20180717144022.4wabhdhysori3mvg@debian>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] dma-mapping: Relax warnings for per-device areas
+Date: Tue, 17 Jul 2018 16:57:25 +0200
+Message-ID: <20180717145725.GA22109@lst.de>
+References: <1f8262d206c6886072d04cc93454f6e3f812bd20.1530623284.git.robin.murphy@arm.com> <20180705193613.GA28905@lst.de> <20180715122826.GB2342@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180717144022.4wabhdhysori3mvg@debian>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
-Cc: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+In-Reply-To: <20180715122826.GB2342@localhost.localdomain>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fredrik Noring <noring@nocrew.org>
+Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, JuergenUrban@gmx.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 17, 2018 at 03:40:22PM +0100, Sudip Mukherjee wrote:
-> Hi Alan,
+On Sun, Jul 15, 2018 at 02:28:27PM +0200, Fredrik Noring wrote:
+> Hi Christoph, Robin,
 > 
-> On Tue, Jul 17, 2018 at 10:28:14AM -0400, Alan Stern wrote:
-> > On Tue, 17 Jul 2018, Sudip Mukherjee wrote:
+> On Thu, Jul 05, 2018 at 09:36:13PM +0200, Christoph Hellwig wrote:
+> > > -	BUG_ON(!ops);
+> > > -	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
+> > > -
+> > >  	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
+> > >  		return cpu_addr;
+> > >  
+> > > +	BUG_ON(!ops);
+> > > +	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
 > > 
-> > > I did some more debugging. Tested with a KASAN enabled kernel and that
-> > > shows the problem. The report is attached.
-> > > 
-> > > To my understanding:
-> > > 
-> > > btusb_work() is calling usb_set_interface() with alternate = 0. which
-> > > again calls usb_hcd_alloc_bandwidth() and that frees the rings by
-> > > xhci_free_endpoint_ring().
+> > I think doing dma on a device without ops is completely broken no matter
+> > what you think of it, so I very much disagree with that part of the change.
 > > 
-> > That doesn't sound like the right thing to do.  The rings shouldn't be 
-> > freed until xhci_endpoint_disable() is called.  
+> > Also while I don't think not having a dma mask is a good idea even for
+> > a driver purely using dma coherent pools.  If the pools really are on
+> > the device itself I can see why it might not matter, but for the case
+> > commonly used on some ARM SOCs where we just reserve memory for certain
+> > devices from a system pool it very much does matter.
 > > 
-> > On the other hand, there doesn't appear to be any 
-> > xhci_endpoint_disable() routine, although a comment refers to it.  
-> > Maybe this is the real problem?
+> > There really is no good excuse to not set a coherent mask in the drivers.
 > 
-> one of your old mail might help :)
-> 
-> https://www.spinics.net/lists/linux-usb/msg98123.html
+> Here are three other regressions related to the coherent mask WARN_ON_ONCE:
 
-Wrote too soon.
-
-Is it the one you are looking for -
-usb_disable_endpoint() is in drivers/usb/core/message.c
-
---
-Regards
-Sudip
+They are a pretty strong indication that yes, you should really set
+the coherent mask if you ever do coherent allocations..
