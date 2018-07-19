@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 1/5] sh: simplify get_arch_dma_ops
-Date: Thu, 19 Jul 2018 06:05:12 -0700
-Message-ID: <20180719130516.1989-2-hch@lst.de>
+Subject: [PATCH 5/5] sh: use generic dma_noncoherent_ops
+Date: Thu, 19 Jul 2018 06:05:16 -0700
+Message-ID: <20180719130516.1989-6-hch@lst.de>
 References: <20180719130516.1989-1-hch@lst.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180719130516.1989-1-hch@lst.de>
@@ -10,92 +10,242 @@ To: Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
 Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove the indirection through the dma_ops variable, and just return
-nommu_dma_ops directly from get_arch_dma_ops.
+Switch to the generic noncoherent direct mapping implementation.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/sh/include/asm/dma-mapping.h |  5 ++---
- arch/sh/kernel/dma-nommu.c        |  8 +-------
- arch/sh/mm/consistent.c           |  3 ---
- arch/sh/mm/init.c                 | 10 ----------
- 4 files changed, 3 insertions(+), 23 deletions(-)
+ arch/sh/Kconfig                   |  3 +-
+ arch/sh/include/asm/Kbuild        |  1 +
+ arch/sh/include/asm/dma-mapping.h | 26 -----------
+ arch/sh/kernel/Makefile           |  2 +-
+ arch/sh/kernel/dma-coherent.c     | 23 +++++----
+ arch/sh/kernel/dma-nommu.c        | 78 -------------------------------
+ 6 files changed, 15 insertions(+), 118 deletions(-)
+ delete mode 100644 arch/sh/include/asm/dma-mapping.h
+ delete mode 100644 arch/sh/kernel/dma-nommu.c
 
+diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
+index c9993a0cdc7e..da4db4b5359f 100644
+--- a/arch/sh/Kconfig
++++ b/arch/sh/Kconfig
+@@ -51,7 +51,6 @@ config SUPERH
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_FUTEX_CMPXCHG if FUTEX
+ 	select HAVE_NMI
+-	select NEED_DMA_MAP_STATE
+ 	select NEED_SG_DMA_LENGTH
+ 
+ 	help
+@@ -164,6 +163,8 @@ config DMA_COHERENT
+ 
+ config DMA_NONCOHERENT
+ 	def_bool !DMA_COHERENT
++	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select DMA_NONCOHERENT_OPS
+ 
+ config PGTABLE_LEVELS
+ 	default 3 if X2TLB
+diff --git a/arch/sh/include/asm/Kbuild b/arch/sh/include/asm/Kbuild
+index 46dd82ab2c29..6a5609a55965 100644
+--- a/arch/sh/include/asm/Kbuild
++++ b/arch/sh/include/asm/Kbuild
+@@ -2,6 +2,7 @@ generic-y += compat.h
+ generic-y += current.h
+ generic-y += delay.h
+ generic-y += div64.h
++generic-y += dma-mapping.h
+ generic-y += emergency-restart.h
+ generic-y += exec.h
+ generic-y += irq_regs.h
 diff --git a/arch/sh/include/asm/dma-mapping.h b/arch/sh/include/asm/dma-mapping.h
-index 41167931e5d9..149e71f95be7 100644
+deleted file mode 100644
+index 1ebc6a4eb1c5..000000000000
 --- a/arch/sh/include/asm/dma-mapping.h
-+++ b/arch/sh/include/asm/dma-mapping.h
-@@ -2,12 +2,11 @@
- #ifndef __ASM_SH_DMA_MAPPING_H
- #define __ASM_SH_DMA_MAPPING_H
- 
--extern const struct dma_map_ops *dma_ops;
--extern void no_iommu_init(void);
-+extern const struct dma_map_ops nommu_dma_ops;
- 
- static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
- {
--	return dma_ops;
-+	return &nommu_dma_ops;
- }
- 
- extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
-diff --git a/arch/sh/kernel/dma-nommu.c b/arch/sh/kernel/dma-nommu.c
-index 3e3a32fc676e..79a9edafa5b0 100644
---- a/arch/sh/kernel/dma-nommu.c
-+++ b/arch/sh/kernel/dma-nommu.c
-@@ -79,10 +79,4 @@ const struct dma_map_ops nommu_dma_ops = {
- 	.sync_sg_for_device	= nommu_sync_sg_for_device,
- #endif
- };
++++ /dev/null
+@@ -1,26 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __ASM_SH_DMA_MAPPING_H
+-#define __ASM_SH_DMA_MAPPING_H
 -
--void __init no_iommu_init(void)
+-extern const struct dma_map_ops nommu_dma_ops;
+-
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
 -{
--	if (dma_ops)
--		return;
--	dma_ops = &nommu_dma_ops;
+-#ifdef CONFIG_DMA_NONCOHERENT
+-	return &nommu_dma_ops;
+-#else
+-	return &dma_direct_ops;
+-#endif
 -}
-+EXPORT_SYMBOL(nommu_dma_ops);
-diff --git a/arch/sh/mm/consistent.c b/arch/sh/mm/consistent.c
-index fceb2adfcac7..e9d422bd42a5 100644
---- a/arch/sh/mm/consistent.c
-+++ b/arch/sh/mm/consistent.c
-@@ -20,9 +20,6 @@
+-
+-extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+-					dma_addr_t *dma_addr, gfp_t flag,
+-					unsigned long attrs);
+-extern void dma_generic_free_coherent(struct device *dev, size_t size,
+-				      void *vaddr, dma_addr_t dma_handle,
+-				      unsigned long attrs);
+-
+-void sh_sync_dma_for_device(void *vaddr, size_t size,
+-	    enum dma_data_direction dir);
+-
+-#endif /* __ASM_SH_DMA_MAPPING_H */
+diff --git a/arch/sh/kernel/Makefile b/arch/sh/kernel/Makefile
+index d5ddb64bfffe..59673f8a3379 100644
+--- a/arch/sh/kernel/Makefile
++++ b/arch/sh/kernel/Makefile
+@@ -45,7 +45,7 @@ obj-$(CONFIG_DUMP_CODE)		+= disassemble.o
+ obj-$(CONFIG_HIBERNATION)	+= swsusp.o
+ obj-$(CONFIG_DWARF_UNWINDER)	+= dwarf.o
+ obj-$(CONFIG_PERF_EVENTS)	+= perf_event.o perf_callchain.o
+-obj-$(CONFIG_DMA_NONCOHERENT)	+= dma-nommu.o dma-coherent.o
++obj-$(CONFIG_DMA_NONCOHERENT)	+= dma-coherent.o
+ obj-$(CONFIG_HAVE_HW_BREAKPOINT)		+= hw_breakpoint.o
+ 
+ ccflags-y := -Werror
+diff --git a/arch/sh/kernel/dma-coherent.c b/arch/sh/kernel/dma-coherent.c
+index 0e7720b5d495..088ecd188b71 100644
+--- a/arch/sh/kernel/dma-coherent.c
++++ b/arch/sh/kernel/dma-coherent.c
+@@ -7,14 +7,13 @@
+  */
+ #include <linux/mm.h>
+ #include <linux/init.h>
+-#include <linux/dma-mapping.h>
++#include <linux/dma-noncoherent.h>
+ #include <linux/module.h>
  #include <asm/cacheflush.h>
  #include <asm/addrspace.h>
  
--const struct dma_map_ops *dma_ops;
--EXPORT_SYMBOL(dma_ops);
--
- void *dma_generic_alloc_coherent(struct device *dev, size_t size,
- 				 dma_addr_t *dma_handle, gfp_t gfp,
- 				 unsigned long attrs)
-diff --git a/arch/sh/mm/init.c b/arch/sh/mm/init.c
-index 4034035fbede..7713c084d040 100644
---- a/arch/sh/mm/init.c
-+++ b/arch/sh/mm/init.c
-@@ -339,22 +339,12 @@ void __init paging_init(void)
- 	free_area_init_nodes(max_zone_pfns);
+-void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+-				 dma_addr_t *dma_handle, gfp_t gfp,
+-				 unsigned long attrs)
++void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
++		gfp_t gfp, unsigned long attrs)
+ {
+ 	void *ret, *ret_nocache;
+ 	int order = get_order(size);
+@@ -29,7 +28,8 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+ 	 * Pages from the page allocator may have data present in
+ 	 * cache. So flush the cache before using uncached memory.
+ 	 */
+-	sh_sync_dma_for_device(ret, size, DMA_BIDIRECTIONAL);
++	arch_sync_dma_for_device(dev, virt_to_phys(ret), size,
++			DMA_BIDIRECTIONAL);
+ 
+ 	ret_nocache = (void __force *)ioremap_nocache(virt_to_phys(ret), size);
+ 	if (!ret_nocache) {
+@@ -46,9 +46,8 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+ 	return ret_nocache;
  }
  
+-void dma_generic_free_coherent(struct device *dev, size_t size,
+-			       void *vaddr, dma_addr_t dma_handle,
+-			       unsigned long attrs)
++void arch_dma_free(struct device *dev, size_t size, void *vaddr,
++		dma_addr_t dma_handle, unsigned long attrs)
+ {
+ 	int order = get_order(size);
+ 	unsigned long pfn = (dma_handle >> PAGE_SHIFT);
+@@ -63,12 +62,12 @@ void dma_generic_free_coherent(struct device *dev, size_t size,
+ 	iounmap(vaddr);
+ }
+ 
+-void sh_sync_dma_for_device(void *vaddr, size_t size,
+-		    enum dma_data_direction direction)
++void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
++		size_t size, enum dma_data_direction dir)
+ {
+-	void *addr = sh_cacheop_vaddr(vaddr);
++	void *addr = sh_cacheop_vaddr(phys_to_virt(paddr));
+ 
+-	switch (direction) {
++	switch (dir) {
+ 	case DMA_FROM_DEVICE:		/* invalidate only */
+ 		__flush_invalidate_region(addr, size);
+ 		break;
+diff --git a/arch/sh/kernel/dma-nommu.c b/arch/sh/kernel/dma-nommu.c
+deleted file mode 100644
+index d8689b1cb743..000000000000
+--- a/arch/sh/kernel/dma-nommu.c
++++ /dev/null
+@@ -1,78 +0,0 @@
 -/*
-- * Early initialization for any I/O MMUs we might have.
+- * DMA mapping support for platforms lacking IOMMUs.
+- *
+- * Copyright (C) 2009  Paul Mundt
+- *
+- * This file is subject to the terms and conditions of the GNU General Public
+- * License.  See the file "COPYING" in the main directory of this archive
+- * for more details.
 - */
--static void __init iommu_init(void)
+-#include <linux/dma-mapping.h>
+-#include <linux/io.h>
+-#include <asm/cacheflush.h>
+-
+-static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
+-				 unsigned long offset, size_t size,
+-				 enum dma_data_direction dir,
+-				 unsigned long attrs)
 -{
--	no_iommu_init();
+-	dma_addr_t addr = page_to_phys(page) + offset
+-		- PFN_PHYS(dev->dma_pfn_offset);
+-
+-	WARN_ON(size == 0);
+-
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		sh_sync_dma_for_device(page_address(page) + offset, size, dir);
+-
+-	return addr;
 -}
 -
- unsigned int mem_init_done = 0;
- 
- void __init mem_init(void)
- {
- 	pg_data_t *pgdat;
- 
--	iommu_init();
+-static int nommu_map_sg(struct device *dev, struct scatterlist *sg,
+-			int nents, enum dma_data_direction dir,
+-			unsigned long attrs)
+-{
+-	struct scatterlist *s;
+-	int i;
 -
- 	high_memory = NULL;
- 	for_each_online_pgdat(pgdat)
- 		high_memory = max_t(void *, high_memory,
+-	WARN_ON(nents == 0 || sg[0].length == 0);
+-
+-	for_each_sg(sg, s, nents, i) {
+-		dma_addr_t offset = PFN_PHYS(dev->dma_pfn_offset);
+-
+-		BUG_ON(!sg_page(s));
+-
+-		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-			sh_sync_dma_for_device(sg_virt(s), s->length, dir);
+-
+-		s->dma_address = sg_phys(s) - offset;
+-		s->dma_length = s->length;
+-	}
+-
+-	return nents;
+-}
+-
+-static void nommu_sync_single_for_device(struct device *dev, dma_addr_t addr,
+-			      size_t size, enum dma_data_direction dir)
+-{
+-	sh_sync_dma_for_device(phys_to_virt(addr), size, dir);
+-}
+-
+-static void nommu_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+-			  int nelems, enum dma_data_direction dir)
+-{
+-	struct scatterlist *s;
+-	int i;
+-
+-	for_each_sg(sg, s, nelems, i)
+-		sh_sync_dma_for_device(sg_virt(s), s->length, dir);
+-}
+-
+-const struct dma_map_ops nommu_dma_ops = {
+-	.alloc			= dma_generic_alloc_coherent,
+-	.free			= dma_generic_free_coherent,
+-	.map_page		= nommu_map_page,
+-	.map_sg			= nommu_map_sg,
+-	.sync_single_for_device	= nommu_sync_single_for_device,
+-	.sync_sg_for_device	= nommu_sync_sg_for_device,
+-};
+-EXPORT_SYMBOL(nommu_dma_ops);
 -- 
 2.18.0
