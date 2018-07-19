@@ -1,116 +1,121 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v13 4/4] iommu/arm-smmu: Add support for qcom,
- smmu-v2 variant
-Date: Thu, 19 Jul 2018 15:45:39 +0530
-Message-ID: <20180719101539.6104-5-vivek.gautam@codeaurora.org>
-References: <20180719101539.6104-1-vivek.gautam@codeaurora.org>
+From: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: usb HC busted?
+Date: Thu, 19 Jul 2018 13:59:01 +0300
+Message-ID: <f7801c24-fa98-6338-0b26-33a0ac9498bb@linux.intel.com>
+References: <20180717114104.irgdb5rmg2qxclgp@debian>
+	<Pine.LNX.4.44L0.1807171022001.1689-100000@iolanthe.rowland.org>
+	<20180717144022.4wabhdhysori3mvg@debian>
+	<20180717144918.7ymzbhijxfcc3fhb@debian>
+	<20180717151017.yk5d4glzwqcrxpqc@debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180719101539.6104-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180717151017.yk5d4glzwqcrxpqc@debian>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-cWNvbSxzbW11LXYyIGlzIGFuIGFybSxzbW11LXYyIGltcGxlbWVudGF0aW9uIHdpdGggc3BlY2lm
-aWMKY2xvY2sgYW5kIHBvd2VyIHJlcXVpcmVtZW50cy4gVGhpcyBzbW11IGNvcmUgaXMgdXNlZCB3
-aXRoCm11bHRpcGxlIG1hc3RlcnMgb24gbXNtODk5Niwgdml6LiBtZHNzLCB2aWRlbywgZXRjLgpB
-ZGQgYmluZGluZ3MgZm9yIHRoZSBzYW1lLgoKU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2
-aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+ClJldmlld2VkLWJ5OiBSb2IgSGVycmluZyA8cm9i
-aEBrZXJuZWwub3JnPgpSZXZpZXdlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9y
-Zz4KLS0tCgpDaGFuZ2Ugc2luY2UgdjEyOgogLSBSZW1vdmVkIElPTU1VX09GX0RFQ0xBUkUoKSBk
-ZWZpbml0aW9uIGFmdGVyIFJvYiBIJ3MgcGF0Y2ggdGhhdCBpcyBtZXJnZWQKICAgaW4gZHJpdmVy
-LWNvcmUtbmV4dC4KCiAuLi4vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQg
-ICAgICAgICB8IDQyICsrKysrKysrKysrKysrKysrKysrKysKIGRyaXZlcnMvaW9tbXUvYXJtLXNt
-bXUuYyAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgMTMgKysrKysrKwogMiBmaWxlcyBjaGFu
-Z2VkLCA1NSBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0
-cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJl
-ZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQKaW5kZXggOGE2ZmZjZTEyYWY1Li43YzcxYTZl
-ZDQ2NWEgMTAwNjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21t
-dS9hcm0sc21tdS50eHQKKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lv
-bW11L2FybSxzbW11LnR4dApAQCAtMTcsMTAgKzE3LDE5IEBAIGNvbmRpdGlvbnMuCiAgICAgICAg
-ICAgICAgICAgICAgICAgICAiYXJtLG1tdS00MDEiCiAgICAgICAgICAgICAgICAgICAgICAgICAi
-YXJtLG1tdS01MDAiCiAgICAgICAgICAgICAgICAgICAgICAgICAiY2F2aXVtLHNtbXUtdjIiCisg
-ICAgICAgICAgICAgICAgICAgICAgICAicWNvbSw8c29jPi1zbW11LXYyIiwgInFjb20sc21tdS12
-MiIKIAogICAgICAgICAgICAgICAgICAgZGVwZW5kaW5nIG9uIHRoZSBwYXJ0aWN1bGFyIGltcGxl
-bWVudGF0aW9uIGFuZC9vciB0aGUKICAgICAgICAgICAgICAgICAgIHZlcnNpb24gb2YgdGhlIGFy
-Y2hpdGVjdHVyZSBpbXBsZW1lbnRlZC4KIAorICAgICAgICAgICAgICAgICAgQSBudW1iZXIgb2Yg
-UWNvbSBTb0NzIHVzZSBxY29tLHNtbXUtdjIgdmVyc2lvbiBvZiB0aGUgSVAuCisgICAgICAgICAg
-ICAgICAgICAicWNvbSw8c29jPi1zbW11LXYyIiByZXByZXNlbnRzIGEgc29jIHNwZWNpZmljIGNv
-bXBhdGlibGUKKyAgICAgICAgICAgICAgICAgIHN0cmluZyB0aGF0IHNob3VsZCBiZSBwcmVzZW50
-IGFsb25nIHdpdGggdGhlICJxY29tLHNtbXUtdjIiCisgICAgICAgICAgICAgICAgICB0byBmYWNp
-bGl0YXRlIFNvQyBzcGVjaWZpYyBjbG9ja3MvcG93ZXIgY29ubmVjdGlvbnMgYW5kIHRvCisgICAg
-ICAgICAgICAgICAgICBhZGRyZXNzIHNwZWNpZmljIGJ1ZyBmaXhlcy4KKyAgICAgICAgICAgICAg
-ICAgIEFuIGV4YW1wbGUgc3RyaW5nIHdvdWxkIGJlIC0KKyAgICAgICAgICAgICAgICAgICJxY29t
-LG1zbTg5OTYtc21tdS12MiIsICJxY29tLHNtbXUtdjIiLgorCiAtIHJlZyAgICAgICAgICAgOiBC
-YXNlIGFkZHJlc3MgYW5kIHNpemUgb2YgdGhlIFNNTVUuCiAKIC0gI2dsb2JhbC1pbnRlcnJ1cHRz
-IDogVGhlIG51bWJlciBvZiBnbG9iYWwgaW50ZXJydXB0cyBleHBvc2VkIGJ5IHRoZQpAQCAtNzEs
-NiArODAsMjIgQEAgY29uZGl0aW9ucy4KICAgICAgICAgICAgICAgICAgIG9yIHVzaW5nIHN0cmVh
-bSBtYXRjaGluZyB3aXRoICNpb21tdS1jZWxscyA9IDwyPiwgYW5kCiAgICAgICAgICAgICAgICAg
-ICBtYXkgYmUgaWdub3JlZCBpZiBwcmVzZW50IGluIHN1Y2ggY2FzZXMuCiAKKy0gY2xvY2stbmFt
-ZXM6ICAgIExpc3Qgb2YgdGhlIG5hbWVzIG9mIGNsb2NrcyBpbnB1dCB0byB0aGUgZGV2aWNlLiBU
-aGUKKyAgICAgICAgICAgICAgICAgIHJlcXVpcmVkIGxpc3QgZGVwZW5kcyBvbiBwYXJ0aWN1bGFy
-IGltcGxlbWVudGF0aW9uIGFuZAorICAgICAgICAgICAgICAgICAgaXMgYXMgZm9sbG93czoKKyAg
-ICAgICAgICAgICAgICAgIC0gZm9yICJxY29tLHNtbXUtdjIiOgorICAgICAgICAgICAgICAgICAg
-ICAtICJidXMiOiBjbG9jayByZXF1aXJlZCBmb3IgZG93bnN0cmVhbSBidXMgYWNjZXNzIGFuZAor
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBmb3IgdGhlIHNtbXUgcHR3LAorICAgICAgICAg
-ICAgICAgICAgICAtICJpZmFjZSI6IGNsb2NrIHJlcXVpcmVkIHRvIGFjY2VzcyBzbW11J3MgcmVn
-aXN0ZXJzCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdGhyb3VnaCB0aGUgVENVJ3Mg
-cHJvZ3JhbW1pbmcgaW50ZXJmYWNlLgorICAgICAgICAgICAgICAgICAgLSB1bnNwZWNpZmllZCBm
-b3Igb3RoZXIgaW1wbGVtZW50YXRpb25zLgorCistIGNsb2NrczogICAgICAgICBTcGVjaWZpZXJz
-IGZvciBhbGwgY2xvY2tzIGxpc3RlZCBpbiB0aGUgY2xvY2stbmFtZXMgcHJvcGVydHksCisgICAg
-ICAgICAgICAgICAgICBhcyBwZXIgZ2VuZXJpYyBjbG9jayBiaW5kaW5ncy4KKworLSBwb3dlci1k
-b21haW5zOiAgU3BlY2lmaWVycyBmb3IgcG93ZXIgZG9tYWlucyByZXF1aXJlZCB0byBiZSBwb3dl
-cmVkIG9uIGZvcgorICAgICAgICAgICAgICAgICAgdGhlIFNNTVUgdG8gb3BlcmF0ZSwgYXMgcGVy
-IGdlbmVyaWMgcG93ZXIgZG9tYWluIGJpbmRpbmdzLgorCiAqKiBEZXByZWNhdGVkIHByb3BlcnRp
-ZXM6CiAKIC0gbW11LW1hc3RlcnMgKGRlcHJlY2F0ZWQgaW4gZmF2b3VyIG9mIHRoZSBnZW5lcmlj
-ICJpb21tdXMiIGJpbmRpbmcpIDoKQEAgLTEzNywzICsxNjIsMjAgQEAgY29uZGl0aW9ucy4KICAg
-ICAgICAgICAgICAgICBpb21tdS1tYXAgPSA8MCAmc21tdTMgMCAweDQwMD47CiAgICAgICAgICAg
-ICAgICAgLi4uCiAgICAgICAgIH07CisKKwkvKiBRY29tJ3MgYXJtLHNtbXUtdjIgaW1wbGVtZW50
-YXRpb24gKi8KKwlzbW11NDogaW9tbXUgeworCQljb21wYXRpYmxlID0gInFjb20sbXNtODk5Ni1z
-bW11LXYyIiwgInFjb20sc21tdS12MiI7CisJCXJlZyA9IDwweGQwMDAwMCAweDEwMDAwPjsKKwor
-CQkjZ2xvYmFsLWludGVycnVwdHMgPSA8MT47CisJCWludGVycnVwdHMgPSA8R0lDX1NQSSA3MyBJ
-UlFfVFlQRV9MRVZFTF9ISUdIPiwKKwkJCSAgICAgPEdJQ19TUEkgMzIwIElSUV9UWVBFX0xFVkVM
-X0hJR0g+LAorCQkJICAgICA8R0lDX1NQSSAzMjEgSVJRX1RZUEVfTEVWRUxfSElHSD47CisJCSNp
-b21tdS1jZWxscyA9IDwxPjsKKwkJcG93ZXItZG9tYWlucyA9IDwmbW1jYyBNRFNTX0dEU0M+Owor
-CisJCWNsb2NrcyA9IDwmbW1jYyBTTU1VX01EUF9BWElfQ0xLPiwKKwkJCSA8Jm1tY2MgU01NVV9N
-RFBfQUhCX0NMSz47CisJCWNsb2NrLW5hbWVzID0gImJ1cyIsICJpZmFjZSI7CisJfTsKZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUu
-YwppbmRleCAyNWZmM2JkYmY3YTMuLjdjNjk3MzZhMzBmOCAxMDA2NDQKLS0tIGEvZHJpdmVycy9p
-b21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwpAQCAtMTE5LDYg
-KzExOSw3IEBAIGVudW0gYXJtX3NtbXVfaW1wbGVtZW50YXRpb24gewogCUdFTkVSSUNfU01NVSwK
-IAlBUk1fTU1VNTAwLAogCUNBVklVTV9TTU1VVjIsCisJUUNPTV9TTU1VVjIsCiB9OwogCiBzdHJ1
-Y3QgYXJtX3NtbXVfczJjciB7CkBAIC0xOTcxLDYgKzE5NzIsMTcgQEAgQVJNX1NNTVVfTUFUQ0hf
-REFUQShhcm1fbW11NDAxLCBBUk1fU01NVV9WMV82NEssIEdFTkVSSUNfU01NVSk7CiBBUk1fU01N
-VV9NQVRDSF9EQVRBKGFybV9tbXU1MDAsIEFSTV9TTU1VX1YyLCBBUk1fTU1VNTAwKTsKIEFSTV9T
-TU1VX01BVENIX0RBVEEoY2F2aXVtX3NtbXV2MiwgQVJNX1NNTVVfVjIsIENBVklVTV9TTU1VVjIp
-OwogCitzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0IHFjb21fc21tdXYyX2Nsa3NbXSA9IHsKKwki
-YnVzIiwgImlmYWNlIiwKK307CisKK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXJtX3NtbXVfbWF0Y2hf
-ZGF0YSBxY29tX3NtbXV2MiA9IHsKKwkudmVyc2lvbiA9IEFSTV9TTU1VX1YyLAorCS5tb2RlbCA9
-IFFDT01fU01NVVYyLAorCS5jbGtzID0gcWNvbV9zbW11djJfY2xrcywKKwkubnVtX2Nsa3MgPSBB
-UlJBWV9TSVpFKHFjb21fc21tdXYyX2Nsa3MpLAorfTsKKwogc3RhdGljIGNvbnN0IHN0cnVjdCBv
-Zl9kZXZpY2VfaWQgYXJtX3NtbXVfb2ZfbWF0Y2hbXSA9IHsKIAl7IC5jb21wYXRpYmxlID0gImFy
-bSxzbW11LXYxIiwgLmRhdGEgPSAmc21tdV9nZW5lcmljX3YxIH0sCiAJeyAuY29tcGF0aWJsZSA9
-ICJhcm0sc21tdS12MiIsIC5kYXRhID0gJnNtbXVfZ2VuZXJpY192MiB9LApAQCAtMTk3OCw2ICsx
-OTkwLDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQgYXJtX3NtbXVfb2ZfbWF0
-Y2hbXSA9IHsKIAl7IC5jb21wYXRpYmxlID0gImFybSxtbXUtNDAxIiwgLmRhdGEgPSAmYXJtX21t
-dTQwMSB9LAogCXsgLmNvbXBhdGlibGUgPSAiYXJtLG1tdS01MDAiLCAuZGF0YSA9ICZhcm1fbW11
-NTAwIH0sCiAJeyAuY29tcGF0aWJsZSA9ICJjYXZpdW0sc21tdS12MiIsIC5kYXRhID0gJmNhdml1
-bV9zbW11djIgfSwKKwl7IC5jb21wYXRpYmxlID0gInFjb20sc21tdS12MiIsIC5kYXRhID0gJnFj
-b21fc21tdXYyIH0sCiAJeyB9LAogfTsKIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGFybV9zbW11
-X29mX21hdGNoKTsKLS0gClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVhbGNvbW0gSW5u
-b3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJvcmEgRm9ydW0sIGhv
-c3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4v
-bGlzdGluZm8vZnJlZWRyZW5vCg==
+On 17.07.2018 18:10, Sudip Mukherjee wrote:
+> Hi Alan, Greg,
+> 
+> On Tue, Jul 17, 2018 at 03:49:18PM +0100, Sudip Mukherjee wrote:
+>> On Tue, Jul 17, 2018 at 03:40:22PM +0100, Sudip Mukherjee wrote:
+>>> Hi Alan,
+>>>
+>>> On Tue, Jul 17, 2018 at 10:28:14AM -0400, Alan Stern wrote:
+>>>> On Tue, 17 Jul 2018, Sudip Mukherjee wrote:
+>>>>
+>>>>> I did some more debugging. Tested with a KASAN enabled kernel and that
+>>>>> shows the problem. The report is attached.
+>>>>>
+>>>>> To my understanding:
+>>>>>
+>>>>> btusb_work() is calling usb_set_interface() with alternate = 0. which
+>>>>> again calls usb_hcd_alloc_bandwidth() and that frees the rings by
+>>>>> xhci_free_endpoint_ring().
+>>>>
+>>>> That doesn't sound like the right thing to do.  The rings shouldn't be
+>>>> freed until xhci_endpoint_disable() is called.
+>>>>
+>>>> On the other hand, there doesn't appear to be any
+>>>> xhci_endpoint_disable() routine, although a comment refers to it.
+>>>> Maybe this is the real problem?
+>>>
+>>> one of your old mail might help :)
+>>>
+>>> https://www.spinics.net/lists/linux-usb/msg98123.html
+>>
+>> Wrote too soon.
+>>
+>> Is it the one you are looking for -
+>> usb_disable_endpoint() is in drivers/usb/core/message.c
+> 
+> I think now I understand what the problem is.
+> usb_set_interface() calls usb_disable_interface() which again calls
+> usb_disable_endpoint(). This usb_disable_endpoint() gets the pointer
+> to 'ep', marks it as NULL and sends the pointer to usb_hcd_flush_endpoint().
+> After flushing the endpoints usb_disable_endpoint() calls
+> usb_hcd_disable_endpoint() which tries to do:
+> 	if (hcd->driver->endpoint_disable)
+> 		hcd->driver->endpoint_disable(hcd, ep);
+> but there is no endpoint_disable() callback in xhci, so the endpoint is
+> never marked as disabled. So, next time usb_hcd_flush_endpoint() is
+> called I get this corruption.
+> And this is exactly where I used to see the problem happening.
+> 
+> And, my hacky patch worked as I prevented it from calling
+> usb_disable_interface() in this particular case.
+> 
+
+Back for a few days, looking at this
+
+xhci driver will set up all the endpoints for the new altsetting already in
+usb_hcd_alloc_bandwidth().
+
+New endpoints will be ready and rings running after this. I don't know the exact
+history behind this, but I assume it is because xhci does all of the steps to
+drop/add, disable/enable endpoints and check bandwidth in a single configure
+endpoint command, that will return errors if there is not enough bandwidth.
+This command is issued in hcd->driver->check_bandwidth()
+This means that xhci doesn't really do much in hcd->driver->endpoint_disable or
+hcd->driver->endpoint_enable
+
+It also means that xhci driver assumes rings are empty when
+hcd->driver->check_bandwidth is called. It will bluntly free dropped rings.
+If there are URBs left on a endpoint ring that was dropped+added
+(freed+reallocated) then those URBs will contain pointers to freed ring,
+causing issues when usb_hcd_flush_endpoint() cancels those URBs.
+
+usb_set_interface()
+   usb_hcd_alloc_bandwidth()
+     hcd->driver->drop_endpoint()
+     hcd->driver->add_endpoint() // allocates new rings
+     hcd->driver->check_bandwidth() // issues configure endpoint command, free rings.
+   usb_disable_interface(iface, true)
+     usb_disable_endpoint()
+       usb_hcd_flush_endpoint() // will access freed ring if URBs found!!
+       usb_hcd_disable_endpoint()
+         hcd->driver->endpoint_disable()  // xhci does nothing
+   usb_enable_interface(iface, true)
+     usb_enable_endpoint(ep_addrss, true) // not really doing much on xhci side.
+
+As first aid I could try to implement checks that make sure the flushed URBs
+trb pointers really are on the current endpoint ring, and also add some warning
+if we are we are dropping endpoints with URBs still queued.
+
+But we need to fix this properly as well.
+xhci needs to be more in sync with usb core in usb_set_interface(), currently xhci
+has the altssetting up and running when usb core hasn't event started flushing endpoints.
+
+-Mathias
