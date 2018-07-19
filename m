@@ -1,63 +1,56 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: [PATCH 3/3] iommu/arm-smmu: Error out only if not enough context interrupts
-Date: Thu, 19 Jul 2018 23:23:56 +0530
-Message-ID: <20180719175356.14753-4-vivek.gautam@codeaurora.org>
-References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 1/3] dts: arm64/sdm845: Add node for arm,mmu-500
+Date: Thu, 19 Jul 2018 17:08:31 -0600
+Message-ID: <CAL_JsqKQgZq23F7gqNoEDzpWj3zVR7Tsok3cZZCpCL=Br_+BeA@mail.gmail.com>
+References: <20180719175356.14753-1-vivek.gautam@codeaurora.org> <20180719175356.14753-2-vivek.gautam@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
+In-Reply-To: <20180719175356.14753-2-vivek.gautam@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, robh+dt@kernel.org, robin.murphy@arm.com, will.deacon@arm.com, andy.gross@linaro.org
-Cc: mark.rutland@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, tfiga@chromium.org, sricharan@codeaurora.org, linux-arm-msm@vger.kernel.org, david.brown@linaro.org, linux-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vivek Gautam <vivek.gautam@codeaurora.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Andy Gross <andy.gross@linaro.org>, Mark Rutland <mark.rutland@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, Sricharan <sricharan@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, David Brown <david.brown@linaro.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently we check if the number of context banks is not equal to
-num_context_interrupts. However, there are booloaders such as, one
-on sdm845 that reserves few context banks and thus kernel views
-less than the total available context banks.
-So, although the hardware definition in device tree would mention
-the correct number of context interrupts, this number can be
-greater than the number of context banks visible to smmu in kernel.
-We should therefore error out only when the number of context banks
-is greater than the available number of context interrupts.
+On Thu, Jul 19, 2018 at 11:54 AM Vivek Gautam
+<vivek.gautam@codeaurora.org> wrote:
+>
+> Add device node for arm,mmu-500 available on sdm845.
+> This MMU-500 with single TCU and multiple TBU architecture
+> is shared among all the peripherals except gpu on sdm845.
+>
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sdm845-mtp.dts |  4 ++
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi    | 73 +++++++++++++++++++++++++++++++++
+>  2 files changed, 77 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+> index 6d651f314193..13b50dff440f 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+> +++ b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+> @@ -58,3 +58,7 @@
+>                 bias-pull-up;
+>         };
+>  };
+> +
+> +&apps_smmu {
+> +       status = "okay";
+> +};
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> index 00722b533a92..70ca18ae6cb3 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> @@ -980,6 +980,79 @@
+>                         cell-index = <0>;
+>                 };
+>
+> +               apps_smmu: arm,smmu@15000000 {
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-Suggested-by: Tomasz Figa <tfiga@chromium.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
----
- drivers/iommu/arm-smmu.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+iommu@...
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7c69736a30f8..4cb53bf4f423 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -2229,12 +2229,19 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
--	if (smmu->version == ARM_SMMU_V2 &&
--	    smmu->num_context_banks != smmu->num_context_irqs) {
--		dev_err(dev,
--			"found only %d context interrupt(s) but %d required\n",
--			smmu->num_context_irqs, smmu->num_context_banks);
--		return -ENODEV;
-+	if (smmu->version == ARM_SMMU_V2) {
-+		if (smmu->num_context_banks > smmu->num_context_irqs) {
-+			dev_err(dev,
-+			      "found only %d context irq(s) but %d required\n",
-+			      smmu->num_context_irqs, smmu->num_context_banks);
-+			return -ENODEV;
-+		} else if (smmu->num_context_banks < smmu->num_context_irqs) {
-+			/* loose extra context interrupts */
-+			dev_notice(dev,
-+			      "found %d context irq(s) but only %d required\n",
-+			      smmu->num_context_irqs, smmu->num_context_banks);
-+			smmu->num_context_irqs = smmu->num_context_banks;
-+		}
- 	}
- 
- 	for (i = 0; i < smmu->num_global_irqs; ++i) {
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> +                       compatible = "arm,mmu-500";
+
+Really unmodified by QCom? Would be better to have SoC specific compatible.
+
+Rob
