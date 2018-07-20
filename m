@@ -1,74 +1,82 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
- AMD sme enabled
-Date: Fri, 20 Jul 2018 09:32:45 +0200
-Message-ID: <20180720073245.GA26926@nazgul.tnic>
-References: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
- <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
- <20180703111428.GB5748@zn.tnic>
- <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
- <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
- <20180709092901.GA22182@nazgul.tnic>
- <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
- <20180713170857.GB17896@nazgul.tnic>
- <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
- <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH 1/3] dts: arm64/sdm845: Add node for arm,mmu-500
+Date: Fri, 20 Jul 2018 13:56:18 +0530
+Message-ID: <CAFp+6iGg=6Hhxj9-995ZzP=_09Y3kZoXthcyNpUqikHsn97uyg@mail.gmail.com>
+References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
+ <20180719175356.14753-2-vivek.gautam@codeaurora.org> <CAL_JsqKQgZq23F7gqNoEDzpWj3zVR7Tsok3cZZCpCL=Br_+BeA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
+In-Reply-To: <CAL_JsqKQgZq23F7gqNoEDzpWj3zVR7Tsok3cZZCpCL=Br_+BeA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>, lijiang <lijiang@redhat.com>
-Cc: bhe@redhat.com, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org
+To: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, David Brown <david.brown@linaro.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Andy Gross <andy.gross@linaro.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 20, 2018 at 01:23:04PM +0800, Dave Young wrote:
-> > Here, it doesn't need to dump MMIO space of the previous kernel, when the
-> > kdump kernel boot, the MMIO address will be remapped in decryption manners,
-> > but the MMIO address don't belong to the range of the crash reserved memory,
-> > for the kdump kernel, the MMIO space(address) and IOMMU device table(address)
-> > are outside address, whereas, the IOMMU device table is encrypted in the first
-> > kernel, the kdump kernel will need to copy the content of IOMMU device table
-> > from the first kernel when the kdump kernel boot, so the IOMMU device table will
-> > be remapped in encryption manners.
+Hi Rob,
 
--ENOFCKINGPARSE
+On Fri, Jul 20, 2018 at 4:38 AM, Rob Herring <robh+dt@kernel.org> wrote:
+> On Thu, Jul 19, 2018 at 11:54 AM Vivek Gautam
+> <vivek.gautam@codeaurora.org> wrote:
+>>
+>> Add device node for arm,mmu-500 available on sdm845.
+>> This MMU-500 with single TCU and multiple TBU architecture
+>> is shared among all the peripherals except gpu on sdm845.
+>>
+>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>> ---
+>>  arch/arm64/boot/dts/qcom/sdm845-mtp.dts |  4 ++
+>>  arch/arm64/boot/dts/qcom/sdm845.dtsi    | 73 +++++++++++++++++++++++++++++++++
+>>  2 files changed, 77 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+>> index 6d651f314193..13b50dff440f 100644
+>> --- a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+>> +++ b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+>> @@ -58,3 +58,7 @@
+>>                 bias-pull-up;
+>>         };
+>>  };
+>> +
+>> +&apps_smmu {
+>> +       status = "okay";
+>> +};
+>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> index 00722b533a92..70ca18ae6cb3 100644
+>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> @@ -980,6 +980,79 @@
+>>                         cell-index = <0>;
+>>                 };
+>>
+>> +               apps_smmu: arm,smmu@15000000 {
+>
+> iommu@...
 
-I believe you're the only one who understands that humongous sentence.
-How about using a fullstop from time to time. And WTF is "encryption
-manners"?
+Thanks for the review.
+Sure, will modify this.
 
-> > So some of them require to be remapped in encryption manners, and some(address)
-> > require to be remapped in decryption manners.
+>
+>> +                       compatible = "arm,mmu-500";
+>
+> Really unmodified by QCom? Would be better to have SoC specific compatible.
 
-> There could be some misunderstanding here.
+Yes, at this point we are able to use the driver as is on 845.
+But, will add a SoC specific compatible as suggested to make bindings
+future proof.
 
-Hell yeah there's a misunderstanding!
+Best regards
+Vivek
 
-Can you folks first relax, sit down and explain the whole problem in
-*plain* English using *simple* sentences. *Not* like the unparseable
-mess above. Use simple, declaratory sentences and don't even try to
-sound fancy:
+>
+> Rob
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
-"The first kernel boots. It's memory is encrypted... Now, the second
-kernel boots. It must do A because of B. In order to do A, it needs to
-do C. Because D..."
 
-And so on. Explain what the problem is first. Then explain the proposed
-solution. Explain *why* it needs to be done this way.
-
-When you've written your explanation, try to read it as someone who
-doesn't know kdump and *think* hard whether your explanation makes
-sense. If it doesn't, fix it and read it again. Rinse and repeat. Until
-it is clear to unenlightened readers too.
-
-It is about time this hurried throwing of half-baked patches at
-maintainers and seeing what sticks, stops!
 
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
---
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
