@@ -1,78 +1,97 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Dave Young <dyoung@redhat.com>
 Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
-	AMD sme enabled
-Date: Fri, 20 Jul 2018 13:06:59 +0800
-Message-ID: <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
-References: <20180702072639.10110-1-lijiang@redhat.com>
-	<20180702072639.10110-2-lijiang@redhat.com>
-	<20180702101451.GB28730@zn.tnic>
-	<4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
-	<895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
-	<20180703111428.GB5748@zn.tnic>
-	<4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
-	<e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
-	<20180709092901.GA22182@nazgul.tnic>
-	<fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
-	<20180713170857.GB17896@nazgul.tnic>
+ AMD sme enabled
+Date: Fri, 20 Jul 2018 13:23:04 +0800
+Message-ID: <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
+References: <20180702101451.GB28730@zn.tnic>
+ <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+ <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
+ <20180703111428.GB5748@zn.tnic>
+ <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
+ <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
+ <20180709092901.GA22182@nazgul.tnic>
+ <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
+ <20180713170857.GB17896@nazgul.tnic>
+ <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180713170857.GB17896-K5JNixvcfoxupOikMc4+xw@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: lijiang <lijiang@redhat.com>, bhe@redhat.com
+Cc: Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwN+aciDE05pelIDAxOjA4LCBCb3Jpc2xhdiBQZXRrb3Yg5YaZ6YGTOgo+IE9u
-IE1vbiwgSnVsIDA5LCAyMDE4IGF0IDA5OjU1OjM1UE0gKzA4MDAsIGxpamlhbmcgd3JvdGU6Cj4+
-IEFib3V0IHRoaXMgaXNzdWUsIGkgd2FudCB0byB1c2UgYW4gZXhhbXBsZSB0byBkZXNjcmliZSBp
-dC4KPj4gLyogZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfaW5pdC5jICovCj4+IHN0YXRpYyB1OCBf
-X2lvbWVtICogX19pbml0IGlvbW11X21hcF9tbWlvX3NwYWNlKHU2NCBhZGRyZXNzLCB1NjQgZW5k
-KQo+IAo+IFRob3NlIGFkZHJlc3NlcyBjb21lIGZyb20gdGhlIElWSEQgaGVhZGVyIHdoaWNoIGlz
-IGFuIEFDUEkgdGFibGUuIFNvIHRoZQo+IGR1bXAga2VybmVsIGNhbiBmaW5kIHRoYXQgb3V0IHRv
-by4KPiBTdXJlLiBJIG1pZ2h0IHVuZGVyc3RhbmQgeW91ciBtZWFucywgdGhhdCB3aWxsIGhhdmUg
-dG8gZmluZCBhbGwgYWRkcmVzcyBvdXQgaW4Kb3JkZXIgdG8gY292ZXIgYW55IGNhc2VzIGluIGtk
-dW1wIGtlcm5lbCwgdGhvc2UgYWRkcmVzcyAgbWlnaHQgaW5jbHVkZSBNTUlPCnNwYWNlLCBIUEVU
-LCBBQ1BJIGRldmljZSB0YWJsZSwgRVJTVCwgYW5kIHNvIG9uLi4uIAoKPj4gT2J2aW91c2x5LCB0
-aGUgaW9tbXUgbW1pbyBzcGFjZSBpcyBub3QgZW5jcnlwdGVkLCBhbmQgdGhlIGRldmljZQo+PiBt
-bWlvIHNwYWNlIGlzIG91dHNpZGUga2R1bXAga2VybmVsLiBXZSBrbm93IHRoYXQgdGhlIG9sZCBt
-ZW1vcnkgaXMKPj4gZW5jcnlwdGVkLCBhbmQgdGhlIG9sZCBtZW1vcnkgaXMgYWxzbyBvdXRzaWRl
-IGtkdW1wIGtlcm5lbC4gRm9yIHRoZQo+PiBjdXJyZW50IGNhc2UsIGU4MjBfX2dldF9lbnRyeV90
-eXBlKCkgYW5kIHdhbGtfaW9tZW1fcmVzX2Rlc2MoKSBjYW4ndAo+PiBnZXQgdGhlIGRlc2lyZWQg
-cmVzdWx0LCBzbyB3ZSBjYW4ndCBhbHNvIGRlY2lkZSB3aGV0aGVyIGVuY3J5cHRpb24KPj4gb3Ig
-bm90IGFjY29yZGluZyB0byB0aGlzIHJlc3VsdChydWxlcykuIElmIHdlIHdhbnQgdG8ga25vdyB3
-aGV0aGVyCj4+IGVuY3J5cHRpb24gb3Igbm90IGJ5IGRlZHVjaW5nIHRoZSBhZGRyZXNzLCB3ZSB3
-aWxsIG5lZWQgdG8gcmVhZCB0aGUKPj4gY29udGVudCBvZiBtZW1vcnkgYW5kIGhhdmUgYSByZWZl
-cmVuY2UgdmFsdWUgZm9yIGNvbXBhcmlzb24sIHRoZW4KPj4gd2hhdCdzIGEgcmVmZXJlbmNlIHZh
-bHVlPyBTb21ldGltZXMgd2UgZG9uJ3Qga25vdyB0aGF0Lgo+IAo+IEFnYWluLCBpZiB3ZSBkb24n
-dCBrbm93IHRoYXQgaG93IGlzIHRoZSAqY2FsbGVyKiBzdXBwb3NlZCB0byBrbm93Cj4gd2hldGhl
-ciB0aGUgbWVtb3J5IGlzIGVuY3J5cHRlZCBvciBub3Q/IEJlY2F1c2UKPiAKPiAid2UiID09ICJj
-YWxsZXIiCj4gCj4gaW4gdGhlIGtkdW1wIGtlcm5lbC4KPiAKPiBBbmQgdGhlIG1vcmUgaW1wb3J0
-YW50IHF1ZXN0aW9uIGlzLCB3aHkgYXJlIHdlIGR1bXBpbmcgTU1JTyBzcGFjZSBvZiB0aGUKPiBw
-cmV2aW91cyBrZXJuZWwgKmF0KiAqYWxsKj8gVGhhdCBkb2Vzbid0IG1ha2UgYW55IHNlbnNlIHRv
-IG1lLgo+IApTb3JyeSBmb3IgbXkgbGF0ZSByZXBseS4KSGVyZSwgaXQgZG9lc24ndCBuZWVkIHRv
-IGR1bXAgTU1JTyBzcGFjZSBvZiB0aGUgcHJldmlvdXMga2VybmVsLCB3aGVuIHRoZQprZHVtcCBr
-ZXJuZWwgYm9vdCwgdGhlIE1NSU8gYWRkcmVzcyB3aWxsIGJlIHJlbWFwcGVkIGluIGRlY3J5cHRp
-b24gbWFubmVycywKYnV0IHRoZSBNTUlPIGFkZHJlc3MgZG9uJ3QgYmVsb25nIHRvIHRoZSByYW5n
-ZSBvZiB0aGUgY3Jhc2ggcmVzZXJ2ZWQgbWVtb3J5LApmb3IgdGhlIGtkdW1wIGtlcm5lbCwgdGhl
-IE1NSU8gc3BhY2UoYWRkcmVzcykgYW5kIElPTU1VIGRldmljZSB0YWJsZShhZGRyZXNzKQphcmUg
-b3V0c2lkZSBhZGRyZXNzLCB3aGVyZWFzLCB0aGUgSU9NTVUgZGV2aWNlIHRhYmxlIGlzIGVuY3J5
-cHRlZCBpbiB0aGUgZmlyc3QKa2VybmVsLCB0aGUga2R1bXAga2VybmVsIHdpbGwgbmVlZCB0byBj
-b3B5IHRoZSBjb250ZW50IG9mIElPTU1VIGRldmljZSB0YWJsZQpmcm9tIHRoZSBmaXJzdCBrZXJu
-ZWwgd2hlbiB0aGUga2R1bXAga2VybmVsIGJvb3QsIHNvIHRoZSBJT01NVSBkZXZpY2UgdGFibGUg
-d2lsbApiZSByZW1hcHBlZCBpbiBlbmNyeXB0aW9uIG1hbm5lcnMuClNvIHNvbWUgb2YgdGhlbSBy
-ZXF1aXJlIHRvIGJlIHJlbWFwcGVkIGluIGVuY3J5cHRpb24gbWFubmVycywgYW5kIHNvbWUoYWRk
-cmVzcykKcmVxdWlyZSB0byBiZSByZW1hcHBlZCBpbiBkZWNyeXB0aW9uIG1hbm5lcnMuCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 07/20/18 at 01:06pm, lijiang wrote:
+> 在 2018年07月14日 01:08, Borislav Petkov 写道:
+> > On Mon, Jul 09, 2018 at 09:55:35PM +0800, lijiang wrote:
+> >> About this issue, i want to use an example to describe it.
+> >> /* drivers/iommu/amd_iommu_init.c */
+> >> static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
+> > 
+> > Those addresses come from the IVHD header which is an ACPI table. So the
+> > dump kernel can find that out too.
+> > Sure. I might understand your means, that will have to find all address out in
+> order to cover any cases in kdump kernel, those address  might include MMIO
+> space, HPET, ACPI device table, ERST, and so on... 
+> 
+> >> Obviously, the iommu mmio space is not encrypted, and the device
+> >> mmio space is outside kdump kernel. We know that the old memory is
+> >> encrypted, and the old memory is also outside kdump kernel. For the
+> >> current case, e820__get_entry_type() and walk_iomem_res_desc() can't
+> >> get the desired result, so we can't also decide whether encryption
+> >> or not according to this result(rules). If we want to know whether
+> >> encryption or not by deducing the address, we will need to read the
+> >> content of memory and have a reference value for comparison, then
+> >> what's a reference value? Sometimes we don't know that.
+> > 
+> > Again, if we don't know that how is the *caller* supposed to know
+> > whether the memory is encrypted or not? Because
+> > 
+> > "we" == "caller"
+> > 
+> > in the kdump kernel.
+> > 
+> > And the more important question is, why are we dumping MMIO space of the
+> > previous kernel *at* *all*? That doesn't make any sense to me.
+> > 
+> Sorry for my late reply.
+> Here, it doesn't need to dump MMIO space of the previous kernel, when the
+> kdump kernel boot, the MMIO address will be remapped in decryption manners,
+> but the MMIO address don't belong to the range of the crash reserved memory,
+> for the kdump kernel, the MMIO space(address) and IOMMU device table(address)
+> are outside address, whereas, the IOMMU device table is encrypted in the first
+> kernel, the kdump kernel will need to copy the content of IOMMU device table
+> from the first kernel when the kdump kernel boot, so the IOMMU device table will
+> be remapped in encryption manners.
+> So some of them require to be remapped in encryption manners, and some(address)
+> require to be remapped in decryption manners.
+> 
+
+There could be some misunderstanding here.  From the code
+copy_device_table in amd_iommu_init.c,  iommu table entry is retrieved
+by read mmio address, then use memremap to map the entry address for
+copying the device table, so the thing related to your patch is the dev
+table entry address not the mmio address.
+
+As for why need copy the old dev table, I think it is for addressing
+on-flight DMA issue,  just like the git log of below commit although the
+commit is for Intel IOMMU but I think AMD IOMMU solution is similar:
+
+commit 091d42e43d21b6ca7ec39bf5f9e17bc0bd8d4312
+Author: Joerg Roedel <jroedel@suse.de>
+Date:   Fri Jun 12 11:56:10 2015 +0200
+
+    iommu/vt-d: Copy translation tables from old kernel
+    
+    If we are in a kdump kernel and find translation enabled in
+    the iommu, try to copy the translation tables from the old
+    kernel to preserve the mappings until the device driver
+    takes over.
+
+Baoquan knows more about this I think he can correct if I'm wrong.
+
+Thanks
+Dave
