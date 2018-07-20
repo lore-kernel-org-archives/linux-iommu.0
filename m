@@ -1,28 +1,45 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v5 0/9] iommu/vt-d: Improve PASID id and table management
-Date: Fri, 20 Jul 2018 14:45:01 +0200
-Message-ID: <20180720124500.rvtprtyemfmddbbt@8bytes.org>
-References: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Remove redundant WARN_ON()
+Date: Fri, 20 Jul 2018 14:36:42 +0200
+Message-ID: <20180720123641.GE18541@8bytes.org>
+References: <20180720084545.3284-1-anna-maria@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1531554422-6874-1-git-send-email-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20180720084545.3284-1-anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Jul 14, 2018 at 03:46:53PM +0800, Lu Baolu wrote:
-> Lu Baolu (9):
->   iommu/vt-d: Global PASID name space
->   iommu/vt-d: Avoid using idr_for_each_entry()
->   iommu/vt-d: Apply global PASID in SVA
->   iommu/vt-d: Move device_domain_info to header
->   iommu/vt-d: Add for_each_device_domain() helper
->   iommu/vt-d: Per PCI device pasid table interfaces
->   iommu/vt-d: Allocate and free pasid table
->   iommu/vt-d: Apply per pci device pasid table in SVA
->   iommu/vt-d: Remove the obsolete per iommu pasid tables
+On Fri, Jul 20, 2018 at 10:45:45AM +0200, Anna-Maria Gleixner wrote:
+> The WARN_ON() was introduced in commit 272e4f99e966 ("iommu/amd: WARN
+> when __[attach|detach]_device are called with irqs enabled") to ensure
+> that the domain->lock is taken in proper irqs disabled context. This
+> is required, because the domain->lock is taken as well in irq
+> context.
+> 
+> The proper context check by the WARN_ON() is redundant, because it is
+> already covered by LOCKDEP. When working with locks and changing
+> context, a run with LOCKDEP is required anyway and would detect the
+> wrong lock context.
+> 
+> Furthermore all callers for those functions are within the same file
+> and all callers acquire another lock which already disables interrupts.
+> 
+> Signed-off-by: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu.c | 12 ------------
+>  1 file changed, 12 deletions(-)
 
 Applied, thanks.
