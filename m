@@ -1,44 +1,31 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu: Add config option to set passthrough as default
-Date: Fri, 20 Jul 2018 14:16:19 +0200
-Message-ID: <20180720121619.pqrgth4zxdj7zjym@8bytes.org>
-References: <20180711205936.18614-1-olof@lixom.net>
+From: =?iso-8859-1?Q?J=F6rg_R=F6del?= <joro@8bytes.org>
+Subject: Re: MSI B350M MORTAR: `AMD-Vi: Unable to write to IOMMU perf
+ counter.` and `pci 0000:00:00.2: can't derive routing for PCI INT A`
+Date: Fri, 20 Jul 2018 14:31:53 +0200
+Message-ID: <20180720123153.GC18541@8bytes.org>
+References: <605ca165-0071-eb7f-4c0d-b1e76ddd0e05@molgen.mpg.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180711205936.18614-1-olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <605ca165-0071-eb7f-4c0d-b1e76ddd0e05@molgen.mpg.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Menzel <pmenzel+linux-iommu@molgen.mpg.de>
+Cc: iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Olof,
+Hi Paul,
 
-On Wed, Jul 11, 2018 at 01:59:35PM -0700, Olof Johansson wrote:
-> +config IOMMU_DEFAULT_PASSTHROUGH
-> +	bool "IOMMU passthrough by default"
-> +	depends on IOMMU_API
-> +        help
-> +	  Enable passthrough by default (removing the need to pass in
-> +	  iommu.passthrough=on through command line). If this is enabled,
-> +	  you can still disable with iommu.passthrough=off
-> +
-> +	  If unsure, say N here.
-> +
+On Tue, Jul 17, 2018 at 06:02:07PM +0200, Paul Menzel wrote:
+> $ dmesg
+> […]
+> [    0.145696] calling  pci_iommu_init+0x0/0x3f @ 1
+> [    0.145719] AMD-Vi: Unable to write to IOMMU perf counter.
 
-The patch is a good start, but the description above indicates that it
-affects all IOMMU driver, which it does not. Please make the Intel and
-AMD IOMMU drivers also take this option into account.
+This is likely a firmware issue. Either the IVRS ACPI table is incorrect
+or the BIOS did not enable the performance counter feature in the IOMMU
+hardware. Are you running on the latest BIOS?
 
 
 	Joerg
