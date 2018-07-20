@@ -1,17 +1,25 @@
-From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Subject: Re: DMA mappings and crossing boundaries
-Date: Fri, 20 Jul 2018 13:12:56 +1000
-Message-ID: <97be22364c8b90ca6caba7e2596d6cf90f28136f.camel@kernel.crashing.org>
-References: <2d752386b82481bc53080fcee1a3dcd474dbeef2.camel@au1.ibm.com>
-	<82688fc5-c294-1db3-9a05-fecf9b9b5e17@arm.com>
-	<5f31e833851f5b9a58ca4ed9b5f0a1958cca0efd.camel@au1.ibm.com>
-	<2786eaad-f359-c88c-a42c-ff1b93e78c21@arm.com>
-	<dad4fa57254e30d99c930e2788eef7f1ce18c17b.camel@kernel.crashing.org>
+From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
+	AMD sme enabled
+Date: Fri, 20 Jul 2018 13:06:59 +0800
+Message-ID: <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
+References: <20180702072639.10110-1-lijiang@redhat.com>
+	<20180702072639.10110-2-lijiang@redhat.com>
+	<20180702101451.GB28730@zn.tnic>
+	<4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+	<895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
+	<20180703111428.GB5748@zn.tnic>
+	<4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
+	<e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
+	<20180709092901.GA22182@nazgul.tnic>
+	<fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
+	<20180713170857.GB17896@nazgul.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <dad4fa57254e30d99c930e2788eef7f1ce18c17b.camel-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20180713170857.GB17896-K5JNixvcfoxupOikMc4+xw@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,117 +29,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Russell Currey <ruscur-8fk3Idey6ehBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jens Axboe <jens.axboe-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2018-07-11 at 14:51 +1000, Benjamin Herrenschmidt wrote:
-> On Wed, 2018-07-04 at 13:57 +0100, Robin Murphy wrote:
-> > 
-> > > Could it ? I wouldn't think dma_map_page is allows to cross page
-> > > boundaries ... what about single() ? The main worry is people using
-> > > these things on kmalloc'ed memory
-> > 
-> > Oh, absolutely - the underlying operation is just "prepare for DMA 
-> > to/from this physically-contiguous region"; the only real difference 
-> > between map_page and map_single is for the sake of the usual "might be 
-> > highmem" vs. "definitely lowmem" dichotomy. Nobody's policing any limits 
-> > on the size and offset parameters (in fact, if anyone asks I would say 
-> > the outcome of the big "offset > PAGE_SIZE" debate for dma_map_sg a few 
-> > months back is valid for dma_map_page too, however silly it may seem).
-> 
-> I think this is a very bad idea though. We should thrive to avoid
-> coalescing before the iommu layer and we should avoid creating sglists
-> that cross natural alignment boundaries.
-
-Ping ? Jens, Christoph ?
-
-I really really don't like how sg_alloc_table_from_pages() coalesces
-the sglist before it gets mapped. This will potentially create huge
-constraints and fragmentation in the IOMMU allocator by passing large
-chunks to it.
-
-> I had a look at sg_alloc_table_from_pages() and it basically freaks me
-> out.
-> 
-> Back in the old days, we used to have the block layer aggressively
-> coalesce requests iirc, but that was changed to let the iommu layer do
-> it.
-> 
-> If you pass to dma_map_sg() something already heavily coalesced, such
-> as what sg_alloc_table_from_pages() can do since it seems to have
-> absolutely no limits there, you will create a significant fragmentation
-> problem in the iommu allocator.
-> 
-> Instead, we should probably avoid such coalescing at that level and
-> instead let the iommu opportunistically coalesce at the point of
-> mapping which it does just fine.
-> 
-> We've been racking our brains here and we can't find a way to implement
-> something we want that is both very performance efficient (no global
-> locks etc...) and works with boundary crossing mappings.
-> 
-> We could always fallback to classic small page mappings but that is
-> quite suboptimal.
-> 
-> I also notice that sg_alloc_table_from_pages() doesn't try to prevent
-> crossing the 4G boundary. I remember pretty clearly that it was
-> explicitely forbidden to create such a crossing.
-> 
-> > Of course, given that the allocators tend to give out size/order-aligned 
-> > chunks, I think you'd have to be pretty tricksy to get two allocations 
-> > to line up either side of a large power-of-two boundary *and* go out of 
-> > your way to then make a single request spanning both, but it's certainly 
-> > not illegal. Realistically, the kind of "scrape together a large buffer 
-> > from smaller pieces" code which is liable to hit a boundary-crossing 
-> > case by sheer chance is almost certainly going to be taking the 
-> > sg_alloc_table_from_pages() + dma_map_sg() route for convenience, rather 
-> > than implementing its own merging and piecemeal mapping.
-> 
-> Yes and I  think what sg_alloc_table_from_pages() does is quite wrong.
-> 
-> > > > Conceptually it looks pretty easy to extend the allocation constraints
-> > > > to cope with that - even the pathological worst case would have an
-> > > > absolute upper bound of 3 IOMMU entries for any one physical region -
-> > > > but if in practice it's a case of mapping arbitrary CPU pages to 32-bit
-> > > > DMA addresses having only 4 1GB slots to play with, I can't really see a
-> > > > way to make that practical :(
-> > > 
-> > > No we are talking about 40-ish-bits of address space, so there's a bit
-> > > of leeway. Of course no scheme will work if the user app tries to map
-> > > more than the GPU can possibly access.
-> > > 
-> > > But with newer AMD adding a few more bits and nVidia being at 47-bits,
-> > > I think we have some margin, it's just that they can't reach our
-> > > discontiguous memory with a normal 'bypass' mapping and I'd rather not
-> > > teach Linux about every single way our HW can scatter memory accross
-> > > nodes, so an "on demand" mechanism is by far the most flexible way to
-> > > deal with all configurations.
-> > > 
-> > > > Maybe the best compromise would be some sort of hybrid scheme which
-> > > > makes sure that one of the IOMMU entries always covers the SWIOTLB
-> > > > buffer, and invokes software bouncing for the awkward cases.
-> > > 
-> > > Hrm... not too sure about that. I'm happy to limit that scheme to well
-> > > known GPU vendor/device IDs, and SW bouncing is pointless in these
-> > > cases. It would be nice if we could have some kind of guarantee that a
-> > > single mapping or sglist entry never crossed a specific boundary
-> > > though... We more/less have that for 4G already (well, we are supposed
-> > > to at least). Who are the main potential problematic subsystems here ?
-> > > I'm thinking network skb allocation pools ... and page cache if it
-> > > tries to coalesce entries before issuing the map request, does it ?
-> > 
-> > I don't know of anything definite off-hand, but my hunch is to be most 
-> > wary of anything wanting to do zero-copy access to large buffers in 
-> > userspace pages. In particular, sg_alloc_table_from_pages() lacks any 
-> > kind of boundary enforcement (and most all users don't even use the 
-> > segment-length-limiting variant either), so I'd say any caller of that 
-> > currently has a very small, but nonzero, probability of spoiling your day.
-> 
-> And I'm starting to think we should just fix them.
-> 
-> Cheers,
-> Ben.
-> 
-> > Robin.
-> > 
+5ZyoIDIwMTjlubQwN+aciDE05pelIDAxOjA4LCBCb3Jpc2xhdiBQZXRrb3Yg5YaZ6YGTOgo+IE9u
+IE1vbiwgSnVsIDA5LCAyMDE4IGF0IDA5OjU1OjM1UE0gKzA4MDAsIGxpamlhbmcgd3JvdGU6Cj4+
+IEFib3V0IHRoaXMgaXNzdWUsIGkgd2FudCB0byB1c2UgYW4gZXhhbXBsZSB0byBkZXNjcmliZSBp
+dC4KPj4gLyogZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfaW5pdC5jICovCj4+IHN0YXRpYyB1OCBf
+X2lvbWVtICogX19pbml0IGlvbW11X21hcF9tbWlvX3NwYWNlKHU2NCBhZGRyZXNzLCB1NjQgZW5k
+KQo+IAo+IFRob3NlIGFkZHJlc3NlcyBjb21lIGZyb20gdGhlIElWSEQgaGVhZGVyIHdoaWNoIGlz
+IGFuIEFDUEkgdGFibGUuIFNvIHRoZQo+IGR1bXAga2VybmVsIGNhbiBmaW5kIHRoYXQgb3V0IHRv
+by4KPiBTdXJlLiBJIG1pZ2h0IHVuZGVyc3RhbmQgeW91ciBtZWFucywgdGhhdCB3aWxsIGhhdmUg
+dG8gZmluZCBhbGwgYWRkcmVzcyBvdXQgaW4Kb3JkZXIgdG8gY292ZXIgYW55IGNhc2VzIGluIGtk
+dW1wIGtlcm5lbCwgdGhvc2UgYWRkcmVzcyAgbWlnaHQgaW5jbHVkZSBNTUlPCnNwYWNlLCBIUEVU
+LCBBQ1BJIGRldmljZSB0YWJsZSwgRVJTVCwgYW5kIHNvIG9uLi4uIAoKPj4gT2J2aW91c2x5LCB0
+aGUgaW9tbXUgbW1pbyBzcGFjZSBpcyBub3QgZW5jcnlwdGVkLCBhbmQgdGhlIGRldmljZQo+PiBt
+bWlvIHNwYWNlIGlzIG91dHNpZGUga2R1bXAga2VybmVsLiBXZSBrbm93IHRoYXQgdGhlIG9sZCBt
+ZW1vcnkgaXMKPj4gZW5jcnlwdGVkLCBhbmQgdGhlIG9sZCBtZW1vcnkgaXMgYWxzbyBvdXRzaWRl
+IGtkdW1wIGtlcm5lbC4gRm9yIHRoZQo+PiBjdXJyZW50IGNhc2UsIGU4MjBfX2dldF9lbnRyeV90
+eXBlKCkgYW5kIHdhbGtfaW9tZW1fcmVzX2Rlc2MoKSBjYW4ndAo+PiBnZXQgdGhlIGRlc2lyZWQg
+cmVzdWx0LCBzbyB3ZSBjYW4ndCBhbHNvIGRlY2lkZSB3aGV0aGVyIGVuY3J5cHRpb24KPj4gb3Ig
+bm90IGFjY29yZGluZyB0byB0aGlzIHJlc3VsdChydWxlcykuIElmIHdlIHdhbnQgdG8ga25vdyB3
+aGV0aGVyCj4+IGVuY3J5cHRpb24gb3Igbm90IGJ5IGRlZHVjaW5nIHRoZSBhZGRyZXNzLCB3ZSB3
+aWxsIG5lZWQgdG8gcmVhZCB0aGUKPj4gY29udGVudCBvZiBtZW1vcnkgYW5kIGhhdmUgYSByZWZl
+cmVuY2UgdmFsdWUgZm9yIGNvbXBhcmlzb24sIHRoZW4KPj4gd2hhdCdzIGEgcmVmZXJlbmNlIHZh
+bHVlPyBTb21ldGltZXMgd2UgZG9uJ3Qga25vdyB0aGF0Lgo+IAo+IEFnYWluLCBpZiB3ZSBkb24n
+dCBrbm93IHRoYXQgaG93IGlzIHRoZSAqY2FsbGVyKiBzdXBwb3NlZCB0byBrbm93Cj4gd2hldGhl
+ciB0aGUgbWVtb3J5IGlzIGVuY3J5cHRlZCBvciBub3Q/IEJlY2F1c2UKPiAKPiAid2UiID09ICJj
+YWxsZXIiCj4gCj4gaW4gdGhlIGtkdW1wIGtlcm5lbC4KPiAKPiBBbmQgdGhlIG1vcmUgaW1wb3J0
+YW50IHF1ZXN0aW9uIGlzLCB3aHkgYXJlIHdlIGR1bXBpbmcgTU1JTyBzcGFjZSBvZiB0aGUKPiBw
+cmV2aW91cyBrZXJuZWwgKmF0KiAqYWxsKj8gVGhhdCBkb2Vzbid0IG1ha2UgYW55IHNlbnNlIHRv
+IG1lLgo+IApTb3JyeSBmb3IgbXkgbGF0ZSByZXBseS4KSGVyZSwgaXQgZG9lc24ndCBuZWVkIHRv
+IGR1bXAgTU1JTyBzcGFjZSBvZiB0aGUgcHJldmlvdXMga2VybmVsLCB3aGVuIHRoZQprZHVtcCBr
+ZXJuZWwgYm9vdCwgdGhlIE1NSU8gYWRkcmVzcyB3aWxsIGJlIHJlbWFwcGVkIGluIGRlY3J5cHRp
+b24gbWFubmVycywKYnV0IHRoZSBNTUlPIGFkZHJlc3MgZG9uJ3QgYmVsb25nIHRvIHRoZSByYW5n
+ZSBvZiB0aGUgY3Jhc2ggcmVzZXJ2ZWQgbWVtb3J5LApmb3IgdGhlIGtkdW1wIGtlcm5lbCwgdGhl
+IE1NSU8gc3BhY2UoYWRkcmVzcykgYW5kIElPTU1VIGRldmljZSB0YWJsZShhZGRyZXNzKQphcmUg
+b3V0c2lkZSBhZGRyZXNzLCB3aGVyZWFzLCB0aGUgSU9NTVUgZGV2aWNlIHRhYmxlIGlzIGVuY3J5
+cHRlZCBpbiB0aGUgZmlyc3QKa2VybmVsLCB0aGUga2R1bXAga2VybmVsIHdpbGwgbmVlZCB0byBj
+b3B5IHRoZSBjb250ZW50IG9mIElPTU1VIGRldmljZSB0YWJsZQpmcm9tIHRoZSBmaXJzdCBrZXJu
+ZWwgd2hlbiB0aGUga2R1bXAga2VybmVsIGJvb3QsIHNvIHRoZSBJT01NVSBkZXZpY2UgdGFibGUg
+d2lsbApiZSByZW1hcHBlZCBpbiBlbmNyeXB0aW9uIG1hbm5lcnMuClNvIHNvbWUgb2YgdGhlbSBy
+ZXF1aXJlIHRvIGJlIHJlbWFwcGVkIGluIGVuY3J5cHRpb24gbWFubmVycywgYW5kIHNvbWUoYWRk
+cmVzcykKcmVxdWlyZSB0byBiZSByZW1hcHBlZCBpbiBkZWNyeXB0aW9uIG1hbm5lcnMuCgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
