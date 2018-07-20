@@ -1,74 +1,23 @@
-From: lijiang <lijiang@redhat.com>
-Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
- AMD sme enabled
-Date: Fri, 20 Jul 2018 17:55:04 +0800
-Message-ID: <562d8611-750d-3624-1a1b-df21f39812d6@redhat.com>
-References: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
- <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
- <20180703111428.GB5748@zn.tnic>
- <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
- <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
- <20180709092901.GA22182@nazgul.tnic>
- <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
- <20180713170857.GB17896@nazgul.tnic>
- <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
- <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
- <20180720073245.GA26926@nazgul.tnic>
+From: Boris Petkov <bp@alien8.de>
+Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when AMD sme enabled
+Date: Fri, 20 Jul 2018 13:08:36 +0300
+Message-ID: <54D39850-F883-4EC6-B160-0CD88D47A997@alien8.de>
+References: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com> <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com> <20180703111428.GB5748@zn.tnic> <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com> <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com> <20180709092901.GA22182@nazgul.tnic> <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com> <20180713170857.GB17896@nazgul.tnic> <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com> <20180720052304.GA9146@dhcp-128-65.nay.redhat.com> <20180720073245.GA26926@nazgul.tnic> <562d8611-750d-3624-1a1b-df21f39812d6@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180720073245.GA26926@nazgul.tnic>
-Content-Language: en-US
+In-Reply-To: <562d8611-750d-3624-1a1b-df21f39812d6@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Borislav Petkov <bp@alien8.de>, Dave Young <dyoung@redhat.com>
+To: lijiang <lijiang@redhat.com>, Dave Young <dyoung@redhat.com>
 Cc: bhe@redhat.com, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-在 2018年07月20日 15:32, Borislav Petkov 写道:
-> On Fri, Jul 20, 2018 at 01:23:04PM +0800, Dave Young wrote:
->>> Here, it doesn't need to dump MMIO space of the previous kernel, when the
->>> kdump kernel boot, the MMIO address will be remapped in decryption manners,
->>> but the MMIO address don't belong to the range of the crash reserved memory,
->>> for the kdump kernel, the MMIO space(address) and IOMMU device table(address)
->>> are outside address, whereas, the IOMMU device table is encrypted in the first
->>> kernel, the kdump kernel will need to copy the content of IOMMU device table
->>> from the first kernel when the kdump kernel boot, so the IOMMU device table will
->>> be remapped in encryption manners.
-> 
-> -ENOFCKINGPARSE
-> 
-> I believe you're the only one who understands that humongous sentence.Sorry for this.
+On July 20, 2018 12:55:04 PM GMT+03:00, lijiang <lijiang@redhat.com> wrote:>
+>Thanks for your advice, I will rewrite the log and send them again.
 
-> How about using a fullstop from time to time. And WTF is "encryption
-> manners"?
-> 
->>> So some of them require to be remapped in encryption manners, and some(address)
->>> require to be remapped in decryption manners.
-> 
->> There could be some misunderstanding here.
-> 
-> Hell yeah there's a misunderstanding!
-> 
-> Can you folks first relax, sit down and explain the whole problem in
-> *plain* English using *simple* sentences. *Not* like the unparseable
-> mess above. Use simple, declaratory sentences and don't even try to
-> sound fancy:
-> 
-> "The first kernel boots. It's memory is encrypted... Now, the second
-> kernel boots. It must do A because of B. In order to do A, it needs to
-> do C. Because D..."
-> 
-> And so on. Explain what the problem is first. Then explain the proposed
-> solution. Explain *why* it needs to be done this way.
-> 
-> When you've written your explanation, try to read it as someone who
-> doesn't know kdump and *think* hard whether your explanation makes
-> sense. If it doesn't, fix it and read it again. Rinse and repeat. Until
-> it is clear to unenlightened readers too.
-> 
-Thanks for your advice, I will rewrite the log and send them again.
+Do not send them again - explain the problem properly first!
 
-> It is about time this hurried throwing of half-baked patches at
-> maintainers and seeing what sticks, stops!
-> 
+-- 
+Sent from a small device: formatting sux and brevity is inevitable. 
