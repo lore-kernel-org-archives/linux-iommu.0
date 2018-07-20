@@ -1,34 +1,39 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/1] Revert "iommu/vt-d: Clean up pasid quirk for
- pre-production devices"
-Date: Fri, 20 Jul 2018 13:56:53 +0200
-Message-ID: <20180720115652.tswu2sohy6snj4hl@8bytes.org>
-References: <1531031001-5783-1-git-send-email-baolu.lu@linux.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: IMUCTRn.TTSEL needs a special usage on
+	R-Car Gen3
+Date: Fri, 20 Jul 2018 14:04:22 +0200
+Message-ID: <20180720120422.f6whui2dtr5ygscu@8bytes.org>
+References: <1531104811-23417-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1531031001-5783-1-git-send-email-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <1531104811-23417-1-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Jul 08, 2018 at 02:23:21PM +0800, Lu Baolu wrote:
-> This reverts commit ab96746aaa344fb720a198245a837e266fad3b62.
+On Mon, Jul 09, 2018 at 11:53:31AM +0900, Yoshihiro Shimoda wrote:
+> The TTSEL bit of IMUCTRn register of R-Car Gen3 needs to be set
+> unused MMU context number even if uTLBs are disabled
+> (The MMUEN bit of IMUCTRn register = 0).
+> Since initial values of IMUCTRn.TTSEL on all IPMMU-domains are 0,
+> this patch adds a new feature "reserved_context" to reserve IPMMU
+> context number 0 as the unused MMU context.
 > 
-> The commit ab96746aaa34 ("iommu/vt-d: Clean up pasid quirk for
-> pre-production devices") triggers ECS mode on some platforms
-> which have broken ECS support. As the result, graphic device
-> will be inoperable on boot.
-> 
-> Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=107017
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 > ---
->  drivers/iommu/intel-iommu.c | 32 ++++++++++++++++++++++++++++++--
->  include/linux/intel-iommu.h |  1 +
->  2 files changed, 31 insertions(+), 2 deletions(-)
+>  drivers/iommu/ipmmu-vmsa.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-Applied to iommu/fixes.
+Applied, thanks.
