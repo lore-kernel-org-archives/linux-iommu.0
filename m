@@ -1,72 +1,74 @@
-From: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: [PATCH] iommu/amd: Remove redundant WARN_ON()
-Date: Fri, 20 Jul 2018 10:45:45 +0200
-Message-ID: <20180720084545.3284-1-anna-maria@linutronix.de>
+From: lijiang <lijiang@redhat.com>
+Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
+ AMD sme enabled
+Date: Fri, 20 Jul 2018 17:55:04 +0800
+Message-ID: <562d8611-750d-3624-1a1b-df21f39812d6@redhat.com>
+References: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
+ <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
+ <20180703111428.GB5748@zn.tnic>
+ <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
+ <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
+ <20180709092901.GA22182@nazgul.tnic>
+ <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
+ <20180713170857.GB17896@nazgul.tnic>
+ <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
+ <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
+ <20180720073245.GA26926@nazgul.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180720073245.GA26926@nazgul.tnic>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Borislav Petkov <bp@alien8.de>, Dave Young <dyoung@redhat.com>
+Cc: bhe@redhat.com, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-The WARN_ON() was introduced in commit 272e4f99e966 ("iommu/amd: WARN
-when __[attach|detach]_device are called with irqs enabled") to ensure
-that the domain->lock is taken in proper irqs disabled context. This
-is required, because the domain->lock is taken as well in irq
-context.
+在 2018年07月20日 15:32, Borislav Petkov 写道:
+> On Fri, Jul 20, 2018 at 01:23:04PM +0800, Dave Young wrote:
+>>> Here, it doesn't need to dump MMIO space of the previous kernel, when the
+>>> kdump kernel boot, the MMIO address will be remapped in decryption manners,
+>>> but the MMIO address don't belong to the range of the crash reserved memory,
+>>> for the kdump kernel, the MMIO space(address) and IOMMU device table(address)
+>>> are outside address, whereas, the IOMMU device table is encrypted in the first
+>>> kernel, the kdump kernel will need to copy the content of IOMMU device table
+>>> from the first kernel when the kdump kernel boot, so the IOMMU device table will
+>>> be remapped in encryption manners.
+> 
+> -ENOFCKINGPARSE
+> 
+> I believe you're the only one who understands that humongous sentence.Sorry for this.
 
-The proper context check by the WARN_ON() is redundant, because it is
-already covered by LOCKDEP. When working with locks and changing
-context, a run with LOCKDEP is required anyway and would detect the
-wrong lock context.
+> How about using a fullstop from time to time. And WTF is "encryption
+> manners"?
+> 
+>>> So some of them require to be remapped in encryption manners, and some(address)
+>>> require to be remapped in decryption manners.
+> 
+>> There could be some misunderstanding here.
+> 
+> Hell yeah there's a misunderstanding!
+> 
+> Can you folks first relax, sit down and explain the whole problem in
+> *plain* English using *simple* sentences. *Not* like the unparseable
+> mess above. Use simple, declaratory sentences and don't even try to
+> sound fancy:
+> 
+> "The first kernel boots. It's memory is encrypted... Now, the second
+> kernel boots. It must do A because of B. In order to do A, it needs to
+> do C. Because D..."
+> 
+> And so on. Explain what the problem is first. Then explain the proposed
+> solution. Explain *why* it needs to be done this way.
+> 
+> When you've written your explanation, try to read it as someone who
+> doesn't know kdump and *think* hard whether your explanation makes
+> sense. If it doesn't, fix it and read it again. Rinse and repeat. Until
+> it is clear to unenlightened readers too.
+> 
+Thanks for your advice, I will rewrite the log and send them again.
 
-Furthermore all callers for those functions are within the same file
-and all callers acquire another lock which already disables interrupts.
-
-Signed-off-by: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 12 ------------
- 1 file changed, 12 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 596b95c50051..b5f39bffd684 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1944,12 +1944,6 @@ static int __attach_device(struct iommu_dev_data *dev_data,
- {
- 	int ret;
- 
--	/*
--	 * Must be called with IRQs disabled. Warn here to detect early
--	 * when its not.
--	 */
--	WARN_ON(!irqs_disabled());
--
- 	/* lock domain */
- 	spin_lock(&domain->lock);
- 
-@@ -2115,12 +2109,6 @@ static void __detach_device(struct iommu_dev_data *dev_data)
- {
- 	struct protection_domain *domain;
- 
--	/*
--	 * Must be called with IRQs disabled. Warn here to detect early
--	 * when its not.
--	 */
--	WARN_ON(!irqs_disabled());
--
- 	domain = dev_data->domain;
- 
- 	spin_lock(&domain->lock);
--- 
-2.18.0
+> It is about time this hurried throwing of half-baked patches at
+> maintainers and seeing what sticks, stops!
+> 
