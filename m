@@ -1,92 +1,34 @@
-From: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: usb HC busted?
-Date: Fri, 20 Jul 2018 14:46:20 +0300
-Message-ID: <f8cfa055-cfd8-db66-a386-72bf904e17cd@linux.intel.com>
-References: <Pine.LNX.4.44L0.1807191046180.1308-100000@iolanthe.rowland.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 1/1] Revert "iommu/vt-d: Clean up pasid quirk for
+ pre-production devices"
+Date: Fri, 20 Jul 2018 13:56:53 +0200
+Message-ID: <20180720115652.tswu2sohy6snj4hl@8bytes.org>
+References: <1531031001-5783-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <Pine.LNX.4.44L0.1807191046180.1308-100000-IYeN2dnnYyZXsRXLowluHWD2FQJk+8+b@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
-Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1531031001-5783-1-git-send-email-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19.07.2018 17:57, Alan Stern wrote:
-> On Thu, 19 Jul 2018, Mathias Nyman wrote:
+On Sun, Jul 08, 2018 at 02:23:21PM +0800, Lu Baolu wrote:
+> This reverts commit ab96746aaa344fb720a198245a837e266fad3b62.
 > 
->> xhci driver will set up all the endpoints for the new altsetting already in
->> usb_hcd_alloc_bandwidth().
->>
->> New endpoints will be ready and rings running after this. I don't know the exact
->> history behind this, but I assume it is because xhci does all of the steps to
->> drop/add, disable/enable endpoints and check bandwidth in a single configure
->> endpoint command, that will return errors if there is not enough bandwidth.
+> The commit ab96746aaa34 ("iommu/vt-d: Clean up pasid quirk for
+> pre-production devices") triggers ECS mode on some platforms
+> which have broken ECS support. As the result, graphic device
+> will be inoperable on boot.
 > 
-> That's right; Sarah and I spent some time going over this while she was
-> working on it.  But it looks like the approach isn't adequate.
+> Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=107017
 > 
->> This command is issued in hcd->driver->check_bandwidth()
->> This means that xhci doesn't really do much in hcd->driver->endpoint_disable or
->> hcd->driver->endpoint_enable
->>
->> It also means that xhci driver assumes rings are empty when
->> hcd->driver->check_bandwidth is called. It will bluntly free dropped rings.
->> If there are URBs left on a endpoint ring that was dropped+added
->> (freed+reallocated) then those URBs will contain pointers to freed ring,
->> causing issues when usb_hcd_flush_endpoint() cancels those URBs.
->>
->> usb_set_interface()
->>     usb_hcd_alloc_bandwidth()
->>       hcd->driver->drop_endpoint()
->>       hcd->driver->add_endpoint() // allocates new rings
->>       hcd->driver->check_bandwidth() // issues configure endpoint command, free rings.
->>     usb_disable_interface(iface, true)
->>       usb_disable_endpoint()
->>         usb_hcd_flush_endpoint() // will access freed ring if URBs found!!
->>         usb_hcd_disable_endpoint()
->>           hcd->driver->endpoint_disable()  // xhci does nothing
->>     usb_enable_interface(iface, true)
->>       usb_enable_endpoint(ep_addrss, true) // not really doing much on xhci side.
->>
->> As first aid I could try to implement checks that make sure the flushed URBs
->> trb pointers really are on the current endpoint ring, and also add some warning
->> if we are we are dropping endpoints with URBs still queued.
->>
->> But we need to fix this properly as well.
->> xhci needs to be more in sync with usb core in usb_set_interface(), currently xhci
->> has the altssetting up and running when usb core hasn't event started flushing endpoints.
-> 
-> Absolutely.  The core tries to be compatible with host controller
-> drivers that either allocate bandwidth as it is requested or else
-> allocate bandwidth all at once when an altsetting is installed.
-> 
-> xhci-hcd falls into the second category.  However, this approach
-> requires the bandwidth verification for the new altsetting to be
-> performed before the old altsetting has been disabled, and the xHCI
-> hardware can't do this.
-> 
-> We may need to change the core so that the old endpoints are disabled
-> before the bandwidth check is done, instead of after.  Of course, this
-> leads to an awkward situation if the check fails -- we'd probably have
-> to go back and re-install the old altsetting.
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel-iommu.c | 32 ++++++++++++++++++++++++++++++--
+>  include/linux/intel-iommu.h |  1 +
+>  2 files changed, 31 insertions(+), 2 deletions(-)
 
-That would help xhci a lot.
-
-If we want to avoid the awkward altsetting re-install after bandwidth failure
-then adding a extra endpoint flush before checking the bandwidth would already help a lot.
-
-The endpoint disabling can then be remain after bandwidth checking.
-Does that work for other host controllers?
-
--Mathias
+Applied to iommu/fixes.
