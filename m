@@ -1,13 +1,23 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Fix allocation in atomic context
-Date: Sat, 21 Jul 2018 12:12:33 +0300
-Message-ID: <25541397.uzn8ZjuUG8@avalon>
-References: <20180720161659.29800-1-geert+renesas@glider.be>
+From: Sudip Mukherjee <sudipm.mukherjee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: usb HC busted?
+Date: Sat, 21 Jul 2018 11:55:47 +0100
+Message-ID: <20180721105509.hjocon6ngk2liwo4@debian>
+References: <Pine.LNX.4.44L0.1807171022001.1689-100000@iolanthe.rowland.org>
+	<20180717144022.4wabhdhysori3mvg@debian>
+	<20180717144918.7ymzbhijxfcc3fhb@debian>
+	<20180717151017.yk5d4glzwqcrxpqc@debian>
+	<f7801c24-fa98-6338-0b26-33a0ac9498bb@linux.intel.com>
+	<20180719113455.urktqxijzoyhfoou@debian>
+	<ab814c88-0857-5444-57da-34c21b8d7f6c@linux.intel.com>
+	<20180719173256.hc5aprma4biuqd4p@debian>
+	<d3f5575c-c75b-ea16-6da9-b2fe3cc9c102@linux.intel.com>
+	<20180720125421.jhdvas6oapryw6yz@debian>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180720161659.29800-1-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180720125421.jhdvas6oapryw6yz@debian>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,100 +27,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mathias Nyman <mathias.nyman-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, lukaszx.szulc-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert,
+Hi Mathias,
 
-Thank you for the patch.
+On Fri, Jul 20, 2018 at 01:54:21PM +0100, Sudip Mukherjee wrote:
+> Hi Mathias,
+> 
+> On Fri, Jul 20, 2018 at 02:10:58PM +0300, Mathias Nyman wrote:
+> > On 19.07.2018 20:32, Sudip Mukherjee wrote:
+> > > Hi Mathias,
+> > > 
+> > > On Thu, Jul 19, 2018 at 06:42:19PM +0300, Mathias Nyman wrote:
+> > > > > > As first aid I could try to implement checks that make sure the flushed URBs
+> > > > > > trb pointers really are on the current endpoint ring, and also add some warning
+> > > > > > if we are we are dropping endpoints with URBs still queued.
+> > > > > 
+> > > > > Yes, please. I think your first-aid will be a much better option than
+> > > > > the hacky patch I am using atm.
+> > > > > 
+> > > > 
+> <snip>
+> > So poison is overwritten at e5acda58 with almost its own address, (reading backwards) e5 ac da 60, twice.
+> > looks like something (32bit?)is pointing to itself twice, maybe a linked list node next and prev pointer
+> > being set to point to itself as last item was removed from list.
+> > 
+> > The cancelled_td_list is part of struct xhci_virt_ep, so that should be fine.
+> > But td_list is part of struct xhci_ring, which was freed. and we removed the URBs tds from the td_list when
+> > flushing the ring after ring was freed
+> > 
+> > I changed the patch (attached) to make sure it doesn't touch the td_list when canceling a URB after
+> > ring is freed.
+> > 
+> > How about this one, any improvements?
+> 
+> Yes, it worked. :D
+> 
+> So, cycle-1 = no change, just to make sure I can still reproduce the error.
+> cycle-2 and cycle-3 with your patch, and there was no problem,
+> slub debug was also happy.
+> I am starting an autotest with this patch now, and I will have almost
+> 50 cycles tested by tomorrow morning.
 
-On Friday, 20 July 2018 19:16:59 EEST Geert Uytterhoeven wrote:
-> When attaching a device to an IOMMU group with
-> CONFIG_DEBUG_ATOMIC_SLEEP=y:
-> 
->     BUG: sleeping function called from invalid context at mm/slab.h:421
->     in_atomic(): 1, irqs_disabled(): 128, pid: 61, name: kworker/1:1
->     ...
->     Call trace:
->      ...
->      arm_lpae_alloc_pgtable+0x114/0x184
->      arm_64_lpae_alloc_pgtable_s1+0x2c/0x128
->      arm_32_lpae_alloc_pgtable_s1+0x40/0x6c
->      alloc_io_pgtable_ops+0x60/0x88
->      ipmmu_attach_device+0x140/0x334
-> 
-> ipmmu_attach_device() takes a spinlock, while arm_lpae_alloc_pgtable()
-> allocates memory using GFP_KERNEL.  Originally, the ipmmu-vmsa driver
-> had its own custom page table allocation implementation using
-> GFP_ATOMIC, hence the spinlock was fine.
-> 
-> Fix this by replacing the spinlock by a mutex, like the arm-smmu driver
-> does.
-> 
-> Fixes: f20ed39f53145e45 ("iommu/ipmmu-vmsa: Use the ARM LPAE page table
-> allocator") Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 6a0e7142f41bf667..8f54f25404456035 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -73,7 +73,7 @@ struct ipmmu_vmsa_domain {
->  	struct io_pgtable_ops *iop;
-> 
->  	unsigned int context_id;
-> -	spinlock_t lock;			/* Protects mappings */
-> +	struct mutex mutex;			/* Protects mappings */
->  };
-> 
->  static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
-> @@ -599,7 +599,7 @@ static struct iommu_domain
-> *__ipmmu_domain_alloc(unsigned type) if (!domain)
->  		return NULL;
-> 
-> -	spin_lock_init(&domain->lock);
-> +	mutex_init(&domain->mutex);
-> 
->  	return &domain->io_domain;
->  }
-> @@ -645,7 +645,6 @@ static int ipmmu_attach_device(struct iommu_domain
-> *io_domain, struct iommu_fwspec *fwspec = dev->iommu_fwspec;
->  	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
->  	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
-> -	unsigned long flags;
->  	unsigned int i;
->  	int ret = 0;
-> 
-> @@ -654,7 +653,7 @@ static int ipmmu_attach_device(struct iommu_domain
-> *io_domain, return -ENXIO;
->  	}
-> 
-> -	spin_lock_irqsave(&domain->lock, flags);
-> +	mutex_lock(&domain->mutex);
+I can confirm that your bandaid patch has worked. Total of 67 cycles
+tested till now and there was no error. Its continuing to test over the
+weekend.
+Thank you very much for this one. :)
 
-As the ipmmu_attach_device() function is called from a sleepable context this 
-should be fine.
+I guess you will start with the proper fix, that you and Alan had been
+discussing, after you are fully back to work.
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-
-> 
->  	if (!domain->mmu) {
->  		/* The domain hasn't been used yet, initialize it. */
-> @@ -678,7 +677,7 @@ static int ipmmu_attach_device(struct iommu_domain
-> *io_domain, } else
->  		dev_info(dev, "Reusing IPMMU context %u\n", domain->context_id);
-> 
-> -	spin_unlock_irqrestore(&domain->lock, flags);
-> +	mutex_unlock(&domain->mutex);
-> 
->  	if (ret < 0)
->  		return ret;
-
-
--- 
-Regards,
-
-Laurent Pinchart
+--
+Regards
+Sudip
