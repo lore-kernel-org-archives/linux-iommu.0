@@ -1,15 +1,11 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: use the generic dma-noncoherent code for openrisc
-Date: Sat, 21 Jul 2018 14:37:08 +0200
-Message-ID: <20180721123708.GA635@lst.de>
-References: <20180719130232.1819-1-hch@lst.de>
-	<20180721053142.GC9742@lianli.shorne-pla.net>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [RFC PATCH 00/10] vfio/mdev: IOMMU aware mediated device
+Date: Sun, 22 Jul 2018 14:09:23 +0800
+Message-ID: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180721053142.GC9742-Uk7Bhu+bUQgm0WYXfsLZQReHL2rgt/dS@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,12 +15,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stafford Horne <shorne-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Jonas Bonn <jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stefan Kristiansson <stefan.kristiansson-MbMCFXIvDHJFcC0YU169RA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Jul 21, 2018 at 02:31:42PM +0900, Stafford Horne wrote:
-> For upstreaming, do you want me to send these through the openrisc tree, or do
-> you want to send with the dma tree?
+Hi,
 
-Feel free to merge them through the openrisc tree.
+The Mediate Device is a framework for fine-grained physical device
+sharing across the isolated domains. Currently the mdev framework
+is designed to be independent of the platform IOMMU support. As the
+result, the DMA isolation relies on the mdev parent device in a
+vendor specific way.
+
+There are several cases where a mediated device could be protected
+and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
+[1] introduces a new translation mode called 'scalable mode', which
+enables PASID-granular translations. The vt-d scalable mode is the
+key ingredient for Scalable I/O Virtualization [2] [3] which allows
+sharing a device in minimal possible granularity (ADI - Assignable
+Device Interface).
+
+A mediated device backed by an ADI could be protected and isolated
+by the IOMMU since 1) the parent device supports tagging an unique
+PASID to all DMA traffic out of the mediated device; and 2) the DMA
+translation unit (IOMMU) supports the PASID granular translation.
+We can apply IOMMU protection and isolation to this kind of devices
+just as what we are doing with an assignable PCI device.
+
+In order to distinguish the IOMMU-capable mediated devices from those
+which still need to rely on parent devices, this patch set adds a
+domain type attribute to each mdev.
+
+enum mdev_domain_type {
+       DOMAIN_TYPE_EXTERNAL,   /* Use the external domain and all
+                                * IOMMU staff controlled by the
+                                * parent device driver.
+                                */
+       DOMAIN_TYPE_INHERITANCE,/* Use the same domain as the parent device. */
+       DOMAIN_TYPE_PRIVATE,    /* Capable of having a private domain. For an
+                                * example, the parent device is able to bind
+                                * a specific PASID for a mediated device and
+                                * transfering data with the asigned PASID.
+                                */
+};
+
+The mdev parent device driver could opt-in whether an mdev is IOMMU
+capable when the device is created by invoking below interface within
+its @create callback:
+
+int mdev_set_domain_type(struct device *dev,
+                         enum mdev_domain_type type);
+
+In vfio_iommu_type1_attach_group(), a domain will be found and assigned
+to the group according to the domain type attributes of mdev devices in
+the group.
+
+Besides above, we still need below changes to sport IOMMU-capable mdev
+device:
+a) The platform specific iommu ops should be set to mdev bus. So that,
+   the vfio/mdev framework could call iommu APIs.
+b) The iommu driver should be changed to support setting up the translation
+   structures for a mediated device.
+
+This patch series extends both IOMMU and vfio components to support
+mdev device passing through when it could be isolated and protected
+by the IOMMU units. The first part of this series (PATCH 1/10 ~ 5/10)
+makes the Intel IOMMU driver to be aware of a mediated device. The
+second part (PATCH 6/10 ~ 8/10) sets the iommu ops for the mdev bus.
+The last part (PATCH 9/10 ~ 10/10) adds the domain type attribute to
+a mdev device and allocates an iommu domain if it is IOMMU-capable.
+
+This patch series depends on a patch set posted here [4] for discussion
+which added the support for scalable mode in Intel IOMMU driver.
+
+References:
+[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+[4] https://lkml.org/lkml/2018/7/16/62
+
+Best regards,
+Lu Baolu
+
+Lu Baolu (10):
+  iommu/vt-d: Get iommu device for a mediated device
+  iommu/vt-d: Alloc domain for a mediated device
+  iommu/vt-d: Allocate groups for mediated devices
+  iommu/vt-d: Get pasid table for a mediated device
+  iommu/vt-d: Setup DMA remapping for mediated devices
+  iommu: Add iommu_set_bus API interface
+  iommu/vt-d: Add set_bus iommu ops
+  vfio/mdev: Set iommu ops for mdev bus
+  vfio/mdev: Add mediated device domain type
+  vfio/type1: Allocate domain for mediated device
+
+ drivers/iommu/intel-iommu.c      | 127 ++++++++++++++++++++++++++++++++++++---
+ drivers/iommu/intel-pasid.c      |  16 ++++-
+ drivers/iommu/intel-pasid.h      |  16 +++++
+ drivers/iommu/iommu.c            |  23 +++++++
+ drivers/vfio/mdev/mdev_core.c    |  30 ++++++++-
+ drivers/vfio/mdev/mdev_driver.c  |  10 +++
+ drivers/vfio/mdev/mdev_private.h |   1 +
+ drivers/vfio/vfio_iommu_type1.c  |  43 +++++++++----
+ include/linux/intel-iommu.h      |   5 ++
+ include/linux/iommu.h            |  12 ++++
+ include/linux/mdev.h             |  22 +++++++
+ 11 files changed, 282 insertions(+), 23 deletions(-)
+
+-- 
+2.7.4
