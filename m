@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 02/10] iommu/vt-d: Alloc domain for a mediated device
-Date: Sun, 22 Jul 2018 14:09:25 +0800
-Message-ID: <1532239773-15325-3-git-send-email-baolu.lu@linux.intel.com>
+Subject: [RFC PATCH 01/10] iommu/vt-d: Get iommu device for a mediated device
+Date: Sun, 22 Jul 2018 14:09:24 +0800
+Message-ID: <1532239773-15325-2-git-send-email-baolu.lu@linux.intel.com>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,12 +10,10 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex 
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The PASID-granular 2nd level address translation makes it possible
-to isolate and protect a mediated device exposed by a real device
-which support PCI PASID features. This patch adds support to allocate
-a domain for a mediated device. A default pasid value will be
-allocated as well for the mediated device. This will be used by the
-mediated device attached to this domain for non-SVM DMA transactions.
+This patch adds the support to get the iommu device for a mediated
+device. The assumption is that each mediated device is a minimal
+assignable set of a physical PCI device. Hence, we should use the
+iommu device of the parent PCI device to manage the translation.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -24,64 +22,53 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 17 ++++++++++++++++-
- include/linux/intel-iommu.h |  5 +++++
- 2 files changed, 21 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c |  6 ++++++
+ drivers/iommu/intel-pasid.h | 16 ++++++++++++++++
+ 2 files changed, 22 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index fc3ac1c..3ede34a 100644
+index 7d198ea..fc3ac1c 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1926,6 +1926,9 @@ static void domain_exit(struct dmar_domain *domain)
- 	domain_remove_dev_info(domain);
- 	rcu_read_unlock();
+@@ -767,6 +767,12 @@ static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devf
+ 	if (iommu_dummy(dev))
+ 		return NULL;
  
-+	if (domain->default_pasid > 0)
-+		intel_pasid_free_id(domain->default_pasid);
-+
- 	/* destroy iovas */
- 	put_iova_domain(&domain->iovad);
- 
-@@ -2519,11 +2522,23 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 		}
- 	}
- 
-+	if (dev && dev_is_mdev(dev) && domain->default_pasid <= 0) {
-+		int max = intel_pasid_get_dev_max_id(dev_mdev_parent(dev));
-+
-+		domain->default_pasid = intel_pasid_alloc_id(domain, PASID_MIN,
-+							     max, GFP_KERNEL);
-+		if (domain->default_pasid < 0) {
-+			free_devinfo_mem(info);
++	if (dev_is_mdev(dev)) {
++		dev = dev_mdev_parent(dev);
++		if (WARN_ON(!dev_is_pci(dev)))
 +			return NULL;
-+		}
 +	}
 +
- 	spin_lock_irqsave(&device_domain_lock, flags);
- 	if (dev)
- 		found = find_domain(dev);
+ 	if (dev_is_pci(dev)) {
+ 		struct pci_dev *pf_pdev;
  
--	if (!found) {
-+	/* A mediated device never has an DMA alias. Ignore searching. */
-+	if (!found && !dev_is_mdev(dev)) {
- 		struct device_domain_info *info2;
- 		info2 = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
- 		if (info2) {
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 7efc632..9f5dcf6 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -423,6 +423,11 @@ struct dmar_domain {
- 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
- 	u64		max_addr;	/* maximum mapped address */
- 
-+	int		default_pasid;	/*
-+					 * The default pasid used for non-SVM
-+					 * traffic on mediated devices.
-+					 */
-+
- 	struct iommu_domain domain;	/* generic domain data structure for
- 					   iommu core */
+diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+index 518df72..46cde66 100644
+--- a/drivers/iommu/intel-pasid.h
++++ b/drivers/iommu/intel-pasid.h
+@@ -35,6 +35,22 @@ struct pasid_table {
+ 	struct list_head	dev;		/* device list */
  };
+ 
++static inline bool dev_is_mdev(struct device *dev)
++{
++	if (!dev)
++		return false;
++
++	return !strcmp(dev->bus->name, "mdev");
++}
++
++static inline struct device *dev_mdev_parent(struct device *dev)
++{
++	if (WARN_ON(!dev_is_mdev(dev)))
++		return NULL;
++
++	return dev->parent;
++}
++
+ extern u32 intel_pasid_max_id;
+ int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
+ void intel_pasid_free_id(int pasid);
 -- 
 2.7.4
