@@ -1,17 +1,18 @@
-From: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 Subject: Re: convert parisc to the generic dma-noncoherent code
-Date: Sun, 22 Jul 2018 17:45:40 +0200
-Message-ID: <c080d766-5b7b-2776-848c-60da09bd2c9c@gmx.de>
+Date: Sun, 22 Jul 2018 21:57:22 +0200
+Message-ID: <20180722195722.GA10147@lst.de>
 References: <20180619070455.26624-1-hch@lst.de> <20180711153445.GC31946@lst.de>
 	<e2b653d8-cc04-7a81-89a0-9d286c5cc0ca@gmx.de>
 	<e29f9140-0d47-e074-1609-d6ae8f8869b3@bell.net>
 	<20180717131952.GF13582@lst.de>
+	<c080d766-5b7b-2776-848c-60da09bd2c9c@gmx.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180717131952.GF13582-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <c080d766-5b7b-2776-848c-60da09bd2c9c-Mmb7MZpHnFY@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,35 +22,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>
-Cc: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+Cc: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTcuMDcuMjAxOCAxNToxOSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gT24gU3VuLCBK
-dWwgMTUsIDIwMTggYXQgMTI6Mjk6MzdQTSAtMDQwMCwgSm9obiBEYXZpZCBBbmdsaW4gd3JvdGU6
-Cj4+IE9uIDIwMTgtMDctMTMgNDoxNCBBTSwgSGVsZ2UgRGVsbGVyIHdyb3RlOgo+Pj4gT24gMTEu
-MDcuMjAxOCAxNzozNCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4+Pj4gcGluZz8gIEFueSBj
-b21tZW50cz8KPj4+IEkgYXBwbGllZCB0aG9zZSAzIHBhdGNoZXMgb24gdG9wIG9mIGdpdCBoZWFk
-LCBhbmQgYm9vdGVkIHRoZQo+Pj4gMzItYml0IGtlcm5lbCBvbiBhIEhQIDcxNS82NCAoUENYLUwp
-IGFuZCBhIEhQIEIxNjBMIChQQ1gtTDIpLgo+Pj4gT24gYm90aCBtYWNoaW5lcyBJIGhhZCBwcm9i
-bGVtcyB3aXRoIHRob3NlIGRyaXZlcnMgd2hpY2ggdXNlCj4+PiBETUEgKEkgY2hlY2tlZCBzcGVj
-aWZpY2FsbHkgdGhlIGxhc2kgTklDIGNhcmQsIHdoaWNoIGlzIHRoZQo+Pj4gbWFpbiBvbmJvYXJk
-IE5JQyBjYXJkIGluIGJvdGggbWFjaGluZXMpLgo+Pj4gR2V0dGluZyBJUCB2aWEgREhDUCB3YXMg
-dW5yZWxpYWJsZSwgcGluZ3Mgb24gdGhlIHNhbWUgbmV0d29yawo+Pj4gdG8gYm90aCBtYWNoaW5l
-cyBnYXZlIGxvc3QgcGFja2V0cywgbG9naW4gdmlhIHNzaCBzb21ldGltZXMgZmFpbGVkCj4+PiBh
-bmQgc28gb24uCj4+Pgo+Pj4gU28sIHRoZXJlIGlzIGRlZmluaXRpdmVseSBzb21lIGNhY2hlLWZs
-dXNoIG1pc3NpbmcgaW4gdGhpcyBwYXRjaHNldC4KPj4gUG9zc2libHksIHRoZSBjb2RlIHNob3Vs
-ZCB1c2UgZmx1c2hfa2VybmVsX3ZtYXBfcmFuZ2UoKSBhcyBpdCBwdXJnZXMgdGhlIAo+PiBUTEIg
-ZW50cmllcyB1c2VkCj4+IGZvciB0aGUgY2FjaGUgZmx1c2guwqAgU29tZSBvZiB0aGUgcm91dGlu
-ZXMgaW4gcGNpLWRtYS5jIGN1cnJlbnRseSB1c2UgaXQuCj4gCj4gVGhhdCBtaWdodCBiZSB3b3J0
-aCBhIHRyeSBhbmQgaXMgYWxyZWFkeSBkaXNjdXNzZWQgaW4gbXkgZGVzY3JpcHRpb24uCj4gCj4g
-QWxzbyBpdCBtaWdodCBiZSBnb29kIHRvIGNoZWNrIHRoYXQgdGhlIGxhc3QgcGF0Y2ggcmVhbGx5
-IGlzIHRoZSBjdWxwcml0LAo+IEknbSBwcmV0dHkgY2VydGFpbiBpdCBpcywgYnV0IGEgZG91Ymxl
-IGNoZWNrIG5ldmVyIGh1cnRzLgoKU29tZWhvdyBJIG5vdyBjYW4ndCByZXByb2R1Y2UgdGhlIGNh
-Y2hlIGlzc3VlcyBhbnkgbG9uZ2VyLiBCb3RoLCB5b3VyIG9yaWdpbmFsCnBhdGNoIGFuZCB3aGVu
-IHVzaW5nIGZsdXNoX2tlcm5lbF92bWFwX3JhbmdlKCksIGJvdGggd29yay4KClNvLCB5b3UgY2Fu
-IGFkZCBhIApUZXN0ZWQtYnk6IEhlbGdlIERlbGxlciA8ZGVsbGVyQGdteC5kZT4KdG8geW91ciBv
-cmlnaW5hbCBwYXRjaCBzZXJpZXMuCgpIZWxnZQpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+On Sun, Jul 22, 2018 at 05:45:40PM +0200, Helge Deller wrote:
+> Somehow I now can't reproduce the cache issues any longer. Both, your original
+> patch and when using flush_kernel_vmap_range(), both work.
+> 
+> So, you can add a 
+> Tested-by: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+> to your original patch series.
+
+I can merge this through the dma-mapping tree, but given that
+it touches only arch/parisc/ it might make more sense to merge it
+through the parisc tree.
