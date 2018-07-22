@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 01/10] iommu/vt-d: Get iommu device for a mediated device
-Date: Sun, 22 Jul 2018 14:09:24 +0800
-Message-ID: <1532239773-15325-2-git-send-email-baolu.lu@linux.intel.com>
+Subject: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated devices
+Date: Sun, 22 Jul 2018 14:09:26 +0800
+Message-ID: <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,10 +10,10 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex 
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the support to get the iommu device for a mediated
-device. The assumption is that each mediated device is a minimal
-assignable set of a physical PCI device. Hence, we should use the
-iommu device of the parent PCI device to manage the translation.
+With the Intel IOMMU supporting PASID granularity isolation and
+protection, a mediated device could be isolated and protected by
+an IOMMU unit. We need to allocate a new group instead of a PCI
+group.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -22,53 +22,39 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c |  6 ++++++
- drivers/iommu/intel-pasid.h | 16 ++++++++++++++++
- 2 files changed, 22 insertions(+)
+ drivers/iommu/intel-iommu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 7d198ea..fc3ac1c 100644
+index 3ede34a..57ccfc4 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -767,6 +767,12 @@ static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devf
- 	if (iommu_dummy(dev))
- 		return NULL;
+@@ -5276,6 +5276,17 @@ static void intel_iommu_put_resv_regions(struct device *dev,
+ 	}
+ }
  
-+	if (dev_is_mdev(dev)) {
-+		dev = dev_mdev_parent(dev);
-+		if (WARN_ON(!dev_is_pci(dev)))
-+			return NULL;
-+	}
++static struct iommu_group *intel_iommu_device_group(struct device *dev)
++{
++	if (dev_is_pci(dev))
++		return pci_device_group(dev);
 +
- 	if (dev_is_pci(dev)) {
- 		struct pci_dev *pf_pdev;
- 
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 518df72..46cde66 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -35,6 +35,22 @@ struct pasid_table {
- 	struct list_head	dev;		/* device list */
++	if (dev_is_mdev(dev))
++		return iommu_group_alloc();
++
++	return ERR_PTR(-EINVAL);
++}
++
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
+ {
+@@ -5370,7 +5381,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.remove_device		= intel_iommu_remove_device,
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+ 	.put_resv_regions	= intel_iommu_put_resv_regions,
+-	.device_group		= pci_device_group,
++	.device_group		= intel_iommu_device_group,
+ 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
  };
  
-+static inline bool dev_is_mdev(struct device *dev)
-+{
-+	if (!dev)
-+		return false;
-+
-+	return !strcmp(dev->bus->name, "mdev");
-+}
-+
-+static inline struct device *dev_mdev_parent(struct device *dev)
-+{
-+	if (WARN_ON(!dev_is_mdev(dev)))
-+		return NULL;
-+
-+	return dev->parent;
-+}
-+
- extern u32 intel_pasid_max_id;
- int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
- void intel_pasid_free_id(int pasid);
 -- 
 2.7.4
