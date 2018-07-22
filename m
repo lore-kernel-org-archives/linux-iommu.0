@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 10/10] vfio/type1: Allocate domain for mediated device
-Date: Sun, 22 Jul 2018 14:09:33 +0800
-Message-ID: <1532239773-15325-11-git-send-email-baolu.lu@linux.intel.com>
+Subject: [RFC PATCH 05/10] iommu/vt-d: Setup DMA remapping for mediated devices
+Date: Sun, 22 Jul 2018 14:09:28 +0800
+Message-ID: <1532239773-15325-6-git-send-email-baolu.lu@linux.intel.com>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,8 +10,8 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex 
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This allocates a domain for the mediated device if it is able to
-be isolated and protected individually by IOMMU.
+This configures the second level page table when external components
+request to allocate a domain for a mediated device.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -20,70 +20,114 @@ Cc: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 43 ++++++++++++++++++++++++++++++-----------
- 1 file changed, 32 insertions(+), 11 deletions(-)
+ drivers/iommu/intel-iommu.c | 73 ++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 66 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 3e5b177..496bea6 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1177,6 +1177,22 @@ static int vfio_bus_type(struct device *dev, void *data)
- 	return 0;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 57ccfc4..b6e9ea8 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2569,8 +2569,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	if (dev)
+ 		dev->archdata.iommu = info;
+ 
+-	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
+-		bool pass_through;
++	if (dev && sm_supported(iommu)) {
++		bool pass_through = hw_pass_through &&
++				domain_type_is_si(domain);
+ 
+ 		ret = intel_pasid_alloc_table(dev);
+ 		if (ret) {
+@@ -2579,12 +2580,21 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 			return NULL;
+ 		}
+ 
+-		/* Setup the PASID entry for requests without PASID: */
+-		pass_through = hw_pass_through && domain_type_is_si(domain);
+ 		spin_lock(&iommu->lock);
+-		intel_pasid_setup_second_level(iommu, domain, dev,
+-					       PASID_RID2PASID,
+-					       pass_through);
++
++		/* Setup the PASID entry for requests without PASID: */
++		if (dev_is_pci(dev))
++			intel_pasid_setup_second_level(iommu, domain, dev,
++						       PASID_RID2PASID,
++						       pass_through);
++		/* Setup the PASID entry for mediated devices: */
++		else if (dev_is_mdev(dev))
++			intel_pasid_setup_second_level(iommu, domain, dev,
++						       domain->default_pasid,
++						       false);
++		else
++			pr_err("Unsupported device %s\n", dev_name(dev));
++
+ 		spin_unlock(&iommu->lock);
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+@@ -4937,6 +4947,32 @@ static void domain_context_clear(struct intel_iommu *iommu, struct device *dev)
+ 	pci_for_each_dma_alias(to_pci_dev(dev), &domain_context_clear_one_cb, iommu);
  }
  
-+static int mdev_private_domain(struct device *dev, void *data)
++static void
++iommu_flush_ext_iotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 gran)
 +{
-+	enum mdev_domain_type type;
-+	enum mdev_domain_type (*fn)(struct device *dev);
++	struct qi_desc desc;
 +
-+	fn = symbol_get(mdev_get_domain_type);
-+	if (fn) {
-+		type = fn(dev);
-+		symbol_put(mdev_get_domain_type);
++	desc.high = 0;
++	desc.low = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
++			QI_EIOTLB_GRAN(gran) | QI_EIOTLB_TYPE;
 +
-+		return type != DOMAIN_TYPE_PRIVATE;
-+	}
-+
-+	return -EINVAL;
++	qi_submit_sync(&desc, iommu);
 +}
 +
- static int vfio_iommu_replay(struct vfio_iommu *iommu,
- 			     struct vfio_domain *domain)
++static void iommu_flush_pasid_dev_iotlb(struct intel_iommu *iommu,
++					struct device *dev, int sid, int pasid)
++{
++	struct qi_desc desc;
++	struct pci_dev *pdev = to_pci_dev(dev);
++	int qdep = pci_ats_queue_depth(pdev);
++
++	desc.low = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
++			QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE;
++	desc.high = QI_DEV_EIOTLB_ADDR(-1ULL >> 1) | QI_DEV_EIOTLB_SIZE;
++
++	qi_submit_sync(&desc, iommu);
++}
++
+ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
  {
-@@ -1371,18 +1387,23 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	mdev_bus = symbol_get(mdev_bus_type);
+ 	struct intel_iommu *iommu;
+@@ -4949,6 +4985,29 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
  
- 	if (mdev_bus) {
--		if ((bus == mdev_bus) && !iommu_present(bus)) {
--			symbol_put(mdev_bus_type);
--			if (!iommu->external_domain) {
--				INIT_LIST_HEAD(&domain->group_list);
--				iommu->external_domain = domain;
--			} else
--				kfree(domain);
-+		if (bus == mdev_bus) {
-+			ret = iommu_group_for_each_dev(iommu_group, NULL,
-+						       mdev_private_domain);
-+			if (!iommu_present(bus) || ret) {
-+				symbol_put(mdev_bus_type);
-+				if (!iommu->external_domain) {
-+					INIT_LIST_HEAD(&domain->group_list);
-+					iommu->external_domain = domain;
-+				} else {
-+					kfree(domain);
-+				}
+ 	iommu = info->iommu;
  
--			list_add(&group->next,
--				 &iommu->external_domain->group_list);
--			mutex_unlock(&iommu->lock);
--			return 0;
-+				list_add(&group->next,
-+					 &iommu->external_domain->group_list);
-+				mutex_unlock(&iommu->lock);
-+				return 0;
-+			}
- 		}
- 		symbol_put(mdev_bus_type);
- 	}
++	if (dev_is_mdev(info->dev)) {
++		struct dmar_domain *domain = info->domain;
++		int did = domain->iommu_did[iommu->seq_id];
++		int sid = info->bus << 8 | info->devfn;
++		struct device *dev = info->dev;
++
++		intel_pasid_clear_entry(dev, domain->default_pasid);
++
++		/* Flush IOTLB including PASID Cache: */
++		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
++
++		/*
++		 * Flush EIOTLB. The only way to flush global mappings within
++		 * a PASID is to use QI_GRAN_ALL_ALL.
++		 */
++		iommu_flush_ext_iotlb(iommu, did, domain->default_pasid,
++				      QI_GRAN_ALL_ALL);
++
++		/* Flush Dev TLB: */
++		iommu_flush_pasid_dev_iotlb(iommu, dev_mdev_parent(dev), sid,
++					    domain->default_pasid);
++	}
++
+ 	if (info->dev) {
+ 		iommu_disable_dev_iotlb(info);
+ 		domain_context_clear(iommu, info->dev);
 -- 
 2.7.4
