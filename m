@@ -1,113 +1,55 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 06/10] iommu: Add iommu_set_bus API interface
-Date: Sun, 22 Jul 2018 14:09:29 +0800
-Message-ID: <1532239773-15325-7-git-send-email-baolu.lu@linux.intel.com>
-References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Helge Deller <deller-Mmb7MZpHnFY@public.gmane.org>
+Subject: Re: convert parisc to the generic dma-noncoherent code
+Date: Sun, 22 Jul 2018 17:45:40 +0200
+Message-ID: <c080d766-5b7b-2776-848c-60da09bd2c9c@gmx.de>
+References: <20180619070455.26624-1-hch@lst.de> <20180711153445.GC31946@lst.de>
+	<e2b653d8-cc04-7a81-89a0-9d286c5cc0ca@gmx.de>
+	<e29f9140-0d47-e074-1609-d6ae8f8869b3@bell.net>
+	<20180717131952.GF13582@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180717131952.GF13582-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, John David Anglin <dave.anglin-CzeTG9NwML0@public.gmane.org>
+Cc: James Bottomley <James.Bottomley-d9PhHud1JfjCXq6kfMZ53/egYHeGw8Jk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This adds iommu_set_bus API by adding a new set_bus ops in the
-iommu_ops structure. A vendor IOMMU driver could either specify
-its callback or safely ignore it. This interface could be used
-to set the iommu methods used for a particular non-pci bus. One
-consumer of this interface could be vfio/mdev bus when the mdev
-devices could be exclusively protected by the IOMMU units.
-
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
- include/linux/iommu.h | 12 ++++++++++++
- 2 files changed, 35 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 63b3756..b22b0a7 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1976,3 +1976,26 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-+
-+int iommu_set_bus(struct bus_type *bus)
-+{
-+	struct iommu_device *iommu;
-+	int ret = -ENODEV;
-+
-+	spin_lock(&iommu_device_lock);
-+	/*
-+	 * Iterate over iommu list and try setting bus with
-+	 * each iommu until a successful setting.
-+	 */
-+	list_for_each_entry(iommu, &iommu_device_list, list) {
-+		if (iommu->ops->set_bus) {
-+			ret = iommu->ops->set_bus(bus, iommu);
-+			if (!ret)
-+				break;
-+		}
-+	}
-+	spin_unlock(&iommu_device_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_set_bus);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee..2679796 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -48,6 +48,7 @@ struct bus_type;
- struct device;
- struct iommu_domain;
- struct notifier_block;
-+struct iommu_device;
- 
- /* iommu fault flags */
- #define IOMMU_FAULT_READ	0x0
-@@ -187,6 +188,7 @@ struct iommu_resv_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @set_bus: set iommu ops for a non-pci bus
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -235,6 +237,9 @@ struct iommu_ops {
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
- 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
- 
-+	/* Set iommu ops for a bus */
-+	int (*set_bus)(struct bus_type *bus, struct iommu_device *iommu);
-+
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -412,6 +417,8 @@ void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
- const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
- 
-+int iommu_set_bus(struct bus_type *bus);
-+
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
-@@ -696,6 +703,11 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 	return NULL;
- }
- 
-+static inline int iommu_set_bus(struct bus_type *bus)
-+{
-+	return -ENODEV;
-+}
-+
- #endif /* CONFIG_IOMMU_API */
- 
- #endif /* __LINUX_IOMMU_H */
--- 
-2.7.4
+T24gMTcuMDcuMjAxOCAxNToxOSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gT24gU3VuLCBK
+dWwgMTUsIDIwMTggYXQgMTI6Mjk6MzdQTSAtMDQwMCwgSm9obiBEYXZpZCBBbmdsaW4gd3JvdGU6
+Cj4+IE9uIDIwMTgtMDctMTMgNDoxNCBBTSwgSGVsZ2UgRGVsbGVyIHdyb3RlOgo+Pj4gT24gMTEu
+MDcuMjAxOCAxNzozNCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4+Pj4gcGluZz8gIEFueSBj
+b21tZW50cz8KPj4+IEkgYXBwbGllZCB0aG9zZSAzIHBhdGNoZXMgb24gdG9wIG9mIGdpdCBoZWFk
+LCBhbmQgYm9vdGVkIHRoZQo+Pj4gMzItYml0IGtlcm5lbCBvbiBhIEhQIDcxNS82NCAoUENYLUwp
+IGFuZCBhIEhQIEIxNjBMIChQQ1gtTDIpLgo+Pj4gT24gYm90aCBtYWNoaW5lcyBJIGhhZCBwcm9i
+bGVtcyB3aXRoIHRob3NlIGRyaXZlcnMgd2hpY2ggdXNlCj4+PiBETUEgKEkgY2hlY2tlZCBzcGVj
+aWZpY2FsbHkgdGhlIGxhc2kgTklDIGNhcmQsIHdoaWNoIGlzIHRoZQo+Pj4gbWFpbiBvbmJvYXJk
+IE5JQyBjYXJkIGluIGJvdGggbWFjaGluZXMpLgo+Pj4gR2V0dGluZyBJUCB2aWEgREhDUCB3YXMg
+dW5yZWxpYWJsZSwgcGluZ3Mgb24gdGhlIHNhbWUgbmV0d29yawo+Pj4gdG8gYm90aCBtYWNoaW5l
+cyBnYXZlIGxvc3QgcGFja2V0cywgbG9naW4gdmlhIHNzaCBzb21ldGltZXMgZmFpbGVkCj4+PiBh
+bmQgc28gb24uCj4+Pgo+Pj4gU28sIHRoZXJlIGlzIGRlZmluaXRpdmVseSBzb21lIGNhY2hlLWZs
+dXNoIG1pc3NpbmcgaW4gdGhpcyBwYXRjaHNldC4KPj4gUG9zc2libHksIHRoZSBjb2RlIHNob3Vs
+ZCB1c2UgZmx1c2hfa2VybmVsX3ZtYXBfcmFuZ2UoKSBhcyBpdCBwdXJnZXMgdGhlIAo+PiBUTEIg
+ZW50cmllcyB1c2VkCj4+IGZvciB0aGUgY2FjaGUgZmx1c2guwqAgU29tZSBvZiB0aGUgcm91dGlu
+ZXMgaW4gcGNpLWRtYS5jIGN1cnJlbnRseSB1c2UgaXQuCj4gCj4gVGhhdCBtaWdodCBiZSB3b3J0
+aCBhIHRyeSBhbmQgaXMgYWxyZWFkeSBkaXNjdXNzZWQgaW4gbXkgZGVzY3JpcHRpb24uCj4gCj4g
+QWxzbyBpdCBtaWdodCBiZSBnb29kIHRvIGNoZWNrIHRoYXQgdGhlIGxhc3QgcGF0Y2ggcmVhbGx5
+IGlzIHRoZSBjdWxwcml0LAo+IEknbSBwcmV0dHkgY2VydGFpbiBpdCBpcywgYnV0IGEgZG91Ymxl
+IGNoZWNrIG5ldmVyIGh1cnRzLgoKU29tZWhvdyBJIG5vdyBjYW4ndCByZXByb2R1Y2UgdGhlIGNh
+Y2hlIGlzc3VlcyBhbnkgbG9uZ2VyLiBCb3RoLCB5b3VyIG9yaWdpbmFsCnBhdGNoIGFuZCB3aGVu
+IHVzaW5nIGZsdXNoX2tlcm5lbF92bWFwX3JhbmdlKCksIGJvdGggd29yay4KClNvLCB5b3UgY2Fu
+IGFkZCBhIApUZXN0ZWQtYnk6IEhlbGdlIERlbGxlciA8ZGVsbGVyQGdteC5kZT4KdG8geW91ciBv
+cmlnaW5hbCBwYXRjaCBzZXJpZXMuCgpIZWxnZQpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
