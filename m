@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 09/10] vfio/mdev: Add mediated device domain type
-Date: Sun, 22 Jul 2018 14:09:32 +0800
-Message-ID: <1532239773-15325-10-git-send-email-baolu.lu@linux.intel.com>
+Subject: [RFC PATCH 10/10] vfio/type1: Allocate domain for mediated device
+Date: Sun, 22 Jul 2018 14:09:33 +0800
+Message-ID: <1532239773-15325-11-git-send-email-baolu.lu@linux.intel.com>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
@@ -10,105 +10,80 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex 
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-A parent device might create different types of mediated
-devices. For example, a mediated device could be created
-on the parent device with a PASID tagged. When the iommu
-supports PASID-granular translations, the mediated device
-is individually protected and isolated by the iommu. It's
-hence possible to allocate a domain for each such device.
-
-This patch defines the domain types of a mediated device
-and allows the parent driver to specify this attribute
-after a mdev is actually created.
+This allocates a domain for the mediated device if it is able to
+be isolated and protected individually by IOMMU.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
 Cc: Liu Yi L <yi.l.liu@intel.com>
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/vfio/mdev/mdev_core.c    | 21 +++++++++++++++++++++
- drivers/vfio/mdev/mdev_private.h |  1 +
- include/linux/mdev.h             | 22 ++++++++++++++++++++++
- 3 files changed, 44 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 43 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 32 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
-index d8f19ba..4d82b36 100644
---- a/drivers/vfio/mdev/mdev_core.c
-+++ b/drivers/vfio/mdev/mdev_core.c
-@@ -391,6 +391,27 @@ int mdev_device_remove(struct device *dev, bool force_remove)
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 3e5b177..496bea6 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -1177,6 +1177,22 @@ static int vfio_bus_type(struct device *dev, void *data)
  	return 0;
  }
  
-+int mdev_set_domain_type(struct device *dev, enum mdev_domain_type type)
++static int mdev_private_domain(struct device *dev, void *data)
 +{
-+	struct mdev_device *mdev = to_mdev_device(dev);
++	enum mdev_domain_type type;
++	enum mdev_domain_type (*fn)(struct device *dev);
 +
-+	if (type == DOMAIN_TYPE_PRIVATE && !iommu_present(&mdev_bus_type))
-+		return -EINVAL;
++	fn = symbol_get(mdev_get_domain_type);
++	if (fn) {
++		type = fn(dev);
++		symbol_put(mdev_get_domain_type);
 +
-+	mdev->domain_type = type;
++		return type != DOMAIN_TYPE_PRIVATE;
++	}
 +
-+	return 0;
++	return -EINVAL;
 +}
-+EXPORT_SYMBOL(mdev_set_domain_type);
 +
-+enum mdev_domain_type mdev_get_domain_type(struct device *dev)
-+{
-+	struct mdev_device *mdev = to_mdev_device(dev);
-+
-+	return mdev->domain_type;
-+}
-+EXPORT_SYMBOL(mdev_get_domain_type);
-+
- static int __init mdev_init(void)
+ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 			     struct vfio_domain *domain)
  {
- 	int ret;
-diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
-index b5819b7..d47a670 100644
---- a/drivers/vfio/mdev/mdev_private.h
-+++ b/drivers/vfio/mdev/mdev_private.h
-@@ -34,6 +34,7 @@ struct mdev_device {
- 	struct list_head next;
- 	struct kobject *type_kobj;
- 	bool active;
-+	int domain_type;
- };
+@@ -1371,18 +1387,23 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	mdev_bus = symbol_get(mdev_bus_type);
  
- #define to_mdev_device(dev)	container_of(dev, struct mdev_device, dev)
-diff --git a/include/linux/mdev.h b/include/linux/mdev.h
-index b6e048e..5d862b0 100644
---- a/include/linux/mdev.h
-+++ b/include/linux/mdev.h
-@@ -15,6 +15,28 @@
+ 	if (mdev_bus) {
+-		if ((bus == mdev_bus) && !iommu_present(bus)) {
+-			symbol_put(mdev_bus_type);
+-			if (!iommu->external_domain) {
+-				INIT_LIST_HEAD(&domain->group_list);
+-				iommu->external_domain = domain;
+-			} else
+-				kfree(domain);
++		if (bus == mdev_bus) {
++			ret = iommu_group_for_each_dev(iommu_group, NULL,
++						       mdev_private_domain);
++			if (!iommu_present(bus) || ret) {
++				symbol_put(mdev_bus_type);
++				if (!iommu->external_domain) {
++					INIT_LIST_HEAD(&domain->group_list);
++					iommu->external_domain = domain;
++				} else {
++					kfree(domain);
++				}
  
- struct mdev_device;
- 
-+enum mdev_domain_type {
-+	DOMAIN_TYPE_EXTERNAL,	/* Use the external domain and all
-+				 * IOMMU staff controlled by the
-+				 * parent device driver.
-+				 */
-+	DOMAIN_TYPE_INHERITANCE,/* Use the same domain as the parent device. */
-+	DOMAIN_TYPE_PRIVATE,	/* Capable of having a private domain. For an
-+				 * example, the parent device is able to bind
-+				 * a specific PASID for a mediated device and
-+				 * transferring data with the asigned PASID.
-+				 */
-+};
-+
-+/*
-+ * Called by the parent device driver to set the domain type.
-+ * By default, the domain type is set to DOMAIN_TYPE_EXTERNAL.
-+ */
-+int mdev_set_domain_type(struct device *dev, enum mdev_domain_type type);
-+
-+/* Check the domain type. */
-+enum mdev_domain_type mdev_get_domain_type(struct device *dev);
-+
- /**
-  * struct mdev_parent_ops - Structure to be registered for each parent device to
-  * register the device to mdev module.
+-			list_add(&group->next,
+-				 &iommu->external_domain->group_list);
+-			mutex_unlock(&iommu->lock);
+-			return 0;
++				list_add(&group->next,
++					 &iommu->external_domain->group_list);
++				mutex_unlock(&iommu->lock);
++				return 0;
++			}
+ 		}
+ 		symbol_put(mdev_bus_type);
+ 	}
 -- 
 2.7.4
