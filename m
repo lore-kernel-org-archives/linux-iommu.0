@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 4/7] of/device: Set bus DMA mask as appropriate
-Date: Mon, 23 Jul 2018 23:16:09 +0100
-Message-ID: <cc56f074b8da7e03a187b2363b1f2c2955d62c1c.1532382222.git.robin.murphy@arm.com>
+Subject: [PATCH v2 6/7] ACPI/IORT: Don't set default coherent DMA mask
+Date: Mon, 23 Jul 2018 23:16:11 +0100
+Message-ID: <3525869e8e7530128bf9718ae8af7d7564b3c684.1532382222.git.robin.murphy@arm.com>
 References: <cover.1532382222.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,28 +21,60 @@ To: hch@lst.de, m.szyprowski@samsung.com
 Cc: lorenzo.pieralisi@arm.com, gregkh@linuxfoundation.org, joro@8bytes.org, x86@kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, frowand.list@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-When an explicit DMA limit is described by firmware, we need to remember
-it regardless of how drivers might subsequently update their devices'
-masks. The new bus_dma_mask field does that.
+Now that we can track upstream DMA constraints properly with
+bus_dma_mask instead of trying (and failing) to maintain it in
+coherent_dma_mask, it doesn't make much sense for the firmware code to
+be touching the latter at all. It's merely papering over bugs wherein a
+driver has failed to call dma_set_coherent_mask() *and* the bus code has
+not initialised any default value.
 
-CC: Rob Herring <robh+dt@kernel.org>
-CC: Frank Rowand <frowand.list@gmail.com>
+We don't really want to encourage more drivers coercing dma_mask so
+we'll continue to fix that up if necessary, but add a warning to help
+flush out any such buggy bus code that remains.
+
+CC: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+CC: Hanjun Guo <hanjun.guo@linaro.org>
+CC: Sudeep Holla <sudeep.holla@arm.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/of/device.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/arm64/iort.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 33d85511d790..0d39633e8545 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -149,6 +149,7 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
- 	 * set by the driver.
- 	 */
- 	mask = DMA_BIT_MASK(ilog2(dma_addr + size - 1) + 1);
-+	dev->bus_dma_mask = mask;
- 	dev->coherent_dma_mask &= mask;
- 	*dev->dma_mask &= mask;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index bc51cff5505e..08f26db2da7e 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -978,20 +978,20 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+ 	int ret, msb;
  
+ 	/*
+-	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
+-	 * setup the correct supported mask.
++	 * If @dev is expected to be DMA-capable then the bus code that created
++	 * it should have initialised its dma_mask pointer by this point. For
++	 * now, we'll continue the legacy behaviour of coercing it to the
++	 * coherent mask if not, but we'll no longer do so quietly.
+ 	 */
+-	if (!dev->coherent_dma_mask)
+-		dev->coherent_dma_mask = DMA_BIT_MASK(32);
+-
+-	/*
+-	 * Set it to coherent_dma_mask by default if the architecture
+-	 * code has not set it.
+-	 */
+-	if (!dev->dma_mask)
++	if (!dev->dma_mask) {
++		dev_warn(dev, "DMA mask not set\n");
+ 		dev->dma_mask = &dev->coherent_dma_mask;
++	}
+ 
+-	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
++	if (dev->coherent_dma_mask)
++		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
++	else
++		size = 1ULL << 32;
+ 
+ 	if (dev_is_pci(dev)) {
+ 		ret = acpi_dma_get_range(dev, &dmaaddr, &offset, &size);
 -- 
 2.17.1.dirty
