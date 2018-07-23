@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 3/7] ACPI/IORT: Set bus DMA mask as appropriate
-Date: Mon, 23 Jul 2018 23:16:08 +0100
-Message-ID: <07cbf8f77fac552dca9b4c85a9d3bd8ed5a4cd29.1532382222.git.robin.murphy@arm.com>
+Subject: [PATCH v2 5/7] iommu/dma: Respect bus DMA limit for IOVAs
+Date: Mon, 23 Jul 2018 23:16:10 +0100
+Message-ID: <d370670edae9c9c537a5280c5e7c96bf3ec7ed8f.1532382222.git.robin.murphy@arm.com>
 References: <cover.1532382222.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,29 +21,41 @@ To: hch@lst.de, m.szyprowski@samsung.com
 Cc: lorenzo.pieralisi@arm.com, gregkh@linuxfoundation.org, joro@8bytes.org, x86@kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, frowand.list@gmail.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-When an explicit DMA limit is described by firmware, we need to remember
-it regardless of how drivers might subsequently update their devices'
-masks. The new bus_dma_mask field does that.
+Take the new bus limit into account (when present) for IOVA allocations,
+to accommodate those SoCs which integrate off-the-shelf IP blocks with
+narrower interconnects such that the link between a device output and an
+IOMMU input can truncate DMA addresses to even fewer bits than the
+native size of either block's interface would imply.
 
-CC: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-CC: Hanjun Guo <hanjun.guo@linaro.org>
-CC: Sudeep Holla <sudeep.holla@arm.com>
+Eventually it might make sense for the DMA core to apply this constraint
+up-front in dma_set_mask() and friends, but for now this seems like the
+least risky approach.
+
+CC: Joerg Roedel <joro@8bytes.org>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/acpi/arm64/iort.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 4a66896e2aa3..bc51cff5505e 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -1014,6 +1014,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
- 		 * Limit coherent and dma mask based on size
- 		 * retrieved from firmware.
- 		 */
-+		dev->bus_dma_mask = mask;
- 		dev->coherent_dma_mask = mask;
- 		*dev->dma_mask = mask;
- 	}
+Bonus question: Now that we're collecing DMA API code in kernel/dma/
+do we want to reevaluate dma-iommu? On the one hand it's the bulk of a
+dma_ops implementation so should perhaps move, but on the other it's
+entirely IOMMU-specific code so should perhaps stay where it is... :/
+
+ drivers/iommu/dma-iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ddcbbdb5d658..511ff9a1d6d9 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -367,6 +367,9 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+ 		iova_len = roundup_pow_of_two(iova_len);
+ 
++	if (dev->bus_dma_mask)
++		dma_limit &= dev->bus_dma_mask;
++
+ 	if (domain->geometry.force_aperture)
+ 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
+ 
 -- 
 2.17.1.dirty
