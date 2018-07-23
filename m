@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 6/7] ACPI/IORT: Don't set default coherent DMA mask
-Date: Mon, 23 Jul 2018 23:16:11 +0100
-Message-ID: <3525869e8e7530128bf9718ae8af7d7564b3c684.1532382222.git.robin.murphy@arm.com>
+Subject: [PATCH v2 7/7] OF: Don't set default coherent DMA mask
+Date: Mon, 23 Jul 2018 23:16:12 +0100
+Message-ID: <66c08e4df2032fde82a2f97544f41fd3a2f24a94.1532382222.git.robin.murphy@arm.com>
 References: <cover.1532382222.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -32,20 +32,19 @@ We don't really want to encourage more drivers coercing dma_mask so
 we'll continue to fix that up if necessary, but add a warning to help
 flush out any such buggy bus code that remains.
 
-CC: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-CC: Hanjun Guo <hanjun.guo@linaro.org>
-CC: Sudeep Holla <sudeep.holla@arm.com>
+CC: Rob Herring <robh+dt@kernel.org>
+CC: Frank Rowand <frowand.list@gmail.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/acpi/arm64/iort.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/of/device.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index bc51cff5505e..08f26db2da7e 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -978,20 +978,20 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
- 	int ret, msb;
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 0d39633e8545..5957cd4fa262 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -127,20 +127,20 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
+ 	}
  
  	/*
 -	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
@@ -57,7 +56,6 @@ index bc51cff5505e..08f26db2da7e 100644
  	 */
 -	if (!dev->coherent_dma_mask)
 -		dev->coherent_dma_mask = DMA_BIT_MASK(32);
--
 -	/*
 -	 * Set it to coherent_dma_mask by default if the architecture
 -	 * code has not set it.
@@ -68,13 +66,13 @@ index bc51cff5505e..08f26db2da7e 100644
  		dev->dma_mask = &dev->coherent_dma_mask;
 +	}
  
--	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
-+	if (dev->coherent_dma_mask)
-+		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
-+	else
+-	if (!size)
++	if (!size && dev->coherent_dma_mask)
+ 		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
++	else if (!size)
 +		size = 1ULL << 32;
  
- 	if (dev_is_pci(dev)) {
- 		ret = acpi_dma_get_range(dev, &dmaaddr, &offset, &size);
+ 	dev->dma_pfn_offset = offset;
+ 
 -- 
 2.17.1.dirty
