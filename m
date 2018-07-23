@@ -1,90 +1,90 @@
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [RFC PATCH 01/10] iommu/vt-d: Get iommu device for a mediated
- device
-Date: Mon, 23 Jul 2018 04:44:02 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439CA141D@SHSMSX104.ccr.corp.intel.com>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated devices
+Date: Mon, 23 Jul 2018 04:44:30 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
- <1532239773-15325-2-git-send-email-baolu.lu@linux.intel.com>
+	<1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1532239773-15325-2-git-send-email-baolu.lu@linux.intel.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1532239773-15325-4-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baolu,
+> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+> Sent: Sunday, July 22, 2018 2:09 PM
+> 
+> With the Intel IOMMU supporting PASID granularity isolation and protection, a
+> mediated device could be isolated and protected by an IOMMU unit. We need to
+> allocate a new group instead of a PCI group.
 
-Per my understanding, the subject is not accurate. I think this patch is
-to get parent device structure for a mediate device instead of iommu
-device. This may be misleading for reviewers.
+Existing vfio mdev framework also allocates an iommu group for mediate device.
+
+mdev_probe()
+  |_ mdev_attach_iommu()
+       |_ iommu_group_alloc()
+
+IMHO, this patch actually do a wrapper to the group allocation API. The reason is: it
+is not necessary to apply the group allocation rules when the allocation is for mediated
+device. Instead, just allocate a new one for it. :)
 
 Thanks,
 Yi Liu
-
-> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
-> Sent: Sunday, July 22, 2018 2:09 PM
 > 
-> This patch adds the support to get the iommu device for a mediated device. The
-> assumption is that each mediated device is a minimal assignable set of a physical PCI
-> device. Hence, we should use the iommu device of the parent PCI device to manage
-> the translation.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > ---
->  drivers/iommu/intel-iommu.c |  6 ++++++  drivers/iommu/intel-pasid.h | 16
-> ++++++++++++++++
->  2 files changed, 22 insertions(+)
+>  drivers/iommu/intel-iommu.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c index
-> 7d198ea..fc3ac1c 100644
+> 3ede34a..57ccfc4 100644
 > --- a/drivers/iommu/intel-iommu.c
 > +++ b/drivers/iommu/intel-iommu.c
-> @@ -767,6 +767,12 @@ static struct intel_iommu *device_to_iommu(struct device
-> *dev, u8 *bus, u8 *devf
->  	if (iommu_dummy(dev))
->  		return NULL;
+> @@ -5276,6 +5276,17 @@ static void intel_iommu_put_resv_regions(struct device
+> *dev,
+>  	}
+>  }
 > 
-> +	if (dev_is_mdev(dev)) {
-> +		dev = dev_mdev_parent(dev);
-> +		if (WARN_ON(!dev_is_pci(dev)))
-> +			return NULL;
-> +	}
+> +static struct iommu_group *intel_iommu_device_group(struct device *dev)
+> +{
+> +	if (dev_is_pci(dev))
+> +		return pci_device_group(dev);
 > +
->  	if (dev_is_pci(dev)) {
->  		struct pci_dev *pf_pdev;
-> 
-> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h index
-> 518df72..46cde66 100644
-> --- a/drivers/iommu/intel-pasid.h
-> +++ b/drivers/iommu/intel-pasid.h
-> @@ -35,6 +35,22 @@ struct pasid_table {
->  	struct list_head	dev;		/* device list */
->  };
-> 
-> +static inline bool dev_is_mdev(struct device *dev) {
-> +	if (!dev)
-> +		return false;
+> +	if (dev_is_mdev(dev))
+> +		return iommu_group_alloc();
 > +
-> +	return !strcmp(dev->bus->name, "mdev"); }
-> +
-> +static inline struct device *dev_mdev_parent(struct device *dev) {
-> +	if (WARN_ON(!dev_is_mdev(dev)))
-> +		return NULL;
-> +
-> +	return dev->parent;
+> +	return ERR_PTR(-EINVAL);
 > +}
 > +
->  extern u32 intel_pasid_max_id;
->  int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);  void
-> intel_pasid_free_id(int pasid);
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+>  int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev
+> *sdev)  { @@ -5370,7 +5381,7 @@ const struct iommu_ops intel_iommu_ops = {
+>  	.remove_device		= intel_iommu_remove_device,
+>  	.get_resv_regions	= intel_iommu_get_resv_regions,
+>  	.put_resv_regions	= intel_iommu_put_resv_regions,
+> -	.device_group		= pci_device_group,
+> +	.device_group		= intel_iommu_device_group,
+>  	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
+>  };
+> 
 > --
 > 2.7.4
