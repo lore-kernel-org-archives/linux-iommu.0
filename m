@@ -1,134 +1,134 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
- mode
-Date: Tue, 24 Jul 2018 23:25:14 +0100
-Message-ID: <89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
+Subject: Re: [PATCH v3 6/6] iommu/arm-smmu-v3: add bootup option
+ "iommu_strict_mode"
+Date: Tue, 24 Jul 2018 23:46:49 +0100
+Message-ID: <33053c8f-3ac3-e1d6-e260-fd36c4af9312@arm.com>
 References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
- <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+ <1531376312-2192-7-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+In-Reply-To: <1531376312-2192-7-git-send-email-thunder.leizhen@huawei.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 On 2018-07-12 7:18 AM, Zhen Lei wrote:
-> To support the non-strict mode, now we only tlbi and sync for the strict
-> mode. But for the non-leaf case, always follow strict mode.
-> 
-> Use the lowest bit of the iova parameter to pass the strict mode:
-> 0, IOMMU_STRICT;
-> 1, IOMMU_NON_STRICT;
-> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
-> other IOMMUs which still use strict mode.
+> Because the non-strict mode introduces a vulnerability window, so add a
+> bootup option to make the manager can choose which mode to be used. The
+> default mode is IOMMU_STRICT.
 > 
 > Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 > ---
->   drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
->   1 file changed, 14 insertions(+), 9 deletions(-)
+>   Documentation/admin-guide/kernel-parameters.txt | 12 ++++++++++
+>   drivers/iommu/arm-smmu-v3.c                     | 32 ++++++++++++++++++++++---
+>   2 files changed, 41 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 010a254..9234db3 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index efc7aa7..0cc80bc 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1720,6 +1720,18 @@
+>   		nobypass	[PPC/POWERNV]
+>   			Disable IOMMU bypass, using IOMMU for PCI devices.
 >   
->   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   			       unsigned long iova, size_t size, int lvl,
-> -			       arm_lpae_iopte *ptep);
-> +			       arm_lpae_iopte *ptep, int strict);
->   
->   static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->   				phys_addr_t paddr, arm_lpae_iopte prot,
-> @@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->   		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
->   
->   		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
-> -		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
-> +		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
->   			return -EINVAL;
->   	}
->   
-> @@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
->   static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->   				       unsigned long iova, size_t size,
->   				       arm_lpae_iopte blk_pte, int lvl,
-> -				       arm_lpae_iopte *ptep)
-> +				       arm_lpae_iopte *ptep, int strict)
+> +	iommu_strict_mode=	[arm-smmu-v3]
 
-DMA code should never ever be splitting blocks anyway, and frankly the 
-TLB maintenance here is dodgy enough (since we can't reasonably do 
-break-before make as VMSA says we should) that I *really* don't want to 
-introduce any possibility of making it more asynchronous. I'd much 
-rather just hard-code the expectation of strict == true for this.
+If anything this should belong to iommu-dma, as that's where the actual 
+decision of whether to use a flush queue or not happens. Also it would 
+be nice to stick to the iommu.* option namespace in the hope of 
+maintaining some consistency.
+
+> +		0 - strict mode
+> +		    Make sure all related TLBs to be invalidated before the
+> +		    memory released.
+> +		1 - non-strict mode
+> +		    Put off TLBs invalidation and release memory first. This mode
+> +		    introduces a vlunerability window, an untrusted device can
+> +		    access the reused memory because the TLBs may still valid.
+> +		    Please take full consideration before choosing this mode.
+> +		    Note that, VFIO is always use strict mode.
+> +		others - strict mode
+> +
+>   	iommu.passthrough=
+>   			[ARM64] Configure DMA to bypass the IOMMU by default.
+>   			Format: { "0" | "1" }
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 4a198a0..9b72fc4 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -631,6 +631,24 @@ struct arm_smmu_option_prop {
+>   	{ 0, NULL},
+>   };
+>   
+> +static u32 iommu_strict_mode __read_mostly = IOMMU_STRICT;
+> +
+> +static int __init setup_iommu_strict_mode(char *str)
+> +{
+> +	u32 strict_mode = IOMMU_STRICT;
+> +
+> +	get_option(&str, &strict_mode);
+> +	if (strict_mode == IOMMU_NON_STRICT) {
+> +		iommu_strict_mode = strict_mode;
+> +		pr_warn("WARNING: iommu non-strict mode is chose.\n"
+> +			"It's good for scatter-gather performance but lacks full isolation\n");
+> +		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
+> +	}
+> +
+> +	return 0;
+> +}
+> +early_param("iommu_strict_mode", setup_iommu_strict_mode);
+> +
+>   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+>   						 struct arm_smmu_device *smmu)
+>   {
+> @@ -1441,7 +1459,7 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+>   	case IOMMU_CAP_NOEXEC:
+>   		return true;
+>   	case IOMMU_CAP_NON_STRICT:
+> -		return true;
+> +		return (iommu_strict_mode == IOMMU_NON_STRICT) ? true : false;
+
+Ugh. The "completely redundant ternany" idiom hurts my soul :(
 
 Robin.
 
->   {
->   	struct io_pgtable_cfg *cfg = &data->iop.cfg;
->   	arm_lpae_iopte pte, *tablep;
-> @@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>   	default:
+>   		return false;
 >   	}
+> @@ -1750,6 +1768,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>   	return ret;
+>   }
 >   
->   	if (unmap_idx < 0)
-> -		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
-> +		return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
->   
->   	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-> +	if (!strict)
-> +		io_pgtable_tlb_sync(&data->iop);
+> +static u32 arm_smmu_strict_mode(struct iommu_domain *domain)
+> +{
+> +	if (iommu_strict_mode == IOMMU_NON_STRICT)
+> +		return IOMMU_DOMAIN_STRICT_MODE(domain);
 > +
->   	return size;
->   }
->   
->   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   			       unsigned long iova, size_t size, int lvl,
-> -			       arm_lpae_iopte *ptep)
-> +			       arm_lpae_iopte *ptep, int strict)
+> +	return IOMMU_STRICT;
+> +}
+> +
+>   static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+>   			phys_addr_t paddr, size_t size, int prot)
 >   {
->   	arm_lpae_iopte pte;
->   	struct io_pgtable *iop = &data->iop;
-> @@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   			io_pgtable_tlb_sync(iop);
->   			ptep = iopte_deref(pte, data);
->   			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
-> -		} else {
-> +		} else if (strict) {
->   			io_pgtable_tlb_add_flush(iop, iova, size, size, true);
->   		}
->   
-> @@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   		 * minus the part we want to unmap
->   		 */
->   		return arm_lpae_split_blk_unmap(data, iova, size, pte,
-> -						lvl + 1, ptep);
-> +						lvl + 1, ptep, strict);
->   	}
->   
->   	/* Keep on walkin' */
->   	ptep = iopte_deref(pte, data);
-> -	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
-> +	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
->   }
->   
->   static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->   			     size_t size)
->   {
-> +	int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
->   	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->   	arm_lpae_iopte *ptep = data->pgd;
->   	int lvl = ARM_LPAE_START_LVL(data);
->   
-> +	iova &= ~IOMMU_STRICT_MODE_MASK;
->   	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+> @@ -1769,7 +1795,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
+>   	if (!ops)
 >   		return 0;
 >   
-> -	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-> +	return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+> -	return ops->unmap(ops, iova | IOMMU_DOMAIN_STRICT_MODE(domain), size);
+> +	return ops->unmap(ops, iova | arm_smmu_strict_mode(domain), size);
 >   }
 >   
->   static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>   static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
+> @@ -1784,7 +1810,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+>   {
+>   	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+>   
+> -	if (smmu && (IOMMU_DOMAIN_STRICT_MODE(domain) == IOMMU_STRICT))
+> +	if (smmu && (arm_smmu_strict_mode(domain) == IOMMU_STRICT))
+>   		__arm_smmu_tlb_sync(smmu);
+>   }
+>   
 > 
