@@ -1,123 +1,67 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
-Date: Tue, 24 Jul 2018 15:13:37 +0530
-Message-ID: <CAFp+6iHnA1Jj8wKO08YYEBKVF2_3oEuOQOcW2boL=AYZ9+b=UA@mail.gmail.com>
-References: <20180615105329.26800-1-vivek.gautam@codeaurora.org>
-	<20180615165232.GE2202@arm.com>
-	<CAFp+6iFm29ufb2Pr7Gb-2O_aN3GQLH4rcyWhbQGZ3QiwCC8vPg@mail.gmail.com>
-	<20180627163749.GA8729@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated
+ devices
+Date: Tue, 24 Jul 2018 12:30:35 +0100
+Message-ID: <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
+References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
+ <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
+ <5B568D5B.5050606@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180627163749.GA8729-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5B568D5B.5050606@linux.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+Hi Baolu,
 
-
-On Wed, Jun 27, 2018 at 10:07 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> Hi Vivek,
->
-> On Tue, Jun 19, 2018 at 02:04:44PM +0530, Vivek Gautam wrote:
->> On Fri, Jun 15, 2018 at 10:22 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> > On Fri, Jun 15, 2018 at 04:23:29PM +0530, Vivek Gautam wrote:
->> >> Qualcomm SoCs have an additional level of cache called as
->> >> System cache or Last level cache[1]. This cache sits right
->> >> before the DDR, and is tightly coupled with the memory
->> >> controller.
->> >> The cache is available to all the clients present in the
->> >> SoC system. The clients request their slices from this system
->> >> cache, make it active, and can then start using it. For these
->> >> clients with smmu, to start using the system cache for
->> >> dma buffers and related page tables [2], few of the memory
->> >> attributes need to be set accordingly.
->> >> This change makes the related memory Outer-Shareable, and
->> >> updates the MAIR with necessary protection.
->> >>
->> >> The MAIR attribute requirements are:
->> >>     Inner Cacheablity = 0
->> >>     Outer Cacheablity = 1, Write-Back Write Allocate
->> >>     Outer Shareablity = 1
->> >
->> > Hmm, so is this cache coherent with the CPU or not?
+On 24/07/18 03:22, Lu Baolu wrote:
+> Hi,
+> 
+> On 07/23/2018 12:44 PM, Liu, Yi L wrote:
+>>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>>> Sent: Sunday, July 22, 2018 2:09 PM
+>>>
+>>> With the Intel IOMMU supporting PASID granularity isolation and protection, a
+>>> mediated device could be isolated and protected by an IOMMU unit. We need to
+>>> allocate a new group instead of a PCI group.
+>> Existing vfio mdev framework also allocates an iommu group for mediate device.
 >>
->> Thanks for reviewing.
->> Yes, this LLC is cache coherent with CPU, so we mark for Outer-cacheable.
->> The different masters such as GPU as able to allocated and activate a slice
->> in this Last Level Cache.
->
-> What I mean is, for example, if the CPU writes some data using Normal, Inner
-> Shareable, Inner/Outer Cacheable, Inner/Outer Write-back, Non-transient
-> Read/Write-allocate and a device reads that data using your MAIR encoding
-> above, is the device guaranteed to see the CPU writes after the CPU has
-> executed a DSB instruction?
->
-> I don't think so, because the ARM ARM would say that there's a mismatch on
-> the Inner Cacheability attribute.
->
->> > Why don't normal
->> > non-cacheable mappings allocated in the LLC by default?
->>
->> Sorry, I couldn't fully understand your question here.
->> Few of the masters on qcom socs are not io-coherent, so for them
->> the IC has to be marked as 0.
->
-> By IC you mean Inner Cacheability? In your MAIR encoding above, it is zero
-> so I don't understand the problem. What goes wrong if non-coherent devices
-> use your MAIR encoding for their DMA buffers?
->
->> But they are able to use the LLC with OC marked as 1.
->
-> The issue here is that whatever attributes we put in the SMMU need to align
-> with the attributes used by the CPU in order to avoid introducing mismatched
-> aliases. Currently, we support three types of mapping in the SMMU:
->
-> 1. DMA non-coherent (e.g. "dma-coherent" is not set on the device)
->         Normal, Inner Shareable, Inner/Outer Non-Cacheable
->
-> 2. DMA coherent (e.g. "dma-coherent" is set on the device) [IOMMU_CACHE]
->         Normal, Inner Shareable, Inner/Outer Cacheable, Inner/Outer
->         Write-back, Non-transient Read/Write-allocate
->
-> 3. MMIO (e.g. MSI doorbell) [IOMMU_MMIO]
->         Device-nGnRE (Outer Shareable)
->
-> So either you override one of these types (I was suggesting (1)) or you need
-> to create a new memory type, along with the infrastructure for it to be
-> recognised on a per-device basis and used by the DMA API so that we don't
-> get mismatched aliases on the CPU.
+>> mdev_probe()
+>>   |_ mdev_attach_iommu()
+>>        |_ iommu_group_alloc()
+> 
+> When external components ask iommu to allocate a group for a device,
+> it will call pci_device_group in Intel IOMMU driver's @device_group
+> callback. In another word, current Intel IOMMU driver doesn't aware
+> the mediated device and treat all devices as PCI ones. This patch
+> extends the @device_group call back to make it aware of a mediated
+> device.
 
-My apologies for delay in responding to this thread.
-I have been digging and getting in touch with internal tech teams
-to get more information on this. I will update as soon as I have enough
-details.
-Thanks.
+I agree that allocating two groups for an mdev seems strange, and in my
+opinion we shouldn't export the notion of mdev to IOMMU drivers.
+Otherwise each driver will have to add its own "dev_is_mdev()" special
+cases, which will get messy in the long run. Besides, the macro is
+currently private, and to be exported it should be wrapped in
+symbol_get/put(mdev_bus_type).
 
-Best regards
-Vivek
+There is another way: as we're planning to add a generic pasid_alloc()
+function to the IOMMU API, the mdev module itself could allocate a
+default PASID for each mdev by calling pasid_alloc() on the mdev's
+parent, and then do map()/unmap() with that PASID. This way we don't
+have to add IOMMU ops to the mdev bus, everything can still be done
+using the ops of the parent. And IOMMU drivers "only" have to implement
+PASID ops, which will be reused by drivers other than mdev.
 
->
-> Will
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+The allocated PASID also needs to be installed into the parent device.
+If the mdev module knows the PASID, we can do that by adding
+set_pasid(mdev, pasid) and clear_pasid(mdev, pasid) operations to
+mdev_parent_ops.
 
-
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Thanks,
+Jean
