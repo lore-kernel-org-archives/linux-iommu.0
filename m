@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 1/5] sh: simplify get_arch_dma_ops
-Date: Tue, 24 Jul 2018 14:01:43 +0200
-Message-ID: <20180724120147.15096-2-hch@lst.de>
+Subject: [PATCH 2/5] sh: introduce a sh_cacheop_vaddr helper
+Date: Tue, 24 Jul 2018 14:01:44 +0200
+Message-ID: <20180724120147.15096-3-hch@lst.de>
 References: <20180724120147.15096-1-hch@lst.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180724120147.15096-1-hch@lst.de>
@@ -10,92 +10,80 @@ To: Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
 Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove the indirection through the dma_ops variable, and just return
-nommu_dma_ops directly from get_arch_dma_ops.
+And use it in the maple bus code to avoid a dma API dependency.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/sh/include/asm/dma-mapping.h |  5 ++---
- arch/sh/kernel/dma-nommu.c        |  8 +-------
- arch/sh/mm/consistent.c           |  3 ---
- arch/sh/mm/init.c                 | 10 ----------
- 4 files changed, 3 insertions(+), 23 deletions(-)
+ arch/sh/include/asm/cacheflush.h | 7 +++++++
+ arch/sh/mm/consistent.c          | 6 +-----
+ drivers/sh/maple/maple.c         | 7 ++++---
+ 3 files changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/arch/sh/include/asm/dma-mapping.h b/arch/sh/include/asm/dma-mapping.h
-index 41167931e5d9..149e71f95be7 100644
---- a/arch/sh/include/asm/dma-mapping.h
-+++ b/arch/sh/include/asm/dma-mapping.h
-@@ -2,12 +2,11 @@
- #ifndef __ASM_SH_DMA_MAPPING_H
- #define __ASM_SH_DMA_MAPPING_H
+diff --git a/arch/sh/include/asm/cacheflush.h b/arch/sh/include/asm/cacheflush.h
+index d103ab5a4e4b..b932e42ef028 100644
+--- a/arch/sh/include/asm/cacheflush.h
++++ b/arch/sh/include/asm/cacheflush.h
+@@ -101,5 +101,12 @@ void kunmap_coherent(void *kvaddr);
  
--extern const struct dma_map_ops *dma_ops;
--extern void no_iommu_init(void);
-+extern const struct dma_map_ops nommu_dma_ops;
+ void cpu_cache_init(void);
  
- static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
- {
--	return dma_ops;
-+	return &nommu_dma_ops;
- }
- 
- extern void *dma_generic_alloc_coherent(struct device *dev, size_t size,
-diff --git a/arch/sh/kernel/dma-nommu.c b/arch/sh/kernel/dma-nommu.c
-index 3e3a32fc676e..79a9edafa5b0 100644
---- a/arch/sh/kernel/dma-nommu.c
-+++ b/arch/sh/kernel/dma-nommu.c
-@@ -79,10 +79,4 @@ const struct dma_map_ops nommu_dma_ops = {
- 	.sync_sg_for_device	= nommu_sync_sg_for_device,
- #endif
- };
--
--void __init no_iommu_init(void)
--{
--	if (dma_ops)
--		return;
--	dma_ops = &nommu_dma_ops;
--}
-+EXPORT_SYMBOL(nommu_dma_ops);
++static inline void *sh_cacheop_vaddr(void *vaddr)
++{
++	if (__in_29bit_mode())
++		vaddr = (void *)CAC_ADDR((unsigned long)vaddr);
++	return vaddr;
++}
++
+ #endif /* __KERNEL__ */
+ #endif /* __ASM_SH_CACHEFLUSH_H */
 diff --git a/arch/sh/mm/consistent.c b/arch/sh/mm/consistent.c
-index fceb2adfcac7..e9d422bd42a5 100644
+index e9d422bd42a5..1622ae6b9dbd 100644
 --- a/arch/sh/mm/consistent.c
 +++ b/arch/sh/mm/consistent.c
-@@ -20,9 +20,6 @@
- #include <asm/cacheflush.h>
- #include <asm/addrspace.h>
- 
--const struct dma_map_ops *dma_ops;
--EXPORT_SYMBOL(dma_ops);
--
- void *dma_generic_alloc_coherent(struct device *dev, size_t size,
- 				 dma_addr_t *dma_handle, gfp_t gfp,
- 				 unsigned long attrs)
-diff --git a/arch/sh/mm/init.c b/arch/sh/mm/init.c
-index 4034035fbede..7713c084d040 100644
---- a/arch/sh/mm/init.c
-+++ b/arch/sh/mm/init.c
-@@ -339,22 +339,12 @@ void __init paging_init(void)
- 	free_area_init_nodes(max_zone_pfns);
- }
- 
--/*
-- * Early initialization for any I/O MMUs we might have.
-- */
--static void __init iommu_init(void)
--{
--	no_iommu_init();
--}
--
- unsigned int mem_init_done = 0;
- 
- void __init mem_init(void)
+@@ -74,10 +74,7 @@ void dma_generic_free_coherent(struct device *dev, size_t size,
+ void sh_sync_dma_for_device(void *vaddr, size_t size,
+ 		    enum dma_data_direction direction)
  {
- 	pg_data_t *pgdat;
- 
--	iommu_init();
+-	void *addr;
 -
- 	high_memory = NULL;
- 	for_each_online_pgdat(pgdat)
- 		high_memory = max_t(void *, high_memory,
+-	addr = __in_29bit_mode() ?
+-	       (void *)CAC_ADDR((unsigned long)vaddr) : vaddr;
++	void *addr = sh_cacheop_vaddr(vaddr);
+ 
+ 	switch (direction) {
+ 	case DMA_FROM_DEVICE:		/* invalidate only */
+@@ -93,7 +90,6 @@ void sh_sync_dma_for_device(void *vaddr, size_t size,
+ 		BUG();
+ 	}
+ }
+-EXPORT_SYMBOL(sh_sync_dma_for_device);
+ 
+ static int __init memchunk_setup(char *str)
+ {
+diff --git a/drivers/sh/maple/maple.c b/drivers/sh/maple/maple.c
+index 2e45988d1259..e5d7fb81ad66 100644
+--- a/drivers/sh/maple/maple.c
++++ b/drivers/sh/maple/maple.c
+@@ -300,8 +300,8 @@ static void maple_send(void)
+ 	mutex_unlock(&maple_wlist_lock);
+ 	if (maple_packets > 0) {
+ 		for (i = 0; i < (1 << MAPLE_DMA_PAGES); i++)
+-			sh_sync_dma_for_device(maple_sendbuf + i * PAGE_SIZE,
+-				       PAGE_SIZE, DMA_BIDIRECTIONAL);
++			__flush_purge_region(maple_sendbuf + i * PAGE_SIZE,
++					PAGE_SIZE);
+ 	}
+ 
+ finish:
+@@ -642,7 +642,8 @@ static void maple_dma_handler(struct work_struct *work)
+ 		list_for_each_entry_safe(mq, nmq, &maple_sentq, list) {
+ 			mdev = mq->dev;
+ 			recvbuf = mq->recvbuf->buf;
+-			sh_sync_dma_for_device(recvbuf, 0x400, DMA_FROM_DEVICE);
++			__flush_invalidate_region(sh_cacheop_vaddr(recvbuf),
++					0x400);
+ 			code = recvbuf[0];
+ 			kfree(mq->sendbuf);
+ 			list_del_init(&mq->list);
 -- 
 2.18.0
