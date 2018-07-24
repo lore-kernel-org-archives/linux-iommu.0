@@ -1,33 +1,110 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use the generic dma-noncoherent code for sh V2
-Date: Tue, 24 Jul 2018 22:21:15 +0200
-Message-ID: <20180724202115.GA4685@lst.de>
-References: <20180724120147.15096-1-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 0/6] add non-strict mode support for arm-smmu-v3
+Date: Tue, 24 Jul 2018 22:51:58 +0100
+Message-ID: <aace9ec9-a36a-79a8-98eb-bbedd06f11a4@arm.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180724120147.15096-1-hch@lst.de>
+In-Reply-To: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
-Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, iommu@lists.linux-foundation.org, Jacopo Mondi <jacopo+renesas@jmondi.org>, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Ok, there is one more issue with this version.   Wait for a new one
-tomorrow.
+On 2018-07-12 7:18 AM, Zhen Lei wrote:
+> v2 -> v3:
+> Add a bootup option "iommu_strict_mode" to make the manager can choose which
+> mode to be used. The first 5 patches have not changed.
+> +	iommu_strict_mode=	[arm-smmu-v3]
+> +		0 - strict mode (default)
+> +		1 - non-strict mode
+> 
+> v1 -> v2:
+> Use the lowest bit of the io_pgtable_ops.unmap's iova parameter to pass the strict mode:
+> 0, IOMMU_STRICT;
+> 1, IOMMU_NON_STRICT;
+> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+> other IOMMUs which still use strict mode. In other words, this patch series
+> will not impact other IOMMU drivers. I tried add a new quirk IO_PGTABLE_QUIRK_NON_STRICT
+> in io_pgtable_cfg.quirks, but it can not pass the strict mode of the domain from SMMUv3
+> driver to io-pgtable module.
 
-On Tue, Jul 24, 2018 at 02:01:42PM +0200, Christoph Hellwig wrote:
-> Hi all,
+What exactly is the issue there? We don't have any problem with other 
+quirks like NO_DMA, and as I said before, by the time we're allocating 
+the io-pgtable in arm_smmu_domain_finalise() we already know everything 
+there is to know about the domain.
+
+> Add a new member domain_non_strict in struct iommu_dma_cookie, this member will only be
+> initialized when the related domain and IOMMU driver support non-strict mode.
 > 
-> can you review these patches to switch sh to use the generic
-> dma-noncoherent code?  All the requirements are in mainline already
-> and we've switched various architectures over to it already.
+> v1:
+> In common, a IOMMU unmap operation follow the below steps:
+> 1. remove the mapping in page table of the specified iova range
+> 2. execute tlbi command to invalid the mapping which is cached in TLB
+> 3. wait for the above tlbi operation to be finished
+> 4. free the IOVA resource
+> 5. free the physical memory resource
 > 
-> Changes since V1:
->  - fixed two stupid compile errors and verified them using a local
->    cross toolchain instead of the 0day buildbot
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
----end quoted text---
+> This maybe a problem when unmap is very frequently, the combination of tlbi
+> and wait operation will consume a lot of time. A feasible method is put off
+> tlbi and iova-free operation, when accumulating to a certain number or
+> reaching a specified time, execute only one tlbi_all command to clean up
+> TLB, then free the backup IOVAs. Mark as non-strict mode.
+> 
+> But it must be noted that, although the mapping has already been removed in
+> the page table, it maybe still exist in TLB. And the freed physical memory
+> may also be reused for others. So a attacker can persistent access to memory
+> based on the just freed IOVA, to obtain sensible data or corrupt memory. So
+> the VFIO should always choose the strict mode.
+> 
+> Some may consider put off physical memory free also, that will still follow
+> strict mode. But for the map_sg cases, the memory allocation is not controlled
+> by IOMMU APIs, so it is not enforceable.
+> 
+> Fortunately, Intel and AMD have already applied the non-strict mode, and put
+> queue_iova() operation into the common file dma-iommu.c., and my work is based
+> on it. The difference is that arm-smmu-v3 driver will call IOMMU common APIs to
+> unmap, but Intel and AMD IOMMU drivers are not.
+> 
+> Below is the performance data of strict vs non-strict for NVMe device:
+> Randomly Read  IOPS: 146K(strict) vs 573K(non-strict)
+> Randomly Write IOPS: 143K(strict) vs 513K(non-strict)
+
+How does that compare to passthrough performance? One thing I'm not 
+entirely clear about is what the realistic use-case for this is - even 
+if invalidation were infinitely fast, enabling translation still 
+typically has a fair impact on overall system performance in terms of 
+latency, power, memory bandwidth, etc., so I can't help wonder what 
+devices exist today for which performance is critical and robustness* is 
+unimportant, yet have crippled addressing capabilities such that they 
+can't just use passthrough.
+
+Robin.
+
+
+* I don't want to say "security" here, since I'm actually a lot less 
+concerned about the theoretical malicious endpoint/wild write scenarios 
+than the the much more straightforward malfunctioning device and/or 
+buggy driver causing use-after-free style memory corruption. Also, I'm 
+sick of the word "security"...
+
+> 
+> Zhen Lei (6):
+>    iommu/arm-smmu-v3: fix the implementation of flush_iotlb_all hook
+>    iommu/dma: add support for non-strict mode
+>    iommu/amd: use default branch to deal with all non-supported
+>      capabilities
+>    iommu/io-pgtable-arm: add support for non-strict mode
+>    iommu/arm-smmu-v3: add support for non-strict mode
+>    iommu/arm-smmu-v3: add bootup option "iommu_strict_mode"
+> 
+>   Documentation/admin-guide/kernel-parameters.txt | 12 +++++++
+>   drivers/iommu/amd_iommu.c                       |  4 +--
+>   drivers/iommu/arm-smmu-v3.c                     | 42 +++++++++++++++++++++++--
+>   drivers/iommu/dma-iommu.c                       | 25 +++++++++++++++
+>   drivers/iommu/io-pgtable-arm.c                  | 23 ++++++++------
+>   include/linux/iommu.h                           |  7 +++++
+>   6 files changed, 98 insertions(+), 15 deletions(-)
+> 
