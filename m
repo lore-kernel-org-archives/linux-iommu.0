@@ -1,67 +1,43 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated
- devices
-Date: Tue, 24 Jul 2018 12:30:35 +0100
-Message-ID: <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
-References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
- <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
- <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
- <5B568D5B.5050606@linux.intel.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 4/5] sh: split arch/sh/mm/consistent.c
+Date: Tue, 24 Jul 2018 13:43:34 +0200
+Message-ID: <20180724114334.GA21973@lst.de>
+References: <20180719130516.1989-1-hch@lst.de>
+	<20180719130516.1989-5-hch@lst.de> <20180723084207.GI6784@w540>
+	<CAMuHMdX=b0iAnDw1=85MXNBSMD=MxZb27QrO3rEWHYq0vB+3ow@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5B568D5B.5050606@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdX=b0iAnDw1=85MXNBSMD=MxZb27QrO3rEWHYq0vB+3ow-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Jacopo Mondi <jacopo-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baolu,
-
-On 24/07/18 03:22, Lu Baolu wrote:
-> Hi,
+On Mon, Jul 23, 2018 at 10:49:39AM +0200, Geert Uytterhoeven wrote:
+> > > +     *dma_handle = virt_to_phys(ret);
+> > > +     if (!WARN_ON(!dev))
+> > > +             *dma_handle - PFN_PHYS(dev->dma_pfn_offset);
+> > vs
+> > > -     *dma_handle = virt_to_phys(ret);
+> > > -     if (!WARN_ON(!dev))
+> > > -             *dma_handle -= PFN_PHYS(dev->dma_pfn_offset);
 > 
-> On 07/23/2018 12:44 PM, Liu, Yi L wrote:
->>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
->>> Sent: Sunday, July 22, 2018 2:09 PM
->>>
->>> With the Intel IOMMU supporting PASID granularity isolation and protection, a
->>> mediated device could be isolated and protected by an IOMMU unit. We need to
->>> allocate a new group instead of a PCI group.
->> Existing vfio mdev framework also allocates an iommu group for mediate device.
->>
->> mdev_probe()
->>   |_ mdev_attach_iommu()
->>        |_ iommu_group_alloc()
+> Doesn't look right to me, neither.
 > 
-> When external components ask iommu to allocate a group for a device,
-> it will call pci_device_group in Intel IOMMU driver's @device_group
-> callback. In another word, current Intel IOMMU driver doesn't aware
-> the mediated device and treat all devices as PCI ones. This patch
-> extends the @device_group call back to make it aware of a mediated
-> device.
+> No complaints for 0day? My gcc says:
+> 
+>     error: statement with no effect [-Werror=unused-value]
 
-I agree that allocating two groups for an mdev seems strange, and in my
-opinion we shouldn't export the notion of mdev to IOMMU drivers.
-Otherwise each driver will have to add its own "dev_is_mdev()" special
-cases, which will get messy in the long run. Besides, the macro is
-currently private, and to be exported it should be wrapped in
-symbol_get/put(mdev_bus_type).
-
-There is another way: as we're planning to add a generic pasid_alloc()
-function to the IOMMU API, the mdev module itself could allocate a
-default PASID for each mdev by calling pasid_alloc() on the mdev's
-parent, and then do map()/unmap() with that PASID. This way we don't
-have to add IOMMU ops to the mdev bus, everything can still be done
-using the ops of the parent. And IOMMU drivers "only" have to implement
-PASID ops, which will be reused by drivers other than mdev.
-
-The allocated PASID also needs to be installed into the parent device.
-If the mdev module knows the PASID, we can do that by adding
-set_pasid(mdev, pasid) and clear_pasid(mdev, pasid) operations to
-mdev_parent_ops.
-
-Thanks,
-Jean
+For some reason 0day has failed me multiple times for sh.  Does the
+0day bot even cover sh at all?
