@@ -1,109 +1,56 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 01/10] iommu/vt-d: Get iommu device for a mediated
-	device
-Date: Tue, 24 Jul 2018 12:50:56 -0600
-Message-ID: <20180724125056.4ae477c9@t450s.home>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated
+ devices
+Date: Tue, 24 Jul 2018 13:51:01 -0600
+Message-ID: <20180724135101.58e81678@t450s.home>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
-	<1532239773-15325-2-git-send-email-baolu.lu@linux.intel.com>
+        <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
+        <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
+        <5B568D5B.5050606@linux.intel.com>
+        <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1532239773-15325-2-git-send-email-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 22 Jul 2018 14:09:24 +0800
-Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+On Tue, 24 Jul 2018 12:30:35 +0100
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-> This patch adds the support to get the iommu device for a mediated
-> device. The assumption is that each mediated device is a minimal
-> assignable set of a physical PCI device. Hence, we should use the
-> iommu device of the parent PCI device to manage the translation.
-
-Hmm, is this absolutely a valid assumption?  I'm afraid there's an
-assumption throughout this series that the only way an mdev device
-could be interacting with the IOMMU is via S-IOV, but we could choose
-today to make an mdev wrapper for any device, which might provide basic
-RID granularity to the IOMMU.  So if I make an mdev wrapper for a PF
-such that I can implement migration for that device, is it valid for
-the IOMMU driver to flag me as an mdev device and base mappings on my
-parent device?  Perhaps in this patch we can assume that the parent of
-such an mdev device would be the PF backing it and that results in the
-correct drhd, but in the next patch we start imposing the assumption
-that because the device is an mdev, the only valid association is via
-pasid, which I'd say is incorrect.
- 
-> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c |  6 ++++++
->  drivers/iommu/intel-pasid.h | 16 ++++++++++++++++
->  2 files changed, 22 insertions(+)
+> Hi Baolu,
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 7d198ea..fc3ac1c 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -767,6 +767,12 @@ static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devf
->  	if (iommu_dummy(dev))
->  		return NULL;
->  
-> +	if (dev_is_mdev(dev)) {
-> +		dev = dev_mdev_parent(dev);
-> +		if (WARN_ON(!dev_is_pci(dev)))
-> +			return NULL;
-> +	}
-> +
->  	if (dev_is_pci(dev)) {
->  		struct pci_dev *pf_pdev;
->  
-> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-> index 518df72..46cde66 100644
-> --- a/drivers/iommu/intel-pasid.h
-> +++ b/drivers/iommu/intel-pasid.h
-> @@ -35,6 +35,22 @@ struct pasid_table {
->  	struct list_head	dev;		/* device list */
->  };
->  
-> +static inline bool dev_is_mdev(struct device *dev)
-> +{
-> +	if (!dev)
-> +		return false;
-> +
-> +	return !strcmp(dev->bus->name, "mdev");
-> +}
+> On 24/07/18 03:22, Lu Baolu wrote:
+> > Hi,
+> > 
+> > On 07/23/2018 12:44 PM, Liu, Yi L wrote:  
+> >>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+> >>> Sent: Sunday, July 22, 2018 2:09 PM
+> >>>
+> >>> With the Intel IOMMU supporting PASID granularity isolation and protection, a
+> >>> mediated device could be isolated and protected by an IOMMU unit. We need to
+> >>> allocate a new group instead of a PCI group.  
+> >> Existing vfio mdev framework also allocates an iommu group for mediate device.
+> >>
+> >> mdev_probe()
+> >>   |_ mdev_attach_iommu()
+> >>        |_ iommu_group_alloc()  
+> > 
+> > When external components ask iommu to allocate a group for a device,
+> > it will call pci_device_group in Intel IOMMU driver's @device_group
+> > callback. In another word, current Intel IOMMU driver doesn't aware
+> > the mediated device and treat all devices as PCI ones. This patch
+> > extends the @device_group call back to make it aware of a mediated
+> > device.  
+> 
+> I agree that allocating two groups for an mdev seems strange, and in my
+> opinion we shouldn't export the notion of mdev to IOMMU drivers.
 
-I assume we're not using mdev_bus_type because mdev is a loadable
-module and that symbol doesn't exist in this statically loaded driver,
-but strcmp is a pretty ugly alternative.  Could we use symbol_get() so
-that we can use mdev_bus_type?  Thanks,
+Yep, I was just thinking the same thing.  This is too highly integrated
+into VT-d and too narrowly focused on PASID being the only way that an
+mdev could make use of the IOMMU.  Thanks,
 
 Alex
-
-> +
-> +static inline struct device *dev_mdev_parent(struct device *dev)
-> +{
-> +	if (WARN_ON(!dev_is_mdev(dev)))
-> +		return NULL;
-> +
-> +	return dev->parent;
-> +}
-> +
->  extern u32 intel_pasid_max_id;
->  int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
->  void intel_pasid_free_id(int pasid);
