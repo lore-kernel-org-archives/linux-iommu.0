@@ -1,15 +1,17 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 3/7] ACPI/IORT: Set bus DMA mask as appropriate
-Date: Wed, 25 Jul 2018 14:16:16 +0100
-Message-ID: <20180725131616.GA15301@e107981-ln.cambridge.arm.com>
-References: <cover.1532382222.git.robin.murphy@arm.com>
-	<07cbf8f77fac552dca9b4c85a9d3bd8ed5a4cd29.1532382222.git.robin.murphy@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/3] arm64: dts: stratix10: Add SMMU Node
+Date: Wed, 25 Jul 2018 14:34:42 +0100
+Message-ID: <ac809d43-7c70-6a3f-1139-5e0cb6ebfae6@arm.com>
+References: <1531499278-32132-1-git-send-email-thor.thayer@linux.intel.com>
+	<1531499278-32132-4-git-send-email-thor.thayer@linux.intel.com>
+	<2d17b3b1-96a1-8a0a-521e-134de9df72d0@arm.com>
+	<847f8f94-5108-47a3-bb08-c5f50b64e6e6@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <07cbf8f77fac552dca9b4c85a9d3bd8ed5a4cd29.1532382222.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <847f8f94-5108-47a3-bb08-c5f50b64e6e6-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,37 +21,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, dinguyen-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 23, 2018 at 11:16:08PM +0100, Robin Murphy wrote:
-> When an explicit DMA limit is described by firmware, we need to remember
-> it regardless of how drivers might subsequently update their devices'
-> masks. The new bus_dma_mask field does that.
-> 
-> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> CC: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> CC: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/acpi/arm64/iort.c | 1 +
->  1 file changed, 1 insertion(+)
-
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 4a66896e2aa3..bc51cff5505e 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -1014,6 +1014,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
->  		 * Limit coherent and dma mask based on size
->  		 * retrieved from firmware.
->  		 */
-> +		dev->bus_dma_mask = mask;
->  		dev->coherent_dma_mask = mask;
->  		*dev->dma_mask = mask;
->  	}
-> -- 
-> 2.17.1.dirty
-> 
+T24gMTYvMDcvMTggMTk6NTYsIFRob3IgVGhheWVyIHdyb3RlOgpbLi4uXQo+Pj4gQEAgLTMzMiw2
+ICszNDIsMzYgQEAKPj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGFsdHIsbW9kcnN0LW9m
+ZnNldCA9IDwweDIwPjsKPj4+IMKgwqDCoMKgwqDCoMKgwqDCoCB9Owo+Pj4gK8KgwqDCoMKgwqDC
+oMKgIHNtbXU6IGlvbW11QGZhMDAwMDAwIHsKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNv
+bXBhdGlibGUgPSAiYXJtLG1tdS01MDAiLCAiYXJtLHNtbXUtdjIiOwo+Pj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgcmVnID0gPDB4ZmEwMDAwMDAgMHg0MDAwMD47Cj4+PiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCAjZ2xvYmFsLWludGVycnVwdHMgPSA8OT47Cj4+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCAjaW9tbXUtY2VsbHMgPSA8MT47Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBj
+bG9ja3MgPSA8JmNsa21nciBTVFJBVElYMTBfTDRfTUFJTl9DTEs+Owo+Pj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgY2xvY2stbmFtZXMgPSAic21tdV9jbGsiOwo+Pj4gK8KgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgaW50ZXJydXB0LXBhcmVudCA9IDwmaW50Yz47Cj4+PiArwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBpbnRlcnJ1cHRzID0gPDAgMTI4IDQ+LMKgwqDCoCAvKiBHbG9iYWwgU2VjdXJlIEZh
+dWx0ICovCj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwwIDEyOSA0PiwgLyog
+R2xvYmFsIE5vbi1zZWN1cmUgRmF1bHQgKi8KPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgPDAgMTMwIDQ+LCAvKiBGUEdBIFBlcmZvcm1hbmNlIENvdW50ZXIgKi8KPj4+ICvCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMTMxIDQ+LCAvKiBETUEgUGVyZm9ybWFuY2Ug
+Q291bnRlciAqLwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA8MCAxMzIgND4s
+IC8qIEVNQUMgUGVyZm9ybWFuY2UgQ291bnRlciAqLwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoCA8MCAxMzMgND4sIC8qIElPIFBlcmZvcm1hbmNlIENvdW50ZXIgKi8KPj4+ICvC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPDAgMTM0IDQ+LCAvKiBTRE0gUGVyZm9ybWFu
+Y2UgQ291bnRlciAqLwo+Pgo+PiBOb3RlIHRoYXQgdGhlcmUgaXNuJ3QgbXVjaCBiZW5lZml0IHRv
+IGFkZGluZyB0aGUgc2VjdXJlIG9yIFBNVSAKPj4gaW50ZXJydXB0cyBoZXJlIG90aGVyIHRoYW4g
+dG8gZG9jdW1lbnQgdGhlIGhhcmR3YXJlIC0gRldJVyBJIGhhdmUgCj4+IGFjdHVhbGx5IGJlZW4g
+d29ya2luZyBvbiBhIFBNVSBkcml2ZXIsIGFuZCBuZWVkbGVzcyB0byBzYXkgaXQgdHVybnMgCj4+
+IG91dCBub3QgdG8gYmUgc3VmZmljaWVudCBqdXN0IGhhdmluZyB0aG9zZSBtdW5nZWQgaW50byB0
+aGUgU01NVSBnbG9iYWwgCj4+IGZhdWx0IGhhbmRsZXIuCj4+Cj4gVGhhbmtzIGZvciBwb2ludGlu
+ZyB0aGlzIG91dC4gSSB3YXMgZm9sbG93aW5nIG90aGVyIFNNTVUtNTAwIGRldmljZSAKPiB0cmVl
+cy4gSnVzdCB0byBjbGFyaWZ5LCBob3cgc2hvdWxkIEkgc2ltcGxpZnkgdGhpcz8gU2hvdWxkIEkg
+cmVwbGFjZSBhbGwgCj4gdGhlIGFib3ZlIHdpdGggdGhlIGZvbGxvd2luZz8KPiAKPiAgwqDCoMKg
+wqA8MCAxMjkgND4sIC8qIEdsb2JhbCBOb24tc2VjdXJlIEZhdWx0ICovCj4gCj4gT3Igd2lsbCB5
+b3VyIHVwY29taW5nIFBNVSBkcml2ZXIgbmVlZCB0aGUgUE1VIHVuaXRzPyBJdCBzb3VuZGVkIGxp
+a2UgCj4gdXNpbmcgdGhlIGp1c3QgR2xvYmFsIGZhdWx0IHdhcyBub3Qgc3VmZmljaWVudC4KCk5v
+LCB5b3UgaGFkIGl0IHJpZ2h0IC0gd2hhdCBJIG1lYW50IHdhcyBpdCdzIG9ubHkgd29ydGggaW5j
+bHVkaW5nIHRoZSAKYWN0dWFsIGdsb2JhbCBmYXVsdCBzaWduYWxzIHRoZW1zZWx2ZXMgaGVyZSAo
+dGhlcmUncyBubyBoYXJtIGluIGxlYXZpbmcgCnRoZSBzZWN1cmUgb25lIGluIGlmIHlvdSBsaWtl
+LCBpdCBqdXN0IHdvbid0IGRvIGFueXRoaW5nIGlmIHRoZSBHSUMgaXMgCmNvbmZpZ3VyZWQgY29y
+cmVjdGx5KS4gV2hhdCBJIGZvdW5kIHdhcyB0aGF0IHRoZSBjdXJyZW50IFNNTVUgYmluZGluZyAK
+bGVhdmVzIG5vIHJlYXNvbmFibGUgd2F5IHRvIGVuY29kZSB0aGUgUE1VIGludGVycnVwdHMgaW4g
+dGhpcyBpbnRlcnJ1cHQgCmxpc3QgdGhhdCBkb2Vzbid0IGJyZWFrIGF0IGxlYXN0IG9uZSBvZiB0
+aGUgcG9zc2libGUgb2xkL25ldyBkcml2ZXIvRFQgCmNvbWJpbmF0aW9ucywgc28gd2hhdGV2ZXIg
+aGFwcGVucyB0aGV5IHdpbGwgbmVlZCB0byBiZSBzcGVjaWZpZWQgCnNlcGFyYXRlbHkgb25jZSBh
+IFBNVSBiaW5kaW5nIGlzIGRlZmluZWQuCgo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCA8MCAxMzYgND4sIC8qIE5vbi1zZWN1cmUgQ29tYmluZWQgSW50ZXJydXB0ICovCj4+PiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDwwIDEzNyA0PiwgLyogU2VjdXJlIENvbWJp
+bmVkIEludGVycnVwdCAqLwo+Pgo+PiBTaW1pbGFybHkgdGhlIGNvbWJpbmVkIGludGVycnVwdDsg
+dGhhdCdzIGxpdGVyYWxseSBqdXN0IGFsbCB0aGVzZSAKPj4gb3RoZXIgaW50ZXJydXB0IGxpbmVz
+IE9SZWQgdG9nZXRoZXIgYXQgdGhlIFNNTVUgZW5kLCBhbmQgd291bGQgCj4+IGdlbmVyYWxseSBv
+bmx5IGJlIHVzZWZ1bCBpZiB5b3UgKmRpZG4ndCogaGF2ZSB0aGUgaW5kaXZpZHVhbCBsaW5lcyAK
+Pj4gd2lyZWQgdXAuIEFzIGl0IHN0YW5kcyB3aXRoIGV2ZXJ5dGhpbmcgbGlzdGVkLCBhbnkgZXZl
+bnQgd2lsbCBhbHNvIAo+PiBnZW5lcmF0ZSBhIHNwdXJpb3VzIGdsb2JhbCBmYXVsdCBJUlEsIHdo
+aWNoIGlzbid0IGlkZWFsIChub3QgdGhhdCB5b3UgCj4+IHNob3VsZCBnZXQgbWFueSBpbnRlcnJ1
+cHRzIGR1cmluZyBub3JtYWwgb3BlcmF0aW9uLCBidXQgc3RpbGwuLi4pCj4+Cj4gQW5kIEknZCBy
+ZW1vdmUgYm90aCBvZiB0aGVzZSB0aGVuLCByaWdodD8KCkluZGVlZC4KCj4gVGhhbmtzIGZvciB0
+aGUgcmV2aWV3IGFuZCBoZWxwZnVsIGNvbW1lbnRzIChhbmQgYWxzbyBwb2ludGluZyBvdXQgdGhl
+IAo+IGV4aXN0aW5nIGNsb2NrIHBhdGNoIGluIG15IHBhdGNoIHNlcmllcyBzdW1tYXJ5KSEKCkNo
+ZWVycywKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
