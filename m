@@ -1,72 +1,107 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 5/7 v6] bus/fsl-mc: support dma configure for devices on
- fsl-mc bus
-Date: Wed, 25 Jul 2018 13:51:30 +0100
-Message-ID: <6fa541f1-be67-3e8d-b12d-bdc6e244acb1@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/7 v6] Documentation: fsl-mc: add iommu-map device-tree
+	binding for fsl-mc bus
+Date: Wed, 25 Jul 2018 14:00:50 +0100
+Message-ID: <c4989dc1-4f18-a30a-75a5-843b6be3b44e@arm.com>
 References: <1531135103-10699-1-git-send-email-nipun.gupta@nxp.com>
- <1531135103-10699-6-git-send-email-nipun.gupta@nxp.com>
+	<1531135103-10699-2-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1531135103-10699-6-git-send-email-nipun.gupta@nxp.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1531135103-10699-2-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nipun Gupta <nipun.gupta@nxp.com>, will.deacon@arm.com, robh+dt@kernel.org, robh@kernel.org, mark.rutland@arm.com, catalin.marinas@arm.com, gregkh@linuxfoundation.org, laurentiu.tudor@nxp.com, bhelgaas@google.com, hch@lst.de
-Cc: joro@8bytes.org, m.szyprowski@samsung.com, shawnguo@kernel.org, frowand.list@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org, bharat.bhushan@nxp.com, stuyoder@gmail.com, leoyang.li@nxp.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, laurentiu.tudor-3arQi8VN3Tc@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 09/07/18 12:18, Nipun Gupta wrote:
-> This patch adds support of dma configuration for devices on fsl-mc
-> bus using 'dma_configure' callback for busses. Also, directly calling
-> arch_setup_dma_ops is removed from the fsl-mc bus.
+> The existing IOMMU bindings cannot be used to specify the relationship
+> between fsl-mc devices and IOMMUs. This patch adds a generic binding for
+> mapping fsl-mc devices to IOMMUs, using iommu-map property.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+No more nits from me :)
 
-> Signed-off-by: Nipun Gupta <nipun.gupta@nxp.com>
-> Reviewed-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 > ---
->   drivers/bus/fsl-mc/fsl-mc-bus.c | 15 +++++++++++----
->   1 file changed, 11 insertions(+), 4 deletions(-)
+>   .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 39 ++++++++++++++++++++++
+>   1 file changed, 39 insertions(+)
 > 
-> diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> index 5d8266c..fa43c7d 100644
-> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> @@ -127,6 +127,16 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
->   	return 0;
->   }
+> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> index 6611a7c..01fdc33 100644
+> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> @@ -9,6 +9,25 @@ blocks that can be used to create functional hardware objects/devices
+>   such as network interfaces, crypto accelerator instances, L2 switches,
+>   etc.
 >   
-> +static int fsl_mc_dma_configure(struct device *dev)
-> +{
-> +	struct device *dma_dev = dev;
+> +For an overview of the DPAA2 architecture and fsl-mc bus see:
+> +Documentation/networking/dpaa2/overview.rst
 > +
-> +	while (dev_is_fsl_mc(dma_dev))
-> +		dma_dev = dma_dev->parent;
+> +As described in the above overview, all DPAA2 objects in a DPRC share the
+> +same hardware "isolation context" and a 10-bit value called an ICID
+> +(isolation context id) is expressed by the hardware to identify
+> +the requester.
 > +
-> +	return of_dma_configure(dev, dma_dev->of_node, 0);
-> +}
+> +The generic 'iommus' property is insufficient to describe the relationship
+> +between ICIDs and IOMMUs, so an iommu-map property is used to define
+> +the set of possible ICIDs under a root DPRC and how they map to
+> +an IOMMU.
 > +
->   static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
->   			     char *buf)
->   {
-> @@ -148,6 +158,7 @@ struct bus_type fsl_mc_bus_type = {
->   	.name = "fsl-mc",
->   	.match = fsl_mc_bus_match,
->   	.uevent = fsl_mc_bus_uevent,
-> +	.dma_configure  = fsl_mc_dma_configure,
->   	.dev_groups = fsl_mc_dev_groups,
->   };
->   EXPORT_SYMBOL_GPL(fsl_mc_bus_type);
-> @@ -633,10 +644,6 @@ int fsl_mc_device_add(struct fsl_mc_obj_desc *obj_desc,
->   			goto error_cleanup_dev;
->   	}
+> +For generic IOMMU bindings, see
+> +Documentation/devicetree/bindings/iommu/iommu.txt.
+> +
+> +For arm-smmu binding, see:
+> +Documentation/devicetree/bindings/iommu/arm,smmu.txt.
+> +
+>   Required properties:
 >   
-> -	/* Objects are coherent, unless 'no shareability' flag set. */
-> -	if (!(obj_desc->flags & FSL_MC_OBJ_FLAG_NO_MEM_SHAREABILITY))
-> -		arch_setup_dma_ops(&mc_dev->dev, 0, 0, NULL, true);
-> -
->   	/*
->   	 * The device-specific probe callback will get invoked by device_add()
->   	 */
+>       - compatible
+> @@ -88,14 +107,34 @@ Sub-nodes:
+>                 Value type: <phandle>
+>                 Definition: Specifies the phandle to the PHY device node associated
+>                             with the this dpmac.
+> +Optional properties:
+> +
+> +- iommu-map: Maps an ICID to an IOMMU and associated iommu-specifier
+> +  data.
+> +
+> +  The property is an arbitrary number of tuples of
+> +  (icid-base,iommu,iommu-base,length).
+> +
+> +  Any ICID i in the interval [icid-base, icid-base + length) is
+> +  associated with the listed IOMMU, with the iommu-specifier
+> +  (i - icid-base + iommu-base).
+>   
+>   Example:
+>   
+> +        smmu: iommu@5000000 {
+> +               compatible = "arm,mmu-500";
+> +               #iommu-cells = <1>;
+> +               stream-match-mask = <0x7C00>;
+> +               ...
+> +        };
+> +
+>           fsl_mc: fsl-mc@80c000000 {
+>                   compatible = "fsl,qoriq-mc";
+>                   reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+>                         <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+>                   msi-parent = <&its>;
+> +                /* define map for ICIDs 23-64 */
+> +                iommu-map = <23 &smmu 23 41>;
+>                   #address-cells = <3>;
+>                   #size-cells = <1>;
+>   
 > 
