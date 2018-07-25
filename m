@@ -1,102 +1,88 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated devices
-Date: Wed, 25 Jul 2018 02:16:00 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19127FB94@SHSMSX101.ccr.corp.intel.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated
+ devices
+Date: Wed, 25 Jul 2018 02:35:47 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439CA28BB@SHSMSX104.ccr.corp.intel.com>
 References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
-	<1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
-	<5B568D5B.5050606@linux.intel.com>
-	<ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
+ <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
+ <5B568D5B.5050606@linux.intel.com>
+ <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ccf6890a-30c6-770b-4299-8cabfdc32f2b-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker
-> Sent: Tuesday, July 24, 2018 7:31 PM
-> 
-> Hi Baolu,
-> 
-> On 24/07/18 03:22, Lu Baolu wrote:
-> > Hi,
-> >
-> > On 07/23/2018 12:44 PM, Liu, Yi L wrote:
-> >>> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
-> >>> Sent: Sunday, July 22, 2018 2:09 PM
-> >>>
-> >>> With the Intel IOMMU supporting PASID granularity isolation and
-> protection, a
-> >>> mediated device could be isolated and protected by an IOMMU unit.
-> We need to
-> >>> allocate a new group instead of a PCI group.
-> >> Existing vfio mdev framework also allocates an iommu group for
-> mediate device.
-> >>
-> >> mdev_probe()
-> >>   |_ mdev_attach_iommu()
-> >>        |_ iommu_group_alloc()
-> >
-> > When external components ask iommu to allocate a group for a device,
-> > it will call pci_device_group in Intel IOMMU driver's @device_group
-> > callback. In another word, current Intel IOMMU driver doesn't aware
-> > the mediated device and treat all devices as PCI ones. This patch
-> > extends the @device_group call back to make it aware of a mediated
-> > device.
-> 
-> I agree that allocating two groups for an mdev seems strange, and in my
-> opinion we shouldn't export the notion of mdev to IOMMU drivers.
-> Otherwise each driver will have to add its own "dev_is_mdev()" special
-> cases, which will get messy in the long run. Besides, the macro is
-> currently private, and to be exported it should be wrapped in
-> symbol_get/put(mdev_bus_type).
-
-There is only one group per mdev, but I agree that avoiding mdev
-awareness in IOMMU driver is definitely good... We didn't find a
-good way before, which is why current RFC was implemented that 
-way.
-
-> 
-> There is another way: as we're planning to add a generic pasid_alloc()
-> function to the IOMMU API, the mdev module itself could allocate a
-> default PASID for each mdev by calling pasid_alloc() on the mdev's
-> parent, and then do map()/unmap() with that PASID. This way we don't
-> have to add IOMMU ops to the mdev bus, everything can still be done
-> using the ops of the parent. And IOMMU drivers "only" have to implement
-> PASID ops, which will be reused by drivers other than mdev.
-
-yes, PASID is more general abstraction than mdev. However there is
-one problem. Please note with new scalable mode now PASID is not
-used just for SVA. You can do 1st-level, 2nd-level and nested in PASID
-granularity, meaning each PASID can be bound to an unique iommu
-domain. However today IOMMU driver allows only one iommu_domain 
-per device. If we simply install allocated PASID to parent device, we 
-should also remove that iommu_domain limitation. Is it the way that
-we want to pursue?
-
-mdev avoids such problem as it introduces a separate device...
-
-> 
-> The allocated PASID also needs to be installed into the parent device.
-> If the mdev module knows the PASID, we can do that by adding
-> set_pasid(mdev, pasid) and clear_pasid(mdev, pasid) operations to
-> mdev_parent_ops.
-> 
-
-Thanks
-Kevin
+SGkgSmVhbiwNCg0KPiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBo
+aWxpcHBlLmJydWNrZXJAYXJtLmNvbV0NCj4gU2VudDogVHVlc2RheSwgSnVseSAyNCwgMjAxOCA3
+OjMxIFBNDQo+IA0KPiBIaSBCYW9sdSwNCj4gDQo+IE9uIDI0LzA3LzE4IDAzOjIyLCBMdSBCYW9s
+dSB3cm90ZToNCj4gPiBIaSwNCj4gPg0KPiA+IE9uIDA3LzIzLzIwMTggMTI6NDQgUE0sIExpdSwg
+WWkgTCB3cm90ZToNCj4gPj4+IEZyb206IEx1IEJhb2x1IFttYWlsdG86YmFvbHUubHVAbGludXgu
+aW50ZWwuY29tXQ0KPiA+Pj4gU2VudDogU3VuZGF5LCBKdWx5IDIyLCAyMDE4IDI6MDkgUE0NCj4g
+Pj4+DQo+ID4+PiBXaXRoIHRoZSBJbnRlbCBJT01NVSBzdXBwb3J0aW5nIFBBU0lEIGdyYW51bGFy
+aXR5IGlzb2xhdGlvbiBhbmQgcHJvdGVjdGlvbiwgYQ0KPiA+Pj4gbWVkaWF0ZWQgZGV2aWNlIGNv
+dWxkIGJlIGlzb2xhdGVkIGFuZCBwcm90ZWN0ZWQgYnkgYW4gSU9NTVUgdW5pdC4gV2UgbmVlZCB0
+bw0KPiA+Pj4gYWxsb2NhdGUgYSBuZXcgZ3JvdXAgaW5zdGVhZCBvZiBhIFBDSSBncm91cC4NCj4g
+Pj4gRXhpc3RpbmcgdmZpbyBtZGV2IGZyYW1ld29yayBhbHNvIGFsbG9jYXRlcyBhbiBpb21tdSBn
+cm91cCBmb3IgbWVkaWF0ZSBkZXZpY2UuDQo+ID4+DQo+ID4+IG1kZXZfcHJvYmUoKQ0KPiA+PiAg
+IHxfIG1kZXZfYXR0YWNoX2lvbW11KCkNCj4gPj4gICAgICAgIHxfIGlvbW11X2dyb3VwX2FsbG9j
+KCkNCj4gPg0KPiA+IFdoZW4gZXh0ZXJuYWwgY29tcG9uZW50cyBhc2sgaW9tbXUgdG8gYWxsb2Nh
+dGUgYSBncm91cCBmb3IgYSBkZXZpY2UsDQo+ID4gaXQgd2lsbCBjYWxsIHBjaV9kZXZpY2VfZ3Jv
+dXAgaW4gSW50ZWwgSU9NTVUgZHJpdmVyJ3MgQGRldmljZV9ncm91cA0KPiA+IGNhbGxiYWNrLiBJ
+biBhbm90aGVyIHdvcmQsIGN1cnJlbnQgSW50ZWwgSU9NTVUgZHJpdmVyIGRvZXNuJ3QgYXdhcmUN
+Cj4gPiB0aGUgbWVkaWF0ZWQgZGV2aWNlIGFuZCB0cmVhdCBhbGwgZGV2aWNlcyBhcyBQQ0kgb25l
+cy4gVGhpcyBwYXRjaA0KPiA+IGV4dGVuZHMgdGhlIEBkZXZpY2VfZ3JvdXAgY2FsbCBiYWNrIHRv
+IG1ha2UgaXQgYXdhcmUgb2YgYSBtZWRpYXRlZA0KPiA+IGRldmljZS4NCj4gDQo+IEkgYWdyZWUg
+dGhhdCBhbGxvY2F0aW5nIHR3byBncm91cHMgZm9yIGFuIG1kZXYgc2VlbXMgc3RyYW5nZSwgYW5k
+IGluIG15DQoNClRoZXJlIHdpbGwgbm90IGJlIHR3byBncm91cHMgZm9yIGEgbWRldi4gUGxzIHJl
+ZmVyIHRvIFBhdGNoIDA4LzEwIG9mIHRoaXMNCnNlcmllcy4gQmFvbHUgYWRkZWQgaW9tbXVfb3Bz
+IGNoZWNrIHdoZW4gZG9pbmcgZ3JvdXAgYWxsb2NhdGlvbiBpbg0KbWRldl9hdHRhY2hfaW9tbXUo
+KS4NCg0KW1JGQyBQQVRDSCAwOC8xMF0gdmZpby9tZGV2OiBTZXQgaW9tbXUgb3BzIGZvciBtZGV2
+IGJ1cw0KDQpAQCAtMjEsNiArMjEsMTMgQEAgc3RhdGljIGludCBtZGV2X2F0dGFjaF9pb21tdShz
+dHJ1Y3QgbWRldl9kZXZpY2UgKm1kZXYpDQogCWludCByZXQ7DQogCXN0cnVjdCBpb21tdV9ncm91
+cCAqZ3JvdXA7DQogDQorCS8qDQorCSAqIElmIGlvbW11X29wcyBpcyBzZXQgZm9yIGJ1cywgYWRk
+X2RldmljZSgpIHdpbGwgYWxsb2NhdGUNCisJICogYSBncm91cCBhbmQgYWRkIHRoZSBkZXZpY2Ug
+aW4gdGhlIGdyb3VwLg0KKwkgKi8NCisJaWYgKGlvbW11X3ByZXNlbnQobWRldi0+ZGV2LmJ1cykp
+DQorCQlyZXR1cm4gMDsNCisNCg0KPiBvcGluaW9uIHdlIHNob3VsZG4ndCBleHBvcnQgdGhlIG5v
+dGlvbiBvZiBtZGV2IHRvIElPTU1VIGRyaXZlcnMuDQoNClRoZSBrZXkgaWRlYSBvZiB0aGlzIFJG
+QyBpcyB0byB0YWcgaW9tbXUgZG9tYWluIHdpdGggUEFTSUQsIGlmIGFueSBtZGV2DQppcyBhZGRl
+ZCB0byBzdWNoIGEgZG9tYWluLCBpdCB3b3VsZCBnZXQgdGhlIFBBU0lEIGFuZCBjb25maWcgaW4g
+aXRzIHBhcmVudC4NClRodXMgdGhlIHRyYW5zYWN0aW9ucyBmcm9tIG1kZXYgY2FuIGJlIGlzb2xh
+dGVkIGluIGlvbW11IGhhcmR3YXJlLg0KDQpCYXNlZCBvbiB0aGlzIGlkZWEsIG1kZXZzIGNhbiBi
+ZSBtYW5hZ2VkIGluIGEgZmxleGlibGUgbWFubmVyLiBlLmcuDQppZiB0d28gbWRldnMgYXJlIGFz
+c2lnbmVkIHRvIHNhbWUgVk0sIHRoZXkgY2FuIHNoYXJlIFBBU0lELiBUaGlzIHNoYXJlDQpjYW4g
+YmUgZWFzaWx5IGFjaGlldmUgYnkgYWRkaW5nIHRoZW0gdG8gdGhlIHNhbWUgZG9tYWluLiBJZiB3
+ZSBkZWZhdWx0DQphbGxvY2F0ZSBhIFBBU0lEIGZvciBlYWNoIG1kZXYsIGl0IG1heSBiZSBhIHdh
+c3RlLg0KDQpXaXRoIHZlbmRvci1zcGVjaWZpYyBpb21tdSBkcml2ZXIgaGFuZGxlIHRoZSBtZGV2
+IGRpZmZlcmVuY2UsIGl0IGNhbg0KbGFyZ2VseSBrZWVwIHRoZSBmdW5kYW1lbnRhbCBpb21tdSBj
+b25jZXB0cyBpbiBjdXJyZW50IHNvZnR3YXJlDQppbXBsZW1lbnRhdGlvbi4NCg0KPiBPdGhlcndp
+c2UgZWFjaCBkcml2ZXIgd2lsbCBoYXZlIHRvIGFkZCBpdHMgb3duICJkZXZfaXNfbWRldigpIiBz
+cGVjaWFsDQo+IGNhc2VzLCB3aGljaCB3aWxsIGdldCBtZXNzeSBpbiB0aGUgbG9uZyBydW4uIEJl
+c2lkZXMsIHRoZSBtYWNybyBpcw0KPiBjdXJyZW50bHkgcHJpdmF0ZSwgYW5kIHRvIGJlIGV4cG9y
+dGVkIGl0IHNob3VsZCBiZSB3cmFwcGVkIGluDQo+IHN5bWJvbF9nZXQvcHV0KG1kZXZfYnVzX3R5
+cGUpLg0KDQpBZ3JlZWQuIFNob3VsZCBmaWd1cmUgb3V0IGEgYmV0dGVyIG1hbm5lci4NCg0KPiBU
+aGVyZSBpcyBhbm90aGVyIHdheTogYXMgd2UncmUgcGxhbm5pbmcgdG8gYWRkIGEgZ2VuZXJpYyBw
+YXNpZF9hbGxvYygpDQo+IGZ1bmN0aW9uIHRvIHRoZSBJT01NVSBBUEksIHRoZSBtZGV2IG1vZHVs
+ZSBpdHNlbGYgY291bGQgYWxsb2NhdGUgYQ0KPiBkZWZhdWx0IFBBU0lEIGZvciBlYWNoIG1kZXYg
+YnkgY2FsbGluZyBwYXNpZF9hbGxvYygpIG9uIHRoZSBtZGV2J3MNCj4gcGFyZW50LCBhbmQgdGhl
+biBkbyBtYXAoKS91bm1hcCgpIHdpdGggdGhhdCBQQVNJRC4gVGhpcyB3YXkgd2UgZG9uJ3QNCg0K
+c28gZmFyLCBtYXAvdW5tYXAgaXMgcGVyLWRvbWFpbiBvcGVyYXRpb24uIEluIHRoaXMgd2F5LCBw
+YXNzaW5nIFBBU0lEIG1ha2VzDQppdCBiZSBraW5kIG9mIHBlci1kZXZpY2Ugb3BlcmF0aW9uLiBU
+aGlzIG1heSBhZmZlY3QgdG9vIG11Y2ggb2YgZXhpc3Rpbmcgc29mdHdhcmUNCmltcGxlbWVudGF0
+aW9uLg0KDQo+IGhhdmUgdG8gYWRkIElPTU1VIG9wcyB0byB0aGUgbWRldiBidXMsIGV2ZXJ5dGhp
+bmcgY2FuIHN0aWxsIGJlIGRvbmUNCj4gdXNpbmcgdGhlIG9wcyBvZiB0aGUgcGFyZW50LiBBbmQg
+SU9NTVUgZHJpdmVycyAib25seSIgaGF2ZSB0byBpbXBsZW1lbnQNCj4gUEFTSUQgb3BzLCB3aGlj
+aCB3aWxsIGJlIHJldXNlZCBieSBkcml2ZXJzIG90aGVyIHRoYW4gbWRldi4NCj4gDQo+IFRoZSBh
+bGxvY2F0ZWQgUEFTSUQgYWxzbyBuZWVkcyB0byBiZSBpbnN0YWxsZWQgaW50byB0aGUgcGFyZW50
+IGRldmljZS4NCj4gSWYgdGhlIG1kZXYgbW9kdWxlIGtub3dzIHRoZSBQQVNJRCwgd2UgY2FuIGRv
+IHRoYXQgYnkgYWRkaW5nDQo+IHNldF9wYXNpZChtZGV2LCBwYXNpZCkgYW5kIGNsZWFyX3Bhc2lk
+KG1kZXYsIHBhc2lkKSBvcGVyYXRpb25zIHRvDQo+IG1kZXZfcGFyZW50X29wcy4NCg0KWW91ciBp
+ZGVhIGlzIGZhc2NpbmF0aW5nLiBQbHMgZmVlbCBmcmVlIGxldCB1cyBrbm93IGlmIHdlIG1pc3Nl
+ZCBhbnkgZnJvbSB5b3UuIDopDQoNCj4gVGhhbmtzLA0KPiBKZWFuDQoNClRoYW5rcywNCllpIExp
+dQ0K
