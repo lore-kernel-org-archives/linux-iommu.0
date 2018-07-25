@@ -1,53 +1,66 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 6/6] swiotlb: respect DMA_ATTR_NO_WARN in __swiotlb_map_page
-Date: Wed, 25 Jul 2018 13:38:02 +0200
-Message-ID: <20180725113802.18943-7-hch@lst.de>
-References: <20180725113802.18943-1-hch@lst.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180725113802.18943-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu/arm-smmu: Error out only if not enough context
+	interrupts
+Date: Wed, 25 Jul 2018 12:57:30 +0100
+Message-ID: <20180725115729.GA31576@arm.com>
+References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
+	<20180719175356.14753-4-vivek.gautam@codeaurora.org>
+	<20180724083633.GA19324@arm.com>
+	<d6796a00-17da-c03e-ca7f-7a67139ad99a@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <d6796a00-17da-c03e-ca7f-7a67139ad99a-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/swiotlb.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+On Tue, Jul 24, 2018 at 03:09:41PM +0530, Vivek Gautam wrote:
+> On 7/24/2018 2:06 PM, Will Deacon wrote:
+> >On Thu, Jul 19, 2018 at 11:23:56PM +0530, Vivek Gautam wrote:
+> >>diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> >>index 7c69736a30f8..4cb53bf4f423 100644
+> >>--- a/drivers/iommu/arm-smmu.c
+> >>+++ b/drivers/iommu/arm-smmu.c
+> >>@@ -2229,12 +2229,19 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >>  	if (err)
+> >>  		return err;
+> >>-	if (smmu->version == ARM_SMMU_V2 &&
+> >>-	    smmu->num_context_banks != smmu->num_context_irqs) {
+> >>-		dev_err(dev,
+> >>-			"found only %d context interrupt(s) but %d required\n",
+> >>-			smmu->num_context_irqs, smmu->num_context_banks);
+> >>-		return -ENODEV;
+> >>+	if (smmu->version == ARM_SMMU_V2) {
+> >>+		if (smmu->num_context_banks > smmu->num_context_irqs) {
+> >>+			dev_err(dev,
+> >>+			      "found only %d context irq(s) but %d required\n",
+> >>+			      smmu->num_context_irqs, smmu->num_context_banks);
+> >>+			return -ENODEV;
+> >>+		} else if (smmu->num_context_banks < smmu->num_context_irqs) {
+> >>+			/* loose extra context interrupts */
+> >>+			dev_notice(dev,
+> >>+			      "found %d context irq(s) but only %d required\n",
+> >>+			      smmu->num_context_irqs, smmu->num_context_banks);
+> >>+			smmu->num_context_irqs = smmu->num_context_banks;
+> >>+		}
+> >I don't see the utility in the new message. Can you simplify with the patch
+> >below on top? It's a bit weird that we only decide to ignore the extra irqs
+> >after calling platform_get_irq() on them, but that seems to be harmless.
+> 
+> Thanks. I will modify as suggested below and respin.
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8ca0964ebf3a..5c3db7c89e0f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -606,8 +606,11 @@ __swiotlb_map_page(struct device *dev, phys_addr_t phys, size_t size,
- 
- 	switch (swiotlb_force) {
- 	case SWIOTLB_NO_FORCE:
--		dev_warn_ratelimited(dev,
--			"swiotlb: force disabled for address %pa\n", &phys);
-+		if (!(attrs & DMA_ATTR_NO_WARN)) {
-+			dev_warn_ratelimited(dev,
-+				"swiotlb: force disabled for address %pa\n",
-+				&phys);
-+		}
- 		return -EOPNOTSUPP;
- 	case SWIOTLB_NORMAL:
- 		/* can we address the memory directly? */
-@@ -627,10 +630,12 @@ __swiotlb_map_page(struct device *dev, phys_addr_t phys, size_t size,
- 	/* Ensure that the address returned is DMA'ble */
- 	*dma_addr = __phys_to_dma(dev, map_addr);
- 	if (unlikely(!dma_capable(dev, *dma_addr, size))) {
--		dev_err_ratelimited(dev,
--			"DMA: swiotlb buffer not addressable.\n");
-+		if (!(attrs & DMA_ATTR_NO_WARN)) {
-+			dev_err_ratelimited(dev,
-+				"DMA: swiotlb buffer not addressable.\n");
-+		}
- 		swiotlb_tbl_unmap_single(dev, map_addr, size, dir,
--			attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+				attrs | DMA_ATTR_SKIP_CPU_SYNC);
- 		return -EINVAL;
- 	}
- 	return 0;
--- 
-2.18.0
+It's ok, I can make the change locally.
+
+Will
