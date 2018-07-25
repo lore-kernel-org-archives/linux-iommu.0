@@ -1,220 +1,89 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v13 1/4] iommu/arm-smmu: Add pm_runtime/sleep ops
-Date: Wed, 25 Jul 2018 15:28:37 +0900
-Message-ID: <CAAFQd5AwrNL7CbBXMYEWcHMuSsENhDuQEJvuypn3nbCzWw5v4Q@mail.gmail.com>
-References: <20180719101539.6104-1-vivek.gautam@codeaurora.org>
-	<20180719101539.6104-2-vivek.gautam@codeaurora.org>
-	<e17fdcb7-2632-753f-4e2e-f81bcded36f1@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e17fdcb7-2632-753f-4e2e-f81bcded36f1-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 2/5] sh: introduce a sh_cacheop_vaddr helper
+Date: Wed, 25 Jul 2018 11:40:40 +0200
+Message-ID: <20180725094043.32443-3-hch@lst.de>
+References: <20180725094043.32443-1-hch@lst.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180725094043.32443-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
+Cc: Jacopo Mondi <jacopo+renesas@jmondi.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 25, 2018 at 12:21 AM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->
-> On 19/07/18 11:15, Vivek Gautam wrote:
-> > From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >
-> > The smmu needs to be functional only when the respective
-> > master's using it are active. The device_link feature
-> > helps to track such functional dependencies, so that the
-> > iommu gets powered when the master device enables itself
-> > using pm_runtime. So by adapting the smmu driver for
-> > runtime pm, above said dependency can be addressed.
-> >
-> > This patch adds the pm runtime/sleep callbacks to the
-> > driver and also the functions to parse the smmu clocks
-> > from DT and enable them in resume/suspend.
-> >
-> > Also, while we enable the runtime pm add a pm sleep suspend
-> > callback that pushes devices to low power state by turning
-> > the clocks off in a system sleep.
-> > Also add corresponding clock enable path in resume callback.
-> >
-> > Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> > Signed-off-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> > [vivek: rework for clock and pm ops]
-> > Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> > Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> > ---
-> >
-> > Changes since v12:
-> >   - Added pm sleep .suspend callback. This disables the clocks.
-> >   - Added corresponding change to enable clocks in .resume
-> >    pm sleep callback.
-> >
-> >   drivers/iommu/arm-smmu.c | 75 ++++++++++++++++++++++++++++++++++++++++++++++--
-> >   1 file changed, 73 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index c73cfce1ccc0..9138a6fffe04 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -48,6 +48,7 @@
-> >   #include <linux/of_iommu.h>
-> >   #include <linux/pci.h>
-> >   #include <linux/platform_device.h>
-> > +#include <linux/pm_runtime.h>
-> >   #include <linux/slab.h>
-> >   #include <linux/spinlock.h>
-> >
-> > @@ -205,6 +206,8 @@ struct arm_smmu_device {
-> >       u32                             num_global_irqs;
-> >       u32                             num_context_irqs;
-> >       unsigned int                    *irqs;
-> > +     struct clk_bulk_data            *clks;
-> > +     int                             num_clks;
-> >
-> >       u32                             cavium_id_base; /* Specific to Cavium */
-> >
-> > @@ -1897,10 +1900,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
-> >   struct arm_smmu_match_data {
-> >       enum arm_smmu_arch_version version;
-> >       enum arm_smmu_implementation model;
-> > +     const char * const *clks;
-> > +     int num_clks;
-> >   };
-> >
-> >   #define ARM_SMMU_MATCH_DATA(name, ver, imp) \
-> > -static struct arm_smmu_match_data name = { .version = ver, .model = imp }
-> > +static const struct arm_smmu_match_data name = { .version = ver, .model = imp }
-> >
-> >   ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
-> >   ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
-> > @@ -1919,6 +1924,23 @@ static const struct of_device_id arm_smmu_of_match[] = {
-> >   };
-> >   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
-> >
-> > +static void arm_smmu_fill_clk_data(struct arm_smmu_device *smmu,
-> > +                                const char * const *clks)
-> > +{
-> > +     int i;
-> > +
-> > +     if (smmu->num_clks < 1)
-> > +             return;
-> > +
-> > +     smmu->clks = devm_kcalloc(smmu->dev, smmu->num_clks,
-> > +                               sizeof(*smmu->clks), GFP_KERNEL);
-> > +     if (!smmu->clks)
-> > +             return;
-> > +
-> > +     for (i = 0; i < smmu->num_clks; i++)
-> > +             smmu->clks[i].id = clks[i];
-> > +}
-> > +
-> >   #ifdef CONFIG_ACPI
-> >   static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
-> >   {
-> > @@ -2001,6 +2023,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
-> >       data = of_device_get_match_data(dev);
-> >       smmu->version = data->version;
-> >       smmu->model = data->model;
-> > +     smmu->num_clks = data->num_clks;
-> > +
-> > +     arm_smmu_fill_clk_data(smmu, data->clks);
-> >
-> >       parse_driver_options(smmu);
-> >
-> > @@ -2099,6 +2124,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
-> >               smmu->irqs[i] = irq;
-> >       }
-> >
-> > +     err = devm_clk_bulk_get(smmu->dev, smmu->num_clks, smmu->clks);
-> > +     if (err)
-> > +             return err;
-> > +
-> > +     err = clk_bulk_prepare(smmu->num_clks, smmu->clks);
-> > +     if (err)
-> > +             return err;
-> > +
-> >       err = arm_smmu_device_cfg_probe(smmu);
-> >       if (err)
-> >               return err;
-> > @@ -2181,6 +2214,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
-> >
-> >       /* Turn the thing off */
-> >       writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> > +
-> > +     clk_bulk_unprepare(smmu->num_clks, smmu->clks);
-> > +
-> >       return 0;
-> >   }
-> >
-> > @@ -2189,15 +2225,50 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
-> >       arm_smmu_device_remove(pdev);
-> >   }
-> >
-> > +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
-> > +{
-> > +     struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > +
-> > +     return clk_bulk_enable(smmu->num_clks, smmu->clks);
->
-> If there's a power domain being automatically switched by genpd then we
-> need a reset here because we may have lost state entirely. Since I
-> remembered the otherwise-useless GPU SMMU on Juno is in a separate power
-> domain, I gave it a poking via sysfs with some debug stuff to dump sCR0
-> in these callbacks, and the problem is clear:
->
-> ...
-> [    4.625551] arm-smmu 2b400000.iommu: genpd_runtime_suspend()
-> [    4.631163] arm-smmu 2b400000.iommu: arm_smmu_runtime_suspend: 0x00201936
-> [    4.637897] arm-smmu 2b400000.iommu: suspend latency exceeded, 6733980 ns
-> [   21.566983] arm-smmu 2b400000.iommu: genpd_runtime_resume()
-> [   21.584796] arm-smmu 2b400000.iommu: arm_smmu_runtime_resume: 0x00220101
-> [   21.591452] arm-smmu 2b400000.iommu: resume latency exceeded, 6658020 ns
-> ...
->
-> > +}
-> > +
-> > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
-> > +{
-> > +     struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > +
-> > +     clk_bulk_disable(smmu->num_clks, smmu->clks);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >   static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
-> >   {
-> >       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > +     int ret;
-> > +
-> > +     if (!pm_runtime_suspended(dev)) {
-> > +             ret = arm_smmu_runtime_resume(dev);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> >
-> >       arm_smmu_device_reset(smmu);
->
-> This looks a bit off too - if we wake from sleep when the SMMU was also
-> runtime-suspended, it appears we might end up trying to restore the
-> register state without clocks enabled. Surely we need to always enable
-> clocks for the reset, then restore the previous suspended state?
-> Although given my previous point, it's probably not worth doing anything
-> at all here for that case.
+And use it in the maple bus code to avoid a dma API dependency.
 
-With a reset added to arm_smmu_runtime_resume(), we wouldn't need the
-reset here anymore. With that, the code below should work.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/sh/include/asm/cacheflush.h | 7 +++++++
+ arch/sh/mm/consistent.c          | 6 +-----
+ drivers/sh/maple/maple.c         | 7 ++++---
+ 3 files changed, 12 insertions(+), 8 deletions(-)
 
-    if (pm_runtime_suspended(dev))
-        return 0;
-    return arm_smmu_runtime_resume(dev);
-
-Best regards,
-Tomasz
+diff --git a/arch/sh/include/asm/cacheflush.h b/arch/sh/include/asm/cacheflush.h
+index d103ab5a4e4b..b932e42ef028 100644
+--- a/arch/sh/include/asm/cacheflush.h
++++ b/arch/sh/include/asm/cacheflush.h
+@@ -101,5 +101,12 @@ void kunmap_coherent(void *kvaddr);
+ 
+ void cpu_cache_init(void);
+ 
++static inline void *sh_cacheop_vaddr(void *vaddr)
++{
++	if (__in_29bit_mode())
++		vaddr = (void *)CAC_ADDR((unsigned long)vaddr);
++	return vaddr;
++}
++
+ #endif /* __KERNEL__ */
+ #endif /* __ASM_SH_CACHEFLUSH_H */
+diff --git a/arch/sh/mm/consistent.c b/arch/sh/mm/consistent.c
+index e9d422bd42a5..1622ae6b9dbd 100644
+--- a/arch/sh/mm/consistent.c
++++ b/arch/sh/mm/consistent.c
+@@ -74,10 +74,7 @@ void dma_generic_free_coherent(struct device *dev, size_t size,
+ void sh_sync_dma_for_device(void *vaddr, size_t size,
+ 		    enum dma_data_direction direction)
+ {
+-	void *addr;
+-
+-	addr = __in_29bit_mode() ?
+-	       (void *)CAC_ADDR((unsigned long)vaddr) : vaddr;
++	void *addr = sh_cacheop_vaddr(vaddr);
+ 
+ 	switch (direction) {
+ 	case DMA_FROM_DEVICE:		/* invalidate only */
+@@ -93,7 +90,6 @@ void sh_sync_dma_for_device(void *vaddr, size_t size,
+ 		BUG();
+ 	}
+ }
+-EXPORT_SYMBOL(sh_sync_dma_for_device);
+ 
+ static int __init memchunk_setup(char *str)
+ {
+diff --git a/drivers/sh/maple/maple.c b/drivers/sh/maple/maple.c
+index 2e45988d1259..e5d7fb81ad66 100644
+--- a/drivers/sh/maple/maple.c
++++ b/drivers/sh/maple/maple.c
+@@ -300,8 +300,8 @@ static void maple_send(void)
+ 	mutex_unlock(&maple_wlist_lock);
+ 	if (maple_packets > 0) {
+ 		for (i = 0; i < (1 << MAPLE_DMA_PAGES); i++)
+-			sh_sync_dma_for_device(maple_sendbuf + i * PAGE_SIZE,
+-				       PAGE_SIZE, DMA_BIDIRECTIONAL);
++			__flush_purge_region(maple_sendbuf + i * PAGE_SIZE,
++					PAGE_SIZE);
+ 	}
+ 
+ finish:
+@@ -642,7 +642,8 @@ static void maple_dma_handler(struct work_struct *work)
+ 		list_for_each_entry_safe(mq, nmq, &maple_sentq, list) {
+ 			mdev = mq->dev;
+ 			recvbuf = mq->recvbuf->buf;
+-			sh_sync_dma_for_device(recvbuf, 0x400, DMA_FROM_DEVICE);
++			__flush_invalidate_region(sh_cacheop_vaddr(recvbuf),
++					0x400);
+ 			code = recvbuf[0];
+ 			kfree(mq->sendbuf);
+ 			list_del_init(&mq->list);
+-- 
+2.18.0
