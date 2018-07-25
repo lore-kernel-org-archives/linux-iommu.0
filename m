@@ -1,11 +1,15 @@
-From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH v2] iommu/ipmmu-vmsa: Fix allocation in atomic context
-Date: Wed, 25 Jul 2018 15:13:20 +0200
-Message-ID: <20180725131320.5994-1-geert+renesas@glider.be>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 3/7] ACPI/IORT: Set bus DMA mask as appropriate
+Date: Wed, 25 Jul 2018 14:16:16 +0100
+Message-ID: <20180725131616.GA15301@e107981-ln.cambridge.arm.com>
+References: <cover.1532382222.git.robin.murphy@arm.com>
+	<07cbf8f77fac552dca9b4c85a9d3bd8ed5a4cd29.1532382222.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <07cbf8f77fac552dca9b4c85a9d3bd8ed5a4cd29.1532382222.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,89 +19,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When attaching a device to an IOMMU group with
-CONFIG_DEBUG_ATOMIC_SLEEP=y:
+On Mon, Jul 23, 2018 at 11:16:08PM +0100, Robin Murphy wrote:
+> When an explicit DMA limit is described by firmware, we need to remember
+> it regardless of how drivers might subsequently update their devices'
+> masks. The new bus_dma_mask field does that.
+> 
+> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> CC: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> CC: Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/acpi/arm64/iort.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-    BUG: sleeping function called from invalid context at mm/slab.h:421
-    in_atomic(): 1, irqs_disabled(): 128, pid: 61, name: kworker/1:1
-    ...
-    Call trace:
-     ...
-     arm_lpae_alloc_pgtable+0x114/0x184
-     arm_64_lpae_alloc_pgtable_s1+0x2c/0x128
-     arm_32_lpae_alloc_pgtable_s1+0x40/0x6c
-     alloc_io_pgtable_ops+0x60/0x88
-     ipmmu_attach_device+0x140/0x334
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 
-ipmmu_attach_device() takes a spinlock, while arm_lpae_alloc_pgtable()
-allocates memory using GFP_KERNEL.  Originally, the ipmmu-vmsa driver
-had its own custom page table allocation implementation using
-GFP_ATOMIC, hence the spinlock was fine.
-
-Fix this by replacing the spinlock by a mutex, like the arm-smmu driver
-does.
-
-Fixes: f20ed39f53145e45 ("iommu/ipmmu-vmsa: Use the ARM LPAE page table allocator")
-Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
-v2:
-  - Add Reviewed-by.
----
- drivers/iommu/ipmmu-vmsa.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 40ae6e87cb880223..ef566b4989d6e2f8 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -73,7 +73,7 @@ struct ipmmu_vmsa_domain {
- 	struct io_pgtable_ops *iop;
- 
- 	unsigned int context_id;
--	spinlock_t lock;			/* Protects mappings */
-+	struct mutex mutex;			/* Protects mappings */
- };
- 
- static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
-@@ -595,7 +595,7 @@ static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
- 	if (!domain)
- 		return NULL;
- 
--	spin_lock_init(&domain->lock);
-+	mutex_init(&domain->mutex);
- 
- 	return &domain->io_domain;
- }
-@@ -641,7 +641,6 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
- 	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
--	unsigned long flags;
- 	unsigned int i;
- 	int ret = 0;
- 
-@@ -650,7 +649,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 		return -ENXIO;
- 	}
- 
--	spin_lock_irqsave(&domain->lock, flags);
-+	mutex_lock(&domain->mutex);
- 
- 	if (!domain->mmu) {
- 		/* The domain hasn't been used yet, initialize it. */
-@@ -674,7 +673,7 @@ static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 	} else
- 		dev_info(dev, "Reusing IPMMU context %u\n", domain->context_id);
- 
--	spin_unlock_irqrestore(&domain->lock, flags);
-+	mutex_unlock(&domain->mutex);
- 
- 	if (ret < 0)
- 		return ret;
--- 
-2.17.1
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 4a66896e2aa3..bc51cff5505e 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -1014,6 +1014,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+>  		 * Limit coherent and dma mask based on size
+>  		 * retrieved from firmware.
+>  		 */
+> +		dev->bus_dma_mask = mask;
+>  		dev->coherent_dma_mask = mask;
+>  		*dev->dma_mask = mask;
+>  	}
+> -- 
+> 2.17.1.dirty
+> 
