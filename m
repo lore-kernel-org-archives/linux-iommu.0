@@ -1,33 +1,69 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 1/3] hexagon: remove the sync_single_for_cpu DMA operation
-Date: Wed, 25 Jul 2018 06:39:27 +0200
-Message-ID: <20180725043927.GA10827@lst.de>
-References: <20180719125635.824-1-hch@lst.de> <20180719125635.824-2-hch@lst.de>
-	<20180725032948.GG12771@codeaurora.org>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated
+ devices
+Date: Wed, 25 Jul 2018 06:19:46 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19127FF05@SHSMSX101.ccr.corp.intel.com>
+References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
+ <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
+ <5B568D5B.5050606@linux.intel.com>
+ <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19127FB9E@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180725032948.GG12771-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19127FB9E@SHSMSX101.ccr.corp.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Jean-Philippe Brucker' <jean-philippe.brucker@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 24, 2018 at 10:29:48PM -0500, Richard Kuo wrote:
-> Patch series looks good.  Definitely appreciate the cleanup.
-> 
-> I can take it through my tree, or if not:
-> 
-> Acked-by: Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-
-Please take it through your tree, thanks!
+PiBGcm9tOiBUaWFuLCBLZXZpbg0KPiBTZW50OiBXZWRuZXNkYXksIEp1bHkgMjUsIDIwMTggMTA6
+MTYgQU0NCj4gDQpbLi4uXQ0KPiA+DQo+ID4gVGhlcmUgaXMgYW5vdGhlciB3YXk6IGFzIHdlJ3Jl
+IHBsYW5uaW5nIHRvIGFkZCBhIGdlbmVyaWMgcGFzaWRfYWxsb2MoKQ0KPiA+IGZ1bmN0aW9uIHRv
+IHRoZSBJT01NVSBBUEksIHRoZSBtZGV2IG1vZHVsZSBpdHNlbGYgY291bGQgYWxsb2NhdGUgYQ0K
+PiA+IGRlZmF1bHQgUEFTSUQgZm9yIGVhY2ggbWRldiBieSBjYWxsaW5nIHBhc2lkX2FsbG9jKCkg
+b24gdGhlIG1kZXYncw0KPiA+IHBhcmVudCwgYW5kIHRoZW4gZG8gbWFwKCkvdW5tYXAoKSB3aXRo
+IHRoYXQgUEFTSUQuIFRoaXMgd2F5IHdlIGRvbid0DQo+ID4gaGF2ZSB0byBhZGQgSU9NTVUgb3Bz
+IHRvIHRoZSBtZGV2IGJ1cywgZXZlcnl0aGluZyBjYW4gc3RpbGwgYmUgZG9uZQ0KPiA+IHVzaW5n
+IHRoZSBvcHMgb2YgdGhlIHBhcmVudC4gQW5kIElPTU1VIGRyaXZlcnMgIm9ubHkiIGhhdmUgdG8N
+Cj4gaW1wbGVtZW50DQo+ID4gUEFTSUQgb3BzLCB3aGljaCB3aWxsIGJlIHJldXNlZCBieSBkcml2
+ZXJzIG90aGVyIHRoYW4gbWRldi4NCj4gDQo+IHllcywgUEFTSUQgaXMgbW9yZSBnZW5lcmFsIGFi
+c3RyYWN0aW9uIHRoYW4gbWRldi4gSG93ZXZlciB0aGVyZSBpcw0KPiBvbmUgcHJvYmxlbS4gUGxl
+YXNlIG5vdGUgd2l0aCBuZXcgc2NhbGFibGUgbW9kZSBub3cgUEFTSUQgaXMgbm90DQo+IHVzZWQg
+anVzdCBmb3IgU1ZBLiBZb3UgY2FuIGRvIDFzdC1sZXZlbCwgMm5kLWxldmVsIGFuZCBuZXN0ZWQg
+aW4gUEFTSUQNCj4gZ3JhbnVsYXJpdHksIG1lYW5pbmcgZWFjaCBQQVNJRCBjYW4gYmUgYm91bmQg
+dG8gYW4gdW5pcXVlIGlvbW11DQo+IGRvbWFpbi4gSG93ZXZlciB0b2RheSBJT01NVSBkcml2ZXIg
+YWxsb3dzIG9ubHkgb25lIGlvbW11X2RvbWFpbg0KPiBwZXIgZGV2aWNlLiBJZiB3ZSBzaW1wbHkg
+aW5zdGFsbCBhbGxvY2F0ZWQgUEFTSUQgdG8gcGFyZW50IGRldmljZSwgd2UNCj4gc2hvdWxkIGFs
+c28gcmVtb3ZlIHRoYXQgaW9tbXVfZG9tYWluIGxpbWl0YXRpb24uIElzIGl0IHRoZSB3YXkgdGhh
+dA0KPiB3ZSB3YW50IHRvIHB1cnN1ZT8NCj4gDQo+IG1kZXYgYXZvaWRzIHN1Y2ggcHJvYmxlbSBh
+cyBpdCBpbnRyb2R1Y2VzIGEgc2VwYXJhdGUgZGV2aWNlLi4uDQoNCmFub3RoZXIgdGhpbmcgdG8g
+dGhpbmsgYWJvdXQgaXMgdG8gc2ltcGxpZnkgdGhlIGNhbGxlciBsb2dpYy4gSXQgd291bGQNCmJl
+IGdvb2QgdG8gaGF2ZSBjb25zaXN0ZW50IElPTU1VIEFQSXMgY3Jvc3MgUENJIGRldmljZSBhbmQg
+DQptZGV2LCBmb3IgY29tbW9uIFZGSU8gb3BlcmF0aW9ucyBlLmcuIG1hcC91bm1hcCwgaW9tbXVf
+DQphdHRhY2hfZ3JvdXAsIGV0Yy4gSWYgd2UgbmVlZCBzcGVjaWFsIHZlcnNpb24gb3BzIHdpdGgg
+UEFTSUQsIGl0IA0KYnJpbmdzIGJ1cmRlbiB0byBWRklPIGFuZCBvdGhlciBJT01NVSBjbGllbnRz
+Li4uDQoNCkZvciBJT01NVS1jYXBhYmxlIG1kZXYsIHRoZXJlIGFyZSB0d28gdXNlIGNhc2VzIHdo
+aWNoIGhhdmUgDQpiZWVuIHRhbGtlZCBzbyBmYXI6DQoNCjEpIG1kZXYgd2l0aCBQQVNJRC1ncmFu
+dWxhciBETUEgaXNvbGF0aW9uDQoyKSBtZGV2IGluaGVyaXRpbmcgUklEIGZyb20gcGFyZW50IGRl
+dmljZSAobm8gc2hhcmluZykNCg0KMSkgaXMgd2hhdCB0aGlzIFJGQyBpcyBjdXJyZW50bHkgZm9y
+LiAyKSBpcyB3aGF0IEFsZXggY29uY2VybmVkIA0Kd2hpY2ggaXMgbm90IGNvdmVyZWQgaW4gUkZD
+IHlldC4NCg0KSW4gbXkgbWluZCwgYW4gaWRlYWwgZGVzaWduIGlzIGxpa2UgYmVsb3c6DQoNCmEp
+IFZGSU8gcHJvdmlkZXMgYW4gaW50ZXJmYWNlIGZvciBwYXJlbnQgZHJpdmVyIHRvIHNwZWNpZnkg
+DQp3aGV0aGVyIGEgbWRldiBpcyBJT01NVSBjYXBhYmxlLCB3aXRoIGZsYWcgdG8gaW5kaWNhdGUg
+DQp3aGV0aGVyIGl0J3MgUEFTSUQtZ3JhbnVsYXIgb3IgUklELWluaGVyaXQ7DQoNCmIpIE9uY2Ug
+YW4gSU9NTVUtY2FwYWJsZSBtZGV2IGlzIGNyZWF0ZWQsIFZGSU8gdHJlYXRzIGl0IG5vDQpkaWZm
+ZXJlbnQgZnJvbSBub3JtYWwgcGh5c2ljYWwgZGV2aWNlcywgdXNpbmcgZXhhY3RseSBzYW1lIA0K
+SU9NTVUgQVBJcyB0byBvcGVyYXRlIChpbmNsdWRpbmcgZnV0dXJlIFNWQSkuIFZGSU8gZG9lc24n
+dCANCmNhcmUgd2hldGhlciBQQVNJRCBvciBSSUQgd2lsbCBiZSB1c2VkIGluIGhhcmR3YXJlOw0K
+DQpjKSBJT01NVSBkcml2ZXIgdGhlbiBoYW5kbGUgUklEL1BBU0lEIGRpZmZlcmVuY2UgaW50ZXJu
+YWxseSwgDQpiYXNlZCBvbiBpdHMgb3duIGNvbmZpZ3VyYXRpb24gYW5kIG1kZXYgdHlwZS4NCg0K
+VG8gc3VwcG9ydCBhYm92ZSBnb2FsLCBJIGZlZWwgYSBuZXcgZGV2aWNlIGhhbmRsZSBpcyBhIG5p
+Y2UgZml0IA0KdG8gcmVwcmVzZW50IG1kZXYgd2l0aGluIElPTU1VIGRyaXZlciwgd2l0aCBzYW1l
+IHNldCBvZiANCmNhcGFiaWxpdGllcyBhcyBvYnNlcnZlZCBvbiBpdHMgcGFyZW50IGRldmljZS4N
+Cg0KSmVhbiwgbWF5YmUgSSBkaWRuJ3QgZnVsbHkgdW5kZXJzdGFuZCB5b3VyIHByb3Bvc2FsLiBD
+YW4geW91DQplbGFib3JhdGUgd2hldGhlciBhYm92ZSBnb2FsIGNhbiBiZSBhY2hpZXZlZCB3aXRo
+IGl0Pw0KDQpUaGFua3MNCktldmluDQo=
