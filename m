@@ -1,69 +1,220 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated
- devices
-Date: Wed, 25 Jul 2018 06:19:46 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19127FF05@SHSMSX101.ccr.corp.intel.com>
-References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
- <1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
- <A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
- <5B568D5B.5050606@linux.intel.com>
- <ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19127FB9E@SHSMSX101.ccr.corp.intel.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v13 1/4] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Wed, 25 Jul 2018 15:28:37 +0900
+Message-ID: <CAAFQd5AwrNL7CbBXMYEWcHMuSsENhDuQEJvuypn3nbCzWw5v4Q@mail.gmail.com>
+References: <20180719101539.6104-1-vivek.gautam@codeaurora.org>
+	<20180719101539.6104-2-vivek.gautam@codeaurora.org>
+	<e17fdcb7-2632-753f-4e2e-f81bcded36f1@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19127FB9E@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: 'Jean-Philippe Brucker' <jean-philippe.brucker@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <e17fdcb7-2632-753f-4e2e-f81bcded36f1-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBUaWFuLCBLZXZpbg0KPiBTZW50OiBXZWRuZXNkYXksIEp1bHkgMjUsIDIwMTggMTA6
-MTYgQU0NCj4gDQpbLi4uXQ0KPiA+DQo+ID4gVGhlcmUgaXMgYW5vdGhlciB3YXk6IGFzIHdlJ3Jl
-IHBsYW5uaW5nIHRvIGFkZCBhIGdlbmVyaWMgcGFzaWRfYWxsb2MoKQ0KPiA+IGZ1bmN0aW9uIHRv
-IHRoZSBJT01NVSBBUEksIHRoZSBtZGV2IG1vZHVsZSBpdHNlbGYgY291bGQgYWxsb2NhdGUgYQ0K
-PiA+IGRlZmF1bHQgUEFTSUQgZm9yIGVhY2ggbWRldiBieSBjYWxsaW5nIHBhc2lkX2FsbG9jKCkg
-b24gdGhlIG1kZXYncw0KPiA+IHBhcmVudCwgYW5kIHRoZW4gZG8gbWFwKCkvdW5tYXAoKSB3aXRo
-IHRoYXQgUEFTSUQuIFRoaXMgd2F5IHdlIGRvbid0DQo+ID4gaGF2ZSB0byBhZGQgSU9NTVUgb3Bz
-IHRvIHRoZSBtZGV2IGJ1cywgZXZlcnl0aGluZyBjYW4gc3RpbGwgYmUgZG9uZQ0KPiA+IHVzaW5n
-IHRoZSBvcHMgb2YgdGhlIHBhcmVudC4gQW5kIElPTU1VIGRyaXZlcnMgIm9ubHkiIGhhdmUgdG8N
-Cj4gaW1wbGVtZW50DQo+ID4gUEFTSUQgb3BzLCB3aGljaCB3aWxsIGJlIHJldXNlZCBieSBkcml2
-ZXJzIG90aGVyIHRoYW4gbWRldi4NCj4gDQo+IHllcywgUEFTSUQgaXMgbW9yZSBnZW5lcmFsIGFi
-c3RyYWN0aW9uIHRoYW4gbWRldi4gSG93ZXZlciB0aGVyZSBpcw0KPiBvbmUgcHJvYmxlbS4gUGxl
-YXNlIG5vdGUgd2l0aCBuZXcgc2NhbGFibGUgbW9kZSBub3cgUEFTSUQgaXMgbm90DQo+IHVzZWQg
-anVzdCBmb3IgU1ZBLiBZb3UgY2FuIGRvIDFzdC1sZXZlbCwgMm5kLWxldmVsIGFuZCBuZXN0ZWQg
-aW4gUEFTSUQNCj4gZ3JhbnVsYXJpdHksIG1lYW5pbmcgZWFjaCBQQVNJRCBjYW4gYmUgYm91bmQg
-dG8gYW4gdW5pcXVlIGlvbW11DQo+IGRvbWFpbi4gSG93ZXZlciB0b2RheSBJT01NVSBkcml2ZXIg
-YWxsb3dzIG9ubHkgb25lIGlvbW11X2RvbWFpbg0KPiBwZXIgZGV2aWNlLiBJZiB3ZSBzaW1wbHkg
-aW5zdGFsbCBhbGxvY2F0ZWQgUEFTSUQgdG8gcGFyZW50IGRldmljZSwgd2UNCj4gc2hvdWxkIGFs
-c28gcmVtb3ZlIHRoYXQgaW9tbXVfZG9tYWluIGxpbWl0YXRpb24uIElzIGl0IHRoZSB3YXkgdGhh
-dA0KPiB3ZSB3YW50IHRvIHB1cnN1ZT8NCj4gDQo+IG1kZXYgYXZvaWRzIHN1Y2ggcHJvYmxlbSBh
-cyBpdCBpbnRyb2R1Y2VzIGEgc2VwYXJhdGUgZGV2aWNlLi4uDQoNCmFub3RoZXIgdGhpbmcgdG8g
-dGhpbmsgYWJvdXQgaXMgdG8gc2ltcGxpZnkgdGhlIGNhbGxlciBsb2dpYy4gSXQgd291bGQNCmJl
-IGdvb2QgdG8gaGF2ZSBjb25zaXN0ZW50IElPTU1VIEFQSXMgY3Jvc3MgUENJIGRldmljZSBhbmQg
-DQptZGV2LCBmb3IgY29tbW9uIFZGSU8gb3BlcmF0aW9ucyBlLmcuIG1hcC91bm1hcCwgaW9tbXVf
-DQphdHRhY2hfZ3JvdXAsIGV0Yy4gSWYgd2UgbmVlZCBzcGVjaWFsIHZlcnNpb24gb3BzIHdpdGgg
-UEFTSUQsIGl0IA0KYnJpbmdzIGJ1cmRlbiB0byBWRklPIGFuZCBvdGhlciBJT01NVSBjbGllbnRz
-Li4uDQoNCkZvciBJT01NVS1jYXBhYmxlIG1kZXYsIHRoZXJlIGFyZSB0d28gdXNlIGNhc2VzIHdo
-aWNoIGhhdmUgDQpiZWVuIHRhbGtlZCBzbyBmYXI6DQoNCjEpIG1kZXYgd2l0aCBQQVNJRC1ncmFu
-dWxhciBETUEgaXNvbGF0aW9uDQoyKSBtZGV2IGluaGVyaXRpbmcgUklEIGZyb20gcGFyZW50IGRl
-dmljZSAobm8gc2hhcmluZykNCg0KMSkgaXMgd2hhdCB0aGlzIFJGQyBpcyBjdXJyZW50bHkgZm9y
-LiAyKSBpcyB3aGF0IEFsZXggY29uY2VybmVkIA0Kd2hpY2ggaXMgbm90IGNvdmVyZWQgaW4gUkZD
-IHlldC4NCg0KSW4gbXkgbWluZCwgYW4gaWRlYWwgZGVzaWduIGlzIGxpa2UgYmVsb3c6DQoNCmEp
-IFZGSU8gcHJvdmlkZXMgYW4gaW50ZXJmYWNlIGZvciBwYXJlbnQgZHJpdmVyIHRvIHNwZWNpZnkg
-DQp3aGV0aGVyIGEgbWRldiBpcyBJT01NVSBjYXBhYmxlLCB3aXRoIGZsYWcgdG8gaW5kaWNhdGUg
-DQp3aGV0aGVyIGl0J3MgUEFTSUQtZ3JhbnVsYXIgb3IgUklELWluaGVyaXQ7DQoNCmIpIE9uY2Ug
-YW4gSU9NTVUtY2FwYWJsZSBtZGV2IGlzIGNyZWF0ZWQsIFZGSU8gdHJlYXRzIGl0IG5vDQpkaWZm
-ZXJlbnQgZnJvbSBub3JtYWwgcGh5c2ljYWwgZGV2aWNlcywgdXNpbmcgZXhhY3RseSBzYW1lIA0K
-SU9NTVUgQVBJcyB0byBvcGVyYXRlIChpbmNsdWRpbmcgZnV0dXJlIFNWQSkuIFZGSU8gZG9lc24n
-dCANCmNhcmUgd2hldGhlciBQQVNJRCBvciBSSUQgd2lsbCBiZSB1c2VkIGluIGhhcmR3YXJlOw0K
-DQpjKSBJT01NVSBkcml2ZXIgdGhlbiBoYW5kbGUgUklEL1BBU0lEIGRpZmZlcmVuY2UgaW50ZXJu
-YWxseSwgDQpiYXNlZCBvbiBpdHMgb3duIGNvbmZpZ3VyYXRpb24gYW5kIG1kZXYgdHlwZS4NCg0K
-VG8gc3VwcG9ydCBhYm92ZSBnb2FsLCBJIGZlZWwgYSBuZXcgZGV2aWNlIGhhbmRsZSBpcyBhIG5p
-Y2UgZml0IA0KdG8gcmVwcmVzZW50IG1kZXYgd2l0aGluIElPTU1VIGRyaXZlciwgd2l0aCBzYW1l
-IHNldCBvZiANCmNhcGFiaWxpdGllcyBhcyBvYnNlcnZlZCBvbiBpdHMgcGFyZW50IGRldmljZS4N
-Cg0KSmVhbiwgbWF5YmUgSSBkaWRuJ3QgZnVsbHkgdW5kZXJzdGFuZCB5b3VyIHByb3Bvc2FsLiBD
-YW4geW91DQplbGFib3JhdGUgd2hldGhlciBhYm92ZSBnb2FsIGNhbiBiZSBhY2hpZXZlZCB3aXRo
-IGl0Pw0KDQpUaGFua3MNCktldmluDQo=
+On Wed, Jul 25, 2018 at 12:21 AM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+> On 19/07/18 11:15, Vivek Gautam wrote:
+> > From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> >
+> > The smmu needs to be functional only when the respective
+> > master's using it are active. The device_link feature
+> > helps to track such functional dependencies, so that the
+> > iommu gets powered when the master device enables itself
+> > using pm_runtime. So by adapting the smmu driver for
+> > runtime pm, above said dependency can be addressed.
+> >
+> > This patch adds the pm runtime/sleep callbacks to the
+> > driver and also the functions to parse the smmu clocks
+> > from DT and enable them in resume/suspend.
+> >
+> > Also, while we enable the runtime pm add a pm sleep suspend
+> > callback that pushes devices to low power state by turning
+> > the clocks off in a system sleep.
+> > Also add corresponding clock enable path in resume callback.
+> >
+> > Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> > Signed-off-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> > [vivek: rework for clock and pm ops]
+> > Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> > Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> > ---
+> >
+> > Changes since v12:
+> >   - Added pm sleep .suspend callback. This disables the clocks.
+> >   - Added corresponding change to enable clocks in .resume
+> >    pm sleep callback.
+> >
+> >   drivers/iommu/arm-smmu.c | 75 ++++++++++++++++++++++++++++++++++++++++++++++--
+> >   1 file changed, 73 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index c73cfce1ccc0..9138a6fffe04 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -48,6 +48,7 @@
+> >   #include <linux/of_iommu.h>
+> >   #include <linux/pci.h>
+> >   #include <linux/platform_device.h>
+> > +#include <linux/pm_runtime.h>
+> >   #include <linux/slab.h>
+> >   #include <linux/spinlock.h>
+> >
+> > @@ -205,6 +206,8 @@ struct arm_smmu_device {
+> >       u32                             num_global_irqs;
+> >       u32                             num_context_irqs;
+> >       unsigned int                    *irqs;
+> > +     struct clk_bulk_data            *clks;
+> > +     int                             num_clks;
+> >
+> >       u32                             cavium_id_base; /* Specific to Cavium */
+> >
+> > @@ -1897,10 +1900,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+> >   struct arm_smmu_match_data {
+> >       enum arm_smmu_arch_version version;
+> >       enum arm_smmu_implementation model;
+> > +     const char * const *clks;
+> > +     int num_clks;
+> >   };
+> >
+> >   #define ARM_SMMU_MATCH_DATA(name, ver, imp) \
+> > -static struct arm_smmu_match_data name = { .version = ver, .model = imp }
+> > +static const struct arm_smmu_match_data name = { .version = ver, .model = imp }
+> >
+> >   ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
+> >   ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
+> > @@ -1919,6 +1924,23 @@ static const struct of_device_id arm_smmu_of_match[] = {
+> >   };
+> >   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+> >
+> > +static void arm_smmu_fill_clk_data(struct arm_smmu_device *smmu,
+> > +                                const char * const *clks)
+> > +{
+> > +     int i;
+> > +
+> > +     if (smmu->num_clks < 1)
+> > +             return;
+> > +
+> > +     smmu->clks = devm_kcalloc(smmu->dev, smmu->num_clks,
+> > +                               sizeof(*smmu->clks), GFP_KERNEL);
+> > +     if (!smmu->clks)
+> > +             return;
+> > +
+> > +     for (i = 0; i < smmu->num_clks; i++)
+> > +             smmu->clks[i].id = clks[i];
+> > +}
+> > +
+> >   #ifdef CONFIG_ACPI
+> >   static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
+> >   {
+> > @@ -2001,6 +2023,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+> >       data = of_device_get_match_data(dev);
+> >       smmu->version = data->version;
+> >       smmu->model = data->model;
+> > +     smmu->num_clks = data->num_clks;
+> > +
+> > +     arm_smmu_fill_clk_data(smmu, data->clks);
+> >
+> >       parse_driver_options(smmu);
+> >
+> > @@ -2099,6 +2124,14 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >               smmu->irqs[i] = irq;
+> >       }
+> >
+> > +     err = devm_clk_bulk_get(smmu->dev, smmu->num_clks, smmu->clks);
+> > +     if (err)
+> > +             return err;
+> > +
+> > +     err = clk_bulk_prepare(smmu->num_clks, smmu->clks);
+> > +     if (err)
+> > +             return err;
+> > +
+> >       err = arm_smmu_device_cfg_probe(smmu);
+> >       if (err)
+> >               return err;
+> > @@ -2181,6 +2214,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+> >
+> >       /* Turn the thing off */
+> >       writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+> > +
+> > +     clk_bulk_unprepare(smmu->num_clks, smmu->clks);
+> > +
+> >       return 0;
+> >   }
+> >
+> > @@ -2189,15 +2225,50 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
+> >       arm_smmu_device_remove(pdev);
+> >   }
+> >
+> > +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
+> > +{
+> > +     struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +
+> > +     return clk_bulk_enable(smmu->num_clks, smmu->clks);
+>
+> If there's a power domain being automatically switched by genpd then we
+> need a reset here because we may have lost state entirely. Since I
+> remembered the otherwise-useless GPU SMMU on Juno is in a separate power
+> domain, I gave it a poking via sysfs with some debug stuff to dump sCR0
+> in these callbacks, and the problem is clear:
+>
+> ...
+> [    4.625551] arm-smmu 2b400000.iommu: genpd_runtime_suspend()
+> [    4.631163] arm-smmu 2b400000.iommu: arm_smmu_runtime_suspend: 0x00201936
+> [    4.637897] arm-smmu 2b400000.iommu: suspend latency exceeded, 6733980 ns
+> [   21.566983] arm-smmu 2b400000.iommu: genpd_runtime_resume()
+> [   21.584796] arm-smmu 2b400000.iommu: arm_smmu_runtime_resume: 0x00220101
+> [   21.591452] arm-smmu 2b400000.iommu: resume latency exceeded, 6658020 ns
+> ...
+>
+> > +}
+> > +
+> > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+> > +{
+> > +     struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +
+> > +     clk_bulk_disable(smmu->num_clks, smmu->clks);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >   static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+> >   {
+> >       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +     int ret;
+> > +
+> > +     if (!pm_runtime_suspended(dev)) {
+> > +             ret = arm_smmu_runtime_resume(dev);
+> > +             if (ret)
+> > +                     return ret;
+> > +     }
+> >
+> >       arm_smmu_device_reset(smmu);
+>
+> This looks a bit off too - if we wake from sleep when the SMMU was also
+> runtime-suspended, it appears we might end up trying to restore the
+> register state without clocks enabled. Surely we need to always enable
+> clocks for the reset, then restore the previous suspended state?
+> Although given my previous point, it's probably not worth doing anything
+> at all here for that case.
+
+With a reset added to arm_smmu_runtime_resume(), we wouldn't need the
+reset here anymore. With that, the code below should work.
+
+    if (pm_runtime_suspended(dev))
+        return 0;
+    return arm_smmu_runtime_resume(dev);
+
+Best regards,
+Tomasz
