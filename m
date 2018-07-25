@@ -1,16 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/7 v6] Documentation: fsl-mc: add iommu-map device-tree
-	binding for fsl-mc bus
-Date: Wed, 25 Jul 2018 14:00:50 +0100
-Message-ID: <c4989dc1-4f18-a30a-75a5-843b6be3b44e@arm.com>
-References: <1531135103-10699-1-git-send-email-nipun.gupta@nxp.com>
-	<1531135103-10699-2-git-send-email-nipun.gupta@nxp.com>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH] iommu/ipmmu-vmsa: Clarify supported platforms
+Date: Wed, 25 Jul 2018 15:10:29 +0200
+Message-ID: <20180725131029.5643-1-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1531135103-10699-2-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,88 +15,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, laurentiu.tudor-3arQi8VN3Tc@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/07/18 12:18, Nipun Gupta wrote:
-> The existing IOMMU bindings cannot be used to specify the relationship
-> between fsl-mc devices and IOMMUs. This patch adds a generic binding for
-> mapping fsl-mc devices to IOMMUs, using iommu-map property.
+The Renesas IPMMU-VMSA driver supports not just R-Car H2 and M2 SoCs,
+but also other R-Car Gen2 and R-Car Gen3 SoCs.
 
-No more nits from me :)
+Drop a superfluous "Renesas" while at it.
 
-Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+---
+ drivers/iommu/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> ---
->   .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 39 ++++++++++++++++++++++
->   1 file changed, 39 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> index 6611a7c..01fdc33 100644
-> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> @@ -9,6 +9,25 @@ blocks that can be used to create functional hardware objects/devices
->   such as network interfaces, crypto accelerator instances, L2 switches,
->   etc.
->   
-> +For an overview of the DPAA2 architecture and fsl-mc bus see:
-> +Documentation/networking/dpaa2/overview.rst
-> +
-> +As described in the above overview, all DPAA2 objects in a DPRC share the
-> +same hardware "isolation context" and a 10-bit value called an ICID
-> +(isolation context id) is expressed by the hardware to identify
-> +the requester.
-> +
-> +The generic 'iommus' property is insufficient to describe the relationship
-> +between ICIDs and IOMMUs, so an iommu-map property is used to define
-> +the set of possible ICIDs under a root DPRC and how they map to
-> +an IOMMU.
-> +
-> +For generic IOMMU bindings, see
-> +Documentation/devicetree/bindings/iommu/iommu.txt.
-> +
-> +For arm-smmu binding, see:
-> +Documentation/devicetree/bindings/iommu/arm,smmu.txt.
-> +
->   Required properties:
->   
->       - compatible
-> @@ -88,14 +107,34 @@ Sub-nodes:
->                 Value type: <phandle>
->                 Definition: Specifies the phandle to the PHY device node associated
->                             with the this dpmac.
-> +Optional properties:
-> +
-> +- iommu-map: Maps an ICID to an IOMMU and associated iommu-specifier
-> +  data.
-> +
-> +  The property is an arbitrary number of tuples of
-> +  (icid-base,iommu,iommu-base,length).
-> +
-> +  Any ICID i in the interval [icid-base, icid-base + length) is
-> +  associated with the listed IOMMU, with the iommu-specifier
-> +  (i - icid-base + iommu-base).
->   
->   Example:
->   
-> +        smmu: iommu@5000000 {
-> +               compatible = "arm,mmu-500";
-> +               #iommu-cells = <1>;
-> +               stream-match-mask = <0x7C00>;
-> +               ...
-> +        };
-> +
->           fsl_mc: fsl-mc@80c000000 {
->                   compatible = "fsl,qoriq-mc";
->                   reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
->                         <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
->                   msi-parent = <&its>;
-> +                /* define map for ICIDs 23-64 */
-> +                iommu-map = <23 &smmu 23 41>;
->                   #address-cells = <3>;
->                   #size-cells = <1>;
->   
-> 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 568ae81b0e99b67b..c69dc0b29b5df37f 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -306,8 +306,8 @@ config IPMMU_VMSA
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_DMA_USE_IOMMU
+ 	help
+-	  Support for the Renesas VMSA-compatible IPMMU Renesas found in the
+-	  R-Mobile APE6 and R-Car H2/M2 SoCs.
++	  Support for the Renesas VMSA-compatible IPMMU found in the R-Mobile
++	  APE6, R-Car Gen2, and R-Car Gen3 SoCs.
+ 
+ 	  If unsure, say N.
+ 
+-- 
+2.17.1
