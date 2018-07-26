@@ -1,147 +1,111 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 2/6] iommu/dma: add support for non-strict mode
-Date: Thu, 26 Jul 2018 12:15:28 +0800
-Message-ID: <5B594AE0.2090701@huawei.com>
-References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
-	<1531376312-2192-3-git-send-email-thunder.leizhen@huawei.com>
-	<4a668c7c-bce6-eef0-e11d-319333c60fcb@arm.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v13 1/4] iommu/arm-smmu: Add
+ pm_runtime/sleep ops
+Date: Thu, 26 Jul 2018 12:42:50 +0530
+Message-ID: <CAFp+6iEYpM7w+pq0bG83vgjedqy4ZkQbUP9Bx=61TbEUN45OkA@mail.gmail.com>
+References: <20180719101539.6104-1-vivek.gautam@codeaurora.org>
+ <20180719101539.6104-2-vivek.gautam@codeaurora.org>
+ <e17fdcb7-2632-753f-4e2e-f81bcded36f1@arm.com>
+ <CAFp+6iF1XzFn1QhWjatxE-1sue-EFS7wNmQ4OB=c3pf1VMLuMA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4a668c7c-bce6-eef0-e11d-319333c60fcb-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg
-	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAFp+6iF1XzFn1QhWjatxE-1sue-EFS7wNmQ4OB=c3pf1VMLuMA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2018/7/25 6:01, Robin Murphy wrote:
-> On 2018-07-12 7:18 AM, Zhen Lei wrote:
->> 1. Save the related domain pointer in struct iommu_dma_cookie, make iovad
->>     capable call domain->ops->flush_iotlb_all to flush TLB.
->> 2. Add a new iommu capability: IOMMU_CAP_NON_STRICT, which used to indicate
->>     that the iommu domain support non-strict mode.
->> 3. During the iommu domain initialization phase, call capable() to check
->>     whether it support non-strcit mode. If so, call init_iova_flush_queue
->>     to register iovad->flush_cb callback.
->> 4. All unmap(contains iova-free) APIs will finally invoke __iommu_dma_unmap
->>     -->iommu_dma_free_iova. If the domain is non-strict, call queue_iova to
->>     put off iova freeing.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>   drivers/iommu/dma-iommu.c | 25 +++++++++++++++++++++++++
->>   include/linux/iommu.h     |  7 +++++++
->>   2 files changed, 32 insertions(+)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index ddcbbdb..9f0c77a 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -55,6 +55,7 @@ struct iommu_dma_cookie {
->>       };
->>       struct list_head        msi_page_list;
->>       spinlock_t            msi_lock;
->> +    struct iommu_domain        *domain_non_strict;
->>   };
->>     static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
->> @@ -257,6 +258,17 @@ static int iova_reserve_iommu_regions(struct device *dev,
->>       return ret;
->>   }
->>   +static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
->> +{
->> +    struct iommu_dma_cookie *cookie;
->> +    struct iommu_domain *domain;
->> +
->> +    cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
->> +    domain = cookie->domain_non_strict;
->> +
->> +    domain->ops->flush_iotlb_all(domain);
->> +}
->> +
->>   /**
->>    * iommu_dma_init_domain - Initialise a DMA mapping domain
->>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
->> @@ -272,6 +284,7 @@ static int iova_reserve_iommu_regions(struct device *dev,
->>   int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>           u64 size, struct device *dev)
->>   {
->> +    const struct iommu_ops *ops = domain->ops;
->>       struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>       struct iova_domain *iovad = &cookie->iovad;
->>       unsigned long order, base_pfn, end_pfn;
->> @@ -308,6 +321,15 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>       }
->>         init_iova_domain(iovad, 1UL << order, base_pfn);
->> +
->> +    if ((ops->capable && ops->capable(IOMMU_CAP_NON_STRICT)) &&
->> +        (IOMMU_DOMAIN_STRICT_MODE(domain) == IOMMU_NON_STRICT)) {
->> +        BUG_ON(!ops->flush_iotlb_all);
->> +
->> +        cookie->domain_non_strict = domain;
->> +        init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all, NULL);
->> +    }
->> +
->>       if (!dev)
->>           return 0;
->>   @@ -390,6 +412,9 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
->>       /* The MSI case is only ever cleaning up its most recent allocation */
->>       if (cookie->type == IOMMU_DMA_MSI_COOKIE)
->>           cookie->msi_iova -= size;
->> +    else if (cookie->domain_non_strict)
->> +        queue_iova(iovad, iova_pfn(iovad, iova),
->> +                size >> iova_shift(iovad), 0);
->>       else
->>           free_iova_fast(iovad, iova_pfn(iovad, iova),
->>                   size >> iova_shift(iovad));
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 19938ee..82ed979 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -86,6 +86,12 @@ struct iommu_domain_geometry {
->>   #define IOMMU_DOMAIN_DMA    (__IOMMU_DOMAIN_PAGING |    \
->>                    __IOMMU_DOMAIN_DMA_API)
->>   +#define IOMMU_STRICT        0
->> +#define IOMMU_NON_STRICT    1
->> +#define IOMMU_STRICT_MODE_MASK    1UL
->> +#define IOMMU_DOMAIN_STRICT_MODE(domain)    \
->> +        (domain->type != IOMMU_DOMAIN_UNMANAGED)
->> +
->>   struct iommu_domain {
->>       unsigned type;
->>       const struct iommu_ops *ops;
->> @@ -101,6 +107,7 @@ enum iommu_cap {
->>                          transactions */
->>       IOMMU_CAP_INTR_REMAP,        /* IOMMU supports interrupt isolation */
->>       IOMMU_CAP_NOEXEC,        /* IOMMU_NOEXEC flag */
->> +    IOMMU_CAP_NON_STRICT,        /* IOMMU supports non-strict mode */
-> 
-> This still isn't a capability of the hardware. Non-strict mode is pure software policy; *every IOMMU ever* supports it.
-> 
-> If you want to have this kind of per-driver control, make it a domain attribute - that's not only more logical, but should also work out a lot cleaner overall.
-
-OK, I will use quirk, so this capability will be removed in the next version.
-
-> 
-> Robin.
-> 
->>   };
->>     /*
->>
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+T24gV2VkLCBKdWwgMjUsIDIwMTggYXQgMTE6NDYgUE0sIFZpdmVrIEdhdXRhbQo8dml2ZWsuZ2F1
+dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiBPbiBUdWUsIEp1bCAyNCwgMjAxOCBhdCA4OjUx
+IFBNLCBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPiB3cm90ZToKPj4gT24gMTkv
+MDcvMTggMTE6MTUsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4+Cj4+PiBGcm9tOiBTcmljaGFyYW4g
+UiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pj4KPj4+IFRoZSBzbW11IG5lZWRzIHRvIGJl
+IGZ1bmN0aW9uYWwgb25seSB3aGVuIHRoZSByZXNwZWN0aXZlCj4+PiBtYXN0ZXIncyB1c2luZyBp
+dCBhcmUgYWN0aXZlLiBUaGUgZGV2aWNlX2xpbmsgZmVhdHVyZQo+Pj4gaGVscHMgdG8gdHJhY2sg
+c3VjaCBmdW5jdGlvbmFsIGRlcGVuZGVuY2llcywgc28gdGhhdCB0aGUKPj4+IGlvbW11IGdldHMg
+cG93ZXJlZCB3aGVuIHRoZSBtYXN0ZXIgZGV2aWNlIGVuYWJsZXMgaXRzZWxmCj4+PiB1c2luZyBw
+bV9ydW50aW1lLiBTbyBieSBhZGFwdGluZyB0aGUgc21tdSBkcml2ZXIgZm9yCj4+PiBydW50aW1l
+IHBtLCBhYm92ZSBzYWlkIGRlcGVuZGVuY3kgY2FuIGJlIGFkZHJlc3NlZC4KPj4+Cj4+PiBUaGlz
+IHBhdGNoIGFkZHMgdGhlIHBtIHJ1bnRpbWUvc2xlZXAgY2FsbGJhY2tzIHRvIHRoZQo+Pj4gZHJp
+dmVyIGFuZCBhbHNvIHRoZSBmdW5jdGlvbnMgdG8gcGFyc2UgdGhlIHNtbXUgY2xvY2tzCj4+PiBm
+cm9tIERUIGFuZCBlbmFibGUgdGhlbSBpbiByZXN1bWUvc3VzcGVuZC4KPj4+Cj4+PiBBbHNvLCB3
+aGlsZSB3ZSBlbmFibGUgdGhlIHJ1bnRpbWUgcG0gYWRkIGEgcG0gc2xlZXAgc3VzcGVuZAo+Pj4g
+Y2FsbGJhY2sgdGhhdCBwdXNoZXMgZGV2aWNlcyB0byBsb3cgcG93ZXIgc3RhdGUgYnkgdHVybmlu
+Zwo+Pj4gdGhlIGNsb2NrcyBvZmYgaW4gYSBzeXN0ZW0gc2xlZXAuCj4+PiBBbHNvIGFkZCBjb3Jy
+ZXNwb25kaW5nIGNsb2NrIGVuYWJsZSBwYXRoIGluIHJlc3VtZSBjYWxsYmFjay4KPj4+Cj4+PiBT
+aWduZWQtb2ZmLWJ5OiBTcmljaGFyYW4gUiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pj4g
+U2lnbmVkLW9mZi1ieTogQXJjaGl0IFRhbmVqYSA8YXJjaGl0dEBjb2RlYXVyb3JhLm9yZz4KPj4+
+IFt2aXZlazogcmV3b3JrIGZvciBjbG9jayBhbmQgcG0gb3BzXQo+Pj4gU2lnbmVkLW9mZi1ieTog
+Vml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+Cj4+PiBSZXZpZXdlZC1i
+eTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4KPj4+IC0tLQo+Pj4KPj4+IENoYW5n
+ZXMgc2luY2UgdjEyOgo+Pj4gICAtIEFkZGVkIHBtIHNsZWVwIC5zdXNwZW5kIGNhbGxiYWNrLiBU
+aGlzIGRpc2FibGVzIHRoZSBjbG9ja3MuCj4+PiAgIC0gQWRkZWQgY29ycmVzcG9uZGluZyBjaGFu
+Z2UgdG8gZW5hYmxlIGNsb2NrcyBpbiAucmVzdW1lCj4+PiAgICBwbSBzbGVlcCBjYWxsYmFjay4K
+Pj4+Cj4+PiAgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDc1Cj4+PiArKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0KPj4+ICAgMSBmaWxlIGNoYW5nZWQs
+IDczIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2Ry
+aXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+Pj4gaW5k
+ZXggYzczY2ZjZTFjY2MwLi45MTM4YTZmZmZlMDQgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2ZXJzL2lv
+bW11L2FybS1zbW11LmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwoKW3NuaXBd
+Cgo+Pj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+Pj4gICAgICAgICBhcm1fc21tdV9kZXZpY2Vf
+cmVtb3ZlKHBkZXYpOwo+Pj4gICB9Cj4+PiAgICtzdGF0aWMgaW50IF9fbWF5YmVfdW51c2VkIGFy
+bV9zbW11X3J1bnRpbWVfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikKPj4+ICt7Cj4+PiArICAg
+ICAgIHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsK
+Pj4+ICsKPj4+ICsgICAgICAgcmV0dXJuIGNsa19idWxrX2VuYWJsZShzbW11LT5udW1fY2xrcywg
+c21tdS0+Y2xrcyk7Cj4+Cj4+Cj4+IElmIHRoZXJlJ3MgYSBwb3dlciBkb21haW4gYmVpbmcgYXV0
+b21hdGljYWxseSBzd2l0Y2hlZCBieSBnZW5wZCB0aGVuIHdlIG5lZWQKPj4gYSByZXNldCBoZXJl
+IGJlY2F1c2Ugd2UgbWF5IGhhdmUgbG9zdCBzdGF0ZSBlbnRpcmVseS4gU2luY2UgSSByZW1lbWJl
+cmVkIHRoZQo+PiBvdGhlcndpc2UtdXNlbGVzcyBHUFUgU01NVSBvbiBKdW5vIGlzIGluIGEgc2Vw
+YXJhdGUgcG93ZXIgZG9tYWluLCBJIGdhdmUgaXQKPj4gYSBwb2tpbmcgdmlhIHN5c2ZzIHdpdGgg
+c29tZSBkZWJ1ZyBzdHVmZiB0byBkdW1wIHNDUjAgaW4gdGhlc2UgY2FsbGJhY2tzLAo+PiBhbmQg
+dGhlIHByb2JsZW0gaXMgY2xlYXI6Cj4+Cj4+IC4uLgo+PiBbICAgIDQuNjI1NTUxXSBhcm0tc21t
+dSAyYjQwMDAwMC5pb21tdTogZ2VucGRfcnVudGltZV9zdXNwZW5kKCkKPj4gWyAgICA0LjYzMTE2
+M10gYXJtLXNtbXUgMmI0MDAwMDAuaW9tbXU6IGFybV9zbW11X3J1bnRpbWVfc3VzcGVuZDogMHgw
+MDIwMTkzNgo+PiBbICAgIDQuNjM3ODk3XSBhcm0tc21tdSAyYjQwMDAwMC5pb21tdTogc3VzcGVu
+ZCBsYXRlbmN5IGV4Y2VlZGVkLCA2NzMzOTgwIG5zCj4+IFsgICAyMS41NjY5ODNdIGFybS1zbW11
+IDJiNDAwMDAwLmlvbW11OiBnZW5wZF9ydW50aW1lX3Jlc3VtZSgpCj4+IFsgICAyMS41ODQ3OTZd
+IGFybS1zbW11IDJiNDAwMDAwLmlvbW11OiBhcm1fc21tdV9ydW50aW1lX3Jlc3VtZTogMHgwMDIy
+MDEwMQo+PiBbICAgMjEuNTkxNDUyXSBhcm0tc21tdSAyYjQwMDAwMC5pb21tdTogcmVzdW1lIGxh
+dGVuY3kgZXhjZWVkZWQsIDY2NTgwMjAgbnMKPj4gLi4uCj4KPiBRdWFsY29tbSBTb0NzIGhhdmUg
+cmV0ZW50aW9uIGVuYWJsZWQgZm9yIFNNTVUgcmVnaXN0ZXJzIHNvIHRoZXkgZG9uJ3QKPiBsb3Nl
+IHN0YXRlLgo+IC4uLgo+IFsgIDI1Ni4wMTMzNjddIGFybS1zbW11IGI0MDAwMC5hcm0sc21tdTog
+YXJtX3NtbXVfcnVudGltZV9zdXNwZW5kCj4gU0NSMCA9IDB4MjAxZTM2Cj4gWyAgMjU2LjAxMzM2
+N10KPiBbICAyNTYuMDE5MTYwXSBhcm0tc21tdSBiNDAwMDAuYXJtLHNtbXU6IGFybV9zbW11X3J1
+bnRpbWVfcmVzdW1lCj4gU0NSMCA9IDB4MjAxZTM2Cj4gWyAgMjU2LjAxOTE2MF0KPiBbICAyNTYu
+MDI3MzY4XSBhcm0tc21tdSBiNDAwMDAuYXJtLHNtbXU6IGFybV9zbW11X3J1bnRpbWVfc3VzcGVu
+ZAo+IFNDUjAgPSAweDIwMWUzNgo+IFsgIDI1Ni4wMjczNjhdCj4gWyAgMjU2LjAzNjc4Nl0gYXJt
+LXNtbXUgYjQwMDAwLmFybSxzbW11OiBhcm1fc21tdV9ydW50aW1lX3Jlc3VtZQo+IFNDUjAgPSAw
+eDIwMWUzNgo+IC4uLgo+Cj4gSG93ZXZlciBhZnRlciBhZGRpbmcgYXJtX3NtbXVfZGV2aWNlX3Jl
+c2V0KCkgaW4gcnVudGltZV9yZXN1bWUoKSBJIG9ic2VydmUKPiBzb21lIHBlcmZvcm1hbmNlIGRl
+Z3JhZGF0aW9uIHdoZW4ga2lsbCBhbiBpbnN0YW5jZSBvZiAna21zY3ViZScgYW5kCj4gc3RhcnQg
+aXQgYWdhaW4uCj4gVGhlIGxhdW5jaCB0aW1lIHdpdGggYXJtX3NtbXVfZGV2aWNlX3Jlc2V0KCkg
+aW4gcnVudGltZV9yZXN1bWUoKSBjaGFuZ2UgaXMKPiBtb3JlLgo+IENvdWxkIHRoaXMgYmUgYmVj
+YXVzZSBvZiBmcmVxdWVudCBUTEIgaW52YWxpZGF0aW9uIGFuZCBzeW5jPwoKU29tZSBtb3JlIGlu
+Zm9ybWF0aW9uIHRoYXQgaSBnYXRoZXJlZC4KT24gUWNvbSBTb0NzIGJlc2lkZXMgdGhlIHJlZ2lz
+dGVycyByZXRlbnRpb24sIFRDVSBpbnZhbGlkYXRlcyBUTEIgY2FjaGUgb24KYSBDWCBwb3dlciBj
+b2xsYXBzZSBleGl0LCB3aGljaCBpcyB0aGUgc3lzdGVtIHdpZGUgc3VzcGVuZCBjYXNlLgpUaGUg
+YXJtLXNtbXUgc29mdHdhcmUgaXMgbm90IGF3YXJlIG9mIHRoaXMgQ1ggcG93ZXIgY29sbGFwc2Ug
+LwphdXRvLWludmFsaWRhdGlvbi4KClNvIHdvdWxkbid0IGRvaW5nIGFuIGV4cGxpY2l0IFRMQiBp
+bnZhbGlkYXRpb25zIGR1cmluZyBydW50aW1lIHJlc3VtZSBiZQpkZXRyaW1lbnRhbCB0byBwZXJm
+b3JtYW5jZT8KCkkgaGF2ZSBvbmUgbW9yZSBkb3VidCBoZXJlIC0KV2UgZG8gcnVudGltZSBwb3dl
+ciBjeWNsZSBhcm91bmQgYXJtX3NtbXVfbWFwL3VubWFwKCkgdG9vLgpOb3cgZHVyaW5nIG1hcC91
+bm1hcCB3ZSBzZWxlY3RpdmVseSBkbyBUTEIgbWFpbnRlbmFuY2UgKGVpdGhlcgp0bGJfc3luYyBv
+ciB0bGJfYWRkX2ZsdXNoKS4KQnV0IHdpdGggcnVudGltZSBwbSB3ZSB3YW50IHRvIGRvIFRMQklB
+TEwqLiBJcyB0aGF0IGEgcHJvYmxlbT8KCkJlc3QgcmVnYXJkcwpWaXZlawoKPgo+IEJlc3QgcmVn
+YXJkcwo+IFZpdmVrCgpbc25pcF0KCi0tIApRVUFMQ09NTSBJTkRJQSwgb24gYmVoYWxmIG9mIFF1
+YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJbmMuIGlzIGEgbWVtYmVyCm9mIENvZGUgQXVyb3Jh
+IEZvcnVtLCBob3N0ZWQgYnkgVGhlIExpbnV4IEZvdW5kYXRpb24KX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVl
+ZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+L21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
