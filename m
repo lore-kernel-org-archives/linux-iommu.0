@@ -1,140 +1,35 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v3 6/6] iommu/arm-smmu-v3: add bootup option
- "iommu_strict_mode"
-Date: Thu, 26 Jul 2018 15:41:06 +0800
-Message-ID: <5B597B12.9020600@huawei.com>
-References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
- <1531376312-2192-7-git-send-email-thunder.leizhen@huawei.com>
- <33053c8f-3ac3-e1d6-e260-fd36c4af9312@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH v2 5/7] iommu/dma: Respect bus DMA limit for IOVAs
+Date: Thu, 26 Jul 2018 10:58:21 +0200
+Message-ID: <20180726085821.GB23310@lst.de>
+References: <cover.1532382222.git.robin.murphy@arm.com>
+	<d370670edae9c9c537a5280c5e7c96bf3ec7ed8f.1532382222.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <33053c8f-3ac3-e1d6-e260-fd36c4af9312@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <d370670edae9c9c537a5280c5e7c96bf3ec7ed8f.1532382222.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Jul 23, 2018 at 11:16:10PM +0100, Robin Murphy wrote:
+> Bonus question: Now that we're collecing DMA API code in kernel/dma/
+> do we want to reevaluate dma-iommu? On the one hand it's the bulk of a
+> dma_ops implementation so should perhaps move, but on the other it's
+> entirely IOMMU-specific code so should perhaps stay where it is... :/
 
-
-On 2018/7/25 6:46, Robin Murphy wrote:
-> On 2018-07-12 7:18 AM, Zhen Lei wrote:
->> Because the non-strict mode introduces a vulnerability window, so add a
->> bootup option to make the manager can choose which mode to be used. The
->> default mode is IOMMU_STRICT.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>   Documentation/admin-guide/kernel-parameters.txt | 12 ++++++++++
->>   drivers/iommu/arm-smmu-v3.c                     | 32 ++++++++++++++++++++++---
->>   2 files changed, 41 insertions(+), 3 deletions(-)
->>
->> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
->> index efc7aa7..0cc80bc 100644
->> --- a/Documentation/admin-guide/kernel-parameters.txt
->> +++ b/Documentation/admin-guide/kernel-parameters.txt
->> @@ -1720,6 +1720,18 @@
->>           nobypass    [PPC/POWERNV]
->>               Disable IOMMU bypass, using IOMMU for PCI devices.
->>   +    iommu_strict_mode=    [arm-smmu-v3]
-> 
-> If anything this should belong to iommu-dma, as that's where the actual decision of whether to use a flush queue or not happens. Also it would be nice to stick to the iommu.* option namespace in the hope of maintaining some consistency.
-
-How about arm_iommu? like "s390_iommu" and "intel_iommu". After all it only affect smmu now.
-
-> 
->> +        0 - strict mode
->> +            Make sure all related TLBs to be invalidated before the
->> +            memory released.
->> +        1 - non-strict mode
->> +            Put off TLBs invalidation and release memory first. This mode
->> +            introduces a vlunerability window, an untrusted device can
->> +            access the reused memory because the TLBs may still valid.
->> +            Please take full consideration before choosing this mode.
->> +            Note that, VFIO is always use strict mode.
->> +        others - strict mode
->> +
->>       iommu.passthrough=
->>               [ARM64] Configure DMA to bypass the IOMMU by default.
->>               Format: { "0" | "1" }
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 4a198a0..9b72fc4 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -631,6 +631,24 @@ struct arm_smmu_option_prop {
->>       { 0, NULL},
->>   };
->>   +static u32 iommu_strict_mode __read_mostly = IOMMU_STRICT;
->> +
->> +static int __init setup_iommu_strict_mode(char *str)
->> +{
->> +    u32 strict_mode = IOMMU_STRICT;
->> +
->> +    get_option(&str, &strict_mode);
->> +    if (strict_mode == IOMMU_NON_STRICT) {
->> +        iommu_strict_mode = strict_mode;
->> +        pr_warn("WARNING: iommu non-strict mode is chose.\n"
->> +            "It's good for scatter-gather performance but lacks full isolation\n");
->> +        add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
->> +    }
->> +
->> +    return 0;
->> +}
->> +early_param("iommu_strict_mode", setup_iommu_strict_mode);
->> +
->>   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
->>                            struct arm_smmu_device *smmu)
->>   {
->> @@ -1441,7 +1459,7 @@ static bool arm_smmu_capable(enum iommu_cap cap)
->>       case IOMMU_CAP_NOEXEC:
->>           return true;
->>       case IOMMU_CAP_NON_STRICT:
->> -        return true;
->> +        return (iommu_strict_mode == IOMMU_NON_STRICT) ? true : false;
-> 
-> Ugh. The "completely redundant ternany" idiom hurts my soul :(
-
-OK, I will modify it.
-
-> 
-> Robin.
-> 
->>       default:
->>           return false;
->>       }
->> @@ -1750,6 +1768,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>       return ret;
->>   }
->>   +static u32 arm_smmu_strict_mode(struct iommu_domain *domain)
->> +{
->> +    if (iommu_strict_mode == IOMMU_NON_STRICT)
->> +        return IOMMU_DOMAIN_STRICT_MODE(domain);
->> +
->> +    return IOMMU_STRICT;
->> +}
->> +
->>   static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
->>               phys_addr_t paddr, size_t size, int prot)
->>   {
->> @@ -1769,7 +1795,7 @@ static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
->>       if (!ops)
->>           return 0;
->>   -    return ops->unmap(ops, iova | IOMMU_DOMAIN_STRICT_MODE(domain), size);
->> +    return ops->unmap(ops, iova | arm_smmu_strict_mode(domain), size);
->>   }
->>     static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
->> @@ -1784,7 +1810,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
->>   {
->>       struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
->>   -    if (smmu && (IOMMU_DOMAIN_STRICT_MODE(domain) == IOMMU_STRICT))
->> +    if (smmu && (arm_smmu_strict_mode(domain) == IOMMU_STRICT))
->>           __arm_smmu_tlb_sync(smmu);
->>   }
->>  
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+I think drivers/iommu/ is the right place for it.  Higher priorities
+would be to actually make it a complete dma_map_ops implementation,
+which should be doable by next merge window, and to actually use it
+for non-arm(64) iommu drivers..
