@@ -1,59 +1,44 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
-Date: Fri, 27 Jul 2018 02:16:18 +0300
-Message-ID: <20180726231624.21084-1-digetx@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mikko Perttunen <cyndis-/1wQRMveznE@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [RFC PATCH v1 1/6] driver core: Add option for disabling of backing devices DMA with IOMMU
+Date: Fri, 27 Jul 2018 02:16:19 +0300
+Message-ID: <20180726231624.21084-2-digetx@gmail.com>
+References: <20180726231624.21084-1-digetx@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180726231624.21084-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Mikko Perttunen <cyndis@kapsi.fi>, Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Ben Skeggs <bskeggs@redhat.com>, Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Nicolas Chauvet <kwizart@gmail.com>
+Cc: devicetree@vger.kernel.org, nouveau@lists.freedesktop.org, iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+This allows device drivers to convey the drivers core that implicit IOMMU
+backing for devices DMA shouldn't happen. It is needed for drivers that
+manage IOMMU by themselves, like for example it is needed by the NVIDIA
+Tegra GPU driver.
 
-There is a trouble on ARM with DMA allocations made by device drivers,
-the trouble is that DMA allocations are getting implicitly backed with
-IOMMU mapping by the driver core if IOMMU presents in a system and IOMMU
-could handle device. This is an undesired behaviour for drivers that
-manage IOMMU by themselves, like NVIDIA Tegra GPU driver. On arm32 the
-implicit backing happens if CONFIG_ARM_DMA_USE_IOMMU=y (multiplatform
-kernel configuration), on arm64 it happens if IOMMU domain type for a
-device is equal to IOMMU_DOMAIN_DMA.
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+---
+ include/linux/device.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The proposed solution adds a new option to the base device driver
-structure that allows device drivers to explicitly convey to the drivers
-core that the implicit IOMMU backing for devices must not happen.
-
-Dmitry Osipenko (6):
-  driver core: Add option for disabling of backing devices DMA with
-    IOMMU
-  of/device: Don't back devices DMA with IOMMU if that's undesired by
-    driver
-  drm/tegra: Avoid implicit DMA backing with IOMMU
-  gpu: host1x: Avoid implicit DMA backing with IOMMU
-  drm/nouveau: tegra: Universally avoid implicit DMA backing with IOMMU
-  Revert "drm/nouveau: tegra: Detach from ARM DMA/IOMMU mapping"
-
- drivers/gpu/drm/nouveau/nouveau_platform.c         |  1 +
- drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c | 13 -------------
- drivers/gpu/drm/tegra/dc.c                         |  1 +
- drivers/gpu/drm/tegra/gr2d.c                       |  1 +
- drivers/gpu/drm/tegra/gr3d.c                       |  1 +
- drivers/gpu/drm/tegra/vic.c                        |  1 +
- drivers/gpu/host1x/dev.c                           |  1 +
- drivers/of/device.c                                |  7 +++++++
- include/linux/device.h                             |  2 ++
- 9 files changed, 15 insertions(+), 13 deletions(-)
-
+diff --git a/include/linux/device.h b/include/linux/device.h
+index ad43a97b50c8..f9e3c1d42abd 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -244,6 +244,7 @@ enum probe_type {
+  * @bus:	The bus which the device of this driver belongs to.
+  * @owner:	The module owner.
+  * @mod_name:	Used for built-in modules.
++ * @no_implicit_iommu: Disables backing DMA allocations with IOMMU mapping.
+  * @suppress_bind_attrs: Disables bind/unbind via sysfs.
+  * @probe_type:	Type of the probe (synchronous or asynchronous) to use.
+  * @of_match_table: The open firmware table.
+@@ -281,6 +282,7 @@ struct device_driver {
+ 	struct module		*owner;
+ 	const char		*mod_name;	/* used for built-in modules */
+ 
++	bool no_implicit_iommu;		/* disables implicit IOMMU for DMA */
+ 	bool suppress_bind_attrs;	/* disables bind/unbind via sysfs */
+ 	enum probe_type probe_type;
+ 
 -- 
 2.18.0
