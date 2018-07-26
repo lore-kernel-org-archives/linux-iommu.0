@@ -1,111 +1,132 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v13 1/4] iommu/arm-smmu: Add
- pm_runtime/sleep ops
-Date: Thu, 26 Jul 2018 12:42:50 +0530
-Message-ID: <CAFp+6iEYpM7w+pq0bG83vgjedqy4ZkQbUP9Bx=61TbEUN45OkA@mail.gmail.com>
-References: <20180719101539.6104-1-vivek.gautam@codeaurora.org>
- <20180719101539.6104-2-vivek.gautam@codeaurora.org>
- <e17fdcb7-2632-753f-4e2e-f81bcded36f1@arm.com>
- <CAFp+6iF1XzFn1QhWjatxE-1sue-EFS7wNmQ4OB=c3pf1VMLuMA@mail.gmail.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
+ mode
+Date: Thu, 26 Jul 2018 15:20:08 +0800
+Message-ID: <5B597628.2020103@huawei.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+ <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+ <89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAFp+6iF1XzFn1QhWjatxE-1sue-EFS7wNmQ4OB=c3pf1VMLuMA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBKdWwgMjUsIDIwMTggYXQgMTE6NDYgUE0sIFZpdmVrIEdhdXRhbQo8dml2ZWsuZ2F1
-dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiBPbiBUdWUsIEp1bCAyNCwgMjAxOCBhdCA4OjUx
-IFBNLCBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPiB3cm90ZToKPj4gT24gMTkv
-MDcvMTggMTE6MTUsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4+Cj4+PiBGcm9tOiBTcmljaGFyYW4g
-UiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pj4KPj4+IFRoZSBzbW11IG5lZWRzIHRvIGJl
-IGZ1bmN0aW9uYWwgb25seSB3aGVuIHRoZSByZXNwZWN0aXZlCj4+PiBtYXN0ZXIncyB1c2luZyBp
-dCBhcmUgYWN0aXZlLiBUaGUgZGV2aWNlX2xpbmsgZmVhdHVyZQo+Pj4gaGVscHMgdG8gdHJhY2sg
-c3VjaCBmdW5jdGlvbmFsIGRlcGVuZGVuY2llcywgc28gdGhhdCB0aGUKPj4+IGlvbW11IGdldHMg
-cG93ZXJlZCB3aGVuIHRoZSBtYXN0ZXIgZGV2aWNlIGVuYWJsZXMgaXRzZWxmCj4+PiB1c2luZyBw
-bV9ydW50aW1lLiBTbyBieSBhZGFwdGluZyB0aGUgc21tdSBkcml2ZXIgZm9yCj4+PiBydW50aW1l
-IHBtLCBhYm92ZSBzYWlkIGRlcGVuZGVuY3kgY2FuIGJlIGFkZHJlc3NlZC4KPj4+Cj4+PiBUaGlz
-IHBhdGNoIGFkZHMgdGhlIHBtIHJ1bnRpbWUvc2xlZXAgY2FsbGJhY2tzIHRvIHRoZQo+Pj4gZHJp
-dmVyIGFuZCBhbHNvIHRoZSBmdW5jdGlvbnMgdG8gcGFyc2UgdGhlIHNtbXUgY2xvY2tzCj4+PiBm
-cm9tIERUIGFuZCBlbmFibGUgdGhlbSBpbiByZXN1bWUvc3VzcGVuZC4KPj4+Cj4+PiBBbHNvLCB3
-aGlsZSB3ZSBlbmFibGUgdGhlIHJ1bnRpbWUgcG0gYWRkIGEgcG0gc2xlZXAgc3VzcGVuZAo+Pj4g
-Y2FsbGJhY2sgdGhhdCBwdXNoZXMgZGV2aWNlcyB0byBsb3cgcG93ZXIgc3RhdGUgYnkgdHVybmlu
-Zwo+Pj4gdGhlIGNsb2NrcyBvZmYgaW4gYSBzeXN0ZW0gc2xlZXAuCj4+PiBBbHNvIGFkZCBjb3Jy
-ZXNwb25kaW5nIGNsb2NrIGVuYWJsZSBwYXRoIGluIHJlc3VtZSBjYWxsYmFjay4KPj4+Cj4+PiBT
-aWduZWQtb2ZmLWJ5OiBTcmljaGFyYW4gUiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pj4g
-U2lnbmVkLW9mZi1ieTogQXJjaGl0IFRhbmVqYSA8YXJjaGl0dEBjb2RlYXVyb3JhLm9yZz4KPj4+
-IFt2aXZlazogcmV3b3JrIGZvciBjbG9jayBhbmQgcG0gb3BzXQo+Pj4gU2lnbmVkLW9mZi1ieTog
-Vml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+Cj4+PiBSZXZpZXdlZC1i
-eTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4KPj4+IC0tLQo+Pj4KPj4+IENoYW5n
-ZXMgc2luY2UgdjEyOgo+Pj4gICAtIEFkZGVkIHBtIHNsZWVwIC5zdXNwZW5kIGNhbGxiYWNrLiBU
-aGlzIGRpc2FibGVzIHRoZSBjbG9ja3MuCj4+PiAgIC0gQWRkZWQgY29ycmVzcG9uZGluZyBjaGFu
-Z2UgdG8gZW5hYmxlIGNsb2NrcyBpbiAucmVzdW1lCj4+PiAgICBwbSBzbGVlcCBjYWxsYmFjay4K
-Pj4+Cj4+PiAgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDc1Cj4+PiArKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0KPj4+ICAgMSBmaWxlIGNoYW5nZWQs
-IDczIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+Pj4gaW5k
-ZXggYzczY2ZjZTFjY2MwLi45MTM4YTZmZmZlMDQgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2ZXJzL2lv
-bW11L2FybS1zbW11LmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwoKW3NuaXBd
-Cgo+Pj4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+Pj4gICAgICAgICBhcm1fc21tdV9kZXZpY2Vf
-cmVtb3ZlKHBkZXYpOwo+Pj4gICB9Cj4+PiAgICtzdGF0aWMgaW50IF9fbWF5YmVfdW51c2VkIGFy
-bV9zbW11X3J1bnRpbWVfcmVzdW1lKHN0cnVjdCBkZXZpY2UgKmRldikKPj4+ICt7Cj4+PiArICAg
-ICAgIHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUgPSBkZXZfZ2V0X2RydmRhdGEoZGV2KTsK
-Pj4+ICsKPj4+ICsgICAgICAgcmV0dXJuIGNsa19idWxrX2VuYWJsZShzbW11LT5udW1fY2xrcywg
-c21tdS0+Y2xrcyk7Cj4+Cj4+Cj4+IElmIHRoZXJlJ3MgYSBwb3dlciBkb21haW4gYmVpbmcgYXV0
-b21hdGljYWxseSBzd2l0Y2hlZCBieSBnZW5wZCB0aGVuIHdlIG5lZWQKPj4gYSByZXNldCBoZXJl
-IGJlY2F1c2Ugd2UgbWF5IGhhdmUgbG9zdCBzdGF0ZSBlbnRpcmVseS4gU2luY2UgSSByZW1lbWJl
-cmVkIHRoZQo+PiBvdGhlcndpc2UtdXNlbGVzcyBHUFUgU01NVSBvbiBKdW5vIGlzIGluIGEgc2Vw
-YXJhdGUgcG93ZXIgZG9tYWluLCBJIGdhdmUgaXQKPj4gYSBwb2tpbmcgdmlhIHN5c2ZzIHdpdGgg
-c29tZSBkZWJ1ZyBzdHVmZiB0byBkdW1wIHNDUjAgaW4gdGhlc2UgY2FsbGJhY2tzLAo+PiBhbmQg
-dGhlIHByb2JsZW0gaXMgY2xlYXI6Cj4+Cj4+IC4uLgo+PiBbICAgIDQuNjI1NTUxXSBhcm0tc21t
-dSAyYjQwMDAwMC5pb21tdTogZ2VucGRfcnVudGltZV9zdXNwZW5kKCkKPj4gWyAgICA0LjYzMTE2
-M10gYXJtLXNtbXUgMmI0MDAwMDAuaW9tbXU6IGFybV9zbW11X3J1bnRpbWVfc3VzcGVuZDogMHgw
-MDIwMTkzNgo+PiBbICAgIDQuNjM3ODk3XSBhcm0tc21tdSAyYjQwMDAwMC5pb21tdTogc3VzcGVu
-ZCBsYXRlbmN5IGV4Y2VlZGVkLCA2NzMzOTgwIG5zCj4+IFsgICAyMS41NjY5ODNdIGFybS1zbW11
-IDJiNDAwMDAwLmlvbW11OiBnZW5wZF9ydW50aW1lX3Jlc3VtZSgpCj4+IFsgICAyMS41ODQ3OTZd
-IGFybS1zbW11IDJiNDAwMDAwLmlvbW11OiBhcm1fc21tdV9ydW50aW1lX3Jlc3VtZTogMHgwMDIy
-MDEwMQo+PiBbICAgMjEuNTkxNDUyXSBhcm0tc21tdSAyYjQwMDAwMC5pb21tdTogcmVzdW1lIGxh
-dGVuY3kgZXhjZWVkZWQsIDY2NTgwMjAgbnMKPj4gLi4uCj4KPiBRdWFsY29tbSBTb0NzIGhhdmUg
-cmV0ZW50aW9uIGVuYWJsZWQgZm9yIFNNTVUgcmVnaXN0ZXJzIHNvIHRoZXkgZG9uJ3QKPiBsb3Nl
-IHN0YXRlLgo+IC4uLgo+IFsgIDI1Ni4wMTMzNjddIGFybS1zbW11IGI0MDAwMC5hcm0sc21tdTog
-YXJtX3NtbXVfcnVudGltZV9zdXNwZW5kCj4gU0NSMCA9IDB4MjAxZTM2Cj4gWyAgMjU2LjAxMzM2
-N10KPiBbICAyNTYuMDE5MTYwXSBhcm0tc21tdSBiNDAwMDAuYXJtLHNtbXU6IGFybV9zbW11X3J1
-bnRpbWVfcmVzdW1lCj4gU0NSMCA9IDB4MjAxZTM2Cj4gWyAgMjU2LjAxOTE2MF0KPiBbICAyNTYu
-MDI3MzY4XSBhcm0tc21tdSBiNDAwMDAuYXJtLHNtbXU6IGFybV9zbW11X3J1bnRpbWVfc3VzcGVu
-ZAo+IFNDUjAgPSAweDIwMWUzNgo+IFsgIDI1Ni4wMjczNjhdCj4gWyAgMjU2LjAzNjc4Nl0gYXJt
-LXNtbXUgYjQwMDAwLmFybSxzbW11OiBhcm1fc21tdV9ydW50aW1lX3Jlc3VtZQo+IFNDUjAgPSAw
-eDIwMWUzNgo+IC4uLgo+Cj4gSG93ZXZlciBhZnRlciBhZGRpbmcgYXJtX3NtbXVfZGV2aWNlX3Jl
-c2V0KCkgaW4gcnVudGltZV9yZXN1bWUoKSBJIG9ic2VydmUKPiBzb21lIHBlcmZvcm1hbmNlIGRl
-Z3JhZGF0aW9uIHdoZW4ga2lsbCBhbiBpbnN0YW5jZSBvZiAna21zY3ViZScgYW5kCj4gc3RhcnQg
-aXQgYWdhaW4uCj4gVGhlIGxhdW5jaCB0aW1lIHdpdGggYXJtX3NtbXVfZGV2aWNlX3Jlc2V0KCkg
-aW4gcnVudGltZV9yZXN1bWUoKSBjaGFuZ2UgaXMKPiBtb3JlLgo+IENvdWxkIHRoaXMgYmUgYmVj
-YXVzZSBvZiBmcmVxdWVudCBUTEIgaW52YWxpZGF0aW9uIGFuZCBzeW5jPwoKU29tZSBtb3JlIGlu
-Zm9ybWF0aW9uIHRoYXQgaSBnYXRoZXJlZC4KT24gUWNvbSBTb0NzIGJlc2lkZXMgdGhlIHJlZ2lz
-dGVycyByZXRlbnRpb24sIFRDVSBpbnZhbGlkYXRlcyBUTEIgY2FjaGUgb24KYSBDWCBwb3dlciBj
-b2xsYXBzZSBleGl0LCB3aGljaCBpcyB0aGUgc3lzdGVtIHdpZGUgc3VzcGVuZCBjYXNlLgpUaGUg
-YXJtLXNtbXUgc29mdHdhcmUgaXMgbm90IGF3YXJlIG9mIHRoaXMgQ1ggcG93ZXIgY29sbGFwc2Ug
-LwphdXRvLWludmFsaWRhdGlvbi4KClNvIHdvdWxkbid0IGRvaW5nIGFuIGV4cGxpY2l0IFRMQiBp
-bnZhbGlkYXRpb25zIGR1cmluZyBydW50aW1lIHJlc3VtZSBiZQpkZXRyaW1lbnRhbCB0byBwZXJm
-b3JtYW5jZT8KCkkgaGF2ZSBvbmUgbW9yZSBkb3VidCBoZXJlIC0KV2UgZG8gcnVudGltZSBwb3dl
-ciBjeWNsZSBhcm91bmQgYXJtX3NtbXVfbWFwL3VubWFwKCkgdG9vLgpOb3cgZHVyaW5nIG1hcC91
-bm1hcCB3ZSBzZWxlY3RpdmVseSBkbyBUTEIgbWFpbnRlbmFuY2UgKGVpdGhlcgp0bGJfc3luYyBv
-ciB0bGJfYWRkX2ZsdXNoKS4KQnV0IHdpdGggcnVudGltZSBwbSB3ZSB3YW50IHRvIGRvIFRMQklB
-TEwqLiBJcyB0aGF0IGEgcHJvYmxlbT8KCkJlc3QgcmVnYXJkcwpWaXZlawoKPgo+IEJlc3QgcmVn
-YXJkcwo+IFZpdmVrCgpbc25pcF0KCi0tIApRVUFMQ09NTSBJTkRJQSwgb24gYmVoYWxmIG9mIFF1
-YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJbmMuIGlzIGEgbWVtYmVyCm9mIENvZGUgQXVyb3Jh
-IEZvcnVtLCBob3N0ZWQgYnkgVGhlIExpbnV4IEZvdW5kYXRpb24KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVl
-ZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-L21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+
+
+On 2018/7/25 6:25, Robin Murphy wrote:
+> On 2018-07-12 7:18 AM, Zhen Lei wrote:
+>> To support the non-strict mode, now we only tlbi and sync for the strict
+>> mode. But for the non-leaf case, always follow strict mode.
+>>
+>> Use the lowest bit of the iova parameter to pass the strict mode:
+>> 0, IOMMU_STRICT;
+>> 1, IOMMU_NON_STRICT;
+>> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+>> other IOMMUs which still use strict mode.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>   drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
+>>   1 file changed, 14 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+>> index 010a254..9234db3 100644
+>> --- a/drivers/iommu/io-pgtable-arm.c
+>> +++ b/drivers/iommu/io-pgtable-arm.c
+>> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+>>     static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>                      unsigned long iova, size_t size, int lvl,
+>> -                   arm_lpae_iopte *ptep);
+>> +                   arm_lpae_iopte *ptep, int strict);
+>>     static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>                   phys_addr_t paddr, arm_lpae_iopte prot,
+>> @@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>           size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+>>             tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+>> -        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
+>> +        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
+>>               return -EINVAL;
+>>       }
+>>   @@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+>>   static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>                          unsigned long iova, size_t size,
+>>                          arm_lpae_iopte blk_pte, int lvl,
+>> -                       arm_lpae_iopte *ptep)
+>> +                       arm_lpae_iopte *ptep, int strict)
+> 
+> DMA code should never ever be splitting blocks anyway, and frankly the TLB maintenance here is dodgy enough (since we can't reasonably do break-before make as VMSA says we should) that I *really* don't want to introduce any possibility of making it more asynchronous. I'd much rather just hard-code the expectation of strict == true for this.
+
+OK, I will hard-code strict=true for it.
+
+But since it never ever be happened, why did not give a warning at the beginning?
+
+> 
+> Robin.
+> 
+>>   {
+>>       struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>>       arm_lpae_iopte pte, *tablep;
+>> @@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>       }
+>>         if (unmap_idx < 0)
+>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+>> +        return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
+>>         io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+>> +    if (!strict)
+>> +        io_pgtable_tlb_sync(&data->iop);
+>> +
+>>       return size;
+>>   }
+>>     static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>                      unsigned long iova, size_t size, int lvl,
+>> -                   arm_lpae_iopte *ptep)
+>> +                   arm_lpae_iopte *ptep, int strict)
+>>   {
+>>       arm_lpae_iopte pte;
+>>       struct io_pgtable *iop = &data->iop;
+>> @@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>               io_pgtable_tlb_sync(iop);
+>>               ptep = iopte_deref(pte, data);
+>>               __arm_lpae_free_pgtable(data, lvl + 1, ptep);
+>> -        } else {
+>> +        } else if (strict) {
+>>               io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+>>           }
+>>   @@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>            * minus the part we want to unmap
+>>            */
+>>           return arm_lpae_split_blk_unmap(data, iova, size, pte,
+>> -                        lvl + 1, ptep);
+>> +                        lvl + 1, ptep, strict);
+>>       }
+>>         /* Keep on walkin' */
+>>       ptep = iopte_deref(pte, data);
+>> -    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
+>> +    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+>>   }
+>>     static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>>                    size_t size)
+>>   {
+>> +    int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
+>>       struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>>       arm_lpae_iopte *ptep = data->pgd;
+>>       int lvl = ARM_LPAE_START_LVL(data);
+>>   +    iova &= ~IOMMU_STRICT_MODE_MASK;
+>>       if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+>>           return 0;
+>>   -    return __arm_lpae_unmap(data, iova, size, lvl, ptep);
+>> +    return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+>>   }
+>>     static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>>
+> 
+> .
+> 
+
+-- 
+Thanks!
+BestRegards
