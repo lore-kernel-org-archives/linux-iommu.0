@@ -1,137 +1,138 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
- mode
-Date: Thu, 26 Jul 2018 15:35:59 +0100
-Message-ID: <04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
-References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
- <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
- <89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com> <5B597628.2020103@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 03/10] iommu/vt-d: Allocate groups for mediated devices
+Date: Thu, 26 Jul 2018 16:09:07 +0100
+Message-ID: <7ac82074-0c75-e099-365a-73ba19949ab3@arm.com>
+References: <1532239773-15325-1-git-send-email-baolu.lu@linux.intel.com>
+	<1532239773-15325-4-git-send-email-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439CA143E@SHSMSX104.ccr.corp.intel.com>
+	<5B568D5B.5050606@linux.intel.com>
+	<ccf6890a-30c6-770b-4299-8cabfdc32f2b@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19127FB9E@SHSMSX101.ccr.corp.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19127FF05@SHSMSX101.ccr.corp.intel.com>
+	<a530c220-9bf1-05ec-5698-526ccbea127f@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1912826A4@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5B597628.2020103@huawei.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1912826A4-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-07-26 8:20 AM, Leizhen (ThunderTown) wrote:
-> On 2018/7/25 6:25, Robin Murphy wrote:
->> On 2018-07-12 7:18 AM, Zhen Lei wrote:
->>> To support the non-strict mode, now we only tlbi and sync for the strict
->>> mode. But for the non-leaf case, always follow strict mode.
->>>
->>> Use the lowest bit of the iova parameter to pass the strict mode:
->>> 0, IOMMU_STRICT;
->>> 1, IOMMU_NON_STRICT;
->>> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
->>> other IOMMUs which still use strict mode.
->>>
->>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->>> ---
->>>    drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
->>>    1 file changed, 14 insertions(+), 9 deletions(-)
->>>
->>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
->>> index 010a254..9234db3 100644
->>> --- a/drivers/iommu/io-pgtable-arm.c
->>> +++ b/drivers/iommu/io-pgtable-arm.c
->>> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
->>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>                       unsigned long iova, size_t size, int lvl,
->>> -                   arm_lpae_iopte *ptep);
->>> +                   arm_lpae_iopte *ptep, int strict);
->>>      static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->>>                    phys_addr_t paddr, arm_lpae_iopte prot,
->>> @@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->>>            size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
->>>              tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
->>> -        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
->>> +        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
->>>                return -EINVAL;
->>>        }
->>>    @@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
->>>    static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->>>                           unsigned long iova, size_t size,
->>>                           arm_lpae_iopte blk_pte, int lvl,
->>> -                       arm_lpae_iopte *ptep)
->>> +                       arm_lpae_iopte *ptep, int strict)
->>
->> DMA code should never ever be splitting blocks anyway, and frankly the TLB maintenance here is dodgy enough (since we can't reasonably do break-before make as VMSA says we should) that I *really* don't want to introduce any possibility of making it more asynchronous. I'd much rather just hard-code the expectation of strict == true for this.
+On 26/07/18 04:03, Tian, Kevin wrote:
+>> Whenever I come back to hierarchical IOMMU domains I reject it as too
+>> complicated, but maybe that is what we need. I find it difficult to
+>> reason about because domains currently represent both a collection of
+>> devices and a one or more address spaces. I proposed the io_mm thing to
+>> represent a single address space, and to avoid adding special cases to
+>> every function in the IOMMU subsystem that manipulates domains.
 > 
-> OK, I will hard-code strict=true for it.
+> I suppose io_mm is still under iommu_domain, right? this is different
+> from hierarchical iommu domain concept...
+
+Yes, my initial solution is io_mm attached to domains, but in the rest
+of the mail yesterday I tried to explore a way to replace io_mm with
+child domains instead. In my current patches, io_mm when used for
+private PASIDs is basically a lightweight child domain. I don't know
+which solution is best or if mdev-aware IOMMU is still preferable. For
+the moment I'll keep the private PASID proposal that uses io_mm, until
+we've thought a bit more about this.
+
+[...]
+>> It's a good abstraction, but I'm still concerned about other users of
+>> PASID-granular DMA isolation, for example GPU drivers wanting to improve
+>> isolation of DMA bufs, will want the same functionality without going
+>> through the vfio-mdev module.
 > 
-> But since it never ever be happened, why did not give a warning at the beginning?
+> for GPU I think you meant SVA. that one anyway needs its own 
+> interface as what we have been discussing in yours and Jacob's
+> series.
 
-Because DMA code is not the only caller of iommu_map/unmap. It's 
-perfectly legal in the IOMMU API to partially unmap a previous mapping 
-such that a block entry needs to be split. The DMA API, however, is a 
-lot more constrined, and thus by construction the iommu-dma layer will 
-never generate a block-splitting iommu_unmap() except as a result of 
-illegal DMA API usage, and we obviously do not need to optimise for that 
-(you will get a warning about mismatched unmaps under dma-debug, but 
-it's a bit too expensive to police in the general case).
+Actually I didn't mean SVA. People would like to allocate PASIDs in
+kernel drivers and do iommu_map/unmap on them, without binding process
+address spaces. Not counting hardware validation, I've actually seen
+more demand for private PASID management than for SVA.
 
-Robin.
+See for example the discussion on RFCv2 of SVA, or Jordan's series:
+https://www.spinics.net/lists/arm-kernel/msg611038.html
+https://lwn.net/Articles/747889/
 
->>>    {
->>>        struct io_pgtable_cfg *cfg = &data->iop.cfg;
->>>        arm_lpae_iopte pte, *tablep;
->>> @@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->>>        }
->>>          if (unmap_idx < 0)
->>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
->>> +        return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
->>>          io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
->>> +    if (!strict)
->>> +        io_pgtable_tlb_sync(&data->iop);
->>> +
->>>        return size;
->>>    }
->>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>                       unsigned long iova, size_t size, int lvl,
->>> -                   arm_lpae_iopte *ptep)
->>> +                   arm_lpae_iopte *ptep, int strict)
->>>    {
->>>        arm_lpae_iopte pte;
->>>        struct io_pgtable *iop = &data->iop;
->>> @@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>                io_pgtable_tlb_sync(iop);
->>>                ptep = iopte_deref(pte, data);
->>>                __arm_lpae_free_pgtable(data, lvl + 1, ptep);
->>> -        } else {
->>> +        } else if (strict) {
->>>                io_pgtable_tlb_add_flush(iop, iova, size, size, true);
->>>            }
->>>    @@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>             * minus the part we want to unmap
->>>             */
->>>            return arm_lpae_split_blk_unmap(data, iova, size, pte,
->>> -                        lvl + 1, ptep);
->>> +                        lvl + 1, ptep, strict);
->>>        }
->>>          /* Keep on walkin' */
->>>        ptep = iopte_deref(pte, data);
->>> -    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
->>> +    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
->>>    }
->>>      static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->>>                     size_t size)
->>>    {
->>> +    int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
->>>        struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->>>        arm_lpae_iopte *ptep = data->pgd;
->>>        int lvl = ARM_LPAE_START_LVL(data);
->>>    +    iova &= ~IOMMU_STRICT_MODE_MASK;
->>>        if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
->>>            return 0;
->>>    -    return __arm_lpae_unmap(data, iova, size, lvl, ptep);
->>> +    return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
->>>    }
->>>      static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
->>>
->>
->> .
->>
+It would be good if mdev and non-mdev could reuse most of the same code
+for private PASID, whatever it turns out to be
+
+> Here mdev is orthogonal to a specific capability like SVA. It is 
+> sort of logical representation of subset resource of parent device,
+> on top of which we can enable IOMMU capabilities including SVA.
 > 
+> I'm not sure whether it is good to combine two requirements closely...
+> 
+>>
+>> The IOMMU operations we care about don't take a device handle, I think,
+>> just a domain. And VFIO itself only deals with domains when doing
+>> map/unmap. Maybe we could add this operation to the IOMMU subsystem:
+>>
+>> child_domain = domain_create_child(parent_dev, parent_domain)
+>>
+>> A child domain would be a smaller isolation granule, getting a PASID if
+>> that's what the IOMMU implements or another mechanism for 2). It is
+>> automatically attached to its parent's devices, so attach/detach
+>> operations wouldn't be necessary on the child.
+>>
+>> Depending on the underlying architecture the child domain can support
+>> map/unmap on a single stage, or map/unmap for 2nd level and
+>> bind_pgtable
+>> for 1st level.
+>>
+>> I'm not sure how this works for host SVA though. I think the
+>> sva_bind_dev() API could stay the same, but the internals will need
+>> to change.
+
+Thinking more about this, the SVA case seems a bit nasty. If we replaced
+io_mm with iommu_domain for SVA, a child domain would represent a single
+process address space, and therefore have multiple parent domains... Not
+sure we should go down that road. Maybe we should keep SVA separate, and
+keep io_mm to be a wrapper for mm_struct
+
+
+> hierarchical domain might be the right way to go, but let's do more
+> thinking on any corner cases. 
+> 
+> One open is whether iommu domain can fully carry all required 
+> attributes on mdev. Note today for physical device each vendor 
+> driver maintains a device structure for device specific info which 
+> may impact IOMMU setting (e.g. struct device_domain_info in 
+> intel-iommu, and struct arm_smmu_device in arm-smmu). If we 
+> want mdev to have a different attribute as its parent device, then 
+> new representation might be required. But honestly speaking I 
+> don't think it is a valid requirement now, since physically finally
+> it is still the IOMMU structure of parent device being configured,
+> so mdev should just inherit same attributes as parent. If the role 
+> of mdev representation in current RFC is just to connect iommu_
+> domain when hierarchical domain is missing, then we might 
+> instead just make the latter happen...
+
+Agreed, the mdev would inherit properties of its parent since physically
+the IOMMU sees DMA transactions coming from the parent
+
+> Let's think more on this direction. btw can you elaborate any 
+> other complexities when you evaluated this option earlier?
+
+I can't think of anything right now - my prototype worked well with
+iommu_sva_alloc_pasid, but the goal was mainly for me to understand mdev
+using a toy DMA engine, I didn't spend time thinking about corner cases.
+
+Thanks,
+Jean
