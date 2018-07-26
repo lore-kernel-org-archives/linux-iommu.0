@@ -1,74 +1,152 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Clarify supported platforms
-Date: Thu, 26 Jul 2018 15:11:10 +0200
-Message-ID: <20180726131109.4jftfgquid3d2hys@verge.net.au>
-References: <20180725131029.5643-1-geert+renesas@glider.be>
-	<1761460.f6S6l84xoB@avalon>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 0/6] add non-strict mode support for arm-smmu-v3
+Date: Thu, 26 Jul 2018 15:16:42 +0100
+Message-ID: <f54dd9e0-6d4b-5daa-f6f6-be610393b487@arm.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+ <aace9ec9-a36a-79a8-98eb-bbedd06f11a4@arm.com> <5B594399.1080404@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1761460.f6S6l84xoB@avalon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5B594399.1080404@huawei.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 26, 2018 at 12:08:33AM +0300, Laurent Pinchart wrote:
-> Hi Geert,
+On 2018-07-26 4:44 AM, Leizhen (ThunderTown) wrote:
 > 
-> Thank you for the patch.
 > 
-> On Wednesday, 25 July 2018 16:10:29 EEST Geert Uytterhoeven wrote:
-> > The Renesas IPMMU-VMSA driver supports not just R-Car H2 and M2 SoCs,
-> > but also other R-Car Gen2 and R-Car Gen3 SoCs.
-> > 
-> > Drop a superfluous "Renesas" while at it.
-> > 
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> On 2018/7/25 5:51, Robin Murphy wrote:
+>> On 2018-07-12 7:18 AM, Zhen Lei wrote:
+>>> v2 -> v3: Add a bootup option "iommu_strict_mode" to make the
+>>> manager can choose which mode to be used. The first 5 patches
+>>> have not changed. +    iommu_strict_mode=    [arm-smmu-v3] +
+>>> 0 - strict mode (default) +        1 - non-strict mode
+>>> 
+>>> v1 -> v2: Use the lowest bit of the io_pgtable_ops.unmap's iova
+>>> parameter to pass the strict mode: 0, IOMMU_STRICT; 1,
+>>> IOMMU_NON_STRICT; Treat 0 as IOMMU_STRICT, so that the unmap
+>>> operation can compatible with other IOMMUs which still use strict
+>>> mode. In other words, this patch series will not impact other
+>>> IOMMU drivers. I tried add a new quirk
+>>> IO_PGTABLE_QUIRK_NON_STRICT in io_pgtable_cfg.quirks, but it can
+>>> not pass the strict mode of the domain from SMMUv3 driver to
+>>> io-pgtable module.
+>> 
+>> What exactly is the issue there? We don't have any problem with
+>> other quirks like NO_DMA, and as I said before, by the time we're
+>> allocating the io-pgtable in arm_smmu_domain_finalise() we already
+>> know everything there is to know about the domain.
 > 
-> Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Because userspace can map/unamp and start devices to access memory
+> through VFIO. So that, the attacker can: 1. alloc memory 2. map 3.
+> unmap 4. free memory 5. repeatedly accesssing the just freed memory
+> base on the just unmapped iova, this attack may success if the freed
+> memory is reused by others and the mapping still staying in TLB
 
-Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Right, but that's why we don't set non-strict mode on unmanaged domains; 
+what I was asking about was specifically why "it can not pass the strict 
+mode of the domain from SMMUv3 driver to io-pgtable module", because we 
+don't get anywhere near io-pgtable until we already know whether the 
+domain in question can allow lazy unmaps or not.
 
+> But if only root user can use VFIO, this is an unnecessary worry.
+> Then both normal and VFIO will use the same strict mode, so that the
+> new quirk IO_PGTABLE_QUIRK_NON_STRICT can easily be applied.
 > 
-> > ---
-> >  drivers/iommu/Kconfig | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > index 568ae81b0e99b67b..c69dc0b29b5df37f 100644
-> > --- a/drivers/iommu/Kconfig
-> > +++ b/drivers/iommu/Kconfig
-> > @@ -306,8 +306,8 @@ config IPMMU_VMSA
-> >  	select IOMMU_IO_PGTABLE_LPAE
-> >  	select ARM_DMA_USE_IOMMU
-> >  	help
-> > -	  Support for the Renesas VMSA-compatible IPMMU Renesas found in the
-> > -	  R-Mobile APE6 and R-Car H2/M2 SoCs.
-> > +	  Support for the Renesas VMSA-compatible IPMMU found in the R-Mobile
-> > +	  APE6, R-Car Gen2, and R-Car Gen3 SoCs.
+>> 
+>>> Add a new member domain_non_strict in struct iommu_dma_cookie,
+>>> this member will only be initialized when the related domain and
+>>> IOMMU driver support non-strict mode.
+>>> 
+>>> v1: In common, a IOMMU unmap operation follow the below steps: 1.
+>>> remove the mapping in page table of the specified iova range 2.
+>>> execute tlbi command to invalid the mapping which is cached in
+>>> TLB 3. wait for the above tlbi operation to be finished 4. free
+>>> the IOVA resource 5. free the physical memory resource
+>>> 
+>>> This maybe a problem when unmap is very frequently, the
+>>> combination of tlbi and wait operation will consume a lot of
+>>> time. A feasible method is put off tlbi and iova-free operation,
+>>> when accumulating to a certain number or reaching a specified
+>>> time, execute only one tlbi_all command to clean up TLB, then
+>>> free the backup IOVAs. Mark as non-strict mode.
+>>> 
+>>> But it must be noted that, although the mapping has already been
+>>> removed in the page table, it maybe still exist in TLB. And the
+>>> freed physical memory may also be reused for others. So a
+>>> attacker can persistent access to memory based on the just freed
+>>> IOVA, to obtain sensible data or corrupt memory. So the VFIO
+>>> should always choose the strict mode.
+>>> 
+>>> Some may consider put off physical memory free also, that will
+>>> still follow strict mode. But for the map_sg cases, the memory
+>>> allocation is not controlled by IOMMU APIs, so it is not
+>>> enforceable.
+>>> 
+>>> Fortunately, Intel and AMD have already applied the non-strict
+>>> mode, and put queue_iova() operation into the common file
+>>> dma-iommu.c., and my work is based on it. The difference is that
+>>> arm-smmu-v3 driver will call IOMMU common APIs to unmap, but
+>>> Intel and AMD IOMMU drivers are not.
+>>> 
+>>> Below is the performance data of strict vs non-strict for NVMe
+>>> device: Randomly Read  IOPS: 146K(strict) vs 573K(non-strict) 
+>>> Randomly Write IOPS: 143K(strict) vs 513K(non-strict)
+>> 
+>> How does that compare to passthrough performance? One thing I'm not
+>> entirely clear about is what the realistic use-case for this is -
+>> even if invalidation were infinitely fast, enabling translation
+>> still typically has a fair impact on overall system performance in
+>> terms of latency, power, memory bandwidth, etc., so I can't help
+>> wonder what devices exist today for which performance is critical
+>> and robustness* is unimportant, yet have crippled addressing
+>> capabilities such that they can't just use passthrough.
+> I have no passthrough performance data yet, I will ask my team to do
+> it. But we have tested the Global bypass: Randomly Read IOPS: 744K,
+> and Randomly Write IOPS: is the same to non-strict.
+> 
+> I'm also not clear. But I think in most cases, the system does not
+> need to run at full capacity, but the system should have that
+> ability. For example, a system's daily load may only 30-50%, but the
+> load may increase to 80%+ on festival day.
+> 
+> Passthrough is not enough to support VFIO, and virtualization need
+> the later.
 
-Perhaps:
+Huh? The whole point of passthrough mode is that the IOMMU can still be 
+used for VFIO, but without imposing the overhead of dynamic mapping on 
+host DMA.
 
-	APE6, and R-Car Gen2 and Gen3 SoCs.
+Robin.
 
-> >  	  If unsure, say N.
+>> * I don't want to say "security" here, since I'm actually a lot
+>> less concerned about the theoretical malicious endpoint/wild write
+>> scenarios than the the much more straightforward malfunctioning
+>> device and/or buggy driver causing use-after-free style memory
+>> corruption. Also, I'm sick of the word "security"...
 > 
+> OK，We really have no need to consider buggy devices.
 > 
-> -- 
-> Regards,
-> 
-> Laurent Pinchart
-> 
-> 
+>> 
+>>> 
+>>> Zhen Lei (6): iommu/arm-smmu-v3: fix the implementation of
+>>> flush_iotlb_all hook iommu/dma: add support for non-strict mode 
+>>> iommu/amd: use default branch to deal with all non-supported 
+>>> capabilities iommu/io-pgtable-arm: add support for non-strict
+>>> mode iommu/arm-smmu-v3: add support for non-strict mode 
+>>> iommu/arm-smmu-v3: add bootup option "iommu_strict_mode"
+>>> 
+>>> Documentation/admin-guide/kernel-parameters.txt | 12 +++++++ 
+>>> drivers/iommu/amd_iommu.c                       |  4 +-- 
+>>> drivers/iommu/arm-smmu-v3.c                     | 42
+>>> +++++++++++++++++++++++-- drivers/iommu/dma-iommu.c
+>>> | 25 +++++++++++++++ drivers/iommu/io-pgtable-arm.c
+>>> | 23 ++++++++------ include/linux/iommu.h
+>>> |  7 +++++ 6 files changed, 98 insertions(+), 15 deletions(-)
+>>> 
+>> 
+>> .
+>> 
 > 
