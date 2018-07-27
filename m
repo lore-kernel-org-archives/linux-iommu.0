@@ -1,18 +1,20 @@
-From: Grygorii Strashko via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH v2 2/7] dma-mapping: Generalise dma_32bit_limit flag
-Date: Fri, 27 Jul 2018 15:41:32 -0500
-Message-ID: <5a7ed608-73dd-e515-3a22-0870fd6064be@ti.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 7/7] OF: Don't set default coherent DMA mask
+Date: Fri, 27 Jul 2018 21:42:14 +0100
+Message-ID: <6d18c0fb-58ed-e4a7-32a4-8bcfa4dc3761@arm.com>
 References: <cover.1532382222.git.robin.murphy@arm.com>
-	<c1720f0181b66f711e4097d85149757b16a7b0a7.1532382222.git.robin.murphy@arm.com>
-	<7872d914-8ea7-06e4-4a0c-489023e098d6@ti.com>
-	<5354ef69-c54e-170b-62d4-5110dc60aa8f@arm.com>
-Reply-To: Grygorii Strashko <grygorii.strashko-l0cyMroinI0@public.gmane.org>
+	<66c08e4df2032fde82a2f97544f41fd3a2f24a94.1532382222.git.robin.murphy@arm.com>
+	<4ed75bc9-1694-2bcb-2ea9-3f2a04f33f54@ti.com>
+	<92d6b010-b5c0-fc59-0668-5b455e26c912@ti.com>
+	<c7a9c7ae-1f4a-af9d-df78-1f48bb5c28a5@arm.com>
+	<20180727181302.GC17271@n2100.armlinux.org.uk>
+	<affa2718-5f3a-7439-db25-ce171a99414a@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5354ef69-c54e-170b-62d4-5110dc60aa8f-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <affa2718-5f3a-7439-db25-ce171a99414a-l0cyMroinI0@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,60 +24,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Grygorii Strashko <grygorii.strashko-l0cyMroinI0@public.gmane.org>, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAwNy8yNy8yMDE4IDAzOjExIFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAxOC0w
-Ny0yNyA2OjQ1IFBNLCBHcnlnb3JpaSBTdHJhc2hrbyB3cm90ZToKPj4gT24gMDcvMjMvMjAxOCAw
-NToxNiBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gV2hpbHN0IHRoZSBub3Rpb24gb2YgYW4g
-dXBzdHJlYW0gRE1BIHJlc3RyaWN0aW9uIGlzIG1vc3QgY29tbW9ubHkgc2Vlbgo+Pj4gaW4gUENJ
-IGhvc3QgYnJpZGdlcyBzYWRkbGVkIHdpdGggYSAzMi1iaXQgbmF0aXZlIGludGVyZmFjZSwgYSBt
-b3JlCj4+PiBnZW5lcmFsIHZlcnNpb24gb2YgdGhlIHNhbWUgaXNzdWUgY2FuIGV4aXN0IG9uIGNv
-bXBsZXggU29DcyB3aGVyZSBhIGJ1cwo+Pj4gb3IgcG9pbnQtdG8tcG9pbnQgaW50ZXJjb25uZWN0
-IGxpbmsgZnJvbSBhIGRldmljZSdzIERNQSBtYXN0ZXIgaW50ZXJmYWNlCj4+PiB0byBhbm90aGVy
-IGNvbXBvbmVudCBhbG9uZyB0aGUgcGF0aCB0byBtZW1vcnkgKG9mdGVuIGFuIElPTU1VKSBtYXkg
-Y2FycnkKPj4+IGZld2VyIGFkZHJlc3MgYml0cyB0aGFuIHRoZSBpbnRlcmZhY2VzIGF0IGJvdGgg
-ZW5kcyBub21pbmFsbHkgc3VwcG9ydC4KPj4+IEluIG9yZGVyIHRvIHByb3Blcmx5IGRlYWwgd2l0
-aCB0aGlzLCB0aGUgZmlyc3Qgc3RlcCBpcyB0byBleHBhbmQgdGhlCj4+PiBkbWFfMzJiaXRfbGlt
-aXQgZmxhZyBpbnRvIGFuIGFyYml0cmFyeSBtYXNrLgo+Pj4KPj4+IFRvIG1pbmltaXNlIHRoZSBp
-bXBhY3Qgb24gZXhpc3RpbmcgY29kZSwgd2UnbGwgbWFrZSBzdXJlIHRvIG9ubHkKPj4+IGNvbnNp
-ZGVyIHRoaXMgbmV3IG1hc2sgdmFsaWQgaWYgc2V0LiBUaGF0IG1ha2VzIHNlbnNlIGFueXdheSwg
-c2luY2UgYQo+Pj4gbWFzayBvZiB6ZXJvIHdvdWxkIHJlcHJlc2VudCBETUEgbm90IGJlaW5nIHdp
-cmVkIHVwIGF0IGFsbCwgYW5kIHRoYXQKPj4+IHdvdWxkIGJlIGJldHRlciBoYW5kbGVkIGJ5IG5v
-dCBwcm92aWRpbmcgdmFsaWQgb3BzIGluIHRoZSBmaXJzdCBwbGFjZS4KPj4+Cj4+PiBTaWduZWQt
-b2ZmLWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPgo+Pgo+PiBJJ2QgbGlr
-ZSB0byBub3RlIGFib3V0IHNvbWUgcG9zc2libGUgaXNzdWUgcmVsYXRlZCB0byB0aGlzIGNoYW5n
-ZS4KPj4KPj4gVGhlcmUgYXJlIHNvbWUgcGxhY2VzIGluIGtlcm5lbCB3aGVyZSBwYXJlbnQgRE1B
-IGNvbmZpZ3VyYXRpb24gaXMgCj4+IGNvcGllZCB0byB0aGUgbWFudWFsbHkgY3JlYXRlZCBjaGls
-ZCBkZXZpY2VzLCBsaWtlOgo+PiBtZmQtY29yZS5jCj4+IG1mZF9hZGRfZGV2aWNlKCkKPj4gwqDC
-oMKgwqDCoHBkZXYtPmRldi5wYXJlbnQgPSBwYXJlbnQ7Cj4+IMKgwqDCoMKgwqBwZGV2LT5kZXYu
-dHlwZSA9ICZtZmRfZGV2X3R5cGU7Cj4+IMKgwqDCoMKgwqBwZGV2LT5kZXYuZG1hX21hc2sgPSBw
-YXJlbnQtPmRtYV9tYXNrOwo+PiDCoMKgwqDCoMKgcGRldi0+ZGV2LmRtYV9wYXJtcyA9IHBhcmVu
-dC0+ZG1hX3Bhcm1zOwo+PiDCoMKgwqDCoMKgcGRldi0+ZGV2LmNvaGVyZW50X2RtYV9tYXNrID0g
-cGFyZW50LT5jb2hlcmVudF9kbWFfbWFzazsKPj4KPj4gQWRkaW5nIG9yIGNoYW5naW5nIGdlbmVy
-aWMgRE1BIGRldmljZSBwcm9wZXJ0aWVzIG1pZ2h0IGFmZmVjdCBvbiBzdWNoCj4+IHN1YnN5c3Rl
-bXMvZHJpdmVycy4gSGF2ZSB5b3UgY29uc2lkZXJlZCBzdWNoIGNhc2VzPwo+IAo+IFllcywgdGhh
-dCdzIGEgbG92ZWx5IGV4YW1wbGUgb2Ygd2hhdCBJIGNsYXNzIGFzICJidXMgY29kZSIgY3JlYXRp
-bmcgYSAKPiBjaGlsZCBkZXZpY2UgYW5kIGluaXRpYWxpc2luZyBpdHMgRE1BIHBhcmFtZXRlcnMg
-YXBwcm9wcmlhdGVseS4gVGhlIAo+IHN1YmRldmljZSBnb2VzIG9uIHRvIGdldCBhc3NvY2lhdGVk
-IHdpdGggYW4gT0Ygbm9kZSBvciBBQ1BJIGNvbXBhbmlvbiwgCj4gc28gd2hlbiB0aGUgc3ViZHJp
-dmVyIGZvciB0aGF0IGZ1bmN0aW9uIGJpbmRzIGl0IHNob3VsZCBnbyB0aHJvdWdoIGl0cyAKPiBv
-d24gZG1hX2NvbmZpZ3VyZSgpIHByb2Nlc3MgYW5kIHBpY2sgdXAgYW55IGZ1cnRoZXIgcHJvcGVy
-dGllcyBhY2NvcmRpbmdseS4KCklkZWFsbHkgOyksIGJ1dCBpbiByZWFsaXR5IC0gZGV2LT5vZl9u
-b2RlIG5vdCBhbHdheXMgaW5pdGlhbGl6ZWQgZm9yIGNoaWxkIGRldmljZXMgOigKCj4gCj4gQ29k
-ZSB3aGljaCBqdXN0IHRyaWVzIHRvIGNvcHkgdGhlIERNQSBjb25maWd1cmF0aW9uIGZyb20gYW4g
-ZXhpc3RpbmcgCj4gZGV2aWNlIHRvIGEgbmV3IG9uZSBoYXMgbmV2ZXIgd29ya2VkIHByb3Blcmx5
-LCBiZWNhdXNlIHRoZXJlIGlzIG9mdGVuIAo+IGFkZGl0aW9uYWwgRE1BIGNvbmZpZ3VyYXRpb24g
-aW4gYXJjaGRhdGEgYW5kIG90aGVyIHBsYWNlcyBpdCBjYW5ub3QgCj4gcG9zc2libHkga25vdyBh
-Ym91dC4gTGFzdCB0aW1lIEkgbG9va2VkIHRoZXJlIHdlcmUgc3RpbGwgc29tZSBzcGVjaWZpYyAK
-PiBoYWNrcyBpbiB0aGUgVVNCIGxheWVyIGluIG9yZGVyIHRvIGludGVyYWN0IGNvcnJlY3RseSB3
-aXRoIHRoZSBibG9jayAKPiBsYXllciBib3VuY2UgbGltaXQsIGJ1dCBJIHRoaW5rIGFueXRoaW5n
-IHRydWx5IHdyb25nIGhhcyBiZWVuIG1vcmUgb3IgCj4gbGVzcyBmbHVzaGVkIG91dCBieSBub3cg
-KHRoZSBETUEgb3BzIGNoYW5nZXMgZm9yIGFybTY0IEFDUEkgc3VwcG9ydCAKPiBjYXVnaHQgYSBm
-YWlyIGZldyBJSVJDKS4KClllcC4gRm9yIHVzYiBJIHdvdWxkbid0IGNhbGwgaXQgaGFjayAoZG1h
-IGNvbnRyb2xsZXIgZGV2aWNlIHdhcyBpbnRyb2R1Y2VkCnRvIGF2b2lkIERNQSBwcm9wcyBjb3B5
-aW5nKS4KClRoYW5rcyBmb3IgeW91ciBjb21tZW50cy4KCi0tIApyZWdhcmRzLAotZ3J5Z29yaWkK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFp
-bGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On 2018-07-27 7:45 PM, Grygorii Strashko wrote:
+[...]
+> But I have a question to all:
+> - The patch [1] sets default DMA mask to DMA_BIT_MASK(32)
+> +	dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+> +	if (!dev->dev.dma_mask)
+> +		dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
+> 
+> this will also work the same way for ARM64
+> 
+> - But of_dma_configure() still have code which does:
+> 	dev->coherent_dma_mask &= mask;
+> 	*dev->dma_mask &= mask;
+> 
+> As result, DMA mask supplied from DT will always be truncated
+>   to 32 bit for platform devices. for example:
+> 
+> soc0: soc0 {
+>          compatible = "simple-bus";
+>          #address-cells = <2>;
+>          #size-cells = <2>;
+>          ranges;
+> +        dma-ranges = <0 0 0 0 0x10000 0>;
+> 
+> ^ 48 bit DMA mask expected to be generated and assigned.
+> 
+> But real mask will be DMA_BIT_MASK(32). As result, any
+> DMA capable driver will have be modified to do dma_set_xxx_mask(),
+> which disregards DT DMA configuration (especially for HW modules
+> which are used on ARM32 and ARM64).
+
+That has always been the case. Drivers which want to use 
+larger-than-32-bit masks *must* explicitly say so. The issue that the DT 
+dma-ranges (and ACPI equivalents) cannot be preserved in the device DMA 
+masks is the entire purpose of this series. At the moment there's only a 
+couple of point fixes for specific places with known problems, but this 
+is just the start of some ongoing work.
+
+> Could it be considered to do one the changes below?
+> 
+> 1) assign mask in case of dt
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 5957cd4..f7dc121 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -150,8 +150,8 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
+>           */
+>          mask = DMA_BIT_MASK(ilog2(dma_addr + size - 1) + 1);
+>          dev->bus_dma_mask = mask;
+> -       dev->coherent_dma_mask &= mask;
+> -       *dev->dma_mask &= mask;
+> +       dev->coherent_dma_mask = mask;
+> +       *dev->dma_mask = mask;
+>   
+>          coherent = of_dma_is_coherent(np);
+
+No, because that leads to a risk of DMA address truncation in hardware 
+(and thus at worst random memory corruption) when drivers expect the 
+default mask to be 32-bit and fail to explicitly set it as such.
+
+> 2) use BITS_PER_LONG for default DMA mask for of_platform devices
+> 
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index 7ba90c2..3f326e2 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -185,7 +185,7 @@ static struct platform_device *of_platform_device_create_pdata(
+>          if (!dev)
+>                  goto err_clear_flag;
+>   
+> -       dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+> +       dev->dev.coherent_dma_mask = DMA_BIT_MASK(BITS_PER_LONG);
+>          if (!dev->dev.dma_mask)
+>                  dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
+
+No, because that leads to a risk of DMA address truncation in hardware 
+(and thus at worst random memory corruption) when drivers expect the 
+default mask to be 32-bit and fail to explicitly set it as such.
+
+> 3) ...
+
+Remember when we found out how many drivers expect the default mask to 
+be 32-bit and fail to explicitly set it as such, because they all broke 
+when some chump set it to 0 in linux-next for a day? ;)
+
+Robin.
