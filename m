@@ -1,37 +1,64 @@
-From: =?iso-8859-1?Q?J=F6rg_R=F6del?= <joro@8bytes.org>
-Subject: Re: MSI B350M MORTAR: `AMD-Vi: Unable to write to IOMMU perf
- counter.` and `pci 0000:00:00.2: can't derive routing for PCI INT A`
-Date: Fri, 27 Jul 2018 12:27:10 +0200
-Message-ID: <20180727102710.GA6738@8bytes.org>
-References: <605ca165-0071-eb7f-4c0d-b1e76ddd0e05@molgen.mpg.de>
- <20180720123153.GC18541@8bytes.org>
- <d2c5ee4a-e72b-672e-ae30-7b3cd5a43c63@molgen.mpg.de>
- <20180727082754.hk44xktdydduu3qo@8bytes.org>
- <92922faa-164d-002b-9a5e-1865a57f1bdb@molgen.mpg.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/7] Stop losing firmware-set DMA masks
+Date: Fri, 27 Jul 2018 11:55:35 +0100
+Message-ID: <8b8ac841-5c4c-ae27-21d5-d7aaaf4c277c@arm.com>
+References: <cover.1532382222.git.robin.murphy@arm.com>
+	<c73bc8d2-b745-ff31-1949-7a59ab04ede6@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <92922faa-164d-002b-9a5e-1865a57f1bdb@molgen.mpg.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Menzel <pmenzel+linux-iommu@molgen.mpg.de>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <c73bc8d2-b745-ff31-1949-7a59ab04ede6-l0cyMroinI0@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Grygorii Strashko <grygorii.strashko-l0cyMroinI0@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 27, 2018 at 11:18:56AM +0200, Paul Menzel wrote:
-> On the AMD site [1] I see the three family 0x17 documents below.
+Hi Grygorii,
+
+Thanks for the report.
+
+On 27/07/18 00:45, Grygorii Strashko wrote:
+[...]
+> With this series applied I can't boot TI ARM32 am574x-idk any more.
 > 
-> 1.  Open-Source Register Reference for AMD Family 17h Processors (PUB)
-> 2.  Processor Programming Reference (PPR) for AMD Family 17h Models 00h-0Fh Processors (PUB)
-> 3.  Software Optimization Guide for AMD Family 17h Processors (PUB)
-> 
-> What documented is required? The BKDG?
+> And log output is full of "DMA mask not set" -
 
-IIRC the PPR is the new BKDG, but the public version does not seem to
-contain any references about how the IOMMU needs to be set up by
-firmware.
+That's somewhat expected - as the relevant commit message mentions, 
+there will be bugs flushed out by this change, but the point is to fix 
+them :)
 
+> nobody sets dma_mask for platform bus in case of OF boot :(
 
-Thanks,
+Right, after a brief investigation, that one turns out to be nice and 
+straightforward to explain and fix; I'll write up the patch shortly.
 
-	Joerg
+[...]
+> [    3.793493] ti-qspi 4b300000.qspi: dma_alloc_coherent failed, using PIO mode
+> [    3.801088] Unable to handle kernel NULL pointer dereference at virtual address 00000080
+[...]
+> [    4.602777] [<c04d87a4>] (omap_dma_write) from [<c04d8dc0>] (omap_dma_start_desc+0x78/0x150)
+> [    4.611258] [<c04d8d48>] (omap_dma_start_desc) from [<c04d9028>] (omap_dma_issue_pending+0x90/0x98)
+> [    4.620347]  r9:ed002780 r8:00000000 r7:00000010 r6:ee2bdd00 r5:ee2bdd4c r4:ee2bdd00
+> [    4.628130] [<c04d8f98>] (omap_dma_issue_pending) from [<c0608d1c>] (ti_qspi_dma_xfer+0x8c/0x13c)
+> [    4.637039]  r5:00000000 r4:ee7e1b28
+> [    4.640636] [<c0608c90>] (ti_qspi_dma_xfer) from [<c06090b0>] (ti_qspi_exec_mem_op+0x2e4/0x32c)
+
+Hooray, a real bug! Since dma_alloc_coherent() could have failed due to 
+lack of memory or any other reason, that's not even directly related to 
+this change, we've simply helped uncover it. I guess that PIO fallback 
+path hasn't been tested recently, because it clearly doesn't work. It 
+would be good if someone who knows the ti-qspi driver and has the means 
+to test it could figure that one out before also adding the missing 
+dma_set_coherent_mask() call.
+
+Robin.
