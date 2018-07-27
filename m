@@ -1,86 +1,65 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
-Date: Fri, 27 Jul 2018 17:02:37 +0100
-Message-ID: <daadd395-dcb7-9505-f171-0fcc28570301@arm.com>
-References: <20180726231624.21084-1-digetx@gmail.com>
- <20180727082512.lpvmeuvxnw3mpeym@8bytes.org> <20180727090328.GH28088@arm.com>
- <4164951.xGHfcFJ9uZ@dimapc>
+Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
+ fails to get any free IOVA
+Date: Fri, 27 Jul 2018 17:18:54 +0100
+Message-ID: <642cefaf-9ce7-bf0f-e6b6-e2e520e2427b@arm.com>
+References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
+ <c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com>
+ <CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
+ <CAKTKpr4skf3=Aw1YJNPppSjUT7w7_CF6QhefeHZDQXzENCfm5g@mail.gmail.com>
+ <CAKTKpr7BmaR-rwqf=z8JiNpaoQNhpSXuUp8sZogUgSLpfcCe0A@mail.gmail.com>
+ <CAKTKpr694WntjTB+pbXN--wthH+sw1mrr=JWjDfddG4bHdLwjw@mail.gmail.com>
+ <CAKTKpr74X9e2X-deraxFQzeoTio09LqoZoLDgod4J5AOn+vPMg@mail.gmail.com>
+ <3ed2046c-6912-9380-7ea4-4d921981c64c@arm.com>
+ <CAKTKpr5eERRzxDcH5cno5kDQ10XO9nHXbLTmk=ShEi8HK05fsg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <4164951.xGHfcFJ9uZ@dimapc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAKTKpr5eERRzxDcH5cno5kDQ10XO9nHXbLTmk=ShEi8HK05fsg@mail.gmail.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Dmitry Osipenko <digetx@gmail.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: devicetree@vger.kernel.org, Mikko Perttunen <cyndis@kapsi.fi>, nouveau@lists.freedesktop.org, "Rafael J. Wysocki" <rafael@kernel.org>, Nicolas Chauvet <kwizart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-tegra@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, linux-kernel@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ganapatrao Kulkarni <gklkml16@gmail.com>
+Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert Richter <Robert.Richter@cavium.com>, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjcvMDcvMTggMTU6MTAsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPiBPbiBGcmlkYXksIDI3
-IEp1bHkgMjAxOCAxMjowMzoyOCBNU0sgV2lsbCBEZWFjb24gd3JvdGU6Cj4+IE9uIEZyaSwgSnVs
-IDI3LCAyMDE4IGF0IDEwOjI1OjEzQU0gKzAyMDAsIEpvZXJnIFJvZWRlbCB3cm90ZToKPj4+IE9u
-IEZyaSwgSnVsIDI3LCAyMDE4IGF0IDAyOjE2OjE4QU0gKzAzMDAsIERtaXRyeSBPc2lwZW5rbyB3
-cm90ZToKPj4+PiBUaGUgcHJvcG9zZWQgc29sdXRpb24gYWRkcyBhIG5ldyBvcHRpb24gdG8gdGhl
-IGJhc2UgZGV2aWNlIGRyaXZlcgo+Pj4+IHN0cnVjdHVyZSB0aGF0IGFsbG93cyBkZXZpY2UgZHJp
-dmVycyB0byBleHBsaWNpdGx5IGNvbnZleSB0byB0aGUgZHJpdmVycwo+Pj4+IGNvcmUgdGhhdCB0
-aGUgaW1wbGljaXQgSU9NTVUgYmFja2luZyBmb3IgZGV2aWNlcyBtdXN0IG5vdCBoYXBwZW4uCj4+
-Pgo+Pj4gV2h5IGlzIElPTU1VIG1hcHBpbmcgYSBwcm9ibGVtIGZvciB0aGUgVGVncmEgR1BVIGRy
-aXZlcj8KPj4+Cj4+PiBJZiB3ZSBhZGQgc29tZXRoaW5nIGxpa2UgdGhpcyB0aGVuIGl0IHNob3Vs
-ZCBub3QgYmUgdGhlIGNob2ljZSBvZiB0aGUKPj4+IGRldmljZSBkcml2ZXIsIGJ1dCBvZiB0aGUg
-dXNlciBhbmQvb3IgdGhlIGZpcm13YXJlLgo+Pgo+PiBBZ3JlZWQsIGFuZCBpdCB3b3VsZCBzdGls
-bCBuZWVkIHNvbWVib2R5IHRvIGNvbmZpZ3VyZSBhbiBpZGVudGl0eSBkb21haW4gc28KPj4gdGhh
-dCB0cmFuc2FjdGlvbnMgYXJlbid0IGFib3J0ZWQgaW1tZWRpYXRlbHkuIFdlIGN1cnJlbnRseSBh
-bGxvdyB0aGUKPj4gaWRlbnRpdHkgZG9tYWluIHRvIGJlIHVzZWQgYnkgZGVmYXVsdCB2aWEgYSBj
-b21tYW5kLWxpbmUgb3B0aW9uLCBzbyBJIGd1ZXNzCj4+IHdlJ2QgbmVlZCBhIHdheSBmb3IgZmly
-bXdhcmUgdG8gcmVxdWVzdCB0aGF0IG9uIGEgcGVyLWRldmljZSBiYXNpcy4KPiAKPiBUaGUgSU9N
-TVUgbWFwcGluZyBpdHNlbGYgaXMgbm90IGEgcHJvYmxlbSwgdGhlIHByb2JsZW0gaXMgdGhlIG1h
-bmFnZW1lbnQgb2YKPiB0aGUgSU9NTVUuIEZvciBUZWdyYSB3ZSBkb24ndCB3YW50IGFueXRoaW5n
-IHRvIGludHJ1ZGUgaW50byB0aGUgSU9NTVUKPiBhY3Rpdml0aWVzIGJlY2F1c2U6Cj4gCj4gMSkg
-R1BVIEhXIHJlcXVpcmUgYWRkaXRpb25hbCBjb25maWd1cmF0aW9uIGZvciB0aGUgSU9NTVUgdXNh
-Z2UgYW5kIGR1bWIKPiBtYXBwaW5nIG9mIHRoZSBhbGxvY2F0aW9ucyBzaW1wbHkgZG9lc24ndCB3
-b3JrLgoKR2VuZXJhbGx5LCB0aGF0J3MgYWxyZWFkeSBoYW5kbGVkIGJ5IHRoZSBEUk0gZHJpdmVy
-cyBhbGxvY2F0aW5nIHRoZWlyIApvd24gdW5tYW5hZ2VkIGRvbWFpbnMuIFRoZSBvbmx5IHByb2Js
-ZW0gd2UgcmVhbGx5IG5lZWQgdG8gc29sdmUgaW4gdGhhdCAKcmVnYXJkIGlzIHRoYXQgY3VycmVu
-dGx5IHRoZSBkZXZpY2UgRE1BIG9wcyBkb24ndCBnZXQgdXBkYXRlZCB3aGVuIAptb3ZpbmcgYXdh
-eSBmcm9tIHRoZSBtYW5hZ2VkIGRvbWFpbi4gVGhhdCdzIGJlZW4gT0sgZm9yIHRoZSBWRklPIGNh
-c2UgCndoZXJlIHRoZSBkZXZpY2UgaXMgYm91bmQgdG8gYSBkaWZmZXJlbnQgZHJpdmVyIHdoaWNo
-IHdlIGtub3cgd29uJ3QgbWFrZSAKYW55IGV4cGxpY2l0IERNQSBBUEkgY2FsbHMsIGJ1dCBmb3Ig
-dGhlIG1vcmUgZ2VuZXJhbCBjYXNlIG9mIElPTU1VLWF3YXJlIApkcml2ZXJzIHdlIGNvdWxkIGNl
-cnRhaW5seSBkbyB3aXRoIGEgYml0IG9mIGNvb3BlcmF0aW9uIGJldHdlZW4gdGhlIApJT01NVSBB
-UEksIERNQSBBUEksIGFuZCBhcmNoIGNvZGUgdG8gdXBkYXRlIHRoZSBETUEgb3BzIGR5bmFtaWNh
-bGx5IHRvIApjb3BlIHdpdGggaW50ZXJtZWRpYXRlIHN1YnN5c3RlbXMgbWFraW5nIERNQSBBUEkg
-Y2FsbHMgb24gYmVoYWxmIG9mIApkZXZpY2VzIHRoZXkgZG9uJ3Qga25vdyB0aGUgaW50aW1hdGUg
-ZGV0YWlscyBvZi4KCj4gMikgT2xkZXIgVGVncmEgZ2VuZXJhdGlvbnMgaGF2ZSBhIGxpbWl0ZWQg
-cmVzb3VyY2UgYW5kIGNhcGFiaWxpdGllcyBpbiByZWdhcmRzCj4gdG8gSU9NTVUgdXNhZ2UsIGFs
-bG9jYXRpbmcgSU9NTVUgZG9tYWluIHBlci1kZXZpY2UgaXMganVzdCBpbXBvc3NpYmxlIGZvcgo+
-IGV4YW1wbGUuCj4gCj4gMykgSFcgcGVyZm9ybXMgY29udGV4dCBzd2l0Y2hlcyBhbmQgc28gcGFy
-dGljdWxhciBhbGxvY2F0aW9ucyBoYXZlIHRvIGJlCj4gYXNzaWduZWQgdG8gYSBwYXJ0aWN1bGFy
-IGNvbnRleHRzIElPTU1VIGRvbWFpbi4KCkkgdW5kZXJzdGFuZCBRdWFsY29tbSBTb0NzIGhhdmUg
-YSBzaW1pbGFyIHRoaW5nIHRvbywgYW5kIEFGQUlDUyB0aGF0IApjYXNlIGp1c3QgZG9lc24ndCBm
-aXQgaW50byB0aGUgY3VycmVudCBBUEkgbW9kZWwgYXQgYWxsLiBXZSBuZWVkIHRoZSAKSU9NTVUg
-ZHJpdmVyIHRvIHNvbWVob3cga25vdyBhYm91dCB0aGUgc3BlY2lmaWMgZGV0YWlscyBvZiB3aGlj
-aCBkZXZpY2VzIApoYXZlIG1hZ2ljIGFzc29jaWF0aW9ucyB3aXRoIHNwZWNpZmljIGNvbnRleHRz
-LCBhbmQgd2UgYWxtb3N0IGNlcnRhaW5seSAKbmVlZCBhIG1vcmUgZXhwcmVzc2l2ZSBpbnRlcmZh
-Y2UgdGhhbiBpb21tdV9kb21haW5fYWxsb2MoKSB0byBoYXZlIGFueSAKaG9wZSBvZiByZWxpYWJs
-ZSByZXN1bHRzLgoKUm9iaW4uCgo+IFNvbWUgb2YgdGhlIGFib3ZlIGlzIGR1ZSB0byBhIFNXIGRy
-aXZlciBtb2RlbCAoYW5kIGl0cyB3b3JrLWluLXByb2dyZXNzCj4gc3RhdHVzKSwgb3RoZXIgaXMg
-ZHVlIHRvIGEgSFcgbW9kZWwuIFNvIGVzc2VudGlhbGx5IHdlIG5lZWQgYSB3YXkgZm9yIGEgZHJp
-dmVyCj4gdG8gdGVsbCB0aGUgY29yZSBub3QgdG8gbWVzcyB3aXRoIElPTU1VIHN0dWZmIG9mIGRy
-aXZlcnMgZGV2aWNlIGJlaGluZCB0aGUKPiBkcml2ZXJzIGJhY2suCj4gCj4gSSdtIG5vdCBzdXJl
-IHdoYXQgeW91IGd1eXMgYXJlIG1lYW5pbmcgYnkgdGhlICJmaXJtd2FyZSIsIGNvdWxkIHlvdSBl
-bGFib3JhdGUKPiBwbGVhc2U/IERvIHlvdSBtZWFuIHRoZSBPcGVuIEZpcm13YXJlIGFuZCBoZW5j
-ZSB0aGUgZGV2aWNldHJlZSBvciB3aGF0Pwo+IAo+IAo+IAo+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4gaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+IApfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBs
-aXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
-bi9saXN0aW5mby9kcmktZGV2ZWwK
+On 27/07/18 13:56, Ganapatrao Kulkarni wrote:
+[...]
+>>> did you get any chance to look in to this issue?
+>>> i am waiting for your suggestion/patch for this issue!
+>>
+>>
+>> I got as far as [1], but I wasn't sure how much I liked it, since it still
+>> seems a little invasive for such a specific case (plus I can't remember if
+>> it's actually been debugged or not). I think in the end I started wondering
+>> whether it's even worth bothering with the 32-bit optimisation for PCIe
+>> devices - 4 extra bytes worth of TLP is surely a lot less significant than
+>> every transaction taking up to 50% more bus cycles was for legacy PCI.
+> 
+> how about tracking previous attempt to get 32bit range iova and avoid
+> further attempts, if it was failed. Later Resume attempts once
+> replenish happens.
+> Created patch for the same [2]
+
+Ooh, that's a much neater implementation of essentially the same concept 
+- now why couldn't I think of that? :)
+
+Looks like it should be possible to make it entirely self-contained too, 
+since alloc_iova() is in a position to both test and update the flag 
+based on the limit_pfn passed in.
+
+Robin.
+
+> 
+> [2] https://github.com/gpkulkarni/linux/commit/e2343a3e1f55cdeb5694103dd354bcb881dc65c3
+> note, the testing of this patch is in progress.
+> 
+>>
+>> Robin.
+>>
+>> [1]
+>> http://www.linux-arm.org/git?p=linux-rm.git;a=commitdiff;h=a8e0e4af10ebebb3669750e05bf0028e5bd6afe8
+> 
+> thanks
+> Ganapat
+> 
