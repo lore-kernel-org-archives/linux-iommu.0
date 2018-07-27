@@ -1,156 +1,167 @@
-From: Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH v2 7/7] OF: Don't set default coherent DMA mask
-Date: Thu, 26 Jul 2018 19:22:35 -0500
-Message-ID: <92d6b010-b5c0-fc59-0668-5b455e26c912@ti.com>
-References: <cover.1532382222.git.robin.murphy@arm.com>
- <66c08e4df2032fde82a2f97544f41fd3a2f24a94.1532382222.git.robin.murphy@arm.com>
- <4ed75bc9-1694-2bcb-2ea9-3f2a04f33f54@ti.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v3 0/6] add non-strict mode support for arm-smmu-v3
+Date: Fri, 27 Jul 2018 10:49:59 +0800
+Message-ID: <5B5A8857.9040907@huawei.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+ <aace9ec9-a36a-79a8-98eb-bbedd06f11a4@arm.com> <5B594399.1080404@huawei.com>
+ <f54dd9e0-6d4b-5daa-f6f6-be610393b487@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <4ed75bc9-1694-2bcb-2ea9-3f2a04f33f54@ti.com>
-Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>, hch@lst.de, m.szyprowski@samsung.com
-Cc: lorenzo.pieralisi@arm.com, gregkh@linuxfoundation.org, joro@8bytes.org, x86@kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, hanjun.guo@linaro.org, sudeep.holla@arm.com, frowand.list@gmail.com, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f54dd9e0-6d4b-5daa-f6f6-be610393b487@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 07/26/2018 06:52 PM, Grygorii Strashko wrote:
-> 
-> 
-> On 07/23/2018 05:16 PM, Robin Murphy wrote:
->> Now that we can track upstream DMA constraints properly with
->> bus_dma_mask instead of trying (and failing) to maintain it in
->> coherent_dma_mask, it doesn't make much sense for the firmware code to
->> be touching the latter at all. It's merely papering over bugs wherein a
->> driver has failed to call dma_set_coherent_mask() *and* the bus code has
->> not initialised any default value.
+On 2018/7/26 22:16, Robin Murphy wrote:
+> On 2018-07-26 4:44 AM, Leizhen (ThunderTown) wrote:
 >>
->> We don't really want to encourage more drivers coercing dma_mask so
->> we'll continue to fix that up if necessary, but add a warning to help
->> flush out any such buggy bus code that remains.
 >>
->> CC: Rob Herring <robh+dt@kernel.org>
->> CC: Frank Rowand <frowand.list@gmail.com>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>    drivers/of/device.c | 20 ++++++++++----------
->>    1 file changed, 10 insertions(+), 10 deletions(-)
+>> On 2018/7/25 5:51, Robin Murphy wrote:
+>>> On 2018-07-12 7:18 AM, Zhen Lei wrote:
+>>>> v2 -> v3: Add a bootup option "iommu_strict_mode" to make the
+>>>> manager can choose which mode to be used. The first 5 patches
+>>>> have not changed. +    iommu_strict_mode=    [arm-smmu-v3] +
+>>>> 0 - strict mode (default) +        1 - non-strict mode
+>>>>
+>>>> v1 -> v2: Use the lowest bit of the io_pgtable_ops.unmap's iova
+>>>> parameter to pass the strict mode: 0, IOMMU_STRICT; 1,
+>>>> IOMMU_NON_STRICT; Treat 0 as IOMMU_STRICT, so that the unmap
+>>>> operation can compatible with other IOMMUs which still use strict
+>>>> mode. In other words, this patch series will not impact other
+>>>> IOMMU drivers. I tried add a new quirk
+>>>> IO_PGTABLE_QUIRK_NON_STRICT in io_pgtable_cfg.quirks, but it can
+>>>> not pass the strict mode of the domain from SMMUv3 driver to
+>>>> io-pgtable module.
+>>>
+>>> What exactly is the issue there? We don't have any problem with
+>>> other quirks like NO_DMA, and as I said before, by the time we're
+>>> allocating the io-pgtable in arm_smmu_domain_finalise() we already
+>>> know everything there is to know about the domain.
 >>
->> diff --git a/drivers/of/device.c b/drivers/of/device.c
->> index 0d39633e8545..5957cd4fa262 100644
->> --- a/drivers/of/device.c
->> +++ b/drivers/of/device.c
->> @@ -127,20 +127,20 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
->>    	}
->>    
->>    	/*
->> -	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
->> -	 * setup the correct supported mask.
->> +	 * If @dev is expected to be DMA-capable then the bus code that created
->> +	 * it should have initialised its dma_mask pointer by this point. For
->> +	 * now, we'll continue the legacy behaviour of coercing it to the
->> +	 * coherent mask if not, but we'll no longer do so quietly.
->>    	 */
->> -	if (!dev->coherent_dma_mask)
->> -		dev->coherent_dma_mask = DMA_BIT_MASK(32);
->> -	/*
->> -	 * Set it to coherent_dma_mask by default if the architecture
->> -	 * code has not set it.
->> -	 */
->> -	if (!dev->dma_mask)
->> +	if (!dev->dma_mask) {
->> +		dev_warn(dev, "DMA mask not set\n");
->>    		dev->dma_mask = &dev->coherent_dma_mask;
->> +	}
->>    
->> -	if (!size)
->> +	if (!size && dev->coherent_dma_mask)
->>    		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
->> +	else if (!size)
->> +		size = 1ULL << 32;
->>    
->>    	dev->dma_pfn_offset = offset;
->>    
+>> Because userspace can map/unamp and start devices to access memory
+>> through VFIO. So that, the attacker can: 1. alloc memory 2. map 3.
+>> unmap 4. free memory 5. repeatedly accesssing the just freed memory
+>> base on the just unmapped iova, this attack may success if the freed
+>> memory is reused by others and the mapping still staying in TLB
+> 
+> Right, but that's why we don't set non-strict mode on unmanaged domains; what I was asking about was specifically why "it can not pass the strict mode of the domain from SMMUv3 driver to io-pgtable module", because we don't get anywhere near io-pgtable until we already know whether the domain in question can allow lazy unmaps or not.
+
+Sorry, it's my fault. I've all through mistaken that "data->iop.cfg" is shared by all domains until you mentioned me again.
+
+> 
+>> But if only root user can use VFIO, this is an unnecessary worry.
+>> Then both normal and VFIO will use the same strict mode, so that the
+>> new quirk IO_PGTABLE_QUIRK_NON_STRICT can easily be applied.
+>>
+>>>
+>>>> Add a new member domain_non_strict in struct iommu_dma_cookie,
+>>>> this member will only be initialized when the related domain and
+>>>> IOMMU driver support non-strict mode.
+>>>>
+>>>> v1: In common, a IOMMU unmap operation follow the below steps: 1.
+>>>> remove the mapping in page table of the specified iova range 2.
+>>>> execute tlbi command to invalid the mapping which is cached in
+>>>> TLB 3. wait for the above tlbi operation to be finished 4. free
+>>>> the IOVA resource 5. free the physical memory resource
+>>>>
+>>>> This maybe a problem when unmap is very frequently, the
+>>>> combination of tlbi and wait operation will consume a lot of
+>>>> time. A feasible method is put off tlbi and iova-free operation,
+>>>> when accumulating to a certain number or reaching a specified
+>>>> time, execute only one tlbi_all command to clean up TLB, then
+>>>> free the backup IOVAs. Mark as non-strict mode.
+>>>>
+>>>> But it must be noted that, although the mapping has already been
+>>>> removed in the page table, it maybe still exist in TLB. And the
+>>>> freed physical memory may also be reused for others. So a
+>>>> attacker can persistent access to memory based on the just freed
+>>>> IOVA, to obtain sensible data or corrupt memory. So the VFIO
+>>>> should always choose the strict mode.
+>>>>
+>>>> Some may consider put off physical memory free also, that will
+>>>> still follow strict mode. But for the map_sg cases, the memory
+>>>> allocation is not controlled by IOMMU APIs, so it is not
+>>>> enforceable.
+>>>>
+>>>> Fortunately, Intel and AMD have already applied the non-strict
+>>>> mode, and put queue_iova() operation into the common file
+>>>> dma-iommu.c., and my work is based on it. The difference is that
+>>>> arm-smmu-v3 driver will call IOMMU common APIs to unmap, but
+>>>> Intel and AMD IOMMU drivers are not.
+>>>>
+>>>> Below is the performance data of strict vs non-strict for NVMe
+>>>> device: Randomly Read  IOPS: 146K(strict) vs 573K(non-strict) Randomly Write IOPS: 143K(strict) vs 513K(non-strict)
+>>>
+>>> How does that compare to passthrough performance? One thing I'm not
+>>> entirely clear about is what the realistic use-case for this is -
+>>> even if invalidation were infinitely fast, enabling translation
+>>> still typically has a fair impact on overall system performance in
+>>> terms of latency, power, memory bandwidth, etc., so I can't help
+>>> wonder what devices exist today for which performance is critical
+>>> and robustness* is unimportant, yet have crippled addressing
+>>> capabilities such that they can't just use passthrough.
+>> I have no passthrough performance data yet, I will ask my team to do
+>> it. But we have tested the Global bypass: Randomly Read IOPS: 744K,
+>> and Randomly Write IOPS: is the same to non-strict.
+>>
+>> I'm also not clear. But I think in most cases, the system does not
+>> need to run at full capacity, but the system should have that
+>> ability. For example, a system's daily load may only 30-50%, but the
+>> load may increase to 80%+ on festival day.
+>>
+>> Passthrough is not enough to support VFIO, and virtualization need
+>> the later.
+> 
+> Huh? The whole point of passthrough mode is that the IOMMU can still be used for VFIO, but without imposing the overhead of dynamic mapping on host DMA.
+
+I said that from my experience. Userspace do not known the PA, so I think the user can not fill dma_map.iova correctly.
+
+	/* Allocate some space and setup a DMA mapping */
+	dma_map.vaddr = (__u64)mmap(0, 0x1000, PROT_READ | PROT_WRITE,
+			     MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+	dma_map.size = 0x1000;
+	dma_map.iova = 0x2f00000000UL;						/* user specified */
+	dma_map.flags = VFIO_DMA_MAP_FLAG_READ | VFIO_DMA_MAP_FLAG_WRITE;
+
+	ioctl(container, VFIO_IOMMU_MAP_DMA, &dma_map);
+
+Further more, dma_map is also suitable for iommu_map_sg usage scenario.
+
+> 
+> Robin.
+> 
+>>> * I don't want to say "security" here, since I'm actually a lot
+>>> less concerned about the theoretical malicious endpoint/wild write
+>>> scenarios than the the much more straightforward malfunctioning
+>>> device and/or buggy driver causing use-after-free style memory
+>>> corruption. Also, I'm sick of the word "security"...
+>>
+>> OK，We really have no need to consider buggy devices.
+>>
+>>>
+>>>>
+>>>> Zhen Lei (6): iommu/arm-smmu-v3: fix the implementation of
+>>>> flush_iotlb_all hook iommu/dma: add support for non-strict mode iommu/amd: use default branch to deal with all non-supported capabilities iommu/io-pgtable-arm: add support for non-strict
+>>>> mode iommu/arm-smmu-v3: add support for non-strict mode iommu/arm-smmu-v3: add bootup option "iommu_strict_mode"
+>>>>
+>>>> Documentation/admin-guide/kernel-parameters.txt | 12 +++++++ drivers/iommu/amd_iommu.c                       |  4 +-- drivers/iommu/arm-smmu-v3.c                     | 42
+>>>> +++++++++++++++++++++++-- drivers/iommu/dma-iommu.c
+>>>> | 25 +++++++++++++++ drivers/iommu/io-pgtable-arm.c
+>>>> | 23 ++++++++------ include/linux/iommu.h
+>>>> |  7 +++++ 6 files changed, 98 insertions(+), 15 deletions(-)
+>>>>
+>>>
+>>> .
+>>>
 >>
 > 
-> the result of this change is pretty strange as for me :(
-> Resulted code:
+> .
 > 
-> 	/*
-> 	 * If @dev is expected to be DMA-capable then the bus code that created
-> 	 * it should have initialised its dma_mask pointer by this point. For
-> 	 * now, we'll continue the legacy behaviour of coercing it to the
-> 	 * coherent mask if not, but we'll no longer do so quietly.
-> 	 */
-> 	if (!dev->dma_mask) {
-> 		dev_warn(dev, "DMA mask not set\n");
-> 		dev->dma_mask = &dev->coherent_dma_mask;
-> ^this will always produce warning in case of platform-bus or if there are no bus driver.
-> even if DT contains correct definition of dma-range
-> 	}
-> 
-> 	if (!size && dev->coherent_dma_mask)
-> 
-> ^ coherent_dma_mask is zero, so size will not be calculated
-pls, ignore this particular comment 
-
-> 		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
-> 	else if (!size)
-> 		size = 1ULL << 32;
-> 
-> 	dev->dma_pfn_offset = offset;
-> 
-> 	/*
-> 	 * Limit coherent and dma mask based on size and default mask
-> 	 * set by the driver.
-> 	 */
-> 	mask = DMA_BIT_MASK(ilog2(dma_addr + size - 1) + 1);
-> 	dev->bus_dma_mask = mask;
-> 	dev->coherent_dma_mask &= mask;
-> 
-> ^^ if nobody set coherent_dma_mask before it will stay null forever unless drivers
-> will overwrite it. Again even if DT has correct definition for dma-range.
-> 
-> 	*dev->dma_mask &= mask;
-> 
-> 	coherent = of_dma_is_coherent(np);
-> 	dev_dbg(dev, "device is%sdma coherent\n",
-> 		coherent ? " " : " not ");
-> 
-> 
-
-FYI, with below diff i can boot at least:
-
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 5957cd4..f7dc121 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -150,8 +150,8 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
-         */
-        mask = DMA_BIT_MASK(ilog2(dma_addr + size - 1) + 1);
-        dev->bus_dma_mask = mask;
--       dev->coherent_dma_mask &= mask;
--       *dev->dma_mask &= mask;
-+       dev->coherent_dma_mask = mask;
-+       *dev->dma_mask = mask;
- 
-        coherent = of_dma_is_coherent(np);
-        dev_dbg(dev, "device is%sdma coherent\n",
-
-
 
 -- 
-regards,
--grygorii
+Thanks!
+BestRegards
