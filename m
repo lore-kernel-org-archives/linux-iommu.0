@@ -1,17 +1,11 @@
-From: Grygorii Strashko via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] Stop losing firmware-set DMA masks
-Date: Fri, 27 Jul 2018 12:22:11 -0500
-Message-ID: <a8e85416-9a58-703a-26fa-f130befadf0d@ti.com>
-References: <cover.1532382222.git.robin.murphy@arm.com>
-	<c73bc8d2-b745-ff31-1949-7a59ab04ede6@ti.com>
-	<8b8ac841-5c4c-ae27-21d5-d7aaaf4c277c@arm.com>
-Reply-To: Grygorii Strashko <grygorii.strashko-l0cyMroinI0@public.gmane.org>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] MIPS: remove mips_swiotlb_ops
+Date: Fri, 27 Jul 2018 19:26:06 +0200
+Message-ID: <20180727172606.21253-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8b8ac841-5c4c-ae27-21d5-d7aaaf4c277c-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,50 +15,128 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Cc: gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+Cc: Huacai Chen <chenhc-h23VmSynlr/QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAwNy8yNy8yMDE4IDA1OjU1IEFNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gSGkgR3J5Z29y
-aWksCj4gCj4gVGhhbmtzIGZvciB0aGUgcmVwb3J0Lgo+IAo+IE9uIDI3LzA3LzE4IDAwOjQ1LCBH
-cnlnb3JpaSBTdHJhc2hrbyB3cm90ZToKPiBbLi4uXQo+PiBXaXRoIHRoaXMgc2VyaWVzIGFwcGxp
-ZWQgSSBjYW4ndCBib290IFRJIEFSTTMyIGFtNTc0eC1pZGsgYW55IG1vcmUuCj4+Cj4+IEFuZCBs
-b2cgb3V0cHV0IGlzIGZ1bGwgb2YgIkRNQSBtYXNrIG5vdCBzZXQiIC0KPiAKPiBUaGF0J3Mgc29t
-ZXdoYXQgZXhwZWN0ZWQgLSBhcyB0aGUgcmVsZXZhbnQgY29tbWl0IG1lc3NhZ2UgbWVudGlvbnMs
-IAo+IHRoZXJlIHdpbGwgYmUgYnVncyBmbHVzaGVkIG91dCBieSB0aGlzIGNoYW5nZSwgYnV0IHRo
-ZSBwb2ludCBpcyB0byBmaXggCj4gdGhlbSA6KQo+IAo+PiBub2JvZHkgc2V0cyBkbWFfbWFzayBm
-b3IgcGxhdGZvcm0gYnVzIGluIGNhc2Ugb2YgT0YgYm9vdCA6KAo+IAo+IFJpZ2h0LCBhZnRlciBh
-IGJyaWVmIGludmVzdGlnYXRpb24sIHRoYXQgb25lIHR1cm5zIG91dCB0byBiZSBuaWNlIGFuZCAK
-PiBzdHJhaWdodGZvcndhcmQgdG8gZXhwbGFpbiBhbmQgZml4OyBJJ2xsIHdyaXRlIHVwIHRoZSBw
-YXRjaCBzaG9ydGx5Lgo+IAo+IFsuLi5dCj4+IFvCoMKgwqAgMy43OTM0OTNdIHRpLXFzcGkgNGIz
-MDAwMDAucXNwaTogZG1hX2FsbG9jX2NvaGVyZW50IGZhaWxlZCwgdXNpbmcgCj4+IFBJTyBtb2Rl
-Cj4+IFvCoMKgwqAgMy44MDEwODhdIFVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRl
-ciBkZXJlZmVyZW5jZSBhdCAKPj4gdmlydHVhbCBhZGRyZXNzIDAwMDAwMDgwCj4gWy4uLl0KPj4g
-W8KgwqDCoCA0LjYwMjc3N10gWzxjMDRkODdhND5dIChvbWFwX2RtYV93cml0ZSkgZnJvbSBbPGMw
-NGQ4ZGMwPl0gCj4+IChvbWFwX2RtYV9zdGFydF9kZXNjKzB4NzgvMHgxNTApCj4+IFvCoMKgwqAg
-NC42MTEyNThdIFs8YzA0ZDhkNDg+XSAob21hcF9kbWFfc3RhcnRfZGVzYykgZnJvbSBbPGMwNGQ5
-MDI4Pl0gCj4+IChvbWFwX2RtYV9pc3N1ZV9wZW5kaW5nKzB4OTAvMHg5OCkKPj4gW8KgwqDCoCA0
-LjYyMDM0N13CoCByOTplZDAwMjc4MCByODowMDAwMDAwMCByNzowMDAwMDAxMCByNjplZTJiZGQw
-MCAKPj4gcjU6ZWUyYmRkNGMgcjQ6ZWUyYmRkMDAKPj4gW8KgwqDCoCA0LjYyODEzMF0gWzxjMDRk
-OGY5OD5dIChvbWFwX2RtYV9pc3N1ZV9wZW5kaW5nKSBmcm9tIFs8YzA2MDhkMWM+XSAKPj4gKHRp
-X3FzcGlfZG1hX3hmZXIrMHg4Yy8weDEzYykKPj4gW8KgwqDCoCA0LjYzNzAzOV3CoCByNTowMDAw
-MDAwMCByNDplZTdlMWIyOAo+PiBbwqDCoMKgIDQuNjQwNjM2XSBbPGMwNjA4YzkwPl0gKHRpX3Fz
-cGlfZG1hX3hmZXIpIGZyb20gWzxjMDYwOTBiMD5dIAo+PiAodGlfcXNwaV9leGVjX21lbV9vcCsw
-eDJlNC8weDMyYykKPiAKPiBIb29yYXksIGEgcmVhbCBidWchIFNpbmNlIGRtYV9hbGxvY19jb2hl
-cmVudCgpIGNvdWxkIGhhdmUgZmFpbGVkIGR1ZSB0byAKPiBsYWNrIG9mIG1lbW9yeSBvciBhbnkg
-b3RoZXIgcmVhc29uLCB0aGF0J3Mgbm90IGV2ZW4gZGlyZWN0bHkgcmVsYXRlZCB0byAKPiB0aGlz
-IGNoYW5nZSwgd2UndmUgc2ltcGx5IGhlbHBlZCB1bmNvdmVyIGl0LiBJIGd1ZXNzIHRoYXQgUElP
-IGZhbGxiYWNrIAo+IHBhdGggaGFzbid0IGJlZW4gdGVzdGVkIHJlY2VudGx5LCBiZWNhdXNlIGl0
-IGNsZWFybHkgZG9lc24ndCB3b3JrLiBJdCAKPiB3b3VsZCBiZSBnb29kIGlmIHNvbWVvbmUgd2hv
-IGtub3dzIHRoZSB0aS1xc3BpIGRyaXZlciBhbmQgaGFzIHRoZSBtZWFucyAKPiB0byB0ZXN0IGl0
-IGNvdWxkIGZpZ3VyZSB0aGF0IG9uZSBvdXQgYmVmb3JlIGFsc28gYWRkaW5nIHRoZSBtaXNzaW5n
-IAo+IGRtYV9zZXRfY29oZXJlbnRfbWFzaygpIGNhbGwuCgp5ZXMuIHRpLXFzcGkgaGFzIGFuIGlz
-c3VlcyB3aXRoIFBJTyBtb2RlLiAKCkJ1dCwgcmVhc29uIG9mIGZhaWx1cmUgaXMgdGhpcyB3YXJu
-aW5nOgoKWyAgICAzLjQ4MjUwMl0gV0FSTklORzogQ1BVOiAwIFBJRDogMSBhdCAuL2luY2x1ZGUv
-bGludXgvZG1hLW1hcHBpbmcuaDo1MTYgdGlfcXNwaV9wcm9iZSsweDRhNC8weDUwYwoKd2hpY2gg
-aXMgY2F1c2VkIGJ5IHRoaXMgc2VyaWVzIC0gd2hpY2ggbWFrZXMgY29oZXJlbnRfZG1hX21hc2sg
-Y29uc3RhbnRseSAwIGJ5IGRlZmF1bHQsCnNvIGRtYV9hbGxvY19jb2hlcmVudCgpIC0gZmFpbHMu
-CgoKPiBSb2Jpbi4KCi0tIApyZWdhcmRzLAotZ3J5Z29yaWkKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+mips_swiotlb_ops differs from the generic swiotlb_dma_ops only in that
+it contains a mb() barrier after each operations that maps or syncs
+dma memory to the device.
+
+The dma operations are defined to not be memory barriers, but instead
+the write* operations to kick the DMA off are supposed to contain them.
+
+For mips this handled by war_io_reorder_wmb(), which evaluates to the
+stronger wmb() instead of the pure compiler barrier barrier() for
+just those platforms that use swiotlb, so I think we are covered
+properly.
+
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ arch/mips/include/asm/dma-mapping.h |  3 +-
+ arch/mips/mm/Makefile               |  1 -
+ arch/mips/mm/dma-swiotlb.c          | 61 -----------------------------
+ 3 files changed, 1 insertion(+), 64 deletions(-)
+ delete mode 100644 arch/mips/mm/dma-swiotlb.c
+
+diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
+index 1c6e0c8ef4830..8ae7b20b68627 100644
+--- a/arch/mips/include/asm/dma-mapping.h
++++ b/arch/mips/include/asm/dma-mapping.h
+@@ -3,14 +3,13 @@
+ #define _ASM_DMA_MAPPING_H
+ 
+ extern const struct dma_map_ops jazz_dma_ops;
+-extern const struct dma_map_ops mips_swiotlb_ops;
+ 
+ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+ {
+ #if defined(CONFIG_MACH_JAZZ)
+ 	return &jazz_dma_ops;
+ #elif defined(CONFIG_SWIOTLB)
+-	return &mips_swiotlb_ops;
++	return &swiotlb_dma_ops;
+ #elif defined(CONFIG_DMA_NONCOHERENT_OPS)
+ 	return &dma_noncoherent_ops;
+ #else
+diff --git a/arch/mips/mm/Makefile b/arch/mips/mm/Makefile
+index 6922f393af196..3e5bb203c95ac 100644
+--- a/arch/mips/mm/Makefile
++++ b/arch/mips/mm/Makefile
+@@ -18,7 +18,6 @@ obj-$(CONFIG_64BIT)		+= pgtable-64.o
+ obj-$(CONFIG_HIGHMEM)		+= highmem.o
+ obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o
+ obj-$(CONFIG_DMA_NONCOHERENT)	+= dma-noncoherent.o
+-obj-$(CONFIG_SWIOTLB)		+= dma-swiotlb.o
+ 
+ obj-$(CONFIG_CPU_R4K_CACHE_TLB) += c-r4k.o cex-gen.o tlb-r4k.o
+ obj-$(CONFIG_CPU_R3000)		+= c-r3k.o tlb-r3k.o
+diff --git a/arch/mips/mm/dma-swiotlb.c b/arch/mips/mm/dma-swiotlb.c
+deleted file mode 100644
+index 6014ed3479fd7..0000000000000
+--- a/arch/mips/mm/dma-swiotlb.c
++++ /dev/null
+@@ -1,61 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-#include <linux/dma-mapping.h>
+-#include <linux/swiotlb.h>
+-
+-static void *mips_swiotlb_alloc(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+-{
+-	void *ret = swiotlb_alloc(dev, size, dma_handle, gfp, attrs);
+-
+-	mb();
+-	return ret;
+-}
+-
+-static dma_addr_t mips_swiotlb_map_page(struct device *dev,
+-		struct page *page, unsigned long offset, size_t size,
+-		enum dma_data_direction dir, unsigned long attrs)
+-{
+-	dma_addr_t daddr = swiotlb_map_page(dev, page, offset, size,
+-					dir, attrs);
+-	mb();
+-	return daddr;
+-}
+-
+-static int mips_swiotlb_map_sg(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs)
+-{
+-	int r = swiotlb_map_sg_attrs(dev, sg, nents, dir, attrs);
+-	mb();
+-
+-	return r;
+-}
+-
+-static void mips_swiotlb_sync_single_for_device(struct device *dev,
+-		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+-{
+-	swiotlb_sync_single_for_device(dev, dma_handle, size, dir);
+-	mb();
+-}
+-
+-static void mips_swiotlb_sync_sg_for_device(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir)
+-{
+-	swiotlb_sync_sg_for_device(dev, sg, nents, dir);
+-	mb();
+-}
+-
+-const struct dma_map_ops mips_swiotlb_ops = {
+-	.alloc			= mips_swiotlb_alloc,
+-	.free			= swiotlb_free,
+-	.map_page		= mips_swiotlb_map_page,
+-	.unmap_page		= swiotlb_unmap_page,
+-	.map_sg			= mips_swiotlb_map_sg,
+-	.unmap_sg		= swiotlb_unmap_sg_attrs,
+-	.sync_single_for_cpu	= swiotlb_sync_single_for_cpu,
+-	.sync_single_for_device	= mips_swiotlb_sync_single_for_device,
+-	.sync_sg_for_cpu	= swiotlb_sync_sg_for_cpu,
+-	.sync_sg_for_device	= mips_swiotlb_sync_sg_for_device,
+-	.mapping_error		= swiotlb_dma_mapping_error,
+-	.dma_supported		= swiotlb_dma_supported,
+-};
+-EXPORT_SYMBOL(mips_swiotlb_ops);
+-- 
+2.18.0
