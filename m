@@ -1,61 +1,65 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with
- IOMMU
-Date: Fri, 27 Jul 2018 17:10:22 +0300
-Message-ID: <4164951.xGHfcFJ9uZ@dimapc>
-References: <20180726231624.21084-1-digetx@gmail.com>
- <20180727082512.lpvmeuvxnw3mpeym@8bytes.org> <20180727090328.GH28088@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] of/platform: Initialise default DMA masks
+Date: Fri, 27 Jul 2018 15:14:15 +0100
+Message-ID: <9ffa7f2676c25adf39e85ec8114b26500b5680f6.1532699305.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180727090328.GH28088-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/nouveau>
-List-Post: <mailto:nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/nouveau>,
- <mailto:nouveau-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Nouveau" <nouveau-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, grygorii.strashko-l0cyMroinI0@public.gmane.org, krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpZGF5LCAyNyBKdWx5IDIwMTggMTI6MDM6MjggTVNLIFdpbGwgRGVhY29uIHdyb3RlOgo+
-IE9uIEZyaSwgSnVsIDI3LCAyMDE4IGF0IDEwOjI1OjEzQU0gKzAyMDAsIEpvZXJnIFJvZWRlbCB3
-cm90ZToKPiA+IE9uIEZyaSwgSnVsIDI3LCAyMDE4IGF0IDAyOjE2OjE4QU0gKzAzMDAsIERtaXRy
-eSBPc2lwZW5rbyB3cm90ZToKPiA+ID4gVGhlIHByb3Bvc2VkIHNvbHV0aW9uIGFkZHMgYSBuZXcg
-b3B0aW9uIHRvIHRoZSBiYXNlIGRldmljZSBkcml2ZXIKPiA+ID4gc3RydWN0dXJlIHRoYXQgYWxs
-b3dzIGRldmljZSBkcml2ZXJzIHRvIGV4cGxpY2l0bHkgY29udmV5IHRvIHRoZSBkcml2ZXJzCj4g
-PiA+IGNvcmUgdGhhdCB0aGUgaW1wbGljaXQgSU9NTVUgYmFja2luZyBmb3IgZGV2aWNlcyBtdXN0
-IG5vdCBoYXBwZW4uCj4gPiAKPiA+IFdoeSBpcyBJT01NVSBtYXBwaW5nIGEgcHJvYmxlbSBmb3Ig
-dGhlIFRlZ3JhIEdQVSBkcml2ZXI/Cj4gPiAKPiA+IElmIHdlIGFkZCBzb21ldGhpbmcgbGlrZSB0
-aGlzIHRoZW4gaXQgc2hvdWxkIG5vdCBiZSB0aGUgY2hvaWNlIG9mIHRoZQo+ID4gZGV2aWNlIGRy
-aXZlciwgYnV0IG9mIHRoZSB1c2VyIGFuZC9vciB0aGUgZmlybXdhcmUuCj4gCj4gQWdyZWVkLCBh
-bmQgaXQgd291bGQgc3RpbGwgbmVlZCBzb21lYm9keSB0byBjb25maWd1cmUgYW4gaWRlbnRpdHkg
-ZG9tYWluIHNvCj4gdGhhdCB0cmFuc2FjdGlvbnMgYXJlbid0IGFib3J0ZWQgaW1tZWRpYXRlbHku
-IFdlIGN1cnJlbnRseSBhbGxvdyB0aGUKPiBpZGVudGl0eSBkb21haW4gdG8gYmUgdXNlZCBieSBk
-ZWZhdWx0IHZpYSBhIGNvbW1hbmQtbGluZSBvcHRpb24sIHNvIEkgZ3Vlc3MKPiB3ZSdkIG5lZWQg
-YSB3YXkgZm9yIGZpcm13YXJlIHRvIHJlcXVlc3QgdGhhdCBvbiBhIHBlci1kZXZpY2UgYmFzaXMu
-CgpUaGUgSU9NTVUgbWFwcGluZyBpdHNlbGYgaXMgbm90IGEgcHJvYmxlbSwgdGhlIHByb2JsZW0g
-aXMgdGhlIG1hbmFnZW1lbnQgb2YgCnRoZSBJT01NVS4gRm9yIFRlZ3JhIHdlIGRvbid0IHdhbnQg
-YW55dGhpbmcgdG8gaW50cnVkZSBpbnRvIHRoZSBJT01NVSAKYWN0aXZpdGllcyBiZWNhdXNlOgoK
-MSkgR1BVIEhXIHJlcXVpcmUgYWRkaXRpb25hbCBjb25maWd1cmF0aW9uIGZvciB0aGUgSU9NTVUg
-dXNhZ2UgYW5kIGR1bWIgCm1hcHBpbmcgb2YgdGhlIGFsbG9jYXRpb25zIHNpbXBseSBkb2Vzbid0
-IHdvcmsuCgoyKSBPbGRlciBUZWdyYSBnZW5lcmF0aW9ucyBoYXZlIGEgbGltaXRlZCByZXNvdXJj
-ZSBhbmQgY2FwYWJpbGl0aWVzIGluIHJlZ2FyZHMgCnRvIElPTU1VIHVzYWdlLCBhbGxvY2F0aW5n
-IElPTU1VIGRvbWFpbiBwZXItZGV2aWNlIGlzIGp1c3QgaW1wb3NzaWJsZSBmb3IgIApleGFtcGxl
-LgoKMykgSFcgcGVyZm9ybXMgY29udGV4dCBzd2l0Y2hlcyBhbmQgc28gcGFydGljdWxhciBhbGxv
-Y2F0aW9ucyBoYXZlIHRvIGJlIAphc3NpZ25lZCB0byBhIHBhcnRpY3VsYXIgY29udGV4dHMgSU9N
-TVUgZG9tYWluLgoKU29tZSBvZiB0aGUgYWJvdmUgaXMgZHVlIHRvIGEgU1cgZHJpdmVyIG1vZGVs
-IChhbmQgaXRzIHdvcmstaW4tcHJvZ3Jlc3MgCnN0YXR1cyksIG90aGVyIGlzIGR1ZSB0byBhIEhX
-IG1vZGVsLiBTbyBlc3NlbnRpYWxseSB3ZSBuZWVkIGEgd2F5IGZvciBhIGRyaXZlciAKdG8gdGVs
-bCB0aGUgY29yZSBub3QgdG8gbWVzcyB3aXRoIElPTU1VIHN0dWZmIG9mIGRyaXZlcnMgZGV2aWNl
-IGJlaGluZCB0aGUgCmRyaXZlcnMgYmFjay4KCkknbSBub3Qgc3VyZSB3aGF0IHlvdSBndXlzIGFy
-ZSBtZWFuaW5nIGJ5IHRoZSAiZmlybXdhcmUiLCBjb3VsZCB5b3UgZWxhYm9yYXRlIApwbGVhc2U/
-IERvIHlvdSBtZWFuIHRoZSBPcGVuIEZpcm13YXJlIGFuZCBoZW5jZSB0aGUgZGV2aWNldHJlZSBv
-ciB3aGF0PwoKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-XwpOb3V2ZWF1IG1haWxpbmcgbGlzdApOb3V2ZWF1QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
-czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL25vdXZlYXUK
+When of_dma_configure() was first born in 591c1ee465ce ("of: configure
+the platform device dma parameters"), everything DMA-related was
+factored out of of_platform_device_create_pdata() as seemed appropriate
+at the time. However, now that of_dma_configure() has grown into the
+generic handler for processing DMA-related properties from DT for all
+kinds of devices, it is no longer an appropriate place to be doing
+OF-platform-specific business. Since there are still plenty of platform
+drivers not setting their own masks and depending on the bus default,
+let's reinstate that inialisation in the OF-platform code itself, and
+restore the long-standing status quo from 0589342c2794 ("of: set
+dma_mask to point to coherent_dma_mask")
+
+CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+CC: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+
+This shouldn't strictly depend on the changes currently queued in the
+dma-mapping tree, so should be OK to go through the DT tree in parallel.
+Ideally we'd fix all DMA-capable drivers to set their masks correctly,
+but in the short term everyone's going to get cross about -rc1 not
+booting...
+
+Robin.
+
+ drivers/of/platform.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index 6925d993e1f0..7ba90c290a42 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -185,6 +185,9 @@ static struct platform_device *of_platform_device_create_pdata(
+ 	if (!dev)
+ 		goto err_clear_flag;
+ 
++	dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	if (!dev->dev.dma_mask)
++		dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
+ 	dev->dev.bus = &platform_bus_type;
+ 	dev->dev.platform_data = platform_data;
+ 	of_msi_configure(&dev->dev, dev->dev.of_node);
+-- 
+2.17.1.dirty
