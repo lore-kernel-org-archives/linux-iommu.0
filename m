@@ -1,65 +1,90 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
- fails to get any free IOVA
-Date: Fri, 27 Jul 2018 17:18:54 +0100
-Message-ID: <642cefaf-9ce7-bf0f-e6b6-e2e520e2427b@arm.com>
-References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
- <c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com>
- <CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
- <CAKTKpr4skf3=Aw1YJNPppSjUT7w7_CF6QhefeHZDQXzENCfm5g@mail.gmail.com>
- <CAKTKpr7BmaR-rwqf=z8JiNpaoQNhpSXuUp8sZogUgSLpfcCe0A@mail.gmail.com>
- <CAKTKpr694WntjTB+pbXN--wthH+sw1mrr=JWjDfddG4bHdLwjw@mail.gmail.com>
- <CAKTKpr74X9e2X-deraxFQzeoTio09LqoZoLDgod4J5AOn+vPMg@mail.gmail.com>
- <3ed2046c-6912-9380-7ea4-4d921981c64c@arm.com>
- <CAKTKpr5eERRzxDcH5cno5kDQ10XO9nHXbLTmk=ShEi8HK05fsg@mail.gmail.com>
+From: Rob Landley <rob@landley.net>
+Subject: Re: use the generic dma-noncoherent code for sh V2
+Date: Fri, 27 Jul 2018 11:20:21 -0500
+Message-ID: <18df6608-61c1-963d-bb1a-d46320232f40@landley.net>
+References: <20180724120147.15096-1-hch@lst.de> <20180724202115.GA4685@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAKTKpr5eERRzxDcH5cno5kDQ10XO9nHXbLTmk=ShEi8HK05fsg@mail.gmail.com>
+In-Reply-To: <20180724202115.GA4685@lst.de>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ganapatrao Kulkarni <gklkml16@gmail.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert Richter <Robert.Richter@cavium.com>, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com
+To: Christoph Hellwig <hch@lst.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>
+Cc: Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, iommu@lists.linux-foundation.org, Jacopo Mondi <jacopo+renesas@jmondi.org>, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/07/18 13:56, Ganapatrao Kulkarni wrote:
-[...]
->>> did you get any chance to look in to this issue?
->>> i am waiting for your suggestion/patch for this issue!
+On 07/24/2018 03:21 PM, Christoph Hellwig wrote:
+> On Tue, Jul 24, 2018 at 02:01:42PM +0200, Christoph Hellwig wrote:
+>> Hi all,
 >>
+>> can you review these patches to switch sh to use the generic
+>> dma-noncoherent code?  All the requirements are in mainline already
+>> and we've switched various architectures over to it already.
+>
+> Ok, there is one more issue with this version.   Wait for a new one
+> tomorrow.
+
+Speaking of DMA:
+
+I'm trying to wire up DMAEngine to an sh7760 board that uses platform data (and
+fix the smc91x.c driver to use DMAEngine without #ifdef arm), so I've been
+reading through all that stuff, but the docs seem kinda... thin?
+
+Is there something I should have read other than
+Documentation/driver-model/platform.txt,
+Documentation/dmaegine/{provider,client}.txt, then trying to picking through the
+source code and the sh7760 hardware pdf? (And watching the youtube video of
+Laurent Pinchart's 2014 ELC talk on DMA, Maxime Ripard's 2015 ELC overview of
+DMAEngine, the Xilinx video on DMAEngine...)
+
+At first I thought the SH_DMAE could initialize itself, but the probe function
+needs platform data, and although arch/sh/kernel/cpu/sh4a/setup-sh7722.c looks
+_kind_ of like a model I can crib from:
+
+A) "make ARCH=sh se7722_defconfig" results in a config with SH_DMA disabled??!?
+(This is why I use miniconfig instead of defconfig format, I'm assuming that's
+bit rot?)
+
+B) That platform data is supplying sh_dmae_slave_config preallocating slave
+channels to devices? (Does it have to? The docs gave me the impression the
+driver would dynamically request them and devices could even share. Wasn't that
+sort of the point of DMAEngine? Can my new board data _not_ do that? What's the
+minimum amount of micromanaging I have to do?)
+
+C) It's full of stuff like setting ts_low_shift to CHCR_TS_LOW_SHIFT where both
+grepping Docuemntation and Google "dmaengine ts_low_shift" are unhelpful.
+
+What I'd really like is a "hello world" version of DMAEngine somewhere I can
+build and run on a supported qemu target, to set up _one_ channel with a block
+device or something using it. I can't tell what's optional, or what the minimal
+version of this looks like.
+
+(Currently I've only managed to update this kernel to 4.14 because 4.15
+introduced an intermittent data corruption bug in the flash, which takes long
+enough to reproduce bisecting it is fiddly and ship deadlines are all blinky and
+red. But next release should be current, _and_ with at least the 4.14 source
+published so I can point people at it. Heck, maybe I can convince them to let me
+port it to device tree next cycle, but I need to get it to _work_ first. And
+doing PIO on a 100baseT controller, I.E. a ~200 mhz embedded CPU trying to copy
+11 megabytes/second across a 16 bit bus with a for(;;) loop... bit of a
+performance bottleneck even before you add https.)
+
+Thanks,
+
+Rob
+
 >>
->> I got as far as [1], but I wasn't sure how much I liked it, since it still
->> seems a little invasive for such a specific case (plus I can't remember if
->> it's actually been debugged or not). I think in the end I started wondering
->> whether it's even worth bothering with the 32-bit optimisation for PCIe
->> devices - 4 extra bytes worth of TLP is surely a lot less significant than
->> every transaction taking up to 50% more bus cycles was for legacy PCI.
-> 
-> how about tracking previous attempt to get 32bit range iova and avoid
-> further attempts, if it was failed. Later Resume attempts once
-> replenish happens.
-> Created patch for the same [2]
-
-Ooh, that's a much neater implementation of essentially the same concept 
-- now why couldn't I think of that? :)
-
-Looks like it should be possible to make it entirely self-contained too, 
-since alloc_iova() is in a position to both test and update the flag 
-based on the limit_pfn passed in.
-
-Robin.
-
-> 
-> [2] https://github.com/gpkulkarni/linux/commit/e2343a3e1f55cdeb5694103dd354bcb881dc65c3
-> note, the testing of this patch is in progress.
-> 
->>
->> Robin.
->>
->> [1]
->> http://www.linux-arm.org/git?p=linux-rm.git;a=commitdiff;h=a8e0e4af10ebebb3669750e05bf0028e5bd6afe8
-> 
-> thanks
-> Ganapat
+>> Changes since V1:
+>>  - fixed two stupid compile errors and verified them using a local
+>>    cross toolchain instead of the 0day buildbot
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> ---end quoted text---
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-sh" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
