@@ -1,167 +1,607 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v3 0/6] add non-strict mode support for arm-smmu-v3
-Date: Fri, 27 Jul 2018 10:49:59 +0800
-Message-ID: <5B5A8857.9040907@huawei.com>
-References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
- <aace9ec9-a36a-79a8-98eb-bbedd06f11a4@arm.com> <5B594399.1080404@huawei.com>
- <f54dd9e0-6d4b-5daa-f6f6-be610393b487@arm.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v13 1/4] iommu/arm-smmu: Add
+ pm_runtime/sleep ops
+Date: Fri, 27 Jul 2018 10:35:46 +0530
+Message-ID: <cc36024e-888f-b323-d960-93f76a7bbea0@codeaurora.org>
+References: <20180719101539.6104-1-vivek.gautam@codeaurora.org>
+ <20180719101539.6104-2-vivek.gautam@codeaurora.org>
+ <e17fdcb7-2632-753f-4e2e-f81bcded36f1@arm.com>
+ <CAFp+6iF1XzFn1QhWjatxE-1sue-EFS7wNmQ4OB=c3pf1VMLuMA@mail.gmail.com>
+ <CAFp+6iEYpM7w+pq0bG83vgjedqy4ZkQbUP9Bx=61TbEUN45OkA@mail.gmail.com>
+ <401d8509-b9ad-913b-334e-f4ac853472e3@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f54dd9e0-6d4b-5daa-f6f6-be610393b487@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
+Content-Type: multipart/mixed; boundary="===============1537761834=="
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <401d8509-b9ad-913b-334e-f4ac853472e3-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+This is a multi-part message in MIME format.
+--===============1537761834==
+Content-Type: multipart/alternative;
+ boundary="------------37BEB597666699A5F82FD777"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------37BEB597666699A5F82FD777
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
-On 2018/7/26 22:16, Robin Murphy wrote:
-> On 2018-07-26 4:44 AM, Leizhen (ThunderTown) wrote:
+
+On 7/26/2018 9:00 PM, Robin Murphy wrote:
+> On 26/07/18 08:12, Vivek Gautam wrote:
+>> On Wed, Jul 25, 2018 at 11:46 PM, Vivek Gautam
+>> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>>> On Tue, Jul 24, 2018 at 8:51 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> 
+>>> wrote:
+>>>> On 19/07/18 11:15, Vivek Gautam wrote:
+>>>>>
+>>>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>>
+>>>>> The smmu needs to be functional only when the respective
+>>>>> master's using it are active. The device_link feature
+>>>>> helps to track such functional dependencies, so that the
+>>>>> iommu gets powered when the master device enables itself
+>>>>> using pm_runtime. So by adapting the smmu driver for
+>>>>> runtime pm, above said dependency can be addressed.
+>>>>>
+>>>>> This patch adds the pm runtime/sleep callbacks to the
+>>>>> driver and also the functions to parse the smmu clocks
+>>>>> from DT and enable them in resume/suspend.
+>>>>>
+>>>>> Also, while we enable the runtime pm add a pm sleep suspend
+>>>>> callback that pushes devices to low power state by turning
+>>>>> the clocks off in a system sleep.
+>>>>> Also add corresponding clock enable path in resume callback.
+>>>>>
+>>>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>> Signed-off-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>> [vivek: rework for clock and pm ops]
+>>>>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>>>>> ---
+>>>>>
+>>>>> Changes since v12:
+>>>>>    - Added pm sleep .suspend callback. This disables the clocks.
+>>>>>    - Added corresponding change to enable clocks in .resume
+>>>>>     pm sleep callback.
+>>>>>
+>>>>>    drivers/iommu/arm-smmu.c | 75
+>>>>> ++++++++++++++++++++++++++++++++++++++++++++++--
+>>>>>    1 file changed, 73 insertions(+), 2 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>>>> index c73cfce1ccc0..9138a6fffe04 100644
+>>>>> --- a/drivers/iommu/arm-smmu.c
+>>>>> +++ b/drivers/iommu/arm-smmu.c
 >>
+>> [snip]
 >>
->> On 2018/7/25 5:51, Robin Murphy wrote:
->>> On 2018-07-12 7:18 AM, Zhen Lei wrote:
->>>> v2 -> v3: Add a bootup option "iommu_strict_mode" to make the
->>>> manager can choose which mode to be used. The first 5 patches
->>>> have not changed. +    iommu_strict_mode=    [arm-smmu-v3] +
->>>> 0 - strict mode (default) +        1 - non-strict mode
+>>>>> platform_device *pdev)
+>>>>>          arm_smmu_device_remove(pdev);
+>>>>>    }
+>>>>>    +static int __maybe_unused arm_smmu_runtime_resume(struct 
+>>>>> device *dev)
+>>>>> +{
+>>>>> +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+>>>>> +
+>>>>> +       return clk_bulk_enable(smmu->num_clks, smmu->clks);
 >>>>
->>>> v1 -> v2: Use the lowest bit of the io_pgtable_ops.unmap's iova
->>>> parameter to pass the strict mode: 0, IOMMU_STRICT; 1,
->>>> IOMMU_NON_STRICT; Treat 0 as IOMMU_STRICT, so that the unmap
->>>> operation can compatible with other IOMMUs which still use strict
->>>> mode. In other words, this patch series will not impact other
->>>> IOMMU drivers. I tried add a new quirk
->>>> IO_PGTABLE_QUIRK_NON_STRICT in io_pgtable_cfg.quirks, but it can
->>>> not pass the strict mode of the domain from SMMUv3 driver to
->>>> io-pgtable module.
+>>>>
+>>>> If there's a power domain being automatically switched by genpd 
+>>>> then we need
+>>>> a reset here because we may have lost state entirely. Since I 
+>>>> remembered the
+>>>> otherwise-useless GPU SMMU on Juno is in a separate power domain, I 
+>>>> gave it
+>>>> a poking via sysfs with some debug stuff to dump sCR0 in these 
+>>>> callbacks,
+>>>> and the problem is clear:
+>>>>
+>>>> ...
+>>>> [    4.625551] arm-smmu 2b400000.iommu: genpd_runtime_suspend()
+>>>> [    4.631163] arm-smmu 2b400000.iommu: arm_smmu_runtime_suspend: 
+>>>> 0x00201936
+>>>> [    4.637897] arm-smmu 2b400000.iommu: suspend latency exceeded, 
+>>>> 6733980 ns
+>>>> [   21.566983] arm-smmu 2b400000.iommu: genpd_runtime_resume()
+>>>> [   21.584796] arm-smmu 2b400000.iommu: arm_smmu_runtime_resume: 
+>>>> 0x00220101
+>>>> [   21.591452] arm-smmu 2b400000.iommu: resume latency exceeded, 
+>>>> 6658020 ns
+>>>> ...
 >>>
->>> What exactly is the issue there? We don't have any problem with
->>> other quirks like NO_DMA, and as I said before, by the time we're
->>> allocating the io-pgtable in arm_smmu_domain_finalise() we already
->>> know everything there is to know about the domain.
->>
->> Because userspace can map/unamp and start devices to access memory
->> through VFIO. So that, the attacker can: 1. alloc memory 2. map 3.
->> unmap 4. free memory 5. repeatedly accesssing the just freed memory
->> base on the just unmapped iova, this attack may success if the freed
->> memory is reused by others and the mapping still staying in TLB
-> 
-> Right, but that's why we don't set non-strict mode on unmanaged domains; what I was asking about was specifically why "it can not pass the strict mode of the domain from SMMUv3 driver to io-pgtable module", because we don't get anywhere near io-pgtable until we already know whether the domain in question can allow lazy unmaps or not.
-
-Sorry, it's my fault. I've all through mistaken that "data->iop.cfg" is shared by all domains until you mentioned me again.
-
-> 
->> But if only root user can use VFIO, this is an unnecessary worry.
->> Then both normal and VFIO will use the same strict mode, so that the
->> new quirk IO_PGTABLE_QUIRK_NON_STRICT can easily be applied.
->>
+>>> Qualcomm SoCs have retention enabled for SMMU registers so they don't
+>>> lose state.
+>>> ...
+>>> [  256.013367] arm-smmu b40000.arm,smmu: arm_smmu_runtime_suspend
+>>> SCR0 = 0x201e36
+>>> [  256.013367]
+>>> [  256.019160] arm-smmu b40000.arm,smmu: arm_smmu_runtime_resume
+>>> SCR0 = 0x201e36
+>>> [  256.019160]
+>>> [  256.027368] arm-smmu b40000.arm,smmu: arm_smmu_runtime_suspend
+>>> SCR0 = 0x201e36
+>>> [  256.027368]
+>>> [  256.036786] arm-smmu b40000.arm,smmu: arm_smmu_runtime_resume
+>>> SCR0 = 0x201e36
+>>> ...
 >>>
->>>> Add a new member domain_non_strict in struct iommu_dma_cookie,
->>>> this member will only be initialized when the related domain and
->>>> IOMMU driver support non-strict mode.
->>>>
->>>> v1: In common, a IOMMU unmap operation follow the below steps: 1.
->>>> remove the mapping in page table of the specified iova range 2.
->>>> execute tlbi command to invalid the mapping which is cached in
->>>> TLB 3. wait for the above tlbi operation to be finished 4. free
->>>> the IOVA resource 5. free the physical memory resource
->>>>
->>>> This maybe a problem when unmap is very frequently, the
->>>> combination of tlbi and wait operation will consume a lot of
->>>> time. A feasible method is put off tlbi and iova-free operation,
->>>> when accumulating to a certain number or reaching a specified
->>>> time, execute only one tlbi_all command to clean up TLB, then
->>>> free the backup IOVAs. Mark as non-strict mode.
->>>>
->>>> But it must be noted that, although the mapping has already been
->>>> removed in the page table, it maybe still exist in TLB. And the
->>>> freed physical memory may also be reused for others. So a
->>>> attacker can persistent access to memory based on the just freed
->>>> IOVA, to obtain sensible data or corrupt memory. So the VFIO
->>>> should always choose the strict mode.
->>>>
->>>> Some may consider put off physical memory free also, that will
->>>> still follow strict mode. But for the map_sg cases, the memory
->>>> allocation is not controlled by IOMMU APIs, so it is not
->>>> enforceable.
->>>>
->>>> Fortunately, Intel and AMD have already applied the non-strict
->>>> mode, and put queue_iova() operation into the common file
->>>> dma-iommu.c., and my work is based on it. The difference is that
->>>> arm-smmu-v3 driver will call IOMMU common APIs to unmap, but
->>>> Intel and AMD IOMMU drivers are not.
->>>>
->>>> Below is the performance data of strict vs non-strict for NVMe
->>>> device: Randomly Read  IOPS: 146K(strict) vs 573K(non-strict) Randomly Write IOPS: 143K(strict) vs 513K(non-strict)
->>>
->>> How does that compare to passthrough performance? One thing I'm not
->>> entirely clear about is what the realistic use-case for this is -
->>> even if invalidation were infinitely fast, enabling translation
->>> still typically has a fair impact on overall system performance in
->>> terms of latency, power, memory bandwidth, etc., so I can't help
->>> wonder what devices exist today for which performance is critical
->>> and robustness* is unimportant, yet have crippled addressing
->>> capabilities such that they can't just use passthrough.
->> I have no passthrough performance data yet, I will ask my team to do
->> it. But we have tested the Global bypass: Randomly Read IOPS: 744K,
->> and Randomly Write IOPS: is the same to non-strict.
+>>> However after adding arm_smmu_device_reset() in runtime_resume() I 
+>>> observe
+>>> some performance degradation when kill an instance of 'kmscube' and
+>>> start it again.
+>>> The launch time with arm_smmu_device_reset() in runtime_resume() 
+>>> change is
+>>> more.
+>>> Could this be because of frequent TLB invalidation and sync?
+>
+> Probably. Plus the reset procedure is a big chunk of MMIO accesses, 
+> which for a non-trivial SMMU configuration probably isn't negligible 
+> in itself. Unfortunately, unless you know for absolute certain that 
+> you don't need to do that, you do.
+>
+>> Some more information that i gathered.
+>> On Qcom SoCs besides the registers retention, TCU invalidates TLB 
+>> cache on
+>> a CX power collapse exit, which is the system wide suspend case.
+>> The arm-smmu software is not aware of this CX power collapse /
+>> auto-invalidation.
 >>
->> I'm also not clear. But I think in most cases, the system does not
->> need to run at full capacity, but the system should have that
->> ability. For example, a system's daily load may only 30-50%, but the
->> load may increase to 80%+ on festival day.
->>
->> Passthrough is not enough to support VFIO, and virtualization need
->> the later.
-> 
-> Huh? The whole point of passthrough mode is that the IOMMU can still be used for VFIO, but without imposing the overhead of dynamic mapping on host DMA.
+>> So wouldn't doing an explicit TLB invalidations during runtime resume be
+>> detrimental to performance?
+>
+> Indeed it would be, but resuming with TLBs full of random 
+> valid-looking junk is even more so.
+>
+>> I have one more doubt here -
+>> We do runtime power cycle around arm_smmu_map/unmap() too.
+>> Now during map/unmap we selectively do TLB maintenance (either
+>> tlb_sync or tlb_add_flush).
+>> But with runtime pm we want to do TLBIALL*. Is that a problem?
+>
+> It's technically redundant to do both, true, but as we've covered in 
+> previous rounds of discussion it's very difficult to know *which* one 
+> is sufficient at any given time, so in order to make progress for now 
+> I think we have to settle with doing both.
 
-I said that from my experience. Userspace do not known the PA, so I think the user can not fill dma_map.iova correctly.
+Thanks Robin. I will respin the patches as Tomasz also suggested;
 
-	/* Allocate some space and setup a DMA mapping */
-	dma_map.vaddr = (__u64)mmap(0, 0x1000, PROT_READ | PROT_WRITE,
-			     MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
-	dma_map.size = 0x1000;
-	dma_map.iova = 0x2f00000000UL;						/* user specified */
-	dma_map.flags = VFIO_DMA_MAP_FLAG_READ | VFIO_DMA_MAP_FLAG_WRITE;
+arm_smmu_runtime_resume() will look like:
 
-	ioctl(container, VFIO_IOMMU_MAP_DMA, &dma_map);
+     if (pm_runtime_suspended(dev))
+         return 0;
+     return arm_smmu_runtime_resume(dev);
 
-Further more, dma_map is also suitable for iommu_map_sg usage scenario.
+and,
+arm_smmu_runtime_resume() will have arm_smmu_device_reset().
 
-> 
+Best regards
+Vivek
+>
 > Robin.
-> 
->>> * I don't want to say "security" here, since I'm actually a lot
->>> less concerned about the theoretical malicious endpoint/wild write
->>> scenarios than the the much more straightforward malfunctioning
->>> device and/or buggy driver causing use-after-free style memory
->>> corruption. Also, I'm sick of the word "security"...
->>
->> OK，We really have no need to consider buggy devices.
->>
->>>
->>>>
->>>> Zhen Lei (6): iommu/arm-smmu-v3: fix the implementation of
->>>> flush_iotlb_all hook iommu/dma: add support for non-strict mode iommu/amd: use default branch to deal with all non-supported capabilities iommu/io-pgtable-arm: add support for non-strict
->>>> mode iommu/arm-smmu-v3: add support for non-strict mode iommu/arm-smmu-v3: add bootup option "iommu_strict_mode"
->>>>
->>>> Documentation/admin-guide/kernel-parameters.txt | 12 +++++++ drivers/iommu/amd_iommu.c                       |  4 +-- drivers/iommu/arm-smmu-v3.c                     | 42
->>>> +++++++++++++++++++++++-- drivers/iommu/dma-iommu.c
->>>> | 25 +++++++++++++++ drivers/iommu/io-pgtable-arm.c
->>>> | 23 ++++++++------ include/linux/iommu.h
->>>> |  7 +++++ 6 files changed, 98 insertions(+), 15 deletions(-)
->>>>
->>>
->>> .
->>>
->>
-> 
-> .
-> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe 
+> linux-arm-msm" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
--- 
-Thanks!
-BestRegards
+
+--------------37BEB597666699A5F82FD777
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    <p><br>
+    </p>
+    <br>
+    <div class="moz-cite-prefix">On 7/26/2018 9:00 PM, Robin Murphy
+      wrote:<br>
+    </div>
+    <blockquote type="cite"
+      cite="mid:401d8509-b9ad-913b-334e-f4ac853472e3-5wv7dgnIgG8@public.gmane.org">On
+      26/07/18 08:12, Vivek Gautam wrote:
+      <br>
+      <blockquote type="cite">On Wed, Jul 25, 2018 at 11:46 PM, Vivek
+        Gautam
+        <br>
+        <a class="moz-txt-link-rfc2396E" href="mailto:vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org">&lt;vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org&gt;</a> wrote:
+        <br>
+        <blockquote type="cite">On Tue, Jul 24, 2018 at 8:51 PM, Robin
+          Murphy <a class="moz-txt-link-rfc2396E" href="mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org">&lt;robin.murphy-5wv7dgnIgG8@public.gmane.org&gt;</a> wrote:
+          <br>
+          <blockquote type="cite">On 19/07/18 11:15, Vivek Gautam wrote:
+            <br>
+            <blockquote type="cite">
+              <br>
+              From: Sricharan R <a class="moz-txt-link-rfc2396E" href="mailto:sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org">&lt;sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org&gt;</a>
+              <br>
+              <br>
+              The smmu needs to be functional only when the respective
+              <br>
+              master's using it are active. The device_link feature
+              <br>
+              helps to track such functional dependencies, so that the
+              <br>
+              iommu gets powered when the master device enables itself
+              <br>
+              using pm_runtime. So by adapting the smmu driver for
+              <br>
+              runtime pm, above said dependency can be addressed.
+              <br>
+              <br>
+              This patch adds the pm runtime/sleep callbacks to the
+              <br>
+              driver and also the functions to parse the smmu clocks
+              <br>
+              from DT and enable them in resume/suspend.
+              <br>
+              <br>
+              Also, while we enable the runtime pm add a pm sleep
+              suspend
+              <br>
+              callback that pushes devices to low power state by turning
+              <br>
+              the clocks off in a system sleep.
+              <br>
+              Also add corresponding clock enable path in resume
+              callback.
+              <br>
+              <br>
+              Signed-off-by: Sricharan R
+              <a class="moz-txt-link-rfc2396E" href="mailto:sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org">&lt;sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org&gt;</a>
+              <br>
+              Signed-off-by: Archit Taneja
+              <a class="moz-txt-link-rfc2396E" href="mailto:architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org">&lt;architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org&gt;</a>
+              <br>
+              [vivek: rework for clock and pm ops]
+              <br>
+              Signed-off-by: Vivek Gautam
+              <a class="moz-txt-link-rfc2396E" href="mailto:vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org">&lt;vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org&gt;</a>
+              <br>
+              Reviewed-by: Tomasz Figa <a class="moz-txt-link-rfc2396E" href="mailto:tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org">&lt;tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org&gt;</a>
+              <br>
+              ---
+              <br>
+              <br>
+              Changes since v12:
+              <br>
+                 - Added pm sleep .suspend callback. This disables the
+              clocks.
+              <br>
+                 - Added corresponding change to enable clocks in
+              .resume
+              <br>
+                  pm sleep callback.
+              <br>
+              <br>
+                 drivers/iommu/arm-smmu.c | 75
+              <br>
+              ++++++++++++++++++++++++++++++++++++++++++++++--
+              <br>
+                 1 file changed, 73 insertions(+), 2 deletions(-)
+              <br>
+              <br>
+              diff --git a/drivers/iommu/arm-smmu.c
+              b/drivers/iommu/arm-smmu.c
+              <br>
+              index c73cfce1ccc0..9138a6fffe04 100644
+              <br>
+              --- a/drivers/iommu/arm-smmu.c
+              <br>
+              +++ b/drivers/iommu/arm-smmu.c
+              <br>
+            </blockquote>
+          </blockquote>
+        </blockquote>
+        <br>
+        [snip]
+        <br>
+        <br>
+        <blockquote type="cite">
+          <blockquote type="cite">
+            <blockquote type="cite">platform_device *pdev)
+              <br>
+                       arm_smmu_device_remove(pdev);
+              <br>
+                 }
+              <br>
+                 +static int __maybe_unused
+              arm_smmu_runtime_resume(struct device *dev)
+              <br>
+              +{
+              <br>
+              +       struct arm_smmu_device *smmu =
+              dev_get_drvdata(dev);
+              <br>
+              +
+              <br>
+              +       return clk_bulk_enable(smmu-&gt;num_clks,
+              smmu-&gt;clks);
+              <br>
+            </blockquote>
+            <br>
+            <br>
+            If there's a power domain being automatically switched by
+            genpd then we need
+            <br>
+            a reset here because we may have lost state entirely. Since
+            I remembered the
+            <br>
+            otherwise-useless GPU SMMU on Juno is in a separate power
+            domain, I gave it
+            <br>
+            a poking via sysfs with some debug stuff to dump sCR0 in
+            these callbacks,
+            <br>
+            and the problem is clear:
+            <br>
+            <br>
+            ...
+            <br>
+            [    4.625551] arm-smmu 2b400000.iommu:
+            genpd_runtime_suspend()
+            <br>
+            [    4.631163] arm-smmu 2b400000.iommu:
+            arm_smmu_runtime_suspend: 0x00201936
+            <br>
+            [    4.637897] arm-smmu 2b400000.iommu: suspend latency
+            exceeded, 6733980 ns
+            <br>
+            [   21.566983] arm-smmu 2b400000.iommu:
+            genpd_runtime_resume()
+            <br>
+            [   21.584796] arm-smmu 2b400000.iommu:
+            arm_smmu_runtime_resume: 0x00220101
+            <br>
+            [   21.591452] arm-smmu 2b400000.iommu: resume latency
+            exceeded, 6658020 ns
+            <br>
+            ...
+            <br>
+          </blockquote>
+          <br>
+          Qualcomm SoCs have retention enabled for SMMU registers so
+          they don't
+          <br>
+          lose state.
+          <br>
+          ...
+          <br>
+          [  256.013367] arm-smmu b40000.arm,smmu:
+          arm_smmu_runtime_suspend
+          <br>
+          SCR0 = 0x201e36
+          <br>
+          [  256.013367]
+          <br>
+          [  256.019160] arm-smmu b40000.arm,smmu:
+          arm_smmu_runtime_resume
+          <br>
+          SCR0 = 0x201e36
+          <br>
+          [  256.019160]
+          <br>
+          [  256.027368] arm-smmu b40000.arm,smmu:
+          arm_smmu_runtime_suspend
+          <br>
+          SCR0 = 0x201e36
+          <br>
+          [  256.027368]
+          <br>
+          [  256.036786] arm-smmu b40000.arm,smmu:
+          arm_smmu_runtime_resume
+          <br>
+          SCR0 = 0x201e36
+          <br>
+          ...
+          <br>
+          <br>
+          However after adding arm_smmu_device_reset() in
+          runtime_resume() I observe
+          <br>
+          some performance degradation when kill an instance of
+          'kmscube' and
+          <br>
+          start it again.
+          <br>
+          The launch time with arm_smmu_device_reset() in
+          runtime_resume() change is
+          <br>
+          more.
+          <br>
+          Could this be because of frequent TLB invalidation and sync?
+          <br>
+        </blockquote>
+      </blockquote>
+      <br>
+      Probably. Plus the reset procedure is a big chunk of MMIO
+      accesses, which for a non-trivial SMMU configuration probably
+      isn't negligible in itself. Unfortunately, unless you know for
+      absolute certain that you don't need to do that, you do.
+      <br>
+      <br>
+      <blockquote type="cite">Some more information that i gathered.
+        <br>
+        On Qcom SoCs besides the registers retention, TCU invalidates
+        TLB cache on
+        <br>
+        a CX power collapse exit, which is the system wide suspend case.
+        <br>
+        The arm-smmu software is not aware of this CX power collapse /
+        <br>
+        auto-invalidation.
+        <br>
+        <br>
+        So wouldn't doing an explicit TLB invalidations during runtime
+        resume be
+        <br>
+        detrimental to performance?
+        <br>
+      </blockquote>
+      <br>
+      Indeed it would be, but resuming with TLBs full of random
+      valid-looking junk is even more so.
+      <br>
+      <br>
+      <blockquote type="cite">I have one more doubt here -
+        <br>
+        We do runtime power cycle around arm_smmu_map/unmap() too.
+        <br>
+        Now during map/unmap we selectively do TLB maintenance (either
+        <br>
+        tlb_sync or tlb_add_flush).
+        <br>
+        But with runtime pm we want to do TLBIALL*. Is that a problem?
+        <br>
+      </blockquote>
+      <br>
+      It's technically redundant to do both, true, but as we've covered
+      in previous rounds of discussion it's very difficult to know
+      *which* one is sufficient at any given time, so in order to make
+      progress for now I think we have to settle with doing both.
+      <br>
+    </blockquote>
+    <br>
+    Thanks Robin. I will respin the patches as Tomasz also suggested;<span
+      style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial; display: inline
+      !important; float: none;"><br>
+      <br>
+      arm_smmu_runtime_resume() will look like:</span><br style="color:
+      rgb(34, 34, 34); font-family: arial, sans-serif; font-size:
+      12.8px; font-style: normal; font-variant-ligatures: normal;
+      font-variant-caps: normal; font-weight: 400; letter-spacing:
+      normal; orphans: 2; text-align: start; text-indent: 0px;
+      text-transform: none; white-space: normal; widows: 2;
+      word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial;">
+    <br style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial;">
+    <span style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial; display: inline
+      !important; float: none;">    if (pm_runtime_suspended(dev))</span><br
+      style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial;">
+    <span style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial; display: inline
+      !important; float: none;">        return 0;</span><br
+      style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial;">
+    <span style="color: rgb(34, 34, 34); font-family: arial, sans-serif;
+      font-size: 12.8px; font-style: normal; font-variant-ligatures:
+      normal; font-variant-caps: normal; font-weight: 400;
+      letter-spacing: normal; orphans: 2; text-align: start;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial; display: inline
+      !important; float: none;">    return arm_smmu_runtime_resume(dev);<br>
+      <br>
+      and,<br>
+    </span><span style="color: rgb(34, 34, 34); font-family: arial,
+      sans-serif; font-size: 12.8px; font-style: normal;
+      font-variant-ligatures: normal; font-variant-caps: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      start; text-indent: 0px; text-transform: none; white-space:
+      normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+      0px; background-color: rgb(255, 255, 255); text-decoration-style:
+      initial; text-decoration-color: initial; display: inline
+      !important; float: none;"><span style="color: rgb(34, 34, 34);
+        font-family: arial, sans-serif; font-size: 12.8px; font-style:
+        normal; font-variant-ligatures: normal; font-variant-caps:
+        normal; font-weight: 400; letter-spacing: normal; orphans: 2;
+        text-align: start; text-indent: 0px; text-transform: none;
+        white-space: normal; widows: 2; word-spacing: 0px;
+        -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
+        255); text-decoration-style: initial; text-decoration-color:
+        initial; display: inline !important; float: none;">arm_smmu_runtime_resume()
+        will have arm_smmu_device_reset().<br>
+      </span></span><br>
+    Best regards<br>
+    Vivek<br>
+    <blockquote type="cite"
+      cite="mid:401d8509-b9ad-913b-334e-f4ac853472e3-5wv7dgnIgG8@public.gmane.org">
+      <br>
+      Robin.
+      <br>
+      --
+      <br>
+      To unsubscribe from this list: send the line "unsubscribe
+      linux-arm-msm" in
+      <br>
+      the body of a message to <a class="moz-txt-link-abbreviated" href="mailto:majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org">majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org</a>
+      <br>
+      More majordomo info at  <a class="moz-txt-link-freetext" href="http://vger.kernel.org/majordomo-info.html">http://vger.kernel.org/majordomo-info.html</a>
+      <br>
+    </blockquote>
+    <br>
+  </body>
+</html>
+
+--------------37BEB597666699A5F82FD777--
+
+--===============1537761834==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5v
+IG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+
+--===============1537761834==--
