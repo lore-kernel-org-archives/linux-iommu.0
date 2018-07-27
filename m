@@ -1,16 +1,18 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: sync the OVACKFLG to PRIQ consumer
-	register
-Date: Fri, 27 Jul 2018 10:48:17 +0100
-Message-ID: <20180727094816.GM28088@arm.com>
-References: <1532350618-16486-1-git-send-email-zhangshaokun@hisilicon.com>
-	<dfeaf347-afd4-b3f2-eb01-2781028371e8@hisilicon.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu/arm-smmu: Error out only if not enough context
+	interrupts
+Date: Fri, 27 Jul 2018 15:27:33 +0530
+Message-ID: <CAFp+6iEwS1xHYz2eptO1p2hzw+cb6WOvohDkx1SGmthzV0SbyA@mail.gmail.com>
+References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
+	<20180719175356.14753-4-vivek.gautam@codeaurora.org>
+	<20180724083633.GA19324@arm.com>
+	<d6796a00-17da-c03e-ca7f-7a67139ad99a@codeaurora.org>
+	<20180725115729.GA31576@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <dfeaf347-afd4-b3f2-eb01-2781028371e8-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+In-Reply-To: <20180725115729.GA31576-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,42 +22,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhangshaokun <zhangshaokun-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Cc: Miao Zhong <zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Brown <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 27, 2018 at 05:41:46PM +0800, Zhangshaokun wrote:
-> I saw it in your trees, is it necessary to Cc stable version?
+On Wed, Jul 25, 2018 at 5:27 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Tue, Jul 24, 2018 at 03:09:41PM +0530, Vivek Gautam wrote:
+>> On 7/24/2018 2:06 PM, Will Deacon wrote:
+>> >On Thu, Jul 19, 2018 at 11:23:56PM +0530, Vivek Gautam wrote:
+>> >>diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> >>index 7c69736a30f8..4cb53bf4f423 100644
+>> >>--- a/drivers/iommu/arm-smmu.c
+>> >>+++ b/drivers/iommu/arm-smmu.c
+>> >>@@ -2229,12 +2229,19 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>> >>    if (err)
+>> >>            return err;
+>> >>-   if (smmu->version == ARM_SMMU_V2 &&
+>> >>-       smmu->num_context_banks != smmu->num_context_irqs) {
+>> >>-           dev_err(dev,
+>> >>-                   "found only %d context interrupt(s) but %d required\n",
+>> >>-                   smmu->num_context_irqs, smmu->num_context_banks);
+>> >>-           return -ENODEV;
+>> >>+   if (smmu->version == ARM_SMMU_V2) {
+>> >>+           if (smmu->num_context_banks > smmu->num_context_irqs) {
+>> >>+                   dev_err(dev,
+>> >>+                         "found only %d context irq(s) but %d required\n",
+>> >>+                         smmu->num_context_irqs, smmu->num_context_banks);
+>> >>+                   return -ENODEV;
+>> >>+           } else if (smmu->num_context_banks < smmu->num_context_irqs) {
+>> >>+                   /* loose extra context interrupts */
+>> >>+                   dev_notice(dev,
+>> >>+                         "found %d context irq(s) but only %d required\n",
+>> >>+                         smmu->num_context_irqs, smmu->num_context_banks);
+>> >>+                   smmu->num_context_irqs = smmu->num_context_banks;
+>> >>+           }
+>> >I don't see the utility in the new message. Can you simplify with the patch
+>> >below on top? It's a bit weird that we only decide to ignore the extra irqs
+>> >after calling platform_get_irq() on them, but that seems to be harmless.
+>>
+>> Thanks. I will modify as suggested below and respin.
+>
+> It's ok, I can make the change locally.
 
-I don't think so, given that we don't actually support PRI upstream.
+Thanks Will for making the changes, and picking this.
 
-Will
+Best regards
+Vivek
 
-> On 2018/7/23 20:56, Shaokun Zhang wrote:
-> > From: Miao Zhong <zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> > 
-> > When PRI queue occurs overflow, driver should update the OVACKFLG to
-> > the PRIQ consumer register, otherwise subsequent PRI requests will not
-> > be processed.
-> > 
-> > Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> > Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> 
-> > Signed-off-by: Miao Zhong <zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> > ---
-> >  drivers/iommu/arm-smmu-v3.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> > index 1d64710..deacc15 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -1301,6 +1301,7 @@ static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
-> >  
-> >  	/* Sync our overflow flag, as we believe we're up to speed */
-> >  	q->cons = Q_OVF(q, q->prod) | Q_WRP(q, q->cons) | Q_IDX(q, q->cons);
-> > +	writel(q->cons, q->cons_reg);
-> >  	return IRQ_HANDLED;
-> >  }
-> >  
-> > 
-> 
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
