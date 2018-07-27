@@ -1,108 +1,86 @@
-From: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH 2/3] dmapool: improve scalability of dma_pool_free
-Date: Fri, 27 Jul 2018 08:23:22 -0700
-Message-ID: <20180727152322.GB13348@bombadil.infradead.org>
-References: <1288e597-a67a-25b3-b7c6-db883ca67a25@cybernetics.com>
-	<20180726194209.GB12992@bombadil.infradead.org>
-	<b3430dd4-a4d6-28f1-09a1-82e0bf4a3b83@cybernetics.com>
-	<20180727000708.GA785@bombadil.infradead.org>
-	<cae33099-3147-5014-ab4e-c22a4d66dc49@cybernetics.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
+Date: Fri, 27 Jul 2018 17:02:37 +0100
+Message-ID: <daadd395-dcb7-9505-f171-0fcc28570301@arm.com>
+References: <20180726231624.21084-1-digetx@gmail.com>
+ <20180727082512.lpvmeuvxnw3mpeym@8bytes.org> <20180727090328.GH28088@arm.com>
+ <4164951.xGHfcFJ9uZ@dimapc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <cae33099-3147-5014-ab4e-c22a4d66dc49-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <4164951.xGHfcFJ9uZ@dimapc>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Dmitry Osipenko <digetx@gmail.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: devicetree@vger.kernel.org, Mikko Perttunen <cyndis@kapsi.fi>, nouveau@lists.freedesktop.org, "Rafael J. Wysocki" <rafael@kernel.org>, Nicolas Chauvet <kwizart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, Ben Skeggs <bskeggs@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-tegra@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 27, 2018 at 09:23:30AM -0400, Tony Battersby wrote:
-> On 07/26/2018 08:07 PM, Matthew Wilcox wrote:
-> > If you're up for more major surgery, then I think we can put all the
-> > information currently stored in dma_page into struct page.  Something
-> > like this:
-> >
-> > +++ b/include/linux/mm_types.h
-> > @@ -152,6 +152,12 @@ struct page {
-> >                         unsigned long hmm_data;
-> >                         unsigned long _zd_pad_1;        /* uses mapping=
- */
-> >                 };
-> > +               struct {        /* dma_pool pages */
-> > +                       struct list_head dma_list;
-> > +                       unsigned short in_use;
-> > +                       unsigned short offset;
-> > +                       dma_addr_t dma;
-> > +               };
-> >  =
-
-> >                 /** @rcu_head: You can use this to free a page by RCU. =
-*/
-> >                 struct rcu_head rcu_head;
-> >
-> > page_list -> dma_list
-> > vaddr goes away (page_to_virt() exists)
-> > dma -> dma
-> > in_use and offset shrink from 4 bytes to 2.
-> >
-> > Some 32-bit systems have a 64-bit dma_addr_t, and on those systems,
-> > this will be 8 + 2 + 2 + 8 =3D 20 bytes.  On 64-bit systems, it'll be
-> > 16 + 2 + 2 + 4 bytes of padding + 8 =3D 32 bytes (we have 40 available).
-> >
-> >
-> offset at least needs more bits, since allocations can be multi-page.=A0
-
-Ah, rats.  That means we have to use the mapcount union too:
-
-+++ b/include/linux/mm_types.h
-@@ -152,6 +152,11 @@ struct page {
-                        unsigned long hmm_data;
-                        unsigned long _zd_pad_1;        /* uses mapping */
-                };
-+               struct {        /* dma_pool pages */
-+                       struct list_head dma_list;
-+                       unsigned int dma_in_use;
-+                       dma_addr_t dma;
-+               };
- =
-
-                /** @rcu_head: You can use this to free a page by RCU. */
-                struct rcu_head rcu_head;
-@@ -174,6 +179,7 @@ struct page {
- =
-
-                unsigned int active;            /* SLAB */
-                int units;                      /* SLOB */
-+               unsigned int dma_offset;        /* dma_pool */
-        };
- =
-
-        /* Usage count. *DO NOT USE DIRECTLY*. See page_ref.h */
-
-
-> See the following from mpt3sas:
-> =
-
-> cat /sys/devices/pci0000:80/0000:80:07.0/0000:85:00.0/pools
-> (manually cleaned up column alignment)
-> poolinfo - 0.1
-> reply_post_free_array pool  1      21     192     1
-> reply_free pool             1      1      41728   1
-> reply pool                  1      1      1335296 1
-> sense pool                  1      1      970272  1
-> chain pool                  373959 386048 128     12064
-> reply_post_free pool        12     12     166528  12
->                                           ^size^
-
-Wow, that's a pretty weird way to use the dmapool.  It'd be more efficient
-to just call dma_alloc_coherent() directly.
+T24gMjcvMDcvMTggMTU6MTAsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPiBPbiBGcmlkYXksIDI3
+IEp1bHkgMjAxOCAxMjowMzoyOCBNU0sgV2lsbCBEZWFjb24gd3JvdGU6Cj4+IE9uIEZyaSwgSnVs
+IDI3LCAyMDE4IGF0IDEwOjI1OjEzQU0gKzAyMDAsIEpvZXJnIFJvZWRlbCB3cm90ZToKPj4+IE9u
+IEZyaSwgSnVsIDI3LCAyMDE4IGF0IDAyOjE2OjE4QU0gKzAzMDAsIERtaXRyeSBPc2lwZW5rbyB3
+cm90ZToKPj4+PiBUaGUgcHJvcG9zZWQgc29sdXRpb24gYWRkcyBhIG5ldyBvcHRpb24gdG8gdGhl
+IGJhc2UgZGV2aWNlIGRyaXZlcgo+Pj4+IHN0cnVjdHVyZSB0aGF0IGFsbG93cyBkZXZpY2UgZHJp
+dmVycyB0byBleHBsaWNpdGx5IGNvbnZleSB0byB0aGUgZHJpdmVycwo+Pj4+IGNvcmUgdGhhdCB0
+aGUgaW1wbGljaXQgSU9NTVUgYmFja2luZyBmb3IgZGV2aWNlcyBtdXN0IG5vdCBoYXBwZW4uCj4+
+Pgo+Pj4gV2h5IGlzIElPTU1VIG1hcHBpbmcgYSBwcm9ibGVtIGZvciB0aGUgVGVncmEgR1BVIGRy
+aXZlcj8KPj4+Cj4+PiBJZiB3ZSBhZGQgc29tZXRoaW5nIGxpa2UgdGhpcyB0aGVuIGl0IHNob3Vs
+ZCBub3QgYmUgdGhlIGNob2ljZSBvZiB0aGUKPj4+IGRldmljZSBkcml2ZXIsIGJ1dCBvZiB0aGUg
+dXNlciBhbmQvb3IgdGhlIGZpcm13YXJlLgo+Pgo+PiBBZ3JlZWQsIGFuZCBpdCB3b3VsZCBzdGls
+bCBuZWVkIHNvbWVib2R5IHRvIGNvbmZpZ3VyZSBhbiBpZGVudGl0eSBkb21haW4gc28KPj4gdGhh
+dCB0cmFuc2FjdGlvbnMgYXJlbid0IGFib3J0ZWQgaW1tZWRpYXRlbHkuIFdlIGN1cnJlbnRseSBh
+bGxvdyB0aGUKPj4gaWRlbnRpdHkgZG9tYWluIHRvIGJlIHVzZWQgYnkgZGVmYXVsdCB2aWEgYSBj
+b21tYW5kLWxpbmUgb3B0aW9uLCBzbyBJIGd1ZXNzCj4+IHdlJ2QgbmVlZCBhIHdheSBmb3IgZmly
+bXdhcmUgdG8gcmVxdWVzdCB0aGF0IG9uIGEgcGVyLWRldmljZSBiYXNpcy4KPiAKPiBUaGUgSU9N
+TVUgbWFwcGluZyBpdHNlbGYgaXMgbm90IGEgcHJvYmxlbSwgdGhlIHByb2JsZW0gaXMgdGhlIG1h
+bmFnZW1lbnQgb2YKPiB0aGUgSU9NTVUuIEZvciBUZWdyYSB3ZSBkb24ndCB3YW50IGFueXRoaW5n
+IHRvIGludHJ1ZGUgaW50byB0aGUgSU9NTVUKPiBhY3Rpdml0aWVzIGJlY2F1c2U6Cj4gCj4gMSkg
+R1BVIEhXIHJlcXVpcmUgYWRkaXRpb25hbCBjb25maWd1cmF0aW9uIGZvciB0aGUgSU9NTVUgdXNh
+Z2UgYW5kIGR1bWIKPiBtYXBwaW5nIG9mIHRoZSBhbGxvY2F0aW9ucyBzaW1wbHkgZG9lc24ndCB3
+b3JrLgoKR2VuZXJhbGx5LCB0aGF0J3MgYWxyZWFkeSBoYW5kbGVkIGJ5IHRoZSBEUk0gZHJpdmVy
+cyBhbGxvY2F0aW5nIHRoZWlyIApvd24gdW5tYW5hZ2VkIGRvbWFpbnMuIFRoZSBvbmx5IHByb2Js
+ZW0gd2UgcmVhbGx5IG5lZWQgdG8gc29sdmUgaW4gdGhhdCAKcmVnYXJkIGlzIHRoYXQgY3VycmVu
+dGx5IHRoZSBkZXZpY2UgRE1BIG9wcyBkb24ndCBnZXQgdXBkYXRlZCB3aGVuIAptb3ZpbmcgYXdh
+eSBmcm9tIHRoZSBtYW5hZ2VkIGRvbWFpbi4gVGhhdCdzIGJlZW4gT0sgZm9yIHRoZSBWRklPIGNh
+c2UgCndoZXJlIHRoZSBkZXZpY2UgaXMgYm91bmQgdG8gYSBkaWZmZXJlbnQgZHJpdmVyIHdoaWNo
+IHdlIGtub3cgd29uJ3QgbWFrZSAKYW55IGV4cGxpY2l0IERNQSBBUEkgY2FsbHMsIGJ1dCBmb3Ig
+dGhlIG1vcmUgZ2VuZXJhbCBjYXNlIG9mIElPTU1VLWF3YXJlIApkcml2ZXJzIHdlIGNvdWxkIGNl
+cnRhaW5seSBkbyB3aXRoIGEgYml0IG9mIGNvb3BlcmF0aW9uIGJldHdlZW4gdGhlIApJT01NVSBB
+UEksIERNQSBBUEksIGFuZCBhcmNoIGNvZGUgdG8gdXBkYXRlIHRoZSBETUEgb3BzIGR5bmFtaWNh
+bGx5IHRvIApjb3BlIHdpdGggaW50ZXJtZWRpYXRlIHN1YnN5c3RlbXMgbWFraW5nIERNQSBBUEkg
+Y2FsbHMgb24gYmVoYWxmIG9mIApkZXZpY2VzIHRoZXkgZG9uJ3Qga25vdyB0aGUgaW50aW1hdGUg
+ZGV0YWlscyBvZi4KCj4gMikgT2xkZXIgVGVncmEgZ2VuZXJhdGlvbnMgaGF2ZSBhIGxpbWl0ZWQg
+cmVzb3VyY2UgYW5kIGNhcGFiaWxpdGllcyBpbiByZWdhcmRzCj4gdG8gSU9NTVUgdXNhZ2UsIGFs
+bG9jYXRpbmcgSU9NTVUgZG9tYWluIHBlci1kZXZpY2UgaXMganVzdCBpbXBvc3NpYmxlIGZvcgo+
+IGV4YW1wbGUuCj4gCj4gMykgSFcgcGVyZm9ybXMgY29udGV4dCBzd2l0Y2hlcyBhbmQgc28gcGFy
+dGljdWxhciBhbGxvY2F0aW9ucyBoYXZlIHRvIGJlCj4gYXNzaWduZWQgdG8gYSBwYXJ0aWN1bGFy
+IGNvbnRleHRzIElPTU1VIGRvbWFpbi4KCkkgdW5kZXJzdGFuZCBRdWFsY29tbSBTb0NzIGhhdmUg
+YSBzaW1pbGFyIHRoaW5nIHRvbywgYW5kIEFGQUlDUyB0aGF0IApjYXNlIGp1c3QgZG9lc24ndCBm
+aXQgaW50byB0aGUgY3VycmVudCBBUEkgbW9kZWwgYXQgYWxsLiBXZSBuZWVkIHRoZSAKSU9NTVUg
+ZHJpdmVyIHRvIHNvbWVob3cga25vdyBhYm91dCB0aGUgc3BlY2lmaWMgZGV0YWlscyBvZiB3aGlj
+aCBkZXZpY2VzIApoYXZlIG1hZ2ljIGFzc29jaWF0aW9ucyB3aXRoIHNwZWNpZmljIGNvbnRleHRz
+LCBhbmQgd2UgYWxtb3N0IGNlcnRhaW5seSAKbmVlZCBhIG1vcmUgZXhwcmVzc2l2ZSBpbnRlcmZh
+Y2UgdGhhbiBpb21tdV9kb21haW5fYWxsb2MoKSB0byBoYXZlIGFueSAKaG9wZSBvZiByZWxpYWJs
+ZSByZXN1bHRzLgoKUm9iaW4uCgo+IFNvbWUgb2YgdGhlIGFib3ZlIGlzIGR1ZSB0byBhIFNXIGRy
+aXZlciBtb2RlbCAoYW5kIGl0cyB3b3JrLWluLXByb2dyZXNzCj4gc3RhdHVzKSwgb3RoZXIgaXMg
+ZHVlIHRvIGEgSFcgbW9kZWwuIFNvIGVzc2VudGlhbGx5IHdlIG5lZWQgYSB3YXkgZm9yIGEgZHJp
+dmVyCj4gdG8gdGVsbCB0aGUgY29yZSBub3QgdG8gbWVzcyB3aXRoIElPTU1VIHN0dWZmIG9mIGRy
+aXZlcnMgZGV2aWNlIGJlaGluZCB0aGUKPiBkcml2ZXJzIGJhY2suCj4gCj4gSSdtIG5vdCBzdXJl
+IHdoYXQgeW91IGd1eXMgYXJlIG1lYW5pbmcgYnkgdGhlICJmaXJtd2FyZSIsIGNvdWxkIHlvdSBl
+bGFib3JhdGUKPiBwbGVhc2U/IERvIHlvdSBtZWFuIHRoZSBPcGVuIEZpcm13YXJlIGFuZCBoZW5j
+ZSB0aGUgZGV2aWNldHJlZSBvciB3aGF0Pwo+IAo+IAo+IAo+IF9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4gaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+IApfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBs
+aXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
+bi9saXN0aW5mby9kcmktZGV2ZWwK
