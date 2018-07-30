@@ -1,8 +1,8 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 03/20] dma-mapping: make the get_required_mask method
-	available unconditionally
-Date: Mon, 30 Jul 2018 18:38:07 +0200
-Message-ID: <20180730163824.10064-4-hch@lst.de>
+Subject: [PATCH 01/20] kernel/dma/direct: take DMA offset into account in
+	dma_direct_supported
+Date: Mon, 30 Jul 2018 18:38:05 +0200
+Message-ID: <20180730163824.10064-2-hch@lst.de>
 References: <20180730163824.10064-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,59 +22,44 @@ To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.o
 Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This save some duplication for ia64.  In the long run this method will
-need some additional work including moving over to kernel/dma, but that
-will require some additional prep work, so let's do this minimal change
-for now.
+When a device has a DMA offset the dma capable result will change due
+to the difference between the physical and DMA address.  Take that into
+account.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- drivers/base/platform.c     | 11 ++++++++++-
- include/linux/dma-mapping.h |  2 --
- 2 files changed, 10 insertions(+), 3 deletions(-)
+ kernel/dma/direct.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index dff82a3c2caa..921ddb0c051b 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -1180,7 +1180,7 @@ int __init platform_bus_init(void)
- }
- 
- #ifndef ARCH_HAS_DMA_GET_REQUIRED_MASK
--u64 dma_get_required_mask(struct device *dev)
-+static u64 default_dma_get_required_mask(struct device *dev)
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 8be8106270c2..d32d4f0d2c0c 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -167,7 +167,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ int dma_direct_supported(struct device *dev, u64 mask)
  {
- 	u32 low_totalram = ((max_pfn - 1) << PAGE_SHIFT);
- 	u32 high_totalram = ((max_pfn - 1) >> (32 - PAGE_SHIFT));
-@@ -1198,6 +1198,15 @@ u64 dma_get_required_mask(struct device *dev)
- 	}
- 	return mask;
- }
-+
-+u64 dma_get_required_mask(struct device *dev)
-+{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+
-+	if (ops->get_required_mask)
-+		return ops->get_required_mask(dev);
-+	return default_dma_get_required_mask(dev);
-+}
- EXPORT_SYMBOL_GPL(dma_get_required_mask);
+ #ifdef CONFIG_ZONE_DMA
+-	if (mask < DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
++	if (mask < phys_to_dma(dev, DMA_BIT_MASK(ARCH_ZONE_DMA_BITS)))
+ 		return 0;
+ #else
+ 	/*
+@@ -176,14 +176,14 @@ int dma_direct_supported(struct device *dev, u64 mask)
+ 	 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+ 	 * architecture needs to use an IOMMU instead of the direct mapping.
+ 	 */
+-	if (mask < DMA_BIT_MASK(32))
++	if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
+ 		return 0;
  #endif
- 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f9cc309507d9..00d3065e1510 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -130,9 +130,7 @@ struct dma_map_ops {
- 			enum dma_data_direction direction);
- 	int (*mapping_error)(struct device *dev, dma_addr_t dma_addr);
- 	int (*dma_supported)(struct device *dev, u64 mask);
--#ifdef ARCH_HAS_DMA_GET_REQUIRED_MASK
- 	u64 (*get_required_mask)(struct device *dev);
--#endif
- };
- 
- extern const struct dma_map_ops dma_direct_ops;
+ 	/*
+ 	 * Various PCI/PCIe bridges have broken support for > 32bit DMA even
+ 	 * if the device itself might support it.
+ 	 */
+-	if (dev->dma_32bit_limit && mask > DMA_BIT_MASK(32))
++	if (dev->dma_32bit_limit && mask > phys_to_dma(dev, DMA_BIT_MASK(32)))
+ 		return 0;
+ 	return 1;
+ }
 -- 
 2.18.0
