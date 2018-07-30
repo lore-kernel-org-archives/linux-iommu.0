@@ -1,8 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 07/20] powerpc/dma: remove the unused
-	ARCH_HAS_DMA_MMAP_COHERENT define
-Date: Mon, 30 Jul 2018 18:38:11 +0200
-Message-ID: <20180730163824.10064-8-hch@lst.de>
+Subject: [PATCH 08/20] powerpc/dma: remove the unused dma_nommu_ops export
+Date: Mon, 30 Jul 2018 18:38:12 +0200
+Message-ID: <20180730163824.10064-9-hch@lst.de>
 References: <20180730163824.10064-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,20 +23,20 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/powerpc/include/asm/dma-mapping.h | 2 --
- 1 file changed, 2 deletions(-)
+ arch/powerpc/kernel/dma.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
-index 8fa394520af6..f2a4a7142b1e 100644
---- a/arch/powerpc/include/asm/dma-mapping.h
-+++ b/arch/powerpc/include/asm/dma-mapping.h
-@@ -112,7 +112,5 @@ extern int dma_set_mask(struct device *dev, u64 dma_mask);
+diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
+index dbfc7056d7df..3939589aab04 100644
+--- a/arch/powerpc/kernel/dma.c
++++ b/arch/powerpc/kernel/dma.c
+@@ -286,7 +286,6 @@ const struct dma_map_ops dma_nommu_ops = {
+ 	.sync_sg_for_device 		= dma_nommu_sync_sg,
+ #endif
+ };
+-EXPORT_SYMBOL(dma_nommu_ops);
  
- extern u64 __dma_get_required_mask(struct device *dev);
- 
--#define ARCH_HAS_DMA_MMAP_COHERENT
--
- #endif /* __KERNEL__ */
- #endif	/* _ASM_DMA_MAPPING_H */
+ int dma_set_coherent_mask(struct device *dev, u64 mask)
+ {
 -- 
 2.18.0
