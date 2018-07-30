@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 08/20] powerpc/dma: remove the unused dma_nommu_ops export
-Date: Mon, 30 Jul 2018 18:38:12 +0200
-Message-ID: <20180730163824.10064-9-hch@lst.de>
+Subject: [PATCH 09/20] powerpc/dma: remove the unused ISA_DMA_THRESHOLD export
+Date: Mon, 30 Jul 2018 18:38:13 +0200
+Message-ID: <20180730163824.10064-10-hch@lst.de>
 References: <20180730163824.10064-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,20 +23,20 @@ List-Id: iommu@lists.linux-foundation.org
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/powerpc/kernel/dma.c | 1 -
+ arch/powerpc/kernel/setup_32.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-index dbfc7056d7df..3939589aab04 100644
---- a/arch/powerpc/kernel/dma.c
-+++ b/arch/powerpc/kernel/dma.c
-@@ -286,7 +286,6 @@ const struct dma_map_ops dma_nommu_ops = {
- 	.sync_sg_for_device 		= dma_nommu_sync_sg,
- #endif
- };
--EXPORT_SYMBOL(dma_nommu_ops);
+diff --git a/arch/powerpc/kernel/setup_32.c b/arch/powerpc/kernel/setup_32.c
+index 74457485574b..3c2d093f74c7 100644
+--- a/arch/powerpc/kernel/setup_32.c
++++ b/arch/powerpc/kernel/setup_32.c
+@@ -55,7 +55,6 @@ unsigned long ISA_DMA_THRESHOLD;
+ unsigned int DMA_MODE_READ;
+ unsigned int DMA_MODE_WRITE;
  
- int dma_set_coherent_mask(struct device *dev, u64 mask)
- {
+-EXPORT_SYMBOL(ISA_DMA_THRESHOLD);
+ EXPORT_SYMBOL(DMA_MODE_READ);
+ EXPORT_SYMBOL(DMA_MODE_WRITE);
+ 
 -- 
 2.18.0
