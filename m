@@ -1,16 +1,15 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH] sparc: use generic dma_noncoherent_ops
-Date: Mon, 30 Jul 2018 10:02:47 +0200
-Message-ID: <20180730080247.GA10682@lst.de>
-References: <20180727164409.14873-1-hch@lst.de>
-	<20180727164409.14873-2-hch@lst.de>
-	<20180727210548.GA1476@ravnborg.org>
+Subject: Re: use the generic dma-noncoherent code for sh V2
+Date: Mon, 30 Jul 2018 11:06:48 +0200
+Message-ID: <20180730090648.GA18361@lst.de>
+References: <20180724120147.15096-1-hch@lst.de> <20180724202115.GA4685@lst.de>
+	<18df6608-61c1-963d-bb1a-d46320232f40@landley.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180727210548.GA1476-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
+In-Reply-To: <18df6608-61c1-963d-bb1a-d46320232f40-VoJi6FS/r0vR7s880joybQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,36 +19,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
-Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+To: Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>
+Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 27, 2018 at 11:05:48PM +0200, Sam Ravnborg wrote:
-> Hi Christoph.
-> 
-> Some observations below - nitpick and bikeshedding only.
-> 
-> The parameter of phys_addr_t is sometimes renamed
-> to use the same name as in the original prototype (good),
-> and sometimes uses the old name (bad).
-> This makes it inconsistent as the local name changes in the
-> different functions, but they represents the same.
+On Fri, Jul 27, 2018 at 11:20:21AM -0500, Rob Landley wrote:
+> Speaking of DMA:
 
-I'll change it.
+Which really has nothing to do with the dma mapping code, which
+also means I can't help you much unfortunately.
 
-> You can add my:
-> Acked-by: Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
-
-I will resend it with your nitpicks addressed and your ack added.
-
-> > +void *arch_dma_alloc(struct device *dev, size_t len, dma_addr_t *pba, gfp_t gfp,
-> > +		unsigned long attrs)
-> 
-> This function was renamed in ee664a9252d24 and is now renamed again.
-> The printk statements should be updated to use arch_dma_alloc.
-
-I've switched the printk statements to use __func__ instead, not that
-I plan for another rename any time soon.
-
-I've also update the comments referring to this function to use the
-right name.
+That being said sh is the last pending of the initial dma-noncoherent
+conversion, I'd greatly appreciate if we could get this reviewed and
+merge for the 4.19 merge window..
