@@ -1,8 +1,7 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 02/20] kernel/dma/direct: refine dma_direct_alloc zone
-	selection
-Date: Mon, 30 Jul 2018 18:38:06 +0200
-Message-ID: <20180730163824.10064-3-hch@lst.de>
+Subject: [PATCH 04/20] ia64: remove get_required_mask implementation
+Date: Mon, 30 Jul 2018 18:38:08 +0200
+Message-ID: <20180730163824.10064-5-hch@lst.de>
 References: <20180730163824.10064-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,61 +21,171 @@ To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.o
 Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-We need to take the DMA offset and encryption bit into account when selecting
-a zone.  Add a helper that takes those into account and use it.
+ia64 can use the generic implementation in general, and SN2 can just
+override it in the dma_map_ops now.
 
 Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- kernel/dma/direct.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ arch/ia64/include/asm/dma-mapping.h  |  2 --
+ arch/ia64/include/asm/machvec.h      |  7 -------
+ arch/ia64/include/asm/machvec_init.h |  1 -
+ arch/ia64/include/asm/machvec_sn2.h  |  2 --
+ arch/ia64/pci/pci.c                  | 26 --------------------------
+ arch/ia64/sn/pci/pci_dma.c           |  4 ++--
+ 6 files changed, 2 insertions(+), 40 deletions(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index d32d4f0d2c0c..c2c1df8827f2 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -58,6 +58,14 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- 	return addr + size - 1 <= dev->coherent_dma_mask;
+diff --git a/arch/ia64/include/asm/dma-mapping.h b/arch/ia64/include/asm/dma-mapping.h
+index 76e4d6632d68..522745ae67bb 100644
+--- a/arch/ia64/include/asm/dma-mapping.h
++++ b/arch/ia64/include/asm/dma-mapping.h
+@@ -10,8 +10,6 @@
+ #include <linux/scatterlist.h>
+ #include <linux/dma-debug.h>
+ 
+-#define ARCH_HAS_DMA_GET_REQUIRED_MASK
+-
+ extern const struct dma_map_ops *dma_ops;
+ extern struct ia64_machine_vector ia64_mv;
+ extern void set_iommu_machvec(void);
+diff --git a/arch/ia64/include/asm/machvec.h b/arch/ia64/include/asm/machvec.h
+index 267f4f170191..5133739966bc 100644
+--- a/arch/ia64/include/asm/machvec.h
++++ b/arch/ia64/include/asm/machvec.h
+@@ -44,7 +44,6 @@ typedef void ia64_mv_kernel_launch_event_t(void);
+ 
+ /* DMA-mapping interface: */
+ typedef void ia64_mv_dma_init (void);
+-typedef u64 ia64_mv_dma_get_required_mask (struct device *);
+ typedef const struct dma_map_ops *ia64_mv_dma_get_ops(struct device *);
+ 
+ /*
+@@ -127,7 +126,6 @@ extern void machvec_tlb_migrate_finish (struct mm_struct *);
+ #  define platform_global_tlb_purge	ia64_mv.global_tlb_purge
+ #  define platform_tlb_migrate_finish	ia64_mv.tlb_migrate_finish
+ #  define platform_dma_init		ia64_mv.dma_init
+-#  define platform_dma_get_required_mask ia64_mv.dma_get_required_mask
+ #  define platform_dma_get_ops		ia64_mv.dma_get_ops
+ #  define platform_irq_to_vector	ia64_mv.irq_to_vector
+ #  define platform_local_vector_to_irq	ia64_mv.local_vector_to_irq
+@@ -171,7 +169,6 @@ struct ia64_machine_vector {
+ 	ia64_mv_global_tlb_purge_t *global_tlb_purge;
+ 	ia64_mv_tlb_migrate_finish_t *tlb_migrate_finish;
+ 	ia64_mv_dma_init *dma_init;
+-	ia64_mv_dma_get_required_mask *dma_get_required_mask;
+ 	ia64_mv_dma_get_ops *dma_get_ops;
+ 	ia64_mv_irq_to_vector *irq_to_vector;
+ 	ia64_mv_local_vector_to_irq *local_vector_to_irq;
+@@ -211,7 +208,6 @@ struct ia64_machine_vector {
+ 	platform_global_tlb_purge,		\
+ 	platform_tlb_migrate_finish,		\
+ 	platform_dma_init,			\
+-	platform_dma_get_required_mask,		\
+ 	platform_dma_get_ops,			\
+ 	platform_irq_to_vector,			\
+ 	platform_local_vector_to_irq,		\
+@@ -286,9 +282,6 @@ extern const struct dma_map_ops *dma_get_ops(struct device *);
+ #ifndef platform_dma_get_ops
+ # define platform_dma_get_ops		dma_get_ops
+ #endif
+-#ifndef platform_dma_get_required_mask
+-# define  platform_dma_get_required_mask	ia64_dma_get_required_mask
+-#endif
+ #ifndef platform_irq_to_vector
+ # define platform_irq_to_vector		__ia64_irq_to_vector
+ #endif
+diff --git a/arch/ia64/include/asm/machvec_init.h b/arch/ia64/include/asm/machvec_init.h
+index 2b32fd06b7c6..2aafb69a3787 100644
+--- a/arch/ia64/include/asm/machvec_init.h
++++ b/arch/ia64/include/asm/machvec_init.h
+@@ -4,7 +4,6 @@
+ 
+ extern ia64_mv_send_ipi_t ia64_send_ipi;
+ extern ia64_mv_global_tlb_purge_t ia64_global_tlb_purge;
+-extern ia64_mv_dma_get_required_mask ia64_dma_get_required_mask;
+ extern ia64_mv_irq_to_vector __ia64_irq_to_vector;
+ extern ia64_mv_local_vector_to_irq __ia64_local_vector_to_irq;
+ extern ia64_mv_pci_get_legacy_mem_t ia64_pci_get_legacy_mem;
+diff --git a/arch/ia64/include/asm/machvec_sn2.h b/arch/ia64/include/asm/machvec_sn2.h
+index ece9fa85be88..b5153d300289 100644
+--- a/arch/ia64/include/asm/machvec_sn2.h
++++ b/arch/ia64/include/asm/machvec_sn2.h
+@@ -55,7 +55,6 @@ extern ia64_mv_readb_t __sn_readb_relaxed;
+ extern ia64_mv_readw_t __sn_readw_relaxed;
+ extern ia64_mv_readl_t __sn_readl_relaxed;
+ extern ia64_mv_readq_t __sn_readq_relaxed;
+-extern ia64_mv_dma_get_required_mask	sn_dma_get_required_mask;
+ extern ia64_mv_dma_init			sn_dma_init;
+ extern ia64_mv_migrate_t		sn_migrate;
+ extern ia64_mv_kernel_launch_event_t	sn_kernel_launch_event;
+@@ -100,7 +99,6 @@ extern ia64_mv_pci_fixup_bus_t		sn_pci_fixup_bus;
+ #define platform_pci_get_legacy_mem	sn_pci_get_legacy_mem
+ #define platform_pci_legacy_read	sn_pci_legacy_read
+ #define platform_pci_legacy_write	sn_pci_legacy_write
+-#define platform_dma_get_required_mask	sn_dma_get_required_mask
+ #define platform_dma_init		sn_dma_init
+ #define platform_migrate		sn_migrate
+ #define platform_kernel_launch_event    sn_kernel_launch_event
+diff --git a/arch/ia64/pci/pci.c b/arch/ia64/pci/pci.c
+index 7ccc64d5fe3e..5d71800df431 100644
+--- a/arch/ia64/pci/pci.c
++++ b/arch/ia64/pci/pci.c
+@@ -568,32 +568,6 @@ static void __init set_pci_dfl_cacheline_size(void)
+ 	pci_dfl_cache_line_size = (1 << cci.pcci_line_size) / 4;
  }
  
-+static bool dma_coherent_below(struct device *dev, u64 mask)
-+{
-+	dma_addr_t addr = force_dma_unencrypted() ?
-+		__phys_to_dma(dev, mask) : phys_to_dma(dev, mask);
-+
-+	return dev->coherent_dma_mask <= addr;
-+}
-+
- void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs)
+-u64 ia64_dma_get_required_mask(struct device *dev)
+-{
+-	u32 low_totalram = ((max_pfn - 1) << PAGE_SHIFT);
+-	u32 high_totalram = ((max_pfn - 1) >> (32 - PAGE_SHIFT));
+-	u64 mask;
+-
+-	if (!high_totalram) {
+-		/* convert to mask just covering totalram */
+-		low_totalram = (1 << (fls(low_totalram) - 1));
+-		low_totalram += low_totalram - 1;
+-		mask = low_totalram;
+-	} else {
+-		high_totalram = (1 << (fls(high_totalram) - 1));
+-		high_totalram += high_totalram - 1;
+-		mask = (((u64)high_totalram) << 32) + 0xffffffff;
+-	}
+-	return mask;
+-}
+-EXPORT_SYMBOL_GPL(ia64_dma_get_required_mask);
+-
+-u64 dma_get_required_mask(struct device *dev)
+-{
+-	return platform_dma_get_required_mask(dev);
+-}
+-EXPORT_SYMBOL_GPL(dma_get_required_mask);
+-
+ static int __init pcibios_init(void)
  {
-@@ -70,9 +78,9 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 	gfp &= ~__GFP_ZERO;
+ 	set_pci_dfl_cacheline_size();
+diff --git a/arch/ia64/sn/pci/pci_dma.c b/arch/ia64/sn/pci/pci_dma.c
+index 74c934a997bb..96eb2567718a 100644
+--- a/arch/ia64/sn/pci/pci_dma.c
++++ b/arch/ia64/sn/pci/pci_dma.c
+@@ -344,11 +344,10 @@ static int sn_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ 	return 0;
+ }
  
- 	/* GFP_DMA32 and GFP_DMA are no ops without the corresponding zones: */
--	if (dev->coherent_dma_mask <= DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
-+	if (dma_coherent_below(dev, DMA_BIT_MASK(ARCH_ZONE_DMA_BITS)))
- 		gfp |= GFP_DMA;
--	if (dev->coherent_dma_mask <= DMA_BIT_MASK(32) && !(gfp & GFP_DMA))
-+	if (dma_coherent_below(dev, DMA_BIT_MASK(32) && !(gfp & GFP_DMA)))
- 		gfp |= GFP_DMA32;
+-u64 sn_dma_get_required_mask(struct device *dev)
++static u64 sn_dma_get_required_mask(struct device *dev)
+ {
+ 	return DMA_BIT_MASK(64);
+ }
+-EXPORT_SYMBOL_GPL(sn_dma_get_required_mask);
  
- again:
-@@ -92,14 +100,14 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		page = NULL;
+ char *sn_pci_get_legacy_mem(struct pci_bus *bus)
+ {
+@@ -473,6 +472,7 @@ static struct dma_map_ops sn_dma_ops = {
+ 	.sync_sg_for_device	= sn_dma_sync_sg_for_device,
+ 	.mapping_error		= sn_dma_mapping_error,
+ 	.dma_supported		= sn_dma_supported,
++	.get_required_mask	= sn_dma_get_required_mask,
+ };
  
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
--		    dev->coherent_dma_mask < DMA_BIT_MASK(64) &&
-+		    dma_coherent_below(dev, DMA_BIT_MASK(64)) &&
- 		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
- 			gfp |= GFP_DMA32;
- 			goto again;
- 		}
- 
- 		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
--		    dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
-+		    dma_coherent_below(dev, DMA_BIT_MASK(32)) &&
- 		    !(gfp & GFP_DMA)) {
- 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
- 			goto again;
+ void sn_dma_init(void)
 -- 
 2.18.0
