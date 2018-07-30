@@ -1,66 +1,77 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH] powerpc: do not redefined NEED_DMA_MAP_STATE
-Date: Mon, 30 Jul 2018 09:37:21 +0200
-Message-ID: <20180730073721.15991-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH] PCI: call dma_debug_add_bus for pci_bus_type in common code
+Date: Mon, 30 Jul 2018 09:38:42 +0200
+Message-ID: <20180730073842.16092-1-hch@lst.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-pci@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-kernel/dma/Kconfig already defines NEED_DMA_MAP_STATE, just select it
-from PPC64 and NOT_COHERENT_CACHE instead.
+There is nothing arch specific about PCI or dma-debug, so move this
+call to common code just after registering the bus type.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/powerpc/Kconfig                   | 3 ---
- arch/powerpc/platforms/Kconfig.cputype | 2 ++
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ arch/powerpc/kernel/dma.c | 3 ---
+ arch/sh/drivers/pci/pci.c | 2 --
+ arch/x86/kernel/pci-dma.c | 3 ---
+ drivers/pci/pci-driver.c  | 2 +-
+ 4 files changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 9f2b75fe2c2d..f9cae7edd735 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -884,9 +884,6 @@ config ZONE_DMA
- 	bool
- 	default y
+diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
+index 155170d70324..dbfc7056d7df 100644
+--- a/arch/powerpc/kernel/dma.c
++++ b/arch/powerpc/kernel/dma.c
+@@ -357,9 +357,6 @@ EXPORT_SYMBOL_GPL(dma_get_required_mask);
  
--config NEED_DMA_MAP_STATE
--	def_bool (PPC64 || NOT_COHERENT_CACHE)
+ static int __init dma_init(void)
+ {
+-#ifdef CONFIG_PCI
+-	dma_debug_add_bus(&pci_bus_type);
+-#endif
+ #ifdef CONFIG_IBMVIO
+ 	dma_debug_add_bus(&vio_bus_type);
+ #endif
+diff --git a/arch/sh/drivers/pci/pci.c b/arch/sh/drivers/pci/pci.c
+index e5b7437ab4af..8256626bc53c 100644
+--- a/arch/sh/drivers/pci/pci.c
++++ b/arch/sh/drivers/pci/pci.c
+@@ -160,8 +160,6 @@ static int __init pcibios_init(void)
+ 	for (hose = hose_head; hose; hose = hose->next)
+ 		pcibios_scanbus(hose);
+ 
+-	dma_debug_add_bus(&pci_bus_type);
 -
- config GENERIC_ISA_DMA
- 	bool
- 	depends on ISA_DMA_API
-diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
-index e6a1de521319..a2578bf8d560 100644
---- a/arch/powerpc/platforms/Kconfig.cputype
-+++ b/arch/powerpc/platforms/Kconfig.cputype
-@@ -3,6 +3,7 @@ config PPC64
- 	bool "64-bit kernel"
- 	default n
- 	select ZLIB_DEFLATE
-+	select NEED_DMA_MAP_STATE
- 	help
- 	  This option selects whether a 32-bit or a 64-bit kernel
- 	  will be built.
-@@ -386,6 +387,7 @@ config NOT_COHERENT_CACHE
- 	depends on 4xx || PPC_8xx || E200 || PPC_MPC512x || GAMECUBE_COMMON
- 	default n if PPC_47x
- 	default y
-+	select NEED_DMA_MAP_STATE
+ 	pci_initialized = 1;
  
- config CHECK_CACHE_COHERENCY
- 	bool
+ 	return 0;
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index ab5d9dd668d2..43f58632f123 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -155,9 +155,6 @@ static int __init pci_iommu_init(void)
+ {
+ 	struct iommu_table_entry *p;
+ 
+-#ifdef CONFIG_PCI
+-	dma_debug_add_bus(&pci_bus_type);
+-#endif
+ 	x86_init.iommu.iommu_init();
+ 
+ 	for (p = __iommu_table; p < __iommu_table_end; p++) {
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 6792292b5fc7..bef17c3fca67 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -1668,7 +1668,7 @@ static int __init pci_driver_init(void)
+ 	if (ret)
+ 		return ret;
+ #endif
+-
++	dma_debug_add_bus(&pci_bus_type);
+ 	return 0;
+ }
+ postcore_initcall(pci_driver_init);
 -- 
 2.18.0
