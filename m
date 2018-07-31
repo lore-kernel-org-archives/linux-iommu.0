@@ -1,88 +1,90 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH] PCI: call dma_debug_add_bus for pci_bus_type in common
- code
-Date: Tue, 31 Jul 2018 05:54:59 -0500
-Message-ID: <20180731105459.GH45322@bhelgaas-glaptop.roam.corp.google.com>
-References: <20180730073842.16092-1-hch@lst.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/7] Stop losing firmware-set DMA masks
+Date: Tue, 31 Jul 2018 12:24:07 +0100
+Message-ID: <1ccccc4b-7d4c-a3ee-23a2-f108916705e9@arm.com>
+References: <cover.1532382222.git.robin.murphy@arm.com>
+	<CAK8P3a3HDJ6svNN_cwvegxu20yNv8+tvc0D1A6Ooeq8agawbFg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180730073842.16092-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAK8P3a3HDJ6svNN_cwvegxu20yNv8+tvc0D1A6Ooeq8agawbFg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: gregkh <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, the arch/x86 maintainers <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 30, 2018 at 09:38:42AM +0200, Christoph Hellwig wrote:
-> There is nothing arch specific about PCI or dma-debug, so move this
-> call to common code just after registering the bus type.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Hi Arnd,
 
-Applied with acks from Thomas and Michael to pci/misc for v4.19, thanks!
+On 29/07/18 13:32, Arnd Bergmann wrote:
+> On Tue, Jul 24, 2018 at 12:16 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> Whilst the common firmware code invoked by dma_configure() initialises
+>> devices' DMA masks according to limitations described by the respective
+>> properties ("dma-ranges" for OF and _DMA/IORT for ACPI), the nature of
+>> the dma_set_mask() API leads to that information getting lost when
+>> well-behaved drivers probe and set a 64-bit mask, since in general
+>> there's no way to tell the difference between a firmware-described mask
+>> (which should be respected) and whatever default may have come from the
+>> bus code (which should be replaced outright). This can break DMA on
+>> systems with certain IOMMU topologies (e.g. [1]) where the IOMMU driver
+>> only knows its maximum supported address size, not how many of those
+>> address bits might actually be wired up between any of its input
+>> interfaces and the associated DMA master devices. Similarly, some PCIe
+>> root complexes only have a 32-bit native interface on their host bridge,
+>> which leads to the same DMA-address-truncation problem in systems with a
+>> larger physical memory map and RAM above 4GB (e.g. [2]).
+>>
+>> These patches attempt to deal with this in the simplest way possible by
+>> generalising the specific quirk for 32-bit bridges into an arbitrary
+>> mask which can then also be plumbed into the firmware code. In the
+>> interest of being minimally invasive, I've only included a point fix
+>> for the IOMMU issue as seen on arm64 - there may be further tweaks
+>> needed in DMA ops (e.g. in arch/arm/ and other OF users) to catch all
+>> possible incarnations of this problem, but at least any that I'm not
+>> fixing here have always been broken. It is also noteworthy that
+>> of_dma_get_range() has never worked properly for the way PCI host
+>> bridges are passed into of_dma_configure() - I'll be working on
+>> further patches to sort that out once this part is done.
+> 
+> Thanks a lot for working on this, this has bugged me for many years,
+> and I've discussed possible solutions with lots of people over time.
+> 
+> I /think/ all your patches are good, but I'm currently travelling and don't
+> have a chance to review the resulting overall implementation.
+> Could you summarize what happens in the following corner cases of
+> DT dma-ranges after your changes (with a driver not setting a mask,
+> setting a 64-bit mask and setting a 24-bit mask, respectively)?
+> 
+> a) a device with no dma-ranges property anywhere in its parents
+> b) a device with with a 64-bit dma-ranges translation in its parent
+>     but none in its grandparent
+> c) a device with no dma-ranges in its parent but a 64-bit mask
+>     in its grandparent
+> d) a device with a 24-bit mask in its parent.
 
-> ---
->  arch/powerpc/kernel/dma.c | 3 ---
->  arch/sh/drivers/pci/pci.c | 2 --
->  arch/x86/kernel/pci-dma.c | 3 ---
->  drivers/pci/pci-driver.c  | 2 +-
->  4 files changed, 1 insertion(+), 9 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-> index 155170d70324..dbfc7056d7df 100644
-> --- a/arch/powerpc/kernel/dma.c
-> +++ b/arch/powerpc/kernel/dma.c
-> @@ -357,9 +357,6 @@ EXPORT_SYMBOL_GPL(dma_get_required_mask);
->  
->  static int __init dma_init(void)
->  {
-> -#ifdef CONFIG_PCI
-> -	dma_debug_add_bus(&pci_bus_type);
-> -#endif
->  #ifdef CONFIG_IBMVIO
->  	dma_debug_add_bus(&vio_bus_type);
->  #endif
-> diff --git a/arch/sh/drivers/pci/pci.c b/arch/sh/drivers/pci/pci.c
-> index e5b7437ab4af..8256626bc53c 100644
-> --- a/arch/sh/drivers/pci/pci.c
-> +++ b/arch/sh/drivers/pci/pci.c
-> @@ -160,8 +160,6 @@ static int __init pcibios_init(void)
->  	for (hose = hose_head; hose; hose = hose->next)
->  		pcibios_scanbus(hose);
->  
-> -	dma_debug_add_bus(&pci_bus_type);
-> -
->  	pci_initialized = 1;
->  
->  	return 0;
-> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> index ab5d9dd668d2..43f58632f123 100644
-> --- a/arch/x86/kernel/pci-dma.c
-> +++ b/arch/x86/kernel/pci-dma.c
-> @@ -155,9 +155,6 @@ static int __init pci_iommu_init(void)
->  {
->  	struct iommu_table_entry *p;
->  
-> -#ifdef CONFIG_PCI
-> -	dma_debug_add_bus(&pci_bus_type);
-> -#endif
->  	x86_init.iommu.iommu_init();
->  
->  	for (p = __iommu_table; p < __iommu_table_end; p++) {
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index 6792292b5fc7..bef17c3fca67 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -1668,7 +1668,7 @@ static int __init pci_driver_init(void)
->  	if (ret)
->  		return ret;
->  #endif
-> -
-> +	dma_debug_add_bus(&pci_bus_type);
->  	return 0;
->  }
->  postcore_initcall(pci_driver_init);
-> -- 
-> 2.18.0
-> 
+In terms of the actual dma-ranges parsing, nothing should be changed by 
+these patches, so the weirdness and inconsistency that I'm pretty sure 
+exists for some of those cases will still be there for the moment - I'm 
+starting on actually fixing of_dma_get_range() now.
+
+The effect after these patches is that a device with a "valid" (per the 
+current of_dma_get_range() implementation) dma-ranges translation gets 
+it bus_dma_mask set to cover the given range, whereas a device with no 
+valid dma-ranges effectively gets a 32-bit bus_dma_mask. That's slightly 
+different from the ACPI default behaviour, due to subtle spec 
+differences, but I think it's in line with what you've proposed before 
+for DT, and it's certainly still flexible if anyone has a different 
+view. The bus_dma_mask in itself should also be low-impact, since it 
+will only currently be enforced in the generic dma-direct and iommu-dma 
+paths, so the likes of powerpc shouldn't see any change at all just yet.
+
+Robin.
