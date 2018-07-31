@@ -1,38 +1,29 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: use the generic dma-noncoherent code for sh V2
-Date: Tue, 31 Jul 2018 15:25:46 +0200
-Message-ID: <CAK8P3a0ZsU=qKhA2ux0X1Zqo0aD6d9T8wnwc5Kr9T6wbsGp2fw@mail.gmail.com>
-References: <20180724120147.15096-1-hch@lst.de> <20180724202115.GA4685@lst.de>
- <18df6608-61c1-963d-bb1a-d46320232f40@landley.net> <20180730090648.GA18361@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/3] hexagon: remove the sync_single_for_cpu DMA
+        operation
+Date: Tue, 31 Jul 2018 17:22:29 +0200
+Message-ID: <20180731152229.GA956@lst.de>
+References: <20180719125635.824-1-hch@lst.de> <20180719125635.824-2-hch@lst.de> <20180725032948.GG12771@codeaurora.org> <20180725043927.GA10827@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180730090648.GA18361@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20180725043927.GA10827@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Rob Landley <rob@landley.net>, Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Jacopo Mondi <jacopo+renesas@jmondi.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-sh list <linux-sh@vger.kernel.org>
+To: Richard Kuo <rkuo@codeaurora.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-hexagon@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 30, 2018 at 11:06 AM, Christoph Hellwig <hch@lst.de> wrote:
-> On Fri, Jul 27, 2018 at 11:20:21AM -0500, Rob Landley wrote:
->> Speaking of DMA:
->
-> Which really has nothing to do with the dma mapping code, which
-> also means I can't help you much unfortunately.
->
-> That being said sh is the last pending of the initial dma-noncoherent
-> conversion, I'd greatly appreciate if we could get this reviewed and
-> merge for the 4.19 merge window..
+On Wed, Jul 25, 2018 at 06:39:27AM +0200, Christoph Hellwig wrote:
+> On Tue, Jul 24, 2018 at 10:29:48PM -0500, Richard Kuo wrote:
+> > Patch series looks good.  Definitely appreciate the cleanup.
+> > 
+> > I can take it through my tree, or if not:
+> > 
+> > Acked-by: Richard Kuo <rkuo@codeaurora.org>
+> 
+> Please take it through your tree, thanks!
 
-I've spent 30 minutes looking through your submission to find something
-wrong with it now, but it all looks fine, the only criticism would be that
-some of the changelogs could provide a little more background.
+I haven't seen it in linux-next yet, do you still plan to take it?
 
-The original implementation seems odd in some places, but your
-new version resolves the few concerns I had (like mixing up
-phys and dma addresses), and I didn't see anything that should
-change behavior.
-
-I hope that helps.
-
-      Arnd
+Otherwise I'll merge it in the dma-mapping tree.
