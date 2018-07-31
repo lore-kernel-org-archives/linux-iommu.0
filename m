@@ -1,30 +1,45 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] PCI: call dma_debug_add_bus for pci_bus_type in common
-        code
-Date: Tue, 31 Jul 2018 10:07:23 +0200
-Message-ID: <20180731080723.GA23303@lst.de>
-References: <20180730073842.16092-1-hch@lst.de> <20180730211713.GA45322@bhelgaas-glaptop.roam.corp.google.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH] PCI: call dma_debug_add_bus for pci_bus_type in common code
+Date: Tue, 31 Jul 2018 19:34:18 +1000
+Message-ID: <87sh3zhhph.fsf@concordia.ellerman.id.au>
+References: <20180730073842.16092-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180730211713.GA45322@bhelgaas-glaptop.roam.corp.google.com>
+In-Reply-To: <20180730073842.16092-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+To: Christoph Hellwig <hch@lst.de>, linux-pci@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org, x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 30, 2018 at 04:17:13PM -0500, Bjorn Helgaas wrote:
-> [+cc Joerg]
-> 
-> On Mon, Jul 30, 2018 at 09:38:42AM +0200, Christoph Hellwig wrote:
-> > There is nothing arch specific about PCI or dma-debug, so move this
-> > call to common code just after registering the bus type.
-> 
-> I assume that previously, even if the user set CONFIG_DMA_API_DEBUG=y
-> we only got PCI DMA debug on powerpc, sh, and x86.  And after this
-> patch, we'll get PCI DMA debug on *all* arches?
+Christoph Hellwig <hch@lst.de> writes:
 
-Yes.  Note that this only covers the actual bus related part, that
-is warning about outstanding dma mappings on unload.  The rest of the
-dma api debugging already is entirely generic.
+> There is nothing arch specific about PCI or dma-debug, so move this
+> call to common code just after registering the bus type.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/powerpc/kernel/dma.c | 3 ---
+>  arch/sh/drivers/pci/pci.c | 2 --
+>  arch/x86/kernel/pci-dma.c | 3 ---
+>  drivers/pci/pci-driver.c  | 2 +-
+>  4 files changed, 1 insertion(+), 9 deletions(-)
+>
+> diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
+> index 155170d70324..dbfc7056d7df 100644
+> --- a/arch/powerpc/kernel/dma.c
+> +++ b/arch/powerpc/kernel/dma.c
+> @@ -357,9 +357,6 @@ EXPORT_SYMBOL_GPL(dma_get_required_mask);
+>  
+>  static int __init dma_init(void)
+>  {
+> -#ifdef CONFIG_PCI
+> -	dma_debug_add_bus(&pci_bus_type);
+> -#endif
+>  #ifdef CONFIG_IBMVIO
+>  	dma_debug_add_bus(&vio_bus_type);
+>  #endif
+
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+
+cheers
