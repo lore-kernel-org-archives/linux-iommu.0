@@ -1,36 +1,38 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use the generic dma-noncoherent code for sh V3
-Date: Tue, 31 Jul 2018 09:24:13 +0200
-Message-ID: <20180731072413.GA22837@lst.de>
-References: <20180725094043.32443-1-hch@lst.de> <877elcrlbe.wl-ysato@users.sourceforge.jp>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH] PCI: call dma_debug_add_bus for pci_bus_type in common
+ code
+Date: Tue, 31 Jul 2018 09:36:02 +0200
+Message-ID: <20180731073602.jbbcr4twd2gnkfoc@suse.de>
+References: <20180730073842.16092-1-hch@lst.de>
+ <20180730211713.GA45322@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <877elcrlbe.wl-ysato@users.sourceforge.jp>
+In-Reply-To: <20180730211713.GA45322@bhelgaas-glaptop.roam.corp.google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yoshinori Sato <ysato@users.sourceforge.jp>
-Cc: Christoph Hellwig <hch@lst.de>, Rich Felker <dalias@libc.org>, Jacopo Mondi <jacopo+renesas@jmondi.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, x86@kernel.org, linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 31, 2018 at 03:06:13PM +0900, Yoshinori Sato wrote:
-> On Wed, 25 Jul 2018 18:40:38 +0900,
-> Christoph Hellwig wrote:
-> > 
-> > Hi all,
-> > 
-> > can you review these patches to switch sh to use the generic
-> > dma-noncoherent code?  All the requirements are in mainline already
-> > and we've switched various architectures over to it already.
-> > 
-> > Changes since V2:
-> >  - drop a now obsolete export
-> > 
-> > Changes since V1:
-> >  - fixed two stupid compile errors and verified them using a local
-> >    cross toolchain instead of the 0day buildbot
+On Mon, Jul 30, 2018 at 04:17:13PM -0500, Bjorn Helgaas wrote:
+> [+cc Joerg]
 > 
-> Acked-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> On Mon, Jul 30, 2018 at 09:38:42AM +0200, Christoph Hellwig wrote:
+> > There is nothing arch specific about PCI or dma-debug, so move this
+> > call to common code just after registering the bus type.
+> 
+> I assume that previously, even if the user set CONFIG_DMA_API_DEBUG=y
+> we only got PCI DMA debug on powerpc, sh, and x86.  And after this
+> patch, we'll get PCI DMA debug on *all* arches?
+> 
+> If that's true, I'll add a comment to that effect to the commitlog
+> since that new functionality might be of interest to other arches.
 
-Do you want to pull this in through the sh tree?  If not I'd be happy
-to take it through the dma mapping tree.
+There should be implicit support for dma-debug for all arches that use
+the generic dma_ops code. The dma_debug_add_bus() function just adds the
+reporting of pending dma-allocations on driver-unload for a device. 
+
+Regards,
+
+	Joerg
