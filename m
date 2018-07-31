@@ -1,15 +1,24 @@
-From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] PCI: call dma_debug_add_bus for pci_bus_type in common
-	code
-Date: Mon, 30 Jul 2018 16:17:13 -0500
-Message-ID: <20180730211713.GA45322@bhelgaas-glaptop.roam.corp.google.com>
-References: <20180730073842.16092-1-hch@lst.de>
+From: Ganapatrao Kulkarni <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/iova: Update cached node pointer when current node
+	fails to get any free IOVA
+Date: Tue, 31 Jul 2018 08:10:16 +0530
+Message-ID: <CAKTKpr5YqVc8R7=Sorzx=fCVg0YphZUHFO7n1FAj2K2XMytQ=w@mail.gmail.com>
+References: <20180419171234.11053-1-ganapatrao.kulkarni@cavium.com>
+	<c6c3655b-cef2-1112-e8a7-79c99f9ddac6@arm.com>
+	<CAKTKpr67gqCK5y6atsterc7kCAg9fK_NKx2yMD3OjY+1L=j0sQ@mail.gmail.com>
+	<CAKTKpr4skf3=Aw1YJNPppSjUT7w7_CF6QhefeHZDQXzENCfm5g@mail.gmail.com>
+	<CAKTKpr7BmaR-rwqf=z8JiNpaoQNhpSXuUp8sZogUgSLpfcCe0A@mail.gmail.com>
+	<CAKTKpr694WntjTB+pbXN--wthH+sw1mrr=JWjDfddG4bHdLwjw@mail.gmail.com>
+	<CAKTKpr74X9e2X-deraxFQzeoTio09LqoZoLDgod4J5AOn+vPMg@mail.gmail.com>
+	<3ed2046c-6912-9380-7ea4-4d921981c64c@arm.com>
+	<CAKTKpr5eERRzxDcH5cno5kDQ10XO9nHXbLTmk=ShEi8HK05fsg@mail.gmail.com>
+	<642cefaf-9ce7-bf0f-e6b6-e2e520e2427b@arm.com>
+	<CAKTKpr5HWUoJL0TcCMmUadtY_Z4p-RnwH7ZNjSxQppw-_=qdOw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180730073842.16092-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <CAKTKpr5HWUoJL0TcCMmUadtY_Z4p-RnwH7ZNjSxQppw-_=qdOw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,85 +28,137 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Robert Richter <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-[+cc Joerg]
+Hi Robin,
 
-On Mon, Jul 30, 2018 at 09:38:42AM +0200, Christoph Hellwig wrote:
-> There is nothing arch specific about PCI or dma-debug, so move this
-> call to common code just after registering the bus type.
 
-I assume that previously, even if the user set CONFIG_DMA_API_DEBUG=y
-we only got PCI DMA debug on powerpc, sh, and x86.  And after this
-patch, we'll get PCI DMA debug on *all* arches?
+On Mon, Jul 30, 2018 at 12:40 PM, Ganapatrao Kulkarni
+<gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> On Fri, Jul 27, 2018 at 9:48 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 27/07/18 13:56, Ganapatrao Kulkarni wrote:
+>> [...]
+>>>>>
+>>>>> did you get any chance to look in to this issue?
+>>>>> i am waiting for your suggestion/patch for this issue!
+>>>>
+>>>>
+>>>>
+>>>> I got as far as [1], but I wasn't sure how much I liked it, since it
+>>>> still
+>>>> seems a little invasive for such a specific case (plus I can't remember
+>>>> if
+>>>> it's actually been debugged or not). I think in the end I started
+>>>> wondering
+>>>> whether it's even worth bothering with the 32-bit optimisation for PCIe
+>>>> devices - 4 extra bytes worth of TLP is surely a lot less significant
+>>>> than
+>>>> every transaction taking up to 50% more bus cycles was for legacy PCI.
+>>>
+>>>
+>>> how about tracking previous attempt to get 32bit range iova and avoid
+>>> further attempts, if it was failed. Later Resume attempts once
+>>> replenish happens.
+>>> Created patch for the same [2]
+>>
+>>
+>> Ooh, that's a much neater implementation of essentially the same concept -
+>> now why couldn't I think of that? :)
+>>
+>> Looks like it should be possible to make it entirely self-contained too,
+>> since alloc_iova() is in a position to both test and update the flag based
+>> on the limit_pfn passed in.
+>
+> is below patch much better?
 
-If that's true, I'll add a comment to that effect to the commitlog
-since that new functionality might be of interest to other arches.
+testing with this diff looks ok, shall i send formal patch with your Acked-by?
+>
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 83fe262..abb15d6 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
+> long granule,
+>      iovad->granule = granule;
+>      iovad->start_pfn = start_pfn;
+>      iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
+> +    iovad->free_32bit_pfns = true;
+>      iovad->flush_cb = NULL;
+>      iovad->fq = NULL;
+>      iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain
+> *iovad, struct iova *free)
+>
+>      cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+>      if (free->pfn_hi < iovad->dma_32bit_pfn &&
+> -        free->pfn_lo >= cached_iova->pfn_lo)
+> +        free->pfn_lo >= cached_iova->pfn_lo) {
+>          iovad->cached32_node = rb_next(&free->node);
+> +        iovad->free_32bit_pfns = true;
+> +    }
+>
+>      cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+>      if (free->pfn_lo >= cached_iova->pfn_lo)
+> @@ -290,6 +293,10 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+>      struct iova *new_iova;
+>      int ret;
+>
+> +    if (limit_pfn < iovad->dma_32bit_pfn &&
+> +            !iovad->free_32bit_pfns)
+> +        return NULL;
+> +
+>      new_iova = alloc_iova_mem();
+>      if (!new_iova)
+>          return NULL;
+> @@ -299,6 +306,8 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+>
+>      if (ret) {
+>          free_iova_mem(new_iova);
+> +        if (limit_pfn < iovad->dma_32bit_pfn)
+> +            iovad->free_32bit_pfns = false;
+>          return NULL;
+>      }
+>
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index 928442d..3810ba9 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -96,6 +96,7 @@ struct iova_domain {
+>                             flush-queues */
+>      atomic_t fq_timer_on;            /* 1 when timer is active, 0
+>                             when not */
+> +    bool    free_32bit_pfns;
+>  };
+>
+>  static inline unsigned long iova_size(struct iova *iova)
+> --
+> 2.9.4
+>>
+>> Robin.
+>>
+>>
+>>>
+>>> [2]
+>>> https://github.com/gpkulkarni/linux/commit/e2343a3e1f55cdeb5694103dd354bcb881dc65c3
+>>> note, the testing of this patch is in progress.
+>>>
+>>>>
+>>>> Robin.
+>>>>
+>>>> [1]
+>>>>
+>>>> http://www.linux-arm.org/git?p=linux-rm.git;a=commitdiff;h=a8e0e4af10ebebb3669750e05bf0028e5bd6afe8
+>>>
+>>>
+>>> thanks
+>>> Ganapat
+>>>
+>>
+>
+> thanks
+> Ganapat
 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  arch/powerpc/kernel/dma.c | 3 ---
->  arch/sh/drivers/pci/pci.c | 2 --
->  arch/x86/kernel/pci-dma.c | 3 ---
->  drivers/pci/pci-driver.c  | 2 +-
->  4 files changed, 1 insertion(+), 9 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-> index 155170d70324..dbfc7056d7df 100644
-> --- a/arch/powerpc/kernel/dma.c
-> +++ b/arch/powerpc/kernel/dma.c
-> @@ -357,9 +357,6 @@ EXPORT_SYMBOL_GPL(dma_get_required_mask);
->  
->  static int __init dma_init(void)
->  {
-> -#ifdef CONFIG_PCI
-> -	dma_debug_add_bus(&pci_bus_type);
-> -#endif
->  #ifdef CONFIG_IBMVIO
->  	dma_debug_add_bus(&vio_bus_type);
->  #endif
-> diff --git a/arch/sh/drivers/pci/pci.c b/arch/sh/drivers/pci/pci.c
-> index e5b7437ab4af..8256626bc53c 100644
-> --- a/arch/sh/drivers/pci/pci.c
-> +++ b/arch/sh/drivers/pci/pci.c
-> @@ -160,8 +160,6 @@ static int __init pcibios_init(void)
->  	for (hose = hose_head; hose; hose = hose->next)
->  		pcibios_scanbus(hose);
->  
-> -	dma_debug_add_bus(&pci_bus_type);
-> -
->  	pci_initialized = 1;
->  
->  	return 0;
-> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> index ab5d9dd668d2..43f58632f123 100644
-> --- a/arch/x86/kernel/pci-dma.c
-> +++ b/arch/x86/kernel/pci-dma.c
-> @@ -155,9 +155,6 @@ static int __init pci_iommu_init(void)
->  {
->  	struct iommu_table_entry *p;
->  
-> -#ifdef CONFIG_PCI
-> -	dma_debug_add_bus(&pci_bus_type);
-> -#endif
->  	x86_init.iommu.iommu_init();
->  
->  	for (p = __iommu_table; p < __iommu_table_end; p++) {
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index 6792292b5fc7..bef17c3fca67 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -1668,7 +1668,7 @@ static int __init pci_driver_init(void)
->  	if (ret)
->  		return ret;
->  #endif
-> -
-> +	dma_debug_add_bus(&pci_bus_type);
->  	return 0;
->  }
->  postcore_initcall(pci_driver_init);
-> -- 
-> 2.18.0
-> 
+thanks
+Ganapat
