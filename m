@@ -1,15 +1,19 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
-Date: Thu, 02 Aug 2018 21:24:10 +0300
-Message-ID: <2887450.sPhIOOMKZK@dimapc>
-References: <20180726231624.21084-1-digetx@gmail.com>
-	<20180727170326.GA21283@jcrouse-lnx.qualcomm.com>
-	<2402373.RyBdR7VSnO@dimapc>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 3/7] vfio: add spimdev support
+Date: Thu, 2 Aug 2018 12:43:27 -0600
+Message-ID: <20180802124327.403b10ab@t450s.home>
+References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+	<20180801102221.5308-4-nek.in.cn@gmail.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191290F7B@SHSMSX101.ccr.corp.intel.com>
+	<20180802034727.GK160746@Turing-Arch-b>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19129102C@SHSMSX101.ccr.corp.intel.com>
+	<20180802073440.GA91035@Turing-Arch-b>
+	<20180802103528.0b863030.cohuck@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2402373.RyBdR7VSnO@dimapc>
+In-Reply-To: <20180802103528.0b863030.cohuck-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,111 +23,107 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Mikko Perttunen <cyndis-/1wQRMveznE@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Cornelia Huck <cohuck-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, SanjayK-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, " <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "@mail.linuxfoundation.orglinuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org,           <linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>,  Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>,   , Zai
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday, 27 July 2018 20:16:53 MSK Dmitry Osipenko wrote:
-> On Friday, 27 July 2018 20:03:26 MSK Jordan Crouse wrote:
-> > On Fri, Jul 27, 2018 at 05:02:37PM +0100, Robin Murphy wrote:
-> > > On 27/07/18 15:10, Dmitry Osipenko wrote:
-> > > >On Friday, 27 July 2018 12:03:28 MSK Will Deacon wrote:
-> > > >>On Fri, Jul 27, 2018 at 10:25:13AM +0200, Joerg Roedel wrote:
-> > > >>>On Fri, Jul 27, 2018 at 02:16:18AM +0300, Dmitry Osipenko wrote:
-> > > >>>>The proposed solution adds a new option to the base device driver
-> > > >>>>structure that allows device drivers to explicitly convey to the
-> > > >>>>drivers
-> > > >>>>core that the implicit IOMMU backing for devices must not happen.
-> > > >>>
-> > > >>>Why is IOMMU mapping a problem for the Tegra GPU driver?
-> > > >>>
-> > > >>>If we add something like this then it should not be the choice of the
-> > > >>>device driver, but of the user and/or the firmware.
-> > > >>
-> > > >>Agreed, and it would still need somebody to configure an identity
-> > > >>domain
-> > > >>so
-> > > >>that transactions aren't aborted immediately. We currently allow the
-> > > >>identity domain to be used by default via a command-line option, so I
-> > > >>guess
-> > > >>we'd need a way for firmware to request that on a per-device basis.
-> > > >
-> > > >The IOMMU mapping itself is not a problem, the problem is the
-> > > >management
-> > > >of
-> > > >the IOMMU. For Tegra we don't want anything to intrude into the IOMMU
-> > > >activities because:
-> > > >
-> > > >1) GPU HW require additional configuration for the IOMMU usage and dumb
-> > > >mapping of the allocations simply doesn't work.
-> > > 
-> > > Generally, that's already handled by the DRM drivers allocating
-> > > their own unmanaged domains. The only problem we really need to
-> > > solve in that regard is that currently the device DMA ops don't get
-> > > updated when moving away from the managed domain. That's been OK for
-> > > the VFIO case where the device is bound to a different driver which
-> > > we know won't make any explicit DMA API calls, but for the more
-> > > general case of IOMMU-aware drivers we could certainly do with a bit
-> > > of cooperation between the IOMMU API, DMA API, and arch code to
-> > > update the DMA ops dynamically to cope with intermediate subsystems
-> > > making DMA API calls on behalf of devices they don't know the
-> > > intimate details of.
-> > > 
-> > > >2) Older Tegra generations have a limited resource and capabilities in
-> > > >regards to IOMMU usage, allocating IOMMU domain per-device is just
-> > > >impossible for example.
-> > > >
-> > > >3) HW performs context switches and so particular allocations have to
-> > > >be
-> > > >assigned to a particular contexts IOMMU domain.
-> > > 
-> > > I understand Qualcomm SoCs have a similar thing too, and AFAICS that
-> > > case just doesn't fit into the current API model at all. We need the
-> > > IOMMU driver to somehow know about the specific details of which
-> > > devices have magic associations with specific contexts, and we
-> > > almost certainly need a more expressive interface than
-> > > iommu_domain_alloc() to have any hope of reliable results.
-> > 
-> > This is correct for Qualcomm GPUs - The GPU hardware context switching
-> > requires a specific context and there are some restrictions around
-> > secure contexts as well.
-> > 
-> > We don't really care if the DMA attaches to a context just as long as it
-> > doesn't attach to the one(s) we care about. Perhaps a "valid context" mask
-> > would work in from the DT or the device struct to give the subsystems a
-> > clue as to which domains they were allowed to use. I recognize that there
-> > isn't a one-size-fits-all solution to this problem so I'm open to
-> > different
-> > ideas.
-> 
-> Designating whether implicit IOMMU backing is appropriate for a device via
-> device-tree property sounds a bit awkward because that will be a kinda
-> software description (of a custom Linux driver model), while device-tree is
-> supposed to describe HW.
-> 
-> What about to grant IOMMU drivers with ability to decide whether the
-> implicit backing for a device is appropriate? Like this:
-> 
-> bool implicit_iommu_for_dma_is_allowed(struct device *dev)
-> {
-> 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> 	struct iommu_group *group;
-> 
-> 	group = iommu_group_get(dev);
-> 	if (!group)
-> 		return NULL;
-> 
-> 	iommu_group_put(group);
-> 
-> 	if (!ops->implicit_iommu_for_dma_is_allowed)
-> 		return true;
-> 
-> 	return ops->implicit_iommu_for_dma_is_allowed(dev);
-> }
-> 
-> Then arch_setup_dma_ops() could have a clue whether implicit IOMMU backing
-> for a device is appropriate.
+On Thu, 2 Aug 2018 10:35:28 +0200
+Cornelia Huck <cohuck-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 
-Guys, does it sound good to you or maybe you have something else on your mind? 
-Even if it's not an ideal solution, it fixes the immediate problem and should 
-be good enough for the starter.
+> On Thu, 2 Aug 2018 15:34:40 +0800
+> Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org> wrote:
+> 
+> > On Thu, Aug 02, 2018 at 04:24:22AM +0000, Tian, Kevin wrote:  
+> 
+> > > > From: Kenneth Lee [mailto:liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org]
+> > > > Sent: Thursday, August 2, 2018 11:47 AM
+> > > >     
+> > > > >    
+> > > > > > From: Kenneth Lee
+> > > > > > Sent: Wednesday, August 1, 2018 6:22 PM
+> > > > > >
+> > > > > > From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+> > > > > >
+> > > > > > SPIMDEV is "Share Parent IOMMU Mdev". It is a vfio-mdev. But differ    
+> > > > from    
+> > > > > > the general vfio-mdev:
+> > > > > >
+> > > > > > 1. It shares its parent's IOMMU.
+> > > > > > 2. There is no hardware resource attached to the mdev is created. The
+> > > > > > hardware resource (A `queue') is allocated only when the mdev is
+> > > > > > opened.    
+> > > > >
+> > > > > Alex has concern on doing so, as pointed out in:
+> > > > >
+> > > > > 	https://www.spinics.net/lists/kvm/msg172652.html
+> > > > >
+> > > > > resource allocation should be reserved at creation time.    
+> > > > 
+> > > > Yes. That is why I keep telling that SPIMDEV is not for "VM", it is for "many
+> > > > processes", it is just an access point to the process. Not a device to VM. I
+> > > > hope
+> > > > Alex can accept it:)
+> > > >     
+> > > 
+> > > VFIO is just about assigning device resource to user space. It doesn't care
+> > > whether it's native processes or VM using the device so far. Along the direction
+> > > which you described, looks VFIO needs to support the configuration that
+> > > some mdevs are used for native process only, while others can be used
+> > > for both native and VM. I'm not sure whether there is a clean way to
+> > > enforce it...    
+> > 
+> > I had the same idea at the beginning. But finally I found that the life cycle
+> > of the virtual device for VM and process were different. Consider you create
+> > some mdevs for VM use, you will give all those mdevs to lib-virt, which
+> > distribute those mdev to VMs or containers. If the VM or container exits, the
+> > mdev is returned to the lib-virt and used for next allocation. It is the
+> > administrator who controlled every mdev's allocation.
+
+Libvirt currently does no management of mdev devices, so I believe
+this example is fictitious.  The extent of libvirt's interaction with
+mdev is that XML may specify an mdev UUID as the source for a hostdev
+and set the permissions on the device files appropriately.  Whether
+mdevs are created in advance and re-used or created and destroyed
+around a VM instance (for example via qemu hooks scripts) is not a
+policy that libvirt imposes.
+ 
+> > But for process, it is different. There is no lib-virt in control. The
+> > administrator's intension is to grant some type of application to access the
+> > hardware. The application can get a handle of the hardware, send request and get
+> > the result. That's all. He/She dose not care which mdev is allocated to that
+> > application. If it crashes, it should be the kernel's responsibility to withdraw
+> > the resource, the system administrator does not want to do it by hand.  
+
+Libvirt is also not a required component for VM lifecycles, it's an
+optional management interface, but there are also VM lifecycles exactly
+as you describe.  A VM may want a given type of vGPU, there might be
+multiple sources of that type and any instance is fungible to any
+other.  Such an mdev can be dynamically created, assigned to the VM,
+and destroyed later.  Why do we need to support "empty" mdevs that do
+not reserve reserve resources until opened?  The concept of available
+instances is entirely lost with that approach and it creates an
+environment that's difficult to support, resources may not be available
+at the time the user attempts to access them.
+ 
+> I don't think that you should distinguish the cases by the presence of
+> a management application. How can the mdev driver know what the
+> intention behind using the device is?
+
+Absolutely, vfio is a userspace driver interface, it's not tailored to
+VM usage and we cannot know the intentions of the user.
+ 
+> Would it make more sense to use a different mechanism to enforce that
+> applications only use those handles they are supposed to use? Maybe
+> cgroups? I don't think it's a good idea to push usage policy into the
+> kernel.
+
+I agree, this sounds like a userspace problem, mdev supports dynamic
+creation and removal of mdev devices, if there's an issue with
+maintaining a set of standby devices that a user has access to, this
+sounds like a userspace broker problem.  It makes more sense to me to
+have a model where a userspace application can make a request to a
+broker and the broker can reply with "none available" rather than
+having a set of devices on standby that may or may not work depending
+on the system load and other users.  Thanks,
+
+Alex
