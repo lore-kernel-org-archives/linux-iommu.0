@@ -1,18 +1,11 @@
-From: Cornelia Huck <cohuck-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 3/7] vfio: add spimdev support
-Date: Thu, 2 Aug 2018 10:35:28 +0200
-Message-ID: <20180802103528.0b863030.cohuck@redhat.com>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
-	<20180801102221.5308-4-nek.in.cn@gmail.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191290F7B@SHSMSX101.ccr.corp.intel.com>
-	<20180802034727.GK160746@Turing-Arch-b>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19129102C@SHSMSX101.ccr.corp.intel.com>
-	<20180802073440.GA91035@Turing-Arch-b>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] arm64: remove dummy_dma_ops
+Date: Thu,  2 Aug 2018 14:13:18 +0200
+Message-ID: <20180802121318.5785-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180802073440.GA91035@Turing-Arch-b>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,74 +15,142 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, "          <linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>,  Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>,   , Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, SanjayK" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>lin
+To: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2 Aug 2018 15:34:40 +0800
-Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org> wrote:
+Returning NULL from get_arch_dma_ops makes all DMA mapping routines
+retourn sensible errors, so remove the dummy ops.
 
-> On Thu, Aug 02, 2018 at 04:24:22AM +0000, Tian, Kevin wrote:
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ arch/arm64/include/asm/dma-mapping.h |  4 +-
+ arch/arm64/mm/dma-mapping.c          | 92 ----------------------------
+ 2 files changed, 1 insertion(+), 95 deletions(-)
 
-> > > From: Kenneth Lee [mailto:liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org]
-> > > Sent: Thursday, August 2, 2018 11:47 AM
-> > >   
-> > > >  
-> > > > > From: Kenneth Lee
-> > > > > Sent: Wednesday, August 1, 2018 6:22 PM
-> > > > >
-> > > > > From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> > > > >
-> > > > > SPIMDEV is "Share Parent IOMMU Mdev". It is a vfio-mdev. But differ  
-> > > from  
-> > > > > the general vfio-mdev:
-> > > > >
-> > > > > 1. It shares its parent's IOMMU.
-> > > > > 2. There is no hardware resource attached to the mdev is created. The
-> > > > > hardware resource (A `queue') is allocated only when the mdev is
-> > > > > opened.  
-> > > >
-> > > > Alex has concern on doing so, as pointed out in:
-> > > >
-> > > > 	https://www.spinics.net/lists/kvm/msg172652.html
-> > > >
-> > > > resource allocation should be reserved at creation time.  
-> > > 
-> > > Yes. That is why I keep telling that SPIMDEV is not for "VM", it is for "many
-> > > processes", it is just an access point to the process. Not a device to VM. I
-> > > hope
-> > > Alex can accept it:)
-> > >   
-> > 
-> > VFIO is just about assigning device resource to user space. It doesn't care
-> > whether it's native processes or VM using the device so far. Along the direction
-> > which you described, looks VFIO needs to support the configuration that
-> > some mdevs are used for native process only, while others can be used
-> > for both native and VM. I'm not sure whether there is a clean way to
-> > enforce it...  
-> 
-> I had the same idea at the beginning. But finally I found that the life cycle
-> of the virtual device for VM and process were different. Consider you create
-> some mdevs for VM use, you will give all those mdevs to lib-virt, which
-> distribute those mdev to VMs or containers. If the VM or container exits, the
-> mdev is returned to the lib-virt and used for next allocation. It is the
-> administrator who controlled every mdev's allocation.
-> 
-> But for process, it is different. There is no lib-virt in control. The
-> administrator's intension is to grant some type of application to access the
-> hardware. The application can get a handle of the hardware, send request and get
-> the result. That's all. He/She dose not care which mdev is allocated to that
-> application. If it crashes, it should be the kernel's responsibility to withdraw
-> the resource, the system administrator does not want to do it by hand.
-
-I don't think that you should distinguish the cases by the presence of
-a management application. How can the mdev driver know what the
-intention behind using the device is?
-
-Would it make more sense to use a different mechanism to enforce that
-applications only use those handles they are supposed to use? Maybe
-cgroups? I don't think it's a good idea to push usage policy into the
-kernel.
-
-[I have not read the documentation, so I may be totally off on the
-intended use of this.]
+diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+index b7847eb8a7bb7..3dd7c10efc745 100644
+--- a/arch/arm64/include/asm/dma-mapping.h
++++ b/arch/arm64/include/asm/dma-mapping.h
+@@ -24,15 +24,13 @@
+ #include <xen/xen.h>
+ #include <asm/xen/hypervisor.h>
+ 
+-extern const struct dma_map_ops dummy_dma_ops;
+-
+ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+ {
+ 	/*
+ 	 * We expect no ISA devices, and all other DMA masters are expected to
+ 	 * have someone call arch_setup_dma_ops at device creation time.
+ 	 */
+-	return &dummy_dma_ops;
++	return NULL;
+ }
+ 
+ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 072c51fb07d73..4fdce2db6f12d 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -406,98 +406,6 @@ static int __init atomic_pool_init(void)
+ 	return -ENOMEM;
+ }
+ 
+-/********************************************
+- * The following APIs are for dummy DMA ops *
+- ********************************************/
+-
+-static void *__dummy_alloc(struct device *dev, size_t size,
+-			   dma_addr_t *dma_handle, gfp_t flags,
+-			   unsigned long attrs)
+-{
+-	return NULL;
+-}
+-
+-static void __dummy_free(struct device *dev, size_t size,
+-			 void *vaddr, dma_addr_t dma_handle,
+-			 unsigned long attrs)
+-{
+-}
+-
+-static int __dummy_mmap(struct device *dev,
+-			struct vm_area_struct *vma,
+-			void *cpu_addr, dma_addr_t dma_addr, size_t size,
+-			unsigned long attrs)
+-{
+-	return -ENXIO;
+-}
+-
+-static dma_addr_t __dummy_map_page(struct device *dev, struct page *page,
+-				   unsigned long offset, size_t size,
+-				   enum dma_data_direction dir,
+-				   unsigned long attrs)
+-{
+-	return 0;
+-}
+-
+-static void __dummy_unmap_page(struct device *dev, dma_addr_t dev_addr,
+-			       size_t size, enum dma_data_direction dir,
+-			       unsigned long attrs)
+-{
+-}
+-
+-static int __dummy_map_sg(struct device *dev, struct scatterlist *sgl,
+-			  int nelems, enum dma_data_direction dir,
+-			  unsigned long attrs)
+-{
+-	return 0;
+-}
+-
+-static void __dummy_unmap_sg(struct device *dev,
+-			     struct scatterlist *sgl, int nelems,
+-			     enum dma_data_direction dir,
+-			     unsigned long attrs)
+-{
+-}
+-
+-static void __dummy_sync_single(struct device *dev,
+-				dma_addr_t dev_addr, size_t size,
+-				enum dma_data_direction dir)
+-{
+-}
+-
+-static void __dummy_sync_sg(struct device *dev,
+-			    struct scatterlist *sgl, int nelems,
+-			    enum dma_data_direction dir)
+-{
+-}
+-
+-static int __dummy_mapping_error(struct device *hwdev, dma_addr_t dma_addr)
+-{
+-	return 1;
+-}
+-
+-static int __dummy_dma_supported(struct device *hwdev, u64 mask)
+-{
+-	return 0;
+-}
+-
+-const struct dma_map_ops dummy_dma_ops = {
+-	.alloc                  = __dummy_alloc,
+-	.free                   = __dummy_free,
+-	.mmap                   = __dummy_mmap,
+-	.map_page               = __dummy_map_page,
+-	.unmap_page             = __dummy_unmap_page,
+-	.map_sg                 = __dummy_map_sg,
+-	.unmap_sg               = __dummy_unmap_sg,
+-	.sync_single_for_cpu    = __dummy_sync_single,
+-	.sync_single_for_device = __dummy_sync_single,
+-	.sync_sg_for_cpu        = __dummy_sync_sg,
+-	.sync_sg_for_device     = __dummy_sync_sg,
+-	.mapping_error          = __dummy_mapping_error,
+-	.dma_supported          = __dummy_dma_supported,
+-};
+-EXPORT_SYMBOL(dummy_dma_ops);
+-
+ static int __init arm64_dma_init(void)
+ {
+ 	if (swiotlb_force == SWIOTLB_FORCE ||
+-- 
+2.18.0
