@@ -1,87 +1,129 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Thu, 2 Aug 2018 10:46:27 -0400
-Message-ID: <20180802144627.GB3481@redhat.com>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
- <20180801165644.GA3820@redhat.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
- <20180802111000.4649d9ed@alans-desktop>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
+Date: Thu, 02 Aug 2018 21:24:10 +0300
+Message-ID: <2887450.sPhIOOMKZK@dimapc>
+References: <20180726231624.21084-1-digetx@gmail.com>
+	<20180727170326.GA21283@jcrouse-lnx.qualcomm.com>
+	<2402373.RyBdR7VSnO@dimapc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180802111000.4649d9ed@alans-desktop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Kenneth Lee <nek.in.cn@gmail.com>, Hao Fang <fanghao11@huawei.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Zaibo Xu <xuzaibo@h>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2402373.RyBdR7VSnO@dimapc>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Mikko Perttunen <cyndis-/1wQRMveznE@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Nicolas Chauvet <kwizart-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 02, 2018 at 11:10:00AM +0100, Alan Cox wrote:
-> > One motivation I guess, is that most accelerators lack of a 
-> > well-abstracted high level APIs similar to GPU side (e.g. OpenCL 
-> > clearly defines Shared Virtual Memory models). VFIO mdev
-> > might be an alternative common interface to enable SVA usages 
-> > on various accelerators...
+On Friday, 27 July 2018 20:16:53 MSK Dmitry Osipenko wrote:
+> On Friday, 27 July 2018 20:03:26 MSK Jordan Crouse wrote:
+> > On Fri, Jul 27, 2018 at 05:02:37PM +0100, Robin Murphy wrote:
+> > > On 27/07/18 15:10, Dmitry Osipenko wrote:
+> > > >On Friday, 27 July 2018 12:03:28 MSK Will Deacon wrote:
+> > > >>On Fri, Jul 27, 2018 at 10:25:13AM +0200, Joerg Roedel wrote:
+> > > >>>On Fri, Jul 27, 2018 at 02:16:18AM +0300, Dmitry Osipenko wrote:
+> > > >>>>The proposed solution adds a new option to the base device driver
+> > > >>>>structure that allows device drivers to explicitly convey to the
+> > > >>>>drivers
+> > > >>>>core that the implicit IOMMU backing for devices must not happen.
+> > > >>>
+> > > >>>Why is IOMMU mapping a problem for the Tegra GPU driver?
+> > > >>>
+> > > >>>If we add something like this then it should not be the choice of the
+> > > >>>device driver, but of the user and/or the firmware.
+> > > >>
+> > > >>Agreed, and it would still need somebody to configure an identity
+> > > >>domain
+> > > >>so
+> > > >>that transactions aren't aborted immediately. We currently allow the
+> > > >>identity domain to be used by default via a command-line option, so I
+> > > >>guess
+> > > >>we'd need a way for firmware to request that on a per-device basis.
+> > > >
+> > > >The IOMMU mapping itself is not a problem, the problem is the
+> > > >management
+> > > >of
+> > > >the IOMMU. For Tegra we don't want anything to intrude into the IOMMU
+> > > >activities because:
+> > > >
+> > > >1) GPU HW require additional configuration for the IOMMU usage and dumb
+> > > >mapping of the allocations simply doesn't work.
+> > > 
+> > > Generally, that's already handled by the DRM drivers allocating
+> > > their own unmanaged domains. The only problem we really need to
+> > > solve in that regard is that currently the device DMA ops don't get
+> > > updated when moving away from the managed domain. That's been OK for
+> > > the VFIO case where the device is bound to a different driver which
+> > > we know won't make any explicit DMA API calls, but for the more
+> > > general case of IOMMU-aware drivers we could certainly do with a bit
+> > > of cooperation between the IOMMU API, DMA API, and arch code to
+> > > update the DMA ops dynamically to cope with intermediate subsystems
+> > > making DMA API calls on behalf of devices they don't know the
+> > > intimate details of.
+> > > 
+> > > >2) Older Tegra generations have a limited resource and capabilities in
+> > > >regards to IOMMU usage, allocating IOMMU domain per-device is just
+> > > >impossible for example.
+> > > >
+> > > >3) HW performs context switches and so particular allocations have to
+> > > >be
+> > > >assigned to a particular contexts IOMMU domain.
+> > > 
+> > > I understand Qualcomm SoCs have a similar thing too, and AFAICS that
+> > > case just doesn't fit into the current API model at all. We need the
+> > > IOMMU driver to somehow know about the specific details of which
+> > > devices have magic associations with specific contexts, and we
+> > > almost certainly need a more expressive interface than
+> > > iommu_domain_alloc() to have any hope of reliable results.
+> > 
+> > This is correct for Qualcomm GPUs - The GPU hardware context switching
+> > requires a specific context and there are some restrictions around
+> > secure contexts as well.
+> > 
+> > We don't really care if the DMA attaches to a context just as long as it
+> > doesn't attach to the one(s) we care about. Perhaps a "valid context" mask
+> > would work in from the DT or the device struct to give the subsystems a
+> > clue as to which domains they were allowed to use. I recognize that there
+> > isn't a one-size-fits-all solution to this problem so I'm open to
+> > different
+> > ideas.
 > 
-> SVA is not IMHO the hard bit from a user level API perspective. The hard
-> bit is describing what you have and enumerating the contents of the device
-> especially when those can be quite dynamic and in the FPGA case can
-> change on the fly.
+> Designating whether implicit IOMMU backing is appropriate for a device via
+> device-tree property sounds a bit awkward because that will be a kinda
+> software description (of a custom Linux driver model), while device-tree is
+> supposed to describe HW.
 > 
-> Right now we've got
-> - FPGA manager
-> - Google's recently posted ASIC patches
-> - WarpDrive
+> What about to grant IOMMU drivers with ability to decide whether the
+> implicit backing for a device is appropriate? Like this:
 > 
-> all trying to be bits of the same thing, and really there needs to be a
-> single solution that handles all of this stuff properly.
+> bool implicit_iommu_for_dma_is_allowed(struct device *dev)
+> {
+> 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> 	struct iommu_group *group;
 > 
-> If we are going to have any kind of general purpose accelerator API then
-> it has to be able to implement things like
-
-Why is the existing driver model not good enough ? So you want
-a device with function X you look into /dev/X (for instance
-for GPU you look in /dev/dri)
-
-Each of those device need a userspace driver and thus this
-user space driver can easily knows where to look. I do not
-expect that every application will reimplement those drivers
-but instead use some kind of library that provide a high
-level API for each of those devices.
-
-> 	'find me an accelerator with function X that is nearest my memory'
-> 	'find me accelerator functions X and Y that share HBM'
-> 	'find me accelerator functions X and Y than can be chained'
+> 	group = iommu_group_get(dev);
+> 	if (!group)
+> 		return NULL;
 > 
-> If instead we have three API's depending upon whose accelerator you are
-> using and whether it's FPGA or ASIC this is going to be a mess on a grand
-> scale.
+> 	iommu_group_put(group);
+> 
+> 	if (!ops->implicit_iommu_for_dma_is_allowed)
+> 		return true;
+> 
+> 	return ops->implicit_iommu_for_dma_is_allowed(dev);
+> }
+> 
+> Then arch_setup_dma_ops() could have a clue whether implicit IOMMU backing
+> for a device is appropriate.
 
-I see the enumeration as an orthogonal problem. There have
-been talks within various circles about it because new system
-bus (CAPI, CCIX, ...) imply that things like NUMA topology
-you have in sysfs is not up to the task.
-
-Now you have a hierarchy of memory for the CPU (HBM, local
-node main memory aka you DDR dimm, persistent memory) each
-with different properties (bandwidth, latency, ...). But
-also for devices memory. Some device can have many types
-of memory too. For instance a GPU might have HBM, GDDR,
-persistant and multiple types of memory. Those device are
-on a given CPU node but can also have inter-connect of their
-own (AMD infinity, NVlink, ...).
-
-
-You have HMAT which i was hopping would provide a new sysfs
-that supersede old numa but it seems it is going back to
-NUMA node for compatibilities reasons i guess (ccing Ross).
-
-
-Anyway i think finding devices and finding relation between
-devices and memory is 2 separate problems and as such should
-be handled separatly.
-
-
-Cheers,
-Jérôme
+Guys, does it sound good to you or maybe you have something else on your mind? 
+Even if it's not an ideal solution, it fixes the immediate problem and should 
+be good enough for the starter.
