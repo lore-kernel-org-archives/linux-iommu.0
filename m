@@ -1,85 +1,46 @@
-From: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Wed, 1 Aug 2018 12:56:44 -0400
-Message-ID: <20180801165644.GA3820@redhat.com>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+From: Rich Felker <dalias@libc.org>
+Subject: Re: use the generic dma-noncoherent code for sh V3
+Date: Wed, 1 Aug 2018 22:09:06 -0400
+Message-ID: <20180802020906.GK1392@brightrain.aerifal.cx>
+References: <20180725094043.32443-1-hch@lst.de>
+ <877elcrlbe.wl-ysato@users.sourceforge.jp>
+ <20180731072413.GA22837@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180801102221.5308-1-nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+In-Reply-To: <20180731072413.GA22837@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, Jacopo Mondi <jacopo+renesas@jmondi.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 01, 2018 at 06:22:14PM +0800, Kenneth Lee wrote:
-> From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-> =
+On Tue, Jul 31, 2018 at 09:24:13AM +0200, Christoph Hellwig wrote:
+> On Tue, Jul 31, 2018 at 03:06:13PM +0900, Yoshinori Sato wrote:
+> > On Wed, 25 Jul 2018 18:40:38 +0900,
+> > Christoph Hellwig wrote:
+> > > 
+> > > Hi all,
+> > > 
+> > > can you review these patches to switch sh to use the generic
+> > > dma-noncoherent code?  All the requirements are in mainline already
+> > > and we've switched various architectures over to it already.
+> > > 
+> > > Changes since V2:
+> > >  - drop a now obsolete export
+> > > 
+> > > Changes since V1:
+> > >  - fixed two stupid compile errors and verified them using a local
+> > >    cross toolchain instead of the 0day buildbot
+> > 
+> > Acked-by: Yoshinori Sato <ysato@users.sourceforge.jp>
+> 
+> Do you want to pull this in through the sh tree?  If not I'd be happy
+> to take it through the dma mapping tree.
 
-> WarpDrive is an accelerator framework to expose the hardware capabilities
-> directly to the user space. It makes use of the exist vfio and vfio-mdev
-> facilities. So the user application can send request and DMA to the
-> hardware without interaction with the kernel. This remove the latency
-> of syscall and context switch.
-> =
+Usually I send the pull requests for sh tree, and I'm trying to figure
+out which patches are okay to merge and prepare one now, but if you're
+happy to take it through the dma mapping tree go ahead, and I'll focus
+on other sh stuff that needs attention.
 
-> The patchset contains documents for the detail. Please refer to it for mo=
-re
-> information.
-> =
-
-> This patchset is intended to be used with Jean Philippe Brucker's SVA
-> patch [1] (Which is also in RFC stage). But it is not mandatory. This
-> patchset is tested in the latest mainline kernel without the SVA patches.
-> So it support only one process for each accelerator.
-> =
-
-> With SVA support, WarpDrive can support multi-process in the same
-> accelerator device.  We tested it in our SoC integrated Accelerator (board
-> ID: D06, Chip ID: HIP08). A reference work tree can be found here: [2].
-
-I have not fully inspected things nor do i know enough about
-this Hisilicon ZIP accelerator to ascertain, but from glimpsing
-at the code it seems that it is unsafe to use even with SVA due
-to the doorbell. There is a comment talking about safetyness
-in patch 7.
-
-Exposing thing to userspace is always enticing, but if it is
-a security risk then it should clearly say so and maybe a
-kernel boot flag should be necessary to allow such device to
-be use.
-
-
-My more general question is do we want to grow VFIO to become
-a more generic device driver API. This patchset adds a command
-queue concept to it (i don't think it exist today but i have
-not follow VFIO closely).
-
-Why is that any better that existing driver model ? Where a
-device create a device file (can be character device, block
-device, ...). Such models also allow for direct hardware
-access from userspace. For instance see the AMD KFD driver
-inside drivers/gpu/drm/amd
-
-So you can already do what you are doing with the Hisilicon
-driver today without this new infrastructure. This only need
-hardware that have command queue and doorbell like mechanisms.
-
-
-Unlike mdev which unify a very high level concept, it seems
-to me spimdev just introduce low level concept (namely command
-queue) and i don't see the intrinsic value here.
-
-
-Cheers,
-J=E9r=F4me
+Rich
