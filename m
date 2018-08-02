@@ -1,62 +1,172 @@
-From: Xu Zaibo <xuzaibo@huawei.com>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Thu, 2 Aug 2018 20:24:39 +0800
-Message-ID: <5B62F807.8030407@huawei.com>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
- <20180801165644.GA3820@redhat.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
- <20180802111000.4649d9ed@alans-desktop>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] arm64: remove dummy_dma_ops
+Date: Thu, 2 Aug 2018 13:32:17 +0100
+Message-ID: <bbb22836-8f2f-5b2f-4801-342643fd9c1b@arm.com>
+References: <20180802121318.5785-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180802111000.4649d9ed@alans-desktop>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alan Cox <gnomes@lxorguk.ukuu.org.uk>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Jerome Glisse <jglisse@redhat.com>, Kenneth Lee <nek.in.cn@gmail.com>, Hao Fang <fanghao11@huawei.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Kenneth Lee <liguoz>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180802121318.5785-1-hch-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 02/08/18 13:13, Christoph Hellwig wrote:
+> Returning NULL from get_arch_dma_ops makes all DMA mapping routines
+> retourn sensible errors, so remove the dummy ops.
 
-On 2018/8/2 18:10, Alan Cox wrote:
->> One motivation I guess, is that most accelerators lack of a
->> well-abstracted high level APIs similar to GPU side (e.g. OpenCL
->> clearly defines Shared Virtual Memory models). VFIO mdev
->> might be an alternative common interface to enable SVA usages
->> on various accelerators...
-> SVA is not IMHO the hard bit from a user level API perspective. The hard
-> bit is describing what you have and enumerating the contents of the device
-> especially when those can be quite dynamic and in the FPGA case can
-> change on the fly.
->
-> Right now we've got
-> - FPGA manager
-> - Google's recently posted ASIC patches
-> - WarpDrive
->
-> all trying to be bits of the same thing, and really there needs to be a
-> single solution that handles all of this stuff properly.
->
-> If we are going to have any kind of general purpose accelerator API then
-> it has to be able to implement things like
->
-> 	'find me an accelerator with function X that is nearest my memory'
-> 	'find me accelerator functions X and Y that share HBM'
-> 	'find me accelerator functions X and Y than can be chained'
->
-> If instead we have three API's depending upon whose accelerator you are
-> using and whether it's FPGA or ASIC this is going to be a mess on a grand
-> scale.
->
-Agree, at the beginning, we try to bring a notion of 'capability' which 
-describes 'algorithms, mem access methods .etc ',
-but then, we come to realize it is the first thing that we should come 
-to a single solution on these things such as
-memory/device access, IOMMU .etc.
+Does it? AFAICS all of the non-optional callbacks will still either 
+BUG_ON(!ops) or blindly dereference the null pointer. Have I lost track 
+of another cleanup patch somewhere?
 
-Thanks,
-Zaibo
+FWIW the point of dummy_dma_ops is to fail safe when the ACPI tables 
+fail to specify _CCA for a device - of course that *should* be caught 
+during firmware development, but if something does slip through because 
+the firmware developer used an older kernel (or never tested device x at 
+all), then the difference to the end user between "device x can't do 
+DMA" and "new kernel blows up" is pretty significant.
 
->
-> .
->
+Robin.
+
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>   arch/arm64/include/asm/dma-mapping.h |  4 +-
+>   arch/arm64/mm/dma-mapping.c          | 92 ----------------------------
+>   2 files changed, 1 insertion(+), 95 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+> index b7847eb8a7bb7..3dd7c10efc745 100644
+> --- a/arch/arm64/include/asm/dma-mapping.h
+> +++ b/arch/arm64/include/asm/dma-mapping.h
+> @@ -24,15 +24,13 @@
+>   #include <xen/xen.h>
+>   #include <asm/xen/hypervisor.h>
+>   
+> -extern const struct dma_map_ops dummy_dma_ops;
+> -
+>   static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+>   {
+>   	/*
+>   	 * We expect no ISA devices, and all other DMA masters are expected to
+>   	 * have someone call arch_setup_dma_ops at device creation time.
+>   	 */
+> -	return &dummy_dma_ops;
+> +	return NULL;
+>   }
+>   
+>   void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 072c51fb07d73..4fdce2db6f12d 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -406,98 +406,6 @@ static int __init atomic_pool_init(void)
+>   	return -ENOMEM;
+>   }
+>   
+> -/********************************************
+> - * The following APIs are for dummy DMA ops *
+> - ********************************************/
+> -
+> -static void *__dummy_alloc(struct device *dev, size_t size,
+> -			   dma_addr_t *dma_handle, gfp_t flags,
+> -			   unsigned long attrs)
+> -{
+> -	return NULL;
+> -}
+> -
+> -static void __dummy_free(struct device *dev, size_t size,
+> -			 void *vaddr, dma_addr_t dma_handle,
+> -			 unsigned long attrs)
+> -{
+> -}
+> -
+> -static int __dummy_mmap(struct device *dev,
+> -			struct vm_area_struct *vma,
+> -			void *cpu_addr, dma_addr_t dma_addr, size_t size,
+> -			unsigned long attrs)
+> -{
+> -	return -ENXIO;
+> -}
+> -
+> -static dma_addr_t __dummy_map_page(struct device *dev, struct page *page,
+> -				   unsigned long offset, size_t size,
+> -				   enum dma_data_direction dir,
+> -				   unsigned long attrs)
+> -{
+> -	return 0;
+> -}
+> -
+> -static void __dummy_unmap_page(struct device *dev, dma_addr_t dev_addr,
+> -			       size_t size, enum dma_data_direction dir,
+> -			       unsigned long attrs)
+> -{
+> -}
+> -
+> -static int __dummy_map_sg(struct device *dev, struct scatterlist *sgl,
+> -			  int nelems, enum dma_data_direction dir,
+> -			  unsigned long attrs)
+> -{
+> -	return 0;
+> -}
+> -
+> -static void __dummy_unmap_sg(struct device *dev,
+> -			     struct scatterlist *sgl, int nelems,
+> -			     enum dma_data_direction dir,
+> -			     unsigned long attrs)
+> -{
+> -}
+> -
+> -static void __dummy_sync_single(struct device *dev,
+> -				dma_addr_t dev_addr, size_t size,
+> -				enum dma_data_direction dir)
+> -{
+> -}
+> -
+> -static void __dummy_sync_sg(struct device *dev,
+> -			    struct scatterlist *sgl, int nelems,
+> -			    enum dma_data_direction dir)
+> -{
+> -}
+> -
+> -static int __dummy_mapping_error(struct device *hwdev, dma_addr_t dma_addr)
+> -{
+> -	return 1;
+> -}
+> -
+> -static int __dummy_dma_supported(struct device *hwdev, u64 mask)
+> -{
+> -	return 0;
+> -}
+> -
+> -const struct dma_map_ops dummy_dma_ops = {
+> -	.alloc                  = __dummy_alloc,
+> -	.free                   = __dummy_free,
+> -	.mmap                   = __dummy_mmap,
+> -	.map_page               = __dummy_map_page,
+> -	.unmap_page             = __dummy_unmap_page,
+> -	.map_sg                 = __dummy_map_sg,
+> -	.unmap_sg               = __dummy_unmap_sg,
+> -	.sync_single_for_cpu    = __dummy_sync_single,
+> -	.sync_single_for_device = __dummy_sync_single,
+> -	.sync_sg_for_cpu        = __dummy_sync_sg,
+> -	.sync_sg_for_device     = __dummy_sync_sg,
+> -	.mapping_error          = __dummy_mapping_error,
+> -	.dma_supported          = __dummy_dma_supported,
+> -};
+> -EXPORT_SYMBOL(dummy_dma_ops);
+> -
+>   static int __init arm64_dma_init(void)
+>   {
+>   	if (swiotlb_force == SWIOTLB_FORCE ||
+> 
