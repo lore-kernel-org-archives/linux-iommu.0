@@ -1,110 +1,45 @@
-From: Kenneth Lee <liguozhu@hisilicon.com>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Thu, 2 Aug 2018 13:35:58 +0800
-Message-ID: <20180802053558.GO160746@Turing-Arch-b>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191290EB3@SHSMSX101.ccr.corp.intel.com>
- <20180802034006.GJ160746@Turing-Arch-b>
- <AADFC41AFE54684AB9EE6CBC0274A5D19129105A@SHSMSX101.ccr.corp.intel.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: use the generic dma-noncoherent code for sh V3
+Date: Thu, 2 Aug 2018 09:15:25 +0200
+Message-ID: <20180802071525.GA11643@lst.de>
+References: <20180725094043.32443-1-hch@lst.de> <877elcrlbe.wl-ysato@users.sourceforge.jp> <20180731072413.GA22837@lst.de> <20180802020906.GK1392@brightrain.aerifal.cx>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19129105A@SHSMSX101.ccr.corp.intel.com>
+In-Reply-To: <20180802020906.GK1392@brightrain.aerifal.cx>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Kenneth Lee <nek.in.cn@gmail.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Zaibo Xu <xuzaibo@huawei.com>, "David S . Miller" <davem@>
+To: Rich Felker <dalias@libc.org>
+Cc: Christoph Hellwig <hch@lst.de>, Yoshinori Sato <ysato@users.sourceforge.jp>, Jacopo Mondi <jacopo+renesas@jmondi.org>, Thomas Petazzoni <thomas.petazzoni@free-electrons.com>, linux-sh@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 02, 2018 at 04:36:52AM +0000, Tian, Kevin wrote:
-> Date: Thu, 2 Aug 2018 04:36:52 +0000
-> From: "Tian, Kevin" <kevin.tian@intel.com>
-> To: Kenneth Lee <liguozhu@hisilicon.com>
-> CC: Kenneth Lee <nek.in.cn@gmail.com>, Herbert Xu
->  <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org"
->  <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg
->  Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-doc@vger.kernel.org"
->  <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
->  Hao Fang <fanghao11@huawei.com>, "iommu@lists.linux-foundation.org"
->  <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
->  <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com"
->  <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>,
->  Thomas Gleixner <tglx@linutronix.de>, "linux-crypto@vger.kernel.org"
->  <linux-crypto@vger.kernel.org>, Philippe Ombredanne
->  <pombredanne@nexb.com>, Zaibo Xu <xuzaibo@huawei.com>, "David S . Miller"
->  <davem@davemloft.net>, "linux-accelerators@lists.ozlabs.org"
->  <linux-accelerators@lists.ozlabs.org>
-> Subject: RE: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-> Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19129105A@SHSMSX101.ccr.corp.intel.com>
-> 
-> > From: Kenneth Lee
-> > Sent: Thursday, August 2, 2018 11:40 AM
+On Wed, Aug 01, 2018 at 10:09:06PM -0400, Rich Felker wrote:
+> On Tue, Jul 31, 2018 at 09:24:13AM +0200, Christoph Hellwig wrote:
+> > On Tue, Jul 31, 2018 at 03:06:13PM +0900, Yoshinori Sato wrote:
+> > > On Wed, 25 Jul 2018 18:40:38 +0900,
+> > > Christoph Hellwig wrote:
+> > > > 
+> > > > Hi all,
+> > > > 
+> > > > can you review these patches to switch sh to use the generic
+> > > > dma-noncoherent code?  All the requirements are in mainline already
+> > > > and we've switched various architectures over to it already.
+> > > > 
+> > > > Changes since V2:
+> > > >  - drop a now obsolete export
+> > > > 
+> > > > Changes since V1:
+> > > >  - fixed two stupid compile errors and verified them using a local
+> > > >    cross toolchain instead of the 0day buildbot
+> > > 
+> > > Acked-by: Yoshinori Sato <ysato@users.sourceforge.jp>
 > > 
-> > On Thu, Aug 02, 2018 at 02:59:33AM +0000, Tian, Kevin wrote:
-> > > > From: Kenneth Lee
-> > > > Sent: Wednesday, August 1, 2018 6:22 PM
-> > > >
-> > > > From: Kenneth Lee <liguozhu@hisilicon.com>
-> > > >
-> > > > WarpDrive is an accelerator framework to expose the hardware
-> > capabilities
-> > > > directly to the user space. It makes use of the exist vfio and vfio-mdev
-> > > > facilities. So the user application can send request and DMA to the
-> > > > hardware without interaction with the kernel. This remove the latency
-> > > > of syscall and context switch.
-> > > >
-> > > > The patchset contains documents for the detail. Please refer to it for
-> > more
-> > > > information.
-> > > >
-> > > > This patchset is intended to be used with Jean Philippe Brucker's SVA
-> > > > patch [1] (Which is also in RFC stage). But it is not mandatory. This
-> > > > patchset is tested in the latest mainline kernel without the SVA patches.
-> > > > So it support only one process for each accelerator.
-> > >
-> > > If no sharing, then why not just assigning the whole parent device to
-> > > the process? IMO if SVA usage is the clear goal of your series, it
-> > > might be made clearly so then Jean's series is mandatory dependency...
-> > >
-> > 
-> > We don't know how SVA will be finally. But the feature, "make use of
-> > per-PASID/substream ID IOMMU page table", should be able to be enabled
-> > in the
-> > kernel. So we don't want to enforce it here. After we have this serial ready,
-> > it
-> > can be hooked to any implementation.
+> > Do you want to pull this in through the sh tree?  If not I'd be happy
+> > to take it through the dma mapping tree.
 > 
-> "any" or "only queue-based" implementation? some devices may not
-> have queue concept, e.g. GPU.
+> Usually I send the pull requests for sh tree, and I'm trying to figure
+> out which patches are okay to merge and prepare one now, but if you're
+> happy to take it through the dma mapping tree go ahead, and I'll focus
+> on other sh stuff that needs attention.
 
-Here, "any implementation" refer to the "per PASID page table" implementatin:)
-
-> 
-> > 
-> > Further more, even without "per-PASID IOMMU page table", this series has
-> > its
-> > value. It is not simply dedicate the whole device to the process. It "shares"
-> > the device with the kernel driver. So you can support crypto and a user
-> > application at the same time.
-> 
-> OK.
-> 
-> Thanks
-> Kevin
-
--- 
-			-Kenneth(Hisilicon)
-
-================================================================================
-本邮件及其附件含有华为公司的保密信息，仅限于发送给上面地址中列出的个人或群组。禁
-止任何其他人以任何形式使用（包括但不限于全部或部分地泄露、复制、或散发）本邮件中
-的信息。如果您错收了本邮件，请您立即电话或邮件通知发件人并删除本邮件！
-This e-mail and its attachments contain confidential information from HUAWEI,
-which is intended only for the person or entity whose address is listed above.
-Any use of the 
-information contained herein in any way (including, but not limited to, total or
-partial disclosure, reproduction, or dissemination) by persons other than the
-intended 
-recipient(s) is prohibited. If you receive this e-mail in error, please notify
-the sender by phone or email immediately and delete it!
+I'd love to take it through the dma mapping tree and save you some work!
