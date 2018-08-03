@@ -1,18 +1,14 @@
-From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Fri, 3 Aug 2018 11:47:21 +0800
-Message-ID: <20180803034721.GC91035@Turing-Arch-b>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
-	<20180801165644.GA3820@redhat.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
-	<20180802040557.GL160746@Turing-Arch-b>
-	<20180802142243.GA3481@redhat.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH v3] sparc: use generic dma_noncoherent_ops
+Date: Fri, 3 Aug 2018 09:48:40 +0200
+Message-ID: <20180803074840.GA2763@lst.de>
+References: <20180731080204.22753-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180802142243.GA3481-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20180731080204.22753-1-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,146 +18,353 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, "linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linux-accelerators@>
+To: davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBBdWcgMDIsIDIwMTggYXQgMTA6MjI6NDNBTSAtMDQwMCwgSmVyb21lIEdsaXNzZSB3
-cm90ZToKPiBEYXRlOiBUaHUsIDIgQXVnIDIwMTggMTA6MjI6NDMgLTA0MDAKPiBGcm9tOiBKZXJv
-bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+Cj4gVG86IEtlbm5ldGggTGVlIDxsaWd1b3po
-dUBoaXNpbGljb24uY29tPgo+IENDOiAiVGlhbiwgS2V2aW4iIDxrZXZpbi50aWFuQGludGVsLmNv
-bT4sIEhhbyBGYW5nIDxmYW5naGFvMTFAaHVhd2VpLmNvbT4sCj4gIEFsZXggV2lsbGlhbXNvbiA8
-YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+LCBIZXJiZXJ0IFh1Cj4gIDxoZXJiZXJ0QGdvbmRv
-ci5hcGFuYS5vcmcuYXU+LCAia3ZtQHZnZXIua2VybmVsLm9yZyIKPiAgPGt2bUB2Z2VyLmtlcm5l
-bC5vcmc+LCBKb25hdGhhbiBDb3JiZXQgPGNvcmJldEBsd24ubmV0PiwgR3JlZwo+ICBLcm9haC1I
-YXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4sIFphaWJvIFh1IDx4dXphaWJvQGh1
-YXdlaS5jb20+LAo+ICAibGludXgtZG9jQHZnZXIua2VybmVsLm9yZyIgPGxpbnV4LWRvY0B2Z2Vy
-Lmtlcm5lbC5vcmc+LCAiS3VtYXIsIFNhbmpheSBLIgo+ICA8c2FuamF5Lmsua3VtYXJAaW50ZWwu
-Y29tPiwgS2VubmV0aCBMZWUgPG5lay5pbi5jbkBnbWFpbC5jb20+LAo+ICAiaW9tbXVAbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmciIDxpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZz4s
-Cj4gICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiA8bGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZz4sCj4gICJsaW51eGFybUBodWF3ZWkuY29tIiA8bGludXhhcm1AaHVhd2VpLmNvbT4s
-Cj4gICJsaW51eC1jcnlwdG9Admdlci5rZXJuZWwub3JnIiA8bGludXgtY3J5cHRvQHZnZXIua2Vy
-bmVsLm9yZz4sIFBoaWxpcHBlCj4gIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIuY29tPiwg
-VGhvbWFzIEdsZWl4bmVyIDx0Z2x4QGxpbnV0cm9uaXguZGU+LAo+ICAiRGF2aWQgUyAuIE1pbGxl
-ciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+LAo+ICAibGludXgtYWNjZWxlcmF0b3JzQGxpc3RzLm96
-bGFicy5vcmciCj4gIDxsaW51eC1hY2NlbGVyYXRvcnNAbGlzdHMub3psYWJzLm9yZz4KPiBTdWJq
-ZWN0OiBSZTogW1JGQyBQQVRDSCAwLzddIEEgR2VuZXJhbCBBY2NlbGVyYXRvciBGcmFtZXdvcmss
-IFdhcnBEcml2ZQo+IFVzZXItQWdlbnQ6IE11dHQvMS4xMC4wICgyMDE4LTA1LTE3KQo+IE1lc3Nh
-Z2UtSUQ6IDwyMDE4MDgwMjE0MjI0My5HQTM0ODFAcmVkaGF0LmNvbT4KPiAKPiBPbiBUaHUsIEF1
-ZyAwMiwgMjAxOCBhdCAxMjowNTo1N1BNICswODAwLCBLZW5uZXRoIExlZSB3cm90ZToKPiA+IE9u
-IFRodSwgQXVnIDAyLCAyMDE4IGF0IDAyOjMzOjEyQU0gKzAwMDAsIFRpYW4sIEtldmluIHdyb3Rl
-Ogo+ID4gPiBEYXRlOiBUaHUsIDIgQXVnIDIwMTggMDI6MzM6MTIgKzAwMDAKPiA+ID4gPiBGcm9t
-OiBKZXJvbWUgR2xpc3NlCj4gPiA+ID4gT24gV2VkLCBBdWcgMDEsIDIwMTggYXQgMDY6MjI6MTRQ
-TSArMDgwMCwgS2VubmV0aCBMZWUgd3JvdGU6Cj4gPiA+ID4gPiBGcm9tOiBLZW5uZXRoIExlZSA8
-bGlndW96aHVAaGlzaWxpY29uLmNvbT4KPiA+ID4gPiA+Cj4gPiA+ID4gPiBXYXJwRHJpdmUgaXMg
-YW4gYWNjZWxlcmF0b3IgZnJhbWV3b3JrIHRvIGV4cG9zZSB0aGUgaGFyZHdhcmUKPiA+ID4gPiBj
-YXBhYmlsaXRpZXMKPiA+ID4gPiA+IGRpcmVjdGx5IHRvIHRoZSB1c2VyIHNwYWNlLiBJdCBtYWtl
-cyB1c2Ugb2YgdGhlIGV4aXN0IHZmaW8gYW5kIHZmaW8tbWRldgo+ID4gPiA+ID4gZmFjaWxpdGll
-cy4gU28gdGhlIHVzZXIgYXBwbGljYXRpb24gY2FuIHNlbmQgcmVxdWVzdCBhbmQgRE1BIHRvIHRo
-ZQo+ID4gPiA+ID4gaGFyZHdhcmUgd2l0aG91dCBpbnRlcmFjdGlvbiB3aXRoIHRoZSBrZXJuZWwu
-IFRoaXMgcmVtb3ZlIHRoZSBsYXRlbmN5Cj4gPiA+ID4gPiBvZiBzeXNjYWxsIGFuZCBjb250ZXh0
-IHN3aXRjaC4KPiA+ID4gPiA+Cj4gPiA+ID4gPiBUaGUgcGF0Y2hzZXQgY29udGFpbnMgZG9jdW1l
-bnRzIGZvciB0aGUgZGV0YWlsLiBQbGVhc2UgcmVmZXIgdG8gaXQgZm9yCj4gPiA+ID4gbW9yZQo+
-ID4gPiA+ID4gaW5mb3JtYXRpb24uCj4gPiA+ID4gPgo+ID4gPiA+ID4gVGhpcyBwYXRjaHNldCBp
-cyBpbnRlbmRlZCB0byBiZSB1c2VkIHdpdGggSmVhbiBQaGlsaXBwZSBCcnVja2VyJ3MgU1ZBCj4g
-PiA+ID4gPiBwYXRjaCBbMV0gKFdoaWNoIGlzIGFsc28gaW4gUkZDIHN0YWdlKS4gQnV0IGl0IGlz
-IG5vdCBtYW5kYXRvcnkuIFRoaXMKPiA+ID4gPiA+IHBhdGNoc2V0IGlzIHRlc3RlZCBpbiB0aGUg
-bGF0ZXN0IG1haW5saW5lIGtlcm5lbCB3aXRob3V0IHRoZSBTVkEgcGF0Y2hlcy4KPiA+ID4gPiA+
-IFNvIGl0IHN1cHBvcnQgb25seSBvbmUgcHJvY2VzcyBmb3IgZWFjaCBhY2NlbGVyYXRvci4KPiA+
-ID4gPiA+Cj4gPiA+ID4gPiBXaXRoIFNWQSBzdXBwb3J0LCBXYXJwRHJpdmUgY2FuIHN1cHBvcnQg
-bXVsdGktcHJvY2VzcyBpbiB0aGUgc2FtZQo+ID4gPiA+ID4gYWNjZWxlcmF0b3IgZGV2aWNlLiAg
-V2UgdGVzdGVkIGl0IGluIG91ciBTb0MgaW50ZWdyYXRlZCBBY2NlbGVyYXRvciAoYm9hcmQKPiA+
-ID4gPiA+IElEOiBEMDYsIENoaXAgSUQ6IEhJUDA4KS4gQSByZWZlcmVuY2Ugd29yayB0cmVlIGNh
-biBiZSBmb3VuZCBoZXJlOiBbMl0uCj4gPiA+ID4gCj4gPiA+ID4gSSBoYXZlIG5vdCBmdWxseSBp
-bnNwZWN0ZWQgdGhpbmdzIG5vciBkbyBpIGtub3cgZW5vdWdoIGFib3V0Cj4gPiA+ID4gdGhpcyBI
-aXNpbGljb24gWklQIGFjY2VsZXJhdG9yIHRvIGFzY2VydGFpbiwgYnV0IGZyb20gZ2xpbXBzaW5n
-Cj4gPiA+ID4gYXQgdGhlIGNvZGUgaXQgc2VlbXMgdGhhdCBpdCBpcyB1bnNhZmUgdG8gdXNlIGV2
-ZW4gd2l0aCBTVkEgZHVlCj4gPiA+ID4gdG8gdGhlIGRvb3JiZWxsLiBUaGVyZSBpcyBhIGNvbW1l
-bnQgdGFsa2luZyBhYm91dCBzYWZldHluZXNzCj4gPiA+ID4gaW4gcGF0Y2ggNy4KPiA+ID4gPiAK
-PiA+ID4gPiBFeHBvc2luZyB0aGluZyB0byB1c2Vyc3BhY2UgaXMgYWx3YXlzIGVudGljaW5nLCBi
-dXQgaWYgaXQgaXMKPiA+ID4gPiBhIHNlY3VyaXR5IHJpc2sgdGhlbiBpdCBzaG91bGQgY2xlYXJs
-eSBzYXkgc28gYW5kIG1heWJlIGEKPiA+ID4gPiBrZXJuZWwgYm9vdCBmbGFnIHNob3VsZCBiZSBu
-ZWNlc3NhcnkgdG8gYWxsb3cgc3VjaCBkZXZpY2UgdG8KPiA+ID4gPiBiZSB1c2UuCj4gPiA+ID4g
-Cj4gPiAKPiA+IEJ1dCBkb29yYmVsbCBpcyBqdXN0IGEgbm90aWZpY2F0aW9uLiBFeGNlcHQgZm9y
-IERPUyAodG8gbWFrZSBoYXJkd2FyZSBidXN5KSBpdAo+ID4gY2Fubm90IGFjdHVhbGx5IHRha2Ug
-b3IgY2hhbmdlIGFueXRoaW5nIGZyb20gdGhlIGtlcm5lbCBzcGFjZS4gQW5kIHRoZSBET1MKPiA+
-IHByb2JsZW0gY2FuIGJlIGFsd2F5cyB0YWtlbiBhcyB0aGUgcHJvYmxlbSB0aGF0IGEgZ3JvdXAg
-b2YgcHJvY2Vzc2VzIHNoYXJlIHRoZQo+ID4gc2FtZSBrZXJuZWwgZW50aXR5Lgo+ID4gCj4gPiBJ
-biB0aGUgY29taW5nIEhJUDA5IGhhcmR3YXJlLCB0aGUgZG9vcmJlbGwgd2lsbCBjb21lIHdpdGgg
-YSByYW5kb20gbnVtYmVyIHNvCj4gPiBvbmx5IHRoZSBwcm9jZXNzIHdobyBhbGxvY2F0ZWQgdGhl
-IHF1ZXVlIGNhbiBrbm9jayBpdCBjb3JyZWN0bHkuCj4gCj4gV2hlbiBkb29yYmVsbCBpcyByaW5n
-IHRoZSBoYXJkd2FyZSBzdGFydCBmZXRjaGluZyBjb21tYW5kcyBmcm9tCj4gdGhlIHF1ZXVlIGFu
-ZCBleGVjdXRlIHRoZW0gPyBJZiBzbyB0aGFuIGEgcm9ndWUgcHJvY2VzcyBCIG1pZ2h0Cj4gcmlu
-ZyB0aGUgZG9vcmJlbGwgb2YgcHJvY2VzcyBBIHdoaWNoIHdvdWxkIHN0YXJ0cyBleGVjdXRpb24g
-b2YKPiByYW5kb20gY29tbWFuZHMgKGllIHdoYXRldmVyIHJhbmRvbSBtZW1vcnkgdmFsdWUgdGhl
-cmUgaXMgbGVmdAo+IGluc2lkZSB0aGUgY29tbWFuZCBidWZmZXIgbWVtb3J5LCBjb3VsZCBiZSBv
-bGQgY29tbWFuZHMgaSBndWVzcykuCj4gCj4gSWYgdGhpcyBpcyBub3QgaG93IHRoaXMgZG9vcmJl
-bGwgd29ya3MgdGhlbiwgeWVzIGl0IGNhbiBvbmx5IGRvCj4gYSBkZW5pYWwgb2Ygc2VydmljZSBp
-IGd1ZXNzLiBJc3N1ZSBpIGhhdmUgd2l0aCBkb29yYmVsbCBpcyB0aGF0Cj4gaSBoYXZlIHNlZW4g
-MTAgZGlmZmVyZW50cyBpbXBsZW1lbnRhdGlvbnMgaW4gMTAgZGlmZmVyZW50cyBodwo+IGFuZCBl
-YWNoIGFyZSBkaWZmZXJlbnQgYXMgdG8gd2hhdCByaW5naW5nIG9yIHZhbHVlIHdyaXR0ZW4gdG8g
-dGhlCj4gZG9vcmJlbGwgZG9lcy4gSXQgaXMgcGFpbmZ1bGwgdG8gdHJhY2sgd2hhdCBpcyB3aGF0
-IGZvciBlYWNoIGh3Lgo+IAoKSW4gb3VyIGltcGxlbWVudGF0aW9uLCBkb29yYmVsbCBpcyBzaW1w
-bHkgYSBub3RpZmljYXRpb24sIGp1c3QgbGlrZSBhbiBpbnRlcnJ1cHQKdG8gdGhlIGFjY2VsZXJh
-dG9yLiBUaGUgY29tbWFuZCBpcyBhbGwgYWJvdXQgd2hhdCdzIGluIHRoZSBxdWV1ZS4KCkkgYWdy
-ZWUgdGhhdCB0aGVyZSBpcyBubyBzaW1wbGUgYW5kIHN0YW5kYXJkIHdheSB0byB0cmFjayB0aGUg
-c2hhcmVkIElPIHNwYWNlLgpCdXQgSSB0aGluayB3ZSBoYXZlIHRvIHRydXN0IHRoZSBkcml2ZXIg
-aW4gc29tZSB3YXkuIElmIHRoZSBkcml2ZXIgaXMgbWFsaWNpb3VzLApldmVuIGEgc2ltcGxlIGlv
-Y3RsIGNhbiBiZWNvbWUgYW4gYXR0YWNrLgoKPiAKPiA+ID4gPiBNeSBtb3JlIGdlbmVyYWwgcXVl
-c3Rpb24gaXMgZG8gd2Ugd2FudCB0byBncm93IFZGSU8gdG8gYmVjb21lCj4gPiA+ID4gYSBtb3Jl
-IGdlbmVyaWMgZGV2aWNlIGRyaXZlciBBUEkuIFRoaXMgcGF0Y2hzZXQgYWRkcyBhIGNvbW1hbmQK
-PiA+ID4gPiBxdWV1ZSBjb25jZXB0IHRvIGl0IChpIGRvbid0IHRoaW5rIGl0IGV4aXN0IHRvZGF5
-IGJ1dCBpIGhhdmUKPiA+ID4gPiBub3QgZm9sbG93IFZGSU8gY2xvc2VseSkuCj4gPiA+ID4gCj4g
-PiAKPiA+IFRoZSB0aGluZyBpcywgVkZJTyBpcyB0aGUgb25seSBwbGFjZSB0byBzdXBwb3J0IERN
-QSBmcm9tIHVzZXIgbGFuZC4gSWYgd2UgZG9uJ3QKPiA+IHB1dCBpdCBoZXJlLCB3ZSBoYXZlIHRv
-IGNyZWF0ZSBhbm90aGVyIHNpbWlsYXIgZmFjaWxpdHkgdG8gc3VwcG9ydCB0aGUgc2FtZS4KPiAK
-PiBObyBpdCBpcyBub3QsIG5ldHdvcmsgZGV2aWNlLCBHUFUsIGJsb2NrIGRldmljZSwgLi4uIHRo
-ZXkgYWxsIGRvCj4gc3VwcG9ydCBETUEuIFRoZSBwb2ludCBpIGFtIHRyeWluZyB0byBtYWtlIGhl
-cmUgaXMgdGhhdCBldmVuIGluCgpTb3JyeSwgd2FpdCBhIG1pbnV0ZSwgYXJlIHdlIHRhbGtpbmcg
-dGhlIHNhbWUgdGhpbmc/IEkgbWVhbnQgIkRNQSBmcm9tIHVzZXIKbGFuZCIsIG5vdCAiRE1BIGZy
-b20ga2VybmVsIGRyaXZlciIuIFRvIGRvIHRoYXQgd2UgaGF2ZSB0byBtYW5pcHVsYXRlIHRoZQpJ
-T01NVShVbml0KS4gSSB0aGluayBpdCBjYW4gb25seSBiZSBkb25lIGJ5IGRlZmF1bHRfZG9tYWlu
-IG9yIHZmaW8gZG9tYWluLiBPcgp0aGUgdXNlciBzcGFjZSBoYXZlIHRvIGRpcmVjdGx5IGFjY2Vz
-cyB0aGUgSU9NTVUuCgo+IHlvdXIgbWVjaGFuaXNtcyB0aGUgdXNlcnNwYWNlIG11c3QgaGF2ZSBh
-IHNwZWNpZmljIHVzZXJzcGFjZQo+IGRyaXZlcnMgZm9yIGVhY2ggaGFyZHdhcmUgYW5kIHRodXMg
-dGhlcmUgYXJlIHZpcnR1YWxseSBubwo+IGRpZmZlcmVuY2VzIGJldHdlZW4gaGF2aW5nIHRoaXMg
-dXNlcnNwYWNlIGRyaXZlciBvcGVuIGEgZGV2aWNlCj4gZmlsZSBpbiB2ZmlvIG9yIHNvbWV3aGVy
-ZSBlbHNlIGluIHRoZSBkZXZpY2UgZmlsZXN5c3RlbS4gVGhpcyBpcwo+IGp1c3QgYSBkaWZmZXJl
-bnQgcGF0aC4KPiAKClRoZSBiYXNpYyBwcm9ibGVtIFdhcnBEcml2ZSB3YW50IHRvIHNvbHZlIGl0
-IHRvIGF2b2lkIHN5c2NhbGwuIFRoaXMgaXMgaW1wb3J0YW50CnRvIGFjY2VsZXJhdG9ycy4gV2Ug
-aGF2ZSBzb21lIGRhdGEgaGVyZToKaHR0cHM6Ly93d3cuc2xpZGVzaGFyZS5uZXQvbGluYXJvb3Jn
-L3Byb2dyZXNzLWFuZC1kZW1vbnN0cmF0aW9uLW9mLXdyYXBkcml2ZS1hLWFjY2VsZXJhdG9yLWZy
-YW1ld29yay1zZm8xNzMxNwoKKHNlZSBwYWdlIDMpCgpUaGUgcGVyZm9ybWFuY2UgaXMgZGlmZmVy
-ZW50IG9uIHVzaW5nIGtlcm5lbCBhbmQgdXNlciBkcml2ZXJzLgoKQW5kIHdlIGFsc28gYmVsaWV2
-ZSB0aGUgaGFyZHdhcmUgaW50ZXJmYWNlIGNhbiBiZWNvbWUgc3RhbmRhcmQgYWZ0ZXIgc29tZXRp
-bWUuClNvbWUgY29tcGFuaWVzIGhhdmUgc3RhcnRlZCB0byBkbyB0aGlzIChzdWNoIEFSTSdzIFJl
-dmVyZSkuIEJ1dCBiZWZvcmUgdGhhdCwgd2UKc2hvdWxkIGhhdmUgYSBzb2Z0d2FyZSBjaGFubmVs
-IGZvciBpdC4KCj4gU28gdGhpcyBpcyB3aHkgaSBkbyBub3Qgc2VlIGFueSBiZW5lZml0IHRvIGhh
-dmluZyBhbGwgZHJpdmVycyB3aXRoCj4gU1ZNIChjYW4gd2UgcGxlYXNlIHVzZSBTVk0gYW5kIG5v
-dCBTVkEgYXMgU1ZNIGlzIHdoYXQgaGF2ZSBiZWVuIHVzZQo+IGluIG1vcmUgcGxhY2VzIHNvIGZh
-cikuCj4gCgpQZXJzb25hbGx5LCB3ZSBkb24ndCBjYXJlIHdoYXQgbmFtZSB0byBiZSB1c2VkLiBJ
-IHVzZWQgU1ZNIHdoZW4gSSBzdGFydCB0aGlzCndvcmsuIEFuZCB0aGVuIEplYW4gc2FpZCBTVk0g
-aGFkIGJlZW4gdXNlZCBieSBBTUQgYXMgU2VjdXJlIFZpcnR1YWwgTWFjaGluZS4gU28KaGUgY2Fs
-bGVkIGl0IFNWQS4gQW5kIG5vdy4uLiB3aG8gc2hvdWxkIEkgZm9sbG93PyA6KQoKPiAKPiBDaGVl
-cnMsCj4gSsOpcsO0bWUKCi0tIAoJCQktS2VubmV0aChIaXNpbGljb24pCgo9PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PQrmnKzpgq7ku7blj4rlhbbpmYTku7blkKvmnInljY7kuLrlhazlj7jnmoTkv53l
-r4bkv6Hmga/vvIzku4XpmZDkuo7lj5HpgIHnu5nkuIrpnaLlnLDlnYDkuK3liJflh7rnmoTkuKrk
-urrmiJbnvqTnu4TjgILnpoEK5q2i5Lu75L2V5YW25LuW5Lq65Lul5Lu75L2V5b2i5byP5L2/55So
-77yI5YyF5ous5L2G5LiN6ZmQ5LqO5YWo6YOo5oiW6YOo5YiG5Zyw5rOE6Zyy44CB5aSN5Yi244CB
-5oiW5pWj5Y+R77yJ5pys6YKu5Lu25LitCueahOS/oeaBr+OAguWmguaenOaCqOmUmeaUtuS6huac
-rOmCruS7tu+8jOivt+aCqOeri+WNs+eUteivneaIlumCruS7tumAmuefpeWPkeS7tuS6uuW5tuWI
-oOmZpOacrOmCruS7tu+8gQpUaGlzIGUtbWFpbCBhbmQgaXRzIGF0dGFjaG1lbnRzIGNvbnRhaW4g
-Y29uZmlkZW50aWFsIGluZm9ybWF0aW9uIGZyb20gSFVBV0VJLAp3aGljaCBpcyBpbnRlbmRlZCBv
-bmx5IGZvciB0aGUgcGVyc29uIG9yIGVudGl0eSB3aG9zZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92
-ZS4KQW55IHVzZSBvZiB0aGUgCmluZm9ybWF0aW9uIGNvbnRhaW5lZCBoZXJlaW4gaW4gYW55IHdh
-eSAoaW5jbHVkaW5nLCBidXQgbm90IGxpbWl0ZWQgdG8sIHRvdGFsIG9yCnBhcnRpYWwgZGlzY2xv
-c3VyZSwgcmVwcm9kdWN0aW9uLCBvciBkaXNzZW1pbmF0aW9uKSBieSBwZXJzb25zIG90aGVyIHRo
-YW4gdGhlCmludGVuZGVkIApyZWNpcGllbnQocykgaXMgcHJvaGliaXRlZC4gSWYgeW91IHJlY2Vp
-dmUgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBub3RpZnkKdGhlIHNlbmRlciBieSBwaG9u
-ZSBvciBlbWFpbCBpbW1lZGlhdGVseSBhbmQgZGVsZXRlIGl0IQoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Dave,
+
+any chance you would consider reviewing and applying this patch,
+which already has an ACK from Sam?  It would really help me with
+some core DMA API projects planned for the next merge window.
+
+On Tue, Jul 31, 2018 at 10:02:04AM +0200, Christoph Hellwig wrote:
+> Switch to the generic noncoherent direct mapping implementation.
+> 
+> This removes the previous sync_single_for_device implementation, which
+> looks bogus given that no syncing is happening in the similar but more
+> important map_single case.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Acked-by: Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
+> ---
+> 
+> Changes since v2:
+>  - remove incorrect hunk to set the sparc cross compiler
+> 
+> Changes since v1:
+>  - clean up various tidbits
+>  - add Ack from Sam
+> 
+>  arch/sparc/Kconfig                   |   2 +
+>  arch/sparc/include/asm/dma-mapping.h |   5 +-
+>  arch/sparc/kernel/ioport.c           | 193 +++++----------------------
+>  3 files changed, 35 insertions(+), 165 deletions(-)
+> 
+> diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
+> index 0f535debf802..79f29c67291a 100644
+> --- a/arch/sparc/Kconfig
+> +++ b/arch/sparc/Kconfig
+> @@ -48,6 +48,8 @@ config SPARC
+>  
+>  config SPARC32
+>  	def_bool !64BIT
+> +	select ARCH_HAS_SYNC_DMA_FOR_CPU
+> +	select DMA_NONCOHERENT_OPS
+>  	select GENERIC_ATOMIC64
+>  	select CLZ_TAB
+>  	select HAVE_UID16
+> diff --git a/arch/sparc/include/asm/dma-mapping.h b/arch/sparc/include/asm/dma-mapping.h
+> index 12ae33daf52f..e17566376934 100644
+> --- a/arch/sparc/include/asm/dma-mapping.h
+> +++ b/arch/sparc/include/asm/dma-mapping.h
+> @@ -7,7 +7,6 @@
+>  #include <linux/dma-debug.h>
+>  
+>  extern const struct dma_map_ops *dma_ops;
+> -extern const struct dma_map_ops pci32_dma_ops;
+>  
+>  extern struct bus_type pci_bus_type;
+>  
+> @@ -15,11 +14,11 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+>  {
+>  #ifdef CONFIG_SPARC_LEON
+>  	if (sparc_cpu_model == sparc_leon)
+> -		return &pci32_dma_ops;
+> +		return &dma_noncoherent_ops;
+>  #endif
+>  #if defined(CONFIG_SPARC32) && defined(CONFIG_PCI)
+>  	if (bus == &pci_bus_type)
+> -		return &pci32_dma_ops;
+> +		return &dma_noncoherent_ops;
+>  #endif
+>  	return dma_ops;
+>  }
+> diff --git a/arch/sparc/kernel/ioport.c b/arch/sparc/kernel/ioport.c
+> index cca9134cfa7d..6799c93c9f27 100644
+> --- a/arch/sparc/kernel/ioport.c
+> +++ b/arch/sparc/kernel/ioport.c
+> @@ -38,6 +38,7 @@
+>  #include <linux/proc_fs.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/scatterlist.h>
+> +#include <linux/dma-noncoherent.h>
+>  #include <linux/of_device.h>
+>  
+>  #include <asm/io.h>
+> @@ -434,42 +435,41 @@ arch_initcall(sparc_register_ioport);
+>  /* Allocate and map kernel buffer using consistent mode DMA for a device.
+>   * hwdev should be valid struct pci_dev pointer for PCI devices.
+>   */
+> -static void *pci32_alloc_coherent(struct device *dev, size_t len,
+> -				  dma_addr_t *pba, gfp_t gfp,
+> -				  unsigned long attrs)
+> +void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> +		gfp_t gfp, unsigned long attrs)
+>  {
+> -	unsigned long len_total = PAGE_ALIGN(len);
+> +	unsigned long len_total = PAGE_ALIGN(size);
+>  	void *va;
+>  	struct resource *res;
+>  	int order;
+>  
+> -	if (len == 0) {
+> +	if (size == 0) {
+>  		return NULL;
+>  	}
+> -	if (len > 256*1024) {			/* __get_free_pages() limit */
+> +	if (size > 256*1024) {			/* __get_free_pages() limit */
+>  		return NULL;
+>  	}
+>  
+>  	order = get_order(len_total);
+>  	va = (void *) __get_free_pages(gfp, order);
+>  	if (va == NULL) {
+> -		printk("pci_alloc_consistent: no %ld pages\n", len_total>>PAGE_SHIFT);
+> +		printk("%s: no %ld pages\n", __func__, len_total>>PAGE_SHIFT);
+>  		goto err_nopages;
+>  	}
+>  
+>  	if ((res = kzalloc(sizeof(struct resource), GFP_KERNEL)) == NULL) {
+> -		printk("pci_alloc_consistent: no core\n");
+> +		printk("%s: no core\n", __func__);
+>  		goto err_nomem;
+>  	}
+>  
+>  	if (allocate_resource(&_sparc_dvma, res, len_total,
+>  	    _sparc_dvma.start, _sparc_dvma.end, PAGE_SIZE, NULL, NULL) != 0) {
+> -		printk("pci_alloc_consistent: cannot occupy 0x%lx", len_total);
+> +		printk("%s: cannot occupy 0x%lx", __func__, len_total);
+>  		goto err_nova;
+>  	}
+>  	srmmu_mapiorange(0, virt_to_phys(va), res->start, len_total);
+>  
+> -	*pba = virt_to_phys(va); /* equals virt_to_bus (R.I.P.) for us. */
+> +	*dma_handle = virt_to_phys(va);
+>  	return (void *) res->start;
+>  
+>  err_nova:
+> @@ -481,184 +481,53 @@ static void *pci32_alloc_coherent(struct device *dev, size_t len,
+>  }
+>  
+>  /* Free and unmap a consistent DMA buffer.
+> - * cpu_addr is what was returned from pci_alloc_consistent,
+> - * size must be the same as what as passed into pci_alloc_consistent,
+> - * and likewise dma_addr must be the same as what *dma_addrp was set to.
+> + * cpu_addr is what was returned arch_dma_alloc, size must be the same as what
+> + * was passed into arch_dma_alloc, and likewise dma_addr must be the same as
+> + * what *dma_ndler was set to.
+>   *
+>   * References to the memory and mappings associated with cpu_addr/dma_addr
+>   * past this call are illegal.
+>   */
+> -static void pci32_free_coherent(struct device *dev, size_t n, void *p,
+> -				dma_addr_t ba, unsigned long attrs)
+> +void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+> +		dma_addr_t dma_addr, unsigned long attrs)
+>  {
+>  	struct resource *res;
+>  
+>  	if ((res = lookup_resource(&_sparc_dvma,
+> -	    (unsigned long)p)) == NULL) {
+> -		printk("pci_free_consistent: cannot free %p\n", p);
+> +	    (unsigned long)cpu_addr)) == NULL) {
+> +		printk("%s: cannot free %p\n", __func__, cpu_addr);
+>  		return;
+>  	}
+>  
+> -	if (((unsigned long)p & (PAGE_SIZE-1)) != 0) {
+> -		printk("pci_free_consistent: unaligned va %p\n", p);
+> +	if (((unsigned long)cpu_addr & (PAGE_SIZE-1)) != 0) {
+> +		printk("%s: unaligned va %p\n", __func__, cpu_addr);
+>  		return;
+>  	}
+>  
+> -	n = PAGE_ALIGN(n);
+> -	if (resource_size(res) != n) {
+> -		printk("pci_free_consistent: region 0x%lx asked 0x%lx\n",
+> -		    (long)resource_size(res), (long)n);
+> +	size = PAGE_ALIGN(size);
+> +	if (resource_size(res) != size) {
+> +		printk("%s: region 0x%lx asked 0x%zx\n", __func__,
+> +		    (long)resource_size(res), size);
+>  		return;
+>  	}
+>  
+> -	dma_make_coherent(ba, n);
+> -	srmmu_unmapiorange((unsigned long)p, n);
+> +	dma_make_coherent(dma_addr, size);
+> +	srmmu_unmapiorange((unsigned long)cpu_addr, size);
+>  
+>  	release_resource(res);
+>  	kfree(res);
+> -	free_pages((unsigned long)phys_to_virt(ba), get_order(n));
+> -}
+> -
+> -/*
+> - * Same as pci_map_single, but with pages.
+> - */
+> -static dma_addr_t pci32_map_page(struct device *dev, struct page *page,
+> -				 unsigned long offset, size_t size,
+> -				 enum dma_data_direction dir,
+> -				 unsigned long attrs)
+> -{
+> -	/* IIep is write-through, not flushing. */
+> -	return page_to_phys(page) + offset;
+> -}
+> -
+> -static void pci32_unmap_page(struct device *dev, dma_addr_t ba, size_t size,
+> -			     enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	if (dir != PCI_DMA_TODEVICE && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> -		dma_make_coherent(ba, PAGE_ALIGN(size));
+> -}
+> -
+> -/* Map a set of buffers described by scatterlist in streaming
+> - * mode for DMA.  This is the scatter-gather version of the
+> - * above pci_map_single interface.  Here the scatter gather list
+> - * elements are each tagged with the appropriate dma address
+> - * and length.  They are obtained via sg_dma_{address,length}(SG).
+> - *
+> - * NOTE: An implementation may be able to use a smaller number of
+> - *       DMA address/length pairs than there are SG table elements.
+> - *       (for example via virtual mapping capabilities)
+> - *       The routine returns the number of addr/length pairs actually
+> - *       used, at most nents.
+> - *
+> - * Device ownership issues as mentioned above for pci_map_single are
+> - * the same here.
+> - */
+> -static int pci32_map_sg(struct device *device, struct scatterlist *sgl,
+> -			int nents, enum dma_data_direction dir,
+> -			unsigned long attrs)
+> -{
+> -	struct scatterlist *sg;
+> -	int n;
+> -
+> -	/* IIep is write-through, not flushing. */
+> -	for_each_sg(sgl, sg, nents, n) {
+> -		sg->dma_address = sg_phys(sg);
+> -		sg->dma_length = sg->length;
+> -	}
+> -	return nents;
+> -}
+> -
+> -/* Unmap a set of streaming mode DMA translations.
+> - * Again, cpu read rules concerning calls here are the same as for
+> - * pci_unmap_single() above.
+> - */
+> -static void pci32_unmap_sg(struct device *dev, struct scatterlist *sgl,
+> -			   int nents, enum dma_data_direction dir,
+> -			   unsigned long attrs)
+> -{
+> -	struct scatterlist *sg;
+> -	int n;
+> -
+> -	if (dir != PCI_DMA_TODEVICE && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+> -		for_each_sg(sgl, sg, nents, n) {
+> -			dma_make_coherent(sg_phys(sg), PAGE_ALIGN(sg->length));
+> -		}
+> -	}
+> -}
+> -
+> -/* Make physical memory consistent for a single
+> - * streaming mode DMA translation before or after a transfer.
+> - *
+> - * If you perform a pci_map_single() but wish to interrogate the
+> - * buffer using the cpu, yet do not wish to teardown the PCI dma
+> - * mapping, you must call this function before doing so.  At the
+> - * next point you give the PCI dma address back to the card, you
+> - * must first perform a pci_dma_sync_for_device, and then the
+> - * device again owns the buffer.
+> - */
+> -static void pci32_sync_single_for_cpu(struct device *dev, dma_addr_t ba,
+> -				      size_t size, enum dma_data_direction dir)
+> -{
+> -	if (dir != PCI_DMA_TODEVICE) {
+> -		dma_make_coherent(ba, PAGE_ALIGN(size));
+> -	}
+> -}
+> -
+> -static void pci32_sync_single_for_device(struct device *dev, dma_addr_t ba,
+> -					 size_t size, enum dma_data_direction dir)
+> -{
+> -	if (dir != PCI_DMA_TODEVICE) {
+> -		dma_make_coherent(ba, PAGE_ALIGN(size));
+> -	}
+> +	free_pages((unsigned long)phys_to_virt(dma_addr), get_order(size));
+>  }
+>  
+> -/* Make physical memory consistent for a set of streaming
+> - * mode DMA translations after a transfer.
+> - *
+> - * The same as pci_dma_sync_single_* but for a scatter-gather list,
+> - * same rules and usage.
+> - */
+> -static void pci32_sync_sg_for_cpu(struct device *dev, struct scatterlist *sgl,
+> -				  int nents, enum dma_data_direction dir)
+> -{
+> -	struct scatterlist *sg;
+> -	int n;
+> -
+> -	if (dir != PCI_DMA_TODEVICE) {
+> -		for_each_sg(sgl, sg, nents, n) {
+> -			dma_make_coherent(sg_phys(sg), PAGE_ALIGN(sg->length));
+> -		}
+> -	}
+> -}
+> +/* IIep is write-through, not flushing on cpu to device transfer. */
+>  
+> -static void pci32_sync_sg_for_device(struct device *device, struct scatterlist *sgl,
+> -				     int nents, enum dma_data_direction dir)
+> +void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
+> +		size_t size, enum dma_data_direction dir)
+>  {
+> -	struct scatterlist *sg;
+> -	int n;
+> -
+> -	if (dir != PCI_DMA_TODEVICE) {
+> -		for_each_sg(sgl, sg, nents, n) {
+> -			dma_make_coherent(sg_phys(sg), PAGE_ALIGN(sg->length));
+> -		}
+> -	}
+> +	if (dir != PCI_DMA_TODEVICE)
+> +		dma_make_coherent(paddr, PAGE_ALIGN(size));
+>  }
+>  
+> -/* note: leon re-uses pci32_dma_ops */
+> -const struct dma_map_ops pci32_dma_ops = {
+> -	.alloc			= pci32_alloc_coherent,
+> -	.free			= pci32_free_coherent,
+> -	.map_page		= pci32_map_page,
+> -	.unmap_page		= pci32_unmap_page,
+> -	.map_sg			= pci32_map_sg,
+> -	.unmap_sg		= pci32_unmap_sg,
+> -	.sync_single_for_cpu	= pci32_sync_single_for_cpu,
+> -	.sync_single_for_device	= pci32_sync_single_for_device,
+> -	.sync_sg_for_cpu	= pci32_sync_sg_for_cpu,
+> -	.sync_sg_for_device	= pci32_sync_sg_for_device,
+> -};
+> -EXPORT_SYMBOL(pci32_dma_ops);
+> -
+>  const struct dma_map_ops *dma_ops = &sbus_dma_ops;
+>  EXPORT_SYMBOL(dma_ops);
+>  
+> -- 
+> 2.18.0
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe sparclinux" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+---end quoted text---
