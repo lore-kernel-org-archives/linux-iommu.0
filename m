@@ -1,32 +1,52 @@
-From: Michael Ellerman <patch-notifications@ellerman.id.au>
-Subject: Re: powerpc: do not redefined NEED_DMA_MAP_STATE
-Date: Fri,  3 Aug 2018 20:48:39 +1000 (AEST)
-Message-ID: <41hkKz6mdvz9s0R@ozlabs.org>
-References: <20180730073721.15991-1-hch@lst.de>
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20180730073721.15991-1-hch@lst.de>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Christoph Hellwig <hch@lst.de>, benh@kernel.crashing.org, paulus@samba.org
-Cc: iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
+From: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Subject: Re: [PATCH v2 2/9] dmapool: cleanup error messages
+Date: Fri, 3 Aug 2018 09:41:55 -0400
+Message-ID: <7a943124-c65e-f0ed-cc5c-20b23f021505@cybernetics.com>
+References: <a9f7ca9a-38d5-12e2-7d15-ab026425e85a@cybernetics.com>
+	<CAHp75Ve0su_S3ZWTtUEUohrs-iPiD1uzFOHhesLrWzJPOa2LNg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAHp75Ve0su_S3ZWTtUEUohrs-iPiD1uzFOHhesLrWzJPOa2LNg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2018-07-30 at 07:37:21 UTC, Christoph Hellwig wrote:
-> kernel/dma/Kconfig already defines NEED_DMA_MAP_STATE, just select it
-> from PPC64 and NOT_COHERENT_CACHE instead.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-Applied to powerpc next, thanks.
-
-https://git.kernel.org/powerpc/c/06832fc004815b4b43628d21fc8171
-
-cheers
+T24gMDgvMDMvMjAxOCAwNDo1NiBBTSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+IE9uIFRodSwg
+QXVnIDIsIDIwMTggYXQgMTA6NTcgUE0sIFRvbnkgQmF0dGVyc2J5IDx0b255YkBjeWJlcm5ldGlj
+cy5jb20+IHdyb3RlOgo+PiBSZW1vdmUgY29kZSBkdXBsaWNhdGlvbiBpbiBlcnJvciBtZXNzYWdl
+cy4gIEl0IGlzIG5vdyBzYWZlIHRvIHBhcyBhIE5VTEwKPj4gZGV2IHRvIGRldl9lcnIoKSwgc28g
+dGhlIGNoZWNrcyB0byBhdm9pZCBkb2luZyBzbyBhcmUgbm8gbG9uZ2VyCj4+IG5lY2Vzc2FyeS4K
+Pj4KPj4gRXhhbXBsZToKPj4KPj4gRXJyb3IgbWVzc2FnZSB3aXRoIGRldiAhPSBOVUxMOgo+PiAg
+IG1wdDNzYXMgMDAwMDowMjowMC4wOiBkbWFfcG9vbF9kZXN0cm95IGNoYWluIHBvb2wsIChfX19f
+cHRydmFsX19fXykgYnVzeQo+Pgo+PiBTYW1lIGVycm9yIG1lc3NhZ2Ugd2l0aCBkZXYgPT0gTlVM
+TCBiZWZvcmUgcGF0Y2g6Cj4+ICAgZG1hX3Bvb2xfZGVzdHJveSBjaGFpbiBwb29sLCAoX19fX3B0
+cnZhbF9fX18pIGJ1c3kKPj4KPj4gU2FtZSBlcnJvciBtZXNzYWdlIHdpdGggZGV2ID09IE5VTEwg
+YWZ0ZXIgcGF0Y2g6Cj4+ICAgKE5VTEwgZGV2aWNlICopOiBkbWFfcG9vbF9kZXN0cm95IGNoYWlu
+IHBvb2wsIChfX19fcHRydmFsX19fXykgYnVzeQo+IEhhdmUgeW91IGNoZWNrZWQgYSBoaXN0b3J5
+IG9mIHRoaXM/Cj4KPiBJJ20gcHJldHR5IHN1cmUgdGhpcyB3YXMgY3JlYXRlZCBpbiBhbiBvcmRl
+ciB0byBhdm9pZCBiYWQgbG9va2luZyAoYW5kCj4gaW4gc29tZSBjYXNlcyBmcmlnaHRlbmluZykg
+Ik5VTEwgZGV2aWNlICoiIHBhcnQuCj4KPiBJZiBpdCBpdCdzIHRoZSBjYXNlLCBJIHdvdWxkIHJh
+dGhlciBsZWF2ZSBpdCBhcyBpcywgYW5kIGV2ZW4gbm90IHRoZQo+IGNhc2UsIEknbSBzbGlnaHRs
+eSBtb3JlIGJlbnQgdG8gdGhlIGN1cnJlbnQgc3RhdGUuCj4KSSBkaWQuwqAgImRyaXZlcnMvYmFz
+ZS9kbWFwb29sLmMiLCBsYXRlciBtb3ZlZCB0byAibW0vZG1hcG9vbC5jIiwgd2FzCmFkZGVkIGlu
+IGxpbnV4LTIuNi4zLCBmb3Igd2hpY2ggZGV2X2VycigpIGRpZCBub3Qgd29yayB3aWxsIGEgTlVM
+TCBkZXYsCnNvIHRoZSBjaGVjayB3YXMgbmVjZXNzYXJ5IGJhY2sgdGhlbi7CoCBJIGFncmVlIHRo
+YXQgdGhlIChOVUxMIGRldmljZSAqKToKYml0IGlzIHVnbHksIGJ1dCB0aGVzZSBtZXNzYWdlcyBz
+aG91bGQgYmUgcHJpbnRlZCBvbmx5IGFmdGVyIGEga2VybmVsCmJ1Zywgc28gaXQgaXMgbm90IGxp
+a2UgdGhleSB3aWxsIGJlIG1ha2luZyBhIHJlZ3VsYXIgYXBwZWFyYW5jZSBpbgpkbWVzZy7CoCBD
+b25zaWRlcmluZyB0aGF0LCBJIHRoaW5rIHRoYXQgaXQgaXMgYmV0dGVyIHRvIGtlZXAgaXQgc2lt
+cGxlLgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
