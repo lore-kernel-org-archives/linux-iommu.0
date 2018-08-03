@@ -1,16 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] arm64: remove dummy_dma_ops
-Date: Fri, 3 Aug 2018 16:05:22 +0100
-Message-ID: <55940a06-4418-287c-1a6c-3db18a0e3ddd@arm.com>
-References: <20180802121318.5785-1-hch@lst.de>
-	<bbb22836-8f2f-5b2f-4801-342643fd9c1b@arm.com>
-	<20180802124328.GA24812@lst.de>
+From: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Subject: Re: [PATCH v2 2/9] dmapool: cleanup error messages
+Date: Fri, 3 Aug 2018 11:17:32 -0400
+Message-ID: <b8547f8d-ac88-3d7b-9c2d-60a2f779259e@cybernetics.com>
+References: <a9f7ca9a-38d5-12e2-7d15-ab026425e85a@cybernetics.com>
+	<CAHp75Ve0su_S3ZWTtUEUohrs-iPiD1uzFOHhesLrWzJPOa2LNg@mail.gmail.com>
+	<7a943124-c65e-f0ed-cc5c-20b23f021505@cybernetics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180802124328.GA24812-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <7a943124-c65e-f0ed-cc5c-20b23f021505-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,39 +20,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/08/18 13:43, Christoph Hellwig wrote:
-> On Thu, Aug 02, 2018 at 01:32:17PM +0100, Robin Murphy wrote:
->> On 02/08/18 13:13, Christoph Hellwig wrote:
->>> Returning NULL from get_arch_dma_ops makes all DMA mapping routines
->>> retourn sensible errors, so remove the dummy ops.
->>
->> Does it? AFAICS all of the non-optional callbacks will still either
->> BUG_ON(!ops) or blindly dereference the null pointer. Have I lost track of
->> another cleanup patch somewhere?
-> 
-> First thing any driver needs to do is dma_set_mask, which first calls
-> dma_supported:
-> 
-> static inline int dma_supported(struct device *dev, u64 mask)
-> {
->          const struct dma_map_ops *ops = get_dma_ops(dev);
-> 
-> 	if (!ops)
-> 		return 0;
-> 	...
-> }
-> 
-
-Yeah, apart from all the drivers that don't. After last week's fun I'm 
-not putting any reliance in that assumption ;)
-
-Of course, the combination of a cheeky legacy driver assuming 32-bit DMA 
-*and* busted firmware failing to describe that device properly should be 
-rare enough that this change is almost certainly a non-issue in 
-practice, but I'm still never going to say I love it.
-
-Robin.
+T24gMDgvMDMvMjAxOCAwOTo0MSBBTSwgVG9ueSBCYXR0ZXJzYnkgd3JvdGU6Cj4gT24gMDgvMDMv
+MjAxOCAwNDo1NiBBTSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+PiBPbiBUaHUsIEF1ZyAyLCAy
+MDE4IGF0IDEwOjU3IFBNLCBUb255IEJhdHRlcnNieSA8dG9ueWJAY3liZXJuZXRpY3MuY29tPiB3
+cm90ZToKPj4+IFJlbW92ZSBjb2RlIGR1cGxpY2F0aW9uIGluIGVycm9yIG1lc3NhZ2VzLiAgSXQg
+aXMgbm93IHNhZmUgdG8gcGFzIGEgTlVMTAo+Pj4gZGV2IHRvIGRldl9lcnIoKSwgc28gdGhlIGNo
+ZWNrcyB0byBhdm9pZCBkb2luZyBzbyBhcmUgbm8gbG9uZ2VyCj4+PiBuZWNlc3NhcnkuCj4+Pgo+
+Pj4gRXhhbXBsZToKPj4+Cj4+PiBFcnJvciBtZXNzYWdlIHdpdGggZGV2ICE9IE5VTEw6Cj4+PiAg
+IG1wdDNzYXMgMDAwMDowMjowMC4wOiBkbWFfcG9vbF9kZXN0cm95IGNoYWluIHBvb2wsIChfX19f
+cHRydmFsX19fXykgYnVzeQo+Pj4KPj4+IFNhbWUgZXJyb3IgbWVzc2FnZSB3aXRoIGRldiA9PSBO
+VUxMIGJlZm9yZSBwYXRjaDoKPj4+ICAgZG1hX3Bvb2xfZGVzdHJveSBjaGFpbiBwb29sLCAoX19f
+X3B0cnZhbF9fX18pIGJ1c3kKPj4+Cj4+PiBTYW1lIGVycm9yIG1lc3NhZ2Ugd2l0aCBkZXYgPT0g
+TlVMTCBhZnRlciBwYXRjaDoKPj4+ICAgKE5VTEwgZGV2aWNlICopOiBkbWFfcG9vbF9kZXN0cm95
+IGNoYWluIHBvb2wsIChfX19fcHRydmFsX19fXykgYnVzeQo+PiBIYXZlIHlvdSBjaGVja2VkIGEg
+aGlzdG9yeSBvZiB0aGlzPwo+Pgo+PiBJJ20gcHJldHR5IHN1cmUgdGhpcyB3YXMgY3JlYXRlZCBp
+biBhbiBvcmRlciB0byBhdm9pZCBiYWQgbG9va2luZyAoYW5kCj4+IGluIHNvbWUgY2FzZXMgZnJp
+Z2h0ZW5pbmcpICJOVUxMIGRldmljZSAqIiBwYXJ0Lgo+Pgo+PiBJZiBpdCBpdCdzIHRoZSBjYXNl
+LCBJIHdvdWxkIHJhdGhlciBsZWF2ZSBpdCBhcyBpcywgYW5kIGV2ZW4gbm90IHRoZQo+PiBjYXNl
+LCBJJ20gc2xpZ2h0bHkgbW9yZSBiZW50IHRvIHRoZSBjdXJyZW50IHN0YXRlLgo+Pgo+IEkgZGlk
+LsKgICJkcml2ZXJzL2Jhc2UvZG1hcG9vbC5jIiwgbGF0ZXIgbW92ZWQgdG8gIm1tL2RtYXBvb2wu
+YyIsIHdhcwo+IGFkZGVkIGluIGxpbnV4LTIuNi4zLCBmb3Igd2hpY2ggZGV2X2VycigpIGRpZCBu
+b3Qgd29yayB3aWxsIGEgTlVMTCBkZXYsCj4gc28gdGhlIGNoZWNrIHdhcyBuZWNlc3NhcnkgYmFj
+ayB0aGVuLsKgIEkgYWdyZWUgdGhhdCB0aGUgKE5VTEwgZGV2aWNlICopOgo+IGJpdCBpcyB1Z2x5
+LCBidXQgdGhlc2UgbWVzc2FnZXMgc2hvdWxkIGJlIHByaW50ZWQgb25seSBhZnRlciBhIGtlcm5l
+bAo+IGJ1Zywgc28gaXQgaXMgbm90IGxpa2UgdGhleSB3aWxsIGJlIG1ha2luZyBhIHJlZ3VsYXIg
+YXBwZWFyYW5jZSBpbgo+IGRtZXNnLsKgIENvbnNpZGVyaW5nIHRoYXQsIEkgdGhpbmsgdGhhdCBp
+dCBpcyBiZXR0ZXIgdG8ga2VlcCBpdCBzaW1wbGUuCj4KCk15IG9yaWdpbmFsIHVuc3VibWl0dGVk
+IHBhdGNoIHVzZWQgdGhlIGZvbGxvd2luZzoKCisjZGVmaW5lIHBvb2xfZXJyKHBvb2wsIGZtdCwg
+YXJncy4uLikgXAorCWRvIHsgXAorCQlpZiAoKHBvb2wpLT5kZXYpIFwKKwkJCWRldl9lcnIoKHBv
+b2wpLT5kZXYsIGZtdCwgYXJncyk7IFwKKwkJZWxzZSBcCisJCQlwcl9lcnIoZm10LCBhcmdzKTsg
+XAorCX0gd2hpbGUgKDApCgpCdXQgdGhlbiBJIGRlY2lkZWQgdG8gc2ltcGxpZnkgaXQgdG8ganVz
+dCB1c2UgZGV2X2VycigpLsKgIEkgc3RpbGwgaGF2ZQp0aGUgb2xkIHZlcnNpb24uwqAgV2hlbiBJ
+IHN1Ym1pdCB2MyBvZiB0aGUgcGF0Y2hzZXQsIHdoaWNoIHdvdWxkIHlvdSBwcmVmZXI/Cl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
+bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
+Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
