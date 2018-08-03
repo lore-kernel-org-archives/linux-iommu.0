@@ -1,61 +1,155 @@
-From: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-Subject: Re: [PATCH v2 2/9] dmapool: cleanup error messages
-Date: Fri, 3 Aug 2018 11:17:32 -0400
-Message-ID: <b8547f8d-ac88-3d7b-9c2d-60a2f779259e@cybernetics.com>
-References: <a9f7ca9a-38d5-12e2-7d15-ab026425e85a@cybernetics.com>
-	<CAHp75Ve0su_S3ZWTtUEUohrs-iPiD1uzFOHhesLrWzJPOa2LNg@mail.gmail.com>
-	<7a943124-c65e-f0ed-cc5c-20b23f021505@cybernetics.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
+Date: Fri, 3 Aug 2018 16:43:41 +0100
+Message-ID: <2e7fab6e-0640-8f48-07b8-2d475538b8ae@arm.com>
+References: <20180726231624.21084-1-digetx@gmail.com>
+ <20180727170326.GA21283@jcrouse-lnx.qualcomm.com> <2402373.RyBdR7VSnO@dimapc>
+ <2887450.sPhIOOMKZK@dimapc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7a943124-c65e-f0ed-cc5c-20b23f021505-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2887450.sPhIOOMKZK@dimapc>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dmitry Osipenko <digetx@gmail.com>, Jordan Crouse <jcrouse@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Mikko Perttunen <cyndis@kapsi.fi>, Thierry Reding <thierry.reding@gmail.com>
+Cc: devicetree@vger.kernel.org, nouveau@lists.freedesktop.org, "Rafael J. Wysocki" <rafael@kernel.org>, Nicolas Chauvet <kwizart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Ben Skeggs <bskeggs@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-tegra@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDgvMDMvMjAxOCAwOTo0MSBBTSwgVG9ueSBCYXR0ZXJzYnkgd3JvdGU6Cj4gT24gMDgvMDMv
-MjAxOCAwNDo1NiBBTSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+PiBPbiBUaHUsIEF1ZyAyLCAy
-MDE4IGF0IDEwOjU3IFBNLCBUb255IEJhdHRlcnNieSA8dG9ueWJAY3liZXJuZXRpY3MuY29tPiB3
-cm90ZToKPj4+IFJlbW92ZSBjb2RlIGR1cGxpY2F0aW9uIGluIGVycm9yIG1lc3NhZ2VzLiAgSXQg
-aXMgbm93IHNhZmUgdG8gcGFzIGEgTlVMTAo+Pj4gZGV2IHRvIGRldl9lcnIoKSwgc28gdGhlIGNo
-ZWNrcyB0byBhdm9pZCBkb2luZyBzbyBhcmUgbm8gbG9uZ2VyCj4+PiBuZWNlc3NhcnkuCj4+Pgo+
-Pj4gRXhhbXBsZToKPj4+Cj4+PiBFcnJvciBtZXNzYWdlIHdpdGggZGV2ICE9IE5VTEw6Cj4+PiAg
-IG1wdDNzYXMgMDAwMDowMjowMC4wOiBkbWFfcG9vbF9kZXN0cm95IGNoYWluIHBvb2wsIChfX19f
-cHRydmFsX19fXykgYnVzeQo+Pj4KPj4+IFNhbWUgZXJyb3IgbWVzc2FnZSB3aXRoIGRldiA9PSBO
-VUxMIGJlZm9yZSBwYXRjaDoKPj4+ICAgZG1hX3Bvb2xfZGVzdHJveSBjaGFpbiBwb29sLCAoX19f
-X3B0cnZhbF9fX18pIGJ1c3kKPj4+Cj4+PiBTYW1lIGVycm9yIG1lc3NhZ2Ugd2l0aCBkZXYgPT0g
-TlVMTCBhZnRlciBwYXRjaDoKPj4+ICAgKE5VTEwgZGV2aWNlICopOiBkbWFfcG9vbF9kZXN0cm95
-IGNoYWluIHBvb2wsIChfX19fcHRydmFsX19fXykgYnVzeQo+PiBIYXZlIHlvdSBjaGVja2VkIGEg
-aGlzdG9yeSBvZiB0aGlzPwo+Pgo+PiBJJ20gcHJldHR5IHN1cmUgdGhpcyB3YXMgY3JlYXRlZCBp
-biBhbiBvcmRlciB0byBhdm9pZCBiYWQgbG9va2luZyAoYW5kCj4+IGluIHNvbWUgY2FzZXMgZnJp
-Z2h0ZW5pbmcpICJOVUxMIGRldmljZSAqIiBwYXJ0Lgo+Pgo+PiBJZiBpdCBpdCdzIHRoZSBjYXNl
-LCBJIHdvdWxkIHJhdGhlciBsZWF2ZSBpdCBhcyBpcywgYW5kIGV2ZW4gbm90IHRoZQo+PiBjYXNl
-LCBJJ20gc2xpZ2h0bHkgbW9yZSBiZW50IHRvIHRoZSBjdXJyZW50IHN0YXRlLgo+Pgo+IEkgZGlk
-LsKgICJkcml2ZXJzL2Jhc2UvZG1hcG9vbC5jIiwgbGF0ZXIgbW92ZWQgdG8gIm1tL2RtYXBvb2wu
-YyIsIHdhcwo+IGFkZGVkIGluIGxpbnV4LTIuNi4zLCBmb3Igd2hpY2ggZGV2X2VycigpIGRpZCBu
-b3Qgd29yayB3aWxsIGEgTlVMTCBkZXYsCj4gc28gdGhlIGNoZWNrIHdhcyBuZWNlc3NhcnkgYmFj
-ayB0aGVuLsKgIEkgYWdyZWUgdGhhdCB0aGUgKE5VTEwgZGV2aWNlICopOgo+IGJpdCBpcyB1Z2x5
-LCBidXQgdGhlc2UgbWVzc2FnZXMgc2hvdWxkIGJlIHByaW50ZWQgb25seSBhZnRlciBhIGtlcm5l
-bAo+IGJ1Zywgc28gaXQgaXMgbm90IGxpa2UgdGhleSB3aWxsIGJlIG1ha2luZyBhIHJlZ3VsYXIg
-YXBwZWFyYW5jZSBpbgo+IGRtZXNnLsKgIENvbnNpZGVyaW5nIHRoYXQsIEkgdGhpbmsgdGhhdCBp
-dCBpcyBiZXR0ZXIgdG8ga2VlcCBpdCBzaW1wbGUuCj4KCk15IG9yaWdpbmFsIHVuc3VibWl0dGVk
-IHBhdGNoIHVzZWQgdGhlIGZvbGxvd2luZzoKCisjZGVmaW5lIHBvb2xfZXJyKHBvb2wsIGZtdCwg
-YXJncy4uLikgXAorCWRvIHsgXAorCQlpZiAoKHBvb2wpLT5kZXYpIFwKKwkJCWRldl9lcnIoKHBv
-b2wpLT5kZXYsIGZtdCwgYXJncyk7IFwKKwkJZWxzZSBcCisJCQlwcl9lcnIoZm10LCBhcmdzKTsg
-XAorCX0gd2hpbGUgKDApCgpCdXQgdGhlbiBJIGRlY2lkZWQgdG8gc2ltcGxpZnkgaXQgdG8ganVz
-dCB1c2UgZGV2X2VycigpLsKgIEkgc3RpbGwgaGF2ZQp0aGUgb2xkIHZlcnNpb24uwqAgV2hlbiBJ
-IHN1Ym1pdCB2MyBvZiB0aGUgcGF0Y2hzZXQsIHdoaWNoIHdvdWxkIHlvdSBwcmVmZXI/Cl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
-bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 02/08/18 19:24, Dmitry Osipenko wrote:
+> On Friday, 27 July 2018 20:16:53 MSK Dmitry Osipenko wrote:
+>> On Friday, 27 July 2018 20:03:26 MSK Jordan Crouse wrote:
+>>> On Fri, Jul 27, 2018 at 05:02:37PM +0100, Robin Murphy wrote:
+>>>> On 27/07/18 15:10, Dmitry Osipenko wrote:
+>>>>> On Friday, 27 July 2018 12:03:28 MSK Will Deacon wrote:
+>>>>>> On Fri, Jul 27, 2018 at 10:25:13AM +0200, Joerg Roedel wrote:
+>>>>>>> On Fri, Jul 27, 2018 at 02:16:18AM +0300, Dmitry Osipenko wrote:
+>>>>>>>> The proposed solution adds a new option to the base device driver
+>>>>>>>> structure that allows device drivers to explicitly convey to the
+>>>>>>>> drivers
+>>>>>>>> core that the implicit IOMMU backing for devices must not happen.
+>>>>>>>
+>>>>>>> Why is IOMMU mapping a problem for the Tegra GPU driver?
+>>>>>>>
+>>>>>>> If we add something like this then it should not be the choice of the
+>>>>>>> device driver, but of the user and/or the firmware.
+>>>>>>
+>>>>>> Agreed, and it would still need somebody to configure an identity
+>>>>>> domain
+>>>>>> so
+>>>>>> that transactions aren't aborted immediately. We currently allow the
+>>>>>> identity domain to be used by default via a command-line option, so I
+>>>>>> guess
+>>>>>> we'd need a way for firmware to request that on a per-device basis.
+>>>>>
+>>>>> The IOMMU mapping itself is not a problem, the problem is the
+>>>>> management
+>>>>> of
+>>>>> the IOMMU. For Tegra we don't want anything to intrude into the IOMMU
+>>>>> activities because:
+>>>>>
+>>>>> 1) GPU HW require additional configuration for the IOMMU usage and dumb
+>>>>> mapping of the allocations simply doesn't work.
+>>>>
+>>>> Generally, that's already handled by the DRM drivers allocating
+>>>> their own unmanaged domains. The only problem we really need to
+>>>> solve in that regard is that currently the device DMA ops don't get
+>>>> updated when moving away from the managed domain. That's been OK for
+>>>> the VFIO case where the device is bound to a different driver which
+>>>> we know won't make any explicit DMA API calls, but for the more
+>>>> general case of IOMMU-aware drivers we could certainly do with a bit
+>>>> of cooperation between the IOMMU API, DMA API, and arch code to
+>>>> update the DMA ops dynamically to cope with intermediate subsystems
+>>>> making DMA API calls on behalf of devices they don't know the
+>>>> intimate details of.
+>>>>
+>>>>> 2) Older Tegra generations have a limited resource and capabilities in
+>>>>> regards to IOMMU usage, allocating IOMMU domain per-device is just
+>>>>> impossible for example.
+>>>>>
+>>>>> 3) HW performs context switches and so particular allocations have to
+>>>>> be
+>>>>> assigned to a particular contexts IOMMU domain.
+>>>>
+>>>> I understand Qualcomm SoCs have a similar thing too, and AFAICS that
+>>>> case just doesn't fit into the current API model at all. We need the
+>>>> IOMMU driver to somehow know about the specific details of which
+>>>> devices have magic associations with specific contexts, and we
+>>>> almost certainly need a more expressive interface than
+>>>> iommu_domain_alloc() to have any hope of reliable results.
+>>>
+>>> This is correct for Qualcomm GPUs - The GPU hardware context switching
+>>> requires a specific context and there are some restrictions around
+>>> secure contexts as well.
+>>>
+>>> We don't really care if the DMA attaches to a context just as long as it
+>>> doesn't attach to the one(s) we care about. Perhaps a "valid context" mask
+>>> would work in from the DT or the device struct to give the subsystems a
+>>> clue as to which domains they were allowed to use. I recognize that there
+>>> isn't a one-size-fits-all solution to this problem so I'm open to
+>>> different
+>>> ideas.
+>>
+>> Designating whether implicit IOMMU backing is appropriate for a device via
+>> device-tree property sounds a bit awkward because that will be a kinda
+>> software description (of a custom Linux driver model), while device-tree is
+>> supposed to describe HW.
+>>
+>> What about to grant IOMMU drivers with ability to decide whether the
+>> implicit backing for a device is appropriate? Like this:
+>>
+>> bool implicit_iommu_for_dma_is_allowed(struct device *dev)
+>> {
+>> 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> 	struct iommu_group *group;
+>>
+>> 	group = iommu_group_get(dev);
+>> 	if (!group)
+>> 		return NULL;
+>>
+>> 	iommu_group_put(group);
+>>
+>> 	if (!ops->implicit_iommu_for_dma_is_allowed)
+>> 		return true;
+>>
+>> 	return ops->implicit_iommu_for_dma_is_allowed(dev);
+>> }
+>>
+>> Then arch_setup_dma_ops() could have a clue whether implicit IOMMU backing
+>> for a device is appropriate.
+> 
+> Guys, does it sound good to you or maybe you have something else on your mind?
+> Even if it's not an ideal solution, it fixes the immediate problem and should
+> be good enough for the starter.
+
+To me that looks like a step ion the wrong direction that won't help at 
+all in actually addressing the underlying issues.
+
+If the GPU driver wants to explicitly control IOMMU mappings instead of 
+relying on the IOMMU_DOMAIN_DMA abstraction, then it should use its own 
+unmanaged domain. At that point it shouldn't matter if a DMA ops domain 
+was allocated, since the GPU device will no longer be attached to it. 
+Yes, there may be some improvements to make like having unused domains 
+not consume hardware contexts, but that's internal to the relevant IOMMU 
+drivers. If moving in and out of DMA ops domains leaves the actual 
+dma_ops broken, that's already a problem between the IOMMU API and the 
+arch DMA code as I've mentioned before.
+
+Furthermore, given what the example above is trying to do, 
+arch_setup_dma_ops() is way too late to do it - the default domain was 
+already set up in iommu_group_get_for_dev() when the IOMMU driver first 
+saw that device. An "opt-out" mechanism that doesn't actually opt out 
+and just bodges around being opted-in after the fact doesn't strike me 
+as something which can grow to be robust and maintainable.
+
+For the case where  a device has some special hardware relationship with 
+a particular IOMMU context, the IOMMU driver *has* to be completely 
+aware of that, i.e. it needs to be described in DT/ACPI, either via some 
+explicit binding or at least inferred from some SoC/instance-specific 
+IOMMU compatible. Then the IOMMU driver needs to know when the driver 
+for that device is requesting its special domain so that it provide the 
+correct context (and *not* allocate that context for other uses). 
+Anything which just relies on the order in which things currently happen 
+to be allocated is far too fragile long-term.
+
+Robin.
