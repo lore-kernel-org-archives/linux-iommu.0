@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v2 3/8] iommu/tegra: gart: Clean up drivers module code
-Date: Sat,  4 Aug 2018 17:29:58 +0300
-Message-ID: <20180804143003.15817-4-digetx@gmail.com>
+Subject: [PATCH v2 1/8] memory: tegra: Provide facility for integration with the GART driver
+Date: Sat,  4 Aug 2018 17:29:56 +0300
+Message-ID: <20180804143003.15817-2-digetx@gmail.com>
 References: <20180804143003.15817-1-digetx@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180804143003.15817-1-digetx@gmail.com>
@@ -10,72 +10,105 @@ To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry
 Cc: iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART driver is built-in, hence it can't be unloaded and the module removal
-code is never used. This patch merely removes the dead code and makes
-GART driver explicitly built-in by dropping the drivers bind/unbind sysfs
-attributes. Lastly disallow to defer drivers probing, since it's a core
-driver and actually nothing should cause the deferred probe.
+In order to report clients name and access direction on GART's page fault,
+MC driver need to access GART registers. Add facility that provides access
+to the GART.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/iommu/tegra-gart.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+ drivers/memory/tegra/mc.c | 26 +++++++++++++++++++++++---
+ include/soc/tegra/mc.h    | 13 +++++++++++++
+ 2 files changed, 36 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index f8b653e25914..141ff0c79ee4 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -502,20 +502,6 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
--static int tegra_gart_remove(struct platform_device *pdev)
--{
--	struct gart_device *gart = platform_get_drvdata(pdev);
--
--	iommu_device_unregister(&gart->iommu);
--	iommu_device_sysfs_remove(&gart->iommu);
--
--	writel(0, gart->regs + GART_CONFIG);
--	if (gart->savedata)
--		vfree(gart->savedata);
--	gart_handle = NULL;
--	return 0;
--}
--
- static const struct dev_pm_ops tegra_gart_pm_ops = {
- 	.suspend	= tegra_gart_suspend,
- 	.resume		= tegra_gart_resume,
-@@ -529,26 +515,21 @@ MODULE_DEVICE_TABLE(of, tegra_gart_of_match);
- 
- static struct platform_driver tegra_gart_driver = {
- 	.probe		= tegra_gart_probe,
--	.remove		= tegra_gart_remove,
- 	.driver = {
- 		.name	= "tegra-gart",
- 		.pm	= &tegra_gart_pm_ops,
- 		.of_match_table = tegra_gart_of_match,
-+		.suppress_bind_attrs = true,
- 	},
-+	.prevent_deferred_probe = true,
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index e56862495f36..4940d72b5263 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -72,6 +72,8 @@ static const struct of_device_id tegra_mc_of_match[] = {
  };
+ MODULE_DEVICE_TABLE(of, tegra_mc_of_match);
  
--static int tegra_gart_init(void)
-+static int __init tegra_gart_init(void)
- {
- 	return platform_driver_register(&tegra_gart_driver);
- }
--
--static void __exit tegra_gart_exit(void)
--{
--	platform_driver_unregister(&tegra_gart_driver);
--}
--
- subsys_initcall(tegra_gart_init);
--module_exit(tegra_gart_exit);
++static struct tegra_mc_gart_handle *gart_handle;
 +
- module_param(gart_debug, bool, 0644);
+ static int terga_mc_block_dma_common(struct tegra_mc *mc,
+ 				     const struct tegra_mc_reset *rst)
+ {
+@@ -543,6 +545,11 @@ static irqreturn_t tegra_mc_irq(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
  
- MODULE_PARM_DESC(gart_debug, "Enable GART debugging");
++void tegra_mc_register_gart(struct tegra_mc_gart_handle *handle)
++{
++	WRITE_ONCE(gart_handle, handle);
++}
++
+ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ {
+ 	struct tegra_mc *mc = data;
+@@ -565,6 +572,7 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ 		switch (BIT(bit)) {
+ 		case MC_INT_DECERR_EMEM:
+ 			reg = MC_DECERR_EMEM_OTHERS_STATUS;
++			addr = mc_readl(mc, reg + sizeof(u32));
+ 			value = mc_readl(mc, reg);
+ 
+ 			id = value & mc->soc->client_id_mask;
+@@ -575,11 +583,24 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ 			break;
+ 
+ 		case MC_INT_INVALID_GART_PAGE:
+-			dev_err_ratelimited(mc->dev, "%s\n", error);
+-			continue;
++			if (gart_handle == NULL) {
++				dev_err_ratelimited(mc->dev, "%s\n", error);
++				continue;
++			}
++
++			addr = gart_handle->error_addr(gart_handle);
++			value = gart_handle->error_req(gart_handle);
++
++			id = (value >> 1) & mc->soc->client_id_mask;
++			desc = error_names[2];
++
++			if (value & BIT(0))
++				direction = "write";
++			break;
+ 
+ 		case MC_INT_SECURITY_VIOLATION:
+ 			reg = MC_SECURITY_VIOLATION_STATUS;
++			addr = mc_readl(mc, reg + sizeof(u32));
+ 			value = mc_readl(mc, reg);
+ 
+ 			id = value & mc->soc->client_id_mask;
+@@ -596,7 +617,6 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ 		}
+ 
+ 		client = mc->soc->clients[id].name;
+-		addr = mc_readl(mc, reg + sizeof(u32));
+ 
+ 		dev_err_ratelimited(mc->dev, "%s: %s%s @%pa: %s (%s)\n",
+ 				    client, secure, direction, &addr, error,
+diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+index b43f37fea096..5bf72eb4dd51 100644
+--- a/include/soc/tegra/mc.h
++++ b/include/soc/tegra/mc.h
+@@ -162,4 +162,17 @@ struct tegra_mc {
+ void tegra_mc_write_emem_configuration(struct tegra_mc *mc, unsigned long rate);
+ unsigned int tegra_mc_get_emem_device_count(struct tegra_mc *mc);
+ 
++struct tegra_mc_gart_handle {
++	u32 (*error_addr)(struct tegra_mc_gart_handle *handle);
++	u32 (*error_req)(struct tegra_mc_gart_handle *handle);
++};
++
++#ifdef CONFIG_TEGRA_MC
++void tegra_mc_register_gart(struct tegra_mc_gart_handle *handle);
++#else
++static inline void tegra_mc_register_gart(struct tegra_mc_gart_handle *handle)
++{
++}
++#endif
++
+ #endif /* __SOC_TEGRA_MC_H__ */
 -- 
 2.18.0
