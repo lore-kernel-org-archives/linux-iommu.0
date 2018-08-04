@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v2 6/8] iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
-Date: Sat,  4 Aug 2018 17:30:01 +0300
-Message-ID: <20180804143003.15817-7-digetx@gmail.com>
+Subject: [PATCH v2 7/8] iommu: Introduce iotlb_sync_map callback
+Date: Sat,  4 Aug 2018 17:30:02 +0300
+Message-ID: <20180804143003.15817-8-digetx@gmail.com>
 References: <20180804143003.15817-1-digetx@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180804143003.15817-1-digetx@gmail.com>
@@ -10,61 +10,68 @@ To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry
 Cc: iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART can't handle all devices, hence ignore devices that aren't related
-to GART. IOMMU phandle must be explicitly assign to devices in the device
-tree.
+Introduce iotlb_sync_map() callback that is invoked in the end of
+iommu_map(). This new callback allows IOMMU drivers to avoid syncing
+after mapping of each contiguous chunk and sync only when the whole
+mapping is completed, optimizing performance of the mapping operation.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/tegra-gart.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 8 ++++++--
+ include/linux/iommu.h | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index def570bc88c4..bcdb8973a0ad 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -348,8 +348,12 @@ static bool gart_iommu_capable(enum iommu_cap cap)
- 
- static int gart_iommu_add_device(struct device *dev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f3698006cb53..056282f23b10 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1545,13 +1545,14 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
+ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	      phys_addr_t paddr, size_t size, int prot)
  {
--	struct iommu_group *group = iommu_group_get_for_dev(dev);
-+	struct iommu_group *group;
++	const struct iommu_ops *ops = domain->ops;
+ 	unsigned long orig_iova = iova;
+ 	unsigned int min_pagesz;
+ 	size_t orig_size = size;
+ 	phys_addr_t orig_paddr = paddr;
+ 	int ret = 0;
  
-+	if (!dev->iommu_fwspec)
-+		return -ENODEV;
-+
-+	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
+-	if (unlikely(domain->ops->map == NULL ||
++	if (unlikely(ops->map == NULL ||
+ 		     domain->pgsize_bitmap == 0UL))
+ 		return -ENODEV;
  
-@@ -366,6 +370,12 @@ static void gart_iommu_remove_device(struct device *dev)
- 	iommu_device_unlink(&gart_handle->iommu, dev);
- }
+@@ -1580,7 +1581,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
+ 			 iova, &paddr, pgsize);
  
-+static int gart_iommu_of_xlate(struct device *dev,
-+			       struct of_phandle_args *args)
-+{
-+	return 0;
-+}
-+
- static const struct iommu_ops gart_iommu_ops = {
- 	.capable	= gart_iommu_capable,
- 	.domain_alloc	= gart_iommu_domain_alloc,
-@@ -380,6 +390,7 @@ static const struct iommu_ops gart_iommu_ops = {
- 	.unmap		= gart_iommu_unmap,
- 	.iova_to_phys	= gart_iommu_iova_to_phys,
- 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
-+	.of_xlate	= gart_iommu_of_xlate,
- };
+-		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
++		ret = ops->map(domain, iova, paddr, pgsize, prot);
+ 		if (ret)
+ 			break;
  
- static int tegra_gart_suspend(struct device *dev)
-@@ -459,6 +470,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
+@@ -1589,6 +1590,9 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		size -= pgsize;
  	}
  
- 	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
-+	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
- 
- 	ret = iommu_device_register(&gart->iommu);
- 	if (ret) {
++	if (ops->iotlb_sync_map)
++		ops->iotlb_sync_map(domain);
++
+ 	/* unroll mapping in case something went wrong */
+ 	if (ret)
+ 		iommu_unmap(domain, orig_iova, orig_size - size);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7447b0b0579a..7ed115526fb5 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -206,6 +206,7 @@ struct iommu_ops {
+ 	void (*flush_iotlb_all)(struct iommu_domain *domain);
+ 	void (*iotlb_range_add)(struct iommu_domain *domain,
+ 				unsigned long iova, size_t size);
++	void (*iotlb_sync_map)(struct iommu_domain *domain);
+ 	void (*iotlb_sync)(struct iommu_domain *domain);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
 -- 
 2.18.0
