@@ -1,91 +1,64 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v2 2/8] iommu/tegra: gart: Provide access to Memory Controller driver
-Date: Sat,  4 Aug 2018 17:29:57 +0300
-Message-ID: <20180804143003.15817-3-digetx@gmail.com>
-References: <20180804143003.15817-1-digetx@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180804143003.15817-1-digetx@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>
-Cc: iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/rockchip: Handle errors returned from PM framework
+Date: Sun,  5 Aug 2018 13:46:16 +0100
+Message-ID: <20180805124616.18020-1-marc.zyngier@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART contain registers needed by the Memory Controller driver, provide
-access to the MC driver by utilizing its GART-integration facility.
+pm_runtime_get_if_in_use can fail: either PM has been disabled
+altogether (-EINVAL), or the device hasn't been enabled yet (0).
+Sadly, we ignore the first case at the moment, and end up treating
+it as if we had received a valid interrupt.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+The first case could happen because the interrupt line is shared
+(with the VOP for example), and although that device hasn't been
+programmed yet, an interrupt may be pending (think kexec/kdump).
+
+The second case means that we've enabled the IOMMU, but it is
+not powered-on just yet. This could be another instance of the
+above, but as it deserves investigation, let's output a single
+warning (instead of flodding the console).
+
+In both cases, bail with an IRQ_NONE.
+
+Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
+Signed-off-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/iommu/rockchip-iommu.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index a004f6da35f2..f8b653e25914 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -31,6 +31,8 @@
- #include <linux/iommu.h>
- #include <linux/of.h>
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 054cd2c8e9c8..9d21495a8433 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -521,10 +521,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+ 	u32 int_status;
+ 	dma_addr_t iova;
+ 	irqreturn_t ret = IRQ_NONE;
+-	int i;
++	int i, err;
  
-+#include <soc/tegra/mc.h>
-+
- #include <asm/cacheflush.h>
+-	if (WARN_ON(!pm_runtime_get_if_in_use(iommu->dev)))
+-		return 0;
++	err = pm_runtime_get_if_in_use(iommu->dev);
++	if ((err < 0) || WARN_ON_ONCE(!err))
++		return ret;
  
- /* bitmap of the page sizes currently supported */
-@@ -41,6 +43,8 @@
- #define GART_ENTRY_ADDR		(0x28 - GART_REG_BASE)
- #define GART_ENTRY_DATA		(0x2c - GART_REG_BASE)
- #define GART_ENTRY_PHYS_ADDR_VALID	(1 << 31)
-+#define GART_ERROR_REQ		(0x30 - GART_REG_BASE)
-+#define GART_ERROR_ADDR		(0x34 - GART_REG_BASE)
- 
- #define GART_PAGE_SHIFT		12
- #define GART_PAGE_SIZE		(1 << GART_PAGE_SHIFT)
-@@ -63,6 +67,8 @@ struct gart_device {
- 	struct device		*dev;
- 
- 	struct iommu_device	iommu;		/* IOMMU Core handle */
-+
-+	struct tegra_mc_gart_handle mc_gart_handle;
- };
- 
- struct gart_domain {
-@@ -408,6 +414,20 @@ static int tegra_gart_resume(struct device *dev)
- 	return 0;
- }
- 
-+static u32 tegra_gart_error_addr(struct tegra_mc_gart_handle *handle)
-+{
-+	struct gart_device *gart = container_of(handle, struct gart_device,
-+						mc_gart_handle);
-+	return readl_relaxed(gart->regs + GART_ERROR_ADDR);
-+}
-+
-+static u32 tegra_gart_error_req(struct tegra_mc_gart_handle *handle)
-+{
-+	struct gart_device *gart = container_of(handle, struct gart_device,
-+						mc_gart_handle);
-+	return readl_relaxed(gart->regs + GART_ERROR_REQ);
-+}
-+
- static int tegra_gart_probe(struct platform_device *pdev)
- {
- 	struct gart_device *gart;
-@@ -464,6 +484,8 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	gart->regs = gart_regs;
- 	gart->iovmm_base = (dma_addr_t)res_remap->start;
- 	gart->page_count = (resource_size(res_remap) >> GART_PAGE_SHIFT);
-+	gart->mc_gart_handle.error_addr = tegra_gart_error_addr;
-+	gart->mc_gart_handle.error_req = tegra_gart_error_req;
- 
- 	gart->savedata = vmalloc(array_size(sizeof(u32), gart->page_count));
- 	if (!gart->savedata) {
-@@ -475,6 +497,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	do_gart_setup(gart, NULL);
- 
- 	gart_handle = gart;
-+	tegra_mc_register_gart(&gart->mc_gart_handle);
- 
- 	return 0;
- }
+ 	if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+ 		goto out;
 -- 
-2.18.0
+2.14.2
