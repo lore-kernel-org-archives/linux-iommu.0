@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 4/5] iommu/arm-smmu-v3: add support for non-strict mode
-Date: Mon, 6 Aug 2018 20:27:03 +0800
-Message-ID: <1533558424-16748-5-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 3/5] iommu/io-pgtable-arm: add support for non-strict mode
+Date: Mon, 6 Aug 2018 20:27:02 +0800
+Message-ID: <1533558424-16748-4-git-send-email-thunder.leizhen@huawei.com>
 References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,38 +12,140 @@ To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joer
 Cc: Zhen Lei <thunder.leizhen@huawei.com>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Dynamically choose strict or non-strict mode for page table config based
-on the iommu domain type.
+To support the non-strict mode, now we only tlbi and sync for the strict
+mode. But for the non-leaf case, always follow strict mode.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/io-pgtable-arm.c | 27 ++++++++++++++++++---------
+ drivers/iommu/io-pgtable.h     |  3 +++
+ 2 files changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 2f1304b..904bc1e 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1622,6 +1622,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
- 		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 010a254..bb61bef 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
 
-+	if (domain->type == IOMMU_DOMAIN_DMA) {
-+		domain->non_strict = 1;
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+	}
-+
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops)
- 		return -ENOMEM;
-@@ -1782,7 +1787,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, int lvl,
+-			       arm_lpae_iopte *ptep);
++			       arm_lpae_iopte *ptep, bool strict);
+
+ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 				phys_addr_t paddr, arm_lpae_iopte prot,
+@@ -319,6 +319,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 			     arm_lpae_iopte prot, int lvl,
+ 			     arm_lpae_iopte *ptep)
  {
- 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
++	size_t unmapped;
+ 	arm_lpae_iopte pte = *ptep;
 
--	if (smmu)
-+	if (smmu && !domain->non_strict)
- 		__arm_smmu_tlb_sync(smmu);
+ 	if (iopte_leaf(pte, lvl)) {
+@@ -334,7 +335,8 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+
+ 		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+-		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
++		unmapped = __arm_lpae_unmap(data, iova, sz, lvl, tblp, true);
++		if (WARN_ON(unmapped != sz))
+ 			return -EINVAL;
+ 	}
+
+@@ -576,15 +578,17 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 	}
+
+ 	if (unmap_idx < 0)
+-		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
++		return __arm_lpae_unmap(data, iova, size, lvl, tablep, true);
+
+ 	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
++	io_pgtable_tlb_sync(&data->iop);
++
+ 	return size;
  }
 
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, int lvl,
+-			       arm_lpae_iopte *ptep)
++			       arm_lpae_iopte *ptep, bool strict)
+ {
+ 	arm_lpae_iopte pte;
+ 	struct io_pgtable *iop = &data->iop;
+@@ -609,7 +613,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			io_pgtable_tlb_sync(iop);
+ 			ptep = iopte_deref(pte, data);
+ 			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+-		} else {
++		} else if (strict) {
+ 			io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+ 		}
+
+@@ -625,12 +629,13 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+
+ 	/* Keep on walkin' */
+ 	ptep = iopte_deref(pte, data);
+-	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
++	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+ }
+
+ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 			     size_t size)
+ {
++	bool strict;
+ 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+ 	arm_lpae_iopte *ptep = data->pgd;
+ 	int lvl = ARM_LPAE_START_LVL(data);
+@@ -638,7 +643,9 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+ 		return 0;
+
+-	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
++	strict = !(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT);
++
++	return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+ }
+
+ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+@@ -771,7 +778,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+ 	u64 reg;
+ 	struct arm_lpae_io_pgtable *data;
+
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
++			IO_PGTABLE_QUIRK_NON_STRICT))
+ 		return NULL;
+
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -863,7 +871,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+ 	struct arm_lpae_io_pgtable *data;
+
+ 	/* The NS quirk doesn't apply at stage 2 */
+-	if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
++		IO_PGTABLE_QUIRK_NON_STRICT))
+ 		return NULL;
+
+ 	data = arm_lpae_alloc_pgtable(cfg);
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index 2df7909..beb14a3 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -71,12 +71,15 @@ struct io_pgtable_cfg {
+ 	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
+ 	 *	software-emulated IOMMU), such that pagetable updates need not
+ 	 *	be treated as explicit DMA data.
++	 * IO_PGTABLE_QUIRK_NON_STRICT: Put off TLBs invalidation and release
++	 *	memory first.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+ 	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
+ 	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
++	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 --
 1.8.3
