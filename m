@@ -1,66 +1,173 @@
-From: Ralf Goebel <ralf.goebel-XQ0Z+IutXF4FoECaAgFIynS5uNuOjpZe@public.gmane.org>
-Subject: [PATCH] iommu/omap: Fix cache flushes on L2 table entries
-Date: Mon,  6 Aug 2018 17:00:36 +0200
-Message-ID: <20180806150036.14644-1-ralf.goebel@imago-technologies.com>
-References: <7c58d42f-cb11-129a-6e04-45319443f1bb@ti.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Mon, 6 Aug 2018 11:32:58 -0400
+Message-ID: <20180806153257.GB6002@redhat.com>
+References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+ <20180801165644.GA3820@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
+ <20180802040557.GL160746@Turing-Arch-b>
+ <20180802142243.GA3481@redhat.com>
+ <20180803034721.GC91035@Turing-Arch-b>
+ <20180803143944.GA4079@redhat.com>
+ <20180806031252.GG91035@Turing-Arch-b>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7c58d42f-cb11-129a-6e04-45319443f1bb-l0cyMroinI0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Suman Anna' <s-anna-l0cyMroinI0@public.gmane.org>, 'Joerg Roedel' <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ralf Goebel <ralf.goebel-XQ0Z+IutXF4FoECaAgFIynS5uNuOjpZe@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'KISHON VIJAY ABRAHAM' <kishon-l0cyMroinI0@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180806031252.GG91035@Turing-Arch-b>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kenneth Lee <liguozhu@hisilicon.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, Kenneth Lee <nek.in.cn@>
 List-Id: iommu@lists.linux-foundation.org
 
-The base address used for DMA operations on the second-level table
-did incorrectly include the offset for the table entry. The offset
-was then added again which lead to incorrect behavior.
+On Mon, Aug 06, 2018 at 11:12:52AM +0800, Kenneth Lee wrote:
+> On Fri, Aug 03, 2018 at 10:39:44AM -0400, Jerome Glisse wrote:
+> > On Fri, Aug 03, 2018 at 11:47:21AM +0800, Kenneth Lee wrote:
+> > > On Thu, Aug 02, 2018 at 10:22:43AM -0400, Jerome Glisse wrote:
+> > > > On Thu, Aug 02, 2018 at 12:05:57PM +0800, Kenneth Lee wrote:
+> > > > > On Thu, Aug 02, 2018 at 02:33:12AM +0000, Tian, Kevin wrote:
+> > > > > > > On Wed, Aug 01, 2018 at 06:22:14PM +0800, Kenneth Lee wrote:
+> > > > > > > >
 
-Operations on the L1 table are not affected.
+[...]
 
-The calculation of the base address is changed to point to the
-beginning of the L2 table.
+> > > > > But doorbell is just a notification. Except for DOS (to make hardware busy) it
+> > > > > cannot actually take or change anything from the kernel space. And the DOS
+> > > > > problem can be always taken as the problem that a group of processes share the
+> > > > > same kernel entity.
+> > > > > 
+> > > > > In the coming HIP09 hardware, the doorbell will come with a random number so
+> > > > > only the process who allocated the queue can knock it correctly.
+> > > > 
+> > > > When doorbell is ring the hardware start fetching commands from
+> > > > the queue and execute them ? If so than a rogue process B might
+> > > > ring the doorbell of process A which would starts execution of
+> > > > random commands (ie whatever random memory value there is left
+> > > > inside the command buffer memory, could be old commands i guess).
+> > > > 
+> > > > If this is not how this doorbell works then, yes it can only do
+> > > > a denial of service i guess. Issue i have with doorbell is that
+> > > > i have seen 10 differents implementations in 10 differents hw
+> > > > and each are different as to what ringing or value written to the
+> > > > doorbell does. It is painfull to track what is what for each hw.
+> > > > 
+> > > 
+> > > In our implementation, doorbell is simply a notification, just like an interrupt
+> > > to the accelerator. The command is all about what's in the queue.
+> > > 
+> > > I agree that there is no simple and standard way to track the shared IO space.
+> > > But I think we have to trust the driver in some way. If the driver is malicious,
+> > > even a simple ioctl can become an attack.
+> > 
+> > Trusting kernel space driver is fine, trusting user space driver is
+> > not in my view. AFAICT every driver developer so far always made
+> > sure that someone could not abuse its device to do harmfull thing to
+> > other process.
+> > 
+> 
+> Fully agree. That is why this driver shares only the doorbell space. There is
+> only the doorbell is shared in the whole page, nothing else.
+> 
+> Maybe you are concerning the user driver will give malicious command to the
+> hardware? But these commands cannot influence the other process. If we can trust
+> the hardware design, the process cannot do any harm.
 
-Fixes: bfee0cf0ee1d ("iommu/omap: Use DMA-API for performing cache flushes")
-Acked-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Signed-off-by: Ralf Goebel <ralf.goebel-XQ0Z+IutXF4FoECaAgFIynS5uNuOjpZe@public.gmane.org>
----
+My questions was what happens if a process B ring the doorbell of
+process A.
 
-Changes in v2: Rephrase patch summary and description
+On some hardware the value written in the doorbell is use as an
+index in command buffer. On other it just wakeup the hardware to go
+look at a structure private to the process. They are other variations
+of those themes.
 
- drivers/iommu/omap-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+If it is the former ie the value is use to advance in the command
+buffer then a rogue process can force another process to advance its
+command buffer and what is in the command buffer can be some random
+old memory values which can be more harmfull than just Denial Of
+Service.
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index af4a8e7fcd27..3b05117118c3 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -550,7 +550,7 @@ static u32 *iopte_alloc(struct omap_iommu *obj, u32 *iopgd,
- 
- pte_ready:
- 	iopte = iopte_offset(iopgd, da);
--	*pt_dma = virt_to_phys(iopte);
-+	*pt_dma = iopgd_page_paddr(iopgd);
- 	dev_vdbg(obj->dev,
- 		 "%s: da:%08x pgd:%p *pgd:%08x pte:%p *pte:%08x\n",
- 		 __func__, da, iopgd, *iopgd, iopte, *iopte);
-@@ -738,7 +738,7 @@ static size_t iopgtable_clear_entry_core(struct omap_iommu *obj, u32 da)
- 		}
- 		bytes *= nent;
- 		memset(iopte, 0, nent * sizeof(*iopte));
--		pt_dma = virt_to_phys(iopte);
-+		pt_dma = iopgd_page_paddr(iopgd);
- 		flush_iopte_range(obj->dev, pt_dma, pt_offset, nent);
- 
- 		/*
--- 
-2.11.0
+
+> > > > > > > My more general question is do we want to grow VFIO to become
+> > > > > > > a more generic device driver API. This patchset adds a command
+> > > > > > > queue concept to it (i don't think it exist today but i have
+> > > > > > > not follow VFIO closely).
+> > > > > > > 
+> > > > > 
+> > > > > The thing is, VFIO is the only place to support DMA from user land. If we don't
+> > > > > put it here, we have to create another similar facility to support the same.
+> > > > 
+> > > > No it is not, network device, GPU, block device, ... they all do
+> > > > support DMA. The point i am trying to make here is that even in
+> > > 
+> > > Sorry, wait a minute, are we talking the same thing? I meant "DMA from user
+> > > land", not "DMA from kernel driver". To do that we have to manipulate the
+> > > IOMMU(Unit). I think it can only be done by default_domain or vfio domain. Or
+> > > the user space have to directly access the IOMMU.
+> > 
+> > GPU do DMA in the sense that you pass to the kernel a valid
+> > virtual address (kernel driver do all the proper check) and
+> > then you can use the GPU to copy from or to that range of
+> > virtual address. Exactly how you want to use this compression
+> > engine. It does not rely on SVM but SVM going forward would
+> > still be the prefered option.
+> > 
+> 
+> No, SVM is not the reason why we rely on Jean's SVM(SVA) series. We rely on
+> Jean's series because of multi-process (PASID or substream ID) support.
+> 
+> But of couse, WarpDrive can still benefit from the SVM feature.
+
+We are getting side tracked here. PASID/ID do not require VFIO.
+
+
+> > > > your mechanisms the userspace must have a specific userspace
+> > > > drivers for each hardware and thus there are virtually no
+> > > > differences between having this userspace driver open a device
+> > > > file in vfio or somewhere else in the device filesystem. This is
+> > > > just a different path.
+> > > > 
+> > > 
+> > > The basic problem WarpDrive want to solve it to avoid syscall. This is important
+> > > to accelerators. We have some data here:
+> > > https://www.slideshare.net/linaroorg/progress-and-demonstration-of-wrapdrive-a-accelerator-framework-sfo17317
+> > > 
+> > > (see page 3)
+> > > 
+> > > The performance is different on using kernel and user drivers.
+> > 
+> > Yes and example i point to is exactly that. You have a one time setup
+> > cost (creating command buffer binding PASID with command buffer and
+> > couple other setup steps). Then userspace no longer have to do any
+> > ioctl to schedule work on the GPU. It is all down from userspace and
+> > it use a doorbell to notify hardware when it should go look at command
+> > buffer for new thing to execute.
+> > 
+> > My point stands on that. You have existing driver already doing so
+> > with no new framework and in your scheme you need a userspace driver.
+> > So i do not see the value add, using one path or the other in the
+> > userspace driver is litteraly one line to change.
+> > 
+> 
+> Sorry, I'd got confuse here. I partially agree that the user driver is
+> redundance of kernel driver. (But for WarpDrive, the kernel driver is a full
+> driver include all preparation and setup stuff for the hardware, the user driver
+> is simply to send request and receive answer). Yes, it is just a choice of path.
+> But the user path is faster if the request come from use space. And to do that,
+> we need user land DMA support. Then why is it invaluable to let VFIO involved?
+
+Some drivers in the kernel already do exactly what you said. The user
+space emit commands without ever going into kernel by directly scheduling
+commands and ringing a doorbell. They do not need VFIO either and they
+can map userspace address into the DMA address space of the device and
+again they do not need VFIO for that.
+
+My point is the you do not need VFIO for DMA in user land, nor do you need
+it to allow a device to consume user space commands without IOCTL.
+
+Moreover as you already need a device specific driver in both kernel and
+user space then there is not added value in trying to have all kind of
+devices under the same devfs hierarchy.
+
+Cheers,
+Jérôme
