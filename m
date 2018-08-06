@@ -1,18 +1,21 @@
-From: "Yang, Shunyong" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
-Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
-	mode
-Date: Mon, 6 Aug 2018 01:32:44 +0000
-Message-ID: <1d24541340334954969c58980ef85444@HXTBJIDCEMVIW01.hxtcorp.net>
-References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
-	<1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
-	<89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
-	<5B597628.2020103@huawei.com>
-	<04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
+From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [RFC PATCH 3/7] vfio: add spimdev support
+Date: Mon, 6 Aug 2018 09:40:04 +0800
+Message-ID: <20180806014004.GF91035@Turing-Arch-b>
+References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+	<20180801102221.5308-4-nek.in.cn@gmail.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191290F7B@SHSMSX101.ccr.corp.intel.com>
+	<20180802034727.GK160746@Turing-Arch-b>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19129102C@SHSMSX101.ccr.corp.intel.com>
+	<20180802073440.GA91035@Turing-Arch-b>
+	<20180802103528.0b863030.cohuck@redhat.com>
+	<20180802124327.403b10ab@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180802124327.403b10ab-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,145 +25,170 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg
-	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Tian,
+	Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Cornelia Huck <cohuck-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "David S .
+	Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, "linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Robin,
-
-On 2018/7/26 22:37, Robin Murphy wrote:
-> On 2018-07-26 8:20 AM, Leizhen (ThunderTown) wrote:
->> On 2018/7/25 6:25, Robin Murphy wrote:
->>> On 2018-07-12 7:18 AM, Zhen Lei wrote:
->>>> To support the non-strict mode, now we only tlbi and sync for the strict
->>>> mode. But for the non-leaf case, always follow strict mode.
->>>>
->>>> Use the lowest bit of the iova parameter to pass the strict mode:
->>>> 0, IOMMU_STRICT;
->>>> 1, IOMMU_NON_STRICT;
->>>> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
->>>> other IOMMUs which still use strict mode.
->>>>
->>>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->>>> ---
->>>>    drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
->>>>    1 file changed, 14 insertions(+), 9 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
->>>> index 010a254..9234db3 100644
->>>> --- a/drivers/iommu/io-pgtable-arm.c
->>>> +++ b/drivers/iommu/io-pgtable-arm.c
->>>> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
->>>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>>                       unsigned long iova, size_t size, int lvl,
->>>> -                   arm_lpae_iopte *ptep);
->>>> +                   arm_lpae_iopte *ptep, int strict);
->>>>      static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->>>>                    phys_addr_t paddr, arm_lpae_iopte prot,
->>>> @@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->>>>            size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
->>>>              tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
->>>> -        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
->>>> +        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
->>>>                return -EINVAL;
->>>>        }
->>>>    @@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
->>>>    static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->>>>                           unsigned long iova, size_t size,
->>>>                           arm_lpae_iopte blk_pte, int lvl,
->>>> -                       arm_lpae_iopte *ptep)
->>>> +                       arm_lpae_iopte *ptep, int strict)
->>>
->>> DMA code should never ever be splitting blocks anyway, and frankly the TLB maintenance here is dodgy enough (since we can't reasonably do break-before make as VMSA says we should) that I *really* don't want to introduce any possibility of making it more asynchronous. I'd much rather just hard-code the expectation of strict == true for this.
->>
->> OK, I will hard-code strict=true for it.
->>
->> But since it never ever be happened, why did not give a warning at the beginning?
-> 
-> Because DMA code is not the only caller of iommu_map/unmap. It's 
-> perfectly legal in the IOMMU API to partially unmap a previous mapping 
-> such that a block entry needs to be split. The DMA API, however, is a 
-> lot more constrined, and thus by construction the iommu-dma layer will 
-> never generate a block-splitting iommu_unmap() except as a result of 
-> illegal DMA API usage, and we obviously do not need to optimise for that 
-> (you will get a warning about mismatched unmaps under dma-debug, but 
-> it's a bit too expensive to police in the general case).
-> 
-
-When I was reading the code around arm_lpae_split_blk_unmap(), I was
-curious in which scenario a block will be split. Now with your comments
-"Because DMA code is not the only caller of iommu_map/unmap", it seems
-depending on the user.
-
-Would you please explain this further? I mean besides DMA, which user
-will use iommu_map/umap and how it split a block.
-
-Thanks.
-Shunyong.
-
-> 
->>>>    {
->>>>        struct io_pgtable_cfg *cfg = &data->iop.cfg;
->>>>        arm_lpae_iopte pte, *tablep;
->>>> @@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->>>>        }
->>>>          if (unmap_idx < 0)
->>>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
->>>> +        return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
->>>>          io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
->>>> +    if (!strict)
->>>> +        io_pgtable_tlb_sync(&data->iop);
->>>> +
->>>>        return size;
->>>>    }
->>>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>>                       unsigned long iova, size_t size, int lvl,
->>>> -                   arm_lpae_iopte *ptep)
->>>> +                   arm_lpae_iopte *ptep, int strict)
->>>>    {
->>>>        arm_lpae_iopte pte;
->>>>        struct io_pgtable *iop = &data->iop;
->>>> @@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>>                io_pgtable_tlb_sync(iop);
->>>>                ptep = iopte_deref(pte, data);
->>>>                __arm_lpae_free_pgtable(data, lvl + 1, ptep);
->>>> -        } else {
->>>> +        } else if (strict) {
->>>>                io_pgtable_tlb_add_flush(iop, iova, size, size, true);
->>>>            }
->>>>    @@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->>>>             * minus the part we want to unmap
->>>>             */
->>>>            return arm_lpae_split_blk_unmap(data, iova, size, pte,
->>>> -                        lvl + 1, ptep);
->>>> +                        lvl + 1, ptep, strict);
->>>>        }
->>>>          /* Keep on walkin' */
->>>>        ptep = iopte_deref(pte, data);
->>>> -    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
->>>> +    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
->>>>    }
->>>>      static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->>>>                     size_t size)
->>>>    {
->>>> +    int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
->>>>        struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->>>>        arm_lpae_iopte *ptep = data->pgd;
->>>>        int lvl = ARM_LPAE_START_LVL(data);
->>>>    +    iova &= ~IOMMU_STRICT_MODE_MASK;
->>>>        if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
->>>>            return 0;
->>>>    -    return __arm_lpae_unmap(data, iova, size, lvl, ptep);
->>>> +    return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
->>>>    }
->>>>      static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
->>>>
->>>
->>> .
->>>
->>
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+T24gVGh1LCBBdWcgMDIsIDIwMTggYXQgMTI6NDM6MjdQTSAtMDYwMCwgQWxleCBXaWxsaWFtc29u
+IHdyb3RlOgo+IERhdGU6IFRodSwgMiBBdWcgMjAxOCAxMjo0MzoyNyAtMDYwMAo+IEZyb206IEFs
+ZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+Cj4gVG86IENvcm5lbGlh
+IEh1Y2sgPGNvaHVja0ByZWRoYXQuY29tPgo+IENDOiBLZW5uZXRoIExlZSA8bGlndW96aHVAaGlz
+aWxpY29uLmNvbT4sICJUaWFuLCBLZXZpbiIKPiAgPGtldmluLnRpYW5AaW50ZWwuY29tPiwgS2Vu
+bmV0aCBMZWUgPG5lay5pbi5jbkBnbWFpbC5jb20+LCBKb25hdGhhbiBDb3JiZXQKPiAgPGNvcmJl
+dEBsd24ubmV0PiwgSGVyYmVydCBYdSA8aGVyYmVydEBnb25kb3IuYXBhbmEub3JnLmF1PiwgIkRh
+dmlkIFMgLgo+ICBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0PiwgSm9lcmcgUm9lZGVsIDxq
+b3JvQDhieXRlcy5vcmc+LCBIYW8gRmFuZwo+ICA8ZmFuZ2hhbzExQGh1YXdlaS5jb20+LCBaaG91
+IFdhbmcgPHdhbmd6aG91MUBoaXNpbGljb24uY29tPiwgWmFpYm8gWHUKPiAgPHh1emFpYm9AaHVh
+d2VpLmNvbT4sIFBoaWxpcHBlIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIuY29tPiwgIkdy
+ZWcKPiAgS3JvYWgtSGFydG1hbiIgPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPiwgVGhvbWFz
+IEdsZWl4bmVyCj4gIDx0Z2x4QGxpbnV0cm9uaXguZGU+LCAibGludXgtZG9jQHZnZXIua2VybmVs
+Lm9yZyIKPiAgPGxpbnV4LWRvY0B2Z2VyLmtlcm5lbC5vcmc+LCAibGludXgta2VybmVsQHZnZXIu
+a2VybmVsLm9yZyIKPiAgPGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+LCAibGludXgtY3J5
+cHRvQHZnZXIua2VybmVsLm9yZyIKPiAgPGxpbnV4LWNyeXB0b0B2Z2VyLmtlcm5lbC5vcmc+LCAi
+aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmciCj4gIDxpb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZz4sICJrdm1Admdlci5rZXJuZWwub3JnIgo+ICA8a3ZtQHZnZXIua2VybmVs
+Lm9yZz4sICJsaW51eC1hY2NlbGVyYXRvcnNAbGlzdHMub3psYWJzLm9yZ1wiCj4gICAgICAgICAg
+PGxpbnV4LWFjY2VsZXJhdG9yc0BsaXN0cy5vemxhYnMub3JnPiwgTHUgQmFvbHUKPiAgPGJhb2x1
+Lmx1QGxpbnV4LmludGVsLmNvbT4sICBLdW1hciIsIDxTYW5qYXkgSyAiCj4gIDxzYW5qYXkuay5r
+dW1hckBpbnRlbC5jb20+LCAiIGxpbnV4YXJtQGh1YXdlaS5jb20gIgo+ICA8bGludXhhcm1AaHVh
+d2VpLmNvbT4iPgo+IFN1YmplY3Q6IFJlOiBbUkZDIFBBVENIIDMvN10gdmZpbzogYWRkIHNwaW1k
+ZXYgc3VwcG9ydAo+IE1lc3NhZ2UtSUQ6IDwyMDE4MDgwMjEyNDMyNy40MDNiMTBhYkB0NDUwcy5o
+b21lPgo+IAo+IE9uIFRodSwgMiBBdWcgMjAxOCAxMDozNToyOCArMDIwMAo+IENvcm5lbGlhIEh1
+Y2sgPGNvaHVja0ByZWRoYXQuY29tPiB3cm90ZToKPiAKPiA+IE9uIFRodSwgMiBBdWcgMjAxOCAx
+NTozNDo0MCArMDgwMAo+ID4gS2VubmV0aCBMZWUgPGxpZ3Vvemh1QGhpc2lsaWNvbi5jb20+IHdy
+b3RlOgo+ID4gCj4gPiA+IE9uIFRodSwgQXVnIDAyLCAyMDE4IGF0IDA0OjI0OjIyQU0gKzAwMDAs
+IFRpYW4sIEtldmluIHdyb3RlOiAgCj4gPiAKPiA+ID4gPiA+IEZyb206IEtlbm5ldGggTGVlIFtt
+YWlsdG86bGlndW96aHVAaGlzaWxpY29uLmNvbV0KPiA+ID4gPiA+IFNlbnQ6IFRodXJzZGF5LCBB
+dWd1c3QgMiwgMjAxOCAxMTo0NyBBTQo+ID4gPiA+ID4gICAgIAo+ID4gPiA+ID4gPiAgICAKPiA+
+ID4gPiA+ID4gPiBGcm9tOiBLZW5uZXRoIExlZQo+ID4gPiA+ID4gPiA+IFNlbnQ6IFdlZG5lc2Rh
+eSwgQXVndXN0IDEsIDIwMTggNjoyMiBQTQo+ID4gPiA+ID4gPiA+Cj4gPiA+ID4gPiA+ID4gRnJv
+bTogS2VubmV0aCBMZWUgPGxpZ3Vvemh1QGhpc2lsaWNvbi5jb20+Cj4gPiA+ID4gPiA+ID4KPiA+
+ID4gPiA+ID4gPiBTUElNREVWIGlzICJTaGFyZSBQYXJlbnQgSU9NTVUgTWRldiIuIEl0IGlzIGEg
+dmZpby1tZGV2LiBCdXQgZGlmZmVyICAgIAo+ID4gPiA+ID4gZnJvbSAgICAKPiA+ID4gPiA+ID4g
+PiB0aGUgZ2VuZXJhbCB2ZmlvLW1kZXY6Cj4gPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gPiAxLiBJ
+dCBzaGFyZXMgaXRzIHBhcmVudCdzIElPTU1VLgo+ID4gPiA+ID4gPiA+IDIuIFRoZXJlIGlzIG5v
+IGhhcmR3YXJlIHJlc291cmNlIGF0dGFjaGVkIHRvIHRoZSBtZGV2IGlzIGNyZWF0ZWQuIFRoZQo+
+ID4gPiA+ID4gPiA+IGhhcmR3YXJlIHJlc291cmNlIChBIGBxdWV1ZScpIGlzIGFsbG9jYXRlZCBv
+bmx5IHdoZW4gdGhlIG1kZXYgaXMKPiA+ID4gPiA+ID4gPiBvcGVuZWQuICAgIAo+ID4gPiA+ID4g
+Pgo+ID4gPiA+ID4gPiBBbGV4IGhhcyBjb25jZXJuIG9uIGRvaW5nIHNvLCBhcyBwb2ludGVkIG91
+dCBpbjoKPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gCWh0dHBzOi8vd3d3LnNwaW5pY3MubmV0L2xp
+c3RzL2t2bS9tc2cxNzI2NTIuaHRtbAo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiByZXNvdXJjZSBh
+bGxvY2F0aW9uIHNob3VsZCBiZSByZXNlcnZlZCBhdCBjcmVhdGlvbiB0aW1lLiAgICAKPiA+ID4g
+PiA+IAo+ID4gPiA+ID4gWWVzLiBUaGF0IGlzIHdoeSBJIGtlZXAgdGVsbGluZyB0aGF0IFNQSU1E
+RVYgaXMgbm90IGZvciAiVk0iLCBpdCBpcyBmb3IgIm1hbnkKPiA+ID4gPiA+IHByb2Nlc3NlcyIs
+IGl0IGlzIGp1c3QgYW4gYWNjZXNzIHBvaW50IHRvIHRoZSBwcm9jZXNzLiBOb3QgYSBkZXZpY2Ug
+dG8gVk0uIEkKPiA+ID4gPiA+IGhvcGUKPiA+ID4gPiA+IEFsZXggY2FuIGFjY2VwdCBpdDopCj4g
+PiA+ID4gPiAgICAgCj4gPiA+ID4gCj4gPiA+ID4gVkZJTyBpcyBqdXN0IGFib3V0IGFzc2lnbmlu
+ZyBkZXZpY2UgcmVzb3VyY2UgdG8gdXNlciBzcGFjZS4gSXQgZG9lc24ndCBjYXJlCj4gPiA+ID4g
+d2hldGhlciBpdCdzIG5hdGl2ZSBwcm9jZXNzZXMgb3IgVk0gdXNpbmcgdGhlIGRldmljZSBzbyBm
+YXIuIEFsb25nIHRoZSBkaXJlY3Rpb24KPiA+ID4gPiB3aGljaCB5b3UgZGVzY3JpYmVkLCBsb29r
+cyBWRklPIG5lZWRzIHRvIHN1cHBvcnQgdGhlIGNvbmZpZ3VyYXRpb24gdGhhdAo+ID4gPiA+IHNv
+bWUgbWRldnMgYXJlIHVzZWQgZm9yIG5hdGl2ZSBwcm9jZXNzIG9ubHksIHdoaWxlIG90aGVycyBj
+YW4gYmUgdXNlZAo+ID4gPiA+IGZvciBib3RoIG5hdGl2ZSBhbmQgVk0uIEknbSBub3Qgc3VyZSB3
+aGV0aGVyIHRoZXJlIGlzIGEgY2xlYW4gd2F5IHRvCj4gPiA+ID4gZW5mb3JjZSBpdC4uLiAgICAK
+PiA+ID4gCj4gPiA+IEkgaGFkIHRoZSBzYW1lIGlkZWEgYXQgdGhlIGJlZ2lubmluZy4gQnV0IGZp
+bmFsbHkgSSBmb3VuZCB0aGF0IHRoZSBsaWZlIGN5Y2xlCj4gPiA+IG9mIHRoZSB2aXJ0dWFsIGRl
+dmljZSBmb3IgVk0gYW5kIHByb2Nlc3Mgd2VyZSBkaWZmZXJlbnQuIENvbnNpZGVyIHlvdSBjcmVh
+dGUKPiA+ID4gc29tZSBtZGV2cyBmb3IgVk0gdXNlLCB5b3Ugd2lsbCBnaXZlIGFsbCB0aG9zZSBt
+ZGV2cyB0byBsaWItdmlydCwgd2hpY2gKPiA+ID4gZGlzdHJpYnV0ZSB0aG9zZSBtZGV2IHRvIFZN
+cyBvciBjb250YWluZXJzLiBJZiB0aGUgVk0gb3IgY29udGFpbmVyIGV4aXRzLCB0aGUKPiA+ID4g
+bWRldiBpcyByZXR1cm5lZCB0byB0aGUgbGliLXZpcnQgYW5kIHVzZWQgZm9yIG5leHQgYWxsb2Nh
+dGlvbi4gSXQgaXMgdGhlCj4gPiA+IGFkbWluaXN0cmF0b3Igd2hvIGNvbnRyb2xsZWQgZXZlcnkg
+bWRldidzIGFsbG9jYXRpb24uCj4gCj4gTGlidmlydCBjdXJyZW50bHkgZG9lcyBubyBtYW5hZ2Vt
+ZW50IG9mIG1kZXYgZGV2aWNlcywgc28gSSBiZWxpZXZlCj4gdGhpcyBleGFtcGxlIGlzIGZpY3Rp
+dGlvdXMuICBUaGUgZXh0ZW50IG9mIGxpYnZpcnQncyBpbnRlcmFjdGlvbiB3aXRoCj4gbWRldiBp
+cyB0aGF0IFhNTCBtYXkgc3BlY2lmeSBhbiBtZGV2IFVVSUQgYXMgdGhlIHNvdXJjZSBmb3IgYSBo
+b3N0ZGV2Cj4gYW5kIHNldCB0aGUgcGVybWlzc2lvbnMgb24gdGhlIGRldmljZSBmaWxlcyBhcHBy
+b3ByaWF0ZWx5LiAgV2hldGhlcgo+IG1kZXZzIGFyZSBjcmVhdGVkIGluIGFkdmFuY2UgYW5kIHJl
+LXVzZWQgb3IgY3JlYXRlZCBhbmQgZGVzdHJveWVkCj4gYXJvdW5kIGEgVk0gaW5zdGFuY2UgKGZv
+ciBleGFtcGxlIHZpYSBxZW11IGhvb2tzIHNjcmlwdHMpIGlzIG5vdCBhCj4gcG9saWN5IHRoYXQg
+bGlidmlydCBpbXBvc2VzLgo+ICAKPiA+ID4gQnV0IGZvciBwcm9jZXNzLCBpdCBpcyBkaWZmZXJl
+bnQuIFRoZXJlIGlzIG5vIGxpYi12aXJ0IGluIGNvbnRyb2wuIFRoZQo+ID4gPiBhZG1pbmlzdHJh
+dG9yJ3MgaW50ZW5zaW9uIGlzIHRvIGdyYW50IHNvbWUgdHlwZSBvZiBhcHBsaWNhdGlvbiB0byBh
+Y2Nlc3MgdGhlCj4gPiA+IGhhcmR3YXJlLiBUaGUgYXBwbGljYXRpb24gY2FuIGdldCBhIGhhbmRs
+ZSBvZiB0aGUgaGFyZHdhcmUsIHNlbmQgcmVxdWVzdCBhbmQgZ2V0Cj4gPiA+IHRoZSByZXN1bHQu
+IFRoYXQncyBhbGwuIEhlL1NoZSBkb3NlIG5vdCBjYXJlIHdoaWNoIG1kZXYgaXMgYWxsb2NhdGVk
+IHRvIHRoYXQKPiA+ID4gYXBwbGljYXRpb24uIElmIGl0IGNyYXNoZXMsIGl0IHNob3VsZCBiZSB0
+aGUga2VybmVsJ3MgcmVzcG9uc2liaWxpdHkgdG8gd2l0aGRyYXcKPiA+ID4gdGhlIHJlc291cmNl
+LCB0aGUgc3lzdGVtIGFkbWluaXN0cmF0b3IgZG9lcyBub3Qgd2FudCB0byBkbyBpdCBieSBoYW5k
+LiAgCj4gCj4gTGlidmlydCBpcyBhbHNvIG5vdCBhIHJlcXVpcmVkIGNvbXBvbmVudCBmb3IgVk0g
+bGlmZWN5Y2xlcywgaXQncyBhbgo+IG9wdGlvbmFsIG1hbmFnZW1lbnQgaW50ZXJmYWNlLCBidXQg
+dGhlcmUgYXJlIGFsc28gVk0gbGlmZWN5Y2xlcyBleGFjdGx5Cj4gYXMgeW91IGRlc2NyaWJlLiAg
+QSBWTSBtYXkgd2FudCBhIGdpdmVuIHR5cGUgb2YgdkdQVSwgdGhlcmUgbWlnaHQgYmUKPiBtdWx0
+aXBsZSBzb3VyY2VzIG9mIHRoYXQgdHlwZSBhbmQgYW55IGluc3RhbmNlIGlzIGZ1bmdpYmxlIHRv
+IGFueQo+IG90aGVyLiAgU3VjaCBhbiBtZGV2IGNhbiBiZSBkeW5hbWljYWxseSBjcmVhdGVkLCBh
+c3NpZ25lZCB0byB0aGUgVk0sCj4gYW5kIGRlc3Ryb3llZCBsYXRlci4gIFdoeSBkbyB3ZSBuZWVk
+IHRvIHN1cHBvcnQgImVtcHR5IiBtZGV2cyB0aGF0IGRvCj4gbm90IHJlc2VydmUgcmVzZXJ2ZSBy
+ZXNvdXJjZXMgdW50aWwgb3BlbmVkPyAgVGhlIGNvbmNlcHQgb2YgYXZhaWxhYmxlCj4gaW5zdGFu
+Y2VzIGlzIGVudGlyZWx5IGxvc3Qgd2l0aCB0aGF0IGFwcHJvYWNoIGFuZCBpdCBjcmVhdGVzIGFu
+Cj4gZW52aXJvbm1lbnQgdGhhdCdzIGRpZmZpY3VsdCB0byBzdXBwb3J0LCByZXNvdXJjZXMgbWF5
+IG5vdCBiZSBhdmFpbGFibGUKPiBhdCB0aGUgdGltZSB0aGUgdXNlciBhdHRlbXB0cyB0byBhY2Nl
+c3MgdGhlbS4KPiAgCj4gPiBJIGRvbid0IHRoaW5rIHRoYXQgeW91IHNob3VsZCBkaXN0aW5ndWlz
+aCB0aGUgY2FzZXMgYnkgdGhlIHByZXNlbmNlIG9mCj4gPiBhIG1hbmFnZW1lbnQgYXBwbGljYXRp
+b24uIEhvdyBjYW4gdGhlIG1kZXYgZHJpdmVyIGtub3cgd2hhdCB0aGUKPiA+IGludGVudGlvbiBi
+ZWhpbmQgdXNpbmcgdGhlIGRldmljZSBpcz8KPiAKPiBBYnNvbHV0ZWx5LCB2ZmlvIGlzIGEgdXNl
+cnNwYWNlIGRyaXZlciBpbnRlcmZhY2UsIGl0J3Mgbm90IHRhaWxvcmVkIHRvCj4gVk0gdXNhZ2Ug
+YW5kIHdlIGNhbm5vdCBrbm93IHRoZSBpbnRlbnRpb25zIG9mIHRoZSB1c2VyLgo+ICAKPiA+IFdv
+dWxkIGl0IG1ha2UgbW9yZSBzZW5zZSB0byB1c2UgYSBkaWZmZXJlbnQgbWVjaGFuaXNtIHRvIGVu
+Zm9yY2UgdGhhdAo+ID4gYXBwbGljYXRpb25zIG9ubHkgdXNlIHRob3NlIGhhbmRsZXMgdGhleSBh
+cmUgc3VwcG9zZWQgdG8gdXNlPyBNYXliZQo+ID4gY2dyb3Vwcz8gSSBkb24ndCB0aGluayBpdCdz
+IGEgZ29vZCBpZGVhIHRvIHB1c2ggdXNhZ2UgcG9saWN5IGludG8gdGhlCj4gPiBrZXJuZWwuCj4g
+Cj4gSSBhZ3JlZSwgdGhpcyBzb3VuZHMgbGlrZSBhIHVzZXJzcGFjZSBwcm9ibGVtLCBtZGV2IHN1
+cHBvcnRzIGR5bmFtaWMKPiBjcmVhdGlvbiBhbmQgcmVtb3ZhbCBvZiBtZGV2IGRldmljZXMsIGlm
+IHRoZXJlJ3MgYW4gaXNzdWUgd2l0aAo+IG1haW50YWluaW5nIGEgc2V0IG9mIHN0YW5kYnkgZGV2
+aWNlcyB0aGF0IGEgdXNlciBoYXMgYWNjZXNzIHRvLCB0aGlzCj4gc291bmRzIGxpa2UgYSB1c2Vy
+c3BhY2UgYnJva2VyIHByb2JsZW0uICBJdCBtYWtlcyBtb3JlIHNlbnNlIHRvIG1lIHRvCj4gaGF2
+ZSBhIG1vZGVsIHdoZXJlIGEgdXNlcnNwYWNlIGFwcGxpY2F0aW9uIGNhbiBtYWtlIGEgcmVxdWVz
+dCB0byBhCj4gYnJva2VyIGFuZCB0aGUgYnJva2VyIGNhbiByZXBseSB3aXRoICJub25lIGF2YWls
+YWJsZSIgcmF0aGVyIHRoYW4KPiBoYXZpbmcgYSBzZXQgb2YgZGV2aWNlcyBvbiBzdGFuZGJ5IHRo
+YXQgbWF5IG9yIG1heSBub3Qgd29yayBkZXBlbmRpbmcKPiBvbiB0aGUgc3lzdGVtIGxvYWQgYW5k
+IG90aGVyIHVzZXJzLiAgVGhhbmtzLAo+IAo+IEFsZXgKCkkgYW0gc29ycnksIEkgdXNlZCBhIHdy
+b25nIG11dHQgY29tbWFuZCB3aGVuIHJlcGx5IHRvIENvcm5lbGlhJ3MgbGFzdCBtYWlsLiBUaGUK
+bGFzdCByZXBseSBkb3NlIG5vdCBzdGF5IHdpdGhpbiB0aGlzIHRocmVhZC4gU28gcGxlYXNlIGxl
+dCBtZSByZXBlYXQgbXkgcG9pbnQKaGVyZS4KCkkgc2hvdWxkIG5vdCBoYXZlIHVzZSBsaWJ2aXJ0
+IGFzIHRoZSBleGFtcGxlLiBCdXQgV2FycERyaXZlIHdvcmtzIGluIHN1Y2gKc2NlbmFyaW86Cgox
+LiBJdCBzdXBwb3J0cyB0aG91c2FuZHMgb2YgcHJvY2Vzc2VzLiBUYWtlIHppcCBhY2NlbGVyYXRv
+ciBhcyBhbiBleGFtcGxlLCBhbnkKYXBwbGljYXRpb24gbmVlZCBkYXRhIGNvbXByZXNzaW9uL2Rl
+Y29tcHJlc3Npb24gd2lsbCBuZWVkIHRvIGludGVyYWN0IHdpdGggdGhlCmFjY2VsZXJhdG9yLiBU
+byBzdXBwb3J0IHRoYXQsIHlvdSBoYXZlIHRvIGNyZWF0ZSB0ZW5zIG9mIHRob3VzYW5kcyBvZiBt
+ZGV2IGZvcgp0aGVpciB1c2FnZS4gSSBkb24ndCB0aGluayBpdCBpcyBhIGdvb2QgaWRlYSB0byBo
+YXZlIHNvIG1hbnkgZGV2aWNlcyBpbiB0aGUKc3lzdGVtLgoKMi4gVGhlIGFwcGxpY2F0aW9uIGRv
+ZXMgbm90IHdhbnQgdG8gb3duIHRoZSBtZGV2IGZvciBsb25nLiBJdCBqdXN0IG5lZWQgYW4KYWNj
+ZXNzIHBvaW50IGZvciB0aGUgaGFyZHdhcmUgc2VydmljZS4gSWYgaXQgaGFzIHRvIGludGVyYWN0
+IHdpdGggYW4gbWFuYWdlbWVudAphZ2VudCBmb3IgYWxsb2NhdGlvbiBhbmQgcmVsZWFzZSwgdGhp
+cyBtYWtlcyB0aGUgcHJvYmxlbSBjb21wbGV4LgoKMy4gVGhlIHNlcnZpY2UgaXMgYm91bmQgd2l0
+aCB0aGUgcHJvY2Vzcy4gV2hlbiB0aGUgcHJvY2VzcyBleGl0LCB0aGUgcmVzb3VyY2UKc2hvdWxk
+IGJlIHJlbGVhc2VkIGF1dG9tYXRpY2FsbHkuIEtlcm5lbCBpcyB0aGUgYmVzdCBwbGFjZSB0byBt
+b25pdG9yIHRoZSBzdGF0ZQpvZiB0aGUgcHJvY2Vzcy4KCkkgYWdyZWUgdGhpcyBleHRlbmRpbmcg
+dGhlIGNvbmNlcHQgb2YgbWRldi4gQnV0IGFnYWluLCBpdCBpcyBjbGVhbmVyIHRoYW4KY3JlYXRp
+bmcgYW5vdGhlciBmYWNpbGl0eSBmb3IgdXNlciBsYW5kIERNQS4gV2UganVzdCBuZWVkIHRvIHRh
+a2UgbWRldiBhcyBhbgphY2Nlc3MgcG9pbnQgb2YgdGhlIGRldmljZTogd2hlbiBpdCBpcyBvcGVu
+LCB0aGUgcmVzb3VyY2UgaXMgZ2l2ZW4uIEl0IGlzIG5vdCBhCmRldmljZSBmb3IgYSBwYXJ0aWN1
+bGFyIGVudGl0eSBvciBpbnN0YW5jZS4gQnV0IGl0IGlzIHN0aWxsIGEgZGV2aWNlIHdoaWNoIGNh
+bgpwcm92aWRlIHNlcnZpY2Ugb2YgdGhlIGhhcmR3YXJlLgoKQ29ybmVsaWEgaXMgd29ycnlpbmcg
+YWJvdXQgcmVzb3VyY2Ugc3RhcnZpbmcuIEkgdGhpbmsgdGhhdCBjYW4gYmUgc29sdmVkIGJ5IHNl
+dApyZXN0cmljdGlvbiBvbiB0aGUgbWRldiBpdHNlbGYuIE1kZXYgbWFuYWdlbWVudCBhZ2VudCBk
+b3NlIG5vdCBoZWxwIG11Y2ggaGVyZS4KTWFuYWdlbWVudCBvbiB0aGUgbWRldiBpdHNlbGYgY2Fu
+IHN0aWxsIGxlYWQgdG8gdGhlIHN0YXR1cyBvZiBydW5uaW5nIG91dCBvZgpyZXNvdXJjZS4KClRo
+YW5rcwoKCi0tIAoJCQktS2VubmV0aChIaXNpbGljb24pCgo9PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PQrmnKzpgq7ku7blj4rlhbbpmYTku7blkKvmnInljY7kuLrlhazlj7jnmoTkv53lr4bkv6Hmga/v
+vIzku4XpmZDkuo7lj5HpgIHnu5nkuIrpnaLlnLDlnYDkuK3liJflh7rnmoTkuKrkurrmiJbnvqTn
+u4TjgILnpoEK5q2i5Lu75L2V5YW25LuW5Lq65Lul5Lu75L2V5b2i5byP5L2/55So77yI5YyF5ous
+5L2G5LiN6ZmQ5LqO5YWo6YOo5oiW6YOo5YiG5Zyw5rOE6Zyy44CB5aSN5Yi244CB5oiW5pWj5Y+R
+77yJ5pys6YKu5Lu25LitCueahOS/oeaBr+OAguWmguaenOaCqOmUmeaUtuS6huacrOmCruS7tu+8
+jOivt+aCqOeri+WNs+eUteivneaIlumCruS7tumAmuefpeWPkeS7tuS6uuW5tuWIoOmZpOacrOmC
+ruS7tu+8gQpUaGlzIGUtbWFpbCBhbmQgaXRzIGF0dGFjaG1lbnRzIGNvbnRhaW4gY29uZmlkZW50
+aWFsIGluZm9ybWF0aW9uIGZyb20gSFVBV0VJLAp3aGljaCBpcyBpbnRlbmRlZCBvbmx5IGZvciB0
+aGUgcGVyc29uIG9yIGVudGl0eSB3aG9zZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92ZS4KQW55IHVz
+ZSBvZiB0aGUgCmluZm9ybWF0aW9uIGNvbnRhaW5lZCBoZXJlaW4gaW4gYW55IHdheSAoaW5jbHVk
+aW5nLCBidXQgbm90IGxpbWl0ZWQgdG8sIHRvdGFsIG9yCnBhcnRpYWwgZGlzY2xvc3VyZSwgcmVw
+cm9kdWN0aW9uLCBvciBkaXNzZW1pbmF0aW9uKSBieSBwZXJzb25zIG90aGVyIHRoYW4gdGhlCmlu
+dGVuZGVkIApyZWNpcGllbnQocykgaXMgcHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmUgdGhpcyBl
+LW1haWwgaW4gZXJyb3IsIHBsZWFzZSBub3RpZnkKdGhlIHNlbmRlciBieSBwaG9uZSBvciBlbWFp
+bCBpbW1lZGlhdGVseSBhbmQgZGVsZXRlIGl0IQoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
+LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2lvbW11
