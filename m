@@ -1,45 +1,88 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH v2 0/7] Stop losing firmware-set DMA masks
-Date: Mon, 6 Aug 2018 14:13:34 +0200
-Message-ID: <20180806121334.GA5340@lst.de>
-References: <cover.1532382222.git.robin.murphy@arm.com>
-	<CAK8P3a3HDJ6svNN_cwvegxu20yNv8+tvc0D1A6Ooeq8agawbFg@mail.gmail.com>
-	<1ccccc4b-7d4c-a3ee-23a2-f108916705e9@arm.com>
-	<CAK8P3a3ZcOeHMR_qFnsBdXED+2X8_AEMKoS5MeAQhbapbGmm9w@mail.gmail.com>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH] iommu/rockchip: Handle errors returned from PM framework
+Date: Mon, 06 Aug 2018 14:09:38 +0200
+Message-ID: <2071881.EAoDzUiQGL@phil>
+References: <20180805124616.18020-1-marc.zyngier@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a3ZcOeHMR_qFnsBdXED+2X8_AEMKoS5MeAQhbapbGmm9w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, gregkh <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, the arch/x86 maintainers <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180805124616.18020-1-marc.zyngier@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 06, 2018 at 12:01:34PM +0200, Arnd Bergmann wrote:
-> There are a few subtle corner cases here, in particular in which cases
-> the new dma_set_mask() behavior on arm64 reports success or
-> failure when truncating the mask to the bus_dma_mask.
+Hi Marc,
 
-Going forward my plan was to make dma_set_mask() never fail.  The idea
-is that it sets the mask that the device is capable of, and the core
-dma code is responsible for also looking at bus_dma_mask and otherwise
-make things just work.
+Am Sonntag, 5. August 2018, 14:46:16 CEST schrieb Marc Zyngier:
+> pm_runtime_get_if_in_use can fail: either PM has been disabled
+> altogether (-EINVAL), or the device hasn't been enabled yet (0).
+> Sadly, we ignore the first case at the moment, and end up treating
+> it as if we had received a valid interrupt.
+> 
+> The first case could happen because the interrupt line is shared
+> (with the VOP for example), and although that device hasn't been
+> programmed yet, an interrupt may be pending (think kexec/kdump).
+> 
+> The second case means that we've enabled the IOMMU, but it is
+> not powered-on just yet. This could be another instance of the
+> above, but as it deserves investigation, let's output a single
+> warning (instead of flodding the console).
+> 
+> In both cases, bail with an IRQ_NONE.
+> 
+> Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
+> Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
 
-Robin brought up the case where a platform can't handle a given limitation
-ever, e.g. a PCI(e) device with a 24-bit dma mask on a device with a dma
-offset that means we'll never have any physical memory reachable in that
-range.  So we'll either still need to allow it to fail for such corner
-cases or delay such error until later, e.g. when dma_alloc_* (or in the
-corner case of the corner case dma_map_*) is called.  I'm still undecided
-which way to go, but not allowing error returns from dma_set_mask and
-its variants sounds very tempting.
+Hmm, maybe my thinking is flawed, but to me it looks a bit different.
+
+I.e. the iommu, as well as the vop have the capability to check if the irq
+is for them via their status registers (INT_STATUS and MMU_STATUS).
+
+For this to happen the power-domain must be active and the device clocked.
+Clock handling is done on both the vop and iommu and in the !CONFIG_PM
+case all power-domains are left on.
+
+Right now a !CONFIG_PM just passes through the driver unnoticed but with
+this change, we would actually make it depend on PM?
+
+What am I missing?
+
+Also there are quite a bit more instances of pm_runtime_get_if_in_use
+present in the iommu driver.
+
+
+Heiko
+
+>  drivers/iommu/rockchip-iommu.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 054cd2c8e9c8..9d21495a8433 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -521,10 +521,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+>  	u32 int_status;
+>  	dma_addr_t iova;
+>  	irqreturn_t ret = IRQ_NONE;
+> -	int i;
+> +	int i, err;
+>  
+> -	if (WARN_ON(!pm_runtime_get_if_in_use(iommu->dev)))
+> -		return 0;
+> +	err = pm_runtime_get_if_in_use(iommu->dev);
+> +	if ((err < 0) || WARN_ON_ONCE(!err))
+> +		return ret;
+>  
+>  	if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+>  		goto out;
+> 
