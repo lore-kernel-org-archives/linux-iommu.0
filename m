@@ -1,81 +1,132 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 1/1] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-Date: Mon, 6 Aug 2018 20:31:29 +0800
-Message-ID: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: [PATCH] iommu/rockchip: Handle errors returned from PM framework
+Date: Mon, 6 Aug 2018 13:32:57 +0100
+Message-ID: <9914232f-7b64-dcc8-8033-757e272be7c4@arm.com>
+References: <20180805124616.18020-1-marc.zyngier@arm.com>
+ <2071881.EAoDzUiQGL@phil>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <2071881.EAoDzUiQGL@phil>
+Content-Language: en-GB
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Heiko Stuebner <heiko@sntech.de>
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
-__arm_smmu_sync_poll_msi requires that sync_idx must be increased
-monotonously according to the sequence of the CMDs in the cmdq.
+Hi Heiko,
 
-But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
-by spinlock, so the following scenarios may appear:
-cpu0			cpu1
-msidata=0
-			msidata=1
-			insert cmd1
-insert cmd0
-			smmu execute cmd1
-smmu execute cmd0
-			poll timeout, because msidata=1 is overridden by
-			cmd0, that means VAL=0, sync_idx=1.
+On 06/08/18 13:09, Heiko Stuebner wrote:
+> Hi Marc,
+> 
+> Am Sonntag, 5. August 2018, 14:46:16 CEST schrieb Marc Zyngier:
+>> pm_runtime_get_if_in_use can fail: either PM has been disabled
+>> altogether (-EINVAL), or the device hasn't been enabled yet (0).
+>> Sadly, we ignore the first case at the moment, and end up treating
+>> it as if we had received a valid interrupt.
+>>
+>> The first case could happen because the interrupt line is shared
+>> (with the VOP for example), and although that device hasn't been
+>> programmed yet, an interrupt may be pending (think kexec/kdump).
+>>
+>> The second case means that we've enabled the IOMMU, but it is
+>> not powered-on just yet. This could be another instance of the
+>> above, but as it deserves investigation, let's output a single
+>> warning (instead of flodding the console).
+>>
+>> In both cases, bail with an IRQ_NONE.
+>>
+>> Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
+>> Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+> 
+> Hmm, maybe my thinking is flawed, but to me it looks a bit different.
+> 
+> I.e. the iommu, as well as the vop have the capability to check if the irq
+> is for them via their status registers (INT_STATUS and MMU_STATUS).
+> 
+> For this to happen the power-domain must be active and the device clocked.
+> Clock handling is done on both the vop and iommu and in the !CONFIG_PM
+> case all power-domains are left on.
+> 
+> Right now a !CONFIG_PM just passes through the driver unnoticed but with
+> this change, we would actually make it depend on PM?
+> 
+> What am I missing?
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+I'm not sure you're missing anything, except that what I'm reporting 
+here has nothing to do with !CONFIG_PM, but with the state of runtime PM 
+when an interrupt gets delivered.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 1d64710..4810f61 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -566,7 +566,7 @@ struct arm_smmu_device {
+> Also there are quite a bit more instances of pm_runtime_get_if_in_use
+> present in the iommu driver.
 
- 	int				gerr_irq;
- 	int				combined_irq;
--	atomic_t			sync_nr;
-+	u32				sync_nr;
+Indeed. Most of the are mishandling the return value by ignoring the 
+error cases. And the more I look at it, the more I think I'm just fixing 
+an effect, and not the root cause. See when the IOMMU interrupts get 
+requested, long before pm_runtime_enable() is called.
 
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
-@@ -836,7 +836,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
- 		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
- 		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
--		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
- 		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
- 		break;
- 	default:
-@@ -947,7 +946,6 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
- 	struct arm_smmu_cmdq_ent ent = {
- 		.opcode = CMDQ_OP_CMD_SYNC,
- 		.sync	= {
--			.msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
- 			.msiaddr = virt_to_phys(&smmu->sync_count),
- 		},
- 	};
-@@ -955,6 +953,8 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
- 	arm_smmu_cmdq_build_cmd(cmd, &ent);
+If you get an interrupt at that point (which is perfectly likely given 
+that the VOP shares the IRQ line), you handle it in an unexpected 
+context. I should have spotted that yesterday...
 
- 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
-+	ent.sync.msidata = ++smmu->sync_nr;
-+	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent.sync.msidata);
- 	arm_smmu_cmdq_insert_cmd(smmu, cmd);
- 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+I've quickly hacked the (untested) following patch, which should do the
+trick (I'll test it tonight).
 
-@@ -2179,7 +2179,6 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- {
- 	int ret;
+Thanks,
 
--	atomic_set(&smmu->sync_nr, 0);
- 	ret = arm_smmu_init_queues(smmu);
- 	if (ret)
- 		return ret;
---
-1.8.3
+	M.
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 054cd2c8e9c8..94942712959d 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1152,17 +1152,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	if (iommu->num_mmu == 0)
+ 		return PTR_ERR(iommu->bases[0]);
+ 
+-	i = 0;
+-	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
+-		if (irq < 0)
+-			return irq;
+-
+-		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
+-				       IRQF_SHARED, dev_name(dev), iommu);
+-		if (err)
+-			return err;
+-	}
+-
+ 	iommu->reset_disabled = device_property_read_bool(dev,
+ 					"rockchip,disable-mmu-reset");
+ 
+@@ -1219,6 +1208,19 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 
+ 	pm_runtime_enable(dev);
+ 
++	i = 0;
++	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
++		if (irq < 0)
++			return irq;
++
++		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
++				       IRQF_SHARED, dev_name(dev), iommu);
++		if (err) {
++			pm_runtime_disable(dev);
++			goto err_remove_sysfs;
++		}
++	}
++
+ 	return 0;
+ err_remove_sysfs:
+ 	iommu_device_sysfs_remove(&iommu->iommu);
+
+-- 
+Jazz is not dead. It just smells funny...
