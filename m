@@ -1,19 +1,18 @@
-From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Mon, 6 Aug 2018 09:26:22 +0800
-Message-ID: <20180806012622.GE91035@Turing-Arch-b>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
-	<20180801165644.GA3820@redhat.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
-	<20180802111000.4649d9ed@alans-desktop>
-	<20180802144627.GB3481@redhat.com>
-	<20180803152043.40f88947@alans-desktop>
+From: "Yang, Shunyong" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
+Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
+	mode
+Date: Mon, 6 Aug 2018 01:32:44 +0000
+Message-ID: <1d24541340334954969c58980ef85444@HXTBJIDCEMVIW01.hxtcorp.net>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+	<1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+	<89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
+	<5B597628.2020103@huawei.com>
+	<04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180803152043.40f88947@alans-desktop>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,95 +22,145 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
-Cc: Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ross Zwisler <ross.zwisler-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David S
-	. Miller
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg
+	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBBdWcgMDMsIDIwMTggYXQgMDM6MjA6NDNQTSArMDEwMCwgQWxhbiBDb3ggd3JvdGU6
-Cj4gRGF0ZTogRnJpLCAzIEF1ZyAyMDE4IDE1OjIwOjQzICswMTAwCj4gRnJvbTogQWxhbiBDb3gg
-PGdub21lc0BseG9yZ3VrLnVrdXUub3JnLnVrPgo+IFRvOiBKZXJvbWUgR2xpc3NlIDxqZ2xpc3Nl
-QHJlZGhhdC5jb20+Cj4gQ0M6ICJUaWFuLCBLZXZpbiIgPGtldmluLnRpYW5AaW50ZWwuY29tPiwg
-S2VubmV0aCBMZWUKPiAgPG5lay5pbi5jbkBnbWFpbC5jb20+LCBIYW8gRmFuZyA8ZmFuZ2hhbzEx
-QGh1YXdlaS5jb20+LCBIZXJiZXJ0IFh1Cj4gIDxoZXJiZXJ0QGdvbmRvci5hcGFuYS5vcmcuYXU+
-LCAia3ZtQHZnZXIua2VybmVsLm9yZyIKPiAgPGt2bUB2Z2VyLmtlcm5lbC5vcmc+LCBKb25hdGhh
-biBDb3JiZXQgPGNvcmJldEBsd24ubmV0PiwgR3JlZwo+ICBLcm9haC1IYXJ0bWFuIDxncmVna2hA
-bGludXhmb3VuZGF0aW9uLm9yZz4sICJsaW51eC1kb2NAdmdlci5rZXJuZWwub3JnIgo+ICA8bGlu
-dXgtZG9jQHZnZXIua2VybmVsLm9yZz4sICJLdW1hciwgU2FuamF5IEsiIDxzYW5qYXkuay5rdW1h
-ckBpbnRlbC5jb20+LAo+ICAiaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmciIDxpb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZz4sCj4gICJsaW51eC1rZXJuZWxAdmdlci5rZXJu
-ZWwub3JnIiA8bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZz4sCj4gICJsaW51eGFybUBodWF3
-ZWkuY29tIiA8bGludXhhcm1AaHVhd2VpLmNvbT4sIEFsZXggV2lsbGlhbXNvbgo+ICA8YWxleC53
-aWxsaWFtc29uQHJlZGhhdC5jb20+LCBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25peC5k
-ZT4sCj4gICJsaW51eC1jcnlwdG9Admdlci5rZXJuZWwub3JnIiA8bGludXgtY3J5cHRvQHZnZXIu
-a2VybmVsLm9yZz4sIFBoaWxpcHBlCj4gIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIuY29t
-PiwgWmFpYm8gWHUgPHh1emFpYm9AaHVhd2VpLmNvbT4sIEtlbm5ldGgKPiAgTGVlIDxsaWd1b3po
-dUBoaXNpbGljb24uY29tPiwgIkRhdmlkIFMgLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0
-PiwKPiAgUm9zcyBad2lzbGVyIDxyb3NzLnp3aXNsZXJAbGludXguaW50ZWwuY29tPgo+IFN1Ympl
-Y3Q6IFJlOiBbUkZDIFBBVENIIDAvN10gQSBHZW5lcmFsIEFjY2VsZXJhdG9yIEZyYW1ld29yaywg
-V2FycERyaXZlCj4gT3JnYW5pemF0aW9uOiBJbnRlbCBDb3Jwb3JhdGlvbgo+IFgtTWFpbGVyOiBD
-bGF3cyBNYWlsIDMuMTYuMCAoR1RLKyAyLjI0LjMyOyB4ODZfNjQtcmVkaGF0LWxpbnV4LWdudSkK
-PiBNZXNzYWdlLUlEOiA8MjAxODA4MDMxNTIwNDMuNDBmODg5NDdAYWxhbnMtZGVza3RvcD4KPiAK
-PiA+IElmIHdlIGFyZSBnb2luZyB0byBoYXZlIGFueSBraW5kIG9mIGdlbmVyYWwgcHVycG9zZSBh
-Y2NlbGVyYXRvciBBUEkgdGhlbgo+ID4gPiBpdCBoYXMgdG8gYmUgYWJsZSB0byBpbXBsZW1lbnQg
-dGhpbmdzIGxpa2UgIAo+ID4gCj4gPiBXaHkgaXMgdGhlIGV4aXN0aW5nIGRyaXZlciBtb2RlbCBu
-b3QgZ29vZCBlbm91Z2ggPyBTbyB5b3Ugd2FudAo+ID4gYSBkZXZpY2Ugd2l0aCBmdW5jdGlvbiBY
-IHlvdSBsb29rIGludG8gL2Rldi9YIChmb3IgaW5zdGFuY2UKPiA+IGZvciBHUFUgeW91IGxvb2sg
-aW4gL2Rldi9kcmkpCj4gCj4gRXhjZXB0IHdoZW4gbXkgR1BVIGlzIGluIGFuIEZQR0EgaW4gd2hp
-Y2ggY2FzZSBpdCBtaWdodCBiZSBzb21ld2hlcmUgZWxzZQo+IG9yIGl0J3MgYSBnZW5lcmFsIHB1
-cnBvc2UgYWNjZWxlcmF0b3IgdGhhdCBoYXBwZW5zIHRvIGJlIHVzYWJsZSBhcyBhIEdQVS4KPiBV
-bnVzdWFsIHRvZGF5IGluIGJpZyBjb21wdXRlciBzcGFjZSBidXQgeW91J2xsIGZpbmQgaXQgaW4K
-PiBtaWNyb2NvbnRyb2xsZXJzLgo+IAo+ID4gRWFjaCBvZiB0aG9zZSBkZXZpY2UgbmVlZCBhIHVz
-ZXJzcGFjZSBkcml2ZXIgYW5kIHRodXMgdGhpcwo+ID4gdXNlciBzcGFjZSBkcml2ZXIgY2FuIGVh
-c2lseSBrbm93cyB3aGVyZSB0byBsb29rLiBJIGRvIG5vdAo+ID4gZXhwZWN0IHRoYXQgZXZlcnkg
-YXBwbGljYXRpb24gd2lsbCByZWltcGxlbWVudCB0aG9zZSBkcml2ZXJzCj4gPiBidXQgaW5zdGVh
-ZCB1c2Ugc29tZSBraW5kIG9mIGxpYnJhcnkgdGhhdCBwcm92aWRlIGEgaGlnaAo+ID4gbGV2ZWwg
-QVBJIGZvciBlYWNoIG9mIHRob3NlIGRldmljZXMuCj4gCj4gVGhpbmsgYWJvdXQgaXQgZnJvbSB0
-aGUgdXNlciBsZXZlbC4gWW91IGhhdmUgYSBwaXBlbGluZSBvZiB0aGluZ3MgeW91Cj4gd2lzaCB0
-byBleGVjdXRlLCB5b3UgbmVlZCB0byBnZXQgdGhlIHJpZ2h0IGFjY2VsZXJhdG9yIGNvbWJpbmF0
-aW9ucyBhbmQKPiB0aGV5IG5lZWQgdG8gZml0IHRvZ2V0aGVyIHRvIG1lZXQgc3lzdGVtIGNvbnN0
-cmFpbnRzIGxpa2UgbnVtYmVyIG9mCj4gSU9NTVUgaWRzIHRoZSBhY2NlbGVyYXRvciBzdXBwb3J0
-cywgd2hlcmUgdGhleSBhcmUgY29ubmVjdGVkLgo+IAo+ID4gTm93IHlvdSBoYXZlIGEgaGllcmFy
-Y2h5IG9mIG1lbW9yeSBmb3IgdGhlIENQVSAoSEJNLCBsb2NhbAo+ID4gbm9kZSBtYWluIG1lbW9y
-eSBha2EgeW91IEREUiBkaW1tLCBwZXJzaXN0ZW50IG1lbW9yeSkgZWFjaAo+IAo+IEl0J3Mgbm90
-IGEgaGVpcmFyY2h5LCBpdCdzIGEgZ3JhcGguIFRoZXJlJ3Mgbm8gZnVuZGFtZW50YWwgcmVhc29u
-IHR3bwo+IGFjY2VsZXJhdG9ycyBjYW4ndCBiZSBjbG9zZSB0byB0d28gZGlmZmVyZW50IENQVSBj
-b3JlcyBidXQgaGF2ZSBzaGFyZWQKPiBIQk0gdGhhdCBpcyBmYXIgZnJvbSBlYWNoIHByb2Nlc3Nv
-ci4gVGhlcmUgYXJlIHBoeXNpY2FsIHJlYXNvbnMgaXQgdGVuZHMKPiB0byBsb29rIG1vcmUgbGlr
-ZSBhIGhlaXJhcmNoeSB0b2RheS4KPiAKPiA+IEFueXdheSBpIHRoaW5rIGZpbmRpbmcgZGV2aWNl
-cyBhbmQgZmluZGluZyByZWxhdGlvbiBiZXR3ZWVuCj4gPiBkZXZpY2VzIGFuZCBtZW1vcnkgaXMg
-MiBzZXBhcmF0ZSBwcm9ibGVtcyBhbmQgYXMgc3VjaCBzaG91bGQKPiA+IGJlIGhhbmRsZWQgc2Vw
-YXJhdGx5Lgo+IAo+IEF0IGEgY2VydGFpbiBsZXZlbCB0aGV5IGFyZSBkZWVwbHkgaW50ZXJ0d2lu
-ZWQgYmVjYXVzZSB5b3UgbmVlZCBhIGNvbW1vbgo+IEFQSS4gSXQncyBub3QgZ29vZCBpZiBJIHdh
-bnQgYSBwYXJ0aWN1bGFyIGFjY2VsZXJhdG9yIGFuZCBuZWVkIHRvIHRoZW4KPiBzZWUgd2hpY2gg
-QVBJIGl0cyB1bmRlciBvbiB0aGlzIG1hY2hpbmUgYW5kIHdoaWNoIGludGVyZmFjZSBJIGhhdmUg
-dG8KPiB1c2UsIGFuZCBtYXliZSBoYXZlIGEgbWl4IG9mIEZQR0EsIFdhcnBEcml2ZSBhbmQgR29v
-Z2xlIEFTSUMgaW50ZXJmYWNlcwo+IGFsbCBkaWZmZXJlbnQuCj4gCj4gVGhlIGpvYiBvZiB0aGUg
-a2VybmVsIGlzIHRvIGltcG9zZSBzb21lIGtpbmQgb2Ygc2FuaXR5IGFuZCB1bml0eSBvbiB0aGlz
-Cj4gbG90Lgo+IAo+IEFsbCBvZiBpdCBpbiB0aGUgZW5kIGNvbWVzIGRvd24gdG8KPiAKPiAnU29t
-ZWhvdyBnbHVlIHNvbWUgY2h1bmsgb2YgbWVtb3J5IGludG8gbXkgYWRkcmVzcyBzcGFjZSBhbmQg
-ZmluZCBhbnkKPiBzdXBwb3J0aW5nIGRyaXZlciBJIG5lZWQnCj4gCgpBZ3JlZS4gVGhpcyBpcyBh
-bHNvIG91ciBpbnRlbnNpb24gb24gV2FycERyaXZlLiBBbmQgaXQgbG9va3MgVkZJTyBpcyB0aGUg
-YmVzdApwbGFjZSB0byBmdWxmaWxsIHRoaXMgcmVxdWlyZW1lbnQuCgo+IHBsdXMgdmlydHVhbGl6
-YXRpb24gb2YgdGhlIGFib3ZlLgo+IAo+IFRoYXQgYml0J3MgZWFzeSAtIGJ1dCBtYWtpbmcgaXQg
-dXNhYmxlIGlzIGEgZGlmZmVyZW50IHN0b3J5Lgo+IAo+IEFsYW4KCi0tIAoJCQktS2VubmV0aChI
-aXNpbGljb24pCgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrmnKzpgq7ku7blj4rlhbbpmYTku7bl
-kKvmnInljY7kuLrlhazlj7jnmoTkv53lr4bkv6Hmga/vvIzku4XpmZDkuo7lj5HpgIHnu5nkuIrp
-naLlnLDlnYDkuK3liJflh7rnmoTkuKrkurrmiJbnvqTnu4TjgILnpoEK5q2i5Lu75L2V5YW25LuW
-5Lq65Lul5Lu75L2V5b2i5byP5L2/55So77yI5YyF5ous5L2G5LiN6ZmQ5LqO5YWo6YOo5oiW6YOo
-5YiG5Zyw5rOE6Zyy44CB5aSN5Yi244CB5oiW5pWj5Y+R77yJ5pys6YKu5Lu25LitCueahOS/oeaB
-r+OAguWmguaenOaCqOmUmeaUtuS6huacrOmCruS7tu+8jOivt+aCqOeri+WNs+eUteivneaIlumC
-ruS7tumAmuefpeWPkeS7tuS6uuW5tuWIoOmZpOacrOmCruS7tu+8gQpUaGlzIGUtbWFpbCBhbmQg
-aXRzIGF0dGFjaG1lbnRzIGNvbnRhaW4gY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIGZyb20gSFVB
-V0VJLAp3aGljaCBpcyBpbnRlbmRlZCBvbmx5IGZvciB0aGUgcGVyc29uIG9yIGVudGl0eSB3aG9z
-ZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92ZS4KQW55IHVzZSBvZiB0aGUgCmluZm9ybWF0aW9uIGNv
-bnRhaW5lZCBoZXJlaW4gaW4gYW55IHdheSAoaW5jbHVkaW5nLCBidXQgbm90IGxpbWl0ZWQgdG8s
-IHRvdGFsIG9yCnBhcnRpYWwgZGlzY2xvc3VyZSwgcmVwcm9kdWN0aW9uLCBvciBkaXNzZW1pbmF0
-aW9uKSBieSBwZXJzb25zIG90aGVyIHRoYW4gdGhlCmludGVuZGVkIApyZWNpcGllbnQocykgaXMg
-cHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmUgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBu
-b3RpZnkKdGhlIHNlbmRlciBieSBwaG9uZSBvciBlbWFpbCBpbW1lZGlhdGVseSBhbmQgZGVsZXRl
-IGl0IQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi, Robin,
+
+On 2018/7/26 22:37, Robin Murphy wrote:
+> On 2018-07-26 8:20 AM, Leizhen (ThunderTown) wrote:
+>> On 2018/7/25 6:25, Robin Murphy wrote:
+>>> On 2018-07-12 7:18 AM, Zhen Lei wrote:
+>>>> To support the non-strict mode, now we only tlbi and sync for the strict
+>>>> mode. But for the non-leaf case, always follow strict mode.
+>>>>
+>>>> Use the lowest bit of the iova parameter to pass the strict mode:
+>>>> 0, IOMMU_STRICT;
+>>>> 1, IOMMU_NON_STRICT;
+>>>> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+>>>> other IOMMUs which still use strict mode.
+>>>>
+>>>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>>>> ---
+>>>>    drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
+>>>>    1 file changed, 14 insertions(+), 9 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+>>>> index 010a254..9234db3 100644
+>>>> --- a/drivers/iommu/io-pgtable-arm.c
+>>>> +++ b/drivers/iommu/io-pgtable-arm.c
+>>>> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+>>>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>                       unsigned long iova, size_t size, int lvl,
+>>>> -                   arm_lpae_iopte *ptep);
+>>>> +                   arm_lpae_iopte *ptep, int strict);
+>>>>      static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>>>                    phys_addr_t paddr, arm_lpae_iopte prot,
+>>>> @@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>>>            size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+>>>>              tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+>>>> -        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
+>>>> +        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
+>>>>                return -EINVAL;
+>>>>        }
+>>>>    @@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+>>>>    static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>>>                           unsigned long iova, size_t size,
+>>>>                           arm_lpae_iopte blk_pte, int lvl,
+>>>> -                       arm_lpae_iopte *ptep)
+>>>> +                       arm_lpae_iopte *ptep, int strict)
+>>>
+>>> DMA code should never ever be splitting blocks anyway, and frankly the TLB maintenance here is dodgy enough (since we can't reasonably do break-before make as VMSA says we should) that I *really* don't want to introduce any possibility of making it more asynchronous. I'd much rather just hard-code the expectation of strict == true for this.
+>>
+>> OK, I will hard-code strict=true for it.
+>>
+>> But since it never ever be happened, why did not give a warning at the beginning?
+> 
+> Because DMA code is not the only caller of iommu_map/unmap. It's 
+> perfectly legal in the IOMMU API to partially unmap a previous mapping 
+> such that a block entry needs to be split. The DMA API, however, is a 
+> lot more constrined, and thus by construction the iommu-dma layer will 
+> never generate a block-splitting iommu_unmap() except as a result of 
+> illegal DMA API usage, and we obviously do not need to optimise for that 
+> (you will get a warning about mismatched unmaps under dma-debug, but 
+> it's a bit too expensive to police in the general case).
+> 
+
+When I was reading the code around arm_lpae_split_blk_unmap(), I was
+curious in which scenario a block will be split. Now with your comments
+"Because DMA code is not the only caller of iommu_map/unmap", it seems
+depending on the user.
+
+Would you please explain this further? I mean besides DMA, which user
+will use iommu_map/umap and how it split a block.
+
+Thanks.
+Shunyong.
+
+> 
+>>>>    {
+>>>>        struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>>>>        arm_lpae_iopte pte, *tablep;
+>>>> @@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>>>        }
+>>>>          if (unmap_idx < 0)
+>>>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+>>>> +        return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
+>>>>          io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+>>>> +    if (!strict)
+>>>> +        io_pgtable_tlb_sync(&data->iop);
+>>>> +
+>>>>        return size;
+>>>>    }
+>>>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>                       unsigned long iova, size_t size, int lvl,
+>>>> -                   arm_lpae_iopte *ptep)
+>>>> +                   arm_lpae_iopte *ptep, int strict)
+>>>>    {
+>>>>        arm_lpae_iopte pte;
+>>>>        struct io_pgtable *iop = &data->iop;
+>>>> @@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>                io_pgtable_tlb_sync(iop);
+>>>>                ptep = iopte_deref(pte, data);
+>>>>                __arm_lpae_free_pgtable(data, lvl + 1, ptep);
+>>>> -        } else {
+>>>> +        } else if (strict) {
+>>>>                io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+>>>>            }
+>>>>    @@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>             * minus the part we want to unmap
+>>>>             */
+>>>>            return arm_lpae_split_blk_unmap(data, iova, size, pte,
+>>>> -                        lvl + 1, ptep);
+>>>> +                        lvl + 1, ptep, strict);
+>>>>        }
+>>>>          /* Keep on walkin' */
+>>>>        ptep = iopte_deref(pte, data);
+>>>> -    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
+>>>> +    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+>>>>    }
+>>>>      static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>>>>                     size_t size)
+>>>>    {
+>>>> +    int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
+>>>>        struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>>>>        arm_lpae_iopte *ptep = data->pgd;
+>>>>        int lvl = ARM_LPAE_START_LVL(data);
+>>>>    +    iova &= ~IOMMU_STRICT_MODE_MASK;
+>>>>        if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+>>>>            return 0;
+>>>>    -    return __arm_lpae_unmap(data, iova, size, lvl, ptep);
+>>>> +    return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+>>>>    }
+>>>>      static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>>>>
+>>>
+>>> .
+>>>
+>>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
