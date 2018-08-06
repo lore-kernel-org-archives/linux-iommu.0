@@ -1,11 +1,19 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/rockchip: Handle errors returned from PM framework
-Date: Sun,  5 Aug 2018 13:46:16 +0100
-Message-ID: <20180805124616.18020-1-marc.zyngier@arm.com>
+From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Mon, 6 Aug 2018 09:26:22 +0800
+Message-ID: <20180806012622.GE91035@Turing-Arch-b>
+References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+	<20180801165644.GA3820@redhat.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
+	<20180802111000.4649d9ed@alans-desktop>
+	<20180802144627.GB3481@redhat.com>
+	<20180803152043.40f88947@alans-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180803152043.40f88947@alans-desktop>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,50 +23,95 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>
+Cc: Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ross Zwisler <ross.zwisler-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David S
+	. Miller
 List-Id: iommu@lists.linux-foundation.org
 
-pm_runtime_get_if_in_use can fail: either PM has been disabled
-altogether (-EINVAL), or the device hasn't been enabled yet (0).
-Sadly, we ignore the first case at the moment, and end up treating
-it as if we had received a valid interrupt.
-
-The first case could happen because the interrupt line is shared
-(with the VOP for example), and although that device hasn't been
-programmed yet, an interrupt may be pending (think kexec/kdump).
-
-The second case means that we've enabled the IOMMU, but it is
-not powered-on just yet. This could be another instance of the
-above, but as it deserves investigation, let's output a single
-warning (instead of flodding the console).
-
-In both cases, bail with an IRQ_NONE.
-
-Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
-Signed-off-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/rockchip-iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 054cd2c8e9c8..9d21495a8433 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -521,10 +521,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
- 	u32 int_status;
- 	dma_addr_t iova;
- 	irqreturn_t ret = IRQ_NONE;
--	int i;
-+	int i, err;
- 
--	if (WARN_ON(!pm_runtime_get_if_in_use(iommu->dev)))
--		return 0;
-+	err = pm_runtime_get_if_in_use(iommu->dev);
-+	if ((err < 0) || WARN_ON_ONCE(!err))
-+		return ret;
- 
- 	if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
- 		goto out;
--- 
-2.14.2
+T24gRnJpLCBBdWcgMDMsIDIwMTggYXQgMDM6MjA6NDNQTSArMDEwMCwgQWxhbiBDb3ggd3JvdGU6
+Cj4gRGF0ZTogRnJpLCAzIEF1ZyAyMDE4IDE1OjIwOjQzICswMTAwCj4gRnJvbTogQWxhbiBDb3gg
+PGdub21lc0BseG9yZ3VrLnVrdXUub3JnLnVrPgo+IFRvOiBKZXJvbWUgR2xpc3NlIDxqZ2xpc3Nl
+QHJlZGhhdC5jb20+Cj4gQ0M6ICJUaWFuLCBLZXZpbiIgPGtldmluLnRpYW5AaW50ZWwuY29tPiwg
+S2VubmV0aCBMZWUKPiAgPG5lay5pbi5jbkBnbWFpbC5jb20+LCBIYW8gRmFuZyA8ZmFuZ2hhbzEx
+QGh1YXdlaS5jb20+LCBIZXJiZXJ0IFh1Cj4gIDxoZXJiZXJ0QGdvbmRvci5hcGFuYS5vcmcuYXU+
+LCAia3ZtQHZnZXIua2VybmVsLm9yZyIKPiAgPGt2bUB2Z2VyLmtlcm5lbC5vcmc+LCBKb25hdGhh
+biBDb3JiZXQgPGNvcmJldEBsd24ubmV0PiwgR3JlZwo+ICBLcm9haC1IYXJ0bWFuIDxncmVna2hA
+bGludXhmb3VuZGF0aW9uLm9yZz4sICJsaW51eC1kb2NAdmdlci5rZXJuZWwub3JnIgo+ICA8bGlu
+dXgtZG9jQHZnZXIua2VybmVsLm9yZz4sICJLdW1hciwgU2FuamF5IEsiIDxzYW5qYXkuay5rdW1h
+ckBpbnRlbC5jb20+LAo+ICAiaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmciIDxpb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZz4sCj4gICJsaW51eC1rZXJuZWxAdmdlci5rZXJu
+ZWwub3JnIiA8bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZz4sCj4gICJsaW51eGFybUBodWF3
+ZWkuY29tIiA8bGludXhhcm1AaHVhd2VpLmNvbT4sIEFsZXggV2lsbGlhbXNvbgo+ICA8YWxleC53
+aWxsaWFtc29uQHJlZGhhdC5jb20+LCBUaG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25peC5k
+ZT4sCj4gICJsaW51eC1jcnlwdG9Admdlci5rZXJuZWwub3JnIiA8bGludXgtY3J5cHRvQHZnZXIu
+a2VybmVsLm9yZz4sIFBoaWxpcHBlCj4gIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIuY29t
+PiwgWmFpYm8gWHUgPHh1emFpYm9AaHVhd2VpLmNvbT4sIEtlbm5ldGgKPiAgTGVlIDxsaWd1b3po
+dUBoaXNpbGljb24uY29tPiwgIkRhdmlkIFMgLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0
+PiwKPiAgUm9zcyBad2lzbGVyIDxyb3NzLnp3aXNsZXJAbGludXguaW50ZWwuY29tPgo+IFN1Ympl
+Y3Q6IFJlOiBbUkZDIFBBVENIIDAvN10gQSBHZW5lcmFsIEFjY2VsZXJhdG9yIEZyYW1ld29yaywg
+V2FycERyaXZlCj4gT3JnYW5pemF0aW9uOiBJbnRlbCBDb3Jwb3JhdGlvbgo+IFgtTWFpbGVyOiBD
+bGF3cyBNYWlsIDMuMTYuMCAoR1RLKyAyLjI0LjMyOyB4ODZfNjQtcmVkaGF0LWxpbnV4LWdudSkK
+PiBNZXNzYWdlLUlEOiA8MjAxODA4MDMxNTIwNDMuNDBmODg5NDdAYWxhbnMtZGVza3RvcD4KPiAK
+PiA+IElmIHdlIGFyZSBnb2luZyB0byBoYXZlIGFueSBraW5kIG9mIGdlbmVyYWwgcHVycG9zZSBh
+Y2NlbGVyYXRvciBBUEkgdGhlbgo+ID4gPiBpdCBoYXMgdG8gYmUgYWJsZSB0byBpbXBsZW1lbnQg
+dGhpbmdzIGxpa2UgIAo+ID4gCj4gPiBXaHkgaXMgdGhlIGV4aXN0aW5nIGRyaXZlciBtb2RlbCBu
+b3QgZ29vZCBlbm91Z2ggPyBTbyB5b3Ugd2FudAo+ID4gYSBkZXZpY2Ugd2l0aCBmdW5jdGlvbiBY
+IHlvdSBsb29rIGludG8gL2Rldi9YIChmb3IgaW5zdGFuY2UKPiA+IGZvciBHUFUgeW91IGxvb2sg
+aW4gL2Rldi9kcmkpCj4gCj4gRXhjZXB0IHdoZW4gbXkgR1BVIGlzIGluIGFuIEZQR0EgaW4gd2hp
+Y2ggY2FzZSBpdCBtaWdodCBiZSBzb21ld2hlcmUgZWxzZQo+IG9yIGl0J3MgYSBnZW5lcmFsIHB1
+cnBvc2UgYWNjZWxlcmF0b3IgdGhhdCBoYXBwZW5zIHRvIGJlIHVzYWJsZSBhcyBhIEdQVS4KPiBV
+bnVzdWFsIHRvZGF5IGluIGJpZyBjb21wdXRlciBzcGFjZSBidXQgeW91J2xsIGZpbmQgaXQgaW4K
+PiBtaWNyb2NvbnRyb2xsZXJzLgo+IAo+ID4gRWFjaCBvZiB0aG9zZSBkZXZpY2UgbmVlZCBhIHVz
+ZXJzcGFjZSBkcml2ZXIgYW5kIHRodXMgdGhpcwo+ID4gdXNlciBzcGFjZSBkcml2ZXIgY2FuIGVh
+c2lseSBrbm93cyB3aGVyZSB0byBsb29rLiBJIGRvIG5vdAo+ID4gZXhwZWN0IHRoYXQgZXZlcnkg
+YXBwbGljYXRpb24gd2lsbCByZWltcGxlbWVudCB0aG9zZSBkcml2ZXJzCj4gPiBidXQgaW5zdGVh
+ZCB1c2Ugc29tZSBraW5kIG9mIGxpYnJhcnkgdGhhdCBwcm92aWRlIGEgaGlnaAo+ID4gbGV2ZWwg
+QVBJIGZvciBlYWNoIG9mIHRob3NlIGRldmljZXMuCj4gCj4gVGhpbmsgYWJvdXQgaXQgZnJvbSB0
+aGUgdXNlciBsZXZlbC4gWW91IGhhdmUgYSBwaXBlbGluZSBvZiB0aGluZ3MgeW91Cj4gd2lzaCB0
+byBleGVjdXRlLCB5b3UgbmVlZCB0byBnZXQgdGhlIHJpZ2h0IGFjY2VsZXJhdG9yIGNvbWJpbmF0
+aW9ucyBhbmQKPiB0aGV5IG5lZWQgdG8gZml0IHRvZ2V0aGVyIHRvIG1lZXQgc3lzdGVtIGNvbnN0
+cmFpbnRzIGxpa2UgbnVtYmVyIG9mCj4gSU9NTVUgaWRzIHRoZSBhY2NlbGVyYXRvciBzdXBwb3J0
+cywgd2hlcmUgdGhleSBhcmUgY29ubmVjdGVkLgo+IAo+ID4gTm93IHlvdSBoYXZlIGEgaGllcmFy
+Y2h5IG9mIG1lbW9yeSBmb3IgdGhlIENQVSAoSEJNLCBsb2NhbAo+ID4gbm9kZSBtYWluIG1lbW9y
+eSBha2EgeW91IEREUiBkaW1tLCBwZXJzaXN0ZW50IG1lbW9yeSkgZWFjaAo+IAo+IEl0J3Mgbm90
+IGEgaGVpcmFyY2h5LCBpdCdzIGEgZ3JhcGguIFRoZXJlJ3Mgbm8gZnVuZGFtZW50YWwgcmVhc29u
+IHR3bwo+IGFjY2VsZXJhdG9ycyBjYW4ndCBiZSBjbG9zZSB0byB0d28gZGlmZmVyZW50IENQVSBj
+b3JlcyBidXQgaGF2ZSBzaGFyZWQKPiBIQk0gdGhhdCBpcyBmYXIgZnJvbSBlYWNoIHByb2Nlc3Nv
+ci4gVGhlcmUgYXJlIHBoeXNpY2FsIHJlYXNvbnMgaXQgdGVuZHMKPiB0byBsb29rIG1vcmUgbGlr
+ZSBhIGhlaXJhcmNoeSB0b2RheS4KPiAKPiA+IEFueXdheSBpIHRoaW5rIGZpbmRpbmcgZGV2aWNl
+cyBhbmQgZmluZGluZyByZWxhdGlvbiBiZXR3ZWVuCj4gPiBkZXZpY2VzIGFuZCBtZW1vcnkgaXMg
+MiBzZXBhcmF0ZSBwcm9ibGVtcyBhbmQgYXMgc3VjaCBzaG91bGQKPiA+IGJlIGhhbmRsZWQgc2Vw
+YXJhdGx5Lgo+IAo+IEF0IGEgY2VydGFpbiBsZXZlbCB0aGV5IGFyZSBkZWVwbHkgaW50ZXJ0d2lu
+ZWQgYmVjYXVzZSB5b3UgbmVlZCBhIGNvbW1vbgo+IEFQSS4gSXQncyBub3QgZ29vZCBpZiBJIHdh
+bnQgYSBwYXJ0aWN1bGFyIGFjY2VsZXJhdG9yIGFuZCBuZWVkIHRvIHRoZW4KPiBzZWUgd2hpY2gg
+QVBJIGl0cyB1bmRlciBvbiB0aGlzIG1hY2hpbmUgYW5kIHdoaWNoIGludGVyZmFjZSBJIGhhdmUg
+dG8KPiB1c2UsIGFuZCBtYXliZSBoYXZlIGEgbWl4IG9mIEZQR0EsIFdhcnBEcml2ZSBhbmQgR29v
+Z2xlIEFTSUMgaW50ZXJmYWNlcwo+IGFsbCBkaWZmZXJlbnQuCj4gCj4gVGhlIGpvYiBvZiB0aGUg
+a2VybmVsIGlzIHRvIGltcG9zZSBzb21lIGtpbmQgb2Ygc2FuaXR5IGFuZCB1bml0eSBvbiB0aGlz
+Cj4gbG90Lgo+IAo+IEFsbCBvZiBpdCBpbiB0aGUgZW5kIGNvbWVzIGRvd24gdG8KPiAKPiAnU29t
+ZWhvdyBnbHVlIHNvbWUgY2h1bmsgb2YgbWVtb3J5IGludG8gbXkgYWRkcmVzcyBzcGFjZSBhbmQg
+ZmluZCBhbnkKPiBzdXBwb3J0aW5nIGRyaXZlciBJIG5lZWQnCj4gCgpBZ3JlZS4gVGhpcyBpcyBh
+bHNvIG91ciBpbnRlbnNpb24gb24gV2FycERyaXZlLiBBbmQgaXQgbG9va3MgVkZJTyBpcyB0aGUg
+YmVzdApwbGFjZSB0byBmdWxmaWxsIHRoaXMgcmVxdWlyZW1lbnQuCgo+IHBsdXMgdmlydHVhbGl6
+YXRpb24gb2YgdGhlIGFib3ZlLgo+IAo+IFRoYXQgYml0J3MgZWFzeSAtIGJ1dCBtYWtpbmcgaXQg
+dXNhYmxlIGlzIGEgZGlmZmVyZW50IHN0b3J5Lgo+IAo+IEFsYW4KCi0tIAoJCQktS2VubmV0aChI
+aXNpbGljb24pCgo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrmnKzpgq7ku7blj4rlhbbpmYTku7bl
+kKvmnInljY7kuLrlhazlj7jnmoTkv53lr4bkv6Hmga/vvIzku4XpmZDkuo7lj5HpgIHnu5nkuIrp
+naLlnLDlnYDkuK3liJflh7rnmoTkuKrkurrmiJbnvqTnu4TjgILnpoEK5q2i5Lu75L2V5YW25LuW
+5Lq65Lul5Lu75L2V5b2i5byP5L2/55So77yI5YyF5ous5L2G5LiN6ZmQ5LqO5YWo6YOo5oiW6YOo
+5YiG5Zyw5rOE6Zyy44CB5aSN5Yi244CB5oiW5pWj5Y+R77yJ5pys6YKu5Lu25LitCueahOS/oeaB
+r+OAguWmguaenOaCqOmUmeaUtuS6huacrOmCruS7tu+8jOivt+aCqOeri+WNs+eUteivneaIlumC
+ruS7tumAmuefpeWPkeS7tuS6uuW5tuWIoOmZpOacrOmCruS7tu+8gQpUaGlzIGUtbWFpbCBhbmQg
+aXRzIGF0dGFjaG1lbnRzIGNvbnRhaW4gY29uZmlkZW50aWFsIGluZm9ybWF0aW9uIGZyb20gSFVB
+V0VJLAp3aGljaCBpcyBpbnRlbmRlZCBvbmx5IGZvciB0aGUgcGVyc29uIG9yIGVudGl0eSB3aG9z
+ZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92ZS4KQW55IHVzZSBvZiB0aGUgCmluZm9ybWF0aW9uIGNv
+bnRhaW5lZCBoZXJlaW4gaW4gYW55IHdheSAoaW5jbHVkaW5nLCBidXQgbm90IGxpbWl0ZWQgdG8s
+IHRvdGFsIG9yCnBhcnRpYWwgZGlzY2xvc3VyZSwgcmVwcm9kdWN0aW9uLCBvciBkaXNzZW1pbmF0
+aW9uKSBieSBwZXJzb25zIG90aGVyIHRoYW4gdGhlCmludGVuZGVkIApyZWNpcGllbnQocykgaXMg
+cHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmUgdGhpcyBlLW1haWwgaW4gZXJyb3IsIHBsZWFzZSBu
+b3RpZnkKdGhlIHNlbmRlciBieSBwaG9uZSBvciBlbWFpbCBpbW1lZGlhdGVseSBhbmQgZGVsZXRl
+IGl0IQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
