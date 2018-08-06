@@ -1,7 +1,7 @@
 From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 5/5] iommu/arm-smmu-v3: add bootup option "arm_iommu"
-Date: Mon, 6 Aug 2018 20:27:04 +0800
-Message-ID: <1533558424-16748-6-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 4/5] iommu/arm-smmu-v3: add support for non-strict mode
+Date: Mon, 6 Aug 2018 20:27:03 +0800
+Message-ID: <1533558424-16748-5-git-send-email-thunder.leizhen@huawei.com>
 References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,69 +12,38 @@ To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joer
 Cc: Zhen Lei <thunder.leizhen@huawei.com>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a bootup option to make the system manager can choose which mode to
-be used. The default mode is strict.
+Dynamically choose strict or non-strict mode for page table config based
+on the iommu domain type.
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  9 +++++++++
- drivers/iommu/arm-smmu-v3.c                     | 17 ++++++++++++++++-
- 2 files changed, 25 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 533ff5c..426e989 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1720,6 +1720,15 @@
- 		nobypass	[PPC/POWERNV]
- 			Disable IOMMU bypass, using IOMMU for PCI devices.
-
-+	arm_iommu=	[ARM64]
-+		non-strict	[Default Off]
-+			Put off TLBs invalidation and release memory first.
-+			It's good for scatter-gather performance but lacks full
-+			isolation, an untrusted device can access the reused
-+			memory because the TLBs may still valid. Please take
-+			full consideration before choosing this mode.
-+			Note that, VFIO will always use strict mode.
-+
- 	iommu.passthrough=
- 			[ARM64] Configure DMA to bypass the IOMMU by default.
- 			Format: { "0" | "1" }
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 904bc1e..9a30892 100644
+index 2f1304b..904bc1e 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -631,6 +631,21 @@ struct arm_smmu_option_prop {
- 	{ 0, NULL},
- };
-
-+static u32 smmu_non_strict __read_mostly;
-+
-+static int __init arm_smmu_setup(char *str)
-+{
-+	if (!strncmp(str, "non-strict", 10)) {
-+		smmu_non_strict = 1;
-+		pr_warn("WARNING: iommu non-strict mode is chosen.\n"
-+			"It's good for scatter-gather performance but lacks full isolation\n");
-+		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
-+	}
-+
-+	return 0;
-+}
-+early_param("arm_iommu", arm_smmu_setup);
-+
- static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
- 						 struct arm_smmu_device *smmu)
- {
-@@ -1622,7 +1637,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+@@ -1622,6 +1622,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
  	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
  		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
 
--	if (domain->type == IOMMU_DOMAIN_DMA) {
-+	if ((domain->type == IOMMU_DOMAIN_DMA) && smmu_non_strict) {
- 		domain->non_strict = 1;
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 	}
++	if (domain->type == IOMMU_DOMAIN_DMA) {
++		domain->non_strict = 1;
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
++	}
++
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
+@@ -1782,7 +1787,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+
+-	if (smmu)
++	if (smmu && !domain->non_strict)
+ 		__arm_smmu_tlb_sync(smmu);
+ }
+
 --
 1.8.3
