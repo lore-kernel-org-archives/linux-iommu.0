@@ -1,77 +1,89 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: [PATCH 2/2] iommu/rockchip: Move irq request past pm_runtime_enable
-Date: Tue,  7 Aug 2018 09:54:06 +0100
-Message-ID: <20180807085406.3863-3-marc.zyngier@arm.com>
-References: <20180807085406.3863-1-marc.zyngier@arm.com>
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Subject: [PATCH] iommu/iova: Optimise attempts to allocate iova from 32bit address range
+Date: Tue,  7 Aug 2018 14:24:37 +0530
+Message-ID: <20180807085437.15965-1-ganapatrao.kulkarni@cavium.com>
+Mime-Version: 1.0
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180807085406.3863-1-marc.zyngier@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, Jeffy Chen <jeffy.chen@rock-chips.com>
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com
+Cc: tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Enabling the interrupt early, before power has been applied to the
-device, can result in an interrupt being delivered too early if:
+As an optimisation for PCI devices, there is always first attempt
+been made to allocate iova from SAC address range. This will lead
+to unnecessary attempts/function calls, when there are no free ranges
+available.
 
-- the IOMMU shares an interrupt with a VOP
-- the VOP has a pending interrupt (after a kexec, for example)
+This patch optimises by adding flag to track previous failed attempts
+and avoids further attempts until replenish happens.
 
-In these conditions, we end-up taking the interrupt without
-the IOMMU being ready to handle the interrupt (not powered on).
-
-Moving the interrupt request past the pm_runtime_enable() call
-makes sure we can at least access the IOMMU registers. Note that
-this is only a partial fix, and that the VOP interrupt will still
-be screaming until the VOP driver kicks in, which advocates for
-a more synchronized interrupt enabling/disabling approach.
-
-Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
 ---
- drivers/iommu/rockchip-iommu.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+This patch is based on comments from Robin Murphy <robin.murphy@arm.com>
+for patch [1]
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 4e0f9b61cd7f..2b1724e8d307 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1161,17 +1161,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (iommu->num_mmu == 0)
- 		return PTR_ERR(iommu->bases[0]);
+[1] https://lkml.org/lkml/2018/4/19/780
+
+ drivers/iommu/iova.c | 11 ++++++++++-
+ include/linux/iova.h |  1 +
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 83fe262..d97bb5a 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->granule = granule;
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
++	iovad->free_32bit_pfns = true;
+ 	iovad->flush_cb = NULL;
+ 	iovad->fq = NULL;
+ 	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+@@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
  
--	i = 0;
--	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
--		if (irq < 0)
--			return irq;
--
--		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
--				       IRQF_SHARED, dev_name(dev), iommu);
--		if (err)
--			return err;
--	}
--
- 	iommu->reset_disabled = device_property_read_bool(dev,
- 					"rockchip,disable-mmu-reset");
- 
-@@ -1228,6 +1217,19 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 
- 	pm_runtime_enable(dev);
- 
-+	i = 0;
-+	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
-+		if (irq < 0)
-+			return irq;
-+
-+		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
-+				       IRQF_SHARED, dev_name(dev), iommu);
-+		if (err) {
-+			pm_runtime_disable(dev);
-+			goto err_remove_sysfs;
-+		}
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+ 	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	    free->pfn_lo >= cached_iova->pfn_lo)
++	    free->pfn_lo >= cached_iova->pfn_lo) {
+ 		iovad->cached32_node = rb_next(&free->node);
++		iovad->free_32bit_pfns = true;
 +	}
+ 
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
+@@ -290,6 +293,10 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 	struct iova *new_iova;
+ 	int ret;
+ 
++	if (limit_pfn <= iovad->dma_32bit_pfn &&
++			!iovad->free_32bit_pfns)
++		return NULL;
 +
- 	return 0;
- err_remove_sysfs:
- 	iommu_device_sysfs_remove(&iommu->iommu);
+ 	new_iova = alloc_iova_mem();
+ 	if (!new_iova)
+ 		return NULL;
+@@ -299,6 +306,8 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 
+ 	if (ret) {
+ 		free_iova_mem(new_iova);
++		if (limit_pfn <= iovad->dma_32bit_pfn)
++			iovad->free_32bit_pfns = false;
+ 		return NULL;
+ 	}
+ 
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 928442d..3810ba9 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -96,6 +96,7 @@ struct iova_domain {
+ 						   flush-queues */
+ 	atomic_t fq_timer_on;			/* 1 when timer is active, 0
+ 						   when not */
++	bool	free_32bit_pfns;
+ };
+ 
+ static inline unsigned long iova_size(struct iova *iova)
 -- 
-2.18.0
+2.9.4
