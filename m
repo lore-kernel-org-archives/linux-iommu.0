@@ -1,39 +1,94 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 0/2] iommu/rockchip: Runtime PM fixes
-Date: Tue,  7 Aug 2018 09:54:04 +0100
-Message-ID: <20180807085406.3863-1-marc.zyngier@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: [PATCH 1/2] iommu/rockchip: Handle errors returned from PM framework
+Date: Tue,  7 Aug 2018 09:54:05 +0100
+Message-ID: <20180807085406.3863-2-marc.zyngier@arm.com>
+References: <20180807085406.3863-1-marc.zyngier@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180807085406.3863-1-marc.zyngier@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, Jeffy Chen <jeffy.chen@rock-chips.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This small series addresses a couple of runtime PM issues I've spotted
-while running 4.18 on a Chromebook Plus (kevin, rk3399) platform, and
-specifically doing kexec.
+pm_runtime_get_if_in_use can fail: either PM has been disabled
+altogether (-EINVAL), or the device hasn't been enabled yet (0).
+Sadly, the Rockchip IOMMU driver tends to conflate the two things
+by considering a non-zero return value as successful.
 
-Note that even with these two patches, kexec is still fairly broken on
-rk3399, as the VOP is never turned off (see [1] for a fix).
+This has the consequence of hiding other bugs, so let's handle this
+case throughout the driver, with a WARN_ON_ONCE so that we can try
+and work out what happened.
 
-[1] https://www.spinics.net/lists/arm-kernel/msg670229.html
+Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
+Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
+---
+ drivers/iommu/rockchip-iommu.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-Marc Zyngier (2):
-  iommu/rockchip: Handle errors returned from PM framework
-  iommu/rockchip: Move irq request past pm_runtime_enable
-
- drivers/iommu/rockchip-iommu.c | 45 +++++++++++++++++++++-------------
- 1 file changed, 28 insertions(+), 17 deletions(-)
-
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 054cd2c8e9c8..4e0f9b61cd7f 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -521,10 +521,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+ 	u32 int_status;
+ 	dma_addr_t iova;
+ 	irqreturn_t ret = IRQ_NONE;
+-	int i;
++	int i, err;
+ 
+-	if (WARN_ON(!pm_runtime_get_if_in_use(iommu->dev)))
+-		return 0;
++	err = pm_runtime_get_if_in_use(iommu->dev);
++	if (WARN_ON_ONCE(err <= 0))
++		return ret;
+ 
+ 	if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+ 		goto out;
+@@ -620,11 +621,15 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
+ 	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+ 	list_for_each(pos, &rk_domain->iommus) {
+ 		struct rk_iommu *iommu;
++		int ret;
+ 
+ 		iommu = list_entry(pos, struct rk_iommu, node);
+ 
+ 		/* Only zap TLBs of IOMMUs that are powered on. */
+-		if (pm_runtime_get_if_in_use(iommu->dev)) {
++		ret = pm_runtime_get_if_in_use(iommu->dev);
++		if (WARN_ON_ONCE(ret < 0))
++			continue;
++		if (ret) {
+ 			WARN_ON(clk_bulk_enable(iommu->num_clocks,
+ 						iommu->clocks));
+ 			rk_iommu_zap_lines(iommu, iova, size);
+@@ -891,6 +896,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	struct rk_iommu *iommu;
+ 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
++	int ret;
+ 
+ 	/* Allow 'virtual devices' (eg drm) to detach from domain */
+ 	iommu = rk_iommu_from_dev(dev);
+@@ -909,7 +915,9 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	list_del_init(&iommu->node);
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ 
+-	if (pm_runtime_get_if_in_use(iommu->dev)) {
++	ret = pm_runtime_get_if_in_use(iommu->dev);
++	WARN_ON_ONCE(ret < 0);
++	if (ret > 0) {
+ 		rk_iommu_disable(iommu);
+ 		pm_runtime_put(iommu->dev);
+ 	}
+@@ -946,7 +954,8 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 	list_add_tail(&iommu->node, &rk_domain->iommus);
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ 
+-	if (!pm_runtime_get_if_in_use(iommu->dev))
++	ret = pm_runtime_get_if_in_use(iommu->dev);
++	if (!ret || WARN_ON_ONCE(ret < 0))
+ 		return 0;
+ 
+ 	ret = rk_iommu_enable(iommu);
 -- 
 2.18.0
