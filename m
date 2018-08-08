@@ -1,41 +1,87 @@
-From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 08/10] dmapool: improve accuracy of debug statistics
-Date: Wed, 8 Aug 2018 12:54:12 +0300
-Message-ID: <CAHp75Vcnf8m0zW+8Y8=fTE+F_bDjmaQpR0s2qiTdkOzqe2+fBA@mail.gmail.com>
-References: <cbe2fb30-54b3-663e-4e30-448353723b8f@cybernetics.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
+Date: Wed, 8 Aug 2018 11:12:15 +0100
+Message-ID: <20180808101215.GB28557@arm.com>
+References: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cbe2fb30-54b3-663e-4e30-448353723b8f-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-Cc: "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 7, 2018 at 7:49 PM, Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org> wrote:
-> The "total number of blocks in pool" debug statistic currently does not
-> take the boundary value into account, so it diverges from the "total
-> number of blocks in use" statistic when a boundary is in effect.  Add a
-> calculation for the number of blocks per allocation that takes the
-> boundary into account, and use it to replace the inaccurate calculation.
+Hi Thunder,
 
+On Mon, Aug 06, 2018 at 08:31:29PM +0800, Zhen Lei wrote:
+> The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
+> __arm_smmu_sync_poll_msi requires that sync_idx must be increased
+> monotonously according to the sequence of the CMDs in the cmdq.
+> 
+> But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
+> by spinlock, so the following scenarios may appear:
+> cpu0			cpu1
+> msidata=0
+> 			msidata=1
+> 			insert cmd1
+> insert cmd0
+> 			smmu execute cmd1
+> smmu execute cmd0
+> 			poll timeout, because msidata=1 is overridden by
+> 			cmd0, that means VAL=0, sync_idx=1.
 
-> +       retval->blks_per_alloc =
-> +               (allocation / boundary) * (boundary / size) +
-> +               (allocation % boundary) / size;
+Oh yuck, you're right! We probably want a CC stable on this. Did you see
+this go wrong in practice?
 
-If boundary is guaranteed to be power of 2, this can avoid cost
-divisions (though it's a slow path anyway).
+One comment on your patch...
 
--- 
-With Best Regards,
-Andy Shevchenko
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 1d64710..4810f61 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -566,7 +566,7 @@ struct arm_smmu_device {
+> 
+>  	int				gerr_irq;
+>  	int				combined_irq;
+> -	atomic_t			sync_nr;
+> +	u32				sync_nr;
+> 
+>  	unsigned long			ias; /* IPA */
+>  	unsigned long			oas; /* PA */
+> @@ -836,7 +836,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+>  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+>  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
+>  		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+>  		break;
+>  	default:
+> @@ -947,7 +946,6 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>  	struct arm_smmu_cmdq_ent ent = {
+>  		.opcode = CMDQ_OP_CMD_SYNC,
+>  		.sync	= {
+> -			.msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
+>  			.msiaddr = virt_to_phys(&smmu->sync_count),
+>  		},
+>  	};
+> @@ -955,6 +953,8 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>  	arm_smmu_cmdq_build_cmd(cmd, &ent);
+> 
+>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> +	ent.sync.msidata = ++smmu->sync_nr;
+> +	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent.sync.msidata);
+
+I really don't like splitting this out from building the rest of the
+command. Can you just move the call to arm_smmu_cmdq_build_cmd into the
+critical section, please?
+
+Thanks,
+
+Will
