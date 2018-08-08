@@ -1,40 +1,36 @@
-From: 'Joerg Roedel' <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/omap: Fix cache flushes on L2 table entries
-Date: Wed, 8 Aug 2018 11:08:43 +0200
-Message-ID: <20180808090843.vz7lpydotmfafkli@8bytes.org>
-References: <7c58d42f-cb11-129a-6e04-45319443f1bb@ti.com>
-	<20180806150036.14644-1-ralf.goebel@imago-technologies.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [RFC PATCH 2/7] iommu: Add share domain interface in iommu for
+ spimdev
+Date: Wed, 8 Aug 2018 11:13:54 +0200
+Message-ID: <20180808091354.ppqgineql3pufwwr@8bytes.org>
+References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+ <20180801102221.5308-3-nek.in.cn@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180806150036.14644-1-ralf.goebel-XQ0Z+IutXF4FoECaAgFIynS5uNuOjpZe@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ralf Goebel <ralf.goebel-XQ0Z+IutXF4FoECaAgFIynS5uNuOjpZe@public.gmane.org>
-Cc: linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'KISHON VIJAY ABRAHAM' <kishon-l0cyMroinI0@public.gmane.org>
+In-Reply-To: <20180801102221.5308-3-nek.in.cn@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kenneth Lee <nek.in.cn@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Alex Williamson <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 06, 2018 at 05:00:36PM +0200, Ralf Goebel wrote:
-> The base address used for DMA operations on the second-level table
-> did incorrectly include the offset for the table entry. The offset
-> was then added again which lead to incorrect behavior.
+On Wed, Aug 01, 2018 at 06:22:16PM +0800, Kenneth Lee wrote:
+> From: Kenneth Lee <liguozhu@hisilicon.com>
 > 
-> Operations on the L1 table are not affected.
+> This patch add sharing interface for a iommu_group. The new interface:
 > 
-> The calculation of the base address is changed to point to the
-> beginning of the L2 table.
+> 	iommu_group_share_domain()
+> 	iommu_group_unshare_domain()
 > 
-> Fixes: bfee0cf0ee1d ("iommu/omap: Use DMA-API for performing cache flushes")
-> Acked-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-> Signed-off-by: Ralf Goebel <ralf.goebel-XQ0Z+IutXF4FoECaAgFIynS5uNuOjpZe@public.gmane.org>
+> can be used by some virtual iommu_group (such as iommu_group for spimdev)
+> to share their parent's iommu_group.
+> 
+> When the domain of the group is shared, it cannot be changed before
+> unshared.  In the future, notification can be added if update is required.
 
-Applied for v4.19, thanks.
+>From the description or the patch I don't really get why this is needed.
+Please update the description and make a case for this API addition.
+
+
+	Joerg
