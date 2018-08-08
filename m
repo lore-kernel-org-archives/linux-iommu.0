@@ -1,184 +1,118 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/2] arm64: dts: stratix10: Add Stratix10 SMMU support
-Date: Wed, 8 Aug 2018 18:38:05 +0100
-Message-ID: <db4d8290-c015-aa8b-6058-11fd3d25464b@arm.com>
-References: <1532543077-8933-1-git-send-email-thor.thayer@linux.intel.com>
- <1532543077-8933-2-git-send-email-thor.thayer@linux.intel.com>
+From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 01/20] kernel/dma/direct: take DMA offset into account
+	in dma_direct_supported
+Date: Thu, 09 Aug 2018 09:44:18 +1000
+Message-ID: <74068e4d2135ecad8645048ed97b1114891ccace.camel@kernel.crashing.org>
+References: <20180730163824.10064-1-hch@lst.de>
+	<20180730163824.10064-2-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1532543077-8933-2-git-send-email-thor.thayer@linux.intel.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: thor.thayer@linux.intel.com, joro@8bytes.org, robh+dt@kernel.org, mark.rutland@arm.com, dinguyen@kernel.org, will.deacon@arm.com
-Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180730163824.10064-2-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/07/18 19:24, thor.thayer@linux.intel.com wrote:
-> From: Thor Thayer <thor.thayer@linux.intel.com>
-> 
-> Add SMMU support to the Stratix10 Device Tree which
-> includes adding the SMMU node and adding IOMMU stream
-> ids to the SMMU peripherals. Update bindings.
-> 
-> Signed-off-by: Thor Thayer <thor.thayer@linux.intel.com>
+On Mon, 2018-07-30 at 18:38 +0200, Christoph Hellwig wrote:
+> When a device has a DMA offset the dma capable result will change due
+> to the difference between the physical and DMA address.  Take that into
+> account.
+
+The patch in itself makes sense.
+
+However, there are a number of things in that dma_direct.c file that I
+don't quite get:
+
+ - looking more generally at what that function does, I worry about the
+switch of ppc32 to this later on:
+
+We do have the occasional device with things like 31-bit DMA
+limitation. We know they happens to work because those systems
+can't have enough memory to be a problem. This is why our current
+DMA direct ops in powerpc just unconditionally return true on ppc32.
+
+The test against a full 32-bit mask here will break them I think.
+
+Thing is, I'm not sure I still have access to one of these things
+to test, I'll have to dig (from memory things like b43 wifi).
+
+Also those platforms don't have an iommu.
+
+ - What is this trying to achieve ?
+
+	/*
+	 * Various PCI/PCIe bridges have broken support for > 32bit DMA even
+	 * if the device itself might support it.
+	 */
+	if (dev->dma_32bit_limit && mask > phys_to_dma(dev, DMA_BIT_MASK(32)))
+		return 0;
+
+IE, if the device has a 32-bit limit, we fail an attempt at checking
+if a >32-bit mask works ? That doesn't quite seem to be the right thing
+to do... Shouldn't this be in dma_set_mask() and just clamp the mask down ?
+
+IE, dma_set_mask() is what a driver uses to establish the device capability,
+so it makes sense tot have dma_32bit_limit just reduce that capability, not
+fail because the device can do more than what the bridge can.... 
+
+Sorry if I'm a bit confused here.
+
+ - How is that file supposed to work on 64-bit platforms ? From what I can
+tell, dma_supported() will unconditionally return true if the mask is
+32-bit or larger (appart from the above issue). This doesn't look right,
+the mask needs to be compared to the max memory address. There are a bunch
+of devices out there with masks anywhere bettween 40 and 64 bits, and
+some of these will not work "out of the box" if the offseted top
+of memory is beyond the mask limit. Or am I missing something ?
+
+Cheers,
+Ben.
+
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+
+Reviewed-by: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+
 > ---
-> This patch is dependent on the patch series
-> "iommu/arm-smmu: Add runtime pm/sleep support"
-> (https://patchwork.ozlabs.org/cover/946160/)
-> ---
->   .../devicetree/bindings/iommu/arm,smmu.txt         | 25 ++++++++++++++++++
->   arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi  | 30 ++++++++++++++++++++++
->   2 files changed, 55 insertions(+)
+>  kernel/dma/direct.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index 7c71a6ed465a..8e3fe0594e3e 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -18,6 +18,7 @@ conditions.
->                           "arm,mmu-500"
->                           "cavium,smmu-v2"
->                           "qcom,<soc>-smmu-v2", "qcom,smmu-v2"
-> +                        "altr,smmu-v2"
-
-Can we guarantee that no Altera SoC will ever exist with a different 
-SMMU implementation, configuration, or clock tree? If we must have 
-compatibles for SoC-specific integrations, I'd be a lot happier if they 
-were actually SoC-specific, i.e. at least "altr,stratix10-smmu", or even 
-something like "altr,gx5500-smmu" if there's a chance of new 
-incompatible designs being added to the Stratix 10 family in future.
-
-I'm still dubious that we actually need this for MMU-500, though, since 
-we will always need the TCU clock enabled to do anything, and given the 
-difficulty in associating particular TBU clocks with whichever domains 
-might cause allocations into which TBU's TLBs, it seems highly unlikely 
-that it'll ever be feasible to work at a granularity finer than "all of 
-the clocks". And at that point the names don't really matter, and we 
-merely need something like the proposed of_clk_bulk_get()[1], which 
-works fine regardless of how many TBUs and distinct clocks exist for a 
-particular MMU-500 configuration and integration.
-
->   
->                     depending on the particular implementation and/or the
->                     version of the architecture implemented.
-> @@ -179,3 +180,27 @@ conditions.
->   			 <&mmcc SMMU_MDP_AHB_CLK>;
->   		clock-names = "bus", "iface";
->   	};
-> +
-> +	/* Stratix10 arm,smmu-v2 implementation */
-> +	smmu5: iommu@fa000000 {
-> +		compatible = "altr,smmu-v2", "arm,mmu-500",
-> +			     "arm,smmu-v2";
-> +		reg = <0xfa000000 0x40000>;
-> +		#global-interrupts = <2>;
-> +		#iommu-cells = <1>;
-> +		clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
-> +		clock-names = "masters";
-
-This isn't documented as an actual property, and if it also clocks the 
-TCU then I'm not sure it's really the most accurate name.
-
-Robin.
-
-[1] https://patchwork.kernel.org/patch/10427095/
-
-> +		interrupt-parent = <&intc>;
-> +		interrupts = <0 128 4>,	/* Global Secure Fault */
-> +			<0 129 4>, /* Global Non-secure Fault */
-> +			/* Non-secure Context Interrupts (32) */
-> +			<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
-> +			<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
-> +			<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
-> +			<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
-> +			<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
-> +			<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
-> +			<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
-> +			<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
-> +		stream-match-mask = <0x7ff0>;
-> +	};
-> diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-> index d033da401c26..e38ca86d48f6 100644
-> --- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-> +++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-> @@ -137,6 +137,7 @@
->   			reset-names = "stmmaceth", "stmmaceth-ocp";
->   			clocks = <&clkmgr STRATIX10_EMAC0_CLK>;
->   			clock-names = "stmmaceth";
-> +			iommus = <&smmu 1>;
->   			status = "disabled";
->   		};
->   
-> @@ -150,6 +151,7 @@
->   			reset-names = "stmmaceth", "stmmaceth-ocp";
->   			clocks = <&clkmgr STRATIX10_EMAC1_CLK>;
->   			clock-names = "stmmaceth";
-> +			iommus = <&smmu 2>;
->   			status = "disabled";
->   		};
->   
-> @@ -163,6 +165,7 @@
->   			reset-names = "stmmaceth", "stmmaceth-ocp";
->   			clocks = <&clkmgr STRATIX10_EMAC2_CLK>;
->   			clock-names = "stmmaceth";
-> +			iommus = <&smmu 3>;
->   			status = "disabled";
->   		};
->   
-> @@ -273,6 +276,7 @@
->   			clocks = <&clkmgr STRATIX10_L4_MP_CLK>,
->   				 <&clkmgr STRATIX10_SDMMC_CLK>;
->   			clock-names = "biu", "ciu";
-> +			iommus = <&smmu 5>;
->   			status = "disabled";
->   		};
->   
-> @@ -307,6 +311,30 @@
->   			altr,modrst-offset = <0x20>;
->   		};
->   
-> +		smmu: iommu@fa000000 {
-> +			compatible = "altr,smmu-v2", "arm,mmu-500",
-> +				     "arm,smmu-v2";
-> +			reg = <0xfa000000 0x40000>;
-> +			#global-interrupts = <2>;
-> +			#iommu-cells = <1>;
-> +			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
-> +			clock-names = "masters";
-> +			interrupt-parent = <&intc>;
-> +			interrupts = <0 128 4>,	/* Global Secure Fault */
-> +				<0 129 4>, /* Global Non-secure Fault */
-> +				/* Non-secure Context Interrupts (32) */
-> +				<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
-> +				<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
-> +				<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
-> +				<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
-> +				<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
-> +				<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
-> +				<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
-> +				<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
-> +			stream-match-mask = <0x7ff0>;
-> +			status = "disabled";
-> +		};
-> +
->   		spi0: spi@ffda4000 {
->   			compatible = "snps,dw-apb-ssi";
->   			#address-cells = <1>;
-> @@ -416,6 +444,7 @@
->   			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
->   			reset-names = "dwc2", "dwc2-ecc";
->   			clocks = <&clkmgr STRATIX10_USB_CLK>;
-> +			iommus = <&smmu 6>;
->   			status = "disabled";
->   		};
->   
-> @@ -428,6 +457,7 @@
->   			resets = <&rst USB1_RESET>, <&rst USB1_OCP_RESET>;
->   			reset-names = "dwc2", "dwc2-ecc";
->   			clocks = <&clkmgr STRATIX10_USB_CLK>;
-> +			iommus = <&smmu 7>;
->   			status = "disabled";
->   		};
->   
-> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 8be8106270c2..d32d4f0d2c0c 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -167,7 +167,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+>  int dma_direct_supported(struct device *dev, u64 mask)
+>  {
+>  #ifdef CONFIG_ZONE_DMA
+> -	if (mask < DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
+> +	if (mask < phys_to_dma(dev, DMA_BIT_MASK(ARCH_ZONE_DMA_BITS)))
+>  		return 0;
+>  #else
+>  	/*
+> @@ -176,14 +176,14 @@ int dma_direct_supported(struct device *dev, u64 mask)
+>  	 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+>  	 * architecture needs to use an IOMMU instead of the direct mapping.
+>  	 */
+> -	if (mask < DMA_BIT_MASK(32))
+> +	if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
+>  		return 0;
+>  #endif
+>  	/*
+>  	 * Various PCI/PCIe bridges have broken support for > 32bit DMA even
+>  	 * if the device itself might support it.
+>  	 */
+> -	if (dev->dma_32bit_limit && mask > DMA_BIT_MASK(32))
+> +	if (dev->dma_32bit_limit && mask > phys_to_dma(dev, DMA_BIT_MASK(32)))
+>  		return 0;
+>  	return 1;
+>  }
