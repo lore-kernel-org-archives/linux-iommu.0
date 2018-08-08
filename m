@@ -1,65 +1,172 @@
-From: Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/3] hexagon: remove the sync_single_for_cpu DMA operation
-Date: Tue, 7 Aug 2018 19:19:27 -0500
-Message-ID: <20180808001927.GA20752@codeaurora.org>
-References: <20180719125635.824-1-hch@lst.de> <20180719125635.824-2-hch@lst.de>
-	<20180725032948.GG12771@codeaurora.org>
-	<20180725043927.GA10827@lst.de> <20180731152229.GA956@lst.de>
-	<20180807070136.GA32634@lst.de>
+From: Kenneth Lee <nek.in.cn@gmail.com>
+Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Wed, 8 Aug 2018 09:08:42 +0800
+Message-ID: <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
+References: <20180801102221.5308-1-nek.in.cn@gmail.com>
+ <20180801165644.GA3820@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
+ <20180802040557.GL160746@Turing-Arch-b> <20180802142243.GA3481@redhat.com>
+ <20180803034721.GC91035@Turing-Arch-b> <20180803143944.GA4079@redhat.com>
+ <20180806031252.GG91035@Turing-Arch-b> <20180806153257.GB6002@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180807070136.GA32634-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180806153257.GB6002@redhat.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Glisse <jglisse@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, "David S . Miller" <dav>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 07, 2018 at 09:01:36AM +0200, Christoph Hellwig wrote:
-> On Tue, Jul 31, 2018 at 05:22:29PM +0200, Christoph Hellwig wrote:
-> > On Wed, Jul 25, 2018 at 06:39:27AM +0200, Christoph Hellwig wrote:
-> > > On Tue, Jul 24, 2018 at 10:29:48PM -0500, Richard Kuo wrote:
-> > > > Patch series looks good.  Definitely appreciate the cleanup.
-> > > > 
-> > > > I can take it through my tree, or if not:
-> > > > 
-> > > > Acked-by: Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> > > 
-> > > Please take it through your tree, thanks!
-> > 
-> > I haven't seen it in linux-next yet, do you still plan to take it?
-> > 
-> > Otherwise I'll merge it in the dma-mapping tree.
-> 
-> Given that I haven't seen this in linux-next nor haven't heard back
-> from you I assume you are on your well deserved summer vacation.
-> 
-> If I don't hear back until tomorrow night I'll merge it through the
-> dma-mapping tree, so that I have it in linux-next before heading out
-> to my summer vacation.
-
-I am here, and I have the patch queued up but it's waiting for approval
-before I get to push it out through my tree.
-
-That said, I am perfectly fine with this going through a different tree
-if expedience is needed.
 
 
-Thanks,
-Richard Kuo
+在 2018年08月06日 星期一 11:32 下午, Jerome Glisse 写道:
+> On Mon, Aug 06, 2018 at 11:12:52AM +0800, Kenneth Lee wrote:
+>> On Fri, Aug 03, 2018 at 10:39:44AM -0400, Jerome Glisse wrote:
+>>> On Fri, Aug 03, 2018 at 11:47:21AM +0800, Kenneth Lee wrote:
+>>>> On Thu, Aug 02, 2018 at 10:22:43AM -0400, Jerome Glisse wrote:
+>>>>> On Thu, Aug 02, 2018 at 12:05:57PM +0800, Kenneth Lee wrote:
+>>>>>> On Thu, Aug 02, 2018 at 02:33:12AM +0000, Tian, Kevin wrote:
+>>>>>>>> On Wed, Aug 01, 2018 at 06:22:14PM +0800, Kenneth Lee wrote:
+> [...]
+>
+>>>>>> But doorbell is just a notification. Except for DOS (to make hardware busy) it
+>>>>>> cannot actually take or change anything from the kernel space. And the DOS
+>>>>>> problem can be always taken as the problem that a group of processes share the
+>>>>>> same kernel entity.
+>>>>>>
+>>>>>> In the coming HIP09 hardware, the doorbell will come with a random number so
+>>>>>> only the process who allocated the queue can knock it correctly.
+>>>>> When doorbell is ring the hardware start fetching commands from
+>>>>> the queue and execute them ? If so than a rogue process B might
+>>>>> ring the doorbell of process A which would starts execution of
+>>>>> random commands (ie whatever random memory value there is left
+>>>>> inside the command buffer memory, could be old commands i guess).
+>>>>>
+>>>>> If this is not how this doorbell works then, yes it can only do
+>>>>> a denial of service i guess. Issue i have with doorbell is that
+>>>>> i have seen 10 differents implementations in 10 differents hw
+>>>>> and each are different as to what ringing or value written to the
+>>>>> doorbell does. It is painfull to track what is what for each hw.
+>>>>>
+>>>> In our implementation, doorbell is simply a notification, just like an interrupt
+>>>> to the accelerator. The command is all about what's in the queue.
+>>>>
+>>>> I agree that there is no simple and standard way to track the shared IO space.
+>>>> But I think we have to trust the driver in some way. If the driver is malicious,
+>>>> even a simple ioctl can become an attack.
+>>> Trusting kernel space driver is fine, trusting user space driver is
+>>> not in my view. AFAICT every driver developer so far always made
+>>> sure that someone could not abuse its device to do harmfull thing to
+>>> other process.
+>>>
+>> Fully agree. That is why this driver shares only the doorbell space. There is
+>> only the doorbell is shared in the whole page, nothing else.
+>>
+>> Maybe you are concerning the user driver will give malicious command to the
+>> hardware? But these commands cannot influence the other process. If we can trust
+>> the hardware design, the process cannot do any harm.
+> My questions was what happens if a process B ring the doorbell of
+> process A.
+>
+> On some hardware the value written in the doorbell is use as an
+> index in command buffer. On other it just wakeup the hardware to go
+> look at a structure private to the process. They are other variations
+> of those themes.
+>
+> If it is the former ie the value is use to advance in the command
+> buffer then a rogue process can force another process to advance its
+> command buffer and what is in the command buffer can be some random
+> old memory values which can be more harmfull than just Denial Of
+> Service.
 
+Yes. We have considered that. There is no other information in the 
+doorbell. The indexes, such as head and tail pointers, are all in the 
+shared memory between the hardware and the user process. The other 
+process cannot touch it.
+>
+>>>>>>>> My more general question is do we want to grow VFIO to become
+>>>>>>>> a more generic device driver API. This patchset adds a command
+>>>>>>>> queue concept to it (i don't think it exist today but i have
+>>>>>>>> not follow VFIO closely).
+>>>>>>>>
+>>>>>> The thing is, VFIO is the only place to support DMA from user land. If we don't
+>>>>>> put it here, we have to create another similar facility to support the same.
+>>>>> No it is not, network device, GPU, block device, ... they all do
+>>>>> support DMA. The point i am trying to make here is that even in
+>>>> Sorry, wait a minute, are we talking the same thing? I meant "DMA from user
+>>>> land", not "DMA from kernel driver". To do that we have to manipulate the
+>>>> IOMMU(Unit). I think it can only be done by default_domain or vfio domain. Or
+>>>> the user space have to directly access the IOMMU.
+>>> GPU do DMA in the sense that you pass to the kernel a valid
+>>> virtual address (kernel driver do all the proper check) and
+>>> then you can use the GPU to copy from or to that range of
+>>> virtual address. Exactly how you want to use this compression
+>>> engine. It does not rely on SVM but SVM going forward would
+>>> still be the prefered option.
+>>>
+>> No, SVM is not the reason why we rely on Jean's SVM(SVA) series. We rely on
+>> Jean's series because of multi-process (PASID or substream ID) support.
+>>
+>> But of couse, WarpDrive can still benefit from the SVM feature.
+> We are getting side tracked here. PASID/ID do not require VFIO.
+>
+Yes, PASID itself do not require VFIO. But what if:
 
--- 
-Employee of Qualcomm Innovation Center, Inc.
-Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, 
-a Linux Foundation Collaborative Project
+1. Support DMA from user space.
+2. The hardware makes use of standard IOMMU/SMMU for IO address translation.
+3. The IOMMU facility is shared by both kernel and user drivers.
+4. Support PASID with the current IOMMU facility
+>>>>> your mechanisms the userspace must have a specific userspace
+>>>>> drivers for each hardware and thus there are virtually no
+>>>>> differences between having this userspace driver open a device
+>>>>> file in vfio or somewhere else in the device filesystem. This is
+>>>>> just a different path.
+>>>>>
+>>>> The basic problem WarpDrive want to solve it to avoid syscall. This is important
+>>>> to accelerators. We have some data here:
+>>>> https://www.slideshare.net/linaroorg/progress-and-demonstration-of-wrapdrive-a-accelerator-framework-sfo17317
+>>>>
+>>>> (see page 3)
+>>>>
+>>>> The performance is different on using kernel and user drivers.
+>>> Yes and example i point to is exactly that. You have a one time setup
+>>> cost (creating command buffer binding PASID with command buffer and
+>>> couple other setup steps). Then userspace no longer have to do any
+>>> ioctl to schedule work on the GPU. It is all down from userspace and
+>>> it use a doorbell to notify hardware when it should go look at command
+>>> buffer for new thing to execute.
+>>>
+>>> My point stands on that. You have existing driver already doing so
+>>> with no new framework and in your scheme you need a userspace driver.
+>>> So i do not see the value add, using one path or the other in the
+>>> userspace driver is litteraly one line to change.
+>>>
+>> Sorry, I'd got confuse here. I partially agree that the user driver is
+>> redundance of kernel driver. (But for WarpDrive, the kernel driver is a full
+>> driver include all preparation and setup stuff for the hardware, the user driver
+>> is simply to send request and receive answer). Yes, it is just a choice of path.
+>> But the user path is faster if the request come from use space. And to do that,
+>> we need user land DMA support. Then why is it invaluable to let VFIO involved?
+> Some drivers in the kernel already do exactly what you said. The user
+> space emit commands without ever going into kernel by directly scheduling
+> commands and ringing a doorbell. They do not need VFIO either and they
+> can map userspace address into the DMA address space of the device and
+> again they do not need VFIO for that.
+Could you please directly point out which driver you refer to here? 
+Thank you.
+>
+> My point is the you do not need VFIO for DMA in user land, nor do you need
+> it to allow a device to consume user space commands without IOCTL.
+>
+> Moreover as you already need a device specific driver in both kernel and
+> user space then there is not added value in trying to have all kind of
+> devices under the same devfs hierarchy.
+>
+> Cheers,
+> Jérôme
+>
+
+Cheers
+Kenneth(Hisilicon)
