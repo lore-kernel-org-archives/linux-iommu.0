@@ -1,87 +1,45 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-Date: Wed, 8 Aug 2018 11:12:15 +0100
-Message-ID: <20180808101215.GB28557@arm.com>
-References: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
+From: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Subject: Re: [PATCH v3 08/10] dmapool: improve accuracy of debug statistics
+Date: Wed, 8 Aug 2018 09:18:48 -0400
+Message-ID: <99f91604-f7ea-aaaa-fc15-3c1264603d0b@cybernetics.com>
+References: <cbe2fb30-54b3-663e-4e30-448353723b8f@cybernetics.com>
+	<CAHp75Vcnf8m0zW+8Y8=fTE+F_bDjmaQpR0s2qiTdkOzqe2+fBA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAHp75Vcnf8m0zW+8Y8=fTE+F_bDjmaQpR0s2qiTdkOzqe2+fBA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thunder,
-
-On Mon, Aug 06, 2018 at 08:31:29PM +0800, Zhen Lei wrote:
-> The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
-> __arm_smmu_sync_poll_msi requires that sync_idx must be increased
-> monotonously according to the sequence of the CMDs in the cmdq.
-> 
-> But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
-> by spinlock, so the following scenarios may appear:
-> cpu0			cpu1
-> msidata=0
-> 			msidata=1
-> 			insert cmd1
-> insert cmd0
-> 			smmu execute cmd1
-> smmu execute cmd0
-> 			poll timeout, because msidata=1 is overridden by
-> 			cmd0, that means VAL=0, sync_idx=1.
-
-Oh yuck, you're right! We probably want a CC stable on this. Did you see
-this go wrong in practice?
-
-One comment on your patch...
-
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 1d64710..4810f61 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -566,7 +566,7 @@ struct arm_smmu_device {
-> 
->  	int				gerr_irq;
->  	int				combined_irq;
-> -	atomic_t			sync_nr;
-> +	u32				sync_nr;
-> 
->  	unsigned long			ias; /* IPA */
->  	unsigned long			oas; /* PA */
-> @@ -836,7 +836,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->  			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
->  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
->  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
-> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
->  		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
->  		break;
->  	default:
-> @@ -947,7 +946,6 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->  	struct arm_smmu_cmdq_ent ent = {
->  		.opcode = CMDQ_OP_CMD_SYNC,
->  		.sync	= {
-> -			.msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
->  			.msiaddr = virt_to_phys(&smmu->sync_count),
->  		},
->  	};
-> @@ -955,6 +953,8 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->  	arm_smmu_cmdq_build_cmd(cmd, &ent);
-> 
->  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
-> +	ent.sync.msidata = ++smmu->sync_nr;
-> +	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent.sync.msidata);
-
-I really don't like splitting this out from building the rest of the
-command. Can you just move the call to arm_smmu_cmdq_build_cmd into the
-critical section, please?
-
-Thanks,
-
-Will
+T24gMDgvMDgvMjAxOCAwNTo1NCBBTSwgQW5keSBTaGV2Y2hlbmtvIHdyb3RlOgo+IE9uIFR1ZSwg
+QXVnIDcsIDIwMTggYXQgNzo0OSBQTSwgVG9ueSBCYXR0ZXJzYnkgPHRvbnliQGN5YmVybmV0aWNz
+LmNvbT4gd3JvdGU6Cj4+IFRoZSAidG90YWwgbnVtYmVyIG9mIGJsb2NrcyBpbiBwb29sIiBkZWJ1
+ZyBzdGF0aXN0aWMgY3VycmVudGx5IGRvZXMgbm90Cj4+IHRha2UgdGhlIGJvdW5kYXJ5IHZhbHVl
+IGludG8gYWNjb3VudCwgc28gaXQgZGl2ZXJnZXMgZnJvbSB0aGUgInRvdGFsCj4+IG51bWJlciBv
+ZiBibG9ja3MgaW4gdXNlIiBzdGF0aXN0aWMgd2hlbiBhIGJvdW5kYXJ5IGlzIGluIGVmZmVjdC4g
+IEFkZCBhCj4+IGNhbGN1bGF0aW9uIGZvciB0aGUgbnVtYmVyIG9mIGJsb2NrcyBwZXIgYWxsb2Nh
+dGlvbiB0aGF0IHRha2VzIHRoZQo+PiBib3VuZGFyeSBpbnRvIGFjY291bnQsIGFuZCB1c2UgaXQg
+dG8gcmVwbGFjZSB0aGUgaW5hY2N1cmF0ZSBjYWxjdWxhdGlvbi4KPgo+PiArICAgICAgIHJldHZh
+bC0+Ymxrc19wZXJfYWxsb2MgPQo+PiArICAgICAgICAgICAgICAgKGFsbG9jYXRpb24gLyBib3Vu
+ZGFyeSkgKiAoYm91bmRhcnkgLyBzaXplKSArCj4+ICsgICAgICAgICAgICAgICAoYWxsb2NhdGlv
+biAlIGJvdW5kYXJ5KSAvIHNpemU7Cj4gSWYgYm91bmRhcnkgaXMgZ3VhcmFudGVlZCB0byBiZSBw
+b3dlciBvZiAyLCB0aGlzIGNhbiBhdm9pZCBjb3N0Cj4gZGl2aXNpb25zICh0aG91Z2ggaXQncyBh
+IHNsb3cgcGF0aCBhbnl3YXkpLgo+CkF0IHRoaXMgcG9pbnQgaW4gdGhlIGZ1bmN0aW9uLCBib3Vu
+ZGFyeSBpcyBndWFyYW50ZWVkIHRvIGJlIGVpdGhlciBhCnBvd2VyIG9mIDIgb3IgZXF1YWwgdG8g
+YWxsb2NhdGlvbiwgd2hpY2ggbWlnaHQgbm90IGJlIGEgcG93ZXIgb2YgMi7CoCBOb3QKd29ydGgg
+c3BlY2lhbC1jYXNpbmcgYSBzbG93IHBhdGguCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
+Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXU=
