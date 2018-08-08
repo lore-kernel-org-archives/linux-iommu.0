@@ -1,36 +1,37 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [RFC PATCH 2/7] iommu: Add share domain interface in iommu for
- spimdev
-Date: Wed, 8 Aug 2018 11:13:54 +0200
-Message-ID: <20180808091354.ppqgineql3pufwwr@8bytes.org>
-References: <20180801102221.5308-1-nek.in.cn@gmail.com>
- <20180801102221.5308-3-nek.in.cn@gmail.com>
+From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 07/10] dmapool: cleanup integer types
+Date: Wed, 8 Aug 2018 12:51:57 +0300
+Message-ID: <CAHp75VfQJPrBPG8_LLQ0Nvs9S8eaQzpwXhf67kA5Cknwy37aTA@mail.gmail.com>
+References: <5d0aec14-73e0-280d-62fb-2b0fe6c01418@cybernetics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180801102221.5308-3-nek.in.cn@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Kenneth Lee <nek.in.cn@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Alex Williamson <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5d0aec14-73e0-280d-62fb-2b0fe6c01418-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Cc: "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Chaitra P B <chaitra.basappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Suganath Prabu Subramani <suganath-prabu.subramani-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Sathya Prakash <sathya.prakash-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <MPT-FusionLinux.pdl-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Aug 01, 2018 at 06:22:16PM +0800, Kenneth Lee wrote:
-> From: Kenneth Lee <liguozhu@hisilicon.com>
-> 
-> This patch add sharing interface for a iommu_group. The new interface:
-> 
-> 	iommu_group_share_domain()
-> 	iommu_group_unshare_domain()
-> 
-> can be used by some virtual iommu_group (such as iommu_group for spimdev)
-> to share their parent's iommu_group.
-> 
-> When the domain of the group is shared, it cannot be changed before
-> unshared.  In the future, notification can be added if update is required.
+On Tue, Aug 7, 2018 at 7:48 PM, Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org> wrote:
+> To represent the size of a single allocation, dmapool currently uses
+> 'unsigned int' in some places and 'size_t' in other places.  Standardize
+> on 'unsigned int' to reduce overhead, but use 'size_t' when counting all
+> the blocks in the entire pool.
 
->From the description or the patch I don't really get why this is needed.
-Please update the description and make a case for this API addition.
+>         else if ((boundary < size) || (boundary & (boundary - 1)))
+>                 return NULL;
 
+Just a side note: in above it's is_power_of_2() opencoded.
 
-	Joerg
+-- 
+With Best Regards,
+Andy Shevchenko
