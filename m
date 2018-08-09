@@ -1,38 +1,104 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Thu, 9 Aug 2018 08:31:31 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912B39B3@SHSMSX101.ccr.corp.intel.com>
-References: <20180801165644.GA3820@redhat.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191290E1A@SHSMSX101.ccr.corp.intel.com>
- <20180802040557.GL160746@Turing-Arch-b> <20180802142243.GA3481@redhat.com>
- <20180803034721.GC91035@Turing-Arch-b> <20180803143944.GA4079@redhat.com>
- <20180806031252.GG91035@Turing-Arch-b> <20180806153257.GB6002@redhat.com>
- <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
- <20180808151835.GA3429@redhat.com> <20180809080352.GI91035@Turing-Arch-b>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
+Date: Thu, 9 Aug 2018 09:49:04 +0100
+Message-ID: <20180809084901.GA28801@arm.com>
+References: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
+ <20180808101215.GB28557@arm.com>
+ <5B6B994B.10208@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180809080352.GI91035@Turing-Arch-b>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <5B6B994B.10208@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kenneth Lee <liguozhu@hisilicon.com>, Jerome Glisse <jglisse@redhat.com>
-Cc: Kenneth Lee <nek.in.cn@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, "David S . Miller" <dave>
+To: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBLZW5uZXRoIExlZSBbbWFpbHRvOmxpZ3Vvemh1QGhpc2lsaWNvbi5jb21dDQo+IFNl
-bnQ6IFRodXJzZGF5LCBBdWd1c3QgOSwgMjAxOCA0OjA0IFBNDQo+IA0KPiBCdXQgd2UgaGF2ZSBh
-bm90aGVyIHJlcXVpcmVtZW50IHdoaWNoIGlzIHRvIGNvbWJpbmUgc29tZSBkZXZpY2UNCj4gdG9n
-ZXRoZXIgdG8NCj4gc2hhcmUgdGhlIHNhbWUgYWRkcmVzcyBzcGFjZS4gVGhpcyBpcyBhIGxpdHRs
-ZSBsaWtlIHRoZXNlIGtpbmRzIG9mIHNvbHV0aW9uOg0KPiANCj4gaHR0cDovL3RjZS50ZWNobmlv
-bi5hYy5pbC93cC1jb250ZW50L3VwbG9hZHMvc2l0ZXMvOC8yMDE1LzA2L1NDLTcuMi1NLi0NCj4g
-U2lsYmVyc3RlaW4ucGRmDQo+IA0KPiBXaXRoIHRoYXQsIHRoZSBhcHBsaWNhdGlvbiBjYW4gZGly
-ZWN0bHkgcGFzcyB0aGUgTmlDIHBhY2tldCBwb2ludGVyIHRvIHRoZQ0KPiBkZWNyeXB0aW9uIGFj
-Y2VsZXJhdG9yLCBhbmQgZ2V0IHRoZSBiYXJlIGRhdGEgaW4gcGxhY2UuIFRoaXMgaXMgdGhlIGZl
-YXR1cmUNCj4gdGhhdA0KPiB0aGUgVkZJTyBjb250YWluZXIgY2FuIHByb3ZpZGUuDQoNCmFib3Zl
-IGlzIG5vdCBhIGdvb2QgYXJndW1lbnQsIGF0IGxlYXN0IGluIHRoZSBjb250ZXh0IG9mIHlvdXIg
-ZGlzY3Vzc2lvbi4NCklmIGVhY2ggZGV2aWNlIGhhcyB0aGVpciBvd24gaW50ZXJmYWNlIChzaW1p
-bGFyIHRvIEdQVSkgZm9yIHByb2Nlc3MgdG8gYmluZCANCndpdGgsIHRoZW4gaGF2aW5nIHRoZSBw
-cm9jZXNzIGJpbmRpbmcgdG8gbXVsdGlwbGUgZGV2aWNlcyBvbmUtYnktb25lIHRoZW4NCnlvdSBz
-dGlsbCBnZXQgc2FtZSBhZGRyZXNzIHNwYWNlIHNoYXJlZCBjcm9zcyB0aGVtLi4uDQoNClRoYW5r
-cw0KS2V2aW4NCg==
+On Thu, Aug 09, 2018 at 09:30:51AM +0800, Leizhen (ThunderTown) wrote:
+> On 2018/8/8 18:12, Will Deacon wrote:
+> > On Mon, Aug 06, 2018 at 08:31:29PM +0800, Zhen Lei wrote:
+> >> The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
+> >> __arm_smmu_sync_poll_msi requires that sync_idx must be increased
+> >> monotonously according to the sequence of the CMDs in the cmdq.
+> >>
+> >> But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
+> >> by spinlock, so the following scenarios may appear:
+> >> cpu0			cpu1
+> >> msidata=0
+> >> 			msidata=1
+> >> 			insert cmd1
+> >> insert cmd0
+> >> 			smmu execute cmd1
+> >> smmu execute cmd0
+> >> 			poll timeout, because msidata=1 is overridden by
+> >> 			cmd0, that means VAL=0, sync_idx=1.
+> > 
+> > Oh yuck, you're right! We probably want a CC stable on this. Did you see
+> > this go wrong in practice?
+> Just misreported and make the caller wait for a long time until TIMEOUT. It's
+> rare to happen, because any other CMD_SYNC during the waiting period will break
+> it.
+
+Thanks. Please mention that in the commit message, because I think it's
+useful to know.
+
+> >> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> >> ---
+> >>  drivers/iommu/arm-smmu-v3.c | 7 +++----
+> >>  1 file changed, 3 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> >> index 1d64710..4810f61 100644
+> >> --- a/drivers/iommu/arm-smmu-v3.c
+> >> +++ b/drivers/iommu/arm-smmu-v3.c
+> >> @@ -566,7 +566,7 @@ struct arm_smmu_device {
+> >>
+> >>  	int				gerr_irq;
+> >>  	int				combined_irq;
+> >> -	atomic_t			sync_nr;
+> >> +	u32				sync_nr;
+> >>
+> >>  	unsigned long			ias; /* IPA */
+> >>  	unsigned long			oas; /* PA */
+> >> @@ -836,7 +836,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> >>  			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+> >>  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+> >>  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+> >> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
+> >>  		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+> >>  		break;
+> >>  	default:
+> >> @@ -947,7 +946,6 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+> >>  	struct arm_smmu_cmdq_ent ent = {
+> >>  		.opcode = CMDQ_OP_CMD_SYNC,
+> >>  		.sync	= {
+> >> -			.msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
+> >>  			.msiaddr = virt_to_phys(&smmu->sync_count),
+> >>  		},
+> >>  	};
+> >> @@ -955,6 +953,8 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+> >>  	arm_smmu_cmdq_build_cmd(cmd, &ent);
+> >>
+> >>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> >> +	ent.sync.msidata = ++smmu->sync_nr;
+> >> +	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent.sync.msidata);
+> > 
+> > I really don't like splitting this out from building the rest of the
+> > command. Can you just move the call to arm_smmu_cmdq_build_cmd into the
+> > critical section, please?
+> OK. I have considered that before, just worry it will increase the
+> compition of spinlock.
+
+If you can provide numbers showing that it's a problem, then we could add
+a helper function e.g. arm_smmu_cmdq_sync_set_msidata(arm_smmu_cmdq_ent *cmd)
+
+> In addition, I will append a optimization patch: the adjacent CMD_SYNCs,
+> we only need one.
+
+Ok, but please keep them separate, since I don't want to fix up fixes and
+optimisations.
+
+Thanks,
+
+Will
