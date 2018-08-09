@@ -1,92 +1,115 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 5/5] iommu/arm-smmu-v3: add bootup option "arm_iommu"
-Date: Thu, 9 Aug 2018 12:08:36 +0100
-Message-ID: <c46fa263-2dfa-b8fc-b2c1-0b1bf6029748@arm.com>
-References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
- <1533558424-16748-6-git-send-email-thunder.leizhen@huawei.com>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 1/8] memory: tegra: Provide facility for integration
+	with the GART driver
+Date: Thu, 9 Aug 2018 13:10:08 +0200
+Message-ID: <20180809111008.GF21639@ulmo>
+References: <20180804143003.15817-1-digetx@gmail.com>
+	<20180804143003.15817-2-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1533558424-16748-6-git-send-email-thunder.leizhen@huawei.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
+Content-Type: multipart/mixed; boundary="===============1831655672355625438=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180804143003.15817-2-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/08/18 13:27, Zhen Lei wrote:
-> Add a bootup option to make the system manager can choose which mode to
-> be used. The default mode is strict.
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+
+--===============1831655672355625438==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ExXT7PjY8AI4Hyfa"
+Content-Disposition: inline
+
+
+--ExXT7PjY8AI4Hyfa
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat, Aug 04, 2018 at 05:29:56PM +0300, Dmitry Osipenko wrote:
+> In order to report clients name and access direction on GART's page fault,
+> MC driver need to access GART registers. Add facility that provides access
+> to the GART.
+>=20
+> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
->   Documentation/admin-guide/kernel-parameters.txt |  9 +++++++++
->   drivers/iommu/arm-smmu-v3.c                     | 17 ++++++++++++++++-
->   2 files changed, 25 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 533ff5c..426e989 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1720,6 +1720,15 @@
->   		nobypass	[PPC/POWERNV]
->   			Disable IOMMU bypass, using IOMMU for PCI devices.
-> 
-> +	arm_iommu=	[ARM64]
-> +		non-strict	[Default Off]
+>  drivers/memory/tegra/mc.c | 26 +++++++++++++++++++++++---
+>  include/soc/tegra/mc.h    | 13 +++++++++++++
+>  2 files changed, 36 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+> index e56862495f36..4940d72b5263 100644
+> --- a/drivers/memory/tegra/mc.c
+> +++ b/drivers/memory/tegra/mc.c
+> @@ -72,6 +72,8 @@ static const struct of_device_id tegra_mc_of_match[] =
+=3D {
+>  };
+>  MODULE_DEVICE_TABLE(of, tegra_mc_of_match);
+> =20
+> +static struct tegra_mc_gart_handle *gart_handle;
+> +
 
-Again, I'd much rather have "iommu.non_strict= { "0" | "1" }" in line 
-with the passthrough option.
+Why the global variable? Can't this be part of struct tegra_mc? We
+already do a very similar thing with the Tegra SMMU integration, why
+invent something completely different? Can't we stick to a similar
+mechanism?
 
-Robin.
+Given that struct tegra_smmu is opaque at the memory controller level,
+we could even go and store the GART related data in the same pointer.
 
-> +			Put off TLBs invalidation and release memory first.
-> +			It's good for scatter-gather performance but lacks full
-> +			isolation, an untrusted device can access the reused
-> +			memory because the TLBs may still valid. Please take
-> +			full consideration before choosing this mode.
-> +			Note that, VFIO will always use strict mode.
-> +
->   	iommu.passthrough=
->   			[ARM64] Configure DMA to bypass the IOMMU by default.
->   			Format: { "0" | "1" }
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 904bc1e..9a30892 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -631,6 +631,21 @@ struct arm_smmu_option_prop {
->   	{ 0, NULL},
->   };
-> 
-> +static u32 smmu_non_strict __read_mostly;
-> +
-> +static int __init arm_smmu_setup(char *str)
-> +{
-> +	if (!strncmp(str, "non-strict", 10)) {
-> +		smmu_non_strict = 1;
-> +		pr_warn("WARNING: iommu non-strict mode is chosen.\n"
-> +			"It's good for scatter-gather performance but lacks full isolation\n");
-> +		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
-> +	}
-> +
-> +	return 0;
-> +}
-> +early_param("arm_iommu", arm_smmu_setup);
-> +
->   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
->   						 struct arm_smmu_device *smmu)
->   {
-> @@ -1622,7 +1637,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
->   	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
->   		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
-> 
-> -	if (domain->type == IOMMU_DOMAIN_DMA) {
-> +	if ((domain->type == IOMMU_DOMAIN_DMA) && smmu_non_strict) {
->   		domain->non_strict = 1;
->   		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
->   	}
-> --
-> 1.8.3
-> 
-> 
+How about the registration code goes into a struct tegra_gart_probe()
+function that is called from tegra_mc_probe() right after the SMMU
+block:
+
+	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_SMMU)) {
+		mc->smmu =3D tegra_smmu_probe(...);
+		...
+	}
+
+	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_GART)) {
+		mc->smmu =3D tegra_gart_probe(...);
+		...
+	}
+
+?
+
+Thierry
+
+--ExXT7PjY8AI4Hyfa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltsIRAACgkQ3SOs138+
+s6EOag/+KWyfIYwlunu77wU6xbe78ZNj4WUCSKcxoA4GExTvqLDNvtjmcxGHxeuh
+1LSf4obEVQZLqCECC0Ie0u24NTosHH+Dm3bjoiXbDPN07JFSBj8PDVdtHoI1+cA/
+H7AqwOhOezhKWdisxNf3mP+aRPLrjqAZQ1IDdK/b0xHlSJA6d97L39nA/h8wKhM8
+4vqm+HD/kJlLAT7gbMQ4J4NVw0amivAeHqI/xSk+MJoghrliR4t9xnOCkJKGsbjH
+BxyaXE1A4HxURPKB1t+LOgOWSgfGY5eeO+CC2Ll2sVG8mfHAKQj3bAr5XXd9Ggl6
+vINQ6xeK0JFJfzw1YKP7bC12DzTU0LWE8KUtdmdND3To0vUj53AjSKX5u0og0jui
+eZIRPva3Om4tGefl2vqraG7DmkJZB02y2l4CqGfJvjZfs8JCeUyxzXAXN47U+gXv
+V8lgCnbUZi/NguOnErGuF3RGjsWbm5t9e2sS2ncSNSpD256iKmHJwdP/myrUX3AL
+GmeG8aeDkk8mqE2zXWBr2agNs/0n95WVdZTTAdW+goVJkkQ62vqUzxyor1Tmw6GP
+664aTF3YssY6/pvJcQeOcdyyZNuRSUg8R1qy0MPBh0v99iagVVRVqJP4cyzuHjcQ
+NCfu9WcqGhTYF84r632VjAr8KVPOY83zQOE5gSiqmD0iRmV3n8A=
+=IZWX
+-----END PGP SIGNATURE-----
+
+--ExXT7PjY8AI4Hyfa--
+
+--===============1831655672355625438==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1831655672355625438==--
