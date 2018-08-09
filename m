@@ -1,168 +1,152 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 3/5] iommu/io-pgtable-arm: add support for non-strict
- mode
-Date: Thu, 9 Aug 2018 11:54:40 +0100
-Message-ID: <788428ef-28b8-e5f2-b519-44b206179b89@arm.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 2/5] iommu/dma: add support for non-strict mode
+Date: Thu, 9 Aug 2018 19:01:09 +0800
+Message-ID: <5B6C1EF5.2050602@huawei.com>
 References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
- <1533558424-16748-4-git-send-email-thunder.leizhen@huawei.com>
+	<1533558424-16748-3-git-send-email-thunder.leizhen@huawei.com>
+	<e57298b0-66ec-b97c-1b36-b35bb3e1f20a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1533558424-16748-4-git-send-email-thunder.leizhen@huawei.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <e57298b0-66ec-b97c-1b36-b35bb3e1f20a-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/08/18 13:27, Zhen Lei wrote:
-> To support the non-strict mode, now we only tlbi and sync for the strict
-> mode. But for the non-leaf case, always follow strict mode.
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->   drivers/iommu/io-pgtable-arm.c | 27 ++++++++++++++++++---------
->   drivers/iommu/io-pgtable.h     |  3 +++
->   2 files changed, 21 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 010a254..bb61bef 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
-> 
->   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   			       unsigned long iova, size_t size, int lvl,
-> -			       arm_lpae_iopte *ptep);
-> +			       arm_lpae_iopte *ptep, bool strict);
-> 
->   static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->   				phys_addr_t paddr, arm_lpae_iopte prot,
-> @@ -319,6 +319,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->   			     arm_lpae_iopte prot, int lvl,
->   			     arm_lpae_iopte *ptep)
->   {
-> +	size_t unmapped;
->   	arm_lpae_iopte pte = *ptep;
-> 
->   	if (iopte_leaf(pte, lvl)) {
-> @@ -334,7 +335,8 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
->   		size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
-> 
->   		tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
-> -		if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
-> +		unmapped = __arm_lpae_unmap(data, iova, sz, lvl, tblp, true);
-> +		if (WARN_ON(unmapped != sz))
 
-What's the extra local variable for?
 
->   			return -EINVAL;
->   	}
+On 2018/8/9 18:46, Robin Murphy wrote:
+> On 06/08/18 13:27, Zhen Lei wrote:
+>> 1. Save the related domain pointer in struct iommu_dma_cookie, make iovad
+>>     capable call domain->ops->flush_iotlb_all to flush TLB.
+>> 2. During the iommu domain initialization phase, base on domain->non_strict
+>>     field to check whether non-strict mode is supported or not. If so, call
+>>     init_iova_flush_queue to register iovad->flush_cb callback.
+>> 3. All unmap(contains iova-free) APIs will finally invoke __iommu_dma_unmap
+>>     -->iommu_dma_free_iova. If the domain is non-strict, call queue_iova to
+>>     put off iova freeing.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 23 +++++++++++++++++++++++
+>>   drivers/iommu/iommu.c     |  1 +
+>>   include/linux/iommu.h     |  1 +
+>>   3 files changed, 25 insertions(+)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index ddcbbdb..213e62a 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -55,6 +55,7 @@ struct iommu_dma_cookie {
+>>       };
+>>       struct list_head        msi_page_list;
+>>       spinlock_t            msi_lock;
+>> +    struct iommu_domain        *domain;
+>>   };
+>>
+>>   static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
+>> @@ -257,6 +258,17 @@ static int iova_reserve_iommu_regions(struct device *dev,
+>>       return ret;
+>>   }
+>>
+>> +static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
+>> +{
+>> +    struct iommu_dma_cookie *cookie;
+>> +    struct iommu_domain *domain;
+>> +
+>> +    cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
+>> +    domain = cookie->domain;
+>> +
+>> +    domain->ops->flush_iotlb_all(domain);
+>> +}
+>> +
+>>   /**
+>>    * iommu_dma_init_domain - Initialise a DMA mapping domain
+>>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+>> @@ -308,6 +320,14 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>>       }
+>>
+>>       init_iova_domain(iovad, 1UL << order, base_pfn);
+>> +
+>> +    if (domain->non_strict) {
+>> +        BUG_ON(!domain->ops->flush_iotlb_all);
+>> +
+>> +        cookie->domain = domain;
 > 
-> @@ -576,15 +578,17 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->   	}
+> cookie->domain will only be non-NULL if domain->non_strict is true...
 > 
->   	if (unmap_idx < 0)
-> -		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
-> +		return __arm_lpae_unmap(data, iova, size, lvl, tablep, true);
+>> +        init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all, NULL);
+>> +    }
+>> +
+>>       if (!dev)
+>>           return 0;
+>>
+>> @@ -390,6 +410,9 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+>>       /* The MSI case is only ever cleaning up its most recent allocation */
+>>       if (cookie->type == IOMMU_DMA_MSI_COOKIE)
+>>           cookie->msi_iova -= size;
+>> +    else if (cookie->domain && cookie->domain->non_strict)
 > 
->   	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-> +	io_pgtable_tlb_sync(&data->iop);
-> +
->   	return size;
->   }
-> 
->   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   			       unsigned long iova, size_t size, int lvl,
-> -			       arm_lpae_iopte *ptep)
-> +			       arm_lpae_iopte *ptep, bool strict)
->   {
->   	arm_lpae_iopte pte;
->   	struct io_pgtable *iop = &data->iop;
-> @@ -609,7 +613,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   			io_pgtable_tlb_sync(iop);
->   			ptep = iopte_deref(pte, data);
->   			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
-> -		} else {
-> +		} else if (strict) {
+> ...so we don't need to re-check non_strict every time here.
 
-Since this is the only place we ever actually evaluate "strict", can't 
-we just test iop->cfg.quirks directly at this point instead of playing 
-pass-the-parcel with the extra argument?
+OK, I will change it to a comment.
 
-Robin.
+> 
+>> +        queue_iova(iovad, iova_pfn(iovad, iova),
+>> +                size >> iova_shift(iovad), 0);
+>>       else
+>>           free_iova_fast(iovad, iova_pfn(iovad, iova),
+>>                   size >> iova_shift(iovad));
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 63b3756..7811fde 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1263,6 +1263,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>>
+>>       domain->ops  = bus->iommu_ops;
+>>       domain->type = type;
+>> +    domain->non_strict = 0;
+>>       /* Assume all sizes by default; the driver may override this later */
+>>       domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 19938ee..0a0fb48 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -88,6 +88,7 @@ struct iommu_domain_geometry {
+>>
+>>   struct iommu_domain {
+>>       unsigned type;
+>> +    int non_strict;
+> 
+> bool?
 
->   			io_pgtable_tlb_add_flush(iop, iova, size, size, true);
->   		}
+OK
+
 > 
-> @@ -625,12 +629,13 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+> Robin.
 > 
->   	/* Keep on walkin' */
->   	ptep = iopte_deref(pte, data);
-> -	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
-> +	return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
->   }
+>>       const struct iommu_ops *ops;
+>>       unsigned long pgsize_bitmap;    /* Bitmap of page sizes in use */
+>>       iommu_fault_handler_t handler;
+>> -- 
+>> 1.8.3
+>>
+>>
 > 
->   static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->   			     size_t size)
->   {
-> +	bool strict;
->   	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->   	arm_lpae_iopte *ptep = data->pgd;
->   	int lvl = ARM_LPAE_START_LVL(data);
-> @@ -638,7 +643,9 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->   	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
->   		return 0;
+> .
 > 
-> -	return __arm_lpae_unmap(data, iova, size, lvl, ptep);
-> +	strict = !(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT);
-> +
-> +	return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
->   }
-> 
->   static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
-> @@ -771,7 +778,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
->   	u64 reg;
->   	struct arm_lpae_io_pgtable *data;
-> 
-> -	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
-> +	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
-> +			IO_PGTABLE_QUIRK_NON_STRICT))
->   		return NULL;
-> 
->   	data = arm_lpae_alloc_pgtable(cfg);
-> @@ -863,7 +871,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
->   	struct arm_lpae_io_pgtable *data;
-> 
->   	/* The NS quirk doesn't apply at stage 2 */
-> -	if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
-> +	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
-> +		IO_PGTABLE_QUIRK_NON_STRICT))
->   		return NULL;
-> 
->   	data = arm_lpae_alloc_pgtable(cfg);
-> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> index 2df7909..beb14a3 100644
-> --- a/drivers/iommu/io-pgtable.h
-> +++ b/drivers/iommu/io-pgtable.h
-> @@ -71,12 +71,15 @@ struct io_pgtable_cfg {
->   	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
->   	 *	software-emulated IOMMU), such that pagetable updates need not
->   	 *	be treated as explicit DMA data.
-> +	 * IO_PGTABLE_QUIRK_NON_STRICT: Put off TLBs invalidation and release
-> +	 *	memory first.
->   	 */
->   	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
->   	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
->   	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
->   	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
->   	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
-> +	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
->   	unsigned long			quirks;
->   	unsigned long			pgsize_bitmap;
->   	unsigned int			ias;
-> --
-> 1.8.3
-> 
-> 
+
+-- 
+Thanks!
+BestRegards
