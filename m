@@ -1,7 +1,7 @@
-From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 Subject: Re: IOAT DMA w/IOMMU
-Date: Thu, 9 Aug 2018 15:48:27 -0700
-Message-ID: <b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
+Date: Thu, 9 Aug 2018 16:50:04 -0600
+Message-ID: <adf51c74-36fa-b61d-8497-27bd75178ba4@deltatee.com>
 References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
 	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
@@ -12,11 +12,12 @@ References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<f04fae39-645e-3c6e-07c0-b194260bf5de@deltatee.com>
 	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
 	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
+	<b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <112A412BB11A1242B37129D931BCE5348382CFB2-5FK+k9557ZBzLByeVOV5+bfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <b8af340c-d40b-cb8c-987f-b394f1d6ec3e-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -27,57 +28,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Jiang, Dave" <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, "Jiang, Dave" <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAwOC8wOS8yMDE4IDAzOjQwIFBNLCBKaWFuZywgRGF2ZSB3cm90ZToKPj4gLS0tLS1Pcmln
-aW5hbCBNZXNzYWdlLS0tLS0KPj4gRnJvbTogbGludXgtcGNpLW93bmVyQHZnZXIua2VybmVsLm9y
-ZyBbbWFpbHRvOmxpbnV4LXBjaS1vd25lckB2Z2VyLmtlcm5lbC5vcmddIE9uIEJlaGFsZiBPZiBL
-aXQgQ2hvdwo+PiBTZW50OiBUaHVyc2RheSwgQXVndXN0IDksIDIwMTggMjo0OCBQTQo+PiBUbzog
-TG9nYW4gR3VudGhvcnBlIDxsb2dhbmdAZGVsdGF0ZWUuY29tPjsgRXJpYyBQaWxtb3JlIDxlcGls
-bW9yZUBnaWdhaW8uY29tPjsgQmpvcm4gSGVsZ2FhcyA8aGVsZ2Fhc0BrZXJuZWwub3JnPgo+PiBD
-YzogbGludXgtcGNpQHZnZXIua2VybmVsLm9yZzsgRGF2aWQgV29vZGhvdXNlIDxkd213MkBpbmZy
-YWRlYWQub3JnPjsgQWxleCBXaWxsaWFtc29uIDxhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbT47
-Cj4+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+IFN1YmplY3Q6IFJlOiBJT0FU
-IERNQSB3L0lPTU1VCj4+Cj4+Cj4+Cj4+IE9uIDA4LzA5LzIwMTggMDI6MTEgUE0sIExvZ2FuIEd1
-bnRob3JwZSB3cm90ZToKPj4+IE9uIDA5LzA4LzE4IDAyOjU3IFBNLCBLaXQgQ2hvdyB3cm90ZToK
-Pj4+PiBPbiAwOC8wOS8yMDE4IDAxOjExIFBNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4+Pj4+
-IE9uIDA5LzA4LzE4IDAxOjQ3IFBNLCBLaXQgQ2hvdyB3cm90ZToKPj4+Pj4+PiBJIGhhdmVuJ3Qg
-dGVzdGVkIHRoaXMgc2NlbmFyaW8gYnV0IG15IGd1ZXNzIHdvdWxkIGJlIHRoYXQgSU9BVCB3b3Vs
-ZAo+Pj4+Pj4+IGluZGVlZCBnbyB0aHJvdWdoIHRoZSBJT01NVSBhbmQgdGhlIFBDSSBCQVIgYWRk
-cmVzcyB3b3VsZCBuZWVkIHRvIGJlCj4+Pj4+Pj4gcHJvcGVybHkgbWFwcGVkIGludG8gdGhlIElP
-QVQncyBJT1ZBLiBUaGUgZmFjdCB0aGF0IHlvdSBzZWUgRE1BUiBlcnJvcnMKPj4+Pj4+PiBpcyBw
-cm9iYWJseSBhIGdvb2QgaW5kaWNhdGlvbiB0aGF0IHRoaXMgaXMgdGhlIGNhc2UuIEkgcmVhbGx5
-IGRvbid0IGtub3cKPj4+Pj4+PiB3aHkgeW91J2Qgd2FudCB0byBETUEgc29tZXRoaW5nIHdpdGhv
-dXQgbWFwcGluZyBpdC4KPj4+Pj4+IEkgaGF2ZSBleHBlcmltZW50ZWQgd2l0aCBjaGFuZ2luZyBu
-dGJfYXN5bmNfdHhfc3VibWl0IHRvIGRtYV9tYXAgdGhlIFBDSQo+Pj4+Pj4gQkFSCj4+Pj4+PiBh
-ZGRyZXNzLiBXaXRoIHRoaXMsIEkgZ2V0IGEgZGlmZmVyZW50IERNQVIgZXJyb3I6Cj4+Pj4+IFdo
-YXQgY29kZSBkaWQgeW91IHVzZSB0byBkbyB0aGlzPwo+Pj4+IElmIHlvdSBtZWFuIHZlcnNpb24g
-b2YgbGludXgsIGl0IGlzIDQuMTUuNy7CoCBPciBzcGVjaWZpYyBkbWFfbWFwIGNhbGwsIEkKPj4+
-PiBiZWxpZXZlIGl0IHdhcyBkbWFfbWFwX3NpbmdsZS4KPj4+IEkgbWVhbiB0aGUgY29tcGxldGUg
-Y29kZSB5b3UgdXNlIHRvIGRvIHRoZSBtYXBwaW5nIHNvIHdlIGNhbiBzZWUgaWYgaXQncwo+Pj4g
-Y29ycmVjdC4gZG1hX21hcF9zaW5nbGUoKSBzZWVtcyBsaWtlIGFuIG9kZCBjaG9pY2UsIEkgZXhw
-ZWN0ZWQgdG8gc2VlCj4+PiBkbWFfbWFwX3Jlc291cmNlKCkuCj4+IFRoYW5rcyBmb3IgdGhlIHN1
-Z2dlc3Rpb24hwqAgV2lsbCB0cnkgb3V0IGRtYV9tYXBfcmVzb3VyY2UgYW5kIHJlcG9ydCBiYWNr
-Lgo+Pgo+PiBLaXQKPiBLaXQsIEkgd2FzIGFibGUgdG8gdHJ5IHRoaXMgb24gdGhlIFNreWxha2Ug
-WGVvbiBwbGF0Zm9ybSB3aXRoIEludGVsIE5UQiBhbmQgaW9hdGRtYSBhbmQgSSBkaWQgbm90IGVu
-Y291bnRlciBhbnkgaXNzdWVzLiBVbmZvcnR1bmF0ZWx5IEkgZG8gbm90IGhhdmUgbXkgcHJlLVNr
-eWxha2UgcGxhdGZvcm0gdG8gdGVzdCBhbnltb3JlIHRvIHZlcmlmeS4KV2UgYXJlIGV4cGVjdGlu
-ZyB0byBnZXQgc2t5bGFrZXMgd2l0aGluIGEgY291cGxlIG9mIHdlZWtzIGFuZCBJJ2xsIGhhdmUg
-CmEgY2hhbmNlIHRvIGdpdmUgaXQgYSBnbyBvbiB0aGVyZS4KCkJhc2VkIG9uIExvZ2FuJ3MgY29t
-bWVudHMsIEkgYW0gdmVyeSBob3BlZnVsIHRoYXQgdGhlIGRtYV9tYXBfcmVzb3VyY2UgCndpbGwg
-bWFrZSB0aGluZ3Mgd29yayBvbiB0aGUgb2xkZXIgcGxhdGZvcm1zLi4uCgpUaGFua3MKS2l0CgoK
-Pj4+Pj4+IERNQVI6IFtETUEgV3JpdGVdIFJlcXVlc3QgZGV2aWNlIFswNzowMC40XSBmYXVsdCBh
-ZGRyIGZmZDAwMDAwCj4+Pj4+PiBbZmF1bHQgcmVhc29uIDEyXSBub24temVybyByZXNlcnZlZCBm
-aWVsZHMgaW4gUFRFCj4+Pj4+IEFsc28sIHdoYXQgZGV2aWNlIGNvcnJlc3BvbmRzIHRvIDA3OjAw
-LjQgb24geW91ciBzeXN0ZW0/Cj4+Pj4gSSBiZWxpZXZlIDA3LjAwLjQgd2FzIHRoZSBQTFggZG1h
-IGRldmljZS4gSSBnZXQgdGhlIHNhbWUgZXJyb3Igd2l0aCBpb2F0Lgo+Pj4gVXNpbmcgdGhlIG1h
-cHBpbmcgd2l0aCB0aGUgUExYIGRtYSBkZXZpY2UgbGlrZWx5IGNvbnZlcnRzIGl0IGZyb20gYSBw
-dXJlCj4+PiBQMlAgcmVxdWVzdCB0byBvbmUgd2hlcmUgdGhlIFRMUHMgcGFzcyB0aHJvdWdoIHRo
-ZSBJT01NVS4gU28gdGhlIGZhY3QKPj4+IHRoYXQgeW91IGdldCB0aGUgc2FtZSBlcnJvciB3aXRo
-IGJvdGggbWVhbnMgSU9BVCBhbG1vc3QgY2VydGFpbmx5IGdvZXMKPj4+IHRocm91Z2ggdGhlIElP
-TU1VIGFuZCB0aGVyZSdzIHNvbWV0aGluZyB3cm9uZyB3aXRoIHRoZSBtYXBwaW5nIHNldHVwLgo+
-Pj4KPj4+IExvZ2FuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
-aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+
+On 09/08/18 04:48 PM, Kit Chow wrote:
+> Based on Logan's comments, I am very hopeful that the dma_map_resource 
+> will make things work on the older platforms...
+
+Well, I *think* dma_map_single() would still work. So I'm not that
+confident that's the root of your problem. I'd still like to see the
+actual code snippet you are using.
+
+Logan
