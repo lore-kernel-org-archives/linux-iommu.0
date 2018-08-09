@@ -1,58 +1,74 @@
-From: Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
-Subject: Re: IOAT DMA w/IOMMU
-Date: Thu, 9 Aug 2018 11:51:53 -0700
-Message-ID: <CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
-References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
-	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180809184331.GB113140-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Ashok Raj <ashok.raj@intel.com>
+Subject: [PATCH] vfio/pci: Some buggy virtual functions incorrectly report 1 for intx.
+Date: Thu,  9 Aug 2018 12:37:06 -0700
+Message-ID: <1533843426-79170-1-git-send-email-ashok.raj@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org
+Cc: Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <helgaas@kernel.org>, Gage Eads <gage.eads@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 9, 2018 at 11:43 AM, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> [+cc David, Logan, Alex, iommu list]
->
-> On Thu, Aug 09, 2018 at 11:14:13AM -0700, Eric Pilmore wrote:
->> Didn't get any response on the IRC channel so trying here.
->>
->> Was wondering if anybody here has used IOAT DMA engines with an
->> IOMMU turned on (Xeon based system)? My specific question is really
->> whether it is possible to DMA (w/IOAT) to a PCI BAR address as the
->> destination without having to map that address to the IOVA space of
->> the DMA engine first (assuming the IOMMU is on)?
->
-> So is this a peer-to-peer DMA scenario?  You mention DMA, which would
-> be a transaction initiated by a PCI device, to a PCI BAR address, so
-> it doesn't sound like system memory is involved.
+PCI_INTERRUPT_PIN should always read  0 for SRIOV Virtual Functions.
 
-No, not peer-to-peer.  This is from system memory (e.g. SKB buffer which
-has had an IOMMU mapping created) to a PCI BAR address.
+Some SRIOV devices have some bugs in RTL and VF's end up reading 1
+instead of 0 for the PIN.
 
->
-> I copied some folks who know a lot more about this than I do.
+Since this is a spec required value, rather than having a device specific
+quirk, we could fix it permanently in vfio.
 
-Thank you!
+Reworked suggestions from Alex https://lkml.org/lkml/2018/7/16/1052
 
+Reported-by: Gage Eads <gage.eads@intel.com>
+Tested-by: Gage Eads <gage.eads@intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Gage Eads <gage.eads@intel.com>
+---
+ drivers/vfio/pci/vfio_pci.c        | 12 +++++++++---
+ drivers/vfio/pci/vfio_pci_config.c |  3 ++-
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
->
->> I am encountering issues where I see PTE Errors reported from DMAR
->> in this scenario, but I do not if I use a different DMA engine
->> that's sitting downstream off the PCI tree. I'm wondering if the
->> IOAT DMA failure is some artifact of these engines sitting behind
->> the Host Bridge.
->>
->> Thanks in advance!
->> Eric
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index b423a30..32943dd 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -433,10 +433,16 @@ static int vfio_pci_get_irq_count(struct vfio_pci_device *vdev, int irq_type)
+ {
+ 	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
+ 		u8 pin;
+-		pci_read_config_byte(vdev->pdev, PCI_INTERRUPT_PIN, &pin);
+-		if (IS_ENABLED(CONFIG_VFIO_PCI_INTX) && !vdev->nointx && pin)
+-			return 1;
++		/*
++		 * INTx must be 0 for all VF's. Enforce that for all
++		 * VF's since this is a spec requirement.
++		 */
++		if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx ||
++			vdev->pdev->is_virtfn)
++			return 0;
+ 
++		pci_read_config_byte(vdev->pdev, PCI_INTERRUPT_PIN, &pin);
++		return (pin ? 1 : 0);
+ 	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX) {
+ 		u8 pos;
+ 		u16 flags;
+diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+index 115a36f..e36b7c3 100644
+--- a/drivers/vfio/pci/vfio_pci_config.c
++++ b/drivers/vfio/pci/vfio_pci_config.c
+@@ -1676,7 +1676,8 @@ int vfio_config_init(struct vfio_pci_device *vdev)
+ 		*(__le16 *)&vconfig[PCI_DEVICE_ID] = cpu_to_le16(pdev->device);
+ 	}
+ 
+-	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx)
++	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx ||
++		pdev->is_virtfn)
+ 		vconfig[PCI_INTERRUPT_PIN] = 0;
+ 
+ 	ret = vfio_cap_init(vdev);
+-- 
+2.7.4
