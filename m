@@ -1,14 +1,15 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-Date: Thu, 9 Aug 2018 09:30:51 +0800
-Message-ID: <5B6B994B.10208@huawei.com>
-References: <1533558689-3000-1-git-send-email-thunder.leizhen@huawei.com>
-	<20180808101215.GB28557@arm.com>
+From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 17/20] powerpc/dma-swiotlb: use generic swiotlb_dma_ops
+Date: Thu, 09 Aug 2018 11:57:53 +1000
+Message-ID: <777010cd04645b55aa4197eddcc880f010f0ef6d.camel@kernel.crashing.org>
+References: <20180730163824.10064-1-hch@lst.de>
+	<20180730163824.10064-18-hch@lst.de>
+	<556a4302d13b1caafb223112c4de43d959146215.camel@kernel.crashing.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180808101215.GB28557-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <556a4302d13b1caafb223112c4de43d959146215.camel-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,97 +19,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, 2018-08-09 at 10:54 +1000, Benjamin Herrenschmidt wrote:
+> On Mon, 2018-07-30 at 18:38 +0200, Christoph Hellwig wrote:
+> > These are identical to the arch specific ones, so remove them.
+> > 
+> > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> 
+> Acked-by: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
 
+Note: We will still need to implement some custom variant of this
+for our secure VMs ... 
 
-On 2018/8/8 18:12, Will Deacon wrote:
-> Hi Thunder,
-> 
-> On Mon, Aug 06, 2018 at 08:31:29PM +0800, Zhen Lei wrote:
->> The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
->> __arm_smmu_sync_poll_msi requires that sync_idx must be increased
->> monotonously according to the sequence of the CMDs in the cmdq.
->>
->> But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
->> by spinlock, so the following scenarios may appear:
->> cpu0			cpu1
->> msidata=0
->> 			msidata=1
->> 			insert cmd1
->> insert cmd0
->> 			smmu execute cmd1
->> smmu execute cmd0
->> 			poll timeout, because msidata=1 is overridden by
->> 			cmd0, that means VAL=0, sync_idx=1.
-> 
-> Oh yuck, you're right! We probably want a CC stable on this. Did you see
-> this go wrong in practice?
-Just misreported and make the caller wait for a long time until TIMEOUT. It's
-rare to happen, because any other CMD_SYNC during the waiting period will break
-it.
+Basically we'll need to use the existing bounce bufferring as-is but
+the condition will be different, it won't be whether the address is
+below a certain limit, it will be *always*.
 
-> 
-> One comment on your patch...
-> 
->> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 7 +++----
->>  1 file changed, 3 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 1d64710..4810f61 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -566,7 +566,7 @@ struct arm_smmu_device {
->>
->>  	int				gerr_irq;
->>  	int				combined_irq;
->> -	atomic_t			sync_nr;
->> +	u32				sync_nr;
->>
->>  	unsigned long			ias; /* IPA */
->>  	unsigned long			oas; /* PA */
->> @@ -836,7 +836,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->>  			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
->>  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
->>  		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
->> -		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
->>  		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
->>  		break;
->>  	default:
->> @@ -947,7 +946,6 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->>  	struct arm_smmu_cmdq_ent ent = {
->>  		.opcode = CMDQ_OP_CMD_SYNC,
->>  		.sync	= {
->> -			.msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
->>  			.msiaddr = virt_to_phys(&smmu->sync_count),
->>  		},
->>  	};
->> @@ -955,6 +953,8 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->>  	arm_smmu_cmdq_build_cmd(cmd, &ent);
->>
->>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
->> +	ent.sync.msidata = ++smmu->sync_nr;
->> +	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent.sync.msidata);
-> 
-> I really don't like splitting this out from building the rest of the
-> command. Can you just move the call to arm_smmu_cmdq_build_cmd into the
-> critical section, please?
-OK. I have considered that before, just worry it will increase the compition of spinlock.
+Cheers,
+Ben.
 
-In addition, I will append a optimization patch: the adjacent CMD_SYNCs, we only need one.
-
-> 
-> Thanks,
-> 
-> Will
-> 
-> .
-> 
-
--- 
-Thanks!
-BestRegards
+> > ---
+> >  arch/powerpc/include/asm/dma-direct.h |  4 ++++
+> >  arch/powerpc/include/asm/swiotlb.h    |  2 --
+> >  arch/powerpc/kernel/dma-swiotlb.c     | 28 ++-------------------------
+> >  arch/powerpc/sysdev/fsl_pci.c         |  2 +-
+> >  4 files changed, 7 insertions(+), 29 deletions(-)
+> > 
+> > diff --git a/arch/powerpc/include/asm/dma-direct.h b/arch/powerpc/include/asm/dma-direct.h
+> > index 0fba19445ae8..657f84ddb20d 100644
+> > --- a/arch/powerpc/include/asm/dma-direct.h
+> > +++ b/arch/powerpc/include/asm/dma-direct.h
+> > @@ -30,4 +30,8 @@ static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
+> >  		return daddr - PCI_DRAM_OFFSET;
+> >  	return daddr - dev->archdata.dma_offset;
+> >  }
+> > +
+> > +u64 swiotlb_powerpc_get_required(struct device *dev);
+> > +#define swiotlb_get_required_mask swiotlb_powerpc_get_required
+> > +
+> >  #endif /* ASM_POWERPC_DMA_DIRECT_H */
+> > diff --git a/arch/powerpc/include/asm/swiotlb.h b/arch/powerpc/include/asm/swiotlb.h
+> > index f65ecf57b66c..1d8c1da26ab3 100644
+> > --- a/arch/powerpc/include/asm/swiotlb.h
+> > +++ b/arch/powerpc/include/asm/swiotlb.h
+> > @@ -13,8 +13,6 @@
+> >  
+> >  #include <linux/swiotlb.h>
+> >  
+> > -extern const struct dma_map_ops powerpc_swiotlb_dma_ops;
+> > -
+> >  extern unsigned int ppc_swiotlb_enable;
+> >  int __init swiotlb_setup_bus_notifier(void);
+> >  
+> > diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
+> > index 25986fcd1e5e..0c269de61f39 100644
+> > --- a/arch/powerpc/kernel/dma-swiotlb.c
+> > +++ b/arch/powerpc/kernel/dma-swiotlb.c
+> > @@ -24,7 +24,7 @@
+> >  
+> >  unsigned int ppc_swiotlb_enable;
+> >  
+> > -static u64 swiotlb_powerpc_get_required(struct device *dev)
+> > +u64 swiotlb_powerpc_get_required(struct device *dev)
+> >  {
+> >  	u64 end, mask, max_direct_dma_addr = dev->archdata.max_direct_dma_addr;
+> >  
+> > @@ -38,30 +38,6 @@ static u64 swiotlb_powerpc_get_required(struct device *dev)
+> >  	return mask;
+> >  }
+> >  
+> > -/*
+> > - * At the moment, all platforms that use this code only require
+> > - * swiotlb to be used if we're operating on HIGHMEM.  Since
+> > - * we don't ever call anything other than map_sg, unmap_sg,
+> > - * map_page, and unmap_page on highmem, use normal dma_ops
+> > - * for everything else.
+> > - */
+> > -const struct dma_map_ops powerpc_swiotlb_dma_ops = {
+> > -	.alloc = dma_direct_alloc,
+> > -	.free = dma_direct_free,
+> > -	.mmap = dma_nommu_mmap_coherent,
+> > -	.map_sg = swiotlb_map_sg_attrs,
+> > -	.unmap_sg = swiotlb_unmap_sg_attrs,
+> > -	.dma_supported = swiotlb_dma_supported,
+> > -	.map_page = swiotlb_map_page,
+> > -	.unmap_page = swiotlb_unmap_page,
+> > -	.sync_single_for_cpu = swiotlb_sync_single_for_cpu,
+> > -	.sync_single_for_device = swiotlb_sync_single_for_device,
+> > -	.sync_sg_for_cpu = swiotlb_sync_sg_for_cpu,
+> > -	.sync_sg_for_device = swiotlb_sync_sg_for_device,
+> > -	.mapping_error = swiotlb_dma_mapping_error,
+> > -	.get_required_mask = swiotlb_powerpc_get_required,
+> > -};
+> > -
+> >  void pci_dma_dev_setup_swiotlb(struct pci_dev *pdev)
+> >  {
+> >  	struct pci_controller *hose;
+> > @@ -88,7 +64,7 @@ static int ppc_swiotlb_bus_notify(struct notifier_block *nb,
+> >  
+> >  	/* May need to bounce if the device can't address all of DRAM */
+> >  	if ((dma_get_mask(dev) + 1) < memblock_end_of_DRAM())
+> > -		set_dma_ops(dev, &powerpc_swiotlb_dma_ops);
+> > +		set_dma_ops(dev, &swiotlb_dma_ops);
+> >  
+> >  	return NOTIFY_DONE;
+> >  }
+> > diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
+> > index 918be816b097..daf44bc0108d 100644
+> > --- a/arch/powerpc/sysdev/fsl_pci.c
+> > +++ b/arch/powerpc/sysdev/fsl_pci.c
+> > @@ -118,7 +118,7 @@ static void setup_swiotlb_ops(struct pci_controller *hose)
+> >  {
+> >  	if (ppc_swiotlb_enable) {
+> >  		hose->controller_ops.dma_dev_setup = pci_dma_dev_setup_swiotlb;
+> > -		set_pci_dma_ops(&powerpc_swiotlb_dma_ops);
+> > +		set_pci_dma_ops(&swiotlb_dma_ops);
+> >  	}
+> >  }
+> >  #else
