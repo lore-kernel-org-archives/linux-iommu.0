@@ -1,213 +1,50 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/iova: Optimise attempts to allocate iova from 32bit
- address range
-Date: Thu, 9 Aug 2018 21:43:59 +0100
-Message-ID: <b7472748-8169-7628-11e5-471045cdf1de@arm.com>
-References: <20180807085437.15965-1-ganapatrao.kulkarni@cavium.com>
- <318f9118-df78-e78f-1ae2-72a33cbee28e@arm.com>
- <CAKTKpr6HfLtkeertCyfA_vJt2rXi5qFOKKXohLfX1Z9QiK=Uvw@mail.gmail.com>
+From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+Subject: Re: IOAT DMA w/IOMMU
+Date: Thu, 9 Aug 2018 13:57:18 -0700
+Message-ID: <b278c1e5-6f08-c879-a27d-7fc172645fd5@gigaio.com>
+References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
+	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
+	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
+	<b54899a8-a144-e8e0-9880-1800c4657b95@deltatee.com>
+	<95e53520-b05f-4be4-e694-463d717453a8@gigaio.com>
+	<cdd9245f-eb23-9e10-1755-8f396a2cd255@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAKTKpr6HfLtkeertCyfA_vJt2rXi5qFOKKXohLfX1Z9QiK=Uvw@mail.gmail.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ganapatrao Kulkarni <gklkml16@gmail.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert Richter <Robert.Richter@cavium.com>, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cdd9245f-eb23-9e10-1755-8f396a2cd255-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-08-09 6:49 PM, Ganapatrao Kulkarni wrote:
-> Hi Robin,
-> 
-> On Thu, Aug 9, 2018 at 9:54 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->> On 07/08/18 09:54, Ganapatrao Kulkarni wrote:
->>>
->>> As an optimisation for PCI devices, there is always first attempt
->>> been made to allocate iova from SAC address range. This will lead
->>> to unnecessary attempts/function calls, when there are no free ranges
->>> available.
->>>
->>> This patch optimises by adding flag to track previous failed attempts
->>> and avoids further attempts until replenish happens.
->>
->>
->> Agh, what I overlooked is that this still suffers from the original problem,
->> wherein a large allocation which fails due to fragmentation then blocks all
->> subsequent smaller allocations, even if they may have succeeded.
->>
->> For a minimal change, though, what I think we could do is instead of just
->> having a flag, track the size of the last 32-bit allocation which failed. If
->> we're happy to assume that nobody's likely to mix aligned and unaligned
->> allocations within the same domain, then that should be sufficiently robust
->> whilst being no more complicated than this version, i.e. (modulo thinking up
->> a better name for it):
-> 
-> I agree, it would be better to track size and attempt to allocate for
-> smaller chunks, if not for bigger one.
-> 
->>
->>>
->>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
->>> ---
->>> This patch is based on comments from Robin Murphy <robin.murphy@arm.com>
->>> for patch [1]
->>>
->>> [1] https://lkml.org/lkml/2018/4/19/780
->>>
->>>    drivers/iommu/iova.c | 11 ++++++++++-
->>>    include/linux/iova.h |  1 +
->>>    2 files changed, 11 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>> index 83fe262..d97bb5a 100644
->>> --- a/drivers/iommu/iova.c
->>> +++ b/drivers/iommu/iova.c
->>> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
->>> long granule,
->>>          iovad->granule = granule;
->>>          iovad->start_pfn = start_pfn;
->>>          iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
->>> +       iovad->free_32bit_pfns = true;
->>
->>
->>          iovad->max_32bit_free = iovad->dma_32bit_pfn;
->>
->>>          iovad->flush_cb = NULL;
->>>          iovad->fq = NULL;
->>>          iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
->>> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain
->>> *iovad, struct iova *free)
->>>          cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
->>>          if (free->pfn_hi < iovad->dma_32bit_pfn &&
->>> -           free->pfn_lo >= cached_iova->pfn_lo)
->>> +           free->pfn_lo >= cached_iova->pfn_lo) {
->>>                  iovad->cached32_node = rb_next(&free->node);
->>> +               iovad->free_32bit_pfns = true;
->>
->>
->>                  iovad->max_32bit_free = iovad->dma_32bit_pfn;
-> 
-> i think, you intended to say,
->    iovad->max_32bit_free += (free->pfn_hi - free->pfn_lo);
-
-Nope, that's why I said it needed a better name ;)
-
-(I nearly called it last_failed_32bit_alloc_size, but that's a bit much)
-
-The point of this value (whetever it's called) is that at any given time 
-it holds an upper bound on the size of the largest contiguous free area. 
-It doesn't have to be the *smallest* upper bound, which is why we can 
-keep things simple and avoid arithmetic - in realistic use-cases like 
-yours when the allocations are a pretty constant size, this should work 
-out directly equivalent to the boolean, only with values of "size" and 
-"dma_32bit_pfn" instead of 0 and 1, so we don't do any more work than 
-necessary. In the edge cases where allocations are all different sizes, 
-it does mean that we will probably end up performing more failing 
-allocations than if we actually tried to track all of the free space 
-exactly, but I think that's reasonable - just because I want to make 
-sure we handle such cases fairly gracefully, doesn't mean that we need 
-to do extra work on the typical fast path to try and actually optimise 
-for them (which is why I didn't really like the accounting 
-implementation I came up with).
-
->>
->>> +       }
->>>          cached_iova = rb_entry(iovad->cached_node, struct iova, node);
->>>          if (free->pfn_lo >= cached_iova->pfn_lo)
->>> @@ -290,6 +293,10 @@ alloc_iova(struct iova_domain *iovad, unsigned long
->>> size,
->>>          struct iova *new_iova;
->>>          int ret;
->>>    +     if (limit_pfn <= iovad->dma_32bit_pfn &&
->>> +                       !iovad->free_32bit_pfns)
->>
->>
->>                          size >= iovad->max_32bit_free)
->>
->>> +               return NULL;
->>> +
->>>          new_iova = alloc_iova_mem();
->>>          if (!new_iova)
->>>                  return NULL;
->>> @@ -299,6 +306,8 @@ alloc_iova(struct iova_domain *iovad, unsigned long
->>> size,
->>>          if (ret) {
->>>                  free_iova_mem(new_iova);
->>> +               if (limit_pfn <= iovad->dma_32bit_pfn)
->>> +                       iovad->free_32bit_pfns = false;
->>
->>
->>                          iovad->max_32bit_free = size;
-> 
-> same here, we should decrease available free range after successful allocation.
-> iovad->max_32bit_free -= size;
-
-Equivalently, the simple assignment is strictly decreasing the upper 
-bound already, since we can only get here if size < max_32bit_free in 
-the first place. One more thing I've realised is that this is all 
-potentially a bit racy as we're outside the lock here, so it might need 
-to be pulled into __alloc_and_insert_iova_range(), something like the 
-rough diff below (name changed again for the sake of it; it also occurs 
-to me that we don't really need to re-check limit_pfn in the failure 
-path either, because even a 64-bit allocation still has to walk down 
-through the 32-bit space in order to fail completely)
-
->>
->> What do you think?
-> 
-> most likely this should work, i will try this and confirm at the earliest,
-
-Thanks for sticking with this.
-
-Robin.
-
------>8-----
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 83fe2621effe..7cbc58885877 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -190,6 +190,10 @@ static int __alloc_and_insert_iova_range(struct 
-iova_domain *iovad,
-
-         /* Walk the tree backwards */
-         spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+       if (limit_pfn <= iovad->dma_32bit_pfn &&
-+           size >= iovad->failed_alloc_size)
-+               goto out_err;
-+
-         curr = __get_cached_rbnode(iovad, limit_pfn);
-         curr_iova = rb_entry(curr, struct iova, node);
-         do {
-@@ -200,10 +204,8 @@ static int __alloc_and_insert_iova_range(struct 
-iova_domain *iovad,
-                 curr_iova = rb_entry(curr, struct iova, node);
-         } while (curr && new_pfn <= curr_iova->pfn_hi);
-
--       if (limit_pfn < size || new_pfn < iovad->start_pfn) {
--               spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--               return -ENOMEM;
--       }
-+       if (limit_pfn < size || new_pfn < iovad->start_pfn)
-+               goto out_err;
-
-         /* pfn_lo will point to size aligned address if size_aligned is 
-set */
-         new->pfn_lo = new_pfn;
-@@ -214,9 +216,12 @@ static int __alloc_and_insert_iova_range(struct 
-iova_domain *iovad,
-         __cached_rbnode_insert_update(iovad, new);
-
-         spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--
--
-         return 0;
-+
-+out_err:
-+       iovad->failed_alloc_size = size;
-+       spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+       return -ENOMEM;
-  }
-
-  static struct kmem_cache *iova_cache;
+CgpPbiAwOC8wOS8yMDE4IDAxOjExIFBNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4KPiBPbiAw
+OS8wOC8xOCAwMTo0NyBQTSwgS2l0IENob3cgd3JvdGU6Cj4+PiBJIGhhdmVuJ3QgdGVzdGVkIHRo
+aXMgc2NlbmFyaW8gYnV0IG15IGd1ZXNzIHdvdWxkIGJlIHRoYXQgSU9BVCB3b3VsZAo+Pj4gaW5k
+ZWVkIGdvIHRocm91Z2ggdGhlIElPTU1VIGFuZCB0aGUgUENJIEJBUiBhZGRyZXNzIHdvdWxkIG5l
+ZWQgdG8gYmUKPj4+IHByb3Blcmx5IG1hcHBlZCBpbnRvIHRoZSBJT0FUJ3MgSU9WQS4gVGhlIGZh
+Y3QgdGhhdCB5b3Ugc2VlIERNQVIgZXJyb3JzCj4+PiBpcyBwcm9iYWJseSBhIGdvb2QgaW5kaWNh
+dGlvbiB0aGF0IHRoaXMgaXMgdGhlIGNhc2UuIEkgcmVhbGx5IGRvbid0IGtub3cKPj4+IHdoeSB5
+b3UnZCB3YW50IHRvIERNQSBzb21ldGhpbmcgd2l0aG91dCBtYXBwaW5nIGl0Lgo+PiBJIGhhdmUg
+ZXhwZXJpbWVudGVkIHdpdGggY2hhbmdpbmcgbnRiX2FzeW5jX3R4X3N1Ym1pdCB0byBkbWFfbWFw
+IHRoZSBQQ0kKPj4gQkFSCj4+IGFkZHJlc3MuIFdpdGggdGhpcywgSSBnZXQgYSBkaWZmZXJlbnQg
+RE1BUiBlcnJvcjoKPiBXaGF0IGNvZGUgZGlkIHlvdSB1c2UgdG8gZG8gdGhpcz8KSWYgeW91IG1l
+YW4gdmVyc2lvbiBvZiBsaW51eCwgaXQgaXMgNC4xNS43LsKgIE9yIHNwZWNpZmljIGRtYV9tYXAg
+Y2FsbCwgSSAKYmVsaWV2ZSBpdCB3YXMgZG1hX21hcF9zaW5nbGUuCgo+Cj4+IERNQVI6IFtETUEg
+V3JpdGVdIFJlcXVlc3QgZGV2aWNlIFswNzowMC40XSBmYXVsdCBhZGRyIGZmZDAwMDAwCj4+IFtm
+YXVsdCByZWFzb24gMTJdIG5vbi16ZXJvIHJlc2VydmVkIGZpZWxkcyBpbiBQVEUKPiBBbHNvLCB3
+aGF0IGRldmljZSBjb3JyZXNwb25kcyB0byAwNzowMC40IG9uIHlvdXIgc3lzdGVtPwpJIGJlbGll
+dmUgMDcuMDAuNCB3YXMgdGhlIFBMWCBkbWEgZGV2aWNlLiBJIGdldCB0aGUgc2FtZSBlcnJvciB3
+aXRoIGlvYXQuCgpLaXQKCgo+IExvZ2FuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
