@@ -1,14 +1,16 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 2/8] iommu/tegra: gart: Provide access to Memory
-	Controller driver
-Date: Thu, 9 Aug 2018 13:17:46 +0200
-Message-ID: <20180809111746.GG21639@ulmo>
-References: <20180804143003.15817-1-digetx@gmail.com>
-	<20180804143003.15817-3-digetx@gmail.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 3/5] iommu/io-pgtable-arm: add support for non-strict
+	mode
+Date: Thu, 9 Aug 2018 19:20:44 +0800
+Message-ID: <5B6C238C.7070600@huawei.com>
+References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
+	<1533558424-16748-4-git-send-email-thunder.leizhen@huawei.com>
+	<788428ef-28b8-e5f2-b519-44b206179b89@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6151161818083376102=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180804143003.15817-3-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <788428ef-28b8-e5f2-b519-44b206179b89-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,145 +20,171 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============6151161818083376102==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="E69HUUNAyIJqGpVn"
-Content-Disposition: inline
 
+On 2018/8/9 18:54, Robin Murphy wrote:
+> On 06/08/18 13:27, Zhen Lei wrote:
+>> To support the non-strict mode, now we only tlbi and sync for the strict
+>> mode. But for the non-leaf case, always follow strict mode.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>   drivers/iommu/io-pgtable-arm.c | 27 ++++++++++++++++++---------
+>>   drivers/iommu/io-pgtable.h     |  3 +++
+>>   2 files changed, 21 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+>> index 010a254..bb61bef 100644
+>> --- a/drivers/iommu/io-pgtable-arm.c
+>> +++ b/drivers/iommu/io-pgtable-arm.c
+>> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+>>
+>>   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>                      unsigned long iova, size_t size, int lvl,
+>> -                   arm_lpae_iopte *ptep);
+>> +                   arm_lpae_iopte *ptep, bool strict);
+>>
+>>   static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>                   phys_addr_t paddr, arm_lpae_iopte prot,
+>> @@ -319,6 +319,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>                    arm_lpae_iopte prot, int lvl,
+>>                    arm_lpae_iopte *ptep)
+>>   {
+>> +    size_t unmapped;
+>>       arm_lpae_iopte pte = *ptep;
+>>
+>>       if (iopte_leaf(pte, lvl)) {
+>> @@ -334,7 +335,8 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>           size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+>>
+>>           tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+>> -        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
+>> +        unmapped = __arm_lpae_unmap(data, iova, sz, lvl, tblp, true);
+>> +        if (WARN_ON(unmapped != sz))
+> 
+> What's the extra local variable for?
 
---E69HUUNAyIJqGpVn
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+in order to remove the warning: more than 80 characters a line
 
-On Sat, Aug 04, 2018 at 05:29:57PM +0300, Dmitry Osipenko wrote:
-> GART contain registers needed by the Memory Controller driver, provide
-> access to the MC driver by utilizing its GART-integration facility.
->=20
-> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/tegra-gart.c | 23 +++++++++++++++++++++++
->  1 file changed, 23 insertions(+)
->=20
-> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-> index a004f6da35f2..f8b653e25914 100644
-> --- a/drivers/iommu/tegra-gart.c
-> +++ b/drivers/iommu/tegra-gart.c
-> @@ -31,6 +31,8 @@
->  #include <linux/iommu.h>
->  #include <linux/of.h>
-> =20
-> +#include <soc/tegra/mc.h>
-> +
->  #include <asm/cacheflush.h>
-> =20
->  /* bitmap of the page sizes currently supported */
-> @@ -41,6 +43,8 @@
->  #define GART_ENTRY_ADDR		(0x28 - GART_REG_BASE)
->  #define GART_ENTRY_DATA		(0x2c - GART_REG_BASE)
->  #define GART_ENTRY_PHYS_ADDR_VALID	(1 << 31)
-> +#define GART_ERROR_REQ		(0x30 - GART_REG_BASE)
-> +#define GART_ERROR_ADDR		(0x34 - GART_REG_BASE)
-> =20
->  #define GART_PAGE_SHIFT		12
->  #define GART_PAGE_SIZE		(1 << GART_PAGE_SHIFT)
-> @@ -63,6 +67,8 @@ struct gart_device {
->  	struct device		*dev;
-> =20
->  	struct iommu_device	iommu;		/* IOMMU Core handle */
-> +
-> +	struct tegra_mc_gart_handle mc_gart_handle;
->  };
-> =20
->  struct gart_domain {
-> @@ -408,6 +414,20 @@ static int tegra_gart_resume(struct device *dev)
->  	return 0;
->  }
-> =20
-> +static u32 tegra_gart_error_addr(struct tegra_mc_gart_handle *handle)
-> +{
-> +	struct gart_device *gart =3D container_of(handle, struct gart_device,
-> +						mc_gart_handle);
-> +	return readl_relaxed(gart->regs + GART_ERROR_ADDR);
-> +}
-> +
-> +static u32 tegra_gart_error_req(struct tegra_mc_gart_handle *handle)
-> +{
-> +	struct gart_device *gart =3D container_of(handle, struct gart_device,
-> +						mc_gart_handle);
-> +	return readl_relaxed(gart->regs + GART_ERROR_REQ);
-> +}
-> +
->  static int tegra_gart_probe(struct platform_device *pdev)
->  {
->  	struct gart_device *gart;
-> @@ -464,6 +484,8 @@ static int tegra_gart_probe(struct platform_device *p=
-dev)
->  	gart->regs =3D gart_regs;
->  	gart->iovmm_base =3D (dma_addr_t)res_remap->start;
->  	gart->page_count =3D (resource_size(res_remap) >> GART_PAGE_SHIFT);
-> +	gart->mc_gart_handle.error_addr =3D tegra_gart_error_addr;
-> +	gart->mc_gart_handle.error_req =3D tegra_gart_error_req;
-> =20
->  	gart->savedata =3D vmalloc(array_size(sizeof(u32), gart->page_count));
->  	if (!gart->savedata) {
-> @@ -475,6 +497,7 @@ static int tegra_gart_probe(struct platform_device *p=
-dev)
->  	do_gart_setup(gart, NULL);
-> =20
->  	gart_handle =3D gart;
-> +	tegra_mc_register_gart(&gart->mc_gart_handle);
-> =20
->  	return 0;
->  }
+> 
+>>               return -EINVAL;
+>>       }
+>>
+>> @@ -576,15 +578,17 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>       }
+>>
+>>       if (unmap_idx < 0)
+>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+>> +        return __arm_lpae_unmap(data, iova, size, lvl, tablep, true);
+>>
+>>       io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+>> +    io_pgtable_tlb_sync(&data->iop);
+>> +
+>>       return size;
+>>   }
+>>
+>>   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>                      unsigned long iova, size_t size, int lvl,
+>> -                   arm_lpae_iopte *ptep)
+>> +                   arm_lpae_iopte *ptep, bool strict)
+>>   {
+>>       arm_lpae_iopte pte;
+>>       struct io_pgtable *iop = &data->iop;
+>> @@ -609,7 +613,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>               io_pgtable_tlb_sync(iop);
+>>               ptep = iopte_deref(pte, data);
+>>               __arm_lpae_free_pgtable(data, lvl + 1, ptep);
+>> -        } else {
+>> +        } else if (strict) {
+> 
+> Since this is the only place we ever actually evaluate "strict", can't we just test iop->cfg.quirks directly at this point instead of playing pass-the-parcel with the extra argument?
 
-I see now why you've did it this way. We have separate devices unlike
-with SMMU where it is properly modeled as part of the memory controller.
-I think we should consider breaking ABI at this point and properly merge
-both the memory controller and GART nodes. There's really no reason why
-they should be separate and we're jumping through multiple hoops to do
-what we need to do just because a few years back we made a mistake.
+Wonderful, you're right!
 
-I know we're technically not supposed to break the DT ABI, but I think
-in this particular case we can make a good case for it. The current DT
-bindings are plainly broken, and obviously so. Also, we don't currently
-use the GART upstream for anything, so we can't break any existing
-systems either.
+> 
+> Robin.
+> 
+>>               io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+>>           }
+>>
+>> @@ -625,12 +629,13 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>
+>>       /* Keep on walkin' */
+>>       ptep = iopte_deref(pte, data);
+>> -    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
+>> +    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+>>   }
+>>
+>>   static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>>                    size_t size)
+>>   {
+>> +    bool strict;
+>>       struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>>       arm_lpae_iopte *ptep = data->pgd;
+>>       int lvl = ARM_LPAE_START_LVL(data);
+>> @@ -638,7 +643,9 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>>       if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+>>           return 0;
+>>
+>> -    return __arm_lpae_unmap(data, iova, size, lvl, ptep);
+>> +    strict = !(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT);
+>> +
+>> +    return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+>>   }
+>>
+>>   static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>> @@ -771,7 +778,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+>>       u64 reg;
+>>       struct arm_lpae_io_pgtable *data;
+>>
+>> -    if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
+>> +    if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+>> +            IO_PGTABLE_QUIRK_NON_STRICT))
+>>           return NULL;
+>>
+>>       data = arm_lpae_alloc_pgtable(cfg);
+>> @@ -863,7 +871,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+>>       struct arm_lpae_io_pgtable *data;
+>>
+>>       /* The NS quirk doesn't apply at stage 2 */
+>> -    if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
+>> +    if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
+>> +        IO_PGTABLE_QUIRK_NON_STRICT))
+>>           return NULL;
+>>
+>>       data = arm_lpae_alloc_pgtable(cfg);
+>> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+>> index 2df7909..beb14a3 100644
+>> --- a/drivers/iommu/io-pgtable.h
+>> +++ b/drivers/iommu/io-pgtable.h
+>> @@ -71,12 +71,15 @@ struct io_pgtable_cfg {
+>>        *    be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
+>>        *    software-emulated IOMMU), such that pagetable updates need not
+>>        *    be treated as explicit DMA data.
+>> +     * IO_PGTABLE_QUIRK_NON_STRICT: Put off TLBs invalidation and release
+>> +     *    memory first.
+>>        */
+>>       #define IO_PGTABLE_QUIRK_ARM_NS        BIT(0)
+>>       #define IO_PGTABLE_QUIRK_NO_PERMS    BIT(1)
+>>       #define IO_PGTABLE_QUIRK_TLBI_ON_MAP    BIT(2)
+>>       #define IO_PGTABLE_QUIRK_ARM_MTK_4GB    BIT(3)
+>>       #define IO_PGTABLE_QUIRK_NO_DMA        BIT(4)
+>> +    #define IO_PGTABLE_QUIRK_NON_STRICT    BIT(5)
+>>       unsigned long            quirks;
+>>       unsigned long            pgsize_bitmap;
+>>       unsigned int            ias;
+>> -- 
+>> 1.8.3
+>>
+>>
+> 
+> .
+> 
 
-Thierry
-
---E69HUUNAyIJqGpVn
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAltsItoACgkQ3SOs138+
-s6HZlw/7BZMnc6smROHoV6LzKfkC1MQe+wBkDlSsOSENtduUUu5dN4qhZbqmpVST
-N1FeQNRuW9UdhZT6gMZ93wCW8NdbF5HmSzYCX89+DBhcpxj61fIPPs1cBVcNFL7G
-RNR4Zz/+DO6tThfKrYumIGq7vg3Qu89gzGVL407luzziNMthV8fdWv233rMqxU2P
-3fK5ljv52zdqmh2Ayyb9WYF6wR//DzvVDJggHl4NcxRic0e9gxN9IUMVaUiE970n
-xxRLhO/rNlMyacOf4YklFhZhovseG2vfd14Qmqci4lLKY68XSTZcZCImKyEAnwxN
-T28ddTi7dyo1XuDkE7/E/zec4rABfk24gEe8q79OW5Wc3VhwzzFIIRbJ99pIWu+4
-fuk7H4rn2VrDLIttR8mFo5arwztHHBrP80rPop3Jd6oDFVlKWHRwHZw+KyJC6Sar
-pS4lHd+iipT+Fiz89NLcuplvwWvtHDIt6aCWmRyMwFaRKziu+2bn4xGh0vUNJQM5
-wmyNB00ZDsZFTxFDv1a77nUrJmsxF7nFTteWVTcCEto+0uniGhbEnar+IDn1f0qf
-rhMhGYib3LEm74MAG7gOJ8uH4uHU7liKwSrxbnB0DEMAyNQDrDOm2xfbwC16RiPq
-VSd3WTnC0/sqGqdDlV2h10iVuaSbcfeJ4mgsLP0WCgzsGgXv+7M=
-=s4am
------END PGP SIGNATURE-----
-
---E69HUUNAyIJqGpVn--
-
---===============6151161818083376102==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6151161818083376102==--
+-- 
+Thanks!
+BestRegards
