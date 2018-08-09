@@ -1,25 +1,16 @@
-From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
-Subject: Re: IOAT DMA w/IOMMU
-Date: Thu, 9 Aug 2018 16:00:00 -0700
-Message-ID: <aa9c3f41-efc9-8c68-a517-2736c8986621@gigaio.com>
-References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
-	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
-	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
-	<b54899a8-a144-e8e0-9880-1800c4657b95@deltatee.com>
-	<95e53520-b05f-4be4-e694-463d717453a8@gigaio.com>
-	<cdd9245f-eb23-9e10-1755-8f396a2cd255@deltatee.com>
-	<b278c1e5-6f08-c879-a27d-7fc172645fd5@gigaio.com>
-	<f04fae39-645e-3c6e-07c0-b194260bf5de@deltatee.com>
-	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
-	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
-	<b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
-	<adf51c74-36fa-b61d-8497-27bd75178ba4@deltatee.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] vfio/pci: Some buggy virtual functions incorrectly
+	report 1 for intx.
+Date: Thu, 9 Aug 2018 16:03:11 -0700
+Message-ID: <20180809230311.GA79703@otc-nc-03>
+References: <1533843426-79170-1-git-send-email-ashok.raj@intel.com>
+	<20180809134417.50de7fe7@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <adf51c74-36fa-b61d-8497-27bd75178ba4-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180809134417.50de7fe7-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,74 +20,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, "Jiang, Dave" <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gage Eads <gage.eads-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAwOC8wOS8yMDE4IDAzOjUwIFBNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4KPiBPbiAw
-OS8wOC8xOCAwNDo0OCBQTSwgS2l0IENob3cgd3JvdGU6Cj4+IEJhc2VkIG9uIExvZ2FuJ3MgY29t
-bWVudHMsIEkgYW0gdmVyeSBob3BlZnVsIHRoYXQgdGhlIGRtYV9tYXBfcmVzb3VyY2UKPj4gd2ls
-bCBtYWtlIHRoaW5ncyB3b3JrIG9uIHRoZSBvbGRlciBwbGF0Zm9ybXMuLi4KPiBXZWxsLCBJICp0
-aGluayogZG1hX21hcF9zaW5nbGUoKSB3b3VsZCBzdGlsbCB3b3JrLiBTbyBJJ20gbm90IHRoYXQK
-PiBjb25maWRlbnQgdGhhdCdzIHRoZSByb290IG9mIHlvdXIgcHJvYmxlbS4gSSdkIHN0aWxsIGxp
-a2UgdG8gc2VlIHRoZQo+IGFjdHVhbCBjb2RlIHNuaXBwZXQgeW91IGFyZSB1c2luZy4KPgo+IExv
-Z2FuCkhlcmUncyB0aGUgY29kZSBzbmlwcGV0IC0gKG50YmRlYnVnICYgNCkgcGF0aCBkb2VzIGRt
-YV9tYXBfcmVzb3VyY2Ugb2YgCnRoZSBwY2kgYmFyIGFkZHJlc3MuCgpJdCB3YXM6CiDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5tYXAtPmFkZHJbMV0gPSBkbWFfbWFwX3NpbmdsZShk
-ZXZpY2UtPmRldiwgKHZvaWQgCiopZGVzdCwgbGVuLAogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgRE1BX1RPX0RFVklDRSk7CgpLaXQKLS0tCgoKc3RhdGljIGludCBudGJf
-YXN5bmNfdHhfc3VibWl0KHN0cnVjdCBudGJfdHJhbnNwb3J0X3FwICpxcCwKIMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3Qg
-bnRiX3F1ZXVlX2VudHJ5ICplbnRyeSkKewogwqDCoMKgwqDCoMKgwqAgc3RydWN0IGRtYV9hc3lu
-Y190eF9kZXNjcmlwdG9yICp0eGQ7CiDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgZG1hX2NoYW4gKmNo
-YW4gPSBxcC0+dHhfZG1hX2NoYW47CiDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgZG1hX2RldmljZSAq
-ZGV2aWNlOwogwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGxlbiA9IGVudHJ5LT5sZW47CiDCoMKgwqDC
-oMKgwqDCoCB2b2lkICpidWYgPSBlbnRyeS0+YnVmOwogwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGRl
-c3Rfb2ZmLCBidWZmX29mZjsKIMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBkbWFlbmdpbmVfdW5tYXBf
-ZGF0YSAqdW5tYXA7CiDCoMKgwqDCoMKgwqDCoCBkbWFfYWRkcl90IGRlc3Q7CiDCoMKgwqDCoMKg
-wqDCoCBkbWFfY29va2llX3QgY29va2llOwogwqDCoMKgwqDCoMKgwqAgaW50wqDCoMKgwqAgdW5t
-YXBjbnQ7CgogwqDCoMKgwqDCoMKgwqAgZGV2aWNlID0gY2hhbi0+ZGV2aWNlOwoKIMKgwqDCoMKg
-wqDCoMKgIGRlc3QgPSBxcC0+dHhfbXdfcGh5cyArIHFwLT50eF9tYXhfZnJhbWUgKiBlbnRyeS0+
-dHhfaW5kZXg7CgogwqDCoMKgwqDCoMKgwqAgYnVmZl9vZmYgPSAoc2l6ZV90KWJ1ZiAmIH5QQUdF
-X01BU0s7CiDCoMKgwqDCoMKgwqDCoCBkZXN0X29mZiA9IChzaXplX3QpZGVzdCAmIH5QQUdFX01B
-U0s7CgogwqDCoMKgwqDCoMKgwqAgaWYgKCFpc19kbWFfY29weV9hbGlnbmVkKGRldmljZSwgYnVm
-Zl9vZmYsIGRlc3Rfb2ZmLCBsZW4pKQogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdv
-dG8gZXJyOwoKCiDCoMKgwqDCoMKgwqDCoCBpZiAobnRiZGVidWcgJiAweDQpIHsKIMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1bm1hcGNudCA9IDI7CiDCoMKgwqDCoMKgwqDCoCB9IGVs
-c2UgewogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVubWFwY250ID0gMTsKIMKgwqDC
-oMKgwqDCoMKgIH0KCiDCoMKgwqDCoMKgwqDCoCB1bm1hcCA9IGRtYWVuZ2luZV9nZXRfdW5tYXBf
-ZGF0YShkZXZpY2UtPmRldiwgdW5tYXBjbnQsIApHRlBfTk9XQUlUKTsKIMKgwqDCoMKgwqDCoMKg
-IGlmICghdW5tYXApCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlcnI7Cgog
-wqDCoMKgwqDCoMKgwqAgdW5tYXAtPmxlbiA9IGxlbjsKIMKgwqDCoMKgwqDCoMKgIHVubWFwLT5h
-ZGRyWzBdID0gZG1hX21hcF9wYWdlKGRldmljZS0+ZGV2LCB2aXJ0X3RvX3BhZ2UoYnVmKSwKIMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIGJ1ZmZfb2ZmLCBsZW4sIERNQV9UT19ERVZJQ0UpOwogwqDCoMKgwqDC
-oMKgwqAgaWYgKGRtYV9tYXBwaW5nX2Vycm9yKGRldmljZS0+ZGV2LCB1bm1hcC0+YWRkclswXSkp
-CiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlcnJfZ2V0X3VubWFwOwoKIMKg
-wqDCoMKgwqDCoMKgIGlmIChudGJkZWJ1ZyAmIDB4NCkgewogwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIHVubWFwLT5hZGRyWzFdID0gZG1hX21hcF9yZXNvdXJjZShkZXZpY2UtPmRldiwK
-IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIChwaHlzX2FkZHJfdClkZXN0
-LCBsZW4sIERNQV9UT19ERVZJQ0UsIDApOwogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IGlmIChkbWFfbWFwcGluZ19lcnJvcihkZXZpY2UtPmRldiwgdW5tYXAtPmFkZHJbMV0pKQogwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIGVycl9nZXRf
-dW5tYXA7CiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5tYXAtPnRvX2NudCA9IDI7
-CiDCoMKgwqDCoMKgwqDCoCB9IGVsc2UgewogwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IHVubWFwLT5hZGRyWzFdID0gZGVzdDsKIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1
-bm1hcC0+dG9fY250ID0gMTsKIMKgwqDCoMKgwqDCoMKgIH0KCiDCoMKgwqDCoMKgwqDCoCB0eGQg
-PSBkZXZpY2UtPmRldmljZV9wcmVwX2RtYV9tZW1jcHkoY2hhbiwgdW5tYXAtPmFkZHJbMV0sCiDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHVubWFwLT5hZGRyWzBdLCBsZW4sIERNQV9QUkVQX0lOVEVS
-UlVQVCk7CgogwqDCoMKgwqDCoMKgwqAgaWYgKCF0eGQpCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgZ290byBlcnJfZ2V0X3VubWFwOwoKIMKgwqDCoMKgwqDCoMKgIHR4ZC0+Y2FsbGJh
-Y2tfcmVzdWx0ID0gbnRiX3R4X2NvcHlfY2FsbGJhY2s7CiDCoMKgwqDCoMKgwqDCoCB0eGQtPmNh
-bGxiYWNrX3BhcmFtID0gZW50cnk7CiDCoMKgwqDCoMKgwqDCoCBkbWFfc2V0X3VubWFwKHR4ZCwg
-dW5tYXApOwoKIMKgwqDCoMKgwqDCoMKgIGNvb2tpZSA9IGRtYWVuZ2luZV9zdWJtaXQodHhkKTsK
-IMKgwqDCoMKgwqDCoMKgIGlmIChkbWFfc3VibWl0X2Vycm9yKGNvb2tpZSkpCiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlcnJfc2V0X3VubWFwOwoKIMKgwqDCoMKgwqDCoMKg
-IGRtYWVuZ2luZV91bm1hcF9wdXQodW5tYXApOwoKIMKgwqDCoMKgwqDCoMKgIGRtYV9hc3luY19p
-c3N1ZV9wZW5kaW5nKGNoYW4pOwoKIMKgwqDCoMKgwqDCoMKgIHJldHVybiAwOwoKZXJyX3NldF91
-bm1hcDoKIMKgwqDCoMKgwqDCoMKgIGRtYV9kZXNjcmlwdG9yX3VubWFwKHR4ZCk7CiDCoMKgwqDC
-oMKgwqDCoCB0eGQtPmRlc2NfZnJlZSh0eGQpOwplcnJfZ2V0X3VubWFwOgogwqDCoMKgwqDCoMKg
-wqAgZG1hZW5naW5lX3VubWFwX3B1dCh1bm1hcCk7CmVycjoKIMKgwqDCoMKgwqDCoMKgIHJldHVy
-biAtRU5YSU87Cn0KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
-dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Thu, Aug 09, 2018 at 01:44:17PM -0600, Alex Williamson wrote:
+> On Thu,  9 Aug 2018 12:37:06 -0700
+> Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> 
+> > PCI_INTERRUPT_PIN should always read  0 for SRIOV Virtual Functions.
+> > 
+> > Some SRIOV devices have some bugs in RTL and VF's end up reading 1
+> > instead of 0 for the PIN.
+> 
+> Hi Ashok,
+> 
+> One question, can we identify which VFs are known to have this issue so
+> that users (and downstreams) can know how to prioritize this patch?
+> Thanks,
+
+Hi Alex,
+
+The hardware isn't public yet, so can't talk about it :-(. Once this patch gets 
+merged, will let the OSV engagement folks drive it for inclusions. We 
+could mark this for stable, but i would rather wait until we know the 
+timeline when they are expecting it to be in. It shouldn't break anything
+since we are just enforcing the spec.
+
+Cheers,
+Ashok
