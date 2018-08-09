@@ -1,238 +1,123 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 2/8] iommu/tegra: gart: Provide access to Memory
-	Controller driver
-Date: Thu, 09 Aug 2018 18:04:32 +0300
-Message-ID: <3558767.SGILOZqXFq@dimapc>
-References: <20180804143003.15817-1-digetx@gmail.com>
-	<40363808.PZSQB5qk50@dimapc> <20180809145206.GA26588@ulmo>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/iova: Optimise attempts to allocate iova from 32bit
+ address range
+Date: Thu, 9 Aug 2018 17:24:47 +0100
+Message-ID: <318f9118-df78-e78f-1ae2-72a33cbee28e@arm.com>
+References: <20180807085437.15965-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180809145206.GA26588@ulmo>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180807085437.15965-1-ganapatrao.kulkarni@cavium.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday, 9 August 2018 17:52:06 MSK Thierry Reding wrote:
-> On Thu, Aug 09, 2018 at 05:22:59PM +0300, Dmitry Osipenko wrote:
-> > On Thursday, 9 August 2018 16:59:24 MSK Thierry Reding wrote:
-> > > On Thu, Aug 09, 2018 at 02:39:03PM +0300, Dmitry Osipenko wrote:
-> > > > On Thursday, 9 August 2018 14:17:46 MSK Thierry Reding wrote:
-> > > > > On Sat, Aug 04, 2018 at 05:29:57PM +0300, Dmitry Osipenko wrote:
-> > > > > > GART contain registers needed by the Memory Controller driver,
-> > > > > > provide
-> > > > > > access to the MC driver by utilizing its GART-integration
-> > > > > > facility.
-> > > > > > 
-> > > > > > Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> > > > > > ---
-> > > > > > 
-> > > > > >  drivers/iommu/tegra-gart.c | 23 +++++++++++++++++++++++
-> > > > > >  1 file changed, 23 insertions(+)
-> > > > > > 
-> > > > > > diff --git a/drivers/iommu/tegra-gart.c
-> > > > > > b/drivers/iommu/tegra-gart.c
-> > > > > > index a004f6da35f2..f8b653e25914 100644
-> > > > > > --- a/drivers/iommu/tegra-gart.c
-> > > > > > +++ b/drivers/iommu/tegra-gart.c
-> > > > > > @@ -31,6 +31,8 @@
-> > > > > > 
-> > > > > >  #include <linux/iommu.h>
-> > > > > >  #include <linux/of.h>
-> > > > > > 
-> > > > > > +#include <soc/tegra/mc.h>
-> > > > > > +
-> > > > > > 
-> > > > > >  #include <asm/cacheflush.h>
-> > > > > >  
-> > > > > >  /* bitmap of the page sizes currently supported */
-> > > > > > 
-> > > > > > @@ -41,6 +43,8 @@
-> > > > > > 
-> > > > > >  #define GART_ENTRY_ADDR		(0x28 - GART_REG_BASE)
-> > > > > >  #define GART_ENTRY_DATA		(0x2c - GART_REG_BASE)
-> > > > > >  #define GART_ENTRY_PHYS_ADDR_VALID	(1 << 31)
-> > > > > > 
-> > > > > > +#define GART_ERROR_REQ		(0x30 - GART_REG_BASE)
-> > > > > > +#define GART_ERROR_ADDR		(0x34 - GART_REG_BASE)
-> > > > > > 
-> > > > > >  #define GART_PAGE_SHIFT		12
-> > > > > >  #define GART_PAGE_SIZE		(1 << GART_PAGE_SHIFT)
-> > > > > > 
-> > > > > > @@ -63,6 +67,8 @@ struct gart_device {
-> > > > > > 
-> > > > > >  	struct device		*dev;
-> > > > > >  	
-> > > > > >  	struct iommu_device	iommu;		/* IOMMU Core handle */
-> > > > > > 
-> > > > > > +
-> > > > > > +	struct tegra_mc_gart_handle mc_gart_handle;
-> > > > > > 
-> > > > > >  };
-> > > > > >  
-> > > > > >  struct gart_domain {
-> > > > > > 
-> > > > > > @@ -408,6 +414,20 @@ static int tegra_gart_resume(struct device
-> > > > > > *dev)
-> > > > > > 
-> > > > > >  	return 0;
-> > > > > >  
-> > > > > >  }
-> > > > > > 
-> > > > > > +static u32 tegra_gart_error_addr(struct tegra_mc_gart_handle
-> > > > > > *handle)
-> > > > > > +{
-> > > > > > +	struct gart_device *gart = container_of(handle, struct
-> > 
-> > gart_device,
-> > 
-> > > > > > +						mc_gart_handle);
-> > > > > > +	return readl_relaxed(gart->regs + GART_ERROR_ADDR);
-> > > > > > +}
-> > > > > > +
-> > > > > > +static u32 tegra_gart_error_req(struct tegra_mc_gart_handle
-> > > > > > *handle)
-> > > > > > +{
-> > > > > > +	struct gart_device *gart = container_of(handle, struct
-> > 
-> > gart_device,
-> > 
-> > > > > > +						mc_gart_handle);
-> > > > > > +	return readl_relaxed(gart->regs + GART_ERROR_REQ);
-> > > > > > +}
-> > > > > > +
-> > > > > > 
-> > > > > >  static int tegra_gart_probe(struct platform_device *pdev)
-> > > > > >  {
-> > > > > >  
-> > > > > >  	struct gart_device *gart;
-> > > > > > 
-> > > > > > @@ -464,6 +484,8 @@ static int tegra_gart_probe(struct
-> > > > > > platform_device
-> > > > > > *pdev)>
-> > > > > > 
-> > > > > >  	gart->regs = gart_regs;
-> > > > > >  	gart->iovmm_base = (dma_addr_t)res_remap->start;
-> > > > > >  	gart->page_count = (resource_size(res_remap) >>
-> > > > > >  	GART_PAGE_SHIFT);
-> > > > > > 
-> > > > > > +	gart->mc_gart_handle.error_addr = tegra_gart_error_addr;
-> > > > > > +	gart->mc_gart_handle.error_req = tegra_gart_error_req;
-> > > > > > 
-> > > > > >  	gart->savedata = vmalloc(array_size(sizeof(u32),
-> > > > > >  	gart->page_count));
-> > > > > >  	if (!gart->savedata) {
-> > > > > > 
-> > > > > > @@ -475,6 +497,7 @@ static int tegra_gart_probe(struct
-> > > > > > platform_device
-> > > > > > *pdev)>
-> > > > > > 
-> > > > > >  	do_gart_setup(gart, NULL);
-> > > > > >  	
-> > > > > >  	gart_handle = gart;
-> > > > > > 
-> > > > > > +	tegra_mc_register_gart(&gart->mc_gart_handle);
-> > > > > > 
-> > > > > >  	return 0;
-> > > > > >  
-> > > > > >  }
-> > > > > 
-> > > > > I see now why you've did it this way. We have separate devices
-> > > > > unlike
-> > > > > with SMMU where it is properly modeled as part of the memory
-> > > > > controller.
-> > > > > I think we should consider breaking ABI at this point and properly
-> > > > > merge
-> > > > > both the memory controller and GART nodes. There's really no reason
-> > > > > why
-> > > > > they should be separate and we're jumping through multiple hoops to
-> > > > > do
-> > > > > what we need to do just because a few years back we made a mistake.
-> > > > > 
-> > > > > I know we're technically not supposed to break the DT ABI, but I
-> > > > > think
-> > > > > in this particular case we can make a good case for it. The current
-> > > > > DT
-> > > > > bindings are plainly broken, and obviously so. Also, we don't
-> > > > > currently
-> > > > > use the GART upstream for anything, so we can't break any existing
-> > > > > systems either.
-> > > > 
-> > > > IIUC, that will require to break the stable DT ABI of the tegra20-mc,
-> > > > which is working fine and does its job. I'm personally not seeing the
-> > > > slight lameness of the current DT as a good excuse to break the ABI.
-> > > > Let's then break DT ABI on all Tegra's and convert them all to genpd
-> > > > and
-> > > > other goodies like assigned clock parents and clock rate.
-> > > 
-> > > genpd and assigned clocks are complementary, they can be switched to
-> > > without breaking ABI.
-> > > 
-> > > And that's also different from the memory controller on Tegra20 where we
-> > > just made the mistake of describing what is effectively one device as
-> > > two separate devices. From what I can tell, the only reason this was
-> > > done was because it mapped better to the Linux driver model where there
-> > > is a framework to represent an IOMMU and a misunderstanding of how to
-> > > work with the driver model and device tree.
-> > > 
-> > > As such, I would describe it as more of a bug in the DT that should be
-> > > fixed rather than breaking the ABI.
-> > > 
-> > > And, like I said, we are in the somewhat fortunate situation that we
-> > > don't actively use the GART, at least in upstream, yet. So even if we
-> > > break ABI, nobody will notice anyway. Those are about as good pre-
-> > > conditions as you're going to get for fixing ABI.
-> > 
-> > Please tell exactly what you're suggesting.
-> > 
-> > Current DT:
-> > 	mc: memory-controller@7000f000 {
-> > 	
-> > 		compatible = "nvidia,tegra20-mc";
-> > 		reg = <0x7000f000 0x024
-> > 		
-> > 		       0x7000f03c 0x3c4>;
-> > 		
-> > 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
-> > 		#reset-cells = <1>;
-> > 	
-> > 	};
-> > 	
-> > 	gart: iommu@7000f024 {
-> > 	
-> > 		compatible = "nvidia,tegra20-gart";
-> > 		reg = <0x7000f024 0x00000018	/* controller registers */
-> > 		
-> > 		       0x58000000 0x02000000>;	/* GART aperture */
-> > 		
-> > 		#iommu-cells = <0>;
-> > 	
-> > 	};
-> > 
-> > Variant 1 (break MC ABI):
-> > 	mc: memory-controller@7000f000 {
-> > 	
-> > 		compatible = "nvidia,tegra20-mc";
-> > 		reg = <0x7000f000 0x400	/* controller registers */
-> > 		
-> > 		       0x58000000 0x02000000>;	/* GART aperture */
-> > 		
-> > 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
-> > 		#reset-cells = <1>;
-> > 		#iommu-cells = <0>;
-> > 	
-> > 	};
+On 07/08/18 09:54, Ganapatrao Kulkarni wrote:
+> As an optimisation for PCI devices, there is always first attempt
+> been made to allocate iova from SAC address range. This will lead
+> to unnecessary attempts/function calls, when there are no free ranges
+> available.
 > 
-> This is the variant that I would prefer.
+> This patch optimises by adding flag to track previous failed attempts
+> and avoids further attempts until replenish happens.
 
-Okay, I'll prepare the patches.
+Agh, what I overlooked is that this still suffers from the original 
+problem, wherein a large allocation which fails due to fragmentation 
+then blocks all subsequent smaller allocations, even if they may have 
+succeeded.
+
+For a minimal change, though, what I think we could do is instead of 
+just having a flag, track the size of the last 32-bit allocation which 
+failed. If we're happy to assume that nobody's likely to mix aligned and 
+unaligned allocations within the same domain, then that should be 
+sufficiently robust whilst being no more complicated than this version, 
+i.e. (modulo thinking up a better name for it):
+
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> ---
+> This patch is based on comments from Robin Murphy <robin.murphy@arm.com>
+> for patch [1]
+> 
+> [1] https://lkml.org/lkml/2018/4/19/780
+> 
+>   drivers/iommu/iova.c | 11 ++++++++++-
+>   include/linux/iova.h |  1 +
+>   2 files changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 83fe262..d97bb5a 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+>   	iovad->granule = granule;
+>   	iovad->start_pfn = start_pfn;
+>   	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
+> +	iovad->free_32bit_pfns = true;
+
+	iovad->max_32bit_free = iovad->dma_32bit_pfn;
+
+>   	iovad->flush_cb = NULL;
+>   	iovad->fq = NULL;
+>   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>   
+>   	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+>   	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+> -	    free->pfn_lo >= cached_iova->pfn_lo)
+> +	    free->pfn_lo >= cached_iova->pfn_lo) {
+>   		iovad->cached32_node = rb_next(&free->node);
+> +		iovad->free_32bit_pfns = true;
+
+		iovad->max_32bit_free = iovad->dma_32bit_pfn;
+
+> +	}
+>   
+>   	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+>   	if (free->pfn_lo >= cached_iova->pfn_lo)
+> @@ -290,6 +293,10 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+>   	struct iova *new_iova;
+>   	int ret;
+>   
+> +	if (limit_pfn <= iovad->dma_32bit_pfn &&
+> +			!iovad->free_32bit_pfns)
+
+			size >= iovad->max_32bit_free)
+
+> +		return NULL;
+> +
+>   	new_iova = alloc_iova_mem();
+>   	if (!new_iova)
+>   		return NULL;
+> @@ -299,6 +306,8 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
+>   
+>   	if (ret) {
+>   		free_iova_mem(new_iova);
+> +		if (limit_pfn <= iovad->dma_32bit_pfn)
+> +			iovad->free_32bit_pfns = false;
+
+			iovad->max_32bit_free = size;
+
+What do you think?
+
+Robin.
+
+>   		return NULL;
+>   	}
+>   
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index 928442d..3810ba9 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -96,6 +96,7 @@ struct iova_domain {
+>   						   flush-queues */
+>   	atomic_t fq_timer_on;			/* 1 when timer is active, 0
+>   						   when not */
+> +	bool	free_32bit_pfns;
+>   };
+>   
+>   static inline unsigned long iova_size(struct iova *iova)
+> 
