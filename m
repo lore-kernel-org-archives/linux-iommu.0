@@ -1,31 +1,15 @@
-From: Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: IOAT DMA w/IOMMU
-Date: Fri, 10 Aug 2018 10:46:31 -0700
-Message-ID: <499934e7-3734-1aee-37dd-b42a5d2a2608@intel.com>
-References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
-	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
-	<b54899a8-a144-e8e0-9880-1800c4657b95@deltatee.com>
-	<95e53520-b05f-4be4-e694-463d717453a8@gigaio.com>
-	<cdd9245f-eb23-9e10-1755-8f396a2cd255@deltatee.com>
-	<b278c1e5-6f08-c879-a27d-7fc172645fd5@gigaio.com>
-	<f04fae39-645e-3c6e-07c0-b194260bf5de@deltatee.com>
-	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
-	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
-	<b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
-	<adf51c74-36fa-b61d-8497-27bd75178ba4@deltatee.com>
-	<aa9c3f41-efc9-8c68-a517-2736c8986621@gigaio.com>
-	<1170c096-a749-6ee3-32d4-ebba1d12adff@gigaio.com>
-	<929f3dfa-fbff-c582-3be5-c368f11feb7e@deltatee.com>
-	<460cc47f-6a8e-67b0-01a0-02f0c51df258@intel.com>
-	<0f653f8f-c7ae-831d-e238-2742590d9ea1@deltatee.com>
-	<6525fa4d-7d9b-0136-7206-f8351230af46@intel.com>
-	<f22c565e-ba49-c83d-3e51-7967664c7136@deltatee.com>
+From: Doug Anderson via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH 1/3] dts: arm64/sdm845: Add node for arm,mmu-500
+Date: Fri, 10 Aug 2018 15:18:12 -0700
+Message-ID: <CAD=FV=Vmn40CmLLLEfrE-eq2sj4CYnx2E2-k-dimk24CDTU1jQ@mail.gmail.com>
+References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
+	<20180719175356.14753-2-vivek.gautam@codeaurora.org>
+Reply-To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f22c565e-ba49-c83d-3e51-7967664c7136-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180719175356.14753-2-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -35,27 +19,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:ARM/QUALCOMM SUPPORT" <linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Brown <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
+On Thu, Jul 19, 2018 at 10:53 AM, Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> Add device node for arm,mmu-500 available on sdm845.
+> This MMU-500 with single TCU and multiple TBU architecture
+> is shared among all the peripherals except gpu on sdm845.
+>
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sdm845-mtp.dts |  4 ++
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi    | 73 +++++++++++++++++++++++++++++++++
+>  2 files changed, 77 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+> index 6d651f314193..13b50dff440f 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+> +++ b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
+> @@ -58,3 +58,7 @@
+>                 bias-pull-up;
+>         };
+>  };
+> +
+> +&apps_smmu {
+> +       status = "okay";
+> +};
 
-On 08/10/2018 10:15 AM, Logan Gunthorpe wrote:
-> 
-> 
-> On 10/08/18 11:01 AM, Dave Jiang wrote:
->> Or if the BIOS has provided mapping for the Intel NTB device
->> specifically? Is that a possibility? NTB does go through the IOMMU.
-> 
-> I don't know but if the BIOS is doing it, but that would only at best
-> work for Intel NTB.... I see no hope in getting the BIOS to map the MW
-> for a Switchtec NTB device...
+When you spin this patch please put the above in the correct place.
+Since "a" sorts alphabetically before "i" then this should be just
+before the line:
 
-Right. I'm just speculating why it may possibly work. But yes, I think
-kernel will need appropriate mapping if it's not happening right now.
-Hopefully Kit is onto something.
+&i2c10 {
 
-> 
-> Logan
-> 
+Thanks!
+
+-Doug
