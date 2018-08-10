@@ -1,322 +1,84 @@
-From: Ganapatrao Kulkarni <gklkml16@gmail.com>
-Subject: Re: [PATCH] iommu/iova: Optimise attempts to allocate iova from 32bit
- address range
-Date: Fri, 10 Aug 2018 15:31:15 +0530
-Message-ID: <CAKTKpr6DwC7Rx6=-VRXw+CvRYX5QzhwtT5W9Qwno5KmBxVw7og@mail.gmail.com>
-References: <20180807085437.15965-1-ganapatrao.kulkarni@cavium.com>
- <318f9118-df78-e78f-1ae2-72a33cbee28e@arm.com> <CAKTKpr6HfLtkeertCyfA_vJt2rXi5qFOKKXohLfX1Z9QiK=Uvw@mail.gmail.com>
- <b7472748-8169-7628-11e5-471045cdf1de@arm.com> <CAKTKpr79N2VBixzGNZUt7XNav7vw3CtSgUTtTgu6rPQDEjv5NQ@mail.gmail.com>
- <f5e38b8b-33e3-33a5-6176-175f6149f561@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Fri, 10 Aug 2018 14:12:37 +0100
+Message-ID: <0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
+References: <20180802040557.GL160746@Turing-Arch-b>
+ <20180802142243.GA3481@redhat.com> <20180803034721.GC91035@Turing-Arch-b>
+ <20180803143944.GA4079@redhat.com> <20180806031252.GG91035@Turing-Arch-b>
+ <20180806153257.GB6002@redhat.com>
+ <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
+ <20180808151835.GA3429@redhat.com> <20180809080352.GI91035@Turing-Arch-b>
+ <20180809144613.GB3386@redhat.com> <20180810033913.GK91035@Turing-Arch-b>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f5e38b8b-33e3-33a5-6176-175f6149f561@arm.com>
+In-Reply-To: <20180810033913.GK91035@Turing-Arch-b>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert Richter <Robert.Richter@cavium.com>, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com
+To: Kenneth Lee <liguozhu@hisilicon.com>, Jerome Glisse <jglisse@redhat.com>
+Cc: Kenneth Lee <nek.in.cn@gmail.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, Hao Fang <fanghao11@h>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 10, 2018 at 3:19 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 10/08/18 10:24, Ganapatrao Kulkarni wrote:
->>
->> Hi Robin,
->>
->> On Fri, Aug 10, 2018 at 2:13 AM, Robin Murphy <robin.murphy@arm.com>
->> wrote:
->>>
->>> On 2018-08-09 6:49 PM, Ganapatrao Kulkarni wrote:
->>>>
->>>>
->>>> Hi Robin,
->>>>
->>>> On Thu, Aug 9, 2018 at 9:54 PM, Robin Murphy <robin.murphy@arm.com>
->>>> wrote:
->>>>>
->>>>>
->>>>> On 07/08/18 09:54, Ganapatrao Kulkarni wrote:
->>>>>>
->>>>>>
->>>>>>
->>>>>> As an optimisation for PCI devices, there is always first attempt
->>>>>> been made to allocate iova from SAC address range. This will lead
->>>>>> to unnecessary attempts/function calls, when there are no free ranges
->>>>>> available.
->>>>>>
->>>>>> This patch optimises by adding flag to track previous failed attempts
->>>>>> and avoids further attempts until replenish happens.
->>>>>
->>>>>
->>>>>
->>>>>
->>>>> Agh, what I overlooked is that this still suffers from the original
->>>>> problem,
->>>>> wherein a large allocation which fails due to fragmentation then blocks
->>>>> all
->>>>> subsequent smaller allocations, even if they may have succeeded.
->>>>>
->>>>> For a minimal change, though, what I think we could do is instead of
->>>>> just
->>>>> having a flag, track the size of the last 32-bit allocation which
->>>>> failed.
->>>>> If
->>>>> we're happy to assume that nobody's likely to mix aligned and unaligned
->>>>> allocations within the same domain, then that should be sufficiently
->>>>> robust
->>>>> whilst being no more complicated than this version, i.e. (modulo
->>>>> thinking
->>>>> up
->>>>> a better name for it):
->>>>
->>>>
->>>>
->>>> I agree, it would be better to track size and attempt to allocate for
->>>> smaller chunks, if not for bigger one.
->>>>
->>>>>
->>>>>>
->>>>>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
->>>>>> ---
->>>>>> This patch is based on comments from Robin Murphy
->>>>>> <robin.murphy@arm.com>
->>>>>> for patch [1]
->>>>>>
->>>>>> [1] https://lkml.org/lkml/2018/4/19/780
->>>>>>
->>>>>>     drivers/iommu/iova.c | 11 ++++++++++-
->>>>>>     include/linux/iova.h |  1 +
->>>>>>     2 files changed, 11 insertions(+), 1 deletion(-)
->>>>>>
->>>>>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>>>>> index 83fe262..d97bb5a 100644
->>>>>> --- a/drivers/iommu/iova.c
->>>>>> +++ b/drivers/iommu/iova.c
->>>>>> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
->>>>>> long granule,
->>>>>>           iovad->granule = granule;
->>>>>>           iovad->start_pfn = start_pfn;
->>>>>>           iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
->>>>>> +       iovad->free_32bit_pfns = true;
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>           iovad->max_32bit_free = iovad->dma_32bit_pfn;
->>>>>
->>>>>>           iovad->flush_cb = NULL;
->>>>>>           iovad->fq = NULL;
->>>>>>           iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
->>>>>> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain
->>>>>> *iovad, struct iova *free)
->>>>>>           cached_iova = rb_entry(iovad->cached32_node, struct iova,
->>>>>> node);
->>>>>>           if (free->pfn_hi < iovad->dma_32bit_pfn &&
->>>>>> -           free->pfn_lo >= cached_iova->pfn_lo)
->>>>>> +           free->pfn_lo >= cached_iova->pfn_lo) {
->>>>>>                   iovad->cached32_node = rb_next(&free->node);
->>>>>> +               iovad->free_32bit_pfns = true;
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>                   iovad->max_32bit_free = iovad->dma_32bit_pfn;
->>>>
->>>>
->>>>
->>>> i think, you intended to say,
->>>>     iovad->max_32bit_free += (free->pfn_hi - free->pfn_lo);
->>>
->>>
->>>
->>> Nope, that's why I said it needed a better name ;)
->>>
->>> (I nearly called it last_failed_32bit_alloc_size, but that's a bit much)
->>
->>
->> may be we can name it "max32_alloc_size"?
->>>
->>>
->>> The point of this value (whetever it's called) is that at any given time
->>> it
->>> holds an upper bound on the size of the largest contiguous free area. It
->>> doesn't have to be the *smallest* upper bound, which is why we can keep
->>> things simple and avoid arithmetic - in realistic use-cases like yours
->>> when
->>> the allocations are a pretty constant size, this should work out directly
->>> equivalent to the boolean, only with values of "size" and "dma_32bit_pfn"
->>> instead of 0 and 1, so we don't do any more work than necessary. In the
->>> edge
->>> cases where allocations are all different sizes, it does mean that we
->>> will
->>> probably end up performing more failing allocations than if we actually
->>> tried to track all of the free space exactly, but I think that's
->>> reasonable
->>> - just because I want to make sure we handle such cases fairly
->>> gracefully,
->>> doesn't mean that we need to do extra work on the typical fast path to
->>> try
->>> and actually optimise for them (which is why I didn't really like the
->>> accounting implementation I came up with).
->>>
->>
->> ok got it, thanks for the explanation.
->>>>>
->>>>>
->>>>>> +       }
->>>>>>           cached_iova = rb_entry(iovad->cached_node, struct iova,
->>>>>> node);
->>>>>>           if (free->pfn_lo >= cached_iova->pfn_lo)
->>>>>> @@ -290,6 +293,10 @@ alloc_iova(struct iova_domain *iovad, unsigned
->>>>>> long
->>>>>> size,
->>>>>>           struct iova *new_iova;
->>>>>>           int ret;
->>>>>>     +     if (limit_pfn <= iovad->dma_32bit_pfn &&
->>>>>> +                       !iovad->free_32bit_pfns)
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>                           size >= iovad->max_32bit_free)
->>>>>
->>>>>> +               return NULL;
->>>>>> +
->>>>>>           new_iova = alloc_iova_mem();
->>>>>>           if (!new_iova)
->>>>>>                   return NULL;
->>>>>> @@ -299,6 +306,8 @@ alloc_iova(struct iova_domain *iovad, unsigned
->>>>>> long
->>>>>> size,
->>>>>>           if (ret) {
->>>>>>                   free_iova_mem(new_iova);
->>>>>> +               if (limit_pfn <= iovad->dma_32bit_pfn)
->>>>>> +                       iovad->free_32bit_pfns = false;
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>                           iovad->max_32bit_free = size;
->>>>
->>>>
->>>>
->>>> same here, we should decrease available free range after successful
->>>> allocation.
->>>> iovad->max_32bit_free -= size;
->>>
->>>
->>>
->>> Equivalently, the simple assignment is strictly decreasing the upper
->>> bound
->>> already, since we can only get here if size < max_32bit_free in the first
->>> place. One more thing I've realised is that this is all potentially a bit
->>> racy as we're outside the lock here, so it might need to be pulled into
->>> __alloc_and_insert_iova_range(), something like the rough diff below
->>> (name
->>> changed again for the sake of it; it also occurs to me that we don't
->>> really
->>> need to re-check limit_pfn in the failure path either, because even a
->>> 64-bit
->>> allocation still has to walk down through the 32-bit space in order to
->>> fail
->>> completely)
->>>
->>>>>
->>>>> What do you think?
->>>>
->>>>
->>>>
->>>> most likely this should work, i will try this and confirm at the
->>>> earliest,
->>>
->>>
->>>
->>> Thanks for sticking with this.
->>>
->>> Robin.
->>>
->>> ----->8-----
->>>
->>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>> index 83fe2621effe..7cbc58885877 100644
->>> --- a/drivers/iommu/iova.c
->>> +++ b/drivers/iommu/iova.c
->>> @@ -190,6 +190,10 @@ static int __alloc_and_insert_iova_range(struct
->>> iova_domain *iovad,
->>>
->>>          /* Walk the tree backwards */
->>>          spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
->>> +       if (limit_pfn <= iovad->dma_32bit_pfn &&
->>> +           size >= iovad->failed_alloc_size)
->>> +               goto out_err;
->>> +
->>>          curr = __get_cached_rbnode(iovad, limit_pfn);
->>>          curr_iova = rb_entry(curr, struct iova, node);
->>>          do {
->>> @@ -200,10 +204,8 @@ static int __alloc_and_insert_iova_range(struct
->>> iova_domain *iovad,
->>>                  curr_iova = rb_entry(curr, struct iova, node);
->>>          } while (curr && new_pfn <= curr_iova->pfn_hi);
->>>
->>> -       if (limit_pfn < size || new_pfn < iovad->start_pfn) {
->>> -               spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->>> -               return -ENOMEM;
->>> -       }
->>> +       if (limit_pfn < size || new_pfn < iovad->start_pfn)
->>> +               goto out_err;
->>>
->>>          /* pfn_lo will point to size aligned address if size_aligned is
->>> set
->>> */
->>>          new->pfn_lo = new_pfn;
->>> @@ -214,9 +216,12 @@ static int __alloc_and_insert_iova_range(struct
->>> iova_domain *iovad,
->>>          __cached_rbnode_insert_update(iovad, new);
->>>
->>>          spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->>> -
->>> -
->>>          return 0;
->>> +
->>> +out_err:
->>> +       iovad->failed_alloc_size = size;
->>> +       spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
->>> +       return -ENOMEM;
->>>   }
->>>
->>>   static struct kmem_cache *iova_cache;
->>
->>
->>
->> cant we bump up the size when ranges are freed? otherwise we never be
->> able to attempt in 32bit range, even there is enough replenish.
->
->
-> Oh, I just left that part out of the example for clarity, since it's already
-> under the lock - I didn't mean to suggest that that we should remove it!
+Hi Kenneth,
 
-ok, thanks
->
-> (I was just too lazy to actually apply your patch to generate a real diff on
-> top of it)
->
-no problem, i will post next version at the earliest.
+On 10/08/18 04:39, Kenneth Lee wrote:
+>> You can achieve everything you want to achieve with existing upstream
+>> solution. Re-inventing a whole new driver infrastructure should really
+>> be motivated with strong and obvious reasons.
+> 
+> I want to understand better of your idea. If I create some unified helper
+> APIs in drivers/iommu/, say:
+> 
+> 	wd_create_dev(parent_dev, wd_dev)
+> 	wd_release_dev(wd_dev)
+> 
+> The API create chrdev to take request from user space for open(resource
+> allocation), iomap, epoll (irq), and dma_map(with pasid automatically).
+> 
+> Do you think it is acceptable?
 
-> Robin.
->
->
->>
->>
->> @@ -139,8 +139,10 @@ __cached_rbnode_delete_update(struct iova_domain
->> *iovad, struct iova *free)
->>
->>          cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
->>          if (free->pfn_hi < iovad->dma_32bit_pfn &&
->> -           free->pfn_lo >= cached_iova->pfn_lo)
->> +           free->pfn_lo >= cached_iova->pfn_lo) {
->>                  iovad->cached32_node = rb_next(&free->node);
->> +               iovad->failed_alloc_size += (free->pfn_hi - free->pfn_lo);
->> +       }
->>
->
+Maybe not drivers/iommu/ :) That subsystem only contains tools for
+dealing with DMA, I don't think epoll, resource enumeration or iomap fit
+in there.
 
-thanks
-Ganapat
+Creating new helpers seems to be precisely what we're trying to avoid in
+this thread, and vfio-mdev does provide the components that you
+describe, so I wouldn't discard it right away. When the GPU, net, block
+or another subsystem doesn't fit your needs, either because your
+accelerator provides some specialized function, or because for
+performance reasons your client wants direct MMIO access, you can at
+least build your driver and library on top of those existing VFIO
+components:
+
+* open allocates a partition of an accelerator.
+* vfio_device_info, vfio_region_info and vfio_irq_info enumerates
+available resources.
+* vfio_irq_set deals with epoll.
+* mmap gives you a private MMIO doorbell.
+* vfio_iommu_type1 provides the DMA operations.
+
+Currently missing:
+
+* Sharing the parent IOMMU between mdev, which is also what the "IOMMU
+aware mediated device" series tackles, and seems like a logical addition
+to VFIO. I'd argue that the existing IOMMU ops (or ones implemented by
+the SVA series) can be used to deal with this
+
+* The interface to discover an accelerator near your memory node, or one
+that you can chain with other devices. If I understood correctly the
+conclusion was that the API (a topology description in sysfs?) should be
+common to various subsystems, in which case vfio-mdev (or the mediating
+driver) could also use it.
+
+* The queue abstraction discussed on patch 3/7. Perhaps the current vfio
+resource description of MMIO and IRQ is sufficient here as well, since
+vendors tend to each implement their own queue schemes. If you need
+additional features, read/write fops give the mediating driver a lot of
+freedom. To support features that are too specific for drivers/vfio/ you
+can implement a config space with capabilities and registers of your
+choice. If you're versioning the capabilities, the code to handle them
+could even be shared between different accelerator drivers and libraries.
+
+Thanks,
+Jean
