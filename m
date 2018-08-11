@@ -1,65 +1,83 @@
-From: Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH 1/3] dts: arm64/sdm845: Add node for arm,mmu-500
-Date: Fri, 10 Aug 2018 15:30:12 -0700
-Message-ID: <CAD=FV=XqBU0dc6smZsEssXAro5UMqqrgLudBQKqG1zznpg9cSA@mail.gmail.com>
-References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
- <20180719175356.14753-2-vivek.gautam@codeaurora.org> <CAD=FV=Vmn40CmLLLEfrE-eq2sj4CYnx2E2-k-dimk24CDTU1jQ@mail.gmail.com>
+From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+Subject: Re: IOAT DMA w/IOMMU
+Date: Fri, 10 Aug 2018 17:53:23 -0700
+Message-ID: <9d135f61-20c2-e966-4d7d-3e154384ea08@gigaio.com>
+References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
+	<b54899a8-a144-e8e0-9880-1800c4657b95@deltatee.com>
+	<95e53520-b05f-4be4-e694-463d717453a8@gigaio.com>
+	<cdd9245f-eb23-9e10-1755-8f396a2cd255@deltatee.com>
+	<b278c1e5-6f08-c879-a27d-7fc172645fd5@gigaio.com>
+	<f04fae39-645e-3c6e-07c0-b194260bf5de@deltatee.com>
+	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
+	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
+	<b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
+	<adf51c74-36fa-b61d-8497-27bd75178ba4@deltatee.com>
+	<aa9c3f41-efc9-8c68-a517-2736c8986621@gigaio.com>
+	<1170c096-a749-6ee3-32d4-ebba1d12adff@gigaio.com>
+	<929f3dfa-fbff-c582-3be5-c368f11feb7e@deltatee.com>
+	<460cc47f-6a8e-67b0-01a0-02f0c51df258@intel.com>
+	<0f653f8f-c7ae-831d-e238-2742590d9ea1@deltatee.com>
+	<6525fa4d-7d9b-0136-7206-f8351230af46@intel.com>
+	<f22c565e-ba49-c83d-3e51-7967664c7136@deltatee.com>
+	<499934e7-3734-1aee-37dd-b42a5d2a2608@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAD=FV=Vmn40CmLLLEfrE-eq2sj4CYnx2E2-k-dimk24CDTU1jQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Andy Gross <andy.gross@linaro.org>, Mark Rutland <mark.rutland@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, sricharan@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, David Brown <david.brown@linaro.org>, "open list:ARM/QUALCOMM SUPPORT" <linux-soc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <499934e7-3734-1aee-37dd-b42a5d2a2608-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On Fri, Aug 10, 2018 at 3:18 PM, Doug Anderson <dianders@chromium.org> wrote:
-> Hi,
->
-> On Thu, Jul 19, 2018 at 10:53 AM, Vivek Gautam
-> <vivek.gautam@codeaurora.org> wrote:
->> Add device node for arm,mmu-500 available on sdm845.
->> This MMU-500 with single TCU and multiple TBU architecture
->> is shared among all the peripherals except gpu on sdm845.
->>
->> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
->> ---
->>  arch/arm64/boot/dts/qcom/sdm845-mtp.dts |  4 ++
->>  arch/arm64/boot/dts/qcom/sdm845.dtsi    | 73 +++++++++++++++++++++++++++++++++
->>  2 files changed, 77 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
->> index 6d651f314193..13b50dff440f 100644
->> --- a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
->> +++ b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
->> @@ -58,3 +58,7 @@
->>                 bias-pull-up;
->>         };
->>  };
->> +
->> +&apps_smmu {
->> +       status = "okay";
->> +};
->
-> When you spin this patch please put the above in the correct place.
-> Since "a" sorts alphabetically before "i" then this should be just
-> before the line:
->
-> &i2c10 {
-
-Sorry--one more thing I thought of after I sent this out...
-
-Possibly you can drop this part of the patch completely and get rid of
-the 'status = "disabled";' in sdm845.dtsi.  As I understand it you
-really only want to mark things as disabled in the SoC dtsi file if
-some boards might use this device and other boards wouldn't.  For
-instance not all boards will have the SD card controller hooked up /
-enabled so having that set to "disabled" in the SoC device tree file
-makes sense.  ...but it's not a board-level question about whether the
-SMMU is present--it's always there.  You don't gain anything by
-forcing all boards to set status to "okay".
-
-
--Doug
+U3VjY2VzcyEKCkkndmUgaW1wbGVtZW50ZWQgYSBuZXcgaW50ZWxfbWFwX3Jlc291cmNlIChhbmQg
+aW50ZWxfdW5tYXBfcmVzb3VyY2UpIApyb3V0aW5lIHdoaWNoIGlzIGNhbGxlZCBieSBkbWFfbWFw
+X3Jlc291cmNlLiBBcyBtZW50aW9uZWQgcHJldmlvdXNseSwgCnRoZSBwcmltYXJ5IGpvYiBvZiBk
+bWFfbWFwX3Jlc291cmNlL2ludGVsX21hcF9yZXNvdXJjZSBpcyB0byBjYWxsIHRoZSAKaW50ZWwg
+aW9tbXUgaW50ZXJuYWwgbWFwcGluZyByb3V0aW5lIChfX2ludGVsX21hcF9zaW5nbGUpIHdpdGhv
+dXQgCnRyYW5zbGF0aW5nIHRoZSBwY2kgYmFyIGFkZHJlc3MgaW50byBhIHBhZ2UgYW5kIHRoZW4g
+YmFjayB0byBhIHBoeXMgYWRkciAKYXMgZG1hX21hcF9wYWdlIGFuZCBkbWFfbWFwX3NpbmdsZSBh
+cmUgZG9pbmcuCgpXaXRoIHRoZSBuZXcgZG1hX21hcF9yZXNvdXJjZSByb3V0aW5lIG1hcHBpbmcg
+dGhlIHBjaSBiYXIgYWRkcmVzcyBpbiAKbnRiX3RyYW5zcG9ydF90eF9zdWJtaXQsIEkgd2FzIHN0
+aWxsIGdldHRpbmcgdGhlICJQVEUgV3JpdGUgYWNjZXNzIGlzIApub3Qgc2V0IiBlcnJvci4KClRo
+ZSBfX2ludGVsX21hcF9zaW5nbGUgcm91dGluZSBzZXRzIHByb3QgYmFzZWQgb24gdGhlIERNQSBk
+aXJlY3Rpb24uCgogwqDCoMKgwqDCoMKgwqAgaWYgKGRpciA9PSBETUFfVE9fREVWSUNFIHx8IGRp
+ciA9PSBETUFfQklESVJFQ1RJT05BTCB8fCBcCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgICFjYXBfemxyKGlvbW11LT5jYXApKQogwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIHByb3QgfD0gRE1BX1BURV9SRUFEOwogwqDCoMKgwqDCoMKgwqAgaWYg
+KGRpciA9PSBETUFfRlJPTV9ERVZJQ0UgfHwgZGlyID09IERNQV9CSURJUkVDVElPTkFMKQogwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHByb3QgfD0gRE1BX1BURV9XUklURTsKCkkgd2Fz
+IGFibGUgdG8gZmluYWxseSBzdWNjZWVkIGluIGRvaW5nIHRoZSBkbWEgdHJhbnNmZXJzIG92ZXIg
+aW9hdCBvbmx5IAp3aGVuIHByb3QgaGFzIERNQV9QVEVfV1JJVEUgc2V0IGJ5IHNldHRpbmcgdGhl
+IGRpcmVjdGlvbiB0byBlaXRoZXIgCkRNQV9GUk9NX0RFVklDRSBvciBETUFfQklESVJFQ1RJT05B
+TC4gQW55IGlkZWFzIGlmIHRoZSBwcm90IHNldHRpbmdzIApuZWVkIHRvIGJlIGNoYW5nZWQ/IEFy
+ZSB0aGVyZSBhbnkgYmFkIHNpZGUgZWZmZWN0cyBpZiBJIHVzZWQgCkRNQV9CSURJUkVDVElPTkFM
+PwoKR2l2ZW4gdGhhdCB1c2luZyB0aGUgcGNpIGJhciBhZGRyZXNzIGFzIGlzIHdpdGhvdXQgZ2V0
+dGluZyBhbiBpb21tdSAKYWRkcmVzcyByZXN1bHRzIGluIHRoZSBzYW1lICJQVEUgV3JpdGUgYWNj
+ZXNzIiBlcnJvciwgSSB3b25kZXIgaWYgdGhlcmUgCmlzIHNvbWUgaW50ZXJuYWwgJ3Byb3QnIGFz
+c29jaWF0ZWQgd2l0aCB0aGUgbm9uLXRyYW5zbGF0ZWQgcGNpIGJhciAKYWRkcmVzcyB0aGF0IGp1
+c3QgbmVlZHMgdG8gYmUgdHdlYWtlZCB0byBpbmNsdWRlIERNQV9QVEVfV1JJVEU/Pz8KClRoYW5r
+cyEKCgoKCk9uIDA4LzEwLzIwMTggMTA6NDYgQU0sIERhdmUgSmlhbmcgd3JvdGU6Cj4KPiBPbiAw
+OC8xMC8yMDE4IDEwOjE1IEFNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4+Cj4+IE9uIDEwLzA4
+LzE4IDExOjAxIEFNLCBEYXZlIEppYW5nIHdyb3RlOgo+Pj4gT3IgaWYgdGhlIEJJT1MgaGFzIHBy
+b3ZpZGVkIG1hcHBpbmcgZm9yIHRoZSBJbnRlbCBOVEIgZGV2aWNlCj4+PiBzcGVjaWZpY2FsbHk/
+IElzIHRoYXQgYSBwb3NzaWJpbGl0eT8gTlRCIGRvZXMgZ28gdGhyb3VnaCB0aGUgSU9NTVUuCj4+
+IEkgZG9uJ3Qga25vdyBidXQgaWYgdGhlIEJJT1MgaXMgZG9pbmcgaXQsIGJ1dCB0aGF0IHdvdWxk
+IG9ubHkgYXQgYmVzdAo+PiB3b3JrIGZvciBJbnRlbCBOVEIuLi4uIEkgc2VlIG5vIGhvcGUgaW4g
+Z2V0dGluZyB0aGUgQklPUyB0byBtYXAgdGhlIE1XCj4+IGZvciBhIFN3aXRjaHRlYyBOVEIgZGV2
+aWNlLi4uCj4gUmlnaHQuIEknbSBqdXN0IHNwZWN1bGF0aW5nIHdoeSBpdCBtYXkgcG9zc2libHkg
+d29yay4gQnV0IHllcywgSSB0aGluawo+IGtlcm5lbCB3aWxsIG5lZWQgYXBwcm9wcmlhdGUgbWFw
+cGluZyBpZiBpdCdzIG5vdCBoYXBwZW5pbmcgcmlnaHQgbm93Lgo+IEhvcGVmdWxseSBLaXQgaXMg
+b250byBzb21ldGhpbmcuCj4KPj4gTG9nYW4KPj4KCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
+eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
+bi9saXN0aW5mby9pb21tdQ==
