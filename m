@@ -1,9 +1,8 @@
-From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 Subject: Re: IOAT DMA w/IOMMU
-Date: Fri, 10 Aug 2018 17:53:23 -0700
-Message-ID: <9d135f61-20c2-e966-4d7d-3e154384ea08@gigaio.com>
+Date: Fri, 10 Aug 2018 20:10:20 -0600
+Message-ID: <0a9fa9c3-dbe4-6451-9c1a-06b662702f61@deltatee.com>
 References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
-	<b54899a8-a144-e8e0-9880-1800c4657b95@deltatee.com>
 	<95e53520-b05f-4be4-e694-463d717453a8@gigaio.com>
 	<cdd9245f-eb23-9e10-1755-8f396a2cd255@deltatee.com>
 	<b278c1e5-6f08-c879-a27d-7fc172645fd5@gigaio.com>
@@ -20,11 +19,12 @@ References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<6525fa4d-7d9b-0136-7206-f8351230af46@intel.com>
 	<f22c565e-ba49-c83d-3e51-7967664c7136@deltatee.com>
 	<499934e7-3734-1aee-37dd-b42a5d2a2608@intel.com>
+	<9d135f61-20c2-e966-4d7d-3e154384ea08@gigaio.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <499934e7-3734-1aee-37dd-b42a5d2a2608-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <9d135f61-20c2-e966-4d7d-3e154384ea08-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -35,49 +35,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-U3VjY2VzcyEKCkkndmUgaW1wbGVtZW50ZWQgYSBuZXcgaW50ZWxfbWFwX3Jlc291cmNlIChhbmQg
-aW50ZWxfdW5tYXBfcmVzb3VyY2UpIApyb3V0aW5lIHdoaWNoIGlzIGNhbGxlZCBieSBkbWFfbWFw
-X3Jlc291cmNlLiBBcyBtZW50aW9uZWQgcHJldmlvdXNseSwgCnRoZSBwcmltYXJ5IGpvYiBvZiBk
-bWFfbWFwX3Jlc291cmNlL2ludGVsX21hcF9yZXNvdXJjZSBpcyB0byBjYWxsIHRoZSAKaW50ZWwg
-aW9tbXUgaW50ZXJuYWwgbWFwcGluZyByb3V0aW5lIChfX2ludGVsX21hcF9zaW5nbGUpIHdpdGhv
-dXQgCnRyYW5zbGF0aW5nIHRoZSBwY2kgYmFyIGFkZHJlc3MgaW50byBhIHBhZ2UgYW5kIHRoZW4g
-YmFjayB0byBhIHBoeXMgYWRkciAKYXMgZG1hX21hcF9wYWdlIGFuZCBkbWFfbWFwX3NpbmdsZSBh
-cmUgZG9pbmcuCgpXaXRoIHRoZSBuZXcgZG1hX21hcF9yZXNvdXJjZSByb3V0aW5lIG1hcHBpbmcg
-dGhlIHBjaSBiYXIgYWRkcmVzcyBpbiAKbnRiX3RyYW5zcG9ydF90eF9zdWJtaXQsIEkgd2FzIHN0
-aWxsIGdldHRpbmcgdGhlICJQVEUgV3JpdGUgYWNjZXNzIGlzIApub3Qgc2V0IiBlcnJvci4KClRo
-ZSBfX2ludGVsX21hcF9zaW5nbGUgcm91dGluZSBzZXRzIHByb3QgYmFzZWQgb24gdGhlIERNQSBk
-aXJlY3Rpb24uCgogwqDCoMKgwqDCoMKgwqAgaWYgKGRpciA9PSBETUFfVE9fREVWSUNFIHx8IGRp
-ciA9PSBETUFfQklESVJFQ1RJT05BTCB8fCBcCiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgICFjYXBfemxyKGlvbW11LT5jYXApKQogwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIHByb3QgfD0gRE1BX1BURV9SRUFEOwogwqDCoMKgwqDCoMKgwqAgaWYg
-KGRpciA9PSBETUFfRlJPTV9ERVZJQ0UgfHwgZGlyID09IERNQV9CSURJUkVDVElPTkFMKQogwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHByb3QgfD0gRE1BX1BURV9XUklURTsKCkkgd2Fz
-IGFibGUgdG8gZmluYWxseSBzdWNjZWVkIGluIGRvaW5nIHRoZSBkbWEgdHJhbnNmZXJzIG92ZXIg
-aW9hdCBvbmx5IAp3aGVuIHByb3QgaGFzIERNQV9QVEVfV1JJVEUgc2V0IGJ5IHNldHRpbmcgdGhl
-IGRpcmVjdGlvbiB0byBlaXRoZXIgCkRNQV9GUk9NX0RFVklDRSBvciBETUFfQklESVJFQ1RJT05B
-TC4gQW55IGlkZWFzIGlmIHRoZSBwcm90IHNldHRpbmdzIApuZWVkIHRvIGJlIGNoYW5nZWQ/IEFy
-ZSB0aGVyZSBhbnkgYmFkIHNpZGUgZWZmZWN0cyBpZiBJIHVzZWQgCkRNQV9CSURJUkVDVElPTkFM
-PwoKR2l2ZW4gdGhhdCB1c2luZyB0aGUgcGNpIGJhciBhZGRyZXNzIGFzIGlzIHdpdGhvdXQgZ2V0
-dGluZyBhbiBpb21tdSAKYWRkcmVzcyByZXN1bHRzIGluIHRoZSBzYW1lICJQVEUgV3JpdGUgYWNj
-ZXNzIiBlcnJvciwgSSB3b25kZXIgaWYgdGhlcmUgCmlzIHNvbWUgaW50ZXJuYWwgJ3Byb3QnIGFz
-c29jaWF0ZWQgd2l0aCB0aGUgbm9uLXRyYW5zbGF0ZWQgcGNpIGJhciAKYWRkcmVzcyB0aGF0IGp1
-c3QgbmVlZHMgdG8gYmUgdHdlYWtlZCB0byBpbmNsdWRlIERNQV9QVEVfV1JJVEU/Pz8KClRoYW5r
-cyEKCgoKCk9uIDA4LzEwLzIwMTggMTA6NDYgQU0sIERhdmUgSmlhbmcgd3JvdGU6Cj4KPiBPbiAw
-OC8xMC8yMDE4IDEwOjE1IEFNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4+Cj4+IE9uIDEwLzA4
-LzE4IDExOjAxIEFNLCBEYXZlIEppYW5nIHdyb3RlOgo+Pj4gT3IgaWYgdGhlIEJJT1MgaGFzIHBy
-b3ZpZGVkIG1hcHBpbmcgZm9yIHRoZSBJbnRlbCBOVEIgZGV2aWNlCj4+PiBzcGVjaWZpY2FsbHk/
-IElzIHRoYXQgYSBwb3NzaWJpbGl0eT8gTlRCIGRvZXMgZ28gdGhyb3VnaCB0aGUgSU9NTVUuCj4+
-IEkgZG9uJ3Qga25vdyBidXQgaWYgdGhlIEJJT1MgaXMgZG9pbmcgaXQsIGJ1dCB0aGF0IHdvdWxk
-IG9ubHkgYXQgYmVzdAo+PiB3b3JrIGZvciBJbnRlbCBOVEIuLi4uIEkgc2VlIG5vIGhvcGUgaW4g
-Z2V0dGluZyB0aGUgQklPUyB0byBtYXAgdGhlIE1XCj4+IGZvciBhIFN3aXRjaHRlYyBOVEIgZGV2
-aWNlLi4uCj4gUmlnaHQuIEknbSBqdXN0IHNwZWN1bGF0aW5nIHdoeSBpdCBtYXkgcG9zc2libHkg
-d29yay4gQnV0IHllcywgSSB0aGluawo+IGtlcm5lbCB3aWxsIG5lZWQgYXBwcm9wcmlhdGUgbWFw
-cGluZyBpZiBpdCdzIG5vdCBoYXBwZW5pbmcgcmlnaHQgbm93Lgo+IEhvcGVmdWxseSBLaXQgaXMg
-b250byBzb21ldGhpbmcuCj4KPj4gTG9nYW4KPj4KCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+
+
+On 10/08/18 06:53 PM, Kit Chow wrote:
+> I was able to finally succeed in doing the dma transfers over ioat only
+> when prot has DMA_PTE_WRITE set by setting the direction to either
+> DMA_FROM_DEVICE or DMA_BIDIRECTIONAL. Any ideas if the prot settings
+> need to be changed? Are there any bad side effects if I used
+> DMA_BIDIRECTIONAL?
+
+Good to hear it. Without digging into the direction much all I can say
+is that it can sometimes be very confusing what the direction is. Adding
+another PCI device just adds to the confusion.
+
+I believe, the direction should be from the IOAT's point of view. So if
+the IOAT is writing to the BAR you'd set DMA_FROM_DEVICE (ie. data is
+coming from the IOAT) and if it's reading you'd set DMA_TO_DEVICE (ie.
+data is going to the IOAT).
+
+Using DMA_BIDIRECTIONAL just forgoes any hardware security / protection
+that the buffer would have in terms of direction. Generally it's good
+practice to use the strictest direction you can.
+
+> Given that using the pci bar address as is without getting an iommu
+> address results in the same "PTE Write access" error, I wonder if there
+> is some internal 'prot' associated with the non-translated pci bar
+> address that just needs to be tweaked to include DMA_PTE_WRITE???
+
+No, I don't think so. The 'prot' will be a property of the IOMMU. Not
+having an entry is probably just the same (from the perspective of the
+error you see) as only having an entry for reading.
+
+Logan
