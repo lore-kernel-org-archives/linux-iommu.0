@@ -1,237 +1,117 @@
-From: Kenneth Lee <nek.in.cn@gmail.com>
+From: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Sat, 11 Aug 2018 22:44:13 +0800
-Message-ID: <f675e2b1-7e7d-0a5a-18ac-cba1491f2846@gmail.com>
-References: <20180802142243.GA3481@redhat.com>
- <20180803034721.GC91035@Turing-Arch-b> <20180803143944.GA4079@redhat.com>
- <20180806031252.GG91035@Turing-Arch-b> <20180806153257.GB6002@redhat.com>
- <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
- <20180808151835.GA3429@redhat.com> <20180809080352.GI91035@Turing-Arch-b>
- <20180809144613.GB3386@redhat.com> <20180810033913.GK91035@Turing-Arch-b>
- <20180810143231.GA7253@redhat.com>
+Date: Sat, 11 Aug 2018 23:26:48 +0800
+Message-ID: <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+References: <20180802040557.GL160746@Turing-Arch-b>
+	<20180802142243.GA3481@redhat.com>
+	<20180803034721.GC91035@Turing-Arch-b>
+	<20180803143944.GA4079@redhat.com>
+	<20180806031252.GG91035@Turing-Arch-b>
+	<20180806153257.GB6002@redhat.com>
+	<11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
+	<20180808151835.GA3429@redhat.com>
+	<20180809080352.GI91035@Turing-Arch-b>
+	<20180809144613.GB3386@redhat.com>
+	<20180810033913.GK91035@Turing-Arch-b>
+	<0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180810143231.GA7253@redhat.com>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0f6bac9b-8381-1874-9367-46b5f4cef56e-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, "David S . Miller" <dav>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, "Kumar, Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, "linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-在 2018年08月10日 星期五 10:32 下午, Jerome Glisse 写道:
-> On Fri, Aug 10, 2018 at 11:39:13AM +0800, Kenneth Lee wrote:
->> On Thu, Aug 09, 2018 at 10:46:13AM -0400, Jerome Glisse wrote:
->>> Date: Thu, 9 Aug 2018 10:46:13 -0400
->>> From: Jerome Glisse <jglisse@redhat.com>
->>> To: Kenneth Lee <liguozhu@hisilicon.com>
->>> CC: Kenneth Lee <nek.in.cn@gmail.com>, "Tian, Kevin"
->>>   <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
->>>   Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org"
->>>   <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg
->>>   Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>,
->>>   "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K"
->>>   <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>,
->>>   "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
->>>   "linuxarm@huawei.com" <linuxarm@huawei.com>,
->>>   "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
->>>   "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe
->>>   Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>,
->>>   "David S . Miller" <davem@davemloft.net>,
->>>   "linux-accelerators@lists.ozlabs.org"
->>>   <linux-accelerators@lists.ozlabs.org>
->>> Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
->>> User-Agent: Mutt/1.10.0 (2018-05-17)
->>> Message-ID: <20180809144613.GB3386@redhat.com>
->>>
->>> On Thu, Aug 09, 2018 at 04:03:52PM +0800, Kenneth Lee wrote:
->>>> On Wed, Aug 08, 2018 at 11:18:35AM -0400, Jerome Glisse wrote:
->>>>> On Wed, Aug 08, 2018 at 09:08:42AM +0800, Kenneth Lee wrote:
->>>>>> 在 2018年08月06日 星期一 11:32 下午, Jerome Glisse 写道:
->>>>>>> On Mon, Aug 06, 2018 at 11:12:52AM +0800, Kenneth Lee wrote:
->>>>>>>> On Fri, Aug 03, 2018 at 10:39:44AM -0400, Jerome Glisse wrote:
->>>>>>>>> On Fri, Aug 03, 2018 at 11:47:21AM +0800, Kenneth Lee wrote:
->>>>>>>>>> On Thu, Aug 02, 2018 at 10:22:43AM -0400, Jerome Glisse wrote:
->>>>>>>>>>> On Thu, Aug 02, 2018 at 12:05:57PM +0800, Kenneth Lee wrote:
->>> [...]
->>>
->>>>>>>>>>> your mechanisms the userspace must have a specific userspace
->>>>>>>>>>> drivers for each hardware and thus there are virtually no
->>>>>>>>>>> differences between having this userspace driver open a device
->>>>>>>>>>> file in vfio or somewhere else in the device filesystem. This is
->>>>>>>>>>> just a different path.
->>>>>>>>>>>
->>>>>>>>>> The basic problem WarpDrive want to solve it to avoid syscall. This is important
->>>>>>>>>> to accelerators. We have some data here:
->>>>>>>>>> https://www.slideshare.net/linaroorg/progress-and-demonstration-of-wrapdrive-a-accelerator-framework-sfo17317
->>>>>>>>>>
->>>>>>>>>> (see page 3)
->>>>>>>>>>
->>>>>>>>>> The performance is different on using kernel and user drivers.
->>>>>>>>> Yes and example i point to is exactly that. You have a one time setup
->>>>>>>>> cost (creating command buffer binding PASID with command buffer and
->>>>>>>>> couple other setup steps). Then userspace no longer have to do any
->>>>>>>>> ioctl to schedule work on the GPU. It is all down from userspace and
->>>>>>>>> it use a doorbell to notify hardware when it should go look at command
->>>>>>>>> buffer for new thing to execute.
->>>>>>>>>
->>>>>>>>> My point stands on that. You have existing driver already doing so
->>>>>>>>> with no new framework and in your scheme you need a userspace driver.
->>>>>>>>> So i do not see the value add, using one path or the other in the
->>>>>>>>> userspace driver is litteraly one line to change.
->>>>>>>>>
->>>>>>>> Sorry, I'd got confuse here. I partially agree that the user driver is
->>>>>>>> redundance of kernel driver. (But for WarpDrive, the kernel driver is a full
->>>>>>>> driver include all preparation and setup stuff for the hardware, the user driver
->>>>>>>> is simply to send request and receive answer). Yes, it is just a choice of path.
->>>>>>>> But the user path is faster if the request come from use space. And to do that,
->>>>>>>> we need user land DMA support. Then why is it invaluable to let VFIO involved?
->>>>>>> Some drivers in the kernel already do exactly what you said. The user
->>>>>>> space emit commands without ever going into kernel by directly scheduling
->>>>>>> commands and ringing a doorbell. They do not need VFIO either and they
->>>>>>> can map userspace address into the DMA address space of the device and
->>>>>>> again they do not need VFIO for that.
->>>>>> Could you please directly point out which driver you refer to here? Thank
->>>>>> you.
->>>>> drivers/gpu/drm/amd/
->>>>>
->>>>> Sub-directory of interest is amdkfd
->>>>>
->>>>> Because it is a big driver here is a highlevel overview of how it works
->>>>> (this is a simplification):
->>>>>    - Process can allocate GPUs buffer (through ioclt) and map them into
->>>>>      its address space (through mmap of device file at buffer object
->>>>>      specific offset).
->>>>>    - Process can map any valid range of virtual address space into device
->>>>>      address space (IOMMU mapping). This must be regular memory ie not an
->>>>>      mmap of a device file or any special file (this is the non PASID
->>>>>      path)
->>>>>    - Process can create a command queue and bind its process to it aka
->>>>>      PASID, this is done through an ioctl.
->>>>>    - Process can schedule commands onto queues it created from userspace
->>>>>      without ioctl. For that it just write command into a ring buffer
->>>>>      that it mapped during the command queue creation process and it
->>>>>      rings a doorbell when commands are ready to be consume by the
->>>>>      hardware.
->>>>>    - Commands can reference (access) all 3 types of object above ie
->>>>>      either full GPUs buffer, process regular memory maped as object
->>>>>      (non PASID) and PASID memory all at the same time ie you can
->>>>>      mix all of the above in same commands queue.
->>>>>    - Kernel can evict, unbind any process command queues, unbind commands
->>>>>      queue are still valid from process point of view but commands
->>>>>      process schedules on them will not be executed until kernel re-bind
->>>>>      the queue.
->>>>>    - Kernel can schedule commands itself onto its dedicated command
->>>>>      queues (kernel driver create its own command queues).
->>>>>    - Kernel can control priorities between all the queues ie it can
->>>>>      decides which queues should the hardware executed first next.
->>>>>
->>>> Thank you. Now I think I understand the point. Indeed, I can see some drivers,
->>>> such GPU and IB, attach their own iommu_domain to their iommu_group and do their
->>>> own iommu_map().
->>>>
->>>> But we have another requirement which is to combine some device together to
->>>> share the same address space. This is a little like these kinds of solution:
->>>>
->>>> http://tce.technion.ac.il/wp-content/uploads/sites/8/2015/06/SC-7.2-M.-Silberstein.pdf
->>>>
->>>> With that, the application can directly pass the NiC packet pointer to the
->>>> decryption accelerator, and get the bare data in place. This is the feature that
->>>> the VFIO container can provide.
->>> Yes and GPU would very much like do the same. There is already out of
->>> tree solution that allow NiC to stream into GPU memory or GPU to stream
->>> its memory to a NiC. I am sure we will want to use more accelerator in
->>> conjunction with GPU in the future.
->>>
->>>>> I believe all of the above are the aspects that matters to you. The main
->>>>> reason i don't like creating a new driver infrastructure is that a lot
->>>>> of existing drivers will want to use some of the new features that are
->>>>> coming (memory topology, where to place process memory, pipeline devices,
->>>>> ...) and thus existing drivers are big (GPU drivers are the biggest of
->>>>> all the kernel drivers).
->>>>>
->>>> I think it is not necessarily to rewrite the GPU driver if they don't need to
->>>> share their space with others. But if they do, no matter how, they have to create
->>>> some facility similar to VFIO container. Then why not just create them in VFIO?
->>> No they do not, nor does anyone needs to. We already have that. If you want
->>> device to share memory object you have either:
->>>      - PASID and everything is just easy no need to create anything, as
->>>        all valid virtual address will work
->>>      - no PASID or one of the device does not support PASID then use the
->>>        existing kernel infrastructure aka dma buffer see Documentation/
->>>        driver-api/dma-buf.rst
->>>
->>> Everything you want to do is already happening upstream and they are allready
->>> working example.
->> OK, I accept it.
->>
->>>> Actually, some GPUs have already used mdev to manage the resource by different
->>>> users, it is already part of VFIO.
->>> The current use of mdev with GPU is to "emulate" the SR_IOV of PCIE in
->>> software so that a single device can be share between multiple guests.
->>> For this using VFIO make sense, as we want to expose device as a single
->>> entity that can be manage without the userspace (QEMU) having to know
->>> or learn about each individual devices.
->>>
->>> QEMU just has a well define API to probe and attach device to guest.
->>> It is the guest that have dedicated drivers for each of those mdev
->>> devices.
->>>
->> Agree
->>
->>> What you are trying to do is recreate a whole driver API inside the
->>> VFIO subsystem and i do not see any valid reasons for that. Moreover
->>> you want to restrict future use to only drivers that are part of this
->>> new driver subsystem and again i do not see any good reasons to
->>> mandate any of the existing driver to be rewritten inside a new VFIO
->>> infrastructure.
->>>
->> I think you have persuaded me now. I thought VFIO was the only unified place to do
->> user land DMA operations. So I tried to make use of it even there was facility I
->> needed not.
->>
->> Thank you very much for the help.
->>
->>> You can achieve everything you want to achieve with existing upstream
->>> solution. Re-inventing a whole new driver infrastructure should really
->>> be motivated with strong and obvious reasons.
->> I want to understand better of your idea. If I create some unified helper
->> APIs in drivers/iommu/, say:
->>
->> 	wd_create_dev(parent_dev, wd_dev)
->> 	wd_release_dev(wd_dev)
->>
->> The API create chrdev to take request from user space for open(resource
->> allocation), iomap, epoll (irq), and dma_map(with pasid automatically).
->>
->> Do you think it is acceptable?
->>
->> I agree that these all can be done with the driver itself. But without a unified
->> interface, it is hard to create a user land ecosystem for accelerator to
->> cooperate.
-> I am fine with creating a new sub-system for pipelining devices (ie some
-> place where it is easy for userspace to get list of all devices that can
-> fit in such model). I am not sure if we want to have everything part of
-> it (ie DMA mapping of memory and pipelining as same thing) i tend to be
-> more unix oriented one tool for one job. But maybe it makes sense, this
-> would likely avoid having each device driver have their own code to
-> create dma buffer or track SVM pointer.
-Yes. The subsystem will become the point to bind the pasid and the 
-allocated resource between the hardware and the process. The io space 
-mapping and command queuing can always be done by the original device 
-driver itself. The subsystem can remain in resource (hardware resource 
-and iommu resource) management.
->
-> In any case for the non SVM case i would suggest to use dma buffer, it
-> has been widely use, it is well tested in many scenarios. Moreover it
-> would allow many existing device driver to register themself in this
-> new framework with minimal changes (couple hundred lines).
-I will consider it. But maybe I should solve the SVM case first.
-
-Thanks again. You suggestion is very helpful.
-> Cheers,
-> Jérôme
->
+CgrlnKggMjAxOOW5tDA45pyIMTDml6Ug5pif5pyf5LqUIDA5OjEyIOS4i+WNiCwgSmVhbi1QaGls
+aXBwZSBCcnVja2VyIOWGmemBkzoKPiBIaSBLZW5uZXRoLAo+Cj4gT24gMTAvMDgvMTggMDQ6Mzks
+IEtlbm5ldGggTGVlIHdyb3RlOgo+Pj4gWW91IGNhbiBhY2hpZXZlIGV2ZXJ5dGhpbmcgeW91IHdh
+bnQgdG8gYWNoaWV2ZSB3aXRoIGV4aXN0aW5nIHVwc3RyZWFtCj4+PiBzb2x1dGlvbi4gUmUtaW52
+ZW50aW5nIGEgd2hvbGUgbmV3IGRyaXZlciBpbmZyYXN0cnVjdHVyZSBzaG91bGQgcmVhbGx5Cj4+
+PiBiZSBtb3RpdmF0ZWQgd2l0aCBzdHJvbmcgYW5kIG9idmlvdXMgcmVhc29ucy4KPj4gSSB3YW50
+IHRvIHVuZGVyc3RhbmQgYmV0dGVyIG9mIHlvdXIgaWRlYS4gSWYgSSBjcmVhdGUgc29tZSB1bmlm
+aWVkIGhlbHBlcgo+PiBBUElzIGluIGRyaXZlcnMvaW9tbXUvLCBzYXk6Cj4+Cj4+IAl3ZF9jcmVh
+dGVfZGV2KHBhcmVudF9kZXYsIHdkX2RldikKPj4gCXdkX3JlbGVhc2VfZGV2KHdkX2RldikKPj4K
+Pj4gVGhlIEFQSSBjcmVhdGUgY2hyZGV2IHRvIHRha2UgcmVxdWVzdCBmcm9tIHVzZXIgc3BhY2Ug
+Zm9yIG9wZW4ocmVzb3VyY2UKPj4gYWxsb2NhdGlvbiksIGlvbWFwLCBlcG9sbCAoaXJxKSwgYW5k
+IGRtYV9tYXAod2l0aCBwYXNpZCBhdXRvbWF0aWNhbGx5KS4KPj4KPj4gRG8geW91IHRoaW5rIGl0
+IGlzIGFjY2VwdGFibGU/Cj4gTWF5YmUgbm90IGRyaXZlcnMvaW9tbXUvIDopIFRoYXQgc3Vic3lz
+dGVtIG9ubHkgY29udGFpbnMgdG9vbHMgZm9yCj4gZGVhbGluZyB3aXRoIERNQSwgSSBkb24ndCB0
+aGluayBlcG9sbCwgcmVzb3VyY2UgZW51bWVyYXRpb24gb3IgaW9tYXAgZml0Cj4gaW4gdGhlcmUu
+Clllcy4gSSBzaG91bGQgY29uc2lkZXIgd2hlcmUgdG8gcHV0IGl0IGNhcmVmdWxseS4KPgo+IENy
+ZWF0aW5nIG5ldyBoZWxwZXJzIHNlZW1zIHRvIGJlIHByZWNpc2VseSB3aGF0IHdlJ3JlIHRyeWlu
+ZyB0byBhdm9pZCBpbgo+IHRoaXMgdGhyZWFkLCBhbmQgdmZpby1tZGV2IGRvZXMgcHJvdmlkZSB0
+aGUgY29tcG9uZW50cyB0aGF0IHlvdQo+IGRlc2NyaWJlLCBzbyBJIHdvdWxkbid0IGRpc2NhcmQg
+aXQgcmlnaHQgYXdheS4gV2hlbiB0aGUgR1BVLCBuZXQsIGJsb2NrCj4gb3IgYW5vdGhlciBzdWJz
+eXN0ZW0gZG9lc24ndCBmaXQgeW91ciBuZWVkcywgZWl0aGVyIGJlY2F1c2UgeW91cgo+IGFjY2Vs
+ZXJhdG9yIHByb3ZpZGVzIHNvbWUgc3BlY2lhbGl6ZWQgZnVuY3Rpb24sIG9yIGJlY2F1c2UgZm9y
+Cj4gcGVyZm9ybWFuY2UgcmVhc29ucyB5b3VyIGNsaWVudCB3YW50cyBkaXJlY3QgTU1JTyBhY2Nl
+c3MsIHlvdSBjYW4gYXQKPiBsZWFzdCBidWlsZCB5b3VyIGRyaXZlciBhbmQgbGlicmFyeSBvbiB0
+b3Agb2YgdGhvc2UgZXhpc3RpbmcgVkZJTwo+IGNvbXBvbmVudHM6Cj4KPiAqIG9wZW4gYWxsb2Nh
+dGVzIGEgcGFydGl0aW9uIG9mIGFuIGFjY2VsZXJhdG9yLgo+ICogdmZpb19kZXZpY2VfaW5mbywg
+dmZpb19yZWdpb25faW5mbyBhbmQgdmZpb19pcnFfaW5mbyBlbnVtZXJhdGVzCj4gYXZhaWxhYmxl
+IHJlc291cmNlcy4KPiAqIHZmaW9faXJxX3NldCBkZWFscyB3aXRoIGVwb2xsLgo+ICogbW1hcCBn
+aXZlcyB5b3UgYSBwcml2YXRlIE1NSU8gZG9vcmJlbGwuCj4gKiB2ZmlvX2lvbW11X3R5cGUxIHBy
+b3ZpZGVzIHRoZSBETUEgb3BlcmF0aW9ucy4KPgo+IEN1cnJlbnRseSBtaXNzaW5nOgo+Cj4gKiBT
+aGFyaW5nIHRoZSBwYXJlbnQgSU9NTVUgYmV0d2VlbiBtZGV2LCB3aGljaCBpcyBhbHNvIHdoYXQg
+dGhlICJJT01NVQo+IGF3YXJlIG1lZGlhdGVkIGRldmljZSIgc2VyaWVzIHRhY2tsZXMsIGFuZCBz
+ZWVtcyBsaWtlIGEgbG9naWNhbCBhZGRpdGlvbgo+IHRvIFZGSU8uIEknZCBhcmd1ZSB0aGF0IHRo
+ZSBleGlzdGluZyBJT01NVSBvcHMgKG9yIG9uZXMgaW1wbGVtZW50ZWQgYnkKPiB0aGUgU1ZBIHNl
+cmllcykgY2FuIGJlIHVzZWQgdG8gZGVhbCB3aXRoIHRoaXMKPgo+ICogVGhlIGludGVyZmFjZSB0
+byBkaXNjb3ZlciBhbiBhY2NlbGVyYXRvciBuZWFyIHlvdXIgbWVtb3J5IG5vZGUsIG9yIG9uZQo+
+IHRoYXQgeW91IGNhbiBjaGFpbiB3aXRoIG90aGVyIGRldmljZXMuIElmIEkgdW5kZXJzdG9vZCBj
+b3JyZWN0bHkgdGhlCj4gY29uY2x1c2lvbiB3YXMgdGhhdCB0aGUgQVBJIChhIHRvcG9sb2d5IGRl
+c2NyaXB0aW9uIGluIHN5c2ZzPykgc2hvdWxkIGJlCj4gY29tbW9uIHRvIHZhcmlvdXMgc3Vic3lz
+dGVtcywgaW4gd2hpY2ggY2FzZSB2ZmlvLW1kZXYgKG9yIHRoZSBtZWRpYXRpbmcKPiBkcml2ZXIp
+IGNvdWxkIGFsc28gdXNlIGl0Lgo+Cj4gKiBUaGUgcXVldWUgYWJzdHJhY3Rpb24gZGlzY3Vzc2Vk
+IG9uIHBhdGNoIDMvNy4gUGVyaGFwcyB0aGUgY3VycmVudCB2ZmlvCj4gcmVzb3VyY2UgZGVzY3Jp
+cHRpb24gb2YgTU1JTyBhbmQgSVJRIGlzIHN1ZmZpY2llbnQgaGVyZSBhcyB3ZWxsLCBzaW5jZQo+
+IHZlbmRvcnMgdGVuZCB0byBlYWNoIGltcGxlbWVudCB0aGVpciBvd24gcXVldWUgc2NoZW1lcy4g
+SWYgeW91IG5lZWQKPiBhZGRpdGlvbmFsIGZlYXR1cmVzLCByZWFkL3dyaXRlIGZvcHMgZ2l2ZSB0
+aGUgbWVkaWF0aW5nIGRyaXZlciBhIGxvdCBvZgo+IGZyZWVkb20uIFRvIHN1cHBvcnQgZmVhdHVy
+ZXMgdGhhdCBhcmUgdG9vIHNwZWNpZmljIGZvciBkcml2ZXJzL3ZmaW8vIHlvdQo+IGNhbiBpbXBs
+ZW1lbnQgYSBjb25maWcgc3BhY2Ugd2l0aCBjYXBhYmlsaXRpZXMgYW5kIHJlZ2lzdGVycyBvZiB5
+b3VyCj4gY2hvaWNlLiBJZiB5b3UncmUgdmVyc2lvbmluZyB0aGUgY2FwYWJpbGl0aWVzLCB0aGUg
+Y29kZSB0byBoYW5kbGUgdGhlbQo+IGNvdWxkIGV2ZW4gYmUgc2hhcmVkIGJldHdlZW4gZGlmZmVy
+ZW50IGFjY2VsZXJhdG9yIGRyaXZlcnMgYW5kIGxpYnJhcmllcy4KVGhhbmsgeW91LCBKZWFuLAoK
+VGhlIG1ham9yIHJlYXNvbiB0aGF0IEkgd2FudCB0byByZW1vdmUgZGVwZW5kZW5jeSB0byBWRklP
+IGlzOiBJIGFjY2VwdGVkIAp0aGF0IHRoZSB3aG9sZSBsb2dpYyBvZiBWRklPIHdhcyBidWlsdCBv
+biB0aGUgaWRlYSBvZiBjcmVhdGluZyB2aXJ0dWFsIApkZXZpY2UuCgpMZXQncyBjb25zaWRlciBp
+dCBpbiB0aGlzIHdheTogV2UgaGF2ZSBoYXJkd2FyZSB3aXRoIElPTU1VIHN1cHBvcnQuIFNvIAp3
+ZSBjcmVhdGUgYSBkZWZhdWx0X2RvbWFpbiB0byB0aGUgcGFydGljdWxhciBJT01NVSAodW5pdCkg
+aW4gdGhlIGdyb3VwIApmb3IgdGhlIGtlcm5lbCBkcml2ZXIgdG8gdXNlIGl0LiBOb3cgdGhlIGRl
+dmljZSBpcyBnb2luZyB0byBiZSB1c2VkIGJ5IGEgClZNIG9yIGEgQ29udGFpbmVyLiBTbyB3ZSB1
+bmJpbmQgaXQgZnJvbSB0aGUgb3JpZ2luYWwgZHJpdmVyLCBhbmQgcHV0IHRoZSAKZGVmYXVsdF9k
+b21haW4gYXdheSzCoCBjcmVhdGUgYSBuZXcgZG9tYWluIGZvciB0aGlzIHBhcnRpY3VsYXIgdXNl
+IGNhc2UuwqAgClNvIG5vdyB0aGUgZGV2aWNlIHNob3dzIHVwIGFzIGEgcGxhdGZvcm0gb3IgcGNp
+IGRldmljZSB0byB0aGUgdXNlciAKc3BhY2UuIFRoaXMgaXMgd2hhdCBWRklPIHRyeSB0byBwcm92
+aWRlLiBNZGV2IGV4dGVuZHMgdGhlIHNjZW5hcmlvIGJ1dCAKZG9zZSBub3QgY2hhbmdlIHRoZSBp
+bnRlbnRpb24uIEFuZCBJIHRoaW5rIHRoYXQgaXMgd2h5IEFsZXggZW1waGFzaXMgCnByZS1hbGxv
+Y2F0aW5nIHJlc291cmNlIHRvIHRoZSBtZGV2LgoKQnV0IHdoYXQgV2FycERyaXZlIG5lZWQgaXMg
+dG8gZ2V0IHNlcnZpY2UgZnJvbSB0aGUgaGFyZHdhcmUgaXRzZWxmIGFuZCAKc2V0IG1hcHBpbmcg
+dG8gaXRzIGN1cnJlbnQgZG9tYWluLCBha2EgZGVmYXV0X2RvbWFpbi4gSWYgd2UgZG8gaXQgaW4g
+ClZGSU8tbWRldiwgaXQgbG9va3MgbGlrZSB0aGUgVkZJTyBmcmFtZXdvcmsgdGFrZXMgYWxsIHRo
+ZSBlZmZvcnQgdG8gcHV0IAp0aGUgZGVmYXVsdF9kb21haW4gYXdheSBhbmQgY3JlYXRlIGEgbmV3
+IG9uZSBhbmQgYmUgcmVhZHkgZm9yIHVzZXIgc3BhY2UgCnRvIHVzZS4gQnV0IEkgdGVsbCBoaW0g
+c3RvcCB1c2luZyB0aGUgbmV3IGRvbWFpbiBhbmQgdHJ5IHRoZSBvcmlnaW5hbCBvbmUuLi4KCkl0
+IGlzIG5vdCByZWFzb25hYmxlLCBpc24ndCBpdDopCgpTbyB3aHkgZG9uJ3QgSSBqdXN0IHRha2Ug
+dGhlIHJlcXVlc3QgYW5kIHNldCBpdCBpbnRvIHRoZSBkZWZhdWx0X2RvbWFpbiAKZGlyZWN0bHk/
+IFRoZSB0cnVlIHJlcXVpcmVtZW50IG9mIFdhcnBEcml2ZSBpcyB0byBsZXQgcHJvY2VzcyBzZXQg
+dGhlIApwYWdlIHRhYmxlIGZvciBwYXJ0aWN1bGFyIHBhc2lkIG9yIHN1YnN0cmVhbSBpZCwgc28g
+aXQgY2FuIGFjY2VwdCAKY29tbWFuZCB3aXRoIGFkZHJlc3MgaW4gdGhlIHByb2Nlc3Mgc3BhY2Uu
+IEl0IG5lZWRzIG5vIGRldmljZS4KCiBGcm9tIHRoaXMgcGVyc3BlY3RpdmUsIGl0IHNlZW1zIHRo
+ZXJlIGlzIG5vIHJlYXNvbiB0byBrZWVwIGl0IGluIFZGSU8uCgpUaGFua3MKS2VubmV0aAo+Cj4g
+VGhhbmtzLAo+IEplYW4KPgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
