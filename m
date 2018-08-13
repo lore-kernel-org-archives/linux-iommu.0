@@ -1,104 +1,113 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v4 5/5] iommu/arm-smmu-v3: add bootup option "arm_iommu"
-Date: Mon, 13 Aug 2018 15:50:17 +0800
-Message-ID: <5B713839.1010609@huawei.com>
-References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
- <1533558424-16748-6-git-send-email-thunder.leizhen@huawei.com>
- <c46fa263-2dfa-b8fc-b2c1-0b1bf6029748@arm.com>
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Subject: [PATCH v2] iommu/iova: Optimise attempts to allocate iova from 32bit address range
+Date: Mon, 13 Aug 2018 13:30:37 +0530
+Message-ID: <20180813080037.27097-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c46fa263-2dfa-b8fc-b2c1-0b1bf6029748@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
+To: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com
+Cc: tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
+As an optimisation for PCI devices, there is always first attempt
+been made to allocate iova from SAC address range. This will lead
+to unnecessary attempts, when there are no free ranges
+available. Adding fix to track recently failed iova address size and
+allow further attempts, only if requested size is lesser than a failed
+size. The size is updated when any replenish happens.
+
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+---
+
+v2: update with comments [2] from Robin Murphy <robin.murphy@arm.com>
+
+[2] https://lkml.org/lkml/2018/8/7/166
+
+v1: Based on comments from Robin Murphy <robin.murphy@arm.com>
+for patch [1]
+
+[1] https://lkml.org/lkml/2018/4/19/780
 
 
-On 2018/8/9 19:08, Robin Murphy wrote:
-> On 06/08/18 13:27, Zhen Lei wrote:
->> Add a bootup option to make the system manager can choose which mode to
->> be used. The default mode is strict.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>   Documentation/admin-guide/kernel-parameters.txt |  9 +++++++++
->>   drivers/iommu/arm-smmu-v3.c                     | 17 ++++++++++++++++-
->>   2 files changed, 25 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
->> index 533ff5c..426e989 100644
->> --- a/Documentation/admin-guide/kernel-parameters.txt
->> +++ b/Documentation/admin-guide/kernel-parameters.txt
->> @@ -1720,6 +1720,15 @@
->>           nobypass    [PPC/POWERNV]
->>               Disable IOMMU bypass, using IOMMU for PCI devices.
->>
->> +    arm_iommu=    [ARM64]
->> +        non-strict    [Default Off]
-> 
-> Again, I'd much rather have "iommu.non_strict= { "0" | "1" }" in line with the passthrough option.
+ drivers/iommu/iova.c | 22 +++++++++++++++-------
+ include/linux/iova.h |  1 +
+ 2 files changed, 16 insertions(+), 7 deletions(-)
 
-OK，I will change it in the next version.
-
-> 
-> Robin.
-> 
->> +            Put off TLBs invalidation and release memory first.
->> +            It's good for scatter-gather performance but lacks full
->> +            isolation, an untrusted device can access the reused
->> +            memory because the TLBs may still valid. Please take
->> +            full consideration before choosing this mode.
->> +            Note that, VFIO will always use strict mode.
->> +
->>       iommu.passthrough=
->>               [ARM64] Configure DMA to bypass the IOMMU by default.
->>               Format: { "0" | "1" }
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 904bc1e..9a30892 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -631,6 +631,21 @@ struct arm_smmu_option_prop {
->>       { 0, NULL},
->>   };
->>
->> +static u32 smmu_non_strict __read_mostly;
->> +
->> +static int __init arm_smmu_setup(char *str)
->> +{
->> +    if (!strncmp(str, "non-strict", 10)) {
->> +        smmu_non_strict = 1;
->> +        pr_warn("WARNING: iommu non-strict mode is chosen.\n"
->> +            "It's good for scatter-gather performance but lacks full isolation\n");
->> +        add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
->> +    }
->> +
->> +    return 0;
->> +}
->> +early_param("arm_iommu", arm_smmu_setup);
->> +
->>   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
->>                            struct arm_smmu_device *smmu)
->>   {
->> @@ -1622,7 +1637,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
->>       if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
->>           pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
->>
->> -    if (domain->type == IOMMU_DOMAIN_DMA) {
->> +    if ((domain->type == IOMMU_DOMAIN_DMA) && smmu_non_strict) {
->>           domain->non_strict = 1;
->>           pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
->>       }
->> -- 
->> 1.8.3
->>
->>
-> 
-> .
-> 
-
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 83fe262..543ac79 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->granule = granule;
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
++	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+ 	iovad->flush_cb = NULL;
+ 	iovad->fq = NULL;
+ 	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+@@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+ 	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	    free->pfn_lo >= cached_iova->pfn_lo)
++	    free->pfn_lo >= cached_iova->pfn_lo) {
+ 		iovad->cached32_node = rb_next(&free->node);
++		iovad->max32_alloc_size += (free->pfn_hi - free->pfn_lo);
++	}
+ 
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
+@@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
++	if (limit_pfn <= iovad->dma_32bit_pfn &&
++			size >= iovad->max32_alloc_size)
++		goto iova32_full;
++
+ 	curr = __get_cached_rbnode(iovad, limit_pfn);
+ 	curr_iova = rb_entry(curr, struct iova, node);
+ 	do {
+@@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 		curr_iova = rb_entry(curr, struct iova, node);
+ 	} while (curr && new_pfn <= curr_iova->pfn_hi);
+ 
+-	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+-		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+-		return -ENOMEM;
+-	}
++	if (limit_pfn < size || new_pfn < iovad->start_pfn)
++		goto iova32_full;
+ 
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+ 	new->pfn_lo = new_pfn;
+@@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	__cached_rbnode_insert_update(iovad, new);
+ 
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+-
+-
+ 	return 0;
++
++iova32_full:
++	iovad->max32_alloc_size = size;
++	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
++	return -ENOMEM;
+ }
+ 
+ static struct kmem_cache *iova_cache;
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 928442d..66dff73 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -75,6 +75,7 @@ struct iova_domain {
+ 	unsigned long	granule;	/* pfn granularity for this domain */
+ 	unsigned long	start_pfn;	/* Lower limit for this domain */
+ 	unsigned long	dma_32bit_pfn;
++	unsigned long	max32_alloc_size;
+ 	struct iova	anchor;		/* rbtree lookup anchor */
+ 	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
+ 
 -- 
-Thanks!
-BestRegards
+2.9.4
