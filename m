@@ -1,7 +1,7 @@
 From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 Subject: Re: IOAT DMA w/IOMMU
-Date: Mon, 13 Aug 2018 16:30:51 -0700
-Message-ID: <dd18cf79-aa10-9801-bf95-192f0b86b6d9@gigaio.com>
+Date: Mon, 13 Aug 2018 16:36:11 -0700
+Message-ID: <b0658bb5-4cbe-3b8d-e360-02c5640d2615@gigaio.com>
 References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
 	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
@@ -21,7 +21,8 @@ References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<c8d69f9b-b3a6-76ee-1a90-b3dbaaa9b82b@arm.com>
 	<3772d88a-e9ad-465a-c91f-df8f9c6219be@gigaio.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7204270282949854172=="
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <3772d88a-e9ad-465a-c91f-df8f9c6219be-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
@@ -38,412 +39,110 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Logan Gunthorpe <l
 Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This is a multi-part message in MIME format.
---===============7204270282949854172==
-Content-Type: multipart/alternative;
- boundary="------------A4CE38F0D46C2E9E0683DDB3"
-Content-Language: en-US
-
-This is a multi-part message in MIME format.
---------------A4CE38F0D46C2E9E0683DDB3
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-
-Taking a step back, I was a little surprised that dma_map_single 
-successfully returned an iommu address for the pci bar address passed 
-into it during my initial experiment...
-
-Internally, dma_map_single calls virt_to_page() to translate the 
-"virtual address" into a page and intel_map page then calls 
-page_to_phys() to convert the page to a dma_addr_t.
-
-The virt_to_page and page_to_phys routines don't appear to do any 
-validation and just uses arithmetic to do the conversions.
-
-the pci bar address (0x383c70e51578) does fall into a valid VA range in 
-x86_64 so it could conceivably be a valid VA.  So I tried an virtual 
-address inside the VA hole and and it too returned without any errors.
-
-virt_to_page(0x800000000000) -> 0xffffede000000000
-page_to_phys(0xffffede000000000) -> 0xf80000000000
-
-In arch/x86/include/asm/page.h, there is the following comment in 
-regards to validating the virtual address.
-
-/*
-  * virt_to_page(kaddr) returns a valid pointer if and only if
-  * virt_addr_valid(kaddr) returns true.
-  */
-#define virt_to_page(kaddr)     pfn_to_page(__pa(kaddr) >> PAGE_SHIFT)
-
-So it looks like the validation by virt_addr_valid was somehow dropped 
-from the virt_to_page code path. Does anyone have any ideas what 
-happended to it?
-
-Kit
-
-
-On 08/13/2018 08:21 AM, Kit Chow wrote:
->
->
-> On 08/13/2018 07:59 AM, Robin Murphy wrote:
->> On 13/08/18 15:23, Kit Chow wrote:
->>> On 08/10/2018 07:10 PM, Logan Gunthorpe wrote:
->>>>
->>>> On 10/08/18 06:53 PM, Kit Chow wrote:
->>>>> I was able to finally succeed in doing the dma transfers over ioat 
->>>>> only
->>>>> when prot has DMA_PTE_WRITE set by setting the direction to either
->>>>> DMA_FROM_DEVICE or DMA_BIDIRECTIONAL. Any ideas if the prot settings
->>>>> need to be changed? Are there any bad side effects if I used
->>>>> DMA_BIDIRECTIONAL?
->>>> Good to hear it. Without digging into the direction much all I can say
->>>> is that it can sometimes be very confusing what the direction is. 
->>>> Adding
->>>> another PCI device just adds to the confusion.
->>> Yep, confusing :).
->>>
->>> ======================= =============================================
->>> DMA_NONE        no direction (used for debugging)
->>> DMA_TO_DEVICE        data is going from the memory to the device
->>> DMA_FROM_DEVICE        data is coming from the device to the memory
->>> DMA_BIDIRECTIONAL    direction isn't known
->>> ======================= =============================================
->>>
->>>> I believe, the direction should be from the IOAT's point of view. 
->>>> So if
->>>> the IOAT is writing to the BAR you'd set DMA_FROM_DEVICE (ie. data is
->>>> coming from the IOAT) and if it's reading you'd set DMA_TO_DEVICE (ie.
->>>> data is going to the IOAT).
->>> It would certainly seem like DMA_TO_DEVICE would be the proper 
->>> choice; IOAT is the plumbing to move host data (memory) to the bar 
->>> address (device).
->>
->> Except that the "device" in question is the IOAT itself (more 
->> generally, it means the device represented by the first argument to 
->> dma_map_*() - the one actually emitting the reads and writes). The 
->> context of a DMA API call is the individual mapping in question, not 
->> whatever overall operation it may be part of - your example already 
->> involves two separate mappings: one "from" system memory "to" the DMA 
->> engine, and one "from" the DMA engine "to" PCI BAR memory.
->
-> OK, that makes sense.  The middleman (aka DMA engine device) is the 
-> key in the to/from puzzle. Thanks!
->
->
->>
->> Note that the DMA API's dma_direction is also distinct from the 
->> dmaengine API's dma_transfer_direction, and there's plenty of fun to 
->> be had mapping between the two - see pl330.c or rcar-dmac.c for other 
->> examples of dma_map_resource() for slave devices - no guarantees that 
->> those implementations are entirely correct (especially the one I 
->> did!), but in practice they do make the "DMA engine behind an IOMMU" 
->> case work for UARTs and similar straightforward slaves.
->>
->>> Will go with what works and set DMA_FROM_DEVICE.
->>>
->>> In ntb_async_tx_submit, does the direction used for the dma_map 
->>> routines for the src and dest addresses need to be consistent?
->>
->> In general, the mappings of source and destination addresses would 
->> typically have opposite directions as above, unless they're both 
->> bidirectional.
->>
->>> And does the direction setting for the dmaengine_unmap_data have to 
->>> be consistent with the direction used in dma_map_*?
->>
->> Yes, the arguments to an unmap are expected to match whatever was 
->> passed to the corresponding map call. CONFIG_DMA_API_DEBUG should 
->> help catch any mishaps.
->>
->> Robin.
->>
->>> BTW, dmaengine_unmap routine only calls dma_unmap_page. Should it 
->>> keep track of the dma_map routine used and call the corresponding 
->>> dma_unmap routine?  In the case of the intel iommu, it doesn't matter.
->>>
->>> Thanks
->>> Kit
->>>
->>>>
->>>> Using DMA_BIDIRECTIONAL just forgoes any hardware security / 
->>>> protection
->>>> that the buffer would have in terms of direction. Generally it's good
->>>> practice to use the strictest direction you can.
->>>>
->>>>> Given that using the pci bar address as is without getting an iommu
->>>>> address results in the same "PTE Write access" error, I wonder if 
->>>>> there
->>>>> is some internal 'prot' associated with the non-translated pci bar
->>>>> address that just needs to be tweaked to include DMA_PTE_WRITE???
->>>> No, I don't think so. The 'prot' will be a property of the IOMMU. Not
->>>> having an entry is probably just the same (from the perspective of the
->>>> error you see) as only having an entry for reading.
->>>>
->>>> Logan
->>>
->>> _______________________________________________
->>> iommu mailing list
->>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
-
-
---------------A4CE38F0D46C2E9E0683DDB3
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: 8bit
-
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    <p><tt>Taking a step back, I was a little surprised that
-        dma_map_single successfully returned an iommu address for the
-        pci bar address passed into it during my initial experiment... <br>
-      </tt></p>
-    <p><tt>Internally, dma_map_single calls virt_to_page() to translate
-        the "virtual address" into a page and intel_map page then calls
-        page_to_phys() to convert the page to a dma_addr_t.</tt></p>
-    <p><tt>The virt_to_page and page_to_phys routines don't appear to do
-        any validation and just uses arithmetic to do the conversions.</tt></p>
-    <p><tt>the pci bar address (0x383c70e51578) does fall into a valid
-        VA range in x86_64 so it could conceivably be a valid VA.  So I
-        tried an virtual address inside the VA hole and and it too
-        returned without any errors.<br>
-      </tt></p>
-    <tt>virt_to_page(0x800000000000) -&gt; </tt><tt>0xffffede000000000
-      <br>
-    </tt><tt>page_to_phys(</tt><tt>0xffffede000000000</tt><tt>) -&gt; </tt><tt>0xf80000000000</tt>
-    <p><tt><tt>
-        </tt></tt></p>
-    <p><tt>In arch/x86/include/asm/page.h, there is the following
-        comment in regards to validating the virtual address.<br>
-      </tt></p>
-    <p><tt>/*<br>
-        <font color="#ff0000"> * virt_to_page(kaddr) returns a valid
-          pointer if and only if<br>
-           * virt_addr_valid(kaddr) returns true.</font><br>
-         */<br>
-        #define virt_to_page(kaddr)     pfn_to_page(__pa(kaddr) &gt;&gt;
-        PAGE_SHIFT)<br>
-        <br>
-      </tt></p>
-    <p><tt>So it looks like the validation by virt_addr_valid was
-        somehow dropped from the virt_to_page code path. Does anyone
-        have any ideas what happended to </tt><tt><tt>it?</tt>
-      </tt>
-    </p>
-    <p><tt>Kit</tt><br>
-    </p>
-    <br>
-    <div class="moz-cite-prefix">On 08/13/2018 08:21 AM, Kit Chow wrote:<br>
-    </div>
-    <blockquote type="cite"
-      cite="mid:3772d88a-e9ad-465a-c91f-df8f9c6219be-Op3I1peydIbQT0dZR+AlfA@public.gmane.org">
-      <br>
-      <br>
-      On 08/13/2018 07:59 AM, Robin Murphy wrote:
-      <br>
-      <blockquote type="cite">On 13/08/18 15:23, Kit Chow wrote:
-        <br>
-        <blockquote type="cite">On 08/10/2018 07:10 PM, Logan Gunthorpe
-          wrote:
-          <br>
-          <blockquote type="cite">
-            <br>
-            On 10/08/18 06:53 PM, Kit Chow wrote:
-            <br>
-            <blockquote type="cite">I was able to finally succeed in
-              doing the dma transfers over ioat only
-              <br>
-              when prot has DMA_PTE_WRITE set by setting the direction
-              to either
-              <br>
-              DMA_FROM_DEVICE or DMA_BIDIRECTIONAL. Any ideas if the
-              prot settings
-              <br>
-              need to be changed? Are there any bad side effects if I
-              used
-              <br>
-              DMA_BIDIRECTIONAL?
-              <br>
-            </blockquote>
-            Good to hear it. Without digging into the direction much all
-            I can say
-            <br>
-            is that it can sometimes be very confusing what the
-            direction is. Adding
-            <br>
-            another PCI device just adds to the confusion.
-            <br>
-          </blockquote>
-          Yep, confusing :).
-          <br>
-          <br>
-          =======================
-          =============================================
-          <br>
-          DMA_NONE        no direction (used for debugging)
-          <br>
-          DMA_TO_DEVICE        data is going from the memory to the
-          device
-          <br>
-          DMA_FROM_DEVICE        data is coming from the device to the
-          memory
-          <br>
-          DMA_BIDIRECTIONAL    direction isn't known
-          <br>
-          =======================
-          =============================================
-          <br>
-          <br>
-          <blockquote type="cite">I believe, the direction should be
-            from the IOAT's point of view. So if
-            <br>
-            the IOAT is writing to the BAR you'd set DMA_FROM_DEVICE
-            (ie. data is
-            <br>
-            coming from the IOAT) and if it's reading you'd set
-            DMA_TO_DEVICE (ie.
-            <br>
-            data is going to the IOAT).
-            <br>
-          </blockquote>
-          It would certainly seem like DMA_TO_DEVICE would be the proper
-          choice; IOAT is the plumbing to move host data (memory) to the
-          bar address (device).
-          <br>
-        </blockquote>
-        <br>
-        Except that the "device" in question is the IOAT itself (more
-        generally, it means the device represented by the first argument
-        to dma_map_*() - the one actually emitting the reads and
-        writes). The context of a DMA API call is the individual mapping
-        in question, not whatever overall operation it may be part of -
-        your example already involves two separate mappings: one "from"
-        system memory "to" the DMA engine, and one "from" the DMA engine
-        "to" PCI BAR memory.
-        <br>
-      </blockquote>
-      <br>
-      OK, that makes sense.  The middleman (aka DMA engine device) is
-      the key in the to/from puzzle. Thanks!
-      <br>
-      <br>
-      <br>
-      <blockquote type="cite">
-        <br>
-        Note that the DMA API's dma_direction is also distinct from the
-        dmaengine API's dma_transfer_direction, and there's plenty of
-        fun to be had mapping between the two - see pl330.c or
-        rcar-dmac.c for other examples of dma_map_resource() for slave
-        devices - no guarantees that those implementations are entirely
-        correct (especially the one I did!), but in practice they do
-        make the "DMA engine behind an IOMMU" case work for UARTs and
-        similar straightforward slaves.
-        <br>
-        <br>
-        <blockquote type="cite">Will go with what works and set
-          DMA_FROM_DEVICE.
-          <br>
-          <br>
-          In ntb_async_tx_submit, does the direction used for the
-          dma_map routines for the src and dest addresses need to be
-          consistent?
-          <br>
-        </blockquote>
-        <br>
-        In general, the mappings of source and destination addresses
-        would typically have opposite directions as above, unless
-        they're both bidirectional.
-        <br>
-        <br>
-        <blockquote type="cite">And does the direction setting for the
-          dmaengine_unmap_data have to be consistent with the direction
-          used in dma_map_*?
-          <br>
-        </blockquote>
-        <br>
-        Yes, the arguments to an unmap are expected to match whatever
-        was passed to the corresponding map call. CONFIG_DMA_API_DEBUG
-        should help catch any mishaps.
-        <br>
-        <br>
-        Robin.
-        <br>
-        <br>
-        <blockquote type="cite">BTW, dmaengine_unmap routine only calls
-          dma_unmap_page. Should it keep track of the dma_map routine
-          used and call the corresponding dma_unmap routine?  In the
-          case of the intel iommu, it doesn't matter.
-          <br>
-          <br>
-          Thanks
-          <br>
-          Kit
-          <br>
-          <br>
-          <blockquote type="cite">
-            <br>
-            Using DMA_BIDIRECTIONAL just forgoes any hardware security /
-            protection
-            <br>
-            that the buffer would have in terms of direction. Generally
-            it's good
-            <br>
-            practice to use the strictest direction you can.
-            <br>
-            <br>
-            <blockquote type="cite">Given that using the pci bar address
-              as is without getting an iommu
-              <br>
-              address results in the same "PTE Write access" error, I
-              wonder if there
-              <br>
-              is some internal 'prot' associated with the non-translated
-              pci bar
-              <br>
-              address that just needs to be tweaked to include
-              DMA_PTE_WRITE???
-              <br>
-            </blockquote>
-            No, I don't think so. The 'prot' will be a property of the
-            IOMMU. Not
-            <br>
-            having an entry is probably just the same (from the
-            perspective of the
-            <br>
-            error you see) as only having an entry for reading.
-            <br>
-            <br>
-            Logan
-            <br>
-          </blockquote>
-          <br>
-          _______________________________________________
-          <br>
-          iommu mailing list
-          <br>
-          <a class="moz-txt-link-abbreviated" href="mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org">iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org</a>
-          <br>
-          <a class="moz-txt-link-freetext" href="https://lists.linuxfoundation.org/mailman/listinfo/iommu">https://lists.linuxfoundation.org/mailman/listinfo/iommu</a>
-          <br>
-        </blockquote>
-      </blockquote>
-      <br>
-    </blockquote>
-    <br>
-  </body>
-</html>
-
---------------A4CE38F0D46C2E9E0683DDB3--
-
---===============7204270282949854172==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7204270282949854172==--
+ClRha2luZyBhIHN0ZXAgYmFjaywgSSB3YXMgYSBsaXR0bGUgc3VycHJpc2VkIHRoYXQgZG1hX21h
+cF9zaW5nbGUgCnN1Y2Nlc3NmdWxseSByZXR1cm5lZCBhbgppb21tdSBhZGRyZXNzIGZvciB0aGUg
+cGNpIGJhciBhZGRyZXNzIHBhc3NlZCBpbnRvIGl0IGR1cmluZyBteSBpbml0aWFsIApleHBlcmlt
+ZW50Li4uCgpJbnRlcm5hbGx5LCBkbWFfbWFwX3NpbmdsZSBjYWxscyB2aXJ0X3RvX3BhZ2UoKSB0
+byB0cmFuc2xhdGUgdGhlIAoidmlydHVhbCBhZGRyZXNzIiBpbnRvIGEKcGFnZSBhbmQgaW50ZWxf
+bWFwIHBhZ2UgdGhlbiBjYWxscyBwYWdlX3RvX3BoeXMoKSB0byBjb252ZXJ0IHRoZSBwYWdlIHRv
+IAphIGRtYV9hZGRyX3QuCgpUaGUgdmlydF90b19wYWdlIGFuZCBwYWdlX3RvX3BoeXMgcm91dGlu
+ZXMgZG9uJ3QgYXBwZWFyIHRvIGRvIGFueSAKdmFsaWRhdGlvbiBhbmQganVzdAp1c2VzIGFyaXRo
+bWV0aWMgdG8gZG8gdGhlIGNvbnZlcnNpb25zLgoKdGhlIHBjaSBiYXIgYWRkcmVzcyAoMHgzODNj
+NzBlNTE1NzgpIGRvZXMgZmFsbCBpbnRvIGEgdmFsaWQgVkEgcmFuZ2UgaW4gCng4Nl82NCBzbwpp
+dCBjb3VsZCBjb25jZWl2YWJseSBiZSBhIHZhbGlkIFZBLsKgIFNvIEkgdHJpZWQgYW4gdmlydHVh
+bCBhZGRyZXNzIAppbnNpZGUgdGhlIFZBIGhvbGUKIMKgYW5kIGFuZCBpdCB0b28gcmV0dXJuZWQg
+d2l0aG91dCBhbnkgZXJyb3JzLgoKdmlydF90b19wYWdlKDB4ODAwMDAwMDAwMDAwKSAtPiAweGZm
+ZmZlZGUwMDAwMDAwMDAKcGFnZV90b19waHlzKDB4ZmZmZmVkZTAwMDAwMDAwMCkgLT4gMHhmODAw
+MDAwMDAwMDAKCkluIGFyY2gveDg2L2luY2x1ZGUvYXNtL3BhZ2UuaCwgdGhlcmUgaXMgdGhlIGZv
+bGxvd2luZyBjb21tZW50IGluIHJlZ2FyZHMgdG8KdmFsaWRhdGluZyB0aGUgdmlydHVhbCBhZGRy
+ZXNzLgoKLyoKIMKgKiB2aXJ0X3RvX3BhZ2Uoa2FkZHIpIHJldHVybnMgYSB2YWxpZCBwb2ludGVy
+IGlmIGFuZCBvbmx5IGlmCiDCoCogdmlydF9hZGRyX3ZhbGlkKGthZGRyKSByZXR1cm5zIHRydWUu
+CiDCoCovCiNkZWZpbmUgdmlydF90b19wYWdlKGthZGRyKcKgwqDCoMKgIHBmbl90b19wYWdlKF9f
+cGEoa2FkZHIpID4+IFBBR0VfU0hJRlQpCgpTbyBpdCBsb29rcyBsaWtlIHRoZSB2YWxpZGF0aW9u
+IGJ5IHZpcnRfYWRkcl92YWxpZCB3YXMgc29tZWhvdyBkcm9wcGVkIApmcm9tIHRoZQp2aXJ0X3Rv
+X3BhZ2UgY29kZSBwYXRoLiBEb2VzIGFueW9uZSBoYXZlIGFueSBpZGVhcyB3aGF0IGhhcHBlbmRl
+ZCB0byBpdD8KCktpdAoKKFJlc2VuZGluZywgZWFybGllciBtZXNzYWdlIHRhZ2dlZCBhcyBjb250
+YWluaW5nIGh0bWwgc3VicGFydCkKCk9uIDA4LzEzLzIwMTggMDg6MjEgQU0sIEtpdCBDaG93IHdy
+b3RlOgo+Cj4KPiBPbiAwOC8xMy8yMDE4IDA3OjU5IEFNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+
+IE9uIDEzLzA4LzE4IDE1OjIzLCBLaXQgQ2hvdyB3cm90ZToKPj4+IE9uIDA4LzEwLzIwMTggMDc6
+MTAgUE0sIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPj4+Pgo+Pj4+IE9uIDEwLzA4LzE4IDA2OjUz
+IFBNLCBLaXQgQ2hvdyB3cm90ZToKPj4+Pj4gSSB3YXMgYWJsZSB0byBmaW5hbGx5IHN1Y2NlZWQg
+aW4gZG9pbmcgdGhlIGRtYSB0cmFuc2ZlcnMgb3ZlciBpb2F0IAo+Pj4+PiBvbmx5Cj4+Pj4+IHdo
+ZW4gcHJvdCBoYXMgRE1BX1BURV9XUklURSBzZXQgYnkgc2V0dGluZyB0aGUgZGlyZWN0aW9uIHRv
+IGVpdGhlcgo+Pj4+PiBETUFfRlJPTV9ERVZJQ0Ugb3IgRE1BX0JJRElSRUNUSU9OQUwuIEFueSBp
+ZGVhcyBpZiB0aGUgcHJvdCBzZXR0aW5ncwo+Pj4+PiBuZWVkIHRvIGJlIGNoYW5nZWQ/IEFyZSB0
+aGVyZSBhbnkgYmFkIHNpZGUgZWZmZWN0cyBpZiBJIHVzZWQKPj4+Pj4gRE1BX0JJRElSRUNUSU9O
+QUw/Cj4+Pj4gR29vZCB0byBoZWFyIGl0LiBXaXRob3V0IGRpZ2dpbmcgaW50byB0aGUgZGlyZWN0
+aW9uIG11Y2ggYWxsIEkgY2FuIHNheQo+Pj4+IGlzIHRoYXQgaXQgY2FuIHNvbWV0aW1lcyBiZSB2
+ZXJ5IGNvbmZ1c2luZyB3aGF0IHRoZSBkaXJlY3Rpb24gaXMuIAo+Pj4+IEFkZGluZwo+Pj4+IGFu
+b3RoZXIgUENJIGRldmljZSBqdXN0IGFkZHMgdG8gdGhlIGNvbmZ1c2lvbi4KPj4+IFllcCwgY29u
+ZnVzaW5nIDopLgo+Pj4KPj4+ID09PT09PT09PT09PT09PT09PT09PT09ID09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQo+Pj4gRE1BX05PTkXCoMKgwqDCoMKgwqDC
+oCBubyBkaXJlY3Rpb24gKHVzZWQgZm9yIGRlYnVnZ2luZykKPj4+IERNQV9UT19ERVZJQ0XCoMKg
+wqDCoMKgwqDCoCBkYXRhIGlzIGdvaW5nIGZyb20gdGhlIG1lbW9yeSB0byB0aGUgZGV2aWNlCj4+
+PiBETUFfRlJPTV9ERVZJQ0XCoMKgwqDCoMKgwqDCoCBkYXRhIGlzIGNvbWluZyBmcm9tIHRoZSBk
+ZXZpY2UgdG8gdGhlIG1lbW9yeQo+Pj4gRE1BX0JJRElSRUNUSU9OQUzCoMKgwqAgZGlyZWN0aW9u
+IGlzbid0IGtub3duCj4+PiA9PT09PT09PT09PT09PT09PT09PT09PSA9PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KPj4+Cj4+Pj4gSSBiZWxpZXZlLCB0aGUgZGly
+ZWN0aW9uIHNob3VsZCBiZSBmcm9tIHRoZSBJT0FUJ3MgcG9pbnQgb2Ygdmlldy4gCj4+Pj4gU28g
+aWYKPj4+PiB0aGUgSU9BVCBpcyB3cml0aW5nIHRvIHRoZSBCQVIgeW91J2Qgc2V0IERNQV9GUk9N
+X0RFVklDRSAoaWUuIGRhdGEgaXMKPj4+PiBjb21pbmcgZnJvbSB0aGUgSU9BVCkgYW5kIGlmIGl0
+J3MgcmVhZGluZyB5b3UnZCBzZXQgRE1BX1RPX0RFVklDRSAoaWUuCj4+Pj4gZGF0YSBpcyBnb2lu
+ZyB0byB0aGUgSU9BVCkuCj4+PiBJdCB3b3VsZCBjZXJ0YWlubHkgc2VlbSBsaWtlIERNQV9UT19E
+RVZJQ0Ugd291bGQgYmUgdGhlIHByb3BlciAKPj4+IGNob2ljZTsgSU9BVCBpcyB0aGUgcGx1bWJp
+bmcgdG8gbW92ZSBob3N0IGRhdGEgKG1lbW9yeSkgdG8gdGhlIGJhciAKPj4+IGFkZHJlc3MgKGRl
+dmljZSkuCj4+Cj4+IEV4Y2VwdCB0aGF0IHRoZSAiZGV2aWNlIiBpbiBxdWVzdGlvbiBpcyB0aGUg
+SU9BVCBpdHNlbGYgKG1vcmUgCj4+IGdlbmVyYWxseSwgaXQgbWVhbnMgdGhlIGRldmljZSByZXBy
+ZXNlbnRlZCBieSB0aGUgZmlyc3QgYXJndW1lbnQgdG8gCj4+IGRtYV9tYXBfKigpIC0gdGhlIG9u
+ZSBhY3R1YWxseSBlbWl0dGluZyB0aGUgcmVhZHMgYW5kIHdyaXRlcykuIFRoZSAKPj4gY29udGV4
+dCBvZiBhIERNQSBBUEkgY2FsbCBpcyB0aGUgaW5kaXZpZHVhbCBtYXBwaW5nIGluIHF1ZXN0aW9u
+LCBub3QgCj4+IHdoYXRldmVyIG92ZXJhbGwgb3BlcmF0aW9uIGl0IG1heSBiZSBwYXJ0IG9mIC0g
+eW91ciBleGFtcGxlIGFscmVhZHkgCj4+IGludm9sdmVzIHR3byBzZXBhcmF0ZSBtYXBwaW5nczog
+b25lICJmcm9tIiBzeXN0ZW0gbWVtb3J5ICJ0byIgdGhlIERNQSAKPj4gZW5naW5lLCBhbmQgb25l
+ICJmcm9tIiB0aGUgRE1BIGVuZ2luZSAidG8iIFBDSSBCQVIgbWVtb3J5Lgo+Cj4gT0ssIHRoYXQg
+bWFrZXMgc2Vuc2UuwqAgVGhlIG1pZGRsZW1hbiAoYWthIERNQSBlbmdpbmUgZGV2aWNlKSBpcyB0
+aGUgCj4ga2V5IGluIHRoZSB0by9mcm9tIHB1enpsZS4gVGhhbmtzIQo+Cj4KPj4KPj4gTm90ZSB0
+aGF0IHRoZSBETUEgQVBJJ3MgZG1hX2RpcmVjdGlvbiBpcyBhbHNvIGRpc3RpbmN0IGZyb20gdGhl
+IAo+PiBkbWFlbmdpbmUgQVBJJ3MgZG1hX3RyYW5zZmVyX2RpcmVjdGlvbiwgYW5kIHRoZXJlJ3Mg
+cGxlbnR5IG9mIGZ1biB0byAKPj4gYmUgaGFkIG1hcHBpbmcgYmV0d2VlbiB0aGUgdHdvIC0gc2Vl
+IHBsMzMwLmMgb3IgcmNhci1kbWFjLmMgZm9yIG90aGVyIAo+PiBleGFtcGxlcyBvZiBkbWFfbWFw
+X3Jlc291cmNlKCkgZm9yIHNsYXZlIGRldmljZXMgLSBubyBndWFyYW50ZWVzIHRoYXQgCj4+IHRo
+b3NlIGltcGxlbWVudGF0aW9ucyBhcmUgZW50aXJlbHkgY29ycmVjdCAoZXNwZWNpYWxseSB0aGUg
+b25lIEkgCj4+IGRpZCEpLCBidXQgaW4gcHJhY3RpY2UgdGhleSBkbyBtYWtlIHRoZSAiRE1BIGVu
+Z2luZSBiZWhpbmQgYW4gSU9NTVUiIAo+PiBjYXNlIHdvcmsgZm9yIFVBUlRzIGFuZCBzaW1pbGFy
+IHN0cmFpZ2h0Zm9yd2FyZCBzbGF2ZXMuCj4+Cj4+PiBXaWxsIGdvIHdpdGggd2hhdCB3b3JrcyBh
+bmQgc2V0IERNQV9GUk9NX0RFVklDRS4KPj4+Cj4+PiBJbiBudGJfYXN5bmNfdHhfc3VibWl0LCBk
+b2VzIHRoZSBkaXJlY3Rpb24gdXNlZCBmb3IgdGhlIGRtYV9tYXAgCj4+PiByb3V0aW5lcyBmb3Ig
+dGhlIHNyYyBhbmQgZGVzdCBhZGRyZXNzZXMgbmVlZCB0byBiZSBjb25zaXN0ZW50Pwo+Pgo+PiBJ
+biBnZW5lcmFsLCB0aGUgbWFwcGluZ3Mgb2Ygc291cmNlIGFuZCBkZXN0aW5hdGlvbiBhZGRyZXNz
+ZXMgd291bGQgCj4+IHR5cGljYWxseSBoYXZlIG9wcG9zaXRlIGRpcmVjdGlvbnMgYXMgYWJvdmUs
+IHVubGVzcyB0aGV5J3JlIGJvdGggCj4+IGJpZGlyZWN0aW9uYWwuCj4+Cj4+PiBBbmQgZG9lcyB0
+aGUgZGlyZWN0aW9uIHNldHRpbmcgZm9yIHRoZSBkbWFlbmdpbmVfdW5tYXBfZGF0YSBoYXZlIHRv
+IAo+Pj4gYmUgY29uc2lzdGVudCB3aXRoIHRoZSBkaXJlY3Rpb24gdXNlZCBpbiBkbWFfbWFwXyo/
+Cj4+Cj4+IFllcywgdGhlIGFyZ3VtZW50cyB0byBhbiB1bm1hcCBhcmUgZXhwZWN0ZWQgdG8gbWF0
+Y2ggd2hhdGV2ZXIgd2FzIAo+PiBwYXNzZWQgdG8gdGhlIGNvcnJlc3BvbmRpbmcgbWFwIGNhbGwu
+IENPTkZJR19ETUFfQVBJX0RFQlVHIHNob3VsZCAKPj4gaGVscCBjYXRjaCBhbnkgbWlzaGFwcy4K
+Pj4KPj4gUm9iaW4uCj4+Cj4+PiBCVFcsIGRtYWVuZ2luZV91bm1hcCByb3V0aW5lIG9ubHkgY2Fs
+bHMgZG1hX3VubWFwX3BhZ2UuIFNob3VsZCBpdCAKPj4+IGtlZXAgdHJhY2sgb2YgdGhlIGRtYV9t
+YXAgcm91dGluZSB1c2VkIGFuZCBjYWxsIHRoZSBjb3JyZXNwb25kaW5nIAo+Pj4gZG1hX3VubWFw
+IHJvdXRpbmU/wqAgSW4gdGhlIGNhc2Ugb2YgdGhlIGludGVsIGlvbW11LCBpdCBkb2Vzbid0IG1h
+dHRlci4KPj4+Cj4+PiBUaGFua3MKPj4+IEtpdAo+Pj4KPj4+Pgo+Pj4+IFVzaW5nIERNQV9CSURJ
+UkVDVElPTkFMIGp1c3QgZm9yZ29lcyBhbnkgaGFyZHdhcmUgc2VjdXJpdHkgLyAKPj4+PiBwcm90
+ZWN0aW9uCj4+Pj4gdGhhdCB0aGUgYnVmZmVyIHdvdWxkIGhhdmUgaW4gdGVybXMgb2YgZGlyZWN0
+aW9uLiBHZW5lcmFsbHkgaXQncyBnb29kCj4+Pj4gcHJhY3RpY2UgdG8gdXNlIHRoZSBzdHJpY3Rl
+c3QgZGlyZWN0aW9uIHlvdSBjYW4uCj4+Pj4KPj4+Pj4gR2l2ZW4gdGhhdCB1c2luZyB0aGUgcGNp
+IGJhciBhZGRyZXNzIGFzIGlzIHdpdGhvdXQgZ2V0dGluZyBhbiBpb21tdQo+Pj4+PiBhZGRyZXNz
+IHJlc3VsdHMgaW4gdGhlIHNhbWUgIlBURSBXcml0ZSBhY2Nlc3MiIGVycm9yLCBJIHdvbmRlciBp
+ZiAKPj4+Pj4gdGhlcmUKPj4+Pj4gaXMgc29tZSBpbnRlcm5hbCAncHJvdCcgYXNzb2NpYXRlZCB3
+aXRoIHRoZSBub24tdHJhbnNsYXRlZCBwY2kgYmFyCj4+Pj4+IGFkZHJlc3MgdGhhdCBqdXN0IG5l
+ZWRzIHRvIGJlIHR3ZWFrZWQgdG8gaW5jbHVkZSBETUFfUFRFX1dSSVRFPz8/Cj4+Pj4gTm8sIEkg
+ZG9uJ3QgdGhpbmsgc28uIFRoZSAncHJvdCcgd2lsbCBiZSBhIHByb3BlcnR5IG9mIHRoZSBJT01N
+VS4gTm90Cj4+Pj4gaGF2aW5nIGFuIGVudHJ5IGlzIHByb2JhYmx5IGp1c3QgdGhlIHNhbWUgKGZy
+b20gdGhlIHBlcnNwZWN0aXZlIG9mIHRoZQo+Pj4+IGVycm9yIHlvdSBzZWUpIGFzIG9ubHkgaGF2
+aW5nIGFuIGVudHJ5IGZvciByZWFkaW5nLgo+Pj4+Cj4+Pj4gTG9nYW4KPj4+Cj4+PiBfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+Pj4gaW9tbXUgbWFpbGlu
+ZyBsaXN0Cj4+PiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwo+Pj4gaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXUKPgoKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
