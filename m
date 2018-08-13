@@ -1,88 +1,104 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: [GIT PULL] dma mapping updates for 4.19
-Date: Mon, 13 Aug 2018 10:15:20 +0300
-Message-ID: <20180813071520.GA25481@infradead.org>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v4 5/5] iommu/arm-smmu-v3: add bootup option "arm_iommu"
+Date: Mon, 13 Aug 2018 15:50:17 +0800
+Message-ID: <5B713839.1010609@huawei.com>
+References: <1533558424-16748-1-git-send-email-thunder.leizhen@huawei.com>
+ <1533558424-16748-6-git-send-email-thunder.leizhen@huawei.com>
+ <c46fa263-2dfa-b8fc-b2c1-0b1bf6029748@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <c46fa263-2dfa-b8fc-b2c1-0b1bf6029748@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The following changes since commit d72e90f33aa4709ebecc5005562f52335e106a60:
 
-  Linux 4.18-rc6 (2018-07-22 14:12:20 -0700)
 
-are available in the Git repository at:
+On 2018/8/9 19:08, Robin Murphy wrote:
+> On 06/08/18 13:27, Zhen Lei wrote:
+>> Add a bootup option to make the system manager can choose which mode to
+>> be used. The default mode is strict.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>   Documentation/admin-guide/kernel-parameters.txt |  9 +++++++++
+>>   drivers/iommu/arm-smmu-v3.c                     | 17 ++++++++++++++++-
+>>   2 files changed, 25 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+>> index 533ff5c..426e989 100644
+>> --- a/Documentation/admin-guide/kernel-parameters.txt
+>> +++ b/Documentation/admin-guide/kernel-parameters.txt
+>> @@ -1720,6 +1720,15 @@
+>>           nobypass    [PPC/POWERNV]
+>>               Disable IOMMU bypass, using IOMMU for PCI devices.
+>>
+>> +    arm_iommu=    [ARM64]
+>> +        non-strict    [Default Off]
+> 
+> Again, I'd much rather have "iommu.non_strict= { "0" | "1" }" in line with the passthrough option.
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.19
+OK，I will change it in the next version.
 
-for you to fetch changes up to 6fa1d28e38cfa0c90f8d64c0cab37769e5337b85:
+> 
+> Robin.
+> 
+>> +            Put off TLBs invalidation and release memory first.
+>> +            It's good for scatter-gather performance but lacks full
+>> +            isolation, an untrusted device can access the reused
+>> +            memory because the TLBs may still valid. Please take
+>> +            full consideration before choosing this mode.
+>> +            Note that, VFIO will always use strict mode.
+>> +
+>>       iommu.passthrough=
+>>               [ARM64] Configure DMA to bypass the IOMMU by default.
+>>               Format: { "0" | "1" }
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 904bc1e..9a30892 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -631,6 +631,21 @@ struct arm_smmu_option_prop {
+>>       { 0, NULL},
+>>   };
+>>
+>> +static u32 smmu_non_strict __read_mostly;
+>> +
+>> +static int __init arm_smmu_setup(char *str)
+>> +{
+>> +    if (!strncmp(str, "non-strict", 10)) {
+>> +        smmu_non_strict = 1;
+>> +        pr_warn("WARNING: iommu non-strict mode is chosen.\n"
+>> +            "It's good for scatter-gather performance but lacks full isolation\n");
+>> +        add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
+>> +    }
+>> +
+>> +    return 0;
+>> +}
+>> +early_param("arm_iommu", arm_smmu_setup);
+>> +
+>>   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+>>                            struct arm_smmu_device *smmu)
+>>   {
+>> @@ -1622,7 +1637,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+>>       if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
+>>           pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+>>
+>> -    if (domain->type == IOMMU_DOMAIN_DMA) {
+>> +    if ((domain->type == IOMMU_DOMAIN_DMA) && smmu_non_strict) {
+>>           domain->non_strict = 1;
+>>           pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+>>       }
+>> -- 
+>> 1.8.3
+>>
+>>
+> 
+> .
+> 
 
-  sh: use generic dma_noncoherent_ops (2018-08-02 13:54:20 +0200)
-
-----------------------------------------------------------------
-dma-mapping updates for 4.19
-
- - a series from Robin to fix bus imposed dma limits by adding a separate
-   mask for them to struct device instead of trying to squeeze a second
-   meaning out of the existing dma mask as we did before.  This has ACKs
-   from the various other subsystems touched
- - a small swiotlb cleanup from Kees (acked by Konrad)
- - conversion of nios2 and sh to the new generic dma-noncoherent code.
-   Various other architecture conversions will come through the
-   architectures maintainers trees.
-
-----------------------------------------------------------------
-Christoph Hellwig (6):
-      nios2: use generic dma_noncoherent_ops
-      sh: simplify get_arch_dma_ops
-      sh: introduce a sh_cacheop_vaddr helper
-      sh: use dma_direct_ops for the CONFIG_DMA_COHERENT case
-      sh: split arch/sh/mm/consistent.c
-      sh: use generic dma_noncoherent_ops
-
-Kees Cook (1):
-      swiotlb: clean up reporting
-
-Robin Murphy (9):
-      dma-mapping: relax warning for per-device areas
-      of/platform: Initialise default DMA masks
-      ACPI/IORT: Support address size limit for root complexes
-      dma-mapping: Generalise dma_32bit_limit flag
-      ACPI/IORT: Set bus DMA mask as appropriate
-      of/device: Set bus DMA mask as appropriate
-      iommu/dma: Respect bus DMA limit for IOVAs
-      ACPI/IORT: Don't set default coherent DMA mask
-      OF: Don't set default coherent DMA mask
-
- arch/nios2/Kconfig                   |   3 +
- arch/nios2/include/asm/Kbuild        |   1 +
- arch/nios2/include/asm/dma-mapping.h |  20 -----
- arch/nios2/mm/dma-mapping.c          | 139 ++++-------------------------------
- arch/sh/Kconfig                      |   4 +-
- arch/sh/include/asm/Kbuild           |   1 +
- arch/sh/include/asm/cacheflush.h     |   7 ++
- arch/sh/include/asm/dma-mapping.h    |  23 ------
- arch/sh/kernel/Makefile              |   4 +-
- arch/sh/kernel/dma-coherent.c        |  83 +++++++++++++++++++++
- arch/sh/kernel/dma-nommu.c           |  88 ----------------------
- arch/sh/mm/consistent.c              |  87 ----------------------
- arch/sh/mm/init.c                    |  10 ---
- arch/x86/kernel/pci-dma.c            |   2 +-
- drivers/acpi/arm64/iort.c            |  48 ++++++++----
- drivers/iommu/dma-iommu.c            |   3 +
- drivers/of/device.c                  |  21 +++---
- drivers/of/platform.c                |   3 +
- drivers/sh/maple/maple.c             |   7 +-
- include/linux/device.h               |   6 +-
- include/linux/dma-mapping.h          |   9 ++-
- kernel/dma/direct.c                  |   6 +-
- kernel/dma/swiotlb.c                 |  18 ++---
- 23 files changed, 192 insertions(+), 401 deletions(-)
- delete mode 100644 arch/nios2/include/asm/dma-mapping.h
- delete mode 100644 arch/sh/include/asm/dma-mapping.h
- create mode 100644 arch/sh/kernel/dma-coherent.c
- delete mode 100644 arch/sh/kernel/dma-nommu.c
+-- 
+Thanks!
+BestRegards
