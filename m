@@ -1,168 +1,146 @@
-From: Kenneth Lee <liguozhu@hisilicon.com>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Mon, 13 Aug 2018 17:29:31 +0800
-Message-ID: <20180813092931.GL91035@Turing-Arch-b>
-References: <20180803143944.GA4079@redhat.com>
- <20180806031252.GG91035@Turing-Arch-b>
- <20180806153257.GB6002@redhat.com>
- <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
- <20180808151835.GA3429@redhat.com>
- <20180809080352.GI91035@Turing-Arch-b>
- <20180809144613.GB3386@redhat.com>
- <20180810033913.GK91035@Turing-Arch-b>
- <0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
- <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu/iova: Optimise attempts to allocate iova from
+ 32bit address range
+Date: Mon, 13 Aug 2018 14:56:07 +0100
+Message-ID: <becdc45b-860d-6a9d-6c4d-df7d129bbe96@arm.com>
+References: <20180813080037.27097-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+In-Reply-To: <20180813080037.27097-1-ganapatrao.kulkarni@cavium.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kenneth Lee <nek.in.cn@gmail.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Jerome Glisse <jglisse@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Tho
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Aug 11, 2018 at 11:26:48PM +0800, Kenneth Lee wrote:
-> Date: Sat, 11 Aug 2018 23:26:48 +0800
-> From: Kenneth Lee <nek.in.cn@gmail.com>
-> To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Kenneth Lee
->  <liguozhu@hisilicon.com>, Jerome Glisse <jglisse@redhat.com>
-> CC: Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org"
->  <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg
->  Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>,
->  "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K"
->  <sanjay.k.kumar@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
->  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
->  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
->  "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson
->  <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org"
->  <linux-crypto@vger.kernel.org>, Philippe Ombredanne
->  <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, Hao Fang
->  <fanghao11@huawei.com>, "David S . Miller" <davem@davemloft.net>,
->  "linux-accelerators@lists.ozlabs.org"
->  <linux-accelerators@lists.ozlabs.org>
-> Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-> User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
->  Thunderbird/52.9.1
-> Message-ID: <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+On 13/08/18 09:00, Ganapatrao Kulkarni wrote:
+> As an optimisation for PCI devices, there is always first attempt
+> been made to allocate iova from SAC address range. This will lead
+> to unnecessary attempts, when there are no free ranges
+> available. Adding fix to track recently failed iova address size and
+> allow further attempts, only if requested size is lesser than a failed
+> size. The size is updated when any replenish happens.
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> ---
+> 
+> v2: update with comments [2] from Robin Murphy <robin.murphy@arm.com>
+> 
+> [2] https://lkml.org/lkml/2018/8/7/166
+> 
+> v1: Based on comments from Robin Murphy <robin.murphy@arm.com>
+> for patch [1]
+> 
+> [1] https://lkml.org/lkml/2018/4/19/780
 > 
 > 
+>   drivers/iommu/iova.c | 22 +++++++++++++++-------
+>   include/linux/iova.h |  1 +
+>   2 files changed, 16 insertions(+), 7 deletions(-)
 > 
-> 在 2018年08月10日 星期五 09:12 下午, Jean-Philippe Brucker 写道:
-> >Hi Kenneth,
-> >
-> >On 10/08/18 04:39, Kenneth Lee wrote:
-> >>>You can achieve everything you want to achieve with existing upstream
-> >>>solution. Re-inventing a whole new driver infrastructure should really
-> >>>be motivated with strong and obvious reasons.
-> >>I want to understand better of your idea. If I create some unified helper
-> >>APIs in drivers/iommu/, say:
-> >>
-> >>	wd_create_dev(parent_dev, wd_dev)
-> >>	wd_release_dev(wd_dev)
-> >>
-> >>The API create chrdev to take request from user space for open(resource
-> >>allocation), iomap, epoll (irq), and dma_map(with pasid automatically).
-> >>
-> >>Do you think it is acceptable?
-> >Maybe not drivers/iommu/ :) That subsystem only contains tools for
-> >dealing with DMA, I don't think epoll, resource enumeration or iomap fit
-> >in there.
-> Yes. I should consider where to put it carefully.
-> >
-> >Creating new helpers seems to be precisely what we're trying to avoid in
-> >this thread, and vfio-mdev does provide the components that you
-> >describe, so I wouldn't discard it right away. When the GPU, net, block
-> >or another subsystem doesn't fit your needs, either because your
-> >accelerator provides some specialized function, or because for
-> >performance reasons your client wants direct MMIO access, you can at
-> >least build your driver and library on top of those existing VFIO
-> >components:
-> >
-> >* open allocates a partition of an accelerator.
-> >* vfio_device_info, vfio_region_info and vfio_irq_info enumerates
-> >available resources.
-> >* vfio_irq_set deals with epoll.
-> >* mmap gives you a private MMIO doorbell.
-> >* vfio_iommu_type1 provides the DMA operations.
-> >
-> >Currently missing:
-> >
-> >* Sharing the parent IOMMU between mdev, which is also what the "IOMMU
-> >aware mediated device" series tackles, and seems like a logical addition
-> >to VFIO. I'd argue that the existing IOMMU ops (or ones implemented by
-> >the SVA series) can be used to deal with this
-> >
-> >* The interface to discover an accelerator near your memory node, or one
-> >that you can chain with other devices. If I understood correctly the
-> >conclusion was that the API (a topology description in sysfs?) should be
-> >common to various subsystems, in which case vfio-mdev (or the mediating
-> >driver) could also use it.
-> >
-> >* The queue abstraction discussed on patch 3/7. Perhaps the current vfio
-> >resource description of MMIO and IRQ is sufficient here as well, since
-> >vendors tend to each implement their own queue schemes. If you need
-> >additional features, read/write fops give the mediating driver a lot of
-> >freedom. To support features that are too specific for drivers/vfio/ you
-> >can implement a config space with capabilities and registers of your
-> >choice. If you're versioning the capabilities, the code to handle them
-> >could even be shared between different accelerator drivers and libraries.
-> Thank you, Jean,
-> 
-> The major reason that I want to remove dependency to VFIO is: I
-> accepted that the whole logic of VFIO was built on the idea of
-> creating virtual device.
-> 
-> Let's consider it in this way: We have hardware with IOMMU support.
-> So we create a default_domain to the particular IOMMU (unit) in the
-> group for the kernel driver to use it. Now the device is going to be
-> used by a VM or a Container. So we unbind it from the original
-> driver, and put the default_domain away,  create a new domain for
-> this particular use case.  So now the device shows up as a platform
-> or pci device to the user space. This is what VFIO try to provide.
-> Mdev extends the scenario but dose not change the intention. And I
-> think that is why Alex emphasis pre-allocating resource to the mdev.
-> 
-> But what WarpDrive need is to get service from the hardware itself
-> and set mapping to its current domain, aka defaut_domain. If we do
-> it in VFIO-mdev, it looks like the VFIO framework takes all the
-> effort to put the default_domain away and create a new one and be
-> ready for user space to use. But I tell him stop using the new
-> domain and try the original one...
-> 
-> It is not reasonable, isn't it:)
-> 
-> So why don't I just take the request and set it into the
-> default_domain directly? The true requirement of WarpDrive is to let
-> process set the page table for particular pasid or substream id, so
-> it can accept command with address in the process space. It needs no
-> device.
-> 
-> From this perspective, it seems there is no reason to keep it in VFIO.
-> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 83fe262..543ac79 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+>   	iovad->granule = granule;
+>   	iovad->start_pfn = start_pfn;
+>   	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
+> +	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+>   	iovad->flush_cb = NULL;
+>   	iovad->fq = NULL;
+>   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>   
+>   	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+>   	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+> -	    free->pfn_lo >= cached_iova->pfn_lo)
+> +	    free->pfn_lo >= cached_iova->pfn_lo) {
+>   		iovad->cached32_node = rb_next(&free->node);
+> +		iovad->max32_alloc_size += (free->pfn_hi - free->pfn_lo);
 
-I made a quick change basing on the RFCv1 here: 
+pfn_hi is inclusive, so I don't think this is actually working as 
+intended - if a full space is being freed one page at a time, this will 
+never move the limit at all (because it's adding 0).
 
-https://github.com/Kenneth-Lee/linux-kernel-warpdrive/commits/warpdrive-v0.6
+As I mentioned before, though, I'm really not convinced that it's worth 
+trying to be even this clever here - we don't know that the IOVA we're 
+freeing is contiguous with other free space, so the only benefit of 
+doing this calculation instead of simply resetting the limit to max 
+(i.e. dma_32bit_pfn) is that a subsequent allocation larger than 
+(max_32_alloc_size + iova_size(free)) pages will still fail early 
+instead of late. My gut feeling is that that case will be rare enough 
+that it won't make a noticeable difference to realistic workloads, so we 
+may as well stick with the simplest possible "almost boolean" approach 
+and not bother with a calculation at all.
 
-I just made it compilable and not test it yet. But it shows how the idea is
-going to be.
+> +	}
+>   
+>   	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+>   	if (free->pfn_lo >= cached_iova->pfn_lo)
+> @@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   
+>   	/* Walk the tree backwards */
+>   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+> +	if (limit_pfn <= iovad->dma_32bit_pfn &&
+> +			size >= iovad->max32_alloc_size)
+> +		goto iova32_full;
+> +
+>   	curr = __get_cached_rbnode(iovad, limit_pfn);
+>   	curr_iova = rb_entry(curr, struct iova, node);
+>   	do {
+> @@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   		curr_iova = rb_entry(curr, struct iova, node);
+>   	} while (curr && new_pfn <= curr_iova->pfn_hi);
+>   
+> -	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+> -		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> -		return -ENOMEM;
+> -	}
+> +	if (limit_pfn < size || new_pfn < iovad->start_pfn)
+> +		goto iova32_full;
+>   
+>   	/* pfn_lo will point to size aligned address if size_aligned is set */
+>   	new->pfn_lo = new_pfn;
+> @@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   	__cached_rbnode_insert_update(iovad, new);
+>   
+>   	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> -
+> -
+>   	return 0;
+> +
+> +iova32_full:
+> +	iovad->max32_alloc_size = size;
+> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> +	return -ENOMEM;
+>   }
+>   
+>   static struct kmem_cache *iova_cache;
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index 928442d..66dff73 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -75,6 +75,7 @@ struct iova_domain {
+>   	unsigned long	granule;	/* pfn granularity for this domain */
+>   	unsigned long	start_pfn;	/* Lower limit for this domain */
+>   	unsigned long	dma_32bit_pfn;
+> +	unsigned long	max32_alloc_size;
 
-The Pros is: most of the virtual device stuff can be removed. Resource
-management is on the openned files only.
+This probably still warrants a brief comment to help document the exact 
+meaning, maybe something like "/* Size of last failed allocation */"?
 
-The Cons is: as Jean said, we have to redo something that has been done by VFIO.
-These mainly are:
+For a while I've had the feeling that it might be possible to do 
+something clever with an augmented rbtree to fundamentally optimise the 
+search for a free area, but for now I reckon that - modulo those last 
+couple of comments - this is a good enough solution for the current problem.
 
-1. Track the dma operation and remove them on resource releasing
-2. Pin the memory with gup and do accounting
+Thanks,
+Robin.
 
-It not going to be easy to make a decision...
-
-> Thanks
-> Kenneth
-> >
-> >Thanks,
-> >Jean
-> >
+>   	struct iova	anchor;		/* rbtree lookup anchor */
+>   	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
+>   
+> 
