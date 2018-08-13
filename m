@@ -1,87 +1,88 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/3] dts: arm64/sdm845: Add node for arm,mmu-500
-Date: Mon, 13 Aug 2018 10:59:47 +0530
-Message-ID: <249d07c0-a2fb-b25e-84aa-ee820bace847@codeaurora.org>
-References: <20180719175356.14753-1-vivek.gautam@codeaurora.org>
-	<20180719175356.14753-2-vivek.gautam@codeaurora.org>
-	<CAD=FV=Vmn40CmLLLEfrE-eq2sj4CYnx2E2-k-dimk24CDTU1jQ@mail.gmail.com>
-	<CAD=FV=XqBU0dc6smZsEssXAro5UMqqrgLudBQKqG1zznpg9cSA@mail.gmail.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] dma mapping updates for 4.19
+Date: Mon, 13 Aug 2018 10:15:20 +0300
+Message-ID: <20180813071520.GA25481@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAD=FV=XqBU0dc6smZsEssXAro5UMqqrgLudBQKqG1zznpg9cSA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:ARM/QUALCOMM SUPPORT" <linux-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Brown <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Doug,
+The following changes since commit d72e90f33aa4709ebecc5005562f52335e106a60:
 
+  Linux 4.18-rc6 (2018-07-22 14:12:20 -0700)
 
-On 8/11/2018 4:00 AM, Doug Anderson wrote:
-> Hi,
->
-> On Fri, Aug 10, 2018 at 3:18 PM, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->> Hi,
->>
->> On Thu, Jul 19, 2018 at 10:53 AM, Vivek Gautam
->> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>> Add device node for arm,mmu-500 available on sdm845.
->>> This MMU-500 with single TCU and multiple TBU architecture
->>> is shared among all the peripherals except gpu on sdm845.
->>>
->>> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>> ---
->>>   arch/arm64/boot/dts/qcom/sdm845-mtp.dts |  4 ++
->>>   arch/arm64/boot/dts/qcom/sdm845.dtsi    | 73 +++++++++++++++++++++++++++++++++
->>>   2 files changed, 77 insertions(+)
->>>
->>> diff --git a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
->>> index 6d651f314193..13b50dff440f 100644
->>> --- a/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
->>> +++ b/arch/arm64/boot/dts/qcom/sdm845-mtp.dts
->>> @@ -58,3 +58,7 @@
->>>                  bias-pull-up;
->>>          };
->>>   };
->>> +
->>> +&apps_smmu {
->>> +       status = "okay";
->>> +};
->> When you spin this patch please put the above in the correct place.
->> Since "a" sorts alphabetically before "i" then this should be just
->> before the line:
->>
->> &i2c10 {
-> Sorry--one more thing I thought of after I sent this out...
->
-> Possibly you can drop this part of the patch completely and get rid of
-> the 'status = "disabled";' in sdm845.dtsi.  As I understand it you
-> really only want to mark things as disabled in the SoC dtsi file if
-> some boards might use this device and other boards wouldn't.  For
-> instance not all boards will have the SD card controller hooked up /
-> enabled so having that set to "disabled" in the SoC device tree file
-> makes sense.  ...but it's not a board-level question about whether the
-> SMMU is present--it's always there.  You don't gain anything by
-> forcing all boards to set status to "okay".
+are available in the Git repository at:
 
-Thanks for reviewing the patches.
-Will sort the node as per alphabetical order.
-Also as you pointed, it makes sense to not have the 'status' property
-in SMMU. Will remove that. Thanks.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.19
 
-Best regards
-Vivek
->
->
-> -Doug
+for you to fetch changes up to 6fa1d28e38cfa0c90f8d64c0cab37769e5337b85:
+
+  sh: use generic dma_noncoherent_ops (2018-08-02 13:54:20 +0200)
+
+----------------------------------------------------------------
+dma-mapping updates for 4.19
+
+ - a series from Robin to fix bus imposed dma limits by adding a separate
+   mask for them to struct device instead of trying to squeeze a second
+   meaning out of the existing dma mask as we did before.  This has ACKs
+   from the various other subsystems touched
+ - a small swiotlb cleanup from Kees (acked by Konrad)
+ - conversion of nios2 and sh to the new generic dma-noncoherent code.
+   Various other architecture conversions will come through the
+   architectures maintainers trees.
+
+----------------------------------------------------------------
+Christoph Hellwig (6):
+      nios2: use generic dma_noncoherent_ops
+      sh: simplify get_arch_dma_ops
+      sh: introduce a sh_cacheop_vaddr helper
+      sh: use dma_direct_ops for the CONFIG_DMA_COHERENT case
+      sh: split arch/sh/mm/consistent.c
+      sh: use generic dma_noncoherent_ops
+
+Kees Cook (1):
+      swiotlb: clean up reporting
+
+Robin Murphy (9):
+      dma-mapping: relax warning for per-device areas
+      of/platform: Initialise default DMA masks
+      ACPI/IORT: Support address size limit for root complexes
+      dma-mapping: Generalise dma_32bit_limit flag
+      ACPI/IORT: Set bus DMA mask as appropriate
+      of/device: Set bus DMA mask as appropriate
+      iommu/dma: Respect bus DMA limit for IOVAs
+      ACPI/IORT: Don't set default coherent DMA mask
+      OF: Don't set default coherent DMA mask
+
+ arch/nios2/Kconfig                   |   3 +
+ arch/nios2/include/asm/Kbuild        |   1 +
+ arch/nios2/include/asm/dma-mapping.h |  20 -----
+ arch/nios2/mm/dma-mapping.c          | 139 ++++-------------------------------
+ arch/sh/Kconfig                      |   4 +-
+ arch/sh/include/asm/Kbuild           |   1 +
+ arch/sh/include/asm/cacheflush.h     |   7 ++
+ arch/sh/include/asm/dma-mapping.h    |  23 ------
+ arch/sh/kernel/Makefile              |   4 +-
+ arch/sh/kernel/dma-coherent.c        |  83 +++++++++++++++++++++
+ arch/sh/kernel/dma-nommu.c           |  88 ----------------------
+ arch/sh/mm/consistent.c              |  87 ----------------------
+ arch/sh/mm/init.c                    |  10 ---
+ arch/x86/kernel/pci-dma.c            |   2 +-
+ drivers/acpi/arm64/iort.c            |  48 ++++++++----
+ drivers/iommu/dma-iommu.c            |   3 +
+ drivers/of/device.c                  |  21 +++---
+ drivers/of/platform.c                |   3 +
+ drivers/sh/maple/maple.c             |   7 +-
+ include/linux/device.h               |   6 +-
+ include/linux/dma-mapping.h          |   9 ++-
+ kernel/dma/direct.c                  |   6 +-
+ kernel/dma/swiotlb.c                 |  18 ++---
+ 23 files changed, 192 insertions(+), 401 deletions(-)
+ delete mode 100644 arch/nios2/include/asm/dma-mapping.h
+ delete mode 100644 arch/sh/include/asm/dma-mapping.h
+ create mode 100644 arch/sh/kernel/dma-coherent.c
+ delete mode 100644 arch/sh/kernel/dma-nommu.c
