@@ -1,146 +1,89 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2] iommu/iova: Optimise attempts to allocate iova from
- 32bit address range
-Date: Mon, 13 Aug 2018 14:56:07 +0100
-Message-ID: <becdc45b-860d-6a9d-6c4d-df7d129bbe96@arm.com>
-References: <20180813080037.27097-1-ganapatrao.kulkarni@cavium.com>
+From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+Subject: Re: IOAT DMA w/IOMMU
+Date: Mon, 13 Aug 2018 07:23:22 -0700
+Message-ID: <a2391f6c-d73b-c140-edad-8cd6584dd437@gigaio.com>
+References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
+	<cdd9245f-eb23-9e10-1755-8f396a2cd255@deltatee.com>
+	<b278c1e5-6f08-c879-a27d-7fc172645fd5@gigaio.com>
+	<f04fae39-645e-3c6e-07c0-b194260bf5de@deltatee.com>
+	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
+	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
+	<b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
+	<adf51c74-36fa-b61d-8497-27bd75178ba4@deltatee.com>
+	<aa9c3f41-efc9-8c68-a517-2736c8986621@gigaio.com>
+	<1170c096-a749-6ee3-32d4-ebba1d12adff@gigaio.com>
+	<929f3dfa-fbff-c582-3be5-c368f11feb7e@deltatee.com>
+	<460cc47f-6a8e-67b0-01a0-02f0c51df258@intel.com>
+	<0f653f8f-c7ae-831d-e238-2742590d9ea1@deltatee.com>
+	<6525fa4d-7d9b-0136-7206-f8351230af46@intel.com>
+	<f22c565e-ba49-c83d-3e51-7967664c7136@deltatee.com>
+	<499934e7-3734-1aee-37dd-b42a5d2a2608@intel.com>
+	<9d135f61-20c2-e966-4d7d-3e154384ea08@gigaio.com>
+	<0a9fa9c3-dbe4-6451-9c1a-06b662702f61@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180813080037.27097-1-ganapatrao.kulkarni@cavium.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0a9fa9c3-dbe4-6451-9c1a-06b662702f61-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 13/08/18 09:00, Ganapatrao Kulkarni wrote:
-> As an optimisation for PCI devices, there is always first attempt
-> been made to allocate iova from SAC address range. This will lead
-> to unnecessary attempts, when there are no free ranges
-> available. Adding fix to track recently failed iova address size and
-> allow further attempts, only if requested size is lesser than a failed
-> size. The size is updated when any replenish happens.
-> 
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> ---
-> 
-> v2: update with comments [2] from Robin Murphy <robin.murphy@arm.com>
-> 
-> [2] https://lkml.org/lkml/2018/8/7/166
-> 
-> v1: Based on comments from Robin Murphy <robin.murphy@arm.com>
-> for patch [1]
-> 
-> [1] https://lkml.org/lkml/2018/4/19/780
-> 
-> 
->   drivers/iommu/iova.c | 22 +++++++++++++++-------
->   include/linux/iova.h |  1 +
->   2 files changed, 16 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 83fe262..543ac79 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	iovad->granule = granule;
->   	iovad->start_pfn = start_pfn;
->   	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
-> +	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
->   	iovad->flush_cb = NULL;
->   	iovad->fq = NULL;
->   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
-> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
->   
->   	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
->   	if (free->pfn_hi < iovad->dma_32bit_pfn &&
-> -	    free->pfn_lo >= cached_iova->pfn_lo)
-> +	    free->pfn_lo >= cached_iova->pfn_lo) {
->   		iovad->cached32_node = rb_next(&free->node);
-> +		iovad->max32_alloc_size += (free->pfn_hi - free->pfn_lo);
-
-pfn_hi is inclusive, so I don't think this is actually working as 
-intended - if a full space is being freed one page at a time, this will 
-never move the limit at all (because it's adding 0).
-
-As I mentioned before, though, I'm really not convinced that it's worth 
-trying to be even this clever here - we don't know that the IOVA we're 
-freeing is contiguous with other free space, so the only benefit of 
-doing this calculation instead of simply resetting the limit to max 
-(i.e. dma_32bit_pfn) is that a subsequent allocation larger than 
-(max_32_alloc_size + iova_size(free)) pages will still fail early 
-instead of late. My gut feeling is that that case will be rare enough 
-that it won't make a noticeable difference to realistic workloads, so we 
-may as well stick with the simplest possible "almost boolean" approach 
-and not bother with a calculation at all.
-
-> +	}
->   
->   	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
->   	if (free->pfn_lo >= cached_iova->pfn_lo)
-> @@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   
->   	/* Walk the tree backwards */
->   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> +	if (limit_pfn <= iovad->dma_32bit_pfn &&
-> +			size >= iovad->max32_alloc_size)
-> +		goto iova32_full;
-> +
->   	curr = __get_cached_rbnode(iovad, limit_pfn);
->   	curr_iova = rb_entry(curr, struct iova, node);
->   	do {
-> @@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   		curr_iova = rb_entry(curr, struct iova, node);
->   	} while (curr && new_pfn <= curr_iova->pfn_hi);
->   
-> -	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
-> -		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> -		return -ENOMEM;
-> -	}
-> +	if (limit_pfn < size || new_pfn < iovad->start_pfn)
-> +		goto iova32_full;
->   
->   	/* pfn_lo will point to size aligned address if size_aligned is set */
->   	new->pfn_lo = new_pfn;
-> @@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   	__cached_rbnode_insert_update(iovad, new);
->   
->   	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> -
-> -
->   	return 0;
-> +
-> +iova32_full:
-> +	iovad->max32_alloc_size = size;
-> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> +	return -ENOMEM;
->   }
->   
->   static struct kmem_cache *iova_cache;
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 928442d..66dff73 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -75,6 +75,7 @@ struct iova_domain {
->   	unsigned long	granule;	/* pfn granularity for this domain */
->   	unsigned long	start_pfn;	/* Lower limit for this domain */
->   	unsigned long	dma_32bit_pfn;
-> +	unsigned long	max32_alloc_size;
-
-This probably still warrants a brief comment to help document the exact 
-meaning, maybe something like "/* Size of last failed allocation */"?
-
-For a while I've had the feeling that it might be possible to do 
-something clever with an augmented rbtree to fundamentally optimise the 
-search for a free area, but for now I reckon that - modulo those last 
-couple of comments - this is a good enough solution for the current problem.
-
-Thanks,
-Robin.
-
->   	struct iova	anchor;		/* rbtree lookup anchor */
->   	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
->   
-> 
+CgpPbiAwOC8xMC8yMDE4IDA3OjEwIFBNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4KPiBPbiAx
+MC8wOC8xOCAwNjo1MyBQTSwgS2l0IENob3cgd3JvdGU6Cj4+IEkgd2FzIGFibGUgdG8gZmluYWxs
+eSBzdWNjZWVkIGluIGRvaW5nIHRoZSBkbWEgdHJhbnNmZXJzIG92ZXIgaW9hdCBvbmx5Cj4+IHdo
+ZW4gcHJvdCBoYXMgRE1BX1BURV9XUklURSBzZXQgYnkgc2V0dGluZyB0aGUgZGlyZWN0aW9uIHRv
+IGVpdGhlcgo+PiBETUFfRlJPTV9ERVZJQ0Ugb3IgRE1BX0JJRElSRUNUSU9OQUwuIEFueSBpZGVh
+cyBpZiB0aGUgcHJvdCBzZXR0aW5ncwo+PiBuZWVkIHRvIGJlIGNoYW5nZWQ/IEFyZSB0aGVyZSBh
+bnkgYmFkIHNpZGUgZWZmZWN0cyBpZiBJIHVzZWQKPj4gRE1BX0JJRElSRUNUSU9OQUw/Cj4gR29v
+ZCB0byBoZWFyIGl0LiBXaXRob3V0IGRpZ2dpbmcgaW50byB0aGUgZGlyZWN0aW9uIG11Y2ggYWxs
+IEkgY2FuIHNheQo+IGlzIHRoYXQgaXQgY2FuIHNvbWV0aW1lcyBiZSB2ZXJ5IGNvbmZ1c2luZyB3
+aGF0IHRoZSBkaXJlY3Rpb24gaXMuIEFkZGluZwo+IGFub3RoZXIgUENJIGRldmljZSBqdXN0IGFk
+ZHMgdG8gdGhlIGNvbmZ1c2lvbi4KWWVwLCBjb25mdXNpbmcgOikuCgo9PT09PT09PT09PT09PT09
+PT09PT09PSA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KRE1B
+X05PTkUJCW5vIGRpcmVjdGlvbiAodXNlZCBmb3IgZGVidWdnaW5nKQpETUFfVE9fREVWSUNFCQlk
+YXRhIGlzIGdvaW5nIGZyb20gdGhlIG1lbW9yeSB0byB0aGUgZGV2aWNlCkRNQV9GUk9NX0RFVklD
+RQkJZGF0YSBpcyBjb21pbmcgZnJvbSB0aGUgZGV2aWNlIHRvIHRoZSBtZW1vcnkKRE1BX0JJRElS
+RUNUSU9OQUwJZGlyZWN0aW9uIGlzbid0IGtub3duCj09PT09PT09PT09PT09PT09PT09PT09ID09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQoKPiBJIGJlbGlldmUs
+IHRoZSBkaXJlY3Rpb24gc2hvdWxkIGJlIGZyb20gdGhlIElPQVQncyBwb2ludCBvZiB2aWV3LiBT
+byBpZgo+IHRoZSBJT0FUIGlzIHdyaXRpbmcgdG8gdGhlIEJBUiB5b3UnZCBzZXQgRE1BX0ZST01f
+REVWSUNFIChpZS4gZGF0YSBpcwo+IGNvbWluZyBmcm9tIHRoZSBJT0FUKSBhbmQgaWYgaXQncyBy
+ZWFkaW5nIHlvdSdkIHNldCBETUFfVE9fREVWSUNFIChpZS4KPiBkYXRhIGlzIGdvaW5nIHRvIHRo
+ZSBJT0FUKS4KSXQgd291bGQgY2VydGFpbmx5IHNlZW0gbGlrZSBETUFfVE9fREVWSUNFIHdvdWxk
+IGJlIHRoZSBwcm9wZXIgY2hvaWNlOyAKSU9BVCBpcyB0aGUgcGx1bWJpbmcgdG8gbW92ZSBob3N0
+IGRhdGEgKG1lbW9yeSkgdG8gdGhlIGJhciBhZGRyZXNzIChkZXZpY2UpLgoKV2lsbCBnbyB3aXRo
+IHdoYXQgd29ya3MgYW5kIHNldCBETUFfRlJPTV9ERVZJQ0UuCgpJbiBudGJfYXN5bmNfdHhfc3Vi
+bWl0LCBkb2VzIHRoZSBkaXJlY3Rpb24gdXNlZCBmb3IgdGhlIGRtYV9tYXAgcm91dGluZXMgCmZv
+ciB0aGUgc3JjIGFuZCBkZXN0IGFkZHJlc3NlcyBuZWVkIHRvIGJlIGNvbnNpc3RlbnQ/CgpBbmQg
+ZG9lcyB0aGUgZGlyZWN0aW9uIHNldHRpbmcgZm9yIHRoZSBkbWFlbmdpbmVfdW5tYXBfZGF0YSBo
+YXZlIHRvIGJlIApjb25zaXN0ZW50IHdpdGggdGhlIGRpcmVjdGlvbiB1c2VkIGluIGRtYV9tYXBf
+Kj8KCkJUVywgZG1hZW5naW5lX3VubWFwIHJvdXRpbmUgb25seSBjYWxscyBkbWFfdW5tYXBfcGFn
+ZS4gU2hvdWxkIGl0IGtlZXAgCnRyYWNrIG9mIHRoZSBkbWFfbWFwIHJvdXRpbmUgdXNlZCBhbmQg
+Y2FsbCB0aGUgY29ycmVzcG9uZGluZyBkbWFfdW5tYXAgCnJvdXRpbmU/wqAgSW4gdGhlIGNhc2Ug
+b2YgdGhlIGludGVsIGlvbW11LCBpdCBkb2Vzbid0IG1hdHRlci4KClRoYW5rcwpLaXQKCj4KPiBV
+c2luZyBETUFfQklESVJFQ1RJT05BTCBqdXN0IGZvcmdvZXMgYW55IGhhcmR3YXJlIHNlY3VyaXR5
+IC8gcHJvdGVjdGlvbgo+IHRoYXQgdGhlIGJ1ZmZlciB3b3VsZCBoYXZlIGluIHRlcm1zIG9mIGRp
+cmVjdGlvbi4gR2VuZXJhbGx5IGl0J3MgZ29vZAo+IHByYWN0aWNlIHRvIHVzZSB0aGUgc3RyaWN0
+ZXN0IGRpcmVjdGlvbiB5b3UgY2FuLgo+Cj4+IEdpdmVuIHRoYXQgdXNpbmcgdGhlIHBjaSBiYXIg
+YWRkcmVzcyBhcyBpcyB3aXRob3V0IGdldHRpbmcgYW4gaW9tbXUKPj4gYWRkcmVzcyByZXN1bHRz
+IGluIHRoZSBzYW1lICJQVEUgV3JpdGUgYWNjZXNzIiBlcnJvciwgSSB3b25kZXIgaWYgdGhlcmUK
+Pj4gaXMgc29tZSBpbnRlcm5hbCAncHJvdCcgYXNzb2NpYXRlZCB3aXRoIHRoZSBub24tdHJhbnNs
+YXRlZCBwY2kgYmFyCj4+IGFkZHJlc3MgdGhhdCBqdXN0IG5lZWRzIHRvIGJlIHR3ZWFrZWQgdG8g
+aW5jbHVkZSBETUFfUFRFX1dSSVRFPz8/Cj4gTm8sIEkgZG9uJ3QgdGhpbmsgc28uIFRoZSAncHJv
+dCcgd2lsbCBiZSBhIHByb3BlcnR5IG9mIHRoZSBJT01NVS4gTm90Cj4gaGF2aW5nIGFuIGVudHJ5
+IGlzIHByb2JhYmx5IGp1c3QgdGhlIHNhbWUgKGZyb20gdGhlIHBlcnNwZWN0aXZlIG9mIHRoZQo+
+IGVycm9yIHlvdSBzZWUpIGFzIG9ubHkgaGF2aW5nIGFuIGVudHJ5IGZvciByZWFkaW5nLgo+Cj4g
+TG9nYW4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
+bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
+L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
