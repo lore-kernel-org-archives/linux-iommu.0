@@ -1,31 +1,23 @@
-From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
-Subject: Re: IOAT DMA w/IOMMU
-Date: Mon, 13 Aug 2018 08:21:52 -0700
-Message-ID: <3772d88a-e9ad-465a-c91f-df8f9c6219be@gigaio.com>
-References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
-	<f04fae39-645e-3c6e-07c0-b194260bf5de@deltatee.com>
-	<3f503940-db6a-ec75-ed15-1db99d5d48ef@gigaio.com>
-	<112A412BB11A1242B37129D931BCE5348382CFB2@fmsmsx117.amr.corp.intel.com>
-	<b8af340c-d40b-cb8c-987f-b394f1d6ec3e@gigaio.com>
-	<adf51c74-36fa-b61d-8497-27bd75178ba4@deltatee.com>
-	<aa9c3f41-efc9-8c68-a517-2736c8986621@gigaio.com>
-	<1170c096-a749-6ee3-32d4-ebba1d12adff@gigaio.com>
-	<929f3dfa-fbff-c582-3be5-c368f11feb7e@deltatee.com>
-	<460cc47f-6a8e-67b0-01a0-02f0c51df258@intel.com>
-	<0f653f8f-c7ae-831d-e238-2742590d9ea1@deltatee.com>
-	<6525fa4d-7d9b-0136-7206-f8351230af46@intel.com>
-	<f22c565e-ba49-c83d-3e51-7967664c7136@deltatee.com>
-	<499934e7-3734-1aee-37dd-b42a5d2a2608@intel.com>
-	<9d135f61-20c2-e966-4d7d-3e154384ea08@gigaio.com>
-	<0a9fa9c3-dbe4-6451-9c1a-06b662702f61@deltatee.com>
-	<a2391f6c-d73b-c140-edad-8cd6584dd437@gigaio.com>
-	<c8d69f9b-b3a6-76ee-1a90-b3dbaaa9b82b@arm.com>
+From: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Mon, 13 Aug 2018 15:23:01 -0400
+Message-ID: <20180813192301.GC3451@redhat.com>
+References: <20180806031252.GG91035@Turing-Arch-b>
+	<20180806153257.GB6002@redhat.com>
+	<11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
+	<20180808151835.GA3429@redhat.com>
+	<20180809080352.GI91035@Turing-Arch-b>
+	<20180809144613.GB3386@redhat.com>
+	<20180810033913.GK91035@Turing-Arch-b>
+	<0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
+	<6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+	<20180813092931.GL91035@Turing-Arch-b>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c8d69f9b-b3a6-76ee-1a90-b3dbaaa9b82b-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180813092931.GL91035@Turing-Arch-b>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -35,88 +27,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Dave Jiang <dave.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Cc: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>l
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAwOC8xMy8yMDE4IDA3OjU5IEFNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMTMvMDgv
-MTggMTU6MjMsIEtpdCBDaG93IHdyb3RlOgo+PiBPbiAwOC8xMC8yMDE4IDA3OjEwIFBNLCBMb2dh
-biBHdW50aG9ycGUgd3JvdGU6Cj4+Pgo+Pj4gT24gMTAvMDgvMTggMDY6NTMgUE0sIEtpdCBDaG93
-IHdyb3RlOgo+Pj4+IEkgd2FzIGFibGUgdG8gZmluYWxseSBzdWNjZWVkIGluIGRvaW5nIHRoZSBk
-bWEgdHJhbnNmZXJzIG92ZXIgaW9hdCAKPj4+PiBvbmx5Cj4+Pj4gd2hlbiBwcm90IGhhcyBETUFf
-UFRFX1dSSVRFIHNldCBieSBzZXR0aW5nIHRoZSBkaXJlY3Rpb24gdG8gZWl0aGVyCj4+Pj4gRE1B
-X0ZST01fREVWSUNFIG9yIERNQV9CSURJUkVDVElPTkFMLiBBbnkgaWRlYXMgaWYgdGhlIHByb3Qg
-c2V0dGluZ3MKPj4+PiBuZWVkIHRvIGJlIGNoYW5nZWQ/IEFyZSB0aGVyZSBhbnkgYmFkIHNpZGUg
-ZWZmZWN0cyBpZiBJIHVzZWQKPj4+PiBETUFfQklESVJFQ1RJT05BTD8KPj4+IEdvb2QgdG8gaGVh
-ciBpdC4gV2l0aG91dCBkaWdnaW5nIGludG8gdGhlIGRpcmVjdGlvbiBtdWNoIGFsbCBJIGNhbiBz
-YXkKPj4+IGlzIHRoYXQgaXQgY2FuIHNvbWV0aW1lcyBiZSB2ZXJ5IGNvbmZ1c2luZyB3aGF0IHRo
-ZSBkaXJlY3Rpb24gaXMuIAo+Pj4gQWRkaW5nCj4+PiBhbm90aGVyIFBDSSBkZXZpY2UganVzdCBh
-ZGRzIHRvIHRoZSBjb25mdXNpb24uCj4+IFllcCwgY29uZnVzaW5nIDopLgo+Pgo+PiA9PT09PT09
-PT09PT09PT09PT09PT09PSA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT0KPj4gRE1BX05PTkXCoMKgwqDCoMKgwqDCoCBubyBkaXJlY3Rpb24gKHVzZWQgZm9yIGRl
-YnVnZ2luZykKPj4gRE1BX1RPX0RFVklDRcKgwqDCoMKgwqDCoMKgIGRhdGEgaXMgZ29pbmcgZnJv
-bSB0aGUgbWVtb3J5IHRvIHRoZSBkZXZpY2UKPj4gRE1BX0ZST01fREVWSUNFwqDCoMKgwqDCoMKg
-wqAgZGF0YSBpcyBjb21pbmcgZnJvbSB0aGUgZGV2aWNlIHRvIHRoZSBtZW1vcnkKPj4gRE1BX0JJ
-RElSRUNUSU9OQUzCoMKgwqAgZGlyZWN0aW9uIGlzbid0IGtub3duCj4+ID09PT09PT09PT09PT09
-PT09PT09PT09ID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQo+
-Pgo+Pj4gSSBiZWxpZXZlLCB0aGUgZGlyZWN0aW9uIHNob3VsZCBiZSBmcm9tIHRoZSBJT0FUJ3Mg
-cG9pbnQgb2Ygdmlldy4gU28gaWYKPj4+IHRoZSBJT0FUIGlzIHdyaXRpbmcgdG8gdGhlIEJBUiB5
-b3UnZCBzZXQgRE1BX0ZST01fREVWSUNFIChpZS4gZGF0YSBpcwo+Pj4gY29taW5nIGZyb20gdGhl
-IElPQVQpIGFuZCBpZiBpdCdzIHJlYWRpbmcgeW91J2Qgc2V0IERNQV9UT19ERVZJQ0UgKGllLgo+
-Pj4gZGF0YSBpcyBnb2luZyB0byB0aGUgSU9BVCkuCj4+IEl0IHdvdWxkIGNlcnRhaW5seSBzZWVt
-IGxpa2UgRE1BX1RPX0RFVklDRSB3b3VsZCBiZSB0aGUgcHJvcGVyIAo+PiBjaG9pY2U7IElPQVQg
-aXMgdGhlIHBsdW1iaW5nIHRvIG1vdmUgaG9zdCBkYXRhIChtZW1vcnkpIHRvIHRoZSBiYXIgCj4+
-IGFkZHJlc3MgKGRldmljZSkuCj4KPiBFeGNlcHQgdGhhdCB0aGUgImRldmljZSIgaW4gcXVlc3Rp
-b24gaXMgdGhlIElPQVQgaXRzZWxmIChtb3JlIAo+IGdlbmVyYWxseSwgaXQgbWVhbnMgdGhlIGRl
-dmljZSByZXByZXNlbnRlZCBieSB0aGUgZmlyc3QgYXJndW1lbnQgdG8gCj4gZG1hX21hcF8qKCkg
-LSB0aGUgb25lIGFjdHVhbGx5IGVtaXR0aW5nIHRoZSByZWFkcyBhbmQgd3JpdGVzKS4gVGhlIAo+
-IGNvbnRleHQgb2YgYSBETUEgQVBJIGNhbGwgaXMgdGhlIGluZGl2aWR1YWwgbWFwcGluZyBpbiBx
-dWVzdGlvbiwgbm90IAo+IHdoYXRldmVyIG92ZXJhbGwgb3BlcmF0aW9uIGl0IG1heSBiZSBwYXJ0
-IG9mIC0geW91ciBleGFtcGxlIGFscmVhZHkgCj4gaW52b2x2ZXMgdHdvIHNlcGFyYXRlIG1hcHBp
-bmdzOiBvbmUgImZyb20iIHN5c3RlbSBtZW1vcnkgInRvIiB0aGUgRE1BIAo+IGVuZ2luZSwgYW5k
-IG9uZSAiZnJvbSIgdGhlIERNQSBlbmdpbmUgInRvIiBQQ0kgQkFSIG1lbW9yeS4KCk9LLCB0aGF0
-IG1ha2VzIHNlbnNlLsKgIFRoZSBtaWRkbGVtYW4gKGFrYSBETUEgZW5naW5lIGRldmljZSkgaXMg
-dGhlIGtleSAKaW4gdGhlIHRvL2Zyb20gcHV6emxlLiBUaGFua3MhCgoKPgo+IE5vdGUgdGhhdCB0
-aGUgRE1BIEFQSSdzIGRtYV9kaXJlY3Rpb24gaXMgYWxzbyBkaXN0aW5jdCBmcm9tIHRoZSAKPiBk
-bWFlbmdpbmUgQVBJJ3MgZG1hX3RyYW5zZmVyX2RpcmVjdGlvbiwgYW5kIHRoZXJlJ3MgcGxlbnR5
-IG9mIGZ1biB0byAKPiBiZSBoYWQgbWFwcGluZyBiZXR3ZWVuIHRoZSB0d28gLSBzZWUgcGwzMzAu
-YyBvciByY2FyLWRtYWMuYyBmb3Igb3RoZXIgCj4gZXhhbXBsZXMgb2YgZG1hX21hcF9yZXNvdXJj
-ZSgpIGZvciBzbGF2ZSBkZXZpY2VzIC0gbm8gZ3VhcmFudGVlcyB0aGF0IAo+IHRob3NlIGltcGxl
-bWVudGF0aW9ucyBhcmUgZW50aXJlbHkgY29ycmVjdCAoZXNwZWNpYWxseSB0aGUgb25lIEkgCj4g
-ZGlkISksIGJ1dCBpbiBwcmFjdGljZSB0aGV5IGRvIG1ha2UgdGhlICJETUEgZW5naW5lIGJlaGlu
-ZCBhbiBJT01NVSIgCj4gY2FzZSB3b3JrIGZvciBVQVJUcyBhbmQgc2ltaWxhciBzdHJhaWdodGZv
-cndhcmQgc2xhdmVzLgo+Cj4+IFdpbGwgZ28gd2l0aCB3aGF0IHdvcmtzIGFuZCBzZXQgRE1BX0ZS
-T01fREVWSUNFLgo+Pgo+PiBJbiBudGJfYXN5bmNfdHhfc3VibWl0LCBkb2VzIHRoZSBkaXJlY3Rp
-b24gdXNlZCBmb3IgdGhlIGRtYV9tYXAgCj4+IHJvdXRpbmVzIGZvciB0aGUgc3JjIGFuZCBkZXN0
-IGFkZHJlc3NlcyBuZWVkIHRvIGJlIGNvbnNpc3RlbnQ/Cj4KPiBJbiBnZW5lcmFsLCB0aGUgbWFw
-cGluZ3Mgb2Ygc291cmNlIGFuZCBkZXN0aW5hdGlvbiBhZGRyZXNzZXMgd291bGQgCj4gdHlwaWNh
-bGx5IGhhdmUgb3Bwb3NpdGUgZGlyZWN0aW9ucyBhcyBhYm92ZSwgdW5sZXNzIHRoZXkncmUgYm90
-aCAKPiBiaWRpcmVjdGlvbmFsLgo+Cj4+IEFuZCBkb2VzIHRoZSBkaXJlY3Rpb24gc2V0dGluZyBm
-b3IgdGhlIGRtYWVuZ2luZV91bm1hcF9kYXRhIGhhdmUgdG8gCj4+IGJlIGNvbnNpc3RlbnQgd2l0
-aCB0aGUgZGlyZWN0aW9uIHVzZWQgaW4gZG1hX21hcF8qPwo+Cj4gWWVzLCB0aGUgYXJndW1lbnRz
-IHRvIGFuIHVubWFwIGFyZSBleHBlY3RlZCB0byBtYXRjaCB3aGF0ZXZlciB3YXMgCj4gcGFzc2Vk
-IHRvIHRoZSBjb3JyZXNwb25kaW5nIG1hcCBjYWxsLiBDT05GSUdfRE1BX0FQSV9ERUJVRyBzaG91
-bGQgaGVscCAKPiBjYXRjaCBhbnkgbWlzaGFwcy4KPgo+IFJvYmluLgo+Cj4+IEJUVywgZG1hZW5n
-aW5lX3VubWFwIHJvdXRpbmUgb25seSBjYWxscyBkbWFfdW5tYXBfcGFnZS4gU2hvdWxkIGl0IAo+
-PiBrZWVwIHRyYWNrIG9mIHRoZSBkbWFfbWFwIHJvdXRpbmUgdXNlZCBhbmQgY2FsbCB0aGUgY29y
-cmVzcG9uZGluZyAKPj4gZG1hX3VubWFwIHJvdXRpbmU/wqAgSW4gdGhlIGNhc2Ugb2YgdGhlIGlu
-dGVsIGlvbW11LCBpdCBkb2Vzbid0IG1hdHRlci4KPj4KPj4gVGhhbmtzCj4+IEtpdAo+Pgo+Pj4K
-Pj4+IFVzaW5nIERNQV9CSURJUkVDVElPTkFMIGp1c3QgZm9yZ29lcyBhbnkgaGFyZHdhcmUgc2Vj
-dXJpdHkgLyBwcm90ZWN0aW9uCj4+PiB0aGF0IHRoZSBidWZmZXIgd291bGQgaGF2ZSBpbiB0ZXJt
-cyBvZiBkaXJlY3Rpb24uIEdlbmVyYWxseSBpdCdzIGdvb2QKPj4+IHByYWN0aWNlIHRvIHVzZSB0
-aGUgc3RyaWN0ZXN0IGRpcmVjdGlvbiB5b3UgY2FuLgo+Pj4KPj4+PiBHaXZlbiB0aGF0IHVzaW5n
-IHRoZSBwY2kgYmFyIGFkZHJlc3MgYXMgaXMgd2l0aG91dCBnZXR0aW5nIGFuIGlvbW11Cj4+Pj4g
-YWRkcmVzcyByZXN1bHRzIGluIHRoZSBzYW1lICJQVEUgV3JpdGUgYWNjZXNzIiBlcnJvciwgSSB3
-b25kZXIgaWYgCj4+Pj4gdGhlcmUKPj4+PiBpcyBzb21lIGludGVybmFsICdwcm90JyBhc3NvY2lh
-dGVkIHdpdGggdGhlIG5vbi10cmFuc2xhdGVkIHBjaSBiYXIKPj4+PiBhZGRyZXNzIHRoYXQganVz
-dCBuZWVkcyB0byBiZSB0d2Vha2VkIHRvIGluY2x1ZGUgRE1BX1BURV9XUklURT8/Pwo+Pj4gTm8s
-IEkgZG9uJ3QgdGhpbmsgc28uIFRoZSAncHJvdCcgd2lsbCBiZSBhIHByb3BlcnR5IG9mIHRoZSBJ
-T01NVS4gTm90Cj4+PiBoYXZpbmcgYW4gZW50cnkgaXMgcHJvYmFibHkganVzdCB0aGUgc2FtZSAo
-ZnJvbSB0aGUgcGVyc3BlY3RpdmUgb2YgdGhlCj4+PiBlcnJvciB5b3Ugc2VlKSBhcyBvbmx5IGhh
-dmluZyBhbiBlbnRyeSBmb3IgcmVhZGluZy4KPj4+Cj4+PiBMb2dhbgo+Pgo+PiBfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+PiBpb21tdSBtYWlsaW5nIGxp
-c3QKPj4gaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPj4gaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXUKCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Mon, Aug 13, 2018 at 05:29:31PM +0800, Kenneth Lee wrote:
+> =
+
+> I made a quick change basing on the RFCv1 here: =
+
+> =
+
+> https://github.com/Kenneth-Lee/linux-kernel-warpdrive/commits/warpdrive-v=
+0.6
+> =
+
+> I just made it compilable and not test it yet. But it shows how the idea =
+is
+> going to be.
+> =
+
+> The Pros is: most of the virtual device stuff can be removed. Resource
+> management is on the openned files only.
+> =
+
+> The Cons is: as Jean said, we have to redo something that has been done b=
+y VFIO.
+> These mainly are:
+> =
+
+> 1. Track the dma operation and remove them on resource releasing
+> 2. Pin the memory with gup and do accounting
+> =
+
+> It not going to be easy to make a decision...
+> =
+
+
+Maybe it would be good to list things you want do. Looking at your tree
+it seems you are re-inventing what dma-buf is already doing.
+
+So here is what i understand for SVM/SVA:
+    (1) allow userspace to create a command buffer for a device and bind
+        it to its address space (PASID)
+    (2) allow userspace to directly schedule commands on its command buffer
+
+No need to do tracking here as SVM/SVA which rely on PASID and something
+like PCIE ATS (address translation service). Userspace can shoot itself
+in the foot but nothing harmful can happen.
+
+
+Non SVM/SVA:
+    (3) allow userspace to wrap a region of its memory into an object so
+        that it can be DMA map (ie GUP + dma_map_page())
+    (4) Have userspace schedule command referencing object created in (3)
+        using an ioctl.
+
+We need to keep track of object usage by the hardware so that we know
+when it is safe to release resources (dma_unmap_page()). The dma-buf
+provides everything you want for (3) and (4). With dma-buf you create
+object and each time it is use by a device you associate a fence with
+it. When fence is signaled it means that the hardware is done using
+that object. Fence also allow proper synchronization between multiple
+devices. For instance making sure that the second device wait for the
+first device before starting doing its thing. dma-buf documentations is
+much more thorough explaining all this.
+
+
+Now from implementation point of view, maybe it would be a good idea
+to create something like the virtual gem driver. It is a virtual device
+that allow to create GEM object. So maybe we want a virtual device that
+allow to create dma-buf object from process memory and allow sharing of
+those dma-buf between multiple devices.
+
+Userspace would only have to talk to this virtual device to create
+object and wrap its memory around, then it could use this object against
+many actual devices.
+
+
+This decouples the memory management, that can be share between all
+devices, from the actual device driver, which is obviously specific to
+every single device.
+
+
+Note that dma-buf use file so that once all file reference are gone the
+resource can be free and cleanup can happen (dma_unmap_page() ...). This
+properly handle the resource lifetime issue you seem to worried about.
+
+Cheers,
+J=E9r=F4me
