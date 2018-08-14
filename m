@@ -1,34 +1,34 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 0/5] Qcom smmu-500 TLB invalidation errata for sdm845
-Date: Tue, 14 Aug 2018 12:40:09 +0100
-Message-ID: <20180814114009.GF28664@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 4/5] iommu/arm-smmu: Make way to add Qcom's smmu-500
+	errata handling
+Date: Tue, 14 Aug 2018 12:40:15 +0100
+Message-ID: <20180814114015.GG28664@arm.com>
 References: <20180814105528.20592-1-vivek.gautam@codeaurora.org>
+	<20180814105528.20592-5-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180814105528.20592-1-vivek.gautam@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: joro@8bytes.org, andy.gross@linaro.org, robin.murphy@arm.com, bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org, mark.rutland@arm.com, david.brown@linaro.org, tfiga@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, robdclark@gmail.com
+In-Reply-To: <20180814105528.20592-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vivek,
+On Tue, Aug 14, 2018 at 04:25:27PM +0530, Vivek Gautam wrote:
+> Cleanup to re-use some of the stuff
 
-On Tue, Aug 14, 2018 at 04:25:23PM +0530, Vivek Gautam wrote:
-> Qcom's implementation of arm,mmu-500 on sdm845 has a functional/performance
-> errata [1] because of which the TCU cache look ups are stalled during
-> invalidation cycle. This is mitigated by serializing all the invalidation
-> requests coming to the smmu.
+Maybe we should factor a few of the other bits whilst we're here.
 
-How does this implementation differ from the one supported by qcom_iommu.c?
-I notice you're adding firmware hooks here, which we avoided by having the
-extra driver. Please help me understand which devices exist, how they
-differ, and which drivers are intended to support them!
-
-Also -- you didn't CC all the maintainers for the firmware bits, so adding
-Andy here for that, and Rob for the previous question.
-
-Thanks,
+Or just write a proper commit message ;)
 
 Will
