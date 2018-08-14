@@ -1,123 +1,115 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3] iommu/iova: Optimise attempts to allocate iova from
- 32bit address range
-Date: Tue, 14 Aug 2018 15:15:22 +0100
-Message-ID: <24e7f5e8-3e73-01c9-c3a3-c16e09d332d7@arm.com>
-References: <20180814032127.6698-1-ganapatrao.kulkarni@cavium.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 4/5] iommu/arm-smmu: Make way to add Qcom's smmu-500
+	errata handling
+Date: Tue, 14 Aug 2018 17:59:08 +0100
+Message-ID: <cfca5369-eacd-bb4b-6f1e-68a56f72c327@arm.com>
+References: <20180814105528.20592-1-vivek.gautam@codeaurora.org>
+	<20180814105528.20592-5-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180814032127.6698-1-ganapatrao.kulkarni@cavium.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180814105528.20592-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/08/18 04:21, Ganapatrao Kulkarni wrote:
-> As an optimisation for PCI devices, there is always first attempt
-> been made to allocate iova from SAC address range. This will lead
-> to unnecessary attempts, when there are no free ranges
-> available. Adding fix to track recently failed iova address size and
-> allow further attempts, only if requested size is lesser than a failed
-> size. The size is updated when any replenish happens.
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+On 14/08/18 11:55, Vivek Gautam wrote:
+> Cleanup to re-use some of the stuff
+> 
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > ---
-> v3:
->      Update with comments [3] from Robin Murphy <robin.murphy@arm.com>
-> 
-> [3] https://lkml.org/lkml/2018/8/13/116
-> 
-> v2: update with comments [2] from Robin Murphy <robin.murphy@arm.com>
-> 
-> [2] https://lkml.org/lkml/2018/8/7/166
-> 
-> v1: Based on comments from Robin Murphy <robin.murphy@arm.com>
-> for patch [1]
-> 
-> [1] https://lkml.org/lkml/2018/4/19/780
-> 
->   drivers/iommu/iova.c | 22 +++++++++++++++-------
->   include/linux/iova.h |  1 +
->   2 files changed, 16 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 83fe262..28ba8b6 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	iovad->granule = granule;
->   	iovad->start_pfn = start_pfn;
->   	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
-> +	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
->   	iovad->flush_cb = NULL;
->   	iovad->fq = NULL;
->   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
-> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
->   
->   	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
->   	if (free->pfn_hi < iovad->dma_32bit_pfn &&
-> -	    free->pfn_lo >= cached_iova->pfn_lo)
-> +	    free->pfn_lo >= cached_iova->pfn_lo) {
->   		iovad->cached32_node = rb_next(&free->node);
-> +		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
-> +	}
->   
->   	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
->   	if (free->pfn_lo >= cached_iova->pfn_lo)
-> @@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   
->   	/* Walk the tree backwards */
->   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> +	if (limit_pfn <= iovad->dma_32bit_pfn &&
-> +			size >= iovad->max32_alloc_size)
-> +		goto iova32_full;
-> +
->   	curr = __get_cached_rbnode(iovad, limit_pfn);
->   	curr_iova = rb_entry(curr, struct iova, node);
->   	do {
-> @@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   		curr_iova = rb_entry(curr, struct iova, node);
->   	} while (curr && new_pfn <= curr_iova->pfn_hi);
->   
-> -	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
-> -		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> -		return -ENOMEM;
-> -	}
-> +	if (limit_pfn < size || new_pfn < iovad->start_pfn)
-> +		goto iova32_full;
->   
->   	/* pfn_lo will point to size aligned address if size_aligned is set */
->   	new->pfn_lo = new_pfn;
-> @@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   	__cached_rbnode_insert_update(iovad, new);
->   
->   	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> -
-> -
->   	return 0;
-> +
-> +iova32_full:
-> +	iovad->max32_alloc_size = size;
-> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> +	return -ENOMEM;
+>   drivers/iommu/arm-smmu.c | 32 +++++++++++++++++++++++++-------
+>   1 file changed, 25 insertions(+), 7 deletions(-)
+
+I think the overall diffstat would be an awful lot smaller if the 
+erratum workaround just has its own readl_poll_timeout() as it does in 
+the vendor kernel. The burst-polling loop is for minimising latency in 
+high-throughput situations, and if you're in a workaround which has to 
+lock *every* register write and issue two firmware calls around each 
+sync I think you're already well out of that game.
+
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 32e86df80428..75c146751c87 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -391,21 +391,31 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+>   	clear_bit(idx, map);
 >   }
 >   
->   static struct kmem_cache *iova_cache;
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 928442d..a930411 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -75,6 +75,7 @@ struct iova_domain {
->   	unsigned long	granule;	/* pfn granularity for this domain */
->   	unsigned long	start_pfn;	/* Lower limit for this domain */
->   	unsigned long	dma_32bit_pfn;
-> +	unsigned long	max32_alloc_size; /* Size of last failed allocation */
->   	struct iova	anchor;		/* rbtree lookup anchor */
->   	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
+> -/* Wait for any pending TLB invalidations to complete */
+> -static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+> -				void __iomem *sync, void __iomem *status)
+> +static int __arm_smmu_tlb_sync_wait(void __iomem *status)
+>   {
+>   	unsigned int spin_cnt, delay;
 >   
+> -	writel_relaxed(0, sync);
+>   	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
+>   		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+>   			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
+> -				return;
+> +				return 0;
+>   			cpu_relax();
+>   		}
+>   		udelay(delay);
+>   	}
+> +
+> +	return -EBUSY;
+> +}
+> +
+> +/* Wait for any pending TLB invalidations to complete */
+> +static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+> +				void __iomem *sync, void __iomem *status)
+> +{
+> +	writel_relaxed(0, sync);
+> +
+> +	if (!__arm_smmu_tlb_sync_wait(status))
+> +		return;
+> +
+>   	dev_err_ratelimited(smmu->dev,
+>   			    "TLB sync timed out -- SMMU may be deadlocked\n");
+>   }
+> @@ -461,8 +471,9 @@ static void arm_smmu_tlb_inv_context_s2(void *cookie)
+>   	arm_smmu_tlb_sync_global(smmu);
+>   }
+>   
+> -static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+> -					  size_t granule, bool leaf, void *cookie)
+> +static void __arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+> +					    size_t granule, bool leaf,
+> +					    void *cookie)
+>   {
+>   	struct arm_smmu_domain *smmu_domain = cookie;
+>   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> @@ -498,6 +509,13 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>   	}
+>   }
+>   
+> +static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+> +					  size_t granule, bool leaf,
+> +					  void *cookie)
+> +{
+> +	__arm_smmu_tlb_inv_range_nosync(iova, size, granule, leaf, cookie);
+> +}
+> +
+
+AFAICS even after patch #5 this does absolutely nothing except make the 
+code needlessly harder to read :(
+
+Robin.
+
+>   /*
+>    * On MMU-401 at least, the cost of firing off multiple TLBIVMIDs appears
+>    * almost negligible, but the benefit of getting the first one in as far ahead
 > 
