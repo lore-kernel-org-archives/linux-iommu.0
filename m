@@ -1,218 +1,182 @@
-From: Kenneth Lee <liguozhu@hisilicon.com>
-Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Tue, 14 Aug 2018 11:46:29 +0800
-Message-ID: <20180814034629.GM91035@Turing-Arch-b>
-References: <20180806153257.GB6002@redhat.com>
- <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
- <20180808151835.GA3429@redhat.com>
- <20180809080352.GI91035@Turing-Arch-b>
- <20180809144613.GB3386@redhat.com>
- <20180810033913.GK91035@Turing-Arch-b>
- <0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
- <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
- <20180813092931.GL91035@Turing-Arch-b>
- <20180813192301.GC3451@redhat.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
+	mode
+Date: Tue, 14 Aug 2018 16:33:41 +0800
+Message-ID: <5B7293E5.7040702@huawei.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+	<1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+	<89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
+	<5B597628.2020103@huawei.com>
+	<04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
+	<1d24541340334954969c58980ef85444@HXTBJIDCEMVIW01.hxtcorp.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180813192301.GC3451@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: Kenneth Lee <nek.in.cn@gmail.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thom
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1d24541340334954969c58980ef85444-lZSh27GicDvRFhMSnsQfeMEiO7E3kugT0e7PPNI6Mm0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Yang, Shunyong" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg
+	Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 13, 2018 at 03:23:01PM -0400, Jerome Glisse wrote:
-> Received: from popscn.huawei.com [10.3.17.45] by Turing-Arch-b with POP3
->  (fetchmail-6.3.26) for <kenny@localhost> (single-drop); Tue, 14 Aug 2018
->  03:30:02 +0800 (CST)
-> Received: from DGGEMM401-HUB.china.huawei.com (10.3.20.209) by
->  DGGEML402-HUB.china.huawei.com (10.3.17.38) with Microsoft SMTP Server
->  (TLS) id 14.3.399.0; Tue, 14 Aug 2018 03:23:25 +0800
-> Received: from dggwg01-in.huawei.com (172.30.65.34) by
->  DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server id
->  14.3.399.0; Tue, 14 Aug 2018 03:23:21 +0800
-> Received: from mx1.redhat.com (unknown [66.187.233.73])	by Forcepoint
->  Email with ESMTPS id 301B5D4F60895	for <liguozhu@hisilicon.com>; Tue, 14
->  Aug 2018 03:23:16 +0800 (CST)
-> Received: from smtp.corp.redhat.com
->  (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])	(using
->  TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))	(No client
->  certificate requested)	by mx1.redhat.com (Postfix) with ESMTPS id
->  4D0A14023461;	Mon, 13 Aug 2018 19:23:05 +0000 (UTC)
-> Received: from redhat.com (unknown [10.20.6.215])	by
->  smtp.corp.redhat.com (Postfix) with ESMTPS id 20D072156712;	Mon, 13 Aug
->  2018 19:23:03 +0000 (UTC)
-> Date: Mon, 13 Aug 2018 15:23:01 -0400
-> From: Jerome Glisse <jglisse@redhat.com>
-> To: Kenneth Lee <liguozhu@hisilicon.com>
-> CC: Kenneth Lee <nek.in.cn@gmail.com>, Jean-Philippe Brucker
->  <jean-philippe.brucker@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>,
->  "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet
->  <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo
->  Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org"
->  <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
->  "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org"
->  <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
->  <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com"
->  <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>,
->  "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe
->  Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>,
->  Hao Fang <fanghao11@huawei.com>, "David S . Miller" <davem@davemloft.net>,
->  "linux-accelerators@lists.ozlabs.org"
->  <linux-accelerators@lists.ozlabs.org>
-> Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
-> Message-ID: <20180813192301.GC3451@redhat.com>
-> References: <20180806031252.GG91035@Turing-Arch-b>
->  <20180806153257.GB6002@redhat.com>
->  <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
->  <20180808151835.GA3429@redhat.com> <20180809080352.GI91035@Turing-Arch-b>
->  <20180809144613.GB3386@redhat.com> <20180810033913.GK91035@Turing-Arch-b>
->  <0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
->  <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
->  <20180813092931.GL91035@Turing-Arch-b>
-> Content-Type: text/plain; charset="iso-8859-1"
-> Content-Disposition: inline
-> Content-Transfer-Encoding: 8bit
-> In-Reply-To: <20180813092931.GL91035@Turing-Arch-b>
-> User-Agent: Mutt/1.10.0 (2018-05-17)
-> X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-> X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
->  (mx1.redhat.com [10.11.55.6]); Mon, 13 Aug 2018 19:23:05 +0000 (UTC)
-> X-Greylist: inspected by milter-greylist-4.5.16 (mx1.redhat.com
->  [10.11.55.6]); Mon, 13 Aug 2018 19:23:05 +0000 (UTC) for IP:'10.11.54.6'
->  DOMAIN:'int-mx06.intmail.prod.int.rdu2.redhat.com'
->  HELO:'smtp.corp.redhat.com' FROM:'jglisse@redhat.com' RCPT:''
-> Return-Path: jglisse@redhat.com
-> X-MS-Exchange-Organization-AuthSource: DGGEMM401-HUB.china.huawei.com
-> X-MS-Exchange-Organization-AuthAs: Anonymous
-> MIME-Version: 1.0
+
+
+On 2018/8/6 9:32, Yang, Shunyong wrote:
+> Hi, Robin,
 > 
-> On Mon, Aug 13, 2018 at 05:29:31PM +0800, Kenneth Lee wrote:
-> > 
-> > I made a quick change basing on the RFCv1 here: 
-> > 
-> > https://github.com/Kenneth-Lee/linux-kernel-warpdrive/commits/warpdrive-v0.6
-> > 
-> > I just made it compilable and not test it yet. But it shows how the idea is
-> > going to be.
-> > 
-> > The Pros is: most of the virtual device stuff can be removed. Resource
-> > management is on the openned files only.
-> > 
-> > The Cons is: as Jean said, we have to redo something that has been done by VFIO.
-> > These mainly are:
-> > 
-> > 1. Track the dma operation and remove them on resource releasing
-> > 2. Pin the memory with gup and do accounting
-> > 
-> > It not going to be easy to make a decision...
-> > 
+> On 2018/7/26 22:37, Robin Murphy wrote:
+>> On 2018-07-26 8:20 AM, Leizhen (ThunderTown) wrote:
+>>> On 2018/7/25 6:25, Robin Murphy wrote:
+>>>> On 2018-07-12 7:18 AM, Zhen Lei wrote:
+>>>>> To support the non-strict mode, now we only tlbi and sync for the strict
+>>>>> mode. But for the non-leaf case, always follow strict mode.
+>>>>>
+>>>>> Use the lowest bit of the iova parameter to pass the strict mode:
+>>>>> 0, IOMMU_STRICT;
+>>>>> 1, IOMMU_NON_STRICT;
+>>>>> Treat 0 as IOMMU_STRICT, so that the unmap operation can compatible with
+>>>>> other IOMMUs which still use strict mode.
+>>>>>
+>>>>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>>>>> ---
+>>>>>    drivers/iommu/io-pgtable-arm.c | 23 ++++++++++++++---------
+>>>>>    1 file changed, 14 insertions(+), 9 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+>>>>> index 010a254..9234db3 100644
+>>>>> --- a/drivers/iommu/io-pgtable-arm.c
+>>>>> +++ b/drivers/iommu/io-pgtable-arm.c
+>>>>> @@ -292,7 +292,7 @@ static void __arm_lpae_set_pte(arm_lpae_iopte *ptep, arm_lpae_iopte pte,
+>>>>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>>                       unsigned long iova, size_t size, int lvl,
+>>>>> -                   arm_lpae_iopte *ptep);
+>>>>> +                   arm_lpae_iopte *ptep, int strict);
+>>>>>      static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>>>>                    phys_addr_t paddr, arm_lpae_iopte prot,
+>>>>> @@ -334,7 +334,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>>>>>            size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+>>>>>              tblp = ptep - ARM_LPAE_LVL_IDX(iova, lvl, data);
+>>>>> -        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp) != sz))
+>>>>> +        if (WARN_ON(__arm_lpae_unmap(data, iova, sz, lvl, tblp, IOMMU_STRICT) != sz))
+>>>>>                return -EINVAL;
+>>>>>        }
+>>>>>    @@ -531,7 +531,7 @@ static void arm_lpae_free_pgtable(struct io_pgtable *iop)
+>>>>>    static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>>>>                           unsigned long iova, size_t size,
+>>>>>                           arm_lpae_iopte blk_pte, int lvl,
+>>>>> -                       arm_lpae_iopte *ptep)
+>>>>> +                       arm_lpae_iopte *ptep, int strict)
+>>>>
+>>>> DMA code should never ever be splitting blocks anyway, and frankly the TLB maintenance here is dodgy enough (since we can't reasonably do break-before make as VMSA says we should) that I *really* don't want to introduce any possibility of making it more asynchronous. I'd much rather just hard-code the expectation of strict == true for this.
+>>>
+>>> OK, I will hard-code strict=true for it.
+>>>
+>>> But since it never ever be happened, why did not give a warning at the beginning?
+>>
+>> Because DMA code is not the only caller of iommu_map/unmap. It's 
+>> perfectly legal in the IOMMU API to partially unmap a previous mapping 
+>> such that a block entry needs to be split. The DMA API, however, is a 
+>> lot more constrined, and thus by construction the iommu-dma layer will 
+>> never generate a block-splitting iommu_unmap() except as a result of 
+>> illegal DMA API usage, and we obviously do not need to optimise for that 
+>> (you will get a warning about mismatched unmaps under dma-debug, but 
+>> it's a bit too expensive to police in the general case).
+>>
 > 
-> Maybe it would be good to list things you want do. Looking at your tree
-> it seems you are re-inventing what dma-buf is already doing.
+> When I was reading the code around arm_lpae_split_blk_unmap(), I was
+> curious in which scenario a block will be split. Now with your comments
+> "Because DMA code is not the only caller of iommu_map/unmap", it seems
+> depending on the user.
+> 
+> Would you please explain this further? I mean besides DMA, which user
+> will use iommu_map/umap and how it split a block.
 
-My English is quite limited;). I think I did not explain it well in the WrapDrive
-document. Please let me try again here:
-
-The requirement of WrapDrive is simple. Many acceleration requirements are from
-user space, such as OpenSSL, AI, and so on. We want to provide a framework for
-the user land application to summon the accelerator easily.
-
-So the scenario is simple: The application is doing its job and faces a tough
-and boring task, say compression. Then it drops the data pointer to the command
-queue and let the accelerator do it at its bidding, and continue its job until
-the task is done, or its other task synchronously
-
-My understanding to the dma-buf is driver oriented. The buffer is created by one
-driver and exported as fd to user space, then the user space can share it with
-some attached devices.
-
-But our scenario is that the whole buffer is from the user space. The
-application will directly assign the pointer to the command queue. The hardware
-will directly use this address.  The kernel should set this particular virtual
-memory or the whole process space to the IOMMU with its pasid. So the hardware
-can use the process' address, which may not only be the address assigning in the
-command queue, it can also be an address inside the memory itself.
-
-To let this work, we have to pin the memory or set a page fault handler when the
-memory is shared (to the hardware). And... the big work of pinning memory is not
-gup (get user page), but rlimit accounting:)
+I also think that arm_lpae_split_blk_unmap() scenario is not exist, maybe
+we should remove it, and give a warning for this wrong usage.
 
 > 
-> So here is what i understand for SVM/SVA:
->     (1) allow userspace to create a command buffer for a device and bind
->         it to its address space (PASID)
->     (2) allow userspace to directly schedule commands on its command buffer
+> Thanks.
+> Shunyong.
 > 
-> No need to do tracking here as SVM/SVA which rely on PASID and something
-> like PCIE ATS (address translation service). Userspace can shoot itself
-> in the foot but nothing harmful can happen.
+>>
+>>>>>    {
+>>>>>        struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>>>>>        arm_lpae_iopte pte, *tablep;
+>>>>> @@ -576,15 +576,18 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>>>>        }
+>>>>>          if (unmap_idx < 0)
+>>>>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+>>>>> +        return __arm_lpae_unmap(data, iova, size, lvl, tablep, strict);
+>>>>>          io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+>>>>> +    if (!strict)
+>>>>> +        io_pgtable_tlb_sync(&data->iop);
+>>>>> +
+>>>>>        return size;
+>>>>>    }
+>>>>>      static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>>                       unsigned long iova, size_t size, int lvl,
+>>>>> -                   arm_lpae_iopte *ptep)
+>>>>> +                   arm_lpae_iopte *ptep, int strict)
+>>>>>    {
+>>>>>        arm_lpae_iopte pte;
+>>>>>        struct io_pgtable *iop = &data->iop;
+>>>>> @@ -609,7 +612,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>>                io_pgtable_tlb_sync(iop);
+>>>>>                ptep = iopte_deref(pte, data);
+>>>>>                __arm_lpae_free_pgtable(data, lvl + 1, ptep);
+>>>>> -        } else {
+>>>>> +        } else if (strict) {
+>>>>>                io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+>>>>>            }
+>>>>>    @@ -620,25 +623,27 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>>>>             * minus the part we want to unmap
+>>>>>             */
+>>>>>            return arm_lpae_split_blk_unmap(data, iova, size, pte,
+>>>>> -                        lvl + 1, ptep);
+>>>>> +                        lvl + 1, ptep, strict);
+>>>>>        }
+>>>>>          /* Keep on walkin' */
+>>>>>        ptep = iopte_deref(pte, data);
+>>>>> -    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep);
+>>>>> +    return __arm_lpae_unmap(data, iova, size, lvl + 1, ptep, strict);
+>>>>>    }
+>>>>>      static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>>>>>                     size_t size)
+>>>>>    {
+>>>>> +    int strict = ((iova & IOMMU_STRICT_MODE_MASK) == IOMMU_STRICT);
+>>>>>        struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>>>>>        arm_lpae_iopte *ptep = data->pgd;
+>>>>>        int lvl = ARM_LPAE_START_LVL(data);
+>>>>>    +    iova &= ~IOMMU_STRICT_MODE_MASK;
+>>>>>        if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+>>>>>            return 0;
+>>>>>    -    return __arm_lpae_unmap(data, iova, size, lvl, ptep);
+>>>>> +    return __arm_lpae_unmap(data, iova, size, lvl, ptep, strict);
+>>>>>    }
+>>>>>      static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+>>>>>
+>>>>
+>>>> .
+>>>>
+>>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
 > 
-
-Yes, we can release the whole page table based on PASID (It also need Jean to
-provide this interface;)). But the gup part still need to be tracked. (This is
-what is done in VFIO)
-
 > 
-> Non SVM/SVA:
->     (3) allow userspace to wrap a region of its memory into an object so
->         that it can be DMA map (ie GUP + dma_map_page())
->     (4) Have userspace schedule command referencing object created in (3)
->         using an ioctl.
-
-Yes, this is going to be something like NOIOMMU mode in VFIO. The hardware have
-to accept DMA/physical address. But anyway, this not the major intension of
-WrapDrive.
-
+> .
 > 
-> We need to keep track of object usage by the hardware so that we know
-> when it is safe to release resources (dma_unmap_page()). The dma-buf
-> provides everything you want for (3) and (4). With dma-buf you create
-> object and each time it is use by a device you associate a fence with
-> it. When fence is signaled it means that the hardware is done using
-> that object. Fence also allow proper synchronization between multiple
-> devices. For instance making sure that the second device wait for the
-> first device before starting doing its thing. dma-buf documentations is
-> much more thorough explaining all this.
-> 
-
-Your idea hints me that the dma_buf design is based on sharing memory from the
-driver, not from the user space. That's why the signal is based on the buffer
-itself, because the buffer can be used again and again.
-
-This is good for performance. The cost is high if remap the data every time. But
-if consider we can devote the whole application space with SVM/SVA support. This
-can become acceptable.
-
-> 
-> Now from implementation point of view, maybe it would be a good idea
-> to create something like the virtual gem driver. It is a virtual device
-> that allow to create GEM object. So maybe we want a virtual device that
-> allow to create dma-buf object from process memory and allow sharing of
-> those dma-buf between multiple devices.
-> 
-> Userspace would only have to talk to this virtual device to create
-> object and wrap its memory around, then it could use this object against
-> many actual devices.
-> 
-> 
-> This decouples the memory management, that can be share between all
-> devices, from the actual device driver, which is obviously specific to
-> every single device.
-> 
-
-Forcing the application to use the device allocate memory is an alluring choice,
-it makes thing simple. Let us consider it for a while...
-
-> 
-> Note that dma-buf use file so that once all file reference are gone the
-> resource can be free and cleanup can happen (dma_unmap_page() ...). This
-> properly handle the resource lifetime issue you seem to worried about.
-> 
-> Cheers,
-> Jérôme
 
 -- 
-			-Kenneth(Hisilicon)
+Thanks!
+BestRegards
