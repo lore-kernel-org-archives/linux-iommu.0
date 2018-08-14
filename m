@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/3] iommu/dma: Use fast DMA domain lookup
-Date: Tue, 14 Aug 2018 14:04:17 +0100
-Message-ID: <9223183f5ec32a0a88b9b70800ca7eef8819874a.1534250425.git.robin.murphy@arm.com>
+Subject: [PATCH 3/3] arm64/dma-mapping: Mildly optimise non-coherent IOMMU ops
+Date: Tue, 14 Aug 2018 14:04:18 +0100
+Message-ID: <52b017ead032f90e5f2b70b87747a49eb86209c8.1534250425.git.robin.murphy@arm.com>
 References: <cover.1534250425.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,110 +21,58 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Most parts of iommu-dma already assume they are operating on a default
-domain set up by iommu_dma_init_domain(), and can be converted straight
-over to avoid the refcounting bottleneck. MSI page mappings may be in
-an unmanaged domain with an explicit MSI-only cookie, so retain the
-non-specific lookup, but that's OK since they're far from a contended
-fast path either way.
+Whilst the symmetry of deferring to the existing sync callback in
+__iommu_map_page() is nice, taking a round-trip through
+iommu_iova_to_phys() is a pretty heavyweight way to get an address we
+can trivially compute from the page we already have. Tweaking it to just
+perform the cache maintenance directly when appropriate doesn't really
+make the code any more complicated, and the runtime efficiency gain can
+only be a benefit.
+
+Furthermore, the sync operations themselves know they can only be
+invoked on a managed DMA ops domain, so can use the fast specific domain
+lookup to avoid excessive manipulation of the group refcount
+(particularly in the scatterlist cases).
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/dma-iommu.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ arch/arm64/mm/dma-mapping.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 8f549bdb866d..a27eedc16b32 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -510,7 +510,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
- void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
- 		dma_addr_t *handle)
- {
--	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), *handle, size);
-+	__iommu_dma_unmap(iommu_get_dma_domain(dev), *handle, size);
- 	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
- 	*handle = IOMMU_MAPPING_ERROR;
- }
-@@ -537,7 +537,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 		unsigned long attrs, int prot, dma_addr_t *handle,
- 		void (*flush_page)(struct device *, const void *, phys_addr_t))
- {
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	struct page **pages;
-@@ -625,9 +625,8 @@ int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 61e93f0b5482..5d4144093c20 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -712,7 +712,7 @@ static void __iommu_sync_single_for_cpu(struct device *dev,
+ 	if (is_device_dma_coherent(dev))
+ 		return;
+ 
+-	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
++	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dev_addr);
+ 	__dma_unmap_area(phys_to_virt(phys), size, dir);
  }
  
- static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
--		size_t size, int prot)
-+		size_t size, int prot, struct iommu_domain *domain)
- {
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	size_t iova_off = 0;
- 	dma_addr_t iova;
-@@ -651,13 +650,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
- dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
- 		unsigned long offset, size_t size, int prot)
- {
--	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot);
-+	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot,
-+			iommu_get_dma_domain(dev));
+@@ -725,7 +725,7 @@ static void __iommu_sync_single_for_device(struct device *dev,
+ 	if (is_device_dma_coherent(dev))
+ 		return;
+ 
+-	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
++	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dev_addr);
+ 	__dma_map_area(phys_to_virt(phys), size, dir);
  }
  
- void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
- 		enum dma_data_direction dir, unsigned long attrs)
- {
--	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle, size);
-+	__iommu_dma_unmap(iommu_get_dma_domain(dev), handle, size);
+@@ -738,9 +738,9 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
+ 	int prot = dma_info_to_prot(dir, coherent, attrs);
+ 	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
+ 
+-	if (!iommu_dma_mapping_error(dev, dev_addr) &&
+-	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
+-		__iommu_sync_single_for_device(dev, dev_addr, size, dir);
++	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    !iommu_dma_mapping_error(dev, dev_addr))
++		__dma_map_area(page_address(page), size, dir);
+ 
+ 	return dev_addr;
  }
- 
- /*
-@@ -745,7 +745,7 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
- int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		int nents, int prot)
- {
--	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	struct scatterlist *s, *prev = NULL;
-@@ -830,20 +830,21 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		sg = tmp;
- 	}
- 	end = sg_dma_address(sg) + sg_dma_len(sg);
--	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), start, end - start);
-+	__iommu_dma_unmap(iommu_get_dma_domain(dev), start, end - start);
- }
- 
- dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
- 	return __iommu_dma_map(dev, phys, size,
--			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
-+			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
-+			iommu_get_dma_domain(dev));
- }
- 
- void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
--	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle, size);
-+	__iommu_dma_unmap(iommu_get_dma_domain(dev), handle, size);
- }
- 
- int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
-@@ -869,7 +870,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
- 	if (!msi_page)
- 		return NULL;
- 
--	iova = __iommu_dma_map(dev, msi_addr, size, prot);
-+	iova = __iommu_dma_map(dev, msi_addr, size, prot, domain);
- 	if (iommu_dma_mapping_error(dev, iova))
- 		goto out_free_page;
- 
 -- 
 2.17.1.dirty
