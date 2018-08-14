@@ -1,126 +1,218 @@
-From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3] iommu/iova: Optimise attempts to allocate iova from 32bit
-	address range
-Date: Tue, 14 Aug 2018 08:51:27 +0530
-Message-ID: <20180814032127.6698-1-ganapatrao.kulkarni@cavium.com>
+From: Kenneth Lee <liguozhu@hisilicon.com>
+Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Tue, 14 Aug 2018 11:46:29 +0800
+Message-ID: <20180814034629.GM91035@Turing-Arch-b>
+References: <20180806153257.GB6002@redhat.com>
+ <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
+ <20180808151835.GA3429@redhat.com>
+ <20180809080352.GI91035@Turing-Arch-b>
+ <20180809144613.GB3386@redhat.com>
+ <20180810033913.GK91035@Turing-Arch-b>
+ <0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
+ <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+ <20180813092931.GL91035@Turing-Arch-b>
+ <20180813192301.GC3451@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180813192301.GC3451@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Glisse <jglisse@redhat.com>
+Cc: Kenneth Lee <nek.in.cn@gmail.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com" <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>, "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe Ombredanne <pombredanne@nexb.com>, Thom
 List-Id: iommu@lists.linux-foundation.org
 
-As an optimisation for PCI devices, there is always first attempt
-been made to allocate iova from SAC address range. This will lead
-to unnecessary attempts, when there are no free ranges
-available. Adding fix to track recently failed iova address size and
-allow further attempts, only if requested size is lesser than a failed
-size. The size is updated when any replenish happens.
+On Mon, Aug 13, 2018 at 03:23:01PM -0400, Jerome Glisse wrote:
+> Received: from popscn.huawei.com [10.3.17.45] by Turing-Arch-b with POP3
+>  (fetchmail-6.3.26) for <kenny@localhost> (single-drop); Tue, 14 Aug 2018
+>  03:30:02 +0800 (CST)
+> Received: from DGGEMM401-HUB.china.huawei.com (10.3.20.209) by
+>  DGGEML402-HUB.china.huawei.com (10.3.17.38) with Microsoft SMTP Server
+>  (TLS) id 14.3.399.0; Tue, 14 Aug 2018 03:23:25 +0800
+> Received: from dggwg01-in.huawei.com (172.30.65.34) by
+>  DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server id
+>  14.3.399.0; Tue, 14 Aug 2018 03:23:21 +0800
+> Received: from mx1.redhat.com (unknown [66.187.233.73])	by Forcepoint
+>  Email with ESMTPS id 301B5D4F60895	for <liguozhu@hisilicon.com>; Tue, 14
+>  Aug 2018 03:23:16 +0800 (CST)
+> Received: from smtp.corp.redhat.com
+>  (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])	(using
+>  TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))	(No client
+>  certificate requested)	by mx1.redhat.com (Postfix) with ESMTPS id
+>  4D0A14023461;	Mon, 13 Aug 2018 19:23:05 +0000 (UTC)
+> Received: from redhat.com (unknown [10.20.6.215])	by
+>  smtp.corp.redhat.com (Postfix) with ESMTPS id 20D072156712;	Mon, 13 Aug
+>  2018 19:23:03 +0000 (UTC)
+> Date: Mon, 13 Aug 2018 15:23:01 -0400
+> From: Jerome Glisse <jglisse@redhat.com>
+> To: Kenneth Lee <liguozhu@hisilicon.com>
+> CC: Kenneth Lee <nek.in.cn@gmail.com>, Jean-Philippe Brucker
+>  <jean-philippe.brucker@arm.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+>  "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet
+>  <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Zaibo
+>  Xu <xuzaibo@huawei.com>, "linux-doc@vger.kernel.org"
+>  <linux-doc@vger.kernel.org>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+>  "Tian, Kevin" <kevin.tian@intel.com>, "iommu@lists.linux-foundation.org"
+>  <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
+>  <linux-kernel@vger.kernel.org>, "linuxarm@huawei.com"
+>  <linuxarm@huawei.com>, Alex Williamson <alex.williamson@redhat.com>,
+>  "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, Philippe
+>  Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>,
+>  Hao Fang <fanghao11@huawei.com>, "David S . Miller" <davem@davemloft.net>,
+>  "linux-accelerators@lists.ozlabs.org"
+>  <linux-accelerators@lists.ozlabs.org>
+> Subject: Re: [RFC PATCH 0/7] A General Accelerator Framework, WarpDrive
+> Message-ID: <20180813192301.GC3451@redhat.com>
+> References: <20180806031252.GG91035@Turing-Arch-b>
+>  <20180806153257.GB6002@redhat.com>
+>  <11bace0e-dc14-5d2c-f65c-25b852f4e9ca@gmail.com>
+>  <20180808151835.GA3429@redhat.com> <20180809080352.GI91035@Turing-Arch-b>
+>  <20180809144613.GB3386@redhat.com> <20180810033913.GK91035@Turing-Arch-b>
+>  <0f6bac9b-8381-1874-9367-46b5f4cef56e@arm.com>
+>  <6ea4dcfd-d539-93e4-acf1-d09ea35f0ddc@gmail.com>
+>  <20180813092931.GL91035@Turing-Arch-b>
+> Content-Type: text/plain; charset="iso-8859-1"
+> Content-Disposition: inline
+> Content-Transfer-Encoding: 8bit
+> In-Reply-To: <20180813092931.GL91035@Turing-Arch-b>
+> User-Agent: Mutt/1.10.0 (2018-05-17)
+> X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+> X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+>  (mx1.redhat.com [10.11.55.6]); Mon, 13 Aug 2018 19:23:05 +0000 (UTC)
+> X-Greylist: inspected by milter-greylist-4.5.16 (mx1.redhat.com
+>  [10.11.55.6]); Mon, 13 Aug 2018 19:23:05 +0000 (UTC) for IP:'10.11.54.6'
+>  DOMAIN:'int-mx06.intmail.prod.int.rdu2.redhat.com'
+>  HELO:'smtp.corp.redhat.com' FROM:'jglisse@redhat.com' RCPT:''
+> Return-Path: jglisse@redhat.com
+> X-MS-Exchange-Organization-AuthSource: DGGEMM401-HUB.china.huawei.com
+> X-MS-Exchange-Organization-AuthAs: Anonymous
+> MIME-Version: 1.0
+> 
+> On Mon, Aug 13, 2018 at 05:29:31PM +0800, Kenneth Lee wrote:
+> > 
+> > I made a quick change basing on the RFCv1 here: 
+> > 
+> > https://github.com/Kenneth-Lee/linux-kernel-warpdrive/commits/warpdrive-v0.6
+> > 
+> > I just made it compilable and not test it yet. But it shows how the idea is
+> > going to be.
+> > 
+> > The Pros is: most of the virtual device stuff can be removed. Resource
+> > management is on the openned files only.
+> > 
+> > The Cons is: as Jean said, we have to redo something that has been done by VFIO.
+> > These mainly are:
+> > 
+> > 1. Track the dma operation and remove them on resource releasing
+> > 2. Pin the memory with gup and do accounting
+> > 
+> > It not going to be easy to make a decision...
+> > 
+> 
+> Maybe it would be good to list things you want do. Looking at your tree
+> it seems you are re-inventing what dma-buf is already doing.
 
-Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
-v3:
-    Update with comments [3] from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+My English is quite limited;). I think I did not explain it well in the WrapDrive
+document. Please let me try again here:
 
-[3] https://lkml.org/lkml/2018/8/13/116
+The requirement of WrapDrive is simple. Many acceleration requirements are from
+user space, such as OpenSSL, AI, and so on. We want to provide a framework for
+the user land application to summon the accelerator easily.
 
-v2: update with comments [2] from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+So the scenario is simple: The application is doing its job and faces a tough
+and boring task, say compression. Then it drops the data pointer to the command
+queue and let the accelerator do it at its bidding, and continue its job until
+the task is done, or its other task synchronously
 
-[2] https://lkml.org/lkml/2018/8/7/166
+My understanding to the dma-buf is driver oriented. The buffer is created by one
+driver and exported as fd to user space, then the user space can share it with
+some attached devices.
 
-v1: Based on comments from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-for patch [1]
+But our scenario is that the whole buffer is from the user space. The
+application will directly assign the pointer to the command queue. The hardware
+will directly use this address.  The kernel should set this particular virtual
+memory or the whole process space to the IOMMU with its pasid. So the hardware
+can use the process' address, which may not only be the address assigning in the
+command queue, it can also be an address inside the memory itself.
 
-[1] https://lkml.org/lkml/2018/4/19/780
+To let this work, we have to pin the memory or set a page fault handler when the
+memory is shared (to the hardware). And... the big work of pinning memory is not
+gup (get user page), but rlimit accounting:)
 
- drivers/iommu/iova.c | 22 +++++++++++++++-------
- include/linux/iova.h |  1 +
- 2 files changed, 16 insertions(+), 7 deletions(-)
+> 
+> So here is what i understand for SVM/SVA:
+>     (1) allow userspace to create a command buffer for a device and bind
+>         it to its address space (PASID)
+>     (2) allow userspace to directly schedule commands on its command buffer
+> 
+> No need to do tracking here as SVM/SVA which rely on PASID and something
+> like PCIE ATS (address translation service). Userspace can shoot itself
+> in the foot but nothing harmful can happen.
+> 
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 83fe262..28ba8b6 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->granule = granule;
- 	iovad->start_pfn = start_pfn;
- 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
-+	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
- 	iovad->flush_cb = NULL;
- 	iovad->fq = NULL;
- 	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
-@@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
- 
- 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
- 	if (free->pfn_hi < iovad->dma_32bit_pfn &&
--	    free->pfn_lo >= cached_iova->pfn_lo)
-+	    free->pfn_lo >= cached_iova->pfn_lo) {
- 		iovad->cached32_node = rb_next(&free->node);
-+		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
-+	}
- 
- 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
- 	if (free->pfn_lo >= cached_iova->pfn_lo)
-@@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 
- 	/* Walk the tree backwards */
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-+	if (limit_pfn <= iovad->dma_32bit_pfn &&
-+			size >= iovad->max32_alloc_size)
-+		goto iova32_full;
-+
- 	curr = __get_cached_rbnode(iovad, limit_pfn);
- 	curr_iova = rb_entry(curr, struct iova, node);
- 	do {
-@@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 		curr_iova = rb_entry(curr, struct iova, node);
- 	} while (curr && new_pfn <= curr_iova->pfn_hi);
- 
--	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
--		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--		return -ENOMEM;
--	}
-+	if (limit_pfn < size || new_pfn < iovad->start_pfn)
-+		goto iova32_full;
- 
- 	/* pfn_lo will point to size aligned address if size_aligned is set */
- 	new->pfn_lo = new_pfn;
-@@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	__cached_rbnode_insert_update(iovad, new);
- 
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--
--
- 	return 0;
-+
-+iova32_full:
-+	iovad->max32_alloc_size = size;
-+	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	return -ENOMEM;
- }
- 
- static struct kmem_cache *iova_cache;
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 928442d..a930411 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -75,6 +75,7 @@ struct iova_domain {
- 	unsigned long	granule;	/* pfn granularity for this domain */
- 	unsigned long	start_pfn;	/* Lower limit for this domain */
- 	unsigned long	dma_32bit_pfn;
-+	unsigned long	max32_alloc_size; /* Size of last failed allocation */
- 	struct iova	anchor;		/* rbtree lookup anchor */
- 	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
- 
+Yes, we can release the whole page table based on PASID (It also need Jean to
+provide this interface;)). But the gup part still need to be tracked. (This is
+what is done in VFIO)
+
+> 
+> Non SVM/SVA:
+>     (3) allow userspace to wrap a region of its memory into an object so
+>         that it can be DMA map (ie GUP + dma_map_page())
+>     (4) Have userspace schedule command referencing object created in (3)
+>         using an ioctl.
+
+Yes, this is going to be something like NOIOMMU mode in VFIO. The hardware have
+to accept DMA/physical address. But anyway, this not the major intension of
+WrapDrive.
+
+> 
+> We need to keep track of object usage by the hardware so that we know
+> when it is safe to release resources (dma_unmap_page()). The dma-buf
+> provides everything you want for (3) and (4). With dma-buf you create
+> object and each time it is use by a device you associate a fence with
+> it. When fence is signaled it means that the hardware is done using
+> that object. Fence also allow proper synchronization between multiple
+> devices. For instance making sure that the second device wait for the
+> first device before starting doing its thing. dma-buf documentations is
+> much more thorough explaining all this.
+> 
+
+Your idea hints me that the dma_buf design is based on sharing memory from the
+driver, not from the user space. That's why the signal is based on the buffer
+itself, because the buffer can be used again and again.
+
+This is good for performance. The cost is high if remap the data every time. But
+if consider we can devote the whole application space with SVM/SVA support. This
+can become acceptable.
+
+> 
+> Now from implementation point of view, maybe it would be a good idea
+> to create something like the virtual gem driver. It is a virtual device
+> that allow to create GEM object. So maybe we want a virtual device that
+> allow to create dma-buf object from process memory and allow sharing of
+> those dma-buf between multiple devices.
+> 
+> Userspace would only have to talk to this virtual device to create
+> object and wrap its memory around, then it could use this object against
+> many actual devices.
+> 
+> 
+> This decouples the memory management, that can be share between all
+> devices, from the actual device driver, which is obviously specific to
+> every single device.
+> 
+
+Forcing the application to use the device allocate memory is an alluring choice,
+it makes thing simple. Let us consider it for a while...
+
+> 
+> Note that dma-buf use file so that once all file reference are gone the
+> resource can be free and cleanup can happen (dma_unmap_page() ...). This
+> properly handle the resource lifetime issue you seem to worried about.
+> 
+> Cheers,
+> Jérôme
+
 -- 
-2.9.4
+			-Kenneth(Hisilicon)
