@@ -1,60 +1,78 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Question on iommu_get_domain_for_dev() for DMA map/unmap
-Date: Tue, 14 Aug 2018 11:45:14 +0100
-Message-ID: <6a713c3a-a305-a4f8-4618-8162a7b6327e@arm.com>
-References: <6ddbe8b7-887e-0bf8-b76e-77b3a9a2fcac@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 3/3] dts: arm64/sdm845: Add node for qcom,smmu-v2
+Date: Tue, 14 Aug 2018 11:49:42 +0100
+Message-ID: <27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
+References: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
+ <20180814102740.30222-4-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6ddbe8b7-887e-0bf8-b76e-77b3a9a2fcac-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180814102740.30222-4-vivek.gautam@codeaurora.org>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>, joro@8bytes.org, robh+dt@kernel.org, andy.gross@linaro.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org
+Cc: mark.rutland@arm.com, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jordan Crouse <jcrouse@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi John,
+Hi Vivek,
 
-On 14/08/18 11:09, John Garry wrote:
-> Hi All,
+On 14/08/18 11:27, Vivek Gautam wrote:
+> Add device node for qcom,smmu-v2 available on sdm845.
+> This smmu is available only to GPU device.
 > 
-> I have a question on function iommu_get_domain_for_dev() in DMA mapping 
-> path, and why we need to get+put a reference to the iommu group.
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> ---
+>   arch/arm64/boot/dts/qcom/sdm845.dtsi | 23 +++++++++++++++++++++++
+>   1 file changed, 23 insertions(+)
 > 
-> The background is that we have been testing iperf throughput performance 
-> for a PCIe NIC card behind an SMMUv3, with small packets and many 
-> threads (128) on a system with a lot cores (>64).
-> 
-> We find that the reference counting on the iommu group in 
-> iommu_dma_map_sg()->iommu_get_domain_for_dev()->kobject_get()/put() is a 
-> big bottleneck. There is much contention on getting and putting the 
-> reference to iommu_group.device_kobj.
-> 
-> The question is do we actually need to get+put this reference for DMA 
-> map/unmap, since the device already takes a reference to the 
-> iommu_group.device_kobj when attached to the group? Is it to protect 
-> against the device being removed and the group being freed as it is 
-> dereferenced? If so, I would say it's not safe to reference the 
-> associated iommu domain thereafter in the DMA map/unmap, as it would be 
-> freed along with the iommu group.
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> index 1c2be2082f33..bd1ec5fa5146 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> @@ -6,6 +6,7 @@
+>    */
+>   
+>   #include <dt-bindings/clock/qcom,gcc-sdm845.h>
+> +#include <dt-bindings/clock/qcom,gpucc-sdm845.h>
+>   #include <dt-bindings/clock/qcom,rpmh.h>
+>   #include <dt-bindings/interrupt-controller/arm-gic.h>
+>   #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+> @@ -989,6 +990,28 @@
+>   			cell-index = <0>;
+>   		};
+>   
+> +		gpu_smmu: iommu@5040000 {
+> +			compatible = "qcom,sdm845-smmu-v2", "qcom,smmu-v2";
 
-Yes, I agree that the reference is something we don't strictly need - if 
-the group disappears while the device is in the middle of DMA things are 
-beyond broken. However, the problem for iommu-dma as "generic" code was 
-that since dev->iommu_group is opaque, there was no other way to 
-actually retrieve the domain pointer.
-
-Now that hardware exists to show a real and measurable impact it 
-probably is time to revisit this. I have an idea for what I think is a 
-reasonable patch - let me throw that together...
+Which of "sdm845" or "msm8996"[1] is the actual SoC name here?
 
 Robin.
+
+[1] 
+https://www.mail-archive.com/freedreno@lists.freedesktop.org/msg02659.html
+
+> +			reg = <0x5040000 0x10000>;
+> +			#iommu-cells = <1>;
+> +			#global-interrupts = <2>;
+> +			interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 231 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 369 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 370 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 371 IRQ_TYPE_EDGE_RISING>;
+> +			clock-names = "bus", "iface";
+> +			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+> +				 <&gcc GCC_GPU_CFG_AHB_CLK>;
+> +
+> +			/*power-domains = <&gpucc GPU_CX_GDSC>;*/
+> +		};
+> +
+>   		apps_smmu: iommu@15000000 {
+>   			compatible = "qcom,sdm845-smmu-500", "arm,mmu-500";
+>   			reg = <0x15000000 0x80000>;
+> 
