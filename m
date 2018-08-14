@@ -1,115 +1,103 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/arm-smmu: Make way to add Qcom's smmu-500
-	errata handling
-Date: Tue, 14 Aug 2018 17:59:08 +0100
-Message-ID: <cfca5369-eacd-bb4b-6f1e-68a56f72c327@arm.com>
-References: <20180814105528.20592-1-vivek.gautam@codeaurora.org>
-	<20180814105528.20592-5-vivek.gautam@codeaurora.org>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v2 3/3] dts: arm64/sdm845: Add node for qcom,smmu-v2
+Date: Wed, 15 Aug 2018 01:09:43 +0530
+Message-ID: <CAFp+6iG8HohQ5=gwL37OuykK+R4U407yfrp=WN6pSgOK-mdzzA@mail.gmail.com>
+References: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
+ <20180814102740.30222-4-vivek.gautam@codeaurora.org> <27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180814105528.20592-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Jordan Crouse <jcrouse@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>, robh+dt <robh+dt@kernel.org>, Andy Gross <andy.gross@linaro.org>, Will Deacon <will.deacon@arm.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/08/18 11:55, Vivek Gautam wrote:
-> Cleanup to re-use some of the stuff
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->   drivers/iommu/arm-smmu.c | 32 +++++++++++++++++++++++++-------
->   1 file changed, 25 insertions(+), 7 deletions(-)
+Adding Jordan here.
 
-I think the overall diffstat would be an awful lot smaller if the 
-erratum workaround just has its own readl_poll_timeout() as it does in 
-the vendor kernel. The burst-polling loop is for minimising latency in 
-high-throughput situations, and if you're in a workaround which has to 
-lock *every* register write and issue two firmware calls around each 
-sync I think you're already well out of that game.
+On Tue, Aug 14, 2018 at 4:19 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> Hi Vivek,
+>
+> On 14/08/18 11:27, Vivek Gautam wrote:
+>>
+>> Add device node for qcom,smmu-v2 available on sdm845.
+>> This smmu is available only to GPU device.
+>>
+>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>> ---
+>>   arch/arm64/boot/dts/qcom/sdm845.dtsi | 23 +++++++++++++++++++++++
+>>   1 file changed, 23 insertions(+)
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> index 1c2be2082f33..bd1ec5fa5146 100644
+>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>> @@ -6,6 +6,7 @@
+>>    */
+>>     #include <dt-bindings/clock/qcom,gcc-sdm845.h>
+>> +#include <dt-bindings/clock/qcom,gpucc-sdm845.h>
+>>   #include <dt-bindings/clock/qcom,rpmh.h>
+>>   #include <dt-bindings/interrupt-controller/arm-gic.h>
+>>   #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+>> @@ -989,6 +990,28 @@
+>>                         cell-index = <0>;
+>>                 };
+>>   +             gpu_smmu: iommu@5040000 {
+>> +                       compatible = "qcom,sdm845-smmu-v2",
+>> "qcom,smmu-v2";
+>
+>
+> Which of "sdm845" or "msm8996"[1] is the actual SoC name here?
 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 32e86df80428..75c146751c87 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -391,21 +391,31 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
->   	clear_bit(idx, map);
->   }
->   
-> -/* Wait for any pending TLB invalidations to complete */
-> -static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
-> -				void __iomem *sync, void __iomem *status)
-> +static int __arm_smmu_tlb_sync_wait(void __iomem *status)
->   {
->   	unsigned int spin_cnt, delay;
->   
-> -	writel_relaxed(0, sync);
->   	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
->   		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
->   			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-> -				return;
-> +				return 0;
->   			cpu_relax();
->   		}
->   		udelay(delay);
->   	}
-> +
-> +	return -EBUSY;
-> +}
-> +
-> +/* Wait for any pending TLB invalidations to complete */
-> +static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
-> +				void __iomem *sync, void __iomem *status)
-> +{
-> +	writel_relaxed(0, sync);
-> +
-> +	if (!__arm_smmu_tlb_sync_wait(status))
-> +		return;
-> +
->   	dev_err_ratelimited(smmu->dev,
->   			    "TLB sync timed out -- SMMU may be deadlocked\n");
->   }
-> @@ -461,8 +471,9 @@ static void arm_smmu_tlb_inv_context_s2(void *cookie)
->   	arm_smmu_tlb_sync_global(smmu);
->   }
->   
-> -static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-> -					  size_t granule, bool leaf, void *cookie)
-> +static void __arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-> +					    size_t granule, bool leaf,
-> +					    void *cookie)
->   {
->   	struct arm_smmu_domain *smmu_domain = cookie;
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> @@ -498,6 +509,13 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->   	}
->   }
->   
-> +static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-> +					  size_t granule, bool leaf,
-> +					  void *cookie)
-> +{
-> +	__arm_smmu_tlb_inv_range_nosync(iova, size, granule, leaf, cookie);
-> +}
-> +
+Well, the bindings use the SoC prefix with smmu-v2, so it should be
+sdm845 for this SoC. This is same as I posted in my v1 of the series [2].
+Using 8996 based string in sdm845 makes things look awful.
 
-AFAICS even after patch #5 this does absolutely nothing except make the 
-code needlessly harder to read :(
+Thanks
+Vivek
 
-Robin.
+[2] https://patchwork.kernel.org/patch/10534989/
 
->   /*
->    * On MMU-401 at least, the cost of firing off multiple TLBIVMIDs appears
->    * almost negligible, but the benefit of getting the first one in as far ahead
-> 
+>
+> Robin.
+>
+> [1]
+> https://www.mail-archive.com/freedreno@lists.freedesktop.org/msg02659.html
+>
+>> +                       reg = <0x5040000 0x10000>;
+>> +                       #iommu-cells = <1>;
+>> +                       #global-interrupts = <2>;
+>> +                       interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>,
+>> +                                    <GIC_SPI 231 IRQ_TYPE_LEVEL_HIGH>,
+>> +                                    <GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 369 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 370 IRQ_TYPE_EDGE_RISING>,
+>> +                                    <GIC_SPI 371 IRQ_TYPE_EDGE_RISING>;
+>> +                       clock-names = "bus", "iface";
+>> +                       clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
+>> +                                <&gcc GCC_GPU_CFG_AHB_CLK>;
+>> +
+>> +                       /*power-domains = <&gpucc GPU_CX_GDSC>;*/
+>> +               };
+>> +
+>>                 apps_smmu: iommu@15000000 {
+>>                         compatible = "qcom,sdm845-smmu-500",
+>> "arm,mmu-500";
+>>                         reg = <0x15000000 0x80000>;
+>>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
