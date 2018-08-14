@@ -1,78 +1,77 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 3/3] dts: arm64/sdm845: Add node for qcom,smmu-v2
-Date: Tue, 14 Aug 2018 11:49:42 +0100
-Message-ID: <27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
-References: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
- <20180814102740.30222-4-vivek.gautam@codeaurora.org>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 0/5] Qcom smmu-500 TLB invalidation errata for sdm845
+Date: Tue, 14 Aug 2018 16:25:23 +0530
+Message-ID: <20180814105528.20592-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180814102740.30222-4-vivek.gautam@codeaurora.org>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>, joro@8bytes.org, robh+dt@kernel.org, andy.gross@linaro.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org
-Cc: mark.rutland@arm.com, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Jordan Crouse <jcrouse@codeaurora.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vivek,
+Qcom's implementation of arm,mmu-500 on sdm845 has a functional/performance
+errata [1] because of which the TCU cache look ups are stalled during
+invalidation cycle. This is mitigated by serializing all the invalidation
+requests coming to the smmu.
 
-On 14/08/18 11:27, Vivek Gautam wrote:
-> Add device node for qcom,smmu-v2 available on sdm845.
-> This smmu is available only to GPU device.
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> ---
->   arch/arm64/boot/dts/qcom/sdm845.dtsi | 23 +++++++++++++++++++++++
->   1 file changed, 23 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> index 1c2be2082f33..bd1ec5fa5146 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-> @@ -6,6 +6,7 @@
->    */
->   
->   #include <dt-bindings/clock/qcom,gcc-sdm845.h>
-> +#include <dt-bindings/clock/qcom,gpucc-sdm845.h>
->   #include <dt-bindings/clock/qcom,rpmh.h>
->   #include <dt-bindings/interrupt-controller/arm-gic.h>
->   #include <dt-bindings/soc/qcom,rpmh-rsc.h>
-> @@ -989,6 +990,28 @@
->   			cell-index = <0>;
->   		};
->   
-> +		gpu_smmu: iommu@5040000 {
-> +			compatible = "qcom,sdm845-smmu-v2", "qcom,smmu-v2";
+This patch series addresses this errata by adding new tlb_ops for
+qcom,sdm845-smmu-500 [2]. These ops take context bank locks for all the
+tlb_ops that queue and sync the TLB invalidation requests.
 
-Which of "sdm845" or "msm8996"[1] is the actual SoC name here?
+Besides adding locks, there's a way to expadite these TLB invalidations
+for display and camera devices by turning off the 'wait-for-safe' logic
+in hardware that holds the tlb invalidations until a safe level.
+This 'wait-for-safe' logic is controlled by toggling a chicken bit
+through a secure register. This secure register is accessed by making an
+explicit SCM call into the EL3 firmware.
+There are two ways of handling this logic -
+ * Firmware, such as tz present on sdm845-mtp devices has a handler to do
+   all the register access and bit set/clear. So is the handling in
+   downstream arm-smmu driver [3].
+ * Other firmwares can have handlers to just read/write this secure
+   register. In such cases the kernel make io_read/writel scm calls to
+   modify the register.
+This patch series adds APIs in qcom-scm driver to handle both of these
+cases.
 
-Robin.
+Lastly, since these TLB invalidations can happen in atomic contexts
+there's a need to add atomic versions of qcom_scm_io_readl/writel() and
+qcom_scm_call() APIs. The traditional scm calls take mutex and we therefore
+can't use these calls in atomic contexts.
 
-[1] 
-https://www.mail-archive.com/freedreno@lists.freedesktop.org/msg02659.html
+This patch series is adapted version of how the errata is handled in
+downstream [1].
 
-> +			reg = <0x5040000 0x10000>;
-> +			#iommu-cells = <1>;
-> +			#global-interrupts = <2>;
-> +			interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 231 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 364 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 365 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 366 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 367 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 368 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 369 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 370 IRQ_TYPE_EDGE_RISING>,
-> +				     <GIC_SPI 371 IRQ_TYPE_EDGE_RISING>;
-> +			clock-names = "bus", "iface";
-> +			clocks = <&gcc GCC_GPU_MEMNOC_GFX_CLK>,
-> +				 <&gcc GCC_GPU_CFG_AHB_CLK>;
-> +
-> +			/*power-domains = <&gpucc GPU_CX_GDSC>;*/
-> +		};
-> +
->   		apps_smmu: iommu@15000000 {
->   			compatible = "qcom,sdm845-smmu-500", "arm,mmu-500";
->   			reg = <0x15000000 0x80000>;
-> 
+[1] https://source.codeaurora.org/quic/la/kernel/msm-4.9/tree/drivers/iommu/arm-smmu.c?h=msm-4.9#n4842
+[2] https://lore.kernel.org/patchwork/patch/974114/
+[3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/tree/drivers/iommu/arm-smmu.c?h=msm-4.9#n4864
+
+Vivek Gautam (5):
+  firmware: qcom_scm-64: Add atomic version of qcom_scm_call
+  firmware/qcom_scm: Add atomic version of io read/write APIs
+  firmware/qcom_scm: Add scm call to handle smmu errata
+  iommu/arm-smmu: Make way to add Qcom's smmu-500 errata handling
+  iommu/arm-smmu: Add support to handle Qcom's TLBI serialization errata
+
+ drivers/firmware/qcom_scm-32.c |  17 ++++
+ drivers/firmware/qcom_scm-64.c | 181 +++++++++++++++++++++++++++++++----------
+ drivers/firmware/qcom_scm.c    |  18 ++++
+ drivers/firmware/qcom_scm.h    |   9 ++
+ drivers/iommu/arm-smmu-regs.h  |   2 +
+ drivers/iommu/arm-smmu.c       | 168 ++++++++++++++++++++++++++++++++++++--
+ include/linux/qcom_scm.h       |   6 ++
+ 7 files changed, 348 insertions(+), 53 deletions(-)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
