@@ -1,62 +1,45 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
- mode
-Date: Tue, 14 Aug 2018 11:02:52 +0100
-Message-ID: <feabf4a3-db1e-a22b-daab-fad831b473f9@arm.com>
-References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
- <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
- <89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com> <5B597628.2020103@huawei.com>
- <04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
- <1d24541340334954969c58980ef85444@HXTBJIDCEMVIW01.hxtcorp.net>
- <5B7293E5.7040702@huawei.com> <20180814083500.GA28101@arm.com>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Question on iommu_get_domain_for_dev() for DMA map/unmap
+Date: Tue, 14 Aug 2018 11:09:23 +0100
+Message-ID: <6ddbe8b7-887e-0bf8-b76e-77b3a9a2fcac@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180814083500.GA28101@arm.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc: "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/08/18 09:35, Will Deacon wrote:
-> On Tue, Aug 14, 2018 at 04:33:41PM +0800, Leizhen (ThunderTown) wrote:
->> On 2018/8/6 9:32, Yang, Shunyong wrote:
->>> On 2018/7/26 22:37, Robin Murphy wrote:
->>>> Because DMA code is not the only caller of iommu_map/unmap. It's
->>>> perfectly legal in the IOMMU API to partially unmap a previous mapping
->>>> such that a block entry needs to be split. The DMA API, however, is a
->>>> lot more constrined, and thus by construction the iommu-dma layer will
->>>> never generate a block-splitting iommu_unmap() except as a result of
->>>> illegal DMA API usage, and we obviously do not need to optimise for that
->>>> (you will get a warning about mismatched unmaps under dma-debug, but
->>>> it's a bit too expensive to police in the general case).
->>>>
->>>
->>> When I was reading the code around arm_lpae_split_blk_unmap(), I was
->>> curious in which scenario a block will be split. Now with your comments
->>> "Because DMA code is not the only caller of iommu_map/unmap", it seems
->>> depending on the user.
->>>
->>> Would you please explain this further? I mean besides DMA, which user
->>> will use iommu_map/umap and how it split a block.
->>
->> I also think that arm_lpae_split_blk_unmap() scenario is not exist, maybe
->> we should remove it, and give a warning for this wrong usage.
-> 
-> Can't it happen with VFIO?
+Hi All,
 
-...or GPU drivers, or anyone else managing their own IOMMU domain 
-directly. A sequence like this is perfectly legal:
+I have a question on function iommu_get_domain_for_dev() in DMA mapping 
+path, and why we need to get+put a reference to the iommu group.
 
-	iommu_map(domain, iova, paddr, SZ_8M, prot);
-	...
-	iommu_unmap(domain, iova + SZ_1M * 5, SZ_1M * 3);
+The background is that we have been testing iperf throughput performance 
+for a PCIe NIC card behind an SMMUv3, with small packets and many 
+threads (128) on a system with a lot cores (>64).
 
-where if iova and paddr happen to be suitably aligned, the map will lay 
-down blocks, and the unmap will then have to split one of them into 
-pages to remove half of it. We don't tear our hair out maintaining 
-split_blk_unmap() for the fun of it :(
+We find that the reference counting on the iommu group in 
+iommu_dma_map_sg()->iommu_get_domain_for_dev()->kobject_get()/put() is a 
+big bottleneck. There is much contention on getting and putting the 
+reference to iommu_group.device_kobj.
 
-Robin.
+The question is do we actually need to get+put this reference for DMA 
+map/unmap, since the device already takes a reference to the 
+iommu_group.device_kobj when attached to the group? Is it to protect 
+against the device being removed and the group being freed as it is 
+dereferenced? If so, I would say it's not safe to reference the 
+associated iommu domain thereafter in the DMA map/unmap, as it would be 
+freed along with the iommu group.
+
+Thanks in advance,
+John
