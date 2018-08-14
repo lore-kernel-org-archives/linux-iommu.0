@@ -1,9 +1,9 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Question on iommu_get_domain_for_dev() for DMA map/unmap
-Date: Tue, 14 Aug 2018 11:09:23 +0100
-Message-ID: <6ddbe8b7-887e-0bf8-b76e-77b3a9a2fcac@huawei.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v2 0/3] Enable smmu support on sdm845
+Date: Tue, 14 Aug 2018 15:57:37 +0530
+Message-ID: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -15,31 +15,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Guohanjun (Hanjun Guo)" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi All,
+This series enables apps-smmu (arm,mmu-500) and gpu-smmu (qcom,smmu-v2)
+on sdm845. gpu-smmu needs one power domain from gpu clock controller
+whose driver was sent by Amit [1].
 
-I have a question on function iommu_get_domain_for_dev() in DMA mapping 
-path, and why we need to get+put a reference to the iommu group.
+Changes since v1:
+ - Addressed Rob's review comments by adding a SoC specific compatible.
+   Have added a new dt-bindings patch for this.
+ - Updated node name to 'iommu'.
+ - Addressed Doug's review comment about removing status property from
+   smmu's nodes, as smmu is either present on the soc or not. Enabling
+   it is not a board-level decision.
 
-The background is that we have been testing iperf throughput performance 
-for a PCIe NIC card behind an SMMUv3, with small packets and many 
-threads (128) on a system with a lot cores (>64).
+[1] https://lore.kernel.org/patchwork/patch/973839/
 
-We find that the reference counting on the iommu group in 
-iommu_dma_map_sg()->iommu_get_domain_for_dev()->kobject_get()/put() is a 
-big bottleneck. There is much contention on getting and putting the 
-reference to iommu_group.device_kobj.
+Vivek Gautam (3):
+  dt-bindings: arm-smmu: Add binding doc for Qcom smmu-500
+  dts: arm64/sdm845: Add node for arm,mmu-500
+  dts: arm64/sdm845: Add node for qcom,smmu-v2
 
-The question is do we actually need to get+put this reference for DMA 
-map/unmap, since the device already takes a reference to the 
-iommu_group.device_kobj when attached to the group? Is it to protect 
-against the device being removed and the group being freed as it is 
-dereferenced? If so, I would say it's not safe to reference the 
-associated iommu domain thereafter in the DMA map/unmap, as it would be 
-freed along with the iommu group.
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  5 ++
+ arch/arm64/boot/dts/qcom/sdm845.dtsi               | 95 ++++++++++++++++++++++
+ 2 files changed, 100 insertions(+)
 
-Thanks in advance,
-John
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
