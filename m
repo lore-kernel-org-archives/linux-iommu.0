@@ -1,89 +1,98 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v5 5/5] iommu/arm-smmu-v3: add bootup option "iommu.non_strict"
-Date: Wed, 15 Aug 2018 09:28:30 +0800
-Message-ID: <1534296510-12888-6-git-send-email-thunder.leizhen@huawei.com>
-References: <1534296510-12888-1-git-send-email-thunder.leizhen@huawei.com>
+From: "Yang, Shunyong" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
+Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
+	mode
+Date: Wed, 15 Aug 2018 01:43:37 +0000
+Message-ID: <7a2dedda98aa9e677eb7f85b6b55e34e0128d2d9.camel@hxt-semitech.com>
+References: <1531376312-2192-1-git-send-email-thunder.leizhen@huawei.com>
+	<1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+	<89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
+	<5B597628.2020103@huawei.com>
+	<04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
+	<1d24541340334954969c58980ef85444@HXTBJIDCEMVIW01.hxtcorp.net>
+	<5B7293E5.7040702@huawei.com> <20180814083500.GA28101@arm.com>
+	<feabf4a3-db1e-a22b-daab-fad831b473f9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1534296510-12888-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <feabf4a3-db1e-a22b-daab-fad831b473f9-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Content-ID: <E537546CE3891F45BCB0B612902F0F8B-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org" <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a bootup option to make the system manager can choose which mode to
-be used. The default mode is strict.
+Hi, Robin,
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- Documentation/admin-guide/kernel-parameters.txt | 13 +++++++++++++
- drivers/iommu/arm-smmu-v3.c                     | 22 +++++++++++++++++++++-
- 2 files changed, 34 insertions(+), 1 deletion(-)
+On Tue, 2018-08-14 at 11:02 +0100, Robin Murphy wrote:
+> On 14/08/18 09:35, Will Deacon wrote:
+> > On Tue, Aug 14, 2018 at 04:33:41PM +0800, Leizhen (ThunderTown)
+> > wrote:
+> > > On 2018/8/6 9:32, Yang, Shunyong wrote:
+> > > > On 2018/7/26 22:37, Robin Murphy wrote:
+> > > > > Because DMA code is not the only caller of iommu_map/unmap.
+> > > > > It's
+> > > > > perfectly legal in the IOMMU API to partially unmap a
+> > > > > previous mapping
+> > > > > such that a block entry needs to be split. The DMA API,
+> > > > > however, is a
+> > > > > lot more constrined, and thus by construction the iommu-dma
+> > > > > layer will
+> > > > > never generate a block-splitting iommu_unmap() except as a
+> > > > > result of
+> > > > > illegal DMA API usage, and we obviously do not need to
+> > > > > optimise for that
+> > > > > (you will get a warning about mismatched unmaps under dma-
+> > > > > debug, but
+> > > > > it's a bit too expensive to police in the general case).
+> > > > > 
+> > > > 
+> > > > When I was reading the code around arm_lpae_split_blk_unmap(),
+> > > > I was
+> > > > curious in which scenario a block will be split. Now with your
+> > > > comments
+> > > > "Because DMA code is not the only caller of iommu_map/unmap",
+> > > > it seems
+> > > > depending on the user.
+> > > > 
+> > > > Would you please explain this further? I mean besides DMA,
+> > > > which user
+> > > > will use iommu_map/umap and how it split a block.
+> > > 
+> > > I also think that arm_lpae_split_blk_unmap() scenario is not
+> > > exist, maybe
+> > > we should remove it, and give a warning for this wrong usage.
+> > 
+> > Can't it happen with VFIO?
+> 
+> ...or GPU drivers, or anyone else managing their own IOMMU domain 
+> directly. A sequence like this is perfectly legal:
+> 
+> 	iommu_map(domain, iova, paddr, SZ_8M, prot);
+> 	...
+> 	iommu_unmap(domain, iova + SZ_1M * 5, SZ_1M * 3);
+> 
+> where if iova and paddr happen to be suitably aligned, the map will
+> lay 
+> down blocks, and the unmap will then have to split one of them into 
+> pages to remove half of it. We don't tear our hair out maintaining 
+> split_blk_unmap() for the fun of it :(
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 5cde1ff..cb9d043e 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1720,6 +1720,19 @@
- 		nobypass	[PPC/POWERNV]
- 			Disable IOMMU bypass, using IOMMU for PCI devices.
+Thank you for the GPU example. But for VFIO, I remember all memory will
+be   pinned in the early stage of emulator (such as qemu) start. So,
+the split will occur at which operation? Maybe virtio balloon inflate?
 
-+	iommu.non_strict=	[ARM64]
-+			Format: { "0" | "1" }
-+			0 - strict mode, default.
-+			    Release IOVAs after the related TLBs are invalid
-+			    completely.
-+			1 - non-strict mode.
-+			    Put off TLBs invalidation and release memory first.
-+			    It's good for scatter-gather performance but lacks
-+			    full isolation, an untrusted device can access the
-+			    reused memory because the TLBs may still valid.
-+			    Please take	full consideration before choosing this
-+			    mode. Note that, VFIO will always use strict mode.
-+
- 	iommu.passthrough=
- 			[ARM64] Configure DMA to bypass the IOMMU by default.
- 			Format: { "0" | "1" }
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 61eb7ec..0eda90e 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -631,6 +631,26 @@ struct arm_smmu_option_prop {
- 	{ 0, NULL},
- };
+Thanks.
+Shunyong.
 
-+static bool smmu_non_strict __read_mostly;
-+
-+static int __init arm_smmu_setup(char *str)
-+{
-+	int ret;
-+
-+	ret = kstrtobool(str, &smmu_non_strict);
-+	if (ret)
-+		return ret;
-+
-+	if (smmu_non_strict) {
-+		pr_warn("WARNING: iommu non-strict mode is chosen.\n"
-+			"It's good for scatter-gather performance but lacks full isolation\n");
-+		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
-+	}
-+
-+	return 0;
-+}
-+early_param("iommu.non_strict", arm_smmu_setup);
-+
- static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
- 						 struct arm_smmu_device *smmu)
- {
-@@ -1622,7 +1642,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
- 		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
-
--	if (domain->type == IOMMU_DOMAIN_DMA) {
-+	if ((domain->type == IOMMU_DOMAIN_DMA) && smmu_non_strict) {
- 		domain->non_strict = true;
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 	}
---
-1.8.3
+> 
+> Robin.
