@@ -1,54 +1,85 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3 0/2] bugfix and optimization about CMD_SYNC
-Date: Wed, 15 Aug 2018 18:23:00 +0800
-Message-ID: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH v3 2/2] iommu/arm-smmu-v3: avoid redundant CMD_SYNCs if possible
+Date: Wed, 15 Aug 2018 18:23:02 +0800
+Message-ID: <1534328582-17664-3-git-send-email-thunder.leizhen@huawei.com>
+References: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-v2 -> v3:
-Although I have no data to show how many performance will be impacted
-because of arm_smmu_cmdq_build_cmd is protected by spinlock. But it's
-clear that the performance is bound to drop, a memset operation and 
-a complicate switch..case in the function arm_smmu_cmdq_build_cmd.
+More than two CMD_SYNCs maybe adjacent in the command queue, and the first
+one has done what others want to do. Drop the redundant CMD_SYNCs can
+improve IO performance especially under the pressure scene.
 
-v1 -> v2:
-1. move the call to arm_smmu_cmdq_build_cmd into the critical section,
-   and keep itself unchange.
-2. Although patch2 can make sure no two CMD_SYNCs will be adjacent,
-but patch1 is still needed, see below:
+I did the statistics in my test environment, the number of CMD_SYNCs can
+be reduced about 1/3. See below:
+CMD_SYNCs reduced:	19542181
+CMD_SYNCs total:	58098548	(include reduced)
+CMDs total:		116197099	(TLBI:SYNC about 1:1)
 
-cpu0			cpu1			cpu2
-msidata=0
-			msidata=1
-			insert cmd1
-						insert a TLBI command
-insert cmd0
-			smmu execute cmd1
-						smmu execute TLBI
-smmu execute cmd0
-			poll timeout, because msidata=1 is overridden by
-			cmd0, that means VAL=0, sync_idx=1.
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/arm-smmu-v3.c | 22 +++++++++++++++++++---
+ 1 file changed, 19 insertions(+), 3 deletions(-)
 
-Zhen Lei (2):
-  iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-  iommu/arm-smmu-v3: avoid redundant CMD_SYNCs if possible
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 3f5c236..ee0219b 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -567,6 +567,7 @@ struct arm_smmu_device {
+ 	int				gerr_irq;
+ 	int				combined_irq;
+ 	u32				sync_nr;
++	u8				prev_cmd_opcode;
 
- drivers/iommu/arm-smmu-v3.c | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
+ 	unsigned long			ias; /* IPA */
+ 	unsigned long			oas; /* PA */
+@@ -780,6 +781,11 @@ static inline void arm_smmu_cmdq_sync_set_msidata(u64 *cmd, u32 msidata)
+ 	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, msidata);
+ }
 
--- 
++static inline u8 arm_smmu_cmd_opcode_get(u64 *cmd)
++{
++	return cmd[0] & CMDQ_0_OP;
++}
++
+ /* High-level queue accessors */
+ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ {
+@@ -904,6 +910,8 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
+ 	struct arm_smmu_queue *q = &smmu->cmdq.q;
+ 	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+
++	smmu->prev_cmd_opcode = arm_smmu_cmd_opcode_get(cmd);
++
+ 	while (queue_insert_raw(q, cmd) == -ENOSPC) {
+ 		if (queue_poll_cons(q, false, wfe))
+ 			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+@@ -958,9 +966,17 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+ 	arm_smmu_cmdq_build_cmd(cmd, &ent);
+
+ 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+-	ent.sync.msidata = ++smmu->sync_nr;
+-	arm_smmu_cmdq_sync_set_msidata(cmd, ent.sync.msidata);
+-	arm_smmu_cmdq_insert_cmd(smmu, cmd);
++	if (smmu->prev_cmd_opcode == CMDQ_OP_CMD_SYNC) {
++		/*
++		 * Previous command is CMD_SYNC also, there is no need to add
++		 * one more. Just poll it.
++		 */
++		ent.sync.msidata = smmu->sync_nr;
++	} else {
++		ent.sync.msidata = ++smmu->sync_nr;
++		arm_smmu_cmdq_sync_set_msidata(cmd, ent.sync.msidata);
++		arm_smmu_cmdq_insert_cmd(smmu, cmd);
++	}
+ 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+
+ 	return __arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
+--
 1.8.3
