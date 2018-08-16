@@ -1,181 +1,116 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [RFC PATCH v1 0/6] Resolve unwanted DMA backing with IOMMU
-Date: Wed, 15 Aug 2018 22:56:19 +0300
-Message-ID: <12474499.22jeAM5LNA@dimapc>
-References: <20180726231624.21084-1-digetx@gmail.com> <2887450.sPhIOOMKZK@dimapc> <2e7fab6e-0640-8f48-07b8-2d475538b8ae@arm.com>
+From: "Yang, Shunyong" <shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org>
+Subject: Re: [PATCH v3 4/6] iommu/io-pgtable-arm: add support for non-strict
+	mode
+Date: Thu, 16 Aug 2018 00:43:45 +0000
+Message-ID: <96d12fc419bb4fb6b1a83de11621cb93@HXTBJIDCEMVIW01.hxtcorp.net>
+References: <1531376312-2192-5-git-send-email-thunder.leizhen@huawei.com>
+	<89cc2201-99ab-3f3b-a2d1-1766515d4375@arm.com>
+	<5B597628.2020103@huawei.com>
+	<04239cfa-bcf2-a33a-e662-ebc75e66782b@arm.com>
+	<1d24541340334954969c58980ef85444@HXTBJIDCEMVIW01.hxtcorp.net>
+	<5B7293E5.7040702@huawei.com> <20180814083500.GA28101@arm.com>
+	<feabf4a3-db1e-a22b-daab-fad831b473f9@arm.com>
+	<7a2dedda98aa9e677eb7f85b6b55e34e0128d2d9.camel@hxt-semitech.com>
+	<20180815073300.GA2100@arm.com> <20180815073501.GA2375@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2e7fab6e-0640-8f48-07b8-2d475538b8ae@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Jordan Crouse <jcrouse@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Mikko Perttunen <cyndis@kapsi.fi>, Thierry Reding <thierry.reding@gmail.com>, devicetree@vger.kernel.org, nouveau@lists.freedesktop.org, "Rafael J. Wysocki" <rafael@kernel.org>, Nicolas Chauvet <kwizart@gmail.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Ben Skeggs <bskeggs@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, linux-tegra@vger.kernel.org, Frank Rowand <frowand.list@gmail.com>, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org" <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Friday, 3 August 2018 18:43:41 MSK Robin Murphy wrote:
-> On 02/08/18 19:24, Dmitry Osipenko wrote:
-> > On Friday, 27 July 2018 20:16:53 MSK Dmitry Osipenko wrote:
-> >> On Friday, 27 July 2018 20:03:26 MSK Jordan Crouse wrote:
-> >>> On Fri, Jul 27, 2018 at 05:02:37PM +0100, Robin Murphy wrote:
-> >>>> On 27/07/18 15:10, Dmitry Osipenko wrote:
-> >>>>> On Friday, 27 July 2018 12:03:28 MSK Will Deacon wrote:
-> >>>>>> On Fri, Jul 27, 2018 at 10:25:13AM +0200, Joerg Roedel wrote:
-> >>>>>>> On Fri, Jul 27, 2018 at 02:16:18AM +0300, Dmitry Osipenko wrote:
-> >>>>>>>> The proposed solution adds a new option to the base device driver
-> >>>>>>>> structure that allows device drivers to explicitly convey to the
-> >>>>>>>> drivers
-> >>>>>>>> core that the implicit IOMMU backing for devices must not happen.
-> >>>>>>> 
-> >>>>>>> Why is IOMMU mapping a problem for the Tegra GPU driver?
-> >>>>>>> 
-> >>>>>>> If we add something like this then it should not be the choice of
-> >>>>>>> the
-> >>>>>>> device driver, but of the user and/or the firmware.
-> >>>>>> 
-> >>>>>> Agreed, and it would still need somebody to configure an identity
-> >>>>>> domain
-> >>>>>> so
-> >>>>>> that transactions aren't aborted immediately. We currently allow the
-> >>>>>> identity domain to be used by default via a command-line option, so I
-> >>>>>> guess
-> >>>>>> we'd need a way for firmware to request that on a per-device basis.
-> >>>>> 
-> >>>>> The IOMMU mapping itself is not a problem, the problem is the
-> >>>>> management
-> >>>>> of
-> >>>>> the IOMMU. For Tegra we don't want anything to intrude into the IOMMU
-> >>>>> activities because:
-> >>>>> 
-> >>>>> 1) GPU HW require additional configuration for the IOMMU usage and
-> >>>>> dumb
-> >>>>> mapping of the allocations simply doesn't work.
-> >>>> 
-> >>>> Generally, that's already handled by the DRM drivers allocating
-> >>>> their own unmanaged domains. The only problem we really need to
-> >>>> solve in that regard is that currently the device DMA ops don't get
-> >>>> updated when moving away from the managed domain. That's been OK for
-> >>>> the VFIO case where the device is bound to a different driver which
-> >>>> we know won't make any explicit DMA API calls, but for the more
-> >>>> general case of IOMMU-aware drivers we could certainly do with a bit
-> >>>> of cooperation between the IOMMU API, DMA API, and arch code to
-> >>>> update the DMA ops dynamically to cope with intermediate subsystems
-> >>>> making DMA API calls on behalf of devices they don't know the
-> >>>> intimate details of.
-> >>>> 
-> >>>>> 2) Older Tegra generations have a limited resource and capabilities in
-> >>>>> regards to IOMMU usage, allocating IOMMU domain per-device is just
-> >>>>> impossible for example.
-> >>>>> 
-> >>>>> 3) HW performs context switches and so particular allocations have to
-> >>>>> be
-> >>>>> assigned to a particular contexts IOMMU domain.
-> >>>> 
-> >>>> I understand Qualcomm SoCs have a similar thing too, and AFAICS that
-> >>>> case just doesn't fit into the current API model at all. We need the
-> >>>> IOMMU driver to somehow know about the specific details of which
-> >>>> devices have magic associations with specific contexts, and we
-> >>>> almost certainly need a more expressive interface than
-> >>>> iommu_domain_alloc() to have any hope of reliable results.
-> >>> 
-> >>> This is correct for Qualcomm GPUs - The GPU hardware context switching
-> >>> requires a specific context and there are some restrictions around
-> >>> secure contexts as well.
-> >>> 
-> >>> We don't really care if the DMA attaches to a context just as long as it
-> >>> doesn't attach to the one(s) we care about. Perhaps a "valid context"
-> >>> mask
-> >>> would work in from the DT or the device struct to give the subsystems a
-> >>> clue as to which domains they were allowed to use. I recognize that
-> >>> there
-> >>> isn't a one-size-fits-all solution to this problem so I'm open to
-> >>> different
-> >>> ideas.
-> >> 
-> >> Designating whether implicit IOMMU backing is appropriate for a device
-> >> via
-> >> device-tree property sounds a bit awkward because that will be a kinda
-> >> software description (of a custom Linux driver model), while device-tree
-> >> is
-> >> supposed to describe HW.
-> >> 
-> >> What about to grant IOMMU drivers with ability to decide whether the
-> >> implicit backing for a device is appropriate? Like this:
-> >> 
-> >> bool implicit_iommu_for_dma_is_allowed(struct device *dev)
-> >> {
-> >> 
-> >> 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> >> 	struct iommu_group *group;
-> >> 	
-> >> 	group = iommu_group_get(dev);
-> >> 	if (!group)
-> >> 	
-> >> 		return NULL;
-> >> 	
-> >> 	iommu_group_put(group);
-> >> 	
-> >> 	if (!ops->implicit_iommu_for_dma_is_allowed)
-> >> 	
-> >> 		return true;
-> >> 	
-> >> 	return ops->implicit_iommu_for_dma_is_allowed(dev);
-> >> 
-> >> }
-> >> 
-> >> Then arch_setup_dma_ops() could have a clue whether implicit IOMMU
-> >> backing
-> >> for a device is appropriate.
-> > 
-> > Guys, does it sound good to you or maybe you have something else on your
-> > mind? Even if it's not an ideal solution, it fixes the immediate problem
-> > and should be good enough for the starter.
+Hi, Will and Robin,
+
+  Many thanks for your explanations.
+
+Thanks.
+Shunyong.
+
+On 2018/8/15 15:35, Will Deacon wrote:
+> On Wed, Aug 15, 2018 at 08:33:01AM +0100, Will Deacon wrote:
+>> On Wed, Aug 15, 2018 at 01:43:37AM +0000, Yang, Shunyong wrote:
+>>> On Tue, 2018-08-14 at 11:02 +0100, Robin Murphy wrote:
+>>>> On 14/08/18 09:35, Will Deacon wrote:
+>>>>> On Tue, Aug 14, 2018 at 04:33:41PM +0800, Leizhen (ThunderTown)
+>>>>> wrote:
+>>>>>> On 2018/8/6 9:32, Yang, Shunyong wrote:
+>>>>>>> On 2018/7/26 22:37, Robin Murphy wrote:
+>>>>>>>> Because DMA code is not the only caller of iommu_map/unmap.
+>>>>>>>> It's
+>>>>>>>> perfectly legal in the IOMMU API to partially unmap a
+>>>>>>>> previous mapping
+>>>>>>>> such that a block entry needs to be split. The DMA API,
+>>>>>>>> however, is a
+>>>>>>>> lot more constrined, and thus by construction the iommu-dma
+>>>>>>>> layer will
+>>>>>>>> never generate a block-splitting iommu_unmap() except as a
+>>>>>>>> result of
+>>>>>>>> illegal DMA API usage, and we obviously do not need to
+>>>>>>>> optimise for that
+>>>>>>>> (you will get a warning about mismatched unmaps under dma-
+>>>>>>>> debug, but
+>>>>>>>> it's a bit too expensive to police in the general case).
+>>>>>>>>
+>>>>>>>
+>>>>>>> When I was reading the code around arm_lpae_split_blk_unmap(),
+>>>>>>> I was
+>>>>>>> curious in which scenario a block will be split. Now with your
+>>>>>>> comments
+>>>>>>> "Because DMA code is not the only caller of iommu_map/unmap",
+>>>>>>> it seems
+>>>>>>> depending on the user.
+>>>>>>>
+>>>>>>> Would you please explain this further? I mean besides DMA,
+>>>>>>> which user
+>>>>>>> will use iommu_map/umap and how it split a block.
+>>>>>>
+>>>>>> I also think that arm_lpae_split_blk_unmap() scenario is not
+>>>>>> exist, maybe
+>>>>>> we should remove it, and give a warning for this wrong usage.
+>>>>>
+>>>>> Can't it happen with VFIO?
+>>>>
+>>>> ...or GPU drivers, or anyone else managing their own IOMMU domain
+>>>> directly. A sequence like this is perfectly legal:
+>>>>
+>>>>     iommu_map(domain, iova, paddr, SZ_8M, prot);
+>>>>     ...
+>>>>     iommu_unmap(domain, iova + SZ_1M * 5, SZ_1M * 3);
+>>>>
+>>>> where if iova and paddr happen to be suitably aligned, the map will
+>>>> lay
+>>>> down blocks, and the unmap will then have to split one of them into
+>>>> pages to remove half of it. We don't tear our hair out maintaining
+>>>> split_blk_unmap() for the fun of it :(
+>>>
+>>> Thank you for the GPU example. But for VFIO, I remember all memory will
+>>> be   pinned in the early stage of emulator (such as qemu) start. So,
+>>> the split will occur at which operation? Maybe virtio balloon inflate?
+>>
+>> My memory is pretty hazy here, but I was fairly sure that VFIO didn't
+>> always unmap() with the same granularity as it map()'d, at least for
+>> the v1 interface. Either way, split_blk_unmap() was written because it was
+>> necessary at the time, rather than just for fun!
+>>
+>> Will
+>> IMPORTANT NOTICE: The contents of this email and any attachments are
+>> confidential and may also be privileged. If you are not the intended
+>> recipient, please notify the sender immediately and do not disclose the
+>> contents to any other person, use it for any purpose, or store or copy the
+>> information in any medium. Thank you.
 > 
-> To me that looks like a step ion the wrong direction that won't help at
-> all in actually addressing the underlying issues.
+> Urgh, sorry about this threatening disclaimer ^^. Please disregard.
 > 
-> If the GPU driver wants to explicitly control IOMMU mappings instead of
-> relying on the IOMMU_DOMAIN_DMA abstraction, then it should use its own
-> unmanaged domain. At that point it shouldn't matter if a DMA ops domain
-> was allocated, since the GPU device will no longer be attached to it.
-
-It is not obvious to me what solution you are proposing.. 
-
-Are you saying that the detaching from the DMA IOMMU domain that is provided 
-by dma_ops() implementer (ARM32 arch for example) should be generalized and 
-hence there should be something like:
-
-	dma_detach_device_from_iommu_dma_domain(dev);
-
-that drivers will have to invoke.
-
-And hence there will be dma_map_ops.iommu_detach_device() that dma_ops() 
-provider will have to implement. Thereby provider will detach device from DMA 
-domain, destroy the domain and update the DMA ops of the device.
-
-> Yes, there may be some improvements to make like having unused domains
-> not consume hardware contexts, but that's internal to the relevant IOMMU
-> drivers. If moving in and out of DMA ops domains leaves the actual
-> dma_ops broken, that's already a problem between the IOMMU API and the
-> arch DMA code as I've mentioned before.
+> Will
 > 
-> Furthermore, given what the example above is trying to do,
-> arch_setup_dma_ops() is way too late to do it - the default domain was
-> already set up in iommu_group_get_for_dev() when the IOMMU driver first
-> saw that device. An "opt-out" mechanism that doesn't actually opt out
-> and just bodges around being opted-in after the fact doesn't strike me
-> as something which can grow to be robust and maintainable.
-> 
-> For the case where  a device has some special hardware relationship with
-> a particular IOMMU context, the IOMMU driver *has* to be completely
-> aware of that, i.e. it needs to be described in DT/ACPI, either via some
-> explicit binding or at least inferred from some SoC/instance-specific
-> IOMMU compatible. Then the IOMMU driver needs to know when the driver
-> for that device is requesting its special domain so that it provide the
-> correct context (and *not* allocate that context for other uses).
-> Anything which just relies on the order in which things currently happen
-> to be allocated is far too fragile long-term.
-
-If hardware has some restrictions, then that should be reflected in the 
-hardware description. But that's not what we are trying to solve, at least 
-there is no such problem right now for NVIDIA Tegra.
