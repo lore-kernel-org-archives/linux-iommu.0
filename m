@@ -1,225 +1,136 @@
-From: lijiang <lijiang@redhat.com>
-Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
- AMD sme enabled
-Date: Thu, 16 Aug 2018 13:35:28 +0800
-Message-ID: <53536964-2b57-4630-de91-3d4da2b643a8@redhat.com>
-References: <4ae1cfb5-0a4b-2aac-2575-024e2c74826f@redhat.com>
- <895db996-febd-d50c-91af-4f1ef3d27bd8@redhat.com>
- <20180703111428.GB5748@zn.tnic>
- <4fbb843b-9597-a48b-8b6f-00e354b91950@redhat.com>
- <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
- <20180709092901.GA22182@nazgul.tnic>
- <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
- <20180713170857.GB17896@nazgul.tnic>
- <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
- <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
- <20180720073245.GA26926@nazgul.tnic>
- <562d8611-750d-3624-1a1b-df21f39812d6@redhat.com>
- <54D39850-F883-4EC6-B160-0CD88D47A997@alien8.de>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
+Date: Thu, 16 Aug 2018 16:21:17 +0800
+Message-ID: <5B7533FD.20903@huawei.com>
+References: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
+ <1534328582-17664-2-git-send-email-thunder.leizhen@huawei.com>
+ <6027cd67-7c76-673c-082f-8dd0b7a575b0@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <54D39850-F883-4EC6-B160-0CD88D47A997@alien8.de>
-Content-Language: en-US
+In-Reply-To: <6027cd67-7c76-673c-082f-8dd0b7a575b0@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Boris Petkov <bp@alien8.de>
-Cc: Dave Young <dyoung@redhat.com>, bhe@redhat.com, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-在 2018年07月20日 18:08, Boris Petkov 写道:
-> On July 20, 2018 12:55:04 PM GMT+03:00, lijiang <lijiang@redhat.com> wrote:>
->> Thanks for your advice, I will rewrite the log and send them again.
+
+
+On 2018/8/15 20:26, Robin Murphy wrote:
+> On 15/08/18 11:23, Zhen Lei wrote:
+>> The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
+>> __arm_smmu_sync_poll_msi requires that sync_idx must be increased
+>> monotonously according to the sequence of the CMDs in the cmdq.
+>>
+>> But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
+>> by spinlock, so the following scenarios may appear:
+>> cpu0            cpu1
+>> msidata=0
+>>             msidata=1
+>>             insert cmd1
+>> insert cmd0
+>>             smmu execute cmd1
+>> smmu execute cmd0
+>>             poll timeout, because msidata=1 is overridden by
+>>             cmd0, that means VAL=0, sync_idx=1.
+>>
+>> This is not a functional problem, just make the caller wait for a long
+>> time until TIMEOUT. It's rare to happen, because any other CMD_SYNCs
+>> during the waiting period will break it.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>   drivers/iommu/arm-smmu-v3.c | 12 ++++++++----
+>>   1 file changed, 8 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 1d64710..3f5c236 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -566,7 +566,7 @@ struct arm_smmu_device {
+>>
+>>       int                gerr_irq;
+>>       int                combined_irq;
+>> -    atomic_t            sync_nr;
+>> +    u32                sync_nr;
+>>
+>>       unsigned long            ias; /* IPA */
+>>       unsigned long            oas; /* PA */
+>> @@ -775,6 +775,11 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+>>       return 0;
+>>   }
+>>
+>> +static inline void arm_smmu_cmdq_sync_set_msidata(u64 *cmd, u32 msidata)
 > 
-> Do not send them again - explain the problem properly first!
+> If we *are* going to go down this route then I think it would make sense to move the msiaddr and CMDQ_SYNC_0_CS_MSI logic here as well; i.e. arm_smmu_cmdq_build_cmd() always generates a "normal" SEV-based sync command, then calling this guy would convert it to an MSI-based one. As-is, having bits of mutually-dependent data handled across two separate places just seems too messy and error-prone.
+
+Yes, How about create a new function "arm_smmu_cmdq_build_sync_msi_cmd"?
+
+static inline
+void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+{
+	cmd[0]  = FIELD_PREP(CMDQ_0_OP, ent->opcode);
+	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
+	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+	cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+}
+
+
 > 
-I have compared two solutions to handle the encrypted memory, the solution A is mine, the solution B is Boris's.
-Here we only talk about the case that SME is active in the first kernel, and only care it's active too in kdump
-kernel. For solution A and solution B, these four cases are same.
-a. dump vmcore
-   It is encrypted in the first kernel, and needs be read out in kdump kernel.
-b. crash notes
-   When dumping vmcore, the people usually need to read the useful information from notes, and the notes
-   is also encrypted.
-c. iommu device table
-   It is allocated by kernel, need fill its pointer into mmio of amd iommu. It's encrypted in the first kernel,
-   need read the old content to analyze and get useful information.
-d. mmio of amd iommu
-   Register reported by amd firmware, it's not RAM, we don't encrypt in both the first kernel and kdump kernel.
+> That said, I still don't think that just building the whole command under the lock is really all that bad - even when it doesn't get optimised into one of the assignments that memset you call out is only a single "stp xzr, xzr, ...", and a couple of extra branches doesn't seem a huge deal compared to the DSB and MMIO accesses (and potentially polling) that we're about to do anyway. I've tried hacking things up enough to convince GCC to inline a specialisation of the relevant switch case when ent->opcode is known, and that reduces the "overhead" down to just a handful of ALU instructions. I still need to try cleaning said hack up and double-check that it doesn't have any adverse impact on all the other SMMUv3 stuff in development, but watch this space...
+> 
+> Robin.
+> 
+>> +{
+>> +    cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, msidata);
+>> +}
+>> +
+>>   /* High-level queue accessors */
+>>   static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>>   {
+>> @@ -836,7 +841,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>>               cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+>>           cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+>>           cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+>> -        cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
+>>           cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+>>           break;
+>>       default:
+>> @@ -947,7 +951,6 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>>       struct arm_smmu_cmdq_ent ent = {
+>>           .opcode = CMDQ_OP_CMD_SYNC,
+>>           .sync    = {
+>> -            .msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
+>>               .msiaddr = virt_to_phys(&smmu->sync_count),
+>>           },
+>>       };
+>> @@ -955,6 +958,8 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>>       arm_smmu_cmdq_build_cmd(cmd, &ent);
+>>
+>>       spin_lock_irqsave(&smmu->cmdq.lock, flags);
+>> +    ent.sync.msidata = ++smmu->sync_nr;
+>> +    arm_smmu_cmdq_sync_set_msidata(cmd, ent.sync.msidata);
+>>       arm_smmu_cmdq_insert_cmd(smmu, cmd);
+>>       spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>>
+>> @@ -2179,7 +2184,6 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+>>   {
+>>       int ret;
+>>
+>> -    atomic_set(&smmu->sync_nr, 0);
+>>       ret = arm_smmu_init_queues(smmu);
+>>       if (ret)
+>>           return ret;
+>> -- 
+>> 1.8.3
+>>
+>>
+> 
+> .
+> 
 
-Solution A:
-   1. add a new bool parameter "encrypted" to __ioremap_caller()
-      It is a low level function, and check the newly added parameter, if it's true and in kdump kernel, will
-      remap the memory with sme mask.
-   2. add a new function ioremap_encrypted() to explicitly passed in a "true" value for "encrypted". For above
-      a, b, c, we will call ioremap_encrypted();
-   3. adjust all existed ioremap wrapper functions, passed in "false" for encrypted to make them an before.
-
-      ioremap_encrypted()\
-      ioremap_cache()     |
-      ioremap_prot()      |
-      ioremap_wt()        |->__ioremap_caller()
-      ioremap_wc()        |
-      ioremap_uc()        |
-      ioremap_nocache()  /    
-
-Solution B(Boris suggested):
-   1. no need to add a new function(ioremap_encrypted), check whether the old memory is encrypted by comparing the address.
-   2. add new functions to check whether the old memory is encrypted for all cases.
-      a. dump vmcore
-         bool addr_is_old_memory(unsignd long addr)
-      b. crash notes
-         bool addr_is_crash_notes(unsigned long addr)
-      c. iommu device table
-         bool addr_is_iommu_device_table(unsigned long addr)
-   3. when remapping the memory, it will call all new functions, and check whether the memory is encrypted in __ioremap_caller().
-      __ioremap_caller()->__ioremap_compute_prot()-> /-> addr_is_crash_notes()
-                                                     |-> addr_is_iommu_device_table()
-                                                     |-> addr_is_old_memory()
-                                                     \ ......
-   For solution B, i made draft patch for demonstration, just pasted them at bottom.
-
-
-Conclusion:
-
-  Solution A:
-      advantages:
-                  1). It's very simple and very clean, less code change;
-                  2). It's easier to understand.
-      disadvantages:
-                  1). Need change the interface of __ioremap_caller() and adjust its wrapper functions;
-                  2). Need call ioremap_encrypted() explicitly for vmcore/crash notes/dev table reading.
-
-  Solution B:
-      advantages:
-                 1). No need to touch interface;
-                 2). Automatically detect and do inside __ioremap_caller().
-      disadvantages:
-                 1). Need add each function for each kind of encrypted old memory reading;
-                 2). In the future, need add these kinds of functions too for intel MKTME;
-                 3). It's more complicated and more code changes.
-
-I personally prefer solution A, which is presented in posted patches.
-What do you think, Boris? And other reviewers?
-
-Thanks,
-Lianbo
-
-
-
-
-The solution B will be described by pseudo-code, for example:
-
-   modified file: drivers/iommu/amd_iommu_init.c
-   inline bool addr_is_iommu_device_table(unsigned long addr) {
-        struct amd_iommu *iommu;
-
-        /* search the addr */
-        for_each_iommu(iommu) {
-            lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-            hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-            entry = (((u64) hi) << 32) + lo;
-            /* check whether it is an iommu device table address */
-            if (addr == entry) {
-                return true;
-            }
-        }
-        return false;
-   }
-
-   modified file: fs/proc/vmcore.c
-   inline bool addr_is_crash_notes(unsigned long addr) {
-       Elf64_Ehdr ehdr;
-       
-       /* code */
-
-       rc = elfcorehdr_read((char*)&ehdr, sizeof(ELF64_Ehdr), &elfcorehdr_addr);
-       elfcorebuf_sz_orig = sizeof(Elf64_Ehdr) + ehdr.e_phnum*sizeof(Elf64_Phdr);
-       rc = elfcorehdr_read(elfcorebuf, elfcorebuf_sz_orig, &elfcorehdr_addr);
-       ehdr_ptr = (Elf64_Ehdr*)(elfcorebuf + 1);
-
-       /* search the addr */
-       for (i = 0; i < ehdr_ptr->e_phnum; i++, phdr_ptr++) {
-           offset = phdr_ptr->p_offset;
-           /* if found it, break the loop */
-           if (offset == addr)
-               return true;
-       }
-       return false;
-   }
-
-   modified file: fs/proc/vmcore.c
-   inline bool addr_is_old_memory(unsignd long addr) {
-      struct vmcore *m;
-
-      /* code */
-
-      /*search the addr*/
-      list_for_each_entry(m, &vmcore_list, list) {
-          /* code */
-          
-          sz = min_t(unsigned long long, m->offset + m->size - *pos, size);
-          start = m->paddr + *pos - m->offset;
-          
-          do {
-             /* if found it, break the loop */ 
-             if (addr == start)
-                  return true;
-
-              offset = (unsigned long)(*start % PAGE_SIZE);
-              bytes = PAGE_SIZE - offset;
-              start += bytes;
-              sz -= bytes;
-
-              /* code */
-
-          } while (sz);
-      }
-      return false;
-   }
-
-   modified file: arch/x86/mm/ioremap.c
-   static void __ioremap_compute_prot(resource_size_t addr, unsigned long size,
-                                   pgprot_t *prot)
-   {
-        bool encrypted_prot = false;
-
-        /* code */
-
-        if (!is_kdump_kernel())
-            return;
-
-        if (addr_is_iommu_device_table(addr))
-            encrypted_prot = true;
-
-        if (addr_is_crash_notes(addr))
-            encrypted_prot = true;
-
-        if (addr_is_old_memory(addr))
-            encrypted_prot = true;
-
-        /* code */
-        
-        *prot = encrypted_prot ? pgprot_encrypted(*prot)
-                               : pgprot_decrypted(*prot);
-   }
-
-   modified file: arch/x86/mm/ioremap.c
-   static void __iomem *__ioremap_caller(resource_size_t phys_addr,
-                unsigned long size, enum page_cache_mode pcm, void *caller)
-   {
-        /* code */
-
-         prot = PAGE_KERNEL_IO;
-         if (sev_active() && mem_flags.desc_other)
-                prot = pgprot_encrypted(prot);
-       
-        /* check whether the memory is encrypted */  
-        __ioremap_compute_prot(phys_addr, size, &prot);
-
-        switch (pcm) {
-        case _PAGE_CACHE_MODE_UC:
-        default:
-
-        /* code */
-   }
+-- 
+Thanks!
+BestRegards
