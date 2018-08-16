@@ -1,70 +1,76 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-Date: Thu, 16 Aug 2018 10:27:38 +0100
-Message-ID: <ad5bd6c0-20bd-9581-a12a-4464e5ec69f6@arm.com>
-References: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
- <1534328582-17664-2-git-send-email-thunder.leizhen@huawei.com>
- <6027cd67-7c76-673c-082f-8dd0b7a575b0@arm.com> <5B7533FD.20903@huawei.com>
- <20180816091805.GB31093@arm.com>
+From: Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+Subject: Re: IOAT DMA w/IOMMU
+Date: Thu, 16 Aug 2018 10:16:14 -0700
+Message-ID: <695826a6-e10c-5a30-a51f-7cc61ba6e640@gigaio.com>
+References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
+	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
+	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
+	<b54899a8-a144-e8e0-9880-1800c4657b95@deltatee.com>
+	<CAOQPn8tSNN+3igN-kMcQH46w_a9p6T+S7=c8CLREMLxr1kaTXQ@mail.gmail.com>
+	<7068db44-af31-4462-f966-2dd2340ba0f0@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180816091805.GB31093@arm.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <7068db44-af31-4462-f966-2dd2340ba0f0-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>, Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-08-16 10:18 AM, Will Deacon wrote:
-> On Thu, Aug 16, 2018 at 04:21:17PM +0800, Leizhen (ThunderTown) wrote:
->> On 2018/8/15 20:26, Robin Murphy wrote:
->>> On 15/08/18 11:23, Zhen Lei wrote:
->>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>>> index 1d64710..3f5c236 100644
->>>> --- a/drivers/iommu/arm-smmu-v3.c
->>>> +++ b/drivers/iommu/arm-smmu-v3.c
->>>> @@ -566,7 +566,7 @@ struct arm_smmu_device {
->>>>
->>>>        int                gerr_irq;
->>>>        int                combined_irq;
->>>> -    atomic_t            sync_nr;
->>>> +    u32                sync_nr;
->>>>
->>>>        unsigned long            ias; /* IPA */
->>>>        unsigned long            oas; /* PA */
->>>> @@ -775,6 +775,11 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
->>>>        return 0;
->>>>    }
->>>>
->>>> +static inline void arm_smmu_cmdq_sync_set_msidata(u64 *cmd, u32 msidata)
->>>
->>> If we *are* going to go down this route then I think it would make sense
->>> to move the msiaddr and CMDQ_SYNC_0_CS_MSI logic here as well; i.e.
->>> arm_smmu_cmdq_build_cmd() always generates a "normal" SEV-based sync
->>> command, then calling this guy would convert it to an MSI-based one.
->>> As-is, having bits of mutually-dependent data handled across two
->>> separate places just seems too messy and error-prone.
->>
->> Yes, How about create a new function "arm_smmu_cmdq_build_sync_msi_cmd"?
->>
->> static inline
->> void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->> {
->> 	cmd[0]  = FIELD_PREP(CMDQ_0_OP, ent->opcode);
->> 	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
->> 	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
->> 	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
->> 	cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
->> }
-> 
-> None of this seems justified given the numbers from John, so please just do
-> the simple thing and build the command with the lock held.
-
-Agreed - sorry if my wording was unclear, but that suggestion was only 
-for the possibility of it proving genuinely worthwhile to build the 
-command outside the lock. Since that isn't the case, I definitely prefer 
-the simpler approach too.
-
-Robin.
+Ck9uIDA4LzA5LzIwMTggMDI6MzYgUE0sIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPgo+IE9uIDA5
+LzA4LzE4IDAzOjMxIFBNLCBFcmljIFBpbG1vcmUgd3JvdGU6Cj4+IE9uIFRodSwgQXVnIDksIDIw
+MTggYXQgMTI6MzUgUE0sIExvZ2FuIEd1bnRob3JwZSA8bG9nYW5nQGRlbHRhdGVlLmNvbT4gd3Jv
+dGU6Cj4+PiBIZXksCj4+Pgo+Pj4gT24gMDkvMDgvMTggMTI6NTEgUE0sIEVyaWMgUGlsbW9yZSB3
+cm90ZToKPj4+Pj4+IFdhcyB3b25kZXJpbmcgaWYgYW55Ym9keSBoZXJlIGhhcyB1c2VkIElPQVQg
+RE1BIGVuZ2luZXMgd2l0aCBhbgo+Pj4+Pj4gSU9NTVUgdHVybmVkIG9uIChYZW9uIGJhc2VkIHN5
+c3RlbSk/IE15IHNwZWNpZmljIHF1ZXN0aW9uIGlzIHJlYWxseQo+Pj4+Pj4gd2hldGhlciBpdCBp
+cyBwb3NzaWJsZSB0byBETUEgKHcvSU9BVCkgdG8gYSBQQ0kgQkFSIGFkZHJlc3MgYXMgdGhlCj4+
+Pj4+PiBkZXN0aW5hdGlvbiB3aXRob3V0IGhhdmluZyB0byBtYXAgdGhhdCBhZGRyZXNzIHRvIHRo
+ZSBJT1ZBIHNwYWNlIG9mCj4+Pj4+PiB0aGUgRE1BIGVuZ2luZSBmaXJzdCAoYXNzdW1pbmcgdGhl
+IElPTU1VIGlzIG9uKT8KPj4+IEkgaGF2ZW4ndCB0ZXN0ZWQgdGhpcyBzY2VuYXJpbyBidXQgbXkg
+Z3Vlc3Mgd291bGQgYmUgdGhhdCBJT0FUIHdvdWxkCj4+PiBpbmRlZWQgZ28gdGhyb3VnaCB0aGUg
+SU9NTVUgYW5kIHRoZSBQQ0kgQkFSIGFkZHJlc3Mgd291bGQgbmVlZCB0byBiZQo+Pj4gcHJvcGVy
+bHkgbWFwcGVkIGludG8gdGhlIElPQVQncyBJT1ZBLiBUaGUgZmFjdCB0aGF0IHlvdSBzZWUgRE1B
+UiBlcnJvcnMKPj4+IGlzIHByb2JhYmx5IGEgZ29vZCBpbmRpY2F0aW9uIHRoYXQgdGhpcyBpcyB0
+aGUgY2FzZS4gSSByZWFsbHkgZG9uJ3Qga25vdwo+Pj4gd2h5IHlvdSdkIHdhbnQgdG8gRE1BIHNv
+bWV0aGluZyB3aXRob3V0IG1hcHBpbmcgaXQuCj4+IFRoZSB0aG91Z2h0IHdhcyB0byBhdm9pZCBw
+YXlpbmcgdGhlIHByaWNlIG9mIGhhdmluZyB0byBnbyB0aHJvdWdoIHlldCBhbm90aGVyCj4+IHRy
+YW5zbGF0aW9uIGFuZCBhbHNvIGJlY2F1c2UgaXQgd2FzIG5vdCBiZWxpZXZlZCB0byBiZSBuZWNl
+c3NhcnkgYW55d2F5IHNpbmNlCj4+IHRoZSBETUEgZGV2aWNlIGNvdWxkIGdvIHN0cmFpZ2h0IHRv
+IGEgUENJIEJBUiBhZGRyZXNzIHdpdGhvdXQgdGhlIG5lZWQgZm9yIGEKPj4gbWFwcGluZy4gIFdl
+IGhhdmUgYmVlbiBwbGF5aW5nIHdpdGggdHdvIERNQSBlbmdpbmVzLCBJT0FUIGFuZCBQTFguIFRo
+ZQo+PiBQTFggZG9lcyBub3QgaGF2ZSBhbnkgaXNzdWVzIGdvaW5nIHN0cmFpZ2h0IHRvIHRoZSBQ
+Q0kgQkFSIGFkZHJlc3MsIGJ1dCB1bmxpa2UKPj4gSU9BVCwgUExYIGlzIHNpdHRpbmcgImluIHRo
+ZSBQQ0kgdHJlZSIuCj4gWWVzLCB5b3UgY2FuIGRvIHRydWUgUDJQIHRyYW5zYWN0aW9ucyB3aXRo
+IHRoZSBQTFggRE1BIGVuZ2luZS4gKFRob3VnaAo+IHlvdSBkbyBoYXZlIHRvIGJlIGNhcmVmdWwg
+YXMgdGVjaG5pY2FsbHkgeW91IG5lZWQgdG8gdHJhbnNsYXRlIHRvIGEgUENJCj4gYnVzIGFkZHJl
+c3Mgbm90IHRoZSBDUFUgcGh5c2ljYWwgYWRkcmVzcyB3aGljaCBhcmUgdGhlIHNhbWUgb24geDg2
+OyBhbmQKPiB5b3UgbmVlZCB0byB3YXRjaCB0aGF0IEFDUyBkb2Vzbid0IG1lc3MgaXQgdXApLgo+
+Cj4gSXQgZG9lc24ndCBzb3VuZCBsaWtlIGl0J3MgcG9zc2libGUgdG8gYXZvaWQgdGhlIElPTU1V
+IHdoZW4gdXNpbmcgdGhlCj4gSU9BVCBzbyB5b3UgbmVlZCB0aGUgbWFwcGluZy4gSSB3b3VsZCBu
+b3QgZXhwZWN0IHRoZSBleHRyYSB0cmFuc2xhdGlvbgo+IGluIHRoZSBJT01NVSB0byBiZSBub3Rp
+Y2VhYmxlLCBwZXJmb3JtYW5jZSB3aXNlLgo+Cj4gTG9nYW4KSGkgTG9nYW4sCgpCYXNlZCBvbiBE
+YXZlIEppYW5nJ3Mgc3VnZ2VzdGlvbiwgSSBhbSBsb29raW5nIGludG8gdXBzdHJlYW1pbmcgdGhl
+Cm50YiBjaGFuZ2UgdG8gZG1hIG1hcCB0aGUgcGNpIGJhciBhZGRyZXNzIGluIG50Yl9hc3luY190
+eF9zdWJtaXQoKSAKKGFsb25nIHdpdGgKdGhlIGludGVsIGlvbW11IGNoYW5nZSB0byBzdXBwb3J0
+IGRtYV9tYXBfcmVzb3VyY2UpLgoKSSBvbmx5IGhhdmUgYWNjZXNzIHRvIGludGVsIGhvc3RzIGZv
+ciB0ZXN0aW5nIChhbmQgcG9zc2libHkgYW4gQU1ECmhvc3QgY3VycmVudGx5IGNvbGxlY3Rpbmcg
+ZHVzdCkgYW5kIGFtIG5vdCBzdXJlIGhvdyB0byBnbyBhYm91dCBnZXR0aW5nCnRoZSBwcm9wZXIg
+dGVzdCBjb3ZlcmFnZSBmb3Igb3RoZXIgYXJjaGl0ZWN0dXJlcy4KCkFueSBzdWdnZXN0aW9ucz8g
+RG8geW91IGFudGljaXBhdGUgYW55IGlzc3VlcyB3aXRoIGRtYSBtYXBwaW5nIHRoZSBwY2kgYmFy
+CmFkZHJlc3MgaW4gbnRiX2FzeW5jX3R4X3N1Ym1pdCBvbiBub24teDg2IGFyY2hzP8KgIERvIHlv
+dSBvciBrbm93IG9mIGZvbGtzCndobyBoYXZlIG50YiB0ZXN0IHNldHVwcyB3aXRoIG5vbi14ODYg
+aG9zdHMgd2hvIG1pZ2h0IGJlIGFibGUgdG8gaGVscD8KClRoYW5rcwpLaXQKCgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
+aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
+YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
