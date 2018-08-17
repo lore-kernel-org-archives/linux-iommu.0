@@ -1,13 +1,16 @@
-From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: [PATCH 2/2] dt-bindings: iommu: ipmmu-vmsa: Add r8a774a1 support
-Date: Fri, 17 Aug 2018 15:31:05 +0100
-Message-ID: <1534516265-10059-3-git-send-email-fabrizio.castro@bp.renesas.com>
-References: <1534516265-10059-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Laurentiu Tudor <laurentiu.tudor-3arQi8VN3Tc@public.gmane.org>
+Subject: Re: [PATCH 1/3] iommu: Add fast hook for getting DMA domains
+Date: Fri, 17 Aug 2018 15:27:16 +0000
+Message-ID: <b2b043f7-6f28-42e4-d630-d9694d34b5b6@nxp.com>
+References: <cover.1534250425.git.robin.murphy@arm.com>
+	<4d50587e62c16f7b5cfc45dee808d774655155cf.1534250425.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1534516265-10059-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+In-Reply-To: <4d50587e62c16f7b5cfc45dee808d774655155cf.1534250425.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Content-ID: <33B777E0A73B7147ADA602C9653B8963-jdb/QiT5osKcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,31 +20,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Document RZ/G2M (R8A774A1) SoC bindings.
+Hi Robin,
 
-Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+On 14.08.2018 16:04, Robin Murphy wrote:
+> While iommu_get_domain_for_dev() is the robust way for arbitrary IOMMU
+> API callers to retrieve the domain pointer, for DMA ops domains it
+> doesn't scale well for large systems and multi-queue devices, since the
+> momentary refcount adjustment will lead to exclusive cacheline contention
+> when multiple CPUs are operating in parallel on different mappings for
+> the same device.
+> 
+> In the case of DMA ops domains, however, this refcounting is actually
+> unnecessary, since they already imply that the group exists and is
+> managed by platform code and IOMMU internals (by virtue of
+> iommu_group_get_for_dev()) such that a reference will already be held
+> for the lifetime of the device. Thus we can avoid the bottleneck by
+> providing a fast lookup specifically for the DMA code to retrieve the
+> default domain it already knows it has set up - a simple read-only
+> dereference plays much nicer with cache-coherency protocols.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>   drivers/iommu/iommu.c | 9 +++++++++
+>   include/linux/iommu.h | 1 +
+>   2 files changed, 10 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 63b37563db7e..63c586875df5 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1379,6 +1379,15 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+>   
+> +/*
+> + * For IOMMU_DOMAIN_DMA implementations which already provide their own
+> + * guarantees that the group and its default domain are valid and correct.
+> + */
+> +struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+> +{
+> +	return dev->iommu_group->default_domain;
+> +}
+
+After some preliminary tests I'm seeing a ~10% performance improvement 
+on one of our chips (nxp ls1046a) which is pretty nice. :-)
+Any chance of making the function inline?
+If not, shouldn't an EXPORT_SYMBOL_GPL be added?
+
 ---
-This patch applies on top of next-20180817
-
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-index ffadb7c..68446dd 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-@@ -13,6 +13,7 @@ Required Properties:
-     - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-     - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
-     - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
-+    - "renesas,ipmmu-r8a774a1" for the R8A774A1 (RZ/G2M) IPMMU.
-     - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
-     - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
-     - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
--- 
-2.7.4
+Thanks & Best Regards, Laurentiu
