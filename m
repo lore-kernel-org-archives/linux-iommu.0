@@ -1,42 +1,79 @@
-From: Christoph Hellwig <hch@infradead.org>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH 0/3] iommu: Avoid DMA ops domain refcount contention
-Date: Fri, 17 Aug 2018 05:01:13 -0700
-Message-ID: <20180817120113.GA31542@infradead.org>
+Date: Fri, 17 Aug 2018 14:03:28 +0100
+Message-ID: <db0d436a-6f3c-6161-0dd1-ac42f908c1ee@huawei.com>
 References: <cover.1534250425.git.robin.murphy@arm.com>
- <20180817072415.GA22241@infradead.org>
- <74796f9d-5320-ea26-630a-207f4c537c55@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <74796f9d-5320-ea26-630a-207f4c537c55@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com, joro@8bytes.org, will.deacon@arm.com, linuxarm@huawei.com, Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org, guohanjun@huawei.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1534250425.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
+Cc: linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 17, 2018 at 12:30:31PM +0100, Robin Murphy wrote:
-> On 17/08/18 08:24, Christoph Hellwig wrote:
-> > I plan to make the arm iommu dma ops generic and move them to
-> > drivers/iommu for the 4.20 merge window.
-> 
-> You mean 32-bit arm?
+On 14/08/2018 14:04, Robin Murphy wrote:
+> John raised the issue[1] that we have some unnecessary refcount contention
+> in the DMA ops path which shows scalability problems now that we have more
+> real high-performance hardware using iommu-dma. The x86 IOMMU drivers are
+> sidestepping this by stashing domain references in archdata, but since
+> that's not very nice for architecture-agnostic code, I think it's time to
+> look at a generic API-level solution.
+>
+> These are a couple of quick patches based on the idea I had back when
+> first implementing this lot, but didn't have any way to justify at the
+> time. The third patch can be ignored for the sake of API discussion, but
+> is included for completeness.
+>
+> Robin.
+>
 
-Sorry, I meant the arm64 wrappers for dma-iommu of course.
+Some results:
 
-> The only place that code should move to is /dev/null ;)
-> - the plan has always been to convert it to use groups and default domains
-> so it can just plug iommu-dma in. The tricky bit is either weaning the users
-> of the private arm_iommu_*() API onto generic IOMMU API usage, or at least
-> implementing transitional wrappers in a way that doesn't break anything.
+PCIe NIC iperf test (128 processes, small packets):
+Without patchset:
+289232.00 rxpck/s
 
-Agreed on the arm32 iommu code.
+With patchset:
+367283 rxpck/s
+
+JFYI, with Leizhen's non-strict mode patchset + Robin's patchset:
+1215539 rxpck/s
+
+Leizhen can share non-strict mode results in his own patchset however.
+
+We did also try the storage controller fio test with a lot of SAS SSD 
+disks (24 disks, 24 fio processes) for Robin's patchset only, but did 
+not see a significant change.
+
+Thanks to Dongdong + chenxiang for testing.
+
+Let me know if you require more info.
+
+Thanks again,
+John
+
+
+>
+> [1] https://lists.linuxfoundation.org/pipermail/iommu/2018-August/029303.html
+>
+> Robin Murphy (3):
+>   iommu: Add fast hook for getting DMA domains
+>   iommu/dma: Use fast DMA domain lookup
+>   arm64/dma-mapping: Mildly optimise non-coherent IOMMU ops
+>
+>  arch/arm64/mm/dma-mapping.c | 10 +++++-----
+>  drivers/iommu/dma-iommu.c   | 23 ++++++++++++-----------
+>  drivers/iommu/iommu.c       |  9 +++++++++
+>  include/linux/iommu.h       |  1 +
+>  4 files changed, 27 insertions(+), 16 deletions(-)
+>
