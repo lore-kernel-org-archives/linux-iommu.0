@@ -1,82 +1,80 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 02/19] iommu/tegra: gart: Clean up driver probe errors
-	handling
-Date: Sat, 18 Aug 2018 18:54:13 +0300
-Message-ID: <20180818155430.5586-3-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v3 15/19] iommu/tegra: gart: Don't use managed resources
+Date: Sat, 18 Aug 2018 18:54:26 +0300
+Message-ID: <20180818155430.5586-16-digetx@gmail.com>
 References: <20180818155430.5586-1-digetx@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180818155430.5586-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180818155430.5586-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>
+Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Properly clean up allocated resources on the drivers probe failure and
-remove unneeded checks.
+GART is a part of the Memory Controller driver that is always built-in,
+hence there is no benefit from the use of managed resources.
 
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/iommu/tegra-gart.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/iommu/tegra-gart.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 6dda7ee1d36c..e9524ed264cf 100644
+index 9f7d3afb686f..d019ae8ecfc9 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -408,9 +408,6 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	int ret;
+@@ -171,7 +171,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 	struct gart_client *client, *c;
+ 	int err = 0;
  
--	if (gart_handle)
--		return -EIO;
--
- 	BUILD_BUG_ON(PAGE_SHIFT != GART_PAGE_SHIFT);
- 
- 	/* the GART memory aperture is required */
-@@ -445,8 +442,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	ret = iommu_device_register(&gart->iommu);
- 	if (ret) {
- 		dev_err(dev, "Failed to register IOMMU\n");
--		iommu_device_sysfs_remove(&gart->iommu);
--		return ret;
-+		goto remove_sysfs;
- 	}
- 
- 	gart->dev = &pdev->dev;
-@@ -460,7 +456,8 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	gart->savedata = vmalloc(array_size(sizeof(u32), gart->page_count));
- 	if (!gart->savedata) {
- 		dev_err(dev, "failed to allocate context save area\n");
--		return -ENOMEM;
-+		ret = -ENOMEM;
-+		goto unregister_iommu;
- 	}
- 
- 	platform_set_drvdata(pdev, gart);
-@@ -469,6 +466,13 @@ static int tegra_gart_probe(struct platform_device *pdev)
- 	gart_handle = gart;
- 
+-	client = devm_kzalloc(gart->dev, sizeof(*c), GFP_KERNEL);
++	client = kzalloc(sizeof(*c), GFP_KERNEL);
+ 	if (!client)
+ 		return -ENOMEM;
+ 	client->dev = dev;
+@@ -197,7 +197,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
  	return 0;
-+
-+unregister_iommu:
-+	iommu_device_unregister(&gart->iommu);
-+remove_sysfs:
-+	iommu_device_sysfs_remove(&gart->iommu);
-+
-+	return ret;
- }
  
- static int tegra_gart_remove(struct platform_device *pdev)
+ fail:
+-	devm_kfree(gart->dev, client);
++	kfree(client);
+ 	spin_unlock(&gart->client_lock);
+ 	return err;
+ }
+@@ -212,7 +212,7 @@ static void __gart_iommu_detach_dev(struct iommu_domain *domain,
+ 	list_for_each_entry(c, &gart->client, list) {
+ 		if (c->dev == dev) {
+ 			list_del(&c->list);
+-			devm_kfree(gart->dev, c);
++			kfree(c);
+ 			if (list_empty(&gart->client))
+ 				gart->active_domain = NULL;
+ 			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
+@@ -459,7 +459,7 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 		return ERR_PTR(-ENXIO);
+ 	}
+ 
+-	gart = devm_kzalloc(dev, sizeof(*gart), GFP_KERNEL);
++	gart = kzalloc(sizeof(*gart), GFP_KERNEL);
+ 	if (!gart) {
+ 		dev_err(dev, "failed to allocate gart_device\n");
+ 		return ERR_PTR(-ENOMEM);
+@@ -468,7 +468,7 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 	ret = iommu_device_sysfs_add(&gart->iommu, dev, NULL, "gart");
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register IOMMU in sysfs\n");
+-		return ERR_PTR(ret);
++		goto free_gart;
+ 	}
+ 
+ 	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
+@@ -506,6 +506,8 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 	iommu_device_unregister(&gart->iommu);
+ remove_sysfs:
+ 	iommu_device_sysfs_remove(&gart->iommu);
++free_gart:
++	kfree(gart);
+ 
+ 	return ERR_PTR(ret);
+ }
 -- 
 2.18.0
