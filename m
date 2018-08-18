@@ -1,53 +1,35 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v3 10/19] memory: tegra: Read client ID on GART page fault
-Date: Sat, 18 Aug 2018 18:54:21 +0300
-Message-ID: <20180818155430.5586-11-digetx@gmail.com>
-References: <20180818155430.5586-1-digetx@gmail.com>
+From: Esteban Zamora <estebanzacr.20@gmail.com>
+Subject: [PATCH] swiotlb: Fix uninitialized pointer on DMA ops
+Date: Sat, 18 Aug 2018 13:04:51 -0600
+Message-ID: <1534619091-14258-1-git-send-email-estebanzacr.20@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180818155430.5586-1-digetx@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>
-Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+To: estebanzacr.20@gmail.com
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the device tree binding changes, now Memory Controller has access to
-GART registers. Hence it is now possible to read client ID on GART page
-fault to get information about what memory client causes the fault.
+The mmap function pointer on swiotlb_dma_ops struct is
+uninitialized, which causes a random crash when calling
+the dma_mmap_coherent function on platforms where no DMA
+address translation hardware is available.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Set this pointer to NULL in order to fix the issue.
+
+Signed-off-by: Esteban Zamora <estebanzacr.20@gmail.com>
 ---
- drivers/memory/tegra/mc.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ kernel/dma/swiotlb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-index 3bf3138769f4..ab383d7a7842 100644
---- a/drivers/memory/tegra/mc.c
-+++ b/drivers/memory/tegra/mc.c
-@@ -38,6 +38,7 @@
- 
- #define MC_ERR_ADR 0x0c
- 
-+#define MC_GART_ERROR_REQ		0x30
- #define MC_DECERR_EMEM_OTHERS_STATUS	0x58
- #define MC_SECURITY_VIOLATION_STATUS	0x74
- 
-@@ -575,8 +576,15 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
- 			break;
- 
- 		case MC_INT_INVALID_GART_PAGE:
--			dev_err_ratelimited(mc->dev, "%s\n", error);
--			continue;
-+			reg = MC_GART_ERROR_REQ;
-+			value = mc_readl(mc, reg);
-+
-+			id = (value >> 1) & mc->soc->client_id_mask;
-+			desc = error_names[2];
-+
-+			if (value & BIT(0))
-+				direction = "write";
-+			break;
- 
- 		case MC_INT_SECURITY_VIOLATION:
- 			reg = MC_SECURITY_VIOLATION_STATUS;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 4f8a6db..9a7718c 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1082,5 +1082,6 @@ const struct dma_map_ops swiotlb_dma_ops = {
+ 	.map_page		= swiotlb_map_page,
+ 	.unmap_page		= swiotlb_unmap_page,
+ 	.dma_supported		= dma_direct_supported,
++	.mmap                   = NULL,
+ };
+ EXPORT_SYMBOL(swiotlb_dma_ops);
 -- 
-2.18.0
+2.7.4
