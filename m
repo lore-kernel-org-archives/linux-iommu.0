@@ -1,399 +1,88 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v3 19/19] iommu/tegra: gart: Perform code refactoring
-Date: Sat, 18 Aug 2018 18:54:30 +0300
-Message-ID: <20180818155430.5586-20-digetx@gmail.com>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v3 04/19] iommu: Introduce iotlb_sync_map callback
+Date: Sat, 18 Aug 2018 18:54:15 +0300
+Message-ID: <20180818155430.5586-5-digetx@gmail.com>
 References: <20180818155430.5586-1-digetx@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180818155430.5586-1-digetx@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>
-Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180818155430.5586-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Perform a major code cleanup to make it more readable and as a result
-easier to maintain. I've removed some redundant safety-checks in the code
-and some debug code that isn't actually very useful for debugging, like
-enormous pagetable dump on each fault, the majority of the changes are
-code reshuffling and variables/whitespaces clean up.
+Introduce iotlb_sync_map() callback that is invoked in the end of
+iommu_map(). This new callback allows IOMMU drivers to avoid syncing
+after mapping of each contiguous chunk and sync only when the whole
+mapping is completed, optimizing performance of the mapping operation.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 203 +++++++++++++++----------------------
- 1 file changed, 79 insertions(+), 124 deletions(-)
+ drivers/iommu/iommu.c | 8 ++++++--
+ include/linux/iommu.h | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 7182445c3b76..aebbb2ccc536 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -34,63 +34,59 @@
- #define GART_CONFIG		(0x24 - GART_REG_BASE)
- #define GART_ENTRY_ADDR		(0x28 - GART_REG_BASE)
- #define GART_ENTRY_DATA		(0x2c - GART_REG_BASE)
--#define GART_ENTRY_PHYS_ADDR_VALID	(1 << 31)
-+
-+#define GART_ENTRY_PHYS_ADDR_VALID	BIT(31)
- 
- #define GART_PAGE_SHIFT		12
- #define GART_PAGE_SIZE		(1 << GART_PAGE_SHIFT)
--#define GART_PAGE_MASK						\
--	(~(GART_PAGE_SIZE - 1) & ~GART_ENTRY_PHYS_ADDR_VALID)
-+#define GART_PAGE_MASK		GENMASK(30, GART_PAGE_SHIFT)
- 
- struct gart_device {
- 	void __iomem		*regs;
- 	u32			*savedata;
--	u32			page_count;	/* total remappable size */
--	dma_addr_t		iovmm_base;	/* offset to vmm_area */
-+	unsigned long		iovmm_base;	/* offset to vmm_area start */
-+	unsigned long		iovmm_end;	/* offset to vmm_area end */
- 	spinlock_t		pte_lock;	/* for pagetable */
- 	spinlock_t		dom_lock;	/* for active domain */
- 	unsigned int		active_devices;	/* number of active devices */
- 	struct iommu_domain	*active_domain;	/* current active domain */
--	struct device		*dev;
--
- 	struct iommu_device	iommu;		/* IOMMU Core handle */
-+	struct device		*dev;
- };
- 
- static struct gart_device *gart_handle; /* unique for a system */
- 
- static bool gart_debug;
- 
--#define GART_PTE(_pfn)						\
--	(GART_ENTRY_PHYS_ADDR_VALID | ((_pfn) << PAGE_SHIFT))
--
- /*
-  * Any interaction between any block on PPSB and a block on APB or AHB
-  * must have these read-back to ensure the APB/AHB bus transaction is
-  * complete before initiating activity on the PPSB block.
-  */
--#define FLUSH_GART_REGS(gart)	((void)readl((gart)->regs + GART_CONFIG))
-+#define FLUSH_GART_REGS(gart)	readl_relaxed((gart)->regs + GART_CONFIG)
- 
- #define for_each_gart_pte(gart, iova)					\
- 	for (iova = gart->iovmm_base;					\
--	     iova < gart->iovmm_base + GART_PAGE_SIZE * gart->page_count; \
-+	     iova < gart->iovmm_end;					\
- 	     iova += GART_PAGE_SIZE)
- 
- static inline void gart_set_pte(struct gart_device *gart,
--				unsigned long offs, u32 pte)
-+				unsigned long iova, u32 pte)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8c15c5980299..8979b16caf61 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1545,13 +1545,14 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
+ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	      phys_addr_t paddr, size_t size, int prot)
  {
--	writel(offs, gart->regs + GART_ENTRY_ADDR);
--	writel(pte, gart->regs + GART_ENTRY_DATA);
-+	writel_relaxed(iova, gart->regs + GART_ENTRY_ADDR);
-+	writel_relaxed(pte, gart->regs + GART_ENTRY_DATA);
++	const struct iommu_ops *ops = domain->ops;
+ 	unsigned long orig_iova = iova;
+ 	unsigned int min_pagesz;
+ 	size_t orig_size = size;
+ 	phys_addr_t orig_paddr = paddr;
+ 	int ret = 0;
  
--	dev_dbg(gart->dev, "GART: %s %08lx:%08x\n",
--		 pte ? "map" : "unmap", offs, pte & GART_PAGE_MASK);
-+	dev_dbg(gart->dev, "GART: %s %08lx:%08lx\n",
-+		pte ? "map" : "unmap", iova, pte & GART_PAGE_MASK);
- }
+-	if (unlikely(domain->ops->map == NULL ||
++	if (unlikely(ops->map == NULL ||
+ 		     domain->pgsize_bitmap == 0UL))
+ 		return -ENODEV;
  
- static inline unsigned long gart_read_pte(struct gart_device *gart,
--					  unsigned long offs)
-+					  unsigned long iova)
- {
- 	unsigned long pte;
+@@ -1580,7 +1581,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
+ 			 iova, &paddr, pgsize);
  
--	writel(offs, gart->regs + GART_ENTRY_ADDR);
--	pte = readl(gart->regs + GART_ENTRY_DATA);
-+	writel_relaxed(iova, gart->regs + GART_ENTRY_ADDR);
-+	pte = readl_relaxed(gart->regs + GART_ENTRY_DATA);
+-		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
++		ret = ops->map(domain, iova, paddr, pgsize, prot);
+ 		if (ret)
+ 			break;
  
- 	return pte;
- }
-@@ -102,49 +98,20 @@ static void do_gart_setup(struct gart_device *gart, const u32 *data)
- 	for_each_gart_pte(gart, iova)
- 		gart_set_pte(gart, iova, data ? *(data++) : 0);
- 
--	writel(1, gart->regs + GART_CONFIG);
-+	writel_relaxed(1, gart->regs + GART_CONFIG);
- 	FLUSH_GART_REGS(gart);
- }
- 
--#ifdef DEBUG
--static void gart_dump_table(struct gart_device *gart)
--{
--	unsigned long iova;
--	unsigned long flags;
--
--	spin_lock_irqsave(&gart->pte_lock, flags);
--	for_each_gart_pte(gart, iova) {
--		unsigned long pte;
--
--		pte = gart_read_pte(gart, iova);
--
--		dev_dbg(gart->dev, "GART: %s %08lx:%08lx\n",
--			(GART_ENTRY_PHYS_ADDR_VALID & pte) ? "v" : " ",
--			iova, pte & GART_PAGE_MASK);
--	}
--	spin_unlock_irqrestore(&gart->pte_lock, flags);
--}
--#else
--static inline void gart_dump_table(struct gart_device *gart)
-+static inline bool gart_iova_range_invalid(struct gart_device *gart,
-+					   unsigned long iova, size_t bytes)
- {
-+	return unlikely(iova < gart->iovmm_base ||
-+			iova + bytes > gart->iovmm_end);
- }
--#endif
- 
--static inline bool gart_iova_range_valid(struct gart_device *gart,
--					 unsigned long iova, size_t bytes)
-+static inline bool gart_pte_valid(struct gart_device *gart, unsigned long iova)
- {
--	unsigned long iova_start, iova_end, gart_start, gart_end;
--
--	iova_start = iova;
--	iova_end = iova_start + bytes - 1;
--	gart_start = gart->iovmm_base;
--	gart_end = gart_start + gart->page_count * GART_PAGE_SIZE - 1;
--
--	if (iova_start < gart_start)
--		return false;
--	if (iova_end > gart_end)
--		return false;
--	return true;
-+	return !!(gart_read_pte(gart, iova) & GART_ENTRY_PHYS_ADDR_VALID);
- }
- 
- static int gart_iommu_attach_dev(struct iommu_domain *domain,
-@@ -187,7 +154,6 @@ static void gart_iommu_detach_dev(struct iommu_domain *domain,
- 
- static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
- {
--	struct gart_device *gart = gart_handle;
- 	struct iommu_domain *domain;
- 
- 	if (type != IOMMU_DOMAIN_UNMANAGED)
-@@ -195,9 +161,8 @@ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
- 
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (domain) {
--		domain->geometry.aperture_start = gart->iovmm_base;
--		domain->geometry.aperture_end = gart->iovmm_base +
--					gart->page_count * GART_PAGE_SIZE - 1;
-+		domain->geometry.aperture_start = gart_handle->iovmm_base;
-+		domain->geometry.aperture_end = gart_handle->iovmm_end - 1;
- 		domain->geometry.force_aperture = true;
+@@ -1589,6 +1590,9 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		size -= pgsize;
  	}
  
-@@ -209,35 +174,44 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
- 	kfree(domain);
- }
- 
-+static int __gart_iommu_map(struct gart_device *gart, unsigned long iova,
-+			    phys_addr_t pa)
-+{
-+	if (unlikely(gart_debug) && gart_pte_valid(gart, iova)) {
-+		dev_WARN(gart->dev, "GART: Page entry is in-use\n");
-+		return -EBUSY;
-+	}
++	if (ops->iotlb_sync_map)
++		ops->iotlb_sync_map(domain);
 +
-+	gart_set_pte(gart, iova, GART_ENTRY_PHYS_ADDR_VALID | pa);
-+
-+	return 0;
-+}
-+
- static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
- 			  phys_addr_t pa, size_t bytes, int prot)
- {
- 	struct gart_device *gart = gart_handle;
- 	unsigned long flags;
--	unsigned long pfn;
--	unsigned long pte;
-+	int ret;
- 
--	if (!gart_iova_range_valid(gart, iova, bytes))
-+	if (gart_iova_range_invalid(gart, iova, bytes))
- 		return -EINVAL;
- 
- 	spin_lock_irqsave(&gart->pte_lock, flags);
--	pfn = __phys_to_pfn(pa);
--	if (!pfn_valid(pfn)) {
--		dev_err(gart->dev, "GART: Invalid page: %pa\n", &pa);
--		spin_unlock_irqrestore(&gart->pte_lock, flags);
--		return -EINVAL;
--	}
--	if (gart_debug) {
--		pte = gart_read_pte(gart, iova);
--		if (pte & GART_ENTRY_PHYS_ADDR_VALID) {
--			spin_unlock_irqrestore(&gart->pte_lock, flags);
--			dev_err(gart->dev, "GART: Page entry is in-use\n");
--			return -EBUSY;
--		}
--	}
--	gart_set_pte(gart, iova, GART_PTE(pfn));
-+	ret = __gart_iommu_map(gart, iova, pa);
- 	spin_unlock_irqrestore(&gart->pte_lock, flags);
--	return 0;
-+
-+	return ret;
-+}
-+
-+static void __gart_iommu_unmap(struct gart_device *gart, unsigned long iova)
-+{
-+	if (unlikely(gart_debug) && !gart_pte_valid(gart, iova)) {
-+		dev_WARN(gart->dev, "GART: Page entry is invalid\n");
-+		return;
-+	}
-+
-+	gart_set_pte(gart, iova, 0);
- }
- 
- static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-@@ -246,12 +220,13 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	struct gart_device *gart = gart_handle;
- 	unsigned long flags;
- 
--	if (!gart_iova_range_valid(gart, iova, bytes))
-+	if (gart_iova_range_invalid(gart, iova, bytes))
- 		return 0;
- 
- 	spin_lock_irqsave(&gart->pte_lock, flags);
--	gart_set_pte(gart, iova, 0);
-+	__gart_iommu_unmap(gart, iova);
- 	spin_unlock_irqrestore(&gart->pte_lock, flags);
-+
- 	return bytes;
- }
- 
-@@ -259,25 +234,17 @@ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
- {
- 	struct gart_device *gart = gart_handle;
--	unsigned long pte;
--	phys_addr_t pa;
- 	unsigned long flags;
-+	unsigned long pte;
- 
--	if (!gart_iova_range_valid(gart, iova, 0))
-+	if (gart_iova_range_invalid(gart, iova, SZ_4K))
- 		return -EINVAL;
- 
- 	spin_lock_irqsave(&gart->pte_lock, flags);
- 	pte = gart_read_pte(gart, iova);
- 	spin_unlock_irqrestore(&gart->pte_lock, flags);
- 
--	pa = (pte & GART_PAGE_MASK);
--	if (!pfn_valid(__phys_to_pfn(pa))) {
--		dev_err(gart->dev, "GART: No entry for %08llx:%pa\n",
--			 (unsigned long long)iova, &pa);
--		gart_dump_table(gart);
--		return -EINVAL;
--	}
--	return pa;
-+	return pte & GART_PAGE_MASK;
- }
- 
- static bool gart_iommu_capable(enum iommu_cap cap)
-@@ -342,24 +309,19 @@ static const struct iommu_ops gart_iommu_ops = {
- 
- int tegra_gart_suspend(struct gart_device *gart)
- {
--	unsigned long iova;
- 	u32 *data = gart->savedata;
--	unsigned long flags;
-+	unsigned long iova;
- 
--	spin_lock_irqsave(&gart->pte_lock, flags);
- 	for_each_gart_pte(gart, iova)
- 		*(data++) = gart_read_pte(gart, iova);
--	spin_unlock_irqrestore(&gart->pte_lock, flags);
-+
- 	return 0;
- }
- 
- int tegra_gart_resume(struct gart_device *gart)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&gart->pte_lock, flags);
- 	do_gart_setup(gart, gart->savedata);
--	spin_unlock_irqrestore(&gart->pte_lock, flags);
-+
- 	return 0;
- }
- 
-@@ -368,8 +330,7 @@ struct gart_device *tegra_gart_probe(struct device *dev,
- 				     struct tegra_mc *mc)
- {
- 	struct gart_device *gart;
--	struct resource *res_remap;
--	void __iomem *gart_regs;
-+	struct resource *res;
- 	int ret;
- 
- 	BUILD_BUG_ON(PAGE_SHIFT != GART_PAGE_SHIFT);
-@@ -379,9 +340,8 @@ struct gart_device *tegra_gart_probe(struct device *dev,
- 		return NULL;
- 
- 	/* the GART memory aperture is required */
--	res_remap = platform_get_resource(to_platform_device(dev),
--					  IORESOURCE_MEM, 1);
--	if (!res_remap) {
-+	res = platform_get_resource(to_platform_device(dev), IORESOURCE_MEM, 1);
-+	if (!res) {
- 		dev_err(dev, "GART: Memory aperture resource unavailable\n");
- 		return ERR_PTR(-ENXIO);
- 	}
-@@ -390,39 +350,34 @@ struct gart_device *tegra_gart_probe(struct device *dev,
- 	if (!gart)
- 		return ERR_PTR(-ENOMEM);
- 
-+	gart_handle = gart;
-+
-+	gart->dev = dev;
-+	gart->regs = mc->regs + GART_REG_BASE;
-+	gart->iovmm_base = res->start;
-+	gart->iovmm_end = res->start + resource_size(res);
-+	spin_lock_init(&gart->pte_lock);
-+	spin_lock_init(&gart->dom_lock);
-+
-+	do_gart_setup(gart, NULL);
-+
- 	ret = iommu_device_sysfs_add(&gart->iommu, dev, NULL, "gart");
--	if (ret) {
--		dev_err(dev, "GART: Failed to register IOMMU sysfs\n");
-+	if (ret)
- 		goto free_gart;
--	}
- 
- 	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
- 	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
- 
- 	ret = iommu_device_register(&gart->iommu);
--	if (ret) {
--		dev_err(dev, "GART: Failed to register IOMMU\n");
-+	if (ret)
- 		goto remove_sysfs;
--	}
--
--	gart->dev = dev;
--	gart_regs = mc->regs + GART_REG_BASE;
--	spin_lock_init(&gart->pte_lock);
--	spin_lock_init(&gart->dom_lock);
--	gart->regs = gart_regs;
--	gart->iovmm_base = (dma_addr_t)res_remap->start;
--	gart->page_count = (resource_size(res_remap) >> GART_PAGE_SHIFT);
- 
--	gart->savedata = vmalloc(array_size(sizeof(u32), gart->page_count));
-+	gart->savedata = vmalloc(resource_size(res) >> GART_PAGE_SHIFT);
- 	if (!gart->savedata) {
- 		ret = -ENOMEM;
- 		goto unregister_iommu;
- 	}
- 
--	do_gart_setup(gart, NULL);
--
--	gart_handle = gart;
--
- 	return gart;
- 
- unregister_iommu:
+ 	/* unroll mapping in case something went wrong */
+ 	if (ret)
+ 		iommu_unmap(domain, orig_iova, orig_size - size);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 87994c265bf5..4c488eb69752 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -202,6 +202,7 @@ struct iommu_ops {
+ 	void (*flush_iotlb_all)(struct iommu_domain *domain);
+ 	void (*iotlb_range_add)(struct iommu_domain *domain,
+ 				unsigned long iova, size_t size);
++	void (*iotlb_sync_map)(struct iommu_domain *domain);
+ 	void (*iotlb_sync)(struct iommu_domain *domain);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
 -- 
 2.18.0
