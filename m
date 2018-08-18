@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v3 05/19] iommu/tegra: gart: Optimize mapping / unmapping performance
-Date: Sat, 18 Aug 2018 18:54:16 +0300
-Message-ID: <20180818155430.5586-6-digetx@gmail.com>
+Subject: [PATCH v3 08/19] memory: tegra: Don't invoke Tegra30+ specific memory timing setup on Tegra20
+Date: Sat, 18 Aug 2018 18:54:19 +0300
+Message-ID: <20180818155430.5586-9-digetx@gmail.com>
 References: <20180818155430.5586-1-digetx@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180818155430.5586-1-digetx@gmail.com>
@@ -10,59 +10,39 @@ To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry
 Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently GART writes one page entry at a time. More optimal would be to
-aggregate the writes and flush BUS buffer in the end, this gives map/unmap
-10-40% performance boost (depending on size of mapping) in comparison to
-flushing after each page entry update.
+This fixes irrelevant "tegra-mc 7000f000.memory-controller: no memory
+timings for RAM code 0 registered" warning message during of kernels
+boot-up on Tegra20.
 
+Fixes: a8d502fd3348 ("memory: tegra: Squash tegra20-mc into common tegra-mc driver")
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Jon Hunter <jonathanh@nvidia.com>
 ---
- drivers/iommu/tegra-gart.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/memory/tegra/mc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index f6cf5cd5aaca..86a855c0d031 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -287,7 +287,6 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index bd25faf6d13d..e56862495f36 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -664,12 +664,13 @@ static int tegra_mc_probe(struct platform_device *pdev)
  		}
+ 
+ 		isr = tegra_mc_irq;
+-	}
+ 
+-	err = tegra_mc_setup_timings(mc);
+-	if (err < 0) {
+-		dev_err(&pdev->dev, "failed to setup timings: %d\n", err);
+-		return err;
++		err = tegra_mc_setup_timings(mc);
++		if (err < 0) {
++			dev_err(&pdev->dev, "failed to setup timings: %d\n",
++				err);
++			return err;
++		}
  	}
- 	gart_set_pte(gart, iova, GART_PTE(pfn));
--	FLUSH_GART_REGS(gart);
- 	spin_unlock_irqrestore(&gart->pte_lock, flags);
- 	return 0;
- }
-@@ -304,7 +303,6 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
  
- 	spin_lock_irqsave(&gart->pte_lock, flags);
- 	gart_set_pte(gart, iova, 0);
--	FLUSH_GART_REGS(gart);
- 	spin_unlock_irqrestore(&gart->pte_lock, flags);
- 	return bytes;
- }
-@@ -370,6 +368,14 @@ static int gart_iommu_of_xlate(struct device *dev,
- 	return 0;
- }
- 
-+static void gart_iommu_sync(struct iommu_domain *domain)
-+{
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
-+
-+	FLUSH_GART_REGS(gart);
-+}
-+
- static const struct iommu_ops gart_iommu_ops = {
- 	.capable	= gart_iommu_capable,
- 	.domain_alloc	= gart_iommu_domain_alloc,
-@@ -384,6 +390,8 @@ static const struct iommu_ops gart_iommu_ops = {
- 	.iova_to_phys	= gart_iommu_iova_to_phys,
- 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
- 	.of_xlate	= gart_iommu_of_xlate,
-+	.iotlb_sync_map	= gart_iommu_sync,
-+	.iotlb_sync	= gart_iommu_sync,
- };
- 
- static int tegra_gart_suspend(struct device *dev)
+ 	mc->irq = platform_get_irq(pdev, 0);
 -- 
 2.18.0
