@@ -1,61 +1,53 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 07/19] ARM: dts: tegra20: Update Memory Controller node to
-	the new binding
-Date: Sat, 18 Aug 2018 18:54:18 +0300
-Message-ID: <20180818155430.5586-8-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v3 10/19] memory: tegra: Read client ID on GART page fault
+Date: Sat, 18 Aug 2018 18:54:21 +0300
+Message-ID: <20180818155430.5586-11-digetx@gmail.com>
 References: <20180818155430.5586-1-digetx@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180818155430.5586-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180818155430.5586-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>
+Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Device tree binding of Memory Controller has been changed: GART has been
-squashed into the MC, there are a new mandatory clock and #iommu-cells
-properties.
+With the device tree binding changes, now Memory Controller has access to
+GART registers. Hence it is now possible to read client ID on GART page
+fault to get information about what memory client causes the fault.
 
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- arch/arm/boot/dts/tegra20.dtsi | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/memory/tegra/mc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
-index 979f38293fe5..74f6e52291c5 100644
---- a/arch/arm/boot/dts/tegra20.dtsi
-+++ b/arch/arm/boot/dts/tegra20.dtsi
-@@ -617,16 +617,13 @@
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index 3bf3138769f4..ab383d7a7842 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -38,6 +38,7 @@
  
- 	mc: memory-controller@7000f000 {
- 		compatible = "nvidia,tegra20-mc";
--		reg = <0x7000f000 0x024
--		       0x7000f03c 0x3c4>;
-+		reg = <0x7000f000 0x400		/* controller registers */
-+		       0x58000000 0x02000000>;	/* GART aperture */
-+		clocks = <&tegra_car TEGRA20_CLK_MC>;
-+		clock-names = "mc";
- 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
- 		#reset-cells = <1>;
--	};
--
--	iommu@7000f024 {
--		compatible = "nvidia,tegra20-gart";
--		reg = <0x7000f024 0x00000018	/* controller registers */
--		       0x58000000 0x02000000>;	/* GART aperture */
-+		#iommu-cells = <0>;
- 	};
+ #define MC_ERR_ADR 0x0c
  
- 	memory-controller@7000f400 {
++#define MC_GART_ERROR_REQ		0x30
+ #define MC_DECERR_EMEM_OTHERS_STATUS	0x58
+ #define MC_SECURITY_VIOLATION_STATUS	0x74
+ 
+@@ -575,8 +576,15 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ 			break;
+ 
+ 		case MC_INT_INVALID_GART_PAGE:
+-			dev_err_ratelimited(mc->dev, "%s\n", error);
+-			continue;
++			reg = MC_GART_ERROR_REQ;
++			value = mc_readl(mc, reg);
++
++			id = (value >> 1) & mc->soc->client_id_mask;
++			desc = error_names[2];
++
++			if (value & BIT(0))
++				direction = "write";
++			break;
+ 
+ 		case MC_INT_SECURITY_VIOLATION:
+ 			reg = MC_SECURITY_VIOLATION_STATUS;
 -- 
 2.18.0
