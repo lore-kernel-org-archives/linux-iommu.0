@@ -1,11 +1,13 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v4 0/2] bugfix and optimization about CMD_SYNC
-Date: Sun, 19 Aug 2018 15:51:09 +0800
-Message-ID: <1534665071-7976-1-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH v4 1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
+Date: Sun, 19 Aug 2018 15:51:10 +0800
+Message-ID: <1534665071-7976-2-git-send-email-thunder.leizhen@huawei.com>
+References: <1534665071-7976-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1534665071-7976-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +21,105 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.
 Cc: Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-v3->v4:
-1. create a new function arm_smmu_cmdq_build_sync_msi_cmd, it's only used to
-build CMD_SYNC for CS=SIG_IRQ mode.
-2. In order to observe the optimization effect, I conducted 5 tests for each
-case. Although the test result is volatility, but we can still get which case
-is good or bad.
+The condition "(int)(VAL - sync_idx) >= 0" to break loop in function
+__arm_smmu_sync_poll_msi requires that sync_idx must be increased
+monotonously according to the sequence of the CMDs in the cmdq.
 
-Test command: fio -numjobs=8 -rw=randread -runtime=30 ... -bs=4k
-Test Result: IOPS
-
-Case 1: (without these patches)
-675480
-672055
-665275
-648610
-661146
-
-Case 2: (only apply the variant of patch 1, move arm_smmu_cmdq_build_cmd into lock)
-688714
-697355
-632951
-700540
-678459
-
-Case 3: (only apply patch 1)
-721582
-729226
-689574
-679710
-727770
-
-Case 4: (apply both patch 1 and patch 2)
-734077
-742868
-738194
-682544
-740586
-
-v2 -> v3:
-Although I have no data to show how many performance will be impacted
-because of arm_smmu_cmdq_build_cmd is protected by spinlock. But it's
-clear that the performance is bound to drop, a memset operation and 
-a complicate switch..case in the function arm_smmu_cmdq_build_cmd.
-
-v1 -> v2:
-1. move the call to arm_smmu_cmdq_build_cmd into the critical section,
-   and keep itself unchange.
-2. Although patch2 can make sure no two CMD_SYNCs will be adjacent,
-but patch1 is still needed, see below:
-
-cpu0			cpu1			cpu2
+But ".msidata = atomic_inc_return_relaxed(&smmu->sync_nr)" is not protected
+by spinlock, so the following scenarios may appear:
+cpu0			cpu1
 msidata=0
 			msidata=1
 			insert cmd1
-						insert a TLBI command
 insert cmd0
 			smmu execute cmd1
-						smmu execute TLBI
 smmu execute cmd0
 			poll timeout, because msidata=1 is overridden by
 			cmd0, that means VAL=0, sync_idx=1.
 
-Zhen Lei (2):
-  iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-  iommu/arm-smmu-v3: avoid redundant CMD_SYNCs if possible
+This is not a functional problem, just make the caller wait for a long
+time until TIMEOUT. It's rare to happen, because any other CMD_SYNCs
+during the waiting period will break it.
 
- drivers/iommu/arm-smmu-v3.c | 44 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 32 insertions(+), 12 deletions(-)
+Split the building of CMD_SYNC for SIG_IRQ mode into a single function,
+to ensure better performance and good coding style.
 
--- 
+Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 1d64710..ac6d6df 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -566,7 +566,7 @@ struct arm_smmu_device {
+
+ 	int				gerr_irq;
+ 	int				combined_irq;
+-	atomic_t			sync_nr;
++	u32				sync_nr;
+
+ 	unsigned long			ias; /* IPA */
+ 	unsigned long			oas; /* PA */
+@@ -775,6 +775,17 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+ 	return 0;
+ }
+
++static inline
++void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
++{
++	cmd[0]  = FIELD_PREP(CMDQ_0_OP, ent->opcode);
++	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
++	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
++	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
++	cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
++	cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
++}
++
+ /* High-level queue accessors */
+ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ {
+@@ -830,14 +841,9 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+ 		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
+ 		break;
+ 	case CMDQ_OP_CMD_SYNC:
+-		if (ent->sync.msiaddr)
+-			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
+-		else
+-			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
++		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+ 		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+ 		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+-		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
+-		cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+ 		break;
+ 	default:
+ 		return -ENOENT;
+@@ -947,14 +953,13 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+ 	struct arm_smmu_cmdq_ent ent = {
+ 		.opcode = CMDQ_OP_CMD_SYNC,
+ 		.sync	= {
+-			.msidata = atomic_inc_return_relaxed(&smmu->sync_nr),
+ 			.msiaddr = virt_to_phys(&smmu->sync_count),
+ 		},
+ 	};
+
+-	arm_smmu_cmdq_build_cmd(cmd, &ent);
+-
+ 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
++	ent.sync.msidata = ++smmu->sync_nr;
++	arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
+ 	arm_smmu_cmdq_insert_cmd(smmu, cmd);
+ 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+
+@@ -2179,7 +2184,6 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+
+-	atomic_set(&smmu->sync_nr, 0);
+ 	ret = arm_smmu_init_queues(smmu);
+ 	if (ret)
+ 		return ret;
+--
 1.8.3
