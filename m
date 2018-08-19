@@ -1,19 +1,17 @@
-From: Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org>
-Subject: Re: dmaengine for sh7760 (was Re: use the generic dma-noncoherent
-	code for sh V2)
-Date: Sun, 19 Aug 2018 00:38:13 -0500
-Message-ID: <3f9fed2a-9800-8a86-2b1f-f7baaea74e54@landley.net>
-References: <20180724120147.15096-1-hch@lst.de> <20180724202115.GA4685@lst.de>
-	<18df6608-61c1-963d-bb1a-d46320232f40@landley.net>
-	<CAK8P3a3bwFupzM14eigXfoQsLtj3cq_xv_p3=O924cgSceLE0g@mail.gmail.com>
-	<418f3fa1-036f-d775-f1bc-e96778b4a4d8@landley.net>
-	<CAK8P3a3x0f_op8PxOaWGNHQ3udg05T6NZggFAd7awns-FoL4yA@mail.gmail.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
+Date: Sun, 19 Aug 2018 15:02:58 +0800
+Message-ID: <5B791622.4040509@huawei.com>
+References: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
+	<1534328582-17664-2-git-send-email-thunder.leizhen@huawei.com>
+	<6027cd67-7c76-673c-082f-8dd0b7a575b0@arm.com>
+	<5B7533FD.20903@huawei.com> <20180816091805.GB31093@arm.com>
+	<ad5bd6c0-20bd-9581-a12a-4464e5ec69f6@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAK8P3a3x0f_op8PxOaWGNHQ3udg05T6NZggFAd7awns-FoL4yA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <ad5bd6c0-20bd-9581-a12a-4464e5ec69f6-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,133 +21,137 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Thomas Petazzoni <thomas.petazzoni-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jacopo Mondi <jacopo+renesas-AW8dsiIh9cEdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/17/2018 03:23 PM, Arnd Bergmann wrote:
-> On Fri, Aug 17, 2018 at 7:04 PM Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org> wrote:
->> On 07/31/2018 07:56 AM, Arnd Bergmann wrote:
->>> On Fri, Jul 27, 2018 at 6:20 PM, Rob Landley <rob-VoJi6FS/r0vR7s880joybQ@public.gmane.org> wrote:
->>>> On 07/24/2018 03:21 PM, Christoph Hellwig wrote:
->>>>> On Tue, Jul 24, 2018 at 02:01:42PM +0200, Christoph Hellwig wrote:
->>>>>> Hi all,
->>> If you hack on it, please convert the dmaengine platform data to use
->>> a dma_slave_map array to pass the data into the dmaengine driver,
+
+
+On 2018/8/16 17:27, Robin Murphy wrote:
+> On 2018-08-16 10:18 AM, Will Deacon wrote:
+>> On Thu, Aug 16, 2018 at 04:21:17PM +0800, Leizhen (ThunderTown) wrote:
+>>> On 2018/8/15 20:26, Robin Murphy wrote:
+>>>> On 15/08/18 11:23, Zhen Lei wrote:
+>>>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>>>>> index 1d64710..3f5c236 100644
+>>>>> --- a/drivers/iommu/arm-smmu-v3.c
+>>>>> +++ b/drivers/iommu/arm-smmu-v3.c
+>>>>> @@ -566,7 +566,7 @@ struct arm_smmu_device {
+>>>>>
+>>>>>        int                gerr_irq;
+>>>>>        int                combined_irq;
+>>>>> -    atomic_t            sync_nr;
+>>>>> +    u32                sync_nr;
+>>>>>
+>>>>>        unsigned long            ias; /* IPA */
+>>>>>        unsigned long            oas; /* PA */
+>>>>> @@ -775,6 +775,11 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+>>>>>        return 0;
+>>>>>    }
+>>>>>
+>>>>> +static inline void arm_smmu_cmdq_sync_set_msidata(u64 *cmd, u32 msidata)
+>>>>
+>>>> If we *are* going to go down this route then I think it would make sense
+>>>> to move the msiaddr and CMDQ_SYNC_0_CS_MSI logic here as well; i.e.
+>>>> arm_smmu_cmdq_build_cmd() always generates a "normal" SEV-based sync
+>>>> command, then calling this guy would convert it to an MSI-based one.
+>>>> As-is, having bits of mutually-dependent data handled across two
+>>>> separate places just seems too messy and error-prone.
+>>>
+>>> Yes, How about create a new function "arm_smmu_cmdq_build_sync_msi_cmd"?
+>>>
+>>> static inline
+>>> void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>>> {
+>>>     cmd[0]  = FIELD_PREP(CMDQ_0_OP, ent->opcode);
+>>>     cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
+>>>     cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+>>>     cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+
+miss:   cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
+
+>>>     cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+>>> }
 >>
->> The dmatest module didn't need it? I don't see why the ethernet driver would?
->> (Isn't the point of an allocator to allocate from a request?)
+>> None of this seems justified given the numbers from John, so please just do
+>> the simple thing and build the command with the lock held.
+
+In order to observe the optimization effect, I conducted 5 tests for each
+case. Although the test result is volatility, but we can still get which case
+is good or bad. It accords with our theoretical analysis.
+
+Test command: fio -numjobs=8 -rw=randread -runtime=30 ... -bs=4k
+Test Result: IOPS, for example: read : io=86790MB, bw=2892.1MB/s, iops=740586, runt= 30001msec
+
+Case 1: (without these patches)
+675480
+672055
+665275
+648610
+661146
+
+Case 2: (move arm_smmu_cmdq_build_cmd into lock)
+688714
+697355
+632951
+700540
+678459
+
+Case 3: (base on case 2, replace arm_smmu_cmdq_build_cmd with arm_smmu_cmdq_build_sync_msi_cmd)
+721582
+729226
+689574
+679710
+727770
+
+Case 4: (base on case 3, plus patch 2)
+734077
+742868
+738194
+682544
+740586
+
+Case 2 is better than case 1, I think the main reason is the atomic_inc_return_relaxed(&smmu->sync_nr)
+has been removed. Case 3 is better than case 2, because the assembly code is reduced, see below.
+
+
 > 
-> I guess you have hit two of the special cases here:
+> Agreed - sorry if my wording was unclear, but that suggestion was only for the possibility of it proving genuinely worthwhile to build the command outside the lock. Since that isn't the case, I definitely prefer the simpler approach too.
+
+Yes, I mean replace arm_smmu_cmdq_build_cmd with arm_smmu_cmdq_build_sync_msi_cmd to build the command inside the lock.
+         spin_lock_irqsave(&smmu->cmdq.lock, flags);
++        ent.sync.msidata = ++smmu->sync_nr;
++        arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
+         arm_smmu_cmdq_insert_cmd(smmu, cmd);
+         spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+
+The assembly code showed me that it's very nice.
+ffff0000085e6928:       94123207        bl      ffff000008a73144 <_raw_spin_lock_irqsave>
+ffff0000085e692c:       b9410ad5        ldr     w21, [x22,#264]
+ffff0000085e6930:       d28208c2        mov     x2, #0x1046                     // #4166
+ffff0000085e6934:       aa0003fa        mov     x26, x0
+ffff0000085e6938:       110006b5        add     w21, w21, #0x1
+ffff0000085e693c:       f2a1f802        movk    x2, #0xfc0, lsl #16
+ffff0000085e6940:       aa1603e0        mov     x0, x22
+ffff0000085e6944:       910163a1        add     x1, x29, #0x58
+ffff0000085e6948:       aa158042        orr     x2, x2, x21, lsl #32
+ffff0000085e694c:       b9010ad5        str     w21, [x22,#264]
+ffff0000085e6950:       f9002fa2        str     x2, [x29,#88]
+ffff0000085e6954:       d2994016        mov     x22, #0xca00                    // #51712
+ffff0000085e6958:       f90033b3        str     x19, [x29,#96]
+ffff0000085e695c:       97fffd5b        bl      ffff0000085e5ec8 <arm_smmu_cmdq_insert_cmd>
+ffff0000085e6960:       aa1903e0        mov     x0, x25
+ffff0000085e6964:       aa1a03e1        mov     x1, x26
+ffff0000085e6968:       f2a77356        movk    x22, #0x3b9a, lsl #16
+ffff0000085e696c:       94123145        bl      ffff000008a72e80 <_raw_spin_unlock_irqrestore>
+
+
 > 
-> - dmatest uses the memory-to-memory DMA engine interface, not the slave
->   API, so you don't have to configure a slave at all
-
-I've read through
-https://www.kernel.org/doc/Documentation/driver-api/dmaengine/client.rst twice
-and am still very unclear on the slave API.
-
-> - smc91x (and its smc911x.c relative) are apparently special in that they
->   use they use the DMA slave API
-
-Only sort of. In 4.14 at least it's under #ifdef ARCH_PXA and full of PXA
-constants (PXAD_PRIO_LOWEST and such).
-
-> but (AFAICT) require programming
->   the dmaengine hardware into a memory-to-memory transfer with no
->   DMA slave request signal and completely synchronous operation
->   (the IRQ handler polls for the DMA descriptor to be complete),
->   see also https://lkml.org/lkml/2018/4/3/464 for the discussion about
->   the recent rework of that driver's implementation.
-
-Bookmarked, thanks.
-
-(Being able to just upgrade to a 4.19 kernel or something and have DMA work in
-this driver if I've got dmaengine set up for the platform would be lovely.)
-
->>> mapping the settings from a (pdev-name, channel-id) tuple to a pointer
->>> that describes the channel configuration rather than having the
->>> mapping from an numerical slave_id to a struct sh_dmae_slave_config
->>> in the setup files. It should be a fairly mechanical conversion.
->>
->> I think all 8 channels are generic. Drivers should be able to grab them and
->> release them at will, why does it need a table?
->>
->> (I say this not having made the smc91x.c driver use this yet, its "conversion"
->> to device tree left it full of PXA #ifdefs and constants, and I've tried the
+> Robin.
 > 
-> Another point about smc91x is that it only uses DMA on the PXA platform,
-> which is not part of the "multiplatform" ARM setup. It's likely that no
-> other platform actually has a DMA engine that can talk to this device in
-> the absence of a request signal, or that on more modern CPU cores,
-> a readsl() is actually just as fast, but it avoids the setup cost of talking
-> to the dma engine. Possibly both of the above.
-
-The sh7760 has the CPU pegged at 100% trying to keep up with ethernet traffic.
-Being able to use DMA on this would be very nice.
-
->> last half-dozen kernel releases and qemu releases and have yet to find an arm
->> mainstone board under qemu that _doesn't_ time out trying to use DMA with this
->> card. But that's another post...)
+> .
 > 
-> Is smc91x the only driver that you want to make use of the DMA engine?
 
-This driver's the low-hanging fruit, yeah. Copying NOR flash jffs2 data into
-page cache would be nice but there's a decompression step so I'm not sure that's
-a win.
-
-> I suspect that every other one currently relies on passing a slave ID
-> shdma_chan_filter into dma_request_slave_channel_compat() or
-> dma_request_channel() , which are some of the interfaces we want to
-> remove in the future, to make everything work the same across
-> all platforms.
-
-What are "all platforms" in this context? I tried to find an x86 variant that
-uses DMAEngine but came up empty. Can I use DMAEngine on a raspberry pi perhaps?
-Is there a QEMU taret I can play with DMAEngine under?
-
-I built a mainstone kernel with dmaengine amd smc91x both enabled, and booted it
-on qemu-system-arm -M mainstone, and it works fine until I try to ping the host
-(via the 10.0.2.2 redirect), at which point no packets are received and a timer
-expires all over the console a few seconds later. I.E. the DMA claims to be
-there, but the transfer never occurs.
-
-I built and tested every Linux version back to 4.2 (before the smc91x was
-converted from PXA dma to use DMAEngine, albeit in a very PXA specific manner).
-I also tested each qemu release back to 2.3.0, with no obvious behavioral
-difference.
-
-I can dig further back in qemu history maybe? Ask on the qemu list? (Did this
-ever work for anyone? I can post my kernel config and qemu command line if you
-think it would help?)
-
-> shdma_chan_filter() is one of those that expect its pointer argument to
-> be a number that is in turn associated with an sh_dmae_slave_config
-> structure in the platform data of the dma engine. What the newer
-> dma_request_chan() interface does is to pass a pointer to the
-> slave device and a string as identifier for the same data, which then
-> gets associated through the dma_slave_map. On smc91x, both
-> the device and name argument are NULL, which triggers the special
-> case in the pxa dmaengine driver.
-
-I do not understand what the slave map is for, is it documented anywhere? (The
-Documentation/randomdir/dmaengine/client.nolongertxt file says: "The association
-is done via DT, ACPI or board file based dma_slave_map matching table." which is
-its only mention of the existence of dma_slave_map.
-
-If the driver just needs "a channel" and doesn't care which one, why isn't the
-config info for that channel in the driver as a generic request for resource?
-
->>> The other part I noticed is arch/sh/drivers/dma/*, which appears to
->>> be entirely unused, and should probably removed.
->>
->> I had to switch that off to get this to work, yes. I believe it predates
->> dmaengine and was obsoleted by it.
-> 
-> Ok. Have you found any reason to keep it around though?
-
-I have not.
-
->        Arnd
-
-Rob
+-- 
+Thanks!
+BestRegards
