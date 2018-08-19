@@ -1,85 +1,54 @@
-From: Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v4 2/2] iommu/arm-smmu-v3: avoid redundant CMD_SYNCs if possible
-Date: Sun, 19 Aug 2018 15:51:11 +0800
-Message-ID: <1534665071-7976-3-git-send-email-thunder.leizhen@huawei.com>
-References: <1534665071-7976-1-git-send-email-thunder.leizhen@huawei.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] swiotlb: Fix uninitialized pointer on DMA ops
+Date: Sun, 19 Aug 2018 08:57:31 -0400
+Message-ID: <779B2AB6-0FF2-4A58-A333-E7207184E0BE@oracle.com>
+References: <1534619091-14258-1-git-send-email-estebanzacr.20@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1534665071-7976-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1534619091-14258-1-git-send-email-estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Esteban Zamora <estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-More than two CMD_SYNCs maybe adjacent in the command queue, and the first
-one has done what others want to do. Drop the redundant CMD_SYNCs can
-improve IO performance especially under the pressure scene.
+On August 18, 2018 3:04:51 PM EDT, Esteban Zamora <estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>The mmap function pointer on swiotlb_dma_ops struct is
+>uninitialized, which causes a random crash when calling
+>the dma_mmap_coherent function on platforms where no DMA
+>address translation hardware is available.
+>
+>Set this pointer to NULL in order to fix the issue.
 
-I did the statistics in my test environment, the number of CMD_SYNCs can
-be reduced about 1/3. See below:
-CMD_SYNCs reduced:	19542181
-CMD_SYNCs total:	58098548	(include reduced)
-CMDs total:		116197099	(TLBI:SYNC about 1:1)
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c | 22 +++++++++++++++++++---
- 1 file changed, 19 insertions(+), 3 deletions(-)
+By default unused entries in .rodata structure (like this one) are zero - meaning they are NULL if not set by the complier.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index ac6d6df..f3a56e1 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -567,6 +567,7 @@ struct arm_smmu_device {
- 	int				gerr_irq;
- 	int				combined_irq;
- 	u32				sync_nr;
-+	u8				prev_cmd_opcode;
+You should be able to verify this by looking at the objdump of the kernel and find this structure.
 
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
-@@ -786,6 +787,11 @@ void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 	cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
- }
 
-+static inline u8 arm_smmu_cmd_opcode_get(u64 *cmd)
-+{
-+	return cmd[0] & CMDQ_0_OP;
-+}
-+
- /* High-level queue accessors */
- static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- {
-@@ -906,6 +912,8 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
- 	struct arm_smmu_queue *q = &smmu->cmdq.q;
- 	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
-
-+	smmu->prev_cmd_opcode = arm_smmu_cmd_opcode_get(cmd);
-+
- 	while (queue_insert_raw(q, cmd) == -ENOSPC) {
- 		if (queue_poll_cons(q, false, wfe))
- 			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-@@ -958,9 +966,17 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
- 	};
-
- 	spin_lock_irqsave(&smmu->cmdq.lock, flags);
--	ent.sync.msidata = ++smmu->sync_nr;
--	arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
--	arm_smmu_cmdq_insert_cmd(smmu, cmd);
-+	if (smmu->prev_cmd_opcode == CMDQ_OP_CMD_SYNC) {
-+		/*
-+		 * Previous command is CMD_SYNC also, there is no need to add
-+		 * one more. Just poll it.
-+		 */
-+		ent.sync.msidata = smmu->sync_nr;
-+	} else {
-+		ent.sync.msidata = ++smmu->sync_nr;
-+		arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
-+		arm_smmu_cmdq_insert_cmd(smmu, cmd);
-+	}
- 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
-
- 	return __arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
---
-1.8.3
+>
+>Signed-off-by: Esteban Zamora <estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>---
+> kernel/dma/swiotlb.c | 1 +
+> 1 file changed, 1 insertion(+)
+>
+>diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>index 4f8a6db..9a7718c 100644
+>--- a/kernel/dma/swiotlb.c
+>+++ b/kernel/dma/swiotlb.c
+>@@ -1082,5 +1082,6 @@ const struct dma_map_ops swiotlb_dma_ops = {
+> 	.map_page		= swiotlb_map_page,
+> 	.unmap_page		= swiotlb_unmap_page,
+> 	.dma_supported		= dma_direct_supported,
+>+	.mmap                   = NULL,
+> };
+> EXPORT_SYMBOL(swiotlb_dma_ops);
