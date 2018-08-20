@@ -1,92 +1,114 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/3] arm64/dma-mapping: Mildly optimise non-coherent IOMMU
-	ops
-Date: Mon, 20 Aug 2018 16:41:13 +0100
-Message-ID: <40b5fd67-f38c-5c5d-b9e1-279bfb175311@arm.com>
-References: <cover.1534250425.git.robin.murphy@arm.com>
-	<52b017ead032f90e5f2b70b87747a49eb86209c8.1534250425.git.robin.murphy@arm.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 06/19] dt-bindings: memory: tegra: Squash tegra20-gart
+ into tegra20-mc
+Date: Mon, 20 Aug 2018 14:12:09 -0500
+Message-ID: <20180820191209.GA28618@bogus>
+References: <20180818155430.5586-1-digetx@gmail.com>
+ <20180818155430.5586-7-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <52b017ead032f90e5f2b70b87747a49eb86209c8.1534250425.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180818155430.5586-7-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dmitry Osipenko <digetx@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/08/18 14:04, Robin Murphy wrote:
-> Whilst the symmetry of deferring to the existing sync callback in
-> __iommu_map_page() is nice, taking a round-trip through
-> iommu_iova_to_phys() is a pretty heavyweight way to get an address we
-> can trivially compute from the page we already have. Tweaking it to just
-> perform the cache maintenance directly when appropriate doesn't really
-> make the code any more complicated, and the runtime efficiency gain can
-> only be a benefit.
-> 
-> Furthermore, the sync operations themselves know they can only be
-> invoked on a managed DMA ops domain, so can use the fast specific domain
-> lookup to avoid excessive manipulation of the group refcount
-> (particularly in the scatterlist cases).
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On Sat, Aug 18, 2018 at 06:54:17PM +0300, Dmitry Osipenko wrote:
+> Splitting GART and Memory Controller wasn't a good decision that was made
+> back in the day. Given that the GART driver hasn't ever been used by
+> anything in the kernel, we decided that it will be better to correct the
+> mistakes of the past and merge two bindings into a single one. In a result
+
+As a result...
+
+> there is a DT ABI change for the Memory Controller that allows not to
+> break newer kernels using older DT by introducing a new required property,
+> the memory clock. Adding the new clock property also puts the tegra20-mc
+> binding in line with the bindings of the later Tegra generations.
+
+I don't understand this part. It looks to me like you are breaking 
+compatibility. The driver failing to probe with an old DT is okay?
+
+OS's like OpenSUSE use new DTs with older kernel versions, so you should 
+consider how to not break them as well. I guess if all this is optional 
+or has been unused, then there shouldn't be a problem.
+
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 > ---
->   arch/arm64/mm/dma-mapping.c | 10 +++++-----
->   1 file changed, 5 insertions(+), 5 deletions(-)
+>  .../bindings/iommu/nvidia,tegra20-gart.txt    | 14 -----------
+>  .../memory-controllers/nvidia,tegra20-mc.txt  | 23 ++++++++++++++-----
+>  2 files changed, 17 insertions(+), 20 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
 > 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 61e93f0b5482..5d4144093c20 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -712,7 +712,7 @@ static void __iommu_sync_single_for_cpu(struct device *dev,
->   	if (is_device_dma_coherent(dev))
->   		return;
->   
-> -	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
-> +	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dev_addr);
->   	__dma_unmap_area(phys_to_virt(phys), size, dir);
->   }
->   
-> @@ -725,7 +725,7 @@ static void __iommu_sync_single_for_device(struct device *dev,
->   	if (is_device_dma_coherent(dev))
->   		return;
->   
-> -	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
-> +	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dev_addr);
->   	__dma_map_area(phys_to_virt(phys), size, dir);
->   }
->   
-> @@ -738,9 +738,9 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
->   	int prot = dma_info_to_prot(dir, coherent, attrs);
->   	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
->   
-> -	if (!iommu_dma_mapping_error(dev, dev_addr) &&
-> -	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-> -		__iommu_sync_single_for_device(dev, dev_addr, size, dir);
-> +	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-> +	    !iommu_dma_mapping_error(dev, dev_addr))
-> +		__dma_map_area(page_address(page), size, dir);
-
-                                                  + offset
-
-Sigh...
-
-And there I was assuming that if I'd bothered to write up a proper 
-commit message for the 15-month-old change I was cherry-picking, I must 
-have actually tested it at the time.
-
-Robin.
-
->   
->   	return dev_addr;
->   }
+> diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+> deleted file mode 100644
+> index 099d9362ebc1..000000000000
+> --- a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+> +++ /dev/null
+> @@ -1,14 +0,0 @@
+> -NVIDIA Tegra 20 GART
+> -
+> -Required properties:
+> -- compatible: "nvidia,tegra20-gart"
+> -- reg: Two pairs of cells specifying the physical address and size of
+> -  the memory controller registers and the GART aperture respectively.
+> -
+> -Example:
+> -
+> -	gart {
+> -		compatible = "nvidia,tegra20-gart";
+> -		reg = <0x7000f024 0x00000018	/* controller registers */
+> -		       0x58000000 0x02000000>;	/* GART aperture */
+> -	};
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
+> index 7d60a50a4fa1..1564df89392a 100644
+> --- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
+> +++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
+> @@ -2,25 +2,36 @@ NVIDIA Tegra20 MC(Memory Controller)
+>  
+>  Required properties:
+>  - compatible : "nvidia,tegra20-mc"
+> -- reg : Should contain 2 register ranges(address and length); see the
+> -  example below. Note that the MC registers are interleaved with the
+> -  GART registers, and hence must be represented as multiple ranges.
+> +- reg : Should contain 2 register ranges: physical base address and length of
+> +  the controller's registers and the GART aperture respectively.
+> +- clocks: Must contain an entry for each entry in clock-names.
+> +  See ../clocks/clock-bindings.txt for details.
+> +- clock-names: Must include the following entries:
+> +  - mc: the module's clock input
+>  - interrupts : Should contain MC General interrupt.
+>  - #reset-cells : Should be 1. This cell represents memory client module ID.
+>    The assignments may be found in header file <dt-bindings/memory/tegra20-mc.h>
+>    or in the TRM documentation.
+> +- #iommu-cells: Should be 0. This cell represents the number of cells in an
+> +  IOMMU specifier needed to encode an address. GART supports only a single
+> +  address space that is shared by all devices, therefore no additional
+> +  information needed for the address encoding.
+>  
+>  Example:
+>  	mc: memory-controller@7000f000 {
+>  		compatible = "nvidia,tegra20-mc";
+> -		reg = <0x7000f000 0x024
+> -		       0x7000f03c 0x3c4>;
+> -		interrupts = <0 77 0x04>;
+> +		reg = <0x7000f000 0x400		/* controller registers */
+> +		       0x58000000 0x02000000>;	/* GART aperture */
+> +		clocks = <&tegra_car TEGRA20_CLK_MC>;
+> +		clock-names = "mc";
+> +		interrupts = <GIC_SPI 77 0x04>;
+>  		#reset-cells = <1>;
+> +		#iommu-cells = <0>;
+>  	};
+>  
+>  	video-codec@6001a000 {
+>  		compatible = "nvidia,tegra20-vde";
+>  		...
+>  		resets = <&mc TEGRA20_MC_RESET_VDE>;
+> +		iommus = <&mc>;
+>  	};
+> -- 
+> 2.18.0
 > 
