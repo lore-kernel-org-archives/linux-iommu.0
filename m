@@ -1,54 +1,70 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] swiotlb: Fix uninitialized pointer on DMA ops
-Date: Sun, 19 Aug 2018 08:57:31 -0400
-Message-ID: <779B2AB6-0FF2-4A58-A333-E7207184E0BE@oracle.com>
-References: <1534619091-14258-1-git-send-email-estebanzacr.20@gmail.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH v14 0/4] iommu/arm-smmu: Add runtime pm/sleep support
+Date: Mon, 20 Aug 2018 18:31:03 +0900
+Message-ID: <CAAFQd5C+ctVA-ynrWy=0=pjKZj0TGmHL+bWAu2yWWjYe4Oyf8w@mail.gmail.com>
+References: <20180727070224.23966-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1534619091-14258-1-git-send-email-estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Esteban Zamora <estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180727070224.23966-1-vivek.gautam@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, freedreno <freedreno@lists.freedesktop.org>, Alex Williamson <alex.williamson@redhat.com>, Mark Rutland <mark.rutland@arm.com>, Rob Clark <robdclark@gmail.com>, Linux PM <linux-pm@vger.kernel.org>, sboyd@kernel.org, jcrouse@codeaurora.org, Sricharan R <sricharan@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On August 18, 2018 3:04:51 PM EDT, Esteban Zamora <estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->The mmap function pointer on swiotlb_dma_ops struct is
->uninitialized, which causes a random crash when calling
->the dma_mmap_coherent function on platforms where no DMA
->address translation hardware is available.
+Hi Robin,
+
+On Fri, Jul 27, 2018 at 4:02 PM Vivek Gautam
+<vivek.gautam@codeaurora.org> wrote:
 >
->Set this pointer to NULL in order to fix the issue.
-
-
-By default unused entries in .rodata structure (like this one) are zero - meaning they are NULL if not set by the complier.
-
-You should be able to verify this by looking at the objdump of the kernel and find this structure.
-
-
+> This series provides the support for turning on the arm-smmu's
+> clocks/power domains using runtime pm. This is done using
+> device links between smmu and client devices. The device link
+> framework keeps the two devices in correct order for power-cycling
+> across runtime PM or across system-wide PM.
 >
->Signed-off-by: Esteban Zamora <estebanzacr.20-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->---
-> kernel/dma/swiotlb.c | 1 +
-> 1 file changed, 1 insertion(+)
+> With addition of a new device link flag DL_FLAG_AUTOREMOVE_SUPPLIER [8]
+> (available in linux-next of Rafael's linux-pm tree [9]), the device links
+> created between arm-smmu and its clients will be automatically purged
+> when arm-smmu driver unbinds from its device.
 >
->diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->index 4f8a6db..9a7718c 100644
->--- a/kernel/dma/swiotlb.c
->+++ b/kernel/dma/swiotlb.c
->@@ -1082,5 +1082,6 @@ const struct dma_map_ops swiotlb_dma_ops = {
-> 	.map_page		= swiotlb_map_page,
-> 	.unmap_page		= swiotlb_unmap_page,
-> 	.dma_supported		= dma_direct_supported,
->+	.mmap                   = NULL,
-> };
-> EXPORT_SYMBOL(swiotlb_dma_ops);
+> As not all implementations support clock/power gating, we are checking
+> for a valid 'smmu->dev's pm_domain' to conditionally enable the runtime
+> power management for such smmu implementations that can support it.
+> Otherwise, the clocks are turned to be always on in .probe until .remove.
+> With conditional runtime pm now, we avoid touching dev->power.lock
+> in fastpaths for smmu implementations that don't need to do anything
+> useful with pm_runtime.
+> This lets us to use the much-argued pm_runtime_get_sync/put_sync()
+> calls in map/unmap callbacks so that the clients do not have to
+> worry about handling any of the arm-smmu's power.
+>
+> This series also adds support for Qcom's arm-smmu-v2 variant that
+> has different clocks and power requirements.
+>
+> Previous version of this patch series is @ [2].
+>
+> Tested this series on msm8996, and sdm845 after pulling in Rafael's linux-pm
+> linux-next[9] and Joerg's iommu next[10] branches, and related changes for
+> device tree, etc.
+>
+> Hi Robin, Will,
+> I have addressed the comments for v13. If there's still a chance
+> can you please consider pulling this for v4.19.
+> Thanks.
+>
+> [v14]
+>    * Moved arm_smmu_device_reset() from arm_smmu_pm_resume() to
+>      arm_smmu_runtime_resume() so that the pm_resume callback calls
+>      only runtime_resume to resume the device.
+>      This should take care of restoring the state of smmu in systems
+>      in which smmu lose register state on power-domain collapse.
+
+It's been a while since this series was posted and no more comments
+seem to be left anymore. Would you have some time to take a look
+again? Thanks.
+
+Best regards,
+Tomasz
