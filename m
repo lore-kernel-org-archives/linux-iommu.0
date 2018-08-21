@@ -1,7 +1,7 @@
-From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+From: Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 Subject: Re: IOAT DMA w/IOMMU
-Date: Tue, 21 Aug 2018 17:35:00 -0600
-Message-ID: <dd918b52-7ddc-662c-5980-edf3e96ebca2@deltatee.com>
+Date: Tue, 21 Aug 2018 16:45:20 -0700
+Message-ID: <CAOQPn8vO7wP2XGwyJALxkyeBFG6fkTAFgF8QcGiiJF0fOMBa4Q@mail.gmail.com>
 References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
 	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
@@ -15,12 +15,12 @@ References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<CAOQPn8uuTEcmdQdZB9-A7FT+YWtxSuruGFwmwCPApffTJNs9Vg@mail.gmail.com>
 	<41419ada-7f16-0028-1e43-3b4a6c6960b6@deltatee.com>
 	<CAOQPn8uyozbmEV0Ww3LW4XDcaY1ZwV0yazsPxPQC0AfLNUhKYw@mail.gmail.com>
+	<dd918b52-7ddc-662c-5980-edf3e96ebca2@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAOQPn8uyozbmEV0Ww3LW4XDcaY1ZwV0yazsPxPQC0AfLNUhKYw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <dd918b52-7ddc-662c-5980-edf3e96ebca2-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -30,42 +30,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAyMS8wOC8xOCAwNToyOCBQTSwgRXJpYyBQaWxtb3JlIHdyb3RlOgo+IAo+IAo+IE9uIFR1
-ZSwgQXVnIDIxLCAyMDE4IGF0IDQ6MjAgUE0sIExvZ2FuIEd1bnRob3JwZSA8bG9nYW5nQGRlbHRh
-dGVlLmNvbQo+IDxtYWlsdG86bG9nYW5nQGRlbHRhdGVlLmNvbT4+IHdyb3RlOgo+IAo+IAo+IAo+
-ICAgICBPbiAyMS8wOC8xOCAwNToxOCBQTSwgRXJpYyBQaWxtb3JlIHdyb3RlOgo+ICAgICA+IFdl
-IGhhdmUgYmVlbiBydW5uaW5nIGxvY2FsbHkgd2l0aCBLaXQncyBjaGFuZ2UgZm9yIGRtYV9tYXBf
-cmVzb3VyY2UgYW5kIGl0cwo+ICAgICA+IGluY29ycG9yYXRpb24gaW4gbnRiX2FzeW5jX3R4X3N1
-Ym1pdCBmb3IgdGhlIGRlc3RpbmF0aW9uIGFkZHJlc3MgYW5kCj4gICAgID4gaXQgcnVucyBmaW5l
-Cj4gICAgID4gdW5kZXIgImxvYWQiIChpcGVyZikgb24gYSBYZW9uIChYZW9uKFIpIENQVSBFNS0y
-NjgwIHY0IEAgMi40MEdIeikgYmFzZWQgc3lzdGVtLAo+ICAgICA+IHJlZ2FyZGxlc3Mgb2Ygd2hl
-dGhlciB0aGUgRE1BIGVuZ2luZSBiZWluZyB1c2VkIGlzIElPQVQgb3IgYSBQTFgKPiAgICAgPiBk
-ZXZpY2Ugc2l0dGluZyBpbgo+ICAgICA+IHRoZSBQQ0llIHRyZWUuIEhvd2V2ZXIsIHdoZW4gd2Ug
-Z28gYmFjayB0byBhIGk3IChpNy03NzAwSyBDUFUgQCA0LjIwR0h6KSBiYXNlZAo+ICAgICA+IHN5
-c3RlbSBpdCBzZWVtcyB0byBydW4gaW50byBpc3N1ZXMsIHNwZWNpZmljYWxseSB3aGVuIHB1dCB1
-bmRlciBhCj4gICAgID4gbG9hZC4gSW4gdGhpcyBjYXNlLAo+ICAgICA+IGp1c3QgaGF2aW5nIGEg
-bG9hZCB1c2luZyBhIHNpbmdsZSBwaW5nIGNvbW1hbmQgd2l0aCBhbiBpbnRlcnZhbD0wLCBpLmUu
-IG5vIGRlbGF5Cj4gICAgID4gYmV0d2VlbiBwaW5nIHBhY2tldHMsIGFmdGVyIGEgZmV3IHRob3Vz
-YW5kIHBhY2tldHMgdGhlIHN5c3RlbSBqdXN0IGhhbmdzLiBObwo+ICAgICA+IHBhbmljIG9yIHdh
-dGNoZG9ncy7CoCBOb3RlIHRoYXQgaW4gdGhpcyBzY2VuYXJpbyBJIGNhbiBvbmx5IHVzZSBhIFBM
-WCBETUEgZW5naW5lLgo+IAo+ICAgICBUaGlzIGlzIGp1c3QgbXkgYmVzdCBndWVzczogYnV0IGl0
-IHNvdW5kcyB0byBtZSBsaWtlIGEgYnVnIGluIHRoZSBQTFgKPiAgICAgRE1BIGRyaXZlciBvciBo
-YXJkd2FyZS4KPiAKPiAKPiBUaGUgUExYIERNQSBkcml2ZXI/wqAgQnV0IHRoZSBQTFggZHJpdmVy
-IGlzbid0IHJlYWxseSBldmVuIGludm9sdmVkIGluCj4gdGhlIG1hcHBpbmcKPiBzdGFnZS7CoCBB
-cmUgeW91IHRoaW5raW5nIG1heWJlIHRoZSBzdGFnZSBhdCB3aGljaCB0aGUgRE1BIGRlc2NyaXB0
-b3IgaXMKPiBmcmVlZCBhbmQKPiB0aGUgUExYIERNQSBkcml2ZXIgZG9lcyBhIGRtYV9kZXNjcmlw
-dG9yX3VubWFwPwoKSG1tLCB3ZWxsIHdoYXQgd291bGQgbWFrZSB5b3UgdGhpbmsgdGhlIGhhbmcg
-aXMgZHVyaW5nCm1hcHBpbmcvdW5tYXBwaW5nPyBJIHdvdWxkIGV4cGVjdCBhIGhhbmcgdG8gYmUg
-aW4gaGFuZGxpbmcgY29tcGxldGlvbnMKZnJvbSB0aGUgRE1BIGVuZ2luZSBvciBzb21ldGhpbmcg
-bGlrZSB0aGF0LgoKPiBBZ2FpbiwgUExYIGRpZCBub3QgZXhoaWJpdCBhbnkgaXNzdWVzIG9uIHRo
-ZSBYZW9uIHN5c3RlbS4KCk9oLCBJIG1pc3NlZCB0aGF0LiBUaGF0IHB1dHMgYSBjcmlua2xlIGlu
-IG15IHRoZW9yeSBidXQsIGFzIHlvdSBzYXksIGl0CmNvdWxkIGJlIGEgdGltaW5nIGlzc3VlLgoK
-QWxzbywgaXQncyBWRVJZIHN0cmFuZ2UgdGhhdCBpdCB3b3VsZCBoYW5nIHRoZSBlbnRpcmUgc3lz
-dGVtLiBUaGF0IG1ha2VzCnRoaW5ncyB2ZXJ5IGhhcmQgdG8gZGVidWcuLi4KCkxvZ2FuCl9fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
-bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, Aug 21, 2018 at 4:35 PM, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org> wrote:
+>
+>
+> On 21/08/18 05:28 PM, Eric Pilmore wrote:
+>>
+>>
+>> On Tue, Aug 21, 2018 at 4:20 PM, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org
+>> <mailto:logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>> wrote:
+>>
+>>
+>>
+>>     On 21/08/18 05:18 PM, Eric Pilmore wrote:
+>>     > We have been running locally with Kit's change for dma_map_resource and its
+>>     > incorporation in ntb_async_tx_submit for the destination address and
+>>     > it runs fine
+>>     > under "load" (iperf) on a Xeon (Xeon(R) CPU E5-2680 v4 @ 2.40GHz) based system,
+>>     > regardless of whether the DMA engine being used is IOAT or a PLX
+>>     > device sitting in
+>>     > the PCIe tree. However, when we go back to a i7 (i7-7700K CPU @ 4.20GHz) based
+>>     > system it seems to run into issues, specifically when put under a
+>>     > load. In this case,
+>>     > just having a load using a single ping command with an interval=0, i.e. no delay
+>>     > between ping packets, after a few thousand packets the system just hangs. No
+>>     > panic or watchdogs.  Note that in this scenario I can only use a PLX DMA engine.
+>>
+>>     This is just my best guess: but it sounds to me like a bug in the PLX
+>>     DMA driver or hardware.
+>>
+>>
+>> The PLX DMA driver?  But the PLX driver isn't really even involved in
+>> the mapping
+>> stage.  Are you thinking maybe the stage at which the DMA descriptor is
+>> freed and
+>> the PLX DMA driver does a dma_descriptor_unmap?
+>
+> Hmm, well what would make you think the hang is during
+> mapping/unmapping?
+
+Well, the only difference between success and failure is running with the
+call to dma_map_resource for the destination address, which is a PCI BAR
+address. Prior to Kit introducing this call, we never created a mapping for the
+destination PCI BAR address and it worked fine on all systems when using
+PLX DMA. It was only when we went to a Xeon system and attempted to use
+IOAT DMA that we found we needed a mapping for that destination PCI BAR
+address.
+
+The only thing the PLX driver does related to "mappings" is a call to
+dma_descriptor_unmap when the descriptor is freed, however that is more
+of an administrative step to clean up the unmap-data data structure used
+when the mapping was originally established.
+
+> I would expect a hang to be in handling completions
+> from the DMA engine or something like that.
+>
+>> Again, PLX did not exhibit any issues on the Xeon system.
+>
+> Oh, I missed that. That puts a crinkle in my theory but, as you say, it
+> could be a timing issue.
+>
+> Also, it's VERY strange that it would hang the entire system. That makes
+> things very hard to debug...
+
+Tell me about it!  ;-)
+
+Eric
