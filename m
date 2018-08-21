@@ -1,7 +1,7 @@
-From: Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
+From: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
 Subject: Re: IOAT DMA w/IOMMU
-Date: Tue, 21 Aug 2018 16:45:20 -0700
-Message-ID: <CAOQPn8vO7wP2XGwyJALxkyeBFG6fkTAFgF8QcGiiJF0fOMBa4Q@mail.gmail.com>
+Date: Tue, 21 Aug 2018 17:53:02 -0600
+Message-ID: <b62adad7-6f39-8bb2-9aca-258cbf909d4d@deltatee.com>
 References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<20180809184331.GB113140@bhelgaas-glaptop.roam.corp.google.com>
 	<CAOQPn8uPYKai49WYPqZp2wNd5of=0hUvPOHEtqP56RZu-hcjuw@mail.gmail.com>
@@ -16,11 +16,13 @@ References: <CAOQPn8soxubJxb=vp7kz+AM6LbPH5y+_Nx0Vzv7rjV_nMMqEmA@mail.gmail.com>
 	<41419ada-7f16-0028-1e43-3b4a6c6960b6@deltatee.com>
 	<CAOQPn8uyozbmEV0Ww3LW4XDcaY1ZwV0yazsPxPQC0AfLNUhKYw@mail.gmail.com>
 	<dd918b52-7ddc-662c-5980-edf3e96ebca2@deltatee.com>
+	<CAOQPn8vO7wP2XGwyJALxkyeBFG6fkTAFgF8QcGiiJF0fOMBa4Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <dd918b52-7ddc-662c-5980-edf3e96ebca2-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <CAOQPn8vO7wP2XGwyJALxkyeBFG6fkTAFgF8QcGiiJF0fOMBa4Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -30,72 +32,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+To: Eric Pilmore <epilmore-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Kit Chow <kchow-Op3I1peydIbQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 21, 2018 at 4:35 PM, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org> wrote:
->
->
-> On 21/08/18 05:28 PM, Eric Pilmore wrote:
->>
->>
->> On Tue, Aug 21, 2018 at 4:20 PM, Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org
->> <mailto:logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>> wrote:
->>
->>
->>
->>     On 21/08/18 05:18 PM, Eric Pilmore wrote:
->>     > We have been running locally with Kit's change for dma_map_resource and its
->>     > incorporation in ntb_async_tx_submit for the destination address and
->>     > it runs fine
->>     > under "load" (iperf) on a Xeon (Xeon(R) CPU E5-2680 v4 @ 2.40GHz) based system,
->>     > regardless of whether the DMA engine being used is IOAT or a PLX
->>     > device sitting in
->>     > the PCIe tree. However, when we go back to a i7 (i7-7700K CPU @ 4.20GHz) based
->>     > system it seems to run into issues, specifically when put under a
->>     > load. In this case,
->>     > just having a load using a single ping command with an interval=0, i.e. no delay
->>     > between ping packets, after a few thousand packets the system just hangs. No
->>     > panic or watchdogs.  Note that in this scenario I can only use a PLX DMA engine.
->>
->>     This is just my best guess: but it sounds to me like a bug in the PLX
->>     DMA driver or hardware.
->>
->>
->> The PLX DMA driver?  But the PLX driver isn't really even involved in
->> the mapping
->> stage.  Are you thinking maybe the stage at which the DMA descriptor is
->> freed and
->> the PLX DMA driver does a dma_descriptor_unmap?
->
-> Hmm, well what would make you think the hang is during
-> mapping/unmapping?
 
-Well, the only difference between success and failure is running with the
-call to dma_map_resource for the destination address, which is a PCI BAR
-address. Prior to Kit introducing this call, we never created a mapping for the
-destination PCI BAR address and it worked fine on all systems when using
-PLX DMA. It was only when we went to a Xeon system and attempted to use
-IOAT DMA that we found we needed a mapping for that destination PCI BAR
-address.
 
-The only thing the PLX driver does related to "mappings" is a call to
-dma_descriptor_unmap when the descriptor is freed, however that is more
-of an administrative step to clean up the unmap-data data structure used
-when the mapping was originally established.
+On 21/08/18 05:45 PM, Eric Pilmore wrote:
+> Well, the only difference between success and failure is running with the
+> call to dma_map_resource for the destination address, which is a PCI BAR
+> address. Prior to Kit introducing this call, we never created a mapping for the
+> destination PCI BAR address and it worked fine on all systems when using
+> PLX DMA. It was only when we went to a Xeon system and attempted to use
+> IOAT DMA that we found we needed a mapping for that destination PCI BAR
+> address.
+> 
+> The only thing the PLX driver does related to "mappings" is a call to
+> dma_descriptor_unmap when the descriptor is freed, however that is more
+> of an administrative step to clean up the unmap-data data structure used
+> when the mapping was originally established.
 
-> I would expect a hang to be in handling completions
-> from the DMA engine or something like that.
->
->> Again, PLX did not exhibit any issues on the Xeon system.
->
-> Oh, I missed that. That puts a crinkle in my theory but, as you say, it
-> could be a timing issue.
->
-> Also, it's VERY strange that it would hang the entire system. That makes
-> things very hard to debug...
+Ah, so there's a big difference here in hardware. Without the mapping
+call you are going to essentially be doing a P2P transaction. So the
+TLPs won't even hit the CPU. With the mapping call, the TLPs will now
+go through the CPU and IOMMU.
 
-Tell me about it!  ;-)
+CPUs don't always have good support for routing PCI P2P transactions.
+However, I would have expected a relatively new i7 CPU to support it
+well. It may simply be that this CPU does not have good support, however
+ that comes as a bit of a surprise to me. Our plans for the P2P
+patch-set was to have a white-list for CPUs that work.
 
-Eric
+If you can, it would be worth hooking up a PCI analyzer to see what's
+happening to the TLPs in both cases.
+
+Logan
