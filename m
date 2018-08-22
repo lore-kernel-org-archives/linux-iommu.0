@@ -1,89 +1,121 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/4] numa, iommu/smmu: IOMMU/SMMU driver optimization for
-	NUMA systems
-Date: Wed, 22 Aug 2018 17:07:55 +0100
-Message-ID: <ec57224a-7673-97d8-bb0c-c612080625bc@huawei.com>
-References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
-	<452f1665-eb3a-5e8c-f671-099ef4a15d84@huawei.com>
-	<a7fc1e43-3652-562a-1e59-499be80b567c@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v5 5/5] iommu/arm-smmu-v3: add bootup option
+ "iommu.non_strict"
+Date: Wed, 22 Aug 2018 18:02:00 +0100
+Message-ID: <29330cf7-d269-c4db-2f5a-632509058987@arm.com>
+References: <1534296510-12888-1-git-send-email-thunder.leizhen@huawei.com>
+ <1534296510-12888-6-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <a7fc1e43-3652-562a-1e59-499be80b567c-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Cc: "mhocko-IBi9RG/b67k@public.gmane.org" <mhocko-IBi9RG/b67k@public.gmane.org>, "Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Will.Deacon-5wv7dgnIgG8@public.gmane.org" <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "vbabka-AlSwsSmVLrQ@public.gmane.org" <vbabka-AlSwsSmVLrQ@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1534296510-12888-6-git-send-email-thunder.leizhen@huawei.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/08/2018 15:56, Robin Murphy wrote:
-> Hi John,
->
-> On 22/08/18 14:44, John Garry wrote:
->> On 21/09/2017 09:59, Ganapatrao Kulkarni wrote:
->>> Adding numa aware memory allocations used for iommu dma allocation and
->>> memory allocated for SMMU stream tables, page walk tables and command
->>> queues.
->>>
->>> With this patch, iperf testing on ThunderX2, with 40G NIC card on
->>> NODE 1 PCI shown same performance(around 30% improvement) as NODE 0.
->>>
->>> Ganapatrao Kulkarni (4):
->>>   mm: move function alloc_pages_exact_nid out of __meminit
->>>   numa, iommu/io-pgtable-arm: Use NUMA aware memory allocation for smmu
->>>     translation tables
->>>   iommu/arm-smmu-v3: Use NUMA memory allocations for stream tables and
->>>     comamnd queues
->>>   iommu/dma, numa: Use NUMA aware memory allocations in
->>>     __iommu_dma_alloc_pages
->>>
->>>  drivers/iommu/arm-smmu-v3.c    | 57
->>> +++++++++++++++++++++++++++++++++++++-----
->>>  drivers/iommu/dma-iommu.c      | 17 +++++++------
->>>  drivers/iommu/io-pgtable-arm.c |  4 ++-
->>>  include/linux/gfp.h            |  2 +-
->>>  mm/page_alloc.c                |  3 ++-
->>>  5 files changed, 67 insertions(+), 16 deletions(-)
->>>
->>
->> Hi Ganapatrao,
->>
->> Have you any plans for further work on this patchset? I have not seen
->> anything since this v1 was posted+discussed.
->
+On 15/08/18 02:28, Zhen Lei wrote:
+> Add a bootup option to make the system manager can choose which mode to
+> be used. The default mode is strict.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>   Documentation/admin-guide/kernel-parameters.txt | 13 +++++++++++++
+>   drivers/iommu/arm-smmu-v3.c                     | 22 +++++++++++++++++++++-
+>   2 files changed, 34 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 5cde1ff..cb9d043e 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1720,6 +1720,19 @@
+>   		nobypass	[PPC/POWERNV]
+>   			Disable IOMMU bypass, using IOMMU for PCI devices.
+> 
+> +	iommu.non_strict=	[ARM64]
+> +			Format: { "0" | "1" }
+> +			0 - strict mode, default.
+> +			    Release IOVAs after the related TLBs are invalid
+> +			    completely.
+> +			1 - non-strict mode.
+> +			    Put off TLBs invalidation and release memory first.
+> +			    It's good for scatter-gather performance but lacks
+> +			    full isolation, an untrusted device can access the
+> +			    reused memory because the TLBs may still valid.
+> +			    Please take	full consideration before choosing this
+> +			    mode. Note that, VFIO will always use strict mode.
+> +
+>   	iommu.passthrough=
+>   			[ARM64] Configure DMA to bypass the IOMMU by default.
+>   			Format: { "0" | "1" }
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 61eb7ec..0eda90e 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -631,6 +631,26 @@ struct arm_smmu_option_prop {
+>   	{ 0, NULL},
+>   };
+> 
+> +static bool smmu_non_strict __read_mostly;
+> +
+> +static int __init arm_smmu_setup(char *str)
+> +{
+> +	int ret;
+> +
+> +	ret = kstrtobool(str, &smmu_non_strict);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (smmu_non_strict) {
+> +		pr_warn("WARNING: iommu non-strict mode is chosen.\n"
+> +			"It's good for scatter-gather performance but lacks full isolation\n");
+> +		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
+> +	}
+> +
+> +	return 0;
+> +}
+> +early_param("iommu.non_strict", arm_smmu_setup);
 
-Hi Robin,
+As I said on v3, the option should be parsed by iommu-dma, since that's 
+where it takes effect, and I'm sure SMMUv2 users will be interested in 
+trying it out too.
 
-Thanks for the info. I thought I remembered 4b12 but couldn't put my 
-finger on it.
+In other words, if iommu_dma_init_domain() does something like:
 
-> Looks like I ended up doing the version of the io-pgtable change that I
-> suggested here, which was merged recently (4b123757eeaa). Patch #3
-> should also be effectively obsolete now since the SWIOTLB/dma-direct
-> rework (21f237e4d085). Apparently I also started reworking patch #4 in
-> my tree at some point but sidelined it - I think that was at least
-> partly due to another thread[1] which made it seem less clear-cut
-> whether this is always the right thing to do.
+	if (iommu_dma_non_strict && domain->ops->flush_iotlb_all) {
+		domain->non_strict = true;
+		cookie->domain = domain;
+		init_iova_flush_queue(...);
+	}
 
-Right, so #4 seems less straightforward and not directly related to 
-IOMMU driver anyway.
+> +
+>   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+>   						 struct arm_smmu_device *smmu)
+>   {
+> @@ -1622,7 +1642,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+>   	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
+>   		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+> 
+> -	if (domain->type == IOMMU_DOMAIN_DMA) {
+> +	if ((domain->type == IOMMU_DOMAIN_DMA) && smmu_non_strict) {
+>   		domain->non_strict = true;
+>   		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+>   	}
 
-Cheers,
-John
+...then all the driver should need to do is:
 
->
-> Robin.
->
-> [1]
-> https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1693026.html
->
-> .
->
+	if (domain->non_strict)
+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+
+
+Now, that would make it possible to request non-strict mode even with 
+drivers which *don't* understand it, but I think that's not actually 
+harmful, just means that some TLBIs will still get issued synchronously 
+and the flush queue might not do much. If you wanted to avoid even that, 
+you could replace domain->non_strict with an iommu_domain_set_attr() 
+call, so iommu_dma could tell up-front whether the driver understands 
+non-strict mode and it's worth setting the queue up or not.
+
+Robin.
