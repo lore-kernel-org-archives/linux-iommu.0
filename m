@@ -1,15 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v14 0/4] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Wed, 22 Aug 2018 16:43:32 +0100
-Message-ID: <08965f23-5b97-3ea7-4bd5-4f36035fddf2@arm.com>
-References: <20180727070224.23966-1-vivek.gautam@codeaurora.org>
-	<CAAFQd5C+ctVA-ynrWy=0=pjKZj0TGmHL+bWAu2yWWjYe4Oyf8w@mail.gmail.com>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/4] numa, iommu/smmu: IOMMU/SMMU driver optimization for
+	NUMA systems
+Date: Wed, 22 Aug 2018 17:07:55 +0100
+Message-ID: <ec57224a-7673-97d8-bb0c-c612080625bc@huawei.com>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+	<452f1665-eb3a-5e8c-f671-099ef4a15d84@huawei.com>
+	<a7fc1e43-3652-562a-1e59-499be80b567c@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5C+ctVA-ynrWy=0=pjKZj0TGmHL+bWAu2yWWjYe4Oyf8w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <a7fc1e43-3652-562a-1e59-499be80b567c-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,68 +20,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Cc: "mhocko-IBi9RG/b67k@public.gmane.org" <mhocko-IBi9RG/b67k@public.gmane.org>, "Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <Tomasz.Nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Will.Deacon-5wv7dgnIgG8@public.gmane.org" <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "vbabka-AlSwsSmVLrQ@public.gmane.org" <vbabka-AlSwsSmVLrQ@public.gmane.org>, "akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org" <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/08/18 10:31, Tomasz Figa wrote:
-> Hi Robin,
-> 
-> On Fri, Jul 27, 2018 at 4:02 PM Vivek Gautam
-> <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+On 22/08/2018 15:56, Robin Murphy wrote:
+> Hi John,
+>
+> On 22/08/18 14:44, John Garry wrote:
+>> On 21/09/2017 09:59, Ganapatrao Kulkarni wrote:
+>>> Adding numa aware memory allocations used for iommu dma allocation and
+>>> memory allocated for SMMU stream tables, page walk tables and command
+>>> queues.
+>>>
+>>> With this patch, iperf testing on ThunderX2, with 40G NIC card on
+>>> NODE 1 PCI shown same performance(around 30% improvement) as NODE 0.
+>>>
+>>> Ganapatrao Kulkarni (4):
+>>>   mm: move function alloc_pages_exact_nid out of __meminit
+>>>   numa, iommu/io-pgtable-arm: Use NUMA aware memory allocation for smmu
+>>>     translation tables
+>>>   iommu/arm-smmu-v3: Use NUMA memory allocations for stream tables and
+>>>     comamnd queues
+>>>   iommu/dma, numa: Use NUMA aware memory allocations in
+>>>     __iommu_dma_alloc_pages
+>>>
+>>>  drivers/iommu/arm-smmu-v3.c    | 57
+>>> +++++++++++++++++++++++++++++++++++++-----
+>>>  drivers/iommu/dma-iommu.c      | 17 +++++++------
+>>>  drivers/iommu/io-pgtable-arm.c |  4 ++-
+>>>  include/linux/gfp.h            |  2 +-
+>>>  mm/page_alloc.c                |  3 ++-
+>>>  5 files changed, 67 insertions(+), 16 deletions(-)
+>>>
 >>
->> This series provides the support for turning on the arm-smmu's
->> clocks/power domains using runtime pm. This is done using
->> device links between smmu and client devices. The device link
->> framework keeps the two devices in correct order for power-cycling
->> across runtime PM or across system-wide PM.
+>> Hi Ganapatrao,
 >>
->> With addition of a new device link flag DL_FLAG_AUTOREMOVE_SUPPLIER [8]
->> (available in linux-next of Rafael's linux-pm tree [9]), the device links
->> created between arm-smmu and its clients will be automatically purged
->> when arm-smmu driver unbinds from its device.
->>
->> As not all implementations support clock/power gating, we are checking
->> for a valid 'smmu->dev's pm_domain' to conditionally enable the runtime
->> power management for such smmu implementations that can support it.
->> Otherwise, the clocks are turned to be always on in .probe until .remove.
->> With conditional runtime pm now, we avoid touching dev->power.lock
->> in fastpaths for smmu implementations that don't need to do anything
->> useful with pm_runtime.
->> This lets us to use the much-argued pm_runtime_get_sync/put_sync()
->> calls in map/unmap callbacks so that the clients do not have to
->> worry about handling any of the arm-smmu's power.
->>
->> This series also adds support for Qcom's arm-smmu-v2 variant that
->> has different clocks and power requirements.
->>
->> Previous version of this patch series is @ [2].
->>
->> Tested this series on msm8996, and sdm845 after pulling in Rafael's linux-pm
->> linux-next[9] and Joerg's iommu next[10] branches, and related changes for
->> device tree, etc.
->>
->> Hi Robin, Will,
->> I have addressed the comments for v13. If there's still a chance
->> can you please consider pulling this for v4.19.
->> Thanks.
->>
->> [v14]
->>     * Moved arm_smmu_device_reset() from arm_smmu_pm_resume() to
->>       arm_smmu_runtime_resume() so that the pm_resume callback calls
->>       only runtime_resume to resume the device.
->>       This should take care of restoring the state of smmu in systems
->>       in which smmu lose register state on power-domain collapse.
-> 
-> It's been a while since this series was posted and no more comments
-> seem to be left anymore. Would you have some time to take a look
-> again? Thanks.
+>> Have you any plans for further work on this patchset? I have not seen
+>> anything since this v1 was posted+discussed.
+>
 
-Other than the binding issue which turned up in the meantime, I *think* 
-this is looking OK now in terms of being sufficiently safe for all the 
-various awkward retention vs. state-loss combinations. There's almost 
-certainly still ways to improve it in future, but what we have now seems 
-like a reasonable starting point that isn't impossibly complicated to 
-reason about.
+Hi Robin,
 
-Robin.
+Thanks for the info. I thought I remembered 4b12 but couldn't put my 
+finger on it.
+
+> Looks like I ended up doing the version of the io-pgtable change that I
+> suggested here, which was merged recently (4b123757eeaa). Patch #3
+> should also be effectively obsolete now since the SWIOTLB/dma-direct
+> rework (21f237e4d085). Apparently I also started reworking patch #4 in
+> my tree at some point but sidelined it - I think that was at least
+> partly due to another thread[1] which made it seem less clear-cut
+> whether this is always the right thing to do.
+
+Right, so #4 seems less straightforward and not directly related to 
+IOMMU driver anyway.
+
+Cheers,
+John
+
+>
+> Robin.
+>
+> [1]
+> https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1693026.html
+>
+> .
+>
