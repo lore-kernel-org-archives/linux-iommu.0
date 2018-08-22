@@ -1,37 +1,58 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 17/20] powerpc/dma-swiotlb: use generic swiotlb_dma_ops
-Date: Wed, 22 Aug 2018 09:04:07 +0200
-Message-ID: <20180822070406.GE19284@lst.de>
-References: <20180730163824.10064-1-hch@lst.de>
-	<20180730163824.10064-18-hch@lst.de>
-	<556a4302d13b1caafb223112c4de43d959146215.camel@kernel.crashing.org>
-	<777010cd04645b55aa4197eddcc880f010f0ef6d.camel@kernel.crashing.org>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH 0/4] numa, iommu/smmu: IOMMU/SMMU driver optimization for
+ NUMA systems
+Date: Wed, 22 Aug 2018 14:44:33 +0100
+Message-ID: <452f1665-eb3a-5e8c-f671-099ef4a15d84@huawei.com>
+References: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <777010cd04645b55aa4197eddcc880f010f0ef6d.camel-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20170921085922.11659-1-ganapatrao.kulkarni@cavium.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "Will.Deacon@arm.com" <Will.Deacon@arm.com>, "gklkml16@gmail.com" <gklkml16@gmail.com>, "Tomasz.Nowicki@cavium.com" <Tomasz.Nowicki@cavium.com>, "Robert.Richter@cavium.com" <Robert.Richter@cavium.com>, "mhocko@suse.com" <mhocko@suse.com>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, "vbabka@suse.cz" <vbabka@suse.cz>, "jnair@caviumnetworks.com" <jnair@caviumnetworks.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "thunder.leizhen@huawei.com" <thunder.leizhen@huawe>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 09, 2018 at 11:57:53AM +1000, Benjamin Herrenschmidt wrote:
-> Note: We will still need to implement some custom variant of this
-> for our secure VMs ... 
-> 
-> Basically we'll need to use the existing bounce bufferring as-is but
-> the condition will be different, it won't be whether the address is
-> below a certain limit, it will be *always*.
+On 21/09/2017 09:59, Ganapatrao Kulkarni wrote:
+> Adding numa aware memory allocations used for iommu dma allocation and
+> memory allocated for SMMU stream tables, page walk tables and command queues.
+>
+> With this patch, iperf testing on ThunderX2, with 40G NIC card on
+> NODE 1 PCI shown same performance(around 30% improvement) as NODE 0.
+>
+> Ganapatrao Kulkarni (4):
+>   mm: move function alloc_pages_exact_nid out of __meminit
+>   numa, iommu/io-pgtable-arm: Use NUMA aware memory allocation for smmu
+>     translation tables
+>   iommu/arm-smmu-v3: Use NUMA memory allocations for stream tables and
+>     comamnd queues
+>   iommu/dma, numa: Use NUMA aware memory allocations in
+>     __iommu_dma_alloc_pages
+>
+>  drivers/iommu/arm-smmu-v3.c    | 57 +++++++++++++++++++++++++++++++++++++-----
+>  drivers/iommu/dma-iommu.c      | 17 +++++++------
+>  drivers/iommu/io-pgtable-arm.c |  4 ++-
+>  include/linux/gfp.h            |  2 +-
+>  mm/page_alloc.c                |  3 ++-
+>  5 files changed, 67 insertions(+), 16 deletions(-)
+>
 
-The conditions are in the dma_capable() helper that the architecture
-can override (and which powerpc already does override).
+Hi Ganapatrao,
+
+Have you any plans for further work on this patchset? I have not seen 
+anything since this v1 was posted+discussed.
+
+Thanks,
+John
+
+> --
+> 2.9.4
+>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
+> .
+>
