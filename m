@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 06/13] vfio: VFIO_IOMMU_BIND_MSI
-Date: Thu, 23 Aug 2018 14:17:29 +0200
-Message-ID: <1535026656-8450-7-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 07/13] vfio: Document nested stage control
+Date: Thu, 23 Aug 2018 14:17:30 +0200
+Message-ID: <1535026656-8450-8-git-send-email-eric.auger@redhat.com>
 References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,81 +21,73 @@ To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf
 Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the VFIO_IOMMU_BIND_MSI ioctl which aims at
-passing the guest MSI binding to the host.
+New iotcls were introduced to pass information about guest stage1
+to the host through VFIO. Let's document the nested stage control.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/vfio/vfio_iommu_type1.c | 31 +++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h       |  7 +++++++
- 2 files changed, 38 insertions(+)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 973bb4d..2962cb9 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1696,6 +1696,24 @@ static int do_tlb_inv_fn(struct device *dev, void *data)
- 	return iommu_tlb_invalidate(task->domain, dev, &ustruct->info);
- }
+---
+
+fault reporting is current missing to the picture
+---
+ Documentation/vfio.txt | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/Documentation/vfio.txt b/Documentation/vfio.txt
+index f1a4d3c..858a363 100644
+--- a/Documentation/vfio.txt
++++ b/Documentation/vfio.txt
+@@ -239,6 +239,51 @@ group and can access them as follows::
+ 	/* Gratuitous device reset and go... */
+ 	ioctl(device, VFIO_DEVICE_RESET);
  
-+static int
-+vfio_iommu_bind_guest_msi(struct vfio_iommu *iommu,
-+			  struct vfio_iommu_type1_guest_msi_binding *ustruct)
-+{
-+	struct vfio_domain *d;
-+	int ret;
++IOMMU Dual Stage Control
++------------------------
 +
-+	mutex_lock(&iommu->lock);
-+	list_for_each_entry(d, &iommu->domain_list, next) {
-+		ret = iommu_bind_guest_msi(d->domain, &ustruct->binding);
-+		if (ret)
-+			break;
-+	}
-+	mutex_unlock(&iommu->lock);
-+	return ret;
-+}
++Some IOMMUs support 2 stages of translation. This is useful when the
++guest is exposed with a virtual IOMMU and some devices are assigned
++to the guest through VFIO. Then the guest OS can use stage 1 (IOVA -> GPA),
++while the hypervisor uses stage 2 for VM isolation (GPA -> HPA).
 +
++The guest gets ownership of the stage 1 page tables and also owns stage 1
++configuration structures. The hypervisor owns the root configuration structure
++(for security reason), including stage 2 configuration. This works as long
++configuration structures and page table format are compatible between the
++virtual IOMMU and the physical IOMMU.
 +
- static int vfio_iommu_dispatch_task(struct vfio_iommu *iommu, void *data,
- 				    int (*fn)(struct device *, void *))
- {
-@@ -1822,6 +1840,19 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
++Assuming the HW supports it, this nested mode is selected by choosing the
++VFIO_TYPE1_NESTING_IOMMU type through:
++
++ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_NESTING_IOMMU);
++
++This forces the hypervisor to use the stage 2, leaving stage 1 available for
++guest usage.
++
++Once groups are attached to the container, the guest stage 1 translation
++configuration data can be passed to VFIO by using
++
++ioctl(container, VFIO_IOMMU_BIND_GUEST_STAGE, &guest_stage_info);
++
++This allows to combine guest stage1 configuration structure along with hypervisor
++stage 2 configuration structure. stage 1 configuration structures are dependent
++on the IOMMU type.
++
++When the guest invalidates stage 1 entries, IOTLB invalidations must be forwarded
++to the host through
++ioctl(container, VFIO_IOMMU_TLB_INVALIDATE, &inv_data);
++Those invalidations can happen at various granularity levels, page, context, ...
++
++The ARM SMMU specification introduces another challenge: MSIs are translated by
++both the virtual SMMU and the physical SMMU. To build a nested mapping for the
++IOVA programmed into the assigned device, the guest needs to pass its IOVA/MSI
++doorbell GPA binding to the host. Then the hypervisor can build a nested stage 2
++binding eventually translating into the physical MSI doorbell.
++
++This is achieved by
++ioctl(container, VFIO_IOMMU_BIND_MSI, &guest_binding);
++
+ VFIO User API
+ -------------------------------------------------------------------------------
  
- 		return vfio_iommu_dispatch_task(iommu, (u8 *)&ustruct,
- 						do_tlb_inv_fn);
-+	} else if (cmd == VFIO_IOMMU_BIND_MSI) {
-+		struct vfio_iommu_type1_guest_msi_binding ustruct;
-+
-+		minsz = offsetofend(struct vfio_iommu_type1_guest_msi_binding,
-+				    binding);
-+
-+		if (copy_from_user(&ustruct, (void __user *)arg, minsz))
-+			return -EFAULT;
-+
-+		if (ustruct.argsz < minsz || ustruct.flags)
-+			return -EINVAL;
-+
-+		return vfio_iommu_bind_guest_msi(iommu, &ustruct);
- 	}
- 
- 	return -ENOTTY;
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index b59f9fc..b7a9943 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -680,6 +680,13 @@ struct vfio_iommu_type1_tlb_invalidate {
- };
- #define VFIO_IOMMU_TLB_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 23)
- 
-+struct vfio_iommu_type1_guest_msi_binding {
-+	__u32   argsz;
-+	__u32   flags;
-+	struct iommu_guest_msi_binding binding;
-+};
-+#define VFIO_IOMMU_BIND_MSI      _IO(VFIO_TYPE, VFIO_BASE + 24)
-+
- /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
- 
- /*
 -- 
 2.5.5
