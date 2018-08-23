@@ -1,101 +1,46 @@
-From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: RE: [PATCH 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
-Date: Thu, 23 Aug 2018 15:18:10 +0000
-Message-ID: <TY1PR01MB1770AE1D3751F092C15F553FC0370@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-References: <1534516265-10059-1-git-send-email-fabrizio.castro@bp.renesas.com>
-	<1534516265-10059-2-git-send-email-fabrizio.castro@bp.renesas.com>
-	<CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA@mail.gmail.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH 1/5 V5] Add a function(ioremap_encrypted) for kdump when
+ AMD sme enabled
+Date: Thu, 23 Aug 2018 17:21:02 +0200
+Message-ID: <20180823152102.GF21323@nazgul.tnic>
+References: <e7357038-08bd-7ba8-5357-7c91d21d10fe@redhat.com>
+ <20180709092901.GA22182@nazgul.tnic>
+ <fc6a47ca-1b16-eba5-d15e-ca294e01af93@redhat.com>
+ <20180713170857.GB17896@nazgul.tnic>
+ <33453712-9b0b-e8b9-08a6-de09e0806dd6@redhat.com>
+ <20180720052304.GA9146@dhcp-128-65.nay.redhat.com>
+ <20180720073245.GA26926@nazgul.tnic>
+ <562d8611-750d-3624-1a1b-df21f39812d6@redhat.com>
+ <54D39850-F883-4EC6-B160-0CD88D47A997@alien8.de>
+ <53536964-2b57-4630-de91-3d4da2b643a8@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <53536964-2b57-4630-de91-3d4da2b643a8@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: lijiang <lijiang@redhat.com>
+Cc: Dave Young <dyoung@redhat.com>, bhe@redhat.com, linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Geert,
+On Thu, Aug 16, 2018 at 01:35:28PM +0800, lijiang wrote:
+> I personally prefer solution A, which is presented in posted patches.
+> What do you think, Boris? And other reviewers?
 
-Thank you for the feedback and welcome back!
+Ok, thanks for taking the time and effort in explaning this in detail.
 
-> Subject: Re: [PATCH 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
->
-> Hi Fabrizio,
->
-> On Fri, Aug 17, 2018 at 4:31 PM Fabrizio Castro
-> <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org> wrote:
-> > Add support for RZ/G2M (R8A774A1) SoC IPMMUs.
-> >
-> > Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> > Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> > ---
-> > This patch applies on top of renesas-drivers-2018-07-31-v4.18-rc7
-> >
-> >  drivers/iommu/ipmmu-vmsa.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> > index 51af2c5..cf5cfcf 100644
-> > --- a/drivers/iommu/ipmmu-vmsa.c
-> > +++ b/drivers/iommu/ipmmu-vmsa.c
-> > @@ -761,6 +761,7 @@ static bool ipmmu_slave_whitelist(struct device *dev)
-> >  }
-> >
-> >  static const struct soc_device_attribute soc_rcar_gen3[] = {
-> > +       { .soc_id = "r8a774a1", },
-> >         { .soc_id = "r8a7795", },
-> >         { .soc_id = "r8a7796", },
-> >         { .soc_id = "r8a77965", },
-> > @@ -942,6 +943,9 @@ static const struct of_device_id ipmmu_of_ids[] = {
-> >                 .compatible = "renesas,ipmmu-vmsa",
-> >                 .data = &ipmmu_features_default,
-> >         }, {
-> > +               .compatible = "renesas,ipmmu-r8a774a1",
-> > +               .data = &ipmmu_features_rcar_gen3,
-> > +       }, {
-> >                 .compatible = "renesas,ipmmu-r8a7795",
-> >                 .data = &ipmmu_features_rcar_gen3,
-> >         }, {
-> > @@ -1143,6 +1147,7 @@ subsys_initcall(ipmmu_init);
-> >  module_exit(ipmmu_exit);
-> >
-> >  IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa");
-> > +IOMMU_OF_DECLARE(ipmmu_r8a774a1_iommu_of, "renesas,ipmmu-r8a774a1");
-> >  IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795");
-> >  IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796");
-> >  IOMMU_OF_DECLARE(ipmmu_r8a77965_iommu_of, "renesas,ipmmu-r8a77965");
->
-> The IOMMU_OF_DECLARE() lines will be gone v4.18-rc1.
+Solution B really turns out to be too complex after all. So as long as
+that @encrypted argument does not need to propagate any further than a
+couple of helpers - as it does now - I guess we can do solution A.
 
-I can see the conflict now, therefore I am going to send a v2. I'll be basing the patch
-on top of renesas-drivers-2018-07-31-v4.18-rc7 again, but this time I'll drop the
-IOMMU_OF_DECLARE line, hopefully this will help.
+BUT! Wait until next week before sending your patches again because the
+merge window isn't over yet.
 
-Thanks,
-Fab
+Thx.
 
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+-- 
+Regards/Gruss,
+    Boris.
 
-
-
-Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
+ECO tip #101: Trim your mails when you reply.
+--
