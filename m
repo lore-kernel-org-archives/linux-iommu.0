@@ -1,13 +1,16 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 13/13] iommu/smmuv3: Implement bind_guest_msi
-Date: Thu, 23 Aug 2018 14:17:36 +0200
-Message-ID: <1535026656-8450-14-git-send-email-eric.auger@redhat.com>
-References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
+From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Subject: RE: [PATCH 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
+Date: Thu, 23 Aug 2018 15:18:10 +0000
+Message-ID: <TY1PR01MB1770AE1D3751F092C15F553FC0370@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+References: <1534516265-10059-1-git-send-email-fabrizio.castro@bp.renesas.com>
+	<1534516265-10059-2-git-send-email-fabrizio.castro@bp.renesas.com>
+	<CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1535026656-8450-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,51 +20,82 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu"@linux.intel.com, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The bind_guest_msi() callback checks the domain
-is NESTED and redirect to the dma-iommu implementation.
+Hello Geert,
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Thank you for the feedback and welcome back!
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e4c7ae8..ccd55d3 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2025,6 +2025,21 @@ static void arm_smmu_put_resv_regions(struct device *dev,
- 		kfree(entry);
- }
- 
-+static int arm_smmu_bind_guest_msi(struct iommu_domain *domain,
-+				   struct iommu_guest_msi_binding *binding)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+
-+	if (!smmu)
-+		return -EINVAL;
-+
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-+		return -EINVAL;
-+
-+	return iommu_dma_bind_doorbell(domain, binding);
-+}
-+
- static int arm_smmu_bind_guest_stage(struct iommu_domain *domain,
- 				     struct device *dev,
- 				     struct iommu_guest_stage_config *cfg)
-@@ -2153,6 +2168,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
- 	.put_resv_regions	= arm_smmu_put_resv_regions,
-+	.bind_guest_msi		= arm_smmu_bind_guest_msi,
- 	.bind_guest_stage	= arm_smmu_bind_guest_stage,
- 	.unbind_guest_stage	= arm_smmu_unbind_guest_stage,
- 	.tlb_invalidate		= arm_smmu_tlb_invalidate,
--- 
-2.5.5
+> Subject: Re: [PATCH 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
+>
+> Hi Fabrizio,
+>
+> On Fri, Aug 17, 2018 at 4:31 PM Fabrizio Castro
+> <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org> wrote:
+> > Add support for RZ/G2M (R8A774A1) SoC IPMMUs.
+> >
+> > Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > ---
+> > This patch applies on top of renesas-drivers-2018-07-31-v4.18-rc7
+> >
+> >  drivers/iommu/ipmmu-vmsa.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> >
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index 51af2c5..cf5cfcf 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -761,6 +761,7 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+> >  }
+> >
+> >  static const struct soc_device_attribute soc_rcar_gen3[] = {
+> > +       { .soc_id = "r8a774a1", },
+> >         { .soc_id = "r8a7795", },
+> >         { .soc_id = "r8a7796", },
+> >         { .soc_id = "r8a77965", },
+> > @@ -942,6 +943,9 @@ static const struct of_device_id ipmmu_of_ids[] = {
+> >                 .compatible = "renesas,ipmmu-vmsa",
+> >                 .data = &ipmmu_features_default,
+> >         }, {
+> > +               .compatible = "renesas,ipmmu-r8a774a1",
+> > +               .data = &ipmmu_features_rcar_gen3,
+> > +       }, {
+> >                 .compatible = "renesas,ipmmu-r8a7795",
+> >                 .data = &ipmmu_features_rcar_gen3,
+> >         }, {
+> > @@ -1143,6 +1147,7 @@ subsys_initcall(ipmmu_init);
+> >  module_exit(ipmmu_exit);
+> >
+> >  IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa");
+> > +IOMMU_OF_DECLARE(ipmmu_r8a774a1_iommu_of, "renesas,ipmmu-r8a774a1");
+> >  IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795");
+> >  IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796");
+> >  IOMMU_OF_DECLARE(ipmmu_r8a77965_iommu_of, "renesas,ipmmu-r8a77965");
+>
+> The IOMMU_OF_DECLARE() lines will be gone v4.18-rc1.
+
+I can see the conflict now, therefore I am going to send a v2. I'll be basing the patch
+on top of renesas-drivers-2018-07-31-v4.18-rc7 again, but this time I'll drop the
+IOMMU_OF_DECLARE line, hopefully this will help.
+
+Thanks,
+Fab
+
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
+
+
+
+Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
