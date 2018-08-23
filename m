@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 03/13] iommu: Introduce bind_guest_msi
-Date: Thu, 23 Aug 2018 14:17:26 +0200
-Message-ID: <1535026656-8450-4-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 04/13] vfio: VFIO_IOMMU_BIND_GUEST_STAGE
+Date: Thu, 23 Aug 2018 14:17:27 +0200
+Message-ID: <1535026656-8450-5-git-send-email-eric.auger@redhat.com>
 References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,110 +21,123 @@ To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf
 Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On ARM, MSI are translated by the SMMU. An IOVA is allocated
-for each MSI doorbell. If both the host and the guest are exposed
-with SMMUs, we end up with 2 different IOVAs allocated by each.
-guest allocates an IOVA (gIOVA) to map onto the guest MSI
-doorbell (gDB). The Host allocates another IOVA (hIOVA) to map
-onto the physical doorbell (hDB).
+From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-So we end up with 2 untied mappings:
-         S1            S2
-gIOVA    ->    gDB
-              hIOVA    ->    gDB
+This patch adds VFIO_IOMMU_BIND_GUEST_STAGE ioctl which aims at
+passing the virtual iommu guest configuration to the VFIO driver
+downto to the iommu subsystem.
 
-Currently the PCI device is programmed by the host with hIOVA
-as MSI doorbell. So this does not work.
-
-This patch introduces an API to pass gIOVA/gDB to the host so
-that gIOVA can be reused by the host instead of re-allocating
-a new IOVA. So the goal is to create the following nested mapping:
-
-         S1            S2
-gIOVA    ->    gDB     ->    hDB
-
-and program the PCI device with gIOVA MSI doorbell.
-
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/iommu.c      | 10 ++++++++++
- include/linux/iommu.h      | 12 ++++++++++++
- include/uapi/linux/iommu.h |  7 +++++++
- 3 files changed, 29 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0bc05a7..ab8968f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1336,6 +1336,16 @@ int iommu_bind_guest_stage(struct iommu_domain *domain, struct device *dev,
- }
- EXPORT_SYMBOL_GPL(iommu_bind_guest_stage);
- 
-+int iommu_bind_guest_msi(struct iommu_domain *domain,
-+			 struct iommu_guest_msi_binding *binding)
-+{
-+	if (unlikely(!domain->ops->bind_guest_msi))
-+		return -ENODEV;
-+
-+	return domain->ops->bind_guest_msi(domain, binding);
-+}
-+EXPORT_SYMBOL_GPL(iommu_bind_guest_msi);
-+
- void iommu_unbind_guest_stage(struct iommu_domain *domain, struct device *dev)
- {
- 	if (unlikely(!domain->ops->unbind_guest_stage))
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b13cf2b..ff8ae5f0 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -247,6 +247,9 @@ struct iommu_ops {
- 	int (*tlb_invalidate)(struct iommu_domain *domain, struct device *dev,
- 			      struct iommu_tlb_invalidate_info *inv_info);
- 
-+	int (*bind_guest_msi)(struct iommu_domain *domain,
-+			      struct iommu_guest_msi_binding *binding);
-+
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -315,6 +318,8 @@ extern void iommu_unbind_guest_stage(struct iommu_domain *domain,
- extern int iommu_tlb_invalidate(struct iommu_domain *domain,
- 				struct device *dev,
- 				struct iommu_tlb_invalidate_info *inv_info);
-+extern int iommu_bind_guest_msi(struct iommu_domain *domain,
-+				struct iommu_guest_msi_binding *binding);
- 
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -732,6 +737,13 @@ static inline int iommu_tlb_invalidate(struct iommu_domain *domain,
- 	return -ENODEV;
+---
+
+for SMMUV3 S1 config data passing the device parameter is not needed.
+---
+ drivers/vfio/vfio_iommu_type1.c | 56 +++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/vfio.h       |  8 ++++++
+ 2 files changed, 64 insertions(+)
+
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index d9fd318..83c7f96 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -1673,6 +1673,48 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+ 	return ret;
  }
  
-+static inline
-+int iommu_bind_guest_msi(struct iommu_domain *domain,
-+			 struct iommu_guest_msi_binding *binding)
-+{
-+	return -ENODEV;
-+}
-+
- #endif /* CONFIG_IOMMU_API */
- 
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 7c88d80..7de9ab1 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -147,4 +147,11 @@ struct iommu_tlb_invalidate_info {
- 	__u32		pasid;
- 	__u64		addr;
- };
-+
-+struct iommu_guest_msi_binding {
-+	__u64		iova;
-+	__u64		gpa;
-+	__u32		granule;
++struct vfio_iommu_task {
++	struct iommu_domain *domain;
++	void *payload;
 +};
- #endif /* _UAPI_IOMMU_H */
 +
++static int bind_guest_stage_fn(struct device *dev, void *data)
++{
++	struct vfio_iommu_type1_bind_guest_stage *ustruct;
++	struct vfio_iommu_task *task = data;
++
++	ustruct = task->payload;
++	return iommu_bind_guest_stage(task->domain, dev, &ustruct->config);
++}
++
++static int vfio_iommu_dispatch_task(struct vfio_iommu *iommu, void *data,
++				    int (*fn)(struct device *, void *))
++{
++	int ret = 0;
++	struct vfio_domain *d;
++	struct vfio_group *g;
++	struct vfio_iommu_task task;
++
++	task.payload = data;
++
++	mutex_lock(&iommu->lock);
++
++	list_for_each_entry(d, &iommu->domain_list, next) {
++		list_for_each_entry(g, &d->group_list, next) {
++			if (g->iommu_group != NULL) {
++				task.domain = d->domain;
++				ret = iommu_group_for_each_dev(
++					g->iommu_group, &task, fn);
++				if (ret != 0)
++					break;
++			}
++		}
++	}
++
++	mutex_unlock(&iommu->lock);
++	return ret;
++}
++
+ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 				   unsigned int cmd, unsigned long arg)
+ {
+@@ -1743,6 +1785,20 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 
+ 		return copy_to_user((void __user *)arg, &unmap, minsz) ?
+ 			-EFAULT : 0;
++	} else if (cmd == VFIO_IOMMU_BIND_GUEST_STAGE) {
++		struct vfio_iommu_type1_bind_guest_stage ustruct;
++
++		minsz = offsetofend(struct vfio_iommu_type1_bind_guest_stage,
++				    config);
++
++		if (copy_from_user(&ustruct, (void __user *)arg, minsz))
++			return -EFAULT;
++
++		if (ustruct.argsz < minsz || ustruct.flags)
++			return -EINVAL;
++
++		return vfio_iommu_dispatch_task(iommu, (u8 *)&ustruct,
++						bind_guest_stage_fn);
+ 	}
+ 
+ 	return -ENOTTY;
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index 1aa7b82..a5801ed 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -14,6 +14,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/ioctl.h>
++#include <linux/iommu.h>
+ 
+ #define VFIO_API_VERSION	0
+ 
+@@ -665,6 +666,13 @@ struct vfio_iommu_type1_dma_unmap {
+ #define VFIO_IOMMU_ENABLE	_IO(VFIO_TYPE, VFIO_BASE + 15)
+ #define VFIO_IOMMU_DISABLE	_IO(VFIO_TYPE, VFIO_BASE + 16)
+ 
++struct vfio_iommu_type1_bind_guest_stage {
++	__u32	argsz;
++	__u32	flags;
++	struct iommu_guest_stage_config config;
++};
++#define VFIO_IOMMU_BIND_GUEST_STAGE	_IO(VFIO_TYPE, VFIO_BASE + 22)
++
+ /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+ 
+ /*
 -- 
 2.5.5
