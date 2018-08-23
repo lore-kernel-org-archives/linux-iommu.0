@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 01/13] iommu: Introduce bind_guest_stage API
-Date: Thu, 23 Aug 2018 14:17:24 +0200
-Message-ID: <1535026656-8450-2-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 02/13] iommu: Introduce tlb_invalidate API
+Date: Thu, 23 Aug 2018 14:17:25 +0200
+Message-ID: <1535026656-8450-3-git-send-email-eric.auger@redhat.com>
 References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,199 +21,202 @@ To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf
 Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-In virtualization use case, when a guest is assigned
-a PCI host device, protected by a virtual IOMMU on a guest,
-the physical IOMMU must be programmed to be consistent with
-the guest mappings. If the physical IOMMU supports two
-translation stages it makes sense to program guest mappings
-onto the first stage while to host owns the stage 2.
+In any virtualization use case When the fisrt translation stage
+is "owned" by the guest OS, the host IOMMU driver has no knowledge
+of caching structure updates unless the guest invalidation activities
+are trapped by the virtualizer and passed down to the host.
 
-In that case, it is mandated to trap on guest configuration
-settings and pass those to the physical iommu driver.
+Since the invalidation data are obtained from user space and will be
+written into physical IOMMU, we must allow security check at various
+layers. Therefore, generic invalidation data format are proposed here,
+model specific IOMMU drivers need to convert them into their own format.
 
-This patch adds a new API to the iommu subsystem that allows
-to bind and unbind the guest configuration data to the host.
-
-A generic iommu_guest_stage_config struct is introduced in
-a new iommu.h uapi header. This is going to be used by the VFIO
-user API. We foresee at least 2 specialization of this struct,
-for PASID table passing and ARM SMMUv3.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
-
-This patch generalizes the API introduced by Jacob & co-authors in
-https://lwn.net/Articles/754331/
+renamed sva_invalidate into tlb_invalidate and add iommu_ prefix in
+header. Commit message reworded.
 ---
- drivers/iommu/iommu.c      | 19 +++++++++++++++
- include/linux/iommu.h      | 23 ++++++++++++++++++
- include/uapi/linux/iommu.h | 59 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 101 insertions(+)
- create mode 100644 include/uapi/linux/iommu.h
+ drivers/iommu/iommu.c      | 14 +++++++
+ include/linux/iommu.h      | 13 +++++++
+ include/uapi/linux/iommu.h | 91 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 118 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 63b3756..5156172 100644
+index 5156172..0bc05a7 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -1326,6 +1326,25 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+@@ -1345,6 +1345,20 @@ void iommu_unbind_guest_stage(struct iommu_domain *domain, struct device *dev)
  }
- EXPORT_SYMBOL_GPL(iommu_attach_device);
+ EXPORT_SYMBOL_GPL(iommu_unbind_guest_stage);
  
-+int iommu_bind_guest_stage(struct iommu_domain *domain, struct device *dev,
-+			   struct iommu_guest_stage_config *cfg)
++int iommu_tlb_invalidate(struct iommu_domain *domain, struct device *dev,
++			 struct iommu_tlb_invalidate_info *inv_info)
 +{
-+	if (unlikely(!domain->ops->bind_guest_stage))
++	int ret = 0;
++
++	if (unlikely(!domain->ops->tlb_invalidate))
 +		return -ENODEV;
 +
-+	return domain->ops->bind_guest_stage(domain, dev, cfg);
-+}
-+EXPORT_SYMBOL_GPL(iommu_bind_guest_stage);
++	ret = domain->ops->tlb_invalidate(domain, dev, inv_info);
 +
-+void iommu_unbind_guest_stage(struct iommu_domain *domain, struct device *dev)
-+{
-+	if (unlikely(!domain->ops->unbind_guest_stage))
-+		return;
-+
-+	domain->ops->unbind_guest_stage(domain, dev);
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(iommu_unbind_guest_stage);
++EXPORT_SYMBOL_GPL(iommu_tlb_invalidate);
 +
  static void __iommu_detach_device(struct iommu_domain *domain,
  				  struct device *dev)
  {
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 19938ee..aec853d 100644
+index aec853d..b13cf2b 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -25,6 +25,7 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
-+#include <uapi/linux/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
- #define IOMMU_WRITE	(1 << 1)
-@@ -187,6 +188,8 @@ struct iommu_resv_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
+@@ -190,6 +190,7 @@ struct iommu_resv_region {
   * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @bind_guest_stage: program the guest stage configuration
-+ * @unbind_guest_stage: unbind the guest stage and restore defaults
+  * @bind_guest_stage: program the guest stage configuration
+  * @unbind_guest_stage: unbind the guest stage and restore defaults
++ * @tlb_invalidate: invalidate translation caches
   */
  struct iommu_ops {
  	bool (*capable)(enum iommu_cap);
-@@ -235,6 +238,11 @@ struct iommu_ops {
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
- 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+@@ -243,6 +244,9 @@ struct iommu_ops {
+ 	void (*unbind_guest_stage)(struct iommu_domain *domain,
+ 				   struct device *dev);
  
-+	int (*bind_guest_stage)(struct iommu_domain *domain, struct device *dev,
-+				struct iommu_guest_stage_config *cfg);
-+	void (*unbind_guest_stage)(struct iommu_domain *domain,
-+				   struct device *dev);
++	int (*tlb_invalidate)(struct iommu_domain *domain, struct device *dev,
++			      struct iommu_tlb_invalidate_info *inv_info);
 +
  	unsigned long pgsize_bitmap;
  };
  
-@@ -296,6 +304,10 @@ extern int iommu_attach_device(struct iommu_domain *domain,
- 			       struct device *dev);
- extern void iommu_detach_device(struct iommu_domain *domain,
- 				struct device *dev);
-+extern int iommu_bind_guest_stage(struct iommu_domain *domain,
-+		struct device *dev, struct iommu_guest_stage_config *cfg);
-+extern void iommu_unbind_guest_stage(struct iommu_domain *domain,
-+				     struct device *dev);
+@@ -308,6 +312,10 @@ extern int iommu_bind_guest_stage(struct iommu_domain *domain,
+ 		struct device *dev, struct iommu_guest_stage_config *cfg);
+ extern void iommu_unbind_guest_stage(struct iommu_domain *domain,
+ 				     struct device *dev);
++extern int iommu_tlb_invalidate(struct iommu_domain *domain,
++				struct device *dev,
++				struct iommu_tlb_invalidate_info *inv_info);
++
  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
  		     phys_addr_t paddr, size_t size, int prot);
-@@ -696,6 +708,17 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- 	return NULL;
+@@ -718,6 +726,11 @@ static inline
+ void iommu_unbind_guest_stage(struct iommu_domain *domain, struct device *dev)
+ {
  }
- 
-+static inline
-+int iommu_bind_guest_stage(struct iommu_domain *domain, struct device *dev,
-+			   struct iommu_guest_stage_config *cfg)
++static inline int iommu_tlb_invalidate(struct iommu_domain *domain,
++		struct device *dev, struct iommu_tlb_invalidate_info *inv_info)
 +{
 +	return -ENODEV;
 +}
-+static inline
-+void iommu_unbind_guest_stage(struct iommu_domain *domain, struct device *dev)
-+{
-+}
-+
+ 
  #endif /* CONFIG_IOMMU_API */
  
- #endif /* __LINUX_IOMMU_H */
 diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-new file mode 100644
-index 0000000..2d1593c
---- /dev/null
+index 2d1593c..7c88d80 100644
+--- a/include/uapi/linux/iommu.h
 +++ b/include/uapi/linux/iommu.h
-@@ -0,0 +1,59 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/*
-+ * IOMMU user API definitions
+@@ -56,4 +56,95 @@ struct iommu_guest_stage_config {
+ 	};
+ };
+ 
++/**
++ * enum iommu_inv_granularity - Generic invalidation granularity
++ * @IOMMU_INV_GRANU_DOMAIN_ALL_PASID:	TLB entries or PASID caches of all
++ *					PASIDs associated with a domain ID
++ * @IOMMU_INV_GRANU_PASID_SEL:		TLB entries or PASID cache associated
++ *					with a PASID and a domain
++ * @IOMMU_INV_GRANU_PAGE_PASID:		TLB entries of selected page range
++ *					within a PASID
 + *
++ * When an invalidation request is passed down to IOMMU to flush translation
++ * caches, it may carry different granularity levels, which can be specific
++ * to certain types of translation caches.
++ * This enum is a collection of granularities for all types of translation
++ * caches. The idea is to make it easy for IOMMU model specific driver to
++ * convert from generic to model specific value. Each IOMMU driver
++ * can enforce check based on its own conversion table. The conversion is
++ * based on 2D look-up with inputs as follows:
++ * - translation cache types
++ * - granularity
 + *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
++ *             type |   DTLB    |    TLB    |   PASID   |
++ *  granule         |           |           |   cache   |
++ * -----------------+-----------+-----------+-----------+
++ *  DN_ALL_PASID    |   Y       |   Y       |   Y       |
++ *  PASID_SEL       |   Y       |   Y       |   Y       |
++ *  PAGE_PASID      |   Y       |   Y       |   N/A     |
++ *
 + */
-+
-+#ifndef _UAPI_IOMMU_H
-+#define _UAPI_IOMMU_H
-+
-+#include <linux/types.h>
++enum iommu_inv_granularity {
++	IOMMU_INV_GRANU_DOMAIN_ALL_PASID,
++	IOMMU_INV_GRANU_PASID_SEL,
++	IOMMU_INV_GRANU_PAGE_PASID,
++	IOMMU_INV_NR_GRANU,
++};
 +
 +/**
-+ * PASID table data used to bind guest PASID table to the host IOMMU. This will
-+ * enable guest managed first level page tables.
-+ * @version: for future extensions and identification of the data format
-+ * @bytes: size of this structure
-+ * @base_ptr:	PASID table pointer
-+ * @pasid_bits:	number of bits supported in the guest PASID table, must be less
-+ *		or equal than the host supported PASID size.
++ * enum iommu_inv_type - Generic translation cache types for invalidation
++ *
++ * @IOMMU_INV_TYPE_DTLB:	device IOTLB
++ * @IOMMU_INV_TYPE_TLB:		IOMMU paging structure cache
++ * @IOMMU_INV_TYPE_PASID:	PASID cache
++ * Invalidation requests sent to IOMMU for a given device need to indicate
++ * which type of translation cache to be operated on. Combined with enum
++ * iommu_inv_granularity, model specific driver can do a simple lookup to
++ * convert from generic to model specific value.
 + */
-+struct iommu_pasid_table_config {
++enum iommu_inv_type {
++	IOMMU_INV_TYPE_DTLB,
++	IOMMU_INV_TYPE_TLB,
++	IOMMU_INV_TYPE_PASID,
++	IOMMU_INV_NR_TYPE
++};
++
++/**
++ * Translation cache invalidation header that contains mandatory meta data.
++ * @version:	info format version, expecting future extesions
++ * @type:	type of translation cache to be invalidated
++ */
++struct iommu_tlb_invalidate_hdr {
 +	__u32 version;
-+#define PASID_TABLE_CFG_VERSION_1 1
-+	__u32 bytes;
-+	__u64 base_ptr;
-+	__u8 pasid_bits;
++#define TLB_INV_HDR_VERSION_1 1
++	enum iommu_inv_type type;
 +};
 +
 +/**
-+ * Stream Table Entry S1 info
-+ * @disabled: the smmu is disabled
-+ * @bypassed: stage 1 is bypassed
-+ * @aborted: aborted
-+ * @cdptr_dma: GPA of the Context Descriptor
-+ * @asid: address space identified associated to the CD
++ * Translation cache invalidation information, contains generic IOMMU
++ * data which can be parsed based on model ID by model specific drivers.
++ * Since the invalidation of second level page tables are included in the
++ * unmap operation, this info is only applicable to the first level
++ * translation caches, i.e. DMA request with PASID.
++ *
++ * @granularity:	requested invalidation granularity, type dependent
++ * @size:		2^size of 4K pages, 0 for 4k, 9 for 2MB, etc.
++ * @nr_pages:		number of pages to invalidate
++ * @pasid:		processor address space ID value per PCI spec.
++ * @addr:		page address to be invalidated
++ * @flags		IOMMU_INVALIDATE_ADDR_LEAF: leaf paging entries
++ *			IOMMU_INVALIDATE_GLOBAL_PAGE: global pages
++ *
 + */
-+struct iommu_smmu_s1_config {
-+	__u8 disabled;
-+	__u8 bypassed;
-+	__u8 aborted;
-+	__u64 cdptr_dma;
-+	__u16 asid;
++struct iommu_tlb_invalidate_info {
++	struct iommu_tlb_invalidate_hdr	hdr;
++	enum iommu_inv_granularity	granularity;
++	__u32		flags;
++#define IOMMU_INVALIDATE_ADDR_LEAF	(1 << 0)
++#define IOMMU_INVALIDATE_GLOBAL_PAGE	(1 << 1)
++	__u8		size;
++	__u64		nr_pages;
++	__u32		pasid;
++	__u64		addr;
 +};
-+
-+struct iommu_guest_stage_config {
-+#define PASID_TABLE	(1 << 0)
-+#define SMMUV3_S1_CFG	(1 << 1)
-+	__u32 flags;
-+	union {
-+		struct iommu_pasid_table_config pasidt;
-+		struct iommu_smmu_s1_config smmu_s1;
-+	};
-+};
-+
-+#endif /* _UAPI_IOMMU_H */
+ #endif /* _UAPI_IOMMU_H */
 -- 
 2.5.5
