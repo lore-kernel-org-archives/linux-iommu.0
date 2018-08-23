@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 08/13] iommu/arm-smmu-v3: Link domains and devices
-Date: Thu, 23 Aug 2018 14:17:31 +0200
-Message-ID: <1535026656-8450-9-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 09/13] iommu/smmuv3: Get prepared for nested stage support
+Date: Thu, 23 Aug 2018 14:17:32 +0200
+Message-ID: <1535026656-8450-10-git-send-email-eric.auger@redhat.com>
 References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,106 +21,102 @@ To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf
 Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+To allow nested stage support, we need to store both
+stage 1 and stage 2 configurations (and remove the former
+union).
 
-When removing a mapping from a domain, we need to send an invalidation to
-all devices that might have stored it in their Address Translation Cache
-(ATC). In addition with SVM, we'll need to invalidate context descriptors
-of all devices attached to a live domain.
+arm_smmu_write_strtab_ent() is modified to write both stage
+fields in the STE.
 
-Maintain a list of devices in each domain, protected by a spinlock. It is
-updated every time we attach or detach devices to and from domains.
+We add a bypass field to the S1 configuration as the first
+stage can be bypassed.
 
-It needs to be a spinlock because we'll invalidate ATC entries from
-within hardirq-safe contexts, but it may be possible to relax the read
-side with RCU later.
+Only S2 stage is "finalized" as the host does not configure
+S1 CD, guest does.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 22bdabd..19c085d 100644
+index 19c085d..3a33979 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -595,6 +595,11 @@ struct arm_smmu_device {
- struct arm_smmu_master_data {
- 	struct arm_smmu_device		*smmu;
- 	struct arm_smmu_strtab_ent	ste;
-+
-+	struct arm_smmu_domain		*domain;
-+	struct list_head		list; /* domain->devices */
-+
-+	struct device			*dev;
- };
+@@ -496,6 +496,7 @@ struct arm_smmu_strtab_l1_desc {
+ struct arm_smmu_s1_cfg {
+ 	__le64				*cdptr;
+ 	dma_addr_t			cdptr_dma;
++	bool bypass;
  
- /* SMMU private data for an IOMMU domain */
-@@ -618,6 +623,9 @@ struct arm_smmu_domain {
- 	};
+ 	struct arm_smmu_ctx_desc {
+ 		u16	asid;
+@@ -617,10 +618,8 @@ struct arm_smmu_domain {
+ 	struct io_pgtable_ops		*pgtbl_ops;
+ 
+ 	enum arm_smmu_domain_stage	stage;
+-	union {
+-		struct arm_smmu_s1_cfg	s1_cfg;
+-		struct arm_smmu_s2_cfg	s2_cfg;
+-	};
++	struct arm_smmu_s1_cfg	s1_cfg;
++	struct arm_smmu_s2_cfg	s2_cfg;
  
  	struct iommu_domain		domain;
-+
-+	struct list_head		devices;
-+	spinlock_t			devices_lock;
- };
  
- struct arm_smmu_option_prop {
-@@ -1470,6 +1478,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+@@ -1107,6 +1106,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 			break;
+ 		case STRTAB_STE_0_CFG_S1_TRANS:
+ 		case STRTAB_STE_0_CFG_S2_TRANS:
++		case STRTAB_STE_0_CFG_S1_TRANS | STRTAB_STE_0_CFG_S2_TRANS:
+ 			ste_live = true;
+ 			break;
+ 		case STRTAB_STE_0_CFG_ABORT:
+@@ -1141,7 +1141,6 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
  	}
  
- 	mutex_init(&smmu_domain->init_mutex);
-+	INIT_LIST_HEAD(&smmu_domain->devices);
-+	spin_lock_init(&smmu_domain->devices_lock);
-+
- 	return &smmu_domain->domain;
- }
+ 	if (ste->s1_cfg) {
+-		BUG_ON(ste_live);
+ 		dst[1] = cpu_to_le64(
+ 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+ 			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+@@ -1155,12 +1154,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
  
-@@ -1685,7 +1696,17 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
- 
- static void arm_smmu_detach_dev(struct device *dev)
- {
-+	unsigned long flags;
- 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-+	struct arm_smmu_domain *smmu_domain = master->domain;
-+
-+	if (smmu_domain) {
-+		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+		list_del(&master->list);
-+		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+
-+		master->domain = NULL;
-+	}
- 
- 	master->ste.assigned = false;
- 	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
-@@ -1694,6 +1715,7 @@ static void arm_smmu_detach_dev(struct device *dev)
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret = 0;
-+	unsigned long flags;
- 	struct arm_smmu_device *smmu;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_master_data *master;
-@@ -1729,6 +1751,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+-		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+-			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
++		if (!ste->s1_cfg->bypass)
++			val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
++				FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
  	}
  
- 	ste->assigned = true;
-+	master->domain = smmu_domain;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_add(&master->list, &smmu_domain->devices);
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS) {
- 		ste->s1_cfg = NULL;
-@@ -1847,6 +1874,7 @@ static int arm_smmu_add_device(struct device *dev)
- 			return -ENOMEM;
- 
- 		master->smmu = smmu;
-+		master->dev = dev;
- 		fwspec->iommu_priv = master;
- 	}
- 
+ 	if (ste->s2_cfg) {
+-		BUG_ON(ste_live);
+ 		dst[2] = cpu_to_le64(
+ 			 FIELD_PREP(STRTAB_STE_2_S2VMID, ste->s2_cfg->vmid) |
+ 			 FIELD_PREP(STRTAB_STE_2_VTCR, ste->s2_cfg->vtcr) |
+@@ -1399,6 +1398,10 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ 		cmd.opcode	= CMDQ_OP_TLBI_NH_ASID;
+ 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
+ 		cmd.tlbi.vmid	= 0;
++	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED) {
++		cmd.opcode      = CMDQ_OP_TLBI_NH_ASID;
++		cmd.tlbi.asid   = smmu_domain->s1_cfg.cd.asid;
++		cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+ 	} else {
+ 		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
+ 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+@@ -1423,6 +1426,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 		cmd.opcode	= CMDQ_OP_TLBI_NH_VA;
+ 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
++	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED) {
++		cmd.opcode      = CMDQ_OP_TLBI_NH_VA;
++		cmd.tlbi.asid   = smmu_domain->s1_cfg.cd.asid;
++		cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+ 	} else {
+ 		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
+ 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
 -- 
 2.5.5
