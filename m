@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 05/13] vfio: VFIO_IOMMU_TLB_INVALIDATE
-Date: Thu, 23 Aug 2018 14:17:28 +0200
-Message-ID: <1535026656-8450-6-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 06/13] vfio: VFIO_IOMMU_BIND_MSI
+Date: Thu, 23 Aug 2018 14:17:29 +0200
+Message-ID: <1535026656-8450-7-git-send-email-eric.auger@redhat.com>
 References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,57 +21,53 @@ To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf
 Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+This patch adds the VFIO_IOMMU_BIND_MSI ioctl which aims at
+passing the guest MSI binding to the host.
 
-This patch adds the VFIO_IOMMU_TLB_INVALIDATE ioctl with aims
-at propagating stage1 IOMMU TLB invalidations from guest to host.
-
-In the case of SVM virtualization on VT-d, host IOMMU driver has
-no knowledge of caching structure updates unless the guest
-invalidation activities are passed down to the host. So a new
-IOCTL is needed to propagate the guest cache invalidation through
-VFIO.
-
-Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
-
-For SMMUv3 invalidations, the device parameter is not needed
----
- drivers/vfio/vfio_iommu_type1.c | 23 +++++++++++++++++++++++
+ drivers/vfio/vfio_iommu_type1.c | 31 +++++++++++++++++++++++++++++++
  include/uapi/linux/vfio.h       |  7 +++++++
- 2 files changed, 30 insertions(+)
+ 2 files changed, 38 insertions(+)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 83c7f96..973bb4d 100644
+index 973bb4d..2962cb9 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1687,6 +1687,15 @@ static int bind_guest_stage_fn(struct device *dev, void *data)
- 	return iommu_bind_guest_stage(task->domain, dev, &ustruct->config);
+@@ -1696,6 +1696,24 @@ static int do_tlb_inv_fn(struct device *dev, void *data)
+ 	return iommu_tlb_invalidate(task->domain, dev, &ustruct->info);
  }
  
-+static int do_tlb_inv_fn(struct device *dev, void *data)
++static int
++vfio_iommu_bind_guest_msi(struct vfio_iommu *iommu,
++			  struct vfio_iommu_type1_guest_msi_binding *ustruct)
 +{
-+	struct vfio_iommu_type1_tlb_invalidate *ustruct;
-+	struct vfio_iommu_task *task = data;
++	struct vfio_domain *d;
++	int ret;
 +
-+	ustruct = task->payload;
-+	return iommu_tlb_invalidate(task->domain, dev, &ustruct->info);
++	mutex_lock(&iommu->lock);
++	list_for_each_entry(d, &iommu->domain_list, next) {
++		ret = iommu_bind_guest_msi(d->domain, &ustruct->binding);
++		if (ret)
++			break;
++	}
++	mutex_unlock(&iommu->lock);
++	return ret;
 +}
++
 +
  static int vfio_iommu_dispatch_task(struct vfio_iommu *iommu, void *data,
  				    int (*fn)(struct device *, void *))
  {
-@@ -1799,6 +1808,20 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+@@ -1822,6 +1840,19 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
  
  		return vfio_iommu_dispatch_task(iommu, (u8 *)&ustruct,
- 						bind_guest_stage_fn);
-+	} else if (cmd == VFIO_IOMMU_TLB_INVALIDATE) {
-+		struct vfio_iommu_type1_tlb_invalidate ustruct;
+ 						do_tlb_inv_fn);
++	} else if (cmd == VFIO_IOMMU_BIND_MSI) {
++		struct vfio_iommu_type1_guest_msi_binding ustruct;
 +
-+		minsz = offsetofend(struct vfio_iommu_type1_tlb_invalidate,
-+				    info);
++		minsz = offsetofend(struct vfio_iommu_type1_guest_msi_binding,
++				    binding);
 +
 +		if (copy_from_user(&ustruct, (void __user *)arg, minsz))
 +			return -EFAULT;
@@ -79,25 +75,24 @@ index 83c7f96..973bb4d 100644
 +		if (ustruct.argsz < minsz || ustruct.flags)
 +			return -EINVAL;
 +
-+		return vfio_iommu_dispatch_task(iommu, (u8 *)&ustruct,
-+						do_tlb_inv_fn);
++		return vfio_iommu_bind_guest_msi(iommu, &ustruct);
  	}
  
  	return -ENOTTY;
 diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index a5801ed..b59f9fc 100644
+index b59f9fc..b7a9943 100644
 --- a/include/uapi/linux/vfio.h
 +++ b/include/uapi/linux/vfio.h
-@@ -673,6 +673,13 @@ struct vfio_iommu_type1_bind_guest_stage {
+@@ -680,6 +680,13 @@ struct vfio_iommu_type1_tlb_invalidate {
  };
- #define VFIO_IOMMU_BIND_GUEST_STAGE	_IO(VFIO_TYPE, VFIO_BASE + 22)
+ #define VFIO_IOMMU_TLB_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 23)
  
-+struct vfio_iommu_type1_tlb_invalidate {
++struct vfio_iommu_type1_guest_msi_binding {
 +	__u32   argsz;
 +	__u32   flags;
-+	struct iommu_tlb_invalidate_info info;
++	struct iommu_guest_msi_binding binding;
 +};
-+#define VFIO_IOMMU_TLB_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 23)
++#define VFIO_IOMMU_BIND_MSI      _IO(VFIO_TYPE, VFIO_BASE + 24)
 +
  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
  
