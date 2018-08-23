@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 09/13] iommu/smmuv3: Get prepared for nested stage support
-Date: Thu, 23 Aug 2018 14:17:32 +0200
-Message-ID: <1535026656-8450-10-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 10/13] iommu/smmuv3: Implement bind_guest_stage
+Date: Thu, 23 Aug 2018 14:17:33 +0200
+Message-ID: <1535026656-8450-11-git-send-email-eric.auger@redhat.com>
 References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,102 +21,112 @@ To: "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf
 Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-To allow nested stage support, we need to store both
-stage 1 and stage 2 configurations (and remove the former
-union).
+On bind_guest_stage() we set the minimal information in s1_cfg:
+- the asid (allocated by the guest)
+- the context descriptor GPA
 
-arm_smmu_write_strtab_ent() is modified to write both stage
-fields in the STE.
-
-We add a bypass field to the S1 configuration as the first
-stage can be bypassed.
-
-Only S2 stage is "finalized" as the host does not configure
-S1 CD, guest does.
+On unbind, the STE stage 1 fields are reset.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 78 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 19c085d..3a33979 100644
+index 3a33979..26afafa 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -496,6 +496,7 @@ struct arm_smmu_strtab_l1_desc {
- struct arm_smmu_s1_cfg {
- 	__le64				*cdptr;
- 	dma_addr_t			cdptr_dma;
-+	bool bypass;
+@@ -2025,6 +2025,82 @@ static void arm_smmu_put_resv_regions(struct device *dev,
+ 		kfree(entry);
+ }
  
- 	struct arm_smmu_ctx_desc {
- 		u16	asid;
-@@ -617,10 +618,8 @@ struct arm_smmu_domain {
- 	struct io_pgtable_ops		*pgtbl_ops;
++static int arm_smmu_bind_guest_stage(struct iommu_domain *domain,
++				     struct device *dev,
++				     struct iommu_guest_stage_config *cfg)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct arm_smmu_master_data *entry;
++	unsigned long flags;
++
++	if (cfg->flags != SMMUV3_S1_CFG)
++		return -EINVAL;
++
++	if (!smmu)
++		return -EINVAL;
++
++	if (!((smmu->features & ARM_SMMU_FEAT_TRANS_S1) &&
++	      (smmu->features & ARM_SMMU_FEAT_TRANS_S2))) {
++		dev_info(smmu_domain->smmu->dev,
++			 "does not implement two stages\n");
++		return -EINVAL;
++	}
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		return -EINVAL;
++
++	if (cfg->smmu_s1.asid >= (1 << smmu->asid_bits))
++		return -EINVAL;
++
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_for_each_entry(entry, &smmu_domain->devices, list) {
++		struct arm_smmu_s1_cfg *s1_cfg;
++
++		if (dev != entry->dev)
++			continue;
++
++		s1_cfg = entry->ste.s1_cfg = &smmu_domain->s1_cfg;
++		s1_cfg->bypass = cfg->smmu_s1.disabled || cfg->smmu_s1.bypassed;
++		s1_cfg->cd.asid = cfg->smmu_s1.asid;
++
++		if (!s1_cfg->bypass)
++			s1_cfg->cdptr_dma = cfg->smmu_s1.cdptr_dma;
++
++		arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
++		break;
++	}
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++
++	return 0;
++}
++
++static void arm_smmu_unbind_guest_stage(struct iommu_domain *domain,
++					struct device *dev)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct arm_smmu_master_data *entry;
++	unsigned long flags;
++
++	if (!smmu)
++		return;
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		return;
++
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_for_each_entry(entry, &smmu_domain->devices, list) {
++		if (dev != entry->dev)
++			continue;
++
++		entry->ste.s1_cfg = NULL;
++		arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
++		break;
++	}
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -2044,6 +2120,8 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= arm_smmu_put_resv_regions,
++	.bind_guest_stage	= arm_smmu_bind_guest_stage,
++	.unbind_guest_stage	= arm_smmu_unbind_guest_stage,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ };
  
- 	enum arm_smmu_domain_stage	stage;
--	union {
--		struct arm_smmu_s1_cfg	s1_cfg;
--		struct arm_smmu_s2_cfg	s2_cfg;
--	};
-+	struct arm_smmu_s1_cfg	s1_cfg;
-+	struct arm_smmu_s2_cfg	s2_cfg;
- 
- 	struct iommu_domain		domain;
- 
-@@ -1107,6 +1106,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 			break;
- 		case STRTAB_STE_0_CFG_S1_TRANS:
- 		case STRTAB_STE_0_CFG_S2_TRANS:
-+		case STRTAB_STE_0_CFG_S1_TRANS | STRTAB_STE_0_CFG_S2_TRANS:
- 			ste_live = true;
- 			break;
- 		case STRTAB_STE_0_CFG_ABORT:
-@@ -1141,7 +1141,6 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 	}
- 
- 	if (ste->s1_cfg) {
--		BUG_ON(ste_live);
- 		dst[1] = cpu_to_le64(
- 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
-@@ -1155,12 +1154,12 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 		   !(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
--		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
--			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
-+		if (!ste->s1_cfg->bypass)
-+			val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-+				FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
- 	}
- 
- 	if (ste->s2_cfg) {
--		BUG_ON(ste_live);
- 		dst[2] = cpu_to_le64(
- 			 FIELD_PREP(STRTAB_STE_2_S2VMID, ste->s2_cfg->vmid) |
- 			 FIELD_PREP(STRTAB_STE_2_VTCR, ste->s2_cfg->vtcr) |
-@@ -1399,6 +1398,10 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- 		cmd.opcode	= CMDQ_OP_TLBI_NH_ASID;
- 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
- 		cmd.tlbi.vmid	= 0;
-+	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED) {
-+		cmd.opcode      = CMDQ_OP_TLBI_NH_ASID;
-+		cmd.tlbi.asid   = smmu_domain->s1_cfg.cd.asid;
-+		cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
- 	} else {
- 		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
- 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-@@ -1423,6 +1426,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
- 		cmd.opcode	= CMDQ_OP_TLBI_NH_VA;
- 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
-+	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED) {
-+		cmd.opcode      = CMDQ_OP_TLBI_NH_VA;
-+		cmd.tlbi.asid   = smmu_domain->s1_cfg.cd.asid;
-+		cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
- 	} else {
- 		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
- 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
 -- 
 2.5.5
