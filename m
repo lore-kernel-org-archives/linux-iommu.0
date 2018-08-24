@@ -1,7 +1,7 @@
 From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: [RFC PATCH 02/11] powerpc/svm: Select CONFIG_DMA_DIRECT_OPS and CONFIG_SWIOTLB
-Date: Thu, 23 Aug 2018 23:59:24 -0300
-Message-ID: <20180824025933.24319-3-bauerman@linux.ibm.com>
+Subject: [RFC PATCH 03/11] powerpc/svm: Add memory conversion (shared/secure) helper functions
+Date: Thu, 23 Aug 2018 23:59:25 -0300
+Message-ID: <20180824025933.24319-4-bauerman@linux.ibm.com>
 References: <20180824025933.24319-1-bauerman@linux.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180824025933.24319-1-bauerman@linux.ibm.com>
@@ -12,28 +12,83 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Anshuman Khandual <khandual@linux.vnet.ibm.com>
 
-Ultravisor based secure guest platforms will use generic SWIOTLB DMA API
-(i.e swiotlb_dma_ops structure) available under the CONFIG_DMA_DIRECT_OPS
-config. Also base CONFIG_SWIOTLB needs to be explicitly selected as well.
-Select both these config options on powerpc server platforms with secure
-guest support.
+Add the following helper functions to convert PAGE_SIZE aligned memory
+buffers as shared or secure (i.e., accessible to the hypervisor or not) via
+Ultravisor calls.
+
+1. mem_convert_shared(unsigned long pfn, unsigned long npages)
+2. mem_convert_secure(unsigned long pfn, unsigned long npages)
 
 Signed-off-by: Anshuman Khandual <khandual@linux.vnet.ibm.com>
 Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 ---
- arch/powerpc/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/include/asm/svm.h |  3 +++
+ arch/powerpc/kernel/Makefile   |  1 +
+ arch/powerpc/kernel/svm.c      | 33 +++++++++++++++++++++++++++++++++
+ 3 files changed, 37 insertions(+)
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index f786c962edf0..90f73d15f58a 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -444,6 +444,8 @@ config PPC_SVM
-        bool "Secure virtual machine (SVM) support for POWERPC"
-        default n
-        depends on PPC_PSERIES
-+       select DMA_DIRECT_OPS
-+       select SWIOTLB
-        help
-          Support secure guests on POWERPC. There are certain POWER platforms
- 	 which support secure guests with the help of an Ultravisor executing
+diff --git a/arch/powerpc/include/asm/svm.h b/arch/powerpc/include/asm/svm.h
+index 6f89e5d6d37f..95d69e472e52 100644
+--- a/arch/powerpc/include/asm/svm.h
++++ b/arch/powerpc/include/asm/svm.h
+@@ -13,6 +13,9 @@ static bool is_svm_platform(void)
+ {
+ 	return mfmsr() & MSR_S;
+ }
++
++extern void mem_convert_shared(unsigned long pfn, unsigned long npages);
++extern void mem_convert_secure(unsigned long pfn, unsigned long npages);
+ #else
+ static inline bool is_svm_platform(void)
+ {
+diff --git a/arch/powerpc/kernel/Makefile b/arch/powerpc/kernel/Makefile
+index 2b4c40b255e4..98780b4e924c 100644
+--- a/arch/powerpc/kernel/Makefile
++++ b/arch/powerpc/kernel/Makefile
+@@ -113,6 +113,7 @@ ifeq ($(CONFIG_HAVE_IMA_KEXEC)$(CONFIG_IMA),yy)
+ obj-y				+= ima_kexec.o
+ endif
+ 
++obj-$(CONFIG_PPC_SVM)		+= svm.o
+ obj-$(CONFIG_AUDIT)		+= audit.o
+ obj64-$(CONFIG_AUDIT)		+= compat_audit.o
+ 
+diff --git a/arch/powerpc/kernel/svm.c b/arch/powerpc/kernel/svm.c
+new file mode 100644
+index 000000000000..37437cf92df5
+--- /dev/null
++++ b/arch/powerpc/kernel/svm.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Secure VM platform
++ *
++ * Copyright 2018 IBM Corporation
++ * Author: Anshuman Khandual <khandual@linux.vnet.ibm.com>
++ */
++
++#include <linux/mm.h>
++
++void mem_convert_shared(unsigned long pfn, unsigned long npages)
++{
++	if (!pfn_valid(pfn))
++		return;
++
++	/*
++	 * FIXME: Insert real UV call when ready
++	 *
++	 * ucall_convert_shared(paddr, size)
++	 */
++}
++
++void mem_convert_secure(unsigned long pfn, unsigned long npages)
++{
++	if (!pfn_valid(pfn))
++		return;
++
++	/*
++	 * FIXME: Insert real UV call when ready
++	 *
++	 * ucall_convert_secure(paddr, size)
++	 */
++}
