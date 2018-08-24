@@ -1,7 +1,7 @@
 From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: [PATCH v2 2/4] arm64: rockchip: Force CONFIG_PM on Rockchip systems
-Date: Fri, 24 Aug 2018 16:06:35 +0100
-Message-ID: <20180824150637.15316-3-marc.zyngier@arm.com>
+Subject: [PATCH v2 3/4] iommu/rockchip: Handle errors returned from PM framework
+Date: Fri, 24 Aug 2018 16:06:36 +0100
+Message-ID: <20180824150637.15316-4-marc.zyngier@arm.com>
 References: <20180824150637.15316-1-marc.zyngier@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180824150637.15316-1-marc.zyngier@arm.com>
@@ -10,30 +10,86 @@ To: linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, io
 Cc: Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, Jeffy Chen <jeffy.chen@rock-chips.com>, arm@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-A number of the Rockchip-specific drivers (IOMMU, display controllers)
-are now assuming that CONFIG_PM is set, and may completely misbehave
-if that's not the case.
+pm_runtime_get_if_in_use can fail: either PM has been disabled
+altogether (-EINVAL), or the device hasn't been enabled yet (0).
+Sadly, the Rockchip IOMMU driver tends to conflate the two things
+by considering a non-zero return value as successful.
 
-Since there is hardly any reason for this configuration option not
-to be selected anyway, let's require it (in the same way Tegra already
-does).
+This has the consequence of hiding other bugs, so let's handle this
+case throughout the driver, with a WARN_ON_ONCE so that we can try
+and work out what happened.
 
+Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
 ---
- arch/arm64/Kconfig.platforms | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/rockchip-iommu.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index d5aeac351fc3..21a715ad8222 100644
---- a/arch/arm64/Kconfig.platforms
-+++ b/arch/arm64/Kconfig.platforms
-@@ -151,6 +151,7 @@ config ARCH_ROCKCHIP
- 	select GPIOLIB
- 	select PINCTRL
- 	select PINCTRL_ROCKCHIP
-+	select PM
- 	select ROCKCHIP_TIMER
- 	help
- 	  This enables support for the ARMv8 based Rockchip chipsets,
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 054cd2c8e9c8..4e0f9b61cd7f 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -521,10 +521,11 @@ static irqreturn_t rk_iommu_irq(int irq, void *dev_id)
+ 	u32 int_status;
+ 	dma_addr_t iova;
+ 	irqreturn_t ret = IRQ_NONE;
+-	int i;
++	int i, err;
+ 
+-	if (WARN_ON(!pm_runtime_get_if_in_use(iommu->dev)))
+-		return 0;
++	err = pm_runtime_get_if_in_use(iommu->dev);
++	if (WARN_ON_ONCE(err <= 0))
++		return ret;
+ 
+ 	if (WARN_ON(clk_bulk_enable(iommu->num_clocks, iommu->clocks)))
+ 		goto out;
+@@ -620,11 +621,15 @@ static void rk_iommu_zap_iova(struct rk_iommu_domain *rk_domain,
+ 	spin_lock_irqsave(&rk_domain->iommus_lock, flags);
+ 	list_for_each(pos, &rk_domain->iommus) {
+ 		struct rk_iommu *iommu;
++		int ret;
+ 
+ 		iommu = list_entry(pos, struct rk_iommu, node);
+ 
+ 		/* Only zap TLBs of IOMMUs that are powered on. */
+-		if (pm_runtime_get_if_in_use(iommu->dev)) {
++		ret = pm_runtime_get_if_in_use(iommu->dev);
++		if (WARN_ON_ONCE(ret < 0))
++			continue;
++		if (ret) {
+ 			WARN_ON(clk_bulk_enable(iommu->num_clocks,
+ 						iommu->clocks));
+ 			rk_iommu_zap_lines(iommu, iova, size);
+@@ -891,6 +896,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	struct rk_iommu *iommu;
+ 	struct rk_iommu_domain *rk_domain = to_rk_domain(domain);
+ 	unsigned long flags;
++	int ret;
+ 
+ 	/* Allow 'virtual devices' (eg drm) to detach from domain */
+ 	iommu = rk_iommu_from_dev(dev);
+@@ -909,7 +915,9 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	list_del_init(&iommu->node);
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ 
+-	if (pm_runtime_get_if_in_use(iommu->dev)) {
++	ret = pm_runtime_get_if_in_use(iommu->dev);
++	WARN_ON_ONCE(ret < 0);
++	if (ret > 0) {
+ 		rk_iommu_disable(iommu);
+ 		pm_runtime_put(iommu->dev);
+ 	}
+@@ -946,7 +954,8 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 	list_add_tail(&iommu->node, &rk_domain->iommus);
+ 	spin_unlock_irqrestore(&rk_domain->iommus_lock, flags);
+ 
+-	if (!pm_runtime_get_if_in_use(iommu->dev))
++	ret = pm_runtime_get_if_in_use(iommu->dev);
++	if (!ret || WARN_ON_ONCE(ret < 0))
+ 		return 0;
+ 
+ 	ret = rk_iommu_enable(iommu);
 -- 
 2.18.0
