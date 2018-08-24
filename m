@@ -1,78 +1,38 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: [PATCH v2 4/4] iommu/rockchip: Move irq request past pm_runtime_enable
-Date: Fri, 24 Aug 2018 16:06:37 +0100
-Message-ID: <20180824150637.15316-5-marc.zyngier@arm.com>
-References: <20180824150637.15316-1-marc.zyngier@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] Changing the AMD IOMMU API path to work in an atomic
+ context which is necessary for any custom drivers using the IOMMU API while
+ holding a spinlock.
+Date: Fri, 24 Aug 2018 16:24:49 +0100
+Message-ID: <24d3f04a-e6e2-ed8f-e2bd-b38144f33f26@arm.com>
+References: <1535120929-5693-1-git-send-email-murphyt7@tcd.ie>
+ <20180824145328.GA7996@infradead.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180824150637.15316-1-marc.zyngier@arm.com>
+In-Reply-To: <20180824145328.GA7996@infradead.org>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, Jeffy Chen <jeffy.chen@rock-chips.com>, arm@kernel.org
+To: Christoph Hellwig <hch@infradead.org>, murphyt7@tcd.ie
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Enabling the interrupt early, before power has been applied to the
-device, can result in an interrupt being delivered too early if:
+On 24/08/18 15:53, Christoph Hellwig wrote:
+> On Fri, Aug 24, 2018 at 02:28:49PM +0000, murphyt7@tcd.ie wrote:
+>> From: Tom Murphy <murphyt7@tcd.ie>
+>>
+>> ---
+>>
+>> This patch allows the IOMMU API path in the AMD driver to be called from an atomic context.
+>> This is useful for anyone building a driver which needs to call the IOMMU API while holding a spinlock.
+> 
+> I don't think that is a good idea.  Please point to the code in the
+> driver and we can't probably find a better solution.
 
-- the IOMMU shares an interrupt with a VOP
-- the VOP has a pending interrupt (after a kexec, for example)
+Although IIRC the AMD driver is in fact the only one whose map/unmap 
+callbacks aren't already spinlock-safe (or at least it was last time I 
+was looking). Stuff like iommu-dma is already relying on this in order 
+to implement streaming DMA API calls (which may be in atomic context) on 
+top of the corresponding IOMMU API operations.
 
-In these conditions, we end-up taking the interrupt without
-the IOMMU being ready to handle the interrupt (not powered on).
-
-Moving the interrupt request past the pm_runtime_enable() call
-makes sure we can at least access the IOMMU registers. Note that
-this is only a partial fix, and that the VOP interrupt will still
-be screaming until the VOP driver kicks in, which advocates for
-a more synchronized interrupt enabling/disabling approach.
-
-Fixes: 0f181d3cf7d98 ("iommu/rockchip: Add runtime PM support")
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
----
- drivers/iommu/rockchip-iommu.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 4e0f9b61cd7f..2b1724e8d307 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1161,17 +1161,6 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (iommu->num_mmu == 0)
- 		return PTR_ERR(iommu->bases[0]);
- 
--	i = 0;
--	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
--		if (irq < 0)
--			return irq;
--
--		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
--				       IRQF_SHARED, dev_name(dev), iommu);
--		if (err)
--			return err;
--	}
--
- 	iommu->reset_disabled = device_property_read_bool(dev,
- 					"rockchip,disable-mmu-reset");
- 
-@@ -1228,6 +1217,19 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 
- 	pm_runtime_enable(dev);
- 
-+	i = 0;
-+	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO) {
-+		if (irq < 0)
-+			return irq;
-+
-+		err = devm_request_irq(iommu->dev, irq, rk_iommu_irq,
-+				       IRQF_SHARED, dev_name(dev), iommu);
-+		if (err) {
-+			pm_runtime_disable(dev);
-+			goto err_remove_sysfs;
-+		}
-+	}
-+
- 	return 0;
- err_remove_sysfs:
- 	iommu_device_sysfs_remove(&iommu->iommu);
--- 
-2.18.0
+Robin.
