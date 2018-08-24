@@ -1,138 +1,60 @@
-From: Tom Murphy <murphyt7-/Zw1syy4LHg@public.gmane.org>
-Subject: Re: [PATCH] Changing the AMD IOMMU API path to work in an atomic
-	context which is necessary for any custom drivers using the IOMMU API
-	while holding a spinlock.
-Date: Sat, 25 Aug 2018 00:06:23 +0100
-Message-ID: <CALQxJuscr_-KmECvx031GH9pR2cdCb46t-owmrkPRZaQXCfTGw@mail.gmail.com>
-References: <1535120929-5693-1-git-send-email-murphyt7@tcd.ie>
-	<20180824145328.GA7996@infradead.org>
-	<24d3f04a-e6e2-ed8f-e2bd-b38144f33f26@arm.com>
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: Re: [RFC PATCH 10/11] powerpc/svm: Force the use of bounce buffers
+Date: Fri, 24 Aug 2018 20:38:54 -0300
+Message-ID: <87o9drxrld.fsf@morokweng.localdomain>
+References: <20180824025933.24319-1-bauerman@linux.ibm.com> <20180824025933.24319-11-bauerman@linux.ibm.com> <20180824060055.GB13689@lst.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7985561947462962202=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <24d3f04a-e6e2-ed8f-e2bd-b38144f33f26-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-reply-to: <20180824060055.GB13689@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>, Anshuman Khandual <anshuman.linux@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Michael Ellerman <mpe@ellerman.id.au>, Mike Anderson <andmike@linux.ibm.com>, Paul Mackerras <paulus@samba.org>, Ram Pai <linuxram@us.ibm.com>, Anshuman Khandual <khandual@linux.vnet.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
---===============7985561947462962202==
-Content-Type: multipart/alternative; boundary="000000000000b68c8d0574366cbc"
 
---000000000000b68c8d0574366cbc
-Content-Type: text/plain; charset="UTF-8"
+Hello Christoph,
 
-*resending this email without a link to the kernel source to avoid spam
-detection*
+Thanks for your quick review.
 
-The reason we want this change is so we can use iommu_group's to force our
-pcie devices to have the same IOMMU mappings. For legacy reasons we require
-a bunch of our pcie devices to have the same address translations.
+Christoph Hellwig <hch@lst.de> writes:
 
-We were going to do this by using the iommu-dma api and replacing all the
-existing calls to the DMA API functions in the amd driver with their
-iommu-dma equivalent like in the driver: /arch/arm64/mm/dma-mapping.c:810
-in kernel v4.18.5
-
-To do this we need the map/unmap callbacks to be spinlock-safe.
-
-On 24 August 2018 at 16:24, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-
-> On 24/08/18 15:53, Christoph Hellwig wrote:
->
->> On Fri, Aug 24, 2018 at 02:28:49PM +0000, murphyt7-/Zw1syy4LHg@public.gmane.org wrote:
+> On Thu, Aug 23, 2018 at 11:59:32PM -0300, Thiago Jung Bauermann wrote:
+>> From: Anshuman Khandual <khandual@linux.vnet.ibm.com>
 >>
->>> From: Tom Murphy <murphyt7-/Zw1syy4LHg@public.gmane.org>
->>>
->>> ---
->>>
->>> This patch allows the IOMMU API path in the AMD driver to be called from
->>> an atomic context.
->>> This is useful for anyone building a driver which needs to call the
->>> IOMMU API while holding a spinlock.
->>>
+>> SWIOTLB checks range of incoming CPU addresses to be bounced and see if the
+>> device can access it through it's DMA window without requiring bouncing. In
+>> such cases it just chooses to skip bouncing. But for cases like secure
+>> guests on powerpc platform all addresses need to be bounced into the shared
+>> pool of memory because the host cannot access it otherwise. Hence the need
+>> to do the bouncing is not related to device's DMA window. Hence force the
+>> use of bouncing by setting the swiotlb_force variable on secure guests.
 >>
->> I don't think that is a good idea.  Please point to the code in the
->> driver and we can't probably find a better solution.
+>> Signed-off-by: Anshuman Khandual <khandual@linux.vnet.ibm.com>
+>> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>> ---
+>>  arch/powerpc/kernel/svm.c | 1 +
+>>  1 file changed, 1 insertion(+)
 >>
+>> diff --git a/arch/powerpc/kernel/svm.c b/arch/powerpc/kernel/svm.c
+>> index 1af5caa955f5..f0576ad65cd0 100644
+>> --- a/arch/powerpc/kernel/svm.c
+>> +++ b/arch/powerpc/kernel/svm.c
+>> @@ -17,6 +17,7 @@ static int __init init_svm(void)
+>>  		return 0;
+>>
+>>  	ppc_swiotlb_enable = 1;
+>> +	swiotlb_force = SWIOTLB_FORCE;
+>>  	swiotlb_update_mem_attributes();
 >
-> Although IIRC the AMD driver is in fact the only one whose map/unmap
-> callbacks aren't already spinlock-safe (or at least it was last time I was
-> looking). Stuff like iommu-dma is already relying on this in order to
-> implement streaming DMA API calls (which may be in atomic context) on top
-> of the corresponding IOMMU API operations.
->
-> Robin.
->
+> This needs a comment.
 
---000000000000b68c8d0574366cbc
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Good point. Will add one.
 
-<div dir=3D"ltr">*resending this email without a link to the kernel source =
-to avoid spam detection*<br><br>The
- reason we want this change is so we can use iommu_group&#39;s to force our=
-=20
-pcie devices to have the same IOMMU mappings. For legacy reasons we=20
-require a bunch of our pcie devices to have the same address=20
-translations.<br><br>We were going to do this by using the iommu-dma api
- and replacing all the existing calls to the DMA API functions in the=20
-amd driver with their iommu-dma equivalent like in the driver:=20
-/arch/arm64/mm/dma-mapping.c:810 in kernel v4.18.5<br><br>To do this we nee=
-d the map/unmap callbacks to be spinlock-safe.<br></div><div class=3D"gmail=
-_extra"><br><div class=3D"gmail_quote">On 24 August 2018 at 16:24, Robin Mu=
-rphy <span dir=3D"ltr">&lt;<a href=3D"mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org" target=
-=3D"_blank">robin.murphy-5wv7dgnIgG8@public.gmane.org</a>&gt;</span> wrote:<br><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex"><div class=3D"HOEnZb"><div class=3D"h5">On 24/08/18 15:53, Ch=
-ristoph Hellwig wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-On Fri, Aug 24, 2018 at 02:28:49PM +0000, <a href=3D"mailto:murphyt7-/Zw1syy4LHg@public.gmane.org=
-" target=3D"_blank">murphyt7-/Zw1syy4LHg@public.gmane.org</a> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-From: Tom Murphy &lt;<a href=3D"mailto:murphyt7-/Zw1syy4LHg@public.gmane.org" target=3D"_blank">m=
-urphyt7-/Zw1syy4LHg@public.gmane.org</a>&gt;<br>
-<br>
----<br>
-<br>
-This patch allows the IOMMU API path in the AMD driver to be called from an=
- atomic context.<br>
-This is useful for anyone building a driver which needs to call the IOMMU A=
-PI while holding a spinlock.<br>
-</blockquote>
-<br>
-I don&#39;t think that is a good idea.=C2=A0 Please point to the code in th=
-e<br>
-driver and we can&#39;t probably find a better solution.<br>
-</blockquote>
-<br></div></div>
-Although IIRC the AMD driver is in fact the only one whose map/unmap callba=
-cks aren&#39;t already spinlock-safe (or at least it was last time I was lo=
-oking). Stuff like iommu-dma is already relying on this in order to impleme=
-nt streaming DMA API calls (which may be in atomic context) on top of the c=
-orresponding IOMMU API operations.<span class=3D"HOEnZb"><font color=3D"#88=
-8888"><br>
-<br>
-Robin.<br>
-</font></span></blockquote></div><br></div>
+If in the new scheme of things (with bus_dma_mask?) dma_capable() on a
+virtio device running in a secure guest returns false, then this patch
+becomes unnecessary and can be dropped.
 
---000000000000b68c8d0574366cbc--
-
---===============7985561947462962202==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7985561947462962202==--
+--
+Thiago Jung Bauermann
+IBM Linux Technology Center
