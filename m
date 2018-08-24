@@ -1,38 +1,39 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] Changing the AMD IOMMU API path to work in an atomic
- context which is necessary for any custom drivers using the IOMMU API while
- holding a spinlock.
-Date: Fri, 24 Aug 2018 16:24:49 +0100
-Message-ID: <24d3f04a-e6e2-ed8f-e2bd-b38144f33f26@arm.com>
-References: <1535120929-5693-1-git-send-email-murphyt7@tcd.ie>
- <20180824145328.GA7996@infradead.org>
+From: Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH v2 0/4] iommu/rockchip: Runtime PM fixes
+Date: Fri, 24 Aug 2018 08:50:59 -0700
+Message-ID: <20180824155059.qskwdxmc6ws3hwtv@localhost>
+References: <20180824150637.15316-1-marc.zyngier@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180824145328.GA7996@infradead.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20180824150637.15316-1-marc.zyngier@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>, murphyt7@tcd.ie
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, Jeffy Chen <jeffy.chen@rock-chips.com>, arm@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 24/08/18 15:53, Christoph Hellwig wrote:
-> On Fri, Aug 24, 2018 at 02:28:49PM +0000, murphyt7@tcd.ie wrote:
->> From: Tom Murphy <murphyt7@tcd.ie>
->>
->> ---
->>
->> This patch allows the IOMMU API path in the AMD driver to be called from an atomic context.
->> This is useful for anyone building a driver which needs to call the IOMMU API while holding a spinlock.
+On Fri, Aug 24, 2018 at 04:06:33PM +0100, Marc Zyngier wrote:
+> This small series addresses a couple of runtime PM issues I've spotted
+> while running 4.18 on a Chromebook Plus (kevin, rk3399) platform, and
+> specifically doing kexec.
 > 
-> I don't think that is a good idea.  Please point to the code in the
-> driver and we can't probably find a better solution.
+> In order to avoid making a complete mess of the IOMMU code, Heiko has
+> requested that all RK platforms would select CONFIG_PM, which
+> simplifies a lot of things. I've kept 32 and 64bit patches separate,
+> but feel free to squash them into on if that's more convenient.
+> 
+> Note that even with these patches, kexec is still fairly broken on
+> rk3399, as the VOP is never turned off (see [1] for a fix).
+> 
+> [1] https://www.spinics.net/lists/arm-kernel/msg670229.html
+> 
+> * From v1:
+>   - Collected RBs from Heiko
+>   - Added two patches forcing CONFIG_PM on all Rockchip platforms at
+>     Heiko's request, following the example set by Tegra platforms.
 
-Although IIRC the AMD driver is in fact the only one whose map/unmap 
-callbacks aren't already spinlock-safe (or at least it was last time I 
-was looking). Stuff like iommu-dma is already relying on this in order 
-to implement streaming DMA API calls (which may be in atomic context) on 
-top of the corresponding IOMMU API operations.
+Thanks, applied to our next/late branch which I plan to send in tomorrow.
 
-Robin.
+
+-Olof
