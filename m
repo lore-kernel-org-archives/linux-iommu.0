@@ -1,39 +1,131 @@
-From: Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH v2 0/4] iommu/rockchip: Runtime PM fixes
-Date: Fri, 24 Aug 2018 08:50:59 -0700
-Message-ID: <20180824155059.qskwdxmc6ws3hwtv@localhost>
-References: <20180824150637.15316-1-marc.zyngier@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Subject: [RFC PATCH 00/11] Secure Virtual Machine Enablement
+Date: Fri, 24 Aug 2018 13:25:24 -0300
+Message-ID: <20180824162535.22798-1-bauerman@linux.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180824150637.15316-1-marc.zyngier@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marc Zyngier <marc.zyngier@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, Jeffy Chen <jeffy.chen@rock-chips.com>, arm@kernel.org
+To: linuxppc-dev@lists.ozlabs.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>, Anshuman Khandual <anshuman.linux@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christoph Hellwig <hch@lst.de>, Michael Ellerman <mpe@ellerman.id.au>, Mike Anderson <andmike@linux.ibm.com>, Paul Mackerras <paulus@samba.org>, Ram Pai <linuxram@us.ibm.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 24, 2018 at 04:06:33PM +0100, Marc Zyngier wrote:
-> This small series addresses a couple of runtime PM issues I've spotted
-> while running 4.18 on a Chromebook Plus (kevin, rk3399) platform, and
-> specifically doing kexec.
-> 
-> In order to avoid making a complete mess of the IOMMU code, Heiko has
-> requested that all RK platforms would select CONFIG_PM, which
-> simplifies a lot of things. I've kept 32 and 64bit patches separate,
-> but feel free to squash them into on if that's more convenient.
-> 
-> Note that even with these patches, kexec is still fairly broken on
-> rk3399, as the VOP is never turned off (see [1] for a fix).
-> 
-> [1] https://www.spinics.net/lists/arm-kernel/msg670229.html
-> 
-> * From v1:
->   - Collected RBs from Heiko
->   - Added two patches forcing CONFIG_PM on all Rockchip platforms at
->     Heiko's request, following the example set by Tegra platforms.
+[ Some people didn't receive all the patches in this series, even though
+  the linuxppc-dev list did so trying to send again. This is exactly the
+  same series I posted yesterday. Sorry for the clutter. ]
 
-Thanks, applied to our next/late branch which I plan to send in tomorrow.
+This series contains preliminary work to enable Secure Virtual Machines
+(SVM) on powerpc. SVMs request to be migrated to secure memory very early in
+the boot process (in prom_init()), so by default all of their memory is
+inaccessible to the hypervisor. There is an ultravisor call that the VM can
+use to request certain pages to be made accessible (aka shared).
 
+The objective of these patches is to have the guest perform this request for
+buffers that need to be shared with the hypervisor, such as the LPPACAs, the
+SWIOTLB buffer and the Debug Trace Log. This work is incomplete: there are
+surely other memory regions that need to be made accessible, but I'm posting
+it early to get comments on whether the approach being taken is appropriate.
 
--Olof
+It should be applied on top of the generic virtio DMA API rework series
+posted earlier, which adds a platform hook to override any arch based DMA
+API operations for any virtio device:
+
+https://lists.ozlabs.org/pipermail/linuxppc-dev/2018-July/175994.html
+
+I'm aware that changes need to be made to the patch series above, but IIUC
+it depends on upcoming virtio cleanup from Christoph Hellwig so for now the
+patch series above will be used as a stepping stone for this series.
+
+This code has been tested with virtio block, net and scsi devices with and
+without VIRTIO_F_IOMMU_PLATFORM flag. Please let me know what you think.
+
+For now I am testing on a regular guest with a couple of patches on top
+forcing is_svm_platform() to always return true and adding debug messages to
+confirm that mem_convert_shared() is being called in the expected places.
+
+These are the commands I'm using to start up the guest:
+
+Without VIRTIO_F_IOMMU_PLATFORM:
+
+qemu-system-ppc64 \
+  -enable-kvm \
+  -kernel /home/bauermann/src/linux/arch/powerpc/boot/zImage \
+  -append "root=PARTUUID=e550ad6f-05 ro" \
+  -machine pseries-2.6 \
+  -m 8G \
+  -smp 2 \
+  -serial mon:stdio \
+  -nographic \
+  -nodefaults \
+  -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x4 \
+  -drive file=/home/bauermann/VMs/svm.qcow2,format=qcow2,if=none,id=drive-scsi0-0-0-0 \
+  -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0 \
+  -drive file=/home/bauermann/VMs/svm-blk.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 \
+  -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,id=virtio-disk0 \
+  -device virtio-net,netdev=hostnet0,id=net0,mac=52:54:00:96:70:1f \
+  -netdev user,id=hostnet0 \
+  -set netdev.hostnet0.hostfwd=tcp::42022-:22
+
+With VIRTIO_F_IOMMU_PLATFORM. Same as above plus some -global options so
+that the virtio devices use the modern interface rather than the
+transitional one:
+
+qemu-system-ppc64 \
+  -enable-kvm \
+  -kernel /home/bauermann/src/linux/arch/powerpc/boot/zImage \
+  -append "root=PARTUUID=e550ad6f-05 ro" \
+  -machine pseries-2.6 \
+  -m 8G \
+  -smp 2 \
+  -serial mon:stdio \
+  -nographic \
+  -nodefaults \
+  -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x4 \
+  -drive file=/home/bauermann/VMs/svm.qcow2,format=qcow2,if=none,id=drive-scsi0-0-0-0 \
+  -device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0 \
+  -drive file=/home/bauermann/VMs/svm-blk.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 \
+  -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x5,drive=drive-virtio-disk0,id=virtio-disk0 \
+  -device virtio-net,netdev=hostnet0,id=net0,mac=52:54:00:96:70:1f \
+  -netdev user,id=hostnet0 \
+  -set netdev.hostnet0.hostfwd=tcp::42022-:22 \
+  -global virtio-blk-pci.iommu_platform=true \
+  -global virtio-blk-pci.disable-legacy=on \
+  -global virtio-blk-pci.disable-modern=off \
+  -global virtio-net-pci.iommu_platform=true \
+  -global virtio-net-pci.disable-legacy=on \
+  -global virtio-net-pci.disable-modern=off \
+  -global virtio-scsi-pci.iommu_platform=true \
+  -global virtio-scsi-pci.disable-legacy=on \
+  -global virtio-scsi-pci.disable-modern=off
+
+The code was tested with a couple of other permutations where one virtio
+device has the flag VIRTIO_F_IOMMU_PLATFORM and others don't. Please suggest
+some other scenarios which need to be tested as well.
+
+Anshuman Khandual (10):
+  powerpc/svm: Detect Secure Virtual Machine (SVM) platform
+  powerpc/svm: Select CONFIG_DMA_DIRECT_OPS and CONFIG_SWIOTLB
+  powerpc/svm: Add memory conversion (shared/secure) helper functions
+  powerpc/svm: Convert SWIOTLB buffers to shared memory
+  powerpc/svm: Don't release SWIOTLB buffers on secure guests
+  powerpc/svm: Use SWIOTLB DMA API for all virtio devices
+  powerpc/svm: Use shared memory for Debug Trace Log (DTL)
+  powerpc/svm: Use shared memory for LPPACA structures
+  powerpc/svm: Force the use of bounce buffers
+  powerpc/svm: Increase SWIOTLB buffer size
+
+Thiago Jung Bauermann (1):
+  powerpc: Add and use LPPACA_SIZE constant
+
+ arch/powerpc/Kconfig                   | 22 ++++++++
+ arch/powerpc/include/asm/mem_encrypt.h | 19 +++++++
+ arch/powerpc/include/asm/reg.h         |  3 ++
+ arch/powerpc/include/asm/svm.h         | 26 +++++++++
+ arch/powerpc/kernel/Makefile           |  1 +
+ arch/powerpc/kernel/paca.c             | 41 ++++++++++++--
+ arch/powerpc/kernel/svm.c              | 99 ++++++++++++++++++++++++++++++++++
+ arch/powerpc/platforms/pseries/iommu.c |  6 ++-
+ arch/powerpc/platforms/pseries/setup.c |  5 +-
+ kernel/dma/swiotlb.c                   |  5 ++
+ 10 files changed, 221 insertions(+), 6 deletions(-)
+ create mode 100644 arch/powerpc/include/asm/mem_encrypt.h
+ create mode 100644 arch/powerpc/include/asm/svm.h
+ create mode 100644 arch/powerpc/kernel/svm.c
