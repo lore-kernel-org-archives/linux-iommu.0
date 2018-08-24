@@ -1,100 +1,59 @@
 From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: [RFC PATCH 07/11] powerpc/svm: Use shared memory for Debug Trace Log (DTL)
-Date: Fri, 24 Aug 2018 13:25:31 -0300
-Message-ID: <20180824162535.22798-8-bauerman@linux.ibm.com>
+Subject: [RFC PATCH 08/11] powerpc: Add and use LPPACA_SIZE constant
+Date: Fri, 24 Aug 2018 13:25:32 -0300
+Message-ID: <20180824162535.22798-9-bauerman@linux.ibm.com>
 References: <20180824162535.22798-1-bauerman@linux.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180824162535.22798-1-bauerman@linux.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: linuxppc-dev@lists.ozlabs.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>, Anshuman Khandual <anshuman.linux@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christoph Hellwig <hch@lst.de>, Michael Ellerman <mpe@ellerman.id.au>, Mike Anderson <andmike@linux.ibm.com>, Paul Mackerras <paulus@samba.org>, Ram Pai <linuxram@us.ibm.com>, Anshuman Khandual <khandual@linux.vnet.ibm.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>, Anshuman Khandual <anshuman.linux@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christoph Hellwig <hch@lst.de>, Michael Ellerman <mpe@ellerman.id.au>, Mike Anderson <andmike@linux.ibm.com>, Paul Mackerras <paulus@samba.org>, Ram Pai <linuxram@us.ibm.com>, Thiago Jung Bauermann <bauerman@linux.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Anshuman Khandual <khandual@linux.vnet.ibm.com>
+Helps document what the hard-coded number means.
 
-On Ultravisor platform kmem_cache for DTL buffers must use a constructor
-function which converts the underlying buddy allocated SLUB cache pages
-into shared memory so that they are accessible to the hypervisor.
-
-Signed-off-by: Anshuman Khandual <khandual@linux.vnet.ibm.com>
+Suggested-by: Alexey Kardashevskiy <aik@linux.ibm.com>
 Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 ---
- arch/powerpc/include/asm/svm.h         |  1 +
- arch/powerpc/kernel/svm.c              | 30 ++++++++++++++++++++++++++++++
- arch/powerpc/platforms/pseries/setup.c |  5 ++++-
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ arch/powerpc/kernel/paca.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/svm.h b/arch/powerpc/include/asm/svm.h
-index 95d69e472e52..e00688761704 100644
---- a/arch/powerpc/include/asm/svm.h
-+++ b/arch/powerpc/include/asm/svm.h
-@@ -16,6 +16,7 @@ static bool is_svm_platform(void)
+diff --git a/arch/powerpc/kernel/paca.c b/arch/powerpc/kernel/paca.c
+index 0ee3e6d50f28..1edf8695019d 100644
+--- a/arch/powerpc/kernel/paca.c
++++ b/arch/powerpc/kernel/paca.c
+@@ -24,6 +24,8 @@
+ #define boot_cpuid 0
+ #endif
  
- extern void mem_convert_shared(unsigned long pfn, unsigned long npages);
- extern void mem_convert_secure(unsigned long pfn, unsigned long npages);
-+extern void dtl_cache_ctor(void *addr);
- #else
- static inline bool is_svm_platform(void)
++#define LPPACA_SIZE 0x400
++
+ static void *__init alloc_paca_data(unsigned long size, unsigned long align,
+ 				unsigned long limit, int cpu)
  {
-diff --git a/arch/powerpc/kernel/svm.c b/arch/powerpc/kernel/svm.c
-index 891db2de8c04..1af5caa955f5 100644
---- a/arch/powerpc/kernel/svm.c
-+++ b/arch/powerpc/kernel/svm.c
-@@ -66,3 +66,33 @@ int set_memory_decrypted(unsigned long addr, int numpages)
+@@ -70,7 +72,7 @@ static inline void init_lppaca(struct lppaca *lppaca)
  
- 	return 0;
- }
-+
-+/* There's one dispatch log per CPU. */
-+#define NR_DTL_PAGE (DISPATCH_LOG_BYTES * CONFIG_NR_CPUS / PAGE_SIZE)
-+
-+static struct page *dtl_page_store[NR_DTL_PAGE];
-+static long dtl_nr_pages;
-+
-+static bool is_dtl_page_shared(struct page *page)
-+{
-+	long i;
-+
-+	for (i = 0; i < dtl_nr_pages; i++)
-+		if (dtl_page_store[i] == page)
-+			return true;
-+
-+	return false;
-+}
-+
-+void dtl_cache_ctor(void *addr)
-+{
-+	unsigned long pfn = PHYS_PFN(__pa(addr));
-+	struct page *page = pfn_to_page(pfn);
-+
-+	if (!is_dtl_page_shared(page)) {
-+		dtl_page_store[dtl_nr_pages] = page;
-+		dtl_nr_pages++;
-+		WARN_ON(dtl_nr_pages >= NR_DTL_PAGE);
-+		mem_convert_shared(pfn, PAGE_SIZE);
-+	}
-+}
-diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
-index 139f0af6c3d9..50ba77c802d2 100644
---- a/arch/powerpc/platforms/pseries/setup.c
-+++ b/arch/powerpc/platforms/pseries/setup.c
-@@ -69,6 +69,7 @@
- #include <asm/kexec.h>
- #include <asm/isa-bridge.h>
- #include <asm/security_features.h>
-+#include <asm/svm.h>
- 
- #include "pseries.h"
- 
-@@ -288,8 +289,10 @@ static inline int alloc_dispatch_logs(void)
- 
- static int alloc_dispatch_log_kmem_cache(void)
+ 	*lppaca = (struct lppaca) {
+ 		.desc = cpu_to_be32(0xd397d781),	/* "LpPa" */
+-		.size = cpu_to_be16(0x400),
++		.size = cpu_to_be16(LPPACA_SIZE),
+ 		.fpregs_in_use = 1,
+ 		.slb_count = cpu_to_be16(64),
+ 		.vmxregs_in_use = 0,
+@@ -80,14 +82,13 @@ static inline void init_lppaca(struct lppaca *lppaca)
+ static struct lppaca * __init new_lppaca(int cpu, unsigned long limit)
  {
-+	void (*ctor)(void *) = is_svm_platform() ? dtl_cache_ctor : NULL;
-+
- 	dtl_cache = kmem_cache_create("dtl", DISPATCH_LOG_BYTES,
--						DISPATCH_LOG_BYTES, 0, NULL);
-+						DISPATCH_LOG_BYTES, 0, ctor);
- 	if (!dtl_cache) {
- 		pr_warn("Failed to create dispatch trace log buffer cache\n");
- 		pr_warn("Stolen time statistics will be unreliable\n");
+ 	struct lppaca *lp;
+-	size_t size = 0x400;
+ 
+-	BUILD_BUG_ON(size < sizeof(struct lppaca));
++	BUILD_BUG_ON(LPPACA_SIZE < sizeof(struct lppaca));
+ 
+ 	if (early_cpu_has_feature(CPU_FTR_HVMODE))
+ 		return NULL;
+ 
+-	lp = alloc_paca_data(size, 0x400, limit, cpu);
++	lp = alloc_paca_data(LPPACA_SIZE, 0x400, limit, cpu);
+ 	init_lppaca(lp);
+ 
+ 	return lp;
