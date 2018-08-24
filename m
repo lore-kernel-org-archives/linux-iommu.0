@@ -1,14 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH 2/2] kernel/dma/direct: refine dma_direct_alloc zone
 	selection
-Date: Fri, 24 Aug 2018 12:38:01 +0100
-Message-ID: <bfba5bae-a88c-f777-ba1f-f0db310904dc@arm.com>
+Date: Fri, 24 Aug 2018 12:49:45 +0100
+Message-ID: <8f6707d4-6158-e608-53aa-3e29ee64ac40@arm.com>
 References: <20180824065324.654-1-hch@lst.de> <20180824065324.654-3-hch@lst.de>
+	<bfba5bae-a88c-f777-ba1f-f0db310904dc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180824065324.654-3-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <bfba5bae-a88c-f777-ba1f-f0db310904dc-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,73 +24,51 @@ To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFL
 Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 24/08/18 07:53, Christoph Hellwig wrote:
-> We need to take the DMA offset and encryption bit into account when selecting
-> a zone.  Add a helper that takes those into account and use it.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->   kernel/dma/direct.c | 16 ++++++++++++----
->   1 file changed, 12 insertions(+), 4 deletions(-)
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index de87b0282e74..3f8b596ea393 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -58,6 +58,14 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->   	return addr + size - 1 <= dev->coherent_dma_mask;
->   }
->   
-> +static bool dma_coherent_below(struct device *dev, u64 mask)
-> +{
-> +	dma_addr_t addr = force_dma_unencrypted() ?
-> +		__phys_to_dma(dev, mask) : phys_to_dma(dev, mask);
-> +
-> +	return dev->coherent_dma_mask <= addr;
-> +}
-> +
->   void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   		gfp_t gfp, unsigned long attrs)
->   {
-> @@ -70,9 +78,9 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   	gfp &= ~__GFP_ZERO;
->   
->   	/* GFP_DMA32 and GFP_DMA are no ops without the corresponding zones: */
-> -	if (dev->coherent_dma_mask <= DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
-> +	if (dma_coherent_below(dev, DMA_BIT_MASK(ARCH_ZONE_DMA_BITS)))
->   		gfp |= GFP_DMA;
-> -	if (dev->coherent_dma_mask <= DMA_BIT_MASK(32) && !(gfp & GFP_DMA))
-> +	if (dma_coherent_below(dev, DMA_BIT_MASK(32) && !(gfp & GFP_DMA)))
->   		gfp |= GFP_DMA32;
->   
->   again:
-> @@ -93,14 +101,14 @@ void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   		page = NULL;
->   
->   		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
-> -		    dev->coherent_dma_mask < DMA_BIT_MASK(64) &&
-
-We're effectively changing the "<" into a "<="...
-
-> +		    dma_coherent_below(dev, DMA_BIT_MASK(64)) &&
-
-...which I think means this check now *always* returns true...
-
->   		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
->   			gfp |= GFP_DMA32;
->   			goto again;
->   		}
->   
->   		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
-> -		    dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
-> +		    dma_coherent_below(dev, DMA_BIT_MASK(32)) &&
-
-...and this one subtly changes WRT ZONE_DMA32, but I can't quite figure 
-out how much that matters :/
-
-Robin.
-
->   		    !(gfp & GFP_DMA)) {
->   			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
->   			goto again;
-> 
+T24gMjQvMDgvMTggMTI6MzgsIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAyNC8wOC8xOCAwNzo1
+MywgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4+IFdlIG5lZWQgdG8gdGFrZSB0aGUgRE1BIG9m
+ZnNldCBhbmQgZW5jcnlwdGlvbiBiaXQgaW50byBhY2NvdW50IHdoZW4gCj4+IHNlbGVjdGluZwo+
+PiBhIHpvbmUuwqAgQWRkIGEgaGVscGVyIHRoYXQgdGFrZXMgdGhvc2UgaW50byBhY2NvdW50IGFu
+ZCB1c2UgaXQuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0
+LmRlPgo+PiAtLS0KPj4gwqAga2VybmVsL2RtYS9kaXJlY3QuYyB8IDE2ICsrKysrKysrKysrKy0t
+LS0KPj4gwqAgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0p
+Cj4+Cj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvZG1hL2RpcmVjdC5jIGIva2VybmVsL2RtYS9kaXJl
+Y3QuYwo+PiBpbmRleCBkZTg3YjAyODJlNzQuLjNmOGI1OTZlYTM5MyAxMDA2NDQKPj4gLS0tIGEv
+a2VybmVsL2RtYS9kaXJlY3QuYwo+PiArKysgYi9rZXJuZWwvZG1hL2RpcmVjdC5jCj4+IEBAIC01
+OCw2ICs1OCwxNCBAQCBzdGF0aWMgYm9vbCBkbWFfY29oZXJlbnRfb2soc3RydWN0IGRldmljZSAq
+ZGV2LCAKPj4gcGh5c19hZGRyX3QgcGh5cywgc2l6ZV90IHNpemUpCj4+IMKgwqDCoMKgwqAgcmV0
+dXJuIGFkZHIgKyBzaXplIC0gMSA8PSBkZXYtPmNvaGVyZW50X2RtYV9tYXNrOwo+PiDCoCB9Cj4+
+ICtzdGF0aWMgYm9vbCBkbWFfY29oZXJlbnRfYmVsb3coc3RydWN0IGRldmljZSAqZGV2LCB1NjQg
+bWFzaykKPj4gK3sKPj4gK8KgwqDCoCBkbWFfYWRkcl90IGFkZHIgPSBmb3JjZV9kbWFfdW5lbmNy
+eXB0ZWQoKSA/Cj4+ICvCoMKgwqDCoMKgwqDCoCBfX3BoeXNfdG9fZG1hKGRldiwgbWFzaykgOiBw
+aHlzX3RvX2RtYShkZXYsIG1hc2spOwo+PiArCj4+ICvCoMKgwqAgcmV0dXJuIGRldi0+Y29oZXJl
+bnRfZG1hX21hc2sgPD0gYWRkcjsKPj4gK30KPj4gKwo+PiDCoCB2b2lkICpkbWFfZGlyZWN0X2Fs
+bG9jKHN0cnVjdCBkZXZpY2UgKmRldiwgc2l6ZV90IHNpemUsIGRtYV9hZGRyX3QgCj4+ICpkbWFf
+aGFuZGxlLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgZ2ZwX3QgZ2ZwLCB1bnNpZ25lZCBsb25nIGF0
+dHJzKQo+PiDCoCB7Cj4+IEBAIC03MCw5ICs3OCw5IEBAIHZvaWQgKmRtYV9kaXJlY3RfYWxsb2Mo
+c3RydWN0IGRldmljZSAqZGV2LCBzaXplX3QgCj4+IHNpemUsIGRtYV9hZGRyX3QgKmRtYV9oYW5k
+bGUsCj4+IMKgwqDCoMKgwqAgZ2ZwICY9IH5fX0dGUF9aRVJPOwo+PiDCoMKgwqDCoMKgIC8qIEdG
+UF9ETUEzMiBhbmQgR0ZQX0RNQSBhcmUgbm8gb3BzIHdpdGhvdXQgdGhlIGNvcnJlc3BvbmRpbmcg
+Cj4+IHpvbmVzOiAqLwo+PiAtwqDCoMKgIGlmIChkZXYtPmNvaGVyZW50X2RtYV9tYXNrIDw9IERN
+QV9CSVRfTUFTSyhBUkNIX1pPTkVfRE1BX0JJVFMpKQo+PiArwqDCoMKgIGlmIChkbWFfY29oZXJl
+bnRfYmVsb3coZGV2LCBETUFfQklUX01BU0soQVJDSF9aT05FX0RNQV9CSVRTKSkpCj4+IMKgwqDC
+oMKgwqDCoMKgwqDCoCBnZnAgfD0gR0ZQX0RNQTsKPj4gLcKgwqDCoCBpZiAoZGV2LT5jb2hlcmVu
+dF9kbWFfbWFzayA8PSBETUFfQklUX01BU0soMzIpICYmICEoZ2ZwICYgR0ZQX0RNQSkpCj4+ICvC
+oMKgwqAgaWYgKGRtYV9jb2hlcmVudF9iZWxvdyhkZXYsIERNQV9CSVRfTUFTSygzMikgJiYgIShn
+ZnAgJiBHRlBfRE1BKSkpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnZnAgfD0gR0ZQX0RNQTMyOwo+
+PiDCoCBhZ2FpbjoKPj4gQEAgLTkzLDE0ICsxMDEsMTQgQEAgdm9pZCAqZG1hX2RpcmVjdF9hbGxv
+YyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHNpemVfdCAKPj4gc2l6ZSwgZG1hX2FkZHJfdCAqZG1hX2hh
+bmRsZSwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHBhZ2UgPSBOVUxMOwo+PiDCoMKgwqDCoMKgwqDC
+oMKgwqAgaWYgKElTX0VOQUJMRUQoQ09ORklHX1pPTkVfRE1BMzIpICYmCj4+IC3CoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIGRldi0+Y29oZXJlbnRfZG1hX21hc2sgPCBETUFfQklUX01BU0soNjQpICYm
+Cj4gCj4gV2UncmUgZWZmZWN0aXZlbHkgY2hhbmdpbmcgdGhlICI8IiBpbnRvIGEgIjw9Ii4uLgo+
+IAo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkbWFfY29oZXJlbnRfYmVsb3coZGV2LCBETUFf
+QklUX01BU0soNjQpKSAmJgo+IAo+IC4uLndoaWNoIEkgdGhpbmsgbWVhbnMgdGhpcyBjaGVjayBu
+b3cgKmFsd2F5cyogcmV0dXJucyB0cnVlLi4uCgpBbHRob3VnaCBvbiBjbG9zZXIgaW5zcGVjdGlv
+biB0aGF0IHdhcyBlZmZlY3RpdmVseSBhbHJlYWR5IHRoZSBjYXNlIC0gd2UgCmNvdWxkIG5ldmVy
+IGdldCBoZXJlIGlmIGRldi0+Y29oZXJlbnRfZG1hX21hc2sgPT0gRE1BX0JJVF9NQVNLKDY0KSwg
+CmJlY2F1c2UgZG1hX2NvaGVyZW50X29rKCkgY291bGRuJ3QgcG9zc2libHkgaGF2ZSByZXR1cm5l
+ZCBmYWxzZSBpbiB0aGUgCmZpcnN0IHBsYWNlLiBTbyB0aGlzIG9uZSB3YXMgYWx3YXlzIHVubmVj
+ZXNzYXJ5LgoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
