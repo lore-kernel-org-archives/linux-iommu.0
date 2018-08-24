@@ -1,93 +1,51 @@
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [RFC PATCH 11/11] powerpc/svm: Increase SWIOTLB buffer size
-Date: Fri, 24 Aug 2018 10:16:46 -0700
-Message-ID: <45561478-ee75-ee62-52d6-a96d60132669@infradead.org>
-References: <20180824162535.22798-1-bauerman@linux.ibm.com>
- <20180824162535.22798-12-bauerman@linux.ibm.com>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v2 0/4] iommu/rockchip: Runtime PM fixes
+Date: Fri, 24 Aug 2018 20:08:22 +0200
+Message-ID: <13492452.cxnNOAAFxb@phil>
+References: <20180824150637.15316-1-marc.zyngier@arm.com>
+	<20180824155059.qskwdxmc6ws3hwtv@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180824162535.22798-12-bauerman@linux.ibm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thiago Jung Bauermann <bauerman@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>, Anshuman Khandual <anshuman.linux@gmail.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christoph Hellwig <hch@lst.de>, Michael Ellerman <mpe@ellerman.id.au>, Mike Anderson <andmike@linux.ibm.com>, Paul Mackerras <paulus@samba.org>, Ram Pai <linuxram@us.ibm.com>, Anshuman Khandual <khandual@linux.vnet.ibm.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180824155059.qskwdxmc6ws3hwtv@localhost>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Olof Johansson <olof-nZhT3qVonbNeoWH0uzbU5w@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/24/2018 09:25 AM, Thiago Jung Bauermann wrote:
-> From: Anshuman Khandual <khandual@linux.vnet.ibm.com>
+Am Freitag, 24. August 2018, 17:50:59 CEST schrieb Olof Johansson:
+> On Fri, Aug 24, 2018 at 04:06:33PM +0100, Marc Zyngier wrote:
+> > This small series addresses a couple of runtime PM issues I've spotted
+> > while running 4.18 on a Chromebook Plus (kevin, rk3399) platform, and
+> > specifically doing kexec.
+> > 
+> > In order to avoid making a complete mess of the IOMMU code, Heiko has
+> > requested that all RK platforms would select CONFIG_PM, which
+> > simplifies a lot of things. I've kept 32 and 64bit patches separate,
+> > but feel free to squash them into on if that's more convenient.
+> > 
+> > Note that even with these patches, kexec is still fairly broken on
+> > rk3399, as the VOP is never turned off (see [1] for a fix).
+> > 
+> > [1] https://www.spinics.net/lists/arm-kernel/msg670229.html
+> > 
+> > * From v1:
+> >   - Collected RBs from Heiko
+> >   - Added two patches forcing CONFIG_PM on all Rockchip platforms at
+> >     Heiko's request, following the example set by Tegra platforms.
 > 
-> SWIOTLB buffer default size (64MB) is not enough for large sequential write
-> operations which eventually leads to kernel crash like here.
-> 
-> virtio-pci 0000:00:05.0: swiotlb buffer is full (sz: 327680 bytes)
-> virtio-pci 0000:00:05.0: DMA: Out of SW-IOMMU space for 327680 bytes
-> Kernel panic - not syncing: DMA: Random memory could be DMA read
-> CPU: 12 PID: 3985 Comm: mkfs.ext4 Not tainted 4.18.0-rc4+ #285
-> Call Trace:
-> [c0000007d2a27020] [c000000000cfdffc] dump_stack+0xb0/0xf4 (unreliable)
-> [c0000007d2a27060] [c000000000112a98] panic+0x140/0x328
-> [c0000007d2a270f0] [c0000000001b4f88] swiotlb_full+0x108/0x130
-> [c0000007d2a27180] [c0000000001b5f6c] swiotlb_map_page+0x25c/0x2c0
-> [c0000007d2a271e0] [c0000000007bfaf8] vring_map_one_sg.isra.0+0x58/0x70
-> [c0000007d2a27200] [c0000000007c08dc] virtqueue_add_sgs+0x1bc/0x690
-> [c0000007d2a272f0] [d0000000042a1280] virtio_queue_rq+0x358/0x4a0 [virtio_blk]
-> [c0000007d2a273d0] [c0000000006b5d68] blk_mq_dispatch_rq_list+0x1f8/0x6d0
-> ..................
-> 
-> Increase the SWIOTLB size to 1GB on Ultravisor based secure guests.
-> 
-> Signed-off-by: Anshuman Khandual <khandual@linux.vnet.ibm.com>
-> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-> ---
->  arch/powerpc/Kconfig | 5 +++++
->  kernel/dma/swiotlb.c | 5 +++++
->  2 files changed, 10 insertions(+)
-> 
-> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-> index 1466d1234723..fee7194ce9e4 100644
-> --- a/arch/powerpc/Kconfig
-> +++ b/arch/powerpc/Kconfig
-> @@ -457,6 +457,11 @@ config PPC_SVM
->  
->  	 If unsure, say "N".
->  
-> +config SWIOTLB_DEFAULT_SIZE
-> +       int "Size of Software I/O TLB buffer (in MiB)"
-> +       default "1024"
+> Thanks, applied to our next/late branch which I plan to send in tomorrow.
 
-I would add a "range" to limit (restrict) how small or large that can be.  E.g.:
+that was a quick turn around :-) .
+Thanks for picking the series.
 
-	range 16 102400
-
-or even smaller for the maximum value...
-
-> +       depends on PPC_SVM
-> +
->  config PPC_TRANSACTIONAL_MEM
->         bool "Transactional Memory support for POWERPC"
->         depends on PPC_BOOK3S_64
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 04b68d9dffac..32dc67422d8a 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -146,8 +146,13 @@ void swiotlb_set_max_segment(unsigned int val)
->  		max_segment = rounddown(val, PAGE_SIZE);
->  }
->  
-> +#ifdef CONFIG_SWIOTLB_DEFAULT_SIZE
-> +#define IO_TLB_DEFAULT_SIZE ((unsigned long) CONFIG_SWIOTLB_DEFAULT_SIZE << 20)
-> +#else
->  /* default to 64MB */
->  #define IO_TLB_DEFAULT_SIZE (64UL<<20)
-> +#endif
-> +
->  unsigned long swiotlb_size_or_default(void)
->  {
->  	unsigned long size;
-> 
-
-
--- 
-~Randy
+Heiko
