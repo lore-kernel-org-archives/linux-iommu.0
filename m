@@ -1,7 +1,7 @@
 From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: [RFC PATCH 10/11] powerpc/svm: Force the use of bounce buffers
-Date: Fri, 24 Aug 2018 13:25:34 -0300
-Message-ID: <20180824162535.22798-11-bauerman@linux.ibm.com>
+Subject: [RFC PATCH 11/11] powerpc/svm: Increase SWIOTLB buffer size
+Date: Fri, 24 Aug 2018 13:25:35 -0300
+Message-ID: <20180824162535.22798-12-bauerman@linux.ibm.com>
 References: <20180824162535.22798-1-bauerman@linux.ibm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180824162535.22798-1-bauerman@linux.ibm.com>
@@ -12,29 +12,64 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Anshuman Khandual <khandual@linux.vnet.ibm.com>
 
-SWIOTLB checks range of incoming CPU addresses to be bounced and see if the
-device can access it through it's DMA window without requiring bouncing. In
-such cases it just chooses to skip bouncing. But for cases like secure
-guests on powerpc platform all addresses need to be bounced into the shared
-pool of memory because the host cannot access it otherwise. Hence the need
-to do the bouncing is not related to device's DMA window. Hence force the
-use of bouncing by setting the swiotlb_force variable on secure guests.
+SWIOTLB buffer default size (64MB) is not enough for large sequential write
+operations which eventually leads to kernel crash like here.
+
+virtio-pci 0000:00:05.0: swiotlb buffer is full (sz: 327680 bytes)
+virtio-pci 0000:00:05.0: DMA: Out of SW-IOMMU space for 327680 bytes
+Kernel panic - not syncing: DMA: Random memory could be DMA read
+CPU: 12 PID: 3985 Comm: mkfs.ext4 Not tainted 4.18.0-rc4+ #285
+Call Trace:
+[c0000007d2a27020] [c000000000cfdffc] dump_stack+0xb0/0xf4 (unreliable)
+[c0000007d2a27060] [c000000000112a98] panic+0x140/0x328
+[c0000007d2a270f0] [c0000000001b4f88] swiotlb_full+0x108/0x130
+[c0000007d2a27180] [c0000000001b5f6c] swiotlb_map_page+0x25c/0x2c0
+[c0000007d2a271e0] [c0000000007bfaf8] vring_map_one_sg.isra.0+0x58/0x70
+[c0000007d2a27200] [c0000000007c08dc] virtqueue_add_sgs+0x1bc/0x690
+[c0000007d2a272f0] [d0000000042a1280] virtio_queue_rq+0x358/0x4a0 [virtio_blk]
+[c0000007d2a273d0] [c0000000006b5d68] blk_mq_dispatch_rq_list+0x1f8/0x6d0
+..................
+
+Increase the SWIOTLB size to 1GB on Ultravisor based secure guests.
 
 Signed-off-by: Anshuman Khandual <khandual@linux.vnet.ibm.com>
 Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
 ---
- arch/powerpc/kernel/svm.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/Kconfig | 5 +++++
+ kernel/dma/swiotlb.c | 5 +++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/arch/powerpc/kernel/svm.c b/arch/powerpc/kernel/svm.c
-index 1af5caa955f5..f0576ad65cd0 100644
---- a/arch/powerpc/kernel/svm.c
-+++ b/arch/powerpc/kernel/svm.c
-@@ -17,6 +17,7 @@ static int __init init_svm(void)
- 		return 0;
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 1466d1234723..fee7194ce9e4 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -457,6 +457,11 @@ config PPC_SVM
  
- 	ppc_swiotlb_enable = 1;
-+	swiotlb_force = SWIOTLB_FORCE;
- 	swiotlb_update_mem_attributes();
+ 	 If unsure, say "N".
  
- 	return 0;
++config SWIOTLB_DEFAULT_SIZE
++       int "Size of Software I/O TLB buffer (in MiB)"
++       default "1024"
++       depends on PPC_SVM
++
+ config PPC_TRANSACTIONAL_MEM
+        bool "Transactional Memory support for POWERPC"
+        depends on PPC_BOOK3S_64
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 04b68d9dffac..32dc67422d8a 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -146,8 +146,13 @@ void swiotlb_set_max_segment(unsigned int val)
+ 		max_segment = rounddown(val, PAGE_SIZE);
+ }
+ 
++#ifdef CONFIG_SWIOTLB_DEFAULT_SIZE
++#define IO_TLB_DEFAULT_SIZE ((unsigned long) CONFIG_SWIOTLB_DEFAULT_SIZE << 20)
++#else
+ /* default to 64MB */
+ #define IO_TLB_DEFAULT_SIZE (64UL<<20)
++#endif
++
+ unsigned long swiotlb_size_or_default(void)
+ {
+ 	unsigned long size;
