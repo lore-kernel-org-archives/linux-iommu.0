@@ -1,7 +1,7 @@
 From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: [PATCH v2 1/4] ARM: rockchip: Force CONFIG_PM on Rockchip systems
-Date: Fri, 24 Aug 2018 16:06:34 +0100
-Message-ID: <20180824150637.15316-2-marc.zyngier@arm.com>
+Subject: [PATCH v2 2/4] arm64: rockchip: Force CONFIG_PM on Rockchip systems
+Date: Fri, 24 Aug 2018 16:06:35 +0100
+Message-ID: <20180824150637.15316-3-marc.zyngier@arm.com>
 References: <20180824150637.15316-1-marc.zyngier@arm.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20180824150637.15316-1-marc.zyngier@arm.com>
@@ -20,20 +20,20 @@ does).
 
 Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
 ---
- arch/arm/mach-rockchip/Kconfig | 1 +
+ arch/arm64/Kconfig.platforms | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/mach-rockchip/Kconfig b/arch/arm/mach-rockchip/Kconfig
-index fafd3d7f9f8c..8ca926522026 100644
---- a/arch/arm/mach-rockchip/Kconfig
-+++ b/arch/arm/mach-rockchip/Kconfig
-@@ -17,6 +17,7 @@ config ARCH_ROCKCHIP
- 	select ARM_GLOBAL_TIMER
- 	select CLKSRC_ARM_GLOBAL_TIMER_SCHED_CLOCK
- 	select ZONE_DMA if ARM_LPAE
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index d5aeac351fc3..21a715ad8222 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -151,6 +151,7 @@ config ARCH_ROCKCHIP
+ 	select GPIOLIB
+ 	select PINCTRL
+ 	select PINCTRL_ROCKCHIP
 +	select PM
+ 	select ROCKCHIP_TIMER
  	help
- 	  Support for Rockchip's Cortex-A9 Single-to-Quad-Core-SoCs
- 	  containing the RK2928, RK30xx and RK31xx series.
+ 	  This enables support for the ARMv8 based Rockchip chipsets,
 -- 
 2.18.0
