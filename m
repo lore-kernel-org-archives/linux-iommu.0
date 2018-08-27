@@ -1,125 +1,160 @@
-From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
-Date: Mon, 27 Aug 2018 16:06:54 +0800
-Message-ID: <5B83B11E.7010807@huawei.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH v5 3/5] iommu/io-pgtable-arm: add support for non-strict
+ mode
+Date: Mon, 27 Aug 2018 16:21:44 +0800
+Message-ID: <5B83B498.1020408@huawei.com>
+References: <1534296510-12888-1-git-send-email-thunder.leizhen@huawei.com>
+ <1534296510-12888-4-git-send-email-thunder.leizhen@huawei.com>
+ <88575452-d370-2488-dd3f-6c3d3ebe150d@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180511190641.23008-14-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, liguozhu <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, fanghao11 <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, =?UTF-8?B?57Gz57Gz?= <kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <88575452-d370-2488-dd3f-6c3d3ebe150d@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
 
-On 2018/5/12 3:06, Jean-Philippe Brucker wrote:
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 1aa7b82e8169..dc07752c8fe8 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -665,6 +665,82 @@ struct vfio_iommu_type1_dma_unmap {
->   #define VFIO_IOMMU_ENABLE	_IO(VFIO_TYPE, VFIO_BASE + 15)
->   #define VFIO_IOMMU_DISABLE	_IO(VFIO_TYPE, VFIO_BASE + 16)
->   
-> +/*
-> + * VFIO_IOMMU_BIND_PROCESS
-> + *
-> + * Allocate a PASID for a process address space, and use it to attach this
-> + * process to all devices in the container. Devices can then tag their DMA
-> + * traffic with the returned @pasid to perform transactions on the associated
-> + * virtual address space. Mapping and unmapping buffers is performed by standard
-> + * functions such as mmap and malloc.
-> + *
-> + * If flag is VFIO_IOMMU_BIND_PID, @pid contains the pid of a foreign process to
-> + * bind. Otherwise the current task is bound. Given that the caller owns the
-> + * device, setting this flag grants the caller read and write permissions on the
-> + * entire address space of foreign process described by @pid. Therefore,
-> + * permission to perform the bind operation on a foreign process is governed by
-> + * the ptrace access mode PTRACE_MODE_ATTACH_REALCREDS check. See man ptrace(2)
-> + * for more information.
-> + *
-> + * On success, VFIO writes a Process Address Space ID (PASID) into @pasid. This
-> + * ID is unique to a process and can be used on all devices in the container.
-> + *
-> + * On fork, the child inherits the device fd and can use the bonds setup by its
-> + * parent. Consequently, the child has R/W access on the address spaces bound by
-> + * its parent. After an execv, the device fd is closed and the child doesn't
-> + * have access to the address space anymore.
-> + *
-> + * To remove a bond between process and container, VFIO_IOMMU_UNBIND ioctl is
-> + * issued with the same parameters. If a pid was specified in VFIO_IOMMU_BIND,
-> + * it should also be present for VFIO_IOMMU_UNBIND. Otherwise unbind the current
-> + * task from the container.
-> + */
-> +struct vfio_iommu_type1_bind_process {
-> +	__u32	flags;
-> +#define VFIO_IOMMU_BIND_PID		(1 << 0)
-> +	__u32	pasid;
-As I am doing some works on the SVA patch set. I just consider why the 
-user space need this pasid.
-Maybe, is it much more reasonable to set the pasid into all devices 
-under the vfio container by
-a call back function from 'vfio_devices'  while 
-'VFIO_IOMMU_BIND_PROCESS' CMD is executed
-in kernel land? I am not sure because there exists no suitable call back 
-in 'vfio_device' at present.
 
-Thanks,
-Zaibo
-> +	__s32	pid;
-> +};
-> +
-> +/*
-> + * Only mode supported at the moment is VFIO_IOMMU_BIND_PROCESS, which takes
-> + * vfio_iommu_type1_bind_process in data.
-> + */
-> +struct vfio_iommu_type1_bind {
-> +	__u32	argsz;
-> +	__u32	flags;
-> +#define VFIO_IOMMU_BIND_PROCESS		(1 << 0)
-> +	__u8	data[];
-> +};
-> +
-> +/*
-> + * VFIO_IOMMU_BIND - _IOWR(VFIO_TYPE, VFIO_BASE + 22, struct vfio_iommu_bind)
-> + *
-> + * Manage address spaces of devices in this container. Initially a TYPE1
-> + * container can only have one address space, managed with
-> + * VFIO_IOMMU_MAP/UNMAP_DMA.
-> + *
-> + * An IOMMU of type VFIO_TYPE1_NESTING_IOMMU can be managed by both MAP/UNMAP
-> + * and BIND ioctls at the same time. MAP/UNMAP acts on the stage-2 (host) page
-> + * tables, and BIND manages the stage-1 (guest) page tables. Other types of
-> + * IOMMU may allow MAP/UNMAP and BIND to coexist, where MAP/UNMAP controls
-> + * non-PASID traffic and BIND controls PASID traffic. But this depends on the
-> + * underlying IOMMU architecture and isn't guaranteed.
-> + *
-> + * Availability of this feature depends on the device, its bus, the underlying
-> + * IOMMU and the CPU architecture.
-> + *
-> + * returns: 0 on success, -errno on failure.
-> + */
-> +#define VFIO_IOMMU_BIND		_IO(VFIO_TYPE, VFIO_BASE + 22)
-> +
-> +/*
-> + * VFIO_IOMMU_UNBIND - _IOWR(VFIO_TYPE, VFIO_BASE + 23, struct vfio_iommu_bind)
-> + *
-> + * Undo what was done by the corresponding VFIO_IOMMU_BIND ioctl.
-> + */
-> +#define VFIO_IOMMU_UNBIND	_IO(VFIO_TYPE, VFIO_BASE + 23)
-> +
->   /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
->   
->   /*
+On 2018/8/23 1:52, Robin Murphy wrote:
+> On 15/08/18 02:28, Zhen Lei wrote:
+>> To support the non-strict mode, now we only tlbi and sync for the strict
+>> mode. But for the non-leaf case, always follow strict mode.
+>>
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>>   drivers/iommu/io-pgtable-arm.c | 20 ++++++++++++++------
+>>   drivers/iommu/io-pgtable.h     |  3 +++
+>>   2 files changed, 17 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+>> index 010a254..20d3e98 100644
+>> --- a/drivers/iommu/io-pgtable-arm.c
+>> +++ b/drivers/iommu/io-pgtable-arm.c
+>> @@ -538,6 +538,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>       phys_addr_t blk_paddr;
+>>       size_t tablesz = ARM_LPAE_GRANULE(data);
+>>       size_t split_sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
+>> +    size_t unmapped = size;
+>>       int i, unmap_idx = -1;
+>>
+>>       if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
+>> @@ -575,11 +576,16 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>>           tablep = iopte_deref(pte, data);
+>>       }
+>>
+>> -    if (unmap_idx < 0)
+> 
+> [ side note: the more I see this test the more it looks slightly wrong, but that's a separate issue. I'll have to sit down and really remember what's going on here... ]
+> 
+>> -        return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+>> +    if (unmap_idx < 0) {
+>> +        unmapped = __arm_lpae_unmap(data, iova, size, lvl, tablep);
+>> +        if (!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT))
+>> +            return unmapped;
+>> +    }
+> 
+> I don't quite get this change - we should only be recursing back into __arm_lpae_unmap() here if nothing's actually been unmapped at this point - the block entry is simply replaced by a full next-level table and we're going to come back and split another block at that next level, or we raced against someone else splitting the same block and that's their table instead. Since that's reverting back to a "regular" unmap, I don't see where the need to introduce an additional flush to that path comes from (relative to the existing behaviour, at least).
+
+The old block mapping maybe cached in TLBs, it should be invalidated completely before the new next-level mapping to be used. Just ensure that.
+
+In fact, I think the code of arm_lpae_split_blk_unmap may has some mistakes. For example:
+	if (size == split_sz)
+		unmap_idx = ARM_LPAE_LVL_IDX(iova, lvl, data);
+
+It means that "the size" can only be the block/page size of the next-level. Suppose current level is 2M block, but we may unmap 12K, and
+the above "if" will limit us only be able to unmap 4K.
+
+Furthermore, the situation "if (unmap_idx < 0)" should not appear.
+
+Maybe my analysis is wrong, I will try to test it.
+
+
+> 
+>>       io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+> 
+> This is the flush which corresponds to whatever page split_blk_unmap() actually unmapped itself (and also covers any recursively-split intermediate-level entries)...
+> 
+>> -    return size;
+>> +    io_pgtable_tlb_sync(&data->iop);
+> 
+> ...which does want this sync, but only technically for non-strict mode, since it's otherwise covered by the sync in iommu_unmap().
+
+Because split_blk_unmap() is rarely to be called, it has little impact on the overall performance,
+so I ommitted the if statement of non-strict, I will add it back.
+
+> 
+> I'm not *against* tightening up the TLB maintenance here in general, but if so that should be a separately-reasoned patch, not snuck in with other changes.
+
+OK
+
+> 
+> Robin.
+> 
+>> +
+>> +    return unmapped;
+>>   }
+>>
+>>   static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>> @@ -609,7 +615,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>>               io_pgtable_tlb_sync(iop);
+>>               ptep = iopte_deref(pte, data);
+>>               __arm_lpae_free_pgtable(data, lvl + 1, ptep);
+>> -        } else {
+>> +        } else if (!(iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT)) {
+>>               io_pgtable_tlb_add_flush(iop, iova, size, size, true);
+>>           }
+>>
+>> @@ -771,7 +777,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+>>       u64 reg;
+>>       struct arm_lpae_io_pgtable *data;
+>>
+>> -    if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
+>> +    if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+>> +            IO_PGTABLE_QUIRK_NON_STRICT))
+>>           return NULL;
+>>
+>>       data = arm_lpae_alloc_pgtable(cfg);
+>> @@ -863,7 +870,8 @@ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+>>       struct arm_lpae_io_pgtable *data;
+>>
+>>       /* The NS quirk doesn't apply at stage 2 */
+>> -    if (cfg->quirks & ~IO_PGTABLE_QUIRK_NO_DMA)
+>> +    if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
+>> +        IO_PGTABLE_QUIRK_NON_STRICT))
+>>           return NULL;
+>>
+>>       data = arm_lpae_alloc_pgtable(cfg);
+>> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+>> index 2df7909..beb14a3 100644
+>> --- a/drivers/iommu/io-pgtable.h
+>> +++ b/drivers/iommu/io-pgtable.h
+>> @@ -71,12 +71,15 @@ struct io_pgtable_cfg {
+>>        *    be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
+>>        *    software-emulated IOMMU), such that pagetable updates need not
+>>        *    be treated as explicit DMA data.
+>> +     * IO_PGTABLE_QUIRK_NON_STRICT: Put off TLBs invalidation and release
+>> +     *    memory first.
+>>        */
+>>       #define IO_PGTABLE_QUIRK_ARM_NS        BIT(0)
+>>       #define IO_PGTABLE_QUIRK_NO_PERMS    BIT(1)
+>>       #define IO_PGTABLE_QUIRK_TLBI_ON_MAP    BIT(2)
+>>       #define IO_PGTABLE_QUIRK_ARM_MTK_4GB    BIT(3)
+>>       #define IO_PGTABLE_QUIRK_NO_DMA        BIT(4)
+>> +    #define IO_PGTABLE_QUIRK_NON_STRICT    BIT(5)
+>>       unsigned long            quirks;
+>>       unsigned long            pgsize_bitmap;
+>>       unsigned int            ias;
+>> -- 
+>> 1.8.3
+>>
+>>
+> 
+> .
+> 
+
+-- 
+Thanks!
+BestRegards
