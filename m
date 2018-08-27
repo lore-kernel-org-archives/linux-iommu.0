@@ -1,77 +1,70 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH v2 3/3] dts: arm64/sdm845: Add node for qcom,smmu-v2
-Date: Mon, 27 Aug 2018 14:26:21 +0530
-Message-ID: <f8d638bd-d0cb-e03d-bac2-3bc2e30c5422@codeaurora.org>
-References: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
- <20180814102740.30222-4-vivek.gautam@codeaurora.org>
- <27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
- <CAFp+6iG8HohQ5=gwL37OuykK+R4U407yfrp=WN6pSgOK-mdzzA@mail.gmail.com>
- <20180814225750.GA31263@rob-hp-laptop>
+From: Scott Wood <oss@buserror.net>
+Subject: Re: [PATCH 16/20] powerpc/dma: use dma_direct_{alloc,free}
+Date: Mon, 27 Aug 2018 03:51:23 -0500
+Message-ID: <f48ee881bf38c97575202a8921bf8df2ff2136cb.camel@buserror.net>
+References: <20180730163824.10064-1-hch@lst.de>
+ <20180730163824.10064-17-hch@lst.de>
+ <4d5c934ea7bc9802eb3653e6afe7583cb05e4484.camel@kernel.crashing.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180814225750.GA31263@rob-hp-laptop>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Rob Herring <robh@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Jordan Crouse <jcrouse@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Andy Gross <andy.gross@linaro.org>, Will Deacon <will.deacon@arm.com>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>Joerg Roedel <joro@8bytes.org>iommu@lists.linux-foundation.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+In-Reply-To: <4d5c934ea7bc9802eb3653e6afe7583cb05e4484.camel@kernel.crashing.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christoph Hellwig <hch@lst.de>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob, Robin,
+On Thu, 2018-08-09 at 10:52 +1000, Benjamin Herrenschmidt wrote:
+> On Mon, 2018-07-30 at 18:38 +0200, Christoph Hellwig wrote:
+> > These do the same functionality as the existing helpers, but do it
+> > simpler, and also allow the (optional) use of CMA.
+> > 
+> > Note that the swiotlb code now calls into the dma_direct code directly,
+> > given that it doesn't work with noncoherent caches at all, and isn't
+> > called
+> > when we have an iommu either, so the iommu special case in
+> > dma_nommu_alloc_coherent isn't required for swiotlb.
+> 
+> I am not convinced that this will produce the same results due to
+> the way the zone picking works.
+> 
+> As for the interaction with swiotlb, we'll need the FSL guys to have
+> a look. Scott, do you remember what this is about ?
 
+dma_direct_alloc() has similar (though not identical[1]) zone picking, so I
+think it will work.  Needs testing though, and I no longer have a book3e
+machine with a PCIe card in it.
 
-On 8/15/2018 4:27 AM, Rob Herring wrote:
-> On Wed, Aug 15, 2018 at 01:09:43AM +0530, Vivek Gautam wrote:
->> Adding Jordan here.
->>
->> On Tue, Aug 14, 2018 at 4:19 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>> Hi Vivek,
->>>
->>> On 14/08/18 11:27, Vivek Gautam wrote:
->>>> Add device node for qcom,smmu-v2 available on sdm845.
->>>> This smmu is available only to GPU device.
->>>>
->>>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
->>>> ---
->>>>    arch/arm64/boot/dts/qcom/sdm845.dtsi | 23 +++++++++++++++++++++++
->>>>    1 file changed, 23 insertions(+)
->>>>
->>>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> index 1c2be2082f33..bd1ec5fa5146 100644
->>>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> @@ -6,6 +6,7 @@
->>>>     */
->>>>      #include <dt-bindings/clock/qcom,gcc-sdm845.h>
->>>> +#include <dt-bindings/clock/qcom,gpucc-sdm845.h>
->>>>    #include <dt-bindings/clock/qcom,rpmh.h>
->>>>    #include <dt-bindings/interrupt-controller/arm-gic.h>
->>>>    #include <dt-bindings/soc/qcom,rpmh-rsc.h>
->>>> @@ -989,6 +990,28 @@
->>>>                          cell-index = <0>;
->>>>                  };
->>>>    +             gpu_smmu: iommu@5040000 {
->>>> +                       compatible = "qcom,sdm845-smmu-v2",
->>>> "qcom,smmu-v2";
->>>
->>> Which of "sdm845" or "msm8996"[1] is the actual SoC name here?
->> Well, the bindings use the SoC prefix with smmu-v2, so it should be
->> sdm845 for this SoC. This is same as I posted in my v1 of the series [2].
->> Using 8996 based string in sdm845 makes things look awful.
-> You need to list valid values of '<soc>' in the binding. Otherwise we
-> get this confusion.
+The odd thing about this platform (fsl book3e) is the 31-bit[2] limitation on
+PCI.  We currently use ZONE_DMA32 for this, rather than ZONE_DMA, at Ben's
+request[3].  dma_direct_alloc() regards ZONE_DMA32 as being fixed at 32-bits,
+but it doesn't really matter as long as limit_zone_pfn() still works, and the
+allocation is made below 2 GiB.  If we were to switch to ZONE_DMA, and have
+both 31-bit and 32-bit zones, then dma_direct_alloc() would have a problem
+knowing when to use the 31-bit zone since it's based on a non-power-of-2 limit
+that isn't reflected in the dma mask.
 
-Sorry for delayed response, I was away on vacation.
-I will list down the valid values for '<soc>' as suggested, and respin 
-this series, and
-smmu bindings patch that comes as part of the runtime pm series [1].
+-Scott
 
-[1] https://lore.kernel.org/patchwork/patch/968017/
+[1] The logic in dma_direct_alloc() seems wrong -- the zone should need to fit
+in the mask, not the other way around.  If ARCH_ZONE_DMA_BITS is 24, then
+0x007fffff should be a failure rather than GFP_DMA, 0x7fffffff should be
+GFP_DMA rather than GFP_DMA32, and 0x3ffffffff should be GFP_DMA32 rather than
+an unrestricted allocation (in each case assuming that the end of RAM is
+beyond the mask).
 
-Best regards
-Vivek
+[2] The actual limit is closer to 4 GiB, but not quite due to special windows.
+ swiotlb still uses the real limit when deciding whether to bounce, so the dma
+mask is still 32 bits.
 
->
-> Rob
+[3] https://lists.ozlabs.org/pipermail/linuxppc-dev/2012-July/099593.html
