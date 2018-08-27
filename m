@@ -1,73 +1,77 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 4/4] dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops
-Date: Mon, 27 Aug 2018 10:47:11 +0200
-Message-ID: <20180827084711.23407-5-hch@lst.de>
-References: <20180827084711.23407-1-hch@lst.de>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v2 3/3] dts: arm64/sdm845: Add node for qcom,smmu-v2
+Date: Mon, 27 Aug 2018 14:26:21 +0530
+Message-ID: <f8d638bd-d0cb-e03d-bac2-3bc2e30c5422@codeaurora.org>
+References: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
+ <20180814102740.30222-4-vivek.gautam@codeaurora.org>
+ <27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
+ <CAFp+6iG8HohQ5=gwL37OuykK+R4U407yfrp=WN6pSgOK-mdzzA@mail.gmail.com>
+ <20180814225750.GA31263@rob-hp-laptop>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180827084711.23407-1-hch@lst.de>
+In-Reply-To: <20180814225750.GA31263@rob-hp-laptop>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Jordan Crouse <jcrouse@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Andy Gross <andy.gross@linaro.org>, Will Deacon <will.deacon@arm.com>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>Joerg Roedel <joro@8bytes.org>iommu@lists.linux-foundation.org, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is no reason to leave the per-device dma_ops around when
-deconfiguring a device, so move this code from arm64 into the
-common code.
+Hi Rob, Robin,
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm64/include/asm/dma-mapping.h | 5 -----
- arch/arm64/mm/dma-mapping.c          | 5 -----
- include/linux/dma-mapping.h          | 5 ++++-
- 3 files changed, 4 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index b7847eb8a7bb..0a2d13332545 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -39,11 +39,6 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 			const struct iommu_ops *iommu, bool coherent);
- #define arch_setup_dma_ops	arch_setup_dma_ops
- 
--#ifdef CONFIG_IOMMU_DMA
--void arch_teardown_dma_ops(struct device *dev);
--#define arch_teardown_dma_ops	arch_teardown_dma_ops
--#endif
--
- /* do not use this function in a driver */
- static inline bool is_device_dma_coherent(struct device *dev)
- {
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 072c51fb07d7..cdcb73db9ea2 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -862,11 +862,6 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 		 dev_name(dev));
- }
- 
--void arch_teardown_dma_ops(struct device *dev)
--{
--	dev->dma_ops = NULL;
--}
--
- #else
- 
- static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 1423b69f3cc9..eafd6f318e78 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -664,7 +664,10 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
- #endif
- 
- #ifndef arch_teardown_dma_ops
--static inline void arch_teardown_dma_ops(struct device *dev) { }
-+static inline void arch_teardown_dma_ops(struct device *dev)
-+{
-+	dev->dma_ops = NULL;
-+}
- #endif
- 
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
--- 
-2.18.0
+On 8/15/2018 4:27 AM, Rob Herring wrote:
+> On Wed, Aug 15, 2018 at 01:09:43AM +0530, Vivek Gautam wrote:
+>> Adding Jordan here.
+>>
+>> On Tue, Aug 14, 2018 at 4:19 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+>>> Hi Vivek,
+>>>
+>>> On 14/08/18 11:27, Vivek Gautam wrote:
+>>>> Add device node for qcom,smmu-v2 available on sdm845.
+>>>> This smmu is available only to GPU device.
+>>>>
+>>>> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+>>>> ---
+>>>>    arch/arm64/boot/dts/qcom/sdm845.dtsi | 23 +++++++++++++++++++++++
+>>>>    1 file changed, 23 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>> b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>> index 1c2be2082f33..bd1ec5fa5146 100644
+>>>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+>>>> @@ -6,6 +6,7 @@
+>>>>     */
+>>>>      #include <dt-bindings/clock/qcom,gcc-sdm845.h>
+>>>> +#include <dt-bindings/clock/qcom,gpucc-sdm845.h>
+>>>>    #include <dt-bindings/clock/qcom,rpmh.h>
+>>>>    #include <dt-bindings/interrupt-controller/arm-gic.h>
+>>>>    #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+>>>> @@ -989,6 +990,28 @@
+>>>>                          cell-index = <0>;
+>>>>                  };
+>>>>    +             gpu_smmu: iommu@5040000 {
+>>>> +                       compatible = "qcom,sdm845-smmu-v2",
+>>>> "qcom,smmu-v2";
+>>>
+>>> Which of "sdm845" or "msm8996"[1] is the actual SoC name here?
+>> Well, the bindings use the SoC prefix with smmu-v2, so it should be
+>> sdm845 for this SoC. This is same as I posted in my v1 of the series [2].
+>> Using 8996 based string in sdm845 makes things look awful.
+> You need to list valid values of '<soc>' in the binding. Otherwise we
+> get this confusion.
+
+Sorry for delayed response, I was away on vacation.
+I will list down the valid values for '<soc>' as suggested, and respin 
+this series, and
+smmu bindings patch that comes as part of the runtime pm series [1].
+
+[1] https://lore.kernel.org/patchwork/patch/968017/
+
+Best regards
+Vivek
+
+>
+> Rob
