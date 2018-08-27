@@ -1,70 +1,55 @@
-From: Scott Wood <oss@buserror.net>
-Subject: Re: [PATCH 16/20] powerpc/dma: use dma_direct_{alloc,free}
-Date: Mon, 27 Aug 2018 03:51:23 -0500
-Message-ID: <f48ee881bf38c97575202a8921bf8df2ff2136cb.camel@buserror.net>
-References: <20180730163824.10064-1-hch@lst.de>
- <20180730163824.10064-17-hch@lst.de>
- <4d5c934ea7bc9802eb3653e6afe7583cb05e4484.camel@kernel.crashing.org>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH] iommu/rockchip: Free irqs in shutdown handler
+Date: Mon, 27 Aug 2018 12:56:24 +0200
+Message-ID: <20180827105624.5593-1-heiko@sntech.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <4d5c934ea7bc9802eb3653e6afe7583cb05e4484.camel@kernel.crashing.org>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Christoph Hellwig <hch@lst.de>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
-Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-ia64@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2018-08-09 at 10:52 +1000, Benjamin Herrenschmidt wrote:
-> On Mon, 2018-07-30 at 18:38 +0200, Christoph Hellwig wrote:
-> > These do the same functionality as the existing helpers, but do it
-> > simpler, and also allow the (optional) use of CMA.
-> > 
-> > Note that the swiotlb code now calls into the dma_direct code directly,
-> > given that it doesn't work with noncoherent caches at all, and isn't
-> > called
-> > when we have an iommu either, so the iommu special case in
-> > dma_nommu_alloc_coherent isn't required for swiotlb.
-> 
-> I am not convinced that this will produce the same results due to
-> the way the zone picking works.
-> 
-> As for the interaction with swiotlb, we'll need the FSL guys to have
-> a look. Scott, do you remember what this is about ?
+In the iommu's shutdown handler we disable runtime-pm which could
+result in the irq-handler running unclocked and since commit
+    3fc7c5c0cff3 ("iommu/rockchip: Handle errors returned from PM framework")
+we warn about that fact.
 
-dma_direct_alloc() has similar (though not identical[1]) zone picking, so I
-think it will work.  Needs testing though, and I no longer have a book3e
-machine with a PCIe card in it.
+This can cause warnings on shutdown on some Rockchip machines, so
+free the irqs in the shutdown handler before we disable runtime-pm.
 
-The odd thing about this platform (fsl book3e) is the 31-bit[2] limitation on
-PCI.  We currently use ZONE_DMA32 for this, rather than ZONE_DMA, at Ben's
-request[3].  dma_direct_alloc() regards ZONE_DMA32 as being fixed at 32-bits,
-but it doesn't really matter as long as limit_zone_pfn() still works, and the
-allocation is made below 2 GiB.  If we were to switch to ZONE_DMA, and have
-both 31-bit and 32-bit zones, then dma_direct_alloc() would have a problem
-knowing when to use the 31-bit zone since it's based on a non-power-of-2 limit
-that isn't reflected in the dma mask.
+Reported-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Fixes: 3fc7c5c0cff3 ("iommu/rockchip: Handle errors returned from PM framework")
+Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
--Scott
-
-[1] The logic in dma_direct_alloc() seems wrong -- the zone should need to fit
-in the mask, not the other way around.  If ARCH_ZONE_DMA_BITS is 24, then
-0x007fffff should be a failure rather than GFP_DMA, 0x7fffffff should be
-GFP_DMA rather than GFP_DMA32, and 0x3ffffffff should be GFP_DMA32 rather than
-an unrestricted allocation (in each case assuming that the end of RAM is
-beyond the mask).
-
-[2] The actual limit is closer to 4 GiB, but not quite due to special windows.
- swiotlb still uses the real limit when deciding whether to bounce, so the dma
-mask is still 32 bits.
-
-[3] https://lists.ozlabs.org/pipermail/linuxppc-dev/2012-July/099593.html
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 258115b10fa9..ad3e2b97469e 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1241,6 +1241,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 
+ static void rk_iommu_shutdown(struct platform_device *pdev)
+ {
++	struct rk_iommu *iommu = platform_get_drvdata(pdev);
++	int i = 0, irq;
++
++	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO)
++		devm_free_irq(iommu->dev, irq, iommu);
++
+ 	pm_runtime_force_suspend(&pdev->dev);
+ }
+ 
+-- 
+2.17.0
