@@ -1,19 +1,15 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 3/3] dts: arm64/sdm845: Add node for qcom,smmu-v2
-Date: Mon, 27 Aug 2018 16:42:33 +0530
-Message-ID: <1fa25d20-94c8-569d-df32-14b66a1092fc@codeaurora.org>
-References: <20180814102740.30222-1-vivek.gautam@codeaurora.org>
-	<20180814102740.30222-4-vivek.gautam@codeaurora.org>
-	<27372288-447d-6c9a-504a-8b8ef40e3d58@arm.com>
-	<CAFp+6iG8HohQ5=gwL37OuykK+R4U407yfrp=WN6pSgOK-mdzzA@mail.gmail.com>
-	<20180814225750.GA31263@rob-hp-laptop>
-	<f8d638bd-d0cb-e03d-bac2-3bc2e30c5422@codeaurora.org>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
+Date: Mon, 27 Aug 2018 14:32:58 +0200
+Message-ID: <20180827123253.56hl2hdumszqxaki@verge.net.au>
+References: <CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA@mail.gmail.com>
+	<1535038384-27080-1-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f8d638bd-d0cb-e03d-bac2-3bc2e30c5422-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1535038384-27080-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,52 +19,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiA4LzI3LzIwMTggMjoyNiBQTSwgVml2ZWsgR2F1dGFtIHdyb3RlOgo+IEhpIFJvYiwgUm9i
-aW4sCj4KPgo+IE9uIDgvMTUvMjAxOCA0OjI3IEFNLCBSb2IgSGVycmluZyB3cm90ZToKPj4gT24g
-V2VkLCBBdWcgMTUsIDIwMTggYXQgMDE6MDk6NDNBTSArMDUzMCwgVml2ZWsgR2F1dGFtIHdyb3Rl
-Ogo+Pj4gQWRkaW5nIEpvcmRhbiBoZXJlLgo+Pj4KPj4+IE9uIFR1ZSwgQXVnIDE0LCAyMDE4IGF0
-IDQ6MTkgUE0sIFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+IAo+Pj4gd3JvdGU6
-Cj4+Pj4gSGkgVml2ZWssCj4+Pj4KPj4+PiBPbiAxNC8wOC8xOCAxMToyNywgVml2ZWsgR2F1dGFt
-IHdyb3RlOgo+Pj4+PiBBZGQgZGV2aWNlIG5vZGUgZm9yIHFjb20sc21tdS12MiBhdmFpbGFibGUg
-b24gc2RtODQ1Lgo+Pj4+PiBUaGlzIHNtbXUgaXMgYXZhaWxhYmxlIG9ubHkgdG8gR1BVIGRldmlj
-ZS4KPj4+Pj4KPj4+Pj4gU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1A
-Y29kZWF1cm9yYS5vcmc+Cj4+Pj4+IC0tLQo+Pj4+PiDCoMKgIGFyY2gvYXJtNjQvYm9vdC9kdHMv
-cWNvbS9zZG04NDUuZHRzaSB8IDIzICsrKysrKysrKysrKysrKysrKysrKysrCj4+Pj4+IMKgwqAg
-MSBmaWxlIGNoYW5nZWQsIDIzIGluc2VydGlvbnMoKykKPj4+Pj4KPj4+Pj4gZGlmZiAtLWdpdCBh
-L2FyY2gvYXJtNjQvYm9vdC9kdHMvcWNvbS9zZG04NDUuZHRzaQo+Pj4+PiBiL2FyY2gvYXJtNjQv
-Ym9vdC9kdHMvcWNvbS9zZG04NDUuZHRzaQo+Pj4+PiBpbmRleCAxYzJiZTIwODJmMzMuLmJkMWVj
-NWZhNTE0NiAxMDA2NDQKPj4+Pj4gLS0tIGEvYXJjaC9hcm02NC9ib290L2R0cy9xY29tL3NkbTg0
-NS5kdHNpCj4+Pj4+ICsrKyBiL2FyY2gvYXJtNjQvYm9vdC9kdHMvcWNvbS9zZG04NDUuZHRzaQo+
-Pj4+PiBAQCAtNiw2ICs2LDcgQEAKPj4+Pj4gwqDCoMKgICovCj4+Pj4+IMKgwqDCoMKgICNpbmNs
-dWRlIDxkdC1iaW5kaW5ncy9jbG9jay9xY29tLGdjYy1zZG04NDUuaD4KPj4+Pj4gKyNpbmNsdWRl
-IDxkdC1iaW5kaW5ncy9jbG9jay9xY29tLGdwdWNjLXNkbTg0NS5oPgo+Pj4+PiDCoMKgICNpbmNs
-dWRlIDxkdC1iaW5kaW5ncy9jbG9jay9xY29tLHJwbWguaD4KPj4+Pj4gwqDCoCAjaW5jbHVkZSA8
-ZHQtYmluZGluZ3MvaW50ZXJydXB0LWNvbnRyb2xsZXIvYXJtLWdpYy5oPgo+Pj4+PiDCoMKgICNp
-bmNsdWRlIDxkdC1iaW5kaW5ncy9zb2MvcWNvbSxycG1oLXJzYy5oPgo+Pj4+PiBAQCAtOTg5LDYg
-Kzk5MCwyOCBAQAo+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgY2VsbC1pbmRleCA9IDwwPjsKPj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgfTsKPj4+Pj4gwqDCoCArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdwdV9zbW11
-OiBpb21tdUA1MDQwMDAwIHsKPj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIGNvbXBhdGlibGUgPSAicWNvbSxzZG04NDUtc21tdS12MiIsCj4+Pj4+ICJx
-Y29tLHNtbXUtdjIiOwo+Pj4+Cj4+Pj4gV2hpY2ggb2YgInNkbTg0NSIgb3IgIm1zbTg5OTYiWzFd
-IGlzIHRoZSBhY3R1YWwgU29DIG5hbWUgaGVyZT8KPj4+IFdlbGwsIHRoZSBiaW5kaW5ncyB1c2Ug
-dGhlIFNvQyBwcmVmaXggd2l0aCBzbW11LXYyLCBzbyBpdCBzaG91bGQgYmUKPj4+IHNkbTg0NSBm
-b3IgdGhpcyBTb0MuIFRoaXMgaXMgc2FtZSBhcyBJIHBvc3RlZCBpbiBteSB2MSBvZiB0aGUgc2Vy
-aWVzIAo+Pj4gWzJdLgo+Pj4gVXNpbmcgODk5NiBiYXNlZCBzdHJpbmcgaW4gc2RtODQ1IG1ha2Vz
-IHRoaW5ncyBsb29rIGF3ZnVsLgo+PiBZb3UgbmVlZCB0byBsaXN0IHZhbGlkIHZhbHVlcyBvZiAn
-PHNvYz4nIGluIHRoZSBiaW5kaW5nLiBPdGhlcndpc2Ugd2UKPj4gZ2V0IHRoaXMgY29uZnVzaW9u
-Lgo+Cj4gU29ycnkgZm9yIGRlbGF5ZWQgcmVzcG9uc2UsIEkgd2FzIGF3YXkgb24gdmFjYXRpb24u
-Cj4gSSB3aWxsIGxpc3QgZG93biB0aGUgdmFsaWQgdmFsdWVzIGZvciAnPHNvYz4nIGFzIHN1Z2dl
-c3RlZCwgYW5kIHJlc3BpbiAKPiB0aGlzIHNlcmllcywgYW5kCj4gc21tdSBiaW5kaW5ncyBwYXRj
-aCB0aGF0IGNvbWVzIGFzIHBhcnQgb2YgdGhlIHJ1bnRpbWUgcG0gc2VyaWVzIFszXS4KPgo+IFsz
-XSBodHRwczovL2xvcmUua2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTY4MDE3Lwo+CgpJIGhh
-dmUgdXBkYXRlZCB0aGUgYmluZGluZyBkb2Mgd2l0aCB2YWxpZCB2YWx1ZXMgZm9yICc8c29jPicg
-c3RyaW5nIFs0XS4KS2luZGx5IHJldmlldyB0aGlzIGJhc2VkIG9uIFs0XS4KCls0XSBodHRwczov
-L2xvcmUua2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTc3ODg4LwoKQmVzdCByZWdhcmRzClZp
-dmVrCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
-IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
-c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Thu, Aug 23, 2018 at 04:33:04PM +0100, Fabrizio Castro wrote:
+> Add support for RZ/G2M (R8A774A1) SoC IPMMUs.
+> 
+> Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> ---
+> v1-v2:
+> * taken out IOMMU_OF_DECLARE
+
+Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
