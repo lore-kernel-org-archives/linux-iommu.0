@@ -1,262 +1,97 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 01/23] iommu: introduce bind_pasid_table API function
-Date: Tue, 28 Aug 2018 10:34:19 +0200
-Message-ID: <7c331f56-1ff8-7929-76bf-e73915a91ace@redhat.com>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-2-git-send-email-jacob.jun.pan@linux.intel.com>
-	<b6621306-fd32-7ede-ae88-7345898eb134@redhat.com>
-	<20180827221422.57e233df@jacob-builder>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] of/platform: Initialise AMBA default DMA masks
+Date: Tue, 28 Aug 2018 10:44:42 +0200
+Message-ID: <20180828084442.30176-1-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180827221422.57e233df@jacob-builder>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Liu-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jacob,
-
-On 08/28/2018 07:14 AM, Jacob Pan wrote:
-> On Fri, 24 Aug 2018 17:00:51 +0200
-> Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> 
->> Hi Jacob,
->>
->> On 05/11/2018 10:53 PM, Jacob Pan wrote:
->>> Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
->>> use in the guest:
->>> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
->>>
->>> As part of the proposed architecture, when an SVM capable PCI
->>> device is assigned to a guest, nested mode is turned on. Guest owns
->>> the first level page tables (request with PASID) which performs
->>> GVA->GPA translation. Second level page tables are owned by the
->>> host for GPA->HPA translation for both request with and without
->>> PASID.
->>>
->>> A new IOMMU driver interface is therefore needed to perform tasks as
->>> follows:
->>> * Enable nested translation and appropriate translation type
->>> * Assign guest PASID table pointer (in GPA) and size to host IOMMU
->>>
->>> This patch introduces new API functions to perform bind/unbind
->>> guest PASID tables. Based on common data, model specific IOMMU
->>> drivers can be extended to perform the specific steps for binding
->>> pasid table of assigned devices.
->>>
->>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
->>> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->>> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>> ---
->>>  drivers/iommu/iommu.c      | 19 +++++++++++++++++++
->>>  include/linux/iommu.h      | 24 ++++++++++++++++++++++++
->>>  include/uapi/linux/iommu.h | 33 +++++++++++++++++++++++++++++++++
->>>  3 files changed, 76 insertions(+)
->>>  create mode 100644 include/uapi/linux/iommu.h
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index d2aa2320..3a69620 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -1325,6 +1325,25 @@ int iommu_attach_device(struct iommu_domain
->>> *domain, struct device *dev) }
->>>  EXPORT_SYMBOL_GPL(iommu_attach_device);
->>>  
->>> +int iommu_bind_pasid_table(struct iommu_domain *domain, struct
->>> device *dev,
->>> +			struct pasid_table_config *pasidt_binfo)  
->> As Jean-Philippe, I must confessed i am very confused by having both
->> the iommu_domain and dev passed as argument.
->>
->> I know this was discussed when the RFC was submitted and maybe I
->> missed the main justification behind that choice. I understand that
->> at the HW level we want to change the context entry or ARM CD in my
->> case for a specific device. But on other hand, at the logical level,
->> I understand the iommu_domain is representing a set of translation
->> config & page tables shared by all the devices within the domain
->> (hope this is fundamentally correct ?!). So to me we can't change the
->> device translation setup without changing the whole iommu_device setup
->> otherwise this would mean this device has a translation configuration
->> that is not consistent anymore with the other devices in the same
->> domain. Is that correct? So can't we only keep the iommu_domain arg?
->>
-> I agree with you on your understanding of HW and logical level. I think
-> there is a new twist to the definition of domain introduced by having
-> PASID and vSVA. Up until now, domain only means 2nd level mapping. In
-> that sense, bind guest PASID table does not alter domain. For VT-d 2.5
-> spec. implementation of the bind_pasid_table(), we needed some per
-> device data, also flags such as indication for IO page fault handling.
-> 
-> Anyway, for the new VT-d 3.0 spec. we no longer need this API. In
-> stead, I will introduce bind_guest_pasid() API, where per device PASID
-> table is allocated by the host.
-
-So what is the exact state of this series? Is it outdated as you don't
-target VT-d 2.5 anymore? Will you keep the rest of the API?
-
-Thanks
-
-Eric
-> 
->>> +{
->>> +	if (unlikely(!domain->ops->bind_pasid_table))
->>> +		return -ENODEV;
->>> +
->>> +	return domain->ops->bind_pasid_table(domain, dev,
->>> pasidt_binfo); +}
->>> +EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
->>> +
->>> +void iommu_unbind_pasid_table(struct iommu_domain *domain, struct
->>> device *dev) +{
->>> +	if (unlikely(!domain->ops->unbind_pasid_table))
->>> +		return;
->>> +
->>> +	domain->ops->unbind_pasid_table(domain, dev);
->>> +}
->>> +EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
->>> +
->>>  static void __iommu_detach_device(struct iommu_domain *domain,
->>>  				  struct device *dev)
->>>  {
->>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>> index 19938ee..5199ca4 100644
->>> --- a/include/linux/iommu.h
->>> +++ b/include/linux/iommu.h
->>> @@ -25,6 +25,7 @@
->>>  #include <linux/errno.h>
->>>  #include <linux/err.h>
->>>  #include <linux/of.h>
->>> +#include <uapi/linux/iommu.h>
->>>  
->>>  #define IOMMU_READ	(1 << 0)
->>>  #define IOMMU_WRITE	(1 << 1)
->>> @@ -187,6 +188,8 @@ struct iommu_resv_region {
->>>   * @domain_get_windows: Return the number of windows for a domain
->>>   * @of_xlate: add OF master IDs to iommu grouping
->>>   * @pgsize_bitmap: bitmap of all possible supported page sizes
->>> + * @bind_pasid_table: bind pasid table pointer for guest SVM
->>> + * @unbind_pasid_table: unbind pasid table pointer and restore
->>> defaults */
->>>  struct iommu_ops {
->>>  	bool (*capable)(enum iommu_cap);
->>> @@ -233,8 +236,14 @@ struct iommu_ops {
->>>  	u32 (*domain_get_windows)(struct iommu_domain *domain);
->>>  
->>>  	int (*of_xlate)(struct device *dev, struct of_phandle_args
->>> *args); +
->>>  	bool (*is_attach_deferred)(struct iommu_domain *domain,
->>> struct device *dev); 
->>> +	int (*bind_pasid_table)(struct iommu_domain *domain,
->>> struct device *dev,
->>> +				struct pasid_table_config
->>> *pasidt_binfo);
->>> +	void (*unbind_pasid_table)(struct iommu_domain *domain,
->>> +				struct device *dev);
->>> +
->>>  	unsigned long pgsize_bitmap;
->>>  };
->>>  
->>> @@ -296,6 +305,10 @@ extern int iommu_attach_device(struct
->>> iommu_domain *domain, struct device *dev);
->>>  extern void iommu_detach_device(struct iommu_domain *domain,
->>>  				struct device *dev);
->>> +extern int iommu_bind_pasid_table(struct iommu_domain *domain,
->>> +		struct device *dev, struct pasid_table_config
->>> *pasidt_binfo); +extern void iommu_unbind_pasid_table(struct
->>> iommu_domain *domain,
->>> +				struct device *dev);
->>>  extern struct iommu_domain *iommu_get_domain_for_dev(struct device
->>> *dev); extern int iommu_map(struct iommu_domain *domain, unsigned
->>> long iova, phys_addr_t paddr, size_t size, int prot);
->>> @@ -696,6 +709,17 @@ const struct iommu_ops
->>> *iommu_ops_from_fwnode(struct fwnode_handle *fwnode) return NULL;
->>>  }
->>>  
->>> +static inline
->>> +int iommu_bind_pasid_table(struct iommu_domain *domain, struct
->>> device *dev,
->>> +			struct pasid_table_config *pasidt_binfo)
->>> +{
->>> +	return -ENODEV;
->>> +}
->>> +static inline
->>> +void iommu_unbind_pasid_table(struct iommu_domain *domain, struct
->>> device *dev) +{
->>> +}
->>> +
->>>  #endif /* CONFIG_IOMMU_API */
->>>  
->>>  #endif /* __LINUX_IOMMU_H */
->>> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
->>> new file mode 100644
->>> index 0000000..cb2d625
->>> --- /dev/null
->>> +++ b/include/uapi/linux/iommu.h
->>> @@ -0,0 +1,33 @@
->>> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
->>> +/*
->>> + * IOMMU user API definitions
->>> + *
->>> + *
->>> + * This program is free software; you can redistribute it and/or
->>> modify
->>> + * it under the terms of the GNU General Public License version 2
->>> as
->>> + * published by the Free Software Foundation.
->>> + */
->>> +
->>> +#ifndef _UAPI_IOMMU_H
->>> +#define _UAPI_IOMMU_H
->>> +
->>> +#include <linux/types.h>
->>> +
->>> +/**
->>> + * PASID table data used to bind guest PASID table to the host
->>> IOMMU. This will
->>> + * enable guest managed first level page tables.
->>> + * @version: for future extensions and identification of the data
->>> format
->>> + * @bytes: size of this structure
->>> + * @base_ptr:	PASID table pointer
->>> + * @pasid_bits:	number of bits supported in the guest PASID
->>> table, must be less
->>> + *		or equal than the host supported PASID size.
->>> + */
->>> +struct pasid_table_config {
->>> +	__u32 version;
->>> +#define PASID_TABLE_CFG_VERSION_1 1
->>> +	__u32 bytes;
->>> +	__u64 base_ptr;
->>> +	__u8 pasid_bits;
->>> +};  
->> Don't we need to index all structs with iommu_ to protect the naming
->> spaces? Same comment on other patches impacting the uapi.
->>
-> yeah, it would be better to use iommu_ prefix, i was thinking vfio also
-> uses it and pasid itself is a industry standard.
->> A question about the alignment. Don't we need to be 64b aligned? VFIO
->> uapi structs are.
->>
-> I am not sure about the benefit, this is not a HW interface nor on
-> speed path.
->> Thanks
->>
->> Eric
->>> +
->>> +#endif /* _UAPI_IOMMU_H */
->>>   
-> 
-> [Jacob Pan]
-> 
+Y29tbWl0IGE1NTE2MjE5YjEwMiAoIm9mL3BsYXRmb3JtOiBJbml0aWFsaXNlIGRlZmF1bHQgRE1B
+IG1hc2tzIikKc2V0cyB1cCB0aGUgY29oZXJlbnRfZG1hX21hc2sgb2YgcGxhdGZvcm0gZGV2aWNl
+cyBjcmVhdGVkCmZyb20gdGhlIGRldmljZSB0cmVlLCBidXQgZmFpbHMgdG8gZG8gdGhlIHNhbWUg
+Zm9yIEFNQkEKKFByaW1lQ2VsbCkgZGV2aWNlcy4KClRoaXMgbGVhZHMgdG8gYSByZWdyZXNzaW9u
+IGluIGtlcm5lbCB2NC4xOS1yYzEgdHJpZ2dlcmluZyB0aGUKV0FSTl9PTkNFKCkgaW4ga2VybmVs
+L2RtYS9jb2hlcmVudC5jLCBkbWFfYWxsb2NfYXR0cnMoKQpXQVJOX09OX09OQ0UoZGV2ICYmICFk
+ZXYtPmNvaGVyZW50X2RtYV9tYXNrKToKCi0tLS0tLS0tLS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0t
+LS0tLQpXQVJOSU5HOiBDUFU6IDAgUElEOiAxIGF0IC4uL2luY2x1ZGUvbGludXgvZG1hLW1hcHBp
+bmcuaDo1MjIgZHJtX2dlbV9jbWFfY3JlYXRlKzB4MWRjLzB4MjFjCk1vZHVsZXMgbGlua2VkIGlu
+OgpDUFU6IDAgUElEOiAxIENvbW06IHN3YXBwZXIgTm90IHRhaW50ZWQgNC4xOS4wLXJjMSsgIzE1
+CkhhcmR3YXJlIG5hbWU6IEFSTS1WZXJzYXRpbGUgKERldmljZSBUcmVlIFN1cHBvcnQpCls8YzAw
+MWM1NTg+XSAodW53aW5kX2JhY2t0cmFjZSkgZnJvbSBbPGMwMDE5MWY4Pl0gKHNob3dfc3RhY2sr
+MHgxMC8weDE0KQpbPGMwMDE5MWY4Pl0gKHNob3dfc3RhY2spIGZyb20gWzxjMDAyNDZhMD5dIChf
+X3dhcm4rMHhjYy8weGY0KQpbPGMwMDI0NmEwPl0gKF9fd2FybikgZnJvbSBbPGMwMDI0N2RjPl0g
+KHdhcm5fc2xvd3BhdGhfbnVsbCsweDNjLzB4NDgpCls8YzAwMjQ3ZGM+XSAod2Fybl9zbG93cGF0
+aF9udWxsKSBmcm9tIFs8YzAyNWNlZjA+XSAoZHJtX2dlbV9jbWFfY3JlYXRlKzB4MWRjLzB4MjFj
+KQpbPGMwMjVjZWYwPl0gKGRybV9nZW1fY21hX2NyZWF0ZSkgZnJvbSBbPGMwMjVkM2ZjPl0gKGRy
+bV9nZW1fY21hX2R1bWJfY3JlYXRlKzB4NDQvMHg5OCkKWzxjMDI1ZDNmYz5dIChkcm1fZ2VtX2Nt
+YV9kdW1iX2NyZWF0ZSkgZnJvbSBbPGMwMjVjNjQ4Pl0gKGRybV9jbGllbnRfZnJhbWVidWZmZXJf
+Y3JlYXRlKzB4ODAvMHgyMDQpCls8YzAyNWM2NDg+XSAoZHJtX2NsaWVudF9mcmFtZWJ1ZmZlcl9j
+cmVhdGUpIGZyb20gWzxjMDIzNGEyMD5dIChkcm1fZmJfaGVscGVyX2dlbmVyaWNfcHJvYmUrMHg0
+Yy8weDIwMCkKWzxjMDIzNGEyMD5dIChkcm1fZmJfaGVscGVyX2dlbmVyaWNfcHJvYmUpIGZyb20g
+WzxjMDIzNWIxND5dIChfX2RybV9mYl9oZWxwZXJfaW5pdGlhbF9jb25maWdfYW5kX3VubG9jaysw
+eDFjYy8weDQ1NCkKWzxjMDIzNWIxND5dIChfX2RybV9mYl9oZWxwZXJfaW5pdGlhbF9jb25maWdf
+YW5kX3VubG9jaykgZnJvbSBbPGMwMjM1ZWEwPl0gKGRybV9mYl9oZWxwZXJfZmJkZXZfc2V0dXAr
+MHgxMDQvMHgyMTgpCls8YzAyMzVlYTA+XSAoZHJtX2ZiX2hlbHBlcl9mYmRldl9zZXR1cCkgZnJv
+bSBbPGMwMjM2NDEwPl0gKGRybV9mYmRldl9jbWFfaW5pdCsweDdjLzB4YWMpCls8YzAyMzY0MTA+
+XSAoZHJtX2ZiZGV2X2NtYV9pbml0KSBmcm9tIFs8YzAyMzY0NDg+XSAoZHJtX2ZiX2NtYV9mYmRl
+dl9pbml0KzB4OC8weDE0KQpbPGMwMjM2NDQ4Pl0gKGRybV9mYl9jbWFfZmJkZXZfaW5pdCkgZnJv
+bSBbPGMwMjYwZDkwPl0gKHBsMTExX2FtYmFfcHJvYmUrMHgzYzgvMHg0YTQpCls8YzAyNjBkOTA+
+XSAocGwxMTFfYW1iYV9wcm9iZSkgZnJvbSBbPGMwMWY0NzljPl0gKGFtYmFfcHJvYmUrMHhkOC8w
+eDE1NCkKWzxjMDFmNDc5Yz5dIChhbWJhX3Byb2JlKSBmcm9tIFs8YzAyNjczOTg+XSAocmVhbGx5
+X3Byb2JlKzB4MjAwLzB4MmFjKQpbPGMwMjY3Mzk4Pl0gKHJlYWxseV9wcm9iZSkgZnJvbSBbPGMw
+MjY3NWE0Pl0gKGRyaXZlcl9wcm9iZV9kZXZpY2UrMHg1Yy8weDE2OCkKWzxjMDI2NzVhND5dIChk
+cml2ZXJfcHJvYmVfZGV2aWNlKSBmcm9tIFs8YzAyNjc3ODA+XSAoX19kcml2ZXJfYXR0YWNoKzB4
+ZDAvMHhkNCkKWzxjMDI2Nzc4MD5dIChfX2RyaXZlcl9hdHRhY2gpIGZyb20gWzxjMDI2NTZjMD5d
+IChidXNfZm9yX2VhY2hfZGV2KzB4NzAvMHhiNCkKWzxjMDI2NTZjMD5dIChidXNfZm9yX2VhY2hf
+ZGV2KSBmcm9tIFs8YzAyNjY4MDg+XSAoYnVzX2FkZF9kcml2ZXIrMHgxNzAvMHgyMDQpCls8YzAy
+NjY4MDg+XSAoYnVzX2FkZF9kcml2ZXIpIGZyb20gWzxjMDI2ODA5MD5dIChkcml2ZXJfcmVnaXN0
+ZXIrMHg3NC8weDEwOCkKWzxjMDI2ODA5MD5dIChkcml2ZXJfcmVnaXN0ZXIpIGZyb20gWzxjMDAw
+YWMyMD5dIChkb19vbmVfaW5pdGNhbGwrMHg0OC8weDFhMCkKWzxjMDAwYWMyMD5dIChkb19vbmVf
+aW5pdGNhbGwpIGZyb20gWzxjMDUwN2RjMD5dIChrZXJuZWxfaW5pdF9mcmVlYWJsZSsweDEwNC8w
+eDFjNCkKWzxjMDUwN2RjMD5dIChrZXJuZWxfaW5pdF9mcmVlYWJsZSkgZnJvbSBbPGMwM2U2ZWU0
+Pl0gKGtlcm5lbF9pbml0KzB4OC8weGYwKQpbPGMwM2U2ZWU0Pl0gKGtlcm5lbF9pbml0KSBmcm9t
+IFs8YzAwMDkwZTA+XSAocmV0X2Zyb21fZm9yaysweDE0LzB4MzQpCkV4Y2VwdGlvbiBzdGFjaygw
+eGM3ODFmZmIwIHRvIDB4Yzc4MWZmZjgpCmZmYTA6ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCmZmYzA6IDAwMDAw
+MDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAw
+IDAwMDAwMDAwCmZmZTA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
+MDEzIDAwMDAwMDAwCi0tLVsgZW5kIHRyYWNlIDJkYzQ3ZWI3OTZiZGUwMDYgXS0tLQoKVGhpcyBy
+ZWdyZXNzZXMgdGhlIFBMMTExIERSTSBkcml2ZXIgaW4gZHJpdmVycy9ncHUvZHJtL3BsMTExCnRo
+YXQgdXNlcyB0aGUgQU1CQSBQcmltZUNlbGwgdG8gaW5zdGFudGlhdGUgdGhlIGZyYW1lIGJ1ZmZl
+cgpkZXZpY2UsIGFzIGl0IGNhbm5vdCBhbGxvY2F0ZSBhIGNodW5rIG9mIGNvaGVyZW50IG1lbW9y
+eQphbnltb3JlIGR1ZSB0byB0aGUgbWlzc2luZyBtYXNrLgoKRml4ZXM6IGE1NTE2MjE5YjEwMiAo
+Im9mL3BsYXRmb3JtOiBJbml0aWFsaXNlIGRlZmF1bHQgRE1BIG1hc2tzIikKQ2M6IFJvYmluIE11
+cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+CkNjOiBSb2IgSGVycmluZyA8cm9iaEBrZXJuZWwu
+b3JnPgpDYzogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+CkNjOiBFcmljIEFuaG9sdCA8
+ZXJpY0BhbmhvbHQubmV0PgpDYzogTm9yYWxmIFRyw7hubmVzIDxub3JhbGZAdHJvbm5lcy5vcmc+
+ClNpZ25lZC1vZmYtYnk6IExpbnVzIFdhbGxlaWogPGxpbnVzLndhbGxlaWpAbGluYXJvLm9yZz4K
+LS0tCkkgZG9uJ3Qga25vdyB3aGljaCB0cmVlIFJvYmlucyBwYXRjaCBjYW1lIGluIGZyb20sIGJ1
+dCBJIGFzc3VtZQpDaHJpc3RvcGgncywgc28gY2FuIHlvdSBjYXJyeSB0aGlzIHBhdGNoIGFzIHdl
+bGw/Ci0tLQogZHJpdmVycy9vZi9wbGF0Zm9ybS5jIHwgMyArKysKIDEgZmlsZSBjaGFuZ2VkLCAz
+IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9kcml2ZXJzL29mL3BsYXRmb3JtLmMgYi9kcml2
+ZXJzL29mL3BsYXRmb3JtLmMKaW5kZXggN2JhOTBjMjkwYTQyLi43NDM1Yzc5Y2E1NmQgMTAwNjQ0
+Ci0tLSBhL2RyaXZlcnMvb2YvcGxhdGZvcm0uYworKysgYi9kcml2ZXJzL29mL3BsYXRmb3JtLmMK
+QEAgLTI0Miw2ICsyNDIsOSBAQCBzdGF0aWMgc3RydWN0IGFtYmFfZGV2aWNlICpvZl9hbWJhX2Rl
+dmljZV9jcmVhdGUoc3RydWN0IGRldmljZV9ub2RlICpub2RlLAogCQlnb3RvIGVycl9jbGVhcl9m
+bGFnOwogCiAJLyogc2V0dXAgZ2VuZXJpYyBkZXZpY2UgaW5mbyAqLworCWRldi0+ZGV2LmNvaGVy
+ZW50X2RtYV9tYXNrID0gRE1BX0JJVF9NQVNLKDMyKTsKKwlpZiAoIWRldi0+ZGV2LmRtYV9tYXNr
+KQorCQlkZXYtPmRldi5kbWFfbWFzayA9ICZkZXYtPmRldi5jb2hlcmVudF9kbWFfbWFzazsKIAlk
+ZXYtPmRldi5vZl9ub2RlID0gb2Zfbm9kZV9nZXQobm9kZSk7CiAJZGV2LT5kZXYuZndub2RlID0g
+Jm5vZGUtPmZ3bm9kZTsKIAlkZXYtPmRldi5wYXJlbnQgPSBwYXJlbnQgPyA6ICZwbGF0Zm9ybV9i
+dXM7Ci0tIAoyLjE3LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9w
+Lm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1k
+ZXZlbAo=
