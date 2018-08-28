@@ -1,165 +1,124 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v5 01/23] iommu: introduce bind_pasid_table API function
-Date: Tue, 28 Aug 2018 10:04:01 -0700
-Message-ID: <20180828100401.223c02f8@jacob-builder>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1526072055-86990-2-git-send-email-jacob.jun.pan@linux.intel.com>
-        <e9ddb745-9cfb-1d40-05e0-7bd75292a41f@redhat.com>
-        <A2975661238FB949B60364EF0F2C257439CCE9CC@SHSMSX104.ccr.corp.intel.com>
-        <4adc15a2-111b-e4e3-525e-0091fcb1ec5c@redhat.com>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [Patch v15 4/5] dt-bindings: arm-smmu: Add bindings for
+ qcom,smmu-v2
+Date: Tue, 28 Aug 2018 15:34:18 -0500
+Message-ID: <20180828203418.GA18366@bogus>
+References: <20180827105551.16346-1-vivek.gautam@codeaurora.org>
+ <20180827105551.16346-5-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4adc15a2-111b-e4e3-525e-0091fcb1ec5c@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <20180827105551.16346-5-vivek.gautam@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Liu@mail.linuxfoundation.org" <Liu@mail.linuxfoundation.org>, Yi L <yi.l.liu@linux.intel.com>, Jean Delvare <khali@linux-fr.org>, "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, jacob.jun.pan@linux.intel.com
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: joro@8bytes.org, robin.murphy@arm.com, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, freedreno@lists.freedesktop.org, alex.williamson@redhat.com, mark.rutland@arm.com, rjw@rjwysocki.net, robdclark@gmail.com, andy.gross@linaro.org, linux-pm@vger.kernel.org, sboyd@kernel.org, tfiga@chromium.org, jcrouse@codeaurora.org, sricharan@codeaurora.org, m.szyprowski@samsung.com, architt@codeaurora.org, linux-arm-msm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 24 Aug 2018 15:20:08 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+On Mon, Aug 27, 2018 at 04:25:50PM +0530, Vivek Gautam wrote:
+> Add bindings doc for Qcom's smmu-v2 implementation.
+> 
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+> 
+> Changes since v14:
+>  - This is a new patch added in v15 after noticing the new
+>    checkpatch warning for separate dt-bindings doc.
+>  - This patch also addresses comments given by Rob and Robin to add
+>    a list of valid values of '<soc>' in "qcom,<soc>-smmu-v2"
+>    compatible string.
+> 
+>  .../devicetree/bindings/iommu/arm,smmu.txt         | 47 ++++++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index 8a6ffce12af5..52198a539606 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -17,10 +17,24 @@ conditions.
+>                          "arm,mmu-401"
+>                          "arm,mmu-500"
+>                          "cavium,smmu-v2"
+> +                        "qcom,<soc>-smmu-v2", "qcom,smmu-v2"
 
-> Hi Yi Liu,
-> 
-> On 08/24/2018 02:47 PM, Liu, Yi L wrote:
-> > Hi Eric,
-> >   
-> >> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> >> bounces@lists.linux-foundation.org] On Behalf Of Auger Eric
-> >> Sent: Friday, August 24, 2018 12:35 AM
-> >>
-> >> Hi Jacob,
-> >>
-> >> On 05/11/2018 10:53 PM, Jacob Pan wrote:  
-> >>> Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
-> >>> use in the guest:
-> >>> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
-> >>>
-> >>> As part of the proposed architecture, when an SVM capable PCI
-> >>> device is assigned to a guest, nested mode is turned on. Guest
-> >>> owns the first level page tables (request with PASID) which
-> >>> performs GVA->GPA translation. Second level page tables are owned
-> >>> by the host for GPA->HPA translation for both request with and
-> >>> without PASID.
-> >>>
-> >>> A new IOMMU driver interface is therefore needed to perform tasks
-> >>> as follows:
-> >>> * Enable nested translation and appropriate translation type
-> >>> * Assign guest PASID table pointer (in GPA) and size to host IOMMU
-> >>>
-> >>> This patch introduces new API functions to perform bind/unbind
-> >>> guest PASID tables. Based on common data, model specific IOMMU
-> >>> drivers can be extended to perform the specific steps for binding
-> >>> pasid table of assigned devices.
-> >>>
-> >>> Signed-off-by: Jean-Philippe Brucker
-> >>> <jean-philippe.brucker@arm.com> Signed-off-by: Liu, Yi L
-> >>> <yi.l.liu@linux.intel.com> Signed-off-by: Ashok Raj
-> >>> <ashok.raj@intel.com> Signed-off-by: Jacob Pan
-> >>> <jacob.jun.pan@linux.intel.com> ---  
-> > 
-> > [...]
-> >   
-> >>> +#ifndef _UAPI_IOMMU_H
-> >>> +#define _UAPI_IOMMU_H
-> >>> +
-> >>> +#include <linux/types.h>
-> >>> +
-> >>> +/**
-> >>> + * PASID table data used to bind guest PASID table to the host
-> >>> IOMMU. This will
-> >>> + * enable guest managed first level page tables.
-> >>> + * @version: for future extensions and identification of the
-> >>> data format
-> >>> + * @bytes: size of this structure
-> >>> + * @base_ptr:	PASID table pointer
-> >>> + * @pasid_bits:	number of bits supported in the guest
-> >>> PASID table, must be  
-> >> less  
-> >>> + *		or equal than the host supported PASID size.
-> >>> + */
-> >>> +struct pasid_table_config {
-> >>> +	__u32 version;
-> >>> +#define PASID_TABLE_CFG_VERSION_1 1
-> >>> +	__u32 bytes;
-> >>> +	__u64 base_ptr;
-> >>> +	__u8 pasid_bits;  
-> >>
-> >> As reported in "[RFC 00/13] SMMUv3 Nested Stage Setup" thread,
-> >> this API could be used for ARM SMMUv3 nested stage enablement
-> >> without many changes. Assuming SMMUv3 nested stage is confirmed to
-> >> be interesting for vendors and maintainers, we could try to unify
-> >> the APIs.  
-> > 
-> > Just a quick question on nested stage on SMMUv3. If virtualizer
-> > wants to enable nested stage on SMMUv3, does it link the whole
-> > guest CD table to host or do it in other manner?  
-> Yes that's correct. On ARM SMMUv3 you have Stream Table Entries (STEs,
-> indexed by ReqID=streamid). If stage 1 is used, the STE points to 1 or
-> more contiguous Context Descriptors (CDs).
-> So STE looks like the VTD Context-Entry and CD table looks like the
-> VTD PASID table as far as I understand.
-> >   
-> >> As far as I understand the VTD PASID table is equivalent to the ARM
-> >> SMMUv3 context descriptor table (CD). This corresponds to the
-> >> stage 1 context table with one or more entries, each corresponding
-> >> to one PASID.  
-> > 
-> > PASID table is index by PASID, and have multiple entries. A PASID
-> > table would have 2^PASID_BITS entries.  
-> On ARM SMMUv3 the  number of CDs is 2 ^STE.S1CDMax.
-> >   
-> >> maybe using the s1ctx_table_config terminology instead of
-> >> pasid_table_config would be more generic, the pasid table being
-> >> Intel naming.
-> >>
-> >> on top of pasid_bits, I think an "asid_bits" field may be needed
-> >> too. The guest IOMMU might support a different number of asid bits
-> >> from the host one.  
-> > 
-> > Maybe needed for SMMUv3. I've noticed you've placed it in
-> > struct iommu_smmu_s1_config.
-> >   
-> >>
-> >> Although without having skimmed through the whole series yet, I
-> >> wonder how you handle the case where stage1 is bypassed or
-> >> disabled? The guest may define the S1 context entries but bypass
-> >> or abort stage 1 translations globally. Looks something missing to
-> >> me at first sight.  
-> > 
-> > Sorry, I didn't quite follow here. What usage is case such for?
-> > like stage 1 is bypassed or disabled. IOVA or SVA?  
-> Each STE entry has a config field which tells how S1 and S2 behave
-> 
-> Options are no traffic at all or any combination of the following:
-> 
-> S1        S2
-> bypass    bypass
-> transl    bypass
-> bypass    transl
-> transl    transl
-> 
-> host manages S2 info. guest sets S1 related fields.
-> 
-> To me the guest SET.Config should be passed to the host so that this
-> latter writes the correct global Config field value in the STE,
-> including S1 + S2 info.
-> 
-Global config ( VT-d global command reg) is IOMMU wide, we cannot let
-guest config change to directly modify global settings. I think it is
-up to the vIOMMU emulation code to unbind guest PASID table thus
-disable S1, if the guest is setting S1 to bypass/disabled.
+The v2 in the compatible string is kind of redundant unless the SoC has 
+other SMMU types.
 
-I am still perplexed by valid use cases of S1 bypass, to me it means no
-SVA nor guest IOVA which means no need for vIOMMU.
+>  
+>                    depending on the particular implementation and/or the
+>                    version of the architecture implemented.
+>  
+> +                  A number of Qcom SoCs use qcom,smmu-v2 version of the IP.
+> +                  "qcom,<soc>-smmu-v2" represents a soc specific compatible
+> +                  string that should be present along with the "qcom,smmu-v2"
+> +                  to facilitate SoC specific clocks/power connections and to
+> +                  address specific bug fixes.
+> +                  '<soc>' string in "qcom,<soc>-smmu-v2" should be one of the
+> +                  following:
+> +                  msm8996 - for msm8996 Qcom SoC.
+> +                  sdm845 - for sdm845 Qcom Soc.
 
-> Thanks
+Rather than all this prose, it would be simpler to just add 2 lines with 
+the full compatibles rather than <soc>. The <soc> thing is not going to 
+work when/if we move bindings to json-schema also.
+
+> +
+> +                  An example string would be -
+> +                  "qcom,msm8996-smmu-v2", "qcom,smmu-v2".
+> +
+>  - reg           : Base address and size of the SMMU.
+>  
+>  - #global-interrupts : The number of global interrupts exposed by the
+> @@ -71,6 +85,22 @@ conditions.
+>                    or using stream matching with #iommu-cells = <2>, and
+>                    may be ignored if present in such cases.
+>  
+> +- clock-names:    List of the names of clocks input to the device. The
+> +                  required list depends on particular implementation and
+> +                  is as follows:
+> +                  - for "qcom,smmu-v2":
+> +                    - "bus": clock required for downstream bus access and
+> +                             for the smmu ptw,
+> +                    - "iface": clock required to access smmu's registers
+> +                               through the TCU's programming interface.
+> +                  - unspecified for other implementations.
+> +
+> +- clocks:         Specifiers for all clocks listed in the clock-names property,
+> +                  as per generic clock bindings.
+> +
+> +- power-domains:  Specifiers for power domains required to be powered on for
+> +                  the SMMU to operate, as per generic power domain bindings.
+> +
+>  ** Deprecated properties:
+>  
+>  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
+> @@ -137,3 +167,20 @@ conditions.
+>                  iommu-map = <0 &smmu3 0 0x400>;
+>                  ...
+>          };
+> +
+> +	/* Qcom's arm,smmu-v2 implementation */
+> +	smmu4: iommu {
+
+Needs a unit-address.
+
+> +		compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
+> +		reg = <0xd00000 0x10000>;
+> +
+> +		#global-interrupts = <1>;
+> +		interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
+> +			     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>;
+> +		#iommu-cells = <1>;
+> +		power-domains = <&mmcc MDSS_GDSC>;
+> +
+> +		clocks = <&mmcc SMMU_MDP_AXI_CLK>,
+> +			 <&mmcc SMMU_MDP_AHB_CLK>;
+> +		clock-names = "bus", "iface";
+> +	};
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
 > 
-> Eric
-> > 
-> > Thanks,
-> > Yi Liu
-> >   
-
-[Jacob Pan]
