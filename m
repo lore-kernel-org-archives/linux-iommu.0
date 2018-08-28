@@ -1,62 +1,52 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v3 06/19] dt-bindings: memory: tegra: Squash tegra20-gart
- into tegra20-mc
-Date: Tue, 28 Aug 2018 16:09:05 +0300
-Message-ID: <80ab7d8c-8172-2521-2eda-a235bfcc2824@gmail.com>
-References: <20180818155430.5586-1-digetx@gmail.com>
- <20180818155430.5586-7-digetx@gmail.com> <20180820191209.GA28618@bogus>
- <b46cac22-9b31-9aa7-7eca-4725156346bb@gmail.com>
- <4538309b-fcb3-73ee-04e3-6cefcedd376d@gmail.com> <20180828104755.GC9386@ulmo>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: [PATCH] of/platform: Initialise AMBA default DMA masks
+Date: Tue, 28 Aug 2018 15:25:55 +0200
+Message-ID: <CACRpkdbLOGE2TiNxnV+L9Y=9QJ9jt-tv4GjDB3iTpJFj_w-5SQ@mail.gmail.com>
+References: <20180828084442.30176-1-linus.walleij@linaro.org>
+ <20180828092338.GA12488@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180828104755.GC9386@ulmo>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jonathan Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20180828092338.GA12488@lst.de>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Russell King <linux@armlinux.org.uk>, "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 28.08.2018 13:47, Thierry Reding wrote:
-> On Mon, Aug 20, 2018 at 10:35:54PM +0300, Dmitry Osipenko wrote:
->> On 20.08.2018 22:27, Dmitry Osipenko wrote:
->>> On 20.08.2018 22:12, Rob Herring wrote:
->>>> On Sat, Aug 18, 2018 at 06:54:17PM +0300, Dmitry Osipenko wrote:
->>>>> Splitting GART and Memory Controller wasn't a good decision that was made
->>>>> back in the day. Given that the GART driver hasn't ever been used by
->>>>> anything in the kernel, we decided that it will be better to correct the
->>>>> mistakes of the past and merge two bindings into a single one. In a result
->>>>
->>>> As a result...
->>>>
->>>>> there is a DT ABI change for the Memory Controller that allows not to
->>>>> break newer kernels using older DT by introducing a new required property,
->>>>> the memory clock. Adding the new clock property also puts the tegra20-mc
->>>>> binding in line with the bindings of the later Tegra generations.
->>>>
->>>> I don't understand this part. It looks to me like you are breaking 
->>>> compatibility. The driver failing to probe with an old DT is okay?
->>>
->>> Yes, DT compatibility is broken. New driver won't probe/load with the old DT,
->>> that's what we want.
->>>
->>>> OS's like OpenSUSE use new DTs with older kernel versions, so you should 
->>>> consider how to not break them as well. I guess if all this is optional 
->>>> or has been unused, then there shouldn't be a problem.
->>>
->>> That's interesting.. Memory Controller isn't optional, I guess we could change
->>> compatible to "nvidia,tegra20-mc-gart".bled in kernels config by
->> default and driver is functional, but it's okay 
->>
->> * I meant it's not optional in a sense that it's enaif MC driver will stop to probe
->> with older kernels as it is used only for reporting memory errors.
-> 
-> Yeah, we don't really regress at runtime. The errors reported by the
-> current driver are very rare, and even if you encounter them, they're
-> pretty cryptic, so I think this is one of the exceptional cases where
-> breaking the ABI "for the greater good" is acceptable.
-
-It's now became apparent that factoring out EMC from MC isn't a good idea too
-because MC need to interact with EMC and probably vice versa. Looks like we
-should consider restructuring MC for all Tegra's.
+T24gVHVlLCBBdWcgMjgsIDIwMTggYXQgMTE6MjEgQU0gQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBs
+c3QuZGU+IHdyb3RlOgoKPiA+ICsgICAgIGRldi0+ZGV2LmNvaGVyZW50X2RtYV9tYXNrID0gRE1B
+X0JJVF9NQVNLKDMyKTsKPiA+ICsgICAgIGlmICghZGV2LT5kZXYuZG1hX21hc2spCj4gPiArICAg
+ICAgICAgICAgIGRldi0+ZGV2LmRtYV9tYXNrID0gJmRldi0+ZGV2LmNvaGVyZW50X2RtYV9tYXNr
+Owo+Cj4gV2Ugc2hvdWxkIG5ldmVyIHNldCBkbWFfbWFzayB0byBwb2ludCB0byB0aGUgY29oZXJl
+bnRfZG1hX21hc2ssCj4gYXMgdGhhdCB3aWxsIGNhdXNlIHByb2JsZW1zIHdpdGggZGV2aWNlcyB0
+aGF0IGhhdmUgZGlmZmVyZW50Cj4gbWFzayBmb3IgdGhlIHR3by4KPgo+IEhvdyBhYm91dCBzb21l
+dGhpbmcgbGlrZSB0aGlzPwooLi4uKQo+ICsgICAgICAgdTY0ICAgICAgICAgICAgICAgICAgICAg
+ZG1hX21hc2s7CgpXZSBkaWQgdGhhdCBiZWZvcmUsIHNvIHRoaXMgYmVjb21lcyBlZmZlY3RpdmVs
+eSBhIHJldmVydCBvZjoKY29tbWl0IDQ0NmIyYTkzODBiNjRiOWQ3NDEwZDg2ZWU4MjI2MDMxZTAz
+NjQ1Y2YKCiAgICBETUEtQVBJOiBhbWJhOiBnZXQgcmlkIG9mIHNlcGFyYXRlIGRtYV9tYXNrCgog
+ICAgQU1CQSBQcmltZWNlbGwgZGV2aWNlcyBhbHdheXMgdHJlYXQgc3RyZWFtaW5nIGFuZCBjb2hl
+cmVudCBETUEgZXhhY3RseQogICAgdGhlIHNhbWUsIHNvIHRoZXJlJ3Mgbm8gcG9pbnQgaW4gaGF2
+aW5nIHRoZSBtYXNrcyBzZXBhcmF0ZWQuCgpTbyB0aGVyZSBpcyBzb21lIGhpc3RvcnkgYXJvdW5k
+IHRoaXMuCgpUaGVyZSBpcyBhbHNvIHNvbWUgY29kZSBpbiBkcml2ZXJzL2FtYmEvYnVzLmMgYWZm
+ZWN0ZWQgYnkgdGhhdAphbmQgSSBuZWVkIHRvIGxvb2sgb3ZlciBhbGwgc3RhdGljIGFtYmEgZGV2
+aWNlIGFsbG9jYXRpb25zIGlmIHdlCnJlaW50cm9kdWNlIHRoaXMuCgpUaGF0IHNhaWQsIHRoZSBy
+ZW1haW5pbmcgc3RhdGljIGFsbG9jYXRpb25zIChhLmsuYS4gYm9hcmRmaWxlcykgYXBwZWFyCnRv
+IGJlIHZlcnkgZmV3IGFuZCB2ZXJ5IGxpbWl0ZWQsIGFsbW9zdCBhbGwgc3lzdGVtcyB1c2UgZGV2
+aWNlIHRyZWUKb3IgQUNQSSBvciBpdGVyYXRpdmUgZHluYW1pYyBhbGxvY2F0aW9uIChmcm9tIGFt
+YmEvYnVzLmMgZnVuY3Rpb25zKQpvZiB0aGUgYW1iYSBkZXZpY2VzIG5vdy4KCkRvIHlvdSB0aGlu
+ayB3ZSBjYW4gcHJvY2VlZCB3aXRoIHRoaXMgcGF0Y2ggb3IgZG8geW91IHdhbnQgbWUgdG8KcmV2
+ZXJ0IHRoZSBzcGxpdCBiYWNrPwoKRldJVyB0aGUgcGxhdGZvcm0gZGV2aWNlcyBoYXZlIHRoZSBz
+YW1lIHByb2JsZW0sIGJ1dCBJIGtub3cKSSBrbm93LCB0d28gd3JvbmdzIGRvZXMgbm90IG1ha2Ug
+b25lIHJpZ2h0IDovCgpZb3VycywKTGludXMgV2FsbGVpagpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
+bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
+bG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
