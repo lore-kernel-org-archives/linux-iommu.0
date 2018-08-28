@@ -1,67 +1,43 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH] of/platform: Initialise AMBA default DMA masks
-Date: Tue, 28 Aug 2018 15:14:14 +0100
-Message-ID: <20180828141413.GH30658@n2100.armlinux.org.uk>
-References: <20180828084442.30176-1-linus.walleij@linaro.org>
- <20180828092338.GA12488@lst.de>
- <CACRpkdbLOGE2TiNxnV+L9Y=9QJ9jt-tv4GjDB3iTpJFj_w-5SQ@mail.gmail.com>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v5 01/23] iommu: introduce bind_pasid_table API function
+Date: Tue, 28 Aug 2018 09:36:16 -0700
+Message-ID: <20180828093616.30e1160f@jacob-builder>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1526072055-86990-2-git-send-email-jacob.jun.pan@linux.intel.com>
+        <b6621306-fd32-7ede-ae88-7345898eb134@redhat.com>
+        <20180827221422.57e233df@jacob-builder>
+        <7c331f56-1ff8-7929-76bf-e73915a91ace@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkdbLOGE2TiNxnV+L9Y=9QJ9jt-tv4GjDB3iTpJFj_w-5SQ@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <7c331f56-1ff8-7929-76bf-e73915a91ace@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Auger Eric <eric.auger@redhat.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Yi L <yi.l.liu@linux.intel.com>, Raj Ashok <ashok.raj@intel.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Liu@mail.linuxfoundation.org, Jean Delvare <khali@linux-fr.org>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBBdWcgMjgsIDIwMTggYXQgMDM6MjU6NTVQTSArMDIwMCwgTGludXMgV2FsbGVpaiB3
-cm90ZToKPiBPbiBUdWUsIEF1ZyAyOCwgMjAxOCBhdCAxMToyMSBBTSBDaHJpc3RvcGggSGVsbHdp
-ZyA8aGNoQGxzdC5kZT4gd3JvdGU6Cj4gCj4gPiA+ICsgICAgIGRldi0+ZGV2LmNvaGVyZW50X2Rt
-YV9tYXNrID0gRE1BX0JJVF9NQVNLKDMyKTsKPiA+ID4gKyAgICAgaWYgKCFkZXYtPmRldi5kbWFf
-bWFzaykKPiA+ID4gKyAgICAgICAgICAgICBkZXYtPmRldi5kbWFfbWFzayA9ICZkZXYtPmRldi5j
-b2hlcmVudF9kbWFfbWFzazsKPiA+Cj4gPiBXZSBzaG91bGQgbmV2ZXIgc2V0IGRtYV9tYXNrIHRv
-IHBvaW50IHRvIHRoZSBjb2hlcmVudF9kbWFfbWFzaywKPiA+IGFzIHRoYXQgd2lsbCBjYXVzZSBw
-cm9ibGVtcyB3aXRoIGRldmljZXMgdGhhdCBoYXZlIGRpZmZlcmVudAo+ID4gbWFzayBmb3IgdGhl
-IHR3by4KPiA+Cj4gPiBIb3cgYWJvdXQgc29tZXRoaW5nIGxpa2UgdGhpcz8KPiAoLi4uKQo+ID4g
-KyAgICAgICB1NjQgICAgICAgICAgICAgICAgICAgICBkbWFfbWFzazsKPiAKPiBXZSBkaWQgdGhh
-dCBiZWZvcmUsIHNvIHRoaXMgYmVjb21lcyBlZmZlY3RpdmVseSBhIHJldmVydCBvZjoKPiBjb21t
-aXQgNDQ2YjJhOTM4MGI2NGI5ZDc0MTBkODZlZTgyMjYwMzFlMDM2NDVjZgo+IAo+ICAgICBETUEt
-QVBJOiBhbWJhOiBnZXQgcmlkIG9mIHNlcGFyYXRlIGRtYV9tYXNrCj4gCj4gICAgIEFNQkEgUHJp
-bWVjZWxsIGRldmljZXMgYWx3YXlzIHRyZWF0IHN0cmVhbWluZyBhbmQgY29oZXJlbnQgRE1BIGV4
-YWN0bHkKPiAgICAgdGhlIHNhbWUsIHNvIHRoZXJlJ3Mgbm8gcG9pbnQgaW4gaGF2aW5nIHRoZSBt
-YXNrcyBzZXBhcmF0ZWQuCj4gCj4gU28gdGhlcmUgaXMgc29tZSBoaXN0b3J5IGFyb3VuZCB0aGlz
-Lgo+IAo+IFRoZXJlIGlzIGFsc28gc29tZSBjb2RlIGluIGRyaXZlcnMvYW1iYS9idXMuYyBhZmZl
-Y3RlZCBieSB0aGF0Cj4gYW5kIEkgbmVlZCB0byBsb29rIG92ZXIgYWxsIHN0YXRpYyBhbWJhIGRl
-dmljZSBhbGxvY2F0aW9ucyBpZiB3ZQo+IHJlaW50cm9kdWNlIHRoaXMuCgpJIGRvbid0IGhhdmUg
-dGhlIHJlc3Qgb2YgdGhpcyB0aHJlYWQgdG8gcmVhZC4uLgoKQnV0IHllcywgdGhlIGZ1bmRhbWVu
-dGFsIGZhY3QgaXMgdGhhdCBBTUJBIGRldmljZXMgZG9uJ3QgaGF2ZSBhbnkKY2FyZSBhYm91dCB0
-aGUgZGlmZmVyZW5jZXMgYmV0d2VlbiBjb2hlcmVudCBhbmQgc3RyZWFtaW5nIERNQS4gIFRoZQpk
-aXN0aW5jdGlvbiB0aGF0IHdlIG1ha2UgaW4gdGhlIGtlcm5lbCBpcyBwdXJlbHkgYSBzb2Z0d2Fy
-ZSBvbmUgd2hlbgppdCBjb21lcyB0byB0aGVzZSBkZXZpY2VzLgoKTW9zdCBBTUJBIGRldmljZXMg
-dGhlbXNlbHZlcyBhcmUgbm90IERNQSBjYXBhYmxlLCBhcyB0aGV5IGFyZSBvbmx5CmNvbm5lY3Rl
-ZCB0byB0aGUgQVBCIChBbWJhIHBlcmlwaGVyYWwgYnVzKSBhbmQgdGhleSByZWx5IG9uIGEKc2Vw
-YXJhdGUgRE1BIGVuZ2luZSBmb3IgdGhlaXIgRE1BLiAgQVBCIGRldmljZXMgc2hvdWxkIG5vdCBo
-YXZlIERNQQptYXNrcyAtIHRoZWlyIERNQSBjYXBhYmlsaXRpZXMgYXJlIGVudGlyZWx5IGRvd24g
-dG8gdGhlIERNQSBjb250cm9sbGVyLgpTbywgdGhlIG1ham9yaXR5IG9mIEFNQkEgZGV2aWNlcyBz
-aG91bGQgbm90IGhhdmUgYW55IERNQSBtYXNrcy4KCk9ubHkgdGhvc2UgY29ubmVjdGVkIHRvIGEg
-YnVzIHRoYXQgdGhleSBjYW4gbWFzdGVyIG9uIChlZyBBWEkpIHNob3VsZApoYXZlIERNQSBtYXNr
-cyAtIHRoaW5ncyBsaWtlIHRoZSBQTDA4eCBETUEgY29udHJvbGxlcnMsIFBMMTF4IExDRApjb250
-cm9sbGVycywgZXRjLiAgQXMgSSd2ZSBzYWlkIGFib3ZlLCB0aGVyZSBpcyBubyBkaWZmZXJlbmNl
-IGJldHdlZW4Kc3RyZWFtaW5nIGFuZCBjb2hlcmVudCBETUEgZm9yIHRoZXNlIGRldmljZXMuCgot
-LSAKUk1LJ3MgUGF0Y2ggc3lzdGVtOiBodHRwOi8vd3d3LmFybWxpbnV4Lm9yZy51ay9kZXZlbG9w
-ZXIvcGF0Y2hlcy8KRlRUQyBicm9hZGJhbmQgZm9yIDAuOG1pbGUgbGluZSBpbiBzdWJ1cmJpYTog
-c3luYyBhdCAxMy44TWJwcyBkb3duIDYzMGticHMgdXAKQWNjb3JkaW5nIHRvIHNwZWVkdGVzdC5u
-ZXQ6IDEzTWJwcyBkb3duIDQ5MGticHMgdXAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMu
-ZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlz
-dGluZm8vZHJpLWRldmVsCg==
+On Tue, 28 Aug 2018 10:34:19 +0200
+Auger Eric <eric.auger@redhat.com> wrote:
+
+> > Anyway, for the new VT-d 3.0 spec. we no longer need this API. In
+> > stead, I will introduce bind_guest_pasid() API, where per device
+> > PASID table is allocated by the host.  
+> 
+> So what is the exact state of this series? Is it outdated as you don't
+> target VT-d 2.5 anymore? Will you keep the rest of the API?
+
+Hi Eric,
+
+I am not targeting VT-d 2.5 for SVA related work. I am working on the
+rest of the APIs for supporting VT-d v3, which includes guest PASID
+bind, fault reporting, and invalidation passdown from the guest. These
+are based on some recent patches from Baolu.
+https://lkml.org/lkml/2018/7/16/62
+
+So I feel it is better for you to take over bind_pasid_table() API in
+your series. I will drop it from my next version.
+
+Thanks,
+
+Jacob
