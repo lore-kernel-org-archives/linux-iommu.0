@@ -1,49 +1,45 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] of/platform: Initialise AMBA default DMA masks
-Date: Tue, 28 Aug 2018 11:23:38 +0200
-Message-ID: <20180828092338.GA12488@lst.de>
-References: <20180828084442.30176-1-linus.walleij@linaro.org>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: new SBus related DMA warnings in 4.18+git
+Date: Tue, 28 Aug 2018 11:24:32 +0200
+Message-ID: <20180828092432.GB12488@lst.de>
+References: <alpine.LRH.2.21.1808260902280.22219@math.ut.ee>
+	<20180827154716.GA30492@lst.de>
+	<20180827191518.GA26665@ravnborg.org>
+	<20180827.134136.955064444069965259.davem@davemloft.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180828084442.30176-1-linus.walleij@linaro.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20180827.134136.955064444069965259.davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Miller <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mroos-Y27EyoLml9s@public.gmane.org, sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-PiAgCS8qIHNldHVwIGdlbmVyaWMgZGV2aWNlIGluZm8gKi8KPiArCWRldi0+ZGV2LmNvaGVyZW50
-X2RtYV9tYXNrID0gRE1BX0JJVF9NQVNLKDMyKTsKPiArCWlmICghZGV2LT5kZXYuZG1hX21hc2sp
-Cj4gKwkJZGV2LT5kZXYuZG1hX21hc2sgPSAmZGV2LT5kZXYuY29oZXJlbnRfZG1hX21hc2s7CgpX
-ZSBzaG91bGQgbmV2ZXIgc2V0IGRtYV9tYXNrIHRvIHBvaW50IHRvIHRoZSBjb2hlcmVudF9kbWFf
-bWFzaywKYXMgdGhhdCB3aWxsIGNhdXNlIHByb2JsZW1zIHdpdGggZGV2aWNlcyB0aGF0IGhhdmUg
-ZGlmZmVyZW50Cm1hc2sgZm9yIHRoZSB0d28uCgpIb3cgYWJvdXQgc29tZXRoaW5nIGxpa2UgdGhp
-cz8KCi0tLQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9vZi9wbGF0Zm9ybS5jIGIvZHJpdmVycy9vZi9w
-bGF0Zm9ybS5jCmluZGV4IDdiYTkwYzI5MGE0Mi4uYzA0ZWQxMjQzMDVjIDEwMDY0NAotLS0gYS9k
-cml2ZXJzL29mL3BsYXRmb3JtLmMKKysrIGIvZHJpdmVycy9vZi9wbGF0Zm9ybS5jCkBAIC0yNDIs
-NiArMjQyLDkgQEAgc3RhdGljIHN0cnVjdCBhbWJhX2RldmljZSAqb2ZfYW1iYV9kZXZpY2VfY3Jl
-YXRlKHN0cnVjdCBkZXZpY2Vfbm9kZSAqbm9kZSwKIAkJZ290byBlcnJfY2xlYXJfZmxhZzsKIAog
-CS8qIHNldHVwIGdlbmVyaWMgZGV2aWNlIGluZm8gKi8KKwlkZXYtPmRtYV9tYXNrID0gRE1BX0JJ
-VF9NQVNLKDMyKTsKKwlkZXYtPmRldi5jb2hlcmVudF9kbWFfbWFzayA9IERNQV9CSVRfTUFTSygz
-Mik7CisJZGV2LT5kZXYuZG1hX21hc2sgPSAmZGV2LT5kbWFfbWFzazsKIAlkZXYtPmRldi5vZl9u
-b2RlID0gb2Zfbm9kZV9nZXQobm9kZSk7CiAJZGV2LT5kZXYuZndub2RlID0gJm5vZGUtPmZ3bm9k
-ZTsKIAlkZXYtPmRldi5wYXJlbnQgPSBwYXJlbnQgPyA6ICZwbGF0Zm9ybV9idXM7CmRpZmYgLS1n
-aXQgYS9pbmNsdWRlL2xpbnV4L2FtYmEvYnVzLmggYi9pbmNsdWRlL2xpbnV4L2FtYmEvYnVzLmgK
-aW5kZXggZDE0M2MxM2JlZDI2Li5mYmM3YWRmM2NhNTQgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGlu
-dXgvYW1iYS9idXMuaAorKysgYi9pbmNsdWRlL2xpbnV4L2FtYmEvYnVzLmgKQEAgLTM0LDYgKzM0
-LDcgQEAgc3RydWN0IGFtYmFfZGV2aWNlIHsKIAl1bnNpZ25lZCBpbnQJCXBlcmlwaGlkOwogCXVu
-c2lnbmVkIGludAkJaXJxW0FNQkFfTlJfSVJRU107CiAJY2hhcgkJCSpkcml2ZXJfb3ZlcnJpZGU7
-CisJdTY0CQkJZG1hX21hc2s7CiB9OwogCiBzdHJ1Y3QgYW1iYV9kcml2ZXIgewpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBs
-aXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
-a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Mon, Aug 27, 2018 at 01:41:36PM -0700, David Miller wrote:
+> From: Sam Ravnborg <sam-uyr5N9Q2VtJg9hUCZPvPmw@public.gmane.org>
+> Date: Mon, 27 Aug 2018 21:15:18 +0200
+> 
+> > Why not fix the drivers rather than papering over the fact
+> > that they are missing the DMA mask?
+> > 
+> > We are in the lucky situation the Meelis can test any patches.
+> 
+> SBUS drivers never set the mask because they never needed to and could
+> use the default, since SBUS IOMMUs were quite universal in nature.
+
+In addition to that the historical expectation is that you can do
+dma to platform_devices without setup, and for some reason sbus
+devices all show up as platform_devices.
+
+> I think it's more error prone to add the mask setting to every single
+> SBUS driver than to just have the core setup the default properly.
