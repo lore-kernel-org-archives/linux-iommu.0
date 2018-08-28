@@ -1,103 +1,35 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/arm-smmu: Make way to add Qcom's smmu-500
-	errata handling
-Date: Tue, 28 Aug 2018 12:29:02 +0530
-Message-ID: <1b73ab8e-a5fa-e917-cd78-1e0fafe8d00f@codeaurora.org>
-References: <20180814105528.20592-1-vivek.gautam@codeaurora.org>
-	<20180814105528.20592-5-vivek.gautam@codeaurora.org>
-	<cfca5369-eacd-bb4b-6f1e-68a56f72c327@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cfca5369-eacd-bb4b-6f1e-68a56f72c327-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Dongli Zhang <dongli.zhang@oracle.com>
+Subject: [PATCH 1/1] swiotlb: fix comment on swiotlb_bounce()
+Date: Tue, 28 Aug 2018 15:46:37 +0800
+Message-ID: <1535442397-28647-1-git-send-email-dongli.zhang@oracle.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgoKT24gOC8xNC8yMDE4IDEwOjI5IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4g
-T24gMTQvMDgvMTggMTE6NTUsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4gQ2xlYW51cCB0byByZS11
-c2Ugc29tZSBvZiB0aGUgc3R1ZmYKPj4KPj4gU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2
-aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+Cj4+IC0tLQo+PiDCoCBkcml2ZXJzL2lvbW11L2Fy
-bS1zbW11LmMgfCAzMiArKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLQo+PiDCoCAxIGZp
-bGUgY2hhbmdlZCwgMjUgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkKPgo+IEkgdGhpbmsg
-dGhlIG92ZXJhbGwgZGlmZnN0YXQgd291bGQgYmUgYW4gYXdmdWwgbG90IHNtYWxsZXIgaWYgdGhl
-IAo+IGVycmF0dW0gd29ya2Fyb3VuZCBqdXN0IGhhcyBpdHMgb3duIHJlYWRsX3BvbGxfdGltZW91
-dCgpIGFzIGl0IGRvZXMgaW4gCj4gdGhlIHZlbmRvciBrZXJuZWwuIFRoZSBidXJzdC1wb2xsaW5n
-IGxvb3AgaXMgZm9yIG1pbmltaXNpbmcgbGF0ZW5jeSBpbiAKPiBoaWdoLXRocm91Z2hwdXQgc2l0
-dWF0aW9ucywgYW5kIGlmIHlvdSdyZSBpbiBhIHdvcmthcm91bmQgd2hpY2ggaGFzIHRvIAo+IGxv
-Y2sgKmV2ZXJ5KiByZWdpc3RlciB3cml0ZSBhbmQgaXNzdWUgdHdvIGZpcm13YXJlIGNhbGxzIGFy
-b3VuZCBlYWNoIAo+IHN5bmMgSSB0aGluayB5b3UncmUgYWxyZWFkeSB3ZWxsIG91dCBvZiB0aGF0
-IGdhbWUuCgpTb3JyeSBmb3IgdGhlIGRlbGF5ZWQgcmVzcG9uc2UuIEkgd2FzIG9uIHZhY2F0aW9u
-LgpJIHdpbGwgZml4IHRoaXMgaW4gbXkgbmV4dCB2ZXJzaW9uIGJ5IGFkZGluZyB0aGUgc2VwYXJh
-dGUgCnJlYWRfcG9sbF90aW1lb3V0KCkgZm9yIHRoZSBlcnJhdHVtIFdBLgoKPgo+PiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS5j
-Cj4+IGluZGV4IDMyZTg2ZGY4MDQyOC4uNzVjMTQ2NzUxYzg3IDEwMDY0NAo+PiAtLS0gYS9kcml2
-ZXJzL2lvbW11L2FybS1zbW11LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCj4+
-IEBAIC0zOTEsMjEgKzM5MSwzMSBAQCBzdGF0aWMgdm9pZCBfX2FybV9zbW11X2ZyZWVfYml0bWFw
-KHVuc2lnbmVkIAo+PiBsb25nICptYXAsIGludCBpZHgpCj4+IMKgwqDCoMKgwqAgY2xlYXJfYml0
-KGlkeCwgbWFwKTsKPj4gwqAgfQo+PiDCoCAtLyogV2FpdCBmb3IgYW55IHBlbmRpbmcgVExCIGlu
-dmFsaWRhdGlvbnMgdG8gY29tcGxldGUgKi8KPj4gLXN0YXRpYyB2b2lkIF9fYXJtX3NtbXVfdGxi
-X3N5bmMoc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSwKPj4gLcKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCB2b2lkIF9faW9tZW0gKnN5bmMsIHZvaWQgX19pb21lbSAqc3RhdHVzKQo+
-PiArc3RhdGljIGludCBfX2FybV9zbW11X3RsYl9zeW5jX3dhaXQodm9pZCBfX2lvbWVtICpzdGF0
-dXMpCj4+IMKgIHsKPj4gwqDCoMKgwqDCoCB1bnNpZ25lZCBpbnQgc3Bpbl9jbnQsIGRlbGF5Owo+
-PiDCoCAtwqDCoMKgIHdyaXRlbF9yZWxheGVkKDAsIHN5bmMpOwo+PiDCoMKgwqDCoMKgIGZvciAo
-ZGVsYXkgPSAxOyBkZWxheSA8IFRMQl9MT09QX1RJTUVPVVQ7IGRlbGF5ICo9IDIpIHsKPj4gwqDC
-oMKgwqDCoMKgwqDCoMKgIGZvciAoc3Bpbl9jbnQgPSBUTEJfU1BJTl9DT1VOVDsgc3Bpbl9jbnQg
-PiAwOyBzcGluX2NudC0tKSB7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmICghKHJl
-YWRsX3JlbGF4ZWQoc3RhdHVzKSAmIHNUTEJHU1RBVFVTX0dTQUNUSVZFKSkKPj4gLcKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm47Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgcmV0dXJuIDA7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNwdV9yZWxh
-eCgpOwo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgfQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgdWRlbGF5
-KGRlbGF5KTsKPj4gwqDCoMKgwqDCoCB9Cj4+ICsKPj4gK8KgwqDCoCByZXR1cm4gLUVCVVNZOwo+
-PiArfQo+PiArCj4+ICsvKiBXYWl0IGZvciBhbnkgcGVuZGluZyBUTEIgaW52YWxpZGF0aW9ucyB0
-byBjb21wbGV0ZSAqLwo+PiArc3RhdGljIHZvaWQgX19hcm1fc21tdV90bGJfc3luYyhzdHJ1Y3Qg
-YXJtX3NtbXVfZGV2aWNlICpzbW11LAo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IHZvaWQgX19pb21lbSAqc3luYywgdm9pZCBfX2lvbWVtICpzdGF0dXMpCj4+ICt7Cj4+ICvCoMKg
-wqAgd3JpdGVsX3JlbGF4ZWQoMCwgc3luYyk7Cj4+ICsKPj4gK8KgwqDCoCBpZiAoIV9fYXJtX3Nt
-bXVfdGxiX3N5bmNfd2FpdChzdGF0dXMpKQo+PiArwqDCoMKgwqDCoMKgwqAgcmV0dXJuOwo+PiAr
-Cj4+IMKgwqDCoMKgwqAgZGV2X2Vycl9yYXRlbGltaXRlZChzbW11LT5kZXYsCj4+IMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgIlRMQiBzeW5jIHRpbWVkIG91dCAtLSBTTU1VIG1h
-eSBiZSBkZWFkbG9ja2VkXG4iKTsKPj4gwqAgfQo+PiBAQCAtNDYxLDggKzQ3MSw5IEBAIHN0YXRp
-YyB2b2lkIGFybV9zbW11X3RsYl9pbnZfY29udGV4dF9zMih2b2lkIAo+PiAqY29va2llKQo+PiDC
-oMKgwqDCoMKgIGFybV9zbW11X3RsYl9zeW5jX2dsb2JhbChzbW11KTsKPj4gwqAgfQo+PiDCoCAt
-c3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl9yYW5nZV9ub3N5bmModW5zaWduZWQgbG9uZyBp
-b3ZhLCAKPj4gc2l6ZV90IHNpemUsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgc2l6ZV90IGdyYW51bGUsIGJvb2wgbGVhZiwgdm9pZCAqY29va2llKQo+PiAr
-c3RhdGljIHZvaWQgX19hcm1fc21tdV90bGJfaW52X3JhbmdlX25vc3luYyh1bnNpZ25lZCBsb25n
-IGlvdmEsIAo+PiBzaXplX3Qgc2l6ZSwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGdyYW51bGUsIGJvb2wgbGVhZiwKPj4gK8KgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdm9pZCAqY29va2llKQo+PiDC
-oCB7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21tdV9kb21haW4gPSBj
-b29raWU7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IGFybV9zbW11X2NmZyAqY2ZnID0gJnNtbXVfZG9t
-YWluLT5jZmc7Cj4+IEBAIC00OTgsNiArNTA5LDEzIEBAIHN0YXRpYyB2b2lkIAo+PiBhcm1fc21t
-dV90bGJfaW52X3JhbmdlX25vc3luYyh1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+
-PiDCoMKgwqDCoMKgIH0KPj4gwqAgfQo+PiDCoCArc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2lu
-dl9yYW5nZV9ub3N5bmModW5zaWduZWQgbG9uZyBpb3ZhLCAKPj4gc2l6ZV90IHNpemUsCj4+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGdyYW51bGUs
-IGJvb2wgbGVhZiwKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCB2b2lkICpjb29raWUpCj4+ICt7Cj4+ICvCoMKgwqAgX19hcm1fc21tdV90bGJfaW52X3Jhbmdl
-X25vc3luYyhpb3ZhLCBzaXplLCBncmFudWxlLCBsZWFmLCBjb29raWUpOwo+PiArfQo+PiArCj4K
-PiBBRkFJQ1MgZXZlbiBhZnRlciBwYXRjaCAjNSB0aGlzIGRvZXMgYWJzb2x1dGVseSBub3RoaW5n
-IGV4Y2VwdCBtYWtlIAo+IHRoZSBjb2RlIG5lZWRsZXNzbHkgaGFyZGVyIHRvIHJlYWQgOigKClN1
-cmUsIEkgd2lsbCByYXRoZXIgY2FsbCBhcm1fc21tdV90bGJfaW52X3JhbmdlX25vc3luYygpIGZy
-b20KcWNvbV9lcnJhdGFfdGxiX2ludl9yYW5nZV9ub3N5bmMoKSB0aGVuIG1ha2UgdGhpcyBjaGFu
-Z2UuClRoYW5rcyBmb3IgdGhlIHJldmlldy4KCkJlc3QgcmVnYXJkcwpWaXZlawoKPgo+IFJvYmlu
-Lgo+Cj4+IMKgIC8qCj4+IMKgwqAgKiBPbiBNTVUtNDAxIGF0IGxlYXN0LCB0aGUgY29zdCBvZiBm
-aXJpbmcgb2ZmIG11bHRpcGxlIFRMQklWTUlEcyAKPj4gYXBwZWFycwo+PiDCoMKgICogYWxtb3N0
-IG5lZ2xpZ2libGUsIGJ1dCB0aGUgYmVuZWZpdCBvZiBnZXR0aW5nIHRoZSBmaXJzdCBvbmUgaW4g
-Cj4+IGFzIGZhciBhaGVhZAo+PgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+Fix the comment as swiotlb_bounce() is used to copy from original dma
+location to swiotlb buffer during swiotlb_tbl_map_single(), while to
+copy from swiotlb buffer to original dma location during
+swiotlb_tbl_unmap_single().
+
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+---
+ kernel/dma/swiotlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 4f8a6db..8fd4cfe 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -435,7 +435,7 @@ int is_swiotlb_buffer(phys_addr_t paddr)
+ }
+ 
+ /*
+- * Bounce: copy the swiotlb buffer back to the original dma location
++ * Bounce: copy the swiotlb buffer from or back to the original dma location
+  */
+ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+ 			   size_t size, enum dma_data_direction dir)
+-- 
+2.7.4
