@@ -1,37 +1,97 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] of/platform: Initialise AMBA default DMA masks
-Date: Wed, 29 Aug 2018 07:55:25 +0200
-Message-ID: <20180829055525.GB28958@lst.de>
-References: <20180828084442.30176-1-linus.walleij@linaro.org>
- <20180828092338.GA12488@lst.de>
- <CACRpkdbLOGE2TiNxnV+L9Y=9QJ9jt-tv4GjDB3iTpJFj_w-5SQ@mail.gmail.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH 1/3] driver core: initialize a default DMA mask for platform
+	device
+Date: Wed, 29 Aug 2018 08:23:59 +0200
+Message-ID: <20180829062401.8701-2-hch@lst.de>
+References: <20180829062401.8701-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <CACRpkdbLOGE2TiNxnV+L9Y=9QJ9jt-tv4GjDB3iTpJFj_w-5SQ@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Russell King <linux@armlinux.org.uk>, "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180829062401.8701-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBBdWcgMjgsIDIwMTggYXQgMDM6MjU6NTVQTSArMDIwMCwgTGludXMgV2FsbGVpaiB3
-cm90ZToKPiBEbyB5b3UgdGhpbmsgd2UgY2FuIHByb2NlZWQgd2l0aCB0aGlzIHBhdGNoIG9yIGRv
-IHlvdSB3YW50IG1lIHRvCj4gcmV2ZXJ0IHRoZSBzcGxpdCBiYWNrPwoKSSdsbCBhcHBseSB0aGlz
-IHBhdGNoIChwcm9iYWJseSB3aXRoIGEgbGl0dGxlIGNvbW1vbiBpbiB0aGUgc291cmNlCmV4cGxh
-aW5pbmcgdGhlIHNpdHVhdGlvbiksIGJhc2VkIG9uIHRoZSBmZWVkYmFjayBmcm9tIHlvdSBhbmQg
-UnVzc2VsbC4KCj4gCj4gRldJVyB0aGUgcGxhdGZvcm0gZGV2aWNlcyBoYXZlIHRoZSBzYW1lIHBy
-b2JsZW0sIGJ1dCBJIGtub3cKPiBJIGtub3csIHR3byB3cm9uZ3MgZG9lcyBub3QgbWFrZSBvbmUg
-cmlnaHQgOi8KCkkgaGF2ZSBhIHBhdGNoIHBlbmRpbmcgZm9yIHRoYXQuLgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0
-CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3Rv
-cC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+We still treat devices without a DMA mask as defaulting to 32-bits for
+both mask, but a few releases ago we've started warning about such
+cases, as they require special cases to work around this sloppyness.
+Add a dma_mask field to struct platform_object so that we can initialize
+the dma_mask pointer in struct device and initialize both masks to
+32-bits by default.  Architectures can still override this in
+arch_setup_pdev_archdata if needed.
+
+Note that the code looks a little odd with the various conditionals
+because we have to support platform_device structures that are
+statically allocated.
+
+Reported-by: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ drivers/base/platform.c         | 15 +++++++++++++--
+ include/linux/platform_device.h |  1 +
+ 2 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index dff82a3c2caa..baf4b06cf2d9 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -225,6 +225,17 @@ struct platform_object {
+ 	char name[];
+ };
+ 
++static void setup_pdev_archdata(struct platform_device *pdev)
++{
++	if (!pdev->dev.coherent_dma_mask)
++		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	if (!pdev->dma_mask)
++		pdev->dma_mask = DMA_BIT_MASK(32);
++	if (!pdev->dev.dma_mask)
++		pdev->dev.dma_mask = &pdev->dma_mask;
++	arch_setup_pdev_archdata(pdev);
++};
++
+ /**
+  * platform_device_put - destroy a platform device
+  * @pdev: platform device to free
+@@ -271,7 +282,7 @@ struct platform_device *platform_device_alloc(const char *name, int id)
+ 		pa->pdev.id = id;
+ 		device_initialize(&pa->pdev.dev);
+ 		pa->pdev.dev.release = platform_device_release;
+-		arch_setup_pdev_archdata(&pa->pdev);
++		setup_pdev_archdata(&pa->pdev);
+ 	}
+ 
+ 	return pa ? &pa->pdev : NULL;
+@@ -472,7 +483,7 @@ EXPORT_SYMBOL_GPL(platform_device_del);
+ int platform_device_register(struct platform_device *pdev)
+ {
+ 	device_initialize(&pdev->dev);
+-	arch_setup_pdev_archdata(pdev);
++	setup_pdev_archdata(pdev);
+ 	return platform_device_add(pdev);
+ }
+ EXPORT_SYMBOL_GPL(platform_device_register);
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 1a9f38f27f65..d9dc4883d5fb 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -25,6 +25,7 @@ struct platform_device {
+ 	int		id;
+ 	bool		id_auto;
+ 	struct device	dev;
++	u64		dma_mask;
+ 	u32		num_resources;
+ 	struct resource	*resource;
+ 
+-- 
+2.18.0
