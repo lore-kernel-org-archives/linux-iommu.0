@@ -1,22 +1,50 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: various dma_mask fixups
-Date: Wed, 29 Aug 2018 08:23:58 +0200
-Message-ID: <20180829062401.8701-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 3/3] of/platform: initialise AMBA default DMA masks
+Date: Wed, 29 Aug 2018 08:24:01 +0200
+Message-ID: <20180829062401.8701-4-hch@lst.de>
+References: <20180829062401.8701-1-hch@lst.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180829062401.8701-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>, Meelis Roos <mroos@linux.ee>, Guenter Roeck <linux@roeck-us.net>, Linus Walleij <linus.walleij@linaro.org>, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fix warnings and regressions from requiring a dma mask.
+From: Linus Walleij <linus.walleij@linaro.org>
+
+commit a5516219b102 ("of/platform: Initialise default DMA masks") sets up
+the coherent_dma_mask of platform devices created from the device tree,
+but fails to do the same for AMBA (PrimeCell) devices.
+
+This leads to a regression in kernel v4.19-rc1 triggering the
+WARN_ON_ONCE(dev && !dev->coherent_dma_mask) in dma_alloc_attrs().
+
+This regresses the PL111 DRM driver in drivers/gpu/drm/pl111 that uses
+the AMBA PrimeCell to instantiate the frame buffer device, as it cannot
+allocate a chunk of coherent memory anymore due to the missing mask.
+
+Fixes: a5516219b102 ("of/platform: Initialise default DMA masks")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+[hch: added a comment, and droped a conditional that can't be true]
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ drivers/of/platform.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index 7ba90c290a42..6c59673933e9 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -241,6 +241,10 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
+ 	if (!dev)
+ 		goto err_clear_flag;
+ 
++	/* AMBA devices only support a single DMA mask */
++	dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
++
+ 	/* setup generic device info */
+ 	dev->dev.of_node = of_node_get(node);
+ 	dev->dev.fwnode = &node->fwnode;
+-- 
+2.18.0
