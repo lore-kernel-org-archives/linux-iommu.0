@@ -1,97 +1,71 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 1/3] driver core: initialize a default DMA mask for platform
-	device
-Date: Wed, 29 Aug 2018 08:23:59 +0200
-Message-ID: <20180829062401.8701-2-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 2/3] sparc: set a default 32-bit dma mask for OF devices
+Date: Wed, 29 Aug 2018 08:24:00 +0200
+Message-ID: <20180829062401.8701-3-hch@lst.de>
 References: <20180829062401.8701-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180829062401.8701-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180829062401.8701-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>, Meelis Roos <mroos@linux.ee>, Guenter Roeck <linux@roeck-us.net>, Linus Walleij <linus.walleij@linaro.org>, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-We still treat devices without a DMA mask as defaulting to 32-bits for
-both mask, but a few releases ago we've started warning about such
-cases, as they require special cases to work around this sloppyness.
-Add a dma_mask field to struct platform_object so that we can initialize
-the dma_mask pointer in struct device and initialize both masks to
-32-bits by default.  Architectures can still override this in
-arch_setup_pdev_archdata if needed.
+This keeps the historic default behavior for devices without a DMA mask,
+but removes the warning about a lacking DMA mask for doing DMA without
+a mask.
 
-Note that the code looks a little odd with the various conditionals
-because we have to support platform_device structures that are
-statically allocated.
-
-Reported-by: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Reported-by: Meelis Roos <mroos@linux.ee>
+Tested-by: Meelis Roos <mroos@linux.ee>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/base/platform.c         | 15 +++++++++++++--
- include/linux/platform_device.h |  1 +
- 2 files changed, 14 insertions(+), 2 deletions(-)
+ arch/sparc/kernel/of_device_32.c | 5 +++++
+ arch/sparc/kernel/of_device_64.c | 4 ++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index dff82a3c2caa..baf4b06cf2d9 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -225,6 +225,17 @@ struct platform_object {
- 	char name[];
- };
+diff --git a/arch/sparc/kernel/of_device_32.c b/arch/sparc/kernel/of_device_32.c
+index 3641a294ed54..7f3dec7e1e78 100644
+--- a/arch/sparc/kernel/of_device_32.c
++++ b/arch/sparc/kernel/of_device_32.c
+@@ -9,6 +9,7 @@
+ #include <linux/irq.h>
+ #include <linux/of_device.h>
+ #include <linux/of_platform.h>
++#include <linux/dma-mapping.h>
+ #include <asm/leon.h>
+ #include <asm/leon_amba.h>
  
-+static void setup_pdev_archdata(struct platform_device *pdev)
-+{
-+	if (!pdev->dev.coherent_dma_mask)
-+		pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
-+	if (!pdev->dma_mask)
-+		pdev->dma_mask = DMA_BIT_MASK(32);
-+	if (!pdev->dev.dma_mask)
-+		pdev->dev.dma_mask = &pdev->dma_mask;
-+	arch_setup_pdev_archdata(pdev);
-+};
+@@ -381,6 +382,10 @@ static struct platform_device * __init scan_one_device(struct device_node *dp,
+ 	else
+ 		dev_set_name(&op->dev, "%08x", dp->phandle);
+ 
++	op->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	op->dev.dma_mask = &op->dma_mask;
++	op->dma_mask = DMA_BIT_MASK(32);
 +
- /**
-  * platform_device_put - destroy a platform device
-  * @pdev: platform device to free
-@@ -271,7 +282,7 @@ struct platform_device *platform_device_alloc(const char *name, int id)
- 		pa->pdev.id = id;
- 		device_initialize(&pa->pdev.dev);
- 		pa->pdev.dev.release = platform_device_release;
--		arch_setup_pdev_archdata(&pa->pdev);
-+		setup_pdev_archdata(&pa->pdev);
- 	}
+ 	if (of_device_register(op)) {
+ 		printk("%s: Could not register of device.\n",
+ 		       dp->full_name);
+diff --git a/arch/sparc/kernel/of_device_64.c b/arch/sparc/kernel/of_device_64.c
+index 44e4d4435bed..d94c31822da1 100644
+--- a/arch/sparc/kernel/of_device_64.c
++++ b/arch/sparc/kernel/of_device_64.c
+@@ -2,6 +2,7 @@
+ #include <linux/string.h>
+ #include <linux/kernel.h>
+ #include <linux/of.h>
++#include <linux/dma-mapping.h>
+ #include <linux/init.h>
+ #include <linux/export.h>
+ #include <linux/mod_devicetable.h>
+@@ -675,6 +676,9 @@ static struct platform_device * __init scan_one_device(struct device_node *dp,
+ 		dev_set_name(&op->dev, "root");
+ 	else
+ 		dev_set_name(&op->dev, "%08x", dp->phandle);
++	op->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	op->dev.dma_mask = &op->dma_mask;
++	op->dma_mask = DMA_BIT_MASK(32);
  
- 	return pa ? &pa->pdev : NULL;
-@@ -472,7 +483,7 @@ EXPORT_SYMBOL_GPL(platform_device_del);
- int platform_device_register(struct platform_device *pdev)
- {
- 	device_initialize(&pdev->dev);
--	arch_setup_pdev_archdata(pdev);
-+	setup_pdev_archdata(pdev);
- 	return platform_device_add(pdev);
- }
- EXPORT_SYMBOL_GPL(platform_device_register);
-diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-index 1a9f38f27f65..d9dc4883d5fb 100644
---- a/include/linux/platform_device.h
-+++ b/include/linux/platform_device.h
-@@ -25,6 +25,7 @@ struct platform_device {
- 	int		id;
- 	bool		id_auto;
- 	struct device	dev;
-+	u64		dma_mask;
- 	u32		num_resources;
- 	struct resource	*resource;
- 
+ 	if (of_device_register(op)) {
+ 		printk("%s: Could not register of device.\n",
 -- 
 2.18.0
