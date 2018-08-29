@@ -1,16 +1,12 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH 1/2] kernel/dma/direct: take DMA offset into account in
-	dma_direct_supported
-Date: Wed, 29 Aug 2018 18:59:56 +0200
-Message-ID: <20180829165956.GA6787@lst.de>
-References: <20180824065324.654-1-hch@lst.de> <20180824065324.654-2-hch@lst.de>
-	<0e95df80-38f7-7970-ef74-419567f13fdc@arm.com>
+From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
+	<niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Subject: [PATCH] dma-mapping: fix return type of dma_set_max_seg_size()
+Date: Wed, 29 Aug 2018 23:29:21 +0200
+Message-ID: <20180829212921.10665-1-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <0e95df80-38f7-7970-ef74-419567f13fdc-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,24 +16,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Aug 24, 2018 at 12:11:23PM +0100, Robin Murphy wrote:
-> On 24/08/18 07:53, Christoph Hellwig wrote:
->> When a device has a DMA offset the dma capable result will change due
->> to the difference between the physical and DMA address.  Take that into
->> account.
->
-> The "phys_to_dma(..., DMA_BIT_MASK(...))" idiom always looks like a glaring 
-> error at first glance, but this whole function is fairly unintuitive 
-> anyway, and ultimately I think the change does work out to be correct.
->
-> It might be nicer if we could reference max_zone_pfns[] for a bit more 
-> clarity, but I guess that's not arch-independent.
-
-Not just arch specific, but also local variables.  There is
-arch_zone_lowest_possible_pfn in page_alloc.c, but that gets discarded
-after init.  That being said this is the right direction and I'll
-look into it for 4.20 or later.
+VGhlIGZ1bmN0aW9uIGRtYV9zZXRfbWF4X3NlZ19zaXplKCkgY2FuIHJldHVybiBlaXRoZXIgMCBv
+biBzdWNjZXNzIG9yCi1FSU8gb24gZXJyb3IuIENoYW5nZSBpdHMgcmV0dXJuIHR5cGUgZnJvbSB1
+bnNpZ25lZCBpbnQgdG8gaW50IHRvCmNhcHR1cmUgdGhpcy4KClNpZ25lZC1vZmYtYnk6IE5pa2xh
+cyBTw7ZkZXJsdW5kIDxuaWtsYXMuc29kZXJsdW5kK3JlbmVzYXNAcmFnbmF0ZWNoLnNlPgotLS0K
+IGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCB8IDMgKy0tCiAxIGZpbGUgY2hhbmdlZCwgMSBp
+bnNlcnRpb24oKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9k
+bWEtbWFwcGluZy5oIGIvaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oCmluZGV4IDFkYjZhNmI0
+NmQwZDNkYmQuLjY2OWNkZTJmYTg3MjNhYzUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvZG1h
+LW1hcHBpbmcuaAorKysgYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgKQEAgLTY3NCw4ICs2
+NzQsNyBAQCBzdGF0aWMgaW5saW5lIHVuc2lnbmVkIGludCBkbWFfZ2V0X21heF9zZWdfc2l6ZShz
+dHJ1Y3QgZGV2aWNlICpkZXYpCiAJcmV0dXJuIFNaXzY0SzsKIH0KIAotc3RhdGljIGlubGluZSB1
+bnNpZ25lZCBpbnQgZG1hX3NldF9tYXhfc2VnX3NpemUoc3RydWN0IGRldmljZSAqZGV2LAotCQkJ
+CQkJdW5zaWduZWQgaW50IHNpemUpCitzdGF0aWMgaW5saW5lIGludCBkbWFfc2V0X21heF9zZWdf
+c2l6ZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHVuc2lnbmVkIGludCBzaXplKQogewogCWlmIChkZXYt
+PmRtYV9wYXJtcykgewogCQlkZXYtPmRtYV9wYXJtcy0+bWF4X3NlZ21lbnRfc2l6ZSA9IHNpemU7
+Ci0tIAoyLjE4LjAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
