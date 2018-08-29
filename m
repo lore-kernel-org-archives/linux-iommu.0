@@ -1,40 +1,34 @@
-From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
-	<niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-Subject: [PATCH] dma-mapping: fix return type of dma_set_max_seg_size()
-Date: Wed, 29 Aug 2018 23:29:21 +0200
-Message-ID: <20180829212921.10665-1-niklas.soderlund+renesas@ragnatech.se>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: various dma_mask fixups
+Date: Wed, 29 Aug 2018 15:38:21 -0700
+Message-ID: <20180829223821.GA29499@roeck-us.net>
+References: <20180829062401.8701-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180829062401.8701-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Meelis Roos <mroos@linux.ee>, Linus Walleij <linus.walleij@linaro.org>, sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhlIGZ1bmN0aW9uIGRtYV9zZXRfbWF4X3NlZ19zaXplKCkgY2FuIHJldHVybiBlaXRoZXIgMCBv
-biBzdWNjZXNzIG9yCi1FSU8gb24gZXJyb3IuIENoYW5nZSBpdHMgcmV0dXJuIHR5cGUgZnJvbSB1
-bnNpZ25lZCBpbnQgdG8gaW50IHRvCmNhcHR1cmUgdGhpcy4KClNpZ25lZC1vZmYtYnk6IE5pa2xh
-cyBTw7ZkZXJsdW5kIDxuaWtsYXMuc29kZXJsdW5kK3JlbmVzYXNAcmFnbmF0ZWNoLnNlPgotLS0K
-IGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCB8IDMgKy0tCiAxIGZpbGUgY2hhbmdlZCwgMSBp
-bnNlcnRpb24oKyksIDIgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9k
-bWEtbWFwcGluZy5oIGIvaW5jbHVkZS9saW51eC9kbWEtbWFwcGluZy5oCmluZGV4IDFkYjZhNmI0
-NmQwZDNkYmQuLjY2OWNkZTJmYTg3MjNhYzUgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvZG1h
-LW1hcHBpbmcuaAorKysgYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgKQEAgLTY3NCw4ICs2
-NzQsNyBAQCBzdGF0aWMgaW5saW5lIHVuc2lnbmVkIGludCBkbWFfZ2V0X21heF9zZWdfc2l6ZShz
-dHJ1Y3QgZGV2aWNlICpkZXYpCiAJcmV0dXJuIFNaXzY0SzsKIH0KIAotc3RhdGljIGlubGluZSB1
-bnNpZ25lZCBpbnQgZG1hX3NldF9tYXhfc2VnX3NpemUoc3RydWN0IGRldmljZSAqZGV2LAotCQkJ
-CQkJdW5zaWduZWQgaW50IHNpemUpCitzdGF0aWMgaW5saW5lIGludCBkbWFfc2V0X21heF9zZWdf
-c2l6ZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHVuc2lnbmVkIGludCBzaXplKQogewogCWlmIChkZXYt
-PmRtYV9wYXJtcykgewogCQlkZXYtPmRtYV9wYXJtcy0+bWF4X3NlZ21lbnRfc2l6ZSA9IHNpemU7
-Ci0tIAoyLjE4LjAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
-dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed, Aug 29, 2018 at 08:23:58AM +0200, Christoph Hellwig wrote:
+> Fix warnings and regressions from requiring a dma mask.
+
+With this series applied, I see the following in my sh4 boot tests.
+
+sb 1-1: new full-speed USB device number 2 using sm501-usb
+sm501-usb sm501-usb: OHCI Unrecoverable Error, disabled
+sm501-usb sm501-usb: HC died; cleaning up
+
+This is a persistent problem. Reverting upstream commit 2f606da7823
+("mfd: sm501: Set coherent_dma_mask when creating subdevices") does not
+make a difference.
+
+The problem is gone if I do not apply 'driver core: initialize a default
+DMA mask for platform device'.
+
+On the plus side, the sparc warnings are gone.
+
+Guenter
