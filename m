@@ -1,147 +1,102 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v4 2/2] iommu/arm-smmu-v3: avoid redundant CMD_SYNCs if
- possible
-Date: Thu, 30 Aug 2018 12:18:21 +0100
-Message-ID: <992a5e9a-ba0c-e25f-b881-89aa914d3a36@huawei.com>
-References: <1534665071-7976-1-git-send-email-thunder.leizhen@huawei.com>
- <1534665071-7976-3-git-send-email-thunder.leizhen@huawei.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [Patch v15 2/5] iommu/arm-smmu: Invoke pm_runtime during probe,
+ add/remove device
+Date: Thu, 30 Aug 2018 19:29:46 +0530
+Message-ID: <CAFp+6iGgePK14WGOdrE2cHLMpZ0JbS6qUvVoP-0mW55xh5haHg@mail.gmail.com>
+References: <20180827105551.16346-1-vivek.gautam@codeaurora.org>
+ <20180827105551.16346-3-vivek.gautam@codeaurora.org> <CAFp+6iGbfHZQjG5oEVKhQ=4rOaaU=5ePykEuwMqYbPTryX6DnA@mail.gmail.com>
+ <CAAFQd5BrJppNSo8ETT6ywjuLEULk4nAvWDQEuNiMCvdddeUq1A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1534665071-7976-3-git-send-email-thunder.leizhen@huawei.com>
+In-Reply-To: <CAAFQd5BrJppNSo8ETT6ywjuLEULk4nAvWDQEuNiMCvdddeUq1A@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, alex.williamson@redhat.com, Linux PM <linux-pm@vger.kernel.org>, sboyd@kernel.org, freedreno <freedreno@lists.freedesktop.org>, Will Deacon <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, robh+dt <robh+dt@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Andy Gross <andy.gross@linaro.org>, Robin Murphy <robin.murphy@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/08/2018 08:51, Zhen Lei wrote:
-> More than two CMD_SYNCs maybe adjacent in the command queue, and the first
-> one has done what others want to do. Drop the redundant CMD_SYNCs can
-> improve IO performance especially under the pressure scene.
+On Thu, Aug 30, 2018 at 3:04 PM Tomasz Figa <tfiga@chromium.org> wrote:
 >
-> I did the statistics in my test environment, the number of CMD_SYNCs can
-> be reduced about 1/3. See below:
-> CMD_SYNCs reduced:	19542181
-> CMD_SYNCs total:	58098548	(include reduced)
-> CMDs total:		116197099	(TLBI:SYNC about 1:1)
+> On Thu, Aug 30, 2018 at 6:22 PM Vivek Gautam
+> <vivek.gautam@codeaurora.org> wrote:
+> >
+> > On Mon, Aug 27, 2018 at 4:27 PM Vivek Gautam
+> > <vivek.gautam@codeaurora.org> wrote:
+> > >
+> > > From: Sricharan R <sricharan@codeaurora.org>
+> > >
+> > > The smmu device probe/remove and add/remove master device callbacks
+> > > gets called when the smmu is not linked to its master, that is without
+> > > the context of the master device. So calling runtime apis in those places
+> > > separately.
+> > >
+> > > Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+> > > [vivek: Cleanup pm runtime calls]
+> > > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> > > Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> > > Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> > > ---
+> > >
+> > > Changes since v14:
+> > >  - none.
+> > >
+> > >  drivers/iommu/arm-smmu.c | 101 +++++++++++++++++++++++++++++++++++++++++++----
+> > >  1 file changed, 93 insertions(+), 8 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > > index a81224bc6637..23b4a60149b6 100644
+> > > --- a/drivers/iommu/arm-smmu.c
+> > > +++ b/drivers/iommu/arm-smmu.c
+> >
+> > [snip]
+> >
+> > > @@ -2131,6 +2188,26 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> > >         if (err)
+> > >                 return err;
+> > >
+> > > +       /*
+> > > +        * We want to avoid touching dev->power.lock in fastpaths unless
+> > > +        * it's really going to do something useful - pm_runtime_enabled()
+> > > +        * can serve as an ideal proxy for that decision. So, conditionally
+> > > +        * enable pm_runtime.
+> > > +        */
+> > > +       if (dev->pm_domain)
+> > > +               pm_runtime_enable(dev);
+> > > +
+> > > +       err = arm_smmu_rpm_get(smmu);
+> >
+> > We shouldn't be doing a runtime_get() yet, as this eventually calls
+> > arm_smmu_device_reset().
+> > arm_smmu_device_reset() should be called only after arm_smmu_device_cfg_probe().
+> > So, I plan to replace the pm_runtime_get/put() calls in probe() with
+> > simple clk_bulk_enable()
+> > to let the driver initialize smmu, and at the end of the probe we can
+> > disable the clocks and
+> > enable runtime pm over the device to let it take care of the device further-on.
+> >
 >
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 22 +++++++++++++++++++---
->  1 file changed, 19 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index ac6d6df..f3a56e1 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -567,6 +567,7 @@ struct arm_smmu_device {
->  	int				gerr_irq;
->  	int				combined_irq;
->  	u32				sync_nr;
-> +	u8				prev_cmd_opcode;
->
->  	unsigned long			ias; /* IPA */
->  	unsigned long			oas; /* PA */
-> @@ -786,6 +787,11 @@ void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->  	cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
->  }
->
-> +static inline u8 arm_smmu_cmd_opcode_get(u64 *cmd)
-> +{
-> +	return cmd[0] & CMDQ_0_OP;
-> +}
-> +
->  /* High-level queue accessors */
->  static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->  {
-> @@ -906,6 +912,8 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
->  	struct arm_smmu_queue *q = &smmu->cmdq.q;
->  	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
->
-> +	smmu->prev_cmd_opcode = arm_smmu_cmd_opcode_get(cmd);
-> +
->  	while (queue_insert_raw(q, cmd) == -ENOSPC) {
->  		if (queue_poll_cons(q, false, wfe))
->  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-> @@ -958,9 +966,17 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->  	};
->
->  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
-> -	ent.sync.msidata = ++smmu->sync_nr;
-> -	arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
-> -	arm_smmu_cmdq_insert_cmd(smmu, cmd);
-> +	if (smmu->prev_cmd_opcode == CMDQ_OP_CMD_SYNC) {
-> +		/*
-> +		 * Previous command is CMD_SYNC also, there is no need to add
-> +		 * one more. Just poll it.
-> +		 */
-> +		ent.sync.msidata = smmu->sync_nr;
-> +	} else {
-> +		ent.sync.msidata = ++smmu->sync_nr;
-> +		arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
-> +		arm_smmu_cmdq_insert_cmd(smmu, cmd);
-> +	}
->  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+> We can avoid the explicit clock disable by just calling
+> pm_runtime_set_active() before pm_runtime_enable(), assuming that what
+> probe does is symmetrical with the suspend callback, which would be
+> called after the latter.
 
-I find something like this adds support for combining CMD_SYNC commands 
-for regular polling mode:
+Sure, that sounds reasonable. Will use pm_runtime_set_active() instead
+of explicitly disabling the clocks.Thanks.
 
-@@ -569,6 +569,7 @@ struct arm_smmu_device {
-         int                             combined_irq;
-         u32                             sync_nr;
-         u8                              prev_cmd_opcode;
-+       int                             prev_cmd_sync_res;
-
-         unsigned long                   ias; /* IPA */
-         unsigned long                   oas; /* PA */
-@@ -985,17 +986,33 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct 
-arm_smmu_device *smmu)
-
-  static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
-  {
--       u64 cmd[CMDQ_ENT_DWORDS];
-+       static u64 cmd[CMDQ_ENT_DWORDS] = {
-+               _FIELD_PREP(CMDQ_0_OP, CMDQ_OP_CMD_SYNC) |
-+               _FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV) |
-+               _FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH) |
-+               _FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB)
-+       };
-         unsigned long flags;
-         bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
--       struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
--       int ret;
-+       int ret = 0;
-
--       arm_smmu_cmdq_build_cmd(cmd, &ent);
-
-         spin_lock_irqsave(&smmu->cmdq.lock, flags);
--       arm_smmu_cmdq_insert_cmd(smmu, cmd);
--       ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
-+       if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC ||
-+               smmu->prev_cmd_sync_res != 0) {
-+               arm_smmu_cmdq_insert_cmd(smmu, cmd);
-+               smmu->prev_cmd_sync_res = ret =
-+                       queue_poll_cons(&smmu->cmdq.q, true, wfe);
-+       }
-
-I tested iperf on a 1G network link and was seeing 6-10% CMD_SYNC 
-commands combined. I would really need to test this on a faster 
-connection to see any throughout difference.
-
- From the above figures, I think leizhen was seeing 25% combine rate, right?
-
-As for this code, it could be neatened...
-
-Cheers,
-John
+Best regards
+Vivek
 
 >
->  	return __arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
-> --
-> 1.8.3
->
->
->
-> .
->
+> Best regards,
+> Tomasz
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
