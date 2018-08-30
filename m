@@ -1,142 +1,84 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 12/12] iommu/vt-d: Remove deferred invalidation
-Date: Thu, 30 Aug 2018 09:35:24 +0800
-Message-ID: <20180830013524.28743-13-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v2 05/12] iommu/vt-d: Reserve a domain id for FL and PT modes
+Date: Thu, 30 Aug 2018 09:35:17 +0800
+Message-ID: <20180830013524.28743-6-baolu.lu@linux.intel.com>
 References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180830013524.28743-1-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180830013524.28743-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Deferred invalidation is an ECS specific feature. It will not be
-supported when IOMMU works in scalable mode. As we deprecated the
-ECS support, remove deferred invalidation and cleanup the code.
+Vt-d spec rev3.0 (section 6.2.3.1) requires that each pasid
+entry for first-level or pass-through translation should be
+programmed with a domain id different from those used for
+second-level or nested translation. It is recommended that
+software could use a same domain id for all first-only and
+pass-through translations.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+This reserves a domain id for first-level and pass-through
+translations.
+
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |  1 -
- drivers/iommu/intel-svm.c   | 45 -------------------------------------
- include/linux/intel-iommu.h |  8 -------
- 3 files changed, 54 deletions(-)
+ drivers/iommu/intel-iommu.c | 10 ++++++++++
+ drivers/iommu/intel-pasid.h |  6 ++++++
+ 2 files changed, 16 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e378a383d4f4..3e49d4029058 100644
+index 93cde957adc7..562da10bf93e 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1722,7 +1722,6 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	if (pasid_supported(iommu)) {
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
--		intel_svm_exit(iommu);
- 	}
- #endif
- }
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index fa5a19d83795..3f5ed33c56f0 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -31,15 +31,8 @@
+@@ -1643,6 +1643,16 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+ 	 */
+ 	set_bit(0, iommu->domain_ids);
  
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--struct pasid_state_entry {
--	u64 val;
--};
--
- int intel_svm_init(struct intel_iommu *iommu)
- {
--	struct page *pages;
--	int order;
--
- 	if (cpu_feature_enabled(X86_FEATURE_GBPAGES) &&
- 			!cap_fl1gp_support(iommu->cap))
- 		return -EINVAL;
-@@ -48,39 +41,6 @@ int intel_svm_init(struct intel_iommu *iommu)
- 			!cap_5lp_support(iommu->cap))
- 		return -EINVAL;
- 
--	/* Start at 2 because it's defined as 2^(1+PSS) */
--	iommu->pasid_max = 2 << ecap_pss(iommu->ecap);
--
--	/* Eventually I'm promised we will get a multi-level PASID table
--	 * and it won't have to be physically contiguous. Until then,
--	 * limit the size because 8MiB contiguous allocations can be hard
--	 * to come by. The limit of 0x20000, which is 1MiB for each of
--	 * the PASID and PASID-state tables, is somewhat arbitrary. */
--	if (iommu->pasid_max > 0x20000)
--		iommu->pasid_max = 0x20000;
--
--	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--	if (ecap_dis(iommu->ecap)) {
--		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
--		if (pages)
--			iommu->pasid_state_table = page_address(pages);
--		else
--			pr_warn("IOMMU: %s: Failed to allocate PASID state table\n",
--				iommu->name);
--	}
--
--	return 0;
--}
--
--int intel_svm_exit(struct intel_iommu *iommu)
--{
--	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--
--	if (iommu->pasid_state_table) {
--		free_pages((unsigned long)iommu->pasid_state_table, order);
--		iommu->pasid_state_table = NULL;
--	}
--
++	/*
++	 * Vt-d spec rev3.0 (section 6.2.3.1) requires that each pasid
++	 * entry for first-level or pass-through translation modes should
++	 * be programmed with a domain id different from those used for
++	 * second-level or nested translation. We reserve a domain id for
++	 * this purpose.
++	 */
++	if (sm_supported(iommu))
++		set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
++
  	return 0;
  }
  
-@@ -214,11 +174,6 @@ static void intel_flush_svm_range(struct intel_svm *svm, unsigned long address,
- {
- 	struct intel_svm_dev *sdev;
+diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+index 12f480c2bb8b..03c1612d173c 100644
+--- a/drivers/iommu/intel-pasid.h
++++ b/drivers/iommu/intel-pasid.h
+@@ -17,6 +17,12 @@
+ #define PDE_PFN_MASK			PAGE_MASK
+ #define PASID_PDE_SHIFT			6
  
--	/* Try deferred invalidate if available */
--	if (svm->iommu->pasid_state_table &&
--	    !cmpxchg64(&svm->iommu->pasid_state_table[svm->pasid].val, 0, 1ULL << 63))
--		return;
--
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(sdev, &svm->devs, list)
- 		intel_flush_svm_range_dev(svm, sdev, address, pages, ih, gl);
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 30e2bbfbbd50..b34cf8b887a0 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -457,15 +457,8 @@ struct intel_iommu {
- 	struct iommu_flush flush;
- #endif
- #ifdef CONFIG_INTEL_IOMMU_SVM
--	/* These are large and need to be contiguous, so we allocate just
--	 * one for now. We'll maybe want to rethink that if we truly give
--	 * devices away to userspace processes (e.g. for DPDK) and don't
--	 * want to trust that userspace will use *only* the PASID it was
--	 * told to. But while it's all driver-arbitrated, we're fine. */
--	struct pasid_state_entry *pasid_state_table;
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
--	u32 pasid_max;
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
-@@ -579,7 +572,6 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- int intel_svm_init(struct intel_iommu *iommu);
--int intel_svm_exit(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
- 
++/*
++ * Domain ID reserved for pasid entries programmed for first-level
++ * only and pass-through transfer modes.
++ */
++#define FLPT_DEFAULT_DID		1
++
+ struct pasid_dir_entry {
+ 	u64 val;
+ };
 -- 
 2.17.1
