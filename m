@@ -1,170 +1,166 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC PATCH v2 01/10] iommu: Add APIs for multiple domains per device
-Date: Thu, 30 Aug 2018 12:09:13 +0800
-Message-ID: <20180830040922.30426-2-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group helpers
+Date: Thu, 30 Aug 2018 12:09:20 +0800
+Message-ID: <20180830040922.30426-9-baolu.lu@linux.intel.com>
 References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180830040922.30426-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180830040922.30426-1-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Sharing a physical PCI device in a finer-granularity way
-is becoming a consensus in the industry. IOMMU vendors
-are also engaging efforts to support such sharing as well
-as possible. Among the efforts, the capability of support
-finer-granularity DMA isolation is a common requirement
-due to the security consideration. With finer-granularity
-DMA isolation, all DMA requests out of or to a subset of
-a physical PCI device can be protected by the IOMMU. As a
-result, there is a request in software to attach multiple
-domains to a physical PCI device. One example of such use
-model is the Intel Scalable IOV [1] [2]. The Intel vt-d
-3.0 spec [3] introduces the scalable mode which enables
-PASID granularity DMA isolation.
+If a domain is attaching to a group which includes the
+mediated devices, it should attach to the mdev parent
+of each mdev. This adds a helper for attaching domain
+to group, no matter a PCI physical device or mediated
+devices which are derived from a PCI physical device.
 
-This adds the APIs to support multiple domains per device.
-In order to ease the discussions, we call it 'a domain in
-auxiliary mode' or simply 'auxiliary domain' when multiple
-domains are attached to a physical device.
-
-The APIs includes:
-
-* iommu_capable(IOMMU_CAP_AUX_DOMAIN)
-  - Represents the ability of supporting multiple domains
-    per device.
-
-* iommu_en(dis)able_aux_domain(struct device *dev)
-  - Enable/disable the multiple domains capability for a
-    device referenced by @dev.
-
-* iommu_auxiliary_id(struct iommu_domain *domain)
-  - Return ID used for finer-granularity DMA translation.
-    For the Intel Scalable IOV usage model, this will be
-    a PASID. The device which supports Scalalbe IOV needs
-    to writes this ID to the device register so that DMA
-    requests could be tagged with a right PASID prefix.
-
-Many people involved in discussions of this design. They're
-
-Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-
-and some discussions can be found here [4].
-
-[1] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-[2] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-[3] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-[4] https://lkml.org/lkml/2018/7/26/4
-
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Suggested-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommu.c | 29 +++++++++++++++++++++++++++++
- include/linux/iommu.h | 13 +++++++++++++
- 2 files changed, 42 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 77 ++++++++++++++++++++++++++++++---
+ 1 file changed, 70 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8c15c5980299..2c6faf417dd5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2014,3 +2014,32 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-+
-+int iommu_enable_aux_domain(struct device *dev)
-+{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+
-+	if (ops && ops->enable_auxd)
-+		return ops->enable_auxd(dev);
-+
-+	return -EINVAL;
-+}
-+EXPORT_SYMBOL_GPL(iommu_enable_aux_domain);
-+
-+void iommu_disable_aux_domain(struct device *dev)
-+{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+
-+	if (ops && ops->disable_auxd)
-+		ops->disable_auxd(dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_disable_aux_domain);
-+
-+int iommu_auxiliary_id(struct iommu_domain *domain)
-+{
-+	if (domain->ops->auxd_id)
-+		return domain->ops->auxd_id(domain);
-+
-+	return -EINVAL;
-+}
-+EXPORT_SYMBOL_GPL(iommu_auxiliary_id);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 87994c265bf5..ffd20b315bee 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -101,6 +101,8 @@ enum iommu_cap {
- 					   transactions */
- 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
- 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
-+	IOMMU_CAP_AUX_DOMAIN,		/* IOMMU supports multiple domains per
-+					   device */
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index d9fd3188615d..89e2e6123223 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -91,6 +91,9 @@ struct vfio_dma {
+ struct vfio_group {
+ 	struct iommu_group	*iommu_group;
+ 	struct list_head	next;
++	bool			attach_parent;	/* An mdev group with domain
++						 * attached to parent
++						 */
  };
  
  /*
-@@ -185,6 +187,9 @@ struct iommu_resv_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @enable_auxd: enable multiple domains per device support
-+ * @disable_auxd: disable multiple domains per device support
-+ * @auxd_id: return the id of an auxiliary domain
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -231,6 +236,10 @@ struct iommu_ops {
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
- 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+@@ -1327,6 +1330,66 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
+ 	return ret;
+ }
  
-+	int (*enable_auxd)(struct device *dev);
-+	void (*disable_auxd)(struct device *dev);
-+	int (*auxd_id)(struct iommu_domain *domain);
++static int vfio_mdev_set_aux_domain(struct device *dev,
++				    struct iommu_domain *domain)
++{
++	int (*fn)(struct device *dev, void *domain);
++	int ret;
 +
- 	unsigned long pgsize_bitmap;
- };
- 
-@@ -400,6 +409,10 @@ void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
- const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
- 
-+int iommu_enable_aux_domain(struct device *dev);
-+void iommu_disable_aux_domain(struct device *dev);
-+int iommu_auxiliary_id(struct iommu_domain *domain);
++	fn = symbol_get(mdev_set_domain);
++	if (fn) {
++		ret = fn(dev, domain);
++		symbol_put(mdev_set_domain);
 +
- #else /* CONFIG_IOMMU_API */
++		return ret;
++	}
++
++	return -EINVAL;
++}
++
++static int vfio_attach_aux_domain(struct device *dev, void *data)
++{
++	struct iommu_domain *domain = data;
++	int ret;
++
++	ret = vfio_mdev_set_aux_domain(dev, domain);
++	if (ret)
++		return ret;
++
++	return iommu_attach_device(domain, dev->parent);
++}
++
++static int vfio_detach_aux_domain(struct device *dev, void *data)
++{
++	struct iommu_domain *domain = data;
++
++	vfio_mdev_set_aux_domain(dev, NULL);
++	iommu_detach_device(domain, dev->parent);
++
++	return 0;
++}
++
++static int vfio_iommu_attach_group(struct vfio_domain *domain,
++				   struct vfio_group *group)
++{
++	if (group->attach_parent)
++		return iommu_group_for_each_dev(group->iommu_group,
++						domain->domain,
++						vfio_attach_aux_domain);
++	else
++		return iommu_attach_group(domain->domain, group->iommu_group);
++}
++
++static void vfio_iommu_detach_group(struct vfio_domain *domain,
++				    struct vfio_group *group)
++{
++	if (group->attach_parent)
++		iommu_group_for_each_dev(group->iommu_group, domain->domain,
++					 vfio_detach_aux_domain);
++	else
++		iommu_detach_group(domain->domain, group->iommu_group);
++}
++
+ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 					 struct iommu_group *iommu_group)
+ {
+@@ -1402,7 +1465,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 			goto out_domain;
+ 	}
  
- struct iommu_ops {};
+-	ret = iommu_attach_group(domain->domain, iommu_group);
++	ret = vfio_iommu_attach_group(domain, group);
+ 	if (ret)
+ 		goto out_domain;
+ 
+@@ -1434,8 +1497,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	list_for_each_entry(d, &iommu->domain_list, next) {
+ 		if (d->domain->ops == domain->domain->ops &&
+ 		    d->prot == domain->prot) {
+-			iommu_detach_group(domain->domain, iommu_group);
+-			if (!iommu_attach_group(d->domain, iommu_group)) {
++			vfio_iommu_detach_group(domain, group);
++			if (!vfio_iommu_attach_group(d, group)) {
+ 				list_add(&group->next, &d->group_list);
+ 				iommu_domain_free(domain->domain);
+ 				kfree(domain);
+@@ -1443,7 +1506,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 				return 0;
+ 			}
+ 
+-			ret = iommu_attach_group(domain->domain, iommu_group);
++			ret = vfio_iommu_attach_group(domain, group);
+ 			if (ret)
+ 				goto out_domain;
+ 		}
+@@ -1469,7 +1532,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	return 0;
+ 
+ out_detach:
+-	iommu_detach_group(domain->domain, iommu_group);
++	vfio_iommu_detach_group(domain, group);
+ out_domain:
+ 	iommu_domain_free(domain->domain);
+ out_free:
+@@ -1560,7 +1623,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+ 		if (!group)
+ 			continue;
+ 
+-		iommu_detach_group(domain->domain, iommu_group);
++		vfio_iommu_detach_group(domain, group);
+ 		list_del(&group->next);
+ 		kfree(group);
+ 		/*
+@@ -1625,7 +1688,7 @@ static void vfio_release_domain(struct vfio_domain *domain, bool external)
+ 	list_for_each_entry_safe(group, group_tmp,
+ 				 &domain->group_list, next) {
+ 		if (!external)
+-			iommu_detach_group(domain->domain, group->iommu_group);
++			vfio_iommu_detach_group(domain, group);
+ 		list_del(&group->next);
+ 		kfree(group);
+ 	}
 -- 
 2.17.1
