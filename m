@@ -1,145 +1,84 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
-Date: Thu, 30 Aug 2018 12:09:12 +0800
-Message-ID: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [RFC PATCH v2 02/10] iommu/vt-d: Add multiple domains per device query
+Date: Thu, 30 Aug 2018 12:09:14 +0800
+Message-ID: <20180830040922.30426-3-baolu.lu@linux.intel.com>
+References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180830040922.30426-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Add the response to IOMMU_CAP_AUX_DOMAIN capability query
+through iommu_capable(). Return true if IOMMUs support the
+scalable mode, return false otherwise.
 
-The Mediate Device is a framework for fine-grained physical device
-sharing across the isolated domains. Currently the mdev framework
-is designed to be independent of the platform IOMMU support. As the
-result, the DMA isolation relies on the mdev parent device in a
-vendor specific way.
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-There are several cases where a mediated device could be protected
-and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
-[1] introduces a new translation mode called 'scalable mode', which
-enables PASID-granular translations. The vt-d scalable mode is the
-key ingredient for Scalable I/O Virtualization [2] [3] which allows
-sharing a device in minimal possible granularity (ADI - Assignable
-Device Interface).
-
-A mediated device backed by an ADI could be protected and isolated
-by the IOMMU since 1) the parent device supports tagging an unique
-PASID to all DMA traffic out of the mediated device; and 2) the DMA
-translation unit (IOMMU) supports the PASID granular translation.
-We can apply IOMMU protection and isolation to this kind of devices
-just as what we are doing with an assignable PCI device.
-
-In order to distinguish the IOMMU-capable mediated devices from those
-which still need to rely on parent devices, this patch set adds a
-domain type attribute to each mdev.
-
-enum mdev_domain_type {
-	DOMAIN_TYPE_NO_IOMMU,	/* Don't need any IOMMU support.
-				 * All isolation and protection
-				 * are handled by the parent
-				 * device driver with a device
-				 * specific mechanism.
-				 */
-	DOMAIN_TYPE_ATTACH_PARENT, /* IOMMU can isolate and protect
-				    * the mdev, and the isolation
-				    * domain should be attaced with
-				    * the parent device.
-				    */
-};
-
-The mdev parent device driver could opt-in whether an mdev is IOMMU
-capable when the device is created by invoking below interface within
-its @create callback:
-
-int mdev_set_domain_type(struct device *dev,
-                         enum mdev_domain_type type);
-
-In the vfio_iommu_type1_attach_group(), a domain allocated through
-iommu_domain_alloc() will be attached to the mdev parent device if
-the domain types of mdev devices in group are of type ATTACH_PARENT;
-Otherwise, the dummy external domain will be used and all the DMA
-isolation and protection are routed to parent driver as the result.
-
-On IOMMU side, a basic requirement is allowing to attach multiple
-domains for a PCI device if the device advertises the capability
-and the IOMMU hardware supports finer granularity translations than
-the normal PCI Source ID based translation.
-
-In order for the ease of discussion, we call "a domain in auxiliary
-mode' or simply 'an auxiliary domain' when a domain is attached to
-a device for finer granularity translations (than the Source ID based
-one). But we need to keep in mind that this doesn't mean two types of
-domains. A same domain could be bound to a device for Source ID based
-translation, and bound to another device for finer granularity
-translation at the same time.
-
-Below APIs are introduced in the IOMMU glue for device drivers to use
-the finer granularity translation.
-
-* iommu_capable(IOMMU_CAP_AUX_DOMAIN)
-  - Represents the ability for supporting multiple domains per device
-    (a.k.a. finer granularity translations) of the IOMMU hardware.
-    
-* iommu_en(dis)able_aux_domain(struct device *dev)
-  - Enable/disable the multiple domains capability for a device
-    referenced by @dev.
-
-* iommu_auxiliary_id(struct iommu_domain *domain)
-  - Return the index value used for finer-granularity DMA translation.
-    The specific device driver needs to feed the hardware with this
-    value, so that hardware device could issue the DMA transaction with
-    this value tagged.
-
-This patch series extends both IOMMU and vfio components to support
-mdev device passing through when it could be isolated and protected
-by the IOMMU units. The first part of this series (PATCH 1/10 ~ 6/10)
-adds the interfaces and implementation of the multiple domains per
-device. The second part (PATCH 7/12 ~ 10/12) adds the domain type
-attribute to each mdev, determines domain type according to the
-attribute when attaching group in vfio type1 iommu module, and bind
-an auxiliary domain for the group with all mediated devices which
-requires its own domain.
-
-This patch series depends on a patch set posted here [4] for discussion
-which added the support for scalable mode in Intel IOMMU driver.
-
-References:
-[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-[4] https://lkml.org/lkml/2018/8/30/27
-
-Best regards,
-Lu Baolu
-
-Change log:
-  v1->v2:
-  - Rewrite the patches with the concept of auxiliary domains.
-
-Lu Baolu (10):
-  iommu: Add APIs for multiple domains per device
-  iommu/vt-d: Add multiple domains per device query
-  iommu/amd: Add default branch in amd_iommu_capable()
-  iommu/vt-d: Enable/disable multiple domains per device
-  iommu/vt-d: Attach/detach domains in auxiliary mode
-  iommu/vt-d: Return ID associated with an auxiliary domain
-  vfio/mdev: Add mediated device domain type
-  vfio/type1: Add domain at(de)taching group helpers
-  vfio/type1: Determine domain type of an mdev group
-  vfio/type1: Attach domain for mdev group
-
- drivers/iommu/amd_iommu.c        |   2 +
- drivers/iommu/intel-iommu.c      | 208 ++++++++++++++++++++++++++++++-
- drivers/iommu/iommu.c            |  29 +++++
- drivers/vfio/mdev/mdev_core.c    |  36 ++++++
- drivers/vfio/mdev/mdev_private.h |   2 +
- drivers/vfio/vfio_iommu_type1.c  | 144 +++++++++++++++++++--
- include/linux/intel-iommu.h      |  11 ++
- include/linux/iommu.h            |  13 ++
- include/linux/mdev.h             |  26 ++++
- 9 files changed, 455 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3e49d4029058..891ae70e7bf2 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5193,12 +5193,39 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return phys;
+ }
+ 
++static inline bool scalable_mode_support(void)
++{
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++	bool ret = true;
++
++	rcu_read_lock();
++	for_each_active_iommu(iommu, drhd) {
++		if (!sm_supported(iommu)) {
++			ret = false;
++			break;
++		}
++	}
++	rcu_read_unlock();
++
++	return ret;
++}
++
+ static bool intel_iommu_capable(enum iommu_cap cap)
+ {
+-	if (cap == IOMMU_CAP_CACHE_COHERENCY)
++	switch (cap) {
++	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return domain_update_iommu_snooping(NULL) == 1;
+-	if (cap == IOMMU_CAP_INTR_REMAP)
++	case IOMMU_CAP_INTR_REMAP:
+ 		return irq_remapping_enabled == 1;
++	case IOMMU_CAP_AUX_DOMAIN:
++		return scalable_mode_support();
++	case IOMMU_CAP_NOEXEC:
++	/* PASSTHROUGH */
++	default:
++		pr_info("Unsupported capability query %d\n", cap);
++		break;
++	}
+ 
+ 	return false;
+ }
 -- 
 2.17.1
