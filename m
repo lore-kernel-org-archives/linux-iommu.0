@@ -1,101 +1,74 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [Patch v15 2/5] iommu/arm-smmu: Invoke pm_runtime during probe,
-	add/remove device
-Date: Thu, 30 Aug 2018 14:52:01 +0530
-Message-ID: <CAFp+6iGbfHZQjG5oEVKhQ=4rOaaU=5ePykEuwMqYbPTryX6DnA@mail.gmail.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [Patch v15 2/5] iommu/arm-smmu: Invoke pm_runtime
+ during probe, add/remove device
+Date: Thu, 30 Aug 2018 18:33:53 +0900
+Message-ID: <CAAFQd5BrJppNSo8ETT6ywjuLEULk4nAvWDQEuNiMCvdddeUq1A@mail.gmail.com>
 References: <20180827105551.16346-1-vivek.gautam@codeaurora.org>
-	<20180827105551.16346-3-vivek.gautam@codeaurora.org>
+ <20180827105551.16346-3-vivek.gautam@codeaurora.org>
+ <CAFp+6iGbfHZQjG5oEVKhQ=4rOaaU=5ePykEuwMqYbPTryX6DnA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180827105551.16346-3-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAFp+6iGbfHZQjG5oEVKhQ=4rOaaU=5ePykEuwMqYbPTryX6DnA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 27, 2018 at 4:27 PM Vivek Gautam
-<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->
-> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->
-> The smmu device probe/remove and add/remove master device callbacks
-> gets called when the smmu is not linked to its master, that is without
-> the context of the master device. So calling runtime apis in those places
-> separately.
->
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> [vivek: Cleanup pm runtime calls]
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> ---
->
-> Changes since v14:
->  - none.
->
->  drivers/iommu/arm-smmu.c | 101 +++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 93 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index a81224bc6637..23b4a60149b6 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-
-[snip]
-
-> @@ -2131,6 +2188,26 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->         if (err)
->                 return err;
->
-> +       /*
-> +        * We want to avoid touching dev->power.lock in fastpaths unless
-> +        * it's really going to do something useful - pm_runtime_enabled()
-> +        * can serve as an ideal proxy for that decision. So, conditionally
-> +        * enable pm_runtime.
-> +        */
-> +       if (dev->pm_domain)
-> +               pm_runtime_enable(dev);
-> +
-> +       err = arm_smmu_rpm_get(smmu);
-
-We shouldn't be doing a runtime_get() yet, as this eventually calls
-arm_smmu_device_reset().
-arm_smmu_device_reset() should be called only after arm_smmu_device_cfg_probe().
-So, I plan to replace the pm_runtime_get/put() calls in probe() with
-simple clk_bulk_enable()
-to let the driver initialize smmu, and at the end of the probe we can
-disable the clocks and
-enable runtime pm over the device to let it take care of the device further-on.
-
-> +       if (err < 0)
-> +               return err;
-> +
-> +       /* Enable clocks explicitly if runtime PM is disabled */
-> +       if (!pm_runtime_enabled(dev)) {
-> +               err = clk_bulk_enable(smmu->num_clks, smmu->clks);
-> +               if (err)
-> +                       return err;
-> +       }
-> +
->         err = arm_smmu_device_cfg_probe(smmu);
->         if (err)
->                 return err;
-
-[snip]
-
-Best regards
-Vivek
---
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+T24gVGh1LCBBdWcgMzAsIDIwMTggYXQgNjoyMiBQTSBWaXZlayBHYXV0YW0KPHZpdmVrLmdhdXRh
+bUBjb2RlYXVyb3JhLm9yZz4gd3JvdGU6Cj4KPiBPbiBNb24sIEF1ZyAyNywgMjAxOCBhdCA0OjI3
+IFBNIFZpdmVrIEdhdXRhbQo+IDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+
+ID4KPiA+IEZyb206IFNyaWNoYXJhbiBSIDxzcmljaGFyYW5AY29kZWF1cm9yYS5vcmc+Cj4gPgo+
+ID4gVGhlIHNtbXUgZGV2aWNlIHByb2JlL3JlbW92ZSBhbmQgYWRkL3JlbW92ZSBtYXN0ZXIgZGV2
+aWNlIGNhbGxiYWNrcwo+ID4gZ2V0cyBjYWxsZWQgd2hlbiB0aGUgc21tdSBpcyBub3QgbGlua2Vk
+IHRvIGl0cyBtYXN0ZXIsIHRoYXQgaXMgd2l0aG91dAo+ID4gdGhlIGNvbnRleHQgb2YgdGhlIG1h
+c3RlciBkZXZpY2UuIFNvIGNhbGxpbmcgcnVudGltZSBhcGlzIGluIHRob3NlIHBsYWNlcwo+ID4g
+c2VwYXJhdGVseS4KPiA+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBTcmljaGFyYW4gUiA8c3JpY2hhcmFu
+QGNvZGVhdXJvcmEub3JnPgo+ID4gW3ZpdmVrOiBDbGVhbnVwIHBtIHJ1bnRpbWUgY2FsbHNdCj4g
+PiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9y
+Zz4KPiA+IFJldmlld2VkLWJ5OiBUb21hc3ogRmlnYSA8dGZpZ2FAY2hyb21pdW0ub3JnPgo+ID4g
+VGVzdGVkLWJ5OiBTcmluaXZhcyBLYW5kYWdhdGxhIDxzcmluaXZhcy5rYW5kYWdhdGxhQGxpbmFy
+by5vcmc+Cj4gPiAtLS0KPiA+Cj4gPiBDaGFuZ2VzIHNpbmNlIHYxNDoKPiA+ICAtIG5vbmUuCj4g
+Pgo+ID4gIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDEwMSArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrLS0tLQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCA5MyBpbnNl
+cnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQo+ID4KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
+bW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiA+IGluZGV4IGE4MTIy
+NGJjNjYzNy4uMjNiNGE2MDE0OWI2IDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0t
+c21tdS5jCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPgo+IFtzbmlwXQo+Cj4g
+PiBAQCAtMjEzMSw2ICsyMTg4LDI2IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX3Byb2Jl
+KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gPiAgICAgICAgIGlmIChlcnIpCj4gPiAg
+ICAgICAgICAgICAgICAgcmV0dXJuIGVycjsKPiA+Cj4gPiArICAgICAgIC8qCj4gPiArICAgICAg
+ICAqIFdlIHdhbnQgdG8gYXZvaWQgdG91Y2hpbmcgZGV2LT5wb3dlci5sb2NrIGluIGZhc3RwYXRo
+cyB1bmxlc3MKPiA+ICsgICAgICAgICogaXQncyByZWFsbHkgZ29pbmcgdG8gZG8gc29tZXRoaW5n
+IHVzZWZ1bCAtIHBtX3J1bnRpbWVfZW5hYmxlZCgpCj4gPiArICAgICAgICAqIGNhbiBzZXJ2ZSBh
+cyBhbiBpZGVhbCBwcm94eSBmb3IgdGhhdCBkZWNpc2lvbi4gU28sIGNvbmRpdGlvbmFsbHkKPiA+
+ICsgICAgICAgICogZW5hYmxlIHBtX3J1bnRpbWUuCj4gPiArICAgICAgICAqLwo+ID4gKyAgICAg
+ICBpZiAoZGV2LT5wbV9kb21haW4pCj4gPiArICAgICAgICAgICAgICAgcG1fcnVudGltZV9lbmFi
+bGUoZGV2KTsKPiA+ICsKPiA+ICsgICAgICAgZXJyID0gYXJtX3NtbXVfcnBtX2dldChzbW11KTsK
+Pgo+IFdlIHNob3VsZG4ndCBiZSBkb2luZyBhIHJ1bnRpbWVfZ2V0KCkgeWV0LCBhcyB0aGlzIGV2
+ZW50dWFsbHkgY2FsbHMKPiBhcm1fc21tdV9kZXZpY2VfcmVzZXQoKS4KPiBhcm1fc21tdV9kZXZp
+Y2VfcmVzZXQoKSBzaG91bGQgYmUgY2FsbGVkIG9ubHkgYWZ0ZXIgYXJtX3NtbXVfZGV2aWNlX2Nm
+Z19wcm9iZSgpLgo+IFNvLCBJIHBsYW4gdG8gcmVwbGFjZSB0aGUgcG1fcnVudGltZV9nZXQvcHV0
+KCkgY2FsbHMgaW4gcHJvYmUoKSB3aXRoCj4gc2ltcGxlIGNsa19idWxrX2VuYWJsZSgpCj4gdG8g
+bGV0IHRoZSBkcml2ZXIgaW5pdGlhbGl6ZSBzbW11LCBhbmQgYXQgdGhlIGVuZCBvZiB0aGUgcHJv
+YmUgd2UgY2FuCj4gZGlzYWJsZSB0aGUgY2xvY2tzIGFuZAo+IGVuYWJsZSBydW50aW1lIHBtIG92
+ZXIgdGhlIGRldmljZSB0byBsZXQgaXQgdGFrZSBjYXJlIG9mIHRoZSBkZXZpY2UgZnVydGhlci1v
+bi4KPgoKV2UgY2FuIGF2b2lkIHRoZSBleHBsaWNpdCBjbG9jayBkaXNhYmxlIGJ5IGp1c3QgY2Fs
+bGluZwpwbV9ydW50aW1lX3NldF9hY3RpdmUoKSBiZWZvcmUgcG1fcnVudGltZV9lbmFibGUoKSwg
+YXNzdW1pbmcgdGhhdCB3aGF0CnByb2JlIGRvZXMgaXMgc3ltbWV0cmljYWwgd2l0aCB0aGUgc3Vz
+cGVuZCBjYWxsYmFjaywgd2hpY2ggd291bGQgYmUKY2FsbGVkIGFmdGVyIHRoZSBsYXR0ZXIuCgpC
+ZXN0IHJlZ2FyZHMsClRvbWFzegpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVz
+a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9m
+cmVlZHJlbm8K
