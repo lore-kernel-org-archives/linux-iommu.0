@@ -1,179 +1,259 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v2 01/12] iommu/vt-d: Enumerate the scalable mode capability
-Date: Thu, 30 Aug 2018 09:35:13 +0800
-Message-ID: <20180830013524.28743-2-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 02/12] iommu/vt-d: Manage scalalble mode PASID tables
+Date: Thu, 30 Aug 2018 09:35:14 +0800
+Message-ID: <20180830013524.28743-3-baolu.lu@linux.intel.com>
 References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180830013524.28743-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180830013524.28743-1-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-VGhlIEludGVsIHZ0LWQgc3BlYyByZXYzLjAgaW50cm9kdWNlcyBhIG5ldyB0cmFuc2xhdGlvbgpt
-b2RlIGNhbGxlZCBzY2FsYWJsZSBtb2RlLCB3aGljaCBlbmFibGVzIFBBU0lELWdyYW51bGFyCnRy
-YW5zbGF0aW9ucyBmb3IgZmlyc3QgbGV2ZWwsIHNlY29uZCBsZXZlbCwgbmVzdGVkIGFuZApwYXNz
-LXRocm91Z2ggbW9kZXMuIEF0IHRoZSBzYW1lIHRpbWUsIHRoZSBwcmV2aW91cwpFeHRlbmRlZCBD
-b250ZXh0IChFQ1MpIG1vZGUgaXMgZGVwcmVjYXRlZCAobm8gcHJvZHVjdGlvbgpldmVyIGltcGxl
-bWVudHMgRUNTKS4KClRoaXMgcGF0Y2ggYWRkcyBlbnVtZXJhdGlvbiBmb3IgU2NhbGFibGUgTW9k
-ZSBhbmQgcmVtb3Zlcwp0aGUgZGVwcmVjYXRlZCBFQ1MgZW51bWVyYXRpb24uIEl0IHByb3ZpZGVz
-IGEgYm9vdCB0aW1lCm9wdGlvbiB0byBkaXNhYmxlIHNjYWxhYmxlIG1vZGUgZXZlbiBoYXJkd2Fy
-ZSBjbGFpbXMgdG8Kc3VwcG9ydCBpdC4KCkNjOiBBc2hvayBSYWogPGFzaG9rLnJhakBpbnRlbC5j
-b20+CkNjOiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPgpDYzogS2V2
-aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+CkNjOiBMaXUgWWkgTCA8eWkubC5saXVAaW50
-ZWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBTYW5qYXkgS3VtYXIgPHNhbmpheS5rLmt1bWFyQGludGVs
-LmNvbT4KU2lnbmVkLW9mZi1ieTogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4K
-UmV2aWV3ZWQtYnk6IEFzaG9rIFJhaiA8YXNob2sucmFqQGludGVsLmNvbT4KLS0tCiAuLi4vYWRt
-aW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0ICAgICAgICAgfCAxMiArKy0tCiBkcml2ZXJz
-L2lvbW11L2ludGVsLWlvbW11LmMgICAgICAgICAgICAgICAgICAgfCA2NCArKysrKy0tLS0tLS0t
-LS0tLS0tCiBpbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmggICAgICAgICAgICAgICAgICAgfCAg
-MSArCiAzIGZpbGVzIGNoYW5nZWQsIDI0IGluc2VydGlvbnMoKyksIDUzIGRlbGV0aW9ucygtKQoK
-ZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMu
-dHh0IGIvRG9jdW1lbnRhdGlvbi9hZG1pbi1ndWlkZS9rZXJuZWwtcGFyYW1ldGVycy50eHQKaW5k
-ZXggOTg3MWU2NDlmZmVmLi41Yjk3MTMwNmExMTQgMTAwNjQ0Ci0tLSBhL0RvY3VtZW50YXRpb24v
-YWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0CisrKyBiL0RvY3VtZW50YXRpb24vYWRt
-aW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0CkBAIC0xNjY4LDEyICsxNjY4LDEyIEBACiAJ
-CQlCeSBkZWZhdWx0LCBzdXBlciBwYWdlIHdpbGwgYmUgc3VwcG9ydGVkIGlmIEludGVsIElPTU1V
-CiAJCQloYXMgdGhlIGNhcGFiaWxpdHkuIFdpdGggdGhpcyBvcHRpb24sIHN1cGVyIHBhZ2Ugd2ls
-bAogCQkJbm90IGJlIHN1cHBvcnRlZC4KLQkJZWNzX29mZiBbRGVmYXVsdCBPZmZdCi0JCQlCeSBk
-ZWZhdWx0LCBleHRlbmRlZCBjb250ZXh0IHRhYmxlcyB3aWxsIGJlIHN1cHBvcnRlZCBpZgotCQkJ
-dGhlIGhhcmR3YXJlIGFkdmVydGlzZXMgdGhhdCBpdCBoYXMgc3VwcG9ydCBib3RoIGZvciB0aGUK
-LQkJCWV4dGVuZGVkIHRhYmxlcyB0aGVtc2VsdmVzLCBhbmQgYWxzbyBQQVNJRCBzdXBwb3J0LiBX
-aXRoCi0JCQl0aGlzIG9wdGlvbiBzZXQsIGV4dGVuZGVkIHRhYmxlcyB3aWxsIG5vdCBiZSB1c2Vk
-IGV2ZW4KLQkJCW9uIGhhcmR3YXJlIHdoaWNoIGNsYWltcyB0byBzdXBwb3J0IHRoZW0uCisJCXNt
-X29mZiBbRGVmYXVsdCBPZmZdCisJCQlCeSBkZWZhdWx0LCBzY2FsYWJsZSBtb2RlIHdpbGwgYmUg
-c3VwcG9ydGVkIGlmIHRoZQorCQkJaGFyZHdhcmUgYWR2ZXJ0aXNlcyB0aGF0IGl0IGhhcyBzdXBw
-b3J0IGZvciB0aGUgc2NhbGFibGUKKwkJCW1vZGUgdHJhbnNsYXRpb24uIFdpdGggdGhpcyBvcHRp
-b24gc2V0LCBzY2FsYWJsZSBtb2RlCisJCQl3aWxsIG5vdCBiZSB1c2VkIGV2ZW4gb24gaGFyZHdh
-cmUgd2hpY2ggY2xhaW1zIHRvIHN1cHBvcnQKKwkJCWl0LgogCQl0Ym9vdF9ub2ZvcmNlIFtEZWZh
-dWx0IE9mZl0KIAkJCURvIG5vdCBmb3JjZSB0aGUgSW50ZWwgSU9NTVUgZW5hYmxlZCB1bmRlciB0
-Ym9vdC4KIAkJCUJ5IGRlZmF1bHQsIHRib290IHdpbGwgZm9yY2UgSW50ZWwgSU9NTVUgb24sIHdo
-aWNoCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgYi9kcml2ZXJzL2lv
-bW11L2ludGVsLWlvbW11LmMKaW5kZXggNWYzZjEwY2Y5ZDlkLi41ODQ1ZWRmNGRjZjkgMTAwNjQ0
-Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYworKysgYi9kcml2ZXJzL2lvbW11L2lu
-dGVsLWlvbW11LmMKQEAgLTQzMCwzOCArNDMwLDE2IEBAIHN0YXRpYyBpbnQgZG1hcl9tYXBfZ2Z4
-ID0gMTsKIHN0YXRpYyBpbnQgZG1hcl9mb3JjZWRhYzsKIHN0YXRpYyBpbnQgaW50ZWxfaW9tbXVf
-c3RyaWN0Owogc3RhdGljIGludCBpbnRlbF9pb21tdV9zdXBlcnBhZ2UgPSAxOwotc3RhdGljIGlu
-dCBpbnRlbF9pb21tdV9lY3MgPSAxOwotc3RhdGljIGludCBpbnRlbF9pb21tdV9wYXNpZDI4Owor
-c3RhdGljIGludCBpbnRlbF9pb21tdV9zbSA9IDE7CiBzdGF0aWMgaW50IGlvbW11X2lkZW50aXR5
-X21hcHBpbmc7CiAKICNkZWZpbmUgSURFTlRNQVBfQUxMCQkxCiAjZGVmaW5lIElERU5UTUFQX0dG
-WAkJMgogI2RlZmluZSBJREVOVE1BUF9BWkFMSUEJCTQKIAotLyogQnJvYWR3ZWxsIGFuZCBTa3ls
-YWtlIGhhdmUgYnJva2VuIEVDUyBzdXBwb3J0IOKAlCBub3JtYWwgc28tY2FsbGVkICJzZWNvbmQK
-LSAqIGxldmVsIiB0cmFuc2xhdGlvbiBvZiBETUEgcmVxdWVzdHMtd2l0aG91dC1QQVNJRCBkb2Vz
-bid0IGFjdHVhbGx5IGhhcHBlbgotICogdW5sZXNzIHlvdSBhbHNvIHNldCB0aGUgTkVTVEUgYml0
-IGluIGFuIGV4dGVuZGVkIGNvbnRleHQtZW50cnkuIFdoaWNoIG9mCi0gKiBjb3Vyc2UgbWVhbnMg
-dGhhdCBTVk0gZG9lc24ndCB3b3JrIGJlY2F1c2UgaXQncyB0cnlpbmcgdG8gZG8gbmVzdGVkCi0g
-KiB0cmFuc2xhdGlvbiBvZiB0aGUgcGh5c2ljYWwgYWRkcmVzc2VzIGl0IGZpbmRzIGluIHRoZSBw
-cm9jZXNzIHBhZ2UgdGFibGVzLAotICogdGhyb3VnaCB0aGUgSU9WQS0+cGh5cyBtYXBwaW5nIGZv
-dW5kIGluIHRoZSAic2Vjb25kIGxldmVsIiBwYWdlIHRhYmxlcy4KLSAqCi0gKiBUaGUgVlQtZCBz
-cGVjaWZpY2F0aW9uIHdhcyByZXRyb2FjdGl2ZWx5IGNoYW5nZWQgdG8gY2hhbmdlIHRoZSBkZWZp
-bml0aW9uCi0gKiBvZiB0aGUgY2FwYWJpbGl0eSBiaXRzIGFuZCBwcmV0ZW5kIHRoYXQgQnJvYWR3
-ZWxsL1NreWxha2UgbmV2ZXIgaGFwcGVuZWQuLi4KLSAqIGJ1dCB1bmZvcnR1bmF0ZWx5IHRoZSB3
-cm9uZyBiaXQgd2FzIGNoYW5nZWQuIEl0J3MgRUNTIHdoaWNoIGlzIGJyb2tlbiwgYnV0Ci0gKiBm
-b3Igc29tZSByZWFzb24gaXQgd2FzIHRoZSBQQVNJRCBjYXBhYmlsaXR5IGJpdCB3aGljaCB3YXMg
-cmVkZWZpbmVkIChmcm9tCi0gKiBiaXQgMjggb24gQkRXL1NLTCB0byBiaXQgNDAgaW4gZnV0dXJl
-KS4KLSAqCi0gKiBTbyBvdXIgdGVzdCBmb3IgRUNTIG5lZWRzIHRvIGVzY2hldyB0aG9zZSBpbXBs
-ZW1lbnRhdGlvbnMgd2hpY2ggc2V0IHRoZSBvbGQKLSAqIFBBU0lEIGNhcGFiaWl0eSBiaXQgMjgs
-IHNpbmNlIHRob3NlIGFyZSB0aGUgb25lcyBvbiB3aGljaCBFQ1MgaXMgYnJva2VuLgotICogVW5s
-ZXNzIHdlIGFyZSB3b3JraW5nIGFyb3VuZCB0aGUgJ3Bhc2lkMjgnIGxpbWl0YXRpb25zLCB0aGF0
-IGlzLCBieSBwdXR0aW5nCi0gKiB0aGUgZGV2aWNlIGludG8gcGFzc3Rocm91Z2ggbW9kZSBmb3Ig
-bm9ybWFsIERNQSBhbmQgdGh1cyBtYXNraW5nIHRoZSBidWcuCi0gKi8KLSNkZWZpbmUgZWNzX2Vu
-YWJsZWQoaW9tbXUpIChpbnRlbF9pb21tdV9lY3MgJiYgZWNhcF9lY3MoaW9tbXUtPmVjYXApICYm
-IFwKLQkJCSAgICAoaW50ZWxfaW9tbXVfcGFzaWQyOCB8fCAhZWNhcF9icm9rZW5fcGFzaWQoaW9t
-bXUtPmVjYXApKSkKLS8qIFBBU0lEIHN1cHBvcnQgaXMgdGh1cyBlbmFibGVkIGlmIEVDUyBpcyBl
-bmFibGVkIGFuZCAqZWl0aGVyKiBvZiB0aGUgb2xkCi0gKiBvciBuZXcgY2FwYWJpbGl0eSBiaXRz
-IGFyZSBzZXQuICovCi0jZGVmaW5lIHBhc2lkX2VuYWJsZWQoaW9tbXUpIChlY3NfZW5hYmxlZChp
-b21tdSkgJiYJCQlcCi0JCQkgICAgICAoZWNhcF9wYXNpZChpb21tdS0+ZWNhcCkgfHwgZWNhcF9i
-cm9rZW5fcGFzaWQoaW9tbXUtPmVjYXApKSkKKyNkZWZpbmUgc21fc3VwcG9ydGVkKGlvbW11KQko
-aW50ZWxfaW9tbXVfc20gJiYgZWNhcF9zbXRzKChpb21tdSktPmVjYXApKQorI2RlZmluZSBwYXNp
-ZF9zdXBwb3J0ZWQoaW9tbXUpCShzbV9zdXBwb3J0ZWQoaW9tbXUpICYmCQkJXAorCQkJCSBlY2Fw
-X3Bhc2lkKChpb21tdSktPmVjYXApKQogCiBpbnQgaW50ZWxfaW9tbXVfZ2Z4X21hcHBlZDsKIEVY
-UE9SVF9TWU1CT0xfR1BMKGludGVsX2lvbW11X2dmeF9tYXBwZWQpOwpAQCAtNTQxLDE1ICs1MTks
-OSBAQCBzdGF0aWMgaW50IF9faW5pdCBpbnRlbF9pb21tdV9zZXR1cChjaGFyICpzdHIpCiAJCX0g
-ZWxzZSBpZiAoIXN0cm5jbXAoc3RyLCAic3Bfb2ZmIiwgNikpIHsKIAkJCXByX2luZm8oIkRpc2Fi
-bGUgc3VwcG9ydGVkIHN1cGVyIHBhZ2VcbiIpOwogCQkJaW50ZWxfaW9tbXVfc3VwZXJwYWdlID0g
-MDsKLQkJfSBlbHNlIGlmICghc3RybmNtcChzdHIsICJlY3Nfb2ZmIiwgNykpIHsKLQkJCXByaW50
-ayhLRVJOX0lORk8KLQkJCQkiSW50ZWwtSU9NTVU6IGRpc2FibGUgZXh0ZW5kZWQgY29udGV4dCB0
-YWJsZSBzdXBwb3J0XG4iKTsKLQkJCWludGVsX2lvbW11X2VjcyA9IDA7Ci0JCX0gZWxzZSBpZiAo
-IXN0cm5jbXAoc3RyLCAicGFzaWQyOCIsIDcpKSB7Ci0JCQlwcmludGsoS0VSTl9JTkZPCi0JCQkJ
-IkludGVsLUlPTU1VOiBlbmFibGUgcHJlLXByb2R1Y3Rpb24gUEFTSUQgc3VwcG9ydFxuIik7Ci0J
-CQlpbnRlbF9pb21tdV9wYXNpZDI4ID0gMTsKLQkJCWlvbW11X2lkZW50aXR5X21hcHBpbmcgfD0g
-SURFTlRNQVBfR0ZYOworCQl9IGVsc2UgaWYgKCFzdHJuY21wKHN0ciwgInNtX29mZiIsIDYpKSB7
-CisJCQlwcl9pbmZvKCJJbnRlbC1JT01NVTogZGlzYWJsZSBzY2FsYWJsZSBtb2RlIHN1cHBvcnRc
-biIpOworCQkJaW50ZWxfaW9tbXVfc20gPSAwOwogCQl9IGVsc2UgaWYgKCFzdHJuY21wKHN0ciwg
-InRib290X25vZm9yY2UiLCAxMykpIHsKIAkJCXByaW50ayhLRVJOX0lORk8KIAkJCQkiSW50ZWwt
-SU9NTVU6IG5vdCBmb3JjaW5nIG9uIGFmdGVyIHRib290LiBUaGlzIGNvdWxkIGV4cG9zZSBzZWN1
-cml0eSByaXNrIGZvciB0Ym9vdFxuIik7CkBAIC03OTYsNyArNzY4LDcgQEAgc3RhdGljIGlubGlu
-ZSBzdHJ1Y3QgY29udGV4dF9lbnRyeSAqaW9tbXVfY29udGV4dF9hZGRyKHN0cnVjdCBpbnRlbF9p
-b21tdSAqaW9tbXUKIAl1NjQgKmVudHJ5OwogCiAJZW50cnkgPSAmcm9vdC0+bG87Ci0JaWYgKGVj
-c19lbmFibGVkKGlvbW11KSkgeworCWlmIChzbV9zdXBwb3J0ZWQoaW9tbXUpKSB7CiAJCWlmIChk
-ZXZmbiA+PSAweDgwKSB7CiAJCQlkZXZmbiAtPSAweDgwOwogCQkJZW50cnkgPSAmcm9vdC0+aGk7
-CkBAIC05MzgsNyArOTEwLDcgQEAgc3RhdGljIHZvaWQgZnJlZV9jb250ZXh0X3RhYmxlKHN0cnVj
-dCBpbnRlbF9pb21tdSAqaW9tbXUpCiAJCWlmIChjb250ZXh0KQogCQkJZnJlZV9wZ3RhYmxlX3Bh
-Z2UoY29udGV4dCk7CiAKLQkJaWYgKCFlY3NfZW5hYmxlZChpb21tdSkpCisJCWlmICghc21fc3Vw
-cG9ydGVkKGlvbW11KSkKIAkJCWNvbnRpbnVlOwogCiAJCWNvbnRleHQgPSBpb21tdV9jb250ZXh0
-X2FkZHIoaW9tbXUsIGksIDB4ODAsIDApOwpAQCAtMTI5MCw4ICsxMjYyLDYgQEAgc3RhdGljIHZv
-aWQgaW9tbXVfc2V0X3Jvb3RfZW50cnkoc3RydWN0IGludGVsX2lvbW11ICppb21tdSkKIAl1bnNp
-Z25lZCBsb25nIGZsYWc7CiAKIAlhZGRyID0gdmlydF90b19waHlzKGlvbW11LT5yb290X2VudHJ5
-KTsKLQlpZiAoZWNzX2VuYWJsZWQoaW9tbXUpKQotCQlhZGRyIHw9IERNQV9SVEFERFJfUlRUOwog
-CiAJcmF3X3NwaW5fbG9ja19pcnFzYXZlKCZpb21tdS0+cmVnaXN0ZXJfbG9jaywgZmxhZyk7CiAJ
-ZG1hcl93cml0ZXEoaW9tbXUtPnJlZyArIERNQVJfUlRBRERSX1JFRywgYWRkcik7CkBAIC0xNzgw
-LDcgKzE3NTAsNyBAQCBzdGF0aWMgdm9pZCBmcmVlX2RtYXJfaW9tbXUoc3RydWN0IGludGVsX2lv
-bW11ICppb21tdSkKIAlmcmVlX2NvbnRleHRfdGFibGUoaW9tbXUpOwogCiAjaWZkZWYgQ09ORklH
-X0lOVEVMX0lPTU1VX1NWTQotCWlmIChwYXNpZF9lbmFibGVkKGlvbW11KSkgeworCWlmIChwYXNp
-ZF9zdXBwb3J0ZWQoaW9tbXUpKSB7CiAJCWlmIChlY2FwX3Bycyhpb21tdS0+ZWNhcCkpCiAJCQlp
-bnRlbF9zdm1fZmluaXNoX3BycShpb21tdSk7CiAJCWludGVsX3N2bV9leGl0KGlvbW11KTsKQEAg
-LTI0ODksOCArMjQ1OSw4IEBAIHN0YXRpYyBzdHJ1Y3QgZG1hcl9kb21haW4gKmRtYXJfaW5zZXJ0
-X29uZV9kZXZfaW5mbyhzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11LAogCQkgICAgZG1hcl9maW5k
-X21hdGNoZWRfYXRzcl91bml0KHBkZXYpKQogCQkJaW5mby0+YXRzX3N1cHBvcnRlZCA9IDE7CiAK
-LQkJaWYgKGVjc19lbmFibGVkKGlvbW11KSkgewotCQkJaWYgKHBhc2lkX2VuYWJsZWQoaW9tbXUp
-KSB7CisJCWlmIChzbV9zdXBwb3J0ZWQoaW9tbXUpKSB7CisJCQlpZiAocGFzaWRfc3VwcG9ydGVk
-KGlvbW11KSkgewogCQkJCWludCBmZWF0dXJlcyA9IHBjaV9wYXNpZF9mZWF0dXJlcyhwZGV2KTsK
-IAkJCQlpZiAoZmVhdHVyZXMgPj0gMCkKIAkJCQkJaW5mby0+cGFzaWRfc3VwcG9ydGVkID0gZmVh
-dHVyZXMgfCAxOwpAQCAtMzMwMiw3ICszMjcyLDcgQEAgc3RhdGljIGludCBfX2luaXQgaW5pdF9k
-bWFycyh2b2lkKQogCQkgKiBXZSBuZWVkIHRvIGVuc3VyZSB0aGUgc3lzdGVtIHBhc2lkIHRhYmxl
-IGlzIG5vIGJpZ2dlcgogCQkgKiB0aGFuIHRoZSBzbWFsbGVzdCBzdXBwb3J0ZWQuCiAJCSAqLwot
-CQlpZiAocGFzaWRfZW5hYmxlZChpb21tdSkpIHsKKwkJaWYgKHBhc2lkX3N1cHBvcnRlZChpb21t
-dSkpIHsKIAkJCXUzMiB0ZW1wID0gMiA8PCBlY2FwX3Bzcyhpb21tdS0+ZWNhcCk7CiAKIAkJCWlu
-dGVsX3Bhc2lkX21heF9pZCA9IG1pbl90KHUzMiwgdGVtcCwKQEAgLTMzNjMsNyArMzMzMyw3IEBA
-IHN0YXRpYyBpbnQgX19pbml0IGluaXRfZG1hcnModm9pZCkKIAkJaWYgKCFlY2FwX3Bhc3NfdGhy
-b3VnaChpb21tdS0+ZWNhcCkpCiAJCQlod19wYXNzX3Rocm91Z2ggPSAwOwogI2lmZGVmIENPTkZJ
-R19JTlRFTF9JT01NVV9TVk0KLQkJaWYgKHBhc2lkX2VuYWJsZWQoaW9tbXUpKQorCQlpZiAocGFz
-aWRfc3VwcG9ydGVkKGlvbW11KSkKIAkJCWludGVsX3N2bV9pbml0KGlvbW11KTsKICNlbmRpZgog
-CX0KQEAgLTM0NjcsNyArMzQzNyw3IEBAIHN0YXRpYyBpbnQgX19pbml0IGluaXRfZG1hcnModm9p
-ZCkKIAkJaW9tbXVfZmx1c2hfd3JpdGVfYnVmZmVyKGlvbW11KTsKIAogI2lmZGVmIENPTkZJR19J
-TlRFTF9JT01NVV9TVk0KLQkJaWYgKHBhc2lkX2VuYWJsZWQoaW9tbXUpICYmIGVjYXBfcHJzKGlv
-bW11LT5lY2FwKSkgeworCQlpZiAocGFzaWRfc3VwcG9ydGVkKGlvbW11KSAmJiBlY2FwX3Bycyhp
-b21tdS0+ZWNhcCkpIHsKIAkJCXJldCA9IGludGVsX3N2bV9lbmFibGVfcHJxKGlvbW11KTsKIAkJ
-CWlmIChyZXQpCiAJCQkJZ290byBmcmVlX2lvbW11OwpAQCAtNDM1OCw3ICs0MzI4LDcgQEAgc3Rh
-dGljIGludCBpbnRlbF9pb21tdV9hZGQoc3RydWN0IGRtYXJfZHJoZF91bml0ICpkbWFydSkKIAkJ
-Z290byBvdXQ7CiAKICNpZmRlZiBDT05GSUdfSU5URUxfSU9NTVVfU1ZNCi0JaWYgKHBhc2lkX2Vu
-YWJsZWQoaW9tbXUpKQorCWlmIChwYXNpZF9zdXBwb3J0ZWQoaW9tbXUpKQogCQlpbnRlbF9zdm1f
-aW5pdChpb21tdSk7CiAjZW5kaWYKIApAQCAtNDM3NSw3ICs0MzQ1LDcgQEAgc3RhdGljIGludCBp
-bnRlbF9pb21tdV9hZGQoc3RydWN0IGRtYXJfZHJoZF91bml0ICpkbWFydSkKIAlpb21tdV9mbHVz
-aF93cml0ZV9idWZmZXIoaW9tbXUpOwogCiAjaWZkZWYgQ09ORklHX0lOVEVMX0lPTU1VX1NWTQot
-CWlmIChwYXNpZF9lbmFibGVkKGlvbW11KSAmJiBlY2FwX3Bycyhpb21tdS0+ZWNhcCkpIHsKKwlp
-ZiAocGFzaWRfc3VwcG9ydGVkKGlvbW11KSAmJiBlY2FwX3Bycyhpb21tdS0+ZWNhcCkpIHsKIAkJ
-cmV0ID0gaW50ZWxfc3ZtX2VuYWJsZV9wcnEoaW9tbXUpOwogCQlpZiAocmV0KQogCQkJZ290byBk
-aXNhYmxlX2lvbW11OwpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oIGIv
-aW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oCmluZGV4IDI4MDA0ZDc0YWUwNC4uMjE3M2FlMzVm
-MWRjIDEwMDY0NAotLS0gYS9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmgKKysrIGIvaW5jbHVk
-ZS9saW51eC9pbnRlbC1pb21tdS5oCkBAIC0xMTUsNiArMTE1LDcgQEAKICAqIEV4dGVuZGVkIENh
-cGFiaWxpdHkgUmVnaXN0ZXIKICAqLwogCisjZGVmaW5lIGVjYXBfc210cyhlKQkJKCgoZSkgPj4g
-NDMpICYgMHgxKQogI2RlZmluZSBlY2FwX2RpdChlKQkJKChlID4+IDQxKSAmIDB4MSkKICNkZWZp
-bmUgZWNhcF9wYXNpZChlKQkJKChlID4+IDQwKSAmIDB4MSkKICNkZWZpbmUgZWNhcF9wc3MoZSkJ
-CSgoZSA+PiAzNSkgJiAweDFmKQotLSAKMi4xNy4xCgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
-YW4vbGlzdGluZm8vaW9tbXU=
+In scalable mode, pasid structure is a two level table with
+a pasid directory table and a pasid table. Any pasid entry
+can be identified by a pasid value in below way.
+
+   1
+   9                       6 5      0
+    .-----------------------.-------.
+    |              PASID    |       |
+    '-----------------------'-------'    .-------------.
+             |                    |      |             |
+             |                    |      |             |
+             |                    |      |             |
+             |     .-----------.  |      .-------------.
+             |     |           |  |----->| PASID Entry |
+             |     |           |  |      '-------------'
+             |     |           |  |Plus  |             |
+             |     .-----------.  |      |             |
+             |---->| DIR Entry |-------->|             |
+             |     '-----------'         '-------------'
+.---------.  |Plus |           |
+| Context |  |     |           |
+|  Entry  |------->|           |
+'---------'        '-----------'
+
+This changes the pasid table APIs to support scalable mode
+PASID directory and PASID table. It also adds a helper to
+get the PASID table entry according to the pasid value.
+
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+---
+ drivers/iommu/intel-iommu.c |  2 +-
+ drivers/iommu/intel-pasid.c | 72 ++++++++++++++++++++++++++++++++-----
+ drivers/iommu/intel-pasid.h | 10 +++++-
+ drivers/iommu/intel-svm.c   |  6 +---
+ 4 files changed, 74 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 5845edf4dcf9..b0da4f765274 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2507,7 +2507,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	if (dev)
+ 		dev->archdata.iommu = info;
+ 
+-	if (dev && dev_is_pci(dev) && info->pasid_supported) {
++	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
+ 		ret = intel_pasid_alloc_table(dev);
+ 		if (ret) {
+ 			__dmar_remove_one_dev_info(info);
+diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+index fe95c9bd4d33..d6e90cd5b062 100644
+--- a/drivers/iommu/intel-pasid.c
++++ b/drivers/iommu/intel-pasid.c
+@@ -127,8 +127,7 @@ int intel_pasid_alloc_table(struct device *dev)
+ 	int ret, order;
+ 
+ 	info = dev->archdata.iommu;
+-	if (WARN_ON(!info || !dev_is_pci(dev) ||
+-		    !info->pasid_supported || info->pasid_table))
++	if (WARN_ON(!info || !dev_is_pci(dev) || info->pasid_table))
+ 		return -EINVAL;
+ 
+ 	/* DMA alias device already has a pasid table, use it: */
+@@ -143,8 +142,9 @@ int intel_pasid_alloc_table(struct device *dev)
+ 		return -ENOMEM;
+ 	INIT_LIST_HEAD(&pasid_table->dev);
+ 
+-	size = sizeof(struct pasid_entry);
++	size = sizeof(struct pasid_dir_entry);
+ 	count = min_t(int, pci_max_pasids(to_pci_dev(dev)), intel_pasid_max_id);
++	count >>= PASID_PDE_SHIFT;
+ 	order = get_order(size * count);
+ 	pages = alloc_pages_node(info->iommu->node,
+ 				 GFP_ATOMIC | __GFP_ZERO,
+@@ -154,7 +154,7 @@ int intel_pasid_alloc_table(struct device *dev)
+ 
+ 	pasid_table->table = page_address(pages);
+ 	pasid_table->order = order;
+-	pasid_table->max_pasid = count;
++	pasid_table->max_pasid = count << PASID_PDE_SHIFT;
+ 
+ attach_out:
+ 	device_attach_pasid_table(info, pasid_table);
+@@ -162,14 +162,33 @@ int intel_pasid_alloc_table(struct device *dev)
+ 	return 0;
+ }
+ 
++/* Get PRESENT bit of a PASID directory entry. */
++static inline bool
++pasid_pde_is_present(struct pasid_dir_entry *pde)
++{
++	return READ_ONCE(pde->val) & PASID_PTE_PRESENT;
++}
++
++/* Get PASID table from a PASID directory entry. */
++static inline struct pasid_entry *
++get_pasid_table_from_pde(struct pasid_dir_entry *pde)
++{
++	if (!pasid_pde_is_present(pde))
++		return NULL;
++
++	return phys_to_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
++}
++
+ void intel_pasid_free_table(struct device *dev)
+ {
+ 	struct device_domain_info *info;
+ 	struct pasid_table *pasid_table;
++	struct pasid_dir_entry *dir;
++	struct pasid_entry *table;
++	int i, max_pde;
+ 
+ 	info = dev->archdata.iommu;
+-	if (!info || !dev_is_pci(dev) ||
+-	    !info->pasid_supported || !info->pasid_table)
++	if (!info || !dev_is_pci(dev) || !info->pasid_table)
+ 		return;
+ 
+ 	pasid_table = info->pasid_table;
+@@ -178,6 +197,14 @@ void intel_pasid_free_table(struct device *dev)
+ 	if (!list_empty(&pasid_table->dev))
+ 		return;
+ 
++	/* Free scalable mode PASID directory tables: */
++	dir = pasid_table->table;
++	max_pde = pasid_table->max_pasid >> PASID_PDE_SHIFT;
++	for (i = 0; i < max_pde; i++) {
++		table = get_pasid_table_from_pde(&dir[i]);
++		free_pgtable_page(table);
++	}
++
+ 	free_pages((unsigned long)pasid_table->table, pasid_table->order);
+ 	kfree(pasid_table);
+ }
+@@ -206,17 +233,37 @@ int intel_pasid_get_dev_max_id(struct device *dev)
+ 
+ struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid)
+ {
++	struct device_domain_info *info;
+ 	struct pasid_table *pasid_table;
++	struct pasid_dir_entry *dir;
+ 	struct pasid_entry *entries;
++	int dir_index, index;
+ 
+ 	pasid_table = intel_pasid_get_table(dev);
+ 	if (WARN_ON(!pasid_table || pasid < 0 ||
+ 		    pasid >= intel_pasid_get_dev_max_id(dev)))
+ 		return NULL;
+ 
+-	entries = pasid_table->table;
++	dir = pasid_table->table;
++	info = dev->archdata.iommu;
++	dir_index = pasid >> PASID_PDE_SHIFT;
++	index = pasid & PASID_PTE_MASK;
++
++	spin_lock(&pasid_lock);
++	entries = get_pasid_table_from_pde(&dir[dir_index]);
++	if (!entries) {
++		entries = alloc_pgtable_page(info->iommu->node);
++		if (!entries) {
++			spin_unlock(&pasid_lock);
++			return NULL;
++		}
++
++		WRITE_ONCE(dir[dir_index].val,
++			   (u64)virt_to_phys(entries) | PASID_PTE_PRESENT);
++	}
++	spin_unlock(&pasid_lock);
+ 
+-	return &entries[pasid];
++	return &entries[index];
+ }
+ 
+ /*
+@@ -224,7 +271,14 @@ struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid)
+  */
+ static inline void pasid_clear_entry(struct pasid_entry *pe)
+ {
+-	WRITE_ONCE(pe->val, 0);
++	WRITE_ONCE(pe->val[0], 0);
++	WRITE_ONCE(pe->val[1], 0);
++	WRITE_ONCE(pe->val[2], 0);
++	WRITE_ONCE(pe->val[3], 0);
++	WRITE_ONCE(pe->val[4], 0);
++	WRITE_ONCE(pe->val[5], 0);
++	WRITE_ONCE(pe->val[6], 0);
++	WRITE_ONCE(pe->val[7], 0);
+ }
+ 
+ void intel_pasid_clear_entry(struct device *dev, int pasid)
+diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+index 1c05ed6fc5a5..12f480c2bb8b 100644
+--- a/drivers/iommu/intel-pasid.h
++++ b/drivers/iommu/intel-pasid.h
+@@ -12,11 +12,19 @@
+ 
+ #define PASID_MIN			0x1
+ #define PASID_MAX			0x100000
++#define PASID_PTE_MASK			0x3F
++#define PASID_PTE_PRESENT		1
++#define PDE_PFN_MASK			PAGE_MASK
++#define PASID_PDE_SHIFT			6
+ 
+-struct pasid_entry {
++struct pasid_dir_entry {
+ 	u64 val;
+ };
+ 
++struct pasid_entry {
++	u64 val[8];
++};
++
+ /* The representative of a PASID table */
+ struct pasid_table {
+ 	void			*table;		/* pasid table pointer */
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 4a03e5090952..6c0bd9ee9602 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -65,8 +65,6 @@ int intel_svm_init(struct intel_iommu *iommu)
+ 
+ 	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+ 	if (ecap_dis(iommu->ecap)) {
+-		/* Just making it explicit... */
+-		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
+ 		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+ 		if (pages)
+ 			iommu->pasid_state_table = page_address(pages);
+@@ -406,9 +404,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 			pasid_entry_val |= PASID_ENTRY_FLPM_5LP;
+ 
+ 		entry = intel_pasid_get_entry(dev, svm->pasid);
+-		entry->val = pasid_entry_val;
+-
+-		wmb();
++		WRITE_ONCE(entry->val[0], pasid_entry_val);
+ 
+ 		/*
+ 		 * Flush PASID cache when a PASID table entry becomes
+-- 
+2.17.1
