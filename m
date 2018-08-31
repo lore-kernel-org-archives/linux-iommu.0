@@ -1,106 +1,121 @@
-From: Nipun Gupta <nipun.gupta@nxp.com>
-Subject: RE: [PATCH 0/7 v6] Support for fsl-mc bus and its devices in SMMU
-Date: Fri, 31 Aug 2018 11:57:48 +0000
-Message-ID: <VI1PR04MB4480D192810E7DEB38895F0AE60F0@VI1PR04MB4480.eurprd04.prod.outlook.com>
-References: <1531135103-10699-1-git-send-email-nipun.gupta@nxp.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC 01/13] iommu: Introduce bind_guest_stage API
+Date: Fri, 31 Aug 2018 14:11:14 +0100
+Message-ID: <b7909f1b-57ce-f4db-d916-140a63283232@arm.com>
+References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
+ <1535026656-8450-2-git-send-email-eric.auger@redhat.com>
+ <22c01a4d-c74a-7279-d4ae-39e29a3bc942@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1531135103-10699-1-git-send-email-nipun.gupta@nxp.com>
+In-Reply-To: <22c01a4d-c74a-7279-d4ae-39e29a3bc942@redhat.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "robin.murphy@arm.com" <robin.murphy@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "robh@kernel.org" <robh@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "catalin.marinas@arm.com" <catalin.marinas@arm.com>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, Laurentiu Tudor <laurentiu.tudor@nxp.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "hch@lst.de" <hch@lst.de>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "shawnguo@kernel.org" <shawnguo@kernel.org>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bharat Bhushan <bharat.bhushan@nxp.com>, "stuyoder@gmail.com" <stuyoder@gmail.com>, Leo Li <leoyang.li@nxp.com>
+To: Auger Eric <eric.auger@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, will.deacon@arm.com, robin.murphy@arm.com
+Cc: marc.zyngier@arm.com, peter.maydell@linaro.org, christoffer.dall@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg/Robin,
+Hi Eric,
 
-Can you please let me know when these patches will be applied onto the tree=
-.
-Is there anything else pending from my side.
+On 23/08/18 16:25, Auger Eric wrote:
+>> +int iommu_bind_guest_stage(struct iommu_domain *domain, struct device *dev,
+>> +			   struct iommu_guest_stage_config *cfg)
+
+About the name change from iommu_bind_pasid_table: is the intent to
+reuse this API for SMMUv2, which supports nested but not PASID? Seems
+like a good idea but "iommu_bind_table" may be better since "stage" is
+only used by Arm.
+
+>> +/**
+>> + * PASID table data used to bind guest PASID table to the host IOMMU. This will
+>> + * enable guest managed first level page tables.
+>> + * @version: for future extensions and identification of the data format
+>> + * @bytes: size of this structure
+>> + * @base_ptr:	PASID table pointer
+>> + * @pasid_bits:	number of bits supported in the guest PASID table, must be less
+>> + *		or equal than the host supported PASID size.
+>> + */
+>> +struct iommu_pasid_table_config {
+>> +	__u32 version;
+>> +#define PASID_TABLE_CFG_VERSION_1 1
+>> +	__u32 bytes;
+>> +	__u64 base_ptr;
+>> +	__u8 pasid_bits;
+>> +};
+>> +
+>> +/**
+>> + * Stream Table Entry S1 info
+>> + * @disabled: the smmu is disabled
+>> + * @bypassed: stage 1 is bypassed
+>> + * @aborted: aborted
+>> + * @cdptr_dma: GPA of the Context Descriptor
+>> + * @asid: address space identified associated to the CD
+>> + */
+>> +struct iommu_smmu_s1_config {
+>> +	__u8 disabled;
+>> +	__u8 bypassed;
+>> +	__u8 aborted;
+>> +	__u64 cdptr_dma;
+>> +	__u16 asid;
+> This asid field is a leftover. asid is part of the CD (owned by the
+> guest) and cannot be conveyed through this API. What is relevant is to
+> pass is the guest asid_bits (vSMMU IDR1 info), to be compared with the
+> host one. So we end up having something similar to the base_ptr and
+> pasid_bits of iommu_pasid_table_config.
+
+That part seems strange. Userspace wouldn't try arbitrary ASID sizes
+until one fits, especially since ASID size isn't the only parameter:
+there will be SSID, IOVA, IPA sizes, HTTU features and I guess any other
+SMMU_IDRx bit that corresponds to a field in the CD or STE. Doesn't
+vSMMU need to tailor its IDR registers to whatever is supported by the
+host SMMU, in order to use nested translation?
+
+Before creating the virtual ID registers, userspace will likely want to
+know more about the physical IOMMU, by querying the kernel. I wrote
+something about that interface recently:
+https://www.spinics.net/lists/iommu/msg28039.html
+
+And if you provide this interface, checking the parameters again in
+BIND_GUEST_STAGE isn't very useful, it only tells you that userspace
+read your values. Once the guest writes the CD, it could still use the
+wrong ASID size or some other invalid config. That would be caught by
+the SMMU walker and cause a C_BAD_CD error report.
+
+> Otherwise, the other fields (disable, bypassed, aborted) can be packed
+> as masks in a _u8 flag.
+
+What's the difference between aborted and disabled? I'm also not sure we
+should give such fine tweaks to userspace, since the STE code is already
+pretty complicated and has to deal with several state transitions.
+Existing behavior (1) (2) (5) probably needs to be preserved:
+
+(1) Initially no container is set, s1-translate s2-bypass with the
+default domain (non-VFIO)
+(2) A VFIO_TYPE1_NESTING_IOMMU container is set, s1-bypass s2-translate
+(3) BIND_GUEST_STAGE, s1-translate s2-translate
+(4) UNBIND_GUEST_STAGE, s1-bypass s2-translate
+(5) Remove container, s1-translate s2-bypass with the default domain
+
+That said, when instantiating a vSMMU, QEMU may want to switch from (2)
+to an intermediate "s1-abort s2-translate" state. At the moment with
+virtio-iommu I only create the stage-2 mappings at (3). This ensures
+that transactions abort until the guest configures the vIOMMU and it
+keeps the host driver simple, but it has the downside of pinning guest
+memory lazily (necessary with virtio-iommu since the guest falls back to
+the map/unmap interface, which doesn't pin all memory upfront, if it
+can't support nested).
+
+> Anyway this API still is at the stage of proof of concept. At least it
+> shows the similarities between that use case and the PASID one and
+> should encourage to discuss about the relevance to have a unified API to
+> pass the guest stage info.
+Other required fields in the BIND_GUEST_STAGE ioctl are at least s1dss,
+s1cdmax and s1fmt. It's not for sanity-check, they describe the guest
+configuration. The guest selects a PASID table format (1-level, 2-level
+4k/64k) which is written into STE.s1fmt. It also selects the behavior of
+requests-without-pasid, which is written into STE.s1dss. s1cdmax
+corresponds to pasid_bits.
 
 Thanks,
-Nipun
-
-> -----Original Message-----
-> From: Nipun Gupta
-> Sent: Monday, July 9, 2018 4:48 PM
-> To: robin.murphy@arm.com; will.deacon@arm.com; robh+dt@kernel.org;
-> robh@kernel.org; mark.rutland@arm.com; catalin.marinas@arm.com;
-> gregkh@linuxfoundation.org; Laurentiu Tudor <laurentiu.tudor@nxp.com>;
-> bhelgaas@google.com; hch@lst.de
-> Cc: joro@8bytes.org; m.szyprowski@samsung.com; shawnguo@kernel.org;
-> frowand.list@gmail.com; iommu@lists.linux-foundation.org; linux-
-> kernel@vger.kernel.org; devicetree@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; linuxppc-dev@lists.ozlabs.org; linux-
-> pci@vger.kernel.org; Bharat Bhushan <bharat.bhushan@nxp.com>;
-> stuyoder@gmail.com; Leo Li <leoyang.li@nxp.com>; Nipun Gupta
-> <nipun.gupta@nxp.com>
-> Subject: [PATCH 0/7 v6] Support for fsl-mc bus and its devices in SMMU
->=20
-> This patchset defines IOMMU DT binding for fsl-mc bus and adds
-> support in SMMU for fsl-mc bus.
->=20
-> The patch series is based on top of dma-mapping tree (for-next branch):
-> http://git.infradead.org/users/hch/dma-mapping.git
->=20
-> These patches
->   - Define property 'iommu-map' for fsl-mc bus (patch 1)
->   - Integrates the fsl-mc bus with the SMMU using this
->     IOMMU binding (patch 2,3,4)
->   - Adds the dma configuration support for fsl-mc bus (patch 5, 6)
->   - Updates the fsl-mc device node with iommu/dma related changes (patch =
-7)
->=20
-> Changes in v2:
->   - use iommu-map property for fsl-mc bus
->   - rebase over patchset https://patchwork.kernel.org/patch/10317337/
->     and make corresponding changes for dma configuration of devices on
->     fsl-mc bus
->=20
-> Changes in v3:
->   - move of_map_rid in drivers/of/address.c
->=20
-> Changes in v4:
->   - move of_map_rid in drivers/of/base.c
->=20
-> Changes in v5:
->   - break patch 5 in two separate patches (now patch 5/7 and patch 6/7)
->   - add changelog text in patch 3/7 and patch 5/7
->   - typo fix
->=20
-> Changes in v6:
->   - Updated fsl_mc_device_group() API to be more rational
->   - Added dma-coherent property in the LS2 smmu device node
->   - Minor fixes in the device-tree documentation
->=20
-> Nipun Gupta (7):
->   Documentation: fsl-mc: add iommu-map device-tree binding for fsl-mc
->     bus
->   iommu/of: make of_pci_map_rid() available for other devices too
->   iommu/of: support iommu configuration for fsl-mc devices
->   iommu/arm-smmu: Add support for the fsl-mc bus
->   bus: fsl-mc: support dma configure for devices on fsl-mc bus
->   bus: fsl-mc: set coherent dma mask for devices on fsl-mc bus
->   arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
->=20
->  .../devicetree/bindings/misc/fsl,qoriq-mc.txt      |  39 ++++++++
->  arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |   7 +-
->  drivers/bus/fsl-mc/fsl-mc-bus.c                    |  16 +++-
->  drivers/iommu/arm-smmu.c                           |   7 ++
->  drivers/iommu/iommu.c                              |  13 +++
->  drivers/iommu/of_iommu.c                           |  25 ++++-
->  drivers/of/base.c                                  | 102 +++++++++++++++=
-++++++
->  drivers/of/irq.c                                   |   5 +-
->  drivers/pci/of.c                                   | 101 ---------------=
------
->  include/linux/fsl/mc.h                             |   8 ++
->  include/linux/iommu.h                              |   2 +
->  include/linux/of.h                                 |  11 +++
->  include/linux/of_pci.h                             |  10 --
->  13 files changed, 224 insertions(+), 122 deletions(-)
->=20
-> --
-> 1.9.1
+Jean
