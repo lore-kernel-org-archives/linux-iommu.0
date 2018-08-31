@@ -1,46 +1,56 @@
-From: Paul Burton <paul.burton@mips.com>
-Subject: Re: [PATCH 2/5] dma-mapping: move the dma_coherent flag to struct
- device
-Date: Fri, 31 Aug 2018 13:11:55 -0700
-Message-ID: <20180831201155.vqhrmn5fdlqv3fpr@pburton-laptop>
+From: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+Subject: Re: your mail
+Date: Fri, 31 Aug 2018 13:23:49 -0700
+Message-ID: <20180831202349.xcz45jjcy7xvx3yk@pburton-laptop>
 References: <20180827145032.9522-1-hch@lst.de>
- <20180827145032.9522-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20180827145032.9522-3-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20180827145032.9522-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Christoph,
 
-On Mon, Aug 27, 2018 at 04:50:29PM +0200, Christoph Hellwig wrote:
-> Various architectures support both coherent and non-coherent dma on
-> a per-device basis.  Move the dma_noncoherent flag from mips the
-> mips archdata field to struct device proper to prepare the
-> infrastructure for reuse on other architectures.
+On Mon, Aug 27, 2018 at 04:50:27PM +0200, Christoph Hellwig wrote:
+> Subject: [RFC] merge dma_direct_ops and dma_noncoherent_ops
+> 
+> While most architectures are either always or never dma coherent for a
+> given build, the arm, arm64, mips and soon arc architectures can have
+> different dma coherent settings on a per-device basis.  Additionally
+> some mips builds can decide at boot time if dma is coherent or not.
+> 
+> I've started to look into handling noncoherent dma in swiotlb, and
+> moving the dma-iommu ops into common code [1], and for that we need a
+> generic way to check if a given device is coherent or not.  Moving
+> this flag into struct device also simplifies the conditionally coherent
+> architecture implementations.
+> 
+> These patches are also available in a git tree given that they have
+> a few previous posted dependencies:
+> 
+>     git://git.infradead.org/users/hch/misc.git dma-direct-noncoherent-merge
+> 
+> Gitweb:
+> 
+>     http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-direct-noncoherent-merge
 
-"mips the mips"
+Apart from the nits in patch 2, these look sane to me from a MIPS
+perspective, so for patches 1-4:
 
-> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-> index a0aa00cc909d..f99748e9c08e 100644
-> --- a/include/linux/dma-noncoherent.h
-> +++ b/include/linux/dma-noncoherent.h
-> @@ -4,6 +4,24 @@
->  
->  #include <linux/dma-mapping.h>
->  
-> +#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
-> +#include <asm/dma-coherence.h>
-> +#else
-> +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-
-#elif ?
+    Acked-by: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org> # MIPS parts
 
 Thanks,
     Paul
