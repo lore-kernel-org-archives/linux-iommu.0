@@ -1,78 +1,46 @@
-From: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v3] of/platform: initialise AMBA default DMA masks
-Date: Fri, 31 Aug 2018 16:13:07 +0200
-Message-ID: <20180831141307.9053-1-linus.walleij@linaro.org>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH 2/5] dma-mapping: move the dma_coherent flag to struct
+ device
+Date: Fri, 31 Aug 2018 13:11:55 -0700
+Message-ID: <20180831201155.vqhrmn5fdlqv3fpr@pburton-laptop>
+References: <20180827145032.9522-1-hch@lst.de>
+ <20180827145032.9522-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Russell King <linux@armlinux.org.uk>
-Cc: iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180827145032.9522-3-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhpcyBhZGRyZXNzZXMgYSB2NC4xOS1yYzEgcmVncmVzc2lvbiBpbiB0aGUgUEwxMTEgRFJNIGRy
-aXZlcgppbiBkcml2ZXJzL2dwdS9wbDExMS8qCgpUaGUgZHJpdmVyIHVzZXMgdGhlIENNQSBLTVMg
-aGVscGVycyBhbmQgd2lsbCB0aHVzIGF0IHNvbWUKcG9pbnQgY2FsbCBkb3duIHRvIGRtYV9hbGxv
-Y19hdHRycygpIHRvIGFsbG9jYXRlIGEgY2h1bmsKb2YgY29udGlnb3VzIERNQSBtZW1vcnkgZm9y
-IHRoZSBmcmFtZWJ1ZmZlci4KCkl0IGFwcGVhcnMgdGhhdCBpbiB2NC4xOCwgaXQgd2FzIE9LIHRo
-YXQgdGhpcyAoYW5kIG90aGVyCkRNQSBtYXN0ZXJpbmcgQU1CQSBkZXZpY2VzKSBsZWZ0IGRldi0+
-Y29oZXJlbnRfZG1hX21hc2sKYmxhbmsgKHplcm8pLgoKSW4gdjQuMTktcmMxIHRoZSBXQVJOX09O
-X09OQ0UoZGV2ICYmICFkZXYtPmNvaGVyZW50X2RtYV9tYXNrKQppbiBkbWFfYWxsb2NfYXR0cnMo
-KSBpbiBpbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmggaXMKdHJpZ2dlcmVkLiBUaGUgYWxsb2Nh
-dGlvbiBsYXRlciBmYWlscyB3aGVuIGdldF9jb2hlcmVudF9kbWFfbWFzaygpCmlzIGNhbGxlZCBm
-cm9tIF9fZG1hX2FsbG9jKCkgYW5kIF9fZG1hX2FsbG9jKCkgcmV0dXJucwpOVUxMOgoKZHJtLWNs
-Y2QtcGwxMTEgZGV2OjIwOiBjb2hlcmVudCBETUEgbWFzayBpcyB1bnNldApkcm0tY2xjZC1wbDEx
-MSBkZXY6MjA6IFtkcm06ZHJtX2ZiX2hlbHBlcl9mYmRldl9zZXR1cF0gKkVSUk9SKgogCSAgICAg
-ICAJICAgICAgICBGYWlsZWQgdG8gc2V0IGZiZGV2IGNvbmZpZ3VyYXRpb24KCkl0IHR1cm5zIG91
-dCB0aGF0IGluIGNvbW1pdCA0ZDhiZGU4ODNiZmIKKCJPRjogRG9uJ3Qgc2V0IGRlZmF1bHQgY29o
-ZXJlbnQgRE1BIG1hc2siKQp0aGUgT0YgY29yZSBzdG9wcyBzZXR0aW5nIHRoZSBkZWZhdWx0IERN
-QSBtYXNrIG9uIG5ldyBkZXZpY2VzLAplc3BlY2lhbGx5IHRob3NlIGxpbmVzIG9mIHRoZSBwYXRj
-aDoKCi0gaWYgKCFkZXYtPmNvaGVyZW50X2RtYV9tYXNrKQotICAgICAgICAgICAgICAgZGV2LT5j
-b2hlcmVudF9kbWFfbWFzayA9IERNQV9CSVRfTUFTSygzMik7CgpSb2JpbiBNdXJwaHkgc29sdmVk
-IGEgc2ltaWxhciBwcm9ibGVtIGluCmE1NTE2MjE5YjEwMiAoIm9mL3BsYXRmb3JtOiBJbml0aWFs
-aXNlIGRlZmF1bHQgRE1BIG1hc2tzIikKYnkgc2ltcGx5IGFzc2lnbmluZyBkZXYuY29oZXJlbnRf
-ZG1hX21hc2sgYW5kIHRoZQpkZXYuZG1hX21hc2sgdG8gcG9pbnQgdG8gdGhlIHNhbWUgd2hlbiBj
-cmVhdGluZyBkZXZpY2VzCmZyb20gdGhlIGRldmljZSB0cmVlLCBhbmQgaW50cm9kdWNpbmcgdGhl
-IHNhbWUgY29kZSBpbnRvCnRoZSBjb2RlIHBhdGggY3JlYXRpbmcgQU1CQS9QcmltZUNlbGwgZGV2
-aWNlcyBzb2x2ZWQgbXkKcHJvYmxlbSwgZ3JhcGhpY3Mgbm93IGNvbWUgdXAuCgpUaGUgY29kZSBz
-aW1wbHkgYXNzdW1lcyB0aGF0IHRoZSBkZXZpY2UgY2FuIGFjY2VzcyBhbGwKb2YgdGhlIHN5c3Rl
-bSBtZW1vcnkgYnkgc2V0dGluZyB0aGUgY29oZXJlbnQgRE1BIG1hc2sKdG8gMHhmZmZmZmZmZiB3
-aGVuIGNyZWF0aW5nIGEgZGV2aWNlIGZyb20gdGhlIGRldmljZQp0cmVlLCB3aGljaCBpcyBjcnVk
-ZSwgYnV0IHNlZW1zIHRvIGJlIHdoYXQga2VybmVsIHY0LjE4CmFzc3VtZWQuCgpUaGUgQU1CQSBQ
-cmltZUNlbGxzIGRvIG5vdCBkaWZmZXIgYmV0d2VlbiBjb2hlcmVudCBhbmQKc3RyZWFtaW5nIERN
-QSBzbyB3ZSBjYW4ganVzdCBhc3NpZ24gdGhlIHNhbWUgdG8gYW55CkRNQSBtYXNrLgoKUG9zc2li
-bHkgZHJpdmVycyBzaG91bGQgYXVnbWVudCB0aGVpciBjb2hlcmVudCBETUEgbWFzawppbiBhY2Nv
-cmRhbmNlIHdpdGggImRtYS1yYW5nZXMiIGZyb20gdGhlIGRldmljZSB0cmVlCmlmIG1vcmUgZmlu
-ZWdyYW51bGFyIG1hc2tpbmcgaXMgbmVlZGVkLgoKUmVwb3J0ZWQtYnk6IFJ1c3NlbGwgS2luZyA8
-bGludXhAYXJtbGludXgub3JnLnVrPgpGaXhlczogNGQ4YmRlODgzYmZiICgiT0Y6IERvbid0IHNl
-dCBkZWZhdWx0IGNvaGVyZW50IERNQSBtYXNrIikKQ2M6IFJ1c3NlbGwgS2luZyA8bGludXhAYXJt
-bGludXgub3JnLnVrPgpDYzogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+CkNjOiBSb2Jp
-biBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPgpTaWduZWQtb2ZmLWJ5OiBMaW51cyBXYWxs
-ZWlqIDxsaW51cy53YWxsZWlqQGxpbmFyby5vcmc+Ci0tLQpDaGFuZ2VMb2cgdjItPnYzOgotIFBy
-b3ZpZGUgcHJvcGVyIHJvb3QgY2F1c2UgYW5hbHlzaXMsIHBvaW50IHRvIHRoZSByaWdodAogIG9m
-ZmVuZGluZyBjb21taXQgd2l0aCBGaXhlczoKLSBNYWtlIGV2ZW4gbW9yZSBlbGFib3JhdGUgZGVz
-Y3JpcHRpb24gb2Ygd2hhdCBpcyBjYXVzaW5nCiAgdGhpcy4KQ2hhbmdlTG9nIHYxLT52MjoKLSBQ
-cm92aWRlIGEgYmV0dGVyIGRlc2NyaXB0aW9uIGZvciB0aGUgY2hhbmdlLgotLS0KIGRyaXZlcnMv
-b2YvcGxhdGZvcm0uYyB8IDQgKysrKwogMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKQoK
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvb2YvcGxhdGZvcm0uYyBiL2RyaXZlcnMvb2YvcGxhdGZvcm0u
-YwppbmRleCA3YmE5MGMyOTBhNDIuLjZjNTk2NzM5MzNlOSAxMDA2NDQKLS0tIGEvZHJpdmVycy9v
-Zi9wbGF0Zm9ybS5jCisrKyBiL2RyaXZlcnMvb2YvcGxhdGZvcm0uYwpAQCAtMjQxLDYgKzI0MSwx
-MCBAQCBzdGF0aWMgc3RydWN0IGFtYmFfZGV2aWNlICpvZl9hbWJhX2RldmljZV9jcmVhdGUoc3Ry
-dWN0IGRldmljZV9ub2RlICpub2RlLAogCWlmICghZGV2KQogCQlnb3RvIGVycl9jbGVhcl9mbGFn
-OwogCisJLyogQU1CQSBkZXZpY2VzIG9ubHkgc3VwcG9ydCBhIHNpbmdsZSBETUEgbWFzayAqLwor
-CWRldi0+ZGV2LmNvaGVyZW50X2RtYV9tYXNrID0gRE1BX0JJVF9NQVNLKDMyKTsKKwlkZXYtPmRl
-di5kbWFfbWFzayA9ICZkZXYtPmRldi5jb2hlcmVudF9kbWFfbWFzazsKKwogCS8qIHNldHVwIGdl
-bmVyaWMgZGV2aWNlIGluZm8gKi8KIAlkZXYtPmRldi5vZl9ub2RlID0gb2Zfbm9kZV9nZXQobm9k
-ZSk7CiAJZGV2LT5kZXYuZndub2RlID0gJm5vZGUtPmZ3bm9kZTsKLS0gCjIuMTcuMQoKX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxp
-bmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+Hi Christoph,
+
+On Mon, Aug 27, 2018 at 04:50:29PM +0200, Christoph Hellwig wrote:
+> Various architectures support both coherent and non-coherent dma on
+> a per-device basis.  Move the dma_noncoherent flag from mips the
+> mips archdata field to struct device proper to prepare the
+> infrastructure for reuse on other architectures.
+
+"mips the mips"
+
+> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+> index a0aa00cc909d..f99748e9c08e 100644
+> --- a/include/linux/dma-noncoherent.h
+> +++ b/include/linux/dma-noncoherent.h
+> @@ -4,6 +4,24 @@
+>  
+>  #include <linux/dma-mapping.h>
+>  
+> +#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
+> +#include <asm/dma-coherence.h>
+> +#else
+> +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+
+#elif ?
+
+Thanks,
+    Paul
