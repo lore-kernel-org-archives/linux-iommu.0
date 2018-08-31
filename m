@@ -1,221 +1,99 @@
-From: Lianbo Jiang <lijiang@redhat.com>
-Subject: [PATCH 5/5 V6] kdump/vmcore: support encrypted old memory with SME enabled
-Date: Fri, 31 Aug 2018 16:19:30 +0800
-Message-ID: <20180831081930.31561-6-lijiang@redhat.com>
-References: <20180831081930.31561-1-lijiang@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180831081930.31561-1-lijiang@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, dyoung@redhat.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, bhe@redhat.com
+From: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2] of/platform: initialise AMBA default DMA masks
+Date: Fri, 31 Aug 2018 10:26:14 +0200
+Message-ID: <20180831082614.27455-1-linus.walleij@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In kdump kernel, we need to dump the old memory into vmcore file,if SME
-is enabled in the first kernel, we have to remap the old memory with the
-memory encryption mask, which will be automatically decrypted when we
-read from DRAM.
+This addresses a v4.19-rc1 regression in the PL111 DRM driver
+in drivers/gpu/pl111/*
 
-For SME kdump, there are two cases that doesn't support:
+The driver uses the CMA KMS helpers and will thus at some
+point call down to dma_alloc_attrs() to allocate a chunk
+of contigous DMA memory for the framebuffer.
 
- ----------------------------------------------
-| first-kernel | second-kernel | kdump support |
-|      (mem_encrypt=on|off)    |   (yes|no)    |
-|--------------+---------------+---------------|
-|     on       |     on        |     yes       |
-|     off      |     off       |     yes       |
-|     on       |     off       |     no        |
-|     off      |     on        |     no        |
-|______________|_______________|_______________|
+It appears that in v4.18, it was OK that this (and other
+DMA mastering AMBA devices) left dev->coherent_dma_mask
+blank (zero).
 
-1. SME is enabled in the first kernel, but SME is disabled in kdump kernel
-In this case, because the old memory is encrypted, we can't decrypt the
-old memory.
+In v4.19-rc1 the WARN_ON_ONCE(dev && !dev->coherent_dma_mask)
+in dma_alloc_attrs() in include/linux/dma-mapping.h is
+triggered. The allocation later fails when get_coherent_dma_mask()
+is called from __dma_alloc() and __dma_alloc() returns
+NULL:
 
-2. SME is disabled in the first kernel, but SME is enabled in kdump kernel
-On the one hand, the old memory is unencrypted, the old memory can be dumped
-as usual, we don't need to enable SME in kdump kernel; On the other hand, it
-will increase the complexity of the code, we will have to consider how to
-pass the SME flag from the first kernel to the kdump kernel, it is really
-too expensive to do this.
+drm-clcd-pl111 dev:20: coherent DMA mask is unset
+drm-clcd-pl111 dev:20: [drm:drm_fb_helper_fbdev_setup] *ERROR*
+ 	       	        Failed to set fbdev configuration
 
-This patches are only for SME kdump, the patches don't support SEV kdump.
+I have not been able to properly bisect down to the actual
+committ causing it beacuse the kernel simply fails to build
+at to many bisection points, pushing the bisect back to places
+like the merge of entire subsystem trees, where things have
+likely been resolved while merging them.
 
-Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
+I found that Robin Murphy solved a similar problem in
+a5516219b102 ("of/platform: Initialise default DMA masks")
+by simply assigning dev.coherent_dma_mask and the
+dev.dma_mask to point to the same when creating devices
+from the device tree, and introducing the same code into
+the code path creating AMBA/PrimeCell devices solved my
+problem, graphics now come up.
+
+The code simply assumes that the device can access all
+of the system memory by setting the coherent DMA mask
+to 0xffffffff when creating a device from the device
+tree, which is crude, but seems to be what kernel v4.18
+assumed.
+
+Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Cc: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 ---
- arch/x86/kernel/Makefile             |  1 +
- arch/x86/kernel/crash_dump_encrypt.c | 53 ++++++++++++++++++++++++++++
- fs/proc/vmcore.c                     | 21 +++++++----
- include/linux/crash_dump.h           | 12 +++++++
- 4 files changed, 81 insertions(+), 6 deletions(-)
- create mode 100644 arch/x86/kernel/crash_dump_encrypt.c
+Russell, Christoph: this is probably not the last patch.
+But it has a more accurate description of the problem.
+I still do not know what change to the kernel made
+it start triggering this, whether in the DMA API or
+in DRM :(
 
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 8824d01c0c35..dfbeae0e35ce 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -97,6 +97,7 @@ obj-$(CONFIG_KEXEC_CORE)	+= machine_kexec_$(BITS).o
- obj-$(CONFIG_KEXEC_CORE)	+= relocate_kernel_$(BITS).o crash.o
- obj-$(CONFIG_KEXEC_FILE)	+= kexec-bzimage64.o
- obj-$(CONFIG_CRASH_DUMP)	+= crash_dump_$(BITS).o
-+obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= crash_dump_encrypt.o
- obj-y				+= kprobes/
- obj-$(CONFIG_MODULES)		+= module.o
- obj-$(CONFIG_DOUBLEFAULT)	+= doublefault.o
-diff --git a/arch/x86/kernel/crash_dump_encrypt.c b/arch/x86/kernel/crash_dump_encrypt.c
-new file mode 100644
-index 000000000000..e1b1a577f197
---- /dev/null
-+++ b/arch/x86/kernel/crash_dump_encrypt.c
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ *	Memory preserving reboot related code.
-+ *
-+ *	Created by: Lianbo Jiang (lijiang@redhat.com)
-+ *	Copyright (C) RedHat Corporation, 2018. All rights reserved
-+ */
-+
-+#include <linux/errno.h>
-+#include <linux/crash_dump.h>
-+#include <linux/uaccess.h>
-+#include <linux/io.h>
-+
-+/**
-+ * copy_oldmem_page_encrypted - copy one page from "oldmem encrypted"
-+ * @pfn: page frame number to be copied
-+ * @buf: target memory address for the copy; this can be in kernel address
-+ *	space or user address space (see @userbuf)
-+ * @csize: number of bytes to copy
-+ * @offset: offset in bytes into the page (based on pfn) to begin the copy
-+ * @userbuf: if set, @buf is in user address space, use copy_to_user(),
-+ *	otherwise @buf is in kernel address space, use memcpy().
-+ *
-+ * Copy a page from "oldmem encrypted". For this page, there is no pte
-+ * mapped in the current kernel. We stitch up a pte, similar to
-+ * kmap_atomic.
-+ */
-+
-+ssize_t copy_oldmem_page_encrypted(unsigned long pfn, char *buf,
-+		size_t csize, unsigned long offset, int userbuf)
-+{
-+	void  *vaddr;
-+
-+	if (!csize)
-+		return 0;
-+
-+	vaddr = (__force void *)ioremap_encrypted(pfn << PAGE_SHIFT,
-+						  PAGE_SIZE);
-+	if (!vaddr)
-+		return -ENOMEM;
-+
-+	if (userbuf) {
-+		if (copy_to_user((void __user *)buf, vaddr + offset, csize)) {
-+			iounmap((void __iomem *)vaddr);
-+			return -EFAULT;
-+		}
-+	} else
-+		memcpy(buf, vaddr + offset, csize);
-+
-+	set_iounmap_nonlazy();
-+	iounmap((void __iomem *)vaddr);
-+	return csize;
-+}
-diff --git a/fs/proc/vmcore.c b/fs/proc/vmcore.c
-index cbde728f8ac6..3065c8bada6a 100644
---- a/fs/proc/vmcore.c
-+++ b/fs/proc/vmcore.c
-@@ -25,6 +25,9 @@
- #include <linux/pagemap.h>
- #include <linux/uaccess.h>
- #include <asm/io.h>
-+#include <linux/io.h>
-+#include <linux/mem_encrypt.h>
-+#include <asm/pgtable.h>
- #include "internal.h"
+I am looking into Russell's suggestion to use the DMA
+ranges, and thusly patch all device trees with DMA
+mastering devices adding DMA ranges to them and parsing
+that in the device tree AMBA/PrimeCell population code.
+Possibly that is the right path forward.
+---
+ drivers/of/platform.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+index 7ba90c290a42..6c59673933e9 100644
+--- a/drivers/of/platform.c
++++ b/drivers/of/platform.c
+@@ -241,6 +241,10 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
+ 	if (!dev)
+ 		goto err_clear_flag;
  
- /* List representing chunks of contiguous memory areas and their offsets in
-@@ -98,7 +101,8 @@ static int pfn_is_ram(unsigned long pfn)
- 
- /* Reads a page from the oldmem device from given offset. */
- static ssize_t read_from_oldmem(char *buf, size_t count,
--				u64 *ppos, int userbuf)
-+				u64 *ppos, int userbuf,
-+				bool encrypted)
- {
- 	unsigned long pfn, offset;
- 	size_t nr_bytes;
-@@ -120,8 +124,11 @@ static ssize_t read_from_oldmem(char *buf, size_t count,
- 		if (pfn_is_ram(pfn) == 0)
- 			memset(buf, 0, nr_bytes);
- 		else {
--			tmp = copy_oldmem_page(pfn, buf, nr_bytes,
--						offset, userbuf);
-+			tmp = encrypted ? copy_oldmem_page_encrypted(pfn,
-+					    buf, nr_bytes, offset, userbuf)
-+					: copy_oldmem_page(pfn, buf, nr_bytes,
-+							   offset, userbuf);
++	/* AMBA devices only support a single DMA mask */
++	dev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
 +
- 			if (tmp < 0)
- 				return tmp;
- 		}
-@@ -155,7 +162,7 @@ void __weak elfcorehdr_free(unsigned long long addr)
-  */
- ssize_t __weak elfcorehdr_read(char *buf, size_t count, u64 *ppos)
- {
--	return read_from_oldmem(buf, count, ppos, 0);
-+	return read_from_oldmem(buf, count, ppos, 0, false);
- }
- 
- /*
-@@ -163,7 +170,7 @@ ssize_t __weak elfcorehdr_read(char *buf, size_t count, u64 *ppos)
-  */
- ssize_t __weak elfcorehdr_read_notes(char *buf, size_t count, u64 *ppos)
- {
--	return read_from_oldmem(buf, count, ppos, 0);
-+	return read_from_oldmem(buf, count, ppos, 0, sme_active());
- }
- 
- /*
-@@ -173,6 +180,7 @@ int __weak remap_oldmem_pfn_range(struct vm_area_struct *vma,
- 				  unsigned long from, unsigned long pfn,
- 				  unsigned long size, pgprot_t prot)
- {
-+	prot = pgprot_encrypted(prot);
- 	return remap_pfn_range(vma, from, pfn, size, prot);
- }
- 
-@@ -351,7 +359,8 @@ static ssize_t __read_vmcore(char *buffer, size_t buflen, loff_t *fpos,
- 					    m->offset + m->size - *fpos,
- 					    buflen);
- 			start = m->paddr + *fpos - m->offset;
--			tmp = read_from_oldmem(buffer, tsz, &start, userbuf);
-+			tmp = read_from_oldmem(buffer, tsz, &start, userbuf,
-+						sme_active());
- 			if (tmp < 0)
- 				return tmp;
- 			buflen -= tsz;
-diff --git a/include/linux/crash_dump.h b/include/linux/crash_dump.h
-index 3e4ba9d753c8..a7e7be8b0502 100644
---- a/include/linux/crash_dump.h
-+++ b/include/linux/crash_dump.h
-@@ -26,6 +26,18 @@ extern int remap_oldmem_pfn_range(struct vm_area_struct *vma,
- 
- extern ssize_t copy_oldmem_page(unsigned long, char *, size_t,
- 						unsigned long, int);
-+#ifdef CONFIG_AMD_MEM_ENCRYPT
-+extern ssize_t copy_oldmem_page_encrypted(unsigned long pfn, char *buf,
-+					   size_t csize, unsigned long offset,
-+					   int userbuf);
-+#else
-+static inline
-+ssize_t copy_oldmem_page_encrypted(unsigned long pfn, char *buf, size_t csize,
-+				    unsigned long offset, int userbuf)
-+{
-+	return 0;
-+}
-+#endif
- void vmcore_cleanup(void);
- 
- /* Architecture code defines this if there are other possible ELF
+ 	/* setup generic device info */
+ 	dev->dev.of_node = of_node_get(node);
+ 	dev->dev.fwnode = &node->fwnode;
 -- 
 2.17.1
