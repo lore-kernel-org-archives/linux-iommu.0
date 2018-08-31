@@ -1,127 +1,94 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [Patch v15 4/5] dt-bindings: arm-smmu: Add bindings
- for qcom, smmu-v2
-Date: Fri, 31 Aug 2018 15:21:49 +0530
-Message-ID: <e5c72d2d-a1a1-40dd-103b-da7147b4e7ae@codeaurora.org>
-References: <20180827105551.16346-1-vivek.gautam@codeaurora.org>
- <20180827105551.16346-5-vivek.gautam@codeaurora.org>
- <20180828203418.GA18366@bogus>
- <a1e31d1e-aaa4-5951-2261-3169033c636a@codeaurora.org>
- <CAFp+6iGHus-kZv+Zr5aiYRLct07NCFBL3k44bX=c4eW7J24kZg@mail.gmail.com>
- <CAL_JsqKGHC9wCy583CTvAz8-A_M6zyrAX69yN5RUjv7Kbs1wFQ@mail.gmail.com>
+From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Subject: Re: [PATCH v2] of/platform: initialise AMBA default DMA masks
+Date: Fri, 31 Aug 2018 11:09:03 +0100
+Message-ID: <20180831100903.GL30658@n2100.armlinux.org.uk>
+References: <20180831082614.27455-1-linus.walleij@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAL_JsqKGHC9wCy583CTvAz8-A_M6zyrAX69yN5RUjv7Kbs1wFQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "open list:THERMAL" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180831082614.27455-1-linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iLAoKCk9uIDgvMzAvMjAxOCA2OjEzIEFNLCBSb2IgSGVycmluZyB3cm90ZToKPiBPbiBX
-ZWQsIEF1ZyAyOSwgMjAxOCBhdCA2OjIzIEFNIFZpdmVrIEdhdXRhbQo+IDx2aXZlay5nYXV0YW1A
-Y29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+PiBPbiBXZWQsIEF1ZyAyOSwgMjAxOCBhdCAyOjA1IFBN
-IFZpdmVrIEdhdXRhbQo+PiA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPj4+
-IEhpIFJvYiwKPj4+Cj4+Pgo+Pj4gT24gOC8yOS8yMDE4IDI6MDQgQU0sIFJvYiBIZXJyaW5nIHdy
-b3RlOgo+Pj4+IE9uIE1vbiwgQXVnIDI3LCAyMDE4IGF0IDA0OjI1OjUwUE0gKzA1MzAsIFZpdmVr
-IEdhdXRhbSB3cm90ZToKPj4+Pj4gQWRkIGJpbmRpbmdzIGRvYyBmb3IgUWNvbSdzIHNtbXUtdjIg
-aW1wbGVtZW50YXRpb24uCj4+Pj4+Cj4+Pj4+IFNpZ25lZC1vZmYtYnk6IFZpdmVrIEdhdXRhbSA8
-dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPgo+Pj4+PiBSZXZpZXdlZC1ieTogVG9tYXN6IEZp
-Z2EgPHRmaWdhQGNocm9taXVtLm9yZz4KPj4+Pj4gVGVzdGVkLWJ5OiBTcmluaXZhcyBLYW5kYWdh
-dGxhIDxzcmluaXZhcy5rYW5kYWdhdGxhQGxpbmFyby5vcmc+Cj4+Pj4+IC0tLQo+Pj4+Pgo+Pj4+
-PiBDaGFuZ2VzIHNpbmNlIHYxNDoKPj4+Pj4gICAgLSBUaGlzIGlzIGEgbmV3IHBhdGNoIGFkZGVk
-IGluIHYxNSBhZnRlciBub3RpY2luZyB0aGUgbmV3Cj4+Pj4+ICAgICAgY2hlY2twYXRjaCB3YXJu
-aW5nIGZvciBzZXBhcmF0ZSBkdC1iaW5kaW5ncyBkb2MuCj4+Pj4+ICAgIC0gVGhpcyBwYXRjaCBh
-bHNvIGFkZHJlc3NlcyBjb21tZW50cyBnaXZlbiBieSBSb2IgYW5kIFJvYmluIHRvIGFkZAo+Pj4+
-PiAgICAgIGEgbGlzdCBvZiB2YWxpZCB2YWx1ZXMgb2YgJzxzb2M+JyBpbiAicWNvbSw8c29jPi1z
-bW11LXYyIgo+Pj4+PiAgICAgIGNvbXBhdGlibGUgc3RyaW5nLgo+Pj4+Pgo+Pj4+PiAgICAuLi4v
-ZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQgICAgICAgICB8IDQ3ICsrKysr
-KysrKysrKysrKysrKysrKysKPj4+Pj4gICAgMSBmaWxlIGNoYW5nZWQsIDQ3IGluc2VydGlvbnMo
-KykKPj4+Pj4KPj4+Pj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5k
-aW5ncy9pb21tdS9hcm0sc21tdS50eHQgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
-Z3MvaW9tbXUvYXJtLHNtbXUudHh0Cj4+Pj4+IGluZGV4IDhhNmZmY2UxMmFmNS4uNTIxOThhNTM5
-NjA2IDEwMDY0NAo+Pj4+PiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3Mv
-aW9tbXUvYXJtLHNtbXUudHh0Cj4+Pj4+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQKPj4+Pj4gQEAgLTE3LDEwICsxNywyNCBAQCBjb25k
-aXRpb25zLgo+Pj4+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJtLG1tdS00MDEiCj4+
-Pj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICJhcm0sbW11LTUwMCIKPj4+Pj4gICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgImNhdml1bSxzbW11LXYyIgo+Pj4+PiArICAgICAgICAgICAg
-ICAgICAgICAgICAgInFjb20sPHNvYz4tc21tdS12MiIsICJxY29tLHNtbXUtdjIiCj4+Pj4gVGhl
-IHYyIGluIHRoZSBjb21wYXRpYmxlIHN0cmluZyBpcyBraW5kIG9mIHJlZHVuZGFudCB1bmxlc3Mg
-dGhlIFNvQyBoYXMKPj4+PiBvdGhlciBTTU1VIHR5cGVzLgo+Pj4gc2RtODQ1IGhhcyBzbW11LXYy
-LCBhbmQgc21tdS01MDAgWzFdLgo+Pj4KPj4+Pj4gICAgICAgICAgICAgICAgICAgICAgZGVwZW5k
-aW5nIG9uIHRoZSBwYXJ0aWN1bGFyIGltcGxlbWVudGF0aW9uIGFuZC9vciB0aGUKPj4+Pj4gICAg
-ICAgICAgICAgICAgICAgICAgdmVyc2lvbiBvZiB0aGUgYXJjaGl0ZWN0dXJlIGltcGxlbWVudGVk
-Lgo+Pj4+Pgo+Pj4+PiArICAgICAgICAgICAgICAgICAgQSBudW1iZXIgb2YgUWNvbSBTb0NzIHVz
-ZSBxY29tLHNtbXUtdjIgdmVyc2lvbiBvZiB0aGUgSVAuCj4+Pj4+ICsgICAgICAgICAgICAgICAg
-ICAicWNvbSw8c29jPi1zbW11LXYyIiByZXByZXNlbnRzIGEgc29jIHNwZWNpZmljIGNvbXBhdGli
-bGUKPj4+Pj4gKyAgICAgICAgICAgICAgICAgIHN0cmluZyB0aGF0IHNob3VsZCBiZSBwcmVzZW50
-IGFsb25nIHdpdGggdGhlICJxY29tLHNtbXUtdjIiCj4+Pj4+ICsgICAgICAgICAgICAgICAgICB0
-byBmYWNpbGl0YXRlIFNvQyBzcGVjaWZpYyBjbG9ja3MvcG93ZXIgY29ubmVjdGlvbnMgYW5kIHRv
-Cj4+Pj4+ICsgICAgICAgICAgICAgICAgICBhZGRyZXNzIHNwZWNpZmljIGJ1ZyBmaXhlcy4KPj4+
-Pj4gKyAgICAgICAgICAgICAgICAgICc8c29jPicgc3RyaW5nIGluICJxY29tLDxzb2M+LXNtbXUt
-djIiIHNob3VsZCBiZSBvbmUgb2YgdGhlCj4+Pj4+ICsgICAgICAgICAgICAgICAgICBmb2xsb3dp
-bmc6Cj4+Pj4+ICsgICAgICAgICAgICAgICAgICBtc204OTk2IC0gZm9yIG1zbTg5OTYgUWNvbSBT
-b0MuCj4+Pj4+ICsgICAgICAgICAgICAgICAgICBzZG04NDUgLSBmb3Igc2RtODQ1IFFjb20gU29j
-Lgo+Pj4+IFJhdGhlciB0aGFuIGFsbCB0aGlzIHByb3NlLCBpdCB3b3VsZCBiZSBzaW1wbGVyIHRv
-IGp1c3QgYWRkIDIgbGluZXMgd2l0aAo+Pj4+IHRoZSBmdWxsIGNvbXBhdGlibGVzIHJhdGhlciB0
-aGFuIDxzb2M+LiBUaGUgPHNvYz4gdGhpbmcgaXMgbm90IGdvaW5nIHRvCj4+Pj4gd29yayB3aGVu
-L2lmIHdlIG1vdmUgYmluZGluZ3MgdG8ganNvbi1zY2hlbWEgYWxzby4KPj4+IHRoZW4gd2Uga2Vl
-cCBhZGRpbmcKPj4+ICAgICAgICAgICAgInFjb20sbXNtODk5Ni1zbW11LXYyIiwgInFjb20sc21t
-dS12MiIKPj4+ICAgICAgICAgICAgInFjb20sbXNtODk5OC1zbW11LXYyIiwgInFjb20sc21tdS12
-MiIKPj4+ICAgICAgICAgICAgInFjb20sc2RtODQ1LXNtbXUtdjIiLCAicWNvbSxzbW11LXYyIiwK
-Pj4+IGFuZCBmcm9tIFsxXQo+Pj4gICAgICAgICAgICAicWNvbSxzZG04NDUtc21tdS01MDAiLCAi
-YXJtLG1tdS01MDAiLCBldGMuCj4+PiBmb3IgZWFjaCBTb0NzPwo+PiBIb3cgYWJvdXQgZm9sbG93
-aW5nIGRpZmYgb24gdG9wIG9mIHRoaXMgcGF0Y2g/Cj4+Cj4+IGRpZmYgLS1naXQgYS9Eb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNtbXUudHh0Cj4+IGIvRG9jdW1l
-bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dAo+PiBpbmRleCA1
-MjE5OGE1Mzk2MDYuLjVlNmMwNDg3NjUzMyAxMDA2NDQKPj4gLS0tIGEvRG9jdW1lbnRhdGlvbi9k
-ZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2FybSxzbW11LnR4dAo+PiArKysgYi9Eb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNtbXUudHh0Cj4+IEBAIC0xNywyMyAr
-MTcsMTggQEAgY29uZGl0aW9ucy4KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJtLG1t
-dS00MDEiCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgImFybSxtbXUtNTAwIgo+PiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICJjYXZpdW0sc21tdS12MiIKPj4gLSAgICAgICAgICAgICAg
-ICAgICAgICAgICJxY29tLDxzb2M+LXNtbXUtdjIiLCAicWNvbSxzbW11LXYyIgo+PiArICAgICAg
-ICAgICAgICAgICAgICAgICAgInFjb20sc21tdS12MiIKPj4KPj4gICAgICAgICAgICAgICAgICAg
-ICBkZXBlbmRpbmcgb24gdGhlIHBhcnRpY3VsYXIgaW1wbGVtZW50YXRpb24gYW5kL29yIHRoZQo+
-PiAgICAgICAgICAgICAgICAgICAgIHZlcnNpb24gb2YgdGhlIGFyY2hpdGVjdHVyZSBpbXBsZW1l
-bnRlZC4KPj4KPj4gLSAgICAgICAgICAgICAgICAgIEEgbnVtYmVyIG9mIFFjb20gU29DcyB1c2Ug
-cWNvbSxzbW11LXYyIHZlcnNpb24gb2YgdGhlIElQLgo+PiAtICAgICAgICAgICAgICAgICAgInFj
-b20sPHNvYz4tc21tdS12MiIgcmVwcmVzZW50cyBhIHNvYyBzcGVjaWZpYyBjb21wYXRpYmxlCj4+
-IC0gICAgICAgICAgICAgICAgICBzdHJpbmcgdGhhdCBzaG91bGQgYmUgcHJlc2VudCBhbG9uZyB3
-aXRoIHRoZSAicWNvbSxzbW11LXYyIgo+PiAtICAgICAgICAgICAgICAgICAgdG8gZmFjaWxpdGF0
-ZSBTb0Mgc3BlY2lmaWMgY2xvY2tzL3Bvd2VyIGNvbm5lY3Rpb25zIGFuZCB0bwo+PiAtICAgICAg
-ICAgICAgICAgICAgYWRkcmVzcyBzcGVjaWZpYyBidWcgZml4ZXMuCj4+IC0gICAgICAgICAgICAg
-ICAgICAnPHNvYz4nIHN0cmluZyBpbiAicWNvbSw8c29jPi1zbW11LXYyIiBzaG91bGQgYmUgb25l
-IG9mIHRoZQo+PiAtICAgICAgICAgICAgICAgICAgZm9sbG93aW5nOgo+PiAtICAgICAgICAgICAg
-ICAgICAgbXNtODk5NiAtIGZvciBtc204OTk2IFFjb20gU29DLgo+PiAtICAgICAgICAgICAgICAg
-ICAgc2RtODQ1IC0gZm9yIHNkbTg0NSBRY29tIFNvYy4KPj4gLQo+PiAtICAgICAgICAgICAgICAg
-ICAgQW4gZXhhbXBsZSBzdHJpbmcgd291bGQgYmUgLQo+PiAtICAgICAgICAgICAgICAgICAgInFj
-b20sbXNtODk5Ni1zbW11LXYyIiwgInFjb20sc21tdS12MiIuCj4+ICsgICAgICAgICAgICAgICAg
-ICBRY29tIFNvQ3MgdXNpbmcgcWNvbSxzbW11LXYyIG11c3QgaGF2ZSBzb2Mgc3BlY2lmaWMKPj4g
-KyAgICAgICAgICAgICAgICAgIGNvbXBhdGlibGUgc3RyaW5nIGF0dGFjaGVkIHRvICJxY29tLHNt
-bXUtdjIiIHRvIHRha2UgY2FyZQo+PiArICAgICAgICAgICAgICAgICAgb2YgU29DIHNwZWNpZmlj
-IGNsb2Nrcy9wb3dlciBjb25uZWN0aW9ucyBhbmQgdG8gYWRkcmVzcwo+PiArICAgICAgICAgICAg
-ICAgICAgc3BlY2lmaWMgYnVnIGZpeGVzLgo+PiArICAgICAgICAgICAgICAgICAgUHJlY2lzZWx5
-LCBpdCBzaG91bGQgYmUgb25lIG9mIHRoZSBmb2xsb3dpbmc6Cj4+ICsgICAgICAgICAgICAgICAg
-ICAicWNvbSxtc204OTk2LXNtbXUtdjIiLCAicWNvbSxzbW11LXYyIiwKPj4gKyAgICAgICAgICAg
-ICAgICAgICJxY29tLHNkbTg0NS1zbW11LXYyIiwgInFjb20sc21tdS12MiIuCj4gV2UgZG9uJ3Qg
-bmVlZCBhbiBleHBsYW5hdGlvbiBvZiB3aHkgd2UgbmVlZCBzcGVjaWZpYyBjb21wYXRpYmxlcyBp
-bgo+IGVhY2ggYmluZGluZyBkb2N1bWVudCAodGhvdWdoIG1heWJlIHdlIG5lZWQgYSBiZXR0ZXIg
-ZXhwbGFuYXRpb24KPiBzb21ld2hlcmUpLiBXZSBqdXN0IG5lZWQgdG8ga25vdyB3aGF0IGFyZSB2
-YWxpZCB2YWx1ZXMgZm9yIGNvbXBhdGlibGVzCj4gYW5kIHRoaXMgaW5jbHVkZXMgYW55IGNvbWJp
-bmF0aW9ucy4gR2VuZXJhbGx5LCB0aGlzIGlzIGp1c3QgYSBsaXN0IG9mCj4gY29tYmluYXRpb25z
-Lgpbc25pcF0KCkZpeGVkIHRoaXMgaW4gdjE2LiBUaGFua3MuCgpCZXN0IHJlZ2FyZHMKVml2ZWsK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5v
-IG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+On Fri, Aug 31, 2018 at 10:26:14AM +0200, Linus Walleij wrote:
+> This addresses a v4.19-rc1 regression in the PL111 DRM driver
+> in drivers/gpu/pl111/*
+> 
+> The driver uses the CMA KMS helpers and will thus at some
+> point call down to dma_alloc_attrs() to allocate a chunk
+> of contigous DMA memory for the framebuffer.
+> 
+> It appears that in v4.18, it was OK that this (and other
+> DMA mastering AMBA devices) left dev->coherent_dma_mask
+> blank (zero).
+> 
+> In v4.19-rc1 the WARN_ON_ONCE(dev && !dev->coherent_dma_mask)
+> in dma_alloc_attrs() in include/linux/dma-mapping.h is
+> triggered. The allocation later fails when get_coherent_dma_mask()
+> is called from __dma_alloc() and __dma_alloc() returns
+> NULL:
+> 
+> drm-clcd-pl111 dev:20: coherent DMA mask is unset
+> drm-clcd-pl111 dev:20: [drm:drm_fb_helper_fbdev_setup] *ERROR*
+>  	       	        Failed to set fbdev configuration
+> 
+> I have not been able to properly bisect down to the actual
+> committ causing it beacuse the kernel simply fails to build
+> at to many bisection points, pushing the bisect back to places
+> like the merge of entire subsystem trees, where things have
+> likely been resolved while merging them.
+> 
+> I found that Robin Murphy solved a similar problem in
+> a5516219b102 ("of/platform: Initialise default DMA masks")
+> by simply assigning dev.coherent_dma_mask and the
+> dev.dma_mask to point to the same when creating devices
+> from the device tree, and introducing the same code into
+> the code path creating AMBA/PrimeCell devices solved my
+> problem, graphics now come up.
+> 
+> The code simply assumes that the device can access all
+> of the system memory by setting the coherent DMA mask
+> to 0xffffffff when creating a device from the device
+> tree, which is crude, but seems to be what kernel v4.18
+> assumed.
+> 
+> Cc: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+> Cc: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> ---
+> Russell, Christoph: this is probably not the last patch.
+> But it has a more accurate description of the problem.
+> I still do not know what change to the kernel made
+> it start triggering this, whether in the DMA API or
+> in DRM :(
+
+Doing some research, it seems the warning was added in v4.16-rc1, and
+it is only a warning - it doesn't otherwise change the behaviour, so
+it's not the actual warning that's the problem.
+
+I can't see anything in the DMA API nor DRM which would cause this
+either, but there are changes in the DT code.
+
+However, there are changes to of_dma_configure() which will be called
+just before the driver's probe function is called - and I guess the
+culpret is 4d8bde883bfb ("OF: Don't set default coherent DMA mask").
+So I guess that's the root cause of the problem, and indeed this
+change was made in 4.19-rc1.
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 13.8Mbps down 630kbps up
+According to speedtest.net: 13Mbps down 490kbps up
