@@ -1,60 +1,81 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Handle memory shortage on pasid table allocation
-Date: Sat,  1 Sep 2018 14:24:16 +0800
-Message-ID: <20180901062416.6107-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH v3] sparc: set a default 32-bit dma mask for OF devices
+Date: Sat,  1 Sep 2018 15:49:11 +0200
+Message-ID: <20180901134911.22616-1-hch@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: mroos-Y27EyoLml9s@public.gmane.org, linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org
+Cc: sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Pasid table memory allocation could return failure due to memory
-shortage. Limit the pasid table size to 1MiB because current 8MiB
-contiguous physical memory allocation can be hard to come by. W/o
-a PASID table, the device could continue to work with only shared
-virtual memory impacted. So, let's go ahead with context mapping
-even the memory allocation for pasid table failed.
+This keeps the historic default behavior for devices without a DMA mask,
+but removes the warning about a lacking DMA mask for doing DMA without
+a mask.
 
-Fixes: cc580e41260d ("iommu/vt-d: Per PCI device pasid table interfaces")
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reported-and-tested-by: Pelton Kyle D <kyle.d.pelton@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reported-by: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 6 +++---
- drivers/iommu/intel-pasid.h | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5f3f10cf9d9d..bedc801b06a0 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2540,9 +2540,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	if (dev && dev_is_pci(dev) && info->pasid_supported) {
- 		ret = intel_pasid_alloc_table(dev);
- 		if (ret) {
--			__dmar_remove_one_dev_info(info);
--			spin_unlock_irqrestore(&device_domain_lock, flags);
--			return NULL;
-+			pr_warn("No pasid table for %s, pasid disabled\n",
-+				dev_name(dev));
-+			info->pasid_supported = 0;
- 		}
- 	}
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 1c05ed6fc5a5..1fb5e12b029a 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -11,7 +11,7 @@
- #define __INTEL_PASID_H
+Had to redo this because the platform_device patch that the previous
+version dependend on had to be dropped.
+
+ arch/sparc/kernel/of_device_32.c | 4 ++++
+ arch/sparc/kernel/of_device_64.c | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/arch/sparc/kernel/of_device_32.c b/arch/sparc/kernel/of_device_32.c
+index 3641a294ed54..e4abe9b8f97a 100644
+--- a/arch/sparc/kernel/of_device_32.c
++++ b/arch/sparc/kernel/of_device_32.c
+@@ -9,6 +9,7 @@
+ #include <linux/irq.h>
+ #include <linux/of_device.h>
+ #include <linux/of_platform.h>
++#include <linux/dma-mapping.h>
+ #include <asm/leon.h>
+ #include <asm/leon_amba.h>
  
- #define PASID_MIN			0x1
--#define PASID_MAX			0x100000
-+#define PASID_MAX			0x20000
+@@ -381,6 +382,9 @@ static struct platform_device * __init scan_one_device(struct device_node *dp,
+ 	else
+ 		dev_set_name(&op->dev, "%08x", dp->phandle);
  
- struct pasid_entry {
- 	u64 val;
++	op->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	op->dev.dma_mask = &op->dev.coherent_dma_mask;
++
+ 	if (of_device_register(op)) {
+ 		printk("%s: Could not register of device.\n",
+ 		       dp->full_name);
+diff --git a/arch/sparc/kernel/of_device_64.c b/arch/sparc/kernel/of_device_64.c
+index 44e4d4435bed..6df6086968c6 100644
+--- a/arch/sparc/kernel/of_device_64.c
++++ b/arch/sparc/kernel/of_device_64.c
+@@ -2,6 +2,7 @@
+ #include <linux/string.h>
+ #include <linux/kernel.h>
+ #include <linux/of.h>
++#include <linux/dma-mapping.h>
+ #include <linux/init.h>
+ #include <linux/export.h>
+ #include <linux/mod_devicetable.h>
+@@ -675,6 +676,8 @@ static struct platform_device * __init scan_one_device(struct device_node *dp,
+ 		dev_set_name(&op->dev, "root");
+ 	else
+ 		dev_set_name(&op->dev, "%08x", dp->phandle);
++	op->dev.coherent_dma_mask = DMA_BIT_MASK(32);
++	op->dev.dma_mask = &op->dev.coherent_dma_mask;
+ 
+ 	if (of_device_register(op)) {
+ 		printk("%s: Could not register of device.\n",
 -- 
-2.17.1
+2.18.0
