@@ -1,228 +1,104 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 3/7] vfio: add sdmdev support
-Date: Mon, 3 Sep 2018 10:55:57 +0800
-Message-ID: <4ea51b20-dcc1-db32-18eb-24a004ab9085@linux.intel.com>
-References: <20180903005204.26041-1-nek.in.cn@gmail.com>
- <20180903005204.26041-4-nek.in.cn@gmail.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH 00/13] MT8183 IOMMU SUPPORT
+Date: Mon, 3 Sep 2018 14:01:29 +0800
+Message-ID: <1535954502-30646-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180903005204.26041-4-nek.in.cn@gmail.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Sanjay Kumar <sanjay.k.kumar@intel.com>
-Cc: baolu.lu@linux.intel.com, linuxarm@huawei.com
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, Daniel Kurtz <djkurtz@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, yong.wu@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+This patchset mainly adds support for mt8183 IOMMU and SMI.
 
-On 09/03/2018 08:52 AM, Kenneth Lee wrote:
-> From: Kenneth Lee <liguozhu@hisilicon.com>
-> 
-> SDMDEV is "Share Domain Mdev". It is a vfio-mdev. But differ from
-> the general vfio-mdev, it shares its parent's IOMMU. If Multi-PASID
-> support is enabled in the IOMMU (not yet in the current kernel HEAD),
-> multiple process can share the IOMMU by different PASID. If it is not
-> support, only one process can share the IOMMU with the kernel driver.
-> 
+mt8183 has only one M4U like mt8173 and is also MTK IOMMU gen2 which
+uses ARM Short-Descriptor translation table format.
 
-If only for share domain purpose, I don't think it's necessary to create
-a new device type.
+The mt8183 M4U-SMI HW diagram is as below:
 
-> Currently only the vfio type-1 driver is updated to make it to be aware
-> of.
-> 
-> Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
-> Signed-off-by: Zaibo Xu <xuzaibo@huawei.com>
-> Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
-> ---
->   drivers/vfio/Kconfig              |   1 +
->   drivers/vfio/Makefile             |   1 +
->   drivers/vfio/sdmdev/Kconfig       |  10 +
->   drivers/vfio/sdmdev/Makefile      |   3 +
->   drivers/vfio/sdmdev/vfio_sdmdev.c | 363 ++++++++++++++++++++++++++++++
->   drivers/vfio/vfio_iommu_type1.c   | 151 ++++++++++++-
->   include/linux/vfio_sdmdev.h       |  96 ++++++++
->   include/uapi/linux/vfio_sdmdev.h  |  29 +++
->   8 files changed, 648 insertions(+), 6 deletions(-)
->   create mode 100644 drivers/vfio/sdmdev/Kconfig
->   create mode 100644 drivers/vfio/sdmdev/Makefile
->   create mode 100644 drivers/vfio/sdmdev/vfio_sdmdev.c
->   create mode 100644 include/linux/vfio_sdmdev.h
->   create mode 100644 include/uapi/linux/vfio_sdmdev.h
-> 
+                          EMI
+                           |
+                          M4U
+                           |
+                       ----------
+                       |        |
+                   gals0-rx   gals1-rx
+                       |        |
+                       |        |
+                   gals0-tx   gals1-tx
+                       |        |
+                      ------------
+                       SMI Common
+                      ------------
+                           |
+  +-----+-----+--------+-----+-----+-------+-------+
+  |     |     |        |     |     |       |       |
+  |     |  gals-rx  gals-rx  |   gals-rx gals-rx gals-rx
+  |     |     |        |     |     |       |       |
+  |     |     |        |     |     |       |       |
+  |     |  gals-tx  gals-tx  |   gals-tx gals-tx gals-tx
+  |     |     |        |     |     |       |       |
+larb0 larb1  larb2   larb3  larb4 larb5  larb6    CCU
+disp  vdec   IPU0    IPU1   venc  IPU1    cam
 
-[--cut for short --]
+All the connections are HW fixed, SW can NOT adjust it.
 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index d9fd3188615d..ba73231d8692 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -41,6 +41,7 @@
->   #include <linux/notifier.h>
->   #include <linux/dma-iommu.h>
->   #include <linux/irqdomain.h>
-> +#include <linux/vfio_sdmdev.h>
->   
->   #define DRIVER_VERSION  "0.2"
->   #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson@redhat.com>"
-> @@ -89,6 +90,8 @@ struct vfio_dma {
->   };
->   
->   struct vfio_group {
-> +	/* iommu_group of mdev's parent device */
-> +	struct iommu_group	*parent_group;
->   	struct iommu_group	*iommu_group;
->   	struct list_head	next;
->   };
-> @@ -1327,6 +1330,109 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
->   	return ret;
->   }
->   
-> +/* return 0 if the device is not sdmdev.
-> + * return 1 if the device is sdmdev, the data will be updated with parent
-> + *	device's group.
-> + * return -errno if other error.
-> + */
-> +static int vfio_sdmdev_type(struct device *dev, void *data)
-> +{
-> +	struct iommu_group **group = data;
-> +	struct iommu_group *pgroup;
-> +	int (*_is_sdmdev)(struct device *dev);
-> +	struct device *pdev;
-> +	int ret = 1;
-> +
-> +	/* vfio_sdmdev module is not configurated */
-> +	_is_sdmdev = symbol_get(vfio_sdmdev_is_sdmdev);
-> +	if (!_is_sdmdev)
-> +		return 0;
-> +
-> +	/* check if it belongs to vfio_sdmdev device */
-> +	if (!_is_sdmdev(dev)) {
-> +		ret = 0;
-> +		goto out;
-> +	}
-> +
-> +	pdev = dev->parent;
-> +	pgroup = iommu_group_get(pdev);
-> +	if (!pgroup) {
-> +		ret = -ENODEV;
-> +		goto out;
-> +	}
-> +
-> +	if (group) {
-> +		/* check if all parent devices is the same */
-> +		if (*group && *group != pgroup)
-> +			ret = -ENODEV;
-> +		else
-> +			*group = pgroup;
-> +	}
-> +
-> +	iommu_group_put(pgroup);
-> +
-> +out:
-> +	symbol_put(vfio_sdmdev_is_sdmdev);
-> +
-> +	return ret;
-> +}
-> +
-> +/* return 0 or -errno */
-> +static int vfio_sdmdev_bus(struct device *dev, void *data)
-> +{
-> +	struct bus_type **bus = data;
-> +
-> +	if (!dev->bus)
-> +		return -ENODEV;
-> +
-> +	/* ensure all devices has the same bus_type */
-> +	if (*bus && *bus != dev->bus)
-> +		return -EINVAL;
-> +
-> +	*bus = dev->bus;
-> +	return 0;
-> +}
-> +
-> +/* return 0 means it is not sd group, 1 means it is, or -EXXX for error */
-> +static int vfio_iommu_type1_attach_sdgroup(struct vfio_domain *domain,
-> +					    struct vfio_group *group,
-> +					    struct iommu_group *iommu_group)
-> +{
-> +	int ret;
-> +	struct bus_type *pbus = NULL;
-> +	struct iommu_group *pgroup = NULL;
-> +
-> +	ret = iommu_group_for_each_dev(iommu_group, &pgroup,
-> +				       vfio_sdmdev_type);
-> +	if (ret < 0)
-> +		goto out;
-> +	else if (ret > 0) {
-> +		domain->domain = iommu_group_share_domain(pgroup);
-> +		if (IS_ERR(domain->domain))
-> +			goto out;
-> +		ret = iommu_group_for_each_dev(pgroup, &pbus,
-> +				       vfio_sdmdev_bus);
-> +		if (ret < 0)
-> +			goto err_with_share_domain;
-> +
-> +		if (pbus && iommu_capable(pbus, IOMMU_CAP_CACHE_COHERENCY))
-> +			domain->prot |= IOMMU_CACHE;
-> +
-> +		group->parent_group = pgroup;
-> +		INIT_LIST_HEAD(&domain->group_list);
-> +		list_add(&group->next, &domain->group_list);
-> +
-> +		return 1;
-> +	}
+Compared with mt8173, we add a GALS(Global Async Local Sync) module
+between SMI-common and M4U, and additional between larb2/3/5/6 and
+SMI-common. GALS can help synchronize for the modules in different
+clock frequence, it can be seen as a "asynchronous fifo".
 
-This doesn't match the function name. It only gets the domain from the
-parent device. It hasn't been really attached.
+GALS can only help transfer the command/data while it don't have the
+register, thus it has the special "smi" clock and it don't have the
+"apb" clock. From the diagram above, we add "gals0" and "gals1"
+clockes for smi-common and add a "gals" clock for smi-larb.
 
-> +
-> +	return 0;
-> +
-> +err_with_share_domain:
-> +	iommu_group_unshare_domain(pgroup);
-> +out:
-> +	return ret;
-> +}
-> +
->   static int vfio_iommu_type1_attach_group(void *iommu_data,
->   					 struct iommu_group *iommu_group)
->   {
-> @@ -1335,8 +1441,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->   	struct vfio_domain *domain, *d;
->   	struct bus_type *bus = NULL, *mdev_bus;
->   	int ret;
-> -	bool resv_msi, msi_remap;
-> -	phys_addr_t resv_msi_base;
-> +	bool resv_msi = false, msi_remap;
-> +	phys_addr_t resv_msi_base = 0;
->   
->   	mutex_lock(&iommu->lock);
->   
-> @@ -1373,6 +1479,14 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->   	if (mdev_bus) {
->   		if ((bus == mdev_bus) && !iommu_present(bus)) {
->   			symbol_put(mdev_bus_type);
-> +
-> +			ret = vfio_iommu_type1_attach_sdgroup(domain, group,
-> +					iommu_group);
-> +			if (ret < 0)
-> +				goto out_free;
-> +			else if (ret > 0)
-> +				goto replay_check;
+>From the diagram above, CCU(Camera Control Unit) is connected with
+smi-common directly, we can look it as "larb7" but its register space
+is different with the normal larb.
 
-Here you get the domain from the parent device and save it for later
-use. The actual attaching is ignored.
+This patchset is based on v4.19-rc1.
+the patch 1/2/3/4/5 add the iommu/smi support for mt8183;
+the patch 6/7/8/9 add mmu1 support;
+the last patches contain some minor changes:
+   -patch 10 fix a issue.
+   -patch 11 improve the code flow(add shutdown).
+   -patch 12 cleanup some smi codes(delete need_larbid).
+   -patch 13 switch to SPDX license.
+this patchset don't contain the dtsi part since it need depend on the
+ccf and power-domain nodes which has not been accepted.
 
-I don't think this follows the philosophy of this function. It actually
-make all devices in the group with the same bus type to share a single
-domain.
+Yong Wu (13):
+  dt-bindings: mediatek: Add binding for mt8183 IOMMU and SMI
+  iommu/mediatek: Use a struct as the platform data
+  memory: mtk-smi: Use a general config_port interface
+  iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB mode
+  iommu/mediatek: Add mt8183 IOMMU support
+  iommu/mediatek: Add mmu1 support
+  memory: mtk-smi: Invoke pm runtime_callback to enable clocks
+  memory: mtk-smi: Use a struct for the platform data for smi-common
+  memory: mtk-smi: Add bus_sel for mt8183
+  iommu/mediatek: Add VLD_PA_RANGE register backup when suspend
+  iommu/mediatek: Add shutdown callback
+  memory: mtk-smi: Get rid of need_larbid
+  iommu/mediatek: Switch to SPDX license identifier
 
-Further more, the parent domain might be a domain of type
-IOMMU_DOMAIN_DMA. That will not be able to use as an
-IOMMU_DOMAIN_UNMANAGED domain for iommu APIs.
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  15 +-
+ .../memory-controllers/mediatek,smi-common.txt     |  11 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |   3 +
+ drivers/iommu/io-pgtable-arm-v7s.c                 |  38 ++-
+ drivers/iommu/io-pgtable.h                         |   8 +-
+ drivers/iommu/mtk_iommu.c                          | 145 +++++++----
+ drivers/iommu/mtk_iommu.h                          |  23 +-
+ drivers/iommu/mtk_iommu_v1.c                       |  10 +-
+ drivers/memory/mtk-smi.c                           | 267 ++++++++++++++-------
+ include/dt-bindings/memory/mt2701-larb-port.h      |  10 +-
+ include/dt-bindings/memory/mt8173-larb-port.h      |  10 +-
+ include/dt-bindings/memory/mt8183-larb-port.h      | 130 ++++++++++
+ include/soc/mediatek/smi.h                         |  10 +-
+ 13 files changed, 476 insertions(+), 204 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt8183-larb-port.h
 
-Best regards,
-Lu Baolu
+-- 
+1.9.1 
