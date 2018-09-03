@@ -1,168 +1,70 @@
-From: lijiang <lijiang@redhat.com>
-Subject: Re: [PATCH 2/5 V6] x86/ioremap: strengthen the logic in
- early_memremap_pgprot_adjust() to adjust encryption mask
-Date: Mon, 3 Sep 2018 22:06:19 +0800
-Message-ID: <d2229538-51d5-ead7-c7e5-f4afe5b53693@redhat.com>
-References: <20180831081930.31561-1-lijiang@redhat.com>
- <20180831081930.31561-3-lijiang@redhat.com>
- <20180903024512.GA2568@dhcp-128-65.nay.redhat.com>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Subject: Re: [PATCH v3 09/19] memory: tegra: Adapt to Tegra20 device-tree
+ binding changes
+Date: Mon, 3 Sep 2018 21:06:01 +0000
+Message-ID: <1536008759.25080.2.camel@toradex.com>
+References: <20180818155430.5586-1-digetx@gmail.com>
+         <20180818155430.5586-10-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180903024512.GA2568@dhcp-128-65.nay.redhat.com>
+In-Reply-To: <20180818155430.5586-10-digetx@gmail.com>
 Content-Language: en-US
+Content-ID: <3E996DE64F62884590CB2AD3355722AE@eurprd05.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dave Young <dyoung@redhat.com>
-Cc: linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de, hpa@zytor.com, ebiederm@xmission.com, joro@8bytes.org, thomas.lendacky@amd.com, kexec@lists.infradead.org, iommu@lists.linux-foundation.org, bhe@redhat.com
+To: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "digetx@gmail.com" <digetx@gmail.com>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>
+Cc: "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-在 2018年09月03日 10:45, Dave Young 写道:
-> On 08/31/18 at 04:19pm, Lianbo Jiang wrote:
->> For kdump kernel, when SME is enabled, the acpi table and dmi table will need
->> to be remapped without the memory encryption mask. So we have to strengthen
->> the logic in early_memremap_pgprot_adjust(), which makes us have an opportunity
->> to adjust the memory encryption mask.
->>
->> Signed-off-by: Lianbo Jiang <lijiang@redhat.com>
->> ---
->>  arch/x86/mm/ioremap.c | 9 ++++++++-
->>  1 file changed, 8 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
->> index e01e6c695add..f9d9a39955f3 100644
->> --- a/arch/x86/mm/ioremap.c
->> +++ b/arch/x86/mm/ioremap.c
->> @@ -689,8 +689,15 @@ pgprot_t __init early_memremap_pgprot_adjust(resource_size_t phys_addr,
->>  	encrypted_prot = true;
->>  
->>  	if (sme_active()) {
->> +                /*
->> +                 * In kdump kernel, the acpi table and dmi table will need
->> +                 * to be remapped without the memory encryption mask. Here
->> +                 * we have to strengthen the logic to adjust the memory
->> +                 * encryption mask.
-> 
-> Assume the acpi/dmi tables are identical for both 1st kernel and kdump
-> kernel, I'm not sure what is the difference, why need special handling
-> for kdump. Can you add more explanations?
-> 
-
-Ok, i will use a dmi example to explain this issue.
-
-There are significant differences about E820 between the 1st kernel and kdump kernel. I pasted them at bottom.
-
-Firstly, we need to know how they are called.
-__acpi_map_table()\                                                        / early_memremap_is_setup_data()
-                   |-> early_memremap()-> early_memremap_pgprot_adjust()-> | memremap_is_efi_data()
- dmi_early_remap()/                                                        \ memremap_should_map_decrypted()-> e820__get_entry_type()
-
-Secondly, we also need to understand the memremap_should_map_decrypted(), which is illustrated by the fake code.
-static bool memremap_should_map_decrypted(resource_size_t phys_addr,
-                                          unsigned long size)
-{
-
-    /* code ... */
-
-    switch (e820__get_entry_type(phys_addr, phys_addr + size - 1)) {
-        case E820_TYPE_RESERVED:
-        case E820_TYPE_ACPI:
-        case E820_TYPE_NVS:
-        case E820_TYPE_UNUSABLE:
-                /* For SEV, these areas are encrypted */
-                if (sev_active())
-                        break;
-                /* Fallthrough */
-
-        case E820_TYPE_PRAM:
-                /* For SME, these areas are decrypted */
-                return true;
-        default:
-                /* these areas are encrypted by default*/
-                break;
-    }
-
-    return false;
-}
-
-For the dmi case, the dmi base address is 0x6286b000 in my test machine.
-
-In the 1st kernel, the e820__get_entry_type() can get a valid entry and type by the dmi address, and we can also find the dmi base address from e820.
-(see the 1st kernel log)
-0x6286b000 ∈ [mem 0x000000006286b000-0x000000006286efff]
-So, these areas are decrypted according to the memremap_should_map_decrypted().
-
-In kdump kernel, the dmi base address is still 0x6286b000, but we can not find the dmi base address from e820 any more. The e820__get_entry_type() can
-not get a valid entry and type by the dmi base address, it will go into the default branch. That is to say, these areas become encrypted. In fact, these
-areas are also decrypted, so we have to strengthen the logic of adjusting the memory encryption mask.
-
-
-The 1st kernel log:
-
-[    0.000000] BIOS-provided physical RAM map:
-[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000008bfff] usable
-[    0.000000] BIOS-e820: [mem 0x000000000008c000-0x000000000009ffff] reserved
-[    0.000000] BIOS-e820: [mem 0x00000000000e0000-0x00000000000fffff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x0000000029920fff] usable
-[    0.000000] BIOS-e820: [mem 0x0000000029921000-0x0000000029921fff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000029922000-0x0000000062256fff] usable
-[    0.000000] BIOS-e820: [mem 0x0000000062257000-0x0000000062356fff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000062357000-0x000000006235cfff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x000000006235d000-0x00000000623dbfff] usable
-[    0.000000] BIOS-e820: [mem 0x00000000623dc000-0x000000006261bfff] reserved
-[    0.000000] BIOS-e820: [mem 0x000000006261c000-0x000000006263dfff] usable
-[    0.000000] BIOS-e820: [mem 0x000000006263e000-0x000000006269dfff] reserved
-[    0.000000] BIOS-e820: [mem 0x000000006269e000-0x00000000627d6fff] usable
-[    0.000000] BIOS-e820: [mem 0x00000000627d7000-0x00000000627e3fff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x00000000627e4000-0x00000000627e4fff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x00000000627e5000-0x00000000627e8fff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x00000000627e9000-0x00000000627eafff] usable
-[    0.000000] BIOS-e820: [mem 0x00000000627eb000-0x00000000627ebfff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x00000000627ec000-0x000000006286afff] usable
-[    0.000000] BIOS-e820: [mem 0x000000006286b000-0x000000006286efff] reserved
-[    0.000000] BIOS-e820: [mem 0x000000006286f000-0x00000000682f8fff] usable
-[    0.000000] BIOS-e820: [mem 0x00000000682f9000-0x0000000068b05fff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000068b06000-0x0000000068b09fff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000068b0a000-0x0000000068b1afff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000068b1b000-0x0000000068b1dfff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000068b1e000-0x0000000071d1dfff] usable
-[    0.000000] BIOS-e820: [mem 0x0000000071d1e000-0x0000000071d2dfff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000071d2e000-0x0000000071d3dfff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000071d3e000-0x0000000071d4dfff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x0000000071d4e000-0x0000000077ffffff] usable
-[    0.000000] BIOS-e820: [mem 0x0000000078000000-0x000000008fffffff] reserved
-[    0.000000] BIOS-e820: [mem 0x00000000fed80000-0x00000000fed80fff] reserved
-[    0.000000] BIOS-e820: [mem 0x0000000100000000-0x000000087effffff] usable
-[    0.000000] BIOS-e820: [mem 0x000000087f000000-0x000000087fffffff] reserved
-
-The kdump kernel log:
-
-[    0.000000] BIOS-provided physical RAM map:
-[    0.000000] BIOS-e820: [mem 0x0000000000001000-0x000000000008bfff] usable
-[    0.000000] BIOS-e820: [mem 0x0000000052000000-0x0000000061ffffff] usable
-[    0.000000] BIOS-e820: [mem 0x00000000622ee000-0x0000000062300fff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x0000000062301000-0x0000000062301fff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000062703000-0x0000000062703fff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x0000000062735000-0x0000000062737fff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x000000006273a000-0x000000006273afff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x0000000068b06000-0x0000000068b09fff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000068b1b000-0x0000000068b1dfff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000071d2e000-0x0000000071d3dfff] ACPI NVS
-[    0.000000] BIOS-e820: [mem 0x0000000071d3e000-0x0000000071d4dfff] ACPI data
-[    0.000000] BIOS-e820: [mem 0x00000007fe000000-0x000000087df70fff] usable
-
->> +                 */
->>  		if (early_memremap_is_setup_data(phys_addr, size) ||
->> -		    memremap_is_efi_data(phys_addr, size))
->> +		    memremap_is_efi_data(phys_addr, size) ||
->> +		    is_kdump_kernel())
->>  			encrypted_prot = false;
->>  	}
->>  
->> -- 
->> 2.17.1
->>
-> 
-> Thanks
-> Dave
-> 
+T24gU2F0LCAyMDE4LTA4LTE4IGF0IDE4OjU0ICswMzAwLCBEbWl0cnkgT3NpcGVua28gd3JvdGU6
+DQo+IFRoZSB0ZWdyYTIwLW1jIERUIGJpbmRpbmcgaGFzIGJlZW4gY2hhbmdlZCwgR0FSVCBoYXMg
+YmVlbiBzcXVhc2hlZA0KPiBpbnRvIE1lbW9yeSBDb250cm9sbGVyIGFuZCBub3cgdGhlIGNsb2Nr
+IHByb3BlcnR5IGlzIG1hbmRhdG9yeSBmb3INCj4gVGVncmEyMC4gQWRhcHQgZHJpdmVyIHRoZSB0
+byBEVCBjaGFuZ2VzLg0KDQpNaW5vciBuaXRwaWNrIGNvbmNlcm5pbmcgdGhlIGNvbW1pdCBtZXNz
+YWdlOg0KDQpBZGFwdCBkcml2ZXIgdG8gdGhlIERUIGNoYW5nZXMuDQoNCj4gU2lnbmVkLW9mZi1i
+eTogRG1pdHJ5IE9zaXBlbmtvIDxkaWdldHhAZ21haWwuY29tPg0KPiAtLS0NCj4gIGRyaXZlcnMv
+bWVtb3J5L3RlZ3JhL21jLmMgfCAxOSArKysrKysrLS0tLS0tLS0tLS0tDQo+ICBkcml2ZXJzL21l
+bW9yeS90ZWdyYS9tYy5oIHwgIDYgLS0tLS0tDQo+ICBpbmNsdWRlL3NvYy90ZWdyYS9tYy5oICAg
+IHwgIDIgKy0NCj4gIDMgZmlsZXMgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCAxOSBkZWxldGlv
+bnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL21lbW9yeS90ZWdyYS9tYy5jIGIvZHJp
+dmVycy9tZW1vcnkvdGVncmEvbWMuYw0KPiBpbmRleCBlNTY4NjI0OTVmMzYuLjNiZjMxMzg3Njlm
+NCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9tZW1vcnkvdGVncmEvbWMuYw0KPiArKysgYi9kcml2
+ZXJzL21lbW9yeS90ZWdyYS9tYy5jDQo+IEBAIC02MzgsMjQgKzYzOCwxOSBAQCBzdGF0aWMgaW50
+IHRlZ3JhX21jX3Byb2JlKHN0cnVjdA0KPiBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICAJaWYg
+KElTX0VSUihtYy0+cmVncykpDQo+ICAJCXJldHVybiBQVFJfRVJSKG1jLT5yZWdzKTsNCj4gIA0K
+PiArCW1jLT5jbGsgPSBkZXZtX2Nsa19nZXQoJnBkZXYtPmRldiwgIm1jIik7DQo+ICsJaWYgKElT
+X0VSUihtYy0+Y2xrKSkgew0KPiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gZ2V0
+IE1DIGNsb2NrOiAlbGRcbiIsDQo+ICsJCQlQVFJfRVJSKG1jLT5jbGspKTsNCj4gKwkJcmV0dXJu
+IFBUUl9FUlIobWMtPmNsayk7DQo+ICsJfQ0KPiArDQo+ICAjaWZkZWYgQ09ORklHX0FSQ0hfVEVH
+UkFfMnhfU09DDQo+ICAJaWYgKG1jLT5zb2MgPT0gJnRlZ3JhMjBfbWNfc29jKSB7DQo+IC0JCXJl
+cyA9IHBsYXRmb3JtX2dldF9yZXNvdXJjZShwZGV2LCBJT1JFU09VUkNFX01FTSwNCj4gMSk7DQo+
+IC0JCW1jLT5yZWdzMiA9IGRldm1faW9yZW1hcF9yZXNvdXJjZSgmcGRldi0+ZGV2LCByZXMpOw0K
+PiAtCQlpZiAoSVNfRVJSKG1jLT5yZWdzMikpDQo+IC0JCQlyZXR1cm4gUFRSX0VSUihtYy0+cmVn
+czIpOw0KPiAtDQo+ICAJCWlzciA9IHRlZ3JhMjBfbWNfaXJxOw0KPiAgCX0gZWxzZQ0KPiAgI2Vu
+ZGlmDQo+ICAJew0KPiAtCQltYy0+Y2xrID0gZGV2bV9jbGtfZ2V0KCZwZGV2LT5kZXYsICJtYyIp
+Ow0KPiAtCQlpZiAoSVNfRVJSKG1jLT5jbGspKSB7DQo+IC0JCQlkZXZfZXJyKCZwZGV2LT5kZXYs
+ICJmYWlsZWQgdG8gZ2V0IE1DIGNsb2NrOg0KPiAlbGRcbiIsDQo+IC0JCQkJUFRSX0VSUihtYy0+
+Y2xrKSk7DQo+IC0JCQlyZXR1cm4gUFRSX0VSUihtYy0+Y2xrKTsNCj4gLQkJfQ0KPiAtDQo+ICAJ
+CWVyciA9IHRlZ3JhX21jX3NldHVwX2xhdGVuY3lfYWxsb3dhbmNlKG1jKTsNCj4gIAkJaWYgKGVy
+ciA8IDApIHsNCj4gIAkJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCB0byBzZXR1cCBsYXRl
+bmN5DQo+IGFsbG93YW5jZTogJWRcbiIsDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL21lbW9yeS90
+ZWdyYS9tYy5oIGIvZHJpdmVycy9tZW1vcnkvdGVncmEvbWMuaA0KPiBpbmRleCAwMTA2NWYxMmVi
+ZWIuLjk4NTZmMDg1ZTQ4NyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9tZW1vcnkvdGVncmEvbWMu
+aA0KPiArKysgYi9kcml2ZXJzL21lbW9yeS90ZWdyYS9tYy5oDQo+IEBAIC0yNiwxOCArMjYsMTIg
+QEANCj4gIA0KPiAgc3RhdGljIGlubGluZSB1MzIgbWNfcmVhZGwoc3RydWN0IHRlZ3JhX21jICpt
+YywgdW5zaWduZWQgbG9uZw0KPiBvZmZzZXQpDQo+ICB7DQo+IC0JaWYgKG1jLT5yZWdzMiAmJiBv
+ZmZzZXQgPj0gMHgyNCkNCj4gLQkJcmV0dXJuIHJlYWRsKG1jLT5yZWdzMiArIG9mZnNldCAtIDB4
+M2MpOw0KPiAtDQo+ICAJcmV0dXJuIHJlYWRsKG1jLT5yZWdzICsgb2Zmc2V0KTsNCj4gIH0NCj4g
+IA0KPiAgc3RhdGljIGlubGluZSB2b2lkIG1jX3dyaXRlbChzdHJ1Y3QgdGVncmFfbWMgKm1jLCB1
+MzIgdmFsdWUsDQo+ICAJCQkgICAgIHVuc2lnbmVkIGxvbmcgb2Zmc2V0KQ0KPiAgew0KPiAtCWlm
+IChtYy0+cmVnczIgJiYgb2Zmc2V0ID49IDB4MjQpDQo+IC0JCXJldHVybiB3cml0ZWwodmFsdWUs
+IG1jLT5yZWdzMiArIG9mZnNldCAtIDB4M2MpOw0KPiAtDQo+ICAJd3JpdGVsKHZhbHVlLCBtYy0+
+cmVncyArIG9mZnNldCk7DQo+ICB9DQo+ICANCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvc29jL3Rl
+Z3JhL21jLmggYi9pbmNsdWRlL3NvYy90ZWdyYS9tYy5oDQo+IGluZGV4IGI0M2YzN2ZlYTA5Ni4u
+ZGI1YmZkZjU4OWI0IDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL3NvYy90ZWdyYS9tYy5oDQo+ICsr
+KyBiL2luY2x1ZGUvc29jL3RlZ3JhL21jLmgNCj4gQEAgLTE0NCw3ICsxNDQsNyBAQCBzdHJ1Y3Qg
+dGVncmFfbWNfc29jIHsNCj4gIHN0cnVjdCB0ZWdyYV9tYyB7DQo+ICAJc3RydWN0IGRldmljZSAq
+ZGV2Ow0KPiAgCXN0cnVjdCB0ZWdyYV9zbW11ICpzbW11Ow0KPiAtCXZvaWQgX19pb21lbSAqcmVn
+cywgKnJlZ3MyOw0KPiArCXZvaWQgX19pb21lbSAqcmVnczsNCj4gIAlzdHJ1Y3QgY2xrICpjbGs7
+DQo+ICAJaW50IGlycTs=
