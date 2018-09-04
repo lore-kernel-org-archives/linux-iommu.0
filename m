@@ -1,18 +1,18 @@
-From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
-Date: Tue, 4 Sep 2018 10:12:37 +0800
-Message-ID: <5B8DEA15.7020404@huawei.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
-	<5B83B11E.7010807@huawei.com>
-	<1d5b6529-4e5a-723c-3f1b-dd5a9adb490c@arm.com>
-	<5B89F818.7060300@huawei.com>
-	<3a961aff-e830-64bb-b6a9-14e08de1abf5@arm.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC 01/13] iommu: Introduce bind_guest_stage API
+Date: Tue, 4 Sep 2018 07:57:50 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912EFB76@SHSMSX101.ccr.corp.intel.com>
+References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
+	<1535026656-8450-2-git-send-email-eric.auger@redhat.com>
+	<22c01a4d-c74a-7279-d4ae-39e29a3bc942@redhat.com>
+	<b7909f1b-57ce-f4db-d916-140a63283232@arm.com>
+	<4309832b-27ed-597a-b5a1-f439fbea9843@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3a961aff-e830-64bb-b6a9-14e08de1abf5-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <4309832b-27ed-597a-b5a1-f439fbea9843-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,39 +22,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
-Cc: "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, fanghao11 <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, =?UTF-8?B?57Gz57Gz?= <kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "christoffer.dall-5wv7dgnIgG8@public.gmane.org" <christoffer.dall-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+> From: Auger Eric
+> Sent: Friday, August 31, 2018 9:52 PM
+> 
+> Hi Jean-Philippe,
+> 
+> On 08/31/2018 03:11 PM, Jean-Philippe Brucker wrote:
+> > Hi Eric,
+> >
+> > On 23/08/18 16:25, Auger Eric wrote:
+> >>> +int iommu_bind_guest_stage(struct iommu_domain *domain, struct
+> device *dev,
+> >>> +			   struct iommu_guest_stage_config *cfg)
+> >
+> > About the name change from iommu_bind_pasid_table: is the intent to
+> > reuse this API for SMMUv2, which supports nested but not PASID? Seems
+> > like a good idea but "iommu_bind_table" may be better since "stage" is
+> > only used by Arm.
+> 
+> At the moment I don't target SMUv2 but just SMMUv3. My focus was on
+> nested stage enablement without enabling the multi-CD feature (PASID),
+> whish is not supported by the QEMU vSMMUv3. Afterwards I realized that
+> basically we are pointing to a CD or PASID table and that's about the
+> same. I don't have a strong opinion on the name, iommu_bind_guest_table
+> or iommu_bind_pasid_table would be fine with me. Indeed "stage" is ARM
+> vocable (level for Intel?)
 
+Intel uses first level/second level. 
 
-On 2018/9/3 18:34, Jean-Philippe Brucker wrote:
-> On 01/09/18 03:23, Xu Zaibo wrote:
->> As one application takes a whole function while using VFIO-PCI, why do
->> the application and the
->> function need to enable PASID capability? (Since just one I/O page table
->> is enough for them.)
-> At the moment the series doesn't provide support for SVA without PASID
-> (on the I/O page fault path, 08/40). In addition the BIND ioctl could be
-> used by the owner application to bind other processes (slaves) and
-> perform sub-assignment. But that feature is incomplete because we don't
-> send stop_pasid notification to the owner when a slave dies.
->
-So, Could I understand like this?
+iommu_bind_table is a bit confusing. what should people take table as?
+there is PASID table. there is also page table linked in each stage/level. and
+maybe other tables in vendor-specific definition.
 
-     1. While the series are finished well, VFIO-PCI device can be held 
-by only one process
-         through binding IOCTL command without PASID (without PASID 
-being exposed user space).
+to me iommu_bind_pasid_table is still clearer. anyway in other places
+we've used pasid explicitly in vfio/iommu APIs, then it should be general
+enough to represent various implementations.
 
-     2. While using VFIO-PCI device to support multiple processes with 
-SVA series, a primary
-         process with multiple secondary processes must be deployed just 
-like DPDK(https://www.dpdk.org/).
-         And, the PASID still has to be exposed to user land.
-
-
-Thanks,
-Zaibo
-
-.
+Thanks
+Kevin
