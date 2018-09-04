@@ -1,114 +1,28 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC 01/13] iommu: Introduce bind_guest_stage API
-Date: Tue, 4 Sep 2018 08:43:42 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912EFDAB@SHSMSX101.ccr.corp.intel.com>
-References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
-        <1535026656-8450-2-git-send-email-eric.auger@redhat.com>
-        <22c01a4d-c74a-7279-d4ae-39e29a3bc942@redhat.com>
-        <b7909f1b-57ce-f4db-d916-140a63283232@arm.com>
-        <4309832b-27ed-597a-b5a1-f439fbea9843@redhat.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D1912EFB76@SHSMSX101.ccr.corp.intel.com>
-        <220e4c2a-d31c-d8fb-2d77-d902d2f13bb2@redhat.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D1912EFCD8@SHSMSX101.ccr.corp.intel.com>
- <8da25040-42fe-5ce8-2647-ee6b8d795bc9@redhat.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v3 09/19] memory: tegra: Adapt to Tegra20 device-tree binding changes
+Date: Tue, 4 Sep 2018 11:56:22 +0300
+Message-ID: <201809041156.22715.digetx@gmail.com>
+References: <20180818155430.5586-1-digetx@gmail.com> <20180818155430.5586-10-digetx@gmail.com> <1536008759.25080.2.camel@toradex.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8da25040-42fe-5ce8-2647-ee6b8d795bc9@redhat.com>
-Content-Language: en-US
+In-Reply-To: <1536008759.25080.2.camel@toradex.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "yi.l.liu@linux.intel.com" <yi.l.liu@linux.intel.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
-Cc: "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "peter.maydell@linaro.org" <peter.maydell@linaro.org>, "christoffer.dall@arm.com" <christoffer.dall@arm.com>
+To: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "thierry.reding@gmail.com" <thierry.reding@gmail.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Auger Eric
-> Sent: Tuesday, September 4, 2018 4:41 PM
-> 
-> Hi Kevin,
-> 
-> On 09/04/2018 10:34 AM, Tian, Kevin wrote:
-> >> From: Auger Eric
-> >> Sent: Tuesday, September 4, 2018 4:11 PM
-> >>
-> >> Hi Kevin,
-> >> On 09/04/2018 09:57 AM, Tian, Kevin wrote:
-> >>>> From: Auger Eric
-> >>>> Sent: Friday, August 31, 2018 9:52 PM
-> >>>>
-> >>>> Hi Jean-Philippe,
-> >>>>
-> >>>> On 08/31/2018 03:11 PM, Jean-Philippe Brucker wrote:
-> >>>>> Hi Eric,
-> >>>>>
-> >>>>> On 23/08/18 16:25, Auger Eric wrote:
-> >>>>>>> +int iommu_bind_guest_stage(struct iommu_domain *domain,
-> >> struct
-> >>>> device *dev,
-> >>>>>>> +			   struct iommu_guest_stage_config *cfg)
-> >>>>>
-> >>>>> About the name change from iommu_bind_pasid_table: is the intent
-> to
-> >>>>> reuse this API for SMMUv2, which supports nested but not PASID?
-> >> Seems
-> >>>>> like a good idea but "iommu_bind_table" may be better since "stage"
-> is
-> >>>>> only used by Arm.
-> >>>>
-> >>>> At the moment I don't target SMUv2 but just SMMUv3. My focus was
-> on
-> >>>> nested stage enablement without enabling the multi-CD feature
-> (PASID),
-> >>>> whish is not supported by the QEMU vSMMUv3. Afterwards I realized
-> >> that
-> >>>> basically we are pointing to a CD or PASID table and that's about the
-> >>>> same. I don't have a strong opinion on the name,
-> >> iommu_bind_guest_table
-> >>>> or iommu_bind_pasid_table would be fine with me. Indeed "stage" is
-> >> ARM
-> >>>> vocable (level for Intel?)
-> >>>
-> >>> Intel uses first level/second level.
-> >>>
-> >>> iommu_bind_table is a bit confusing. what should people take table as?
-> >>> there is PASID table. there is also page table linked in each stage/level.
-> >> and
-> >>> maybe other tables in vendor-specific definition.
-> >>>
-> >>> to me iommu_bind_pasid_table is still clearer. anyway in other places
-> >>> we've used pasid explicitly in vfio/iommu APIs, then it should be
-> general
-> >>> enough to represent various implementations.
-> >>
-> >> Fine for me.
-> >>
-> >> However I I would suggest to rename the original iommu_sva_invalidate
-> >> into something that is SVA unrelated. iommu_tlb_invalidate is not OK as
-> >> this API also is used to invalidate context caches - which are not
-> >> iotlbs -. What about iommu_cache_invalidate?
-> >>
-> >> At least we must clarify that this API can be used for something else
-> >> than SVA enablement.
-> >>
-> >
-> > Agree. using SVA is limiting.
-> >
-> > I also agree that iommu_cache_invalidate is better, though I don't think
-> > you want to pass guest context cache invalidation to host. that
-> information
-> > is fully under host control. :-)
-> 
-> I think the confusion comes from the different terminology used in VTD
-> and ARM SMMU spec.
-> 
-> Your PASID table ~ ARM SMMU Context Descriptor (CD) table
-> Your Root Entry/Context Entry ~ ARM SMMU Stream Table Entry (STE)
-> 
-> So I meant guesr invalidates its Context Descriptor cache. He "owns"
-> those. Host owns the STE.
-> 
+On Tuesday 04 September 2018 00:06:01 Marcel Ziswiler wrote:
+> On Sat, 2018-08-18 at 18:54 +0300, Dmitry Osipenko wrote:
+> > The tegra20-mc DT binding has been changed, GART has been squashed
+> > into Memory Controller and now the clock property is mandatory for
+> > Tegra20. Adapt driver the to DT changes.
+>
+> Minor nitpick concerning the commit message:
+>
+> Adapt driver to the DT changes.
 
-yes, then it makes sense.
-
-Thanks
-Kevin
+Yes, thank you.
