@@ -1,71 +1,110 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
-Date: Tue, 4 Sep 2018 11:57:02 +0100
-Message-ID: <bc27f902-4d12-21b7-b9e9-18bcae170503@arm.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
-	<5B83B11E.7010807@huawei.com>
-	<1d5b6529-4e5a-723c-3f1b-dd5a9adb490c@arm.com>
-	<5B89F818.7060300@huawei.com>
-	<3a961aff-e830-64bb-b6a9-14e08de1abf5@arm.com>
-	<5B8DEA15.7020404@huawei.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Tue, 4 Sep 2018 11:00:19 -0400
+Message-ID: <20180904150019.GA4024@redhat.com>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5B8DEA15.7020404-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
-Cc: "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, fanghao11 <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, =?UTF-8?B?57Gz57Gz?= <kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180903005204.26041-1-nek.in.cn@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kenneth Lee <nek.in.cn@gmail.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/09/2018 03:12, Xu Zaibo wrote:
-> On 2018/9/3 18:34, Jean-Philippe Brucker wrote:
->> On 01/09/18 03:23, Xu Zaibo wrote:
->>> As one application takes a whole function while using VFIO-PCI, why do
->>> the application and the
->>> function need to enable PASID capability? (Since just one I/O page table
->>> is enough for them.)
->> At the moment the series doesn't provide support for SVA without PASID
->> (on the I/O page fault path, 08/40). In addition the BIND ioctl could be
->> used by the owner application to bind other processes (slaves) and
->> perform sub-assignment. But that feature is incomplete because we don't
->> send stop_pasid notification to the owner when a slave dies.
->>
-> So, Could I understand like this?
+On Mon, Sep 03, 2018 at 08:51:57AM +0800, Kenneth Lee wrote:
+> From: Kenneth Lee <liguozhu@hisilicon.com>
 > 
->      1. While the series are finished well, VFIO-PCI device can be held 
-> by only one process
->          through binding IOCTL command without PASID (without PASID 
-> being exposed user space).
+> WarpDrive is an accelerator framework to expose the hardware capabilities
+> directly to the user space. It makes use of the exist vfio and vfio-mdev
+> facilities. So the user application can send request and DMA to the
+> hardware without interaction with the kernel. This removes the latency
+> of syscall.
+> 
+> WarpDrive is the name for the whole framework. The component in kernel
+> is called SDMDEV, Share Domain Mediated Device. Driver driver exposes its
+> hardware resource by registering to SDMDEV as a VFIO-Mdev. So the user
+> library of WarpDrive can access it via VFIO interface.
+> 
+> The patchset contains document for the detail. Please refer to it for more
+> information.
+> 
+> This patchset is intended to be used with Jean Philippe Brucker's SVA
+> patch [1], which enables not only IO side page fault, but also PASID
+> support to IOMMU and VFIO.
+> 
+> With these features, WarpDrive can support non-pinned memory and
+> multi-process in the same accelerator device.  We tested it in our SoC
+> integrated Accelerator (board ID: D06, Chip ID: HIP08). A reference work
+> tree can be found here: [2].
+> 
+> But it is not mandatory. This patchset is tested in the latest mainline
+> kernel without the SVA patches.  So it supports only one process for each
+> accelerator.
+> 
+> We have noticed the IOMMU aware mdev RFC announced recently [3].
+> 
+> The IOMMU aware mdev has similar idea but different intention comparing to
+> WarpDrive. It intends to dedicate part of the hardware resource to a VM.
+> And the design is supposed to be used with Scalable I/O Virtualization.
+> While sdmdev is intended to share the hardware resource with a big amount
+> of processes.  It just requires the hardware supporting address
+> translation per process (PCIE's PASID or ARM SMMU's substream ID).
+> 
+> But we don't see serious confliction on both design. We believe they can be
+> normalized as one.
+> 
 
-It could, but isn't supported at the moment. In addition to adding
-support in the I/O page fault code, we'd also need to update the VFIO
-API. Currently a VFIO_TYPE1 domain always supports the MAP/UNMAP ioctl.
-The case you describe isn't compatible with MAP/UNMAP, since the process
-manages the shared address space with mmap or malloc. We'd probably need
-to introduce a new VFIO IOMMU type, in which case the bind could be
-performed implicitly when the process does VFIO_SET_IOMMU. Then the
-process wouldn't need to send an additional BIND IOCTL.
+So once again i do not understand why you are trying to do things
+this way. Kernel already have tons of example of everything you
+want to do without a new framework. Moreover i believe you are
+confuse by VFIO. To me VFIO is for VM not to create general device
+driver frame work.
 
->      2. While using VFIO-PCI device to support multiple processes with 
-> SVA series, a primary
->          process with multiple secondary processes must be deployed just 
-> like DPDK(https://www.dpdk.org/).
->          And, the PASID still has to be exposed to user land.
+So here is your use case as i understand it. You have a device
+with a limited number of command queues (can be just one) and in
+some case it can support SVA/SVM (when hardware support it and it
+is not disabled). Final requirement is being able to schedule cmds
+from userspace without ioctl. All of this exists already exists
+upstream in few device drivers.
 
-Right. A third case, also implemented by this patch (and complete), is
-the primary process simply doing a BIND for itself, and using the
-returned PASID to share its own address space with the device.
 
-Thanks,
-Jean
+So here is how every body else is doing it. Please explain why
+this does not work.
+
+1 Userspace open device file driver. Kernel device driver create
+  a context and associate it with on open. This context can be
+  uniq to the process and can bind hardware resources (like a
+  command queue) to the process.
+2 Userspace bind/acquire a commands queue and initialize it with
+  an ioctl on the device file. Through that ioctl userspace can
+  be inform wether either SVA/SVM works for the device. If SVA/
+  SVM works then kernel device driver bind the process to the
+  device as part of this ioctl.
+3 If SVM/SVA does not work userspace do an ioctl to create dma
+  buffer or something that does exactly the same thing.
+4 Userspace mmap the command queue (mmap of the device file by
+  using informations gather at step 2)
+5 Userspace can write commands into the queue it mapped
+6 When userspace close the device file all resources are release
+  just like any existing device drivers.
+
+Now if you want to create a device driver framework that expose
+a device file with generic API for all of the above steps fine.
+But it does not need to be part of VFIO whatsoever or explain
+why.
+
+
+Note that if IOMMU is fully disabled you probably want to block
+userspace from being able to directly scheduling commands onto
+the hardware as it would allow userspace to DMA anywhere and thus
+would open the kernel to easy exploits. In this case you can still
+keeps the same API as above and use page fault tricks to valid
+commands written by userspace into fake commands ring. This will
+be as slow or maybe even slower than ioctl but at least it allows
+you to validate commands.
+
+Cheers,
+Jérôme
