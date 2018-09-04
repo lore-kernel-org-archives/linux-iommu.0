@@ -1,37 +1,71 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC 01/13] iommu: Introduce bind_guest_stage API
-Date: Tue, 4 Sep 2018 10:53:11 +0100
-Message-ID: <c05ac969-2921-3166-e715-af3595291666@arm.com>
-References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
- <1535026656-8450-2-git-send-email-eric.auger@redhat.com>
- <22c01a4d-c74a-7279-d4ae-39e29a3bc942@redhat.com>
- <b7909f1b-57ce-f4db-d916-140a63283232@arm.com>
- <4309832b-27ed-597a-b5a1-f439fbea9843@redhat.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D1912EFB76@SHSMSX101.ccr.corp.intel.com>
- <220e4c2a-d31c-d8fb-2d77-d902d2f13bb2@redhat.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D1912EFCD8@SHSMSX101.ccr.corp.intel.com>
- <8da25040-42fe-5ce8-2647-ee6b8d795bc9@redhat.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
+Date: Tue, 4 Sep 2018 11:57:02 +0100
+Message-ID: <bc27f902-4d12-21b7-b9e9-18bcae170503@arm.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
+	<5B83B11E.7010807@huawei.com>
+	<1d5b6529-4e5a-723c-3f1b-dd5a9adb490c@arm.com>
+	<5B89F818.7060300@huawei.com>
+	<3a961aff-e830-64bb-b6a9-14e08de1abf5@arm.com>
+	<5B8DEA15.7020404@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8da25040-42fe-5ce8-2647-ee6b8d795bc9@redhat.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5B8DEA15.7020404-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "yi.l.liu@linux.intel.com" <yi.l.liu@linux.intel.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
-Cc: Marc Zyngier <Marc.Zyngier@arm.com>, "peter.maydell@linaro.org" <peter.maydell@linaro.org>, Christoffer Dall <Christoffer.Dall@arm.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
+Cc: "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, fanghao11 <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, =?UTF-8?B?57Gz57Gz?= <kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/09/2018 09:41, Auger Eric wrote:
-> I think the confusion comes from the different terminology used in VTD
-> and ARM SMMU spec.
+On 04/09/2018 03:12, Xu Zaibo wrote:
+> On 2018/9/3 18:34, Jean-Philippe Brucker wrote:
+>> On 01/09/18 03:23, Xu Zaibo wrote:
+>>> As one application takes a whole function while using VFIO-PCI, why do
+>>> the application and the
+>>> function need to enable PASID capability? (Since just one I/O page table
+>>> is enough for them.)
+>> At the moment the series doesn't provide support for SVA without PASID
+>> (on the I/O page fault path, 08/40). In addition the BIND ioctl could be
+>> used by the owner application to bind other processes (slaves) and
+>> perform sub-assignment. But that feature is incomplete because we don't
+>> send stop_pasid notification to the owner when a slave dies.
+>>
+> So, Could I understand like this?
 > 
-> Your PASID table ~ ARM SMMU Context Descriptor (CD) table
-> Your Root Entry/Context Entry ~ ARM SMMU Stream Table Entry (STE)
+>      1. While the series are finished well, VFIO-PCI device can be held 
+> by only one process
+>          through binding IOCTL command without PASID (without PASID 
+> being exposed user space).
 
-In past discussions we used "PASID table (entry)" and "device context"
-respectively. For clarity we should probably stick to those names unless
-we discuss arch-specific patches
+It could, but isn't supported at the moment. In addition to adding
+support in the I/O page fault code, we'd also need to update the VFIO
+API. Currently a VFIO_TYPE1 domain always supports the MAP/UNMAP ioctl.
+The case you describe isn't compatible with MAP/UNMAP, since the process
+manages the shared address space with mmap or malloc. We'd probably need
+to introduce a new VFIO IOMMU type, in which case the bind could be
+performed implicitly when the process does VFIO_SET_IOMMU. Then the
+process wouldn't need to send an additional BIND IOCTL.
+
+>      2. While using VFIO-PCI device to support multiple processes with 
+> SVA series, a primary
+>          process with multiple secondary processes must be deployed just 
+> like DPDK(https://www.dpdk.org/).
+>          And, the PASID still has to be exposed to user land.
+
+Right. A third case, also implemented by this patch (and complete), is
+the primary process simply doing a BIND for itself, and using the
+returned PASID to share its own address space with the device.
 
 Thanks,
 Jean
