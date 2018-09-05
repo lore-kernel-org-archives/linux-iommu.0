@@ -1,82 +1,58 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC PATCH v2 02/10] iommu/vt-d: Add multiple domains per
- device query
-Date: Wed, 5 Sep 2018 13:35:40 -0600
-Message-ID: <20180905133540.5d7a7ea3@t450s.home>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v2 03/10] iommu/amd: Add default branch in
+	amd_iommu_capable()
+Date: Wed, 5 Sep 2018 13:37:03 -0600
+Message-ID: <20180905133703.331c0c17@t450s.home>
 References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-        <20180830040922.30426-3-baolu.lu@linux.intel.com>
+	<20180830040922.30426-4-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180830040922.30426-3-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180830040922.30426-4-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 30 Aug 2018 12:09:14 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Thu, 30 Aug 2018 12:09:15 +0800
+Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
 
-> Add the response to IOMMU_CAP_AUX_DOMAIN capability query
-> through iommu_capable(). Return true if IOMMUs support the
-> scalable mode, return false otherwise.
+> Otherwise, there will be a build warning:
 > 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> drivers/iommu/amd_iommu.c:3083:2: warning: enumeration value
+> 'IOMMU_CAP_AUX_DOMAIN' not handled in switch [-Wswitch]
+> 
+> There is no functional change.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 > ---
->  drivers/iommu/intel-iommu.c | 31 +++++++++++++++++++++++++++++--
->  1 file changed, 29 insertions(+), 2 deletions(-)
+>  drivers/iommu/amd_iommu.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 3e49d4029058..891ae70e7bf2 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5193,12 +5193,39 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
->  	return phys;
->  }
->  
-> +static inline bool scalable_mode_support(void)
-> +{
-> +	struct dmar_drhd_unit *drhd;
-> +	struct intel_iommu *iommu;
-> +	bool ret = true;
-> +
-> +	rcu_read_lock();
-> +	for_each_active_iommu(iommu, drhd) {
-> +		if (!sm_supported(iommu)) {
-> +			ret = false;
-> +			break;
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +
-> +	return ret;
-> +}
-> +
->  static bool intel_iommu_capable(enum iommu_cap cap)
->  {
-> -	if (cap == IOMMU_CAP_CACHE_COHERENCY)
-> +	switch (cap) {
-> +	case IOMMU_CAP_CACHE_COHERENCY:
->  		return domain_update_iommu_snooping(NULL) == 1;
-> -	if (cap == IOMMU_CAP_INTR_REMAP)
-> +	case IOMMU_CAP_INTR_REMAP:
->  		return irq_remapping_enabled == 1;
-> +	case IOMMU_CAP_AUX_DOMAIN:
-> +		return scalable_mode_support();
-> +	case IOMMU_CAP_NOEXEC:
-> +	/* PASSTHROUGH */
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 4e04fff23977..237ae6db4cfd 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -3077,6 +3077,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+>  		return (irq_remapping_enabled == 1);
+>  	case IOMMU_CAP_NOEXEC:
+>  		return false;
 > +	default:
-> +		pr_info("Unsupported capability query %d\n", cap);
 > +		break;
+>  	}
+>  
+>  	return false;
 
-Please don't do this, there's no reason to be noisy about a query of a
-capability that VT-d doesn't know about.  We implement capabilities
-exactly so that relevant drivers can expose a feature and others can
-happily (and quietly) ignore them.  Thanks,
+Seems like a bug fix that doesn't need to be part of this RFC, send it
+separately.  Thanks,
 
 Alex
