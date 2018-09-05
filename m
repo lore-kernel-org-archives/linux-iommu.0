@@ -1,123 +1,53 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Tue, 4 Sep 2018 10:15:09 -0600
-Message-ID: <20180904101509.62314b67@t450s.home>
-References: <20180903005204.26041-1-nek.in.cn@gmail.com>
-        <20180904150019.GA4024@redhat.com>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [RFC 01/13] iommu: Introduce bind_guest_stage API
+Date: Wed, 5 Sep 2018 00:36:23 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912F0BC2@SHSMSX101.ccr.corp.intel.com>
+References: <1535026656-8450-1-git-send-email-eric.auger@redhat.com>
+ <1535026656-8450-2-git-send-email-eric.auger@redhat.com>
+ <22c01a4d-c74a-7279-d4ae-39e29a3bc942@redhat.com>
+ <b7909f1b-57ce-f4db-d916-140a63283232@arm.com>
+ <4309832b-27ed-597a-b5a1-f439fbea9843@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D1912EFB76@SHSMSX101.ccr.corp.intel.com>
+ <220e4c2a-d31c-d8fb-2d77-d902d2f13bb2@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D1912EFCD8@SHSMSX101.ccr.corp.intel.com>
+ <8da25040-42fe-5ce8-2647-ee6b8d795bc9@redhat.com>
+ <c05ac969-2921-3166-e715-af3595291666@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180904150019.GA4024@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Kenneth Lee <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <c05ac969-2921-3166-e715-af3595291666@arm.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Auger Eric <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "yi.l.liu@linux.intel.com" <yi.l.liu@linux.intel.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
+Cc: Marc Zyngier <Marc.Zyngier@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 4 Sep 2018 11:00:19 -0400
-Jerome Glisse <jglisse@redhat.com> wrote:
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker@arm.com]
+> Sent: Tuesday, September 4, 2018 5:53 PM
+> 
+> On 04/09/2018 09:41, Auger Eric wrote:
+> > I think the confusion comes from the different terminology used in VTD
+> > and ARM SMMU spec.
+> >
+> > Your PASID table ~ ARM SMMU Context Descriptor (CD) table
+> > Your Root Entry/Context Entry ~ ARM SMMU Stream Table Entry (STE)
+> 
+> In past discussions we used "PASID table (entry)" and "device context"
+> respectively. For clarity we should probably stick to those names unless
+> we discuss arch-specific patches
+> 
 
-> On Mon, Sep 03, 2018 at 08:51:57AM +0800, Kenneth Lee wrote:
-> > From: Kenneth Lee <liguozhu@hisilicon.com>
-> > 
-> > WarpDrive is an accelerator framework to expose the hardware capabilities
-> > directly to the user space. It makes use of the exist vfio and vfio-mdev
-> > facilities. So the user application can send request and DMA to the
-> > hardware without interaction with the kernel. This removes the latency
-> > of syscall.
-> > 
-> > WarpDrive is the name for the whole framework. The component in kernel
-> > is called SDMDEV, Share Domain Mediated Device. Driver driver exposes its
-> > hardware resource by registering to SDMDEV as a VFIO-Mdev. So the user
-> > library of WarpDrive can access it via VFIO interface.
-> > 
-> > The patchset contains document for the detail. Please refer to it for more
-> > information.
-> > 
-> > This patchset is intended to be used with Jean Philippe Brucker's SVA
-> > patch [1], which enables not only IO side page fault, but also PASID
-> > support to IOMMU and VFIO.
-> > 
-> > With these features, WarpDrive can support non-pinned memory and
-> > multi-process in the same accelerator device.  We tested it in our SoC
-> > integrated Accelerator (board ID: D06, Chip ID: HIP08). A reference work
-> > tree can be found here: [2].
-> > 
-> > But it is not mandatory. This patchset is tested in the latest mainline
-> > kernel without the SVA patches.  So it supports only one process for each
-> > accelerator.
-> > 
-> > We have noticed the IOMMU aware mdev RFC announced recently [3].
-> > 
-> > The IOMMU aware mdev has similar idea but different intention comparing to
-> > WarpDrive. It intends to dedicate part of the hardware resource to a VM.
-> > And the design is supposed to be used with Scalable I/O Virtualization.
-> > While sdmdev is intended to share the hardware resource with a big amount
-> > of processes.  It just requires the hardware supporting address
-> > translation per process (PCIE's PASID or ARM SMMU's substream ID).
-> > 
-> > But we don't see serious confliction on both design. We believe they can be
-> > normalized as one.
-> >   
-> 
-> So once again i do not understand why you are trying to do things
-> this way. Kernel already have tons of example of everything you
-> want to do without a new framework. Moreover i believe you are
-> confuse by VFIO. To me VFIO is for VM not to create general device
-> driver frame work.
+yes, that is a good abstraction. let's try to use them in related discussions
+and patch series.
 
-VFIO is a userspace driver framework, the VM use case just happens to
-be a rather prolific one.  VFIO was never intended to be solely a VM
-device interface and has several other userspace users, notably DPDK
-and SPDK, an NVMe backend in QEMU, a userspace NVMe driver, a ruby
-wrapper, and perhaps others that I'm not aware of.  Whether vfio is
-appropriate interface here might certainly still be a debatable topic,
-but I would strongly disagree with your last sentence above.  Thanks,
-
-Alex
-
-> So here is your use case as i understand it. You have a device
-> with a limited number of command queues (can be just one) and in
-> some case it can support SVA/SVM (when hardware support it and it
-> is not disabled). Final requirement is being able to schedule cmds
-> from userspace without ioctl. All of this exists already exists
-> upstream in few device drivers.
-> 
-> 
-> So here is how every body else is doing it. Please explain why
-> this does not work.
-> 
-> 1 Userspace open device file driver. Kernel device driver create
->   a context and associate it with on open. This context can be
->   uniq to the process and can bind hardware resources (like a
->   command queue) to the process.
-> 2 Userspace bind/acquire a commands queue and initialize it with
->   an ioctl on the device file. Through that ioctl userspace can
->   be inform wether either SVA/SVM works for the device. If SVA/
->   SVM works then kernel device driver bind the process to the
->   device as part of this ioctl.
-> 3 If SVM/SVA does not work userspace do an ioctl to create dma
->   buffer or something that does exactly the same thing.
-> 4 Userspace mmap the command queue (mmap of the device file by
->   using informations gather at step 2)
-> 5 Userspace can write commands into the queue it mapped
-> 6 When userspace close the device file all resources are release
->   just like any existing device drivers.
-> 
-> Now if you want to create a device driver framework that expose
-> a device file with generic API for all of the above steps fine.
-> But it does not need to be part of VFIO whatsoever or explain
-> why.
-> 
-> 
-> Note that if IOMMU is fully disabled you probably want to block
-> userspace from being able to directly scheduling commands onto
-> the hardware as it would allow userspace to DMA anywhere and thus
-> would open the kernel to easy exploits. In this case you can still
-> keeps the same API as above and use page fault tricks to valid
-> commands written by userspace into fake commands ring. This will
-> be as slow or maybe even slower than ioctl but at least it allows
-> you to validate commands.
-> 
-> Cheers,
-> Jérôme
+Thanks
+Kevin
