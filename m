@@ -1,169 +1,68 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-Date: Wed, 5 Sep 2018 09:46:29 +0800
-Message-ID: <5B8F3575.8000408@huawei.com>
-References: <1534328582-17664-1-git-send-email-thunder.leizhen@huawei.com>
- <1534328582-17664-2-git-send-email-thunder.leizhen@huawei.com>
- <6027cd67-7c76-673c-082f-8dd0b7a575b0@arm.com> <5B7533FD.20903@huawei.com>
- <20180816091805.GB31093@arm.com>
- <ad5bd6c0-20bd-9581-a12a-4464e5ec69f6@arm.com> <5B791622.4040509@huawei.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
+Date: Wed, 5 Sep 2018 03:01:39 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912F128F@SHSMSX101.ccr.corp.intel.com>
+References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5B791622.4040509@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180830040922.30426-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Bie, Tiwei" <tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2018/8/19 15:02, Leizhen (ThunderTown) wrote:
+> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+> Sent: Thursday, August 30, 2018 12:09 PM
 > 
+[...]
 > 
-> On 2018/8/16 17:27, Robin Murphy wrote:
->> On 2018-08-16 10:18 AM, Will Deacon wrote:
->>> On Thu, Aug 16, 2018 at 04:21:17PM +0800, Leizhen (ThunderTown) wrote:
->>>> On 2018/8/15 20:26, Robin Murphy wrote:
->>>>> On 15/08/18 11:23, Zhen Lei wrote:
->>>>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>>>>> index 1d64710..3f5c236 100644
->>>>>> --- a/drivers/iommu/arm-smmu-v3.c
->>>>>> +++ b/drivers/iommu/arm-smmu-v3.c
->>>>>> @@ -566,7 +566,7 @@ struct arm_smmu_device {
->>>>>>
->>>>>>        int                gerr_irq;
->>>>>>        int                combined_irq;
->>>>>> -    atomic_t            sync_nr;
->>>>>> +    u32                sync_nr;
->>>>>>
->>>>>>        unsigned long            ias; /* IPA */
->>>>>>        unsigned long            oas; /* PA */
->>>>>> @@ -775,6 +775,11 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
->>>>>>        return 0;
->>>>>>    }
->>>>>>
->>>>>> +static inline void arm_smmu_cmdq_sync_set_msidata(u64 *cmd, u32 msidata)
->>>>>
->>>>> If we *are* going to go down this route then I think it would make sense
->>>>> to move the msiaddr and CMDQ_SYNC_0_CS_MSI logic here as well; i.e.
->>>>> arm_smmu_cmdq_build_cmd() always generates a "normal" SEV-based sync
->>>>> command, then calling this guy would convert it to an MSI-based one.
->>>>> As-is, having bits of mutually-dependent data handled across two
->>>>> separate places just seems too messy and error-prone.
->>>>
->>>> Yes, How about create a new function "arm_smmu_cmdq_build_sync_msi_cmd"?
->>>>
->>>> static inline
->>>> void arm_smmu_cmdq_build_sync_msi_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->>>> {
->>>>     cmd[0]  = FIELD_PREP(CMDQ_0_OP, ent->opcode);
->>>>     cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
->>>>     cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
->>>>     cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+> In order to distinguish the IOMMU-capable mediated devices from those
+> which still need to rely on parent devices, this patch set adds a
+> domain type attribute to each mdev.
 > 
-> miss:   cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIDATA, ent->sync.msidata);
-> 
->>>>     cmd[1]  = ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
->>>> }
->>>
->>> None of this seems justified given the numbers from John, so please just do
->>> the simple thing and build the command with the lock held.
-> 
-> In order to observe the optimization effect, I conducted 5 tests for each
-> case. Although the test result is volatility, but we can still get which case
-> is good or bad. It accords with our theoretical analysis.
-> 
-> Test command: fio -numjobs=8 -rw=randread -runtime=30 ... -bs=4k
-> Test Result: IOPS, for example: read : io=86790MB, bw=2892.1MB/s, iops=740586, runt= 30001msec
-> 
-> Case 1: (without these patches)
-> 675480
-> 672055
-> 665275
-> 648610
-> 661146
-> 
-> Case 2: (move arm_smmu_cmdq_build_cmd into lock)
-
-https://lore.kernel.org/patchwork/patch/973121/
-[v2,1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-
-> 688714
-> 697355
-> 632951
-> 700540
-> 678459
-> 
-> Case 3: (base on case 2, replace arm_smmu_cmdq_build_cmd with arm_smmu_cmdq_build_sync_msi_cmd)
-
-https://patchwork.kernel.org/patch/10569675/
-[v4,1/2] iommu/arm-smmu-v3: fix unexpected CMD_SYNC timeout
-
-> 721582
-> 729226
-> 689574
-> 679710
-> 727770
-> 
-> Case 4: (base on case 3, plus patch 2)
-> 734077
-> 742868
-> 738194
-> 682544
-> 740586
-> 
-> Case 2 is better than case 1, I think the main reason is the atomic_inc_return_relaxed(&smmu->sync_nr)
-> has been removed. Case 3 is better than case 2, because the assembly code is reduced, see below.
-
-Hi, Will
-  Have you received this email? Which case do you prefer? Suppose we don't consider patch 2, according
-to the test result, maybe we should choose case3.
-  Because John Garry wants patch 2 to cover the non-MSI branch also, this may take some time. So can
-you decide and apply patch 1 first?
-
-
-> 
-> 
->>
->> Agreed - sorry if my wording was unclear, but that suggestion was only for the possibility of it proving genuinely worthwhile to build the command outside the lock. Since that isn't the case, I definitely prefer the simpler approach too.
-> 
-> Yes, I mean replace arm_smmu_cmdq_build_cmd with arm_smmu_cmdq_build_sync_msi_cmd to build the command inside the lock.
->          spin_lock_irqsave(&smmu->cmdq.lock, flags);
-> +        ent.sync.msidata = ++smmu->sync_nr;
-> +        arm_smmu_cmdq_build_sync_msi_cmd(cmd, &ent);
->          arm_smmu_cmdq_insert_cmd(smmu, cmd);
->          spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
-> 
-> The assembly code showed me that it's very nice.
-> ffff0000085e6928:       94123207        bl      ffff000008a73144 <_raw_spin_lock_irqsave>
-> ffff0000085e692c:       b9410ad5        ldr     w21, [x22,#264]
-> ffff0000085e6930:       d28208c2        mov     x2, #0x1046                     // #4166
-> ffff0000085e6934:       aa0003fa        mov     x26, x0
-> ffff0000085e6938:       110006b5        add     w21, w21, #0x1
-> ffff0000085e693c:       f2a1f802        movk    x2, #0xfc0, lsl #16
-> ffff0000085e6940:       aa1603e0        mov     x0, x22
-> ffff0000085e6944:       910163a1        add     x1, x29, #0x58
-> ffff0000085e6948:       aa158042        orr     x2, x2, x21, lsl #32
-> ffff0000085e694c:       b9010ad5        str     w21, [x22,#264]
-> ffff0000085e6950:       f9002fa2        str     x2, [x29,#88]
-> ffff0000085e6954:       d2994016        mov     x22, #0xca00                    // #51712
-> ffff0000085e6958:       f90033b3        str     x19, [x29,#96]
-> ffff0000085e695c:       97fffd5b        bl      ffff0000085e5ec8 <arm_smmu_cmdq_insert_cmd>
-> ffff0000085e6960:       aa1903e0        mov     x0, x25
-> ffff0000085e6964:       aa1a03e1        mov     x1, x26
-> ffff0000085e6968:       f2a77356        movk    x22, #0x3b9a, lsl #16
-> ffff0000085e696c:       94123145        bl      ffff000008a72e80 <_raw_spin_unlock_irqrestore>
-> 
-> 
->>
->> Robin.
->>
->> .
->>
+> enum mdev_domain_type {
+> 	DOMAIN_TYPE_NO_IOMMU,	/* Don't need any IOMMU support.
+> 				 * All isolation and protection
+> 				 * are handled by the parent
+> 				 * device driver with a device
+> 				 * specific mechanism.
+> 				 */
+> 	DOMAIN_TYPE_ATTACH_PARENT, /* IOMMU can isolate and
+> protect
+> 				    * the mdev, and the isolation
+> 				    * domain should be attaced with
+> 				    * the parent device.
+> 				    */
+> };
 > 
 
--- 
-Thanks!
-BestRegards
+ATTACH_PARENT is not like a good counterpart to NO_IOMMU.
+
+what about DOMAIN_TYPE_NO_IOMMU/DOMAIN_TYPE_IOMMU? whether
+to attach parent device is just internal logic.
+
+Alternatively DOMAIN_TYPE_SOFTWARE/DOMAIN_TYPE_HARDWARE,
+where software means iommu_domain is managed by software while
+the other means managed by hardware.
+
+One side note to Alex - with multiple domain extension in IOMMU layer,
+this version combines IOMMU-capable usages in VFIO: PASID-based (as 
+in scalable iov) and RID-based (as the usage of mdev wrapper on any 
+device). Both cases share the common path - just binding the domain to the
+parent device of mdev. IOMMU layer will handle two cases differently later. 
+
+Thanks
+Kevin
