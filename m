@@ -1,74 +1,82 @@
 From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
-Date: Wed, 5 Sep 2018 13:15:34 -0600
-Message-ID: <20180905131534.1e638e3e@t450s.home>
+Subject: Re: [RFC PATCH v2 02/10] iommu/vt-d: Add multiple domains per
+ device query
+Date: Wed, 5 Sep 2018 13:35:40 -0600
+Message-ID: <20180905133540.5d7a7ea3@t450s.home>
 References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D1912F128F@SHSMSX101.ccr.corp.intel.com>
+        <20180830040922.30426-3-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1912F128F@SHSMSX101.ccr.corp.intel.com>
+In-Reply-To: <20180830040922.30426-3-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 5 Sep 2018 03:01:39 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
+On Thu, 30 Aug 2018 12:09:14 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
 
-> > From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
-> > Sent: Thursday, August 30, 2018 12:09 PM
-> >   
-> [...]
-> > 
-> > In order to distinguish the IOMMU-capable mediated devices from those
-> > which still need to rely on parent devices, this patch set adds a
-> > domain type attribute to each mdev.
-> > 
-> > enum mdev_domain_type {
-> > 	DOMAIN_TYPE_NO_IOMMU,	/* Don't need any IOMMU support.
-> > 				 * All isolation and protection
-> > 				 * are handled by the parent
-> > 				 * device driver with a device
-> > 				 * specific mechanism.
-> > 				 */
-> > 	DOMAIN_TYPE_ATTACH_PARENT, /* IOMMU can isolate and
-> > protect
-> > 				    * the mdev, and the isolation
-> > 				    * domain should be attaced with
-> > 				    * the parent device.
-> > 				    */
-> > };
-> >   
+> Add the response to IOMMU_CAP_AUX_DOMAIN capability query
+> through iommu_capable(). Return true if IOMMUs support the
+> scalable mode, return false otherwise.
 > 
-> ATTACH_PARENT is not like a good counterpart to NO_IOMMU.
-
-Please do not use NO_IOMMU, we already have a thing called
-vfio-noiommu, enabled through CONFIG_VFIO_NOIOMMU and module parameter
-enable_unsafe_noiommu_mode.  This is much, much too similar and will
-generate confusion.
-
-> what about DOMAIN_TYPE_NO_IOMMU/DOMAIN_TYPE_IOMMU? whether
-> to attach parent device is just internal logic.
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel-iommu.c | 31 +++++++++++++++++++++++++++++--
+>  1 file changed, 29 insertions(+), 2 deletions(-)
 > 
-> Alternatively DOMAIN_TYPE_SOFTWARE/DOMAIN_TYPE_HARDWARE,
-> where software means iommu_domain is managed by software while
-> the other means managed by hardware.
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 3e49d4029058..891ae70e7bf2 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5193,12 +5193,39 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+>  	return phys;
+>  }
+>  
+> +static inline bool scalable_mode_support(void)
+> +{
+> +	struct dmar_drhd_unit *drhd;
+> +	struct intel_iommu *iommu;
+> +	bool ret = true;
+> +
+> +	rcu_read_lock();
+> +	for_each_active_iommu(iommu, drhd) {
+> +		if (!sm_supported(iommu)) {
+> +			ret = false;
+> +			break;
+> +		}
+> +	}
+> +	rcu_read_unlock();
+> +
+> +	return ret;
+> +}
+> +
+>  static bool intel_iommu_capable(enum iommu_cap cap)
+>  {
+> -	if (cap == IOMMU_CAP_CACHE_COHERENCY)
+> +	switch (cap) {
+> +	case IOMMU_CAP_CACHE_COHERENCY:
+>  		return domain_update_iommu_snooping(NULL) == 1;
+> -	if (cap == IOMMU_CAP_INTR_REMAP)
+> +	case IOMMU_CAP_INTR_REMAP:
+>  		return irq_remapping_enabled == 1;
+> +	case IOMMU_CAP_AUX_DOMAIN:
+> +		return scalable_mode_support();
+> +	case IOMMU_CAP_NOEXEC:
+> +	/* PASSTHROUGH */
+> +	default:
+> +		pr_info("Unsupported capability query %d\n", cap);
+> +		break;
 
-I haven't gotten deep enough into the series to see how it's used, but
-my gut reaction is that we don't need an enum, we just need some sort
-of pointer on the mdev that points to an iommu_parent, which indicates
-the root of our IOMMU based isolation, or is NULL, which indicates we
-use vendor defined isolation as we have now.
-
-> One side note to Alex - with multiple domain extension in IOMMU layer,
-> this version combines IOMMU-capable usages in VFIO: PASID-based (as 
-> in scalable iov) and RID-based (as the usage of mdev wrapper on any 
-> device). Both cases share the common path - just binding the domain to the
-> parent device of mdev. IOMMU layer will handle two cases differently later. 
-
-Good, I'm glad you've considered the regular (RID) IOMMU domain and not
-just the new aux domain.  Thanks,
+Please don't do this, there's no reason to be noisy about a query of a
+capability that VT-d doesn't know about.  We implement capabilities
+exactly so that relevant drivers can expose a feature and others can
+happily (and quietly) ignore them.  Thanks,
 
 Alex
