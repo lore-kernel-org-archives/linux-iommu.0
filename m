@@ -1,58 +1,75 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v2 03/10] iommu/amd: Add default branch in
-	amd_iommu_capable()
-Date: Wed, 5 Sep 2018 13:37:03 -0600
-Message-ID: <20180905133703.331c0c17@t450s.home>
-References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-	<20180830040922.30426-4-baolu.lu@linux.intel.com>
+From: Rob Herring <robh@kernel.org>
+Subject: [PATCH 00/21] DT cpu node iterator
+Date: Wed,  5 Sep 2018 14:37:17 -0500
+Message-ID: <20180905193738.19325-1-robh@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180830040922.30426-4-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org, Rich Felker <dalias@libc.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-sh@vger.kernel.org, Vitaly Bordug <vitb@kernel.crashing.org>, Palmer Dabbelt <palmer@sifive.com>, Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, "H. Peter Anvin" <hpa@zytor.com>, linux-riscv@lists.infradead.org, Frank Rowand <frowand.list@gmail.com>, Thomas Gleixner <tglx@linutronix.de>, Jonas Bonn <jonas@southpole.se>, linux-c6x-dev@linux-c6x.org, Yoshinori Sato <ysato@users.sourceforge.jp>, Michael Ellerman <mpe@ellerman.id.au>, Magnus Damm <magnus.damm@gmail.com>, Russell King <linux@armlinux.org.uk>, linux-clk@vger.kernel.org, Ingo Molnar <mingo@redhat.com>, Mark Salter <msalter@redhat.com>, Albert Ou <aou@eecs.berkeley.edu>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Aur
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 30 Aug 2018 12:09:15 +0800
-Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
-
-> Otherwise, there will be a build warning:
-> 
-> drivers/iommu/amd_iommu.c:3083:2: warning: enumeration value
-> 'IOMMU_CAP_AUX_DOMAIN' not handled in switch [-Wswitch]
-> 
-> There is no functional change.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  drivers/iommu/amd_iommu.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 4e04fff23977..237ae6db4cfd 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -3077,6 +3077,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
->  		return (irq_remapping_enabled == 1);
->  	case IOMMU_CAP_NOEXEC:
->  		return false;
-> +	default:
-> +		break;
->  	}
->  
->  	return false;
-
-Seems like a bug fix that doesn't need to be part of this RFC, send it
-separately.  Thanks,
-
-Alex
+VGhpcyBzZXJpZXMgYWRkcyBhbiBpdGVyYXRvciBmb3IgY3B1IG5vZGVzIGFuZCBjb252ZXJ0cyB1
+c2VycyBvdmVyIHRvIHVzZQppdCBvciBvZl9nZXRfY3B1X25vZGUgaW4gc29tZSBjYXNlcy4gVGhp
+cyBhbGxvd3MgdXMgdG8gcmVtb3ZlIHRoZQpkZXBlbmRlbmN5IG9uIGRldmljZV90eXBlIHByb3Bl
+cnR5IGZvciBjcHUgbm9kZXMgdGhvdWdoIHJlbW92aW5nIHRoYXQKZnJvbSBEVFMgZmlsZXMgd2ls
+bCBoYXZlIHRvIHdhaXQgZm9yIHNvbWUgdGltZS4gSW4gc29tZSBjYXNlcywgdGhpcyBtYWtlcwp0
+aGUgRFQgc2VhcmNoIG1vcmUgc3RyaWN0IGJ5IG9ubHkgbG9va2luZyBpbiAvY3B1cyBjaGlsZCBu
+b2RlcyByYXRoZXIKdGhhbiBhbnkgbm9kZSB3aXRoIHRoZSBkZXZpY2VfdHlwZSA9PSBjcHUuIFRo
+ZSBpdGVyYXRvciBhbHNvIGhvbm9ycyB0aGUKc3RhdHVzIHByb3BlcnR5IHdoaWNoIGlzIG9mdGVu
+IGZvcmdvdHRlbi4KCkkndmUgb25seSB0ZXN0ZWQgb24gQVJNIHVuZGVyIFFFTVUgYW5kIGNvbXBp
+bGVkIHBvd2VycGMuCgpSb2IKClJvYiBIZXJyaW5nICgyMSk6CiAgb2Y6IEFkZCBjcHUgbm9kZSBp
+dGVyYXRvciBmb3JfZWFjaF9vZl9jcHVfbm9kZSgpCiAgb2Y6IFN1cHBvcnQgbWF0Y2hpbmcgY3B1
+IG5vZGVzIHdpdGggbm8gJ3JlZycgcHJvcGVydHkKICBBUk06IHVzZSBmb3JfZWFjaF9vZl9jcHVf
+bm9kZSBpdGVyYXRvcgogIEFSTTogdG9wb2xvZ3k6IHJlbW92ZSB1bm5lZWRlZCBjaGVjayBmb3Ig
+L2NwdXMgbm9kZQogIEFSTTogc2htb2JpbGU6IHVzZSBmb3JfZWFjaF9vZl9jcHVfbm9kZSBpdGVy
+YXRvcgogIGFybTY0OiB1c2UgZm9yX2VhY2hfb2ZfY3B1X25vZGUgaXRlcmF0b3IKICBjNng6IHVz
+ZSBmb3JfZWFjaF9vZl9jcHVfbm9kZSBpdGVyYXRvcgogIG1pY3JvYmxhemU6IGdldCBjcHUgbm9k
+ZSB3aXRoIG9mX2dldF9jcHVfbm9kZQogIG5pb3MyOiBnZXQgY3B1IG5vZGUgd2l0aCBvZl9nZXRf
+Y3B1X25vZGUKICBvcGVucmlzYzogdXNlIGZvcl9lYWNoX29mX2NwdV9ub2RlIGl0ZXJhdG9yCiAg
+cG93ZXJwYzogdXNlIGZvcl9lYWNoX29mX2NwdV9ub2RlIGl0ZXJhdG9yCiAgcG93ZXJwYzogNHh4
+OiBnZXQgY3B1IG5vZGUgd2l0aCBvZl9nZXRfY3B1X25vZGUKICBwb3dlcnBjOiA4eHg6IGdldCBj
+cHUgbm9kZSB3aXRoIG9mX2dldF9jcHVfbm9kZQogIHJpc2N2OiB1c2UgZm9yX2VhY2hfb2ZfY3B1
+X25vZGUgaXRlcmF0b3IKICBTSDogdXNlIGZvcl9lYWNoX29mX2NwdV9ub2RlIGl0ZXJhdG9yCiAg
+eDg2OiBEVDogdXNlIGZvcl9lYWNoX29mX2NwdV9ub2RlIGl0ZXJhdG9yCiAgY2xrOiBtdmVidTog
+dXNlIGZvcl9lYWNoX29mX2NwdV9ub2RlIGl0ZXJhdG9yCiAgZWRhYzogY3BjOTI1OiB1c2UgZm9y
+X2VhY2hfb2ZfY3B1X25vZGUgaXRlcmF0b3IKICBpb21tdTogZnNsX3BhbXU6IHVzZSBmb3JfZWFj
+aF9vZl9jcHVfbm9kZSBpdGVyYXRvcgogIG9mOiB1c2UgZm9yX2VhY2hfb2ZfY3B1X25vZGUgaXRl
+cmF0b3IKICBmYmRldjogZnNsLWRpdTogZ2V0IGNwdSBub2RlIHdpdGggb2ZfZ2V0X2NwdV9ub2Rl
+CgogYXJjaC9hcm0va2VybmVsL2RldnRyZWUuYyAgICAgICAgICAgICAgICAgfCAgNSArLS0KIGFy
+Y2gvYXJtL2tlcm5lbC90b3BvbG9neS5jICAgICAgICAgICAgICAgIHwgIDYgLS0tCiBhcmNoL2Fy
+bS9tYWNoLXNobW9iaWxlL3BtLXJjYXItZ2VuMi5jICAgICB8ICA4ICstLS0KIGFyY2gvYXJtL21h
+Y2gtc2htb2JpbGUvcG0tcm1vYmlsZS5jICAgICAgIHwgIDIgKy0KIGFyY2gvYXJtL21hY2gtc2ht
+b2JpbGUvdGltZXIuYyAgICAgICAgICAgIHwgMTAgKy0tLS0KIGFyY2gvYXJtNjQva2VybmVsL3Nt
+cC5jICAgICAgICAgICAgICAgICAgIHwgIDIgKy0KIGFyY2gvYzZ4L2tlcm5lbC9zZXR1cC5jICAg
+ICAgICAgICAgICAgICAgIHwgMTEgKystLS0KIGFyY2gvbWljcm9ibGF6ZS9rZXJuZWwvY3B1L2Nw
+dWluZm8uYyAgICAgIHwgIDQgKy0KIGFyY2gvbmlvczIva2VybmVsL2NwdWluZm8uYyAgICAgICAg
+ICAgICAgIHwgIDQgKy0KIGFyY2gvb3BlbnJpc2Mva2VybmVsL3NldHVwLmMgICAgICAgICAgICAg
+IHwgIDMgKy0KIGFyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvNHh4L3NvYy5jICAgICAgICAgIHwgIDIg
+Ky0KIGFyY2gvcG93ZXJwYy9wbGF0Zm9ybXMvOHh4L204eHhfc2V0dXAuYyAgIHwgIDUgKystCiBh
+cmNoL3Bvd2VycGMvcGxhdGZvcm1zL3Bvd2VybWFjL2ZlYXR1cmUuYyB8IDUxICsrKysrKysrLS0t
+LS0tLS0tLS0tLS0tCiBhcmNoL3Bvd2VycGMvcGxhdGZvcm1zL3Bvd2VybWFjL3NldHVwLmMgICB8
+IDE1ICsrKy0tLS0KIGFyY2gvcmlzY3Yva2VybmVsL3NtcGJvb3QuYyAgICAgICAgICAgICAgIHwg
+IDIgKy0KIGFyY2gvc2gvYm9hcmRzL29mLWdlbmVyaWMuYyAgICAgICAgICAgICAgIHwgIDIgKy0K
+IGFyY2gveDg2L2tlcm5lbC9kZXZpY2V0cmVlLmMgICAgICAgICAgICAgIHwgIDIgKy0KIGRyaXZl
+cnMvY2xrL212ZWJ1L2Nsay1jcHUuYyAgICAgICAgICAgICAgIHwgIDQgKy0KIGRyaXZlcnMvZWRh
+Yy9jcGM5MjVfZWRhYy5jICAgICAgICAgICAgICAgIHwgMjAgKy0tLS0tLS0tCiBkcml2ZXJzL2lv
+bW11L2ZzbF9wYW11LmMgICAgICAgICAgICAgICAgICB8ICAyICstCiBkcml2ZXJzL29mL2Jhc2Uu
+YyAgICAgICAgICAgICAgICAgICAgICAgICB8IDQzICsrKysrKysrKysrKysrKysrKy0KIGRyaXZl
+cnMvb2Yvb2ZfbnVtYS5jICAgICAgICAgICAgICAgICAgICAgIHwgMTUgKy0tLS0tLQogZHJpdmVy
+cy92aWRlby9mYmRldi9mc2wtZGl1LWZiLmMgICAgICAgICAgfCAgMiArLQogaW5jbHVkZS9saW51
+eC9vZi5oICAgICAgICAgICAgICAgICAgICAgICAgfCAxMSArKysrKwogMjQgZmlsZXMgY2hhbmdl
+ZCwgMTExIGluc2VydGlvbnMoKyksIDEyMCBkZWxldGlvbnMoLSkKCi0tCjIuMTcuMQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGlu
+ZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVl
+ZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
