@@ -1,20 +1,12 @@
-From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
-Date: Wed, 5 Sep 2018 11:15:37 +0800
-Message-ID: <5B8F4A59.20004@huawei.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
-	<5B83B11E.7010807@huawei.com>
-	<1d5b6529-4e5a-723c-3f1b-dd5a9adb490c@arm.com>
-	<5B89F818.7060300@huawei.com>
-	<3a961aff-e830-64bb-b6a9-14e08de1abf5@arm.com>
-	<5B8DEA15.7020404@huawei.com>
-	<bc27f902-4d12-21b7-b9e9-18bcae170503@arm.com>
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v4] iommu/iova: Optimise attempts to allocate iova from 32bit
+	address range
+Date: Wed,  5 Sep 2018 09:57:36 +0530
+Message-ID: <20180905042736.11904-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <bc27f902-4d12-21b7-b9e9-18bcae170503-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,60 +16,114 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
-Cc: "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, fanghao11 <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, =?UTF-8?B?57Gz57Gz?= <kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: Vadim.Lomovtsev-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Jan.Glauber-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, gklkml16-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tomasz.nowicki-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Robert.Richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+As an optimisation for PCI devices, there is always first attempt
+been made to allocate iova from SAC address range. This will lead
+to unnecessary attempts, when there are no free ranges
+available. Adding fix to track recently failed iova address size and
+allow further attempts, only if requested size is lesser than a failed
+size. The size is updated when any replenish happens.
 
-On 2018/9/4 18:57, Jean-Philippe Brucker wrote:
-> On 04/09/2018 03:12, Xu Zaibo wrote:
->> On 2018/9/3 18:34, Jean-Philippe Brucker wrote:
->>> On 01/09/18 03:23, Xu Zaibo wrote:
->>>> As one application takes a whole function while using VFIO-PCI, why do
->>>> the application and the
->>>> function need to enable PASID capability? (Since just one I/O page table
->>>> is enough for them.)
->>> At the moment the series doesn't provide support for SVA without PASID
->>> (on the I/O page fault path, 08/40). In addition the BIND ioctl could be
->>> used by the owner application to bind other processes (slaves) and
->>> perform sub-assignment. But that feature is incomplete because we don't
->>> send stop_pasid notification to the owner when a slave dies.
->>>
->> So, Could I understand like this?
->>
->>       1. While the series are finished well, VFIO-PCI device can be held
->> by only one process
->>           through binding IOCTL command without PASID (without PASID
->> being exposed user space).
-> It could, but isn't supported at the moment. In addition to adding
-> support in the I/O page fault code, we'd also need to update the VFIO
-> API. Currently a VFIO_TYPE1 domain always supports the MAP/UNMAP ioctl.
-> The case you describe isn't compatible with MAP/UNMAP, since the process
-> manages the shared address space with mmap or malloc. We'd probably need
-> to introduce a new VFIO IOMMU type, in which case the bind could be
-> performed implicitly when the process does VFIO_SET_IOMMU. Then the
-> process wouldn't need to send an additional BIND IOCTL.
-ok. got it.  This is the legacy mode, so all the VFIO APIs are kept 
-unchanged?
->>       2. While using VFIO-PCI device to support multiple processes with
->> SVA series, a primary
->>           process with multiple secondary processes must be deployed just
->> like DPDK(https://www.dpdk.org/).
->>           And, the PASID still has to be exposed to user land.
-> Right. A third case, also implemented by this patch (and complete), is
-> the primary process simply doing a BIND for itself, and using the
-> returned PASID to share its own address space with the device.
->
-ok. But I am worried that the sulotion of one primary processes with 
-several secondary ones
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+---
+v4:
+    Rebsaed to 4.19-rc2
+v3:
+    Update with comments [3] from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-is a little bit limited. Maybe, users don't want to depend on the 
-primary process. :)
+[3] https://lkml.org/lkml/2018/8/13/116
 
+v2: update with comments [2] from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
+[2] https://lkml.org/lkml/2018/8/7/166
 
-Thanks,
-Zaibo
+v1: Based on comments from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+for patch [1]
 
-.
+[1] https://lkml.org/lkml/2018/4/19/780
+
+ drivers/iommu/iova.c | 22 +++++++++++++++-------
+ include/linux/iova.h |  1 +
+ 2 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 83fe2621effe..f8d3ba247523 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ 	iovad->granule = granule;
+ 	iovad->start_pfn = start_pfn;
+ 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
++	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+ 	iovad->flush_cb = NULL;
+ 	iovad->fq = NULL;
+ 	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+@@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 
+ 	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
+ 	if (free->pfn_hi < iovad->dma_32bit_pfn &&
+-	    free->pfn_lo >= cached_iova->pfn_lo)
++	    free->pfn_lo >= cached_iova->pfn_lo) {
+ 		iovad->cached32_node = rb_next(&free->node);
++		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
++	}
+ 
+ 	cached_iova = rb_entry(iovad->cached_node, struct iova, node);
+ 	if (free->pfn_lo >= cached_iova->pfn_lo)
+@@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
++	if (limit_pfn <= iovad->dma_32bit_pfn &&
++			size >= iovad->max32_alloc_size)
++		goto iova32_full;
++
+ 	curr = __get_cached_rbnode(iovad, limit_pfn);
+ 	curr_iova = rb_entry(curr, struct iova, node);
+ 	do {
+@@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 		curr_iova = rb_entry(curr, struct iova, node);
+ 	} while (curr && new_pfn <= curr_iova->pfn_hi);
+ 
+-	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+-		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+-		return -ENOMEM;
+-	}
++	if (limit_pfn < size || new_pfn < iovad->start_pfn)
++		goto iova32_full;
+ 
+ 	/* pfn_lo will point to size aligned address if size_aligned is set */
+ 	new->pfn_lo = new_pfn;
+@@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	__cached_rbnode_insert_update(iovad, new);
+ 
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+-
+-
+ 	return 0;
++
++iova32_full:
++	iovad->max32_alloc_size = size;
++	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
++	return -ENOMEM;
+ }
+ 
+ static struct kmem_cache *iova_cache;
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 928442dda565..0b93bf96693e 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -75,6 +75,7 @@ struct iova_domain {
+ 	unsigned long	granule;	/* pfn granularity for this domain */
+ 	unsigned long	start_pfn;	/* Lower limit for this domain */
+ 	unsigned long	dma_32bit_pfn;
++	unsigned long	max32_alloc_size; /* Size of last failed allocation */
+ 	struct iova	anchor;		/* rbtree lookup anchor */
+ 	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
+ 
+-- 
+2.18.0
