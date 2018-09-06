@@ -1,98 +1,60 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
-Date: Thu, 6 Sep 2018 18:06:37 +0100
-Message-ID: <289610e3-2633-e448-259c-194e6f2c2b52@arm.com>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
-	<2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
-	<e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
-	<9013df5a-02f9-55b8-eb5e-fad4be0a2c92@redhat.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
+Date: Thu, 6 Sep 2018 18:40:49 +0100
+Message-ID: <574a1792-7ac5-e4db-6eae-16ef700cba02@arm.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+ <20180511190641.23008-4-jean-philippe.brucker@arm.com>
+ <d785ec89-6743-d0f1-1a7f-85599a033e5b@redhat.com>
+ <20180905111835.7f3ae40e@jacob-builder>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9013df5a-02f9-55b8-eb5e-fad4be0a2c92-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20180905111835.7f3ae40e@jacob-builder>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Auger Eric <eric.auger@redhat.com>
+Cc: "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "xuzaibo@huawei.com" <xuzaibo@huawei.com>, "jonathan.cameron@huawei.com" <jonathan.cameron@huawei.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>, "joro@8bytes.org" <joro@8bytes.org>, "robdclark@gmail.com" <robdclark@gmail.com>, "bharatku@xilinx.com" <bharatku@xilinx.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "liudongdong3@huawei.com" <liudongdong3@huawei.com>, "rfranz@cavium.com" <rfranz@cavium.com>"devicetree@vger.kernel.org" <d>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/09/2018 14:14, Auger Eric wrote:
-> Hi Jean-Philippe,
+On 05/09/2018 19:18, Jacob Pan wrote:
+> On Wed, 5 Sep 2018 14:14:12 +0200
+> Auger Eric <eric.auger@redhat.com> wrote:
 > 
-> On 09/06/2018 02:42 PM, Jean-Philippe Brucker wrote:
->> On 06/09/2018 10:25, Auger Eric wrote:
->>>> +		mutex_lock(&fparam->lock);
->>>> +		list_add_tail(&evt_pending->list, &fparam->faults);
->>> same doubt as Yi Liu. You cannot rely on the userspace willingness to
->>> void the queue and deallocate this memory.
-> 
-> By the way I saw there is a kind of garbage collectors for faults which
-> wouldn't have received any responses. However I am not sure this removes
-> the concern of having the fault list on kernel side growing beyond
-> acceptable limits.
+>>> + *
+>>> + * On Arm and AMD IOMMUs, entry 0 of the PASID table can be used
+>>> to hold
+>>> + * non-PASID translations. In this case PASID 0 is reserved and
+>>> entry 0 points
+>>> + * to the io_pgtable base. On Intel IOMMU, the io_pgtable base
+>>> would be held in
+>>> + * the device table and PASID 0 would be available to the
+>>> allocator.
+>>> + */  
+>> very nice explanation
+> With the new Vt-d 3.0 spec., 2nd level IO page table base is no longer
+> held in the device context table. Instead it is held in the PASID table
+> entry pointed by the RID_PASID field in the device context entry. If
+> RID_PASID = 0, then it is the same as ARM and AMD IOMMUs.
+> You can refer to ch3.4.3 of the VT-d spec.
 
-How about per-device quotas? (https://lkml.org/lkml/2018/4/23/706 for
-reference) With PRI the IOMMU driver already sets per-device credits
-when initializing the device (pci_enable_pri), so if the device behaves
-properly it shouldn't send new page requests once the number of
-outstanding ones is maxed out.
+I could simplify that paragraph by removing the specific implementations:
 
-The stall mode of SMMU doesn't have per-device limit, and depending on
-the implementation it might be easy for one guest using stall to prevent
-other guests from receiving faults. For this reason we'll have to
-enforce a per-device stall quota in the SMMU driver, and immediately
-terminate faults that exceed this quota. We could easily do the same for
-PRI, if we don't trust devices to follow the spec. The difficult part is
-finding the right number of credits...
+"In some IOMMUs, entry 0 of the PASID table can be used to hold
+non-PASID translations. In this case PASID 0 is reserved and entry 0
+points to the io_pgtable base. In other IOMMUs the io_pgtable base is
+held in the device table and PASID 0 is available to the allocator."
 
->> Host device drivers that use this API to be notified on fault can't deal
->> with arch-specific event formats (SMMU event, Vt-d fault event, etc), so
->> the APIs should be arch-agnostic. Given that requirement, using a single
->> iommu_fault_event structure for both PRI and event queues made sense,
->> especially since the even queue can have stall events that look a lot
->> like PRI page requests.
-> I understand the data structure needs to be generic. Now I guess PRI
-> events and other standard translator error events (that can happen
-> without PRI) may have different characteristics in event fields,
-
-Right, an event contains more information than a PRI page request.
-Stage-2 fields (CLASS, S2, IPA, TTRnW) cannot be represented by
-iommu_fault_event at the moment. For precise emulation it might be
-useful to at least add the S2 flag (as a new iommu_fault_reason?), so
-that when the guest maps stage-1 to an invalid GPA, QEMU could for
-example inject an external abort.
-
-> queue
-> size, that may deserve to create different APIs and internal data
-> structs. Also this may help separating the concerns.
-
-It might duplicate them. If the consumer of the event report is a host
-device driver, the SMMU needs to report a "generic" iommu_fault_event,
-and if the consumer is VFIO it would report a specialized one
-
-> My remark also
-> stems from the fact the SMMU uses 2 different queues, whose size can
-> also be different.
-
-Hm, for PRI requests the kernel-userspace queue size should actually be
-the number of PRI credits for that device. Hadn't thought about it
-before, where do we pass that info to userspace? For fault events, the
-queue could be as big as the SMMU event queue, though using all that
-space might be wasteful. Non-stalled events should be rare and reporting
-them isn't urgent. Stalled ones would need the number of stall credits I
-mentioned above, which realistically will be a lot less than the SMMU
-event queue size. Given that a device will use either PRI or stall but
-not both, I still think events and PRI could go through the same queue.
+I guess in Linux there isn't any reason to set RID_PASID to a non-zero
+value? Otherwise the iommu-sva allocator will need minor changes.
 
 Thanks,
 Jean
