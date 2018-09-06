@@ -1,161 +1,59 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 03/12] iommu/vt-d: Move page table helpers into header
-Date: Thu, 6 Sep 2018 10:52:00 +0800
-Message-ID: <08966280-44db-a9a8-bc54-93f698c87823@linux.intel.com>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [PATCH v2 02/12] iommu/vt-d: Manage scalalble mode PASID tables
+Date: Thu, 6 Sep 2018 02:52:32 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2BBC@SHSMSX101.ccr.corp.intel.com>
 References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
- <20180830013524.28743-4-baolu.lu@linux.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D1912F2A9F@SHSMSX101.ccr.corp.intel.com>
+ <20180830013524.28743-3-baolu.lu@linux.intel.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D1912F2A85@SHSMSX101.ccr.corp.intel.com>
+ <44298d5c-5720-a382-07d1-a90a072ff24b@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2A9F@SHSMSX101.ccr.corp.intel.com>
+In-Reply-To: <44298d5c-5720-a382-07d1-a90a072ff24b@linux.intel.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: baolu.lu@linux.intel.com, "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On 09/06/2018 10:15 AM, Tian, Kevin wrote:
->> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
->> Sent: Thursday, August 30, 2018 9:35 AM
->>
->> So that they could also be used in other source files.
->>
->> Cc: Ashok Raj <ashok.raj@intel.com>
->> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Cc: Kevin Tian <kevin.tian@intel.com>
->> Cc: Liu Yi L <yi.l.liu@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Ashok Raj <ashok.raj@intel.com>
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-
-Thank you, Kevin.
-
-Best regards,
-Lu Baolu
-
-> 
->> ---
->>   drivers/iommu/intel-iommu.c | 43 -------------------------------------
->>   include/linux/intel-iommu.h | 43
->> +++++++++++++++++++++++++++++++++++++
->>   2 files changed, 43 insertions(+), 43 deletions(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index b0da4f765274..93cde957adc7 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -315,49 +315,6 @@ static inline void context_clear_entry(struct
->> context_entry *context)
->>   	context->hi = 0;
->>   }
->>
->> -/*
->> - * 0: readable
->> - * 1: writable
->> - * 2-6: reserved
->> - * 7: super page
->> - * 8-10: available
->> - * 11: snoop behavior
->> - * 12-63: Host physcial address
->> - */
->> -struct dma_pte {
->> -	u64 val;
->> -};
->> -
->> -static inline void dma_clear_pte(struct dma_pte *pte)
->> -{
->> -	pte->val = 0;
->> -}
->> -
->> -static inline u64 dma_pte_addr(struct dma_pte *pte)
->> -{
->> -#ifdef CONFIG_64BIT
->> -	return pte->val & VTD_PAGE_MASK;
->> -#else
->> -	/* Must have a full atomic 64-bit read */
->> -	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
->> -#endif
->> -}
->> -
->> -static inline bool dma_pte_present(struct dma_pte *pte)
->> -{
->> -	return (pte->val & 3) != 0;
->> -}
->> -
->> -static inline bool dma_pte_superpage(struct dma_pte *pte)
->> -{
->> -	return (pte->val & DMA_PTE_LARGE_PAGE);
->> -}
->> -
->> -static inline int first_pte_in_page(struct dma_pte *pte)
->> -{
->> -	return !((unsigned long)pte & ~VTD_PAGE_MASK);
->> -}
->> -
->>   /*
->>    * This domain is a statically identity mapping domain.
->>    *	1. This domain creats a static 1:1 mapping to all usable memory.
->> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
->> index 2173ae35f1dc..41791903a5e3 100644
->> --- a/include/linux/intel-iommu.h
->> +++ b/include/linux/intel-iommu.h
->> @@ -501,6 +501,49 @@ static inline void __iommu_flush_cache(
->>   		clflush_cache_range(addr, size);
->>   }
->>
->> +/*
->> + * 0: readable
->> + * 1: writable
->> + * 2-6: reserved
->> + * 7: super page
->> + * 8-10: available
->> + * 11: snoop behavior
->> + * 12-63: Host physcial address
->> + */
->> +struct dma_pte {
->> +	u64 val;
->> +};
->> +
->> +static inline void dma_clear_pte(struct dma_pte *pte)
->> +{
->> +	pte->val = 0;
->> +}
->> +
->> +static inline u64 dma_pte_addr(struct dma_pte *pte)
->> +{
->> +#ifdef CONFIG_64BIT
->> +	return pte->val & VTD_PAGE_MASK;
->> +#else
->> +	/* Must have a full atomic 64-bit read */
->> +	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
->> +#endif
->> +}
->> +
->> +static inline bool dma_pte_present(struct dma_pte *pte)
->> +{
->> +	return (pte->val & 3) != 0;
->> +}
->> +
->> +static inline bool dma_pte_superpage(struct dma_pte *pte)
->> +{
->> +	return (pte->val & DMA_PTE_LARGE_PAGE);
->> +}
->> +
->> +static inline int first_pte_in_page(struct dma_pte *pte)
->> +{
->> +	return !((unsigned long)pte & ~VTD_PAGE_MASK);
->> +}
->> +
->>   extern struct dmar_drhd_unit * dmar_find_matched_drhd_unit(struct
->> pci_dev *dev);
->>   extern int dmar_find_matched_atsr_unit(struct pci_dev *dev);
->>
->> --
->> 2.17.1
-> 
-> 
+PiBGcm9tOiBMdSBCYW9sdSBbbWFpbHRvOmJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbV0NCj4gU2Vu
+dDogVGh1cnNkYXksIFNlcHRlbWJlciA2LCAyMDE4IDEwOjQ2IEFNDQo+DQpbLi4uXSANCj4gPj4g
+QEAgLTE0Myw4ICsxNDIsOSBAQCBpbnQgaW50ZWxfcGFzaWRfYWxsb2NfdGFibGUoc3RydWN0IGRl
+dmljZSAqZGV2KQ0KPiA+PiAgIAkJcmV0dXJuIC1FTk9NRU07DQo+ID4+ICAgCUlOSVRfTElTVF9I
+RUFEKCZwYXNpZF90YWJsZS0+ZGV2KTsNCj4gPj4NCj4gPj4gLQlzaXplID0gc2l6ZW9mKHN0cnVj
+dCBwYXNpZF9lbnRyeSk7DQo+ID4+ICsJc2l6ZSA9IHNpemVvZihzdHJ1Y3QgcGFzaWRfZGlyX2Vu
+dHJ5KTsNCj4gPj4gICAJY291bnQgPSBtaW5fdChpbnQsIHBjaV9tYXhfcGFzaWRzKHRvX3BjaV9k
+ZXYoZGV2KSksDQo+ID4+IGludGVsX3Bhc2lkX21heF9pZCk7DQo+ID4+ICsJY291bnQgPj49IFBB
+U0lEX1BERV9TSElGVDsNCj4gPj4gICAJb3JkZXIgPSBnZXRfb3JkZXIoc2l6ZSAqIGNvdW50KTsN
+Cj4gPj4gICAJcGFnZXMgPSBhbGxvY19wYWdlc19ub2RlKGluZm8tPmlvbW11LT5ub2RlLA0KPiA+
+PiAgIAkJCQkgR0ZQX0FUT01JQyB8IF9fR0ZQX1pFUk8sDQo+ID4+IEBAIC0xNTQsNyArMTU0LDcg
+QEAgaW50IGludGVsX3Bhc2lkX2FsbG9jX3RhYmxlKHN0cnVjdCBkZXZpY2UgKmRldikNCj4gPj4N
+Cj4gPj4gICAJcGFzaWRfdGFibGUtPnRhYmxlID0gcGFnZV9hZGRyZXNzKHBhZ2VzKTsNCj4gPj4g
+ICAJcGFzaWRfdGFibGUtPm9yZGVyID0gb3JkZXI7DQo+ID4+IC0JcGFzaWRfdGFibGUtPm1heF9w
+YXNpZCA9IGNvdW50Ow0KPiA+PiArCXBhc2lkX3RhYmxlLT5tYXhfcGFzaWQgPSBjb3VudCA8PCBQ
+QVNJRF9QREVfU0hJRlQ7DQo+ID4NCj4gPiBhcmUgeW91IHN1cmUgb2YgdGhhdCBjb3VudCBpcyBQ
+REVfU0hJRlQgYWxpZ25lZD8gb3RoZXJ3aXNlID4+DQo+ID4gdGhlbiA8PCB3b3VsZCBsb3NlIHNv
+bWUgYml0cy4gSWYgc3VyZSwgdGhlbiBiZXR0ZXIgYWRkIHNvbWUgY2hlY2suDQo+IA0KPiBJIGFt
+IG1ha2luZyB0aGUgbWF4X3Bhc2lkIFBERV9TSElGVCBhbGlnbmVkIGFzIHRoZSByZXN1bHQgb2Yg
+c2hpZnQNCj4gb3BlcmF0aW9ucy4NCj4gDQoNCmVhcmxpZXI6DQo+ID4+ICAgCWNvdW50ID0gbWlu
+X3QoaW50LCBwY2lfbWF4X3Bhc2lkcyh0b19wY2lfZGV2KGRldikpLA0KPiA+PiBpbnRlbF9wYXNp
+ZF9tYXhfaWQpOw0KDQpzbyB5b3UgZGVjaWRlZCB0byB0cnVuY2F0ZSBjb3VudCB0byBiZSBQREVf
+U0hJRlQgYWxpZ25lZC4gSXMgUEFTSUQNCnZhbHVlIHVzZXIgY29uZmlndXJhYmxlPyBpZiBub3Qs
+IHRoZW4gaXQncyBmaW5lLg0KDQo+ID4NCj4gPj4NCj4gPj4gICBhdHRhY2hfb3V0Og0KPiA+PiAg
+IAlkZXZpY2VfYXR0YWNoX3Bhc2lkX3RhYmxlKGluZm8sIHBhc2lkX3RhYmxlKTsNCj4gPj4gQEAg
+LTE2MiwxNCArMTYyLDMzIEBAIGludCBpbnRlbF9wYXNpZF9hbGxvY190YWJsZShzdHJ1Y3QgZGV2
+aWNlICpkZXYpDQo+ID4+ICAgCXJldHVybiAwOw0KPiA+PiAgIH0NCj4gPj4NCj4gPj4gKy8qIEdl
+dCBQUkVTRU5UIGJpdCBvZiBhIFBBU0lEIGRpcmVjdG9yeSBlbnRyeS4gKi8NCj4gPj4gK3N0YXRp
+YyBpbmxpbmUgYm9vbA0KPiA+PiArcGFzaWRfcGRlX2lzX3ByZXNlbnQoc3RydWN0IHBhc2lkX2Rp
+cl9lbnRyeSAqcGRlKQ0KPiA+PiArew0KPiA+PiArCXJldHVybiBSRUFEX09OQ0UocGRlLT52YWwp
+ICYgUEFTSURfUFRFX1BSRVNFTlQ7DQo+ID4NCj4gPiBjdXJpb3VzIHdoeSBhZGRpbmcgUkVBRF9P
+TkNFIHNwZWNpZmljYWxseSBmb3IgUEFTSUQgc3RydWN0dXJlLA0KPiA+IGJ1dCBub3QgdXNlZCBm
+b3IgYW55IG90aGVyIGV4aXN0aW5nIHZ0ZCBzdHJ1Y3R1cmVzPyBJcyBpdCB0byBhZGRyZXNzDQo+
+ID4gc29tZSBzcGVjaWZpYyByZXF1aXJlbWVudCBvbiBQQVNJRCBzdHJ1Y3R1cmUgYXMgZGVmaW5l
+ZCBpbiBzcGVjPw0KPiANCj4gUkVBRC9XUklURV9PTkNFIGFyZSB1c2VkIGluIHBhc2lkIGVudHJ5
+IHJlYWQvd3JpdGUgdG8gcHJldmVudCB0aGUNCj4gY29tcGlsZXIgZnJvbSBtZXJnaW5nLCByZWZl
+dGNoaW5nIG9yIHJlb3JkZXJpbmcgc3VjY2Vzc2l2ZSBpbnN0YW5jZXMgb2YNCj4gcmVhZC93cml0
+ZS4NCj4gDQoNCnRoYXQncyBmaW5lLiBJJ20ganVzdCBjdXJpb3VzIHdoeSB0aGlzIGlzIHRoZSBm
+aXJzdCB1c2VyIG9mIHN1Y2ggbWFjcm9zDQppbiBpbnRlbC1pb21tdSBkcml2ZXIuIEV2ZW4gYmVm
+b3JlIHdpdGggZWNzIHdlIGhhdmUgUEFTSUQgdGFibGUgdG9vLg0KDQpUaGFua3MNCktldmluDQo=
