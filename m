@@ -1,52 +1,89 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
-Date: Thu, 6 Sep 2018 13:45:36 +0100
-Message-ID: <f0b317d5-e2e9-5478-952c-05e8b97bd68b@arm.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
-	<bf42affd-e9d0-e4fc-6d28-f3c3f7795348@redhat.com>
-	<03d31ba5-1eda-ea86-8c0c-91d14c86fe83@arm.com>
-	<ed39159c-087e-7e56-7d29-d1de9fa1677f@amd.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Thu, 6 Sep 2018 15:14:25 +0200
+Message-ID: <9013df5a-02f9-55b8-eb5e-fad4be0a2c92@redhat.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+ <2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
+ <e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ed39159c-087e-7e56-7d29-d1de9fa1677f-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Jean Delvare <khali@linux-fr.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Raj Ashok <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDYvMDkvMjAxOCAxMjoxMiwgQ2hyaXN0aWFuIEvDtm5pZyB3cm90ZToKPiBBbSAwNi4wOS4y
-MDE4IHVtIDEzOjA5IHNjaHJpZWIgSmVhbi1QaGlsaXBwZSBCcnVja2VyOgo+PiBIaSBFcmljLAo+
-Pgo+PiBUaGFua3MgZm9yIHJldmlld2luZwo+Pgo+PiBPbiAwNS8wOS8yMDE4IDEyOjI5LCBBdWdl
-ciBFcmljIHdyb3RlOgo+Pj4+ICtpbnQgaW9tbXVfc3ZhX2RldmljZV9pbml0KHN0cnVjdCBkZXZp
-Y2UgKmRldiwgdW5zaWduZWQgbG9uZyBmZWF0dXJlcywKPj4+PiArwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgdW5zaWduZWQgaW50IG1heF9wYXNpZCkKPj4+IHdoYXQgYWJvdXQgbWluX3Bhc2lk
-Pwo+PiBObyBvbmUgYXNrZWQgZm9yIGl0Li4uIFRoZSBtYXhfcGFzaWQgcGFyYW1ldGVyIGlzIGhl
-cmUgZm9yIGRyaXZlcnMgdGhhdAo+PiBoYXZlIHZlbmRvci1zcGVjaWZpYyBQQVNJRCBzaXplIGxp
-bWl0cywgc3VjaCBhcyBBTUQgS0ZEIChzZWUKPj4ga2ZkX2lvbW11X2RldmljZV9pbml0IGFuZAo+
-PiBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNoLzk5ODkzMDcvIzIxMzg5NTcxKS4g
-QnV0IGluIG1vc3QgY2FzZXMKPj4gdGhlIFBBU0lEIHNpemUgd2lsbCBvbmx5IGRlcGVuZCBvbiB0
-aGUgUENJIFBBU0lEIGNhcGFiaWxpdHkgYW5kIHRoZQo+PiBJT01NVSBsaW1pdHMsIGJvdGgga25v
-d24gYnkgdGhlIElPTU1VIGRyaXZlciwgc28gZGV2aWNlIGRyaXZlcnMgd29uJ3QKPj4gaGF2ZSB0
-byBzZXQgbWF4X3Bhc2lkLgo+Pgo+PiBJT01NVSBkcml2ZXJzIG5lZWQgdG8gc2V0IG1pbl9wYXNp
-ZCBpbiB0aGUgc3ZhX2RldmljZV9pbml0IGNhbGxiYWNrCj4+IGJlY2F1c2UgaXQgbWF5IGJlIGVp
-dGhlciAxIChlLmcuIEFybSB3aGVyZSBQQVNJRCAjMCBpcyByZXNlcnZlZCkgb3IgMAo+PiAoSW50
-ZWwgVnQtZCByZXYyKSwgYnV0IGF0IHRoZSBtb21lbnQgSSBjYW4ndCBzZWUgYSByZWFzb24gZm9y
-IGRldmljZQo+PiBkcml2ZXJzIHRvIG92ZXJyaWRlIG1pbl9wYXNpZAo+IAo+IFNvcnJ5IHRvIHJ1
-aW4geW91ciBkYXksIGJ1dCBpZiBJJ20gbm90IGNvbXBsZXRlbHkgbWlzdGFrZW4gUEFTSUQgemVy
-byBpcwo+IHJlc2VydmVkIGluIHRoZSBBTUQgS0ZEIGFzIHdlbGwuCgpIZWgsIGZhaXIgZW5vdWdo
-LiBJJ2xsIGFkZCB0aGUgbWluX3Bhc2lkIHBhcmFtZXRlcgoKVGhhbmtzLApKZWFuCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
-dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Jean-Philippe,
+
+On 09/06/2018 02:42 PM, Jean-Philippe Brucker wrote:
+> On 06/09/2018 10:25, Auger Eric wrote:
+>>> +		mutex_lock(&fparam->lock);
+>>> +		list_add_tail(&evt_pending->list, &fparam->faults);
+>> same doubt as Yi Liu. You cannot rely on the userspace willingness to
+>> void the queue and deallocate this memory.
+
+By the way I saw there is a kind of garbage collectors for faults which
+wouldn't have received any responses. However I am not sure this removes
+the concern of having the fault list on kernel side growing beyond
+acceptable limits.
+>>
+>> SMMUv3 holds a queue of events whose size is implementation dependent.
+>> I think such a queue should be available at SW level and its size should
+>> be negotiated.
+> 
+> Note that this fault API can also be used by host device drivers that
+> want to be notified on fault, in which case a direct callback seems
+> easier to use, and perhaps more efficient than an intermediate queue.
+
+> 
+> When injecting faults into userspace it makes sense to batch events, to
+> avoid context switches. Even though that queue management should
+> probably be done by VFIO, the IOMMU API has to help in some way, at
+> least to tell VFIO when the IOMMU driver is done processing a batch of
+> event.
+Yes I am currently investigating the usage of a kfifo in
+vfio_iommu_type1, filled by the direct callback.
+> 
+>> Note SMMU has separate queues for PRI and fault events. Here you use the
+>> same queue for all events. I don't know if it would make sense to have
+>> separate APIs?
+> 
+> Host device drivers that use this API to be notified on fault can't deal
+> with arch-specific event formats (SMMU event, Vt-d fault event, etc), so
+> the APIs should be arch-agnostic. Given that requirement, using a single
+> iommu_fault_event structure for both PRI and event queues made sense,
+> especially since the even queue can have stall events that look a lot
+> like PRI page requests.
+I understand the data structure needs to be generic. Now I guess PRI
+events and other standard translator error events (that can happen
+without PRI) may have different characteristics in event fields, queue
+size, that may deserve to create different APIs and internal data
+structs. Also this may help separating the concerns. My remark also
+stems from the fact the SMMU uses 2 different queues, whose size can
+also be different.
+
+Thanks
+
+Eric
+> 
+> Or do you mean separate APIs for recoverable and non-recoverable faults?
+> Using the same queue for PRI and stall event, and a separate one for
+> non-recoverable events?
+> 
+> Separate queues may be useful for the device driver scenario
+> (non-virtualization), where recoverable faults are handled by
+> io-pgfaults while non-recoverable ones could be reported directly to the
+> device driver. For this case I was thinking of adding a
+> multiple-consumer thing: both io-pgfaults and the device driver register
+> a fault handler. io-pgfault handles recoverable ones and what's left
+> goes to the device driver. This could also allow the device driver to be
+> notified when io-pgfault doesn't successfully handle a fault
+> (handle_mm_fault returns an error).
+> 
+> Thanks,
+> Jean
+> 
