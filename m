@@ -1,15 +1,22 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v16 4/5] dt-bindings: arm-smmu: Add bindings for qcom,
-	smmu-v2
-Date: Thu, 6 Sep 2018 09:22:16 +0530
-Message-ID: <CAFp+6iFstfn1LXh6m_XFZr8LfdUA7Yd3-bx+43-SM4TU3kPqXg@mail.gmail.com>
-References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
-	<20180830144541.17740-5-vivek.gautam@codeaurora.org>
+From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 13/40] vfio: Add support for Shared Virtual Addressing
+Date: Thu, 6 Sep 2018 15:26:40 +0800
+Message-ID: <5B90D6B0.300@huawei.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-14-jean-philippe.brucker@arm.com>
+	<5B83B11E.7010807@huawei.com>
+	<1d5b6529-4e5a-723c-3f1b-dd5a9adb490c@arm.com>
+	<5B89F818.7060300@huawei.com>
+	<3a961aff-e830-64bb-b6a9-14e08de1abf5@arm.com>
+	<5B8DEA15.7020404@huawei.com>
+	<bc27f902-4d12-21b7-b9e9-18bcae170503@arm.com>
+	<5B8F4A59.20004@huawei.com>
+	<b51107b8-a525-13ce-f4c3-d423b8502c27@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180830144541.17740-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <b51107b8-a525-13ce-f4c3-d423b8502c27-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,109 +26,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
+Cc: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, fanghao11 <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, =?UTF-8?B?57Gz57Gz?= <kenneth-lee-2012-H32Fclmsjq1BDgjK7y7TUQ@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
 
-On Thu, Aug 30, 2018 at 8:16 PM Vivek Gautam
-<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+On 2018/9/5 19:02, Jean-Philippe Brucker wrote:
+> On 05/09/2018 04:15, Xu Zaibo wrote:
+>>>>        1. While the series are finished well, VFIO-PCI device can be held
+>>>> by only one process
+>>>>            through binding IOCTL command without PASID (without PASID
+>>>> being exposed user space).
+>>> It could, but isn't supported at the moment. In addition to adding
+>>> support in the I/O page fault code, we'd also need to update the VFIO
+>>> API. Currently a VFIO_TYPE1 domain always supports the MAP/UNMAP ioctl.
+>>> The case you describe isn't compatible with MAP/UNMAP, since the process
+>>> manages the shared address space with mmap or malloc. We'd probably need
+>>> to introduce a new VFIO IOMMU type, in which case the bind could be
+>>> performed implicitly when the process does VFIO_SET_IOMMU. Then the
+>>> process wouldn't need to send an additional BIND IOCTL.
+>> ok. got it.  This is the legacy mode, so all the VFIO APIs are kept
+>> unchanged?
+> Yes, existing VFIO semantics are preserved
 >
-> Add bindings doc for Qcom's smmu-v2 implementation.
+>>>>        2. While using VFIO-PCI device to support multiple processes with
+>>>> SVA series, a primary
+>>>>            process with multiple secondary processes must be deployed just
+>>>> like DPDK(https://www.dpdk.org/).
+>>>>            And, the PASID still has to be exposed to user land.
+>>> Right. A third case, also implemented by this patch (and complete), is
+>>> the primary process simply doing a BIND for itself, and using the
+>>> returned PASID to share its own address space with the device.
+>>>
+>> ok. But I am worried that the sulotion of one primary processes with
+>> several secondary ones
+>>
+>> is a little bit limited. Maybe, users don't want to depend on the
+>> primary process. :)
+> I don't see a better way for vfio-pci, though. But more importantly, I
+> don't know of any users :) While the feature is great for testing new
+> hardware, and I've been using it for all kinds of stress testing, I
+> haven't received feedback from possible users in production settings
+> (DPDK etc) and can't speculate about what they'd prefer.
 >
-> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> ---
+At present, It seems no other way existing while being compatible with 
+current logic.
+Thank you.
 
-I removed your reviewed-by for this particular patch.
-Can you please consider giving your review if you find the changes okay now.
-Thanks.
-
-Best regards
-Vivek
-
->  .../devicetree/bindings/iommu/arm,smmu.txt         | 39 ++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index 8a6ffce12af5..a6504b37cc21 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -17,10 +17,16 @@ conditions.
->                          "arm,mmu-401"
->                          "arm,mmu-500"
->                          "cavium,smmu-v2"
-> +                        "qcom,smmu-v2"
->
->                    depending on the particular implementation and/or the
->                    version of the architecture implemented.
->
-> +                  Qcom SoCs must contain, as below, SoC-specific compatibles
-> +                  along with "qcom,smmu-v2":
-> +                  "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
-> +                  "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
-> +
->  - reg           : Base address and size of the SMMU.
->
->  - #global-interrupts : The number of global interrupts exposed by the
-> @@ -71,6 +77,22 @@ conditions.
->                    or using stream matching with #iommu-cells = <2>, and
->                    may be ignored if present in such cases.
->
-> +- clock-names:    List of the names of clocks input to the device. The
-> +                  required list depends on particular implementation and
-> +                  is as follows:
-> +                  - for "qcom,smmu-v2":
-> +                    - "bus": clock required for downstream bus access and
-> +                             for the smmu ptw,
-> +                    - "iface": clock required to access smmu's registers
-> +                               through the TCU's programming interface.
-> +                  - unspecified for other implementations.
-> +
-> +- clocks:         Specifiers for all clocks listed in the clock-names property,
-> +                  as per generic clock bindings.
-> +
-> +- power-domains:  Specifiers for power domains required to be powered on for
-> +                  the SMMU to operate, as per generic power domain bindings.
-> +
->  ** Deprecated properties:
->
->  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
-> @@ -137,3 +159,20 @@ conditions.
->                  iommu-map = <0 &smmu3 0 0x400>;
->                  ...
->          };
-> +
-> +       /* Qcom's arm,smmu-v2 implementation */
-> +       smmu4: iommu@d00000 {
-> +               compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
-> +               reg = <0xd00000 0x10000>;
-> +
-> +               #global-interrupts = <1>;
-> +               interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
-> +                            <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
-> +                            <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>;
-> +               #iommu-cells = <1>;
-> +               power-domains = <&mmcc MDSS_GDSC>;
-> +
-> +               clocks = <&mmcc SMMU_MDP_AXI_CLK>,
-> +                        <&mmcc SMMU_MDP_AHB_CLK>;
-> +               clock-names = "bus", "iface";
-> +       };
-> --
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
->
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Thanks,
+Zaibo
