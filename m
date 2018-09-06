@@ -1,60 +1,169 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v2 03/40] iommu/sva: Manage process address spaces
-Date: Thu, 6 Sep 2018 18:40:49 +0100
-Message-ID: <574a1792-7ac5-e4db-6eae-16ef700cba02@arm.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
- <20180511190641.23008-4-jean-philippe.brucker@arm.com>
- <d785ec89-6743-d0f1-1a7f-85599a033e5b@redhat.com>
- <20180905111835.7f3ae40e@jacob-builder>
+From: Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH 1/7] vfio/sdmdev: Add documents for WarpDrive framework
+Date: Thu, 6 Sep 2018 11:36:36 -0700
+Message-ID: <56f5f66d-f6d9-f4fa-40ca-e4a8bad170c1@infradead.org>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+ <20180903005204.26041-2-nek.in.cn@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20180905111835.7f3ae40e@jacob-builder>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180903005204.26041-2-nek.in.cn@gmail.com>
 Content-Language: en-US
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Auger Eric <eric.auger@redhat.com>
-Cc: "xieyisheng1@huawei.com" <xieyisheng1@huawei.com>, "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "xuzaibo@huawei.com" <xuzaibo@huawei.com>, "jonathan.cameron@huawei.com" <jonathan.cameron@huawei.com>, Will Deacon <Will.Deacon@arm.com>, "okaya@codeaurora.org" <okaya@codeaurora.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "yi.l.liu@intel.com" <yi.l.liu@intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>, "tn@semihalf.com" <tn@semihalf.com>, "joro@8bytes.org" <joro@8bytes.org>, "robdclark@gmail.com" <robdclark@gmail.com>, "bharatku@xilinx.com" <bharatku@xilinx.com>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "liudongdong3@huawei.com" <liudongdong3@huawei.com>, "rfranz@cavium.com" <rfranz@cavium.com>"devicetree@vger.kernel.org" <d>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>
+Cc: linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/09/2018 19:18, Jacob Pan wrote:
-> On Wed, 5 Sep 2018 14:14:12 +0200
-> Auger Eric <eric.auger@redhat.com> wrote:
+Hi,
+
+On 09/02/2018 05:51 PM, Kenneth Lee wrote:
+> From: Kenneth Lee <liguozhu@hisilicon.com>
 > 
->>> + *
->>> + * On Arm and AMD IOMMUs, entry 0 of the PASID table can be used
->>> to hold
->>> + * non-PASID translations. In this case PASID 0 is reserved and
->>> entry 0 points
->>> + * to the io_pgtable base. On Intel IOMMU, the io_pgtable base
->>> would be held in
->>> + * the device table and PASID 0 would be available to the
->>> allocator.
->>> + */  
->> very nice explanation
-> With the new Vt-d 3.0 spec., 2nd level IO page table base is no longer
-> held in the device context table. Instead it is held in the PASID table
-> entry pointed by the RID_PASID field in the device context entry. If
-> RID_PASID = 0, then it is the same as ARM and AMD IOMMUs.
-> You can refer to ch3.4.3 of the VT-d spec.
+> WarpDrive is a common user space accelerator framework.  Its main component
+> in Kernel is called sdmdev, Share Domain Mediated Device. It exposes
+> the hardware capabilities to the user space via vfio-mdev. So processes in
+> user land can obtain a "queue" by open the device and direct access the
+> hardware MMIO space or do DMA operation via VFIO interface.
+> 
+> WarpDrive is intended to be used with Jean Philippe Brucker's SVA
+> patchset to support multi-process. But This is not a must.  Without the
+> SVA patches, WarpDrive can still work for one process for every hardware
+> device.
+> 
+> This patch add detail documents for the framework.
+> 
+> Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
+> ---
+>  Documentation/00-INDEX                |   2 +
+>  Documentation/warpdrive/warpdrive.rst | 100 ++++
+>  Documentation/warpdrive/wd-arch.svg   | 728 ++++++++++++++++++++++++++
+>  3 files changed, 830 insertions(+)
+>  create mode 100644 Documentation/warpdrive/warpdrive.rst
+>  create mode 100644 Documentation/warpdrive/wd-arch.svg
 
-I could simplify that paragraph by removing the specific implementations:
+> diff --git a/Documentation/warpdrive/warpdrive.rst b/Documentation/warpdrive/warpdrive.rst
+> new file mode 100644
+> index 000000000000..6d2a5d1e08c4
+> --- /dev/null
+> +++ b/Documentation/warpdrive/warpdrive.rst
+> @@ -0,0 +1,100 @@
+> +Introduction of WarpDrive
+> +=========================
+> +
+> +*WarpDrive* is a general accelerator framework for user space. It intends to
+> +provide interface for the user process to send request to hardware
+> +accelerator without heavy user-kernel interaction cost.
+> +
+> +The *WarpDrive* user library is supposed to provide a pipe-based API, such as:
 
-"In some IOMMUs, entry 0 of the PASID table can be used to hold
-non-PASID translations. In this case PASID 0 is reserved and entry 0
-points to the io_pgtable base. In other IOMMUs the io_pgtable base is
-held in the device table and PASID 0 is available to the allocator."
+Do you say "is supposed to" because it doesn't do that (yet)?
+Or you could just change that to say:
 
-I guess in Linux there isn't any reason to set RID_PASID to a non-zero
-value? Otherwise the iommu-sva allocator will need minor changes.
+   The WarpDrive user library provides a pipe-based API, such as:
 
-Thanks,
-Jean
+
+> +        ::
+> +        int wd_request_queue(struct wd_queue *q);
+> +        void wd_release_queue(struct wd_queue *q);
+> +
+> +        int wd_send(struct wd_queue *q, void *req);
+> +        int wd_recv(struct wd_queue *q, void **req);
+> +        int wd_recv_sync(struct wd_queue *q, void **req);
+> +        int wd_flush(struct wd_queue *q);
+> +
+> +*wd_request_queue* creates the pipe connection, *queue*, between the
+> +application and the hardware. The application sends request and pulls the
+> +answer back by asynchronized wd_send/wd_recv, which directly interact with the
+> +hardware (by MMIO or share memory) without syscall.
+> +
+> +*WarpDrive* maintains a unified application address space among all involved
+> +accelerators.  With the following APIs: ::
+
+Seems like an extra '.' there.  How about:
+
+  accelerators with the following APIs: ::
+
+> +
+> +        int wd_mem_share(struct wd_queue *q, const void *addr,
+> +                         size_t size, int flags);
+> +        void wd_mem_unshare(struct wd_queue *q, const void *addr, size_t size);
+> +
+> +The referred process space shared by these APIs can be directly referred by the
+> +hardware. The process can also dedicate its whole process space with flags,
+> +*WD_SHARE_ALL* (not in this patch yet).
+> +
+> +The name *WarpDrive* is simply a cool and general name meaning the framework
+> +makes the application faster. As it will be explained in this text later, the
+> +facility in kernel is called *SDMDEV*, namely "Share Domain Mediated Device".
+> +
+> +
+> +How does it work
+> +================
+> +
+> +*WarpDrive* is built upon *VFIO-MDEV*. The queue is wrapped as *mdev* in VFIO.
+> +So memory sharing can be done via standard VFIO standard DMA interface.
+> +
+> +The architecture is illustrated as follow figure:
+> +
+> +.. image:: wd-arch.svg
+> +        :alt: WarpDrive Architecture
+> +
+> +Accelerator driver shares its capability via *SDMDEV* API: ::
+> +
+> +        vfio_sdmdev_register(struct vfio_sdmdev *sdmdev);
+> +        vfio_sdmdev_unregister(struct vfio_sdmdev *sdmdev);
+> +        vfio_sdmdev_wake_up(struct spimdev_queue *q);
+> +
+> +*vfio_sdmdev_register* is a helper function to register the hardware to the
+> +*VFIO_MDEV* framework. The queue creation is done by *mdev* creation interface.
+> +
+> +*WarpDrive* User library mmap the mdev to access its mmio space and shared
+
+s/mmio/MMIO/
+
+> +memory. Request can be sent to, or receive from, hardware in this mmap-ed
+> +space until the queue is full or empty.
+> +
+> +The user library can wait on the queue by ioctl(VFIO_SDMDEV_CMD_WAIT) the mdev
+> +if the queue is full or empty. If the queue status is changed, the hardware
+> +driver use *vfio_sdmdev_wake_up* to wake up the waiting process.
+> +
+> +
+> +Multiple processes support
+> +==========================
+> +
+> +In the latest mainline kernel (4.18) when this document is written,
+> +multi-process is not supported in VFIO yet.
+> +
+> +Jean Philippe Brucker has a patchset to enable it[1]_. We have tested it
+> +with our hardware (which is known as *D06*). It works well. *WarpDrive* rely
+> +on them to support multiple processes. If it is not enabled, *WarpDrive* can
+> +still work, but it support only one mdev for a process, which will share the
+> +same io map table with kernel. (But it is not going to be a security problem,
+> +since the user application cannot access the kernel address space)
+> +
+> +When multiprocess is support, mdev can be created based on how many
+> +hardware resource (queue) is available. Because the VFIO framework accepts only
+> +one open from one mdev iommu_group. Mdev become the smallest unit for process
+> +to use queue. And the mdev will not be released if the user process exist. So
+> +it will need a resource agent to manage the mdev allocation for the user
+> +process. This is not in this document's range.
+> +
+> +
+> +Legacy Mode Support
+> +===================
+> +For the hardware on which IOMMU is not support, WarpDrive can run on *NOIOMMU*
+> +mode. That require some update to the mdev driver, which is not included in
+> +this version yet.
+> +
+> +
+> +References
+> +==========
+> +.. [1] https://patchwork.kernel.org/patch/10394851/
+> +
+> +.. vim: tw=78
+
+thanks,
+-- 
+~Randy
