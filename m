@@ -1,101 +1,127 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH v2 08/12] iommu/vt-d: Pass pasid table to context mapping
-Date: Thu, 6 Sep 2018 03:17:52 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2C7A@SHSMSX101.ccr.corp.intel.com>
-References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
- <20180830013524.28743-9-baolu.lu@linux.intel.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v16 4/5] dt-bindings: arm-smmu: Add bindings for qcom,
+	smmu-v2
+Date: Thu, 6 Sep 2018 09:22:16 +0530
+Message-ID: <CAFp+6iFstfn1LXh6m_XFZr8LfdUA7Yd3-bx+43-SM4TU3kPqXg@mail.gmail.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
+	<20180830144541.17740-5-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180830013524.28743-9-baolu.lu@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180830144541.17740-5-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
-> Sent: Thursday, August 30, 2018 9:35 AM
-> 
-> So that the pasid related info, such as the pasid table and the
-> maximum of pasid could be used during setting up scalable mode
-> context.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Hi Rob,
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-
+On Thu, Aug 30, 2018 at 8:16 PM Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>
+> Add bindings doc for Qcom's smmu-v2 implementation.
+>
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 > ---
->  drivers/iommu/intel-iommu.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index c3bf2ccf094d..33642dd3d6ba 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1942,6 +1942,7 @@ static void domain_exit(struct dmar_domain
-> *domain)
-> 
->  static int domain_context_mapping_one(struct dmar_domain *domain,
->  				      struct intel_iommu *iommu,
-> +				      struct pasid_table *table,
->  				      u8 bus, u8 devfn)
->  {
->  	u16 did = domain->iommu_did[iommu->seq_id];
-> @@ -2064,6 +2065,7 @@ static int domain_context_mapping_one(struct
-> dmar_domain *domain,
->  struct domain_context_mapping_data {
->  	struct dmar_domain *domain;
->  	struct intel_iommu *iommu;
-> +	struct pasid_table *table;
->  };
-> 
->  static int domain_context_mapping_cb(struct pci_dev *pdev,
-> @@ -2072,25 +2074,31 @@ static int domain_context_mapping_cb(struct
-> pci_dev *pdev,
->  	struct domain_context_mapping_data *data = opaque;
-> 
->  	return domain_context_mapping_one(data->domain, data-
-> >iommu,
-> -					  PCI_BUS_NUM(alias), alias & 0xff);
-> +					  data->table, PCI_BUS_NUM(alias),
-> +					  alias & 0xff);
->  }
-> 
->  static int
->  domain_context_mapping(struct dmar_domain *domain, struct device
-> *dev)
->  {
-> +	struct domain_context_mapping_data data;
-> +	struct pasid_table *table;
->  	struct intel_iommu *iommu;
->  	u8 bus, devfn;
-> -	struct domain_context_mapping_data data;
-> 
->  	iommu = device_to_iommu(dev, &bus, &devfn);
->  	if (!iommu)
->  		return -ENODEV;
-> 
-> +	table = intel_pasid_get_table(dev);
+
+I removed your reviewed-by for this particular patch.
+Can you please consider giving your review if you find the changes okay now.
+Thanks.
+
+Best regards
+Vivek
+
+>  .../devicetree/bindings/iommu/arm,smmu.txt         | 39 ++++++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index 8a6ffce12af5..a6504b37cc21 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -17,10 +17,16 @@ conditions.
+>                          "arm,mmu-401"
+>                          "arm,mmu-500"
+>                          "cavium,smmu-v2"
+> +                        "qcom,smmu-v2"
+>
+>                    depending on the particular implementation and/or the
+>                    version of the architecture implemented.
+>
+> +                  Qcom SoCs must contain, as below, SoC-specific compatibles
+> +                  along with "qcom,smmu-v2":
+> +                  "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
+> +                  "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
 > +
->  	if (!dev_is_pci(dev))
-> -		return domain_context_mapping_one(domain, iommu, bus,
-> devfn);
-> +		return domain_context_mapping_one(domain, iommu,
-> table,
-> +						  bus, devfn);
-> 
->  	data.domain = domain;
->  	data.iommu = iommu;
-> +	data.table = table;
-> 
->  	return pci_for_each_dma_alias(to_pci_dev(dev),
->  				      &domain_context_mapping_cb, &data);
+>  - reg           : Base address and size of the SMMU.
+>
+>  - #global-interrupts : The number of global interrupts exposed by the
+> @@ -71,6 +77,22 @@ conditions.
+>                    or using stream matching with #iommu-cells = <2>, and
+>                    may be ignored if present in such cases.
+>
+> +- clock-names:    List of the names of clocks input to the device. The
+> +                  required list depends on particular implementation and
+> +                  is as follows:
+> +                  - for "qcom,smmu-v2":
+> +                    - "bus": clock required for downstream bus access and
+> +                             for the smmu ptw,
+> +                    - "iface": clock required to access smmu's registers
+> +                               through the TCU's programming interface.
+> +                  - unspecified for other implementations.
+> +
+> +- clocks:         Specifiers for all clocks listed in the clock-names property,
+> +                  as per generic clock bindings.
+> +
+> +- power-domains:  Specifiers for power domains required to be powered on for
+> +                  the SMMU to operate, as per generic power domain bindings.
+> +
+>  ** Deprecated properties:
+>
+>  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
+> @@ -137,3 +159,20 @@ conditions.
+>                  iommu-map = <0 &smmu3 0 0x400>;
+>                  ...
+>          };
+> +
+> +       /* Qcom's arm,smmu-v2 implementation */
+> +       smmu4: iommu@d00000 {
+> +               compatible = "qcom,msm8996-smmu-v2", "qcom,smmu-v2";
+> +               reg = <0xd00000 0x10000>;
+> +
+> +               #global-interrupts = <1>;
+> +               interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+> +                            <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
+> +                            <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>;
+> +               #iommu-cells = <1>;
+> +               power-domains = <&mmcc MDSS_GDSC>;
+> +
+> +               clocks = <&mmcc SMMU_MDP_AXI_CLK>,
+> +                        <&mmcc SMMU_MDP_AHB_CLK>;
+> +               clock-names = "bus", "iface";
+> +       };
 > --
-> 2.17.1
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
