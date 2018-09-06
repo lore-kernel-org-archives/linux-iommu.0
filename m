@@ -1,15 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix race handling in
-	split_blk_unmap()
-Date: Thu, 6 Sep 2018 11:05:28 +0100
-Message-ID: <20180906100527.GF3592@arm.com>
-References: <f6700817286f60597f2a93835bf658f3ef3585ef.1535026499.git.robin.murphy@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
+Date: Thu, 6 Sep 2018 12:09:30 +0100
+Message-ID: <03d31ba5-1eda-ea86-8c0c-91d14c86fe83@arm.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
+	<bf42affd-e9d0-e4fc-6d28-f3c3f7795348@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f6700817286f60597f2a93835bf658f3ef3585ef.1535026499.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <bf42affd-e9d0-e4fc-6d28-f3c3f7795348-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +20,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
+Cc: xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Eric,
 
-On Thu, Aug 23, 2018 at 01:14:59PM +0100, Robin Murphy wrote:
-> In removing the pagetable-wide lock, we gained the possibility of the
-> vanishingly unlikely case where we have a race between two concurrent
-> unmappers splitting the same block entry. The logic to handle this is
-> fairly straightforward - whoever loses the race frees their partial
-> next-level table and instead dereferences the winner's newly-installed
-> entry in order to fall back to a regular unmap, which intentionally
-> echoes the pre-existing case of recursively splitting a 1GB block down
-> to 4KB pages by installing a full table of 2MB blocks first.
-> 
-> Unfortunately, the chump who implemented that logic failed to update the
-> condition check for that fallback, meaning that if said race occurs at
-> the last level (where the loser's unmap_idx is valid) then the unmap
-> won't actually happen. Fix that to properly account for both the race
-> and recursive cases.
-> 
-> Fixes: 2c3d273eabe8 ("iommu/io-pgtable-arm: Support lockless operation")
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/io-pgtable-arm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks for reviewing
 
-Well spotted! Did you just find this by inspection?
+On 05/09/2018 12:29, Auger Eric wrote:
+>> +int iommu_sva_device_init(struct device *dev, unsigned long features,
+>> +			  unsigned int max_pasid)
+> what about min_pasid?
 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 010a254305dd..93b4833cef73 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -575,7 +575,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
->  		tablep = iopte_deref(pte, data);
->  	}
->  
-> -	if (unmap_idx < 0)
-> +	if (unmap_idx < 0 || pte != blk_pte)
->  		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+No one asked for it... The max_pasid parameter is here for drivers that
+have vendor-specific PASID size limits, such as AMD KFD (see
+kfd_iommu_device_init and
+https://patchwork.kernel.org/patch/9989307/#21389571). But in most cases
+the PASID size will only depend on the PCI PASID capability and the
+IOMMU limits, both known by the IOMMU driver, so device drivers won't
+have to set max_pasid.
 
-Can we tidy up the control flow a bit here to avoid re-checking the status
-of the cmpxchg? See below.
+IOMMU drivers need to set min_pasid in the sva_device_init callback
+because it may be either 1 (e.g. Arm where PASID #0 is reserved) or 0
+(Intel Vt-d rev2), but at the moment I can't see a reason for device
+drivers to override min_pasid
 
-Will
+>> +	/*
+>> +	 * IOMMU driver updates the limits depending on the IOMMU and device
+>> +	 * capabilities.
+>> +	 */
+>> +	ret = domain->ops->sva_device_init(dev, param);
+>> +	if (ret)
+>> +		goto err_free_param;
+> So you are likely to call sva_device_init even if it was already called
+> (ie. dev->iommu_param->sva_param is already set). Can't you test whether
+> dev->iommu_param->sva_param is already set first?
 
---->8
+Right, that's probably better
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 88641b4560bc..2f79efd16a05 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -574,13 +574,12 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 			return 0;
- 
- 		tablep = iopte_deref(pte, data);
-+	} else if (unmap_idx >= 0) {
-+		io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-+		return size;
- 	}
- 
--	if (unmap_idx < 0)
--		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
--
--	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
--	return size;
-+	return __arm_lpae_unmap(data, iova, size, lvl, tablep);
- }
- 
- static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>> +/**
+>> + * iommu_sva_device_shutdown() - Shutdown Shared Virtual Addressing for a device
+>> + * @dev: the device
+>> + *
+>> + * Disable SVA. Device driver should ensure that the device isn't performing any
+>> + * DMA while this function is running.
+>> + */
+>> +int iommu_sva_device_shutdown(struct device *dev)
+> Not sure the returned value is required for a shutdown operation.
+
+I don't know either. I like them because they help me debug, but are
+otherwise rather useless if we don't describe precise semantics. The
+caller cannot do anything with it. Given that the corresponding IOMMU op
+is already void, I can change this function to void as well
+
+>> +struct iommu_sva_param {
+> What are the feature values?
+
+At the moment only IOMMU_SVA_FEAT_IOPF, introduced by patch 09
+
+>> +	unsigned long features;
+>> +	unsigned int min_pasid;
+>> +	unsigned int max_pasid;
+>> +};
+>> +
+>>  /**
+>>   * struct iommu_ops - iommu ops and capabilities
+>>   * @capable: check capability
+>> @@ -219,6 +225,8 @@ struct page_response_msg {
+>>   * @domain_free: free iommu domain
+>>   * @attach_dev: attach device to an iommu domain
+>>   * @detach_dev: detach device from an iommu domain
+>> + * @sva_device_init: initialize Shared Virtual Adressing for a device
+> Addressing
+>> + * @sva_device_shutdown: shutdown Shared Virtual Adressing for a device
+> Addressing
+
+Nice catch
+
+Thanks,
+Jean
