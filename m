@@ -1,89 +1,154 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
-Date: Thu, 6 Sep 2018 15:14:25 +0200
-Message-ID: <9013df5a-02f9-55b8-eb5e-fad4be0a2c92@redhat.com>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
- <2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
- <e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Thu, 6 Sep 2018 09:31:33 -0400
+Message-ID: <20180906133133.GA3830@redhat.com>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+ <20180904150019.GA4024@redhat.com>
+ <20180904101509.62314b67@t450s.home>
+ <20180906094532.GG230707@Turing-Arch-b>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180906094532.GG230707@Turing-Arch-b>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Jean Delvare <khali@linux-fr.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Raj Ashok <ashok.raj@intel.com>
+To: Kenneth Lee <liguozhu@hisilicon.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
+On Thu, Sep 06, 2018 at 05:45:32PM +0800, Kenneth Lee wrote:
+> On Tue, Sep 04, 2018 at 10:15:09AM -0600, Alex Williamson wrote:
+> > Date: Tue, 4 Sep 2018 10:15:09 -0600
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > To: Jerome Glisse <jglisse@redhat.com>
+> > CC: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
+> >  Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller"
+> >  <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Kenneth Lee
+> >  <liguozhu@hisilicon.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang
+> >  <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe
+> >  Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman
+> >  <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>,
+> >  linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+> >  linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org,
+> >  kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu
+> >  <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>,
+> >  linuxarm@huawei.com
+> > Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+> > Message-ID: <20180904101509.62314b67@t450s.home>
+> > 
+> > On Tue, 4 Sep 2018 11:00:19 -0400
+> > Jerome Glisse <jglisse@redhat.com> wrote:
+> > 
+> > > On Mon, Sep 03, 2018 at 08:51:57AM +0800, Kenneth Lee wrote:
+> > > > From: Kenneth Lee <liguozhu@hisilicon.com>
+> > > > 
+> > > > WarpDrive is an accelerator framework to expose the hardware capabilities
+> > > > directly to the user space. It makes use of the exist vfio and vfio-mdev
+> > > > facilities. So the user application can send request and DMA to the
+> > > > hardware without interaction with the kernel. This removes the latency
+> > > > of syscall.
+> > > > 
+> > > > WarpDrive is the name for the whole framework. The component in kernel
+> > > > is called SDMDEV, Share Domain Mediated Device. Driver driver exposes its
+> > > > hardware resource by registering to SDMDEV as a VFIO-Mdev. So the user
+> > > > library of WarpDrive can access it via VFIO interface.
+> > > > 
+> > > > The patchset contains document for the detail. Please refer to it for more
+> > > > information.
+> > > > 
+> > > > This patchset is intended to be used with Jean Philippe Brucker's SVA
+> > > > patch [1], which enables not only IO side page fault, but also PASID
+> > > > support to IOMMU and VFIO.
+> > > > 
+> > > > With these features, WarpDrive can support non-pinned memory and
+> > > > multi-process in the same accelerator device.  We tested it in our SoC
+> > > > integrated Accelerator (board ID: D06, Chip ID: HIP08). A reference work
+> > > > tree can be found here: [2].
+> > > > 
+> > > > But it is not mandatory. This patchset is tested in the latest mainline
+> > > > kernel without the SVA patches.  So it supports only one process for each
+> > > > accelerator.
+> > > > 
+> > > > We have noticed the IOMMU aware mdev RFC announced recently [3].
+> > > > 
+> > > > The IOMMU aware mdev has similar idea but different intention comparing to
+> > > > WarpDrive. It intends to dedicate part of the hardware resource to a VM.
+> > > > And the design is supposed to be used with Scalable I/O Virtualization.
+> > > > While sdmdev is intended to share the hardware resource with a big amount
+> > > > of processes.  It just requires the hardware supporting address
+> > > > translation per process (PCIE's PASID or ARM SMMU's substream ID).
+> > > > 
+> > > > But we don't see serious confliction on both design. We believe they can be
+> > > > normalized as one.
+> > > >   
+> > > 
+> > > So once again i do not understand why you are trying to do things
+> > > this way. Kernel already have tons of example of everything you
+> > > want to do without a new framework. Moreover i believe you are
+> > > confuse by VFIO. To me VFIO is for VM not to create general device
+> > > driver frame work.
+> > 
+> > VFIO is a userspace driver framework, the VM use case just happens to
+> > be a rather prolific one.  VFIO was never intended to be solely a VM
+> > device interface and has several other userspace users, notably DPDK
+> > and SPDK, an NVMe backend in QEMU, a userspace NVMe driver, a ruby
+> > wrapper, and perhaps others that I'm not aware of.  Whether vfio is
+> > appropriate interface here might certainly still be a debatable topic,
+> > but I would strongly disagree with your last sentence above.  Thanks,
+> > 
+> > Alex
+> > 
+> 
+> Yes, that is also my standpoint here.
+> 
+> > > So here is your use case as i understand it. You have a device
+> > > with a limited number of command queues (can be just one) and in
+> > > some case it can support SVA/SVM (when hardware support it and it
+> > > is not disabled). Final requirement is being able to schedule cmds
+> > > from userspace without ioctl. All of this exists already exists
+> > > upstream in few device drivers.
+> > > 
+> > > 
+> > > So here is how every body else is doing it. Please explain why
+> > > this does not work.
+> > > 
+> > > 1 Userspace open device file driver. Kernel device driver create
+> > >   a context and associate it with on open. This context can be
+> > >   uniq to the process and can bind hardware resources (like a
+> > >   command queue) to the process.
+> > > 2 Userspace bind/acquire a commands queue and initialize it with
+> > >   an ioctl on the device file. Through that ioctl userspace can
+> > >   be inform wether either SVA/SVM works for the device. If SVA/
+> > >   SVM works then kernel device driver bind the process to the
+> > >   device as part of this ioctl.
+> > > 3 If SVM/SVA does not work userspace do an ioctl to create dma
+> > >   buffer or something that does exactly the same thing.
+> > > 4 Userspace mmap the command queue (mmap of the device file by
+> > >   using informations gather at step 2)
+> > > 5 Userspace can write commands into the queue it mapped
+> > > 6 When userspace close the device file all resources are release
+> > >   just like any existing device drivers.
+> 
+> Hi, Jerome,
+> 
+> Just one thing, as I said in the cover letter, dma-buf requires the application
+> to use memory created by the driver for DMA. I did try the dma-buf way in
+> WrapDrive (refer to [4] in the cover letter), it is a good backup for NOIOMMU
+> mode or we cannot solve the problem in VFIO.
+> 
+> But, in many of my application scenario, the application already has some memory
+> in hand, maybe allocated by the framework or libraries. Anyway, they don't get
+> memory from my library, and they pass the poiter for data operation. And they
+> may also have pointer in the buffer. Those pointer may be used by the
+> accelerator. So I need hardware fully share the address space with the
+> application. That is what dmabuf cannot do.
 
-On 09/06/2018 02:42 PM, Jean-Philippe Brucker wrote:
-> On 06/09/2018 10:25, Auger Eric wrote:
->>> +		mutex_lock(&fparam->lock);
->>> +		list_add_tail(&evt_pending->list, &fparam->faults);
->> same doubt as Yi Liu. You cannot rely on the userspace willingness to
->> void the queue and deallocate this memory.
+dmabuf can do that ... it is call uptr you can look at i915 for
+instance. Still this does not answer my question above, why do
+you need to be in VFIO to do any of the above thing ? Kernel has
+tons of examples that does all of the above and are not in VFIO
+(including usinng existing user pointer with device).
 
-By the way I saw there is a kind of garbage collectors for faults which
-wouldn't have received any responses. However I am not sure this removes
-the concern of having the fault list on kernel side growing beyond
-acceptable limits.
->>
->> SMMUv3 holds a queue of events whose size is implementation dependent.
->> I think such a queue should be available at SW level and its size should
->> be negotiated.
-> 
-> Note that this fault API can also be used by host device drivers that
-> want to be notified on fault, in which case a direct callback seems
-> easier to use, and perhaps more efficient than an intermediate queue.
-
-> 
-> When injecting faults into userspace it makes sense to batch events, to
-> avoid context switches. Even though that queue management should
-> probably be done by VFIO, the IOMMU API has to help in some way, at
-> least to tell VFIO when the IOMMU driver is done processing a batch of
-> event.
-Yes I am currently investigating the usage of a kfifo in
-vfio_iommu_type1, filled by the direct callback.
-> 
->> Note SMMU has separate queues for PRI and fault events. Here you use the
->> same queue for all events. I don't know if it would make sense to have
->> separate APIs?
-> 
-> Host device drivers that use this API to be notified on fault can't deal
-> with arch-specific event formats (SMMU event, Vt-d fault event, etc), so
-> the APIs should be arch-agnostic. Given that requirement, using a single
-> iommu_fault_event structure for both PRI and event queues made sense,
-> especially since the even queue can have stall events that look a lot
-> like PRI page requests.
-I understand the data structure needs to be generic. Now I guess PRI
-events and other standard translator error events (that can happen
-without PRI) may have different characteristics in event fields, queue
-size, that may deserve to create different APIs and internal data
-structs. Also this may help separating the concerns. My remark also
-stems from the fact the SMMU uses 2 different queues, whose size can
-also be different.
-
-Thanks
-
-Eric
-> 
-> Or do you mean separate APIs for recoverable and non-recoverable faults?
-> Using the same queue for PRI and stall event, and a separate one for
-> non-recoverable events?
-> 
-> Separate queues may be useful for the device driver scenario
-> (non-virtualization), where recoverable faults are handled by
-> io-pgfaults while non-recoverable ones could be reported directly to the
-> device driver. For this case I was thinking of adding a
-> multiple-consumer thing: both io-pgfaults and the device driver register
-> a fault handler. io-pgfault handles recoverable ones and what's left
-> goes to the device driver. This could also allow the device driver to be
-> notified when io-pgfault doesn't successfully handle a fault
-> (handle_mm_fault returns an error).
-> 
-> Thanks,
-> Jean
-> 
+Cheers,
+Jérôme
