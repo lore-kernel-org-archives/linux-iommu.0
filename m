@@ -1,130 +1,349 @@
-From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Thu, 6 Sep 2018 17:11:35 +0800
-Message-ID: <20180906091135.GF230707@Turing-Arch-b>
-References: <20180903005204.26041-1-nek.in.cn@gmail.com>
-	<81edb8ff-d046-34e5-aee7-d8564e2517c2@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Thu, 6 Sep 2018 11:25:00 +0200
+Message-ID: <2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <81edb8ff-d046-34e5-aee7-d8564e2517c2-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Raj Ashok <ashok.raj@intel.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean Delvare <khali@linux-fr.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBTZXAgMDMsIDIwMTggYXQgMTA6MzI6MTZBTSArMDgwMCwgTHUgQmFvbHUgd3JvdGU6
-Cj4gRGF0ZTogTW9uLCAzIFNlcCAyMDE4IDEwOjMyOjE2ICswODAwCj4gRnJvbTogTHUgQmFvbHUg
-PGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4KPiBUbzogS2VubmV0aCBMZWUgPG5lay5pbi5jbkBn
-bWFpbC5jb20+LCBKb25hdGhhbiBDb3JiZXQgPGNvcmJldEBsd24ubmV0PiwKPiAgSGVyYmVydCBY
-dSA8aGVyYmVydEBnb25kb3IuYXBhbmEub3JnLmF1PiwgIkRhdmlkIFMgLiBNaWxsZXIiCj4gIDxk
-YXZlbUBkYXZlbWxvZnQubmV0PiwgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+LCBBbGV4
-IFdpbGxpYW1zb24KPiAgPGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tPiwgS2VubmV0aCBMZWUg
-PGxpZ3Vvemh1QGhpc2lsaWNvbi5jb20+LCBIYW8KPiAgRmFuZyA8ZmFuZ2hhbzExQGh1YXdlaS5j
-b20+LCBaaG91IFdhbmcgPHdhbmd6aG91MUBoaXNpbGljb24uY29tPiwgWmFpYm8gWHUKPiAgPHh1
-emFpYm9AaHVhd2VpLmNvbT4sIFBoaWxpcHBlIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIu
-Y29tPiwgR3JlZwo+ICBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4s
-IFRob21hcyBHbGVpeG5lcgo+ICA8dGdseEBsaW51dHJvbml4LmRlPiwgbGludXgtZG9jQHZnZXIu
-a2VybmVsLm9yZywKPiAgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywgbGludXgtY3J5cHRv
-QHZnZXIua2VybmVsLm9yZywKPiAgaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcsIGt2
-bUB2Z2VyLmtlcm5lbC5vcmcsCj4gIGxpbnV4LWFjY2VsZXJhdG9yc0BsaXN0cy5vemxhYnMub3Jn
-LCBTYW5qYXkgS3VtYXIKPiAgPHNhbmpheS5rLmt1bWFyQGludGVsLmNvbT4KPiBDQzogYmFvbHUu
-bHVAbGludXguaW50ZWwuY29tLCBsaW51eGFybUBodWF3ZWkuY29tCj4gU3ViamVjdDogUmU6IFtS
-RkN2MiBQQVRDSCAwLzddIEEgR2VuZXJhbCBBY2NlbGVyYXRvciBGcmFtZXdvcmssIFdhcnBEcml2
-ZQo+IFVzZXItQWdlbnQ6IE1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NDsgcnY6NTIuMCkg
-R2Vja28vMjAxMDAxMDEKPiAgVGh1bmRlcmJpcmQvNTIuOS4xCj4gTWVzc2FnZS1JRDogPDgxZWRi
-OGZmLWQwNDYtMzRlNS1hZWU3LWQ4NTY0ZTI1MTdjMkBsaW51eC5pbnRlbC5jb20+Cj4gCj4gSGks
-Cj4gCj4gT24gMDkvMDMvMjAxOCAwODo1MSBBTSwgS2VubmV0aCBMZWUgd3JvdGU6Cj4gPkZyb206
-IEtlbm5ldGggTGVlIDxsaWd1b3podUBoaXNpbGljb24uY29tPgo+ID4KPiA+V2FycERyaXZlIGlz
-IGFuIGFjY2VsZXJhdG9yIGZyYW1ld29yayB0byBleHBvc2UgdGhlIGhhcmR3YXJlIGNhcGFiaWxp
-dGllcwo+ID5kaXJlY3RseSB0byB0aGUgdXNlciBzcGFjZS4gSXQgbWFrZXMgdXNlIG9mIHRoZSBl
-eGlzdCB2ZmlvIGFuZCB2ZmlvLW1kZXYKPiA+ZmFjaWxpdGllcy4gU28gdGhlIHVzZXIgYXBwbGlj
-YXRpb24gY2FuIHNlbmQgcmVxdWVzdCBhbmQgRE1BIHRvIHRoZQo+ID5oYXJkd2FyZSB3aXRob3V0
-IGludGVyYWN0aW9uIHdpdGggdGhlIGtlcm5lbC4gVGhpcyByZW1vdmVzIHRoZSBsYXRlbmN5Cj4g
-Pm9mIHN5c2NhbGwuCj4gPgo+ID5XYXJwRHJpdmUgaXMgdGhlIG5hbWUgZm9yIHRoZSB3aG9sZSBm
-cmFtZXdvcmsuIFRoZSBjb21wb25lbnQgaW4ga2VybmVsCj4gPmlzIGNhbGxlZCBTRE1ERVYsIFNo
-YXJlIERvbWFpbiBNZWRpYXRlZCBEZXZpY2UuIERyaXZlciBkcml2ZXIgZXhwb3NlcyBpdHMKPiA+
-aGFyZHdhcmUgcmVzb3VyY2UgYnkgcmVnaXN0ZXJpbmcgdG8gU0RNREVWIGFzIGEgVkZJTy1NZGV2
-LiBTbyB0aGUgdXNlcgo+ID5saWJyYXJ5IG9mIFdhcnBEcml2ZSBjYW4gYWNjZXNzIGl0IHZpYSBW
-RklPIGludGVyZmFjZS4KPiA+Cj4gPlRoZSBwYXRjaHNldCBjb250YWlucyBkb2N1bWVudCBmb3Ig
-dGhlIGRldGFpbC4gUGxlYXNlIHJlZmVyIHRvIGl0IGZvciBtb3JlCj4gPmluZm9ybWF0aW9uLgo+
-ID4KPiA+VGhpcyBwYXRjaHNldCBpcyBpbnRlbmRlZCB0byBiZSB1c2VkIHdpdGggSmVhbiBQaGls
-aXBwZSBCcnVja2VyJ3MgU1ZBCj4gPnBhdGNoIFsxXSwgd2hpY2ggZW5hYmxlcyBub3Qgb25seSBJ
-TyBzaWRlIHBhZ2UgZmF1bHQsIGJ1dCBhbHNvIFBBU0lECj4gPnN1cHBvcnQgdG8gSU9NTVUgYW5k
-IFZGSU8uCj4gPgo+ID5XaXRoIHRoZXNlIGZlYXR1cmVzLCBXYXJwRHJpdmUgY2FuIHN1cHBvcnQg
-bm9uLXBpbm5lZCBtZW1vcnkgYW5kCj4gPm11bHRpLXByb2Nlc3MgaW4gdGhlIHNhbWUgYWNjZWxl
-cmF0b3IgZGV2aWNlLiAgV2UgdGVzdGVkIGl0IGluIG91ciBTb0MKPiA+aW50ZWdyYXRlZCBBY2Nl
-bGVyYXRvciAoYm9hcmQgSUQ6IEQwNiwgQ2hpcCBJRDogSElQMDgpLiBBIHJlZmVyZW5jZSB3b3Jr
-Cj4gPnRyZWUgY2FuIGJlIGZvdW5kIGhlcmU6IFsyXS4KPiA+Cj4gPkJ1dCBpdCBpcyBub3QgbWFu
-ZGF0b3J5LiBUaGlzIHBhdGNoc2V0IGlzIHRlc3RlZCBpbiB0aGUgbGF0ZXN0IG1haW5saW5lCj4g
-Pmtlcm5lbCB3aXRob3V0IHRoZSBTVkEgcGF0Y2hlcy4gIFNvIGl0IHN1cHBvcnRzIG9ubHkgb25l
-IHByb2Nlc3MgZm9yIGVhY2gKPiA+YWNjZWxlcmF0b3IuCj4gPgo+ID5XZSBoYXZlIG5vdGljZWQg
-dGhlIElPTU1VIGF3YXJlIG1kZXYgUkZDIGFubm91bmNlZCByZWNlbnRseSBbM10uCj4gPgo+ID5U
-aGUgSU9NTVUgYXdhcmUgbWRldiBoYXMgc2ltaWxhciBpZGVhIGJ1dCBkaWZmZXJlbnQgaW50ZW50
-aW9uIGNvbXBhcmluZyB0bwo+ID5XYXJwRHJpdmUuIEl0IGludGVuZHMgdG8gZGVkaWNhdGUgcGFy
-dCBvZiB0aGUgaGFyZHdhcmUgcmVzb3VyY2UgdG8gYSBWTS4KPiA+QW5kIHRoZSBkZXNpZ24gaXMg
-c3VwcG9zZWQgdG8gYmUgdXNlZCB3aXRoIFNjYWxhYmxlIEkvTyBWaXJ0dWFsaXphdGlvbi4KPiA+
-V2hpbGUgc2RtZGV2IGlzIGludGVuZGVkIHRvIHNoYXJlIHRoZSBoYXJkd2FyZSByZXNvdXJjZSB3
-aXRoIGEgYmlnIGFtb3VudAo+ID5vZiBwcm9jZXNzZXMuICBJdCBqdXN0IHJlcXVpcmVzIHRoZSBo
-YXJkd2FyZSBzdXBwb3J0aW5nIGFkZHJlc3MKPiA+dHJhbnNsYXRpb24gcGVyIHByb2Nlc3MgKFBD
-SUUncyBQQVNJRCBvciBBUk0gU01NVSdzIHN1YnN0cmVhbSBJRCkuCj4gPgo+ID5CdXQgd2UgZG9u
-J3Qgc2VlIHNlcmlvdXMgY29uZmxpY3Rpb24gb24gYm90aCBkZXNpZ24uIFdlIGJlbGlldmUgdGhl
-eSBjYW4gYmUKPiA+bm9ybWFsaXplZCBhcyBvbmUuCj4gPgo+ID5UaGUgcGF0Y2ggMSBpcyBkb2N1
-bWVudCBvZiB0aGUgZnJhbWV3b3JrLiBUaGUgcGF0Y2ggMiBhbmQgMyBhZGQgc2RtZGV2Cj4gPnN1
-cHBvcnQuIFRoZSBwYXRjaCA0LCA1IGFuZCA2IGlzIGRyaXZlcnMgZm9yIEhpc2xpY29uJ3MgWklQ
-IEFjY2VsZXJhdG9yCj4gPndoaWNoIGlzIHJlZ2lzdGVyZWQgdG8gYm90aCBjcnlwdG8gYW5kIHdh
-cnBkcml2ZShzZG1kZXYpIGFuZCBjYW4gYmUKPiA+dXNlZCBmcm9tIGtlcm5lbCBvciB1c2VyIHNw
-YWNlIGF0IHRoZSBzYW1lIHRpbWUuIFRoZSBwYXRjaCA3IGlzIGEgdXNlcgo+ID5zcGFjZSBzYW1w
-bGUgZGVtb25zdHJhdGluZyBob3cgV2FycERyaXZlIHdvcmtzLgo+ID4KPiA+Cj4gPkNoYW5nZSBI
-aXN0b3J5Ogo+ID5WMiBjaGFuZ2VkIGZyb20gVjE6Cj4gPgkxLiBDaGFuZ2Uga2VybmVsIGZyYW1l
-d29yayBuYW1lIGZyb20gU1BJTURFViAoU2hhcmUgUGFyZW50IElPTU1VCj4gPgkgICBNZGV2KSB0
-byBTRE1ERVYgKFNoYXJlIERvbWFpbiBNZGV2KS4KPiA+CTIuIEFsbG9jYXRlIEhhcmR3YXJlIFJl
-c291cmNlIHdoZW4gYSBuZXcgbWRldiBpcyBjcmVhdGVkIChXaGlsZQo+ID4JICAgaXQgaXMgYWxs
-b2NhdGVkIHdoZW4gdGhlIG1kZXYgaXMgb3Blbm5lZCkKPiA+CTMuIFVubWFwIHBhZ2VzIGZyb20g
-dGhlIHNoYXJlZCBkb21haW4gd2hlbiB0aGUgc2RtZGV2IGlvbW11IGdyb3VwIGlzCj4gPgkgICBk
-ZXRhY2hlZC4gKFRoaXMgcHJvY2VkdXJlIGlzIG5lY2Vzc2FyeSwgYnV0IG1pc3NlZCBpbiBWMSkK
-PiA+CTQuIFVwZGF0ZSBkb2N1bWVudCBhY2NvcmRpbmdseS4KPiA+CTUuIFJlYmFzZSB0byB0aGUg
-bGF0ZXN0IGtlcm5lbCAoNC4xOS4wLXJjMSkKPiA+CQo+ID4JQWNjb3JkaW5nIHRoZSByZXZpZXcg
-Y29tbWVudCBvbiBSRkN2MSwgV2UgZGlkIHRyeSB0byB1c2UgZG1hLWJ1Zgo+ID4JYXMgYmFjayBl
-bmQgb2YgV2FycERyaXZlLiBJdCBjYW4gd29yayBwcm9wZXJseSB3aXRoIHRoZSBjdXJyZW50Cj4g
-Pglzb2x1dGlvbiBbNF0sIGJ1dCBpdCBjYW5ub3QgbWFrZSB1c2Ugb2YgcHJvY2VzcydzCj4gPglv
-d24gbWVtb3J5IGFkZHJlc3Mgc3BhY2UgZGlyZWN0bHkuIFRoaXMgaXMgaW1wb3J0YW50IHRvIG1h
-bnkKPiA+CWFjY2VsZXJhdGlvbiBzY2VuYXJpby4gU28gZG1hLWJ1ZiB3aWxsIGJlIHRha2VuIGFz
-IGEgYmFja3VwCj4gPglhbHRlcm5hdGl2ZSBmb3Igbm9pb21tdSBzY2VuYXJpbywgaXQgd2lsbCBi
-ZSBhZGRlZCBpbiB0aGUgZnV0dXJlCj4gPgl2ZXJzaW9uLgo+ID4KPiA+Cj4gPlJlZmVybmNlczoK
-PiA+WzFdIGh0dHBzOi8vd3d3LnNwaW5pY3MubmV0L2xpc3RzL2tlcm5lbC9tc2cyNjUxNDgxLmh0
-bWwKPiA+WzJdIGh0dHBzOi8vZ2l0aHViLmNvbS9LZW5uZXRoLUxlZS9saW51eC1rZXJuZWwtd2Fy
-cGRyaXZlL3RyZWUvd2FycGRyaXZlLXN2YS12MC41Cj4gPlszXSBodHRwczovL2xrbWwub3JnL2xr
-bWwvMjAxOC83LzIyLzM0Cj4gCj4gUGxlYXNlIHJlZmVyIHRvIHRoZSBsYXRlc3QgdmVyc2lvbiBw
-b3N0ZWQgaGVyZSBmb3IgZGlzY3Vzc2lvbi4KPiAKPiBodHRwczovL2xrbWwub3JnL2xrbWwvMjAx
-OC84LzMwLzEwNwoKU3VyZS4gVGhhbmsgeW91LgoKPiAKPiBCZXN0IHJlZ2FyZHMsCj4gTHUgQmFv
-bHUKCi0tIAoJCQktS2VubmV0aChIaXNpbGljb24pCgo9PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQrm
-nKzpgq7ku7blj4rlhbbpmYTku7blkKvmnInljY7kuLrlhazlj7jnmoTkv53lr4bkv6Hmga/vvIzk
-u4XpmZDkuo7lj5HpgIHnu5nkuIrpnaLlnLDlnYDkuK3liJflh7rnmoTkuKrkurrmiJbnvqTnu4Tj
-gILnpoEK5q2i5Lu75L2V5YW25LuW5Lq65Lul5Lu75L2V5b2i5byP5L2/55So77yI5YyF5ous5L2G
-5LiN6ZmQ5LqO5YWo6YOo5oiW6YOo5YiG5Zyw5rOE6Zyy44CB5aSN5Yi244CB5oiW5pWj5Y+R77yJ
-5pys6YKu5Lu25LitCueahOS/oeaBr+OAguWmguaenOaCqOmUmeaUtuS6huacrOmCruS7tu+8jOiv
-t+aCqOeri+WNs+eUteivneaIlumCruS7tumAmuefpeWPkeS7tuS6uuW5tuWIoOmZpOacrOmCruS7
-tu+8gQpUaGlzIGUtbWFpbCBhbmQgaXRzIGF0dGFjaG1lbnRzIGNvbnRhaW4gY29uZmlkZW50aWFs
-IGluZm9ybWF0aW9uIGZyb20gSFVBV0VJLAp3aGljaCBpcyBpbnRlbmRlZCBvbmx5IGZvciB0aGUg
-cGVyc29uIG9yIGVudGl0eSB3aG9zZSBhZGRyZXNzIGlzIGxpc3RlZCBhYm92ZS4KQW55IHVzZSBv
-ZiB0aGUgCmluZm9ybWF0aW9uIGNvbnRhaW5lZCBoZXJlaW4gaW4gYW55IHdheSAoaW5jbHVkaW5n
-LCBidXQgbm90IGxpbWl0ZWQgdG8sIHRvdGFsIG9yCnBhcnRpYWwgZGlzY2xvc3VyZSwgcmVwcm9k
-dWN0aW9uLCBvciBkaXNzZW1pbmF0aW9uKSBieSBwZXJzb25zIG90aGVyIHRoYW4gdGhlCmludGVu
-ZGVkIApyZWNpcGllbnQocykgaXMgcHJvaGliaXRlZC4gSWYgeW91IHJlY2VpdmUgdGhpcyBlLW1h
-aWwgaW4gZXJyb3IsIHBsZWFzZSBub3RpZnkKdGhlIHNlbmRlciBieSBwaG9uZSBvciBlbWFpbCBp
-bW1lZGlhdGVseSBhbmQgZGVsZXRlIGl0IQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+Hi Jacob,
+
+On 05/11/2018 10:54 PM, Jacob Pan wrote:
+> Traditionally, device specific faults are detected and handled within
+> their own device drivers. When IOMMU is enabled, faults such as DMA
+> related transactions are detected by IOMMU. There is no generic
+> reporting mechanism to report faults back to the in-kernel device
+> driver or the guest OS in case of assigned devices.
+> 
+> Faults detected by IOMMU is based on the transaction's source ID which
+> can be reported at per device basis, regardless of the device type is a
+> PCI device or not.
+> 
+> The fault types include recoverable (e.g. page request) and
+> unrecoverable faults(e.g. access error). In most cases, faults can be
+> handled by IOMMU drivers internally. The primary use cases are as
+> follows:
+> 1. page request fault originated from an SVM capable device that is
+> assigned to guest via vIOMMU. In this case, the first level page tables
+> are owned by the guest. Page request must be propagated to the guest to
+> let guest OS fault in the pages then send page response. In this
+> mechanism, the direct receiver of IOMMU fault notification is VFIO,
+> which can relay notification events to QEMU or other user space
+> software.
+> 
+> 2. faults need more subtle handling by device drivers. Other than
+> simply invoke reset function, there are needs to let device driver
+> handle the fault with a smaller impact.
+> 
+> This patchset is intended to create a generic fault report API such
+> that it can scale as follows:
+> - all IOMMU types
+> - PCI and non-PCI devices
+> - recoverable and unrecoverable faults
+> - VFIO and other other in kernel users
+> - DMA & IRQ remapping (TBD)
+> The original idea was brought up by David Woodhouse and discussions
+> summarized at https://lwn.net/Articles/608914/.
+> 
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> ---
+>  drivers/iommu/iommu.c | 149 +++++++++++++++++++++++++++++++++++++++++++++++++-
+>  include/linux/iommu.h |  35 +++++++++++-
+>  2 files changed, 181 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3a49b96..b3f9daf 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -609,6 +609,13 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  		goto err_free_name;
+>  	}
+>  
+> +	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param), GFP_KERNEL);
+> +	if (!dev->iommu_param) {
+> +		ret = -ENOMEM;
+> +		goto err_free_name;
+> +	}
+> +	mutex_init(&dev->iommu_param->lock);
+> +
+>  	kobject_get(group->devices_kobj);
+>  
+>  	dev->iommu_group = group;
+> @@ -639,6 +646,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  	mutex_unlock(&group->mutex);
+>  	dev->iommu_group = NULL;
+>  	kobject_put(group->devices_kobj);
+> +	kfree(dev->iommu_param);
+>  err_free_name:
+>  	kfree(device->name);
+>  err_remove_link:
+> @@ -685,7 +693,7 @@ void iommu_group_remove_device(struct device *dev)
+>  	sysfs_remove_link(&dev->kobj, "iommu_group");
+>  
+>  	trace_remove_device_from_group(group->id, dev);
+> -
+> +	kfree(dev->iommu_param);
+>  	kfree(device->name);
+>  	kfree(device);
+>  	dev->iommu_group = NULL;
+> @@ -820,6 +828,145 @@ int iommu_group_unregister_notifier(struct iommu_group *group,
+>  EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier);
+>  
+>  /**
+> + * iommu_register_device_fault_handler() - Register a device fault handler
+> + * @dev: the device
+> + * @handler: the fault handler
+> + * @data: private data passed as argument to the handler
+> + *
+> + * When an IOMMU fault event is received, call this handler with the fault event
+> + * and data as argument. The handler should return 0 on success. If the fault is
+> + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also complete
+> + * the fault by calling iommu_page_response() with one of the following
+iommu_page_response name looks too specific to PRI use case. why not
+using iommu_fault_response.
+> + * response code:
+> + * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
+> + * - IOMMU_PAGE_RESP_INVALID: terminate the fault
+> + * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop reporting
+Same here s/IOMMU_PAGE_RESP/IOMMU_PAGE_RESP
+
+That way I can easily reuse the API for SMMU nested stage handing.
+> + *   page faults if possible.
+> + *
+> + * Return 0 if the fault handler was installed successfully, or an error.
+> + */
+> +int iommu_register_device_fault_handler(struct device *dev,
+> +					iommu_dev_fault_handler_t handler,
+> +					void *data)
+> +{
+> +	struct iommu_param *param = dev->iommu_param;
+> +	int ret = 0;
+> +
+> +	/*
+> +	 * Device iommu_param should have been allocated when device is
+> +	 * added to its iommu_group.
+> +	 */
+> +	if (!param)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&param->lock);
+> +	/* Only allow one fault handler registered for each device */
+> +	if (param->fault_param) {
+> +		ret = -EBUSY;
+> +		goto done_unlock;
+> +	}
+> +
+> +	get_device(dev);
+> +	param->fault_param =
+> +		kzalloc(sizeof(struct iommu_fault_param), GFP_KERNEL);
+> +	if (!param->fault_param) {
+> +		put_device(dev);
+> +		ret = -ENOMEM;
+> +		goto done_unlock;
+> +	}
+> +	mutex_init(&param->fault_param->lock);
+> +	param->fault_param->handler = handler;
+> +	param->fault_param->data = data;
+> +	INIT_LIST_HEAD(&param->fault_param->faults);
+> +
+> +done_unlock:
+> +	mutex_unlock(&param->lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
+> +
+> +/**
+> + * iommu_unregister_device_fault_handler() - Unregister the device fault handler
+> + * @dev: the device
+> + *
+> + * Remove the device fault handler installed with
+> + * iommu_register_device_fault_handler().
+> + *
+> + * Return 0 on success, or an error.
+> + */
+> +int iommu_unregister_device_fault_handler(struct device *dev)
+> +{
+> +	struct iommu_param *param = dev->iommu_param;
+> +	int ret = 0;
+> +
+> +	if (!param)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&param->lock);
+> +	/* we cannot unregister handler if there are pending faults */
+> +	if (!list_empty(&param->fault_param->faults)) {> +		ret = -EBUSY;
+> +		goto unlock;
+> +	}
+> +
+> +	kfree(param->fault_param);
+> +	param->fault_param = NULL;
+> +	put_device(dev);
+> +unlock:
+> +	mutex_unlock(&param->lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
+> +
+> +
+> +/**
+> + * iommu_report_device_fault() - Report fault event to device
+> + * @dev: the device
+> + * @evt: fault event data
+> + *
+> + * Called by IOMMU model specific drivers when fault is detected, typically
+> + * in a threaded IRQ handler.
+> + *
+> + * Return 0 on success, or an error.
+> + */
+> +int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+> +{
+> +	int ret = 0;
+> +	struct iommu_fault_event *evt_pending;
+> +	struct iommu_fault_param *fparam;
+> +
+> +	/* iommu_param is allocated when device is added to group */
+> +	if (!dev->iommu_param | !evt)
+> +		return -EINVAL;
+> +	/* we only report device fault if there is a handler registered */
+> +	mutex_lock(&dev->iommu_param->lock);
+> +	if (!dev->iommu_param->fault_param ||
+> +		!dev->iommu_param->fault_param->handler) {
+> +		ret = -EINVAL;
+> +		goto done_unlock;
+> +	}
+> +	fparam = dev->iommu_param->fault_param;
+> +	if (evt->type == IOMMU_FAULT_PAGE_REQ && evt->last_req) {
+> +		evt_pending = kmemdup(evt, sizeof(struct iommu_fault_event),
+> +				GFP_KERNEL);
+> +		if (!evt_pending) {
+> +			ret = -ENOMEM;
+> +			goto done_unlock;
+> +		}
+> +		mutex_lock(&fparam->lock);
+> +		list_add_tail(&evt_pending->list, &fparam->faults);
+same doubt as Yi Liu. You cannot rely on the userspace willingness to
+void the queue and deallocate this memory.
+
+SMMUv3 holds a queue of events whose size is implementation dependent.
+I think such a queue should be available at SW level and its size should
+be negotiated.
+
+Note SMMU has separate queues for PRI and fault events. Here you use the
+same queue for all events. I don't know if it would make sense to have
+separate APIs?
+
+Thanks
+
+Eric
+
+> +		mutex_unlock(&fparam->lock);
+> +	}
+> +	ret = fparam->handler(evt, fparam->data);
+> +done_unlock:
+> +	mutex_unlock(&dev->iommu_param->lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_report_device_fault);
+> +
+> +/**
+>   * iommu_group_id - Return ID for a group
+>   * @group: the group to ID
+>   *
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index aeadb4f..b3312ee 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -307,7 +307,8 @@ enum iommu_fault_reason {
+>   * and PASID spec.
+>   * - Un-recoverable faults of device interest
+>   * - DMA remapping and IRQ remapping faults
+> -
+> + *
+> + * @list pending fault event list, used for tracking responses
+>   * @type contains fault type.
+>   * @reason fault reasons if relevant outside IOMMU driver, IOMMU driver internal
+>   *         faults are not reported
+> @@ -324,6 +325,7 @@ enum iommu_fault_reason {
+>   *                 sending the fault response.
+>   */
+>  struct iommu_fault_event {
+> +	struct list_head list;
+>  	enum iommu_fault_type type;
+>  	enum iommu_fault_reason reason;
+>  	u64 addr;
+> @@ -340,10 +342,13 @@ struct iommu_fault_event {
+>   * struct iommu_fault_param - per-device IOMMU fault data
+>   * @dev_fault_handler: Callback function to handle IOMMU faults at device level
+>   * @data: handler private data
+> - *
+> + * @faults: holds the pending faults which needs response, e.g. page response.
+> + * @lock: protect pending PRQ event list
+>   */
+>  struct iommu_fault_param {
+>  	iommu_dev_fault_handler_t handler;
+> +	struct list_head faults;
+> +	struct mutex lock;
+>  	void *data;
+>  };
+>  
+> @@ -357,6 +362,7 @@ struct iommu_fault_param {
+>   *	struct iommu_fwspec	*iommu_fwspec;
+>   */
+>  struct iommu_param {
+> +	struct mutex lock;
+>  	struct iommu_fault_param *fault_param;
+>  };
+>  
+> @@ -456,6 +462,14 @@ extern int iommu_group_register_notifier(struct iommu_group *group,
+>  					 struct notifier_block *nb);
+>  extern int iommu_group_unregister_notifier(struct iommu_group *group,
+>  					   struct notifier_block *nb);
+> +extern int iommu_register_device_fault_handler(struct device *dev,
+> +					iommu_dev_fault_handler_t handler,
+> +					void *data);
+> +
+> +extern int iommu_unregister_device_fault_handler(struct device *dev);
+> +
+> +extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
+> +
+>  extern int iommu_group_id(struct iommu_group *group);
+>  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>  extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+> @@ -727,6 +741,23 @@ static inline int iommu_group_unregister_notifier(struct iommu_group *group,
+>  	return 0;
+>  }
+>  
+> +static inline int iommu_register_device_fault_handler(struct device *dev,
+> +						iommu_dev_fault_handler_t handler,
+> +						void *data)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int iommu_unregister_device_fault_handler(struct device *dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  static inline int iommu_group_id(struct iommu_group *group)
+>  {
+>  	return -ENODEV;
+> 
