@@ -1,36 +1,293 @@
 From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [PATCH v2 01/12] iommu/vt-d: Enumerate the scalable mode
- capability
-Date: Thu, 6 Sep 2018 01:55:06 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2A40@SHSMSX101.ccr.corp.intel.com>
+Subject: RE: [PATCH v2 02/12] iommu/vt-d: Manage scalalble mode PASID tables
+Date: Thu, 6 Sep 2018 02:14:00 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2A85@SHSMSX101.ccr.corp.intel.com>
 References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
- <20180830013524.28743-2-baolu.lu@linux.intel.com>
+ <20180830013524.28743-3-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180830013524.28743-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20180830013524.28743-3-baolu.lu@linux.intel.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBMdSBCYW9sdSBbbWFpbHRvOmJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbV0NCj4gU2Vu
-dDogVGh1cnNkYXksIEF1Z3VzdCAzMCwgMjAxOCA5OjM1IEFNDQo+IA0KPiBUaGUgSW50ZWwgdnQt
-ZCBzcGVjIHJldjMuMCBpbnRyb2R1Y2VzIGEgbmV3IHRyYW5zbGF0aW9uDQo+IG1vZGUgY2FsbGVk
-IHNjYWxhYmxlIG1vZGUsIHdoaWNoIGVuYWJsZXMgUEFTSUQtZ3JhbnVsYXINCj4gdHJhbnNsYXRp
-b25zIGZvciBmaXJzdCBsZXZlbCwgc2Vjb25kIGxldmVsLCBuZXN0ZWQgYW5kDQo+IHBhc3MtdGhy
-b3VnaCBtb2Rlcy4gQXQgdGhlIHNhbWUgdGltZSwgdGhlIHByZXZpb3VzDQo+IEV4dGVuZGVkIENv
-bnRleHQgKEVDUykgbW9kZSBpcyBkZXByZWNhdGVkIChubyBwcm9kdWN0aW9uDQo+IGV2ZXIgaW1w
-bGVtZW50cyBFQ1MpLg0KPiANCj4gVGhpcyBwYXRjaCBhZGRzIGVudW1lcmF0aW9uIGZvciBTY2Fs
-YWJsZSBNb2RlIGFuZCByZW1vdmVzDQo+IHRoZSBkZXByZWNhdGVkIEVDUyBlbnVtZXJhdGlvbi4g
-SXQgcHJvdmlkZXMgYSBib290IHRpbWUNCj4gb3B0aW9uIHRvIGRpc2FibGUgc2NhbGFibGUgbW9k
-ZSBldmVuIGhhcmR3YXJlIGNsYWltcyB0bw0KPiBzdXBwb3J0IGl0Lg0KPiANCj4gQ2M6IEFzaG9r
-IFJhaiA8YXNob2sucmFqQGludGVsLmNvbT4NCj4gQ2M6IEphY29iIFBhbiA8amFjb2IuanVuLnBh
-bkBsaW51eC5pbnRlbC5jb20+DQo+IENjOiBLZXZpbiBUaWFuIDxrZXZpbi50aWFuQGludGVsLmNv
-bT4NCj4gQ2M6IExpdSBZaSBMIDx5aS5sLmxpdUBpbnRlbC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6
-IFNhbmpheSBLdW1hciA8c2FuamF5Lmsua3VtYXJAaW50ZWwuY29tPg0KPiBTaWduZWQtb2ZmLWJ5
-OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBSZXZpZXdlZC1ieTogQXNo
-b2sgUmFqIDxhc2hvay5yYWpAaW50ZWwuY29tPg0KDQpSZXZpZXdlZC1ieTogS2V2aW4gVGlhbiA8
-a2V2aW4udGlhbkBpbnRlbC5jb20+DQo=
+> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+> Sent: Thursday, August 30, 2018 9:35 AM
+> 
+> In scalable mode, pasid structure is a two level table with
+> a pasid directory table and a pasid table. Any pasid entry
+> can be identified by a pasid value in below way.
+> 
+>    1
+>    9                       6 5      0
+>     .-----------------------.-------.
+>     |              PASID    |       |
+>     '-----------------------'-------'    .-------------.
+>              |                    |      |             |
+>              |                    |      |             |
+>              |                    |      |             |
+>              |     .-----------.  |      .-------------.
+>              |     |           |  |----->| PASID Entry |
+>              |     |           |  |      '-------------'
+>              |     |           |  |Plus  |             |
+>              |     .-----------.  |      |             |
+>              |---->| DIR Entry |-------->|             |
+>              |     '-----------'         '-------------'
+> .---------.  |Plus |           |
+> | Context |  |     |           |
+> |  Entry  |------->|           |
+> '---------'        '-----------'
+> 
+> This changes the pasid table APIs to support scalable mode
+> PASID directory and PASID table. It also adds a helper to
+> get the PASID table entry according to the pasid value.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+> ---
+>  drivers/iommu/intel-iommu.c |  2 +-
+>  drivers/iommu/intel-pasid.c | 72 ++++++++++++++++++++++++++++++++----
+> -
+>  drivers/iommu/intel-pasid.h | 10 +++++-
+>  drivers/iommu/intel-svm.c   |  6 +---
+>  4 files changed, 74 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 5845edf4dcf9..b0da4f765274 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2507,7 +2507,7 @@ static struct dmar_domain
+> *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>  	if (dev)
+>  		dev->archdata.iommu = info;
+> 
+> -	if (dev && dev_is_pci(dev) && info->pasid_supported) {
+> +	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
+
+worthy of a comment here that PASID table now is mandatory in
+scalable mode, instead of optional for 1st level usage before.
+
+>  		ret = intel_pasid_alloc_table(dev);
+>  		if (ret) {
+>  			__dmar_remove_one_dev_info(info);
+> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+> index fe95c9bd4d33..d6e90cd5b062 100644
+> --- a/drivers/iommu/intel-pasid.c
+> +++ b/drivers/iommu/intel-pasid.c
+> @@ -127,8 +127,7 @@ int intel_pasid_alloc_table(struct device *dev)
+>  	int ret, order;
+> 
+>  	info = dev->archdata.iommu;
+> -	if (WARN_ON(!info || !dev_is_pci(dev) ||
+> -		    !info->pasid_supported || info->pasid_table))
+> +	if (WARN_ON(!info || !dev_is_pci(dev) || info->pasid_table))
+>  		return -EINVAL;
+
+following same logic should you check sm_supported here?
+
+> 
+>  	/* DMA alias device already has a pasid table, use it: */
+> @@ -143,8 +142,9 @@ int intel_pasid_alloc_table(struct device *dev)
+>  		return -ENOMEM;
+>  	INIT_LIST_HEAD(&pasid_table->dev);
+> 
+> -	size = sizeof(struct pasid_entry);
+> +	size = sizeof(struct pasid_dir_entry);
+>  	count = min_t(int, pci_max_pasids(to_pci_dev(dev)),
+> intel_pasid_max_id);
+> +	count >>= PASID_PDE_SHIFT;
+>  	order = get_order(size * count);
+>  	pages = alloc_pages_node(info->iommu->node,
+>  				 GFP_ATOMIC | __GFP_ZERO,
+> @@ -154,7 +154,7 @@ int intel_pasid_alloc_table(struct device *dev)
+> 
+>  	pasid_table->table = page_address(pages);
+>  	pasid_table->order = order;
+> -	pasid_table->max_pasid = count;
+> +	pasid_table->max_pasid = count << PASID_PDE_SHIFT;
+
+are you sure of that count is PDE_SHIFT aligned? otherwise >>
+then << would lose some bits. If sure, then better add some check.
+
+> 
+>  attach_out:
+>  	device_attach_pasid_table(info, pasid_table);
+> @@ -162,14 +162,33 @@ int intel_pasid_alloc_table(struct device *dev)
+>  	return 0;
+>  }
+> 
+> +/* Get PRESENT bit of a PASID directory entry. */
+> +static inline bool
+> +pasid_pde_is_present(struct pasid_dir_entry *pde)
+> +{
+> +	return READ_ONCE(pde->val) & PASID_PTE_PRESENT;
+
+curious why adding READ_ONCE specifically for PASID structure,
+but not used for any other existing vtd structures? Is it to address
+some specific requirement on PASID structure as defined in spec?
+
+> +}
+> +
+> +/* Get PASID table from a PASID directory entry. */
+> +static inline struct pasid_entry *
+> +get_pasid_table_from_pde(struct pasid_dir_entry *pde)
+> +{
+> +	if (!pasid_pde_is_present(pde))
+> +		return NULL;
+> +
+> +	return phys_to_virt(READ_ONCE(pde->val) & PDE_PFN_MASK);
+> +}
+> +
+>  void intel_pasid_free_table(struct device *dev)
+>  {
+>  	struct device_domain_info *info;
+>  	struct pasid_table *pasid_table;
+> +	struct pasid_dir_entry *dir;
+> +	struct pasid_entry *table;
+> +	int i, max_pde;
+> 
+>  	info = dev->archdata.iommu;
+> -	if (!info || !dev_is_pci(dev) ||
+> -	    !info->pasid_supported || !info->pasid_table)
+> +	if (!info || !dev_is_pci(dev) || !info->pasid_table)
+>  		return;
+> 
+>  	pasid_table = info->pasid_table;
+> @@ -178,6 +197,14 @@ void intel_pasid_free_table(struct device *dev)
+>  	if (!list_empty(&pasid_table->dev))
+>  		return;
+> 
+> +	/* Free scalable mode PASID directory tables: */
+> +	dir = pasid_table->table;
+> +	max_pde = pasid_table->max_pasid >> PASID_PDE_SHIFT;
+> +	for (i = 0; i < max_pde; i++) {
+> +		table = get_pasid_table_from_pde(&dir[i]);
+> +		free_pgtable_page(table);
+> +	}
+> +
+>  	free_pages((unsigned long)pasid_table->table, pasid_table->order);
+>  	kfree(pasid_table);
+>  }
+> @@ -206,17 +233,37 @@ int intel_pasid_get_dev_max_id(struct device
+> *dev)
+> 
+>  struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid)
+>  {
+> +	struct device_domain_info *info;
+>  	struct pasid_table *pasid_table;
+> +	struct pasid_dir_entry *dir;
+>  	struct pasid_entry *entries;
+> +	int dir_index, index;
+> 
+>  	pasid_table = intel_pasid_get_table(dev);
+>  	if (WARN_ON(!pasid_table || pasid < 0 ||
+>  		    pasid >= intel_pasid_get_dev_max_id(dev)))
+>  		return NULL;
+> 
+> -	entries = pasid_table->table;
+> +	dir = pasid_table->table;
+> +	info = dev->archdata.iommu;
+> +	dir_index = pasid >> PASID_PDE_SHIFT;
+> +	index = pasid & PASID_PTE_MASK;
+> +
+> +	spin_lock(&pasid_lock);
+> +	entries = get_pasid_table_from_pde(&dir[dir_index]);
+> +	if (!entries) {
+> +		entries = alloc_pgtable_page(info->iommu->node);
+> +		if (!entries) {
+> +			spin_unlock(&pasid_lock);
+> +			return NULL;
+> +		}
+> +
+> +		WRITE_ONCE(dir[dir_index].val,
+> +			   (u64)virt_to_phys(entries) | PASID_PTE_PRESENT);
+> +	}
+> +	spin_unlock(&pasid_lock);
+> 
+> -	return &entries[pasid];
+> +	return &entries[index];
+>  }
+> 
+>  /*
+> @@ -224,7 +271,14 @@ struct pasid_entry *intel_pasid_get_entry(struct
+> device *dev, int pasid)
+>   */
+>  static inline void pasid_clear_entry(struct pasid_entry *pe)
+>  {
+> -	WRITE_ONCE(pe->val, 0);
+> +	WRITE_ONCE(pe->val[0], 0);
+> +	WRITE_ONCE(pe->val[1], 0);
+> +	WRITE_ONCE(pe->val[2], 0);
+> +	WRITE_ONCE(pe->val[3], 0);
+> +	WRITE_ONCE(pe->val[4], 0);
+> +	WRITE_ONCE(pe->val[5], 0);
+> +	WRITE_ONCE(pe->val[6], 0);
+> +	WRITE_ONCE(pe->val[7], 0);
+
+memset?
+
+>  }
+> 
+>  void intel_pasid_clear_entry(struct device *dev, int pasid)
+> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+> index 1c05ed6fc5a5..12f480c2bb8b 100644
+> --- a/drivers/iommu/intel-pasid.h
+> +++ b/drivers/iommu/intel-pasid.h
+> @@ -12,11 +12,19 @@
+> 
+>  #define PASID_MIN			0x1
+>  #define PASID_MAX			0x100000
+> +#define PASID_PTE_MASK			0x3F
+> +#define PASID_PTE_PRESENT		1
+> +#define PDE_PFN_MASK			PAGE_MASK
+> +#define PASID_PDE_SHIFT			6
+> 
+> -struct pasid_entry {
+> +struct pasid_dir_entry {
+>  	u64 val;
+>  };
+> 
+> +struct pasid_entry {
+> +	u64 val[8];
+> +};
+> +
+>  /* The representative of a PASID table */
+>  struct pasid_table {
+>  	void			*table;		/* pasid table pointer */
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 4a03e5090952..6c0bd9ee9602 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -65,8 +65,6 @@ int intel_svm_init(struct intel_iommu *iommu)
+> 
+>  	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+>  	if (ecap_dis(iommu->ecap)) {
+> -		/* Just making it explicit... */
+> -		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct
+> pasid_state_entry));
+>  		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+>  		if (pages)
+>  			iommu->pasid_state_table = page_address(pages);
+> @@ -406,9 +404,7 @@ int intel_svm_bind_mm(struct device *dev, int
+> *pasid, int flags, struct svm_dev_
+>  			pasid_entry_val |= PASID_ENTRY_FLPM_5LP;
+> 
+>  		entry = intel_pasid_get_entry(dev, svm->pasid);
+> -		entry->val = pasid_entry_val;
+> -
+> -		wmb();
+> +		WRITE_ONCE(entry->val[0], pasid_entry_val);
+> 
+>  		/*
+>  		 * Flush PASID cache when a PASID table entry becomes
+> --
+> 2.17.1
