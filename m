@@ -1,105 +1,67 @@
-From: Hans Verkuil <hverkuil@xs4all.nl>
-Subject: Re: [PATCH v8 4/8] media: platform: Add Cedrus VPU decoder driver
-Date: Thu, 6 Sep 2018 09:39:30 +0200
-Message-ID: <7a2167a3-5b61-0937-7f06-8b36fa12e7a0@xs4all.nl>
-References: <20180828073424.30247-1-paul.kocialkowski@bootlin.com>
- <20180828073424.30247-5-paul.kocialkowski@bootlin.com>
- <5faf5eed-eb2c-f804-93e3-5a42f6204d99@xs4all.nl>
- <b7b3cb2320978d45acb34475d15abd7bf03da367.camel@paulk.fr>
- <461c6a0d-a346-b9da-b75e-4aab907054df@xs4all.nl>
- <CAAFQd5Cmc7uFhprsoTU6Gq19n3z2eiUfZZ2ZjDW4QWVWMDN6tg@mail.gmail.com>
+From: Kenneth Lee <liguozhu@hisilicon.com>
+Subject: Re: [PATCH 3/7] vfio: add sdmdev support
+Date: Thu, 6 Sep 2018 16:08:24 +0800
+Message-ID: <20180906080824.GA230707@Turing-Arch-b>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+ <20180903005204.26041-4-nek.in.cn@gmail.com>
+ <0574e7dc-bed2-d2d0-3aa6-93590d54ce81@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAFQd5Cmc7uFhprsoTU6Gq19n3z2eiUfZZ2ZjDW4QWVWMDN6tg@mail.gmail.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <0574e7dc-bed2-d2d0-3aa6-93590d54ce81@infradead.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: contact@paulk.fr, Linux Media Mailing List <linux-media@vger.kernel.org>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, devel@driverdev.osuosl.org, Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Maxime Ripard <maxime.ripard@bootlin.com>, Chen-Yu Tsai <wens@csie.org>, Greg KH <gregkh@linuxfoundation.org>, thomas.petazzoni@bootlin.com, ayaka <ayaka@soulik.info>, Ezequiel Garcia <ezequiel@collabora.com>, Alexandre Courbot <acourbot@chromium.org>, Philipp Zabel <p.zabel@pengutronix.de>, Laurent Pinchart <laurent.pin>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/06/2018 09:25 AM, Tomasz Figa wrote:
-> On Thu, Sep 6, 2018 at 4:01 PM Hans Verkuil <hverkuil@xs4all.nl> wrote:
->>
->> On 09/05/2018 06:29 PM, Paul Kocialkowski wrote:
->>> Hi and thanks for the review!
->>>
->>> Le lundi 03 septembre 2018 à 11:11 +0200, Hans Verkuil a écrit :
->>>> On 08/28/2018 09:34 AM, Paul Kocialkowski wrote:
->>>>> +static int cedrus_request_validate(struct media_request *req)
->>>>> +{
->>>>> +   struct media_request_object *obj, *obj_safe;
->>>>> +   struct v4l2_ctrl_handler *parent_hdl, *hdl;
->>>>> +   struct cedrus_ctx *ctx = NULL;
->>>>> +   struct v4l2_ctrl *ctrl_test;
->>>>> +   unsigned int i;
->>>>> +
->>>>> +   list_for_each_entry_safe(obj, obj_safe, &req->objects, list) {
->>>>
->>>> You don't need to use the _safe variant during validation.
->>>
->>> Okay, I'll use the regular one then.
->>>
->>>>> +           struct vb2_buffer *vb;
->>>>> +
->>>>> +           if (vb2_request_object_is_buffer(obj)) {
->>>>> +                   vb = container_of(obj, struct vb2_buffer, req_obj);
->>>>> +                   ctx = vb2_get_drv_priv(vb->vb2_queue);
->>>>> +
->>>>> +                   break;
->>>>> +           }
->>>>> +   }
->>>>
->>>> Interesting question: what happens if more than one buffer is queued in the
->>>> request? This is allowed by the request API and in that case the associated
->>>> controls in the request apply to all queued buffers.
->>>>
->>>> Would this make sense at all for this driver? If not, then you need to
->>>> check here if there is more than one buffer in the request and document in
->>>> the spec that this is not allowed.
->>>
->>> Well, our driver was written with the (unformal) assumption that we
->>> only deal with a pair of one output and one capture buffer. So I will
->>> add a check for this at request validation time and document it in the
->>> spec. Should that be part of the MPEG-2 PIXFMT documentation (and
->>> duplicated for future formats we add support for)?
->>
->> Can you make a patch for vb2_request_has_buffers() in videobuf2-core.c
->> renaming it to vb2_request_buffer_cnt() and returning the number of buffers
->> in the request?
->>
->> Then you can call it here to check that you have only one buffer.
->>
->> And this has to be documented with the PIXFMT.
->>
->> Multiple buffers are certainly possible in non-codec scenarios (vim2m and
->> vivid happily accept that), so this is an exception that should be
->> documented and checked in the codec driver.
+On Sun, Sep 02, 2018 at 07:11:12PM -0700, Randy Dunlap wrote:
+> Date: Sun, 2 Sep 2018 19:11:12 -0700
+> From: Randy Dunlap <rdunlap@infradead.org>
+> To: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
+>  Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller"
+>  <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson
+>  <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao
+>  Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu
+>  <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg
+>  Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner
+>  <tglx@linutronix.de>, linux-doc@vger.kernel.org,
+>  linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+>  iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
+>  linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>,
+>  Sanjay Kumar <sanjay.k.kumar@intel.com>
+> CC: linuxarm@huawei.com
+> Subject: Re: [PATCH 3/7] vfio: add sdmdev support
+> User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+>  Thunderbird/52.9.1
+> Message-ID: <0574e7dc-bed2-d2d0-3aa6-93590d54ce81@infradead.org>
 > 
-> Hmm, isn't it still 1 buffer per 1 queue and just multiple queues
-> included in the request?
-
-No. The request API allows multiple buffers for the same vb2_queue to be
-queued for the same request (obviously when the request is committed, the
-buffers are queued to the driver in the same order).
-
+> On 09/02/2018 05:52 PM, Kenneth Lee wrote:
+> > diff --git a/drivers/vfio/sdmdev/Kconfig b/drivers/vfio/sdmdev/Kconfig
+> > new file mode 100644
+> > index 000000000000..51474272870d
+> > --- /dev/null
+> > +++ b/drivers/vfio/sdmdev/Kconfig
+> > @@ -0,0 +1,10 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +config VFIO_SDMDEV
+> > +	tristate "Support for Share Domain MDEV"
+> > +	depends on VFIO_MDEV_DEVICE
+> > +	help
+> > +	  Support for VFIO Share Domain MDEV, which enables the kernel to
+> > +	  support light weight hardware accelerator framework, WarpDrive.
 > 
-> If we indeed allow multiple buffers for the same queue in a request,
-> we shouldn't restrict this on a per-driver basis. It's definitely not
-> a hardware limitation, since the driver could just do the same as if 2
-> requests with the same controls were given.
+> 	          lightweight
+> 
+Thank you, will fix it.
+> > +
+> > +	  To compile this as a module, choose M here: the module will be called
+> > +	  sdmdev.
+> 
+> 
+> thanks,
+> -- 
+> ~Randy
 
-That's how it operates: for all buffers in the request the same controls
-apply. But does this make sense for codecs? If the control(s) with the
-codec metadata always change for every buffer, then having more than one
-buffer in the request is senseless and the driver should check for this
-in the validation step.
-
-If it *does* make sense in some circumstances to have the same metadata
-for multiple buffers, then it should be checked if the cedrus driver
-handles this correctly.
-
-Regards,
-
-	Hans
+-- 
+			-Kenneth(Hisilicon)
