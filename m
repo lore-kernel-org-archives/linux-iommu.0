@@ -1,86 +1,137 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime
- during probe, add/remove device
-Date: Fri, 7 Sep 2018 15:52:06 +0530
-Message-ID: <CAFp+6iE3+qn6-gpXEzxfoP5yPMARmUcJNn0AZk-kA2AreTLnng@mail.gmail.com>
-References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
- <20180830144541.17740-3-vivek.gautam@codeaurora.org>
- <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
- <3ccc3690-dc9d-56e7-e2d1-62e73a189bff@codeaurora.org>
- <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Fri, 7 Sep 2018 12:23:01 +0100
+Message-ID: <21349516-030a-93df-35bd-3597fa1cba79@arm.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+	<2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
+	<e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
+	<9013df5a-02f9-55b8-eb5e-fad4be0a2c92@redhat.com>
+	<289610e3-2633-e448-259c-194e6f2c2b52@arm.com>
+	<953746f3-352b-cd17-9938-eb78af3b58a9@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <953746f3-352b-cd17-9938-eb78af3b58a9-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Jean Delvare <khali-PUYAD+kWke1g9hUCZPvPmw@public.gmane.org>, Rafael Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Raj Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBTZXAgNywgMjAxOCBhdCAzOjIyIFBNIFRvbWFzeiBGaWdhIDx0ZmlnYUBjaHJvbWl1
-bS5vcmc+IHdyb3RlOgo+Cj4gT24gRnJpLCBTZXAgNywgMjAxOCBhdCA2OjM4IFBNIFZpdmVrIEdh
-dXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+Cj4gPiBIaSBUb21h
-c3osCj4gPgo+ID4KPiA+IE9uIDkvNy8yMDE4IDI6NDYgUE0sIFRvbWFzeiBGaWdhIHdyb3RlOgo+
-ID4gPiBIaSBWaXZlaywKPiA+ID4KPiA+ID4gT24gVGh1LCBBdWcgMzAsIDIwMTggYXQgMTE6NDYg
-UE0gVml2ZWsgR2F1dGFtCj4gPiA+IDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3Rl
-Ogo+ID4gPj4gRnJvbTogU3JpY2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiA+
-ID4+Cj4gPiA+PiBUaGUgc21tdSBkZXZpY2UgcHJvYmUvcmVtb3ZlIGFuZCBhZGQvcmVtb3ZlIG1h
-c3RlciBkZXZpY2UgY2FsbGJhY2tzCj4gPiA+PiBnZXRzIGNhbGxlZCB3aGVuIHRoZSBzbW11IGlz
-IG5vdCBsaW5rZWQgdG8gaXRzIG1hc3RlciwgdGhhdCBpcyB3aXRob3V0Cj4gPiA+PiB0aGUgY29u
-dGV4dCBvZiB0aGUgbWFzdGVyIGRldmljZS4gU28gY2FsbGluZyBydW50aW1lIGFwaXMgaW4gdGhv
-c2UgcGxhY2VzCj4gPiA+PiBzZXBhcmF0ZWx5Lgo+ID4gPj4gR2xvYmFsIGxvY2tzIGFyZSBhbHNv
-IGluaXRpYWxpemVkIGJlZm9yZSBlbmFibGluZyBydW50aW1lIHBtIGFzIHRoZQo+ID4gPj4gcnVu
-dGltZV9yZXN1bWUoKSBjYWxscyBkZXZpY2VfcmVzZXQoKSB3aGljaCBkb2VzIHRsYl9zeW5jX2ds
-b2JhbCgpCj4gPiA+PiB0aGF0IHVsdGltYXRlbHkgcmVxdWlyZXMgbG9ja3MgdG8gYmUgaW5pdGlh
-bGl6ZWQuCj4gPiA+Pgo+ID4gPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIgPHNyaWNoYXJh
-bkBjb2RlYXVyb3JhLm9yZz4KPiA+ID4+IFt2aXZlazogQ2xlYW51cCBwbSBydW50aW1lIGNhbGxz
-XQo+ID4gPj4gU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1
-cm9yYS5vcmc+Cj4gPiA+PiBSZXZpZXdlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVt
-Lm9yZz4KPiA+ID4+IFRlc3RlZC1ieTogU3Jpbml2YXMgS2FuZGFnYXRsYSA8c3Jpbml2YXMua2Fu
-ZGFnYXRsYUBsaW5hcm8ub3JnPgo+ID4gPj4gLS0tCj4gPiA+PiAgIGRyaXZlcnMvaW9tbXUvYXJt
-LXNtbXUuYyB8IDg5ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKyst
-LS0tLQo+ID4gPj4gICAxIGZpbGUgY2hhbmdlZCwgODEgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlv
-bnMoLSkKPiA+ID4gW3NuaXBdCj4gPiA+PiBAQCAtMjIxNSwxMCArMjI4MSwxNyBAQCBzdGF0aWMg
-aW50IGFybV9zbW11X2RldmljZV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikK
-PiA+ID4+ICAgICAgICAgIGlmICghYml0bWFwX2VtcHR5KHNtbXUtPmNvbnRleHRfbWFwLCBBUk1f
-U01NVV9NQVhfQ0JTKSkKPiA+ID4+ICAgICAgICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2
-LCAicmVtb3ZpbmcgZGV2aWNlIHdpdGggYWN0aXZlIGRvbWFpbnMhXG4iKTsKPiA+ID4+Cj4gPiA+
-PiArICAgICAgIGFybV9zbW11X3JwbV9nZXQoc21tdSk7Cj4gPiA+PiAgICAgICAgICAvKiBUdXJu
-IHRoZSB0aGluZyBvZmYgKi8KPiA+ID4+ICAgICAgICAgIHdyaXRlbChzQ1IwX0NMSUVOVFBELCBB
-Uk1fU01NVV9HUjBfTlMoc21tdSkgKyBBUk1fU01NVV9HUjBfc0NSMCk7Cj4gPiA+PiArICAgICAg
-IGFybV9zbW11X3JwbV9wdXQoc21tdSk7Cj4gPiA+PiArCj4gPiA+PiArICAgICAgIGlmIChwbV9y
-dW50aW1lX2VuYWJsZWQoc21tdS0+ZGV2KSkKPiA+ID4+ICsgICAgICAgICAgICAgICBwbV9ydW50
-aW1lX2ZvcmNlX3N1c3BlbmQoc21tdS0+ZGV2KTsKPiA+ID4+ICsgICAgICAgZWxzZQo+ID4gPj4g
-KyAgICAgICAgICAgICAgIGNsa19idWxrX2Rpc2FibGUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNs
-a3MpOwo+ID4gPj4KPiA+ID4+IC0gICAgICAgY2xrX2J1bGtfZGlzYWJsZV91bnByZXBhcmUoc21t
-dS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPj4gKyAgICAgICBjbGtfYnVsa191bnByZXBh
-cmUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPiBBcmVuJ3Qgd2UgbWlzc2luZyBw
-bV9ydW50aW1lX2Rpc2FibGUoKSBoZXJlPyBXZSdsbCBoYXZlIHRoZSBlbmFibGUKPiA+ID4gY291
-bnQgdW5iYWxhbmNlZCBpZiB0aGUgZHJpdmVyIGlzIHJlbW92ZWQgYW5kIHByb2JlZCBhZ2Fpbi4K
-PiA+Cj4gPiBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKSBkb2VzIGEgcG1fcnVudGltZV9kaXNh
-YmxlKCkgYWxzbyBpZiBpIGFtIG5vdAo+ID4gd3JvbmcuCj4gPiBBbmQsIGFzIG1lbnRpb25lZCBp
-biBhIHByZXZpb3VzIHRocmVhZCBbMV0sIHdlIHdlcmUgc2VlaW5nIGEgd2FybmluZwo+ID4gd2hp
-Y2ggd2UgYXZvaWRlZAo+ID4gYnkga2VlcGluZyBmb3JjZV9zdXNwZW5kKCkuCj4gPgo+ID4gWzFd
-IGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE4LzcvOC8xMjQKPgo+IEkgc2VlLCB0aGFua3MuIEkg
-ZGlkbid0IHJlYWxpemUgdGhhdCBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKQo+IGFscmVhZHkg
-ZGlzYWJsZXMgcnVudGltZSBQTSBpbmRlZWQuIFNvcnJ5IGZvciB0aGUgbm9pc2UuCgpIaSBUb21h
-c3osCk5vIHByb2JsZW0uIFRoYW5rcyBmb3IgbG9va2luZyBiYWNrIGF0IGl0LgoKSGkgUm9iaW4s
-CklmIHlvdSBhcmUgZmluZSB3aXRoIHRoaXMgc2VyaWVzLCB0aGVuIGNhbiB5b3UgcGxlYXNlIGNv
-bnNpZGVyIGdpdmluZwpSZXZpZXdlZC1ieSwgc28gdGhhdCB3ZSBhcmUgY2VydGFpbiB0aGF0IHRo
-aXMgc2VyaWVzIHdpbGwgZ28gaW4gdGhlIG5leHQgbWVyZ2UKd2luZG93LgpUaGFua3MKCkJlc3Qg
-cmVnYXJkcwpWaXZlawoKCgoKLS0gClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVhbGNv
-bW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJvcmEgRm9y
-dW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVu
-b0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+On 07/09/2018 08:11, Auger Eric wrote:
+>>> On 09/06/2018 02:42 PM, Jean-Philippe Brucker wrote:
+>>>> On 06/09/2018 10:25, Auger Eric wrote:
+>>>>>> +		mutex_lock(&fparam->lock);
+>>>>>> +		list_add_tail(&evt_pending->list, &fparam->faults);
+>>>>> same doubt as Yi Liu. You cannot rely on the userspace willingness to
+>>>>> void the queue and deallocate this memory.
+>>>
+>>> By the way I saw there is a kind of garbage collectors for faults which
+>>> wouldn't have received any responses. However I am not sure this removes
+>>> the concern of having the fault list on kernel side growing beyond
+>>> acceptable limits.
+>>
+>> How about per-device quotas? (https://lkml.org/lkml/2018/4/23/706 for
+>> reference) With PRI the IOMMU driver already sets per-device credits
+>> when initializing the device (pci_enable_pri), so if the device behaves
+>> properly it shouldn't send new page requests once the number of
+>> outstanding ones is maxed out.
+> 
+> But this needs to work for non PRI use case too?
+
+Only recoverable faults, PRI and stall, are added to the fparam->faults
+list, because the kernel needs to make sure that each of these faults
+gets a reply, or else they are held in hardware indefinitely.
+Non-recoverable faults don't need tracking, the IOMMU API can forget
+about them after they're reported. Rate-limiting could be done by the
+consumer if it gets flooded by non-recoverable faults, for example by
+dropping some of them.
+
+>> Right, an event contains more information than a PRI page request.
+>> Stage-2 fields (CLASS, S2, IPA, TTRnW) cannot be represented by
+>> iommu_fault_event at the moment.
+> 
+> Yes I am currently doing the mapping exercise between SMMUv3 events and
+> iommu_fault_event and I miss config errors for instance.
+
+We may have initially focused only on guest and userspace config errors
+(IOMMU_FAULT_REASON_PASID_FETCH, IOMMU_FAULT_REASON_PASID_INVALID, etc),
+since other config errors are most likely a bug in the host IOMMU
+driver, and could be reported with pr_err
+
+>  For precise emulation it might be
+>> useful to at least add the S2 flag (as a new iommu_fault_reason?), so
+>> that when the guest maps stage-1 to an invalid GPA, QEMU could for
+>> example inject an external abort.
+> 
+> Actually we may even need to filter events and return to the guest only
+> the S1 related.
+>>
+>>> queue
+>>> size, that may deserve to create different APIs and internal data
+>>> structs. Also this may help separating the concerns.
+>>
+>> It might duplicate them. If the consumer of the event report is a host
+>> device driver, the SMMU needs to report a "generic" iommu_fault_event,
+>> and if the consumer is VFIO it would report a specialized one
+> 
+> I am unsure of my understanding of the UNRECOVERABLE error type. Is it
+> everything else than a PRI. For instance are all SMMUv3 event errors
+> supposed to be put under the IOMMU_FAULT_DMA_UNRECOV umbrella?
+
+I guess it's more clear-cut in VT-d, which defines recoverable and
+non-recoverable faults. In SMMUv3, PRI Page Requests are recoverable,
+but event errors can also be recoverable if they have the Stall flag set.
+
+Stall is a way for non-PCI endpoints to do SVA, and I have a patch in my
+series that sorts events into PAGE_REQ and DMA_UNRECOV before feeding
+them to this API: https://patchwork.kernel.org/patch/10395043/
+
+> If I understand correctly there are different consumers for PRI and
+> unrecoverable data, so why not having 2 different APIs.
+
+My reasoning was that for virtualization they go through the same
+channel, VFIO, until the guest or the vIOMMU dispatches them depending
+on their type, so we might as well use the same API.
+
+In addition, host device drivers might also want to handle stall or PRI
+events themselves instead of relying on the SVA infrastructure. For
+example the MSM GPU with SMMUv2: https://patchwork.kernel.org/patch/9953803/
+
+>>> My remark also
+>>> stems from the fact the SMMU uses 2 different queues, whose size can
+>>> also be different.
+>>
+>> Hm, for PRI requests the kernel-userspace queue size should actually be
+>> the number of PRI credits for that device. Hadn't thought about it
+>> before, where do we pass that info to userspace?
+> Cannot help here at the moment, sorry.
+>  For fault events, the
+>> queue could be as big as the SMMU event queue, though using all that
+>> space might be wasteful.
+> The guest has its own programming of the SMMU_EVENTQ_BASE.LOG2SIZE. This
+> could be used to program the SW fifo
+> 
+>  Non-stalled events should be rare and reporting
+>> them isn't urgent. Stalled ones would need the number of stall credits I
+>> mentioned above, which realistically will be a lot less than the SMMU
+>> event queue size. Given that a device will use either PRI or stall but
+>> not both, I still think events and PRI could go through the same queue.
+> Did I get it right PRI is for PCIe and STALL for non PCIe? But all that
+> stuff also is related to Page Request use case, right?
+
+Yes, a stall event is a page request from a non-PCI device, but it comes
+in through the SMMU event queue
+
+Thanks,
+Jean
