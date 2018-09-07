@@ -1,8 +1,8 @@
 From: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/4 v7] kexec: allocate unencrypted control pages for kdump in
-	case SME is enabled
-Date: Fri,  7 Sep 2018 16:18:03 +0800
-Message-ID: <20180907081805.368-3-lijiang@redhat.com>
+Subject: [PATCH 3/4 v7] amd_iommu: remap the device table of IOMMU with the
+	memory encryption mask for kdump
+Date: Fri,  7 Sep 2018 16:18:04 +0800
+Message-ID: <20180907081805.368-4-lijiang@redhat.com>
 References: <20180907081805.368-1-lijiang@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,50 +22,43 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When SME is enabled in the first kernel, we will allocate unencrypted pages
-for kdump in order to be able to boot the kdump kernel like kexec.
+In kdump kernel, it will copy the device table of IOMMU from the old device
+table, which is encrypted when SME is enabled in the first kernel. So we
+have to remap the old device table with the memory encryption mask.
 
 Signed-off-by: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- kernel/kexec_core.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index 23a83a4da38a..e7efcd1a977b 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -471,6 +471,16 @@ static struct page *kimage_alloc_crash_control_pages(struct kimage *image,
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 84b3e4445d46..3931c7de7c69 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -902,12 +902,22 @@ static bool copy_device_table(void)
  		}
  	}
  
-+	if (pages) {
-+		/*
-+		 * For kdump, we need to ensure that these pages are
-+		 * unencrypted pages if SME is enabled.
-+		 * By the way, it is unnecessary to call the arch_
-+		 * kexec_pre_free_pages(), which will make the code
-+		 * become more simple.
-+		 */
-+		arch_kexec_post_alloc_pages(page_address(pages), 1 << order, 0);
-+	}
- 	return pages;
- }
+-	old_devtb_phys = entry & PAGE_MASK;
++	/*
++	 * When SME is enabled in the first kernel, the entry includes the
++	 * memory encryption mask(sme_me_mask), we must remove the memory
++	 * encryption mask to obtain the true physical address in kdump kernel.
++	 */
++	old_devtb_phys = __sme_clr(entry) & PAGE_MASK;
++
+ 	if (old_devtb_phys >= 0x100000000ULL) {
+ 		pr_err("The address of old device table is above 4G, not trustworthy!\n");
+ 		return false;
+ 	}
+-	old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
++	old_devtb = (sme_active() && is_kdump_kernel())
++		    ? (__force void *)ioremap_encrypted(old_devtb_phys,
++							dev_table_size)
++		    : memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
++
+ 	if (!old_devtb)
+ 		return false;
  
-@@ -867,6 +877,7 @@ static int kimage_load_crash_segment(struct kimage *image,
- 			result  = -ENOMEM;
- 			goto out;
- 		}
-+		arch_kexec_post_alloc_pages(page_address(page), 1, 0);
- 		ptr = kmap(page);
- 		ptr += maddr & ~PAGE_MASK;
- 		mchunk = min_t(size_t, mbytes,
-@@ -884,6 +895,7 @@ static int kimage_load_crash_segment(struct kimage *image,
- 			result = copy_from_user(ptr, buf, uchunk);
- 		kexec_flush_icache_page(page);
- 		kunmap(page);
-+		arch_kexec_pre_free_pages(page_address(page), 1);
- 		if (result) {
- 			result = -EFAULT;
- 			goto out;
 -- 
 2.17.1
