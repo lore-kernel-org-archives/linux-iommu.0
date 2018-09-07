@@ -1,19 +1,15 @@
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
-Date: Fri, 7 Sep 2018 10:55:31 +0200
-Message-ID: <2fd4a0a1-1a35-bf82-df84-b995cce011d9@amd.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
-	<bf42affd-e9d0-e4fc-6d28-f3c3f7795348@redhat.com>
-	<03d31ba5-1eda-ea86-8c0c-91d14c86fe83@arm.com>
-	<ed39159c-087e-7e56-7d29-d1de9fa1677f@amd.com>
-	<f0b317d5-e2e9-5478-952c-05e8b97bd68b@arm.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime during probe,
+	add/remove device
+Date: Fri, 7 Sep 2018 18:16:37 +0900
+Message-ID: <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
+	<20180830144541.17740-3-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f0b317d5-e2e9-5478-952c-05e8b97bd68b-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180830144541.17740-3-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,65 +19,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-QW0gMDYuMDkuMjAxOCB1bSAxNDo0NSBzY2hyaWViIEplYW4tUGhpbGlwcGUgQnJ1Y2tlcjoKPiBP
-biAwNi8wOS8yMDE4IDEyOjEyLCBDaHJpc3RpYW4gS8O2bmlnIHdyb3RlOgo+PiBBbSAwNi4wOS4y
-MDE4IHVtIDEzOjA5IHNjaHJpZWIgSmVhbi1QaGlsaXBwZSBCcnVja2VyOgo+Pj4gSGkgRXJpYywK
-Pj4+Cj4+PiBUaGFua3MgZm9yIHJldmlld2luZwo+Pj4KPj4+IE9uIDA1LzA5LzIwMTggMTI6Mjks
-IEF1Z2VyIEVyaWMgd3JvdGU6Cj4+Pj4+ICtpbnQgaW9tbXVfc3ZhX2RldmljZV9pbml0KHN0cnVj
-dCBkZXZpY2UgKmRldiwgdW5zaWduZWQgbG9uZyBmZWF0dXJlcywKPj4+Pj4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIGludCBtYXhfcGFzaWQpCj4+Pj4gd2hhdCBhYm91dCBt
-aW5fcGFzaWQ/Cj4+PiBObyBvbmUgYXNrZWQgZm9yIGl0Li4uIFRoZSBtYXhfcGFzaWQgcGFyYW1l
-dGVyIGlzIGhlcmUgZm9yIGRyaXZlcnMgdGhhdAo+Pj4gaGF2ZSB2ZW5kb3Itc3BlY2lmaWMgUEFT
-SUQgc2l6ZSBsaW1pdHMsIHN1Y2ggYXMgQU1EIEtGRCAoc2VlCj4+PiBrZmRfaW9tbXVfZGV2aWNl
-X2luaXQgYW5kCj4+PiBodHRwczovL3BhdGNod29yay5rZXJuZWwub3JnL3BhdGNoLzk5ODkzMDcv
-IzIxMzg5NTcxKS4gQnV0IGluIG1vc3QgY2FzZXMKPj4+IHRoZSBQQVNJRCBzaXplIHdpbGwgb25s
-eSBkZXBlbmQgb24gdGhlIFBDSSBQQVNJRCBjYXBhYmlsaXR5IGFuZCB0aGUKPj4+IElPTU1VIGxp
-bWl0cywgYm90aCBrbm93biBieSB0aGUgSU9NTVUgZHJpdmVyLCBzbyBkZXZpY2UgZHJpdmVycyB3
-b24ndAo+Pj4gaGF2ZSB0byBzZXQgbWF4X3Bhc2lkLgo+Pj4KPj4+IElPTU1VIGRyaXZlcnMgbmVl
-ZCB0byBzZXQgbWluX3Bhc2lkIGluIHRoZSBzdmFfZGV2aWNlX2luaXQgY2FsbGJhY2sKPj4+IGJl
-Y2F1c2UgaXQgbWF5IGJlIGVpdGhlciAxIChlLmcuIEFybSB3aGVyZSBQQVNJRCAjMCBpcyByZXNl
-cnZlZCkgb3IgMAo+Pj4gKEludGVsIFZ0LWQgcmV2MiksIGJ1dCBhdCB0aGUgbW9tZW50IEkgY2Fu
-J3Qgc2VlIGEgcmVhc29uIGZvciBkZXZpY2UKPj4+IGRyaXZlcnMgdG8gb3ZlcnJpZGUgbWluX3Bh
-c2lkCj4+IFNvcnJ5IHRvIHJ1aW4geW91ciBkYXksIGJ1dCBpZiBJJ20gbm90IGNvbXBsZXRlbHkg
-bWlzdGFrZW4gUEFTSUQgemVybyBpcwo+PiByZXNlcnZlZCBpbiB0aGUgQU1EIEtGRCBhcyB3ZWxs
-Lgo+IEhlaCwgZmFpciBlbm91Z2guIEknbGwgYWRkIHRoZSBtaW5fcGFzaWQgcGFyYW1ldGVyCgpJ
-IHdpbGwgdGFrZSB0aGlzIGFzIGFuIG9wcG9ydHVuaXR5IHRvIHN1bW1hcml6ZSBzb21lIG9mIHRo
-ZSByZXF1aXJlbWVudHMgCndlIGhhdmUgZm9yIFBBU0lEIG1hbmFnZW1lbnQgZnJvbSB0aGUgYW1k
-Z3B1IGRyaXZlciBwb2ludCBvZiB2aWV3OgoKMS4gV2UgbmVlZCB0byBiZSBhYmxlIHRvIGFsbG9j
-YXRlIFBBU0lEIGJldHdlZW4gMSBhbmQgc29tZSBtYXhpbXVtLiBaZXJvIAppcyByZXNlcnZlZCBh
-cyBmYXIgYXMgSSBrbm93LCBidXQgd2UgZG9uJ3QgbmVjZXNzYXJ5IG5lZWQgYSBtaW5pbXVtLgoK
-Mi4gV2UgbmVlZCB0byBiZSBhYmxlIHRvIGFsbG9jYXRlIFBBU0lEcyB3aXRob3V0IGEgcHJvY2Vz
-cyBhZGRyZXNzIHNwYWNlIApiYWNraW5nIGl0LiBFLmcuIG91ciBoYXJkd2FyZSB1c2VzIFBBU0lE
-cyBldmVuIHdpdGhvdXQgU2hhcmVkIFZpcnR1YWwgCkFkZHJlc3NpbmcgZW5hYmxlZCB0byBkaXN0
-aW5jdCBjbGllbnRzIGZyb20gZWFjaCBvdGhlci4KIMKgwqDCoCDCoMKgwqAgV291bGQgYmUgYSBw
-aXR5IGlmIHdlIG5lZWQgdG8gc3RpbGwgaGF2ZSBhIHNlcGFyYXRlIFBBU0lEIApoYW5kbGluZyBi
-ZWNhdXNlIHRoZSBzeXN0ZW0gd2lkZSBpcyBvbmx5IGF2YWlsYWJsZSB3aGVuIElPTU1VIGlzIHR1
-cm5lZCBvbi4KCjMuIEV2ZW4gYWZ0ZXIgZGVzdHJ1Y3Rpb24gb2YgYSBwcm9jZXNzIGFkZHJlc3Mg
-c3BhY2Ugd2UgbmVlZCBzb21lIGdyYWNlIApwZXJpb2QgYmVmb3JlIGEgUEFTSUQgaXMgcmV1c2Vk
-IGJlY2F1c2UgaXQgY2FuIGJlIHRoYXQgdGhlIHNwZWNpZmljIApQQVNJRCBpcyBzdGlsbCBpbiBz
-b21lIGhhcmR3YXJlIHF1ZXVlcyBldGMuLi4KIMKgwqDCoCDCoMKgwqAgQXQgYmFyZSBtaW5pbXVt
-IGFsbCBkZXZpY2UgZHJpdmVycyB1c2luZyBwcm9jZXNzIGJpbmRpbmcgbmVlZCAKdG8gZXhwbGlj
-aXRseSBub3RlIHRvIHRoZSBjb3JlIHdoZW4gdGhleSBhcmUgZG9uZSB3aXRoIGEgUEFTSUQuCgo0
-LiBJdCB3b3VsZCBiZSBuaWNlIHRvIGhhdmUgdG8gYmUgYWJsZSB0byBzZXQgYSAidm9pZCAqIiBm
-b3IgZWFjaCAKUEFTSUQvZGV2aWNlIGNvbWJpbmF0aW9uIHdoaWxlIGJpbmRpbmcgdG8gYSBwcm9j
-ZXNzIHdoaWNoIHRoZW4gY2FuIGJlIApxdWVyaWVkIGxhdGVyIG9uIGJhc2VkIG9uIHRoZSBQQVNJ
-RC4KIMKgwqDCoCDCoMKgwqAgRS5nLiB3aGVuIHlvdSBoYXZlIGEgcGVyIFBBU0lEL2RldmljZSBz
-dHJ1Y3R1cmUgYXJvdW5kIGFueXdheSwgCmp1c3QgYWRkIGFuIGV4dHJhIGZpZWxkLgoKNS4gSXQg
-d291bGQgYmUgbmljZSB0byBoYXZlIHRvIGFsbG9jYXRlIG11bHRpcGxlIFBBU0lEcyBmb3IgdGhl
-IHNhbWUgCnByb2Nlc3MgYWRkcmVzcyBzcGFjZS4KIMKgwqDCoCDCoMKgwqAgRS5nLiBzb21lIHRl
-YW1zIGF0IEFNRCB3YW50IHRvIHVzZSBhIHNlcGFyYXRlIEdQVSBhZGRyZXNzIHNwYWNlIApmb3Ig
-dGhlaXIgdXNlcnNwYWNlIGNsaWVudCBsaWJyYXJ5LiBJJ20gc3RpbGwgdHJ5aW5nIHRvIGF2b2lk
-IHRoYXQsIGJ1dCAKaXQgaXMgcGVyZmVjdGx5IHBvc3NpYmxlIHRoYXQgd2UgYXJlIGdvaW5nIHRv
-IG5lZWQgdGhhdC4KIMKgwqDCoCDCoMKgwqAgQWRkaXRpb25hbCB0byB0aGF0IGl0IGlzIHNvbWV0
-aW1lcyBxdWl0ZSB1c2VmdWwgZm9yIGRlYnVnZ2luZyAKdG8gaXNvbGF0ZSB3aGVyZSBleGFjdGx5
-IGFuIGluY29ycmVjdCBhY2Nlc3MgKHNlZ2ZhdWx0KSBpcyBjb21pbmcgZnJvbS4KCkxldCBtZSBr
-bm93IGlmIHRoZXJlIGFyZSBzb21lIHByb2JsZW1zIHdpdGggdGhhdCwgZXNwZWNpYWxseSBJIHdh
-bnQgdG8gCmtub3cgaWYgdGhlcmUgaXMgcHVzaGJhY2sgb24gIzUgc28gdGhhdCBJIGNhbiBmb3J3
-YXJkIHRoYXQgOikKClRoYW5rcywKQ2hyaXN0aWFuLgoKPgo+IFRoYW5rcywKPiBKZWFuCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi Vivek,
+
+On Thu, Aug 30, 2018 at 11:46 PM Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>
+> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>
+> The smmu device probe/remove and add/remove master device callbacks
+> gets called when the smmu is not linked to its master, that is without
+> the context of the master device. So calling runtime apis in those places
+> separately.
+> Global locks are also initialized before enabling runtime pm as the
+> runtime_resume() calls device_reset() which does tlb_sync_global()
+> that ultimately requires locks to be initialized.
+>
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> [vivek: Cleanup pm runtime calls]
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 89 +++++++++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 81 insertions(+), 8 deletions(-)
+[snip]
+> @@ -2215,10 +2281,17 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>         if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
+>                 dev_err(&pdev->dev, "removing device with active domains!\n");
+>
+> +       arm_smmu_rpm_get(smmu);
+>         /* Turn the thing off */
+>         writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+> +       arm_smmu_rpm_put(smmu);
+> +
+> +       if (pm_runtime_enabled(smmu->dev))
+> +               pm_runtime_force_suspend(smmu->dev);
+> +       else
+> +               clk_bulk_disable(smmu->num_clks, smmu->clks);
+>
+> -       clk_bulk_disable_unprepare(smmu->num_clks, smmu->clks);
+> +       clk_bulk_unprepare(smmu->num_clks, smmu->clks);
+
+Aren't we missing pm_runtime_disable() here? We'll have the enable
+count unbalanced if the driver is removed and probed again.
+
+Also, if we add pm_runtime_disable(), we can reorder things a bit and
+simplify into:
+
+       arm_smmu_rpm_get(smmu);
+
+       /* Turn the thing off */
+       writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+
+       if (pm_runtime_enabled())
+               pm_runtime_disable();
+        arm_smmu_rpm_put(smmu);
+
+        clk_bulk_disable_unprepare(smmu->num_clks, smmu->clks);
+
+Best regards,
+Tomasz
