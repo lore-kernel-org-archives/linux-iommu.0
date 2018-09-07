@@ -1,123 +1,102 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
-Date: Fri, 7 Sep 2018 09:11:14 +0200
-Message-ID: <953746f3-352b-cd17-9938-eb78af3b58a9@redhat.com>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
- <2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
- <e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
- <9013df5a-02f9-55b8-eb5e-fad4be0a2c92@redhat.com>
- <289610e3-2633-e448-259c-194e6f2c2b52@arm.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH v8 4/8] media: platform: Add Cedrus VPU decoder driver
+Date: Fri, 7 Sep 2018 17:05:01 +0900
+Message-ID: <CAAFQd5A1NFBE8x8h-CYrusmqR5sJzhQdgyrhU5oVbPR22vu6wg@mail.gmail.com>
+References: <20180828073424.30247-1-paul.kocialkowski@bootlin.com>
+ <20180828073424.30247-5-paul.kocialkowski@bootlin.com>
+ <5faf5eed-eb2c-f804-93e3-5a42f6204d99@xs4all.nl>
+ <b7b3cb2320978d45acb34475d15abd7bf03da367.camel@paulk.fr>
+ <461c6a0d-a346-b9da-b75e-4aab907054df@xs4all.nl>
+ <CAAFQd5Cmc7uFhprsoTU6Gq19n3z2eiUfZZ2ZjDW4QWVWMDN6tg@mail.gmail.com>
+ <7a2167a3-5b61-0937-7f06-8b36fa12e7a0@xs4all.nl>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <289610e3-2633-e448-259c-194e6f2c2b52@arm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>
-Cc: Jean Delvare <khali@linux-fr.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Raj Ashok <ashok.raj@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <driverdev-devel-bounces@linuxdriverproject.org>
+In-Reply-To: <7a2167a3-5b61-0937-7f06-8b36fa12e7a0@xs4all.nl>
+List-Unsubscribe: <http://driverdev.linuxdriverproject.org/mailman/options/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=unsubscribe>
+List-Archive: <http://driverdev.linuxdriverproject.org/pipermail/driverdev-devel/>
+List-Post: <mailto:driverdev-devel@linuxdriverproject.org>
+List-Help: <mailto:driverdev-devel-request@linuxdriverproject.org?subject=help>
+List-Subscribe: <http://driverdev.linuxdriverproject.org/mailman/listinfo/driverdev-devel>,
+ <mailto:driverdev-devel-request@linuxdriverproject.org?subject=subscribe>
+Errors-To: driverdev-devel-bounces@linuxdriverproject.org
+Sender: "devel" <driverdev-devel-bounces@linuxdriverproject.org>
+To: Hans Verkuil <hverkuil@xs4all.nl>
+Cc: Mark Rutland <mark.rutland@arm.com>, Maxime Ripard <maxime.ripard@bootlin.com>, contact@paulk.fr, linux-sunxi@googlegroups.com, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, thomas.petazzoni@bootlin.com, devel@driverdev.osuosl.org, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <joro@8bytes.org>, Chen-Yu Tsai <wens@csie.org>, Linux Media Mailing List <linux-media@vger.kernel.org>, devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>, ayaka <ayaka@soulik.info>, Rob Herring <robh+dt@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Ezequiel Garcia <ezequiel@collabora.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>, Alexandre Courbot <acourbot@chromium.org>, Greg KH <gregkh@linuxfoundation.org>Li
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
-
-On 09/06/2018 07:06 PM, Jean-Philippe Brucker wrote:
-> On 06/09/2018 14:14, Auger Eric wrote:
->> Hi Jean-Philippe,
->>
->> On 09/06/2018 02:42 PM, Jean-Philippe Brucker wrote:
->>> On 06/09/2018 10:25, Auger Eric wrote:
->>>>> +		mutex_lock(&fparam->lock);
->>>>> +		list_add_tail(&evt_pending->list, &fparam->faults);
->>>> same doubt as Yi Liu. You cannot rely on the userspace willingness to
->>>> void the queue and deallocate this memory.
->>
->> By the way I saw there is a kind of garbage collectors for faults which
->> wouldn't have received any responses. However I am not sure this removes
->> the concern of having the fault list on kernel side growing beyond
->> acceptable limits.
-> 
-> How about per-device quotas? (https://lkml.org/lkml/2018/4/23/706 for
-> reference) With PRI the IOMMU driver already sets per-device credits
-> when initializing the device (pci_enable_pri), so if the device behaves
-> properly it shouldn't send new page requests once the number of
-> outstanding ones is maxed out.
-
-But this needs to work for non PRI use case too?
-> 
-> The stall mode of SMMU doesn't have per-device limit, and depending on
-> the implementation it might be easy for one guest using stall to prevent
-> other guests from receiving faults. For this reason we'll have to
-> enforce a per-device stall quota in the SMMU driver, and immediately
-> terminate faults that exceed this quota. We could easily do the same for
-> PRI, if we don't trust devices to follow the spec. The difficult part is
-> finding the right number of credits...
-> 
->>> Host device drivers that use this API to be notified on fault can't deal
->>> with arch-specific event formats (SMMU event, Vt-d fault event, etc), so
->>> the APIs should be arch-agnostic. Given that requirement, using a single
->>> iommu_fault_event structure for both PRI and event queues made sense,
->>> especially since the even queue can have stall events that look a lot
->>> like PRI page requests.
->> I understand the data structure needs to be generic. Now I guess PRI
->> events and other standard translator error events (that can happen
->> without PRI) may have different characteristics in event fields,
-> 
-> Right, an event contains more information than a PRI page request.
-> Stage-2 fields (CLASS, S2, IPA, TTRnW) cannot be represented by
-> iommu_fault_event at the moment.
-
-Yes I am currently doing the mapping exercise between SMMUv3 events and
-iommu_fault_event and I miss config errors for instance.
- For precise emulation it might be
-> useful to at least add the S2 flag (as a new iommu_fault_reason?), so
-> that when the guest maps stage-1 to an invalid GPA, QEMU could for
-> example inject an external abort.
-
-Actually we may even need to filter events and return to the guest only
-the S1 related.
-> 
->> queue
->> size, that may deserve to create different APIs and internal data
->> structs. Also this may help separating the concerns.
-> 
-> It might duplicate them. If the consumer of the event report is a host
-> device driver, the SMMU needs to report a "generic" iommu_fault_event,
-> and if the consumer is VFIO it would report a specialized one
-
-I am unsure of my understanding of the UNRECOVERABLE error type. Is it
-everything else than a PRI. For instance are all SMMUv3 event errors
-supposed to be put under the IOMMU_FAULT_DMA_UNRECOV umbrella?
-
-If I understand correctly there are different consumers for PRI and
-unrecoverable data, so why not having 2 different APIs.
-> 
->> My remark also
->> stems from the fact the SMMU uses 2 different queues, whose size can
->> also be different.
-> 
-> Hm, for PRI requests the kernel-userspace queue size should actually be
-> the number of PRI credits for that device. Hadn't thought about it
-> before, where do we pass that info to userspace?
-Cannot help here at the moment, sorry.
- For fault events, the
-> queue could be as big as the SMMU event queue, though using all that
-> space might be wasteful.
-The guest has its own programming of the SMMU_EVENTQ_BASE.LOG2SIZE. This
-could be used to program the SW fifo
-
- Non-stalled events should be rare and reporting
-> them isn't urgent. Stalled ones would need the number of stall credits I
-> mentioned above, which realistically will be a lot less than the SMMU
-> event queue size. Given that a device will use either PRI or stall but
-> not both, I still think events and PRI could go through the same queue.
-Did I get it right PRI is for PCIe and STALL for non PCIe? But all that
-stuff also is related to Page Request use case, right?
-
-Thanks
-
-Eric
-> 
-> Thanks,
-> Jean
-> 
+T24gVGh1LCBTZXAgNiwgMjAxOCBhdCA0OjM5IFBNIEhhbnMgVmVya3VpbCA8aHZlcmt1aWxAeHM0
+YWxsLm5sPiB3cm90ZToKPgo+IE9uIDA5LzA2LzIwMTggMDk6MjUgQU0sIFRvbWFzeiBGaWdhIHdy
+b3RlOgo+ID4gT24gVGh1LCBTZXAgNiwgMjAxOCBhdCA0OjAxIFBNIEhhbnMgVmVya3VpbCA8aHZl
+cmt1aWxAeHM0YWxsLm5sPiB3cm90ZToKPiA+Pgo+ID4+IE9uIDA5LzA1LzIwMTggMDY6MjkgUE0s
+IFBhdWwgS29jaWFsa293c2tpIHdyb3RlOgo+ID4+PiBIaSBhbmQgdGhhbmtzIGZvciB0aGUgcmV2
+aWV3IQo+ID4+Pgo+ID4+PiBMZSBsdW5kaSAwMyBzZXB0ZW1icmUgMjAxOCDDoCAxMToxMSArMDIw
+MCwgSGFucyBWZXJrdWlsIGEgw6ljcml0IDoKPiA+Pj4+IE9uIDA4LzI4LzIwMTggMDk6MzQgQU0s
+IFBhdWwgS29jaWFsa293c2tpIHdyb3RlOgo+ID4+Pj4+ICtzdGF0aWMgaW50IGNlZHJ1c19yZXF1
+ZXN0X3ZhbGlkYXRlKHN0cnVjdCBtZWRpYV9yZXF1ZXN0ICpyZXEpCj4gPj4+Pj4gK3sKPiA+Pj4+
+PiArICAgc3RydWN0IG1lZGlhX3JlcXVlc3Rfb2JqZWN0ICpvYmosICpvYmpfc2FmZTsKPiA+Pj4+
+PiArICAgc3RydWN0IHY0bDJfY3RybF9oYW5kbGVyICpwYXJlbnRfaGRsLCAqaGRsOwo+ID4+Pj4+
+ICsgICBzdHJ1Y3QgY2VkcnVzX2N0eCAqY3R4ID0gTlVMTDsKPiA+Pj4+PiArICAgc3RydWN0IHY0
+bDJfY3RybCAqY3RybF90ZXN0Owo+ID4+Pj4+ICsgICB1bnNpZ25lZCBpbnQgaTsKPiA+Pj4+PiAr
+Cj4gPj4+Pj4gKyAgIGxpc3RfZm9yX2VhY2hfZW50cnlfc2FmZShvYmosIG9ial9zYWZlLCAmcmVx
+LT5vYmplY3RzLCBsaXN0KSB7Cj4gPj4+Pgo+ID4+Pj4gWW91IGRvbid0IG5lZWQgdG8gdXNlIHRo
+ZSBfc2FmZSB2YXJpYW50IGR1cmluZyB2YWxpZGF0aW9uLgo+ID4+Pgo+ID4+PiBPa2F5LCBJJ2xs
+IHVzZSB0aGUgcmVndWxhciBvbmUgdGhlbi4KPiA+Pj4KPiA+Pj4+PiArICAgICAgICAgICBzdHJ1
+Y3QgdmIyX2J1ZmZlciAqdmI7Cj4gPj4+Pj4gKwo+ID4+Pj4+ICsgICAgICAgICAgIGlmICh2YjJf
+cmVxdWVzdF9vYmplY3RfaXNfYnVmZmVyKG9iaikpIHsKPiA+Pj4+PiArICAgICAgICAgICAgICAg
+ICAgIHZiID0gY29udGFpbmVyX29mKG9iaiwgc3RydWN0IHZiMl9idWZmZXIsIHJlcV9vYmopOwo+
+ID4+Pj4+ICsgICAgICAgICAgICAgICAgICAgY3R4ID0gdmIyX2dldF9kcnZfcHJpdih2Yi0+dmIy
+X3F1ZXVlKTsKPiA+Pj4+PiArCj4gPj4+Pj4gKyAgICAgICAgICAgICAgICAgICBicmVhazsKPiA+
+Pj4+PiArICAgICAgICAgICB9Cj4gPj4+Pj4gKyAgIH0KPiA+Pj4+Cj4gPj4+PiBJbnRlcmVzdGlu
+ZyBxdWVzdGlvbjogd2hhdCBoYXBwZW5zIGlmIG1vcmUgdGhhbiBvbmUgYnVmZmVyIGlzIHF1ZXVl
+ZCBpbiB0aGUKPiA+Pj4+IHJlcXVlc3Q/IFRoaXMgaXMgYWxsb3dlZCBieSB0aGUgcmVxdWVzdCBB
+UEkgYW5kIGluIHRoYXQgY2FzZSB0aGUgYXNzb2NpYXRlZAo+ID4+Pj4gY29udHJvbHMgaW4gdGhl
+IHJlcXVlc3QgYXBwbHkgdG8gYWxsIHF1ZXVlZCBidWZmZXJzLgo+ID4+Pj4KPiA+Pj4+IFdvdWxk
+IHRoaXMgbWFrZSBzZW5zZSBhdCBhbGwgZm9yIHRoaXMgZHJpdmVyPyBJZiBub3QsIHRoZW4geW91
+IG5lZWQgdG8KPiA+Pj4+IGNoZWNrIGhlcmUgaWYgdGhlcmUgaXMgbW9yZSB0aGFuIG9uZSBidWZm
+ZXIgaW4gdGhlIHJlcXVlc3QgYW5kIGRvY3VtZW50IGluCj4gPj4+PiB0aGUgc3BlYyB0aGF0IHRo
+aXMgaXMgbm90IGFsbG93ZWQuCj4gPj4+Cj4gPj4+IFdlbGwsIG91ciBkcml2ZXIgd2FzIHdyaXR0
+ZW4gd2l0aCB0aGUgKHVuZm9ybWFsKSBhc3N1bXB0aW9uIHRoYXQgd2UKPiA+Pj4gb25seSBkZWFs
+IHdpdGggYSBwYWlyIG9mIG9uZSBvdXRwdXQgYW5kIG9uZSBjYXB0dXJlIGJ1ZmZlci4gU28gSSB3
+aWxsCj4gPj4+IGFkZCBhIGNoZWNrIGZvciB0aGlzIGF0IHJlcXVlc3QgdmFsaWRhdGlvbiB0aW1l
+IGFuZCBkb2N1bWVudCBpdCBpbiB0aGUKPiA+Pj4gc3BlYy4gU2hvdWxkIHRoYXQgYmUgcGFydCBv
+ZiB0aGUgTVBFRy0yIFBJWEZNVCBkb2N1bWVudGF0aW9uIChhbmQKPiA+Pj4gZHVwbGljYXRlZCBm
+b3IgZnV0dXJlIGZvcm1hdHMgd2UgYWRkIHN1cHBvcnQgZm9yKT8KPiA+Pgo+ID4+IENhbiB5b3Ug
+bWFrZSBhIHBhdGNoIGZvciB2YjJfcmVxdWVzdF9oYXNfYnVmZmVycygpIGluIHZpZGVvYnVmMi1j
+b3JlLmMKPiA+PiByZW5hbWluZyBpdCB0byB2YjJfcmVxdWVzdF9idWZmZXJfY250KCkgYW5kIHJl
+dHVybmluZyB0aGUgbnVtYmVyIG9mIGJ1ZmZlcnMKPiA+PiBpbiB0aGUgcmVxdWVzdD8KPiA+Pgo+
+ID4+IFRoZW4geW91IGNhbiBjYWxsIGl0IGhlcmUgdG8gY2hlY2sgdGhhdCB5b3UgaGF2ZSBvbmx5
+IG9uZSBidWZmZXIuCj4gPj4KPiA+PiBBbmQgdGhpcyBoYXMgdG8gYmUgZG9jdW1lbnRlZCB3aXRo
+IHRoZSBQSVhGTVQuCj4gPj4KPiA+PiBNdWx0aXBsZSBidWZmZXJzIGFyZSBjZXJ0YWlubHkgcG9z
+c2libGUgaW4gbm9uLWNvZGVjIHNjZW5hcmlvcyAodmltMm0gYW5kCj4gPj4gdml2aWQgaGFwcGls
+eSBhY2NlcHQgdGhhdCksIHNvIHRoaXMgaXMgYW4gZXhjZXB0aW9uIHRoYXQgc2hvdWxkIGJlCj4g
+Pj4gZG9jdW1lbnRlZCBhbmQgY2hlY2tlZCBpbiB0aGUgY29kZWMgZHJpdmVyLgo+ID4KPiA+IEht
+bSwgaXNuJ3QgaXQgc3RpbGwgMSBidWZmZXIgcGVyIDEgcXVldWUgYW5kIGp1c3QgbXVsdGlwbGUg
+cXVldWVzCj4gPiBpbmNsdWRlZCBpbiB0aGUgcmVxdWVzdD8KPgo+IE5vLiBUaGUgcmVxdWVzdCBB
+UEkgYWxsb3dzIG11bHRpcGxlIGJ1ZmZlcnMgZm9yIHRoZSBzYW1lIHZiMl9xdWV1ZSB0byBiZQo+
+IHF1ZXVlZCBmb3IgdGhlIHNhbWUgcmVxdWVzdCAob2J2aW91c2x5IHdoZW4gdGhlIHJlcXVlc3Qg
+aXMgY29tbWl0dGVkLCB0aGUKPiBidWZmZXJzIGFyZSBxdWV1ZWQgdG8gdGhlIGRyaXZlciBpbiB0
+aGUgc2FtZSBvcmRlcikuCj4KPiA+Cj4gPiBJZiB3ZSBpbmRlZWQgYWxsb3cgbXVsdGlwbGUgYnVm
+ZmVycyBmb3IgdGhlIHNhbWUgcXVldWUgaW4gYSByZXF1ZXN0LAo+ID4gd2Ugc2hvdWxkbid0IHJl
+c3RyaWN0IHRoaXMgb24gYSBwZXItZHJpdmVyIGJhc2lzLiBJdCdzIGRlZmluaXRlbHkgbm90Cj4g
+PiBhIGhhcmR3YXJlIGxpbWl0YXRpb24sIHNpbmNlIHRoZSBkcml2ZXIgY291bGQganVzdCBkbyB0
+aGUgc2FtZSBhcyBpZiAyCj4gPiByZXF1ZXN0cyB3aXRoIHRoZSBzYW1lIGNvbnRyb2xzIHdlcmUg
+Z2l2ZW4uCj4KPiBUaGF0J3MgaG93IGl0IG9wZXJhdGVzOiBmb3IgYWxsIGJ1ZmZlcnMgaW4gdGhl
+IHJlcXVlc3QgdGhlIHNhbWUgY29udHJvbHMKPiBhcHBseS4gQnV0IGRvZXMgdGhpcyBtYWtlIHNl
+bnNlIGZvciBjb2RlY3M/IElmIHRoZSBjb250cm9sKHMpIHdpdGggdGhlCj4gY29kZWMgbWV0YWRh
+dGEgYWx3YXlzIGNoYW5nZSBmb3IgZXZlcnkgYnVmZmVyLCB0aGVuIGhhdmluZyBtb3JlIHRoYW4g
+b25lCj4gYnVmZmVyIGluIHRoZSByZXF1ZXN0IGlzIHNlbnNlbGVzcyBhbmQgdGhlIGRyaXZlciBz
+aG91bGQgY2hlY2sgZm9yIHRoaXMKPiBpbiB0aGUgdmFsaWRhdGlvbiBzdGVwLgo+Cj4gSWYgaXQg
+KmRvZXMqIG1ha2Ugc2Vuc2UgaW4gc29tZSBjaXJjdW1zdGFuY2VzIHRvIGhhdmUgdGhlIHNhbWUg
+bWV0YWRhdGEKPiBmb3IgbXVsdGlwbGUgYnVmZmVycywgdGhlbiBpdCBzaG91bGQgYmUgY2hlY2tl
+ZCBpZiB0aGUgY2VkcnVzIGRyaXZlcgo+IGhhbmRsZXMgdGhpcyBjb3JyZWN0bHkuCgpKdXN0IEZZ
+SSwgd2UgbWF5IHdhbnQgdG8gbW92ZSB0aGlzIGRpc2N1c3Npb24gdG8gQWxleCdzIFJGQyB3aXRo
+CmRvY3VtZW50YXRpb24gb2Ygc3RhdGVsZXNzIGludGVyZmFjZToKaHR0cHM6Ly9wYXRjaHdvcmsu
+a2VybmVsLm9yZy9wYXRjaC8xMDU4MzIzMy8KCkJlc3QgcmVnYXJkcywKVG9tYXN6Cl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRldmVsIG1haWxpbmcgbGlz
+dApkZXZlbEBsaW51eGRyaXZlcnByb2plY3Qub3JnCmh0dHA6Ly9kcml2ZXJkZXYubGludXhkcml2
+ZXJwcm9qZWN0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaXZlcmRldi1kZXZlbAo=
