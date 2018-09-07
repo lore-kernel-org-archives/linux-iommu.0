@@ -1,16 +1,18 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v2 06/12] iommu/vt-d: Add second level page table interface
-Date: Fri, 7 Sep 2018 10:47:11 +0800
-Message-ID: <331eef29-ae41-2d36-9487-265d773aae5b@linux.intel.com>
-References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
-	<20180830013524.28743-7-baolu.lu@linux.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D1912F2C24@SHSMSX101.ccr.corp.intel.com>
+From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Fri, 7 Sep 2018 12:01:38 +0800
+Message-ID: <20180907040138.GI230707@Turing-Arch-b>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+	<20180904150019.GA4024@redhat.com>
+	<20180904101509.62314b67@t450s.home>
+	<20180906094532.GG230707@Turing-Arch-b>
+	<20180906133133.GA3830@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2C24-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20180906133133.GA3830-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,441 +22,197 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On 09/06/2018 11:11 AM, Tian, Kevin wrote:
->> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
->> Sent: Thursday, August 30, 2018 9:35 AM
->>
->> This adds the interfaces to setup or tear down the structures
->> for second level page table translations. This includes types
->> of second level only translation and pass through.
->>
->> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->> Reviewed-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> ---
->>   drivers/iommu/intel-iommu.c |   2 +-
->>   drivers/iommu/intel-pasid.c | 246
->> ++++++++++++++++++++++++++++++++++++
->>   drivers/iommu/intel-pasid.h |   7 +
->>   include/linux/intel-iommu.h |   3 +
->>   4 files changed, 257 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 562da10bf93e..de6b909bb47a 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -1232,7 +1232,7 @@ static void iommu_set_root_entry(struct
->> intel_iommu *iommu)
->>   	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
->>   }
->>
->> -static void iommu_flush_write_buffer(struct intel_iommu *iommu)
->> +void iommu_flush_write_buffer(struct intel_iommu *iommu)
->>   {
->>   	u32 val;
->>   	unsigned long flag;
->> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
->> index d6e90cd5b062..edcea1d8b9fc 100644
->> --- a/drivers/iommu/intel-pasid.c
->> +++ b/drivers/iommu/intel-pasid.c
->> @@ -9,6 +9,7 @@
->>
->>   #define pr_fmt(fmt)	"DMAR: " fmt
->>
->> +#include <linux/bitops.h>
->>   #include <linux/dmar.h>
->>   #include <linux/intel-iommu.h>
->>   #include <linux/iommu.h>
->> @@ -291,3 +292,248 @@ void intel_pasid_clear_entry(struct device *dev,
->> int pasid)
->>
->>   	pasid_clear_entry(pe);
->>   }
->> +
->> +static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
->> +{
->> +	u64 old;
->> +
->> +	old = READ_ONCE(*ptr);
->> +	WRITE_ONCE(*ptr, (old & ~mask) | bits);
->> +}
->> +
->> +/*
->> + * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
->> + * PASID entry.
->> + */
->> +static inline void
->> +pasid_set_domain_id(struct pasid_entry *pe, u64 value)
->> +{
->> +	pasid_set_bits(&pe->val[1], GENMASK_ULL(15, 0), value);
->> +}
->> +
->> +/*
->> + * Setup the SLPTPTR(Second Level Page Table Pointer) field (Bit 12~63)
->> + * of a scalable mode PASID entry.
->> + */
->> +static inline void
->> +pasid_set_address_root(struct pasid_entry *pe, u64 value)
-> 
-> is address_root too general? especially when the entry could contain both
-> 1st level and 2nd level pointers.
-> 
-
-Yes. Should be changed to a specific name like pasid_set_slpt_ptr().
-
->> +{
->> +	pasid_set_bits(&pe->val[0], VTD_PAGE_MASK, value);
->> +}
->> +
->> +/*
->> + * Setup the AW(Address Width) field (Bit 2~4) of a scalable mode PASID
->> + * entry.
->> + */
->> +static inline void
->> +pasid_set_address_width(struct pasid_entry *pe, u64 value)
->> +{
->> +	pasid_set_bits(&pe->val[0], GENMASK_ULL(4, 2), value << 2);
->> +}
->> +
->> +/*
->> + * Setup the PGTT(PASID Granular Translation Type) field (Bit 6~8)
->> + * of a scalable mode PASID entry.
->> + */
->> +static inline void
->> +pasid_set_translation_type(struct pasid_entry *pe, u64 value)
->> +{
->> +	pasid_set_bits(&pe->val[0], GENMASK_ULL(8, 6), value << 6);
->> +}
->> +
->> +/*
->> + * Enable fault processing by clearing the FPD(Fault Processing
->> + * Disable) field (Bit 1) of a scalable mode PASID entry.
->> + */
->> +static inline void pasid_set_fault_enable(struct pasid_entry *pe)
->> +{
->> +	pasid_set_bits(&pe->val[0], 1 << 1, 0);
->> +}
->> +
->> +/*
->> + * Setup the SRE(Supervisor Request Enable) field (Bit 128) of a
->> + * scalable mode PASID entry.
->> + */
->> +static inline void pasid_set_sre(struct pasid_entry *pe)
->> +{
->> +	pasid_set_bits(&pe->val[2], 1 << 0, 1);
->> +}
->> +
->> +/*
->> + * Setup the P(Present) field (Bit 0) of a scalable mode PASID
->> + * entry.
->> + */
->> +static inline void pasid_set_present(struct pasid_entry *pe)
->> +{
->> +	pasid_set_bits(&pe->val[0], 1 << 0, 1);
->> +}
-> 
-> it's a long list and there could be more in the future. What about
-> defining some macro to simplify LOC, e.g.
-> 
-> #define PASID_SET(name, i, m, b)				\
-> static inline void pasid_set_name(struct pasid_entry *pe)	\
-> {								\
-> 	pasid_set_bits(&pe->val[i], m, b);			\
-> }
-> 
-> PASID_SET(present, 0, 1<<0, 1);
-> PASID_SET(sre, 2, 1<<0, 1);
-> ...
-> 
-
-Fair enough. This looks more concise.
-
->> +
->> +/*
->> + * Setup Page Walk Snoop bit (Bit 87) of a scalable mode PASID
->> + * entry.
->> + */
->> +static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
->> +{
->> +	pasid_set_bits(&pe->val[1], 1 << 23, value);
->> +}
->> +
->> +static void
->> +pasid_based_pasid_cache_invalidation(struct intel_iommu *iommu,
->> +				     int did, int pasid)
-> 
-> pasid_cache_invalidation_with_pasid
-
-Okay.
-
-> 
->> +{
->> +	struct qi_desc desc;
->> +
->> +	desc.qw0 = QI_PC_DID(did) | QI_PC_PASID_SEL |
->> QI_PC_PASID(pasid);
->> +	desc.qw1 = 0;
->> +	desc.qw2 = 0;
->> +	desc.qw3 = 0;
->> +
->> +	qi_submit_sync(&desc, iommu);
->> +}
->> +
->> +static void
->> +pasid_based_iotlb_cache_invalidation(struct intel_iommu *iommu,
->> +				     u16 did, u32 pasid)
-> 
-> iotlb_invalidation_with_pasid
-
-Okay.
-
-> 
->> +{
->> +	struct qi_desc desc;
->> +
->> +	desc.qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
->> +			QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
->> QI_EIOTLB_TYPE;
->> +	desc.qw1 = 0;
->> +	desc.qw2 = 0;
->> +	desc.qw3 = 0;
->> +
->> +	qi_submit_sync(&desc, iommu);
->> +}
->> +
->> +static void
->> +pasid_based_dev_iotlb_cache_invalidation(struct intel_iommu *iommu,
->> +					 struct device *dev, int pasid)
-> 
-> devtlb_invalidation_with_pasid
-
-Okay.
-
-> 
->> +{
->> +	struct device_domain_info *info;
->> +	u16 sid, qdep, pfsid;
->> +
->> +	info = dev->archdata.iommu;
->> +	if (!info || !info->ats_enabled)
->> +		return;
->> +
->> +	sid = info->bus << 8 | info->devfn;
->> +	qdep = info->ats_qdep;
->> +	pfsid = info->pfsid;
->> +
->> +	qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 -
->> VTD_PAGE_SHIFT);
->> +}
->> +
->> +static void tear_down_one_pasid_entry(struct intel_iommu *iommu,
->> +				      struct device *dev, u16 did,
->> +				      int pasid)
->> +{
->> +	struct pasid_entry *pte;
-> 
-> ptep
-> 
-
-Okay.
-
->> +
->> +	intel_pasid_clear_entry(dev, pasid);
->> +
->> +	if (!ecap_coherent(iommu->ecap)) {
->> +		pte = intel_pasid_get_entry(dev, pasid);
->> +		clflush_cache_range(pte, sizeof(*pte));
->> +	}
->> +
->> +	pasid_based_pasid_cache_invalidation(iommu, did, pasid);
->> +	pasid_based_iotlb_cache_invalidation(iommu, did, pasid);
->> +
->> +	/* Device IOTLB doesn't need to be flushed in caching mode. */
->> +	if (!cap_caching_mode(iommu->cap))
->> +		pasid_based_dev_iotlb_cache_invalidation(iommu, dev,
->> pasid);
-> 
-> can you elaborate, or point to any spec reference?
-> 
-
-In the driver, device iotlb doesn't get flushed in caching mode. I just
-follow what have been done there.
-
-It also makes sense to me since only the bare metal host needs to
-consider whether and how to flush the device iotlb.
-
->> +}
->> +
->> +/*
->> + * Set up the scalable mode pasid table entry for second only or
->> + * passthrough translation type.
->> + */
->> +int intel_pasid_setup_second_level(struct intel_iommu *iommu,
-> 
-> second_level doesn't imply passthrough. what about intel_pasid_
-> setup_common, which is then invoked by SL or PT individually (
-> or even FL)?
-
-Fair enough. Will refine this part of code.
-
-> 
->> +				   struct dmar_domain *domain,
->> +				   struct device *dev, int pasid,
->> +				   bool pass_through)
->> +{
->> +	struct pasid_entry *pte;
->> +	struct dma_pte *pgd;
->> +	u64 pgd_val;
->> +	int agaw;
->> +	u16 did;
->> +
->> +	/*
->> +	 * If hardware advertises no support for second level translation,
->> +	 * we only allow pass through translation setup.
->> +	 */
->> +	if (!(ecap_slts(iommu->ecap) || pass_through)) {
->> +		pr_err("No first level translation support on %s, only pass-
-> 
-> first->second
-
-Sure.
-
-> 
->> through mode allowed\n",
->> +		       iommu->name);
->> +		return -EINVAL;
->> +	}
->> +
->> +	/*
->> +	 * Skip top levels of page tables for iommu which has less agaw
-> 
-> skip doesn't mean error
-
-Yes. But it's an error if we can't skip ... :-)
-
-> 
->> +	 * than default. Unnecessary for PT mode.
->> +	 */
->> +	pgd = domain->pgd;
->> +	if (!pass_through) {
->> +		for (agaw = domain->agaw; agaw != iommu->agaw; agaw--)
->> {
->> +			pgd = phys_to_virt(dma_pte_addr(pgd));
->> +			if (!dma_pte_present(pgd)) {
->> +				dev_err(dev, "Invalid domain page table\n");
->> +				return -EINVAL;
->> +			}
->> +		}
->> +	}
->> +	pgd_val = pass_through ? 0 : virt_to_phys(pgd);
->> +	did = pass_through ? FLPT_DEFAULT_DID :
->> +			domain->iommu_did[iommu->seq_id];
->> +
->> +	pte = intel_pasid_get_entry(dev, pasid);
->> +	if (!pte) {
->> +		dev_err(dev, "Failed to get pasid entry of PASID %d\n",
->> pasid);
->> +		return -ENODEV;
->> +	}
->> +
->> +	pasid_clear_entry(pte);
->> +	pasid_set_domain_id(pte, did);
->> +
->> +	if (!pass_through)
->> +		pasid_set_address_root(pte, pgd_val);
->> +
->> +	pasid_set_address_width(pte, iommu->agaw);
->> +	pasid_set_translation_type(pte, pass_through ? 4 : 2);
->> +	pasid_set_fault_enable(pte);
->> +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
->> +
->> +	/*
->> +	 * Since it is a second level only translation setup, we should
->> +	 * set SRE bit as well (addresses are expected to be GPAs).
->> +	 */
->> +	pasid_set_sre(pte);
->> +	pasid_set_present(pte);
->> +
->> +	if (!ecap_coherent(iommu->ecap))
->> +		clflush_cache_range(pte, sizeof(*pte));
->> +
->> +	if (cap_caching_mode(iommu->cap)) {
->> +		pasid_based_pasid_cache_invalidation(iommu, did, pasid);
->> +		pasid_based_iotlb_cache_invalidation(iommu, did, pasid);
->> +	} else {
->> +		iommu_flush_write_buffer(iommu);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +/*
->> + * Tear down the scalable mode pasid table entry for second only or
->> + * passthrough translation type.
->> + */
->> +void intel_pasid_tear_down_second_level(struct intel_iommu *iommu,
->> +					struct dmar_domain *domain,
->> +					struct device *dev, int pasid)
->> +{
->> +	u16 did = domain->iommu_did[iommu->seq_id];
->> +
->> +	tear_down_one_pasid_entry(iommu, dev, did, pasid);
->> +}
->> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
->> index 03c1612d173c..85b158a1826a 100644
->> --- a/drivers/iommu/intel-pasid.h
->> +++ b/drivers/iommu/intel-pasid.h
->> @@ -49,5 +49,12 @@ struct pasid_table *intel_pasid_get_table(struct
->> device *dev);
->>   int intel_pasid_get_dev_max_id(struct device *dev);
->>   struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
->>   void intel_pasid_clear_entry(struct device *dev, int pasid);
->> +int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->> +				   struct dmar_domain *domain,
->> +				   struct device *dev, int pasid,
->> +				   bool pass_through);
->> +void intel_pasid_tear_down_second_level(struct intel_iommu *iommu,
->> +					struct dmar_domain *domain,
->> +					struct device *dev, int pasid);
->>
->>   #endif /* __INTEL_PASID_H */
->> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
->> index 72aff482b293..d77d23dfd221 100644
->> --- a/include/linux/intel-iommu.h
->> +++ b/include/linux/intel-iommu.h
->> @@ -115,6 +115,8 @@
->>    * Extended Capability Register
->>    */
->>
->> +#define ecap_smpwc(e)		(((e) >> 48) & 0x1)
->> +#define ecap_slts(e)		(((e) >> 46) & 0x1)
->>   #define ecap_smts(e)		(((e) >> 43) & 0x1)
->>   #define ecap_dit(e)		((e >> 41) & 0x1)
->>   #define ecap_pasid(e)		((e >> 40) & 0x1)
->> @@ -571,6 +573,7 @@ void free_pgtable_page(void *vaddr);
->>   struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
->>   int for_each_device_domain(int (*fn)(struct device_domain_info *info,
->>   				     void *data), void *data);
->> +void iommu_flush_write_buffer(struct intel_iommu *iommu);
->>
->>   #ifdef CONFIG_INTEL_IOMMU_SVM
->>   int intel_svm_init(struct intel_iommu *iommu);
->> --
->> 2.17.1
-> 
-> 
-
-Best regards,
-Lu Baolu
+T24gVGh1LCBTZXAgMDYsIDIwMTggYXQgMDk6MzE6MzNBTSAtMDQwMCwgSmVyb21lIEdsaXNzZSB3
+cm90ZToKPiBEYXRlOiBUaHUsIDYgU2VwIDIwMTggMDk6MzE6MzMgLTA0MDAKPiBGcm9tOiBKZXJv
+bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+Cj4gVG86IEtlbm5ldGggTGVlIDxsaWd1b3po
+dUBoaXNpbGljb24uY29tPgo+IENDOiBBbGV4IFdpbGxpYW1zb24gPGFsZXgud2lsbGlhbXNvbkBy
+ZWRoYXQuY29tPiwgS2VubmV0aCBMZWUKPiAgPG5lay5pbi5jbkBnbWFpbC5jb20+LCBKb25hdGhh
+biBDb3JiZXQgPGNvcmJldEBsd24ubmV0PiwgSGVyYmVydCBYdQo+ICA8aGVyYmVydEBnb25kb3Iu
+YXBhbmEub3JnLmF1PiwgIkRhdmlkIFMgLiBNaWxsZXIiIDxkYXZlbUBkYXZlbWxvZnQubmV0PiwK
+PiAgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+LCBIYW8gRmFuZyA8ZmFuZ2hhbzExQGh1
+YXdlaS5jb20+LCBaaG91IFdhbmcKPiAgPHdhbmd6aG91MUBoaXNpbGljb24uY29tPiwgWmFpYm8g
+WHUgPHh1emFpYm9AaHVhd2VpLmNvbT4sIFBoaWxpcHBlCj4gIE9tYnJlZGFubmUgPHBvbWJyZWRh
+bm5lQG5leGIuY29tPiwgR3JlZyBLcm9haC1IYXJ0bWFuCj4gIDxncmVna2hAbGludXhmb3VuZGF0
+aW9uLm9yZz4sIFRob21hcyBHbGVpeG5lciA8dGdseEBsaW51dHJvbml4LmRlPiwKPiAgbGludXgt
+ZG9jQHZnZXIua2VybmVsLm9yZywgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywKPiAgbGlu
+dXgtY3J5cHRvQHZnZXIua2VybmVsLm9yZywgaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5v
+cmcsCj4gIGt2bUB2Z2VyLmtlcm5lbC5vcmcsIGxpbnV4LWFjY2VsZXJhdG9yc0BsaXN0cy5vemxh
+YnMub3JnLCBMdSBCYW9sdQo+ICA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPiwgU2FuamF5IEt1
+bWFyIDxzYW5qYXkuay5rdW1hckBpbnRlbC5jb20+LAo+ICBsaW51eGFybUBodWF3ZWkuY29tCj4g
+U3ViamVjdDogUmU6IFtSRkN2MiBQQVRDSCAwLzddIEEgR2VuZXJhbCBBY2NlbGVyYXRvciBGcmFt
+ZXdvcmssIFdhcnBEcml2ZQo+IFVzZXItQWdlbnQ6IE11dHQvMS4xMC4wICgyMDE4LTA1LTE3KQo+
+IE1lc3NhZ2UtSUQ6IDwyMDE4MDkwNjEzMzEzMy5HQTM4MzBAcmVkaGF0LmNvbT4KPiAKPiBPbiBU
+aHUsIFNlcCAwNiwgMjAxOCBhdCAwNTo0NTozMlBNICswODAwLCBLZW5uZXRoIExlZSB3cm90ZToK
+PiA+IE9uIFR1ZSwgU2VwIDA0LCAyMDE4IGF0IDEwOjE1OjA5QU0gLTA2MDAsIEFsZXggV2lsbGlh
+bXNvbiB3cm90ZToKPiA+ID4gRGF0ZTogVHVlLCA0IFNlcCAyMDE4IDEwOjE1OjA5IC0wNjAwCj4g
+PiA+IEZyb206IEFsZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+Cj4g
+PiA+IFRvOiBKZXJvbWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+Cj4gPiA+IENDOiBLZW5u
+ZXRoIExlZSA8bmVrLmluLmNuQGdtYWlsLmNvbT4sIEpvbmF0aGFuIENvcmJldCA8Y29yYmV0QGx3
+bi5uZXQ+LAo+ID4gPiAgSGVyYmVydCBYdSA8aGVyYmVydEBnb25kb3IuYXBhbmEub3JnLmF1Piwg
+IkRhdmlkIFMgLiBNaWxsZXIiCj4gPiA+ICA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD4sIEpvZXJnIFJv
+ZWRlbCA8am9yb0A4Ynl0ZXMub3JnPiwgS2VubmV0aCBMZWUKPiA+ID4gIDxsaWd1b3podUBoaXNp
+bGljb24uY29tPiwgSGFvIEZhbmcgPGZhbmdoYW8xMUBodWF3ZWkuY29tPiwgWmhvdSBXYW5nCj4g
+PiA+ICA8d2FuZ3pob3UxQGhpc2lsaWNvbi5jb20+LCBaYWlibyBYdSA8eHV6YWlib0BodWF3ZWku
+Y29tPiwgUGhpbGlwcGUKPiA+ID4gIE9tYnJlZGFubmUgPHBvbWJyZWRhbm5lQG5leGIuY29tPiwg
+R3JlZyBLcm9haC1IYXJ0bWFuCj4gPiA+ICA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+LCBU
+aG9tYXMgR2xlaXhuZXIgPHRnbHhAbGludXRyb25peC5kZT4sCj4gPiA+ICBsaW51eC1kb2NAdmdl
+ci5rZXJuZWwub3JnLCBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnLAo+ID4gPiAgbGludXgt
+Y3J5cHRvQHZnZXIua2VybmVsLm9yZywgaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcs
+Cj4gPiA+ICBrdm1Admdlci5rZXJuZWwub3JnLCBsaW51eC1hY2NlbGVyYXRvcnNAbGlzdHMub3ps
+YWJzLm9yZywgTHUgQmFvbHUKPiA+ID4gIDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+LCBTYW5q
+YXkgS3VtYXIgPHNhbmpheS5rLmt1bWFyQGludGVsLmNvbT4sCj4gPiA+ICBsaW51eGFybUBodWF3
+ZWkuY29tCj4gPiA+IFN1YmplY3Q6IFJlOiBbUkZDdjIgUEFUQ0ggMC83XSBBIEdlbmVyYWwgQWNj
+ZWxlcmF0b3IgRnJhbWV3b3JrLCBXYXJwRHJpdmUKPiA+ID4gTWVzc2FnZS1JRDogPDIwMTgwOTA0
+MTAxNTA5LjYyMzE0YjY3QHQ0NTBzLmhvbWU+Cj4gPiA+IAo+ID4gPiBPbiBUdWUsIDQgU2VwIDIw
+MTggMTE6MDA6MTkgLTA0MDAKPiA+ID4gSmVyb21lIEdsaXNzZSA8amdsaXNzZUByZWRoYXQuY29t
+PiB3cm90ZToKPiA+ID4gCj4gPiA+ID4gT24gTW9uLCBTZXAgMDMsIDIwMTggYXQgMDg6NTE6NTdB
+TSArMDgwMCwgS2VubmV0aCBMZWUgd3JvdGU6Cj4gPiA+ID4gPiBGcm9tOiBLZW5uZXRoIExlZSA8
+bGlndW96aHVAaGlzaWxpY29uLmNvbT4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gV2FycERyaXZlIGlz
+IGFuIGFjY2VsZXJhdG9yIGZyYW1ld29yayB0byBleHBvc2UgdGhlIGhhcmR3YXJlIGNhcGFiaWxp
+dGllcwo+ID4gPiA+ID4gZGlyZWN0bHkgdG8gdGhlIHVzZXIgc3BhY2UuIEl0IG1ha2VzIHVzZSBv
+ZiB0aGUgZXhpc3QgdmZpbyBhbmQgdmZpby1tZGV2Cj4gPiA+ID4gPiBmYWNpbGl0aWVzLiBTbyB0
+aGUgdXNlciBhcHBsaWNhdGlvbiBjYW4gc2VuZCByZXF1ZXN0IGFuZCBETUEgdG8gdGhlCj4gPiA+
+ID4gPiBoYXJkd2FyZSB3aXRob3V0IGludGVyYWN0aW9uIHdpdGggdGhlIGtlcm5lbC4gVGhpcyBy
+ZW1vdmVzIHRoZSBsYXRlbmN5Cj4gPiA+ID4gPiBvZiBzeXNjYWxsLgo+ID4gPiA+ID4gCj4gPiA+
+ID4gPiBXYXJwRHJpdmUgaXMgdGhlIG5hbWUgZm9yIHRoZSB3aG9sZSBmcmFtZXdvcmsuIFRoZSBj
+b21wb25lbnQgaW4ga2VybmVsCj4gPiA+ID4gPiBpcyBjYWxsZWQgU0RNREVWLCBTaGFyZSBEb21h
+aW4gTWVkaWF0ZWQgRGV2aWNlLiBEcml2ZXIgZHJpdmVyIGV4cG9zZXMgaXRzCj4gPiA+ID4gPiBo
+YXJkd2FyZSByZXNvdXJjZSBieSByZWdpc3RlcmluZyB0byBTRE1ERVYgYXMgYSBWRklPLU1kZXYu
+IFNvIHRoZSB1c2VyCj4gPiA+ID4gPiBsaWJyYXJ5IG9mIFdhcnBEcml2ZSBjYW4gYWNjZXNzIGl0
+IHZpYSBWRklPIGludGVyZmFjZS4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gVGhlIHBhdGNoc2V0IGNv
+bnRhaW5zIGRvY3VtZW50IGZvciB0aGUgZGV0YWlsLiBQbGVhc2UgcmVmZXIgdG8gaXQgZm9yIG1v
+cmUKPiA+ID4gPiA+IGluZm9ybWF0aW9uLgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBUaGlzIHBhdGNo
+c2V0IGlzIGludGVuZGVkIHRvIGJlIHVzZWQgd2l0aCBKZWFuIFBoaWxpcHBlIEJydWNrZXIncyBT
+VkEKPiA+ID4gPiA+IHBhdGNoIFsxXSwgd2hpY2ggZW5hYmxlcyBub3Qgb25seSBJTyBzaWRlIHBh
+Z2UgZmF1bHQsIGJ1dCBhbHNvIFBBU0lECj4gPiA+ID4gPiBzdXBwb3J0IHRvIElPTU1VIGFuZCBW
+RklPLgo+ID4gPiA+ID4gCj4gPiA+ID4gPiBXaXRoIHRoZXNlIGZlYXR1cmVzLCBXYXJwRHJpdmUg
+Y2FuIHN1cHBvcnQgbm9uLXBpbm5lZCBtZW1vcnkgYW5kCj4gPiA+ID4gPiBtdWx0aS1wcm9jZXNz
+IGluIHRoZSBzYW1lIGFjY2VsZXJhdG9yIGRldmljZS4gIFdlIHRlc3RlZCBpdCBpbiBvdXIgU29D
+Cj4gPiA+ID4gPiBpbnRlZ3JhdGVkIEFjY2VsZXJhdG9yIChib2FyZCBJRDogRDA2LCBDaGlwIElE
+OiBISVAwOCkuIEEgcmVmZXJlbmNlIHdvcmsKPiA+ID4gPiA+IHRyZWUgY2FuIGJlIGZvdW5kIGhl
+cmU6IFsyXS4KPiA+ID4gPiA+IAo+ID4gPiA+ID4gQnV0IGl0IGlzIG5vdCBtYW5kYXRvcnkuIFRo
+aXMgcGF0Y2hzZXQgaXMgdGVzdGVkIGluIHRoZSBsYXRlc3QgbWFpbmxpbmUKPiA+ID4gPiA+IGtl
+cm5lbCB3aXRob3V0IHRoZSBTVkEgcGF0Y2hlcy4gIFNvIGl0IHN1cHBvcnRzIG9ubHkgb25lIHBy
+b2Nlc3MgZm9yIGVhY2gKPiA+ID4gPiA+IGFjY2VsZXJhdG9yLgo+ID4gPiA+ID4gCj4gPiA+ID4g
+PiBXZSBoYXZlIG5vdGljZWQgdGhlIElPTU1VIGF3YXJlIG1kZXYgUkZDIGFubm91bmNlZCByZWNl
+bnRseSBbM10uCj4gPiA+ID4gPiAKPiA+ID4gPiA+IFRoZSBJT01NVSBhd2FyZSBtZGV2IGhhcyBz
+aW1pbGFyIGlkZWEgYnV0IGRpZmZlcmVudCBpbnRlbnRpb24gY29tcGFyaW5nIHRvCj4gPiA+ID4g
+PiBXYXJwRHJpdmUuIEl0IGludGVuZHMgdG8gZGVkaWNhdGUgcGFydCBvZiB0aGUgaGFyZHdhcmUg
+cmVzb3VyY2UgdG8gYSBWTS4KPiA+ID4gPiA+IEFuZCB0aGUgZGVzaWduIGlzIHN1cHBvc2VkIHRv
+IGJlIHVzZWQgd2l0aCBTY2FsYWJsZSBJL08gVmlydHVhbGl6YXRpb24uCj4gPiA+ID4gPiBXaGls
+ZSBzZG1kZXYgaXMgaW50ZW5kZWQgdG8gc2hhcmUgdGhlIGhhcmR3YXJlIHJlc291cmNlIHdpdGgg
+YSBiaWcgYW1vdW50Cj4gPiA+ID4gPiBvZiBwcm9jZXNzZXMuICBJdCBqdXN0IHJlcXVpcmVzIHRo
+ZSBoYXJkd2FyZSBzdXBwb3J0aW5nIGFkZHJlc3MKPiA+ID4gPiA+IHRyYW5zbGF0aW9uIHBlciBw
+cm9jZXNzIChQQ0lFJ3MgUEFTSUQgb3IgQVJNIFNNTVUncyBzdWJzdHJlYW0gSUQpLgo+ID4gPiA+
+ID4gCj4gPiA+ID4gPiBCdXQgd2UgZG9uJ3Qgc2VlIHNlcmlvdXMgY29uZmxpY3Rpb24gb24gYm90
+aCBkZXNpZ24uIFdlIGJlbGlldmUgdGhleSBjYW4gYmUKPiA+ID4gPiA+IG5vcm1hbGl6ZWQgYXMg
+b25lLgo+ID4gPiA+ID4gICAKPiA+ID4gPiAKPiA+ID4gPiBTbyBvbmNlIGFnYWluIGkgZG8gbm90
+IHVuZGVyc3RhbmQgd2h5IHlvdSBhcmUgdHJ5aW5nIHRvIGRvIHRoaW5ncwo+ID4gPiA+IHRoaXMg
+d2F5LiBLZXJuZWwgYWxyZWFkeSBoYXZlIHRvbnMgb2YgZXhhbXBsZSBvZiBldmVyeXRoaW5nIHlv
+dQo+ID4gPiA+IHdhbnQgdG8gZG8gd2l0aG91dCBhIG5ldyBmcmFtZXdvcmsuIE1vcmVvdmVyIGkg
+YmVsaWV2ZSB5b3UgYXJlCj4gPiA+ID4gY29uZnVzZSBieSBWRklPLiBUbyBtZSBWRklPIGlzIGZv
+ciBWTSBub3QgdG8gY3JlYXRlIGdlbmVyYWwgZGV2aWNlCj4gPiA+ID4gZHJpdmVyIGZyYW1lIHdv
+cmsuCj4gPiA+IAo+ID4gPiBWRklPIGlzIGEgdXNlcnNwYWNlIGRyaXZlciBmcmFtZXdvcmssIHRo
+ZSBWTSB1c2UgY2FzZSBqdXN0IGhhcHBlbnMgdG8KPiA+ID4gYmUgYSByYXRoZXIgcHJvbGlmaWMg
+b25lLiAgVkZJTyB3YXMgbmV2ZXIgaW50ZW5kZWQgdG8gYmUgc29sZWx5IGEgVk0KPiA+ID4gZGV2
+aWNlIGludGVyZmFjZSBhbmQgaGFzIHNldmVyYWwgb3RoZXIgdXNlcnNwYWNlIHVzZXJzLCBub3Rh
+Ymx5IERQREsKPiA+ID4gYW5kIFNQREssIGFuIE5WTWUgYmFja2VuZCBpbiBRRU1VLCBhIHVzZXJz
+cGFjZSBOVk1lIGRyaXZlciwgYSBydWJ5Cj4gPiA+IHdyYXBwZXIsIGFuZCBwZXJoYXBzIG90aGVy
+cyB0aGF0IEknbSBub3QgYXdhcmUgb2YuICBXaGV0aGVyIHZmaW8gaXMKPiA+ID4gYXBwcm9wcmlh
+dGUgaW50ZXJmYWNlIGhlcmUgbWlnaHQgY2VydGFpbmx5IHN0aWxsIGJlIGEgZGViYXRhYmxlIHRv
+cGljLAo+ID4gPiBidXQgSSB3b3VsZCBzdHJvbmdseSBkaXNhZ3JlZSB3aXRoIHlvdXIgbGFzdCBz
+ZW50ZW5jZSBhYm92ZS4gIFRoYW5rcywKPiA+ID4gCj4gPiA+IEFsZXgKPiA+ID4gCj4gPiAKPiA+
+IFllcywgdGhhdCBpcyBhbHNvIG15IHN0YW5kcG9pbnQgaGVyZS4KPiA+IAo+ID4gPiA+IFNvIGhl
+cmUgaXMgeW91ciB1c2UgY2FzZSBhcyBpIHVuZGVyc3RhbmQgaXQuIFlvdSBoYXZlIGEgZGV2aWNl
+Cj4gPiA+ID4gd2l0aCBhIGxpbWl0ZWQgbnVtYmVyIG9mIGNvbW1hbmQgcXVldWVzIChjYW4gYmUg
+anVzdCBvbmUpIGFuZCBpbgo+ID4gPiA+IHNvbWUgY2FzZSBpdCBjYW4gc3VwcG9ydCBTVkEvU1ZN
+ICh3aGVuIGhhcmR3YXJlIHN1cHBvcnQgaXQgYW5kIGl0Cj4gPiA+ID4gaXMgbm90IGRpc2FibGVk
+KS4gRmluYWwgcmVxdWlyZW1lbnQgaXMgYmVpbmcgYWJsZSB0byBzY2hlZHVsZSBjbWRzCj4gPiA+
+ID4gZnJvbSB1c2Vyc3BhY2Ugd2l0aG91dCBpb2N0bC4gQWxsIG9mIHRoaXMgZXhpc3RzIGFscmVh
+ZHkgZXhpc3RzCj4gPiA+ID4gdXBzdHJlYW0gaW4gZmV3IGRldmljZSBkcml2ZXJzLgo+ID4gPiA+
+IAo+ID4gPiA+IAo+ID4gPiA+IFNvIGhlcmUgaXMgaG93IGV2ZXJ5IGJvZHkgZWxzZSBpcyBkb2lu
+ZyBpdC4gUGxlYXNlIGV4cGxhaW4gd2h5Cj4gPiA+ID4gdGhpcyBkb2VzIG5vdCB3b3JrLgo+ID4g
+PiA+IAo+ID4gPiA+IDEgVXNlcnNwYWNlIG9wZW4gZGV2aWNlIGZpbGUgZHJpdmVyLiBLZXJuZWwg
+ZGV2aWNlIGRyaXZlciBjcmVhdGUKPiA+ID4gPiAgIGEgY29udGV4dCBhbmQgYXNzb2NpYXRlIGl0
+IHdpdGggb24gb3Blbi4gVGhpcyBjb250ZXh0IGNhbiBiZQo+ID4gPiA+ICAgdW5pcSB0byB0aGUg
+cHJvY2VzcyBhbmQgY2FuIGJpbmQgaGFyZHdhcmUgcmVzb3VyY2VzIChsaWtlIGEKPiA+ID4gPiAg
+IGNvbW1hbmQgcXVldWUpIHRvIHRoZSBwcm9jZXNzLgo+ID4gPiA+IDIgVXNlcnNwYWNlIGJpbmQv
+YWNxdWlyZSBhIGNvbW1hbmRzIHF1ZXVlIGFuZCBpbml0aWFsaXplIGl0IHdpdGgKPiA+ID4gPiAg
+IGFuIGlvY3RsIG9uIHRoZSBkZXZpY2UgZmlsZS4gVGhyb3VnaCB0aGF0IGlvY3RsIHVzZXJzcGFj
+ZSBjYW4KPiA+ID4gPiAgIGJlIGluZm9ybSB3ZXRoZXIgZWl0aGVyIFNWQS9TVk0gd29ya3MgZm9y
+IHRoZSBkZXZpY2UuIElmIFNWQS8KPiA+ID4gPiAgIFNWTSB3b3JrcyB0aGVuIGtlcm5lbCBkZXZp
+Y2UgZHJpdmVyIGJpbmQgdGhlIHByb2Nlc3MgdG8gdGhlCj4gPiA+ID4gICBkZXZpY2UgYXMgcGFy
+dCBvZiB0aGlzIGlvY3RsLgo+ID4gPiA+IDMgSWYgU1ZNL1NWQSBkb2VzIG5vdCB3b3JrIHVzZXJz
+cGFjZSBkbyBhbiBpb2N0bCB0byBjcmVhdGUgZG1hCj4gPiA+ID4gICBidWZmZXIgb3Igc29tZXRo
+aW5nIHRoYXQgZG9lcyBleGFjdGx5IHRoZSBzYW1lIHRoaW5nLgo+ID4gPiA+IDQgVXNlcnNwYWNl
+IG1tYXAgdGhlIGNvbW1hbmQgcXVldWUgKG1tYXAgb2YgdGhlIGRldmljZSBmaWxlIGJ5Cj4gPiA+
+ID4gICB1c2luZyBpbmZvcm1hdGlvbnMgZ2F0aGVyIGF0IHN0ZXAgMikKPiA+ID4gPiA1IFVzZXJz
+cGFjZSBjYW4gd3JpdGUgY29tbWFuZHMgaW50byB0aGUgcXVldWUgaXQgbWFwcGVkCj4gPiA+ID4g
+NiBXaGVuIHVzZXJzcGFjZSBjbG9zZSB0aGUgZGV2aWNlIGZpbGUgYWxsIHJlc291cmNlcyBhcmUg
+cmVsZWFzZQo+ID4gPiA+ICAganVzdCBsaWtlIGFueSBleGlzdGluZyBkZXZpY2UgZHJpdmVycy4K
+PiA+IAo+ID4gSGksIEplcm9tZSwKPiA+IAo+ID4gSnVzdCBvbmUgdGhpbmcsIGFzIEkgc2FpZCBp
+biB0aGUgY292ZXIgbGV0dGVyLCBkbWEtYnVmIHJlcXVpcmVzIHRoZSBhcHBsaWNhdGlvbgo+ID4g
+dG8gdXNlIG1lbW9yeSBjcmVhdGVkIGJ5IHRoZSBkcml2ZXIgZm9yIERNQS4gSSBkaWQgdHJ5IHRo
+ZSBkbWEtYnVmIHdheSBpbgo+ID4gV3JhcERyaXZlIChyZWZlciB0byBbNF0gaW4gdGhlIGNvdmVy
+IGxldHRlciksIGl0IGlzIGEgZ29vZCBiYWNrdXAgZm9yIE5PSU9NTVUKPiA+IG1vZGUgb3Igd2Ug
+Y2Fubm90IHNvbHZlIHRoZSBwcm9ibGVtIGluIFZGSU8uCj4gPiAKPiA+IEJ1dCwgaW4gbWFueSBv
+ZiBteSBhcHBsaWNhdGlvbiBzY2VuYXJpbywgdGhlIGFwcGxpY2F0aW9uIGFscmVhZHkgaGFzIHNv
+bWUgbWVtb3J5Cj4gPiBpbiBoYW5kLCBtYXliZSBhbGxvY2F0ZWQgYnkgdGhlIGZyYW1ld29yayBv
+ciBsaWJyYXJpZXMuIEFueXdheSwgdGhleSBkb24ndCBnZXQKPiA+IG1lbW9yeSBmcm9tIG15IGxp
+YnJhcnksIGFuZCB0aGV5IHBhc3MgdGhlIHBvaXRlciBmb3IgZGF0YSBvcGVyYXRpb24uIEFuZCB0
+aGV5Cj4gPiBtYXkgYWxzbyBoYXZlIHBvaW50ZXIgaW4gdGhlIGJ1ZmZlci4gVGhvc2UgcG9pbnRl
+ciBtYXkgYmUgdXNlZCBieSB0aGUKPiA+IGFjY2VsZXJhdG9yLiBTbyBJIG5lZWQgaGFyZHdhcmUg
+ZnVsbHkgc2hhcmUgdGhlIGFkZHJlc3Mgc3BhY2Ugd2l0aCB0aGUKPiA+IGFwcGxpY2F0aW9uLiBU
+aGF0IGlzIHdoYXQgZG1hYnVmIGNhbm5vdCBkby4KPiAKPiBkbWFidWYgY2FuIGRvIHRoYXQgLi4u
+IGl0IGlzIGNhbGwgdXB0ciB5b3UgY2FuIGxvb2sgYXQgaTkxNSBmb3IKPiBpbnN0YW5jZS4gU3Rp
+bGwgdGhpcyBkb2VzIG5vdCBhbnN3ZXIgbXkgcXVlc3Rpb24gYWJvdmUsIHdoeSBkbwo+IHlvdSBu
+ZWVkIHRvIGJlIGluIFZGSU8gdG8gZG8gYW55IG9mIHRoZSBhYm92ZSB0aGluZyA/IEtlcm5lbCBo
+YXMKPiB0b25zIG9mIGV4YW1wbGVzIHRoYXQgZG9lcyBhbGwgb2YgdGhlIGFib3ZlIGFuZCBhcmUg
+bm90IGluIFZGSU8KPiAoaW5jbHVkaW5nIHVzaW5uZyBleGlzdGluZyB1c2VyIHBvaW50ZXIgd2l0
+aCBkZXZpY2UpLgo+IAo+IENoZWVycywKPiBKw6lyw7RtZQoKSSB0b29rIGEgbG9vayBhdCBpOTE1
+X2dlbV9leGVjYnVmZmVyX2lvY3RsKCkuIEl0IHNlZW1zIGl0ICJjb3B5X2Zyb21fdXNlciIgdGhl
+CnVzZXIgbWVtb3J5IHRvIHRoZSBrZXJuZWwuIFRoYXQgaXMgbm90IHdoYXQgd2UgbmVlZC4gV2hh
+dCB3ZSB0cnkgdG8gZ2V0IGlzOiB0aGUKdXNlciBhcHBsaWNhdGlvbiBkbyBzb21ldGhpbmcgb24g
+aXRzIGRhdGEsIGFuZCBwdXNoIGl0IGF3YXkgdG8gdGhlIGFjY2VsZXJhdG9yLAphbmQgc2F5czog
+IkknbSB0aWVkLCBpdCBpcyB5b3VyIHR1cm4gdG8gZG8gdGhlIGpvYi4uLiIuIFRoZW4gdGhlIGFj
+Y2VsZXJhdG9yIGhhcwp0aGUgbWVtb3J5LCByZWZlcnJpbmcgYW55IHBvcnRpb24gb2YgaXQgd2l0
+aCB0aGUgc2FtZSBWQXMgb2YgdGhlIGFwcGxpY2F0aW9uLApldmVuIHRoZSBWQXMgYXJlIHN0b3Jl
+ZCBpbnNpZGUgdGhlIG1lbW9yeSBpdHNlbGYuCgpBbmQgSSBkb24ndCB1bmRlcnN0YW5kIHdoeSBJ
+IHNob3VsZCBhdm9pZCB0byB1c2UgVkZJTz8gQXMgQWxleCBzYWlkLCBWRklPIGlzIHRoZQp1c2Vy
+IGRyaXZlciBmcmFtZXdvcmsuIEFuZCBJIG5lZWQgZXhhY3RseSBhIHVzZXIgZHJpdmVyIGludGVy
+ZmFjZS4gV2h5IHNob3VsZCBJCmludmVudCBhbm90aGVyIHdoZWVsPyBJdCBoYXMgbW9zdCBvZiBz
+dHVmZiBJIG5lZWQ6CgoxLiBDb25uZWN0aW5nIG11bHRpcGxlIGRldmljZXMgdG8gdGhlIHNhbWUg
+YXBwbGljYXRpb24gc3BhY2UKMi4gUGlubmluZyBhbmQgRE1BIGZyb20gdGhlIGFwcGxpY2F0aW9u
+IHNwYWNlIHRvIHRoZSB3aG9sZSBzZXQgb2YgZGV2aWNlCjMuIE1hbmFnaW5nIGhhcmR3YXJlIHJl
+c291cmNlIGJ5IGRldmljZQoKV2UganVzdCBuZWVkIHRoZSBsYXN0IHN0ZXA6IG1ha2Ugc3VyZSBt
+dWx0aXBsZSBhcHBsaWNhdGlvbnMgYW5kIHRoZSBrZXJuZWwgY2FuCnNoYXJlIHRoZSBzYW1lIElP
+TU1VLiBUaGVuIHdoeSBzaG91bGRuJ3Qgd2UgdXNlIFZGSU8/CgpBbmQgcGVyc29uYWxseSwgSSBi
+ZWxpZXZlIHRoZSBtYXR1cml0eSBhbmQgY29ycmVjdG5lc3Mgb2YgYSBmcmFtZXdvcmsgYXJlIGRy
+aXZlbgpieSBhcHBsaWNhdGlvbnMuIE5vdyB0aGUgcHJvYmxlbSBpbiBhY2NlbGVyYXRvciB3b3Js
+ZCBpcyB0aGF0IHdlIGRvbid0IGhhdmUgYQpkaXJlY3Rpb24uIElmIHdlIGJlbGlldmUgdGhlIHJl
+cXVpcmVtZW50IGlzIHJpZ2h0LCB0aGUgbWV0aG9kIGl0c2VsZiBpcyBub3QgYQpiaWcgcHJvYmxl
+bSBpbiB0aGUgZW5kLiBXZSBqdXN0IG5lZWQgdG8gbGV0IHBlb3BsZSBoYXZlIGEgdW5pZnkgcGxh
+dGZvcm0gdG8Kc2hhcmUgdGhlaXIgd29yayB0b2dldGhlci4KCkNoZWVycwotLSAKCQkJLUtlbm5l
+dGgoSGlzaWxpY29uKQoKPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0K5pys6YKu5Lu25Y+K5YW26ZmE
+5Lu25ZCr5pyJ5Y2O5Li65YWs5Y+455qE5L+d5a+G5L+h5oGv77yM5LuF6ZmQ5LqO5Y+R6YCB57uZ
+5LiK6Z2i5Zyw5Z2A5Lit5YiX5Ye655qE5Liq5Lq65oiW576k57uE44CC56aBCuatouS7u+S9leWF
+tuS7luS6uuS7peS7u+S9leW9ouW8j+S9v+eUqO+8iOWMheaLrOS9huS4jemZkOS6juWFqOmDqOaI
+lumDqOWIhuWcsOazhOmcsuOAgeWkjeWItuOAgeaIluaVo+WPke+8ieacrOmCruS7tuS4rQrnmoTk
+v6Hmga/jgILlpoLmnpzmgqjplJnmlLbkuobmnKzpgq7ku7bvvIzor7fmgqjnq4vljbPnlLXor53m
+iJbpgq7ku7bpgJrnn6Xlj5Hku7bkurrlubbliKDpmaTmnKzpgq7ku7bvvIEKVGhpcyBlLW1haWwg
+YW5kIGl0cyBhdHRhY2htZW50cyBjb250YWluIGNvbmZpZGVudGlhbCBpbmZvcm1hdGlvbiBmcm9t
+IEhVQVdFSSwKd2hpY2ggaXMgaW50ZW5kZWQgb25seSBmb3IgdGhlIHBlcnNvbiBvciBlbnRpdHkg
+d2hvc2UgYWRkcmVzcyBpcyBsaXN0ZWQgYWJvdmUuCkFueSB1c2Ugb2YgdGhlIAppbmZvcm1hdGlv
+biBjb250YWluZWQgaGVyZWluIGluIGFueSB3YXkgKGluY2x1ZGluZywgYnV0IG5vdCBsaW1pdGVk
+IHRvLCB0b3RhbCBvcgpwYXJ0aWFsIGRpc2Nsb3N1cmUsIHJlcHJvZHVjdGlvbiwgb3IgZGlzc2Vt
+aW5hdGlvbikgYnkgcGVyc29ucyBvdGhlciB0aGFuIHRoZQppbnRlbmRlZCAKcmVjaXBpZW50KHMp
+IGlzIHByb2hpYml0ZWQuIElmIHlvdSByZWNlaXZlIHRoaXMgZS1tYWlsIGluIGVycm9yLCBwbGVh
+c2Ugbm90aWZ5CnRoZSBzZW5kZXIgYnkgcGhvbmUgb3IgZW1haWwgaW1tZWRpYXRlbHkgYW5kIGRl
+bGV0ZSBpdCEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
+czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
