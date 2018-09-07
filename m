@@ -1,93 +1,123 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Handle memory shortage on pasid table
- allocation
-Date: Fri, 7 Sep 2018 13:02:42 +0800
-Message-ID: <01578cfe-48c3-93bc-90a1-14971e3864f1@linux.intel.com>
-References: <20180901062416.6107-1-baolu.lu@linux.intel.com>
- <20180906231313.GB90494@otc-nc-03>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Fri, 7 Sep 2018 09:11:14 +0200
+Message-ID: <953746f3-352b-cd17-9938-eb78af3b58a9@redhat.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+ <2094d667-5dbf-b4b8-8e19-c76d67b82362@redhat.com>
+ <e19eb88b-b24b-66bc-8d5b-6196b26f1456@arm.com>
+ <9013df5a-02f9-55b8-eb5e-fad4be0a2c92@redhat.com>
+ <289610e3-2633-e448-259c-194e6f2c2b52@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180906231313.GB90494@otc-nc-03>
+In-Reply-To: <289610e3-2633-e448-259c-194e6f2c2b52@arm.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Jean Delvare <khali@linux-fr.org>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Raj Ashok <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Ashok,
+Hi Jean-Philippe,
 
-On 09/07/2018 07:13 AM, Raj, Ashok wrote:
-> On Sat, Sep 01, 2018 at 02:24:16PM +0800, Lu Baolu wrote:
->> Pasid table memory allocation could return failure due to memory
->> shortage. Limit the pasid table size to 1MiB because current 8MiB
->> contiguous physical memory allocation can be hard to come by. W/o
->> a PASID table, the device could continue to work with only shared
->> virtual memory impacted. So, let's go ahead with context mapping
->> even the memory allocation for pasid table failed.
+On 09/06/2018 07:06 PM, Jean-Philippe Brucker wrote:
+> On 06/09/2018 14:14, Auger Eric wrote:
+>> Hi Jean-Philippe,
 >>
->> Fixes: cc580e41260d ("iommu/vt-d: Per PCI device pasid table interfaces")
+>> On 09/06/2018 02:42 PM, Jean-Philippe Brucker wrote:
+>>> On 06/09/2018 10:25, Auger Eric wrote:
+>>>>> +		mutex_lock(&fparam->lock);
+>>>>> +		list_add_tail(&evt_pending->list, &fparam->faults);
+>>>> same doubt as Yi Liu. You cannot rely on the userspace willingness to
+>>>> void the queue and deallocate this memory.
+>>
+>> By the way I saw there is a kind of garbage collectors for faults which
+>> wouldn't have received any responses. However I am not sure this removes
+>> the concern of having the fault list on kernel side growing beyond
+>> acceptable limits.
 > 
-> Although this reduces the changes of failure, ideally we should remove
-> any trace of ecs support. We officially have no products that support it
-> officially, and our latest spec does deprecate ECS feature.
+> How about per-device quotas? (https://lkml.org/lkml/2018/4/23/706 for
+> reference) With PRI the IOMMU driver already sets per-device credits
+> when initializing the device (pci_enable_pri), so if the device behaves
+> properly it shouldn't send new page requests once the number of
+> outstanding ones is maxed out.
 
-The spec update has been posted here.
-
-https://lkml.org/lkml/2018/8/30/27
-
-This is a fix for regression caused by cc580e41260d ("iommu/vt-d: Per
-PCI device pasid table interfaces"), where the maximum of pasid table
-was changed from 1MiB to 8MiB and stopping programming context entry
-once the pasid table memory allocations is failed. This regression was
-found on some internal pre-production devices.
-
-Best regards,
-Lu Baolu
-
+But this needs to work for non PRI use case too?
 > 
->> Cc: Ashok Raj <ashok.raj@intel.com>
->> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
->> Reported-and-tested-by: Pelton Kyle D <kyle.d.pelton@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel-iommu.c | 6 +++---
->>   drivers/iommu/intel-pasid.h | 2 +-
->>   2 files changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 5f3f10cf9d9d..bedc801b06a0 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -2540,9 +2540,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
->>   	if (dev && dev_is_pci(dev) && info->pasid_supported) {
->>   		ret = intel_pasid_alloc_table(dev);
->>   		if (ret) {
->> -			__dmar_remove_one_dev_info(info);
->> -			spin_unlock_irqrestore(&device_domain_lock, flags);
->> -			return NULL;
->> +			pr_warn("No pasid table for %s, pasid disabled\n",
->> +				dev_name(dev));
->> +			info->pasid_supported = 0;
->>   		}
->>   	}
->>   	spin_unlock_irqrestore(&device_domain_lock, flags);
->> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
->> index 1c05ed6fc5a5..1fb5e12b029a 100644
->> --- a/drivers/iommu/intel-pasid.h
->> +++ b/drivers/iommu/intel-pasid.h
->> @@ -11,7 +11,7 @@
->>   #define __INTEL_PASID_H
->>   
->>   #define PASID_MIN			0x1
->> -#define PASID_MAX			0x100000
->> +#define PASID_MAX			0x20000
->>   
->>   struct pasid_entry {
->>   	u64 val;
->> -- 
->> 2.17.1
->>
+> The stall mode of SMMU doesn't have per-device limit, and depending on
+> the implementation it might be easy for one guest using stall to prevent
+> other guests from receiving faults. For this reason we'll have to
+> enforce a per-device stall quota in the SMMU driver, and immediately
+> terminate faults that exceed this quota. We could easily do the same for
+> PRI, if we don't trust devices to follow the spec. The difficult part is
+> finding the right number of credits...
+> 
+>>> Host device drivers that use this API to be notified on fault can't deal
+>>> with arch-specific event formats (SMMU event, Vt-d fault event, etc), so
+>>> the APIs should be arch-agnostic. Given that requirement, using a single
+>>> iommu_fault_event structure for both PRI and event queues made sense,
+>>> especially since the even queue can have stall events that look a lot
+>>> like PRI page requests.
+>> I understand the data structure needs to be generic. Now I guess PRI
+>> events and other standard translator error events (that can happen
+>> without PRI) may have different characteristics in event fields,
+> 
+> Right, an event contains more information than a PRI page request.
+> Stage-2 fields (CLASS, S2, IPA, TTRnW) cannot be represented by
+> iommu_fault_event at the moment.
+
+Yes I am currently doing the mapping exercise between SMMUv3 events and
+iommu_fault_event and I miss config errors for instance.
+ For precise emulation it might be
+> useful to at least add the S2 flag (as a new iommu_fault_reason?), so
+> that when the guest maps stage-1 to an invalid GPA, QEMU could for
+> example inject an external abort.
+
+Actually we may even need to filter events and return to the guest only
+the S1 related.
+> 
+>> queue
+>> size, that may deserve to create different APIs and internal data
+>> structs. Also this may help separating the concerns.
+> 
+> It might duplicate them. If the consumer of the event report is a host
+> device driver, the SMMU needs to report a "generic" iommu_fault_event,
+> and if the consumer is VFIO it would report a specialized one
+
+I am unsure of my understanding of the UNRECOVERABLE error type. Is it
+everything else than a PRI. For instance are all SMMUv3 event errors
+supposed to be put under the IOMMU_FAULT_DMA_UNRECOV umbrella?
+
+If I understand correctly there are different consumers for PRI and
+unrecoverable data, so why not having 2 different APIs.
+> 
+>> My remark also
+>> stems from the fact the SMMU uses 2 different queues, whose size can
+>> also be different.
+> 
+> Hm, for PRI requests the kernel-userspace queue size should actually be
+> the number of PRI credits for that device. Hadn't thought about it
+> before, where do we pass that info to userspace?
+Cannot help here at the moment, sorry.
+ For fault events, the
+> queue could be as big as the SMMU event queue, though using all that
+> space might be wasteful.
+The guest has its own programming of the SMMU_EVENTQ_BASE.LOG2SIZE. This
+could be used to program the SW fifo
+
+ Non-stalled events should be rare and reporting
+> them isn't urgent. Stalled ones would need the number of stall credits I
+> mentioned above, which realistically will be a lot less than the SMMU
+> event queue size. Given that a device will use either PRI or stall but
+> not both, I still think events and PRI could go through the same queue.
+Did I get it right PRI is for PCIe and STALL for non PCIe? But all that
+stuff also is related to Page Request use case, right?
+
+Thanks
+
+Eric
+> 
+> Thanks,
+> Jean
 > 
