@@ -1,217 +1,460 @@
-From: Kenneth Lee <liguozhu@hisilicon.com>
-Subject: Re: [PATCH 1/7] vfio/sdmdev: Add documents for WarpDrive framework
-Date: Fri, 7 Sep 2018 10:21:15 +0800
-Message-ID: <20180907022115.GH230707@Turing-Arch-b>
-References: <20180903005204.26041-1-nek.in.cn@gmail.com>
- <20180903005204.26041-2-nek.in.cn@gmail.com>
- <56f5f66d-f6d9-f4fa-40ca-e4a8bad170c1@infradead.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 06/12] iommu/vt-d: Add second level page table interface
+Date: Fri, 7 Sep 2018 10:47:11 +0800
+Message-ID: <331eef29-ae41-2d36-9487-265d773aae5b@linux.intel.com>
+References: <20180830013524.28743-1-baolu.lu@linux.intel.com>
+	<20180830013524.28743-7-baolu.lu@linux.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D1912F2C24@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <56f5f66d-f6d9-f4fa-40ca-e4a8bad170c1@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, Hao Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner <tglx@linutronix.de>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>, Sanjay Kumar <sanjay.k.kumar@intel.com>, linuxarm@huawei.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D1912F2C24-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 06, 2018 at 11:36:36AM -0700, Randy Dunlap wrote:
-> Date: Thu, 6 Sep 2018 11:36:36 -0700
-> From: Randy Dunlap <rdunlap@infradead.org>
-> To: Kenneth Lee <nek.in.cn@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
->  Herbert Xu <herbert@gondor.apana.org.au>, "David S . Miller"
->  <davem@davemloft.net>, Joerg Roedel <joro@8bytes.org>, Alex Williamson
->  <alex.williamson@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>, Hao
->  Fang <fanghao11@huawei.com>, Zhou Wang <wangzhou1@hisilicon.com>, Zaibo Xu
->  <xuzaibo@huawei.com>, Philippe Ombredanne <pombredanne@nexb.com>, Greg
->  Kroah-Hartman <gregkh@linuxfoundation.org>, Thomas Gleixner
->  <tglx@linutronix.de>, linux-doc@vger.kernel.org,
->  linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
->  iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
->  linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>,
->  Sanjay Kumar <sanjay.k.kumar@intel.com>
-> CC: linuxarm@huawei.com
-> Subject: Re: [PATCH 1/7] vfio/sdmdev: Add documents for WarpDrive framework
-> User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
->  Thunderbird/52.9.1
-> Message-ID: <56f5f66d-f6d9-f4fa-40ca-e4a8bad170c1@infradead.org>
+Hi,
+
+On 09/06/2018 11:11 AM, Tian, Kevin wrote:
+>> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+>> Sent: Thursday, August 30, 2018 9:35 AM
+>>
+>> This adds the interfaces to setup or tear down the structures
+>> for second level page table translations. This includes types
+>> of second level only translation and pass through.
+>>
+>> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Reviewed-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> ---
+>>   drivers/iommu/intel-iommu.c |   2 +-
+>>   drivers/iommu/intel-pasid.c | 246
+>> ++++++++++++++++++++++++++++++++++++
+>>   drivers/iommu/intel-pasid.h |   7 +
+>>   include/linux/intel-iommu.h |   3 +
+>>   4 files changed, 257 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>> index 562da10bf93e..de6b909bb47a 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -1232,7 +1232,7 @@ static void iommu_set_root_entry(struct
+>> intel_iommu *iommu)
+>>   	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+>>   }
+>>
+>> -static void iommu_flush_write_buffer(struct intel_iommu *iommu)
+>> +void iommu_flush_write_buffer(struct intel_iommu *iommu)
+>>   {
+>>   	u32 val;
+>>   	unsigned long flag;
+>> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+>> index d6e90cd5b062..edcea1d8b9fc 100644
+>> --- a/drivers/iommu/intel-pasid.c
+>> +++ b/drivers/iommu/intel-pasid.c
+>> @@ -9,6 +9,7 @@
+>>
+>>   #define pr_fmt(fmt)	"DMAR: " fmt
+>>
+>> +#include <linux/bitops.h>
+>>   #include <linux/dmar.h>
+>>   #include <linux/intel-iommu.h>
+>>   #include <linux/iommu.h>
+>> @@ -291,3 +292,248 @@ void intel_pasid_clear_entry(struct device *dev,
+>> int pasid)
+>>
+>>   	pasid_clear_entry(pe);
+>>   }
+>> +
+>> +static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
+>> +{
+>> +	u64 old;
+>> +
+>> +	old = READ_ONCE(*ptr);
+>> +	WRITE_ONCE(*ptr, (old & ~mask) | bits);
+>> +}
+>> +
+>> +/*
+>> + * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
+>> + * PASID entry.
+>> + */
+>> +static inline void
+>> +pasid_set_domain_id(struct pasid_entry *pe, u64 value)
+>> +{
+>> +	pasid_set_bits(&pe->val[1], GENMASK_ULL(15, 0), value);
+>> +}
+>> +
+>> +/*
+>> + * Setup the SLPTPTR(Second Level Page Table Pointer) field (Bit 12~63)
+>> + * of a scalable mode PASID entry.
+>> + */
+>> +static inline void
+>> +pasid_set_address_root(struct pasid_entry *pe, u64 value)
 > 
-> Hi,
-> 
-> On 09/02/2018 05:51 PM, Kenneth Lee wrote:
-> > From: Kenneth Lee <liguozhu@hisilicon.com>
-> > 
-> > WarpDrive is a common user space accelerator framework.  Its main component
-> > in Kernel is called sdmdev, Share Domain Mediated Device. It exposes
-> > the hardware capabilities to the user space via vfio-mdev. So processes in
-> > user land can obtain a "queue" by open the device and direct access the
-> > hardware MMIO space or do DMA operation via VFIO interface.
-> > 
-> > WarpDrive is intended to be used with Jean Philippe Brucker's SVA
-> > patchset to support multi-process. But This is not a must.  Without the
-> > SVA patches, WarpDrive can still work for one process for every hardware
-> > device.
-> > 
-> > This patch add detail documents for the framework.
-> > 
-> > Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
-> > ---
-> >  Documentation/00-INDEX                |   2 +
-> >  Documentation/warpdrive/warpdrive.rst | 100 ++++
-> >  Documentation/warpdrive/wd-arch.svg   | 728 ++++++++++++++++++++++++++
-> >  3 files changed, 830 insertions(+)
-> >  create mode 100644 Documentation/warpdrive/warpdrive.rst
-> >  create mode 100644 Documentation/warpdrive/wd-arch.svg
-> 
-> > diff --git a/Documentation/warpdrive/warpdrive.rst b/Documentation/warpdrive/warpdrive.rst
-> > new file mode 100644
-> > index 000000000000..6d2a5d1e08c4
-> > --- /dev/null
-> > +++ b/Documentation/warpdrive/warpdrive.rst
-> > @@ -0,0 +1,100 @@
-> > +Introduction of WarpDrive
-> > +=========================
-> > +
-> > +*WarpDrive* is a general accelerator framework for user space. It intends to
-> > +provide interface for the user process to send request to hardware
-> > +accelerator without heavy user-kernel interaction cost.
-> > +
-> > +The *WarpDrive* user library is supposed to provide a pipe-based API, such as:
-> 
-> Do you say "is supposed to" because it doesn't do that (yet)?
-> Or you could just change that to say:
-> 
->    The WarpDrive user library provides a pipe-based API, such as:
+> is address_root too general? especially when the entry could contain both
+> 1st level and 2nd level pointers.
 > 
 
-Actually, I tried to say it can be defined like this. But people can choose
-other implementation with the same kernel API.
+Yes. Should be changed to a specific name like pasid_set_slpt_ptr().
 
-I will say it explicitly in the future version. Thank you.
+>> +{
+>> +	pasid_set_bits(&pe->val[0], VTD_PAGE_MASK, value);
+>> +}
+>> +
+>> +/*
+>> + * Setup the AW(Address Width) field (Bit 2~4) of a scalable mode PASID
+>> + * entry.
+>> + */
+>> +static inline void
+>> +pasid_set_address_width(struct pasid_entry *pe, u64 value)
+>> +{
+>> +	pasid_set_bits(&pe->val[0], GENMASK_ULL(4, 2), value << 2);
+>> +}
+>> +
+>> +/*
+>> + * Setup the PGTT(PASID Granular Translation Type) field (Bit 6~8)
+>> + * of a scalable mode PASID entry.
+>> + */
+>> +static inline void
+>> +pasid_set_translation_type(struct pasid_entry *pe, u64 value)
+>> +{
+>> +	pasid_set_bits(&pe->val[0], GENMASK_ULL(8, 6), value << 6);
+>> +}
+>> +
+>> +/*
+>> + * Enable fault processing by clearing the FPD(Fault Processing
+>> + * Disable) field (Bit 1) of a scalable mode PASID entry.
+>> + */
+>> +static inline void pasid_set_fault_enable(struct pasid_entry *pe)
+>> +{
+>> +	pasid_set_bits(&pe->val[0], 1 << 1, 0);
+>> +}
+>> +
+>> +/*
+>> + * Setup the SRE(Supervisor Request Enable) field (Bit 128) of a
+>> + * scalable mode PASID entry.
+>> + */
+>> +static inline void pasid_set_sre(struct pasid_entry *pe)
+>> +{
+>> +	pasid_set_bits(&pe->val[2], 1 << 0, 1);
+>> +}
+>> +
+>> +/*
+>> + * Setup the P(Present) field (Bit 0) of a scalable mode PASID
+>> + * entry.
+>> + */
+>> +static inline void pasid_set_present(struct pasid_entry *pe)
+>> +{
+>> +	pasid_set_bits(&pe->val[0], 1 << 0, 1);
+>> +}
+> 
+> it's a long list and there could be more in the future. What about
+> defining some macro to simplify LOC, e.g.
+> 
+> #define PASID_SET(name, i, m, b)				\
+> static inline void pasid_set_name(struct pasid_entry *pe)	\
+> {								\
+> 	pasid_set_bits(&pe->val[i], m, b);			\
+> }
+> 
+> PASID_SET(present, 0, 1<<0, 1);
+> PASID_SET(sre, 2, 1<<0, 1);
+> ...
+> 
+
+Fair enough. This looks more concise.
+
+>> +
+>> +/*
+>> + * Setup Page Walk Snoop bit (Bit 87) of a scalable mode PASID
+>> + * entry.
+>> + */
+>> +static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
+>> +{
+>> +	pasid_set_bits(&pe->val[1], 1 << 23, value);
+>> +}
+>> +
+>> +static void
+>> +pasid_based_pasid_cache_invalidation(struct intel_iommu *iommu,
+>> +				     int did, int pasid)
+> 
+> pasid_cache_invalidation_with_pasid
+
+Okay.
 
 > 
-> > +        ::
-> > +        int wd_request_queue(struct wd_queue *q);
-> > +        void wd_release_queue(struct wd_queue *q);
-> > +
-> > +        int wd_send(struct wd_queue *q, void *req);
-> > +        int wd_recv(struct wd_queue *q, void **req);
-> > +        int wd_recv_sync(struct wd_queue *q, void **req);
-> > +        int wd_flush(struct wd_queue *q);
-> > +
-> > +*wd_request_queue* creates the pipe connection, *queue*, between the
-> > +application and the hardware. The application sends request and pulls the
-> > +answer back by asynchronized wd_send/wd_recv, which directly interact with the
-> > +hardware (by MMIO or share memory) without syscall.
-> > +
-> > +*WarpDrive* maintains a unified application address space among all involved
-> > +accelerators.  With the following APIs: ::
+>> +{
+>> +	struct qi_desc desc;
+>> +
+>> +	desc.qw0 = QI_PC_DID(did) | QI_PC_PASID_SEL |
+>> QI_PC_PASID(pasid);
+>> +	desc.qw1 = 0;
+>> +	desc.qw2 = 0;
+>> +	desc.qw3 = 0;
+>> +
+>> +	qi_submit_sync(&desc, iommu);
+>> +}
+>> +
+>> +static void
+>> +pasid_based_iotlb_cache_invalidation(struct intel_iommu *iommu,
+>> +				     u16 did, u32 pasid)
 > 
-> Seems like an extra '.' there.  How about:
+> iotlb_invalidation_with_pasid
+
+Okay.
+
 > 
->   accelerators with the following APIs: ::
+>> +{
+>> +	struct qi_desc desc;
+>> +
+>> +	desc.qw0 = QI_EIOTLB_PASID(pasid) | QI_EIOTLB_DID(did) |
+>> +			QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
+>> QI_EIOTLB_TYPE;
+>> +	desc.qw1 = 0;
+>> +	desc.qw2 = 0;
+>> +	desc.qw3 = 0;
+>> +
+>> +	qi_submit_sync(&desc, iommu);
+>> +}
+>> +
+>> +static void
+>> +pasid_based_dev_iotlb_cache_invalidation(struct intel_iommu *iommu,
+>> +					 struct device *dev, int pasid)
+> 
+> devtlb_invalidation_with_pasid
+
+Okay.
+
+> 
+>> +{
+>> +	struct device_domain_info *info;
+>> +	u16 sid, qdep, pfsid;
+>> +
+>> +	info = dev->archdata.iommu;
+>> +	if (!info || !info->ats_enabled)
+>> +		return;
+>> +
+>> +	sid = info->bus << 8 | info->devfn;
+>> +	qdep = info->ats_qdep;
+>> +	pfsid = info->pfsid;
+>> +
+>> +	qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 -
+>> VTD_PAGE_SHIFT);
+>> +}
+>> +
+>> +static void tear_down_one_pasid_entry(struct intel_iommu *iommu,
+>> +				      struct device *dev, u16 did,
+>> +				      int pasid)
+>> +{
+>> +	struct pasid_entry *pte;
+> 
+> ptep
 > 
 
-Err, the "with..." clause belong to the following "The referred process
-space...".
+Okay.
 
-> > +
-> > +        int wd_mem_share(struct wd_queue *q, const void *addr,
-> > +                         size_t size, int flags);
-> > +        void wd_mem_unshare(struct wd_queue *q, const void *addr, size_t size);
-> > +
-> > +The referred process space shared by these APIs can be directly referred by the
-> > +hardware. The process can also dedicate its whole process space with flags,
-> > +*WD_SHARE_ALL* (not in this patch yet).
-> > +
-> > +The name *WarpDrive* is simply a cool and general name meaning the framework
-> > +makes the application faster. As it will be explained in this text later, the
-> > +facility in kernel is called *SDMDEV*, namely "Share Domain Mediated Device".
-> > +
-> > +
-> > +How does it work
-> > +================
-> > +
-> > +*WarpDrive* is built upon *VFIO-MDEV*. The queue is wrapped as *mdev* in VFIO.
-> > +So memory sharing can be done via standard VFIO standard DMA interface.
-> > +
-> > +The architecture is illustrated as follow figure:
-> > +
-> > +.. image:: wd-arch.svg
-> > +        :alt: WarpDrive Architecture
-> > +
-> > +Accelerator driver shares its capability via *SDMDEV* API: ::
-> > +
-> > +        vfio_sdmdev_register(struct vfio_sdmdev *sdmdev);
-> > +        vfio_sdmdev_unregister(struct vfio_sdmdev *sdmdev);
-> > +        vfio_sdmdev_wake_up(struct spimdev_queue *q);
-> > +
-> > +*vfio_sdmdev_register* is a helper function to register the hardware to the
-> > +*VFIO_MDEV* framework. The queue creation is done by *mdev* creation interface.
-> > +
-> > +*WarpDrive* User library mmap the mdev to access its mmio space and shared
+>> +
+>> +	intel_pasid_clear_entry(dev, pasid);
+>> +
+>> +	if (!ecap_coherent(iommu->ecap)) {
+>> +		pte = intel_pasid_get_entry(dev, pasid);
+>> +		clflush_cache_range(pte, sizeof(*pte));
+>> +	}
+>> +
+>> +	pasid_based_pasid_cache_invalidation(iommu, did, pasid);
+>> +	pasid_based_iotlb_cache_invalidation(iommu, did, pasid);
+>> +
+>> +	/* Device IOTLB doesn't need to be flushed in caching mode. */
+>> +	if (!cap_caching_mode(iommu->cap))
+>> +		pasid_based_dev_iotlb_cache_invalidation(iommu, dev,
+>> pasid);
 > 
-> s/mmio/MMIO/
+> can you elaborate, or point to any spec reference?
 > 
-> > +memory. Request can be sent to, or receive from, hardware in this mmap-ed
-> > +space until the queue is full or empty.
-> > +
-> > +The user library can wait on the queue by ioctl(VFIO_SDMDEV_CMD_WAIT) the mdev
-> > +if the queue is full or empty. If the queue status is changed, the hardware
-> > +driver use *vfio_sdmdev_wake_up* to wake up the waiting process.
-> > +
-> > +
-> > +Multiple processes support
-> > +==========================
-> > +
-> > +In the latest mainline kernel (4.18) when this document is written,
-> > +multi-process is not supported in VFIO yet.
-> > +
-> > +Jean Philippe Brucker has a patchset to enable it[1]_. We have tested it
-> > +with our hardware (which is known as *D06*). It works well. *WarpDrive* rely
-> > +on them to support multiple processes. If it is not enabled, *WarpDrive* can
-> > +still work, but it support only one mdev for a process, which will share the
-> > +same io map table with kernel. (But it is not going to be a security problem,
-> > +since the user application cannot access the kernel address space)
-> > +
-> > +When multiprocess is support, mdev can be created based on how many
-> > +hardware resource (queue) is available. Because the VFIO framework accepts only
-> > +one open from one mdev iommu_group. Mdev become the smallest unit for process
-> > +to use queue. And the mdev will not be released if the user process exist. So
-> > +it will need a resource agent to manage the mdev allocation for the user
-> > +process. This is not in this document's range.
-> > +
-> > +
-> > +Legacy Mode Support
-> > +===================
-> > +For the hardware on which IOMMU is not support, WarpDrive can run on *NOIOMMU*
-> > +mode. That require some update to the mdev driver, which is not included in
-> > +this version yet.
-> > +
-> > +
-> > +References
-> > +==========
-> > +.. [1] https://patchwork.kernel.org/patch/10394851/
-> > +
-> > +.. vim: tw=78
-> 
-> thanks,
-> -- 
-> ~Randy
 
--- 
-			-Kenneth(Hisilicon)
+In the driver, device iotlb doesn't get flushed in caching mode. I just
+follow what have been done there.
 
-================================================================================
-本邮件及其附件含有华为公司的保密信息，仅限于发送给上面地址中列出的个人或群组。禁
-止任何其他人以任何形式使用（包括但不限于全部或部分地泄露、复制、或散发）本邮件中
-的信息。如果您错收了本邮件，请您立即电话或邮件通知发件人并删除本邮件！
-This e-mail and its attachments contain confidential information from HUAWEI,
-which is intended only for the person or entity whose address is listed above.
-Any use of the 
-information contained herein in any way (including, but not limited to, total or
-partial disclosure, reproduction, or dissemination) by persons other than the
-intended 
-recipient(s) is prohibited. If you receive this e-mail in error, please notify
-the sender by phone or email immediately and delete it!
+It also makes sense to me since only the bare metal host needs to
+consider whether and how to flush the device iotlb.
+
+>> +}
+>> +
+>> +/*
+>> + * Set up the scalable mode pasid table entry for second only or
+>> + * passthrough translation type.
+>> + */
+>> +int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+> 
+> second_level doesn't imply passthrough. what about intel_pasid_
+> setup_common, which is then invoked by SL or PT individually (
+> or even FL)?
+
+Fair enough. Will refine this part of code.
+
+> 
+>> +				   struct dmar_domain *domain,
+>> +				   struct device *dev, int pasid,
+>> +				   bool pass_through)
+>> +{
+>> +	struct pasid_entry *pte;
+>> +	struct dma_pte *pgd;
+>> +	u64 pgd_val;
+>> +	int agaw;
+>> +	u16 did;
+>> +
+>> +	/*
+>> +	 * If hardware advertises no support for second level translation,
+>> +	 * we only allow pass through translation setup.
+>> +	 */
+>> +	if (!(ecap_slts(iommu->ecap) || pass_through)) {
+>> +		pr_err("No first level translation support on %s, only pass-
+> 
+> first->second
+
+Sure.
+
+> 
+>> through mode allowed\n",
+>> +		       iommu->name);
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	/*
+>> +	 * Skip top levels of page tables for iommu which has less agaw
+> 
+> skip doesn't mean error
+
+Yes. But it's an error if we can't skip ... :-)
+
+> 
+>> +	 * than default. Unnecessary for PT mode.
+>> +	 */
+>> +	pgd = domain->pgd;
+>> +	if (!pass_through) {
+>> +		for (agaw = domain->agaw; agaw != iommu->agaw; agaw--)
+>> {
+>> +			pgd = phys_to_virt(dma_pte_addr(pgd));
+>> +			if (!dma_pte_present(pgd)) {
+>> +				dev_err(dev, "Invalid domain page table\n");
+>> +				return -EINVAL;
+>> +			}
+>> +		}
+>> +	}
+>> +	pgd_val = pass_through ? 0 : virt_to_phys(pgd);
+>> +	did = pass_through ? FLPT_DEFAULT_DID :
+>> +			domain->iommu_did[iommu->seq_id];
+>> +
+>> +	pte = intel_pasid_get_entry(dev, pasid);
+>> +	if (!pte) {
+>> +		dev_err(dev, "Failed to get pasid entry of PASID %d\n",
+>> pasid);
+>> +		return -ENODEV;
+>> +	}
+>> +
+>> +	pasid_clear_entry(pte);
+>> +	pasid_set_domain_id(pte, did);
+>> +
+>> +	if (!pass_through)
+>> +		pasid_set_address_root(pte, pgd_val);
+>> +
+>> +	pasid_set_address_width(pte, iommu->agaw);
+>> +	pasid_set_translation_type(pte, pass_through ? 4 : 2);
+>> +	pasid_set_fault_enable(pte);
+>> +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+>> +
+>> +	/*
+>> +	 * Since it is a second level only translation setup, we should
+>> +	 * set SRE bit as well (addresses are expected to be GPAs).
+>> +	 */
+>> +	pasid_set_sre(pte);
+>> +	pasid_set_present(pte);
+>> +
+>> +	if (!ecap_coherent(iommu->ecap))
+>> +		clflush_cache_range(pte, sizeof(*pte));
+>> +
+>> +	if (cap_caching_mode(iommu->cap)) {
+>> +		pasid_based_pasid_cache_invalidation(iommu, did, pasid);
+>> +		pasid_based_iotlb_cache_invalidation(iommu, did, pasid);
+>> +	} else {
+>> +		iommu_flush_write_buffer(iommu);
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +/*
+>> + * Tear down the scalable mode pasid table entry for second only or
+>> + * passthrough translation type.
+>> + */
+>> +void intel_pasid_tear_down_second_level(struct intel_iommu *iommu,
+>> +					struct dmar_domain *domain,
+>> +					struct device *dev, int pasid)
+>> +{
+>> +	u16 did = domain->iommu_did[iommu->seq_id];
+>> +
+>> +	tear_down_one_pasid_entry(iommu, dev, did, pasid);
+>> +}
+>> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+>> index 03c1612d173c..85b158a1826a 100644
+>> --- a/drivers/iommu/intel-pasid.h
+>> +++ b/drivers/iommu/intel-pasid.h
+>> @@ -49,5 +49,12 @@ struct pasid_table *intel_pasid_get_table(struct
+>> device *dev);
+>>   int intel_pasid_get_dev_max_id(struct device *dev);
+>>   struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
+>>   void intel_pasid_clear_entry(struct device *dev, int pasid);
+>> +int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+>> +				   struct dmar_domain *domain,
+>> +				   struct device *dev, int pasid,
+>> +				   bool pass_through);
+>> +void intel_pasid_tear_down_second_level(struct intel_iommu *iommu,
+>> +					struct dmar_domain *domain,
+>> +					struct device *dev, int pasid);
+>>
+>>   #endif /* __INTEL_PASID_H */
+>> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+>> index 72aff482b293..d77d23dfd221 100644
+>> --- a/include/linux/intel-iommu.h
+>> +++ b/include/linux/intel-iommu.h
+>> @@ -115,6 +115,8 @@
+>>    * Extended Capability Register
+>>    */
+>>
+>> +#define ecap_smpwc(e)		(((e) >> 48) & 0x1)
+>> +#define ecap_slts(e)		(((e) >> 46) & 0x1)
+>>   #define ecap_smts(e)		(((e) >> 43) & 0x1)
+>>   #define ecap_dit(e)		((e >> 41) & 0x1)
+>>   #define ecap_pasid(e)		((e >> 40) & 0x1)
+>> @@ -571,6 +573,7 @@ void free_pgtable_page(void *vaddr);
+>>   struct intel_iommu *domain_get_iommu(struct dmar_domain *domain);
+>>   int for_each_device_domain(int (*fn)(struct device_domain_info *info,
+>>   				     void *data), void *data);
+>> +void iommu_flush_write_buffer(struct intel_iommu *iommu);
+>>
+>>   #ifdef CONFIG_INTEL_IOMMU_SVM
+>>   int intel_svm_init(struct intel_iommu *iommu);
+>> --
+>> 2.17.1
+> 
+> 
+
+Best regards,
+Lu Baolu
