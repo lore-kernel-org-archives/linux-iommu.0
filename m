@@ -1,41 +1,138 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
-Date: Fri, 7 Sep 2018 18:55:45 +0100
-Message-ID: <404f0944-d514-b450-f743-89ae798ac694@arm.com>
-References: <20180903005204.26041-1-nek.in.cn@gmail.com>
- <20180904150019.GA4024@redhat.com> <20180904101509.62314b67@t450s.home>
- <20180906094532.GG230707@Turing-Arch-b> <20180906133133.GA3830@redhat.com>
- <20180907040138.GI230707@Turing-Arch-b> <20180907165303.GA3519@redhat.com>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
+Date: Fri, 7 Sep 2018 20:02:54 +0200
+Message-ID: <5bbc0332-b94b-75cc-ca42-a9b196811daf@amd.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
+	<bf42affd-e9d0-e4fc-6d28-f3c3f7795348@redhat.com>
+	<03d31ba5-1eda-ea86-8c0c-91d14c86fe83@arm.com>
+	<ed39159c-087e-7e56-7d29-d1de9fa1677f@amd.com>
+	<f0b317d5-e2e9-5478-952c-05e8b97bd68b@arm.com>
+	<2fd4a0a1-1a35-bf82-df84-b995cce011d9@amd.com>
+	<65e7accd-4446-19f5-c667-c6407e89cfa6@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180907165303.GA3519@redhat.com>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <65e7accd-4446-19f5-c667-c6407e89cfa6-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>, Kenneth Lee <liguozhu@hisilicon.com>
-Cc: Kenneth Lee <nek.in.cn@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>, kvm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-doc@vger.kernel.org, Sanjay Kumar <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, linux-kernel@vger.kernel.org, linuxarm@huawei.com, iommu@lists.linux-foundation.org, "David S . Miller" <davem@davemloft.net>, linux-crypto@vger.kernel.org, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, linux-accelerators@lists.ozlabs.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
+Cc: "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/09/2018 17:53, Jerome Glisse wrote:
-> So there is no reasons to do that under VFIO. Especialy as in your example
-> it is not a real user space device driver, the userspace portion only knows
-> about writting command into command buffer AFAICT.
-> 
-> VFIO is for real userspace driver where interrupt, configurations, ... ie
-> all the driver is handled in userspace. This means that the userspace have
-> to be trusted as it could program the device to do DMA to anywhere (if
-> IOMMU is disabled at boot which is still the default configuration in the
-> kernel).
-
-If the IOMMU is disabled (not exactly a kernel default by the way, I
-think most IOMMU drivers enable it by default), your userspace driver
-can't bypass DMA isolation by accident. It just won't be allowed to
-access the device. VFIO requires an IOMMU unless the admin forces the
-NOIOMMU mode with the "enable_unsafe_noiommu_mode" module parameter, and
-the userspace explicitly asks for it with VFIO_NOIOMMU_IOMMU, which
-taints the kernel. Not for production. A normal userspace driver that
-uses VFIO can only do DMA to its own memory.
-
-Thanks,
-Jean
+QW0gMDcuMDkuMjAxOCB1bSAxNzo0NSBzY2hyaWViIEplYW4tUGhpbGlwcGUgQnJ1Y2tlcjoKPiBP
+biAwNy8wOS8yMDE4IDA5OjU1LCBDaHJpc3RpYW4gS8O2bmlnIHdyb3RlOgo+PiBJIHdpbGwgdGFr
+ZSB0aGlzIGFzIGFuIG9wcG9ydHVuaXR5IHRvIHN1bW1hcml6ZSBzb21lIG9mIHRoZSByZXF1aXJl
+bWVudHMKPj4gd2UgaGF2ZSBmb3IgUEFTSUQgbWFuYWdlbWVudCBmcm9tIHRoZSBhbWRncHUgZHJp
+dmVyIHBvaW50IG9mIHZpZXc6Cj4gVGhhdCdzIGluY3JlZGlibHkgdXNlZnVsLCB0aGFua3MgOikK
+Pgo+PiAxLiBXZSBuZWVkIHRvIGJlIGFibGUgdG8gYWxsb2NhdGUgUEFTSUQgYmV0d2VlbiAxIGFu
+ZCBzb21lIG1heGltdW0uIFplcm8KPj4gaXMgcmVzZXJ2ZWQgYXMgZmFyIGFzIEkga25vdywgYnV0
+IHdlIGRvbid0IG5lY2Vzc2FyeSBuZWVkIGEgbWluaW11bS4KPiBTaG91bGQgYmUgZmluZS4gVGhl
+IFBBU0lEIHJhbmdlIGlzIHJlc3RyaWN0ZWQgYnkgdGhlIFBDSSBQQVNJRAo+IGNhcGFiaWxpdHks
+IGZpcm13YXJlIGRlc2NyaXB0aW9uIChmb3Igbm9uLVBDSSBkZXZpY2VzKSwgdGhlIElPTU1VCj4g
+Y2FwYWNpdHksIGFuZCB3aGF0IHRoZSBkZXZpY2UgZHJpdmVyIHBhc3NlcyB0byBpb21tdV9zdmFf
+ZGV2aWNlX2luaXQuCj4gTm90IGFsbCBJT01NVXMgcmVzZXJ2ZSBQQVNJRCAwIChBTUQgSU9NTVUg
+d2l0aG91dCBHSW9TdXAgZG9lc24ndCwgaWYgSSdtCj4gbm90IG1pc3Rha2VuKSwgc28gdGhlIEtG
+RCBkcml2ZXIgd2lsbCBuZWVkIHRvIHBhc3MgbWluX3Bhc2lkPTEgdG8gbWFrZQo+IHN1cmUgdGhh
+dCAwIGlzbid0IGFsbG9jYXRlZC4KPgo+PiAyLiBXZSBuZWVkIHRvIGJlIGFibGUgdG8gYWxsb2Nh
+dGUgUEFTSURzIHdpdGhvdXQgYSBwcm9jZXNzIGFkZHJlc3Mgc3BhY2UKPj4gYmFja2luZyBpdC4g
+RS5nLiBvdXIgaGFyZHdhcmUgdXNlcyBQQVNJRHMgZXZlbiB3aXRob3V0IFNoYXJlZCBWaXJ0dWFs
+Cj4+IEFkZHJlc3NpbmcgZW5hYmxlZCB0byBkaXN0aW5jdCBjbGllbnRzIGZyb20gZWFjaCBvdGhl
+ci4KPj4gICDCoMKgwqAgwqDCoMKgIFdvdWxkIGJlIGEgcGl0eSBpZiB3ZSBuZWVkIHRvIHN0aWxs
+IGhhdmUgYSBzZXBhcmF0ZSBQQVNJRAo+PiBoYW5kbGluZyBiZWNhdXNlIHRoZSBzeXN0ZW0gd2lk
+ZSBpcyBvbmx5IGF2YWlsYWJsZSB3aGVuIElPTU1VIGlzIHR1cm5lZCBvbi4KPiBJJ20gc3RpbGwg
+bm90IHN1cmUgYWJvdXQgdGhpcyBvbmUuIEZyb20gbXkgcG9pbnQgb2YgdmlldyB3ZSBzaG91bGRu
+J3QKPiBhZGQgdG8gdGhlIElPTU1VIHN1YnN5c3RlbSBoZWxwZXJzIGZvciBkZXZpY2VzIHdpdGhv
+dXQgYW4gSU9NTVUuCgpJIGFncmVlIG9uIHRoYXQuCgo+IGlvbW11LXN2YSBleHBlY3RzIGV2ZXJ5
+d2hlcmUgdGhhdCB0aGUgZGV2aWNlIGhhcyBhbiBpb21tdV9kb21haW4sIGl0J3MKPiB0aGUgZmly
+c3QgdGhpbmcgd2UgY2hlY2sgb24gZW50cnkuIEJ5cGFzc2luZyBhbGwgb2YgdGhpcyB3b3VsZCBj
+YWxsCj4gaWRyX2FsbG9jKCkgZGlyZWN0bHksIGFuZCB3b3VsZG4ndCBoYXZlIGFueSBjb2RlIGlu
+IGNvbW1vbiB3aXRoIHRoZQo+IGN1cnJlbnQgaW9tbXUtc3ZhLiBTbyBpdCBzZWVtcyBsaWtlIHlv
+dSBuZWVkIGEgbGF5ZXIgb24gdG9wIG9mIGlvbW11LXN2YQo+IGNhbGxpbmcgaWRyX2FsbG9jKCkg
+d2hlbiBhbiBJT01NVSBpc24ndCBwcmVzZW50LCBidXQgSSBkb24ndCB0aGluayBpdAo+IHNob3Vs
+ZCBiZSBpbiBkcml2ZXJzL2lvbW11LwoKSW4gdGhpcyBjYXNlIEkgcXVlc3Rpb24gaWYgdGhlIFBB
+U0lEIGhhbmRsaW5nIHNob3VsZCBiZSB1bmRlciAKZHJpdmVycy9pb21tdSBhdCBhbGwuCgpTZWUg
+SSBjYW4gaGF2ZSBhIG1peCBvZiBWTSBjb250ZXh0IHdoaWNoIGFyZSBib3VuZCB0byBwcm9jZXNz
+ZXMgKHNvbWUgCmZldykgYW5kIFZNIGNvbnRleHRzIHdoaWNoIGFyZSBzdGFuZGFsb25lIGFuZCBk
+b2Vzbid0IGNhcmUgZm9yIGEgcHJvY2VzcyAKYWRkcmVzcyBzcGFjZS4gQnV0IGZvciBlYWNoIFZN
+IGNvbnRleHQgSSBuZWVkIGEgZGlzdGluY3QgUEFTSUQgZm9yIHRoZSAKaGFyZHdhcmUgdG8gd29y
+ay4KCkkgY2FuIGxpdmUgaWYgd2Ugc2F5IGlmIElPTU1VIGlzIGNvbXBsZXRlbHkgZGlzYWJsZWQg
+d2UgdXNlIGEgc2ltcGxlIGlkYSAKdG8gYWxsb2NhdGUgdGhlbSwgYnV0IHdoZW4gSU9NTVUgaXMg
+ZW5hYmxlZCBJIGNlcnRhaW5seSBuZWVkIGEgd2F5IHRvIApyZXNlcnZlIGEgUEFTSUQgd2l0aG91
+dCBhbiBhc3NvY2lhdGVkIHByb2Nlc3MuCgo+PiAzLiBFdmVuIGFmdGVyIGRlc3RydWN0aW9uIG9m
+IGEgcHJvY2VzcyBhZGRyZXNzIHNwYWNlIHdlIG5lZWQgc29tZSBncmFjZQo+PiBwZXJpb2QgYmVm
+b3JlIGEgUEFTSUQgaXMgcmV1c2VkIGJlY2F1c2UgaXQgY2FuIGJlIHRoYXQgdGhlIHNwZWNpZmlj
+Cj4+IFBBU0lEIGlzIHN0aWxsIGluIHNvbWUgaGFyZHdhcmUgcXVldWVzIGV0Yy4uLgo+PiAgIMKg
+wqDCoCDCoMKgwqAgQXQgYmFyZSBtaW5pbXVtIGFsbCBkZXZpY2UgZHJpdmVycyB1c2luZyBwcm9j
+ZXNzIGJpbmRpbmcgbmVlZAo+PiB0byBleHBsaWNpdGx5IG5vdGUgdG8gdGhlIGNvcmUgd2hlbiB0
+aGV5IGFyZSBkb25lIHdpdGggYSBQQVNJRC4KPiBSaWdodCwgbXVjaCBvZiB0aGUgaG9ycmlibGVu
+ZXNzIGluIGlvbW11LXN2YSBkZWFscyB3aXRoIHRoaXM6Cj4KPiBUaGUgcHJvY2VzcyBkaWVzLCBp
+b21tdS1zdmEgaXMgbm90aWZpZWQgYW5kIGNhbGxzIHRoZSBtbV9leGl0KCkgZnVuY3Rpb24KPiBw
+YXNzZWQgYnkgdGhlIGRldmljZSBkcml2ZXIgdG8gaW9tbXVfc3ZhX2RldmljZV9pbml0KCkuIElu
+IG1tX2V4aXQoKSB0aGUKPiBkZXZpY2UgZHJpdmVyIG5lZWRzIHRvIGNsZWFyIGFueSByZWZlcmVu
+Y2UgdG8gdGhlIFBBU0lEIGluIGhhcmR3YXJlIGFuZAo+IGluIGl0cyBvd24gc3RydWN0dXJlcy4g
+V2hlbiB0aGUgZGV2aWNlIGRyaXZlciByZXR1cm5zIGZyb20gbW1fZXhpdCgpLCBpdAo+IGVmZmVj
+dGl2ZWx5IHRlbGxzIHRoZSBjb3JlIHRoYXQgaXQgaGFzIGZpbmlzaGVkIHVzaW5nIHRoZSBQQVNJ
+RCwgYW5kCj4gaW9tbXUtc3ZhIGNhbiByZXVzZSB0aGUgUEFTSUQgZm9yIGFub3RoZXIgcHJvY2Vz
+cy4gbW1fZXhpdCgpIGlzIGFsbG93ZWQKPiB0byBibG9jaywgc28gdGhlIGRldmljZSBkcml2ZXIg
+aGFzIHRpbWUgdG8gY2xlYW4gdXAgYW5kIGZsdXNoIHRoZSBxdWV1ZXMuCj4KPiBJZiB0aGUgZGV2
+aWNlIGRyaXZlciBmaW5pc2hlcyB1c2luZyB0aGUgUEFTSUQgYmVmb3JlIHRoZSBwcm9jZXNzIGV4
+aXRzLAo+IGl0IGp1c3QgY2FsbHMgdW5iaW5kKCkuCgpFeGFjdGx5IHRoYXQncyB3aGF0IE1pY2hh
+bCBIb2NrbyBpcyBwcm9iYWJseSBnb2luZyB0byBub3QgbGlrZSBhdCBhbGwuCgpDYW4gd2UgaGF2
+ZSBhIGRpZmZlcmVudCBhcHByb2FjaCB3aGVyZSBlYWNoIGRyaXZlciBpcyBpbmZvcm1lZCBieSB0
+aGUgCm1tX2V4aXQoKSwgYnV0IG5lZWRzIHRvIGV4cGxpY2l0bHkgY2FsbCB1bmJpbmQoKSBiZWZv
+cmUgYSBQQVNJRCBpcyByZXVzZWQ/CgpEdXJpbmcgdGhhdCB0ZWFyZG93biB0cmFuc2l0aW9uIGl0
+IHdvdWxkIGJlIGlkZWFsIGlmIHRoYXQgUEFTSUQgb25seSAKcG9pbnRzIHRvIGEgZHVtbXkgcm9v
+dCBwYWdlIGRpcmVjdG9yeSB3aXRoIG9ubHkgaW52YWxpZCBlbnRyaWVzLgoKPgo+PiA0LiBJdCB3
+b3VsZCBiZSBuaWNlIHRvIGhhdmUgdG8gYmUgYWJsZSB0byBzZXQgYSAidm9pZCAqIiBmb3IgZWFj
+aAo+PiBQQVNJRC9kZXZpY2UgY29tYmluYXRpb24gd2hpbGUgYmluZGluZyB0byBhIHByb2Nlc3Mg
+d2hpY2ggdGhlbiBjYW4gYmUKPj4gcXVlcmllZCBsYXRlciBvbiBiYXNlZCBvbiB0aGUgUEFTSUQu
+Cj4+ICAgwqDCoMKgIMKgwqDCoCBFLmcuIHdoZW4geW91IGhhdmUgYSBwZXIgUEFTSUQvZGV2aWNl
+IHN0cnVjdHVyZSBhcm91bmQgYW55d2F5LAo+PiBqdXN0IGFkZCBhbiBleHRyYSBmaWVsZC4KPiBp
+b21tdV9zdmFfYmluZF9kZXZpY2UoKSB0YWtlcyBhICJkcnZkYXRhIiBwb2ludGVyIHRoYXQgaXMg
+c3RvcmVkCj4gaW50ZXJuYWxseSBmb3IgdGhlIFBBU0lEL2RldmljZSBjb21iaW5hdGlvbiAoaW9t
+bXVfYm9uZCkuIEl0IGlzIHBhc3NlZAo+IHRvIG1tX2V4aXQoKSwgYnV0IEkgaGF2ZW4ndCBhZGRl
+ZCBhbnl0aGluZyBmb3IgdGhlIGRldmljZSBkcml2ZXIgdG8KPiBxdWVyeSBpdCBiYWNrLgoKTmlj
+ZSEgTG9va3MgbGlrZSBhbGwgd2UgbmVlZCBhZGRpdGlvbmFsbHkgaXMgYSBmdW5jdGlvbiB0byBy
+ZXRyaWV2ZSB0aGF0IApiYXNlZCBvbiB0aGUgUEFTSUQuCgo+PiA1LiBJdCB3b3VsZCBiZSBuaWNl
+IHRvIGhhdmUgdG8gYWxsb2NhdGUgbXVsdGlwbGUgUEFTSURzIGZvciB0aGUgc2FtZQo+PiBwcm9j
+ZXNzIGFkZHJlc3Mgc3BhY2UuCj4+ICAgwqDCoMKgIMKgwqDCoCBFLmcuIHNvbWUgdGVhbXMgYXQg
+QU1EIHdhbnQgdG8gdXNlIGEgc2VwYXJhdGUgR1BVIGFkZHJlc3Mgc3BhY2UKPj4gZm9yIHRoZWly
+IHVzZXJzcGFjZSBjbGllbnQgbGlicmFyeS4gSSdtIHN0aWxsIHRyeWluZyB0byBhdm9pZCB0aGF0
+LCBidXQKPj4gaXQgaXMgcGVyZmVjdGx5IHBvc3NpYmxlIHRoYXQgd2UgYXJlIGdvaW5nIHRvIG5l
+ZWQgdGhhdC4KPiBUd28gUEFTSURzIHBvaW50aW5nIHRvIHRoZSBzYW1lIHByb2Nlc3MgcGdkPyBB
+dCBmaXJzdCBnbGFuY2UgaXQgc2VlbXMKPiBmZWFzaWJsZSwgbWF5YmUgd2l0aCBhIGZsYWcgcGFz
+c2VkIHRvIGJpbmQoKSBhbmQgYSBmZXcgY2hhbmdlcyB0bwo+IGludGVybmFsIHN0cnVjdHVyZXMu
+IEl0IHdpbGwgZHVwbGljYXRlIEFUQyBpbnZhbGlkYXRpb24gY29tbWFuZHMgZm9yCj4gZWFjaCBw
+cm9jZXNzIGFkZHJlc3Mgc3BhY2UgY2hhbmdlIChtdW5tYXAgZXRjKSBzbyB5b3UgbWlnaHQgdGFr
+ZSBhCj4gcGVyZm9ybWFuY2UgaGl0Lgo+Cj4gSW50ZWwncyBTVk0gY29kZSBoYXMgdGhlIFNWTV9G
+TEFHX1BSSVZBVEVfUEFTSUQgd2hpY2ggc2VlbXMgc2ltaWxhciB0bwo+IHdoYXQgeW91IGRlc2Ny
+aWJlLCBidXQgSSBkb24ndCBwbGFuIHRvIHN1cHBvcnQgaXQgaW4gdGhpcyBzZXJpZXMgKHRoZQo+
+IGlvX21tIG1vZGVsIGlzIGFscmVhZHkgcHJldHR5IGNvbXBsaWNhdGVkKS4gSSB0aGluayBpdCBj
+YW4gYmUgYWRkZWQKPiB3aXRob3V0IHRvbyBtdWNoIGVmZm9ydCBpbiBhIGZ1dHVyZSBzZXJpZXMs
+IHRob3VnaCB3aXRoIGEgZGlmZmVyZW50IGZsYWcKPiBuYW1lIHNpbmNlIHdlJ2QgbGlrZSB0byB1
+c2UgInByaXZhdGUgUEFTSUQiIGZvciBzb21ldGhpbmcgZWxzZQo+IChodHRwczovL3d3dy5zcGlu
+aWNzLm5ldC9saXN0cy9kcmktZGV2ZWwvbXNnMTc3MDA3Lmh0bWwpLgoKVG8gYmUgaG9uZXN0IEkg
+aG9wZWQgdGhhdCB5b3Ugd291bGQgc2F5OiBObyBuZXZlciEgU28gdGhhdCBJIGhhdmUgYSBnb29k
+IAphcmd1bWVudCB0byBwdXNoYmFjayBvbiBzdWNoIHJlcXVpcmVtZW50cyA6KQoKQnV0IGlmIGl0
+J3MgZG9hYmxlIGl0IHdvdWxkIGJlIGF0IGxlYXN0IG5pY2UgdG8gaGF2ZSBmb3IgZGVidWdnaW5n
+LgoKVGhhbmtzIGEgbG90IGZvciB3b3JraW5nIG9uIHRoYXQsCkNocmlzdGlhbi4KCj4KPiBUaGFu
+a3MsCj4gSmVhbgo+Cj4+ICAgwqDCoMKgIMKgwqDCoCBBZGRpdGlvbmFsIHRvIHRoYXQgaXQgaXMg
+c29tZXRpbWVzIHF1aXRlIHVzZWZ1bCBmb3IgZGVidWdnaW5nCj4+IHRvIGlzb2xhdGUgd2hlcmUg
+ZXhhY3RseSBhbiBpbmNvcnJlY3QgYWNjZXNzIChzZWdmYXVsdCkgaXMgY29taW5nIGZyb20uCj4+
+Cj4+IExldCBtZSBrbm93IGlmIHRoZXJlIGFyZSBzb21lIHByb2JsZW1zIHdpdGggdGhhdCwgZXNw
+ZWNpYWxseSBJIHdhbnQgdG8KPj4ga25vdyBpZiB0aGVyZSBpcyBwdXNoYmFjayBvbiAjNSBzbyB0
+aGF0IEkgY2FuIGZvcndhcmQgdGhhdCA6KQo+Pgo+PiBUaGFua3MsCj4+IENocmlzdGlhbi4KPj4K
+Pj4+IFRoYW5rcywKPj4+IEplYW4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pb21tdQ==
