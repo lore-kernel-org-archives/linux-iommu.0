@@ -1,12 +1,20 @@
-From: Michal Simek <monstr-pSz03upnqPeHXe+LvDLADg@public.gmane.org>
-Subject: Re: [PATCH 00/21] DT cpu node iterator
-Date: Fri, 7 Sep 2018 14:54:20 +0200
-Message-ID: <CAHTX3d+BFKM-jFo8Ww_dXwAzsDVoWqE==erfwVTeijHfh8kkOw@mail.gmail.com>
-References: <20180905193738.19325-1-robh@kernel.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 01/40] iommu: Introduce Shared Virtual Addressing API
+Date: Fri, 7 Sep 2018 16:45:02 +0100
+Message-ID: <65e7accd-4446-19f5-c667-c6407e89cfa6@arm.com>
+References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
+	<20180511190641.23008-2-jean-philippe.brucker@arm.com>
+	<bf42affd-e9d0-e4fc-6d28-f3c3f7795348@redhat.com>
+	<03d31ba5-1eda-ea86-8c0c-91d14c86fe83@arm.com>
+	<ed39159c-087e-7e56-7d29-d1de9fa1677f@amd.com>
+	<f0b317d5-e2e9-5478-952c-05e8b97bd68b@arm.com>
+	<2fd4a0a1-1a35-bf82-df84-b995cce011d9@amd.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0971646821141865186=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180905193738.19325-1-robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <2fd4a0a1-1a35-bf82-df84-b995cce011d9-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,68 +24,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rich Felker <dalias-8zAoT0mYgF4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vitaly Bordug <vitb-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Stefan Kristiansson <stefan.kristiansson-MbMCFXIvDHJFcC0YU169RA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-riscv-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jonas Bonn <jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org>, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.orgAlbert Ou <a>
+To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>
+Cc: "xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org" <rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============0971646821141865186==
-Content-Type: multipart/alternative; boundary="0000000000009fa1d105754781ee"
-
---0000000000009fa1d105754781ee
-Content-Type: text/plain; charset="UTF-8"
-
-Hi Rob,
-
-2018-09-05 21:37 GMT+02:00 Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>:
-
-> This series adds an iterator for cpu nodes and converts users over to use
-> it or of_get_cpu_node in some cases. This allows us to remove the
-> dependency on device_type property for cpu nodes though removing that
-> from DTS files will have to wait for some time. In some cases, this makes
-> the DT search more strict by only looking in /cpus child nodes rather
-> than any node with the device_type == cpu. The iterator also honors the
-> status property which is often forgotten.
->
-> I've only tested on ARM under QEMU and compiled powerpc.
->
-
-
-Do you have this somewhere in your tree not to apply 21 patches by hand?
-
-Thanks,
-Michal
-
---0000000000009fa1d105754781ee
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi Rob,<br><div><div class=3D"gmail_extra"><br><div class=
-=3D"gmail_quote">2018-09-05 21:37 GMT+02:00 Rob Herring <span dir=3D"ltr">&=
-lt;<a href=3D"mailto:robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" target=3D"_blank">robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org</a>=
-&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
-x;border-left:1px #ccc solid;padding-left:1ex">This series adds an iterator=
- for cpu nodes and converts users over to use<br>
-it or of_get_cpu_node in some cases. This allows us to remove the<br>
-dependency on device_type property for cpu nodes though removing that<br>
-from DTS files will have to wait for some time. In some cases, this makes<b=
-r>
-the DT search more strict by only looking in /cpus child nodes rather<br>
-than any node with the device_type =3D=3D cpu. The iterator also honors the=
-<br>
-status property which is often forgotten.<br>
-<br>
-I&#39;ve only tested on ARM under QEMU and compiled powerpc.<br></blockquot=
-e><div><br></div><div><br></div><div>Do you have this somewhere in your tre=
-e not to apply 21 patches by hand?</div><div><br></div><div>Thanks,</div><d=
-iv>Michal<br></div><div>=C2=A0</div></div><br></div></div></div>
-
---0000000000009fa1d105754781ee--
-
---===============0971646821141865186==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0971646821141865186==--
+T24gMDcvMDkvMjAxOCAwOTo1NSwgQ2hyaXN0aWFuIEvDtm5pZyB3cm90ZToKPiBJIHdpbGwgdGFr
+ZSB0aGlzIGFzIGFuIG9wcG9ydHVuaXR5IHRvIHN1bW1hcml6ZSBzb21lIG9mIHRoZSByZXF1aXJl
+bWVudHMgCj4gd2UgaGF2ZSBmb3IgUEFTSUQgbWFuYWdlbWVudCBmcm9tIHRoZSBhbWRncHUgZHJp
+dmVyIHBvaW50IG9mIHZpZXc6CgpUaGF0J3MgaW5jcmVkaWJseSB1c2VmdWwsIHRoYW5rcyA6KQoK
+PiAxLiBXZSBuZWVkIHRvIGJlIGFibGUgdG8gYWxsb2NhdGUgUEFTSUQgYmV0d2VlbiAxIGFuZCBz
+b21lIG1heGltdW0uIFplcm8gCj4gaXMgcmVzZXJ2ZWQgYXMgZmFyIGFzIEkga25vdywgYnV0IHdl
+IGRvbid0IG5lY2Vzc2FyeSBuZWVkIGEgbWluaW11bS4KClNob3VsZCBiZSBmaW5lLiBUaGUgUEFT
+SUQgcmFuZ2UgaXMgcmVzdHJpY3RlZCBieSB0aGUgUENJIFBBU0lECmNhcGFiaWxpdHksIGZpcm13
+YXJlIGRlc2NyaXB0aW9uIChmb3Igbm9uLVBDSSBkZXZpY2VzKSwgdGhlIElPTU1VCmNhcGFjaXR5
+LCBhbmQgd2hhdCB0aGUgZGV2aWNlIGRyaXZlciBwYXNzZXMgdG8gaW9tbXVfc3ZhX2RldmljZV9p
+bml0LgpOb3QgYWxsIElPTU1VcyByZXNlcnZlIFBBU0lEIDAgKEFNRCBJT01NVSB3aXRob3V0IEdJ
+b1N1cCBkb2Vzbid0LCBpZiBJJ20Kbm90IG1pc3Rha2VuKSwgc28gdGhlIEtGRCBkcml2ZXIgd2ls
+bCBuZWVkIHRvIHBhc3MgbWluX3Bhc2lkPTEgdG8gbWFrZQpzdXJlIHRoYXQgMCBpc24ndCBhbGxv
+Y2F0ZWQuCgo+IDIuIFdlIG5lZWQgdG8gYmUgYWJsZSB0byBhbGxvY2F0ZSBQQVNJRHMgd2l0aG91
+dCBhIHByb2Nlc3MgYWRkcmVzcyBzcGFjZSAKPiBiYWNraW5nIGl0LiBFLmcuIG91ciBoYXJkd2Fy
+ZSB1c2VzIFBBU0lEcyBldmVuIHdpdGhvdXQgU2hhcmVkIFZpcnR1YWwgCj4gQWRkcmVzc2luZyBl
+bmFibGVkIHRvIGRpc3RpbmN0IGNsaWVudHMgZnJvbSBlYWNoIG90aGVyLgo+ICDCoMKgwqAgwqDC
+oMKgIFdvdWxkIGJlIGEgcGl0eSBpZiB3ZSBuZWVkIHRvIHN0aWxsIGhhdmUgYSBzZXBhcmF0ZSBQ
+QVNJRCAKPiBoYW5kbGluZyBiZWNhdXNlIHRoZSBzeXN0ZW0gd2lkZSBpcyBvbmx5IGF2YWlsYWJs
+ZSB3aGVuIElPTU1VIGlzIHR1cm5lZCBvbi4KCkknbSBzdGlsbCBub3Qgc3VyZSBhYm91dCB0aGlz
+IG9uZS4gRnJvbSBteSBwb2ludCBvZiB2aWV3IHdlIHNob3VsZG4ndAphZGQgdG8gdGhlIElPTU1V
+IHN1YnN5c3RlbSBoZWxwZXJzIGZvciBkZXZpY2VzIHdpdGhvdXQgYW4gSU9NTVUuCmlvbW11LXN2
+YSBleHBlY3RzIGV2ZXJ5d2hlcmUgdGhhdCB0aGUgZGV2aWNlIGhhcyBhbiBpb21tdV9kb21haW4s
+IGl0J3MKdGhlIGZpcnN0IHRoaW5nIHdlIGNoZWNrIG9uIGVudHJ5LiBCeXBhc3NpbmcgYWxsIG9m
+IHRoaXMgd291bGQgY2FsbAppZHJfYWxsb2MoKSBkaXJlY3RseSwgYW5kIHdvdWxkbid0IGhhdmUg
+YW55IGNvZGUgaW4gY29tbW9uIHdpdGggdGhlCmN1cnJlbnQgaW9tbXUtc3ZhLiBTbyBpdCBzZWVt
+cyBsaWtlIHlvdSBuZWVkIGEgbGF5ZXIgb24gdG9wIG9mIGlvbW11LXN2YQpjYWxsaW5nIGlkcl9h
+bGxvYygpIHdoZW4gYW4gSU9NTVUgaXNuJ3QgcHJlc2VudCwgYnV0IEkgZG9uJ3QgdGhpbmsgaXQK
+c2hvdWxkIGJlIGluIGRyaXZlcnMvaW9tbXUvCgo+IDMuIEV2ZW4gYWZ0ZXIgZGVzdHJ1Y3Rpb24g
+b2YgYSBwcm9jZXNzIGFkZHJlc3Mgc3BhY2Ugd2UgbmVlZCBzb21lIGdyYWNlIAo+IHBlcmlvZCBi
+ZWZvcmUgYSBQQVNJRCBpcyByZXVzZWQgYmVjYXVzZSBpdCBjYW4gYmUgdGhhdCB0aGUgc3BlY2lm
+aWMgCj4gUEFTSUQgaXMgc3RpbGwgaW4gc29tZSBoYXJkd2FyZSBxdWV1ZXMgZXRjLi4uCj4gIMKg
+wqDCoCDCoMKgwqAgQXQgYmFyZSBtaW5pbXVtIGFsbCBkZXZpY2UgZHJpdmVycyB1c2luZyBwcm9j
+ZXNzIGJpbmRpbmcgbmVlZCAKPiB0byBleHBsaWNpdGx5IG5vdGUgdG8gdGhlIGNvcmUgd2hlbiB0
+aGV5IGFyZSBkb25lIHdpdGggYSBQQVNJRC4KClJpZ2h0LCBtdWNoIG9mIHRoZSBob3JyaWJsZW5l
+c3MgaW4gaW9tbXUtc3ZhIGRlYWxzIHdpdGggdGhpczoKClRoZSBwcm9jZXNzIGRpZXMsIGlvbW11
+LXN2YSBpcyBub3RpZmllZCBhbmQgY2FsbHMgdGhlIG1tX2V4aXQoKSBmdW5jdGlvbgpwYXNzZWQg
+YnkgdGhlIGRldmljZSBkcml2ZXIgdG8gaW9tbXVfc3ZhX2RldmljZV9pbml0KCkuIEluIG1tX2V4
+aXQoKSB0aGUKZGV2aWNlIGRyaXZlciBuZWVkcyB0byBjbGVhciBhbnkgcmVmZXJlbmNlIHRvIHRo
+ZSBQQVNJRCBpbiBoYXJkd2FyZSBhbmQKaW4gaXRzIG93biBzdHJ1Y3R1cmVzLiBXaGVuIHRoZSBk
+ZXZpY2UgZHJpdmVyIHJldHVybnMgZnJvbSBtbV9leGl0KCksIGl0CmVmZmVjdGl2ZWx5IHRlbGxz
+IHRoZSBjb3JlIHRoYXQgaXQgaGFzIGZpbmlzaGVkIHVzaW5nIHRoZSBQQVNJRCwgYW5kCmlvbW11
+LXN2YSBjYW4gcmV1c2UgdGhlIFBBU0lEIGZvciBhbm90aGVyIHByb2Nlc3MuIG1tX2V4aXQoKSBp
+cyBhbGxvd2VkCnRvIGJsb2NrLCBzbyB0aGUgZGV2aWNlIGRyaXZlciBoYXMgdGltZSB0byBjbGVh
+biB1cCBhbmQgZmx1c2ggdGhlIHF1ZXVlcy4KCklmIHRoZSBkZXZpY2UgZHJpdmVyIGZpbmlzaGVz
+IHVzaW5nIHRoZSBQQVNJRCBiZWZvcmUgdGhlIHByb2Nlc3MgZXhpdHMsCml0IGp1c3QgY2FsbHMg
+dW5iaW5kKCkuCgo+IDQuIEl0IHdvdWxkIGJlIG5pY2UgdG8gaGF2ZSB0byBiZSBhYmxlIHRvIHNl
+dCBhICJ2b2lkICoiIGZvciBlYWNoIAo+IFBBU0lEL2RldmljZSBjb21iaW5hdGlvbiB3aGlsZSBi
+aW5kaW5nIHRvIGEgcHJvY2VzcyB3aGljaCB0aGVuIGNhbiBiZSAKPiBxdWVyaWVkIGxhdGVyIG9u
+IGJhc2VkIG9uIHRoZSBQQVNJRC4KPiAgwqDCoMKgIMKgwqDCoCBFLmcuIHdoZW4geW91IGhhdmUg
+YSBwZXIgUEFTSUQvZGV2aWNlIHN0cnVjdHVyZSBhcm91bmQgYW55d2F5LCAKPiBqdXN0IGFkZCBh
+biBleHRyYSBmaWVsZC4KCmlvbW11X3N2YV9iaW5kX2RldmljZSgpIHRha2VzIGEgImRydmRhdGEi
+IHBvaW50ZXIgdGhhdCBpcyBzdG9yZWQKaW50ZXJuYWxseSBmb3IgdGhlIFBBU0lEL2RldmljZSBj
+b21iaW5hdGlvbiAoaW9tbXVfYm9uZCkuIEl0IGlzIHBhc3NlZAp0byBtbV9leGl0KCksIGJ1dCBJ
+IGhhdmVuJ3QgYWRkZWQgYW55dGhpbmcgZm9yIHRoZSBkZXZpY2UgZHJpdmVyIHRvCnF1ZXJ5IGl0
+IGJhY2suCgo+IDUuIEl0IHdvdWxkIGJlIG5pY2UgdG8gaGF2ZSB0byBhbGxvY2F0ZSBtdWx0aXBs
+ZSBQQVNJRHMgZm9yIHRoZSBzYW1lIAo+IHByb2Nlc3MgYWRkcmVzcyBzcGFjZS4KPiAgwqDCoMKg
+IMKgwqDCoCBFLmcuIHNvbWUgdGVhbXMgYXQgQU1EIHdhbnQgdG8gdXNlIGEgc2VwYXJhdGUgR1BV
+IGFkZHJlc3Mgc3BhY2UgCj4gZm9yIHRoZWlyIHVzZXJzcGFjZSBjbGllbnQgbGlicmFyeS4gSSdt
+IHN0aWxsIHRyeWluZyB0byBhdm9pZCB0aGF0LCBidXQgCj4gaXQgaXMgcGVyZmVjdGx5IHBvc3Np
+YmxlIHRoYXQgd2UgYXJlIGdvaW5nIHRvIG5lZWQgdGhhdC4KClR3byBQQVNJRHMgcG9pbnRpbmcg
+dG8gdGhlIHNhbWUgcHJvY2VzcyBwZ2Q/IEF0IGZpcnN0IGdsYW5jZSBpdCBzZWVtcwpmZWFzaWJs
+ZSwgbWF5YmUgd2l0aCBhIGZsYWcgcGFzc2VkIHRvIGJpbmQoKSBhbmQgYSBmZXcgY2hhbmdlcyB0
+bwppbnRlcm5hbCBzdHJ1Y3R1cmVzLiBJdCB3aWxsIGR1cGxpY2F0ZSBBVEMgaW52YWxpZGF0aW9u
+IGNvbW1hbmRzIGZvcgplYWNoIHByb2Nlc3MgYWRkcmVzcyBzcGFjZSBjaGFuZ2UgKG11bm1hcCBl
+dGMpIHNvIHlvdSBtaWdodCB0YWtlIGEKcGVyZm9ybWFuY2UgaGl0LgoKSW50ZWwncyBTVk0gY29k
+ZSBoYXMgdGhlIFNWTV9GTEFHX1BSSVZBVEVfUEFTSUQgd2hpY2ggc2VlbXMgc2ltaWxhciB0bwp3
+aGF0IHlvdSBkZXNjcmliZSwgYnV0IEkgZG9uJ3QgcGxhbiB0byBzdXBwb3J0IGl0IGluIHRoaXMg
+c2VyaWVzICh0aGUKaW9fbW0gbW9kZWwgaXMgYWxyZWFkeSBwcmV0dHkgY29tcGxpY2F0ZWQpLiBJ
+IHRoaW5rIGl0IGNhbiBiZSBhZGRlZAp3aXRob3V0IHRvbyBtdWNoIGVmZm9ydCBpbiBhIGZ1dHVy
+ZSBzZXJpZXMsIHRob3VnaCB3aXRoIGEgZGlmZmVyZW50IGZsYWcKbmFtZSBzaW5jZSB3ZSdkIGxp
+a2UgdG8gdXNlICJwcml2YXRlIFBBU0lEIiBmb3Igc29tZXRoaW5nIGVsc2UKKGh0dHBzOi8vd3d3
+LnNwaW5pY3MubmV0L2xpc3RzL2RyaS1kZXZlbC9tc2cxNzcwMDcuaHRtbCkuCgpUaGFua3MsCkpl
+YW4KCj4gIMKgwqDCoCDCoMKgwqAgQWRkaXRpb25hbCB0byB0aGF0IGl0IGlzIHNvbWV0aW1lcyBx
+dWl0ZSB1c2VmdWwgZm9yIGRlYnVnZ2luZyAKPiB0byBpc29sYXRlIHdoZXJlIGV4YWN0bHkgYW4g
+aW5jb3JyZWN0IGFjY2VzcyAoc2VnZmF1bHQpIGlzIGNvbWluZyBmcm9tLgo+IAo+IExldCBtZSBr
+bm93IGlmIHRoZXJlIGFyZSBzb21lIHByb2JsZW1zIHdpdGggdGhhdCwgZXNwZWNpYWxseSBJIHdh
+bnQgdG8gCj4ga25vdyBpZiB0aGVyZSBpcyBwdXNoYmFjayBvbiAjNSBzbyB0aGF0IEkgY2FuIGZv
+cndhcmQgdGhhdCA6KQo+IAo+IFRoYW5rcywKPiBDaHJpc3RpYW4uCj4gCj4+Cj4+IFRoYW5rcywK
+Pj4gSmVhbgo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
