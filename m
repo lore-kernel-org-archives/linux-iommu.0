@@ -1,80 +1,86 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime during probe,
- add/remove device
-Date: Fri, 7 Sep 2018 18:52:07 +0900
-Message-ID: <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ@mail.gmail.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime
+ during probe, add/remove device
+Date: Fri, 7 Sep 2018 15:52:06 +0530
+Message-ID: <CAFp+6iE3+qn6-gpXEzxfoP5yPMARmUcJNn0AZk-kA2AreTLnng@mail.gmail.com>
 References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
- <20180830144541.17740-3-vivek.gautam@codeaurora.org> <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
+ <20180830144541.17740-3-vivek.gautam@codeaurora.org>
+ <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
  <3ccc3690-dc9d-56e7-e2d1-62e73a189bff@codeaurora.org>
+ <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3ccc3690-dc9d-56e7-e2d1-62e73a189bff@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Alex Williamson <alex.williamson@redhat.com>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Rob Clark <robdclark@gmail.com>, Linux PM <linux-pm@vger.kernel.org>, freedreno <freedreno@lists.freedesktop.org>, sboyd@kernel.org, jcrouse@codeaurora.org, Sricharan R <sricharan@codeaurora.org>, Marek
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 7, 2018 at 6:38 PM Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
->
-> Hi Tomasz,
->
->
-> On 9/7/2018 2:46 PM, Tomasz Figa wrote:
-> > Hi Vivek,
-> >
-> > On Thu, Aug 30, 2018 at 11:46 PM Vivek Gautam
-> > <vivek.gautam@codeaurora.org> wrote:
-> >> From: Sricharan R <sricharan@codeaurora.org>
-> >>
-> >> The smmu device probe/remove and add/remove master device callbacks
-> >> gets called when the smmu is not linked to its master, that is without
-> >> the context of the master device. So calling runtime apis in those places
-> >> separately.
-> >> Global locks are also initialized before enabling runtime pm as the
-> >> runtime_resume() calls device_reset() which does tlb_sync_global()
-> >> that ultimately requires locks to be initialized.
-> >>
-> >> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> >> [vivek: Cleanup pm runtime calls]
-> >> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> >> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
-> >> Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> >> ---
-> >>   drivers/iommu/arm-smmu.c | 89 +++++++++++++++++++++++++++++++++++++++++++-----
-> >>   1 file changed, 81 insertions(+), 8 deletions(-)
-> > [snip]
-> >> @@ -2215,10 +2281,17 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
-> >>          if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
-> >>                  dev_err(&pdev->dev, "removing device with active domains!\n");
-> >>
-> >> +       arm_smmu_rpm_get(smmu);
-> >>          /* Turn the thing off */
-> >>          writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> >> +       arm_smmu_rpm_put(smmu);
-> >> +
-> >> +       if (pm_runtime_enabled(smmu->dev))
-> >> +               pm_runtime_force_suspend(smmu->dev);
-> >> +       else
-> >> +               clk_bulk_disable(smmu->num_clks, smmu->clks);
-> >>
-> >> -       clk_bulk_disable_unprepare(smmu->num_clks, smmu->clks);
-> >> +       clk_bulk_unprepare(smmu->num_clks, smmu->clks);
-> > Aren't we missing pm_runtime_disable() here? We'll have the enable
-> > count unbalanced if the driver is removed and probed again.
->
-> pm_runtime_force_suspend() does a pm_runtime_disable() also if i am not
-> wrong.
-> And, as mentioned in a previous thread [1], we were seeing a warning
-> which we avoided
-> by keeping force_suspend().
->
-> [1] https://lkml.org/lkml/2018/7/8/124
-
-I see, thanks. I didn't realize that pm_runtime_force_suspend()
-already disables runtime PM indeed. Sorry for the noise.
-
-Best regards,
-Tomasz
+T24gRnJpLCBTZXAgNywgMjAxOCBhdCAzOjIyIFBNIFRvbWFzeiBGaWdhIDx0ZmlnYUBjaHJvbWl1
+bS5vcmc+IHdyb3RlOgo+Cj4gT24gRnJpLCBTZXAgNywgMjAxOCBhdCA2OjM4IFBNIFZpdmVrIEdh
+dXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+Cj4gPiBIaSBUb21h
+c3osCj4gPgo+ID4KPiA+IE9uIDkvNy8yMDE4IDI6NDYgUE0sIFRvbWFzeiBGaWdhIHdyb3RlOgo+
+ID4gPiBIaSBWaXZlaywKPiA+ID4KPiA+ID4gT24gVGh1LCBBdWcgMzAsIDIwMTggYXQgMTE6NDYg
+UE0gVml2ZWsgR2F1dGFtCj4gPiA+IDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3Rl
+Ogo+ID4gPj4gRnJvbTogU3JpY2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiA+
+ID4+Cj4gPiA+PiBUaGUgc21tdSBkZXZpY2UgcHJvYmUvcmVtb3ZlIGFuZCBhZGQvcmVtb3ZlIG1h
+c3RlciBkZXZpY2UgY2FsbGJhY2tzCj4gPiA+PiBnZXRzIGNhbGxlZCB3aGVuIHRoZSBzbW11IGlz
+IG5vdCBsaW5rZWQgdG8gaXRzIG1hc3RlciwgdGhhdCBpcyB3aXRob3V0Cj4gPiA+PiB0aGUgY29u
+dGV4dCBvZiB0aGUgbWFzdGVyIGRldmljZS4gU28gY2FsbGluZyBydW50aW1lIGFwaXMgaW4gdGhv
+c2UgcGxhY2VzCj4gPiA+PiBzZXBhcmF0ZWx5Lgo+ID4gPj4gR2xvYmFsIGxvY2tzIGFyZSBhbHNv
+IGluaXRpYWxpemVkIGJlZm9yZSBlbmFibGluZyBydW50aW1lIHBtIGFzIHRoZQo+ID4gPj4gcnVu
+dGltZV9yZXN1bWUoKSBjYWxscyBkZXZpY2VfcmVzZXQoKSB3aGljaCBkb2VzIHRsYl9zeW5jX2ds
+b2JhbCgpCj4gPiA+PiB0aGF0IHVsdGltYXRlbHkgcmVxdWlyZXMgbG9ja3MgdG8gYmUgaW5pdGlh
+bGl6ZWQuCj4gPiA+Pgo+ID4gPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIgPHNyaWNoYXJh
+bkBjb2RlYXVyb3JhLm9yZz4KPiA+ID4+IFt2aXZlazogQ2xlYW51cCBwbSBydW50aW1lIGNhbGxz
+XQo+ID4gPj4gU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1
+cm9yYS5vcmc+Cj4gPiA+PiBSZXZpZXdlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVt
+Lm9yZz4KPiA+ID4+IFRlc3RlZC1ieTogU3Jpbml2YXMgS2FuZGFnYXRsYSA8c3Jpbml2YXMua2Fu
+ZGFnYXRsYUBsaW5hcm8ub3JnPgo+ID4gPj4gLS0tCj4gPiA+PiAgIGRyaXZlcnMvaW9tbXUvYXJt
+LXNtbXUuYyB8IDg5ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKyst
+LS0tLQo+ID4gPj4gICAxIGZpbGUgY2hhbmdlZCwgODEgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlv
+bnMoLSkKPiA+ID4gW3NuaXBdCj4gPiA+PiBAQCAtMjIxNSwxMCArMjI4MSwxNyBAQCBzdGF0aWMg
+aW50IGFybV9zbW11X2RldmljZV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikK
+PiA+ID4+ICAgICAgICAgIGlmICghYml0bWFwX2VtcHR5KHNtbXUtPmNvbnRleHRfbWFwLCBBUk1f
+U01NVV9NQVhfQ0JTKSkKPiA+ID4+ICAgICAgICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2
+LCAicmVtb3ZpbmcgZGV2aWNlIHdpdGggYWN0aXZlIGRvbWFpbnMhXG4iKTsKPiA+ID4+Cj4gPiA+
+PiArICAgICAgIGFybV9zbW11X3JwbV9nZXQoc21tdSk7Cj4gPiA+PiAgICAgICAgICAvKiBUdXJu
+IHRoZSB0aGluZyBvZmYgKi8KPiA+ID4+ICAgICAgICAgIHdyaXRlbChzQ1IwX0NMSUVOVFBELCBB
+Uk1fU01NVV9HUjBfTlMoc21tdSkgKyBBUk1fU01NVV9HUjBfc0NSMCk7Cj4gPiA+PiArICAgICAg
+IGFybV9zbW11X3JwbV9wdXQoc21tdSk7Cj4gPiA+PiArCj4gPiA+PiArICAgICAgIGlmIChwbV9y
+dW50aW1lX2VuYWJsZWQoc21tdS0+ZGV2KSkKPiA+ID4+ICsgICAgICAgICAgICAgICBwbV9ydW50
+aW1lX2ZvcmNlX3N1c3BlbmQoc21tdS0+ZGV2KTsKPiA+ID4+ICsgICAgICAgZWxzZQo+ID4gPj4g
+KyAgICAgICAgICAgICAgIGNsa19idWxrX2Rpc2FibGUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNs
+a3MpOwo+ID4gPj4KPiA+ID4+IC0gICAgICAgY2xrX2J1bGtfZGlzYWJsZV91bnByZXBhcmUoc21t
+dS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPj4gKyAgICAgICBjbGtfYnVsa191bnByZXBh
+cmUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPiBBcmVuJ3Qgd2UgbWlzc2luZyBw
+bV9ydW50aW1lX2Rpc2FibGUoKSBoZXJlPyBXZSdsbCBoYXZlIHRoZSBlbmFibGUKPiA+ID4gY291
+bnQgdW5iYWxhbmNlZCBpZiB0aGUgZHJpdmVyIGlzIHJlbW92ZWQgYW5kIHByb2JlZCBhZ2Fpbi4K
+PiA+Cj4gPiBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKSBkb2VzIGEgcG1fcnVudGltZV9kaXNh
+YmxlKCkgYWxzbyBpZiBpIGFtIG5vdAo+ID4gd3JvbmcuCj4gPiBBbmQsIGFzIG1lbnRpb25lZCBp
+biBhIHByZXZpb3VzIHRocmVhZCBbMV0sIHdlIHdlcmUgc2VlaW5nIGEgd2FybmluZwo+ID4gd2hp
+Y2ggd2UgYXZvaWRlZAo+ID4gYnkga2VlcGluZyBmb3JjZV9zdXNwZW5kKCkuCj4gPgo+ID4gWzFd
+IGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE4LzcvOC8xMjQKPgo+IEkgc2VlLCB0aGFua3MuIEkg
+ZGlkbid0IHJlYWxpemUgdGhhdCBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKQo+IGFscmVhZHkg
+ZGlzYWJsZXMgcnVudGltZSBQTSBpbmRlZWQuIFNvcnJ5IGZvciB0aGUgbm9pc2UuCgpIaSBUb21h
+c3osCk5vIHByb2JsZW0uIFRoYW5rcyBmb3IgbG9va2luZyBiYWNrIGF0IGl0LgoKSGkgUm9iaW4s
+CklmIHlvdSBhcmUgZmluZSB3aXRoIHRoaXMgc2VyaWVzLCB0aGVuIGNhbiB5b3UgcGxlYXNlIGNv
+bnNpZGVyIGdpdmluZwpSZXZpZXdlZC1ieSwgc28gdGhhdCB3ZSBhcmUgY2VydGFpbiB0aGF0IHRo
+aXMgc2VyaWVzIHdpbGwgZ28gaW4gdGhlIG5leHQgbWVyZ2UKd2luZG93LgpUaGFua3MKCkJlc3Qg
+cmVnYXJkcwpWaXZlawoKCgoKLS0gClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVhbGNv
+bW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJvcmEgRm9y
+dW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVu
+b0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
+bG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
