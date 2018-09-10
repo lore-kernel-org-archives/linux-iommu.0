@@ -1,14 +1,14 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: No video output on 4.19-rc1 on Dell XPS 13 9360
-Date: Sun, 9 Sep 2018 10:01:17 +0800
-Message-ID: <89dff474-7baa-83ce-d70d-fffc4699d3ce@linux.intel.com>
-References: <20180908165747.16c2843c@fire.localdomain>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: RE: [PATCH 2/3] iommu: mtk: constify iommu_ops
+Date: Mon, 10 Sep 2018 10:35:34 +0800
+Message-ID: <1536546934.29639.4.camel@mhfsdcap03>
+References: <80e3d51296564c929a039ac83d83dd94@mtkmbs01n1.mediatek.inc>
+	<d7decc0805d04c148bb2cbda8b70b767@MTKMBS31N1.mediatek.inc>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180908165747.16c2843c-STI+9kRLTpF82hYKe6nXyg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <d7decc0805d04c148bb2cbda8b70b767-1/hHtGjKHHyGRgb7Xm6L22/AB3i2Q03W@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,43 +18,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitrii Tcvetkov <demfloro-dmrBKrQMA3sox3rIn2DAYQ@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-The fix has been posted here.
-
-https://lkml.org/lkml/2018/9/8/14
-
-Best regards,
-Lu Baolu
-
-On 09/08/2018 09:57 PM, Dmitrii Tcvetkov wrote:
-> I've sent the email[1] before to iommu and lkml mailing lists only, but
-> according to iommu mailing list archive it wasn't received[2]. I'm
-> resending it to Lu Baolu and Joerg Roedel with proper kernel .config
-> file. Sorry if the duplication is unnecessary.
-> 
-> Since 4.19-rc1 my laptop boots with vertical static set of rows of dots
-> on the screen instead of proper video output. SSH'ing into it allowed
-> to get dmesg-without-pt.log output, PCI device 00:02.0 is VGA
-> compatible controller: Intel Corporation HD Graphics 620 (rev 02)
-> 
-> Appending "iommu=pt" to kernel cmdline allowed to boot with functional
-> graphics, but gave dmesg-with-pt.log output.
-> 
-> Bisect between v4.18 and v4.19-rc1 tags led me to commit
-> a7fc93fed94b173e2 (iommu/vt-d: Allocate and free pasid table).
-> 
-> Reverting this commit allows to build kernel on current master
-> (a12ed06ba2d3fa60e), which boots with functional graphical output
-> without specifying "iommu=pt".
-> Dmesg output is in dmesg-with-revert.log.
-> 
-> Without the revert current master boots like 4.19-rc1.
-> 
-> [1] https://lkml.org/lkml/2018/9/7/1081
-> [2] https://lists.linuxfoundation.org/pipermail/iommu/2018-September/date.html
-> 
+SGkgQXJ2aW5kLAoKICAgICBUaGlzIHBhdGNoIGxvb2tzIGxvc3QuIENvdWxkIHlvdSBoZWxwIHJl
+c2VuZCBpdCBhZnRlciBjaGFuZ2luZyB0aGUKdGl0bGUgdG8gImlvbW11L21lZGlhdGVrOnh4eCI/
+CgpUaGFua3MuCgpPbiBGcmksIDIwMTgtMDktMDcgYXQgMTQ6MjEgKzA4MDAsIFlvbmcgV3UgKOWQ
+tOWLhykgd3JvdGU6Cj4gRnJvbTogTGludXgtbWVkaWF0ZWsgW21haWx0bzpsaW51eC1tZWRpYXRl
+ay1ib3VuY2VzQGxpc3RzLmluZnJhZGVhZC5vcmddIE9uIEJlaGFsZiBPZiBBcnZpbmQgWWFkYXYK
+PiBTZW50OiBNb25kYXksIEF1Z3VzdCAyOCwgMjAxNyA4OjEyIFBNCj4gVG86IG0uc3p5cHJvd3Nr
+aUBzYW1zdW5nLmNvbTsgam9yb0A4Ynl0ZXMub3JnOyBrZ2VuZUBrZXJuZWwub3JnOyBrcnprQGtl
+cm5lbC5vcmc7IG1hdHRoaWFzLmJnZ0BnbWFpbC5jb207IGdlcmFsZC5zY2hhZWZlckBkZS5pYm0u
+Y29tCj4gQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBsaW51eC1tZWRpYXRl
+a0BsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKPiBTdWJqZWN0OiBbUEFUQ0ggMi8zXSBp
+b21tdTogbXRrOiBjb25zdGlmeSBpb21tdV9vcHMKPiAKPiBpb21tdV9vcHMgYXJlIG5vdCBzdXBw
+b3NlZCB0byBjaGFuZ2UgYXQgcnVudGltZS4KPiBGdW5jdGlvbnMgJ2lvbW11X2RldmljZV9zZXRf
+b3BzJyBhbmQgJ2J1c19zZXRfaW9tbXUnIHdvcmtpbmcgd2l0aCBjb25zdCBpb21tdV9vcHMgcHJv
+dmlkZWQgYnkgPGxpbnV4L2lvbW11Lmg+LiBTbyBtYXJrIHRoZSBub24tY29uc3Qgc3RydWN0cyBh
+cyBjb25zdC4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBBcnZpbmQgWWFkYXYgPGFydmluZC55YWRhdi5j
+c0BnbWFpbC5jb20+Cj4gLS0tCj4gIGRyaXZlcnMvaW9tbXUvbXRrX2lvbW11LmMgICAgfCA0ICsr
+LS0KPiAgZHJpdmVycy9pb21tdS9tdGtfaW9tbXVfdjEuYyB8IDQgKystLQo+ICAyIGZpbGVzIGNo
+YW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9pb21tdS9tdGtfaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvbXRrX2lvbW11LmMgaW5k
+ZXggOTFjNmQzNi4uZWFjOTlhMyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L210a19pb21t
+dS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9tdGtfaW9tbXUuYwo+IEBAIC0xMDIsNyArMTAyLDcg
+QEAgc3RydWN0IG10a19pb21tdV9kb21haW4gewo+ICAJc3RydWN0IGlvbW11X2RvbWFpbgkJZG9t
+YWluOwo+ICB9Owo+ICAKPiAtc3RhdGljIHN0cnVjdCBpb21tdV9vcHMgbXRrX2lvbW11X29wczsK
+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBpb21tdV9vcHMgbXRrX2lvbW11X29wczsKPiAgCj4gIHN0
+YXRpYyBzdHJ1Y3QgbXRrX2lvbW11X2RvbWFpbiAqdG9fbXRrX2RvbWFpbihzdHJ1Y3QgaW9tbXVf
+ZG9tYWluICpkb20pICB7IEBAIC00MzcsNyArNDM3LDcgQEAgc3RhdGljIGludCBtdGtfaW9tbXVf
+b2ZfeGxhdGUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgb2ZfcGhhbmRsZV9hcmdzICphcmdz
+KQo+ICAJcmV0dXJuIGlvbW11X2Z3c3BlY19hZGRfaWRzKGRldiwgYXJncy0+YXJncywgMSk7ICB9
+Cj4gIAo+IC1zdGF0aWMgc3RydWN0IGlvbW11X29wcyBtdGtfaW9tbXVfb3BzID0gewo+ICtzdGF0
+aWMgY29uc3Qgc3RydWN0IGlvbW11X29wcyBtdGtfaW9tbXVfb3BzID0gewo+ICAJLmRvbWFpbl9h
+bGxvYwk9IG10a19pb21tdV9kb21haW5fYWxsb2MsCj4gIAkuZG9tYWluX2ZyZWUJPSBtdGtfaW9t
+bXVfZG9tYWluX2ZyZWUsCj4gIAkuYXR0YWNoX2Rldgk9IG10a19pb21tdV9hdHRhY2hfZGV2aWNl
+LAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L210a19pb21tdV92MS5jIGIvZHJpdmVycy9p
+b21tdS9tdGtfaW9tbXVfdjEuYyBpbmRleCBiYzFlZmJmLi40MGIyMzFmIDEwMDY0NAo+IC0tLSBh
+L2RyaXZlcnMvaW9tbXUvbXRrX2lvbW11X3YxLmMKPiArKysgYi9kcml2ZXJzL2lvbW11L210a19p
+b21tdV92MS5jCj4gQEAgLTM2Myw3ICszNjMsNyBAQCBzdGF0aWMgcGh5c19hZGRyX3QgbXRrX2lv
+bW11X2lvdmFfdG9fcGh5cyhzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sCj4gIAlyZXR1cm4g
+cGE7Cj4gIH0KPiAgCj4gLXN0YXRpYyBzdHJ1Y3QgaW9tbXVfb3BzIG10a19pb21tdV9vcHM7Cj4g
+K3N0YXRpYyBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzIG10a19pb21tdV9vcHM7Cj4gIAo+ICAvKgo+
+ICAgKiBNVEsgZ2VuZXJhdGlvbiBvbmUgaW9tbXUgSFcgb25seSBzdXBwb3J0IG9uZSBpb21tdSBk
+b21haW4sIGFuZCBhbGwgdGhlIGNsaWVudCBAQCAtNTM2LDcgKzUzNiw3IEBAIHN0YXRpYyBpbnQg
+bXRrX2lvbW11X2h3X2luaXQoY29uc3Qgc3RydWN0IG10a19pb21tdV9kYXRhICpkYXRhKQo+ICAJ
+cmV0dXJuIDA7Cj4gIH0KPiAgCj4gLXN0YXRpYyBzdHJ1Y3QgaW9tbXVfb3BzIG10a19pb21tdV9v
+cHMgPSB7Cj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaW9tbXVfb3BzIG10a19pb21tdV9vcHMgPSB7
+Cj4gIAkuZG9tYWluX2FsbG9jCT0gbXRrX2lvbW11X2RvbWFpbl9hbGxvYywKPiAgCS5kb21haW5f
+ZnJlZQk9IG10a19pb21tdV9kb21haW5fZnJlZSwKPiAgCS5hdHRhY2hfZGV2CT0gbXRrX2lvbW11
+X2F0dGFjaF9kZXZpY2UsCj4gLS0KPiAxLjkuMQo+IAo+IAo+IF9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gTGludXgtbWVkaWF0ZWsgbWFpbGluZyBsaXN0
+Cj4gTGludXgtbWVkaWF0ZWtAbGlzdHMuaW5mcmFkZWFkLm9yZwo+IGh0dHA6Ly9saXN0cy5pbmZy
+YWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtbWVkaWF0ZWsKCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
