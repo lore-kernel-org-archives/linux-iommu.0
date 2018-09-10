@@ -1,11 +1,14 @@
 From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: [PATCH 0/7 v7] Support for fsl-mc bus and its devices in SMMU
-Date: Mon, 10 Sep 2018 19:19:14 +0530
-Message-ID: <1536587361-11047-1-git-send-email-nipun.gupta@nxp.com>
+Subject: [PATCH 1/7 v7] Documentation: fsl-mc: add iommu-map device-tree
+	binding for fsl-mc bus
+Date: Mon, 10 Sep 2018 19:19:15 +0530
+Message-ID: <1536587361-11047-2-git-send-email-nipun.gupta@nxp.com>
+References: <1536587361-11047-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1536587361-11047-1-git-send-email-nipun.gupta-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,65 +22,81 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@publi
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patchset defines IOMMU DT binding for fsl-mc bus and adds
-support in SMMU for fsl-mc bus.
+The existing IOMMU bindings cannot be used to specify the relationship
+between fsl-mc devices and IOMMUs. This patch adds a generic binding for
+mapping fsl-mc devices to IOMMUs, using iommu-map property.
 
-These patches
-  - Define property 'iommu-map' for fsl-mc bus (patch 1)
-  - Integrates the fsl-mc bus with the SMMU using this
-    IOMMU binding (patch 2,3,4)
-  - Adds the dma configuration support for fsl-mc bus (patch 5, 6)
-  - Updates the fsl-mc device node with iommu/dma related changes (patch 7)
+Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ .../devicetree/bindings/misc/fsl,qoriq-mc.txt      | 39 ++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-Changes in v2:
-  - use iommu-map property for fsl-mc bus
-  - rebase over patchset https://patchwork.kernel.org/patch/10317337/
-    and make corresponding changes for dma configuration of devices on
-    fsl-mc bus
-
-Changes in v3:
-  - move of_map_rid in drivers/of/address.c
-
-Changes in v4:
-  - move of_map_rid in drivers/of/base.c
-
-Changes in v5:
-  - break patch 5 in two separate patches (now patch 5/7 and patch 6/7)
-  - add changelog text in patch 3/7 and patch 5/7
-  - typo fix
-
-Changes in v6:
-  - Updated fsl_mc_device_group() API to be more rational
-  - Added dma-coherent property in the LS2 smmu device node
-  - Minor fixes in the device-tree documentation
-
-Changes in v7:
-  - Rebased over linux 4.19
-
-Nipun Gupta (7):
-  Documentation: fsl-mc: add iommu-map device-tree binding for fsl-mc
-    bus
-  iommu/of: make of_pci_map_rid() available for other devices too
-  iommu/of: support iommu configuration for fsl-mc devices
-  iommu/arm-smmu: Add support for the fsl-mc bus
-  bus: fsl-mc: support dma configure for devices on fsl-mc bus
-  bus: fsl-mc: set coherent dma mask for devices on fsl-mc bus
-  arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
-
- .../devicetree/bindings/misc/fsl,qoriq-mc.txt      |  39 ++++++++
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |   7 +-
- drivers/bus/fsl-mc/fsl-mc-bus.c                    |  16 +++-
- drivers/iommu/arm-smmu.c                           |   7 ++
- drivers/iommu/iommu.c                              |  13 +++
- drivers/iommu/of_iommu.c                           |  25 ++++-
- drivers/of/base.c                                  | 102 +++++++++++++++++++++
- drivers/of/irq.c                                   |   5 +-
- drivers/pci/of.c                                   | 101 --------------------
- include/linux/fsl/mc.h                             |   8 ++
- include/linux/iommu.h                              |   2 +
- include/linux/of.h                                 |  11 +++
- include/linux/of_pci.h                             |  10 --
- 13 files changed, 224 insertions(+), 122 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+index 6611a7c..01fdc33 100644
+--- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
++++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+@@ -9,6 +9,25 @@ blocks that can be used to create functional hardware objects/devices
+ such as network interfaces, crypto accelerator instances, L2 switches,
+ etc.
+ 
++For an overview of the DPAA2 architecture and fsl-mc bus see:
++Documentation/networking/dpaa2/overview.rst
++
++As described in the above overview, all DPAA2 objects in a DPRC share the
++same hardware "isolation context" and a 10-bit value called an ICID
++(isolation context id) is expressed by the hardware to identify
++the requester.
++
++The generic 'iommus' property is insufficient to describe the relationship
++between ICIDs and IOMMUs, so an iommu-map property is used to define
++the set of possible ICIDs under a root DPRC and how they map to
++an IOMMU.
++
++For generic IOMMU bindings, see
++Documentation/devicetree/bindings/iommu/iommu.txt.
++
++For arm-smmu binding, see:
++Documentation/devicetree/bindings/iommu/arm,smmu.txt.
++
+ Required properties:
+ 
+     - compatible
+@@ -88,14 +107,34 @@ Sub-nodes:
+               Value type: <phandle>
+               Definition: Specifies the phandle to the PHY device node associated
+                           with the this dpmac.
++Optional properties:
++
++- iommu-map: Maps an ICID to an IOMMU and associated iommu-specifier
++  data.
++
++  The property is an arbitrary number of tuples of
++  (icid-base,iommu,iommu-base,length).
++
++  Any ICID i in the interval [icid-base, icid-base + length) is
++  associated with the listed IOMMU, with the iommu-specifier
++  (i - icid-base + iommu-base).
+ 
+ Example:
+ 
++        smmu: iommu@5000000 {
++               compatible = "arm,mmu-500";
++               #iommu-cells = <1>;
++               stream-match-mask = <0x7C00>;
++               ...
++        };
++
+         fsl_mc: fsl-mc@80c000000 {
+                 compatible = "fsl,qoriq-mc";
+                 reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+                       <0x00000000 0x08340000 0 0x40000>; /* MC control reg */
+                 msi-parent = <&its>;
++                /* define map for ICIDs 23-64 */
++                iommu-map = <23 &smmu 23 41>;
+                 #address-cells = <3>;
+                 #size-cells = <1>;
+ 
 -- 
 1.9.1
