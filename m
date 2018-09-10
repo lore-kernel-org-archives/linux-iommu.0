@@ -1,121 +1,153 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: [PATCH v2 3/4] firmware/qcom_scm: Add scm call to handle smmu errata
-Date: Mon, 10 Sep 2018 11:55:50 +0530
-Message-ID: <20180910062551.28175-4-vivek.gautam@codeaurora.org>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v2 4/4] iommu/arm-smmu: Add support to handle Qcom's TLBI
+	serialization errata
+Date: Mon, 10 Sep 2018 11:55:51 +0530
+Message-ID: <20180910062551.28175-5-vivek.gautam@codeaurora.org>
 References: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, andy.gross@linaro.org, will.deacon@arm.com, robin.murphy@arm.com, bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
-Cc: david.brown@linaro.org, tfiga@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, robdclark@gmail.com, Vivek Gautam <vivek.gautam@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180910062551.28175-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, bjorn.andersson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Qcom's smmu-500 needs to toggle wait-for-safe sequence to
-handle TLB invalidation sync's.
-Few firmwares allow doing that through SCM interface.
-Add API to toggle wait for safe from firmware through a
-SCM call.
-
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
----
- drivers/firmware/qcom_scm-32.c |  5 +++++
- drivers/firmware/qcom_scm-64.c | 13 +++++++++++++
- drivers/firmware/qcom_scm.c    |  6 ++++++
- drivers/firmware/qcom_scm.h    |  5 +++++
- include/linux/qcom_scm.h       |  2 ++
- 5 files changed, 31 insertions(+)
-
-diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
-index 7293e5efad69..2d301ad053f8 100644
---- a/drivers/firmware/qcom_scm-32.c
-+++ b/drivers/firmware/qcom_scm-32.c
-@@ -639,3 +639,8 @@ int __qcom_scm_io_writel_atomic(struct device *dev, phys_addr_t addr,
- {
- 	return -ENODEV;
- }
-+
-+int __qcom_scm_qsmmu500_wait_safe_toggle(struct device *dev, bool enable)
-+{
-+	return -ENODEV;
-+}
-diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-index 6bf55403f6e3..f13bcabc5d78 100644
---- a/drivers/firmware/qcom_scm-64.c
-+++ b/drivers/firmware/qcom_scm-64.c
-@@ -590,3 +590,16 @@ int __qcom_scm_io_writel_atomic(struct device *dev, phys_addr_t addr,
- 	return qcom_scm_call_atomic(dev, QCOM_SCM_SVC_IO, QCOM_SCM_IO_WRITE,
- 				    &desc, &res);
- }
-+
-+int __qcom_scm_qsmmu500_wait_safe_toggle(struct device *dev, bool en)
-+{
-+	struct qcom_scm_desc desc = {0};
-+	struct arm_smccc_res res;
-+
-+	desc.args[0] = QCOM_SCM_CONFIG_ERRATA1_CLIENT_ALL;
-+	desc.args[1] = en;
-+	desc.arginfo = QCOM_SCM_ARGS(2);
-+
-+	return qcom_scm_call_atomic(dev, QCOM_SCM_SVC_SMMU_PROGRAM,
-+				    QCOM_SCM_CONFIG_ERRATA1, &desc, &res);
-+}
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index 36da0000b37f..5f15cc2e9f69 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -353,6 +353,12 @@ int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
- }
- EXPORT_SYMBOL(qcom_scm_iommu_secure_ptbl_init);
- 
-+int qcom_scm_qsmmu500_wait_safe_toggle(bool en)
-+{
-+	return __qcom_scm_qsmmu500_wait_safe_toggle(__scm->dev, en);
-+}
-+EXPORT_SYMBOL(qcom_scm_qsmmu500_wait_safe_toggle);
-+
- int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val)
- {
- 	return __qcom_scm_io_readl(__scm->dev, addr, val);
-diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
-index bb176107f51e..89a822c23e33 100644
---- a/drivers/firmware/qcom_scm.h
-+++ b/drivers/firmware/qcom_scm.h
-@@ -103,10 +103,15 @@ extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
- 				      u32 spare);
- #define QCOM_SCM_IOMMU_SECURE_PTBL_SIZE	3
- #define QCOM_SCM_IOMMU_SECURE_PTBL_INIT	4
-+#define QCOM_SCM_SVC_SMMU_PROGRAM	0x15
-+#define QCOM_SCM_CONFIG_ERRATA1		0x3
-+#define QCOM_SCM_CONFIG_ERRATA1_CLIENT_ALL	0x2
- extern int __qcom_scm_iommu_secure_ptbl_size(struct device *dev, u32 spare,
- 					     size_t *size);
- extern int __qcom_scm_iommu_secure_ptbl_init(struct device *dev, u64 addr,
- 					     u32 size, u32 spare);
-+extern int __qcom_scm_qsmmu500_wait_safe_toggle(struct device *dev,
-+						bool enable);
- #define QCOM_MEM_PROT_ASSIGN_ID	0x16
- extern int  __qcom_scm_assign_mem(struct device *dev,
- 				  phys_addr_t mem_region, size_t mem_sz,
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index 6a5d0c98b328..46e6b1692998 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -62,6 +62,7 @@ extern int qcom_scm_set_remote_state(u32 state, u32 id);
- extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
- extern int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size);
- extern int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare);
-+extern int qcom_scm_qsmmu500_wait_safe_toggle(bool en);
- extern int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val);
- extern int qcom_scm_io_writel(phys_addr_t addr, unsigned int val);
- extern int qcom_scm_io_readl_atomic(phys_addr_t addr, unsigned int *val);
-@@ -100,6 +101,7 @@ qcom_scm_set_remote_state(u32 state,u32 id) { return -ENODEV; }
- static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare) { return -ENODEV; }
- static inline int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size) { return -ENODEV; }
- static inline int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare) { return -ENODEV; }
-+static inline int qcom_scm_qsmmu500_wait_safe_toggle(bool en) { return -ENODEV; }
- static inline int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val) { return -ENODEV; }
- static inline int qcom_scm_io_writel(phys_addr_t addr, unsigned int val) { return -ENODEV; }
- static inline int qcom_scm_io_readl_atomic(phys_addr_t addr, unsigned int *val) { return -ENODEV; }
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+UWNvbSdzIGltcGxlbWVudGF0aW9uIG9mIGFybSxtbXUtNTAwIHJlcXVpcmUgdG8gc2VyaWFsaXpl
+IGFsbApUTEIgaW52YWxpZGF0aW9ucyBmb3IgY29udGV4dCBiYW5rcy4KSW4gY2FzZSB0aGUgVExC
+IGludmFsaWRhdGlvbiByZXF1ZXN0cyBkb24ndCBnbyB0aHJvdWdoIHRoZSBmaXJzdAp0aW1lLCB0
+aGVyZSdzIGEgd2F5IHRvIGRpc2FibGUvZW5hYmxlIHRoZSB3YWl0IGZvciBzYWZlIGxvZ2ljLgpE
+aXNhYmxpbmcgdGhpcyBsb2dpYyBleHBhZGl0ZXMgdGhlIFRMQklzLgoKRGlmZmVyZW50IGJvb3Rs
+b2FkZXJzIHdpdGggdGhlaXIgYWNjZXNzIGNvbnRyb2wgcG9saWNpZXMgYWxsb3cgdGhpcwpyZWdp
+c3RlciBhY2Nlc3MgZGlmZmVybnRseS4gV2l0aCBvbmUsIHdlIHNob3VsZCBiZSBhYmxlIHRvIGRp
+cmVjdGx5Cm1ha2UgcWNvbS1zY20gY2FsbCB0byBkbyBpbyByZWFkL3dyaXRlLCB3aGlsZSB3aXRo
+IG90aGVyIHdlIHNob3VsZAp1c2UgdGhlIHNwZWNpZmljIFNDTSBjb21tYW5kIHRvIHNlbmQgcmVx
+dWVzdCB0byBkbyB0aGUgY29tcGxldGUKcmVnaXN0ZXIgY29uZmlndXJhdGlvbi4KQSBzZXBhcmF0
+ZSBkZXZpY2UgdHJlZSBmbGFnIGZvciBhcm0tc21tdSB3aWxsIGFsbG93IHRvIGlkZW50aWZ5Cndo
+aWNoIGZpcm13YXJlIGNvbmZpZ3VyYXRpb24gb2YgdGhlIHR3byBtZW50aW9uZWQgYWJvdmUgd2Ug
+dXNlLgoKU2lnbmVkLW9mZi1ieTogVml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1cm9y
+YS5vcmc+Ci0tLQogZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggfCAgIDIgKwogZHJpdmVy
+cy9pb21tdS9hcm0tc21tdS5jICAgICAgfCAxMzMgKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKystCiAyIGZpbGVzIGNoYW5nZWQsIDEzMyBpbnNlcnRpb25zKCspLCAyIGRl
+bGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oIGIv
+ZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmgKaW5kZXggYTEyMjZlNGFiNWY4Li43MTY2MmNh
+ZTk4MDYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCisrKyBiL2Ry
+aXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCkBAIC0xNzcsNiArMTc3LDggQEAgZW51bSBhcm1f
+c21tdV9zMmNyX3ByaXZjZmcgewogI2RlZmluZSBBUk1fU01NVV9DQl9BVFMxUFIJCTB4ODAwCiAj
+ZGVmaW5lIEFSTV9TTU1VX0NCX0FUU1IJCTB4OGYwCiAKKyNkZWZpbmUgQVJNX1NNTVVfR0lEX1FD
+T01fQ1VTVE9NX0NGRwkweDMwMAorCiAjZGVmaW5lIFNDVExSX1MxX0FTSURQTkUJCSgxIDw8IDEy
+KQogI2RlZmluZSBTQ1RMUl9DRkNGRwkJCSgxIDw8IDcpCiAjZGVmaW5lIFNDVExSX0NGSUUJCQko
+MSA8PCA2KQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIGIvZHJpdmVycy9p
+b21tdS9hcm0tc21tdS5jCmluZGV4IDQxMWU1YWM1N2M2NC4uZGU5YzRhNWJmNjg2IDEwMDY0NAot
+LS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKKysrIGIvZHJpdmVycy9pb21tdS9hcm0tc21t
+dS5jCkBAIC00OSw2ICs0OSw3IEBACiAjaW5jbHVkZSA8bGludXgvcGNpLmg+CiAjaW5jbHVkZSA8
+bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+CiAjaW5jbHVkZSA8bGludXgvcG1fcnVudGltZS5oPgor
+I2luY2x1ZGUgPGxpbnV4L3Fjb21fc2NtLmg+CiAjaW5jbHVkZSA8bGludXgvc2xhYi5oPgogI2lu
+Y2x1ZGUgPGxpbnV4L3NwaW5sb2NrLmg+CiAKQEAgLTE4MSw3ICsxODIsOCBAQCBzdHJ1Y3QgYXJt
+X3NtbXVfZGV2aWNlIHsKICNkZWZpbmUgQVJNX1NNTVVfRkVBVF9FWElEUwkJKDEgPDwgMTIpCiAJ
+dTMyCQkJCWZlYXR1cmVzOwogCi0jZGVmaW5lIEFSTV9TTU1VX09QVF9TRUNVUkVfQ0ZHX0FDQ0VT
+UyAoMSA8PCAwKQorI2RlZmluZSBBUk1fU01NVV9PUFRfU0VDVVJFX0NGR19BQ0NFU1MJICgxIDw8
+IDApCisjZGVmaW5lIEFSTV9TTU1VX09QVF9RQ09NX0ZXX0lNUExfRVJSQVRBICgxIDw8IDEpCiAJ
+dTMyCQkJCW9wdGlvbnM7CiAJZW51bSBhcm1fc21tdV9hcmNoX3ZlcnNpb24JdmVyc2lvbjsKIAll
+bnVtIGFybV9zbW11X2ltcGxlbWVudGF0aW9uCW1vZGVsOwpAQCAtMjY2LDYgKzI2OCw3IEBAIHN0
+YXRpYyBib29sIHVzaW5nX2xlZ2FjeV9iaW5kaW5nLCB1c2luZ19nZW5lcmljX2JpbmRpbmc7CiAK
+IHN0YXRpYyBzdHJ1Y3QgYXJtX3NtbXVfb3B0aW9uX3Byb3AgYXJtX3NtbXVfb3B0aW9uc1tdID0g
+ewogCXsgQVJNX1NNTVVfT1BUX1NFQ1VSRV9DRkdfQUNDRVNTLCAiY2FseGVkYSxzbW11LXNlY3Vy
+ZS1jb25maWctYWNjZXNzIiB9LAorCXsgQVJNX1NNTVVfT1BUX1FDT01fRldfSU1QTF9FUlJBVEEs
+ICJxY29tLHNtbXUtNTAwLWZ3LWltcGwtZXJyYXRhIiB9LAogCXsgMCwgTlVMTH0sCiB9OwogCkBA
+IC01MzEsMTIgKzUzNCwxMzQgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl92bWlkX25v
+c3luYyh1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAogCXdyaXRlbF9yZWxheGVkKHNt
+bXVfZG9tYWluLT5jZmcudm1pZCwgYmFzZSArIEFSTV9TTU1VX0dSMF9UTEJJVk1JRCk7CiB9CiAK
+KyNkZWZpbmUgQ1VTVE9NX0NGR19NRFBfU0FGRV9FTkFCTEUJCUJJVCgxNSkKKyNkZWZpbmUgQ1VT
+VE9NX0NGR19JRkUxX1NBRkVfRU5BQkxFCQlCSVQoMTQpCisjZGVmaW5lIENVU1RPTV9DRkdfSUZF
+MF9TQUZFX0VOQUJMRQkJQklUKDEzKQorCitzdGF0aWMgaW50IF9fcXNtbXU1MDBfd2FpdF9zYWZl
+X3RvZ2dsZShzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LCBpbnQgZW4pCit7CisJaW50IHJl
+dDsKKwl1MzIgdmFsLCBnaWRfcGh5c19iYXNlOworCXBoeXNfYWRkcl90IHJlZzsKKwlzdHJ1Y3Qg
+dm1fc3RydWN0ICp2bTsKKworCS8qIFdlIHdhbnQgcGh5c2ljYWwgYWRkcmVzcyBvZiBTTU1VLCBz
+byB0aGUgdm1fYXJlYSAqLworCXZtID0gZmluZF92bV9hcmVhKHNtbXUtPmJhc2UpOworCisJLyoK
+KwkgKiBHSUQgKGltcGxlbWVudGF0aW9uIGRlZmluZWQgYWRkcmVzcyBzcGFjZSkgaXMgbG9jYXRl
+ZCBhdAorCSAqIFNNTVVfQkFTRSArICgyIMOXIFBBR0VTSVpFKS4KKwkgKi8KKwlnaWRfcGh5c19i
+YXNlID0gdm0tPnBoeXNfYWRkciArICgyIDw8IChzbW11KS0+cGdzaGlmdCk7CisJcmVnID0gZ2lk
+X3BoeXNfYmFzZSArIEFSTV9TTU1VX0dJRF9RQ09NX0NVU1RPTV9DRkc7CisKKwlyZXQgPSBxY29t
+X3NjbV9pb19yZWFkbF9hdG9taWMocmVnLCAmdmFsKTsKKwlpZiAocmV0KQorCQlyZXR1cm4gcmV0
+OworCisJaWYgKGVuKQorCQl2YWwgfD0gQ1VTVE9NX0NGR19NRFBfU0FGRV9FTkFCTEUgfAorCQkg
+ICAgICAgQ1VTVE9NX0NGR19JRkUwX1NBRkVfRU5BQkxFIHwKKwkJICAgICAgIENVU1RPTV9DRkdf
+SUZFMV9TQUZFX0VOQUJMRTsKKwllbHNlCisJCXZhbCAmPSB+KENVU1RPTV9DRkdfTURQX1NBRkVf
+RU5BQkxFIHwKKwkJCSBDVVNUT01fQ0ZHX0lGRTBfU0FGRV9FTkFCTEUgfAorCQkJIENVU1RPTV9D
+RkdfSUZFMV9TQUZFX0VOQUJMRSk7CisKKwlyZXQgPSBxY29tX3NjbV9pb193cml0ZWxfYXRvbWlj
+KHJlZywgdmFsKTsKKworCXJldHVybiByZXQ7Cit9CisKK3N0YXRpYyBpbnQgcXNtbXU1MDBfd2Fp
+dF9zYWZlX3RvZ2dsZShzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LAorCQkJCSAgICAgaW50
+IGVuLCBib29sIGlzX2Z3X2ltcGwpCit7CisJaWYgKGlzX2Z3X2ltcGwpCisJCXJldHVybiBxY29t
+X3NjbV9xc21tdTUwMF93YWl0X3NhZmVfdG9nZ2xlKGVuKTsKKwllbHNlCisJCXJldHVybiBfX3Fz
+bW11NTAwX3dhaXRfc2FmZV90b2dnbGUoc21tdSwgZW4pOworfQorCitzdGF0aWMgdm9pZCBxY29t
+X2VycmF0YV90bGJfc3luYyhzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbikKK3sK
+KwlzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11ID0gc21tdV9kb21haW4tPnNtbXU7CisJdm9p
+ZCBfX2lvbWVtICpiYXNlID0gQVJNX1NNTVVfQ0Ioc21tdSwgc21tdV9kb21haW4tPmNmZy5jYm5k
+eCk7CisJYm9vbCBpc19md19pbXBsOworCXUzMiB2YWw7CisKKwl3cml0ZWxfcmVsYXhlZCgwLCBi
+YXNlICsgQVJNX1NNTVVfQ0JfVExCU1lOQyk7CisKKwlpZiAoIXJlYWRsX3BvbGxfdGltZW91dF9h
+dG9taWMoYmFzZSArIEFSTV9TTU1VX0NCX1RMQlNUQVRVUywgdmFsLAorCQkJCSAgICAgICAhKHZh
+bCAmIHNUTEJHU1RBVFVTX0dTQUNUSVZFKSwgMCwgMTAwKSkKKwkJcmV0dXJuOworCisJaXNfZndf
+aW1wbCA9IHNtbXUtPm9wdGlvbnMgJiBBUk1fU01NVV9PUFRfUUNPTV9GV19JTVBMX0VSUkFUQSA/
+CisJCQl0cnVlIDogZmFsc2U7CisKKwkvKiBTQ00gY2FsbCBoZXJlIHRvIGRpc2FibGUgdGhlIHdh
+aXQtZm9yLXNhZmUgbG9naWMuICovCisJaWYgKFdBUk4ocXNtbXU1MDBfd2FpdF9zYWZlX3RvZ2ds
+ZShzbW11LCBmYWxzZSwgaXNfZndfaW1wbCksCisJCSAiRmFpbGVkIHRvIGRpc2FibGUgd2FpdC1z
+YWZlIGxvZ2ljLCBiYWQgaHcgc3RhdGVcbiIpKQorCQlyZXR1cm47CisKKwlpZiAoIXJlYWRsX3Bv
+bGxfdGltZW91dF9hdG9taWMoYmFzZSArIEFSTV9TTU1VX0NCX1RMQlNUQVRVUywgdmFsLAorCQkJ
+CSAgICAgICAhKHZhbCAmIHNUTEJHU1RBVFVTX0dTQUNUSVZFKSwgMCwgMTAwMDApKQorCQlyZXR1
+cm47CisKKwkvKiBTQ00gY2FsbCBoZXJlIHRvIHJlLWVuYWJsZSB0aGUgd2FpdC1mb3Itc2FmZSBs
+b2dpYy4gKi8KKwlXQVJOKHFzbW11NTAwX3dhaXRfc2FmZV90b2dnbGUoc21tdSwgdHJ1ZSwgaXNf
+ZndfaW1wbCksCisJICAgICAiRmFpbGVkIHRvIHJlLWVuYWJsZSB3YWl0LXNhZmUgbG9naWMsIGJh
+ZCBodyBzdGF0ZVxuIik7CisKKwlkZXZfZXJyX3JhdGVsaW1pdGVkKHNtbXUtPmRldiwKKwkJCSAg
+ICAiVExCIHN5bmMgdGltZWQgb3V0IC0tIFNNTVUgaW4gYmFkIHN0YXRlXG4iKTsKK30KKworc3Rh
+dGljIHZvaWQgcWNvbV9lcnJhdGFfdGxiX3N5bmNfY29udGV4dCh2b2lkICpjb29raWUpCit7CisJ
+c3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21tdV9kb21haW4gPSBjb29raWU7CisJdW5zaWduZWQg
+bG9uZyBmbGFnczsKKworCXNwaW5fbG9ja19pcnFzYXZlKCZzbW11X2RvbWFpbi0+Y2JfbG9jaywg
+ZmxhZ3MpOworCXFjb21fZXJyYXRhX3RsYl9zeW5jKHNtbXVfZG9tYWluKTsKKwlzcGluX3VubG9j
+a19pcnFyZXN0b3JlKCZzbW11X2RvbWFpbi0+Y2JfbG9jaywgZmxhZ3MpOworfQorCitzdGF0aWMg
+dm9pZCBxY29tX2VycmF0YV90bGJfaW52X2NvbnRleHRfczEodm9pZCAqY29va2llKQoreworCXN0
+cnVjdCBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWluID0gY29va2llOworCXN0cnVjdCBhcm1f
+c21tdV9jZmcgKmNmZyA9ICZzbW11X2RvbWFpbi0+Y2ZnOworCXZvaWQgX19pb21lbSAqYmFzZSA9
+IEFSTV9TTU1VX0NCKHNtbXVfZG9tYWluLT5zbW11LCBjZmctPmNibmR4KTsKKwl1bnNpZ25lZCBs
+b25nIGZsYWdzOworCisJc3Bpbl9sb2NrX2lycXNhdmUoJnNtbXVfZG9tYWluLT5jYl9sb2NrLCBm
+bGFncyk7CisJd3JpdGVsX3JlbGF4ZWQoY2ZnLT5hc2lkLCBiYXNlICsgQVJNX1NNTVVfQ0JfUzFf
+VExCSUFTSUQpOworCXFjb21fZXJyYXRhX3RsYl9zeW5jKGNvb2tpZSk7CisJc3Bpbl91bmxvY2tf
+aXJxcmVzdG9yZSgmc21tdV9kb21haW4tPmNiX2xvY2ssIGZsYWdzKTsKK30KKworc3RhdGljIHZv
+aWQgcWNvbV9lcnJhdGFfdGxiX2ludl9yYW5nZV9ub3N5bmModW5zaWduZWQgbG9uZyBpb3ZhLCBz
+aXplX3Qgc2l6ZSwKKwkJCQkJICAgICBzaXplX3QgZ3JhbnVsZSwgYm9vbCBsZWFmLAorCQkJCQkg
+ICAgIHZvaWQgKmNvb2tpZSkKK3sKKwlzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFp
+biA9IGNvb2tpZTsKKwl1bnNpZ25lZCBsb25nIGZsYWdzOworCisJc3Bpbl9sb2NrX2lycXNhdmUo
+JnNtbXVfZG9tYWluLT5jYl9sb2NrLCBmbGFncyk7CisJYXJtX3NtbXVfdGxiX2ludl9yYW5nZV9u
+b3N5bmMoaW92YSwgc2l6ZSwgZ3JhbnVsZSwgbGVhZiwgY29va2llKTsKKwlzcGluX3VubG9ja19p
+cnFyZXN0b3JlKCZzbW11X2RvbWFpbi0+Y2JfbG9jaywgZmxhZ3MpOworfQorCiBzdGF0aWMgY29u
+c3Qgc3RydWN0IGlvbW11X2dhdGhlcl9vcHMgYXJtX3NtbXVfczFfdGxiX29wcyA9IHsKIAkudGxi
+X2ZsdXNoX2FsbAk9IGFybV9zbW11X3RsYl9pbnZfY29udGV4dF9zMSwKIAkudGxiX2FkZF9mbHVz
+aAk9IGFybV9zbW11X3RsYl9pbnZfcmFuZ2Vfbm9zeW5jLAogCS50bGJfc3luYwk9IGFybV9zbW11
+X3RsYl9zeW5jX2NvbnRleHQsCiB9OwogCitzdGF0aWMgY29uc3Qgc3RydWN0IGlvbW11X2dhdGhl
+cl9vcHMgcWNvbV9lcnJhdGFfczFfdGxiX29wcyA9IHsKKwkudGxiX2ZsdXNoX2FsbAk9IHFjb21f
+ZXJyYXRhX3RsYl9pbnZfY29udGV4dF9zMSwKKwkudGxiX2FkZF9mbHVzaAk9IHFjb21fZXJyYXRh
+X3RsYl9pbnZfcmFuZ2Vfbm9zeW5jLAorCS50bGJfc3luYwk9IHFjb21fZXJyYXRhX3RsYl9zeW5j
+X2NvbnRleHQsCit9OworCiBzdGF0aWMgY29uc3Qgc3RydWN0IGlvbW11X2dhdGhlcl9vcHMgYXJt
+X3NtbXVfczJfdGxiX29wc192MiA9IHsKIAkudGxiX2ZsdXNoX2FsbAk9IGFybV9zbW11X3RsYl9p
+bnZfY29udGV4dF9zMiwKIAkudGxiX2FkZF9mbHVzaAk9IGFybV9zbW11X3RsYl9pbnZfcmFuZ2Vf
+bm9zeW5jLApAQCAtODI0LDcgKzk0OSwxMSBAQCBzdGF0aWMgaW50IGFybV9zbW11X2luaXRfZG9t
+YWluX2NvbnRleHQoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAogCQkJaWFzID0gbWluKGlh
+cywgMzJVTCk7CiAJCQlvYXMgPSBtaW4ob2FzLCAzMlVMKTsKIAkJfQotCQlzbW11X2RvbWFpbi0+
+dGxiX29wcyA9ICZhcm1fc21tdV9zMV90bGJfb3BzOworCQlpZiAob2ZfZGV2aWNlX2lzX2NvbXBh
+dGlibGUoc21tdS0+ZGV2LT5vZl9ub2RlLAorCQkJCQkgICAgInFjb20sc2RtODQ1LXNtbXUtNTAw
+IikpCisJCQlzbW11X2RvbWFpbi0+dGxiX29wcyA9ICZxY29tX2VycmF0YV9zMV90bGJfb3BzOwor
+CQllbHNlCisJCQlzbW11X2RvbWFpbi0+dGxiX29wcyA9ICZhcm1fc21tdV9zMV90bGJfb3BzOwog
+CQlicmVhazsKIAljYXNlIEFSTV9TTU1VX0RPTUFJTl9ORVNURUQ6CiAJCS8qCi0tIApRVUFMQ09N
+TSBJTkRJQSwgb24gYmVoYWxmIG9mIFF1YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJbmMuIGlz
+IGEgbWVtYmVyCm9mIENvZGUgQXVyb3JhIEZvcnVtLCBob3N0ZWQgYnkgVGhlIExpbnV4IEZvdW5k
+YXRpb24KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
+bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
+L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
