@@ -1,137 +1,113 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 17/40] iommu/arm-smmu-v3: Link domains and devices
-Date: Mon, 10 Sep 2018 17:16:25 +0200
-Message-ID: <b4154adb-313c-133b-6c5d-6e789bd754c7@redhat.com>
-References: <20180511190641.23008-1-jean-philippe.brucker@arm.com>
-	<20180511190641.23008-18-jean-philippe.brucker@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/5] dma-mapping: move the dma_coherent flag to struct
+ device
+Date: Mon, 10 Sep 2018 16:19:30 +0100
+Message-ID: <71ec3eef-54c1-f692-5a17-4302c4dd4b05@arm.com>
+References: <20180910060533.27172-1-hch@lst.de>
+ <20180910060533.27172-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180511190641.23008-18-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
-Cc: xieyisheng1-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rfranz-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, rgummal-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, liubo95-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180910060533.27172-3-hch@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Paul Burton <paul.burton@mips.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
-
-On 05/11/2018 09:06 PM, Jean-Philippe Brucker wrote:
-> When removing a mapping from a domain, we need to send an invalidation to
-> all devices that might have stored it in their Address Translation Cache
-> (ATC). In addition when updating the context descriptor of a live domain,
-> we'll need to send invalidations for all devices attached to it.
+On 10/09/18 07:05, Christoph Hellwig wrote:
+> Various architectures support both coherent and non-coherent dma on a
+> per-device basis.  Move the dma_noncoherent flag from the mips archdata
+> field to struct device proper to prepare the infrastructure for reuse on
+> other architectures.
 > 
-> Maintain a list of devices in each domain, protected by a spinlock. It is
-> updated every time we attach or detach devices to and from domains.
-> 
-> It needs to be a spinlock because we'll invalidate ATC entries from
-> within hardirq-safe contexts, but it may be possible to relax the read
-> side with RCU later.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Acked-by: Paul Burton <paul.burton@mips.com>
 > ---
->  drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
->  1 file changed, 28 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 1d647104bccc..c892f012fb43 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -595,6 +595,11 @@ struct arm_smmu_device {
->  struct arm_smmu_master_data {
->  	struct arm_smmu_device		*smmu;
->  	struct arm_smmu_strtab_ent	ste;
-> +
-> +	struct arm_smmu_domain		*domain;
-> +	struct list_head		list; /* domain->devices */
-> +
-> +	struct device			*dev;
-This field addition and associated assignment in arm_smmu_attach_dev()
-is not really documented in the commit message.
 
->  };
->  
->  /* SMMU private data for an IOMMU domain */
-> @@ -618,6 +623,9 @@ struct arm_smmu_domain {
->  	};
->  
->  	struct iommu_domain		domain;
-> +
-> +	struct list_head		devices;
-> +	spinlock_t			devices_lock;
->  };
->  
->  struct arm_smmu_option_prop {
-> @@ -1470,6 +1478,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
->  	}
->  
->  	mutex_init(&smmu_domain->init_mutex);
-> +	INIT_LIST_HEAD(&smmu_domain->devices);
-> +	spin_lock_init(&smmu_domain->devices_lock);
-> +
->  	return &smmu_domain->domain;
->  }
->  
-> @@ -1685,7 +1696,17 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
->  
->  static void arm_smmu_detach_dev(struct device *dev)
->  {
-> +	unsigned long flags;
->  	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-> +	struct arm_smmu_domain *smmu_domain = master->domain;
-> +
-> +	if (smmu_domain) {
-> +		spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +		list_del(&master->list);
-> +		spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> +
-> +		master->domain = NULL;
-> +	}
->  
->  	master->ste.assigned = false;
->  	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
-> @@ -1694,6 +1715,7 @@ static void arm_smmu_detach_dev(struct device *dev)
->  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  {
->  	int ret = 0;
-> +	unsigned long flags;
->  	struct arm_smmu_device *smmu;
->  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->  	struct arm_smmu_master_data *master;
-> @@ -1729,6 +1751,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	}
->  
->  	ste->assigned = true;
-> +	master->domain = smmu_domain;
-> +
-> +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +	list_add(&master->list, &smmu_domain->devices);
-it is not totally obvious to me why master->domain = smmu_domain isn't
-within the lock either for consistency. Same when deleting the node.
+[...]
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 8f882549edee..983506789402 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -927,6 +927,8 @@ struct dev_links_info {
+>    * @offline:	Set after successful invocation of bus type's .offline().
+>    * @of_node_reused: Set if the device-tree node is shared with an ancestor
+>    *              device.
+> + * @dma_coherent: this particular device is dma coherent, even if the
+> + *		architecture supports non-coherent devices.
+>    *
+>    * At the lowest level, every device in a Linux system is represented by an
+>    * instance of struct device. The device structure contains the information
+> @@ -1016,6 +1018,11 @@ struct device {
+>   	bool			offline_disabled:1;
+>   	bool			offline:1;
+>   	bool			of_node_reused:1;
+> +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
 
-Thanks
+If we're likely to refer to it more than once, is it worth wrapping that 
+condition up in something like ARCH_HAS_NONCOHERENT_DMA?
 
-Eric
-> +	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->  
->  	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS) {
->  		ste->s1_cfg = NULL;
-> @@ -1847,6 +1874,7 @@ static int arm_smmu_add_device(struct device *dev)
->  			return -ENOMEM;
->  
->  		master->smmu = smmu;
-> +		master->dev = dev;
->  		fwspec->iommu_priv = master;
->  	}
->  
+> +	bool			dma_coherent:1;
+> +#endif
+>   };
+>   
+>   static inline struct device *kobj_to_dev(struct kobject *kobj)
+> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+> index a0aa00cc909d..69630ec320be 100644
+> --- a/include/linux/dma-noncoherent.h
+> +++ b/include/linux/dma-noncoherent.h
+> @@ -4,6 +4,22 @@
+>   
+>   #include <linux/dma-mapping.h>
+>   
+> +#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
+> +#include <asm/dma-coherence.h>
+> +#elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+> +	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+> +	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+> +static inline int dev_is_dma_coherent(struct device *dev)
+
+Given that it's backed by a bool and used as a bool everywhere, this 
+(and its equivalents) should probably return a bool ;)
+
+> +{
+> +	return dev->dma_coherent;
+> +}
+> +#else
+> +static inline int dev_is_dma_coherent(struct device *dev)
+> +{
+> +	return true;
+> +}
+> +#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
+> +
+>   void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   		gfp_t gfp, unsigned long attrs);
+>   void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 9bd54304446f..040859ac2a56 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -13,6 +13,9 @@ config NEED_DMA_MAP_STATE
+>   config ARCH_DMA_ADDR_T_64BIT
+>   	def_bool 64BIT || PHYS_ADDR_T_64BIT
+>   
+> +config ARCH_HAS_DMA_COHERENCE_H
+> +	bool
+
+This seems a little crude - is it unbearably churny to make an 
+asm-generic/dma-coherence.h implementation for everyone else?
+
+Nits aside, this otherwise looks sane to me for factoring out the 
+equivalent Xen and arm64 DMA ops cases.
+
+Robin.
+
+> +
+>   config HAVE_GENERIC_DMA_COHERENT
+>   	bool
+>   
 > 
