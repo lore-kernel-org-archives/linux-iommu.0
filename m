@@ -1,65 +1,49 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH 2/5] dma-mapping: move the dma_coherent flag to struct
-	device
-Date: Mon, 10 Sep 2018 17:06:40 +0100
-Message-ID: <aa6f49f8-24ea-f166-9c58-aecb13df0418@arm.com>
+ device
+Date: Mon, 10 Sep 2018 18:13:50 +0200
+Message-ID: <20180910161350.GA10380@kroah.com>
 References: <20180910060533.27172-1-hch@lst.de>
-	<20180910060533.27172-3-hch@lst.de>
-	<71ec3eef-54c1-f692-5a17-4302c4dd4b05@arm.com>
-	<20180910154747.GA23578@lst.de>
+ <20180910060533.27172-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180910154747.GA23578-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180910060533.27172-3-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Paul Burton <paul.burton@mips.com>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/09/18 16:47, Christoph Hellwig wrote:
->>> --- a/kernel/dma/Kconfig
->>> +++ b/kernel/dma/Kconfig
->>> @@ -13,6 +13,9 @@ config NEED_DMA_MAP_STATE
->>>    config ARCH_DMA_ADDR_T_64BIT
->>>    	def_bool 64BIT || PHYS_ADDR_T_64BIT
->>>    +config ARCH_HAS_DMA_COHERENCE_H
->>> +	bool
->>
->> This seems a little crude - is it unbearably churny to make an
->> asm-generic/dma-coherence.h implementation for everyone else?
-> 
-> The case of having something else than the per-device flag is rather
-> odd, and I hope we don't grow any new user in addition to mips.
-> 
-> In fact I'm already thinking of ways to get rid of it for mips by
-> e.g. iterating over all devices and just setting dma_coherent,
-> but for now I wanted to solve the more urgen issues and tackle this
-> later, as this unification blocks a few other things
+On Mon, Sep 10, 2018 at 08:05:30AM +0200, Christoph Hellwig wrote:
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 8f882549edee..983506789402 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -927,6 +927,8 @@ struct dev_links_info {
+>   * @offline:	Set after successful invocation of bus type's .offline().
+>   * @of_node_reused: Set if the device-tree node is shared with an ancestor
+>   *              device.
+> + * @dma_coherent: this particular device is dma coherent, even if the
+> + *		architecture supports non-coherent devices.
+>   *
+>   * At the lowest level, every device in a Linux system is represented by an
+>   * instance of struct device. The device structure contains the information
+> @@ -1016,6 +1018,11 @@ struct device {
+>  	bool			offline_disabled:1;
+>  	bool			offline:1;
+>  	bool			of_node_reused:1;
+> +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+> +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+> +	bool			dma_coherent:1;
+> +#endif
 
-Ah, somehow I started thinking that arm(64) would need to implement 
-their own as well, but I see the point now. In that case, TBH I'd be 
-quite happy with just a simple #ifdef CONFIG_MIPS in 
-linux/dma-noncoherent.h - plus then it looks even more like something 
-nobody else is expected to do.
+It's just one bit, why not always have it enabled here?  If the arch
+uses it or doesn't, no big deal.
 
->> Nits aside, this otherwise looks sane to me for factoring out the
->> equivalent Xen and arm64 DMA ops cases.
-> 
-> Like this? :)
-> 
-> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-maybe-coherent
+Or are you using this to "catch" arches that mess something up?
 
-Man, that's going to take me a *lot* of time to pick through. All those 
-horrendous subtleties that I barely remember!
+thanks,
 
-Robin.
+greg k-h
