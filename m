@@ -1,126 +1,200 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: 4.19-rc3: IOMMU PT warnings: WARNING: CPU: 0 PID: 1 at
- mm/page_alloc.c:4065 __alloc_pages_slowpath+0xb7b/0xcd0
-Date: Mon, 10 Sep 2018 15:36:30 +0100
-Message-ID: <059cc599-469a-fe31-ac5e-1198a75e6fb1@arm.com>
-References: <alpine.LRH.2.21.1809101111040.31938@math.ut.ee>
- <20180910132304.GA20244@lst.de>
- <e3f0e78a-3e3d-aae7-2588-599184dee534@arm.com>
- <alpine.LRH.2.21.1809101705250.6328@math.ut.ee>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v5 14/23] iommu: introduce page response function
+Date: Mon, 10 Sep 2018 16:52:24 +0200
+Message-ID: <b6743e3d-b8eb-ad44-9b13-c7231807b114@redhat.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1526072055-86990-15-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.LRH.2.21.1809101705250.6328@math.ut.ee>
-Content-Language: en-GB
+In-Reply-To: <1526072055-86990-15-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Meelis Roos <mroos@linux.ee>
-Cc: iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>, Linux Kernel list <linux-kernel@vger.kernel.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Raj Ashok <ashok.raj@intel.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean Delvare <khali@linux-fr.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/09/18 15:07, Meelis Roos wrote:
->> Given the __alloc_pages_slowpath() warning, this looks like it's probably
->> stemming from the oversized PASID table issue which a few other folks have hit
->> too. I think this patch is the most up-to-date fix:
->>
->> https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg25639.html
-> 
-> The warning is gone but there seem to be more warnings about
-> IOMMU_DOMAIN_DMA:
-> 
-> [    0.171992] DMAR: Host address width 39
-> [    0.171994] DMAR: DRHD base: 0x000000fed90000 flags: 0x0
-> [    0.171998] DMAR: dmar0: reg_base_addr fed90000 ver 1:0 cap 1c0000c40660462 ecap 19e2ff0505e
-> [    0.171999] DMAR: DRHD base: 0x000000fed91000 flags: 0x1
-> [    0.172002] DMAR: dmar1: reg_base_addr fed91000 ver 1:0 cap d2008c40660462 ecap f050da
-> [    0.172004] DMAR: RMRR base: 0x000000ca02f000 end: 0x000000ca04efff
-> [    0.172005] DMAR: RMRR base: 0x000000cb800000 end: 0x000000cfffffff
-> [    0.172007] DMAR-IR: IOAPIC id 2 under DRHD base  0xfed91000 IOMMU 1
-> [    0.172008] DMAR-IR: HPET id 0 under DRHD base 0xfed91000
-> [    0.173441] DMAR-IR: Enabled IRQ remapping in xapic mode
-> 
-> [...]
-> 
-> [    0.324160] DMAR: No ATSR found
-> [    0.324175] DMAR: dmar0: Using Queued invalidation
-> [    0.324229] DMAR: dmar1: Using Queued invalidation
-> [    0.324453] DMAR: Hardware identity mapping for device 0000:00:00.0
-> [    0.324501] DMAR: Hardware identity mapping for device 0000:00:02.0
-> [    0.324503] DMAR: Hardware identity mapping for device 0000:00:08.0
-> [    0.324505] DMAR: Hardware identity mapping for device 0000:00:14.0
-> [    0.324507] DMAR: Hardware identity mapping for device 0000:00:16.0
-> [    0.324508] DMAR: Hardware identity mapping for device 0000:00:17.0
-> [    0.324510] DMAR: Hardware identity mapping for device 0000:00:1b.0
-> [    0.324512] DMAR: Hardware identity mapping for device 0000:00:1b.2
-> [    0.324513] DMAR: Hardware identity mapping for device 0000:00:1b.3
-> [    0.324515] DMAR: Hardware identity mapping for device 0000:00:1b.4
-> [    0.324516] DMAR: Hardware identity mapping for device 0000:00:1c.0
-> [    0.324518] DMAR: Hardware identity mapping for device 0000:00:1c.2
-> [    0.324520] DMAR: Hardware identity mapping for device 0000:00:1c.4
-> [    0.324521] DMAR: Hardware identity mapping for device 0000:00:1d.0
-> [    0.324523] DMAR: Hardware identity mapping for device 0000:00:1f.0
-> [    0.324524] DMAR: Hardware identity mapping for device 0000:00:1f.2
-> [    0.324526] DMAR: Hardware identity mapping for device 0000:00:1f.3
-> [    0.324528] DMAR: Hardware identity mapping for device 0000:00:1f.4
-> [    0.324529] DMAR: Hardware identity mapping for device 0000:00:1f.6
-> [    0.324532] DMAR: Hardware identity mapping for device 0000:09:00.0
-> [    0.324533] DMAR: Setting RMRR:
-> [    0.324535] DMAR: Ignoring identity map for HW passthrough device 0000:00:02.0 [0xcb800000 - 0xcfffffff]
-> [    0.324536] DMAR: Ignoring identity map for HW passthrough device 0000:00:14.0 [0xca02f000 - 0xca04efff]
-> [    0.324539] DMAR: Prepare 0-16MiB unity mapping for LPC
-> [    0.324540] DMAR: Ignoring identity map for HW passthrough device 0000:00:1f.0 [0x0 - 0xffffff]
-> [    0.324576] DMAR: Intel(R) Virtualization Technology for Directed I/O
-> [    0.324601] pci 0000:00:00.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
+Hi Jacob,
 
-Ah, that's probably related to 58d1131777a4 or something related in that 
-area - intel-iommu does its own thing when it comes to passthrough 
-domains and doesn't actually support IOMMU_DOMAIN_IDENTITY. AFAICS this 
-is benign other than the log noise, since it's never supported default 
-domains at all anyway.
-
-Robin.
-
-> [    0.324604] iommu: Adding device 0000:00:00.0 to group 0
-> [    0.324610] pci 0000:00:02.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324613] iommu: Adding device 0000:00:02.0 to group 1
-> [    0.324619] pci 0000:00:08.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324621] iommu: Adding device 0000:00:08.0 to group 2
-> [    0.324629] pci 0000:00:14.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324631] iommu: Adding device 0000:00:14.0 to group 3
-> [    0.324639] pci 0000:00:16.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324641] iommu: Adding device 0000:00:16.0 to group 4
-> [    0.324647] pci 0000:00:17.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324649] iommu: Adding device 0000:00:17.0 to group 5
-> [    0.324664] pci 0000:00:1b.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324666] iommu: Adding device 0000:00:1b.0 to group 6
-> [    0.324673] pci 0000:00:1b.2: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324675] iommu: Adding device 0000:00:1b.2 to group 7
-> [    0.324683] pci 0000:00:1b.3: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324685] iommu: Adding device 0000:00:1b.3 to group 8
-> [    0.324693] pci 0000:00:1b.4: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324695] iommu: Adding device 0000:00:1b.4 to group 9
-> [    0.324708] pci 0000:00:1c.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324711] iommu: Adding device 0000:00:1c.0 to group 10
-> [    0.324718] pci 0000:00:1c.2: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324721] iommu: Adding device 0000:00:1c.2 to group 11
-> [    0.324728] pci 0000:00:1c.4: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324730] iommu: Adding device 0000:00:1c.4 to group 12
-> [    0.324738] pci 0000:00:1d.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324740] iommu: Adding device 0000:00:1d.0 to group 13
-> [    0.324754] pci 0000:00:1f.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324757] iommu: Adding device 0000:00:1f.0 to group 14
-> [    0.324763] pci 0000:00:1f.2: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324765] iommu: Adding device 0000:00:1f.2 to group 14
-> [    0.324771] pci 0000:00:1f.3: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324773] iommu: Adding device 0000:00:1f.3 to group 14
-> [    0.324779] pci 0000:00:1f.4: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324782] iommu: Adding device 0000:00:1f.4 to group 14
-> [    0.324788] pci 0000:00:1f.6: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324790] iommu: Adding device 0000:00:1f.6 to group 15
-> [    0.324797] pci 0000:02:00.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324800] iommu: Adding device 0000:02:00.0 to group 16
-> [    0.324807] pci 0000:09:00.0: failed to allocate default IOMMU domain of type 4; falling back to IOMMU_DOMAIN_DMA
-> [    0.324810] iommu: Adding device 0000:09:00.0 to group 17
+On 05/11/2018 10:54 PM, Jacob Pan wrote:
+> IO page faults can be handled outside IOMMU subsystem. For an example,
+> when nested translation is turned on and guest owns the
+> first level page tables, device page request can be forwared
+forwarded
+> to the guest for handling faults. As the page response returns
+> by the guest, IOMMU driver on the host need to process the
+from the guest ...  host needs
+> response which informs the device and completes the page request
+> transaction.
 > 
+> This patch introduces generic API function for page response
+> passing from the guest or other in-kernel users. The definitions of
+> the generic data is based on PCI ATS specification not limited to
+> any vendor.
 > 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Link: https://lkml.org/lkml/2017/12/7/1725
+> ---
+>  drivers/iommu/iommu.c | 45 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iommu.h | 43 +++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 88 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index b3f9daf..02fed3e 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1533,6 +1533,51 @@ int iommu_sva_invalidate(struct iommu_domain *domain,
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_sva_invalidate);
+>  
+> +int iommu_page_response(struct device *dev,
+> +			struct page_response_msg *msg)
+> +{
+> +	struct iommu_param *param = dev->iommu_param;
+> +	int ret = -EINVAL;
+> +	struct iommu_fault_event *evt;
+> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> +
+> +	if (!domain || !domain->ops->page_response)
+> +		return -ENODEV;
+> +
+> +	/*
+> +	 * Device iommu_param should have been allocated when device is
+> +	 * added to its iommu_group.
+> +	 */
+> +	if (!param || !param->fault_param)
+> +		return -EINVAL;
+> +
+> +	/* Only send response if there is a fault report pending */
+> +	mutex_lock(&param->fault_param->lock);
+> +	if (list_empty(&param->fault_param->faults)) {
+> +		pr_warn("no pending PRQ, drop response\n");
+> +		goto done_unlock;
+> +	}
+> +	/*
+> +	 * Check if we have a matching page request pending to respond,
+> +	 * otherwise return -EINVAL
+> +	 */
+> +	list_for_each_entry(evt, &param->fault_param->faults, list) {
+> +		if (evt->pasid == msg->pasid &&
+> +		    msg->page_req_group_id == evt->page_req_group_id) {
+> +			msg->private_data = evt->iommu_private;
+> +			ret = domain->ops->page_response(dev, msg);
+> +			list_del(&evt->list);
+don't you need a list_for_each_entry_safe?
+> +			kfree(evt);
+> +			break;
+> +		}
+> +	}
+> +
+> +done_unlock:
+> +	mutex_unlock(&param->fault_param->lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_page_response);
+> +
+>  static void __iommu_detach_device(struct iommu_domain *domain,
+>  				  struct device *dev)
+>  {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index b3312ee..722b90f 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -163,6 +163,41 @@ struct iommu_resv_region {
+>  #ifdef CONFIG_IOMMU_API
+>  
+>  /**
+> + * enum page_response_code - Return status of fault handlers, telling the IOMMU
+> + * driver how to proceed with the fault.
+> + *
+> + * @IOMMU_PAGE_RESP_SUCCESS: Fault has been handled and the page tables
+> + *	populated, retry the access. This is "Success" in PCI PRI.
+> + * @IOMMU_PAGE_RESP_FAILURE: General error. Drop all subsequent faults from
+> + *	this device if possible. This is "Response Failure" in PCI PRI.
+> + * @IOMMU_PAGE_RESP_INVALID: Could not handle this fault, don't retry the
+> + *	access. This is "Invalid Request" in PCI PRI.
+> + */
+> +enum page_response_code {
+> +	IOMMU_PAGE_RESP_SUCCESS = 0,
+> +	IOMMU_PAGE_RESP_INVALID,
+> +	IOMMU_PAGE_RESP_FAILURE,
+> +};
+> +
+> +/**
+> + * Generic page response information based on PCI ATS and PASID spec.
+> + * @addr: servicing page address
+> + * @pasid: contains process address space ID
+> + * @resp_code: response code
+nit: @pasid_present doc missing although quite obvious
+> + * @page_req_group_id: page request group index
+> + * @private_data: uniquely identify device-specific private data for an
+> + *                individual page response
+> + */
+> +struct page_response_msg {
+> +	u64 addr;
+> +	u32 pasid;
+> +	enum page_response_code resp_code;
+> +	u32 pasid_present:1;
+> +	u32 page_req_group_id;
+> +	u64 private_data;
+> +};
+Doesn't it need to be part of iommu uapi header since the virtualizer
+will pass the response through VFIO?
+
+As mentioned in previous discussion this is really PRI related and does
+not really fit unrecoverable fault reporting. To me we should clarify if
+this API targets both use cases or only the PRI response use case. Also
+in the implementation we check pasid and PRGindex. As mentionned by
+Jean-Philippe, unrecoverable "traditional" faults do not require to
+manage a list in the iommu subsystem.
+
+Have you considered using a kfifo instead of a list to manage the
+pending PRI requests?
+
+Thanks
+
+Eric
+> +
+> +/**
+>   * struct iommu_ops - iommu ops and capabilities
+>   * @capable: check capability
+>   * @domain_alloc: allocate iommu domain
+> @@ -195,6 +230,7 @@ struct iommu_resv_region {
+>   * @bind_pasid_table: bind pasid table pointer for guest SVM
+>   * @unbind_pasid_table: unbind pasid table pointer and restore defaults
+>   * @sva_invalidate: invalidate translation caches of shared virtual address
+> + * @page_response: handle page request response
+>   */
+>  struct iommu_ops {
+>  	bool (*capable)(enum iommu_cap);
+> @@ -250,6 +286,7 @@ struct iommu_ops {
+>  				struct device *dev);
+>  	int (*sva_invalidate)(struct iommu_domain *domain,
+>  		struct device *dev, struct tlb_invalidate_info *inv_info);
+> +	int (*page_response)(struct device *dev, struct page_response_msg *msg);
+>  
+>  	unsigned long pgsize_bitmap;
+>  };
+> @@ -470,6 +507,7 @@ extern int iommu_unregister_device_fault_handler(struct device *dev);
+>  
+>  extern int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt);
+>  
+> +extern int iommu_page_response(struct device *dev, struct page_response_msg *msg);
+>  extern int iommu_group_id(struct iommu_group *group);
+>  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+>  extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+> @@ -758,6 +796,11 @@ static inline int iommu_report_device_fault(struct device *dev, struct iommu_fau
+>  	return -ENODEV;
+>  }
+>  
+> +static inline int iommu_page_response(struct device *dev, struct page_response_msg *msg)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  static inline int iommu_group_id(struct iommu_group *group)
+>  {
+>  	return -ENODEV;
 > 
