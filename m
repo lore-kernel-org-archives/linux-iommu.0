@@ -1,16 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: 4.19-rc3: IOMMU PT warnings: WARNING: CPU: 0 PID: 1 at
-	mm/page_alloc.c:4065 __alloc_pages_slowpath+0xb7b/0xcd0
-Date: Mon, 10 Sep 2018 14:26:30 +0100
-Message-ID: <e3f0e78a-3e3d-aae7-2588-599184dee534@arm.com>
-References: <alpine.LRH.2.21.1809101111040.31938@math.ut.ee>
-	<20180910132304.GA20244@lst.de>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH 0/7 v7] Support for fsl-mc bus and its devices in SMMU
+Date: Mon, 10 Sep 2018 19:19:14 +0530
+Message-ID: <1536587361-11047-1-git-send-email-nipun.gupta@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180910132304.GA20244-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,31 +15,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, laurentiu.tudor-3arQi8VN3Tc@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shawnguo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/09/18 14:23, Christoph Hellwig wrote:
-> On Mon, Sep 10, 2018 at 11:16:12AM +0300, Meelis Roos wrote:
->> In 4.19-rc1, I found that to keep Intel integrated graphics working when
->> VT-d is on, I need to have IOMMU passthough on or GPU init would fail
->> with DMAR error and the screen would display static gibberish. So I
->> turned IOMMU PT on by default in kernel config. It worked, also in rc2.
->>
->> Now with rc3, it still works but I get some warning splats in dmesg
->> about IOMMU passthrough:
-> 
-> Any chance you could bisect this down to a specific commit?  For
-> a start it might be worth if it is reproducable with:
-> 
->     git://git.infradead.org/users/hch/dma-mapping.git dma-mapping-4.19-2
-> 
-> which were the only dma-mapping changes post -rc2.
+This patchset defines IOMMU DT binding for fsl-mc bus and adds
+support in SMMU for fsl-mc bus.
 
-Given the __alloc_pages_slowpath() warning, this looks like it's 
-probably stemming from the oversized PASID table issue which a few other 
-folks have hit too. I think this patch is the most up-to-date fix:
+These patches
+  - Define property 'iommu-map' for fsl-mc bus (patch 1)
+  - Integrates the fsl-mc bus with the SMMU using this
+    IOMMU binding (patch 2,3,4)
+  - Adds the dma configuration support for fsl-mc bus (patch 5, 6)
+  - Updates the fsl-mc device node with iommu/dma related changes (patch 7)
 
-https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg25639.html
+Changes in v2:
+  - use iommu-map property for fsl-mc bus
+  - rebase over patchset https://patchwork.kernel.org/patch/10317337/
+    and make corresponding changes for dma configuration of devices on
+    fsl-mc bus
 
-Robin.
+Changes in v3:
+  - move of_map_rid in drivers/of/address.c
+
+Changes in v4:
+  - move of_map_rid in drivers/of/base.c
+
+Changes in v5:
+  - break patch 5 in two separate patches (now patch 5/7 and patch 6/7)
+  - add changelog text in patch 3/7 and patch 5/7
+  - typo fix
+
+Changes in v6:
+  - Updated fsl_mc_device_group() API to be more rational
+  - Added dma-coherent property in the LS2 smmu device node
+  - Minor fixes in the device-tree documentation
+
+Changes in v7:
+  - Rebased over linux 4.19
+
+Nipun Gupta (7):
+  Documentation: fsl-mc: add iommu-map device-tree binding for fsl-mc
+    bus
+  iommu/of: make of_pci_map_rid() available for other devices too
+  iommu/of: support iommu configuration for fsl-mc devices
+  iommu/arm-smmu: Add support for the fsl-mc bus
+  bus: fsl-mc: support dma configure for devices on fsl-mc bus
+  bus: fsl-mc: set coherent dma mask for devices on fsl-mc bus
+  arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
+
+ .../devicetree/bindings/misc/fsl,qoriq-mc.txt      |  39 ++++++++
+ arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |   7 +-
+ drivers/bus/fsl-mc/fsl-mc-bus.c                    |  16 +++-
+ drivers/iommu/arm-smmu.c                           |   7 ++
+ drivers/iommu/iommu.c                              |  13 +++
+ drivers/iommu/of_iommu.c                           |  25 ++++-
+ drivers/of/base.c                                  | 102 +++++++++++++++++++++
+ drivers/of/irq.c                                   |   5 +-
+ drivers/pci/of.c                                   | 101 --------------------
+ include/linux/fsl/mc.h                             |   8 ++
+ include/linux/iommu.h                              |   2 +
+ include/linux/of.h                                 |  11 +++
+ include/linux/of_pci.h                             |  10 --
+ 13 files changed, 224 insertions(+), 122 deletions(-)
+
+-- 
+1.9.1
