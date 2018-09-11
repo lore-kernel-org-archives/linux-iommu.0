@@ -1,114 +1,94 @@
-From: Robin Murphy <robin.murphy@arm.com>
+From: Wolfram Sang <wsa@the-dreams.de>
 Subject: Re: [RFC PATCH 0/2] dma-mapping: introduce helper for setting
  dma_parms
-Date: Tue, 11 Sep 2018 18:24:08 +0100
-Message-ID: <a9478a05-5908-e693-7eeb-3673b2facda7@arm.com>
+Date: Wed, 12 Sep 2018 01:39:33 +0200
+Message-ID: <20180911233933.GA1402@kunai>
 References: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
+ <a9478a05-5908-e693-7eeb-3673b2facda7@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lrZ03NoBR/3+SXJZ"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <a9478a05-5908-e693-7eeb-3673b2facda7@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>, iommu@lists.linux-foundation.org
-Cc: linux-renesas-soc@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/09/18 17:30, Wolfram Sang wrote:
-> Hi all,
-> 
-> commit 78c47830a5cb ("dma-debug: check scatterlist segments") triggers
-> for Renesas hardware I look after, so thanks for pointing out we should
-> have proper dma_parms for our DMA providers.
-> 
-> When trying to fix it, I became a bit puzzled about the life cycle of
-> the pointer to dma_parms. AFAIU most drivers leave the pointer dangling
-> on driver unbind. Check drivers/dma/bcm2835-dma.c, for example:
-> 
-> 	od = devm_kzalloc(&pdev->dev, sizeof(*od), GFP_KERNEL);
-> 	if (!od)
-> 		return -ENOMEM;
-> 
-> 	pdev->dev.dma_parms = &od->dma_parms;
-> 	dma_set_max_seg_size(&pdev->dev, 0x3FFFFFFF);
-> 
-> And that's all about handling dma_parms. So, on unbind, the memory for
-> 'od' gets freed and dma_params is a dangling pointer.
 
-That's the typical case - the dma_parms structure is simply embedded in 
-some other private data which tends to have the appropriate lifetime 
-anyway. I can't see that the dangling pointer is an issue when it's set 
-unconditionally on probe and valid until remove, because anyone 
-dereferencing dev->dma_parms when dev has no driver bound is doing 
-something very very wrong anyway. I suppose we could zero it in 
-__device_release_driver() for good measure though - shame we've found 
-something dma_deconfigure() could have been useful for just after we 
-killed it ;)
+--lrZ03NoBR/3+SXJZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> drivers/gpu/drm/exynos/exynos_drm_iommu.c seems to do it correctly:
+Hi Robin,
 
-...but could be even simpler if it was just included in 
-exynos_drm_private. Realistically, I struggle to imagine a driver which 
-would need to set dma_parms that didn't already have some other private 
-state into which it could fit.
+> > 	od =3D devm_kzalloc(&pdev->dev, sizeof(*od), GFP_KERNEL);
+> > 	if (!od)
+> > 		return -ENOMEM;
+> >=20
+> > 	pdev->dev.dma_parms =3D &od->dma_parms;
+> > 	dma_set_max_seg_size(&pdev->dev, 0x3FFFFFFF);
+> >=20
+> > And that's all about handling dma_parms. So, on unbind, the memory for
+> > 'od' gets freed and dma_params is a dangling pointer.
+>=20
+> That's the typical case - the dma_parms structure is simply embedded in s=
+ome
+> other private data which tends to have the appropriate lifetime anyway. I
+> can't see that the dangling pointer is an issue when it's set
+> unconditionally on probe and valid until remove, because anyone
+> dereferencing dev->dma_parms when dev has no driver bound is doing someth=
+ing
+> very very wrong anyway. I suppose we could zero it in
+> __device_release_driver() for good measure though - shame we've found
+> something dma_deconfigure() could have been useful for just after we kill=
+ed
+> it ;)
 
-Note that ultimately we'd like to have a single structure to hold all 
-the masks and other gubbins (per the very original intent of dma_parms), 
-so there's a fair chance of this getting fundamentally rejigged at some 
-point anyway.
+I see. Yes, I was aware that the misuse of this dangling pointer is
+somewhat academical. Yet, it was easy to fix and clearing this pointer
+is good programming practice, I'd say. I agree that clearing the pointer
+in __device_release_driver is a good option, too, if documentation about
+its expected life cycle (=3D=3D get's cleared on unbind) is clear about
+that. Probably that life cycle confusion led to the more complicated
+code in the exynos_drm driver. I will look into all of that tomorrow.
 
-Robin.
+> Note that ultimately we'd like to have a single structure to hold all the
+> masks and other gubbins (per the very original intent of dma_parms), so
 
-> static inline int configure_dma_max_seg_size(struct device *dev)
-> {
->          if (!dev->dma_parms)
->                  dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
->          if (!dev->dma_parms)
->                  return -ENOMEM;
-> 
->          dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
->          return 0;
-> }
-> 
-> static inline void clear_dma_max_seg_size(struct device *dev)
-> {
->          kfree(dev->dma_parms);
->          dev->dma_parms = NULL;
-> }
-> 
-> But this seems error prone and quite some code to add for every DMA
-> provider. So, I wondered if we couldn't have a helper for that. After
-> some brainstorming, I favour a dmam_-type of function. It will ensure
-> the memory gets freed and the pointer cleared on unbind. And it should
-> be easy to use.
-> 
-> I attached an RFC which I tested on a Renesas R-Car H3 SoC with the internal
-> DMAC of the SD controller. A branch can be found here (still waiting for
-> buildbot results):
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/sdhi/set_max_seg
-> 
-> I added the companion function dmam_free_dma_parms() for completeness
-> although there is no user yet. I'd be totally open to drop it until
-> someone needs it.
-> 
-> Please let me know what you think. If this is the right track, I'll be
-> willing to fix the dangling pointers with it, too.
-> 
-> Thanks and happy hacking,
-> 
->     Wolfram
-> 
-> 
-> 
-> Wolfram Sang (2):
->    dma-mapping: introduce helper for setting dma_parms
->    mmc: sdhi: internal_dmac: set dma_parms
-> 
->   drivers/mmc/host/renesas_sdhi_internal_dmac.c |  2 +
->   include/linux/dma-mapping.h                   |  5 ++
->   kernel/dma/mapping.c                          | 50 +++++++++++++++++++
->   3 files changed, 57 insertions(+)
-> 
+I was wondering about that, yes.
+
+> there's a fair chance of this getting fundamentally rejigged at some point
+> anyway.
+
+Makes sense. Yet, as this change is gonna be small, I think it's still
+nice to have.
+
+Thanks for the input!
+
+   Wolfram
+
+
+--lrZ03NoBR/3+SXJZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAluYUjAACgkQFA3kzBSg
+KbYMPg//Zfi+Hz+7x50SPmdAwCyPvJ+GIPolfb9bnY4HJd2+bTBp4dHh8c0NDkxT
+HzIqv8AEjMuO+WqsnBqQGHxHD0tWif5t2JHgcrxplRGSh/Ten/PcFtb0tngLLxu+
+NaYBEvLW2TjXqoyoNuJ8NXXo3p9+Y+anN5iTnN1u+hLPezNlf+ksQZGJbNcWpsnU
+ZQr3Of/2wmsOtamRhJvdZ0N8ywqXZrxGqPaQzrEYnY0kX4CcVWfLC0GjOQ5qq60+
+acWYcPoXp0qBAV1KNGaIaqyCdPxwG6D6wafbh47wF9YdlZ7qXe7nrkXwbBEg6teE
+cmf0norWDL1pqriwtXO9s/PBY7HMbzfSpSQtrPzHlgaVIaaOqDfWMepi1UaAjiKJ
+Y/EO9AC+QdT/CYOhV4nMWqGkUacjmgxFmTQkiHaUVvbYEk9SWl3hxjT2Z/U3ah5b
+QJZu5KFvXpZLjEOawHhHhiLzw4DA7Uuq5rmG8UqRisYhtSOGJv+LmOuiICSI0SQL
+rtEIEl6HNWtssBRbwRY49fmsFZ8cvcZn+dtk28bX4PIItA82OtPY1/b+uwlMiVdp
+PpPPtLMcfpb7klzmVfTlziw2k9I/NCtrrx+NrDILL2PLAf39TQb6aHmobAKk9Y35
+C0f/YanJSh/ELEjRxpRZp0dAHDrZ28DdKcabrLtnNSVYbIOlFEs=
+=5tYY
+-----END PGP SIGNATURE-----
+
+--lrZ03NoBR/3+SXJZ--
