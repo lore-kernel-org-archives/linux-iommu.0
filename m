@@ -1,85 +1,105 @@
 From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [RFC PATCH 0/2] dma-mapping: introduce helper for setting dma_parms
-Date: Tue, 11 Sep 2018 18:30:48 +0200
-Message-ID: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH 1/2] dma-mapping: introduce helper for setting dma_parms
+Date: Tue, 11 Sep 2018 18:30:49 +0200
+Message-ID: <20180911163050.28072-2-wsa+renesas@sang-engineering.com>
+References: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 Cc: linux-renesas-soc@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-kernel@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+Setting up dma_parms seems not so trivial because it is easy to miss
+that its pointer has the life cycle of its containing 'struct device'
+while the allocation of dma_parms usually happens during the bind/unbind
+life cycle. Which can lead to dangling pointers.
+If coding this correctly in drivers, this results in boilerplate code.
+So, this patch adds a devm_* style helper which is easy to use and make
+sure the allocation and the pointer are always handled at the same time.
 
-commit 78c47830a5cb ("dma-debug: check scatterlist segments") triggers
-for Renesas hardware I look after, so thanks for pointing out we should
-have proper dma_parms for our DMA providers.
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ include/linux/dma-mapping.h |  5 ++++
+ kernel/dma/mapping.c        | 50 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+)
 
-When trying to fix it, I became a bit puzzled about the life cycle of
-the pointer to dma_parms. AFAIU most drivers leave the pointer dangling
-on driver unbind. Check drivers/dma/bcm2835-dma.c, for example:
-
-	od = devm_kzalloc(&pdev->dev, sizeof(*od), GFP_KERNEL);
-	if (!od)
-		return -ENOMEM;
-
-	pdev->dev.dma_parms = &od->dma_parms;
-	dma_set_max_seg_size(&pdev->dev, 0x3FFFFFFF);
-
-And that's all about handling dma_parms. So, on unbind, the memory for
-'od' gets freed and dma_params is a dangling pointer.
-
-drivers/gpu/drm/exynos/exynos_drm_iommu.c seems to do it correctly:
-
-static inline int configure_dma_max_seg_size(struct device *dev)
-{
-        if (!dev->dma_parms)
-                dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
-        if (!dev->dma_parms)
-                return -ENOMEM;
-
-        dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
-        return 0;
-}
-
-static inline void clear_dma_max_seg_size(struct device *dev)
-{
-        kfree(dev->dma_parms);
-        dev->dma_parms = NULL;
-}
-
-But this seems error prone and quite some code to add for every DMA
-provider. So, I wondered if we couldn't have a helper for that. After
-some brainstorming, I favour a dmam_-type of function. It will ensure
-the memory gets freed and the pointer cleared on unbind. And it should
-be easy to use.
-
-I attached an RFC which I tested on a Renesas R-Car H3 SoC with the internal
-DMAC of the SD controller. A branch can be found here (still waiting for
-buildbot results):
-
-git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/sdhi/set_max_seg
-
-I added the companion function dmam_free_dma_parms() for completeness
-although there is no user yet. I'd be totally open to drop it until
-someone needs it.
-
-Please let me know what you think. If this is the right track, I'll be
-willing to fix the dangling pointers with it, too.
-
-Thanks and happy hacking,
-
-   Wolfram
-
-
-
-Wolfram Sang (2):
-  dma-mapping: introduce helper for setting dma_parms
-  mmc: sdhi: internal_dmac: set dma_parms
-
- drivers/mmc/host/renesas_sdhi_internal_dmac.c |  2 +
- include/linux/dma-mapping.h                   |  5 ++
- kernel/dma/mapping.c                          | 50 +++++++++++++++++++
- 3 files changed, 57 insertions(+)
-
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 1db6a6b46d0d..05a525b4639b 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -700,6 +700,11 @@ static inline int dma_set_seg_boundary(struct device *dev, unsigned long mask)
+ 	return -EIO;
+ }
+ 
++extern int dmam_set_dma_parms(struct device *dev, unsigned int max_seg_size,
++			      unsigned long seg_bound_mask);
++
++extern void dmam_free_dma_parms(struct device *dev);
++
+ #ifndef dma_max_pfn
+ static inline unsigned long dma_max_pfn(struct device *dev)
+ {
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index d2a92ddaac4d..082cc651513b 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -198,6 +198,56 @@ EXPORT_SYMBOL(dmam_release_declared_memory);
+ 
+ #endif
+ 
++static void dmam_release_dma_parms(struct device *dev, void *res)
++{
++	dev->dma_parms = NULL;
++}
++
++static int dmam_match_dma_parms(struct device *dev, void *res, void *data)
++{
++	return res == data;
++}
++
++/**
++ * dmam_set_dma_parms - Managed setting of dma_parms
++ * @dev: device to set dma_parms for
++ * @max_seg_size: the maximum segment size for this device
++ * @seg_bound_mask: the segment boundary mask for this device
++ *
++ * RETURNS:
++ * 0 on success, errno on failure.
++ */
++int dmam_set_dma_parms(struct device *dev, unsigned int max_seg_size,
++		       unsigned long seg_bound_mask)
++{
++	struct device_dma_parameters *parms;
++
++	parms = devres_alloc(dmam_release_dma_parms,
++			     sizeof(struct device_dma_parameters), GFP_KERNEL);
++	if (!parms)
++		return -ENOMEM;
++
++	dev->dma_parms = parms;
++	dma_set_max_seg_size(dev, max_seg_size);
++	dma_set_seg_boundary(dev, seg_bound_mask);
++
++	devres_add(dev, parms);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dmam_set_dma_parms);
++
++/**
++ * dmam_free_dma_parms - free dma_parms allocated with dmam_set_dma_parms
++ * @dev: device with dma_parms allocated by dmam_set_dma_parms()
++ */
++void dmam_free_dma_parms(struct device *dev)
++{
++	int rc = devres_destroy(dev, dmam_release_dma_parms, dmam_match_dma_parms,
++				dev->dma_parms);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(dmam_free_dma_parms);
++
+ /*
+  * Create scatter-list for the already allocated DMA buffer.
+  */
 -- 
 2.18.0
