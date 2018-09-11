@@ -1,69 +1,46 @@
-From: Christoph Hellwig <hch@lst.de>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 Subject: Re: [PATCH 2/5] dma-mapping: move the dma_coherent flag to struct
- device
-Date: Tue, 11 Sep 2018 08:58:39 +0200
-Message-ID: <20180911065839.GA6479@lst.de>
-References: <20180910060533.27172-1-hch@lst.de> <20180910060533.27172-3-hch@lst.de> <71ec3eef-54c1-f692-5a17-4302c4dd4b05@arm.com>
+	device
+Date: Tue, 11 Sep 2018 10:19:52 +0200
+Message-ID: <20180911081952.GA17267@kroah.com>
+References: <20180910060533.27172-1-hch@lst.de>
+	<20180910060533.27172-3-hch@lst.de>
+	<20180910161350.GA10380@kroah.com> <20180911064636.GA6214@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <71ec3eef-54c1-f692-5a17-4302c4dd4b05@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Paul Burton <paul.burton@mips.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20180911064636.GA6214-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 10, 2018 at 04:19:30PM +0100, Robin Murphy wrote:
-> If we're likely to refer to it more than once, is it worth wrapping that 
-> condition up in something like ARCH_HAS_NONCOHERENT_DMA?
+On Tue, Sep 11, 2018 at 08:46:36AM +0200, Christoph Hellwig wrote:
+> On Mon, Sep 10, 2018 at 06:13:50PM +0200, Greg Kroah-Hartman wrote:
+> > > +#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+> > > +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+> > > +    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+> > > +	bool			dma_coherent:1;
+> > > +#endif
+> > 
+> > It's just one bit, why not always have it enabled here?  If the arch
+> > uses it or doesn't, no big deal.
+> > 
+> > Or are you using this to "catch" arches that mess something up?
+> 
+> Yes, that is the intent - I don't want architectures to accidentally
+> set it while not selecting the non-coherent infrastructure, as it
+> won't have an effect.
 
-Below is what we'd need.  Which to me doesn't look wortwhile for just
-those two conditionals:
-
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 983506789402..d260536f6f46 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -1018,9 +1018,7 @@ struct device {
- 	bool			offline_disabled:1;
- 	bool			offline:1;
- 	bool			of_node_reused:1;
--#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
--    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
--    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+#ifdef CONFIG_ARCH_HAS_NONCOHERENT_DMA
- 	bool			dma_coherent:1;
- #endif
- };
-diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index 9051b055beec..9e3adf924d1e 100644
---- a/include/linux/dma-noncoherent.h
-+++ b/include/linux/dma-noncoherent.h
-@@ -6,9 +6,7 @@
- 
- #ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
- #include <asm/dma-coherence.h>
--#elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
--	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
--	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+#elif defined(CONFIG_ARCH_HAS_NONCOHERENT_DMA)
- static inline bool dev_is_dma_coherent(struct device *dev)
- {
- 	return dev->dma_coherent;
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 645c7a2ecde8..06283d6e305b 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -29,6 +29,11 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
- config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
- 	bool
- 
-+config ARCH_HAS_NONCOHERENT_DMA
-+	def_bool ARCH_HAS_SYNC_DMA_FOR_DEVICE || \
-+		ARCH_HAS_SYNC_DMA_FOR_CPU || \
-+		ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
-+
- config ARCH_HAS_DMA_COHERENT_TO_PFN
- 	bool
- 
+Ok, fine with me:
+	Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
