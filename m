@@ -1,69 +1,45 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/rockchip: Free irqs in shutdown handler
-Date: Tue, 11 Sep 2018 11:57:36 +0100
-Message-ID: <cd621b70-ddb1-1e04-0432-db69a50df081@arm.com>
-References: <20180827105624.5593-1-heiko@sntech.de>
+From: Colin King <colin.king@canonical.com>
+Subject: [PATCH] iommu/fsl: fix spelling mistake pci_endpt_partioning -> pci_endpt_partitioning
+Date: Tue, 11 Sep 2018 13:28:32 +0100
+Message-ID: <20180911122832.32383-1-colin.king@canonical.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180827105624.5593-1-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Heiko,
+From: Colin Ian King <colin.king@canonical.com>
 
-On 27/08/18 11:56, Heiko Stuebner wrote:
-> In the iommu's shutdown handler we disable runtime-pm which could
-> result in the irq-handler running unclocked and since commit
->     3fc7c5c0cff3 ("iommu/rockchip: Handle errors returned from PM framework")
-> we warn about that fact.
-> 
-> This can cause warnings on shutdown on some Rockchip machines, so
-> free the irqs in the shutdown handler before we disable runtime-pm.
-> 
-> Reported-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-> Fixes: 3fc7c5c0cff3 ("iommu/rockchip: Handle errors returned from PM framework")
-> Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> ---
->  drivers/iommu/rockchip-iommu.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 258115b10fa9..ad3e2b97469e 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1241,6 +1241,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
->  
->  static void rk_iommu_shutdown(struct platform_device *pdev)
->  {
-> +	struct rk_iommu *iommu = platform_get_drvdata(pdev);
-> +	int i = 0, irq;
-> +
-> +	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO)
-> +		devm_free_irq(iommu->dev, irq, iommu);
-> +
->  	pm_runtime_force_suspend(&pdev->dev);
->  }
->  
-> 
+Trivial fix to spelling mistake in variable name
 
-Looks OK to me. I don't think there is a point in using devm_irq* 
-anymore in this driver, but that's a separate issue.
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iommu/fsl_pamu_domain.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Acked-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-
-	M.
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index f089136e9c3f..18970d38f698 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -916,13 +916,13 @@ static struct iommu_group *get_shared_pci_device_group(struct pci_dev *pdev)
+ static struct iommu_group *get_pci_device_group(struct pci_dev *pdev)
+ {
+ 	struct pci_controller *pci_ctl;
+-	bool pci_endpt_partioning;
++	bool pci_endpt_partitioning;
+ 	struct iommu_group *group = NULL;
+ 
+ 	pci_ctl = pci_bus_to_host(pdev->bus);
+-	pci_endpt_partioning = check_pci_ctl_endpt_part(pci_ctl);
++	pci_endpt_partitioning = check_pci_ctl_endpt_part(pci_ctl);
+ 	/* We can partition PCIe devices so assign device group to the device */
+-	if (pci_endpt_partioning) {
++	if (pci_endpt_partitioning) {
+ 		group = pci_device_group(&pdev->dev);
+ 
+ 		/*
 -- 
-Jazz is not dead. It just smells funny...
+2.17.1
