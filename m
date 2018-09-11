@@ -1,52 +1,85 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] Iommu: ipmmu-vmsa: replace spin_lock_irqsave with
- spin_lock in ISR
-Date: Tue, 11 Sep 2018 17:11:34 +0200
-Message-ID: <CAMuHMdWjKLqRPW=mUEk8LxWoSQSgw25p60PPL9WE=d12YfD-4g@mail.gmail.com>
-References: <20180911150020.53768-1-hangdianqj@163.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH 0/2] dma-mapping: introduce helper for setting dma_parms
+Date: Tue, 11 Sep 2018 18:30:48 +0200
+Message-ID: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180911150020.53768-1-hangdianqj@163.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: hangdianqj@163.com
-Cc: Joerg Roedel <joro@8bytes.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
+To: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+Cc: linux-renesas-soc@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-kernel@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>
 List-Id: iommu@lists.linux-foundation.org
 
-CC linux-renesas-soc
+Hi all,
 
-On Tue, Sep 11, 2018 at 5:01 PM jun qian <hangdianqj@163.com> wrote:
->
-> As you are already in ISR, it is unnecessary to call spin_lock_irqsave.
->
-> Signed-off-by: jun qian <hangdianqj@163.com>
-> ---
->  drivers/iommu/ipmmu-vmsa.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 22b94f8a9a04..afa23d53502c 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -569,9 +569,8 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
->         struct ipmmu_vmsa_device *mmu = dev;
->         irqreturn_t status = IRQ_NONE;
->         unsigned int i;
-> -       unsigned long flags;
->
-> -       spin_lock_irqsave(&mmu->lock, flags);
-> +       spin_lock(&mmu->lock);
->
->         /*
->          * Check interrupts for all active contexts.
-> @@ -583,7 +582,7 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
->                         status = IRQ_HANDLED;
->         }
->
-> -       spin_unlock_irqrestore(&mmu->lock, flags);
-> +       spin_unlock(&mmu->lock);
->
->         return status;
->  }
-> --
-> 2.17.1
+commit 78c47830a5cb ("dma-debug: check scatterlist segments") triggers
+for Renesas hardware I look after, so thanks for pointing out we should
+have proper dma_parms for our DMA providers.
+
+When trying to fix it, I became a bit puzzled about the life cycle of
+the pointer to dma_parms. AFAIU most drivers leave the pointer dangling
+on driver unbind. Check drivers/dma/bcm2835-dma.c, for example:
+
+	od = devm_kzalloc(&pdev->dev, sizeof(*od), GFP_KERNEL);
+	if (!od)
+		return -ENOMEM;
+
+	pdev->dev.dma_parms = &od->dma_parms;
+	dma_set_max_seg_size(&pdev->dev, 0x3FFFFFFF);
+
+And that's all about handling dma_parms. So, on unbind, the memory for
+'od' gets freed and dma_params is a dangling pointer.
+
+drivers/gpu/drm/exynos/exynos_drm_iommu.c seems to do it correctly:
+
+static inline int configure_dma_max_seg_size(struct device *dev)
+{
+        if (!dev->dma_parms)
+                dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
+        if (!dev->dma_parms)
+                return -ENOMEM;
+
+        dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
+        return 0;
+}
+
+static inline void clear_dma_max_seg_size(struct device *dev)
+{
+        kfree(dev->dma_parms);
+        dev->dma_parms = NULL;
+}
+
+But this seems error prone and quite some code to add for every DMA
+provider. So, I wondered if we couldn't have a helper for that. After
+some brainstorming, I favour a dmam_-type of function. It will ensure
+the memory gets freed and the pointer cleared on unbind. And it should
+be easy to use.
+
+I attached an RFC which I tested on a Renesas R-Car H3 SoC with the internal
+DMAC of the SD controller. A branch can be found here (still waiting for
+buildbot results):
+
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/sdhi/set_max_seg
+
+I added the companion function dmam_free_dma_parms() for completeness
+although there is no user yet. I'd be totally open to drop it until
+someone needs it.
+
+Please let me know what you think. If this is the right track, I'll be
+willing to fix the dangling pointers with it, too.
+
+Thanks and happy hacking,
+
+   Wolfram
+
+
+
+Wolfram Sang (2):
+  dma-mapping: introduce helper for setting dma_parms
+  mmc: sdhi: internal_dmac: set dma_parms
+
+ drivers/mmc/host/renesas_sdhi_internal_dmac.c |  2 +
+ include/linux/dma-mapping.h                   |  5 ++
+ kernel/dma/mapping.c                          | 50 +++++++++++++++++++
+ 3 files changed, 57 insertions(+)
+
+-- 
+2.18.0
