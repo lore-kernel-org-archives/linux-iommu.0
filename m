@@ -1,61 +1,69 @@
-From: Vladimir Murzin <vladimir.murzin@arm.com>
-Subject: Re: [PATCH 1/4] arm-nommu: don't define arch_teardown_dma_ops
-Date: Tue, 11 Sep 2018 11:23:30 +0100
-Message-ID: <8ae006ad-0aff-bab3-2c16-be1696d58b5f@arm.com>
-References: <20180827084711.23407-1-hch@lst.de>
- <20180827084711.23407-2-hch@lst.de>
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/rockchip: Free irqs in shutdown handler
+Date: Tue, 11 Sep 2018 11:57:36 +0100
+Message-ID: <cd621b70-ddb1-1e04-0432-db69a50df081@arm.com>
+References: <20180827105624.5593-1-heiko@sntech.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180827084711.23407-2-hch@lst.de>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180827105624.5593-1-heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/08/18 09:47, Christoph Hellwig wrote:
-> We can just use the default implementation.
+Hi Heiko,
+
+On 27/08/18 11:56, Heiko Stuebner wrote:
+> In the iommu's shutdown handler we disable runtime-pm which could
+> result in the irq-handler running unclocked and since commit
+>     3fc7c5c0cff3 ("iommu/rockchip: Handle errors returned from PM framework")
+> we warn about that fact.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> This can cause warnings on shutdown on some Rockchip machines, so
+> free the irqs in the shutdown handler before we disable runtime-pm.
+> 
+> Reported-by: Enric Balletbo i Serra <enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> Fixes: 3fc7c5c0cff3 ("iommu/rockchip: Handle errors returned from PM framework")
+> Signed-off-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 > ---
->  arch/arm/include/asm/dma-mapping.h | 2 ++
->  arch/arm/mm/dma-mapping-nommu.c    | 4 ----
->  2 files changed, 2 insertions(+), 4 deletions(-)
+>  drivers/iommu/rockchip-iommu.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-> index 8436f6ade57d..965b7c846ecb 100644
-> --- a/arch/arm/include/asm/dma-mapping.h
-> +++ b/arch/arm/include/asm/dma-mapping.h
-> @@ -100,8 +100,10 @@ static inline unsigned long dma_max_pfn(struct device *dev)
->  extern void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  			       const struct iommu_ops *iommu, bool coherent);
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 258115b10fa9..ad3e2b97469e 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1241,6 +1241,12 @@ static int rk_iommu_probe(struct platform_device *pdev)
 >  
-> +#ifdef CONFIG_MMU
->  #define arch_teardown_dma_ops arch_teardown_dma_ops
->  extern void arch_teardown_dma_ops(struct device *dev);
-> +#endif
->  
->  /* do not use this function in a driver */
->  static inline bool is_device_dma_coherent(struct device *dev)
-> diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
-> index f448a0663b10..aa7aba302e76 100644
-> --- a/arch/arm/mm/dma-mapping-nommu.c
-> +++ b/arch/arm/mm/dma-mapping-nommu.c
-> @@ -237,7 +237,3 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  
->  	set_dma_ops(dev, dma_ops);
+>  static void rk_iommu_shutdown(struct platform_device *pdev)
+>  {
+> +	struct rk_iommu *iommu = platform_get_drvdata(pdev);
+> +	int i = 0, irq;
+> +
+> +	while ((irq = platform_get_irq(pdev, i++)) != -ENXIO)
+> +		devm_free_irq(iommu->dev, irq, iommu);
+> +
+>  	pm_runtime_force_suspend(&pdev->dev);
 >  }
-> -
-> -void arch_teardown_dma_ops(struct device *dev)
-> -{
-> -}
+>  
 > 
 
-FWIW:
+Looks OK to me. I don't think there is a point in using devm_irq* 
+anymore in this driver, but that's a separate issue.
 
-Reviewed-by: Vladimir Murzin <vladimir.murzin@arm.com>
+Acked-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 
-Thanks
-Vladimir
+	M.
+-- 
+Jazz is not dead. It just smells funny...
