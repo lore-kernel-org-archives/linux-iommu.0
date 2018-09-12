@@ -1,94 +1,101 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [RFC PATCH 0/2] dma-mapping: introduce helper for setting
- dma_parms
-Date: Wed, 12 Sep 2018 01:39:33 +0200
-Message-ID: <20180911233933.GA1402@kunai>
-References: <20180911163050.28072-1-wsa+renesas@sang-engineering.com>
- <a9478a05-5908-e693-7eeb-3673b2facda7@arm.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lrZ03NoBR/3+SXJZ"
+From: Sohil Mehta <sohil.mehta@intel.com>
+Subject: [PATCH v8 0/6] Add Intel IOMMU debugfs support
+Date: Tue, 11 Sep 2018 17:11:35 -0700
+Message-ID: <20180912001141.64025-1-sohil.mehta@intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <a9478a05-5908-e693-7eeb-3673b2facda7@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Ashok Raj <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 
---lrZ03NoBR/3+SXJZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi All,
 
-Hi Robin,
+This series aims to add debugfs support for Intel IOMMU. It exposes IOMMU
+registers, internal context and dumps individual table entries to help debug
+Intel IOMMUs.
 
-> > 	od =3D devm_kzalloc(&pdev->dev, sizeof(*od), GFP_KERNEL);
-> > 	if (!od)
-> > 		return -ENOMEM;
-> >=20
-> > 	pdev->dev.dma_parms =3D &od->dma_parms;
-> > 	dma_set_max_seg_size(&pdev->dev, 0x3FFFFFFF);
-> >=20
-> > And that's all about handling dma_parms. So, on unbind, the memory for
-> > 'od' gets freed and dma_params is a dangling pointer.
->=20
-> That's the typical case - the dma_parms structure is simply embedded in s=
-ome
-> other private data which tends to have the appropriate lifetime anyway. I
-> can't see that the dangling pointer is an issue when it's set
-> unconditionally on probe and valid until remove, because anyone
-> dereferencing dev->dma_parms when dev has no driver bound is doing someth=
-ing
-> very very wrong anyway. I suppose we could zero it in
-> __device_release_driver() for good measure though - shame we've found
-> something dma_deconfigure() could have been useful for just after we kill=
-ed
-> it ;)
+Patches 1-3 do the ground work for the following patches by reorganizing
+some Intel IOMMU data structures, creating a new config option -
+INTEL_IOMMU_DEBUGFS and adding an Intel IOMMU debugfs directory. The following
+patches add debugfs support for IOMMU resigter contents, Interrupt remapping
+and context internals in that order. The information can be accessed in sysfs
+at '/sys/kernel/debug/iommu/intel/'.
 
-I see. Yes, I was aware that the misuse of this dangling pointer is
-somewhat academical. Yet, it was easy to fix and clearing this pointer
-is good programming practice, I'd say. I agree that clearing the pointer
-in __device_release_driver is a good option, too, if documentation about
-its expected life cycle (=3D=3D get's cleared on unbind) is clear about
-that. Probably that life cycle confusion led to the more complicated
-code in the exynos_drm driver. I will look into all of that tomorrow.
+This series is based on the new VT-d 3.0 specification [1]. The scalable mode
+and PASID table debugfs patches are not part of this series. They would be
+submitted later once the IOMMU driver patches for the same are accepted and
+merged upstream.
 
-> Note that ultimately we'd like to have a single structure to hold all the
-> masks and other gubbins (per the very original intent of dma_parms), so
+Regards,
+Sohil
 
-I was wondering about that, yes.
+[1] https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf
 
-> there's a fair chance of this getting fundamentally rejigged at some point
-> anyway.
+Changes since v7:
+ - Move to the common iommu directory approach suggested by Joerg
+ - Remove ECS debugfs support that has been deprecated with the new VT-d spec
+ - Change filename to intel-iommu-debugfs.c
+ - Remove the pasid table debugfs patch
+ - Add MTRR and Virtual command register support
+ - Use locks to protect register and table access
+ - Improve seq_printf formatting
+ - Simplify and split the patches differently
 
-Makes sense. Yet, as this change is gonna be small, I think it's still
-nice to have.
+Changes since v6:
+ - Split patch 1/5 and 2/5 differently
+ - Simplify and improve code formatting
+ - Use macro for register set definitions
+ - Fix compiler warning for readq
+ - Add Co-Developed-by tag to commit messages
 
-Thanks for the input!
+Changes since v5:
+ - Change the order of includes to an alphabetical order
+ - Change seq_printf and seq_puts formatting
 
-   Wolfram
+Changes since v4:
+ - Change to a SPDX license tag
+ - Fix seq_printf formatting and remove leading '\n's
+
+Changes since v3:
+ - Remove an unused function parameter from some of the functions
+ - Fix checkpatch.pl warnings
+ - Remove error reporting for debugfs_create_file functions
+ - Fix unnecessary reprogramming of the context entries
+ - Simplify and merge the show context and extended context patch into one
+ - Remove redundant IOMMU null check under for_each_active_iommu
+ - Update the commit title to be consistent
+
+Changes since v2:
+ - Added a macro for seq file operations based on recommendation by Andy 
+   Shevchenko. The marco can be moved to seq_file.h at a future point
+ - Changed the debugfs file names to more relevant ones
+ - Added information for MTRR registers in the regset file
+
+Changes since v1:
+ - Fixed seq_printf formatting
+ - Handled the case when Interrupt remapping is not enabled
 
 
---lrZ03NoBR/3+SXJZ
-Content-Type: application/pgp-signature; name="signature.asc"
+Gayatri Kammela (1):
+  iommu/vt-d: Add debugfs support to show register contents
 
------BEGIN PGP SIGNATURE-----
+Sohil Mehta (5):
+  iommu/vt-d: Relocate struct/function declarations to its header files
+  iommu/vt-d: Update register definitions to VT-d 3.0 specification
+  iommu/vt-d: Enable base Intel IOMMU debugfs support
+  iommu/vt-d: Add debugfs support for Interrupt remapping
+  iommu/vt-d: Add debugfs support to show context internals
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAluYUjAACgkQFA3kzBSg
-KbYMPg//Zfi+Hz+7x50SPmdAwCyPvJ+GIPolfb9bnY4HJd2+bTBp4dHh8c0NDkxT
-HzIqv8AEjMuO+WqsnBqQGHxHD0tWif5t2JHgcrxplRGSh/Ten/PcFtb0tngLLxu+
-NaYBEvLW2TjXqoyoNuJ8NXXo3p9+Y+anN5iTnN1u+hLPezNlf+ksQZGJbNcWpsnU
-ZQr3Of/2wmsOtamRhJvdZ0N8ywqXZrxGqPaQzrEYnY0kX4CcVWfLC0GjOQ5qq60+
-acWYcPoXp0qBAV1KNGaIaqyCdPxwG6D6wafbh47wF9YdlZ7qXe7nrkXwbBEg6teE
-cmf0norWDL1pqriwtXO9s/PBY7HMbzfSpSQtrPzHlgaVIaaOqDfWMepi1UaAjiKJ
-Y/EO9AC+QdT/CYOhV4nMWqGkUacjmgxFmTQkiHaUVvbYEk9SWl3hxjT2Z/U3ah5b
-QJZu5KFvXpZLjEOawHhHhiLzw4DA7Uuq5rmG8UqRisYhtSOGJv+LmOuiICSI0SQL
-rtEIEl6HNWtssBRbwRY49fmsFZ8cvcZn+dtk28bX4PIItA82OtPY1/b+uwlMiVdp
-PpPPtLMcfpb7klzmVfTlziw2k9I/NCtrrx+NrDILL2PLAf39TQb6aHmobAKk9Y35
-C0f/YanJSh/ELEjRxpRZp0dAHDrZ28DdKcabrLtnNSVYbIOlFEs=
-=5tYY
------END PGP SIGNATURE-----
+ arch/x86/include/asm/irq_remapping.h |   2 +
+ drivers/iommu/Kconfig                |  13 ++
+ drivers/iommu/Makefile               |   1 +
+ drivers/iommu/intel-iommu-debugfs.c  | 314 +++++++++++++++++++++++++++
+ drivers/iommu/intel-iommu.c          |  32 +--
+ drivers/iommu/intel_irq_remapping.c  |   2 +-
+ include/linux/intel-iommu.h          |  72 ++++++
+ 7 files changed, 407 insertions(+), 29 deletions(-)
+ create mode 100644 drivers/iommu/intel-iommu-debugfs.c
 
---lrZ03NoBR/3+SXJZ--
+-- 
+2.18.0
