@@ -1,89 +1,203 @@
-From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v8 2/6] iommu/vt-d: Update register definitions to VT-d 3.0
-	specification
-Date: Tue, 11 Sep 2018 17:11:37 -0700
-Message-ID: <20180912001141.64025-3-sohil.mehta@intel.com>
+From: Sohil Mehta <sohil.mehta@intel.com>
+Subject: [PATCH v8 4/6] iommu/vt-d: Add debugfs support to show register contents
+Date: Tue, 11 Sep 2018 17:11:39 -0700
+Message-ID: <20180912001141.64025-5-sohil.mehta@intel.com>
 References: <20180912001141.64025-1-sohil.mehta@intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180912001141.64025-1-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180912001141.64025-1-sohil.mehta@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Ashok Raj <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add new register definitions added in the VT-d 3.0 specification. Also
-include registers that were missing previously.
+From: Gayatri Kammela <gayatri.kammela@intel.com>
 
-Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Add Intel IOMMU debugfs extension to dump all the register contents for
+each IOMMU device.
+
+Example:
+root@OTC-KBLH-01:~# cat /sys/kernel/debug/iommu/intel/iommu_regset
+IOMMU: dmar0 Register Base Address: fed90000
+Name            Offset          Contents
+VER             0x00            0x0000000000000010
+CAP             0x08            0x01c0000c40660462
+ECAP            0x10            0x0000000000f0101a
+GCMD            0x18            0x0000000000000000
+GSTS            0x1c            0x00000000c7000000
+RTADDR          0x20            0x00000004071d3800
+CCMD            0x28            0x0800000000000000
+FSTS            0x34            0x0000000000000000
+FECTL           0x38            0x0000000000000000
+FEDATA          0x3c            0xfee0100400004021
+
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Co-Developed-by: Sohil Mehta <sohil.mehta@intel.com>
+Signed-off-by: Sohil Mehta <sohil.mehta@intel.com>
 ---
 
-v8: Simplify and split the patches differently
+v8: Add MTRR and Virtual command register support
+    Use the iommu register lock to protect register access
 
- include/linux/intel-iommu.h | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+v7: Use macro for register set definitions
+    Fix compiler warning for readq with 32bit architecture
+    Remove leading '\n'
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index b7cf32e8ae1f..3bdb9aa198af 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -72,6 +72,42 @@
- #define	DMAR_PEDATA_REG	0xe4	/* Page request event interrupt data register */
- #define	DMAR_PEADDR_REG	0xe8	/* Page request event interrupt addr register */
- #define	DMAR_PEUADDR_REG 0xec	/* Page request event Upper address register */
-+#define DMAR_MTRRCAP_REG 0x100	/* MTRR capability register */
-+#define DMAR_MTRRDEF_REG 0x108	/* MTRR default type register */
-+#define DMAR_MTRR_FIX64K_00000_REG 0x120 /* MTRR Fixed range registers */
-+#define DMAR_MTRR_FIX16K_80000_REG 0x128
-+#define DMAR_MTRR_FIX16K_A0000_REG 0x130
-+#define DMAR_MTRR_FIX4K_C0000_REG 0x138
-+#define DMAR_MTRR_FIX4K_C8000_REG 0x140
-+#define DMAR_MTRR_FIX4K_D0000_REG 0x148
-+#define DMAR_MTRR_FIX4K_D8000_REG 0x150
-+#define DMAR_MTRR_FIX4K_E0000_REG 0x158
-+#define DMAR_MTRR_FIX4K_E8000_REG 0x160
-+#define DMAR_MTRR_FIX4K_F0000_REG 0x168
-+#define DMAR_MTRR_FIX4K_F8000_REG 0x170
-+#define DMAR_MTRR_PHYSBASE0_REG 0x180 /* MTRR Variable range registers */
-+#define DMAR_MTRR_PHYSMASK0_REG 0x188
-+#define DMAR_MTRR_PHYSBASE1_REG 0x190
-+#define DMAR_MTRR_PHYSMASK1_REG 0x198
-+#define DMAR_MTRR_PHYSBASE2_REG 0x1a0
-+#define DMAR_MTRR_PHYSMASK2_REG 0x1a8
-+#define DMAR_MTRR_PHYSBASE3_REG 0x1b0
-+#define DMAR_MTRR_PHYSMASK3_REG 0x1b8
-+#define DMAR_MTRR_PHYSBASE4_REG 0x1c0
-+#define DMAR_MTRR_PHYSMASK4_REG 0x1c8
-+#define DMAR_MTRR_PHYSBASE5_REG 0x1d0
-+#define DMAR_MTRR_PHYSMASK5_REG 0x1d8
-+#define DMAR_MTRR_PHYSBASE6_REG 0x1e0
-+#define DMAR_MTRR_PHYSMASK6_REG 0x1e8
-+#define DMAR_MTRR_PHYSBASE7_REG 0x1f0
-+#define DMAR_MTRR_PHYSMASK7_REG 0x1f8
-+#define DMAR_MTRR_PHYSBASE8_REG 0x200
-+#define DMAR_MTRR_PHYSMASK8_REG 0x208
-+#define DMAR_MTRR_PHYSBASE9_REG 0x210
-+#define DMAR_MTRR_PHYSMASK9_REG 0x218
-+#define DMAR_VCCAP_REG		0xe00 /* Virtual command capability register */
-+#define DMAR_VCMD_REG		0xe10 /* Virtual command register */
-+#define DMAR_VCRSP_REG		0xe20 /* Virtual command response register */
+v6: No change
+
+v5: No change
+
+v4: Fix checkpatch.pl warnings
+    Remove error reporting for debugfs_create_file function
+    Remove redundant IOMMU null check under for_each_active_iommu
+
+v3: Use a macro for seq file operations 
+    Change the intel_iommu_regset file name to iommu_regset
+    Add information for MTRR registers
+
+v2: Fix seq_printf formatting
+
+ drivers/iommu/intel-iommu-debugfs.c | 123 +++++++++++++++++++++++++++-
+ 1 file changed, 122 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
+index 33e0a6c12d92..57af2f774312 100644
+--- a/drivers/iommu/intel-iommu-debugfs.c
++++ b/drivers/iommu/intel-iommu-debugfs.c
+@@ -14,7 +14,128 @@
  
- #define OFFSET_STRIDE		(9)
+ #include <asm/irq_remapping.h>
  
++struct iommu_regset {
++	int offset;
++	const char *regs;
++};
++
++#define IOMMU_REGSET_ENTRY(_reg_)					\
++	{ DMAR_##_reg_##_REG, __stringify(_reg_) }
++static const struct iommu_regset iommu_regs[] = {
++	IOMMU_REGSET_ENTRY(VER),
++	IOMMU_REGSET_ENTRY(CAP),
++	IOMMU_REGSET_ENTRY(ECAP),
++	IOMMU_REGSET_ENTRY(GCMD),
++	IOMMU_REGSET_ENTRY(GSTS),
++	IOMMU_REGSET_ENTRY(RTADDR),
++	IOMMU_REGSET_ENTRY(CCMD),
++	IOMMU_REGSET_ENTRY(FSTS),
++	IOMMU_REGSET_ENTRY(FECTL),
++	IOMMU_REGSET_ENTRY(FEDATA),
++	IOMMU_REGSET_ENTRY(FEADDR),
++	IOMMU_REGSET_ENTRY(FEUADDR),
++	IOMMU_REGSET_ENTRY(AFLOG),
++	IOMMU_REGSET_ENTRY(PMEN),
++	IOMMU_REGSET_ENTRY(PLMBASE),
++	IOMMU_REGSET_ENTRY(PLMLIMIT),
++	IOMMU_REGSET_ENTRY(PHMBASE),
++	IOMMU_REGSET_ENTRY(PHMLIMIT),
++	IOMMU_REGSET_ENTRY(IQH),
++	IOMMU_REGSET_ENTRY(IQT),
++	IOMMU_REGSET_ENTRY(IQA),
++	IOMMU_REGSET_ENTRY(ICS),
++	IOMMU_REGSET_ENTRY(IRTA),
++	IOMMU_REGSET_ENTRY(PQH),
++	IOMMU_REGSET_ENTRY(PQT),
++	IOMMU_REGSET_ENTRY(PQA),
++	IOMMU_REGSET_ENTRY(PRS),
++	IOMMU_REGSET_ENTRY(PECTL),
++	IOMMU_REGSET_ENTRY(PEDATA),
++	IOMMU_REGSET_ENTRY(PEADDR),
++	IOMMU_REGSET_ENTRY(PEUADDR),
++	IOMMU_REGSET_ENTRY(MTRRCAP),
++	IOMMU_REGSET_ENTRY(MTRRDEF),
++	IOMMU_REGSET_ENTRY(MTRR_FIX64K_00000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX16K_80000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX16K_A0000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_C0000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_C8000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_D0000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_D8000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_E0000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_E8000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_F0000),
++	IOMMU_REGSET_ENTRY(MTRR_FIX4K_F8000),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE0),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK0),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE1),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK1),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE2),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK2),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE3),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK3),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE4),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK4),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE5),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK5),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE6),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK6),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE7),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK7),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE8),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK8),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSBASE9),
++	IOMMU_REGSET_ENTRY(MTRR_PHYSMASK9),
++	IOMMU_REGSET_ENTRY(VCCAP),
++	IOMMU_REGSET_ENTRY(VCMD),
++	IOMMU_REGSET_ENTRY(VCRSP),
++};
++
++static int iommu_regset_show(struct seq_file *m, void *unused)
++{
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++	unsigned long flag;
++	int i, ret = 0;
++	u64 value;
++
++	rcu_read_lock();
++	for_each_active_iommu(iommu, drhd) {
++		if (!drhd->reg_base_addr) {
++			seq_puts(m, "IOMMU: Invalid base address\n");
++			ret = -EINVAL;
++			goto out;
++		}
++
++		seq_printf(m, "IOMMU: %s Register Base Address: %llx\n",
++			   iommu->name, drhd->reg_base_addr);
++		seq_puts(m, "Name\t\t\tOffset\t\tContents\n");
++		/*
++		 * Publish the contents of the 64-bit hardware registers
++		 * by adding the offset to the pointer (virtual address).
++		 */
++		raw_spin_lock_irqsave(&iommu->register_lock, flag);
++		for (i = 0 ; i < ARRAY_SIZE(iommu_regs); i++) {
++			value = dmar_readq(iommu->reg + iommu_regs[i].offset);
++			seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
++				   iommu_regs[i].regs, iommu_regs[i].offset,
++				   value);
++		}
++		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
++		seq_putc(m, '\n');
++	}
++out:
++	rcu_read_unlock();
++
++	return ret;
++}
++DEFINE_SHOW_ATTRIBUTE(iommu_regset);
++
+ void __init intel_iommu_debugfs_init(void)
+ {
+-	debugfs_create_dir("intel", iommu_debugfs_dir);
++	struct dentry *intel_iommu_debug = debugfs_create_dir("intel",
++						iommu_debugfs_dir);
++
++	debugfs_create_file("iommu_regset", 0444, intel_iommu_debug, NULL,
++			    &iommu_regset_fops);
+ }
 -- 
 2.18.0
