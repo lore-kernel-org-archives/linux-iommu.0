@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 0/3] iommu: Avoid DMA ops domain refcount contention
-Date: Wed, 12 Sep 2018 16:24:11 +0100
-Message-ID: <cover.1536764440.git.robin.murphy@arm.com>
+Subject: [PATCH v2 1/3] iommu: Add fast hook for getting DMA domains
+Date: Wed, 12 Sep 2018 16:24:12 +0100
+Message-ID: <0bf530fe4ae907facbb83080b07e06aeb9f6273f.1536764440.git.robin.murphy@arm.com>
+References: <cover.1536764440.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cover.1536764440.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,37 +21,59 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.o
 Cc: guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-John raised the issue[1] that we have some unnecessary refcount contention
-in the DMA ops path which shows scalability problems now that we have more
-real high-performance hardware using iommu-dma. The x86 IOMMU drivers are
-sidestepping this by stashing domain references in archdata, but since
-that's not very nice for architecture-agnostic code, I think it's time to
-look at a generic API-level solution.
+While iommu_get_domain_for_dev() is the robust way for arbitrary IOMMU
+API callers to retrieve the domain pointer, for DMA ops domains it
+doesn't scale well for large systems and multi-queue devices, since the
+momentary refcount adjustment will lead to exclusive cacheline contention
+when multiple CPUs are operating in parallel on different mappings for
+the same device.
 
-These are a couple of quick patches based on the idea I had back when
-first implementing iommu-dma, but didn't have any way to justify at the
-time. However, the reports of 10-25% better networking performance on v1
-suggest that it's very worthwhile (and far more significant than I ever
-would have guessed).
+In the case of DMA ops domains, however, this refcounting is actually
+unnecessary, since they already imply that the group exists and is
+managed by platform code and IOMMU internals (by virtue of
+iommu_group_get_for_dev()) such that a reference will already be held
+for the lifetime of the device. Thus we can avoid the bottleneck by
+providing a fast lookup specifically for the DMA code to retrieve the
+default domain it already knows it has set up - a simple read-only
+dereference plays much nicer with cache-coherency protocols.
 
-As far as merging goes, I don't mind at all whether this goes via IOMMU,
-or via dma-mapping provided Joerg's happy to ack it.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/iommu.c | 9 +++++++++
+ include/linux/iommu.h | 1 +
+ 2 files changed, 10 insertions(+)
 
-Robin.
-
-
-[1] https://lists.linuxfoundation.org/pipermail/iommu/2018-August/029303.html
-
-Robin Murphy (3):
-  iommu: Add fast hook for getting DMA domains
-  iommu/dma: Use fast DMA domain lookup
-  arm64/dma-mapping: Mildly optimise non-coherent IOMMU ops
-
- arch/arm64/mm/dma-mapping.c | 10 +++++-----
- drivers/iommu/dma-iommu.c   | 23 ++++++++++++-----------
- drivers/iommu/iommu.c       |  9 +++++++++
- include/linux/iommu.h       |  1 +
- 4 files changed, 27 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8c15c5980299..9d70344204fe 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1415,6 +1415,15 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+ 
++/*
++ * For IOMMU_DOMAIN_DMA implementations which already provide their own
++ * guarantees that the group and its default domain are valid and correct.
++ */
++struct iommu_domain *iommu_get_dma_domain(struct device *dev)
++{
++	return dev->iommu_group->default_domain;
++}
++
+ /*
+  * IOMMU groups are really the natrual working unit of the IOMMU, but
+  * the IOMMU API works on domains and devices.  Bridge that gap by
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 87994c265bf5..c783648d4060 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -293,6 +293,7 @@ extern int iommu_attach_device(struct iommu_domain *domain,
+ extern void iommu_detach_device(struct iommu_domain *domain,
+ 				struct device *dev);
+ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
++extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		     phys_addr_t paddr, size_t size, int prot);
+ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 -- 
 2.19.0.dirty
