@@ -1,45 +1,100 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v5 0/5] add non-strict mode support for arm-smmu-v3
-Date: Wed, 12 Sep 2018 18:12:57 +0100
-Message-ID: <d0775377-206f-ae3e-051d-3b829b499471@arm.com>
-References: <1534296510-12888-1-git-send-email-thunder.leizhen@huawei.com>
- <20180912165700.GC16071@arm.com>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: [PATCH] vfio/pci: Some buggy virtual functions incorrectly
+ report 1 for intx.
+Date: Wed, 12 Sep 2018 10:46:19 -0700
+Message-ID: <20180912174618.GA19551@araj-mobl1.jf.intel.com>
+References: <1533843426-79170-1-git-send-email-ashok.raj@intel.com>
+ <20180809134417.50de7fe7@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180912165700.GC16071@arm.com>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20180809134417.50de7fe7@t450s.home>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Libin <huawei.libin@huawei.com>, John Garry <john.garry@huawei.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <helgaas@kernel.org>, Gage Eads <gage.eads@intel.com>, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/09/18 17:57, Will Deacon wrote:
-> Hi all,
+On Thu, Aug 09, 2018 at 01:44:17PM -0600, Alex Williamson wrote:
+> On Thu,  9 Aug 2018 12:37:06 -0700
+> Ashok Raj <ashok.raj@intel.com> wrote:
 > 
-> On Wed, Aug 15, 2018 at 09:28:25AM +0800, Zhen Lei wrote:
->> v4 -> v5:
->> 1. change the type of global variable and struct member named "non_strict" from
->>     "int" to "bool".
->> 2. cancel the unnecessary parameter "strict" of __arm_lpae_unmap which was added
->>     in v4.
->> 3. change boot option "arm_iommu" to "iommu.non_strict".
->> 4. convert __iommu_dma_unmap to use iommu_unmap_fast()/iommu_tlb_sync(), because
->>     non-leaf unmaps still need to be synchronous.
->>
->> Thanks for Robin's review comments.
+> > PCI_INTERRUPT_PIN should always read  0 for SRIOV Virtual Functions.
+> > 
+> > Some SRIOV devices have some bugs in RTL and VF's end up reading 1
+> > instead of 0 for the PIN.
 > 
-> Since this is 90% of the way there now, I suggest Robin picks up what's here
-> and incorporates his remaining review comments directly (especially since it
-> sounded like Zhen Lei hasn't got much free time lately). With that, I can
-> queue this lot via my smmu branch, which already has some stuff queued
-> for SMMUv3 and io-pgtable.
+> Hi Ashok,
 > 
-> Please shout if you have any objections, but I'm keen for this not to
-> languish on the lists given how close it is!
+> One question, can we identify which VFs are known to have this issue so
+> that users (and downstreams) can know how to prioritize this patch?
 
-Sure, having got this far I'd like to see it get done too. I'll make 
-some time and give it a go.
+Hi Alex
 
-Robin.
+Sorry it took some time to hunt this down. 
+
+The offending VF has a device ID : 0x270C
+The corresponding PF has a device ID: 0x270B.
+
+> Thanks,
+> 
+> Alex
+> 
+> > Since this is a spec required value, rather than having a device specific
+> > quirk, we could fix it permanently in vfio.
+> > 
+> > Reworked suggestions from Alex https://lkml.org/lkml/2018/7/16/1052
+> > 
+> > Reported-by: Gage Eads <gage.eads@intel.com>
+> > Tested-by: Gage Eads <gage.eads@intel.com>
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > Cc: kvm@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+> > Cc: iommu@lists.linux-foundation.org
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Bjorn Helgaas <helgaas@kernel.org>
+> > Cc: Gage Eads <gage.eads@intel.com>
+> > ---
+> >  drivers/vfio/pci/vfio_pci.c        | 12 +++++++++---
+> >  drivers/vfio/pci/vfio_pci_config.c |  3 ++-
+> >  2 files changed, 11 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+> > index b423a30..32943dd 100644
+> > --- a/drivers/vfio/pci/vfio_pci.c
+> > +++ b/drivers/vfio/pci/vfio_pci.c
+> > @@ -433,10 +433,16 @@ static int vfio_pci_get_irq_count(struct vfio_pci_device *vdev, int irq_type)
+> >  {
+> >  	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
+> >  		u8 pin;
+> > -		pci_read_config_byte(vdev->pdev, PCI_INTERRUPT_PIN, &pin);
+> > -		if (IS_ENABLED(CONFIG_VFIO_PCI_INTX) && !vdev->nointx && pin)
+> > -			return 1;
+> > +		/*
+> > +		 * INTx must be 0 for all VF's. Enforce that for all
+> > +		 * VF's since this is a spec requirement.
+> > +		 */
+> > +		if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx ||
+> > +			vdev->pdev->is_virtfn)
+> > +			return 0;
+> >  
+> > +		pci_read_config_byte(vdev->pdev, PCI_INTERRUPT_PIN, &pin);
+> > +		return (pin ? 1 : 0);
+> >  	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX) {
+> >  		u8 pos;
+> >  		u16 flags;
+> > diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> > index 115a36f..e36b7c3 100644
+> > --- a/drivers/vfio/pci/vfio_pci_config.c
+> > +++ b/drivers/vfio/pci/vfio_pci_config.c
+> > @@ -1676,7 +1676,8 @@ int vfio_config_init(struct vfio_pci_device *vdev)
+> >  		*(__le16 *)&vconfig[PCI_DEVICE_ID] = cpu_to_le16(pdev->device);
+> >  	}
+> >  
+> > -	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx)
+> > +	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx ||
+> > +		pdev->is_virtfn)
+> >  		vconfig[PCI_INTERRUPT_PIN] = 0;
+> >  
+> >  	ret = vfio_cap_init(vdev);
+> 
