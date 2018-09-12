@@ -1,101 +1,197 @@
-From: Sohil Mehta <sohil.mehta@intel.com>
-Subject: [PATCH v8 0/6] Add Intel IOMMU debugfs support
-Date: Tue, 11 Sep 2018 17:11:35 -0700
-Message-ID: <20180912001141.64025-1-sohil.mehta@intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Ashok Raj <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Gayatri Kammela <gayatri.kammela@intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Fenghua Yu <fenghua.yu@intel.com>
+From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v8 1/6] iommu/vt-d: Relocate struct/function declarations to
+	its header files
+Date: Tue, 11 Sep 2018 17:11:36 -0700
+Message-ID: <20180912001141.64025-2-sohil.mehta@intel.com>
+References: <20180912001141.64025-1-sohil.mehta@intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180912001141.64025-1-sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+To reuse the static functions and the struct declarations, move them to
+corresponding header files and export the needed functions.
 
-Hi All,
+Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Gayatri Kammela <gayatri.kammela-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
 
-This series aims to add debugfs support for Intel IOMMU. It exposes IOMMU
-registers, internal context and dumps individual table entries to help debug
-Intel IOMMUs.
+v8: Remove pasid table related changes
+    Add Interrupt remapping related changes
+    Remove redundant extern type from functions
 
-Patches 1-3 do the ground work for the following patches by reorganizing
-some Intel IOMMU data structures, creating a new config option -
-INTEL_IOMMU_DEBUGFS and adding an Intel IOMMU debugfs directory. The following
-patches add debugfs support for IOMMU resigter contents, Interrupt remapping
-and context internals in that order. The information can be accessed in sysfs
-at '/sys/kernel/debug/iommu/intel/'.
+v7: Split patch 1/5 and 2/5 differently
+    Update the commit message
 
-This series is based on the new VT-d 3.0 specification [1]. The scalable mode
-and PASID table debugfs patches are not part of this series. They would be
-submitted later once the IOMMU driver patches for the same are accepted and
-merged upstream.
+v6: No change
 
-Regards,
-Sohil
+v5: No change
 
-[1] https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf
+v4: No change
 
-Changes since v7:
- - Move to the common iommu directory approach suggested by Joerg
- - Remove ECS debugfs support that has been deprecated with the new VT-d spec
- - Change filename to intel-iommu-debugfs.c
- - Remove the pasid table debugfs patch
- - Add MTRR and Virtual command register support
- - Use locks to protect register and table access
- - Improve seq_printf formatting
- - Simplify and split the patches differently
+v3: No change
 
-Changes since v6:
- - Split patch 1/5 and 2/5 differently
- - Simplify and improve code formatting
- - Use macro for register set definitions
- - Fix compiler warning for readq
- - Add Co-Developed-by tag to commit messages
+v2: No change
 
-Changes since v5:
- - Change the order of includes to an alphabetical order
- - Change seq_printf and seq_puts formatting
+ arch/x86/include/asm/irq_remapping.h |  2 ++
+ drivers/iommu/intel-iommu.c          | 31 +++-------------------------
+ drivers/iommu/intel_irq_remapping.c  |  2 +-
+ include/linux/intel-iommu.h          | 30 +++++++++++++++++++++++++++
+ 4 files changed, 36 insertions(+), 29 deletions(-)
 
-Changes since v4:
- - Change to a SPDX license tag
- - Fix seq_printf formatting and remove leading '\n's
-
-Changes since v3:
- - Remove an unused function parameter from some of the functions
- - Fix checkpatch.pl warnings
- - Remove error reporting for debugfs_create_file functions
- - Fix unnecessary reprogramming of the context entries
- - Simplify and merge the show context and extended context patch into one
- - Remove redundant IOMMU null check under for_each_active_iommu
- - Update the commit title to be consistent
-
-Changes since v2:
- - Added a macro for seq file operations based on recommendation by Andy 
-   Shevchenko. The marco can be moved to seq_file.h at a future point
- - Changed the debugfs file names to more relevant ones
- - Added information for MTRR registers in the regset file
-
-Changes since v1:
- - Fixed seq_printf formatting
- - Handled the case when Interrupt remapping is not enabled
-
-
-Gayatri Kammela (1):
-  iommu/vt-d: Add debugfs support to show register contents
-
-Sohil Mehta (5):
-  iommu/vt-d: Relocate struct/function declarations to its header files
-  iommu/vt-d: Update register definitions to VT-d 3.0 specification
-  iommu/vt-d: Enable base Intel IOMMU debugfs support
-  iommu/vt-d: Add debugfs support for Interrupt remapping
-  iommu/vt-d: Add debugfs support to show context internals
-
- arch/x86/include/asm/irq_remapping.h |   2 +
- drivers/iommu/Kconfig                |  13 ++
- drivers/iommu/Makefile               |   1 +
- drivers/iommu/intel-iommu-debugfs.c  | 314 +++++++++++++++++++++++++++
- drivers/iommu/intel-iommu.c          |  32 +--
- drivers/iommu/intel_irq_remapping.c  |   2 +-
- include/linux/intel-iommu.h          |  72 ++++++
- 7 files changed, 407 insertions(+), 29 deletions(-)
- create mode 100644 drivers/iommu/intel-iommu-debugfs.c
-
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 5f26962eff42..67ed72f31cc2 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -45,6 +45,8 @@ struct vcpu_data {
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 
++extern raw_spinlock_t irq_2_ir_lock;
++
+ extern bool irq_remapping_cap(enum irq_remap_cap cap);
+ extern void set_irq_remapping_broken(void);
+ extern int irq_remapping_prepare(void);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 5f3f10cf9d9d..b5868c757995 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -185,16 +185,6 @@ static int rwbf_quirk;
+ static int force_on = 0;
+ int intel_iommu_tboot_noforce;
+ 
+-/*
+- * 0: Present
+- * 1-11: Reserved
+- * 12-63: Context Ptr (12 - (haw-1))
+- * 64-127: Reserved
+- */
+-struct root_entry {
+-	u64	lo;
+-	u64	hi;
+-};
+ #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+ 
+ /*
+@@ -220,21 +210,6 @@ static phys_addr_t root_entry_uctp(struct root_entry *re)
+ 
+ 	return re->hi & VTD_PAGE_MASK;
+ }
+-/*
+- * low 64 bits:
+- * 0: present
+- * 1: fault processing disable
+- * 2-3: translation type
+- * 12-63: address space root
+- * high 64 bits:
+- * 0-2: address width
+- * 3-6: aval
+- * 8-23: domain id
+- */
+-struct context_entry {
+-	u64 lo;
+-	u64 hi;
+-};
+ 
+ static inline void context_clear_pasid_enable(struct context_entry *context)
+ {
+@@ -261,7 +236,7 @@ static inline bool __context_present(struct context_entry *context)
+ 	return (context->lo & 1);
+ }
+ 
+-static inline bool context_present(struct context_entry *context)
++bool context_present(struct context_entry *context)
+ {
+ 	return context_pasid_enabled(context) ?
+ 	     __context_present(context) :
+@@ -788,8 +763,8 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ 	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
+ }
+ 
+-static inline struct context_entry *iommu_context_addr(struct intel_iommu *iommu,
+-						       u8 bus, u8 devfn, int alloc)
++struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
++					 u8 devfn, int alloc)
+ {
+ 	struct root_entry *root = &iommu->root_entry[bus];
+ 	struct context_entry *context;
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index 967450bd421a..c2d6c11431de 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -76,7 +76,7 @@ static struct hpet_scope ir_hpet[MAX_HPET_TBS];
+  * in single-threaded environment with interrupt disabled, so no need to tabke
+  * the dmar_global_lock.
+  */
+-static DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
++DEFINE_RAW_SPINLOCK(irq_2_ir_lock);
+ static const struct irq_domain_ops intel_ir_domain_ops;
+ 
+ static void iommu_disable_irq_remapping(struct intel_iommu *iommu);
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 28004d74ae04..b7cf32e8ae1f 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -389,6 +389,33 @@ struct pasid_entry;
+ struct pasid_state_entry;
+ struct page_req_dsc;
+ 
++/*
++ * 0: Present
++ * 1-11: Reserved
++ * 12-63: Context Ptr (12 - (haw-1))
++ * 64-127: Reserved
++ */
++struct root_entry {
++	u64     lo;
++	u64     hi;
++};
++
++/*
++ * low 64 bits:
++ * 0: present
++ * 1: fault processing disable
++ * 2-3: translation type
++ * 12-63: address space root
++ * high 64 bits:
++ * 0-2: address width
++ * 3-6: aval
++ * 8-23: domain id
++ */
++struct context_entry {
++	u64 lo;
++	u64 hi;
++};
++
+ struct dmar_domain {
+ 	int	nid;			/* node id */
+ 
+@@ -559,5 +586,8 @@ extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+ #endif
+ 
+ extern const struct attribute_group *intel_iommu_groups[];
++bool context_present(struct context_entry *context);
++struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
++					 u8 devfn, int alloc);
+ 
+ #endif
 -- 
 2.18.0
