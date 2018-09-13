@@ -1,54 +1,54 @@
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [RFC PATCH 3/3] dma-mapping: clear dma_parms on teardown, too
-Date: Thu, 13 Sep 2018 17:17:16 +0200
-Message-ID: <20180913151716.6333-4-wsa+renesas@sang-engineering.com>
-References: <20180913151716.6333-1-wsa+renesas@sang-engineering.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v6 0/6] Add non-strict mode support for iommu-dma
+Date: Thu, 13 Sep 2018 17:42:17 +0100
+Message-ID: <cover.1536856828.git.robin.murphy@arm.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180913151716.6333-1-wsa+renesas@sang-engineering.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
-Cc: linux-renesas-soc@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: joro@8bytes.org, will.deacon@arm.com, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-While sanitizig the pointer for dma_ops on teardown, do the same for
-dma_parms, too. Rename the function to have a more generic name.
+Hi all,
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- arch/arm/mm/dma-mapping.c   | 2 +-
- include/linux/dma-mapping.h | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+Since we'd like to get this polished up and merged and Leizhen has other
+commitments, here's v6 of the previous series[1] wherein I address all
+my own feedback :)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 466b0242e8af..bcf77bc0423f 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2399,5 +2399,5 @@ void arch_teardown_dma_ops(struct device *dev)
- 	if (dev->archdata.dma_ops_setup)
- 		arm_teardown_iommu_dma_ops(dev);
- 
--	generic_teardown_dma_ops(dev);
-+	generic_teardown_dma(dev);
- }
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 020512cb7f0e..6a2d8779b1d8 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -663,12 +663,13 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
- 				      bool coherent) { }
- #endif
- 
--static inline void generic_teardown_dma_ops(struct device *dev)
-+static inline void generic_teardown_dma(struct device *dev)
- {
- 	dev->dma_ops = NULL;
-+	dev->dma_parms = NULL;
- }
- #ifndef arch_teardown_dma_ops
--#define arch_teardown_dma_ops generic_teardown_dma_ops
-+#define arch_teardown_dma_ops generic_teardown_dma
- #endif
- 
- static inline unsigned int dma_get_max_seg_size(struct device *dev)
+The principal change is that I've inverted things slightly such that
+it's now a generic domain attribute controlled by iommu-dma given the
+necessary support from individual IOMMU drivers. That way we can easily
+enable other drivers straight away, as I've done for SMMUv2 here (which
+also allowed me to give it a quick test with MMU-401s on a Juno board).
+Otherwise it's really just cosmetic cleanup and rebasing onto Will's
+pending SMMU queue.
+
+Robin.
+
+[1] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg25150.html
+
+
+Robin Murphy (2):
+  iommu/io-pgtable: Add helper for toggling non-strict mode
+  iommu/arm-smmu: Support non-strict mode
+
+Zhen Lei (5):
+  iommu/arm-smmu-v3: Implement flush_iotlb_all hook
+  iommu/dma: Add support for non-strict mode
+  iommu/io-pgtable-arm: Add support for non-strict mode
+  iommu/arm-smmu-v3: Add support for non-strict mode
+  iommu/dma: Add bootup option "iommu.non_strict"
+
+ .../admin-guide/kernel-parameters.txt         | 13 +++++
+ drivers/iommu/arm-smmu-v3.c                   | 43 +++++++++++++---
+ drivers/iommu/arm-smmu.c                      | 43 +++++++++++++---
+ drivers/iommu/dma-iommu.c                     | 49 ++++++++++++++++++-
+ drivers/iommu/io-pgtable-arm.c                |  9 ++--
+ drivers/iommu/io-pgtable.c                    |  9 ++++
+ drivers/iommu/io-pgtable.h                    |  6 +++
+ include/linux/iommu.h                         |  1 +
+ 8 files changed, 155 insertions(+), 18 deletions(-)
+
 -- 
-2.18.0
+2.19.0.dirty
