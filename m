@@ -1,51 +1,36 @@
 From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [RFC PATCH 0/3] dma-mapping: clear dangling pointers consistently
-Date: Thu, 13 Sep 2018 17:17:13 +0200
-Message-ID: <20180913151716.6333-1-wsa+renesas@sang-engineering.com>
+Subject: [RFC PATCH 1/3] ARM: dma-mapping: update comment about handling dma_ops when detaching from IOMMU
+Date: Thu, 13 Sep 2018 17:17:14 +0200
+Message-ID: <20180913151716.6333-2-wsa+renesas@sang-engineering.com>
+References: <20180913151716.6333-1-wsa+renesas@sang-engineering.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180913151716.6333-1-wsa+renesas@sang-engineering.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 Cc: linux-renesas-soc@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Wolfram Sang <wsa+renesas@sang-engineering.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When working with dma_set_max_seg_size(), I noticed issues with a
-dangling dma_parms pointer. I saw Christoph just worked on handling
-something similar for the dma_ops pointer, too. I came up with three
-patches on top of Christoph's work which I send out for discussion here:
+Update the comment because we don't set the pointer to NULL anymore.
+Also use the correct pointer name 'dma_ops' instead of 'dma_map_ops'.
 
-Patch 1 fixes a meanwhile stale comment.
+Fixes: 1874619a7df4 ("ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()")
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ arch/arm/mm/dma-mapping.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch 2 makes clearing the dma_ops pointer more consistent because it
-was missed on the custom ARM implementation to the best of my knowledge.
-
-Patch 3 generalizes teardown_dma_ops to teardown_dma, so that clearing
-dma_parms can be added there.
-
-All these patches are based on the dma-mapping for-next branch. They are
-build tested and runtime tested on a Renesas Salvator-XS board (R-Car
-M3-N, ARM64) and Renesas Lager board (R-Car H2, ARM32).
-
-A branch containing these (and dma_parms additions for the above boards)
-can be found here:
-
-git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/sdhi/set_max_seg
-
-Looking forward to opinions.
-
-Regards,
-
-   Wolfram
-
-
-Wolfram Sang (3):
-  ARM: dma-mapping: update comment about handling dma_ops when detaching
-    from IOMMU
-  dma-mapping: clear dma_ops pointer also on ARM
-  dma-mapping: clear dma_parms on teardown, too
-
- arch/arm/mm/dma-mapping.c   | 8 ++++----
- include/linux/dma-mapping.h | 6 ++++--
- 2 files changed, 8 insertions(+), 6 deletions(-)
-
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 66566472c153..e3b04786838f 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2287,7 +2287,7 @@ EXPORT_SYMBOL_GPL(arm_iommu_attach_device);
+  * @dev: valid struct device pointer
+  *
+  * Detaches the provided device from a previously attached map.
+- * This voids the dma operations (dma_map_ops pointer)
++ * This overwrites the dma_ops pointer with appropriate non-IOMMU ops.
+  */
+ void arm_iommu_detach_device(struct device *dev)
+ {
 -- 
 2.18.0
