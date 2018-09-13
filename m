@@ -1,81 +1,69 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group
- helpers
-Date: Thu, 13 Sep 2018 00:35:21 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
-References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
- <20180830040922.30426-9-baolu.lu@linux.intel.com>
- <c5124ac1-65fe-7f89-265c-bef229bc5ce9@arm.com>
- <a97c8f75-ff49-5b87-198f-d3c8950d4e90@linux.intel.com>
- <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 0/5] add non-strict mode support for arm-smmu-v3
+Date: Thu, 13 Sep 2018 10:02:11 +0800
+Message-ID: <5B99C523.7060704@huawei.com>
+References: <1534296510-12888-1-git-send-email-thunder.leizhen@huawei.com>
+	<20180912165700.GC16071@arm.com>
+	<d0775377-206f-ae3e-051d-3b829b499471@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <d0775377-206f-ae3e-051d-3b829b499471-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Libin <huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogVGh1cnNkYXksIFNlcHRlbWJlciAxMywgMjAxOCAxOjU0IEFN
-DQo+IA0KPiBPbiAxMi8wOS8yMDE4IDA2OjAyLCBMdSBCYW9sdSB3cm90ZToNCj4gPiBIaSwNCj4g
-Pg0KPiA+IE9uIDA5LzExLzIwMTggMTI6MjMgQU0sIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciB3cm90
-ZToNCj4gPj4gT24gMzAvMDgvMjAxOCAwNTowOSwgTHUgQmFvbHUgd3JvdGU6DQo+ID4+PiArc3Rh
-dGljIGludCB2ZmlvX2RldGFjaF9hdXhfZG9tYWluKHN0cnVjdCBkZXZpY2UgKmRldiwgdm9pZCAq
-ZGF0YSkNCj4gPj4+ICt7DQo+ID4+PiArCXN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiA9IGRh
-dGE7DQo+ID4+PiArDQo+ID4+PiArCXZmaW9fbWRldl9zZXRfYXV4X2RvbWFpbihkZXYsIE5VTEwp
-Ow0KPiA+Pj4gKwlpb21tdV9kZXRhY2hfZGV2aWNlKGRvbWFpbiwgZGV2LT5wYXJlbnQpOw0KPiA+
-Pg0KPiA+PiBJIHRoaW5rIHRoYXQncyBvbmx5IGdvaW5nIHRvIHdvcmsgZm9yIHZ0LWQsIHdoaWNo
-IGRvZXNuJ3QgdXNlIGENCj4gPj4gZGVmYXVsdF9kb21haW4uIEZvciBvdGhlciBkcml2ZXJzLCBp
-b21tdS5jIGVuZHMgdXAgY2FsbGluZw0KPiA+PiBkb21haW4tPm9wcy0+YXR0YWNoX2RldihkZWZh
-dWx0X2RvbWFpbiwgZGV2KSBoZXJlLCB3aGljaCBpc24ndCB3aGF0DQo+IHdlIHdhbnQuDQo+ID4N
-Cj4gPiBUaGlzIGRvZXNuJ3QgYnJlYWsgYW55IGZ1bmN0aW9uYWxpdHkuIEl0IHRha2VzIGVmZmVj
-dCBvbmx5IGlmIGlvbW11DQo+ID4gaGFyZHdhcmUgc3VwcG9ydHMgZmluZXIgZ3JhbnVsYXIgdHJh
-bnNsYXRpb24gYW5kIGFkdmVydGlzZXMgaXQgdGhyb3VnaA0KPiA+IHRoZSBBUEkuPg0KPiA+PiBU
-aGF0IHdhcyBteSBjb25jZXJuIHdpdGggcmV1c2luZyBhdHRhY2gvZGV0YWNoX2RldiBjYWxsYmFj
-a3MgZm9yDQo+IFBBU0lEDQo+ID4+IG1hbmFnZW1lbnQuIFRoZSBhdHRhY2hfZGV2IGNvZGUgb2Yg
-SU9NTVUgZHJpdmVycyBhbHJlYWR5IGhhcyB0bw0KPiBkZWFsDQo+ID4+IHdpdGggdG9nZ2xpbmcg
-YmV0d2VlbiBkZWZhdWx0IGFuZCB1bm1hbmFnZWQgZG9tYWluLiBEZWFsaW5nIHdpdGgNCj4gbW9y
-ZQ0KPiA+PiBzdGF0ZSB0cmFuc2l0aW9ucyBpbiB0aGUgc2FtZSBwYXRoIGlzIGdvaW5nIHRvIGJl
-IGRpZmZpY3VsdC4NCj4gPg0KPiA+IExldCdzIGNvbnNpZGVyIGl0IGZyb20gdGhlIEFQSSBwb2lu
-dCBvZiB2aWV3Lg0KPiA+DQo+ID4gV2UgaGF2ZSBpb21tdV9hKGRlKXR0YWNoX2RldmljZSgpIEFQ
-SXMgdG8gYXR0YWNoIG9yIGRldGFjaCBhIGRvbWFpbg0KPiA+IHRvL2Zyb20gYSBkZXZpY2UuIFdl
-IHNob3VsZCBhdm9pZCBhcHBseWluZyBhIGxpbWl0YXRpb24gb2YgInRoZXNlIGFyZQ0KPiA+IG9u
-bHkgZm9yIHNpbmdsZSBkb21haW4gY2FzZSwgZm9yIG11bHRpcGxlIGRvbWFpbnMsIHVzZSBhbm90
-aGVyIEFQSSIuDQo+IA0KPiBUaGF0J3MgYW4gaWRlYWxpemVkIHZpZXcgb2YgdGhlIEFQSSwgdGhl
-IGFjdHVhbCBzZW1hbnRpY3MgYXJlbid0IGFzDQo+IHNpbXBsZS4gRm9yIElPTU1VIGRyaXZlcnMg
-dGhhdCBpbXBsZW1lbnQgSU9NTVVfRE9NQUlOX0RNQSBpbiB0aGVpcg0KPiBkb21haW5fYWxsb2Mg
-b3BlcmF0aW9uIChBcm0gU01NVSwgQU1EIElPTU1VLCAuLi4pLCBhdHRhY2hfZGV2DQo+IGF0dGFj
-aGVzDQo+IGFuIHVubWFuYWdlZCBkb21haW4sIGRldGFjaF9kZXYgcmVhdHRhY2hlcyB0aGUgZGVm
-YXVsdCBETUEgZG9tYWluLA0KPiBhbmQNCj4gdGhlIGRldGFjaF9kZXYgSU9NTVUgb3AgaXMgbm90
-IGNhbGxlZC4gV2UgY2FuJ3QgY2hhbmdlIHRoYXQgbm93LCBzbyBpdCdzDQo+IGRpZmZpY3VsdCB0
-byBhZGQgbW9yZSBmdW5jdGlvbmFsaXR5IHRvIGF0dGFjaF9kZXYgYW5kIGRldGFjaF9kZXYuDQo+
-IA0KDQpOb3cgd2UgaGF2ZSBmb3VyIHBvc3NpYmxlIHVzYWdlcyBvbiBhKGRlKXR0YWNoX2Rldmlj
-ZToNCg0KMSkgTm9ybWFsIERNQSBBUEkgcGF0aCBpLmUuIElPTU1VX0RPTUFJTl9ETUEsIGZvciBE
-TUEgb3BlcmF0aW9ucw0KaW4gaG9zdC9wYXJlbnQgZGV2aWNlIGRyaXZlcjsNCg0KMikgVkZJTyBw
-YXNzdGhydSBwYXRoLCB3aGVuIHRoZSBwaHlzaWNhbCBkZXZpY2UgaXMgYXNzaWduZWQgdG8gdXNl
-ciBzcGFjZQ0Kb3IgZ3Vlc3QgZHJpdmVyDQoNCjMpIG1kZXYgcGFzc3RocnUgcGF0aCAxLCB3aGVu
-IG1kZXYgaXMgYXNzaWduZWQgdG8gdXNlciBzcGFjZSBvciBndWVzdA0KZHJpdmVyLiBIZXJlIG1k
-ZXYgaXMgYSB3cmFwIG9uIHJhbmRvbSBQQ0kgZGV2aWNlDQoNCjQpIG1kZXYgcGFzc3RocnUgcGF0
-aCAyLCB3aGVuIG1kZXYgaXMgYXNzaWduZWQgdG8gdXNlciBzcGFjZSBvciBndWVzdA0KZHJpdmVy
-LiBIZXJlIG1kZXYgaXMgaW4gYSBzbWFsbGVyIGdyYW51bGFyaXR5IChlLmcuIHRhZ2dlZCBieSBQ
-QVNJRCkgYXMNCnN1cHBvcnRlZCBieSB2dC1kIHNjYWxhYmxlIG1vZGUNCg0KMSkgYW5kIDIpIGFy
-ZSBleGlzdGluZyB1c2FnZXMuIFdoYXQgeW91IGRlc2NyaWJlZCAodW5tYW5hZ2VkIHZzLiBkZWZh
-dWx0KQ0KZmFsbHMgaW50byB0aGlzIGNhdGVnb3J5Lg0KDQozKSBpcyBhY3R1YWxseSBzYW1lIGFz
-IDIpIGluIElPTU1VIGxheWVyLiBzb3J0IG9mIHBhc3NpbmcgdGhyb3VnaCBETUENCmNhcGFiaWxp
-dHkgdG8gZ3Vlc3QuIFRob3VnaCB0aGVyZSBpcyBzdGlsbCBhIHBhcmVudCBkcml2ZXIsIHRoZSBw
-YXJlbnQgZHJpdmVyDQppdHNlbGYgc2hvdWxkIG5vdCBkbyBETUEgLSBpLmUuIHVubWFuYWdlZCBp
-biBob3N0IHNpZGUuDQoNCjQpIGlzIGEgbmV3IGNvZGUgcGF0aCBpbnRyb2R1Y2VkIGluIElPTU1V
-IGxheWVyLCB3aGljaCBpcyB3aGF0DQp2ZmlvX2EoZGUpdGFjaF9hdXhfZG9tYWluIGlzIHRyeWlu
-ZyB0byBhZGRyZXNzLiBJbiB0aGlzIGNhc2UgcGFyZW50IGRldmljZQ0KY2FuIHN0aWxsIGhhdmUg
-aXRzIG93biBETUEgY2FwYWJpbGl0eSwgdXNpbmcgZXhpc3RpbmcgY29kZSBwYXRoIDEpICh0aHVz
-DQpkZWZhdWx0IGRvbWFpbiBzdGlsbCBhcHBsaWVzKS4gYW5kIHRoZSBwYXJlbnQgZGV2aWNlIGNh
-biBoYXZlIG11bHRpcGxlIA0KYXV4IGRvbWFpbnMgKGFuZCBhc3NvY2lhdGVkIHN0cnVjdHVyZXMp
-LCB1c2luZyBjb2RlIHBhdGggNCkuDQoNCkkgZGlkbid0IHNlZSBob3cgdGhpcyBuZXcgY29kZSBw
-YXRoIGludGVyZmVyZXMgd2l0aCBkZWZhdWx0IGRvbWFpbiANCmNvbmNlcHQgaW4gZXhpc3Rpbmcg
-cGF0aC4gSW4gdGhlIGZ1dHVyZSBpZiBBUk0gb3Igb3RoZXIgYXJjaGl0ZWN0dXJlcw0KcGxhbiB0
-byBzdXBwb3J0IHNpbWlsYXIgc2NhbGFibGUgbW9kZSBjYXBhYmlsaXR5LCBvbmx5IHRoZSBuZXcg
-Y29kZQ0KcGF0aCBzaG91bGQgYmUgdHdlYWtlZC4NCg0KVGhhbmtzDQpLZXZpbg0K
+
+
+On 2018/9/13 1:12, Robin Murphy wrote:
+> On 12/09/18 17:57, Will Deacon wrote:
+>> Hi all,
+>>
+>> On Wed, Aug 15, 2018 at 09:28:25AM +0800, Zhen Lei wrote:
+>>> v4 -> v5:
+>>> 1. change the type of global variable and struct member named "non_strict" from
+>>>     "int" to "bool".
+>>> 2. cancel the unnecessary parameter "strict" of __arm_lpae_unmap which was added
+>>>     in v4.
+>>> 3. change boot option "arm_iommu" to "iommu.non_strict".
+>>> 4. convert __iommu_dma_unmap to use iommu_unmap_fast()/iommu_tlb_sync(), because
+>>>     non-leaf unmaps still need to be synchronous.
+>>>
+>>> Thanks for Robin's review comments.
+>>
+>> Since this is 90% of the way there now, I suggest Robin picks up what's here
+>> and incorporates his remaining review comments directly (especially since it
+>> sounded like Zhen Lei hasn't got much free time lately). With that, I can
+>> queue this lot via my smmu branch, which already has some stuff queued
+>> for SMMUv3 and io-pgtable.
+>>
+>> Please shout if you have any objections, but I'm keen for this not to
+>> languish on the lists given how close it is!
+> 
+> Sure, having got this far I'd like to see it get done too. I'll make some time and give it a go.
+
+Thank you very much.
+
+I've been too busy lately, at least I still have no time this week, I also think it's been too long.
+
+So sorry and thanks again.
+
+> 
+> Robin.
+> 
+> .
+> 
+
+-- 
+Thanks!
+BestRegards
