@@ -1,275 +1,442 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 3/6] dma-mapping: move the dma_coherent flag to struct device
-Date: Fri, 14 Sep 2018 11:58:05 +0200
-Message-ID: <20180914095808.22202-4-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 5/6] dma-mapping: consolidate the dma mmap implementations
+Date: Fri, 14 Sep 2018 11:58:07 +0200
+Message-ID: <20180914095808.22202-6-hch@lst.de>
 References: <20180914095808.22202-1-hch@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180914095808.22202-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180914095808.22202-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Paul Burton <paul.burton@mips.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Various architectures support both coherent and non-coherent dma on a
-per-device basis.  Move the dma_noncoherent flag from the mips archdata
-field to struct device proper to prepare the infrastructure for reuse on
-other architectures.
+The only functional differences (modulo a few missing fixes in the arch
+code) is that architectures without coherent caches need a hook to
+convert a virtual or dma address into a pfn, given that we don't have
+the kernel linear mapping available for the otherwise easy virt_to_page
+call.  As a side effect we can support mmap of the per-device coherent
+area even on architectures not providing the callback, and we make
+previous dangerous default methods dma_common_mmap actually save for
+non-coherent architectures by rejecting it without the right helper.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Acked-by: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-Acked-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+In addition to that we need a hook so that some architectures can
+override the protection bits when mmaping a dma coherent allocations.
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Paul Burton <paul.burton@mips.com> # MIPS parts
 ---
- arch/mips/Kconfig                     |  1 +
- arch/mips/include/asm/Kbuild          |  1 +
- arch/mips/include/asm/device.h        | 19 ----------------
- arch/mips/include/asm/dma-coherence.h |  6 +++++
- arch/mips/include/asm/dma-mapping.h   |  2 +-
- arch/mips/mm/dma-noncoherent.c        | 32 +++++----------------------
- include/linux/device.h                |  7 ++++++
- include/linux/dma-noncoherent.h       | 16 ++++++++++++++
- kernel/dma/Kconfig                    |  3 +++
- 9 files changed, 41 insertions(+), 46 deletions(-)
- delete mode 100644 arch/mips/include/asm/device.h
+ arch/arc/Kconfig                      |  2 +-
+ arch/arc/mm/dma.c                     | 25 +++------------------
+ arch/arm/mm/dma-mapping-nommu.c       |  2 +-
+ arch/microblaze/Kconfig               |  2 +-
+ arch/microblaze/include/asm/pgtable.h |  2 --
+ arch/microblaze/kernel/dma.c          | 22 ------------------
+ arch/microblaze/mm/consistent.c       |  3 ++-
+ arch/mips/Kconfig                     |  3 ++-
+ arch/mips/jazz/jazzdma.c              |  1 -
+ arch/mips/mm/dma-noncoherent.c        | 32 ++++++++-------------------
+ drivers/xen/swiotlb-xen.c             |  2 +-
+ include/linux/dma-mapping.h           |  5 +++--
+ include/linux/dma-noncoherent.h       | 10 +++++++--
+ kernel/dma/Kconfig                    | 10 +++++----
+ kernel/dma/direct.c                   | 11 ---------
+ kernel/dma/mapping.c                  | 32 ++++++++++++++++++---------
+ 16 files changed, 58 insertions(+), 106 deletions(-)
 
+diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
+index ca03694d518a..3d9bdecfa52d 100644
+--- a/arch/arc/Kconfig
++++ b/arch/arc/Kconfig
+@@ -9,6 +9,7 @@
+ config ARC
+ 	def_bool y
+ 	select ARC_TIMERS
++	select ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	select ARCH_HAS_PTE_SPECIAL
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+@@ -18,7 +19,6 @@ config ARC
+ 	select CLONE_BACKWARDS
+ 	select COMMON_CLK
+ 	select DMA_DIRECT_OPS
+-	select DMA_NONCOHERENT_MMAP
+ 	select GENERIC_ATOMIC64 if !ISA_ARCV2 || !(ARC_HAS_LL64 && ARC_HAS_LLSC)
+ 	select GENERIC_CLOCKEVENTS
+ 	select GENERIC_FIND_FIRST_BIT
+diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
+index 535ed4a068ef..db203ff69ccf 100644
+--- a/arch/arc/mm/dma.c
++++ b/arch/arc/mm/dma.c
+@@ -84,29 +84,10 @@ void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 	__free_pages(page, get_order(size));
+ }
+ 
+-int arch_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+-		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+-		unsigned long attrs)
++long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
++		dma_addr_t dma_addr)
+ {
+-	unsigned long user_count = vma_pages(vma);
+-	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	unsigned long pfn = __phys_to_pfn(dma_addr);
+-	unsigned long off = vma->vm_pgoff;
+-	int ret = -ENXIO;
+-
+-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+-
+-	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+-		return ret;
+-
+-	if (off < count && user_count <= (count - off)) {
+-		ret = remap_pfn_range(vma, vma->vm_start,
+-				      pfn + off,
+-				      user_count << PAGE_SHIFT,
+-				      vma->vm_page_prot);
+-	}
+-
+-	return ret;
++	return __phys_to_pfn(dma_addr);
+ }
+ 
+ /*
+diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
+index 0ad156f9985b..712416ecd8e6 100644
+--- a/arch/arm/mm/dma-mapping-nommu.c
++++ b/arch/arm/mm/dma-mapping-nommu.c
+@@ -91,7 +91,7 @@ static int arm_nommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	if (dma_mmap_from_global_coherent(vma, cpu_addr, size, &ret))
+ 		return ret;
+ 
+-	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
++	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
+ }
+ 
+ 
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 0f48ab6a8070..164a4857737a 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -1,6 +1,7 @@
+ config MICROBLAZE
+ 	def_bool y
+ 	select ARCH_NO_SWAP
++	select ARCH_HAS_DMA_COHERENT_TO_PFN if MMU
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+@@ -12,7 +13,6 @@ config MICROBLAZE
+ 	select CLONE_BACKWARDS3
+ 	select COMMON_CLK
+ 	select DMA_DIRECT_OPS
+-	select DMA_NONCOHERENT_MMAP
+ 	select GENERIC_ATOMIC64
+ 	select GENERIC_CLOCKEVENTS
+ 	select GENERIC_CPU_DEVICES
+diff --git a/arch/microblaze/include/asm/pgtable.h b/arch/microblaze/include/asm/pgtable.h
+index 7b650ab14fa0..f64ebb9c9a41 100644
+--- a/arch/microblaze/include/asm/pgtable.h
++++ b/arch/microblaze/include/asm/pgtable.h
+@@ -553,8 +553,6 @@ void __init *early_get_page(void);
+ 
+ extern unsigned long ioremap_bot, ioremap_base;
+ 
+-unsigned long consistent_virt_to_pfn(void *vaddr);
+-
+ void setup_memory(void);
+ #endif /* __ASSEMBLY__ */
+ 
+diff --git a/arch/microblaze/kernel/dma.c b/arch/microblaze/kernel/dma.c
+index 71032cf64669..a89c2d4ed5ff 100644
+--- a/arch/microblaze/kernel/dma.c
++++ b/arch/microblaze/kernel/dma.c
+@@ -42,25 +42,3 @@ void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
+ {
+ 	__dma_sync(dev, paddr, size, dir);
+ }
+-
+-int arch_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+-		void *cpu_addr, dma_addr_t handle, size_t size,
+-		unsigned long attrs)
+-{
+-#ifdef CONFIG_MMU
+-	unsigned long user_count = vma_pages(vma);
+-	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	unsigned long off = vma->vm_pgoff;
+-	unsigned long pfn;
+-
+-	if (off >= count || user_count > (count - off))
+-		return -ENXIO;
+-
+-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+-	pfn = consistent_virt_to_pfn(cpu_addr);
+-	return remap_pfn_range(vma, vma->vm_start, pfn + off,
+-			       vma->vm_end - vma->vm_start, vma->vm_page_prot);
+-#else
+-	return -ENXIO;
+-#endif
+-}
+diff --git a/arch/microblaze/mm/consistent.c b/arch/microblaze/mm/consistent.c
+index c9a278ac795a..d801cc5f5b95 100644
+--- a/arch/microblaze/mm/consistent.c
++++ b/arch/microblaze/mm/consistent.c
+@@ -165,7 +165,8 @@ static pte_t *consistent_virt_to_pte(void *vaddr)
+ 	return pte_offset_kernel(pmd_offset(pgd_offset_k(addr), addr), addr);
+ }
+ 
+-unsigned long consistent_virt_to_pfn(void *vaddr)
++long arch_dma_coherent_to_pfn(struct device *dev, void *vaddr,
++		dma_addr_t dma_addr)
+ {
+ 	pte_t *ptep = consistent_virt_to_pte(vaddr);
+ 
 diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 0b25180028b8..54c52bd0d9d3 100644
+index 96da6e3396e1..77c022e56e6e 100644
 --- a/arch/mips/Kconfig
 +++ b/arch/mips/Kconfig
-@@ -1106,6 +1106,7 @@ config ARCH_SUPPORTS_UPROBES
+@@ -1116,10 +1116,11 @@ config DMA_PERDEV_COHERENT
+ 
+ config DMA_NONCOHERENT
  	bool
++	select ARCH_HAS_DMA_MMAP_PGPROT
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select NEED_DMA_MAP_STATE
+-	select DMA_NONCOHERENT_MMAP
++	select ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	select DMA_NONCOHERENT_CACHE_SYNC
  
- config DMA_MAYBE_COHERENT
-+	select ARCH_HAS_DMA_COHERENCE_H
- 	select DMA_NONCOHERENT
- 	bool
- 
-diff --git a/arch/mips/include/asm/Kbuild b/arch/mips/include/asm/Kbuild
-index 58351e48421e..9a81e72119da 100644
---- a/arch/mips/include/asm/Kbuild
-+++ b/arch/mips/include/asm/Kbuild
-@@ -1,6 +1,7 @@
- # MIPS headers
- generic-(CONFIG_GENERIC_CSUM) += checksum.h
- generic-y += current.h
-+generic-y += device.h
- generic-y += dma-contiguous.h
- generic-y += emergency-restart.h
- generic-y += export.h
-diff --git a/arch/mips/include/asm/device.h b/arch/mips/include/asm/device.h
-deleted file mode 100644
-index 6aa796f1081a..000000000000
---- a/arch/mips/include/asm/device.h
-+++ /dev/null
-@@ -1,19 +0,0 @@
--/*
-- * Arch specific extensions to struct device
-- *
-- * This file is released under the GPLv2
-- */
--#ifndef _ASM_MIPS_DEVICE_H
--#define _ASM_MIPS_DEVICE_H
--
--struct dev_archdata {
--#ifdef CONFIG_DMA_PERDEV_COHERENT
--	/* Non-zero if DMA is coherent with CPU caches */
--	bool dma_coherent;
--#endif
--};
--
--struct pdev_archdata {
--};
--
--#endif /* _ASM_MIPS_DEVICE_H*/
-diff --git a/arch/mips/include/asm/dma-coherence.h b/arch/mips/include/asm/dma-coherence.h
-index 8eda48748ed5..5eaa1fcc878a 100644
---- a/arch/mips/include/asm/dma-coherence.h
-+++ b/arch/mips/include/asm/dma-coherence.h
-@@ -20,6 +20,12 @@ enum coherent_io_user_state {
- #elif defined(CONFIG_DMA_MAYBE_COHERENT)
- extern enum coherent_io_user_state coherentio;
- extern int hw_coherentio;
-+
-+static inline bool dev_is_dma_coherent(struct device *dev)
-+{
-+	return coherentio == IO_COHERENCE_ENABLED ||
-+		(coherentio == IO_COHERENCE_DEFAULT && hw_coherentio);
-+}
- #else
- #ifdef CONFIG_DMA_NONCOHERENT
- #define coherentio	IO_COHERENCE_DISABLED
-diff --git a/arch/mips/include/asm/dma-mapping.h b/arch/mips/include/asm/dma-mapping.h
-index e81c4e97ff1a..40d825c779de 100644
---- a/arch/mips/include/asm/dma-mapping.h
-+++ b/arch/mips/include/asm/dma-mapping.h
-@@ -25,7 +25,7 @@ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
- 				      bool coherent)
- {
- #ifdef CONFIG_DMA_PERDEV_COHERENT
--	dev->archdata.dma_coherent = coherent;
-+	dev->dma_coherent = coherent;
- #endif
- }
- 
+ config SYS_HAS_EARLY_PRINTK
+diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
+index bb49dfa1a9a3..0a0aaf39fd16 100644
+--- a/arch/mips/jazz/jazzdma.c
++++ b/arch/mips/jazz/jazzdma.c
+@@ -682,7 +682,6 @@ static int jazz_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ const struct dma_map_ops jazz_dma_ops = {
+ 	.alloc			= jazz_dma_alloc,
+ 	.free			= jazz_dma_free,
+-	.mmap			= arch_dma_mmap,
+ 	.map_page		= jazz_dma_map_page,
+ 	.unmap_page		= jazz_dma_unmap_page,
+ 	.map_sg			= jazz_dma_map_sg,
 diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index 2aca1236af36..d408ac51f56c 100644
+index b01b9a3e424f..e6c9485cadcf 100644
 --- a/arch/mips/mm/dma-noncoherent.c
 +++ b/arch/mips/mm/dma-noncoherent.c
-@@ -14,26 +14,6 @@
- #include <asm/dma-coherence.h>
- #include <asm/io.h>
+@@ -66,33 +66,19 @@ void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 	dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
+ }
  
--#ifdef CONFIG_DMA_PERDEV_COHERENT
--static inline int dev_is_coherent(struct device *dev)
--{
--	return dev->archdata.dma_coherent;
--}
--#else
--static inline int dev_is_coherent(struct device *dev)
--{
--	switch (coherentio) {
--	default:
--	case IO_COHERENCE_DEFAULT:
--		return hw_coherentio;
--	case IO_COHERENCE_ENABLED:
--		return 1;
--	case IO_COHERENCE_DISABLED:
--		return 0;
--	}
--}
--#endif /* CONFIG_DMA_PERDEV_COHERENT */
+-int arch_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+-		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+-		unsigned long attrs)
++long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
++		dma_addr_t dma_addr)
+ {
+-	unsigned long user_count = vma_pages(vma);
+-	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	unsigned long addr = CAC_ADDR((unsigned long)cpu_addr);
+-	unsigned long off = vma->vm_pgoff;
+-	unsigned long pfn = page_to_pfn(virt_to_page((void *)addr));
+-	int ret = -ENXIO;
++	return page_to_pfn(virt_to_page((void *)addr));
++}
+ 
++pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
++		unsigned long attrs)
++{
+ 	if (attrs & DMA_ATTR_WRITE_COMBINE)
+-		vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
+-	else
+-		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 -
+-	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+-		return ret;
+-
+-	if (off < count && user_count <= (count - off)) {
+-		ret = remap_pfn_range(vma, vma->vm_start,
+-				      pfn + off,
+-				      user_count << PAGE_SHIFT,
+-				      vma->vm_page_prot);
+-	}
+-
+-	return ret;
++		return pgprot_writecombine(prot);
++	return pgprot_noncached(prot);
+ }
+ 
+ static inline void dma_sync_virt(void *addr, size_t size,
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index a6f9ba85dc4b..470757ddddea 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -662,7 +662,7 @@ xen_swiotlb_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 		return xen_get_dma_ops(dev)->mmap(dev, vma, cpu_addr,
+ 						    dma_addr, size, attrs);
+ #endif
+-	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
++	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
+ }
+ 
  /*
-  * The affected CPUs below in 'cpu_needs_post_dma_flush()' can speculatively
-  * fill random cachelines with stale data at any time, requiring an extra
-@@ -49,7 +29,7 @@ static inline int dev_is_coherent(struct device *dev)
-  */
- static inline bool cpu_needs_post_dma_flush(struct device *dev)
- {
--	if (dev_is_coherent(dev))
-+	if (dev_is_dma_coherent(dev))
- 		return false;
- 
- 	switch (boot_cpu_type()) {
-@@ -76,7 +56,7 @@ void *arch_dma_alloc(struct device *dev, size_t size,
- 	if (!ret)
- 		return NULL;
- 
--	if (!dev_is_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
-+	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_NON_CONSISTENT)) {
- 		dma_cache_wback_inv((unsigned long) ret, size);
- 		ret = (void *)UNCAC_ADDR(ret);
- 	}
-@@ -87,7 +67,7 @@ void *arch_dma_alloc(struct device *dev, size_t size,
- void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
- 		dma_addr_t dma_addr, unsigned long attrs)
- {
--	if (!(attrs & DMA_ATTR_NON_CONSISTENT) && !dev_is_coherent(dev))
-+	if (!(attrs & DMA_ATTR_NON_CONSISTENT) && !dev_is_dma_coherent(dev))
- 		cpu_addr = (void *)CAC_ADDR((unsigned long)cpu_addr);
- 	dma_direct_free(dev, size, cpu_addr, dma_addr, attrs);
- }
-@@ -103,7 +83,7 @@ int arch_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	unsigned long pfn;
- 	int ret = -ENXIO;
- 
--	if (!dev_is_coherent(dev))
-+	if (!dev_is_dma_coherent(dev))
- 		addr = CAC_ADDR(addr);
- 
- 	pfn = page_to_pfn(virt_to_page((void *)addr));
-@@ -187,7 +167,7 @@ static inline void dma_sync_phys(phys_addr_t paddr, size_t size,
- void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
- 		size_t size, enum dma_data_direction dir)
- {
--	if (!dev_is_coherent(dev))
-+	if (!dev_is_dma_coherent(dev))
- 		dma_sync_phys(paddr, size, dir);
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 8f2001181cd1..c3378d4e0d57 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -444,7 +444,8 @@ dma_cache_sync(struct device *dev, void *vaddr, size_t size,
  }
  
-@@ -203,6 +183,6 @@ void arch_dma_cache_sync(struct device *dev, void *vaddr, size_t size,
- {
- 	BUG_ON(direction == DMA_NONE);
+ extern int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+-			   void *cpu_addr, dma_addr_t dma_addr, size_t size);
++		void *cpu_addr, dma_addr_t dma_addr, size_t size,
++		unsigned long attrs);
  
--	if (!dev_is_coherent(dev))
-+	if (!dev_is_dma_coherent(dev))
- 		dma_sync_virt(vaddr, size, direction);
+ void *dma_common_contiguous_remap(struct page *page, size_t size,
+ 			unsigned long vm_flags,
+@@ -476,7 +477,7 @@ dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma, void *cpu_addr,
+ 	BUG_ON(!ops);
+ 	if (ops->mmap)
+ 		return ops->mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
+-	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
++	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
  }
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 8f882549edee..983506789402 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -927,6 +927,8 @@ struct dev_links_info {
-  * @offline:	Set after successful invocation of bus type's .offline().
-  * @of_node_reused: Set if the device-tree node is shared with an ancestor
-  *              device.
-+ * @dma_coherent: this particular device is dma coherent, even if the
-+ *		architecture supports non-coherent devices.
-  *
-  * At the lowest level, every device in a Linux system is represented by an
-  * instance of struct device. The device structure contains the information
-@@ -1016,6 +1018,11 @@ struct device {
- 	bool			offline_disabled:1;
- 	bool			offline:1;
- 	bool			of_node_reused:1;
-+#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-+    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+	bool			dma_coherent:1;
-+#endif
- };
  
- static inline struct device *kobj_to_dev(struct kobject *kobj)
+ #define dma_mmap_coherent(d, v, c, h, s) dma_mmap_attrs(d, v, c, h, s, 0)
 diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index a0aa00cc909d..ce9732506ef4 100644
+index 3f503025a0cd..9051b055beec 100644
 --- a/include/linux/dma-noncoherent.h
 +++ b/include/linux/dma-noncoherent.h
-@@ -4,6 +4,22 @@
- 
- #include <linux/dma-mapping.h>
- 
-+#ifdef CONFIG_ARCH_HAS_DMA_COHERENCE_H
-+#include <asm/dma-coherence.h>
-+#elif defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-+	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-+	defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-+static inline bool dev_is_dma_coherent(struct device *dev)
-+{
-+	return dev->dma_coherent;
-+}
-+#else
-+static inline bool dev_is_dma_coherent(struct device *dev)
-+{
-+	return true;
-+}
-+#endif /* CONFIG_ARCH_HAS_DMA_COHERENCE_H */
-+
- void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+@@ -24,9 +24,15 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
  		gfp_t gfp, unsigned long attrs);
  void arch_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ 		dma_addr_t dma_addr, unsigned long attrs);
+-int arch_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+-		void *cpu_addr, dma_addr_t dma_addr, size_t size,
++long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
++		dma_addr_t dma_addr);
++
++#ifdef CONFIG_ARCH_HAS_DMA_MMAP_PGPROT
++pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
+ 		unsigned long attrs);
++#else
++# define arch_dma_mmap_pgprot(dev, prot, attrs)	pgprot_noncached(prot)
++#endif
+ 
+ #ifdef CONFIG_DMA_NONCOHERENT_CACHE_SYNC
+ void arch_dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 1b1d63b3634b..79476749f196 100644
+index 5617c9a76208..645c7a2ecde8 100644
 --- a/kernel/dma/Kconfig
 +++ b/kernel/dma/Kconfig
-@@ -13,6 +13,9 @@ config NEED_DMA_MAP_STATE
- config ARCH_DMA_ADDR_T_64BIT
- 	def_bool 64BIT || PHYS_ADDR_T_64BIT
- 
-+config ARCH_HAS_DMA_COHERENCE_H
-+	bool
-+
- config HAVE_GENERIC_DMA_COHERENT
+@@ -29,13 +29,15 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+ config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
  	bool
+ 
+-config DMA_DIRECT_OPS
++config ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	bool
+-	depends on HAS_DMA
+ 
+-config DMA_NONCOHERENT_MMAP
++config ARCH_HAS_DMA_MMAP_PGPROT
+ 	bool
+-	depends on DMA_DIRECT_OPS
++
++config DMA_DIRECT_OPS
++	bool
++	depends on HAS_DMA
+ 
+ config DMA_NONCOHERENT_CACHE_SYNC
+ 	bool
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 09e85f6aa4ba..c954f0a6dc62 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -155,16 +155,6 @@ void dma_direct_free(struct device *dev, size_t size,
+ 		dma_direct_free_pages(dev, size, cpu_addr, dma_addr, attrs);
+ }
+ 
+-static int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
+-		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+-		unsigned long attrs)
+-{
+-	if (!dev_is_dma_coherent(dev) &&
+-	    IS_ENABLED(CONFIG_DMA_NONCOHERENT_MMAP))
+-		return arch_dma_mmap(dev, vma, cpu_addr, dma_addr, size, attrs);
+-	return dma_common_mmap(dev, vma, cpu_addr, dma_addr, size);
+-}
+-
+ static void dma_direct_sync_single_for_device(struct device *dev,
+ 		dma_addr_t addr, size_t size, enum dma_data_direction dir)
+ {
+@@ -293,7 +283,6 @@ int dma_direct_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ const struct dma_map_ops dma_direct_ops = {
+ 	.alloc			= dma_direct_alloc,
+ 	.free			= dma_direct_free,
+-	.mmap			= dma_direct_mmap,
+ 	.map_page		= dma_direct_map_page,
+ 	.map_sg			= dma_direct_map_sg,
+ #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE)
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 3540cb399bd2..42fd73aca305 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -7,7 +7,7 @@
+  */
+ 
+ #include <linux/acpi.h>
+-#include <linux/dma-mapping.h>
++#include <linux/dma-noncoherent.h>
+ #include <linux/export.h>
+ #include <linux/gfp.h>
+ #include <linux/of_device.h>
+@@ -220,27 +220,37 @@ EXPORT_SYMBOL(dma_common_get_sgtable);
+  * Create userspace mapping for the DMA-coherent memory.
+  */
+ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+-		    void *cpu_addr, dma_addr_t dma_addr, size_t size)
++		void *cpu_addr, dma_addr_t dma_addr, size_t size,
++		unsigned long attrs)
+ {
+-	int ret = -ENXIO;
+ #ifndef CONFIG_ARCH_NO_COHERENT_DMA_MMAP
+ 	unsigned long user_count = vma_pages(vma);
+ 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	unsigned long off = vma->vm_pgoff;
++	unsigned long pfn;
++	int ret = -ENXIO;
+ 
+-	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
++	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
+ 
+ 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
+ 		return ret;
+ 
+-	if (off < count && user_count <= (count - off))
+-		ret = remap_pfn_range(vma, vma->vm_start,
+-				      page_to_pfn(virt_to_page(cpu_addr)) + off,
+-				      user_count << PAGE_SHIFT,
+-				      vma->vm_page_prot);
+-#endif	/* !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
++	if (off >= count || user_count > count - off)
++		return -ENXIO;
++
++	if (!dev_is_dma_coherent(dev)) {
++		if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_COHERENT_TO_PFN))
++			return -ENXIO;
++		pfn = arch_dma_coherent_to_pfn(dev, cpu_addr, dma_addr);
++	} else {
++		pfn = page_to_pfn(virt_to_page(cpu_addr));
++	}
+ 
+-	return ret;
++	return remap_pfn_range(vma, vma->vm_start, pfn + vma->vm_pgoff,
++			user_count << PAGE_SHIFT, vma->vm_page_prot);
++#else
++	return -ENXIO;
++#endif /* !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
+ }
+ EXPORT_SYMBOL(dma_common_mmap);
  
 -- 
 2.18.0
