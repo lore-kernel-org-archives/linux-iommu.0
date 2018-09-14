@@ -1,55 +1,69 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v7 0/6] Add non-strict mode support for iommu-dma
-Date: Fri, 14 Sep 2018 15:30:18 +0100
-Message-ID: <cover.1536935328.git.robin.murphy@arm.com>
+Subject: [PATCH v7 1/6] iommu/arm-smmu-v3: Implement flush_iotlb_all hook
+Date: Fri, 14 Sep 2018 15:30:19 +0100
+Message-ID: <f2c5d38962c1f7ceccdf5faafb90d7076eef0752.1536935328.git.robin.murphy@arm.com>
+References: <cover.1536935328.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1536935328.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: joro@8bytes.org, will.deacon@arm.com, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc: linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-Since we'd like to get this polished up and merged and Leizhen has other
-commitments, here's v7 of the previous series[1] wherein I address all
-my own feedback :) This is a quick tweak of the v6 I sent yesterday
-since I figured out slightly too late a much neater way of setting the
-attribute at the appropriate time.
+.flush_iotlb_all is currently stubbed to arm_smmu_iotlb_sync() since the
+only time it would ever need to actually do anything is for callers
+doing their own explicit batching, e.g.:
 
-The principal change is that I've inverted things slightly such that
-it's now a generic domain attribute controlled by iommu-dma given the
-necessary support from individual IOMMU drivers. That way we can easily
-enable other drivers straight away, as I've done for SMMUv2 here (which
-also allowed me to give it a quick test with MMU-401s on a Juno board).
-Otherwise it's really just cosmetic cleanup and rebasing onto Will's
-pending SMMU queue.
+	iommu_unmap_fast(domain, ...);
+	iommu_unmap_fast(domain, ...);
+	iommu_iotlb_flush_all(domain, ...);
 
-Robin.
+where since io-pgtable still issues the TLBI commands implicitly in the
+unmap instead of implementing .iotlb_range_add, the "flush" only needs
+to ensure completion of those already-in-flight invalidations.
 
-[1] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg25150.html
+However, we're about to start using it in anger with flush queues, so
+let's get a proper implementation wired up.
 
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+[rm: expand commit message]
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/arm-smmu-v3.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-Robin Murphy (1):
-  iommu/arm-smmu: Support non-strict mode
-
-Zhen Lei (5):
-  iommu/arm-smmu-v3: Implement flush_iotlb_all hook
-  iommu/dma: Add support for non-strict mode
-  iommu/io-pgtable-arm: Add support for non-strict mode
-  iommu: Add bootup option "iommu.non_strict"
-  iommu/arm-smmu-v3: Add support for non-strict mode
-
- .../admin-guide/kernel-parameters.txt         | 13 ++++++
- drivers/iommu/arm-smmu-v3.c                   | 40 +++++++++++++++----
- drivers/iommu/arm-smmu.c                      | 40 +++++++++++++++----
- drivers/iommu/dma-iommu.c                     | 29 +++++++++++++-
- drivers/iommu/io-pgtable-arm.c                |  9 +++--
- drivers/iommu/io-pgtable.h                    |  5 +++
- drivers/iommu/iommu.c                         | 26 ++++++++++++
- include/linux/iommu.h                         |  1 +
- 8 files changed, 145 insertions(+), 18 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index e395f1ff3f81..f10c852479fc 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1781,6 +1781,14 @@ arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
+ 	return ops->unmap(ops, iova, size);
+ }
+ 
++static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (smmu_domain->smmu)
++		arm_smmu_tlb_inv_context(smmu_domain);
++}
++
+ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
+@@ -2008,7 +2016,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.attach_dev		= arm_smmu_attach_dev,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
+-	.flush_iotlb_all	= arm_smmu_iotlb_sync,
++	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+ 	.iotlb_sync		= arm_smmu_iotlb_sync,
+ 	.iova_to_phys		= arm_smmu_iova_to_phys,
+ 	.add_device		= arm_smmu_add_device,
 -- 
 2.19.0.dirty
