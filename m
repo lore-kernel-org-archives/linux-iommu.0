@@ -1,7 +1,7 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
-Date: Thu, 13 Sep 2018 09:55:21 -0700
-Message-ID: <20180913165520.GA14731@otc-nc-03>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
+Date: Fri, 14 Sep 2018 00:39:27 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191302ECE@SHSMSX101.ccr.corp.intel.com>
 References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
 	<380dc154-5d72-0085-2056-fa466789e1ab@arm.com>
 	<aa1ff748-c2ec-acc0-f1d9-cdff2b131e58@linux.intel.com>
@@ -12,8 +12,8 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 In-Reply-To: <03d496b0-84c2-b3ca-5be5-d4540c6d8ec7-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,13 +23,15 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Bie,
-	Tiwei" <tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar, Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti
+	Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Bie, Tiwei" <tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar, Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 13, 2018 at 04:03:01PM +0100, Jean-Philippe Brucker wrote:
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, September 13, 2018 11:03 PM
+> 
 > On 13/09/2018 01:19, Tian, Kevin wrote:
 > >>> This is proposed for architectures which support finer granularity
 > >>> second level translation with no impact on architectures which only
@@ -40,35 +42,29 @@ On Thu, Sep 13, 2018 at 04:03:01PM +0100, Jean-Philippe Brucker wrote:
 > >> rev3? Other architectures can still do first-level translation with
 > >> PASID, to support some use-cases of IOMMU aware mediated device
 > >> (assigning mdevs to userspace drivers, for example)
-> > 
+> >
 > > yes. aux domain concept applies only to vt-d rev3 which introduces
 > > scalable mode. Care is taken to avoid breaking usages on existing
 > > architectures.
-> > 
+> >
 > > one note. Assigning mdevs to user space alone doesn't imply IOMMU
 > > aware. All existing mdev usages use software or proprietary methods to
-> > isolate DMA. There is only one potential IOMMU aware mdev usage 
-> > which we talked not rely on vt-d rev3 scalable mode - wrap a random 
-> > PCI device into a single mdev instance (no sharing). In that case mdev 
-> > inherits RID from parent PCI device, thus is isolated by IOMMU in RID 
+> > isolate DMA. There is only one potential IOMMU aware mdev usage
+> > which we talked not rely on vt-d rev3 scalable mode - wrap a random
+> > PCI device into a single mdev instance (no sharing). In that case mdev
+> > inherits RID from parent PCI device, thus is isolated by IOMMU in RID
 > > granular. Our RFC supports this usage too. In VFIO two usages (PASID-
 > > based and RID-based) use same code path, i.e. always binding domain to
 > > the parent device of mdev. But within IOMMU they go different paths.
 > > PASID-based will go to aux-domain as iommu_enable_aux_domain
-> > has been called on that device. RID-based will follow existing 
+> > has been called on that device. RID-based will follow existing
 > > unmanaged domain path, as if it is parent device assignment.
 > 
 > For Arm SMMU we're more interested in the PASID-granular case than the
 > RID-granular one. It doesn't necessarily require vt-d rev3 scalable
-> mode, the following example can be implemented with an SMMUv3, since it
+> mode, the following example can be implemented with an SMMUv3, since
+> it
 > only needs PASID-granular first-level translation:
-
-You are right, you can simply use the first level as IOVA for every PASID.
-
-Only issue becomes when you need to assign that to a guest, you would be required
-to shadow the 1st level. If you have a 2nd level per-pasid first level can
-be managed in guest and don't require to shadow them.
-
 > 
 > We have a PCI function that supports PASID, and can be partitioned into
 > multiple isolated entities, mdevs. Each mdev has an MMIO frame, an MSI
@@ -79,12 +75,14 @@ be managed in guest and don't require to shadow them.
 > 
 > (1) Classically, the process uses a VFIO_TYPE1v2_IOMMU container. This
 > creates an auxiliary domain for the mdev, with PASID #35. The process
-> creates DMA mappings with VFIO_IOMMU_MAP_DMA. VFIO calls iommu_map on
+> creates DMA mappings with VFIO_IOMMU_MAP_DMA. VFIO calls
+> iommu_map on
 > the auxiliary domain. The IOMMU driver populates the pgtables associated
 > with PASID #35.
 > 
 > (2) SVA. One way of doing it: the process uses a new
-> "VFIO_TYPE1_SVA_IOMMU" type of container. VFIO binds the process address
+> "VFIO_TYPE1_SVA_IOMMU" type of container. VFIO binds the process
+> address
 > space to the device, gets PASID #35. Simpler, but not everyone wants to
 > use SVA, especially not userspace drivers which need the highest
 > performance.
@@ -95,6 +93,12 @@ be managed in guest and don't require to shadow them.
 > second-level translation is disabled in the SMMU, or it could be the
 > guest, in which case second-level mappings are created by QEMU and
 > first-level translation is managed by assigning PASID tables to the guest.
+
+the former yes applies to aux domain concept. The latter doesn't -
+you have only one second-level per device. whole PASID table managed
+by guest means you assign the whole device to guest, which is not the
+concept of aux domain here.
+
 > 
 > So (2) would use iommu_sva_bind_device(), but (1) needs something else.
 > Aren't auxiliary domains suitable for (1)? Why limit auxiliary domain to
@@ -105,35 +109,45 @@ be managed in guest and don't require to shadow them.
 > which binds first-level page tables. An auxiliary domain that only
 > supports first-level wouldn't support this operation, but it can still
 > implement iommu_map/unmap/etc.
+
+Thanks for correcting me on this. You are right that aux domain shouldn't
+impose such limitation on 2nd or nested only. We define aux domain
+as a normal domain (aux takes effect only when attaching to a device),
+thus it should support all capabilities possible on a normal domain.
+
+btw I'm not sure whether you look at my comment to patch 8/10. I
+explained the rationale why aux domain doesn't interfere with existing
+default domain usage, and in a quick thinking above example might
+not make difference. but need your confirm here. :-)
+
 > 
 > 
 > Another note: if for some reason you did want to allow userspace to
 > choose between first-level or second-level, you could implement the
-> VFIO_TYPE1_NESTING_IOMMU container. It acts like a VFIO_TYPE1v2_IOMMU,
-> but also sets the DOMAIN_ATTR_NESTING on the IOMMU domain. So DMA_MAP
-> ioctl on a NESTING container would populate second-level, and DMA_MAP on
+> VFIO_TYPE1_NESTING_IOMMU container. It acts like a
+> VFIO_TYPE1v2_IOMMU,
+> but also sets the DOMAIN_ATTR_NESTING on the IOMMU domain. So
+> DMA_MAP
+> ioctl on a NESTING container would populate second-level, and DMA_MAP
+> on
 > a normal container populates first-level. But if you're always going to
 > use second-level by default, the distinction isn't necessary.
 
-Where is the nesting attribute specified? in vt-d2 it was part of context
-entry, so also meant all PASID's are nested now. In vt-d3 its part of
-PASID context.
-
-It seems unsafe to share PASID's with different VM's since any request 
-W/O PASID has only one mapping.
+yes, NESTING_IOMMU is the one that we want to use.
 
 > 
 > 
 > >> Sounds good, I'll drop the private PASID patch if we can figure out a
 > >> solution to the attach/detach_dev problem discussed on patch 8/10
 > >>
-> > 
+> >
 > > Can you elaborate a bit on private PASID usage? what is the
-> > high level flow on it? 
-> > 
+> > high level flow on it?
+> >
 > > Again based on earlier explanation, aux domain is specific to IOMMU
 > > architecture supporting vtd scalable mode-like capability, which allows
-> > separate 2nd/1st level translations per PASID. Need a better understanding
+> > separate 2nd/1st level translations per PASID. Need a better
+> understanding
 > > how private PASID is relevant here.
 > 
 > Private PASIDs are used for doing iommu_map/iommu_unmap on PASIDs
@@ -141,8 +155,14 @@ W/O PASID has only one mapping.
 > https://www.spinics.net/lists/dri-devel/msg177003.html As above, some
 > people don't want SVA, some can't do it, some may even want a few
 > private address spaces just for their kernel driver. They need a way to
-> allocate PASIDs and do iommu_map/iommu_unmap on them, without binding to
+> allocate PASIDs and do iommu_map/iommu_unmap on them, without
+> binding to
 > a process. I was planning to add the private PASID patch to my SVA
 > series, but in my opinion the feature overlaps with auxiliary domains.
+> 
 
-It sounds like it maps to AUX domains.
+yes. Though private address spaces in such usage won't be activated 
+simultaneously (switched by driver), the concept does apply.
+
+Thanks
+Kevin
