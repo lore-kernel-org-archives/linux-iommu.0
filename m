@@ -1,130 +1,96 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v7 6/6] iommu/arm-smmu: Support non-strict mode
-Date: Fri, 14 Sep 2018 15:30:24 +0100
-Message-ID: <09be4304bf23dde899be48dbddd93b09296f76bd.1536935328.git.robin.murphy@arm.com>
-References: <cover.1536935328.git.robin.murphy@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
+Date: Fri, 14 Sep 2018 15:39:36 +0100
+Message-ID: <1eea3561-f2c3-29a2-8ae4-879d8230b540@arm.com>
+References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
+ <380dc154-5d72-0085-2056-fa466789e1ab@arm.com>
+ <aa1ff748-c2ec-acc0-f1d9-cdff2b131e58@linux.intel.com>
+ <3602f8c1-df17-4894-1bcc-4d779f9aa7fd@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D191300D06@SHSMSX101.ccr.corp.intel.com>
+ <03d496b0-84c2-b3ca-5be5-d4540c6d8ec7@arm.com>
+ <20180913165520.GA14731@otc-nc-03>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1536935328.git.robin.murphy@arm.com>
+In-Reply-To: <20180913165520.GA14731@otc-nc-03>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, will.deacon@arm.com, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
+To: "Raj, Ashok" <ashok.raj@intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, Kirti Wankhede <kwankhede@nvidia.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Alex Williamson <alex.williamson@redhat.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, David Woodhouse <dwmw2@infradead.org>, "Sun, Yi Y" <yi.y.sun@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-All we need is to wire up .flush_iotlb_all properly and implement the
-domain attribute, and iommu-dma and io-pgtable-arm will do the rest for
-us. Rather than bother implementing it for v7s format for the highly
-unlikely chance of that being relevant, we can simply hide the
-non-strict flag from io-pgtable for that combination just so anyone who
-does actually try it will simply get over-invalidation instead of
-failure to initialise domains.
+On 13/09/2018 17:55, Raj, Ashok wrote:
+>> For Arm SMMU we're more interested in the PASID-granular case than the
+>> RID-granular one. It doesn't necessarily require vt-d rev3 scalable
+>> mode, the following example can be implemented with an SMMUv3, since it
+>> only needs PASID-granular first-level translation:
+> 
+> You are right, you can simply use the first level as IOVA for every PASID.
+> 
+> Only issue becomes when you need to assign that to a guest, you would be required
+> to shadow the 1st level. If you have a 2nd level per-pasid first level can
+> be managed in guest and don't require to shadow them.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm-smmu.c | 40 +++++++++++++++++++++++++++++++++-------
- 1 file changed, 33 insertions(+), 7 deletions(-)
+Right, for us assigning a PASID-granular mdev to a guest requires shadowing
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index fd1b80ef9490..aa5be334753b 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -246,6 +246,7 @@ struct arm_smmu_domain {
- 	const struct iommu_gather_ops	*tlb_ops;
- 	struct arm_smmu_cfg		cfg;
- 	enum arm_smmu_domain_stage	stage;
-+	bool				non_strict;
- 	struct mutex			init_mutex; /* Protects smmu pointer */
- 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
- 	struct iommu_domain		domain;
-@@ -863,6 +864,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
- 		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
- 
-+	if (smmu_domain->non_strict && cfg->fmt != ARM_SMMU_CTX_FMT_AARCH32_S)
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+
- 	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops) {
-@@ -1252,6 +1256,14 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return ops->unmap(ops, iova, size);
- }
- 
-+static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (smmu_domain->tlb_ops)
-+		smmu_domain->tlb_ops->tlb_flush_all(smmu_domain);
-+}
-+
- static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -1470,13 +1482,17 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
--	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
--		return -EINVAL;
--
- 	switch (attr) {
- 	case DOMAIN_ATTR_NESTING:
-+		if (domain->type != IOMMU_DOMAIN_UNMANAGED)
-+			return -EINVAL;
- 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 		return 0;
-+	case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
-+		if (domain->type != IOMMU_DOMAIN_DMA)
-+			return -EINVAL;
-+		*(int *)data = smmu_domain->non_strict;
-+		return 0;
- 	default:
- 		return -ENODEV;
- 	}
-@@ -1488,13 +1504,15 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
- 	int ret = 0;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
--	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
--		return -EINVAL;
--
- 	mutex_lock(&smmu_domain->init_mutex);
- 
- 	switch (attr) {
- 	case DOMAIN_ATTR_NESTING:
-+		if (domain->type != IOMMU_DOMAIN_UNMANAGED) {
-+			ret = -EINVAL;
-+			goto out_unlock;
-+		}
-+
- 		if (smmu_domain->smmu) {
- 			ret = -EPERM;
- 			goto out_unlock;
-@@ -1505,6 +1523,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
- 		else
- 			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
- 
-+		break;
-+	case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
-+		if (domain->type != IOMMU_DOMAIN_DMA) {
-+			ret = -EINVAL;
-+			goto out_unlock;
-+		}
-+
-+		smmu_domain->non_strict = *(int *)data;
- 		break;
- 	default:
- 		ret = -ENODEV;
-@@ -1562,7 +1588,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.attach_dev		= arm_smmu_attach_dev,
- 	.map			= arm_smmu_map,
- 	.unmap			= arm_smmu_unmap,
--	.flush_iotlb_all	= arm_smmu_iotlb_sync,
-+	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
- 	.iotlb_sync		= arm_smmu_iotlb_sync,
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
--- 
-2.19.0.dirty
+>> Another note: if for some reason you did want to allow userspace to
+>> choose between first-level or second-level, you could implement the
+>> VFIO_TYPE1_NESTING_IOMMU container. It acts like a VFIO_TYPE1v2_IOMMU,
+>> but also sets the DOMAIN_ATTR_NESTING on the IOMMU domain. So DMA_MAP
+>> ioctl on a NESTING container would populate second-level, and DMA_MAP on
+>> a normal container populates first-level. But if you're always going to
+>> use second-level by default, the distinction isn't necessary.
+> 
+> Where is the nesting attribute specified? in vt-d2 it was part of context
+> entry, so also meant all PASID's are nested now. In vt-d3 its part of
+> PASID context.
+
+I don't think the nesting attribute is described in details anywhere.
+The SMMU drivers use it to know if they should create first- or
+second-level mappings. At the moment QEMU always uses
+VFIO_TYPE1v2_IOMMU, but Eric Auger is proposing a patch that adds
+VFIO_TYPE1_NESTING_IOMMU to QEMU:
+https://www.mail-archive.com/qemu-devel@nongnu.org/msg559820.html
+
+> It seems unsafe to share PASID's with different VM's since any request 
+> W/O PASID has only one mapping.
+
+Which case are you talking about? It might be more confusing than
+helpful, but here's my understanding of what we can assign to a guest:
+
+              |  no vIOMMU  | vIOMMU no PASID  | vIOMMU with PASID
+--------------+-------------+------------------+--------------------
+ VF           |     ok      |  shadow or nest  |      nest
+ mdev, SMMUv3 |     ok      |     shadow       |  shadow + PV (?)
+ mdev, vt-d3  |     ok      |      nest        |    nest + PV
+
+The first line, assigning a PCI VF to a guest is the "basic" vfio-pci
+case. Currently in QEMU it works by shadowing first-level translation.
+We still have to upstream nested translation for that case. Vt-d2 didn't
+support nested without PASID, vt-d3 offers RID_PASID for this. On SMMUv3
+the PASID table is assigned to the guest, whereas on vt-d3 the host
+manages the PASID table and individual page tables are assigned to the
+guest.
+
+Assigning an mdev (here I'm talking about the PASID-granular partition
+of a VF, not the whole RID-granular VF wrapped by an mdev) could be done
+by shadowing first-level translation on SMMUv3. It cannot do nested
+since the VF has a single set of second-level page tables, which cannot
+be used when mdevs are assigned to different VMs. Vt-d3 has one set of
+second-level page tables per PASID, so it can do nested.
+
+Since the parent device has a single PASID space, allowing the guest to
+use multiple PASIDs for one mdev requires paravirtual allocation of
+PASIDs (last column). Vt-d3 uses the Virtual Command Registers for that.
+I assume that it is safe because the host is in charge of programming
+PASIDs in the parent device, so the guest couldn't use a PASID allocated
+to another mdev, but I don't know what the device's programming model
+would look like. Anyway I don't think guest PASID is tackled by this
+series (right?) and I don't intend to work on it for SMMUv3 (shadowing
+stage-1 for vSVA seems like a bad idea...)
+
+Does this seem accurate?
+
+Thanks,
+Jean
