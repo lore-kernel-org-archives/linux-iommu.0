@@ -1,71 +1,117 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
-Date: Fri, 14 Sep 2018 15:40:15 +0100
-Message-ID: <64e4726e-929f-0e76-6dcc-45a750bde7e9@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group
+ helpers
+Date: Fri, 14 Sep 2018 15:45:52 +0100
+Message-ID: <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
 References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-	<380dc154-5d72-0085-2056-fa466789e1ab@arm.com>
-	<aa1ff748-c2ec-acc0-f1d9-cdff2b131e58@linux.intel.com>
-	<3602f8c1-df17-4894-1bcc-4d779f9aa7fd@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191300D06@SHSMSX101.ccr.corp.intel.com>
-	<03d496b0-84c2-b3ca-5be5-d4540c6d8ec7@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D191302ECE@SHSMSX101.ccr.corp.intel.com>
+ <20180830040922.30426-9-baolu.lu@linux.intel.com>
+ <c5124ac1-65fe-7f89-265c-bef229bc5ce9@arm.com>
+ <a97c8f75-ff49-5b87-198f-d3c8950d4e90@linux.intel.com>
+ <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191302ECE-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Bie, Tiwei" <tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Kumar, Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
->> This example only needs to modify first-level translation, and works
->> with SMMUv3. The kernel here could be the host, in which case
->> second-level translation is disabled in the SMMU, or it could be the
->> guest, in which case second-level mappings are created by QEMU and
->> first-level translation is managed by assigning PASID tables to the guest.
+On 13/09/2018 01:35, Tian, Kevin wrote:
+>>> Let's consider it from the API point of view.
+>>>
+>>> We have iommu_a(de)ttach_device() APIs to attach or detach a domain
+>>> to/from a device. We should avoid applying a limitation of "these are
+>>> only for single domain case, for multiple domains, use another API".
+>>
+>> That's an idealized view of the API, the actual semantics aren't as
+>> simple. For IOMMU drivers that implement IOMMU_DOMAIN_DMA in their
+>> domain_alloc operation (Arm SMMU, AMD IOMMU, ...), attach_dev
+>> attaches
+>> an unmanaged domain, detach_dev reattaches the default DMA domain,
+>> and
+>> the detach_dev IOMMU op is not called. We can't change that now, so it's
+>> difficult to add more functionality to attach_dev and detach_dev.
+>>
 > 
-> the former yes applies to aux domain concept. The latter doesn't -
-> you have only one second-level per device. whole PASID table managed
-> by guest means you assign the whole device to guest, which is not the
-> concept of aux domain here.
-
-Right, in the latter case, the host uses a "normal" domain to assign the
-whole PCI function to the guest. But the guest can still use auxiliary
-domains like in my example, to sub-assign the PCI function to different
-guest userspace applications.
-
->> So (2) would use iommu_sva_bind_device(), but (1) needs something else.
->> Aren't auxiliary domains suitable for (1)? Why limit auxiliary domain to
->> second-level or nested translation? It seems silly to use a different
->> API for first-level, since the flow in userspace and VFIO is the same as
->> your second-level case as far as MAP_DMA ioctl goes. The difference is
->> that in your case the auxiliary domain supports an additional operation
->> which binds first-level page tables. An auxiliary domain that only
->> supports first-level wouldn't support this operation, but it can still
->> implement iommu_map/unmap/etc.
+> Now we have four possible usages on a(de)ttach_device:
 > 
-> Thanks for correcting me on this. You are right that aux domain shouldn't
-> impose such limitation on 2nd or nested only. We define aux domain
-> as a normal domain (aux takes effect only when attaching to a device),
-> thus it should support all capabilities possible on a normal domain.
+> 1) Normal DMA API path i.e. IOMMU_DOMAIN_DMA, for DMA operations
+> in host/parent device driver;
 > 
-> btw I'm not sure whether you look at my comment to patch 8/10. I
-> explained the rationale why aux domain doesn't interfere with existing
-> default domain usage, and in a quick thinking above example might
-> not make difference. but need your confirm here. :-)
+> 2) VFIO passthru path, when the physical device is assigned to user space
+> or guest driver
+> 
+> 3) mdev passthru path 1, when mdev is assigned to user space or guest
+> driver. Here mdev is a wrap on random PCI device
+> 
+> 4) mdev passthru path 2, when mdev is assigned to user space or guest
+> driver. Here mdev is in a smaller granularity (e.g. tagged by PASID) as
+> supported by vt-d scalable mode
+> 
+> 1) and 2) are existing usages. What you described (unmanaged vs. default)
+> falls into this category.
+> 
+> 3) is actually same as 2) in IOMMU layer. sort of passing through DMA
+> capability to guest. Though there is still a parent driver, the parent driver
+> itself should not do DMA - i.e. unmanaged in host side.
+> 
+> 4) is a new code path introduced in IOMMU layer, which is what
+> vfio_a(de)tach_aux_domain is trying to address. In this case parent device
+> can still have its own DMA capability, using existing code path 1) (thus
+> default domain still applies). and the parent device can have multiple 
+> aux domains (and associated structures), using code path 4).
 
-Yes sorry, I didn't have time to answer, will do it now
+We still have the problem that detach() doesn't propagate to the IOMMU
+driver. Here's the current flow, without mdev:
+
+1) At boot, the PF's (parent device) driver is probed, and the IOMMU
+core sets up a default DMA domain, to be used by dma_alloc by the PF's
+driver.
+-> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
+
+2) or 3) Later userspace wants to control the PF, replaces the PF's
+driver with vfio-pci. When userspace creates a container, VFIO allocates
+a new IOMMU domain, and calls iommu_attach_group.
+-> iommu.c calls domain->ops->attach_dev(domain, dev)
+This detaches the PF from the default domain, and attaches it to the new
+domain.
+
+1) When the container is closed, VFIO calls iommu_detach_group. This
+detaches the PF from its current domain, and attaches it back to the
+default domain.
+-> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
+
+-----
+Now with mdev, we still attach the DMA domain in 1). Then:
+
+4) Userspace opens an mdev and creates a container. VFIO enables aux
+domain for the device. VFIO allocates a new IOMMU domain, and calls
+iommu_attach_device(domain1, parent_dev).
+-> iommu.c calls domain->ops->attach_dev(domain1, dev)
+Because the device is in "aux domain" state, the IOMMU driver does not
+detach from the default domain, but instead allocates a PASID and
+attaches the aux domain. (Side note: for SMMU we couldn't detach from
+the default domain, because we need it for MSI mappings.)
+
+4) Userspace opens another mdev.
+-> iommu.c calls domain->ops->attach_dev(domain2, dev)
+
+1)? When the container is closed, VFIO calls
+iommu_detach_device(domain2, parent_dev)
+-> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
+Given that auxiliary domains are attached, the IOMMU driver could deduce
+that this actually means "detach an auxiliary domain". But which one?
+
+So the proposed interface doesn't seem to work as is. If we want to use
+iommu_attach/detach_device for auxiliary domains, the existing behavior
+of iommu.c, and IOMMU drivers that rely on it, have to change. Any
+change I can think of right now seems more daunting than introducing a
+different path for auxiliary domains, like iommu_attach_aux_domain for
+example.
 
 Thanks,
 Jean
