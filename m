@@ -1,15 +1,14 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] media: s5p-mfc: Fix memdev DMA configuration
-Date: Fri, 14 Sep 2018 14:19:29 +0200
-Message-ID: <20180914121931eucas1p14292ee983fd9b4bb21968dffa303dde8~UQ3utL6mj2689726897eucas1p15@eucas1p1.samsung.com>
-References: <CGME20180912164604epcas3p1ac72c0861ec182f50485959ac998ed52@epcas3p1.samsung.com>
-	<d485dc3698304403620d5ed92d066942a6b68cfd.1536770587.git.robin.murphy@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/3] iommu: Avoid DMA ops domain refcount contention
+Date: Fri, 14 Sep 2018 13:48:59 +0100
+Message-ID: <20180914124858.GA4010@arm.com>
+References: <cover.1536764440.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <d485dc3698304403620d5ed92d066942a6b68cfd.1536770587.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <cover.1536764440.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +18,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, kamil-MZ2JYD8fkKLYtjvyW6yDsg@public.gmane.org, jtp.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sylwester Nawrocki <snawrocki-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Smitha T Murthy <smitha.t-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
-On 2018-09-12 18:45, Robin Murphy wrote:
-> Having of_reserved_mem_device_init() forcibly reconfigure DMA for all
-> callers, potentially overriding the work done by a bus-specific
-> .dma_configure method earlier, is at best a bad idea and at worst
-> actively harmful. If drivers really need virtual devices to own
-> dma-coherent memory, they should explicitly configure those devices
-> based on the appropriate firmware node as they create them.
->
-> It looks like the only driver not passing in a proper OF platform device
-> is s5p-mfc, so move the rogue of_dma_configure() call into that driver
-> where it logically belongs.
->
-> CC: Smitha T Murthy <smitha.t-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> CC: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On Wed, Sep 12, 2018 at 04:24:11PM +0100, Robin Murphy wrote:
+> John raised the issue[1] that we have some unnecessary refcount contention
+> in the DMA ops path which shows scalability problems now that we have more
+> real high-performance hardware using iommu-dma. The x86 IOMMU drivers are
+> sidestepping this by stashing domain references in archdata, but since
+> that's not very nice for architecture-agnostic code, I think it's time to
+> look at a generic API-level solution.
+> 
+> These are a couple of quick patches based on the idea I had back when
+> first implementing iommu-dma, but didn't have any way to justify at the
+> time. However, the reports of 10-25% better networking performance on v1
+> suggest that it's very worthwhile (and far more significant than I ever
+> would have guessed).
+> 
+> As far as merging goes, I don't mind at all whether this goes via IOMMU,
+> or via dma-mapping provided Joerg's happy to ack it.
 
-Right, after recent cleanup dma ops initialization, MFC driver is
-a better place for calling of_dma_configure() on virtual devices.
+I think it makes most sense for Joerg to take this series via his tree.
 
-Reviewed-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Anyway, I've been running them on my TX2 box and things are happy enough,
+so:
 
-> ---
->   drivers/media/platform/s5p-mfc/s5p_mfc.c | 7 +++++++
->   drivers/of/of_reserved_mem.c             | 4 ----
->   2 files changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc.c b/drivers/media/platform/s5p-mfc/s5p_mfc.c
-> index 927a1235408d..77eb4a4511c1 100644
-> --- a/drivers/media/platform/s5p-mfc/s5p_mfc.c
-> +++ b/drivers/media/platform/s5p-mfc/s5p_mfc.c
-> @@ -1094,6 +1094,13 @@ static struct device *s5p_mfc_alloc_memdev(struct device *dev,
->   	child->dma_mask = dev->dma_mask;
->   	child->release = s5p_mfc_memdev_release;
->   
-> +	/*
-> +	 * The memdevs are not proper OF platform devices, so in order for them
-> +	 * to be treated as valid DMA masters we need a bit of a hack to force
-> +	 * them to inherit the MFC node's DMA configuration.
-> +	 */
-> +	of_dma_configure(child, dev->of_node, true);
-> +
->   	if (device_add(child) == 0) {
->   		ret = of_reserved_mem_device_init_by_idx(child, dev->of_node,
->   							 idx);
-> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> index 895c83e0c7b6..4ef6f4485335 100644
-> --- a/drivers/of/of_reserved_mem.c
-> +++ b/drivers/of/of_reserved_mem.c
-> @@ -350,10 +350,6 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
->   		mutex_lock(&of_rmem_assigned_device_mutex);
->   		list_add(&rd->list, &of_rmem_assigned_device_list);
->   		mutex_unlock(&of_rmem_assigned_device_mutex);
-> -		/* ensure that dma_ops is set for virtual devices
-> -		 * using reserved memory
-> -		 */
-> -		of_dma_configure(dev, np, true);
->   
->   		dev_info(dev, "assigned reserved memory node %s\n", rmem->name);
->   	} else {
+Tested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Will
