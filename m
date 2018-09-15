@@ -1,175 +1,150 @@
-From: Jacob Pan <jacob.jun.pan@intel.com>
-Subject: Re: [RFC PATCH v2 00/10] vfio/mdev: IOMMU aware mediated device
-Date: Fri, 14 Sep 2018 14:04:33 -0700
-Message-ID: <20180914140433.6891a90c@jacob-builder>
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group
+        helpers
+Date: Sat, 15 Sep 2018 02:36:57 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191305A74@SHSMSX101.ccr.corp.intel.com>
 References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-        <380dc154-5d72-0085-2056-fa466789e1ab@arm.com>
-        <aa1ff748-c2ec-acc0-f1d9-cdff2b131e58@linux.intel.com>
-        <3602f8c1-df17-4894-1bcc-4d779f9aa7fd@arm.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D191300D06@SHSMSX101.ccr.corp.intel.com>
-        <03d496b0-84c2-b3ca-5be5-d4540c6d8ec7@arm.com>
+        <20180830040922.30426-9-baolu.lu@linux.intel.com>
+        <c5124ac1-65fe-7f89-265c-bef229bc5ce9@arm.com>
+        <a97c8f75-ff49-5b87-198f-d3c8950d4e90@linux.intel.com>
+        <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
+        <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
+ <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <03d496b0-84c2-b3ca-5be5-d4540c6d8ec7@arm.com>
+In-Reply-To: <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, jacob.jun.pan@intel.com
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 13 Sep 2018 16:03:01 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
-
-> On 13/09/2018 01:19, Tian, Kevin wrote:
-> >>> This is proposed for architectures which support finer granularity
-> >>> second level translation with no impact on architectures which
-> >>> only support Source ID or the similar granularity.  
+> From: Jean-Philippe Brucker
+> Sent: Friday, September 14, 2018 10:46 PM
+> 
+> On 13/09/2018 01:35, Tian, Kevin wrote:
+> >>> Let's consider it from the API point of view.
+> >>>
+> >>> We have iommu_a(de)ttach_device() APIs to attach or detach a domain
+> >>> to/from a device. We should avoid applying a limitation of "these are
+> >>> only for single domain case, for multiple domains, use another API".
 > >>
-> >> Just to be clear, in this paragraph you're only referring to the
-> >> Nested/second-level translation for mdev, which is specific to vt-d
-> >> rev3? Other architectures can still do first-level translation with
-> >> PASID, to support some use-cases of IOMMU aware mediated device
-> >> (assigning mdevs to userspace drivers, for example)  
-> > 
-> > yes. aux domain concept applies only to vt-d rev3 which introduces
-> > scalable mode. Care is taken to avoid breaking usages on existing
-> > architectures.
-> > 
-> > one note. Assigning mdevs to user space alone doesn't imply IOMMU
-> > aware. All existing mdev usages use software or proprietary methods
-> > to isolate DMA. There is only one potential IOMMU aware mdev usage 
-> > which we talked not rely on vt-d rev3 scalable mode - wrap a random 
-> > PCI device into a single mdev instance (no sharing). In that case
-> > mdev inherits RID from parent PCI device, thus is isolated by IOMMU
-> > in RID granular. Our RFC supports this usage too. In VFIO two
-> > usages (PASID- based and RID-based) use same code path, i.e. always
-> > binding domain to the parent device of mdev. But within IOMMU they
-> > go different paths. PASID-based will go to aux-domain as
-> > iommu_enable_aux_domain has been called on that device. RID-based
-> > will follow existing unmanaged domain path, as if it is parent
-> > device assignment.  
+> >> That's an idealized view of the API, the actual semantics aren't as
+> >> simple. For IOMMU drivers that implement IOMMU_DOMAIN_DMA in
+> their
+> >> domain_alloc operation (Arm SMMU, AMD IOMMU, ...), attach_dev
+> >> attaches
+> >> an unmanaged domain, detach_dev reattaches the default DMA domain,
+> >> and
+> >> the detach_dev IOMMU op is not called. We can't change that now, so
+> it's
+> >> difficult to add more functionality to attach_dev and detach_dev.
+> >>
+> >
+> > Now we have four possible usages on a(de)ttach_device:
+> >
+> > 1) Normal DMA API path i.e. IOMMU_DOMAIN_DMA, for DMA
+> operations
+> > in host/parent device driver;
+> >
+> > 2) VFIO passthru path, when the physical device is assigned to user space
+> > or guest driver
+> >
+> > 3) mdev passthru path 1, when mdev is assigned to user space or guest
+> > driver. Here mdev is a wrap on random PCI device
+> >
+> > 4) mdev passthru path 2, when mdev is assigned to user space or guest
+> > driver. Here mdev is in a smaller granularity (e.g. tagged by PASID) as
+> > supported by vt-d scalable mode
+> >
+> > 1) and 2) are existing usages. What you described (unmanaged vs. default)
+> > falls into this category.
+> >
+> > 3) is actually same as 2) in IOMMU layer. sort of passing through DMA
+> > capability to guest. Though there is still a parent driver, the parent driver
+> > itself should not do DMA - i.e. unmanaged in host side.
+> >
+> > 4) is a new code path introduced in IOMMU layer, which is what
+> > vfio_a(de)tach_aux_domain is trying to address. In this case parent
+> device
+> > can still have its own DMA capability, using existing code path 1) (thus
+> > default domain still applies). and the parent device can have multiple
+> > aux domains (and associated structures), using code path 4).
 > 
-> For Arm SMMU we're more interested in the PASID-granular case than the
-> RID-granular one. It doesn't necessarily require vt-d rev3 scalable
-> mode, the following example can be implemented with an SMMUv3, since
-> it only needs PASID-granular first-level translation:
+> We still have the problem that detach() doesn't propagate to the IOMMU
+> driver. Here's the current flow, without mdev:
 > 
-> We have a PCI function that supports PASID, and can be partitioned
-> into multiple isolated entities, mdevs. Each mdev has an MMIO frame,
-> an MSI vector and a PASID.
+> 1) At boot, the PF's (parent device) driver is probed, and the IOMMU
+> core sets up a default DMA domain, to be used by dma_alloc by the PF's
+> driver.
+> -> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
 > 
-> Different processes (userspace drivers, not QEMU) each open one mdev.
-> A process controlling one mdev has two ways of doing DMA:
+> 2) or 3) Later userspace wants to control the PF, replaces the PF's
+> driver with vfio-pci. When userspace creates a container, VFIO allocates
+> a new IOMMU domain, and calls iommu_attach_group.
+> -> iommu.c calls domain->ops->attach_dev(domain, dev)
+> This detaches the PF from the default domain, and attaches it to the new
+> domain.
 > 
-> (1) Classically, the process uses a VFIO_TYPE1v2_IOMMU container. This
-> creates an auxiliary domain for the mdev, with PASID #35. The process
-> creates DMA mappings with VFIO_IOMMU_MAP_DMA. VFIO calls iommu_map on
-> the auxiliary domain. The IOMMU driver populates the pgtables
-> associated with PASID #35.
+> 1) When the container is closed, VFIO calls iommu_detach_group. This
+> detaches the PF from its current domain, and attaches it back to the
+> default domain.
+> -> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
 > 
-> (2) SVA. One way of doing it: the process uses a new
-> "VFIO_TYPE1_SVA_IOMMU" type of container. VFIO binds the process
-> address space to the device, gets PASID #35. Simpler, but not
-> everyone wants to use SVA, especially not userspace drivers which
-> need the highest performance.
+> -----
+> Now with mdev, we still attach the DMA domain in 1). Then:
 > 
-> 
-> This example only needs to modify first-level translation, and works
-> with SMMUv3. The kernel here could be the host, in which case
-> second-level translation is disabled in the SMMU, or it could be the
-> guest, in which case second-level mappings are created by QEMU and
-> first-level translation is managed by assigning PASID tables to the
-> guest.
-There is a difference in case of guest SVA. VT-d v3 will bind guest
-PASID and guest CR3 instead of the guest PASID table. Then turn on
-nesting. In case of mdev, the second level is obtained from the aux
-domain which was setup for the default PASID. Or in case of PCI device,
-second level is harvested from RID2PASID.
+> 4) Userspace opens an mdev and creates a container. VFIO enables aux
+> domain for the device. VFIO allocates a new IOMMU domain, and calls
+> iommu_attach_device(domain1, parent_dev).
+> -> iommu.c calls domain->ops->attach_dev(domain1, dev)
+> Because the device is in "aux domain" state, the IOMMU driver does not
+> detach from the default domain, but instead allocates a PASID and
+> attaches the aux domain. (Side note: for SMMU we couldn't detach from
+> the default domain, because we need it for MSI mappings.)
 
-> So (2) would use iommu_sva_bind_device(), 
-We would need something different than that for guest bind, just to show
-the two cases:
-
-int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int
-*pasid, unsigned long flags, void *drvdata)
-
-(WIP)
-int sva_bind_gpasid(struct device *dev, struct gpasid_bind_data *data)
-where:
-/**
- * struct gpasid_bind_data - Information about device and guest PASID binding
- * @pasid:	Process address space ID used for the guest mm
- * @addr_width:	Guest address width. Paging mode can also be derived.
- * @gcr3:	Guest CR3 value from guest mm
- */
-struct gpasid_bind_data {
-	__u32 pasid;
-	__u64 gcr3;
-	__u32 addr_width;
-	__u32 flags;
-#define	IOMMU_SVA_GPASID_SRE	BIT(0) /* supervisor request */
-};
-Perhaps there is room to merge with io_mm but the life cycle management
-of guest PASID and host PASID will be different if you rely on mm
-release callback than FD.
-
-> but (1) needs something
-> else. Aren't auxiliary domains suitable for (1)? Why limit auxiliary
-> domain to second-level or nested translation? It seems silly to use a
-> different API for first-level, since the flow in userspace and VFIO
-> is the same as your second-level case as far as MAP_DMA ioctl goes.
-> The difference is that in your case the auxiliary domain supports an
-> additional operation which binds first-level page tables. An
-> auxiliary domain that only supports first-level wouldn't support this
-> operation, but it can still implement iommu_map/unmap/etc.
-> 
-I think the intention is that when a mdev is created, we don;t
-know whether it will be used for SVA or IOVA. So aux domain is here to
-"hold a spot" for the default PASID such that MAP_DMA calls can work as
-usual, which is second level only. Later, if SVA is used on the mdev
-there will be another PASID allocated for that purpose.
-Do we need to create an aux domain for each PASID? the translation can
-be looked up by the combination of parent dev and pasid.
+same for vtd. We don't require parent driver to detach its domain in 1).
+Parent driver can have its own DMA capability when aux domain is
+enabled in parallel
 
 > 
-> Another note: if for some reason you did want to allow userspace to
-> choose between first-level or second-level, you could implement the
-> VFIO_TYPE1_NESTING_IOMMU container. It acts like a VFIO_TYPE1v2_IOMMU,
-> but also sets the DOMAIN_ATTR_NESTING on the IOMMU domain. So DMA_MAP
-> ioctl on a NESTING container would populate second-level, and DMA_MAP
-> on a normal container populates first-level. But if you're always
-> going to use second-level by default, the distinction isn't necessary.
-> 
-In case of guest SVA, the second level is always there.
-> 
-> >> Sounds good, I'll drop the private PASID patch if we can figure
-> >> out a solution to the attach/detach_dev problem discussed on patch
-> >> 8/10 
-> > 
-> > Can you elaborate a bit on private PASID usage? what is the
-> > high level flow on it? 
-> > 
-> > Again based on earlier explanation, aux domain is specific to IOMMU
-> > architecture supporting vtd scalable mode-like capability, which
-> > allows separate 2nd/1st level translations per PASID. Need a better
-> > understanding how private PASID is relevant here.  
-> 
-> Private PASIDs are used for doing iommu_map/iommu_unmap on PASIDs
-> (first-level translation):
-> https://www.spinics.net/lists/dri-devel/msg177003.html As above, some
-> people don't want SVA, some can't do it, some may even want a few
-> private address spaces just for their kernel driver. They need a way
-> to allocate PASIDs and do iommu_map/iommu_unmap on them, without
-> binding to a process. I was planning to add the private PASID patch
-> to my SVA series, but in my opinion the feature overlaps with
-> auxiliary domains.
-> 
-> Thanks,
-> Jean
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 4) Userspace opens another mdev.
+> -> iommu.c calls domain->ops->attach_dev(domain2, dev)
 
-[Jacob Pan]
+another mdev in same VFIO container or different? I assume the
+latter since you mentioned a new domain2.
+
+> 
+> 1)? When the container is closed, VFIO calls
+> iommu_detach_device(domain2, parent_dev)
+> -> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
+> Given that auxiliary domains are attached, the IOMMU driver could deduce
+> that this actually means "detach an auxiliary domain". But which one?
+
+I didn't get this one. There is no need to stick to 1) behavior for
+4), i.e. below is expected:
+	domain2->ops->detach_dev(domain2, dev)
+
+why cannot ARM implement a detach_dev for aux_domain too? My
+feeling is that default domain twist is only for switch between 1/2/3
+in concept. 
+
+> 
+> So the proposed interface doesn't seem to work as is. If we want to use
+> iommu_attach/detach_device for auxiliary domains, the existing behavior
+> of iommu.c, and IOMMU drivers that rely on it, have to change. Any
+> change I can think of right now seems more daunting than introducing a
+> different path for auxiliary domains, like iommu_attach_aux_domain for
+> example.
+> 
+
+introducing *aux* specific API will cause different VFIO code path to
+handle RID-based and PASID-based mdev, since RID-based still needs
+to use normal attach_domain that way. well, this argument is not very strong
+in itself, if indeed proposed way doesn't work for ARM. But let's see
+whether it is the case with more understanding of your actual concern.
+
+Thanks
+Kevin
