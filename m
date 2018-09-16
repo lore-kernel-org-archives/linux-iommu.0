@@ -1,65 +1,93 @@
-From: <zhe.he@windriver.com>
-Subject: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to command line
-Date: Mon, 17 Sep 2018 11:27:11 +0800
-Message-ID: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 01/13] dt-bindings: mediatek: Add binding for mt8183
+	IOMMU and SMI
+Date: Sun, 16 Sep 2018 17:26:16 -0500
+Message-ID: <5b9f3f52.1c69fb81.a7f7c.f34e@mx.google.com>
+References: <1535954502-30646-1-git-send-email-yong.wu@mediatek.com>
+	<1535954502-30646-2-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: zhe.he@windriver.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1535954502-30646-2-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: He Zhe <zhe.he@windriver.com>
+On Mon, Sep 03, 2018 at 02:01:30PM +0800, Yong Wu wrote:
+> This patch adds decriptions for mt8183 IOMMU and SMI.
+> 
+> mt8183 has one M4U like mt8173 and is also MTK IOMMU gen2 which
+> uses ARM Short-Descriptor translation table format.
+> 
+> The mt8183 M4U-SMI HW diagram is as below:
+> 
+>                           EMI
+>                            |
+>                           M4U
+>                            |
+>                        ----------
+>                        |        |
+>                    gals0-rx   gals1-rx
+>                        |        |
+>                        |        |
+>                    gals0-tx   gals1-tx
+>                        |        |
+>                       ------------
+>                        SMI Common
+>                       ------------
+>                            |
+>   +-----+-----+--------+-----+-----+-------+-------+
+>   |     |     |        |     |     |       |       |
+>   |     |  gals-rx  gals-rx  |   gals-rx gals-rx gals-rx
+>   |     |     |        |     |     |       |       |
+>   |     |     |        |     |     |       |       |
+>   |     |  gals-tx  gals-tx  |   gals-tx gals-tx gals-tx
+>   |     |     |        |     |     |       |       |
+> larb0 larb1  larb2   larb3  larb4 larb5  larb6    CCU
+> disp  vdec   IPU0    IPU1   venc  IPU1    cam
+> 
+> All the connections are HW fixed, SW can NOT adjust it.
+> 
+> Compared with mt8173, we add a GALS(Global Async Local Sync) module
+> between SMI-common and M4U, and additional between larb2/3/5/6 and
+> SMI-common. GALS can help synchronize for the modules in different
+> clock frequence, it can be seen as a "asynchronous fifo".
 
-setup_io_tlb_npages does not check input argument before passing it
-to isdigit. The argument would be a NULL pointer if "swiotlb", without
-its value, is set in command line and thus causes the following panic.
+s/frequence/frequency/
 
-PANIC: early exception 0xe3 IP 10:ffffffffbb9b8e9f error 0 cr2 0x0
-[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.19.0-rc3-yocto-standard+ #9
-[    0.000000] RIP: 0010:setup_io_tlb_npages+0xf/0x95
-...
-[    0.000000] Call Trace:
-[    0.000000]  do_early_param+0x57/0x8e
-[    0.000000]  parse_args+0x208/0x320
-[    0.000000]  ? rdinit_setup+0x30/0x30
-[    0.000000]  parse_early_options+0x29/0x2d
-[    0.000000]  ? rdinit_setup+0x30/0x30
-[    0.000000]  parse_early_param+0x36/0x4d
-[    0.000000]  setup_arch+0x336/0x99e
-[    0.000000]  start_kernel+0x6f/0x4e6
-[    0.000000]  x86_64_start_reservations+0x24/0x26
-[    0.000000]  x86_64_start_kernel+0x6f/0x72
-[    0.000000]  secondary_startup_64+0xa4/0xb0
 
-This patch adds a check to prevent the panic.
+> GALS can only help transfer the command/data while it don't have the
+> register, thus it has the special "smi" clock and it don't have the
+> "apb" clock. From the diagram above, we add "gals0" and "gals1"
+> clockes for smi-common and add a "gals" clock for smi-larb.
 
-Signed-off-by: He Zhe <zhe.he@windriver.com>
-Cc: stable@vger.kernel.org
-Cc: konrad.wilk@oracle.com
-Cc: hch@lst.de
-Cc: m.szyprowski@samsung.com
-Cc: robin.murphy@arm.com
----
- kernel/dma/swiotlb.c | 5 +++++
- 1 file changed, 5 insertions(+)
+s/clockes/clocks/
+s/don't/doesn't/
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 4f8a6db..46fc34e 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -109,6 +109,11 @@ static int late_alloc;
- static int __init
- setup_io_tlb_npages(char *str)
- {
-+	if (!str) {
-+		pr_err("Config string not provided\n");
-+		return -EINVAL;
-+	}
-+
- 	if (isdigit(*str)) {
- 		io_tlb_nslabs = simple_strtoul(str, &str, 0);
- 		/* avoid tail segment of size < IO_TLB_SEGSIZE */
--- 
-2.7.4
+> From the diagram above, CCU(Camera Control Unit) is connected with
+> smi-common directly, we can look it as "larb7" but its register space
+> is different with the normal larb.
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>  .../devicetree/bindings/iommu/mediatek,iommu.txt   |  15 ++-
+>  .../memory-controllers/mediatek,smi-common.txt     |  11 +-
+>  .../memory-controllers/mediatek,smi-larb.txt       |   3 +
+>  include/dt-bindings/memory/mt8183-larb-port.h      | 130 +++++++++++++++++++++
+>  4 files changed, 153 insertions(+), 6 deletions(-)
+>  create mode 100644 include/dt-bindings/memory/mt8183-larb-port.h
+
+With those fixed,
+
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
