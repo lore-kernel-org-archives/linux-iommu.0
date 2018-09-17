@@ -1,286 +1,111 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
-Date: Mon, 17 Sep 2018 09:57:58 -0700
-Message-ID: <20180917095758.589d44ec@jacob-builder>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
-        <aea7a57f-e3d8-ed87-22ac-941f50c8e2b5@redhat.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Explicit IOVA management from a PCIe endpoint driver
+Date: Mon, 17 Sep 2018 15:36:46 -0600
+Message-ID: <3e9950c5-4986-6b0d-74c8-97014530c132@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <aea7a57f-e3d8-ed87-22ac-941f50c8e2b5@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Raj Ashok <ashok.raj@intel.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean Delvare <khali@linux-fr.org>, jacob.jun.pan@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vidya Sagar <vidyas-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joao Pinto <Joao.Pinto-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 14 Sep 2018 15:24:41 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
+Joerg, Christoph, Marek, Robin,
 
-> Hi Jacob,
-> 
-> On 5/11/18 10:54 PM, Jacob Pan wrote:
-> > Traditionally, device specific faults are detected and handled
-> > within their own device drivers. When IOMMU is enabled, faults such
-> > as DMA related transactions are detected by IOMMU. There is no
-> > generic reporting mechanism to report faults back to the in-kernel
-> > device driver or the guest OS in case of assigned devices.
-> > 
-> > Faults detected by IOMMU is based on the transaction's source ID
-> > which can be reported at per device basis, regardless of the device
-> > type is a PCI device or not.
-> > 
-> > The fault types include recoverable (e.g. page request) and
-> > unrecoverable faults(e.g. access error). In most cases, faults can
-> > be handled by IOMMU drivers internally. The primary use cases are as
-> > follows:
-> > 1. page request fault originated from an SVM capable device that is
-> > assigned to guest via vIOMMU. In this case, the first level page
-> > tables are owned by the guest. Page request must be propagated to
-> > the guest to let guest OS fault in the pages then send page
-> > response. In this mechanism, the direct receiver of IOMMU fault
-> > notification is VFIO, which can relay notification events to QEMU
-> > or other user space software.
-> > 
-> > 2. faults need more subtle handling by device drivers. Other than
-> > simply invoke reset function, there are needs to let device driver
-> > handle the fault with a smaller impact.
-> > 
-> > This patchset is intended to create a generic fault report API such
-> > that it can scale as follows:
-> > - all IOMMU types
-> > - PCI and non-PCI devices
-> > - recoverable and unrecoverable faults
-> > - VFIO and other other in kernel users
-> > - DMA & IRQ remapping (TBD)
-> > The original idea was brought up by David Woodhouse and discussions
-> > summarized at https://lwn.net/Articles/608914/.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> > ---
-> >  drivers/iommu/iommu.c | 149
-> > +++++++++++++++++++++++++++++++++++++++++++++++++-
-> > include/linux/iommu.h |  35 +++++++++++- 2 files changed, 181
-> > insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 3a49b96..b3f9daf 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -609,6 +609,13 @@ int iommu_group_add_device(struct iommu_group
-> > *group, struct device *dev) goto err_free_name;
-> >  	}
-> >  
-> > +	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param),
-> > GFP_KERNEL);
-> > +	if (!dev->iommu_param) {
-> > +		ret = -ENOMEM;
-> > +		goto err_free_name;
-> > +	}
-> > +	mutex_init(&dev->iommu_param->lock);
-> > +
-> >  	kobject_get(group->devices_kobj);
-> >  
-> >  	dev->iommu_group = group;
-> > @@ -639,6 +646,7 @@ int iommu_group_add_device(struct iommu_group
-> > *group, struct device *dev) mutex_unlock(&group->mutex);
-> >  	dev->iommu_group = NULL;
-> >  	kobject_put(group->devices_kobj);
-> > +	kfree(dev->iommu_param);
-> >  err_free_name:
-> >  	kfree(device->name);
-> >  err_remove_link:
-> > @@ -685,7 +693,7 @@ void iommu_group_remove_device(struct device
-> > *dev) sysfs_remove_link(&dev->kobj, "iommu_group");
-> >  
-> >  	trace_remove_device_from_group(group->id, dev);
-> > -
-> > +	kfree(dev->iommu_param);
-> >  	kfree(device->name);
-> >  	kfree(device);
-> >  	dev->iommu_group = NULL;
-> > @@ -820,6 +828,145 @@ int iommu_group_unregister_notifier(struct
-> > iommu_group *group,
-> > EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier); 
-> >  /**
-> > + * iommu_register_device_fault_handler() - Register a device fault
-> > handler
-> > + * @dev: the device
-> > + * @handler: the fault handler
-> > + * @data: private data passed as argument to the handler
-> > + *
-> > + * When an IOMMU fault event is received, call this handler with
-> > the fault event
-> > + * and data as argument. The handler should return 0 on success.
-> > If the fault is
-> > + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also
-> > complete
-> > + * the fault by calling iommu_page_response() with one of the
-> > following
-> > + * response code:
-> > + * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
-> > + * - IOMMU_PAGE_RESP_INVALID: terminate the fault
-> > + * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop
-> > reporting
-> > + *   page faults if possible.
-> > + *
-> > + * Return 0 if the fault handler was installed successfully, or an
-> > error.
-> > + */
-> > +int iommu_register_device_fault_handler(struct device *dev,
-> > +					iommu_dev_fault_handler_t
-> > handler,
-> > +					void *data)
-> > +{
-> > +	struct iommu_param *param = dev->iommu_param;
-> > +	int ret = 0;
-> > +
-> > +	/*
-> > +	 * Device iommu_param should have been allocated when
-> > device is
-> > +	 * added to its iommu_group.
-> > +	 */
-> > +	if (!param)
-> > +		return -EINVAL;
-> > +
-> > +	mutex_lock(&param->lock);
-> > +	/* Only allow one fault handler registered for each device
-> > */
-> > +	if (param->fault_param) {
-> > +		ret = -EBUSY;
-> > +		goto done_unlock;
-> > +	}
-> > +
-> > +	get_device(dev);
-> > +	param->fault_param =
-> > +		kzalloc(sizeof(struct iommu_fault_param),
-> > GFP_KERNEL);
-> > +	if (!param->fault_param) {
-> > +		put_device(dev);
-> > +		ret = -ENOMEM;
-> > +		goto done_unlock;
-> > +	}
-> > +	mutex_init(&param->fault_param->lock);
-> > +	param->fault_param->handler = handler;
-> > +	param->fault_param->data = data;
-> > +	INIT_LIST_HEAD(&param->fault_param->faults);
-> > +
-> > +done_unlock:
-> > +	mutex_unlock(&param->lock);
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
-> > +
-> > +/**
-> > + * iommu_unregister_device_fault_handler() - Unregister the device
-> > fault handler
-> > + * @dev: the device
-> > + *
-> > + * Remove the device fault handler installed with
-> > + * iommu_register_device_fault_handler().
-> > + *
-> > + * Return 0 on success, or an error.
-> > + */
-> > +int iommu_unregister_device_fault_handler(struct device *dev)
-> > +{
-> > +	struct iommu_param *param = dev->iommu_param;
-> > +	int ret = 0;
-> > +
-> > +	if (!param)
-> > +		return -EINVAL;
-> > +
-> > +	mutex_lock(&param->lock);
-> > +	/* we cannot unregister handler if there are pending
-> > faults */
-> > +	if (!list_empty(&param->fault_param->faults)) {
-> > +		ret = -EBUSY;
-> > +		goto unlock;
-> > +	}
-> > +
-> > +	kfree(param->fault_param);
-> > +	param->fault_param = NULL;
-> > +	put_device(dev);  
-> don't you need to test if (param->fault_param) is set first. Otherwise
-> you may end up with an unpaired put_device()?
-You are right, thanks.
+I believe that the driver for our PCIe endpoint controller hardware will 
+need to explicitly manage its IOVA space more than current APIs allow. 
+I'd like to discuss how to make that possible.
 
-I am also working on allowing multiple registrations per handler. i.e.
-device can register the same fault handler with different data. Then I
-will add refcount. The motivation is that for PCIe device with
-sub-device partitioned at PASID granularity, fault reporting needs to
-be at PCI device + PASID level.
-> 
->  [...]  
-> s/needs/need
-> 
-taken, thanks
-> Thanks
-> 
-> Eric
-> > + * @lock: protect pending PRQ event list
-> >   */
-> >  struct iommu_fault_param {
-> >  	iommu_dev_fault_handler_t handler;
-> > +	struct list_head faults;
-> > +	struct mutex lock;
-> >  	void *data;
-> >  };
-> >  
-> > @@ -357,6 +362,7 @@ struct iommu_fault_param {
-> >   *	struct iommu_fwspec	*iommu_fwspec;
-> >   */
-> >  struct iommu_param {
-> > +	struct mutex lock;
-> >  	struct iommu_fault_param *fault_param;
-> >  };
-> >  
-> > @@ -456,6 +462,14 @@ extern int
-> > iommu_group_register_notifier(struct iommu_group *group, struct
-> > notifier_block *nb); extern int
-> > iommu_group_unregister_notifier(struct iommu_group *group, struct
-> > notifier_block *nb); +extern int
-> > iommu_register_device_fault_handler(struct device *dev,
-> > +					iommu_dev_fault_handler_t
-> > handler,
-> > +					void *data);
-> > +
-> > +extern int iommu_unregister_device_fault_handler(struct device
-> > *dev); +
-> > +extern int iommu_report_device_fault(struct device *dev, struct
-> > iommu_fault_event *evt); +
-> >  extern int iommu_group_id(struct iommu_group *group);
-> >  extern struct iommu_group *iommu_group_get_for_dev(struct device
-> > *dev); extern struct iommu_domain
-> > *iommu_group_default_domain(struct iommu_group *); @@ -727,6
-> > +741,23 @@ static inline int iommu_group_unregister_notifier(struct
-> > iommu_group *group, return 0; }
-> >  
-> > +static inline int iommu_register_device_fault_handler(struct
-> > device *dev,
-> > +
-> > iommu_dev_fault_handler_t handler,
-> > +						void *data)
-> > +{
-> > +	return -ENODEV;
-> > +}
-> > +
-> > +static inline int iommu_unregister_device_fault_handler(struct
-> > device *dev) +{
-> > +	return 0;
-> > +}
-> > +
-> > +static inline int iommu_report_device_fault(struct device *dev,
-> > struct iommu_fault_event *evt) +{
-> > +	return -ENODEV;
-> > +}
-> > +
-> >  static inline int iommu_group_id(struct iommu_group *group)
-> >  {
-> >  	return -ENODEV;
-> >   
+First some background on our hardware:
 
-[Jacob Pan]
+NVIDIA's Xavier SoC contains a Synopsis Designware PCIe controller. This 
+can operate in either root port or endpoint mode. I'm particularly 
+interested in endpoint mode.
+
+Our particular instantiation of this controller exposes a single 
+function with a single software-controlled PCIe BAR to the PCIe bus 
+(there are also BARs for access to DMA controller registers and outbound 
+MSI configuration, which can both be enabled/disabled but not used for 
+any other purpose). When a transaction is received from the PCIe bus, 
+the following happens:
+
+1) Transaction is matched against the BAR base/size (in PCIe address 
+space) to determine whether it "hits" this BAR or not.
+
+2) The transaction's address is processed by the PCIe controller's ATU 
+(Address Translation Unit), which can re-write the address that the 
+transaction accesses.
+
+Our particular instantiation of the hardware only has 2 entries in the 
+ATU mapping table, which gives very little flexibility in setting up a 
+mapping.
+
+As an FYI, ATU entries can match PCIe transactions either:
+a) Any transaction received on a particular BAR.
+b) Any transaction received within a single contiguous window of PCIe 
+address space. This kind of mapping entry obviously has to be set up 
+after device enumeration is complete so that it can match the correct 
+PCIe address.
+
+Each ATU entry maps a single contiguous set of PCIe addresses to a 
+single contiguous set of IOVAs which are passed to the IOMMU. 
+Transactions can pass through the ATU without being translated if desired.
+
+3) The transaction is passed to the IOMMU, which can again re-write the 
+address that the transaction accesses.
+
+4) The transaction is passed to the memory controller and reads/writes DRAM.
+
+In general, we want to be able to expose a large and dynamic set of data 
+buffers to the PCIe bus; certainly /far/ more than two separate buffers 
+(the number of ATU table entries). With current Linux APIs, these 
+buffers will not be located in contiguous or adjacent physical (DRAM) or 
+virtual (IOVA) addresses, nor in any particular window of physical or 
+IOVA addresses. However, the ATU's mapping from PCIe to IOVA can only 
+expose one or two contiguous ranges of IOVA space. These two sets of 
+requirements are at odds!
+
+So, I'd like to propose some new APIs that the PCIe endpoint driver can use:
+
+1) Allocate/reserve an IOVA range of specified size, but don't map 
+anything into the IOVA range.
+
+2) De-allocate the IOVA range allocated in (1).
+
+3) Map a specific set (scatter-gather list I suppose) of 
+already-allocated/extant physical addresses into part of an IOVA range 
+allocated in (1).
+
+4) Unmap a portion of an IOVA range that was mapped by (3).
+
+One final note:
+
+The memory controller can translate accesses to a small region of DRAM 
+address space into accesses to an interrupt generation module. This 
+allows devices attached to the PCIe bus to generate interrupts to 
+software running on the system with the PCIe endpoint controller. Thus I 
+deliberately described API 3 above as mapping a specific physical 
+address into IOVA space, as opposed to mapping an existing DRAM 
+allocation into IOVA space, in order to allow mapping this interrupt 
+generation address space into IOVA space. If we needed separate APIs to 
+map physical addresses vs. DRAM allocations into IOVA space, that would 
+likely be fine too.
+
+Does this API proposal sound reasonable?
+
+I have heard from some NVIDIA developers that the above APIs rather go 
+against the principle that individual drivers should not be aware of the 
+presence/absence of an IOMMU, and hence direct management of IOVA 
+allocation/layout is deliberately avoided, and hence there hasn't been a 
+need/desire for this kind of API in the past. However, I think our 
+current hardware design and use-case rather requires it. Do you agree?
