@@ -1,515 +1,286 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 9/9] arm64: use the generic swiotlb_dma_ops
-Date: Mon, 17 Sep 2018 17:38:26 +0200
-Message-ID: <20180917153826.28052-10-hch@lst.de>
-References: <20180917153826.28052-1-hch@lst.de>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Mon, 17 Sep 2018 09:57:58 -0700
+Message-ID: <20180917095758.589d44ec@jacob-builder>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+        <aea7a57f-e3d8-ed87-22ac-941f50c8e2b5@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180917153826.28052-1-hch@lst.de>
+In-Reply-To: <aea7a57f-e3d8-ed87-22ac-941f50c8e2b5@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Auger Eric <eric.auger@redhat.com>
+Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Raj Ashok <ashok.raj@intel.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, Jean Delvare <khali@linux-fr.org>, jacob.jun.pan@linux.intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Now that the generic swiotlb code supports non-coherent DMA we can switch
-to it for arm64.  For that we need to refactor the existing
-alloc/free/mmap/pgprot helpers to be used as the architecture hooks,
-and implement the standard arch_sync_dma_for_{device,cpu} hooks for
-cache maintaincance in the streaming dma hooks, which also implies
-using the generic dma_coherent flag in struct device.
+On Fri, 14 Sep 2018 15:24:41 +0200
+Auger Eric <eric.auger@redhat.com> wrote:
 
-Note that we need to keep the old is_device_dma_coherent function around
-for now, so that the shared arm/arm64 Xen code keeps working.
+> Hi Jacob,
+> 
+> On 5/11/18 10:54 PM, Jacob Pan wrote:
+> > Traditionally, device specific faults are detected and handled
+> > within their own device drivers. When IOMMU is enabled, faults such
+> > as DMA related transactions are detected by IOMMU. There is no
+> > generic reporting mechanism to report faults back to the in-kernel
+> > device driver or the guest OS in case of assigned devices.
+> > 
+> > Faults detected by IOMMU is based on the transaction's source ID
+> > which can be reported at per device basis, regardless of the device
+> > type is a PCI device or not.
+> > 
+> > The fault types include recoverable (e.g. page request) and
+> > unrecoverable faults(e.g. access error). In most cases, faults can
+> > be handled by IOMMU drivers internally. The primary use cases are as
+> > follows:
+> > 1. page request fault originated from an SVM capable device that is
+> > assigned to guest via vIOMMU. In this case, the first level page
+> > tables are owned by the guest. Page request must be propagated to
+> > the guest to let guest OS fault in the pages then send page
+> > response. In this mechanism, the direct receiver of IOMMU fault
+> > notification is VFIO, which can relay notification events to QEMU
+> > or other user space software.
+> > 
+> > 2. faults need more subtle handling by device drivers. Other than
+> > simply invoke reset function, there are needs to let device driver
+> > handle the fault with a smaller impact.
+> > 
+> > This patchset is intended to create a generic fault report API such
+> > that it can scale as follows:
+> > - all IOMMU types
+> > - PCI and non-PCI devices
+> > - recoverable and unrecoverable faults
+> > - VFIO and other other in kernel users
+> > - DMA & IRQ remapping (TBD)
+> > The original idea was brought up by David Woodhouse and discussions
+> > summarized at https://lwn.net/Articles/608914/.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> > ---
+> >  drivers/iommu/iommu.c | 149
+> > +++++++++++++++++++++++++++++++++++++++++++++++++-
+> > include/linux/iommu.h |  35 +++++++++++- 2 files changed, 181
+> > insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 3a49b96..b3f9daf 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -609,6 +609,13 @@ int iommu_group_add_device(struct iommu_group
+> > *group, struct device *dev) goto err_free_name;
+> >  	}
+> >  
+> > +	dev->iommu_param = kzalloc(sizeof(*dev->iommu_param),
+> > GFP_KERNEL);
+> > +	if (!dev->iommu_param) {
+> > +		ret = -ENOMEM;
+> > +		goto err_free_name;
+> > +	}
+> > +	mutex_init(&dev->iommu_param->lock);
+> > +
+> >  	kobject_get(group->devices_kobj);
+> >  
+> >  	dev->iommu_group = group;
+> > @@ -639,6 +646,7 @@ int iommu_group_add_device(struct iommu_group
+> > *group, struct device *dev) mutex_unlock(&group->mutex);
+> >  	dev->iommu_group = NULL;
+> >  	kobject_put(group->devices_kobj);
+> > +	kfree(dev->iommu_param);
+> >  err_free_name:
+> >  	kfree(device->name);
+> >  err_remove_link:
+> > @@ -685,7 +693,7 @@ void iommu_group_remove_device(struct device
+> > *dev) sysfs_remove_link(&dev->kobj, "iommu_group");
+> >  
+> >  	trace_remove_device_from_group(group->id, dev);
+> > -
+> > +	kfree(dev->iommu_param);
+> >  	kfree(device->name);
+> >  	kfree(device);
+> >  	dev->iommu_group = NULL;
+> > @@ -820,6 +828,145 @@ int iommu_group_unregister_notifier(struct
+> > iommu_group *group,
+> > EXPORT_SYMBOL_GPL(iommu_group_unregister_notifier); 
+> >  /**
+> > + * iommu_register_device_fault_handler() - Register a device fault
+> > handler
+> > + * @dev: the device
+> > + * @handler: the fault handler
+> > + * @data: private data passed as argument to the handler
+> > + *
+> > + * When an IOMMU fault event is received, call this handler with
+> > the fault event
+> > + * and data as argument. The handler should return 0 on success.
+> > If the fault is
+> > + * recoverable (IOMMU_FAULT_PAGE_REQ), the handler can also
+> > complete
+> > + * the fault by calling iommu_page_response() with one of the
+> > following
+> > + * response code:
+> > + * - IOMMU_PAGE_RESP_SUCCESS: retry the translation
+> > + * - IOMMU_PAGE_RESP_INVALID: terminate the fault
+> > + * - IOMMU_PAGE_RESP_FAILURE: terminate the fault and stop
+> > reporting
+> > + *   page faults if possible.
+> > + *
+> > + * Return 0 if the fault handler was installed successfully, or an
+> > error.
+> > + */
+> > +int iommu_register_device_fault_handler(struct device *dev,
+> > +					iommu_dev_fault_handler_t
+> > handler,
+> > +					void *data)
+> > +{
+> > +	struct iommu_param *param = dev->iommu_param;
+> > +	int ret = 0;
+> > +
+> > +	/*
+> > +	 * Device iommu_param should have been allocated when
+> > device is
+> > +	 * added to its iommu_group.
+> > +	 */
+> > +	if (!param)
+> > +		return -EINVAL;
+> > +
+> > +	mutex_lock(&param->lock);
+> > +	/* Only allow one fault handler registered for each device
+> > */
+> > +	if (param->fault_param) {
+> > +		ret = -EBUSY;
+> > +		goto done_unlock;
+> > +	}
+> > +
+> > +	get_device(dev);
+> > +	param->fault_param =
+> > +		kzalloc(sizeof(struct iommu_fault_param),
+> > GFP_KERNEL);
+> > +	if (!param->fault_param) {
+> > +		put_device(dev);
+> > +		ret = -ENOMEM;
+> > +		goto done_unlock;
+> > +	}
+> > +	mutex_init(&param->fault_param->lock);
+> > +	param->fault_param->handler = handler;
+> > +	param->fault_param->data = data;
+> > +	INIT_LIST_HEAD(&param->fault_param->faults);
+> > +
+> > +done_unlock:
+> > +	mutex_unlock(&param->lock);
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
+> > +
+> > +/**
+> > + * iommu_unregister_device_fault_handler() - Unregister the device
+> > fault handler
+> > + * @dev: the device
+> > + *
+> > + * Remove the device fault handler installed with
+> > + * iommu_register_device_fault_handler().
+> > + *
+> > + * Return 0 on success, or an error.
+> > + */
+> > +int iommu_unregister_device_fault_handler(struct device *dev)
+> > +{
+> > +	struct iommu_param *param = dev->iommu_param;
+> > +	int ret = 0;
+> > +
+> > +	if (!param)
+> > +		return -EINVAL;
+> > +
+> > +	mutex_lock(&param->lock);
+> > +	/* we cannot unregister handler if there are pending
+> > faults */
+> > +	if (!list_empty(&param->fault_param->faults)) {
+> > +		ret = -EBUSY;
+> > +		goto unlock;
+> > +	}
+> > +
+> > +	kfree(param->fault_param);
+> > +	param->fault_param = NULL;
+> > +	put_device(dev);  
+> don't you need to test if (param->fault_param) is set first. Otherwise
+> you may end up with an unpaired put_device()?
+You are right, thanks.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/arm64/Kconfig                   |   4 +
- arch/arm64/include/asm/device.h      |   1 -
- arch/arm64/include/asm/dma-mapping.h |   7 +-
- arch/arm64/mm/dma-mapping.c          | 255 +++++----------------------
- 4 files changed, 55 insertions(+), 212 deletions(-)
+I am also working on allowing multiple registrations per handler. i.e.
+device can register the same fault handler with different data. Then I
+will add refcount. The motivation is that for PCIe device with
+sub-device partitioned at PASID granularity, fault reporting needs to
+be at PCI device + PASID level.
+> 
+>  [...]  
+> s/needs/need
+> 
+taken, thanks
+> Thanks
+> 
+> Eric
+> > + * @lock: protect pending PRQ event list
+> >   */
+> >  struct iommu_fault_param {
+> >  	iommu_dev_fault_handler_t handler;
+> > +	struct list_head faults;
+> > +	struct mutex lock;
+> >  	void *data;
+> >  };
+> >  
+> > @@ -357,6 +362,7 @@ struct iommu_fault_param {
+> >   *	struct iommu_fwspec	*iommu_fwspec;
+> >   */
+> >  struct iommu_param {
+> > +	struct mutex lock;
+> >  	struct iommu_fault_param *fault_param;
+> >  };
+> >  
+> > @@ -456,6 +462,14 @@ extern int
+> > iommu_group_register_notifier(struct iommu_group *group, struct
+> > notifier_block *nb); extern int
+> > iommu_group_unregister_notifier(struct iommu_group *group, struct
+> > notifier_block *nb); +extern int
+> > iommu_register_device_fault_handler(struct device *dev,
+> > +					iommu_dev_fault_handler_t
+> > handler,
+> > +					void *data);
+> > +
+> > +extern int iommu_unregister_device_fault_handler(struct device
+> > *dev); +
+> > +extern int iommu_report_device_fault(struct device *dev, struct
+> > iommu_fault_event *evt); +
+> >  extern int iommu_group_id(struct iommu_group *group);
+> >  extern struct iommu_group *iommu_group_get_for_dev(struct device
+> > *dev); extern struct iommu_domain
+> > *iommu_group_default_domain(struct iommu_group *); @@ -727,6
+> > +741,23 @@ static inline int iommu_group_unregister_notifier(struct
+> > iommu_group *group, return 0; }
+> >  
+> > +static inline int iommu_register_device_fault_handler(struct
+> > device *dev,
+> > +
+> > iommu_dev_fault_handler_t handler,
+> > +						void *data)
+> > +{
+> > +	return -ENODEV;
+> > +}
+> > +
+> > +static inline int iommu_unregister_device_fault_handler(struct
+> > device *dev) +{
+> > +	return 0;
+> > +}
+> > +
+> > +static inline int iommu_report_device_fault(struct device *dev,
+> > struct iommu_fault_event *evt) +{
+> > +	return -ENODEV;
+> > +}
+> > +
+> >  static inline int iommu_group_id(struct iommu_group *group)
+> >  {
+> >  	return -ENODEV;
+> >   
 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1b1a0e95c751..c4db5131d837 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -11,6 +11,8 @@ config ARM64
- 	select ARCH_CLOCKSOURCE_DATA
- 	select ARCH_HAS_DEBUG_VIRTUAL
- 	select ARCH_HAS_DEVMEM_IS_ALLOWED
-+	select ARCH_HAS_DMA_COHERENT_TO_PFN
-+	select ARCH_HAS_DMA_MMAP_PGPROT
- 	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
- 	select ARCH_HAS_ELF_RANDOMIZE
- 	select ARCH_HAS_FAST_MULTIPLIER
-@@ -24,6 +26,8 @@ config ARM64
- 	select ARCH_HAS_SG_CHAIN
- 	select ARCH_HAS_STRICT_KERNEL_RWX
- 	select ARCH_HAS_STRICT_MODULE_RWX
-+	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-+	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYSCALL_WRAPPER
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-diff --git a/arch/arm64/include/asm/device.h b/arch/arm64/include/asm/device.h
-index 5a5fa47a6b18..3dd3d664c5c5 100644
---- a/arch/arm64/include/asm/device.h
-+++ b/arch/arm64/include/asm/device.h
-@@ -23,7 +23,6 @@ struct dev_archdata {
- #ifdef CONFIG_XEN
- 	const struct dma_map_ops *dev_dma_ops;
- #endif
--	bool dma_coherent;
- };
- 
- struct pdev_archdata {
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index 0a2d13332545..d2414b540af1 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -39,10 +39,13 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 			const struct iommu_ops *iommu, bool coherent);
- #define arch_setup_dma_ops	arch_setup_dma_ops
- 
--/* do not use this function in a driver */
-+/*
-+ * Do not use this function in a driver, it is only provided for
-+ * arch/arm/mm/xen.c, which is used by arm64 as well.
-+ */
- static inline bool is_device_dma_coherent(struct device *dev)
- {
--	return dev->archdata.dma_coherent;
-+	return dev->dma_coherent;
- }
- 
- #endif	/* __KERNEL__ */
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 07d9c2633f80..b644b67bc333 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -25,6 +25,7 @@
- #include <linux/slab.h>
- #include <linux/genalloc.h>
- #include <linux/dma-direct.h>
-+#include <linux/dma-noncoherent.h>
- #include <linux/dma-contiguous.h>
- #include <linux/vmalloc.h>
- #include <linux/swiotlb.h>
-@@ -32,16 +33,6 @@
- 
- #include <asm/cacheflush.h>
- 
--static int swiotlb __ro_after_init;
--
--static pgprot_t __get_dma_pgprot(unsigned long attrs, pgprot_t prot,
--				 bool coherent)
--{
--	if (!coherent || (attrs & DMA_ATTR_WRITE_COMBINE))
--		return pgprot_writecombine(prot);
--	return prot;
--}
--
- static struct gen_pool *atomic_pool __ro_after_init;
- 
- #define DEFAULT_DMA_COHERENT_POOL_SIZE  SZ_256K
-@@ -91,18 +82,15 @@ static int __free_from_pool(void *start, size_t size)
- 	return 1;
- }
- 
--static void *__dma_alloc(struct device *dev, size_t size,
--			 dma_addr_t *dma_handle, gfp_t flags,
--			 unsigned long attrs)
-+void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-+		gfp_t flags, unsigned long attrs)
- {
- 	struct page *page;
- 	void *ptr, *coherent_ptr;
--	bool coherent = is_device_dma_coherent(dev);
--	pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, false);
- 
- 	size = PAGE_ALIGN(size);
- 
--	if (!coherent && !gfpflags_allow_blocking(flags)) {
-+	if (!gfpflags_allow_blocking(flags)) {
- 		struct page *page = NULL;
- 		void *addr = __alloc_from_pool(size, &page, flags);
- 
-@@ -116,17 +104,14 @@ static void *__dma_alloc(struct device *dev, size_t size,
- 	if (!ptr)
- 		goto no_mem;
- 
--	/* no need for non-cacheable mapping if coherent */
--	if (coherent)
--		return ptr;
--
- 	/* remove any dirty cache lines on the kernel alias */
- 	__dma_flush_area(ptr, size);
- 
- 	/* create a coherent mapping */
- 	page = virt_to_page(ptr);
- 	coherent_ptr = dma_common_contiguous_remap(page, size, VM_USERMAP,
--						   prot, __builtin_return_address(0));
-+			pgprot_writecombine(PAGE_KERNEL),
-+			__builtin_return_address(0));
- 	if (!coherent_ptr)
- 		goto no_map;
- 
-@@ -138,125 +123,50 @@ static void *__dma_alloc(struct device *dev, size_t size,
- 	return NULL;
- }
- 
--static void __dma_free(struct device *dev, size_t size,
--		       void *vaddr, dma_addr_t dma_handle,
--		       unsigned long attrs)
-+void arch_dma_free(struct device *dev, size_t size, void *vaddr,
-+		dma_addr_t dma_handle, unsigned long attrs)
- {
--	void *swiotlb_addr = phys_to_virt(dma_to_phys(dev, dma_handle));
--
--	size = PAGE_ALIGN(size);
--
--	if (!is_device_dma_coherent(dev)) {
--		if (__free_from_pool(vaddr, size))
--			return;
-+	if (!__free_from_pool(vaddr, size)) {
- 		vunmap(vaddr);
-+		__swiotlb_free(dev, size, vaddr, dma_handle, attrs);
- 	}
--	__swiotlb_free(dev, size, swiotlb_addr, dma_handle, attrs);
- }
- 
--static dma_addr_t __swiotlb_map_page(struct device *dev, struct page *page,
--				     unsigned long offset, size_t size,
--				     enum dma_data_direction dir,
--				     unsigned long attrs)
-+long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
-+		dma_addr_t dma_addr)
- {
--	dma_addr_t dev_addr;
--
--	dev_addr = swiotlb_map_page(dev, page, offset, size, dir, attrs);
--	if (!is_device_dma_coherent(dev) &&
--	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
--		__dma_map_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
--
--	return dev_addr;
--}
--
--
--static void __swiotlb_unmap_page(struct device *dev, dma_addr_t dev_addr,
--				 size_t size, enum dma_data_direction dir,
--				 unsigned long attrs)
--{
--	if (!is_device_dma_coherent(dev) &&
--	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
--		__dma_unmap_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
--	swiotlb_unmap_page(dev, dev_addr, size, dir, attrs);
-+	return __phys_to_pfn(dma_to_phys(dev, dma_addr));
- }
- 
--static int __swiotlb_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
--				  int nelems, enum dma_data_direction dir,
--				  unsigned long attrs)
-+pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
-+		unsigned long attrs)
- {
--	struct scatterlist *sg;
--	int i, ret;
--
--	ret = swiotlb_map_sg_attrs(dev, sgl, nelems, dir, attrs);
--	if (!is_device_dma_coherent(dev) &&
--	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
--		for_each_sg(sgl, sg, ret, i)
--			__dma_map_area(phys_to_virt(dma_to_phys(dev, sg->dma_address)),
--				       sg->length, dir);
--
--	return ret;
--}
--
--static void __swiotlb_unmap_sg_attrs(struct device *dev,
--				     struct scatterlist *sgl, int nelems,
--				     enum dma_data_direction dir,
--				     unsigned long attrs)
--{
--	struct scatterlist *sg;
--	int i;
--
--	if (!is_device_dma_coherent(dev) &&
--	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
--		for_each_sg(sgl, sg, nelems, i)
--			__dma_unmap_area(phys_to_virt(dma_to_phys(dev, sg->dma_address)),
--					 sg->length, dir);
--	swiotlb_unmap_sg_attrs(dev, sgl, nelems, dir, attrs);
-+	if (!dev_is_dma_coherent(dev) || (attrs & DMA_ATTR_WRITE_COMBINE))
-+		return pgprot_writecombine(prot);
-+	return prot;
- }
- 
--static void __swiotlb_sync_single_for_cpu(struct device *dev,
--					  dma_addr_t dev_addr, size_t size,
--					  enum dma_data_direction dir)
-+void arch_sync_dma_for_device(struct device *dev, phys_addr_t paddr,
-+		size_t size, enum dma_data_direction dir)
- {
--	if (!is_device_dma_coherent(dev))
--		__dma_unmap_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
--	swiotlb_sync_single_for_cpu(dev, dev_addr, size, dir);
-+	__dma_map_area(phys_to_virt(paddr), size, dir);
- }
- 
--static void __swiotlb_sync_single_for_device(struct device *dev,
--					     dma_addr_t dev_addr, size_t size,
--					     enum dma_data_direction dir)
-+void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
-+		size_t size, enum dma_data_direction dir)
- {
--	swiotlb_sync_single_for_device(dev, dev_addr, size, dir);
--	if (!is_device_dma_coherent(dev))
--		__dma_map_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
-+	__dma_unmap_area(phys_to_virt(paddr), size, dir);
- }
- 
--static void __swiotlb_sync_sg_for_cpu(struct device *dev,
--				      struct scatterlist *sgl, int nelems,
--				      enum dma_data_direction dir)
-+static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
-+				      struct page *page, size_t size)
- {
--	struct scatterlist *sg;
--	int i;
--
--	if (!is_device_dma_coherent(dev))
--		for_each_sg(sgl, sg, nelems, i)
--			__dma_unmap_area(phys_to_virt(dma_to_phys(dev, sg->dma_address)),
--					 sg->length, dir);
--	swiotlb_sync_sg_for_cpu(dev, sgl, nelems, dir);
--}
-+	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
- 
--static void __swiotlb_sync_sg_for_device(struct device *dev,
--					 struct scatterlist *sgl, int nelems,
--					 enum dma_data_direction dir)
--{
--	struct scatterlist *sg;
--	int i;
-+	if (!ret)
-+		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
- 
--	swiotlb_sync_sg_for_device(dev, sgl, nelems, dir);
--	if (!is_device_dma_coherent(dev))
--		for_each_sg(sgl, sg, nelems, i)
--			__dma_map_area(phys_to_virt(dma_to_phys(dev, sg->dma_address)),
--				       sg->length, dir);
-+	return ret;
- }
- 
- static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
-@@ -277,74 +187,6 @@ static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
- 	return ret;
- }
- 
--static int __swiotlb_mmap(struct device *dev,
--			  struct vm_area_struct *vma,
--			  void *cpu_addr, dma_addr_t dma_addr, size_t size,
--			  unsigned long attrs)
--{
--	int ret;
--	unsigned long pfn = dma_to_phys(dev, dma_addr) >> PAGE_SHIFT;
--
--	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot,
--					     is_device_dma_coherent(dev));
--
--	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
--		return ret;
--
--	return __swiotlb_mmap_pfn(vma, pfn, size);
--}
--
--static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
--				      struct page *page, size_t size)
--{
--	int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
--
--	if (!ret)
--		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
--
--	return ret;
--}
--
--static int __swiotlb_get_sgtable(struct device *dev, struct sg_table *sgt,
--				 void *cpu_addr, dma_addr_t handle, size_t size,
--				 unsigned long attrs)
--{
--	struct page *page = phys_to_page(dma_to_phys(dev, handle));
--
--	return __swiotlb_get_sgtable_page(sgt, page, size);
--}
--
--static int __swiotlb_dma_supported(struct device *hwdev, u64 mask)
--{
--	if (swiotlb)
--		return swiotlb_dma_supported(hwdev, mask);
--	return 1;
--}
--
--static int __swiotlb_dma_mapping_error(struct device *hwdev, dma_addr_t addr)
--{
--	if (swiotlb)
--		return dma_direct_mapping_error(hwdev, addr);
--	return 0;
--}
--
--static const struct dma_map_ops arm64_swiotlb_dma_ops = {
--	.alloc = __dma_alloc,
--	.free = __dma_free,
--	.mmap = __swiotlb_mmap,
--	.get_sgtable = __swiotlb_get_sgtable,
--	.map_page = __swiotlb_map_page,
--	.unmap_page = __swiotlb_unmap_page,
--	.map_sg = __swiotlb_map_sg_attrs,
--	.unmap_sg = __swiotlb_unmap_sg_attrs,
--	.sync_single_for_cpu = __swiotlb_sync_single_for_cpu,
--	.sync_single_for_device = __swiotlb_sync_single_for_device,
--	.sync_sg_for_cpu = __swiotlb_sync_sg_for_cpu,
--	.sync_sg_for_device = __swiotlb_sync_sg_for_device,
--	.dma_supported = __swiotlb_dma_supported,
--	.mapping_error = __swiotlb_dma_mapping_error,
--};
--
- static int __init atomic_pool_init(void)
- {
- 	pgprot_t prot = __pgprot(PROT_NORMAL_NC);
-@@ -500,10 +342,6 @@ EXPORT_SYMBOL(dummy_dma_ops);
- 
- static int __init arm64_dma_init(void)
- {
--	if (swiotlb_force == SWIOTLB_FORCE ||
--	    max_pfn > (arm64_dma_phys_limit >> PAGE_SHIFT))
--		swiotlb = 1;
--
- 	WARN_TAINT(ARCH_DMA_MINALIGN < cache_line_size(),
- 		   TAINT_CPU_OUT_OF_SPEC,
- 		   "ARCH_DMA_MINALIGN smaller than CTR_EL0.CWG (%d < %d)",
-@@ -528,7 +366,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 				 dma_addr_t *handle, gfp_t gfp,
- 				 unsigned long attrs)
- {
--	bool coherent = is_device_dma_coherent(dev);
-+	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
- 	size_t iosize = size;
- 	void *addr;
-@@ -569,7 +407,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 			addr = NULL;
- 		}
- 	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
--		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
-+		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 		struct page *page;
- 
- 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
-@@ -596,7 +434,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 						    size >> PAGE_SHIFT);
- 		}
- 	} else {
--		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
-+		pgprot_t prot = arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs);
- 		struct page **pages;
- 
- 		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
-@@ -658,8 +496,7 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 	struct vm_struct *area;
- 	int ret;
- 
--	vma->vm_page_prot = __get_dma_pgprot(attrs, vma->vm_page_prot,
--					     is_device_dma_coherent(dev));
-+	vma->vm_page_prot = arch_dma_mmap_pgprot(dev, vma->vm_page_prot, attrs);
- 
- 	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
- 		return ret;
-@@ -709,11 +546,11 @@ static void __iommu_sync_single_for_cpu(struct device *dev,
- {
- 	phys_addr_t phys;
- 
--	if (is_device_dma_coherent(dev))
-+	if (dev_is_dma_coherent(dev))
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
--	__dma_unmap_area(phys_to_virt(phys), size, dir);
-+	arch_sync_dma_for_cpu(dev, phys, size, dir);
- }
- 
- static void __iommu_sync_single_for_device(struct device *dev,
-@@ -722,11 +559,11 @@ static void __iommu_sync_single_for_device(struct device *dev,
- {
- 	phys_addr_t phys;
- 
--	if (is_device_dma_coherent(dev))
-+	if (dev_is_dma_coherent(dev))
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_domain_for_dev(dev), dev_addr);
--	__dma_map_area(phys_to_virt(phys), size, dir);
-+	arch_sync_dma_for_device(dev, phys, size, dir);
- }
- 
- static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
-@@ -734,7 +571,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
- 				   enum dma_data_direction dir,
- 				   unsigned long attrs)
- {
--	bool coherent = is_device_dma_coherent(dev);
-+	bool coherent = dev_is_dma_coherent(dev);
- 	int prot = dma_info_to_prot(dir, coherent, attrs);
- 	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
- 
-@@ -762,11 +599,11 @@ static void __iommu_sync_sg_for_cpu(struct device *dev,
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (is_device_dma_coherent(dev))
-+	if (dev_is_dma_coherent(dev))
- 		return;
- 
- 	for_each_sg(sgl, sg, nelems, i)
--		__dma_unmap_area(sg_virt(sg), sg->length, dir);
-+		arch_sync_dma_for_cpu(dev, sg_phys(sg), sg->length, dir);
- }
- 
- static void __iommu_sync_sg_for_device(struct device *dev,
-@@ -776,18 +613,18 @@ static void __iommu_sync_sg_for_device(struct device *dev,
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (is_device_dma_coherent(dev))
-+	if (dev_is_dma_coherent(dev))
- 		return;
- 
- 	for_each_sg(sgl, sg, nelems, i)
--		__dma_map_area(sg_virt(sg), sg->length, dir);
-+		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
- }
- 
- static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
- 				int nelems, enum dma_data_direction dir,
- 				unsigned long attrs)
- {
--	bool coherent = is_device_dma_coherent(dev);
-+	bool coherent = dev_is_dma_coherent(dev);
- 
- 	if ((attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
- 		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
-@@ -874,9 +711,9 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 			const struct iommu_ops *iommu, bool coherent)
- {
- 	if (!dev->dma_ops)
--		dev->dma_ops = &arm64_swiotlb_dma_ops;
-+		dev->dma_ops = &swiotlb_dma_ops;
- 
--	dev->archdata.dma_coherent = coherent;
-+	dev->dma_coherent = coherent;
- 	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
- 
- #ifdef CONFIG_XEN
--- 
-2.18.0
+[Jacob Pan]
