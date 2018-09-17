@@ -1,150 +1,166 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group
-        helpers
-Date: Sat, 15 Sep 2018 02:36:57 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D191305A74@SHSMSX101.ccr.corp.intel.com>
-References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
-        <20180830040922.30426-9-baolu.lu@linux.intel.com>
-        <c5124ac1-65fe-7f89-265c-bef229bc5ce9@arm.com>
-        <a97c8f75-ff49-5b87-198f-d3c8950d4e90@linux.intel.com>
-        <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
-        <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
- <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
+From: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Sun, 16 Sep 2018 21:42:44 -0400
+Message-ID: <20180917014244.GA27596@redhat.com>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180903005204.26041-1-nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker
-> Sent: Friday, September 14, 2018 10:46 PM
-> 
-> On 13/09/2018 01:35, Tian, Kevin wrote:
-> >>> Let's consider it from the API point of view.
-> >>>
-> >>> We have iommu_a(de)ttach_device() APIs to attach or detach a domain
-> >>> to/from a device. We should avoid applying a limitation of "these are
-> >>> only for single domain case, for multiple domains, use another API".
-> >>
-> >> That's an idealized view of the API, the actual semantics aren't as
-> >> simple. For IOMMU drivers that implement IOMMU_DOMAIN_DMA in
-> their
-> >> domain_alloc operation (Arm SMMU, AMD IOMMU, ...), attach_dev
-> >> attaches
-> >> an unmanaged domain, detach_dev reattaches the default DMA domain,
-> >> and
-> >> the detach_dev IOMMU op is not called. We can't change that now, so
-> it's
-> >> difficult to add more functionality to attach_dev and detach_dev.
-> >>
-> >
-> > Now we have four possible usages on a(de)ttach_device:
-> >
-> > 1) Normal DMA API path i.e. IOMMU_DOMAIN_DMA, for DMA
-> operations
-> > in host/parent device driver;
-> >
-> > 2) VFIO passthru path, when the physical device is assigned to user space
-> > or guest driver
-> >
-> > 3) mdev passthru path 1, when mdev is assigned to user space or guest
-> > driver. Here mdev is a wrap on random PCI device
-> >
-> > 4) mdev passthru path 2, when mdev is assigned to user space or guest
-> > driver. Here mdev is in a smaller granularity (e.g. tagged by PASID) as
-> > supported by vt-d scalable mode
-> >
-> > 1) and 2) are existing usages. What you described (unmanaged vs. default)
-> > falls into this category.
-> >
-> > 3) is actually same as 2) in IOMMU layer. sort of passing through DMA
-> > capability to guest. Though there is still a parent driver, the parent driver
-> > itself should not do DMA - i.e. unmanaged in host side.
-> >
-> > 4) is a new code path introduced in IOMMU layer, which is what
-> > vfio_a(de)tach_aux_domain is trying to address. In this case parent
-> device
-> > can still have its own DMA capability, using existing code path 1) (thus
-> > default domain still applies). and the parent device can have multiple
-> > aux domains (and associated structures), using code path 4).
-> 
-> We still have the problem that detach() doesn't propagate to the IOMMU
-> driver. Here's the current flow, without mdev:
-> 
-> 1) At boot, the PF's (parent device) driver is probed, and the IOMMU
-> core sets up a default DMA domain, to be used by dma_alloc by the PF's
-> driver.
-> -> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
-> 
-> 2) or 3) Later userspace wants to control the PF, replaces the PF's
-> driver with vfio-pci. When userspace creates a container, VFIO allocates
-> a new IOMMU domain, and calls iommu_attach_group.
-> -> iommu.c calls domain->ops->attach_dev(domain, dev)
-> This detaches the PF from the default domain, and attaches it to the new
-> domain.
-> 
-> 1) When the container is closed, VFIO calls iommu_detach_group. This
-> detaches the PF from its current domain, and attaches it back to the
-> default domain.
-> -> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
-> 
-> -----
-> Now with mdev, we still attach the DMA domain in 1). Then:
-> 
-> 4) Userspace opens an mdev and creates a container. VFIO enables aux
-> domain for the device. VFIO allocates a new IOMMU domain, and calls
-> iommu_attach_device(domain1, parent_dev).
-> -> iommu.c calls domain->ops->attach_dev(domain1, dev)
-> Because the device is in "aux domain" state, the IOMMU driver does not
-> detach from the default domain, but instead allocates a PASID and
-> attaches the aux domain. (Side note: for SMMU we couldn't detach from
-> the default domain, because we need it for MSI mappings.)
+So i want to summarize issues i have as this threads have dig deep into
+details. For this i would like to differentiate two cases first the easy
+one when relying on SVA/SVM. Then the second one when there is no SVA/SVM.
+In both cases your objectives as i understand them:
 
-same for vtd. We don't require parent driver to detach its domain in 1).
-Parent driver can have its own DMA capability when aux domain is
-enabled in parallel
+[R1]- expose a common user space API that make it easy to share boiler
+      plate code accross many devices (discovering devices, opening
+      device, creating context, creating command queue ...).
+[R2]- try to share the device as much as possible up to device limits
+      (number of independant queues the device has)
+[R3]- minimize syscall by allowing user space to directly schedule on the
+      device queue without a round trip to the kernel
 
-> 
-> 4) Userspace opens another mdev.
-> -> iommu.c calls domain->ops->attach_dev(domain2, dev)
+I don't think i missed any.
 
-another mdev in same VFIO container or different? I assume the
-latter since you mentioned a new domain2.
 
-> 
-> 1)? When the container is closed, VFIO calls
-> iommu_detach_device(domain2, parent_dev)
-> -> iommu.c calls default_domain->ops->attach_dev(default_domain, dev)
-> Given that auxiliary domains are attached, the IOMMU driver could deduce
-> that this actually means "detach an auxiliary domain". But which one?
+(1) Device with SVA/SVM
 
-I didn't get this one. There is no need to stick to 1) behavior for
-4), i.e. below is expected:
-	domain2->ops->detach_dev(domain2, dev)
+For that case it is easy, you do not need to be in VFIO or part of any
+thing specific in the kernel. There is no security risk (modulo bug in
+the SVA/SVM silicon). Fork/exec is properly handle and binding a process
+to a device is just couple dozen lines of code.
 
-why cannot ARM implement a detach_dev for aux_domain too? My
-feeling is that default domain twist is only for switch between 1/2/3
-in concept. 
 
-> 
-> So the proposed interface doesn't seem to work as is. If we want to use
-> iommu_attach/detach_device for auxiliary domains, the existing behavior
-> of iommu.c, and IOMMU drivers that rely on it, have to change. Any
-> change I can think of right now seems more daunting than introducing a
-> different path for auxiliary domains, like iommu_attach_aux_domain for
-> example.
-> 
+(2) Device does not have SVA/SVM (or it is disabled)
 
-introducing *aux* specific API will cause different VFIO code path to
-handle RID-based and PASID-based mdev, since RID-based still needs
-to use normal attach_domain that way. well, this argument is not very strong
-in itself, if indeed proposed way doesn't work for ARM. But let's see
-whether it is the case with more understanding of your actual concern.
+You want to still allow device to be part of your framework. However
+here i see fundamentals securities issues and you move the burden of
+being careful to user space which i think is a bad idea. We should
+never trus the userspace from kernel space.
 
-Thanks
-Kevin
+To keep the same API for the user space code you want a 1:1 mapping
+between device physical address and process virtual address (ie if
+device access device physical address A it is accessing the same
+memory as what is backing the virtual address A in the process.
+
+Security issues are on two things:
+[I1]- fork/exec, a process who opened any such device and created an
+      active queue can transfer without its knowledge control of its
+      commands queue through COW. The parent map some anonymous region
+      to the device as a command queue buffer but because of COW the
+      parent can be the first to copy on write and thus the child can
+      inherit the original pages that are mapped to the hardware.
+      Here parent lose control and child gain it.
+
+[I2]- Because of [R3] you want to allow userspace to schedule commands
+      on the device without doing an ioctl and thus here user space
+      can schedule any commands to the device with any address. What
+      happens if that address have not been mapped by the user space
+      is undefined and in fact can not be defined as what each IOMMU
+      does on invalid address access is different from IOMMU to IOMMU.
+
+      In case of a bad IOMMU, or simply an IOMMU improperly setup by
+      the kernel, this can potentialy allow user space to DMA anywhere.
+
+[I3]- By relying on GUP in VFIO you are not abiding by the implicit
+      contract (at least i hope it is implicit) that you should not
+      try to map to the device any file backed vma (private or share).
+
+      The VFIO code never check the vma controlling the addresses that
+      are provided to VFIO_IOMMU_MAP_DMA ioctl. Which means that the
+      user space can provide file backed range.
+
+      I am guessing that the VFIO code never had any issues because its
+      number one user is QEMU and QEMU never does that (and that's good
+      as no one should ever do that).
+
+      So if process does that you are opening your self to serious file
+      system corruption (depending on file system this can lead to total
+      data loss for the filesystem).
+
+      Issue is that once you GUP you never abide to file system flushing
+      which write protect the page before writing to the disk. So
+      because the page is still map with write permission to the device
+      (assuming VFIO_IOMMU_MAP_DMA was a write map) then the device can
+      write to the page while it is in the middle of being written back
+      to disk. Consult your nearest file system specialist to ask him
+      how bad that can be.
+
+[I4]- Design issue, mdev design As Far As I Understand It is about
+      sharing a single device to multiple clients (most obvious case
+      here is again QEMU guest). But you are going against that model,
+      in fact AFAIUI you are doing the exect opposite. When there is
+      no SVA/SVM you want only one mdev device that can not be share.
+
+      So this is counter intuitive to the mdev existing design. It is
+      not about sharing device among multiple users but about giving
+      exclusive access to the device to one user.
+
+
+
+All the reasons above is why i believe a different model would serve
+you and your user better. Below is a design that avoids all of the
+above issues and still delivers all of your objectives with the
+exceptions of the third one [R3] when there is no SVA/SVM.
+
+
+Create a subsystem (very much boiler plate code) which allow device to
+register themself against (very much like what you do in your current
+patchset but outside of VFIO).
+
+That subsystem will create a device file for each registered system and
+expose a common API (ie set of ioctl) for each of those device files.
+
+When user space create a queue (through an ioctl after opening the device
+file) the kernel can return -EBUSY if all the device queue are in use,
+or create a device queue and return a flag like SYNC_ONLY for device that
+do not have SVA/SVM.
+
+For device with SVA/SVM at the time the process create a queue you bind
+the process PASID to the device queue. From there on the userspace can
+schedule commands and use the device without going to kernel space.
+
+For device without SVA/SVM you create a fake queue that is just pure
+memory is not related to the device. From there on the userspace must
+call an ioctl every time it wants the device to consume its queue
+(hence why the SYNC_ONLY flag for synchronous operation only). The
+kernel portion read the fake queue expose to user space and copy
+commands into the real hardware queue but first it properly map any
+of the process memory needed for those commands to the device and
+adjust the device physical address with the one it gets from dma_map
+API.
+
+With that model it is "easy" to listen to mmu_notifier and to abide by
+them to avoid issues [I1], [I3] and [I4]. You obviously avoid the [I2]
+issue by only mapping a fake device queue to userspace.
+
+So yes with that models it means that every device that wish to support
+the non SVA/SVM case will have to do extra work (ie emulate its command
+queue in software in the kernel). But by doing so, you support an
+unlimited number of process on your device (ie all the process can share
+one single hardware command queues or multiple hardware queues).
+
+The big advantages i see here is that the process do not have to worry
+about doing something wrong. You are protecting yourself and your user
+from stupid mistakes.
+
+
+I hope this is useful to you.
+
+Cheers,
+J=E9r=F4me
