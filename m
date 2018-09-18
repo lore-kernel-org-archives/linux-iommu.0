@@ -1,156 +1,177 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Explicit IOVA management from a PCIe endpoint driver
-Date: Tue, 18 Sep 2018 11:59:28 +0100
-Message-ID: <a0d97ebd-c77e-400a-29cd-9524e9f47dbc@arm.com>
-References: <3e9950c5-4986-6b0d-74c8-97014530c132@wwwdotorg.org>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Tue, 18 Sep 2018 09:03:14 -0400
+Message-ID: <20180918130314.GA3500@redhat.com>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+ <20180917014244.GA27596@redhat.com>
+ <20180917083940.GE207969@Turing-Arch-b>
+ <20180917123744.GA3605@redhat.com>
+ <20180918060014.GF207969@Turing-Arch-b>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3e9950c5-4986-6b0d-74c8-97014530c132-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vidya Sagar <vidyas-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joao Pinto <Joao.Pinto-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180918060014.GF207969@Turing-Arch-b>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kenneth Lee <liguozhu@hisilicon.com>
+Cc: Kenneth Lee <nek.in.cn@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>, kvm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, linux-doc@vger.kernel.org, Sanjay Kumar <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, linux-kernel@vger.kernel.org, linuxarm@huawei.com, iommu@lists.linux-foundation.org, "David S . Miller" <davem@davemloft.net>, linux-crypto@vger.kernel.org, Zhou Wang <wangzhou1@hisilicon.com>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, Zaibo Xu <xuzaibo@huawei.com>, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Stephen,
+On Tue, Sep 18, 2018 at 02:00:14PM +0800, Kenneth Lee wrote:
+> On Mon, Sep 17, 2018 at 08:37:45AM -0400, Jerome Glisse wrote:
+> > On Mon, Sep 17, 2018 at 04:39:40PM +0800, Kenneth Lee wrote:
+> > > On Sun, Sep 16, 2018 at 09:42:44PM -0400, Jerome Glisse wrote:
+> > > > So i want to summarize issues i have as this threads have dig deep into
+> > > > details. For this i would like to differentiate two cases first the easy
+> > > > one when relying on SVA/SVM. Then the second one when there is no SVA/SVM.
+> > > 
+> > > Thank you very much for the summary.
+> > > 
+> > > > In both cases your objectives as i understand them:
+> > > > 
+> > > > [R1]- expose a common user space API that make it easy to share boiler
+> > > >       plate code accross many devices (discovering devices, opening
+> > > >       device, creating context, creating command queue ...).
+> > > > [R2]- try to share the device as much as possible up to device limits
+> > > >       (number of independant queues the device has)
+> > > > [R3]- minimize syscall by allowing user space to directly schedule on the
+> > > >       device queue without a round trip to the kernel
+> > > > 
+> > > > I don't think i missed any.
+> > > > 
+> > > > 
+> > > > (1) Device with SVA/SVM
+> > > > 
+> > > > For that case it is easy, you do not need to be in VFIO or part of any
+> > > > thing specific in the kernel. There is no security risk (modulo bug in
+> > > > the SVA/SVM silicon). Fork/exec is properly handle and binding a process
+> > > > to a device is just couple dozen lines of code.
+> > > > 
+> > > 
+> > > This is right...logically. But the kernel has no clear definition about "Device
+> > > with SVA/SVM" and no boiler plate for doing so. Then VFIO may become one of the
+> > > boiler plate.
+> > > 
+> > > VFIO is one of the wrappers for IOMMU for user space. And maybe it is the only
+> > > one. If we add that support within VFIO, which solve most of the problem of
+> > > SVA/SVM, it will save a lot of work in the future.
+> > 
+> > You do not need to "wrap" IOMMU for SVA/SVM. Existing upstream SVA/SVM user
+> > all do the SVA/SVM setup in couple dozen lines and i failed to see how it
+> > would require any more than that in your case.
+> > 
+> > 
+> > > I think this is the key confliction between us. So could Alex please say
+> > > something here? If the VFIO is going to take this into its scope, we can try
+> > > together to solve all the problem on the way. If it it is not, it is also
+> > > simple, we can just go to another way to fulfill this part of requirements even
+> > > we have to duplicate most of the code.
+> > > 
+> > > Another point I need to emphasis here: because we have to replace the hardware
+> > > queue when fork, so it won't be very simple even in SVA/SVM case.
+> > 
+> > I am assuming hardware queue can only be setup by the kernel and thus
+> > you are totaly safe forkwise as the queue is setup against a PASID and
+> > the child does not bind to any PASID and you use VM_DONTCOPY on the
+> > mmap of the hardware MMIO queue because you should really use that flag
+> > for that.
+> > 
+> > 
+> > > > (2) Device does not have SVA/SVM (or it is disabled)
+> > > > 
+> > > > You want to still allow device to be part of your framework. However
+> > > > here i see fundamentals securities issues and you move the burden of
+> > > > being careful to user space which i think is a bad idea. We should
+> > > > never trus the userspace from kernel space.
+> > > > 
+> > > > To keep the same API for the user space code you want a 1:1 mapping
+> > > > between device physical address and process virtual address (ie if
+> > > > device access device physical address A it is accessing the same
+> > > > memory as what is backing the virtual address A in the process.
+> > > > 
+> > > > Security issues are on two things:
+> > > > [I1]- fork/exec, a process who opened any such device and created an
+> > > >       active queue can transfer without its knowledge control of its
+> > > >       commands queue through COW. The parent map some anonymous region
+> > > >       to the device as a command queue buffer but because of COW the
+> > > >       parent can be the first to copy on write and thus the child can
+> > > >       inherit the original pages that are mapped to the hardware.
+> > > >       Here parent lose control and child gain it.
+> > > 
+> > > This is indeed an issue. But it remains an issue only if you continue to use the
+> > > queue and the memory after fork. We can use at_fork kinds of gadget to fix it in
+> > > user space.
+> > 
+> > Trusting user space is a no go from my point of view.
+> 
+> Can we dive deeper on this? Maybe we have different understanding on "Trusting
+> user space". As my understanding, "trusting user space" means "no matter what
+> the user process does, it should only hurt itself and anything give to it, no
+> the kernel and the other process".
+> 
+> In our case, we create a channel between a process and the hardware. The process
+> can do whateven it like to its own memory the channel itself. It won't hurt the
+> other process and the kernel. And if the process fork a child and give the
+> channel to the child, it should the freedom on those resource remain within the
+> parent and the child. We are not trust another else.
+> 
+> So do you refer to something else here?
+> 
 
-On 17/09/18 22:36, Stephen Warren wrote:
-> Joerg, Christoph, Marek, Robin,
-> 
-> I believe that the driver for our PCIe endpoint controller hardware will 
-> need to explicitly manage its IOVA space more than current APIs allow. 
-> I'd like to discuss how to make that possible.
-> 
-> First some background on our hardware:
-> 
-> NVIDIA's Xavier SoC contains a Synopsis Designware PCIe controller. This 
-> can operate in either root port or endpoint mode. I'm particularly 
-> interested in endpoint mode.
-> 
-> Our particular instantiation of this controller exposes a single 
-> function with a single software-controlled PCIe BAR to the PCIe bus 
-> (there are also BARs for access to DMA controller registers and outbound 
-> MSI configuration, which can both be enabled/disabled but not used for 
-> any other purpose). When a transaction is received from the PCIe bus, 
-> the following happens:
-> 
-> 1) Transaction is matched against the BAR base/size (in PCIe address 
-> space) to determine whether it "hits" this BAR or not.
-> 
-> 2) The transaction's address is processed by the PCIe controller's ATU 
-> (Address Translation Unit), which can re-write the address that the 
-> transaction accesses.
-> 
-> Our particular instantiation of the hardware only has 2 entries in the 
-> ATU mapping table, which gives very little flexibility in setting up a 
-> mapping.
-> 
-> As an FYI, ATU entries can match PCIe transactions either:
-> a) Any transaction received on a particular BAR.
-> b) Any transaction received within a single contiguous window of PCIe 
-> address space. This kind of mapping entry obviously has to be set up 
-> after device enumeration is complete so that it can match the correct 
-> PCIe address.
-> 
-> Each ATU entry maps a single contiguous set of PCIe addresses to a 
-> single contiguous set of IOVAs which are passed to the IOMMU. 
-> Transactions can pass through the ATU without being translated if desired.
-> 
-> 3) The transaction is passed to the IOMMU, which can again re-write the 
-> address that the transaction accesses.
-> 
-> 4) The transaction is passed to the memory controller and reads/writes 
-> DRAM.
-> 
-> In general, we want to be able to expose a large and dynamic set of data 
-> buffers to the PCIe bus; certainly /far/ more than two separate buffers 
-> (the number of ATU table entries). With current Linux APIs, these 
-> buffers will not be located in contiguous or adjacent physical (DRAM) or 
-> virtual (IOVA) addresses, nor in any particular window of physical or 
-> IOVA addresses. However, the ATU's mapping from PCIe to IOVA can only 
-> expose one or two contiguous ranges of IOVA space. These two sets of 
-> requirements are at odds!
-> 
-> So, I'd like to propose some new APIs that the PCIe endpoint driver can 
-> use:
-> 
-> 1) Allocate/reserve an IOVA range of specified size, but don't map 
-> anything into the IOVA range.
-> 
-> 2) De-allocate the IOVA range allocated in (1).
-> 
-> 3) Map a specific set (scatter-gather list I suppose) of 
-> already-allocated/extant physical addresses into part of an IOVA range 
-> allocated in (1).
-> 
-> 4) Unmap a portion of an IOVA range that was mapped by (3).
+I am refering to COW giving control to the child on to what happens
+in the parent from device point of view. A process hurting itself is
+fine, but if process now has to do special steps to protect from
+its child ie make sure that its childs can not hurt it, then i see
+that as a kernel bug. We can not ask user space process to know about
+all the thousands things that needs to be done to avoid issues with
+each device driver that the process may use (process can be totaly
+ignorant it is using a device if that device is use by a library it
+links to).
 
-That all sounds perfectly reasonable - basically it sounds like the 
-endpoint framework wants the option to do the same as VFIO or many DRM 
-drivers, i.e. set up its own IOMMU domain, attach the endpoint's group, 
-and explicitly manage its mappings via IOMMU API calls. Provided you can 
-assume cache-coherent PCI, that should be enough to get things going - 
-supporting non-coherent endpoints is a little trickier in terms of 
-making sure the endpoint controller and/or device gets the right DMA ops 
-to only ever perform cache maintenance once you add streaming DMA 
-mappings into the mix, but that's not insurmountable (and I think it's 
-something we still need to address for DRM anyway, at least on arm64)
 
-> One final note:
-> 
-> The memory controller can translate accesses to a small region of DRAM 
-> address space into accesses to an interrupt generation module. This 
-> allows devices attached to the PCIe bus to generate interrupts to 
-> software running on the system with the PCIe endpoint controller. Thus I 
-> deliberately described API 3 above as mapping a specific physical 
-> address into IOVA space, as opposed to mapping an existing DRAM 
-> allocation into IOVA space, in order to allow mapping this interrupt 
-> generation address space into IOVA space. If we needed separate APIs to 
-> map physical addresses vs. DRAM allocations into IOVA space, that would 
-> likely be fine too.
+Maybe what needs to happen will explain it better. So if userspace
+wants to be secure and protect itself from its child taking over the
+device through COW:
 
-If that's the standard DesignWare MSI dingaling, then all you should 
-need to do is ensure you IOVA is reserved in your allocator (if it can 
-be entirely outside the EP BAR, even better) - AFAIK the writes get 
-completely intercepted such that they never go out to the SMMU side at 
-all, and thus no actual mapping is even needed.
+    - parent opened a device and is using it
 
-> Does this API proposal sound reasonable?
+    ... when parent wants to fork/exec it must:
 
-Indeed, as I say apart from using streaming DMA for coherency management 
-(which I think could be added in pretty much orthogonally later), this 
-sounds like something you could plumb into the endpoint framework right 
-now with no dependent changes elsewhere.
+    - parent _must_ flush device command queue and wait for the
+      device to finish all pending jobs
 
-> I have heard from some NVIDIA developers that the above APIs rather go 
-> against the principle that individual drivers should not be aware of the 
-> presence/absence of an IOMMU, and hence direct management of IOVA 
-> allocation/layout is deliberately avoided, and hence there hasn't been a 
-> need/desire for this kind of API in the past. However, I think our 
-> current hardware design and use-case rather requires it. Do you agree?
+    - parent _must_ unmap all range mapped to the device
 
-If there is a principle, it's more the inverse - the point of things 
-like SWIOTLB and iommu-dma is that we don't want to *have* to add 
-IOMMU-awareness or explicit bounce-buffering to every driver or 
-subsystem which might ever find itself on a machine with more memory 
-than its device can address natively. Thus drivers which only need to 
-use the DMA API can continue to do so and the arch code hooks up this 
-stuff automatically to make sure that just works. However, drivers which 
-*do* expect their device to have an IOMMU, and have good cause to manage 
-it themselves to do things that simple DMA API calls can't, should of 
-course be welcome to implement that extra code and depend on IOMMU_API 
-if they so wish. Again, DRM drivers are the prime example (er, no pun 
-intended) - simple ones let drm_gem_cma_helper et al do all the heavy 
-lifting for them, more complex ones get their hands dirty.
+    - parent should first close device file (unless you force set
+      the CLOEXEC flag in the kernel)/it could also just flush
+      but if you are not mapping the device command queue with
+      VM_DONTCOPY then you should really be closing the device
 
-Robin.
+    - now parent can fork/exec
+
+    - parent must force COW ie write at least one byte to _all_
+      pages in the range it wants to use with the device
+
+    - parent re-open the device and re-initialize everything
+
+
+So this is putting quite a burden on a number of steps the parent
+_must_ do in order to keep control of memory exposed to the device.
+Not doing so can potentialy lead (it depends on who does the COW
+first) to the child taking control of memory use by the device,
+memory which was mapped by the parent before the child was created.
+
+Forcing CLOEXEC and VM_DONTCOPY somewhat help to simplify this,
+but you still need to stop, flush, unmap, before fork/exec and then
+re-init everything after.
+
+
+This is only when not using SVA/SVM, SVA/SVM is totaly fine from
+that point of view, no issues whatsoever.
+
+The solution i outlined in previous email do not have that above
+issue either, no need to rely on user space doing that dance.
+
+Cheers,
+Jérôme
