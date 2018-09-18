@@ -1,86 +1,82 @@
 From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v7 2/6] iommu/dma: Add support for non-strict mode
-Date: Tue, 18 Sep 2018 18:10:07 +0100
-Message-ID: <20180918171007.GJ16498@arm.com>
+Subject: Re: [PATCH v7 5/6] iommu/arm-smmu-v3: Add support for non-strict mode
+Date: Tue, 18 Sep 2018 18:10:17 +0100
+Message-ID: <20180918171016.GL16498@arm.com>
 References: <cover.1536935328.git.robin.murphy@arm.com>
- <0a891cec4bb164f8cf2f57c753791a7d1f5f1d81.1536935328.git.robin.murphy@arm.com>
+ <4f9444c7224ea0e6e4cef8ddbf77bb5292a383e3.1536935328.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <0a891cec4bb164f8cf2f57c753791a7d1f5f1d81.1536935328.git.robin.murphy@arm.com>
+In-Reply-To: <4f9444c7224ea0e6e4cef8ddbf77bb5292a383e3.1536935328.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Fri, Sep 14, 2018 at 03:30:20PM +0100, Robin Murphy wrote:
+On Fri, Sep 14, 2018 at 03:30:23PM +0100, Robin Murphy wrote:
 > From: Zhen Lei <thunder.leizhen@huawei.com>
 > 
-> 1. Save the related domain pointer in struct iommu_dma_cookie, make iovad
->    capable call domain->ops->flush_iotlb_all to flush TLB.
-> 2. During the iommu domain initialization phase, base on domain->non_strict
->    field to check whether non-strict mode is supported or not. If so, call
->    init_iova_flush_queue to register iovad->flush_cb callback.
-> 3. All unmap(contains iova-free) APIs will finally invoke __iommu_dma_unmap
->    -->iommu_dma_free_iova. If the domain is non-strict, call queue_iova to
->    put off iova freeing, and omit iommu_tlb_sync operation.
+> Dynamically choose strict or non-strict mode for page table config based
+> on the iommu domain type.
 
-Hmm, this is basically just a commentary on the code. Please could you write
-it more in terms of the problem that's being solved?
+It's the domain type in conjunction with the attribute that determines
+whether we use lazy or strict invalidation.
 
 > Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> [rm: convert raw boolean to domain attribute]
+> [rm: convert to domain attribute]
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/iommu/dma-iommu.c | 29 ++++++++++++++++++++++++++++-
->  include/linux/iommu.h     |  1 +
->  2 files changed, 29 insertions(+), 1 deletion(-)
+>  drivers/iommu/arm-smmu-v3.c | 30 ++++++++++++++++++++++++------
+>  1 file changed, 24 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 511ff9a1d6d9..092e6926dc3c 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -55,6 +55,9 @@ struct iommu_dma_cookie {
->  	};
->  	struct list_head		msi_page_list;
->  	spinlock_t			msi_lock;
-> +
-> +	/* Only be assigned in non-strict mode, otherwise it's NULL */
-> +	struct iommu_domain		*domain;
->  };
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index f10c852479fc..7bbfa5f7ce8e 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -612,6 +612,7 @@ struct arm_smmu_domain {
+>  	struct mutex			init_mutex; /* Protects smmu pointer */
 >  
->  static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
-> @@ -257,6 +260,17 @@ static int iova_reserve_iommu_regions(struct device *dev,
->  	return ret;
->  }
+>  	struct io_pgtable_ops		*pgtbl_ops;
+> +	bool				non_strict;
 >  
-> +static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
-> +{
-> +	struct iommu_dma_cookie *cookie;
-> +	struct iommu_domain *domain;
+>  	enum arm_smmu_domain_stage	stage;
+>  	union {
+> @@ -1633,6 +1634,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+>  	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
+>  		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+>  
+> +	if (smmu_domain->non_strict)
+> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
 > +
-> +	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
-> +	domain = cookie->domain;
-> +
-> +	domain->ops->flush_iotlb_all(domain);
+>  	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+>  	if (!pgtbl_ops)
+>  		return -ENOMEM;
+> @@ -1934,13 +1938,17 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  {
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  
+> -	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> -		return -EINVAL;
+> -
+>  	switch (attr) {
+>  	case DOMAIN_ATTR_NESTING:
+> +		if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +			return -EINVAL;
+>  		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+>  		return 0;
+> +	case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+> +		if (domain->type != IOMMU_DOMAIN_DMA)
+> +			return -EINVAL;
+> +		*(int *)data = smmu_domain->non_strict;
+> +		return 0;
+>  	default:
+>  		return -ENODEV;
 
-Can we rely on this function pointer being non-NULL? I think it would
-be better to call iommu_flush_tlb_all(cookie->domain) instead.
-
-> +}
-> +
->  /**
->   * iommu_dma_init_domain - Initialise a DMA mapping domain
->   * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
-> @@ -275,6 +289,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->  	struct iova_domain *iovad = &cookie->iovad;
->  	unsigned long order, base_pfn, end_pfn;
-> +	int attr = 1;
-
-Do we actually need to initialise this?
+Hmm, there's a change in behaviour here (and also in the set function)
+which is that unknown attributes now return -ENODEV for managed domains
+instead of -EINVAL. I don't know if that's a problem, but I'd be inclined
+to switch on the domain type and then have a nested switch for the supported
+attributes.
 
 Will
