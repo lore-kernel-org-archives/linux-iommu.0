@@ -1,367 +1,48 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: move swiotlb noncoherent dma support from arm64 to generic code
-Date: Tue, 18 Sep 2018 14:28:42 +0100
-Message-ID: <d6a4f58e-975f-e7dc-d622-d56760710a92@arm.com>
-References: <20180917153826.28052-1-hch@lst.de>
+From: Tom Murphy <murphyt7-/Zw1syy4LHg@public.gmane.org>
+Subject: Re: [PATCH v2 0/3] iommu: Avoid DMA ops domain refcount contention
+Date: Tue, 18 Sep 2018 14:28:55 +0100
+Message-ID: <CALQxJusfn_d0X34RAevfunjj9-dA6_qq97efjUriBZWMJoX4QA@mail.gmail.com>
+References: <cover.1536764440.git.robin.murphy@arm.com>
+	<20180914124858.GA4010@arm.com> <20180917133359.GA972@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180917153826.28052-1-hch@lst.de>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180917133359.GA972-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+>Not sure how fast Tom needs the common dma-iommu code for the x86 AMD iommu conversion.
 
-On 17/09/18 16:38, Christoph Hellwig wrote:
-> Hi all,
-> 
-> this series starts with various swiotlb cleanups, then adds support for
-> non-cache coherent devices to the generic swiotlb support, and finally
-> switches arm64 to use the generic code.
+I am currently busy working on something else and won't be able to
+do/test the x86 AMD iommu conversion anytime soon. So I don't need the
+common dma-iommu code anytime soon.
 
-I think there's going to be an issue with the embedded folks' grubby 
-hack in arm64's mem_init() which skips initialising SWIOTLB at all with 
-sufficiently little DRAM. I've been waiting for 
-dma-direct-noncoherent-merge so that I could fix that case to swizzle in 
-dma_direct_ops and avoid swiotlb_dma_ops entirely.
-
-> Given that this series depends on patches in the dma-mapping tree, or
-> pending for it I've also published a git tree here:
-> 
->      git://git.infradead.org/users/hch/misc.git swiotlb-noncoherent
-
-However, upon sitting down to eagerly write that patch I've just 
-boot-tested the above branch as-is for a baseline and discovered a 
-rather more significant problem: arch_dma_alloc() is recursing back into 
-__swiotlb_alloc() and blowing the stack. Not good :(
-
-Robin.
-
------>8-----
-[    4.032760] Insufficient stack space to handle exception!
-[    4.032765] ESR: 0x96000047 -- DABT (current EL)
-[    4.042666] FAR: 0xffff00000a937fb0
-[    4.046113] Task stack:     [0xffff00000a938000..0xffff00000a93c000]
-[    4.052399] IRQ stack:      [0xffff000008008000..0xffff00000800c000]
-[    4.058684] Overflow stack: [0xffff80097ff4b290..0xffff80097ff4c290]
-[    4.064972] CPU: 1 PID: 130 Comm: kworker/1:1 Not tainted 4.19.0-rc2+ 
-#681
-[    4.071775] Hardware name: ARM LTD ARM Juno Development Platform/ARM 
-Juno Development Platform, BIOS EDK II Jul 10 2018
-[    4.082456] Workqueue: events deferred_probe_work_func
-[    4.087542] pstate: 00000005 (nzcv daif -PAN -UAO)
-[    4.092283] pc : arch_dma_alloc+0x0/0x198
-[    4.096250] lr : dma_direct_alloc+0x20/0x28
-[    4.100385] sp : ffff00000a938010
-[    4.103660] x29: ffff00000a938010 x28: ffff800974e15238
-[    4.108918] x27: ffff000008bf30d8 x26: ffff80097543d400
-[    4.114176] x25: 0000000000000300 x24: ffff80097543d400
-[    4.119434] x23: ffff800974e15238 x22: 0000000000001000
-[    4.124691] x21: ffff80097543d400 x20: 0000000000001000
-[    4.129948] x19: 0000000000000300 x18: ffffffffffffffff
-[    4.135206] x17: 0000000000000000 x16: ffff000008bf1b58
-[    4.140463] x15: ffff0000091eb688 x14: ffff00008a93ba1d
-[    4.145720] x13: ffffff0000000000 x12: 0000000000000000
-[    4.150977] x11: 0000000000000001 x10: ffffff7f7fff7fff
-[    4.156235] x9 : 0000000000000000 x8 : 0000000000000000
-[    4.161492] x7 : ffff800974df9810 x6 : 0000000000000000
-[    4.166749] x5 : 0000000000000000 x4 : 0000000000000300
-[    4.172006] x3 : 00000000006002c0 x2 : ffff800974e15238
-[    4.177263] x1 : 0000000000001000 x0 : ffff80097543d400
-[    4.182521] Kernel panic - not syncing: kernel stack overflow
-[    4.188207] CPU: 1 PID: 130 Comm: kworker/1:1 Not tainted 4.19.0-rc2+ 
-#681
-[    4.195008] Hardware name: ARM LTD ARM Juno Development Platform/ARM 
-Juno Development Platform, BIOS EDK II Jul 10 2018
-[    4.205681] Workqueue: events deferred_probe_work_func
-[    4.210765] Call trace:
-[    4.213183]  dump_backtrace+0x0/0x1f0
-[    4.216805]  show_stack+0x14/0x20
-[    4.220084]  dump_stack+0x9c/0xbc
-[    4.223362]  panic+0x138/0x294
-[    4.226381]  __stack_chk_fail+0x0/0x18
-[    4.230088]  handle_bad_stack+0x11c/0x130
-[    4.234052]  __bad_stack+0x88/0x8c
-[    4.237415]  arch_dma_alloc+0x0/0x198
-[    4.241036]  __swiotlb_alloc+0x3c/0x178
-[    4.244828]  arch_dma_alloc+0xd0/0x198
-[    4.248534]  dma_direct_alloc+0x20/0x28
-[    4.252327]  __swiotlb_alloc+0x3c/0x178
-[    4.256119]  arch_dma_alloc+0xd0/0x198
-[    4.259825]  dma_direct_alloc+0x20/0x28
-[    4.263617]  __swiotlb_alloc+0x3c/0x178
-[    4.267409]  arch_dma_alloc+0xd0/0x198
-[    4.271115]  dma_direct_alloc+0x20/0x28
-[    4.274907]  __swiotlb_alloc+0x3c/0x178
-[    4.278700]  arch_dma_alloc+0xd0/0x198
-[    4.282405]  dma_direct_alloc+0x20/0x28
-[    4.286198]  __swiotlb_alloc+0x3c/0x178
-[    4.289990]  arch_dma_alloc+0xd0/0x198
-[    4.293696]  dma_direct_alloc+0x20/0x28
-[    4.297489]  __swiotlb_alloc+0x3c/0x178
-[    4.301281]  arch_dma_alloc+0xd0/0x198
-[    4.304987]  dma_direct_alloc+0x20/0x28
-[    4.308779]  __swiotlb_alloc+0x3c/0x178
-[    4.312571]  arch_dma_alloc+0xd0/0x198
-[    4.316277]  dma_direct_alloc+0x20/0x28
-[    4.320069]  __swiotlb_alloc+0x3c/0x178
-[    4.323861]  arch_dma_alloc+0xd0/0x198
-[    4.327567]  dma_direct_alloc+0x20/0x28
-[    4.331359]  __swiotlb_alloc+0x3c/0x178
-[    4.335151]  arch_dma_alloc+0xd0/0x198
-[    4.338857]  dma_direct_alloc+0x20/0x28
-[    4.342650]  __swiotlb_alloc+0x3c/0x178
-[    4.346442]  arch_dma_alloc+0xd0/0x198
-[    4.350148]  dma_direct_alloc+0x20/0x28
-[    4.353940]  __swiotlb_alloc+0x3c/0x178
-[    4.357732]  arch_dma_alloc+0xd0/0x198
-[    4.361438]  dma_direct_alloc+0x20/0x28
-[    4.365230]  __swiotlb_alloc+0x3c/0x178
-[    4.369022]  arch_dma_alloc+0xd0/0x198
-[    4.372728]  dma_direct_alloc+0x20/0x28
-[    4.376520]  __swiotlb_alloc+0x3c/0x178
-[    4.380313]  arch_dma_alloc+0xd0/0x198
-[    4.384018]  dma_direct_alloc+0x20/0x28
-[    4.387811]  __swiotlb_alloc+0x3c/0x178
-[    4.391603]  arch_dma_alloc+0xd0/0x198
-[    4.395309]  dma_direct_alloc+0x20/0x28
-[    4.399101]  __swiotlb_alloc+0x3c/0x178
-[    4.402893]  arch_dma_alloc+0xd0/0x198
-[    4.406599]  dma_direct_alloc+0x20/0x28
-[    4.410391]  __swiotlb_alloc+0x3c/0x178
-[    4.414183]  arch_dma_alloc+0xd0/0x198
-[    4.417889]  dma_direct_alloc+0x20/0x28
-[    4.421682]  __swiotlb_alloc+0x3c/0x178
-[    4.425474]  arch_dma_alloc+0xd0/0x198
-[    4.429180]  dma_direct_alloc+0x20/0x28
-[    4.432972]  __swiotlb_alloc+0x3c/0x178
-[    4.436764]  arch_dma_alloc+0xd0/0x198
-[    4.440470]  dma_direct_alloc+0x20/0x28
-[    4.444262]  __swiotlb_alloc+0x3c/0x178
-[    4.448055]  arch_dma_alloc+0xd0/0x198
-[    4.451760]  dma_direct_alloc+0x20/0x28
-[    4.455553]  __swiotlb_alloc+0x3c/0x178
-[    4.459345]  arch_dma_alloc+0xd0/0x198
-[    4.463051]  dma_direct_alloc+0x20/0x28
-[    4.466843]  __swiotlb_alloc+0x3c/0x178
-[    4.470635]  arch_dma_alloc+0xd0/0x198
-[    4.474341]  dma_direct_alloc+0x20/0x28
-[    4.478134]  __swiotlb_alloc+0x3c/0x178
-[    4.481926]  arch_dma_alloc+0xd0/0x198
-[    4.485632]  dma_direct_alloc+0x20/0x28
-[    4.489424]  __swiotlb_alloc+0x3c/0x178
-[    4.493216]  arch_dma_alloc+0xd0/0x198
-[    4.496922]  dma_direct_alloc+0x20/0x28
-[    4.500714]  __swiotlb_alloc+0x3c/0x178
-[    4.504506]  arch_dma_alloc+0xd0/0x198
-[    4.508212]  dma_direct_alloc+0x20/0x28
-[    4.512004]  __swiotlb_alloc+0x3c/0x178
-[    4.515797]  arch_dma_alloc+0xd0/0x198
-[    4.519502]  dma_direct_alloc+0x20/0x28
-[    4.523295]  __swiotlb_alloc+0x3c/0x178
-[    4.527087]  arch_dma_alloc+0xd0/0x198
-[    4.530793]  dma_direct_alloc+0x20/0x28
-[    4.534585]  __swiotlb_alloc+0x3c/0x178
-[    4.538378]  arch_dma_alloc+0xd0/0x198
-[    4.542083]  dma_direct_alloc+0x20/0x28
-[    4.545876]  __swiotlb_alloc+0x3c/0x178
-[    4.549668]  arch_dma_alloc+0xd0/0x198
-[    4.553374]  dma_direct_alloc+0x20/0x28
-[    4.557166]  __swiotlb_alloc+0x3c/0x178
-[    4.560958]  arch_dma_alloc+0xd0/0x198
-[    4.564664]  dma_direct_alloc+0x20/0x28
-[    4.568456]  __swiotlb_alloc+0x3c/0x178
-[    4.572248]  arch_dma_alloc+0xd0/0x198
-[    4.575954]  dma_direct_alloc+0x20/0x28
-[    4.579747]  __swiotlb_alloc+0x3c/0x178
-[    4.583539]  arch_dma_alloc+0xd0/0x198
-[    4.587245]  dma_direct_alloc+0x20/0x28
-[    4.591037]  __swiotlb_alloc+0x3c/0x178
-[    4.594829]  arch_dma_alloc+0xd0/0x198
-[    4.598535]  dma_direct_alloc+0x20/0x28
-[    4.602327]  __swiotlb_alloc+0x3c/0x178
-[    4.606120]  arch_dma_alloc+0xd0/0x198
-[    4.609826]  dma_direct_alloc+0x20/0x28
-[    4.613618]  __swiotlb_alloc+0x3c/0x178
-[    4.617410]  arch_dma_alloc+0xd0/0x198
-[    4.621116]  dma_direct_alloc+0x20/0x28
-[    4.624908]  __swiotlb_alloc+0x3c/0x178
-[    4.628701]  arch_dma_alloc+0xd0/0x198
-[    4.632407]  dma_direct_alloc+0x20/0x28
-[    4.636199]  __swiotlb_alloc+0x3c/0x178
-[    4.639991]  arch_dma_alloc+0xd0/0x198
-[    4.643697]  dma_direct_alloc+0x20/0x28
-[    4.647490]  __swiotlb_alloc+0x3c/0x178
-[    4.651282]  arch_dma_alloc+0xd0/0x198
-[    4.654988]  dma_direct_alloc+0x20/0x28
-[    4.658780]  __swiotlb_alloc+0x3c/0x178
-[    4.662572]  arch_dma_alloc+0xd0/0x198
-[    4.666278]  dma_direct_alloc+0x20/0x28
-[    4.670070]  __swiotlb_alloc+0x3c/0x178
-[    4.673862]  arch_dma_alloc+0xd0/0x198
-[    4.677568]  dma_direct_alloc+0x20/0x28
-[    4.681361]  __swiotlb_alloc+0x3c/0x178
-[    4.685153]  arch_dma_alloc+0xd0/0x198
-[    4.688859]  dma_direct_alloc+0x20/0x28
-[    4.692651]  __swiotlb_alloc+0x3c/0x178
-[    4.696443]  arch_dma_alloc+0xd0/0x198
-[    4.700148]  dma_direct_alloc+0x20/0x28
-[    4.703941]  __swiotlb_alloc+0x3c/0x178
-[    4.707733]  arch_dma_alloc+0xd0/0x198
-[    4.711439]  dma_direct_alloc+0x20/0x28
-[    4.715231]  __swiotlb_alloc+0x3c/0x178
-[    4.719023]  arch_dma_alloc+0xd0/0x198
-[    4.722729]  dma_direct_alloc+0x20/0x28
-[    4.726522]  __swiotlb_alloc+0x3c/0x178
-[    4.730313]  arch_dma_alloc+0xd0/0x198
-[    4.734019]  dma_direct_alloc+0x20/0x28
-[    4.737811]  __swiotlb_alloc+0x3c/0x178
-[    4.741604]  arch_dma_alloc+0xd0/0x198
-[    4.745310]  dma_direct_alloc+0x20/0x28
-[    4.749102]  __swiotlb_alloc+0x3c/0x178
-[    4.752894]  arch_dma_alloc+0xd0/0x198
-[    4.756600]  dma_direct_alloc+0x20/0x28
-[    4.760393]  __swiotlb_alloc+0x3c/0x178
-[    4.764185]  arch_dma_alloc+0xd0/0x198
-[    4.767891]  dma_direct_alloc+0x20/0x28
-[    4.771683]  __swiotlb_alloc+0x3c/0x178
-[    4.775475]  arch_dma_alloc+0xd0/0x198
-[    4.779181]  dma_direct_alloc+0x20/0x28
-[    4.782973]  __swiotlb_alloc+0x3c/0x178
-[    4.786765]  arch_dma_alloc+0xd0/0x198
-[    4.790471]  dma_direct_alloc+0x20/0x28
-[    4.794263]  __swiotlb_alloc+0x3c/0x178
-[    4.798055]  arch_dma_alloc+0xd0/0x198
-[    4.801761]  dma_direct_alloc+0x20/0x28
-[    4.805553]  __swiotlb_alloc+0x3c/0x178
-[    4.809345]  arch_dma_alloc+0xd0/0x198
-[    4.813051]  dma_direct_alloc+0x20/0x28
-[    4.816844]  __swiotlb_alloc+0x3c/0x178
-[    4.820636]  arch_dma_alloc+0xd0/0x198
-[    4.824342]  dma_direct_alloc+0x20/0x28
-[    4.828134]  __swiotlb_alloc+0x3c/0x178
-[    4.831926]  arch_dma_alloc+0xd0/0x198
-[    4.835632]  dma_direct_alloc+0x20/0x28
-[    4.839425]  __swiotlb_alloc+0x3c/0x178
-[    4.843217]  arch_dma_alloc+0xd0/0x198
-[    4.846923]  dma_direct_alloc+0x20/0x28
-[    4.850715]  __swiotlb_alloc+0x3c/0x178
-[    4.854507]  arch_dma_alloc+0xd0/0x198
-[    4.858212]  dma_direct_alloc+0x20/0x28
-[    4.862005]  __swiotlb_alloc+0x3c/0x178
-[    4.865797]  arch_dma_alloc+0xd0/0x198
-[    4.869503]  dma_direct_alloc+0x20/0x28
-[    4.873295]  __swiotlb_alloc+0x3c/0x178
-[    4.877087]  arch_dma_alloc+0xd0/0x198
-[    4.880793]  dma_direct_alloc+0x20/0x28
-[    4.884586]  __swiotlb_alloc+0x3c/0x178
-[    4.888377]  arch_dma_alloc+0xd0/0x198
-[    4.892083]  dma_direct_alloc+0x20/0x28
-[    4.895875]  __swiotlb_alloc+0x3c/0x178
-[    4.899667]  arch_dma_alloc+0xd0/0x198
-[    4.903373]  dma_direct_alloc+0x20/0x28
-[    4.907165]  __swiotlb_alloc+0x3c/0x178
-[    4.910957]  arch_dma_alloc+0xd0/0x198
-[    4.914663]  dma_direct_alloc+0x20/0x28
-[    4.918455]  __swiotlb_alloc+0x3c/0x178
-[    4.922247]  arch_dma_alloc+0xd0/0x198
-[    4.925953]  dma_direct_alloc+0x20/0x28
-[    4.929746]  __swiotlb_alloc+0x3c/0x178
-[    4.933538]  arch_dma_alloc+0xd0/0x198
-[    4.937244]  dma_direct_alloc+0x20/0x28
-[    4.941036]  __swiotlb_alloc+0x3c/0x178
-[    4.944828]  arch_dma_alloc+0xd0/0x198
-[    4.948534]  dma_direct_alloc+0x20/0x28
-[    4.952327]  __swiotlb_alloc+0x3c/0x178
-[    4.956119]  arch_dma_alloc+0xd0/0x198
-[    4.959825]  dma_direct_alloc+0x20/0x28
-[    4.963617]  __swiotlb_alloc+0x3c/0x178
-[    4.967409]  arch_dma_alloc+0xd0/0x198
-[    4.971115]  dma_direct_alloc+0x20/0x28
-[    4.974907]  __swiotlb_alloc+0x3c/0x178
-[    4.978699]  arch_dma_alloc+0xd0/0x198
-[    4.982405]  dma_direct_alloc+0x20/0x28
-[    4.986197]  __swiotlb_alloc+0x3c/0x178
-[    4.989990]  arch_dma_alloc+0xd0/0x198
-[    4.993695]  dma_direct_alloc+0x20/0x28
-[    4.997488]  __swiotlb_alloc+0x3c/0x178
-[    5.001280]  arch_dma_alloc+0xd0/0x198
-[    5.004986]  dma_direct_alloc+0x20/0x28
-[    5.008778]  __swiotlb_alloc+0x3c/0x178
-[    5.012570]  arch_dma_alloc+0xd0/0x198
-[    5.016276]  dma_direct_alloc+0x20/0x28
-[    5.020069]  __swiotlb_alloc+0x3c/0x178
-[    5.023861]  arch_dma_alloc+0xd0/0x198
-[    5.027567]  dma_direct_alloc+0x20/0x28
-[    5.031359]  __swiotlb_alloc+0x3c/0x178
-[    5.035151]  arch_dma_alloc+0xd0/0x198
-[    5.038857]  dma_direct_alloc+0x20/0x28
-[    5.042650]  __swiotlb_alloc+0x3c/0x178
-[    5.046442]  arch_dma_alloc+0xd0/0x198
-[    5.050148]  dma_direct_alloc+0x20/0x28
-[    5.053940]  __swiotlb_alloc+0x3c/0x178
-[    5.057732]  arch_dma_alloc+0xd0/0x198
-[    5.061438]  dma_direct_alloc+0x20/0x28
-[    5.065230]  __swiotlb_alloc+0x3c/0x178
-[    5.069023]  arch_dma_alloc+0xd0/0x198
-[    5.072728]  dma_direct_alloc+0x20/0x28
-[    5.076521]  __swiotlb_alloc+0x3c/0x178
-[    5.080313]  arch_dma_alloc+0xd0/0x198
-[    5.084019]  dma_direct_alloc+0x20/0x28
-[    5.087811]  __swiotlb_alloc+0x3c/0x178
-[    5.091604]  arch_dma_alloc+0xd0/0x198
-[    5.095309]  dma_direct_alloc+0x20/0x28
-[    5.099102]  __swiotlb_alloc+0x3c/0x178
-[    5.102894]  arch_dma_alloc+0xd0/0x198
-[    5.106600]  dma_direct_alloc+0x20/0x28
-[    5.110392]  __swiotlb_alloc+0x3c/0x178
-[    5.114184]  arch_dma_alloc+0xd0/0x198
-[    5.117890]  dma_direct_alloc+0x20/0x28
-[    5.121682]  __swiotlb_alloc+0x3c/0x178
-[    5.125474]  arch_dma_alloc+0xd0/0x198
-[    5.129180]  dma_direct_alloc+0x20/0x28
-[    5.132973]  __swiotlb_alloc+0x3c/0x178
-[    5.136765]  arch_dma_alloc+0xd0/0x198
-[    5.140470]  dma_direct_alloc+0x20/0x28
-[    5.144262]  __swiotlb_alloc+0x3c/0x178
-[    5.148054]  arch_dma_alloc+0xd0/0x198
-[    5.151760]  dma_direct_alloc+0x20/0x28
-[    5.155552]  __swiotlb_alloc+0x3c/0x178
-[    5.159345]  arch_dma_alloc+0xd0/0x198
-[    5.163050]  dma_direct_alloc+0x20/0x28
-[    5.166843]  __swiotlb_alloc+0x3c/0x178
-[    5.170635]  arch_dma_alloc+0xd0/0x198
-[    5.174341]  dma_direct_alloc+0x20/0x28
-[    5.178133]  __swiotlb_alloc+0x3c/0x178
-[    5.181925]  arch_dma_alloc+0xd0/0x198
-[    5.185631]  dma_direct_alloc+0x20/0x28
-[    5.189423]  __swiotlb_alloc+0x3c/0x178
-[    5.193215]  arch_dma_alloc+0xd0/0x198
-[    5.196921]  dma_direct_alloc+0x20/0x28
-[    5.200714]  __swiotlb_alloc+0x3c/0x178
-[    5.204506]  arch_dma_alloc+0xd0/0x198
-[    5.208212]  swiotlb_alloc+0x20/0x28
-[    5.211748]  pl330_probe+0x344/0xaf0
-[    5.215283]  amba_probe+0xe8/0x1b8
-[    5.218646]  really_probe+0xdc/0x3d0
-[    5.222181]  driver_probe_device+0x5c/0x148
-[    5.226318]  __device_attach_driver+0xa8/0x160
-[    5.230712]  bus_for_each_drv+0x64/0xc8
-[    5.234505]  __device_attach+0xd8/0x158
-[    5.238298]  device_initial_probe+0x10/0x18
-[    5.242434]  bus_probe_device+0x90/0x98
-[    5.246227]  deferred_probe_work_func+0x88/0xe0
-[    5.250708]  process_one_work+0x1e0/0x330
-[    5.254673]  worker_thread+0x238/0x460
-[    5.258380]  kthread+0x128/0x130
-[    5.261571]  ret_from_fork+0x10/0x1c
-[    5.265109] SMP: stopping secondary CPUs
-[    5.268990] Kernel Offset: disabled
-[    5.272438] CPU features: 0x0,25806004
-[    5.276143] Memory Limit: none
-[    5.279168] ---[ end Kernel panic - not syncing: kernel stack 
-overflow ]---
+On 17 September 2018 at 14:33, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
+> On Fri, Sep 14, 2018 at 01:48:59PM +0100, Will Deacon wrote:
+>> > As far as merging goes, I don't mind at all whether this goes via IOMMU,
+>> > or via dma-mapping provided Joerg's happy to ack it.
+>>
+>> I think it makes most sense for Joerg to take this series via his tree.
+>
+> FYI, I have WIP patches to move the arm dma-iommu wrappers to common
+> code:
+>
+> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-maybe-coherent
+>
+> which will require some synchronization of the involved trees.  In the
+> end it is iommu code, so the actual iommu patches should probably
+> go into the iommu tree after all, but it might have to pull in the
+> dma-mapping branch for that.  Or we just punt it until the next merge
+> window.  Not sure how fast Tom needs the common dma-iommu code for
+> the x86 AMD iommu conversion.
