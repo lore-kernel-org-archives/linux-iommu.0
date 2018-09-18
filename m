@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v7 4/6] iommu: Add bootup option "iommu.non_strict"
-Date: Tue, 18 Sep 2018 20:01:54 +0100
-Message-ID: <f98e3245-bbaf-fdd9-d8d3-2ac9900af636@arm.com>
+Subject: Re: [PATCH v7 5/6] iommu/arm-smmu-v3: Add support for non-strict mode
+Date: Tue, 18 Sep 2018 20:09:45 +0100
+Message-ID: <aec7c175-dd77-8cb7-7544-579bd73c162d@arm.com>
 References: <cover.1536935328.git.robin.murphy@arm.com>
- <41f81c46348db4acd9a542184f10e7ca24f6c219.1536935328.git.robin.murphy@arm.com>
- <20180918171013.GK16498@arm.com>
+ <4f9444c7224ea0e6e4cef8ddbf77bb5292a383e3.1536935328.git.robin.murphy@arm.com>
+ <20180918171016.GL16498@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180918171013.GK16498@arm.com>
+In-Reply-To: <20180918171016.GL16498@arm.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Will Deacon <will.deacon@arm.com>
@@ -17,119 +17,76 @@ Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.or
 List-Id: iommu@lists.linux-foundation.org
 
 On 2018-09-18 6:10 PM, Will Deacon wrote:
-> On Fri, Sep 14, 2018 at 03:30:22PM +0100, Robin Murphy wrote:
+> On Fri, Sep 14, 2018 at 03:30:23PM +0100, Robin Murphy wrote:
 >> From: Zhen Lei <thunder.leizhen@huawei.com>
 >>
->> Add a bootup option to make the system manager can choose which mode to
->> be used. The default mode is strict.
->>
+>> Dynamically choose strict or non-strict mode for page table config based
+>> on the iommu domain type.
+> 
+> It's the domain type in conjunction with the attribute that determines
+> whether we use lazy or strict invalidation.
+> 
 >> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> [rm: move handling out of SMMUv3 driver]
+>> [rm: convert to domain attribute]
 >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 >> ---
->>   .../admin-guide/kernel-parameters.txt         | 13 ++++++++++
->>   drivers/iommu/iommu.c                         | 26 +++++++++++++++++++
->>   2 files changed, 39 insertions(+)
+>>   drivers/iommu/arm-smmu-v3.c | 30 ++++++++++++++++++++++++------
+>>   1 file changed, 24 insertions(+), 6 deletions(-)
 >>
->> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
->> index 9871e649ffef..406b91759b62 100644
->> --- a/Documentation/admin-guide/kernel-parameters.txt
->> +++ b/Documentation/admin-guide/kernel-parameters.txt
->> @@ -1749,6 +1749,19 @@
->>   		nobypass	[PPC/POWERNV]
->>   			Disable IOMMU bypass, using IOMMU for PCI devices.
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index f10c852479fc..7bbfa5f7ce8e 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -612,6 +612,7 @@ struct arm_smmu_domain {
+>>   	struct mutex			init_mutex; /* Protects smmu pointer */
 >>   
->> +	iommu.non_strict=	[ARM64]
->> +			Format: { "0" | "1" }
->> +			0 - strict mode, default.
->> +			    Release IOVAs after the related TLBs are invalid
->> +			    completely.
->> +			1 - non-strict mode.
->> +			    Put off TLBs invalidation and release memory first.
->> +			    It's good for scatter-gather performance but lacks
->> +			    full isolation, an untrusted device can access the
->> +			    reused memory because the TLBs may still valid.
->> +			    Please take	full consideration before choosing this
->> +			    mode. Note that, VFIO will always use strict mode.
-> 
-> This text needs help. How about something like:
-> 
-> 	0 - strict mode, default.
-> 	    Invalidate the TLB of the IOMMU hardware as part of every
-> 	    unmap() operation.
-> 	1 - lazy mode.
-> 	    Defer TLB invalidation so that the TLB of the IOMMU hardware
-> 	    is invalidated periodically, rather than as part of every
-> 	    unmap() operation.
-> 
-> (generally, I think I'd s/non strict/lazy/ in this patch to avoid the double
-> negatives)
-> 
->> +
->>   	iommu.passthrough=
->>   			[ARM64] Configure DMA to bypass the IOMMU by default.
->>   			Format: { "0" | "1" }
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 8c15c5980299..2cabd0c0a4f3 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -41,6 +41,7 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
->>   #else
->>   static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
->>   #endif
->> +static bool iommu_dma_non_strict __read_mostly;
+>>   	struct io_pgtable_ops		*pgtbl_ops;
+>> +	bool				non_strict;
 >>   
->>   struct iommu_callback_data {
->>   	const struct iommu_ops *ops;
->> @@ -131,6 +132,24 @@ static int __init iommu_set_def_domain_type(char *str)
->>   }
->>   early_param("iommu.passthrough", iommu_set_def_domain_type);
+>>   	enum arm_smmu_domain_stage	stage;
+>>   	union {
+>> @@ -1633,6 +1634,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+>>   	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
+>>   		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
 >>   
->> +static int __init iommu_dma_setup(char *str)
->> +{
->> +	int ret;
+>> +	if (smmu_domain->non_strict)
+>> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
 >> +
->> +	ret = kstrtobool(str, &iommu_dma_non_strict);
->> +	if (ret)
->> +		return ret;
->> +
->> +	if (iommu_dma_non_strict) {
->> +		pr_warn("WARNING: iommu non-strict mode is chosen.\n"
->> +			"It's good for scatter-gather performance but lacks full isolation\n");
-> 
-> Hmm, not sure about this message either and tainting is probably over the
-> top. Maybe drop the taint and just pr_info something like "IOMMU DMA ops
-> using lazy TLB invalidation: unable to protect against malicious devices"
-> 
->> +		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
->> +	}
->> +
->> +	return 0;
->> +}
->> +early_param("iommu.non_strict", iommu_dma_setup);
->> +
->>   static ssize_t iommu_group_attr_show(struct kobject *kobj,
->>   				     struct attribute *__attr, char *buf)
+>>   	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+>>   	if (!pgtbl_ops)
+>>   		return -ENOMEM;
+>> @@ -1934,13 +1938,17 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
 >>   {
->> @@ -1072,6 +1091,13 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->>   		group->default_domain = dom;
->>   		if (!group->domain)
->>   			group->domain = dom;
->> +
->> +		if (dom && iommu_dma_non_strict) {
->> +			int attr = 1;
->> +			iommu_domain_set_attr(dom,
->> +					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
->> +					      &attr);
->> +		}
+>>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>>   
+>> -	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+>> -		return -EINVAL;
+>> -
+>>   	switch (attr) {
+>>   	case DOMAIN_ATTR_NESTING:
+>> +		if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+>> +			return -EINVAL;
+>>   		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+>>   		return 0;
+>> +	case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
+>> +		if (domain->type != IOMMU_DOMAIN_DMA)
+>> +			return -EINVAL;
+>> +		*(int *)data = smmu_domain->non_strict;
+>> +		return 0;
+>>   	default:
+>>   		return -ENODEV;
 > 
-> Hmm, I don't think we can guarantee that we're working with the DMA domain
-> here. Does this all fall out in the wash for the identity domain?
+> Hmm, there's a change in behaviour here (and also in the set function)
+> which is that unknown attributes now return -ENODEV for managed domains
+> instead of -EINVAL. I don't know if that's a problem, but I'd be inclined
+> to switch on the domain type and then have a nested switch for the supported
+> attributes.
 
-Indeed so - for one, I expect drivers to reject it for anything that 
-isn't their own default DMA ops domain type (as #5 and #6 do), and 
-furthermore it only has any effect once iommu_dma_init_domain() reads it 
-back if it stuck, and other domain types should never be getting passed 
-into there anyway.
+Sure, a nested switch did actually cross my mind, but I was worried it 
+might be a little boilerplate-heavy since there's still only one of each 
+case (and this quick'n'dirty copy-paste job didn't need any thought...)
+
+If that's your preference too, though, I'll respin both driver patches 
+that way.
 
 Robin.
