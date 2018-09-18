@@ -1,58 +1,70 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v7 6/6] iommu/arm-smmu: Support non-strict mode
-Date: Tue, 18 Sep 2018 18:10:20 +0100
-Message-ID: <20180918171020.GM16498@arm.com>
-References: <cover.1536935328.git.robin.murphy@arm.com>
- <09be4304bf23dde899be48dbddd93b09296f76bd.1536935328.git.robin.murphy@arm.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: Explicit IOVA management from a PCIe endpoint driver
+Date: Tue, 18 Sep 2018 12:16:03 -0600
+Message-ID: <52dc4d4b-b521-17a5-dc93-e2992e481083@wwwdotorg.org>
+References: <3e9950c5-4986-6b0d-74c8-97014530c132@wwwdotorg.org>
+	<a0d97ebd-c77e-400a-29cd-9524e9f47dbc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <09be4304bf23dde899be48dbddd93b09296f76bd.1536935328.git.robin.murphy@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <a0d97ebd-c77e-400a-29cd-9524e9f47dbc-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joao Pinto <Joao.Pinto-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Vidya Sagar <vidyas-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 14, 2018 at 03:30:24PM +0100, Robin Murphy wrote:
-> All we need is to wire up .flush_iotlb_all properly and implement the
-> domain attribute, and iommu-dma and io-pgtable-arm will do the rest for
-> us. Rather than bother implementing it for v7s format for the highly
-> unlikely chance of that being relevant, we can simply hide the
-> non-strict flag from io-pgtable for that combination just so anyone who
-> does actually try it will simply get over-invalidation instead of
-> failure to initialise domains.
+On 09/18/2018 04:59 AM, Robin Murphy wrote:
+> Hi Stephen,
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/arm-smmu.c | 40 +++++++++++++++++++++++++++++++++-------
->  1 file changed, 33 insertions(+), 7 deletions(-)
+> On 17/09/18 22:36, Stephen Warren wrote:
+>> Joerg, Christoph, Marek, Robin,
+>>
+>> I believe that the driver for our PCIe endpoint controller hardware 
+>> will need to explicitly manage its IOVA space more than current APIs 
+>> allow. I'd like to discuss how to make that possible.
+...
+>> One final note:
+>>
+>> The memory controller can translate accesses to a small region of DRAM 
+>> address space into accesses to an interrupt generation module. This 
+>> allows devices attached to the PCIe bus to generate interrupts to 
+>> software running on the system with the PCIe endpoint controller. Thus 
+>> I deliberately described API 3 above as mapping a specific physical 
+>> address into IOVA space, as opposed to mapping an existing DRAM 
+>> allocation into IOVA space, in order to allow mapping this interrupt 
+>> generation address space into IOVA space. If we needed separate APIs 
+>> to map physical addresses vs. DRAM allocations into IOVA space, that 
+>> would likely be fine too.
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index fd1b80ef9490..aa5be334753b 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -246,6 +246,7 @@ struct arm_smmu_domain {
->  	const struct iommu_gather_ops	*tlb_ops;
->  	struct arm_smmu_cfg		cfg;
->  	enum arm_smmu_domain_stage	stage;
-> +	bool				non_strict;
->  	struct mutex			init_mutex; /* Protects smmu pointer */
->  	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
->  	struct iommu_domain		domain;
-> @@ -863,6 +864,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->  	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
->  		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
->  
-> +	if (smmu_domain->non_strict && cfg->fmt != ARM_SMMU_CTX_FMT_AARCH32_S)
-> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+> If that's the standard DesignWare MSI dingaling, then all you should 
+> need to do is ensure you IOVA is reserved in your allocator (if it can 
+> be entirely outside the EP BAR, even better) - AFAIK the writes get 
+> completely intercepted such that they never go out to the SMMU side at 
+> all, and thus no actual mapping is even needed.
 
-Does this mean we end up over-invalidating when using short-descriptor?
-Could we not bypass the flush queue in this case instead? Ideally, we'd
-just reject the domain attribute but I don't know if we know about the
-page-table format early enough for that. Alternatively, we could force
-long format if the attribute is set.
+Unfortunately it's not. We have some custom hardware module (that 
+already existed for other purposes, such as interaction/synchronization 
+between various graphics modules) that we will slightly repurpose as a 
+plain interrupt generator for PCIe endpoint use-cases.
 
-What do you think?
+>> Does this API proposal sound reasonable?
+> 
+> Indeed, as I say apart from using streaming DMA for coherency management 
+> (which I think could be added in pretty much orthogonally later), this 
+> sounds like something you could plumb into the endpoint framework right 
+> now with no dependent changes elsewhere.
 
-Will
+Great. I'll take a look at Oza's code and see about getting this 
+implemented.
+
+Thanks.
