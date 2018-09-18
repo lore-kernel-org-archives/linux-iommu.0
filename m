@@ -1,126 +1,58 @@
 From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v7 4/6] iommu: Add bootup option "iommu.non_strict"
-Date: Tue, 18 Sep 2018 18:10:13 +0100
-Message-ID: <20180918171013.GK16498@arm.com>
+Subject: Re: [PATCH v7 6/6] iommu/arm-smmu: Support non-strict mode
+Date: Tue, 18 Sep 2018 18:10:20 +0100
+Message-ID: <20180918171020.GM16498@arm.com>
 References: <cover.1536935328.git.robin.murphy@arm.com>
- <41f81c46348db4acd9a542184f10e7ca24f6c219.1536935328.git.robin.murphy@arm.com>
+ <09be4304bf23dde899be48dbddd93b09296f76bd.1536935328.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <41f81c46348db4acd9a542184f10e7ca24f6c219.1536935328.git.robin.murphy@arm.com>
+In-Reply-To: <09be4304bf23dde899be48dbddd93b09296f76bd.1536935328.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 14, 2018 at 03:30:22PM +0100, Robin Murphy wrote:
-> From: Zhen Lei <thunder.leizhen@huawei.com>
+On Fri, Sep 14, 2018 at 03:30:24PM +0100, Robin Murphy wrote:
+> All we need is to wire up .flush_iotlb_all properly and implement the
+> domain attribute, and iommu-dma and io-pgtable-arm will do the rest for
+> us. Rather than bother implementing it for v7s format for the highly
+> unlikely chance of that being relevant, we can simply hide the
+> non-strict flag from io-pgtable for that combination just so anyone who
+> does actually try it will simply get over-invalidation instead of
+> failure to initialise domains.
 > 
-> Add a bootup option to make the system manager can choose which mode to
-> be used. The default mode is strict.
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> [rm: move handling out of SMMUv3 driver]
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  .../admin-guide/kernel-parameters.txt         | 13 ++++++++++
->  drivers/iommu/iommu.c                         | 26 +++++++++++++++++++
->  2 files changed, 39 insertions(+)
+>  drivers/iommu/arm-smmu.c | 40 +++++++++++++++++++++++++++++++++-------
+>  1 file changed, 33 insertions(+), 7 deletions(-)
 > 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 9871e649ffef..406b91759b62 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1749,6 +1749,19 @@
->  		nobypass	[PPC/POWERNV]
->  			Disable IOMMU bypass, using IOMMU for PCI devices.
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index fd1b80ef9490..aa5be334753b 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -246,6 +246,7 @@ struct arm_smmu_domain {
+>  	const struct iommu_gather_ops	*tlb_ops;
+>  	struct arm_smmu_cfg		cfg;
+>  	enum arm_smmu_domain_stage	stage;
+> +	bool				non_strict;
+>  	struct mutex			init_mutex; /* Protects smmu pointer */
+>  	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+>  	struct iommu_domain		domain;
+> @@ -863,6 +864,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>  	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+>  		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
 >  
-> +	iommu.non_strict=	[ARM64]
-> +			Format: { "0" | "1" }
-> +			0 - strict mode, default.
-> +			    Release IOVAs after the related TLBs are invalid
-> +			    completely.
-> +			1 - non-strict mode.
-> +			    Put off TLBs invalidation and release memory first.
-> +			    It's good for scatter-gather performance but lacks
-> +			    full isolation, an untrusted device can access the
-> +			    reused memory because the TLBs may still valid.
-> +			    Please take	full consideration before choosing this
-> +			    mode. Note that, VFIO will always use strict mode.
+> +	if (smmu_domain->non_strict && cfg->fmt != ARM_SMMU_CTX_FMT_AARCH32_S)
+> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
 
-This text needs help. How about something like:
+Does this mean we end up over-invalidating when using short-descriptor?
+Could we not bypass the flush queue in this case instead? Ideally, we'd
+just reject the domain attribute but I don't know if we know about the
+page-table format early enough for that. Alternatively, we could force
+long format if the attribute is set.
 
-	0 - strict mode, default.
-	    Invalidate the TLB of the IOMMU hardware as part of every
-	    unmap() operation.
-	1 - lazy mode.
-	    Defer TLB invalidation so that the TLB of the IOMMU hardware
-	    is invalidated periodically, rather than as part of every
-	    unmap() operation.
-
-(generally, I think I'd s/non strict/lazy/ in this patch to avoid the double
-negatives)
-
-> +
->  	iommu.passthrough=
->  			[ARM64] Configure DMA to bypass the IOMMU by default.
->  			Format: { "0" | "1" }
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 8c15c5980299..2cabd0c0a4f3 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -41,6 +41,7 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
->  #else
->  static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
->  #endif
-> +static bool iommu_dma_non_strict __read_mostly;
->  
->  struct iommu_callback_data {
->  	const struct iommu_ops *ops;
-> @@ -131,6 +132,24 @@ static int __init iommu_set_def_domain_type(char *str)
->  }
->  early_param("iommu.passthrough", iommu_set_def_domain_type);
->  
-> +static int __init iommu_dma_setup(char *str)
-> +{
-> +	int ret;
-> +
-> +	ret = kstrtobool(str, &iommu_dma_non_strict);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (iommu_dma_non_strict) {
-> +		pr_warn("WARNING: iommu non-strict mode is chosen.\n"
-> +			"It's good for scatter-gather performance but lacks full isolation\n");
-
-Hmm, not sure about this message either and tainting is probably over the
-top. Maybe drop the taint and just pr_info something like "IOMMU DMA ops
-using lazy TLB invalidation: unable to protect against malicious devices"
-
-> +		add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
-> +	}
-> +
-> +	return 0;
-> +}
-> +early_param("iommu.non_strict", iommu_dma_setup);
-> +
->  static ssize_t iommu_group_attr_show(struct kobject *kobj,
->  				     struct attribute *__attr, char *buf)
->  {
-> @@ -1072,6 +1091,13 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->  		group->default_domain = dom;
->  		if (!group->domain)
->  			group->domain = dom;
-> +
-> +		if (dom && iommu_dma_non_strict) {
-> +			int attr = 1;
-> +			iommu_domain_set_attr(dom,
-> +					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
-> +					      &attr);
-> +		}
-
-Hmm, I don't think we can guarantee that we're working with the DMA domain
-here. Does this all fall out in the wash for the identity domain?
+What do you think?
 
 Will
