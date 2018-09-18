@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v7 5/6] iommu/arm-smmu-v3: Add support for non-strict mode
-Date: Tue, 18 Sep 2018 20:09:45 +0100
-Message-ID: <aec7c175-dd77-8cb7-7544-579bd73c162d@arm.com>
+Subject: Re: [PATCH v7 6/6] iommu/arm-smmu: Support non-strict mode
+Date: Tue, 18 Sep 2018 20:22:21 +0100
+Message-ID: <a6738582-2b18-8463-b525-73deb70797d1@arm.com>
 References: <cover.1536935328.git.robin.murphy@arm.com>
- <4f9444c7224ea0e6e4cef8ddbf77bb5292a383e3.1536935328.git.robin.murphy@arm.com>
- <20180918171016.GL16498@arm.com>
+ <09be4304bf23dde899be48dbddd93b09296f76bd.1536935328.git.robin.murphy@arm.com>
+ <20180918171020.GM16498@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180918171016.GL16498@arm.com>
+In-Reply-To: <20180918171020.GM16498@arm.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Will Deacon <will.deacon@arm.com>
@@ -17,76 +17,55 @@ Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.or
 List-Id: iommu@lists.linux-foundation.org
 
 On 2018-09-18 6:10 PM, Will Deacon wrote:
-> On Fri, Sep 14, 2018 at 03:30:23PM +0100, Robin Murphy wrote:
->> From: Zhen Lei <thunder.leizhen@huawei.com>
+> On Fri, Sep 14, 2018 at 03:30:24PM +0100, Robin Murphy wrote:
+>> All we need is to wire up .flush_iotlb_all properly and implement the
+>> domain attribute, and iommu-dma and io-pgtable-arm will do the rest for
+>> us. Rather than bother implementing it for v7s format for the highly
+>> unlikely chance of that being relevant, we can simply hide the
+>> non-strict flag from io-pgtable for that combination just so anyone who
+>> does actually try it will simply get over-invalidation instead of
+>> failure to initialise domains.
 >>
->> Dynamically choose strict or non-strict mode for page table config based
->> on the iommu domain type.
-> 
-> It's the domain type in conjunction with the attribute that determines
-> whether we use lazy or strict invalidation.
-> 
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> [rm: convert to domain attribute]
 >> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 >> ---
->>   drivers/iommu/arm-smmu-v3.c | 30 ++++++++++++++++++++++++------
->>   1 file changed, 24 insertions(+), 6 deletions(-)
+>>   drivers/iommu/arm-smmu.c | 40 +++++++++++++++++++++++++++++++++-------
+>>   1 file changed, 33 insertions(+), 7 deletions(-)
 >>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index f10c852479fc..7bbfa5f7ce8e 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -612,6 +612,7 @@ struct arm_smmu_domain {
->>   	struct mutex			init_mutex; /* Protects smmu pointer */
->>   
->>   	struct io_pgtable_ops		*pgtbl_ops;
->> +	bool				non_strict;
->>   
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index fd1b80ef9490..aa5be334753b 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -246,6 +246,7 @@ struct arm_smmu_domain {
+>>   	const struct iommu_gather_ops	*tlb_ops;
+>>   	struct arm_smmu_cfg		cfg;
 >>   	enum arm_smmu_domain_stage	stage;
->>   	union {
->> @@ -1633,6 +1634,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
->>   	if (smmu->features & ARM_SMMU_FEAT_COHERENCY)
+>> +	bool				non_strict;
+>>   	struct mutex			init_mutex; /* Protects smmu pointer */
+>>   	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+>>   	struct iommu_domain		domain;
+>> @@ -863,6 +864,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>>   	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
 >>   		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
 >>   
->> +	if (smmu_domain->non_strict)
+>> +	if (smmu_domain->non_strict && cfg->fmt != ARM_SMMU_CTX_FMT_AARCH32_S)
 >> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
->> +
->>   	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
->>   	if (!pgtbl_ops)
->>   		return -ENOMEM;
->> @@ -1934,13 +1938,17 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
->>   {
->>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>   
->> -	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
->> -		return -EINVAL;
->> -
->>   	switch (attr) {
->>   	case DOMAIN_ATTR_NESTING:
->> +		if (domain->type != IOMMU_DOMAIN_UNMANAGED)
->> +			return -EINVAL;
->>   		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
->>   		return 0;
->> +	case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
->> +		if (domain->type != IOMMU_DOMAIN_DMA)
->> +			return -EINVAL;
->> +		*(int *)data = smmu_domain->non_strict;
->> +		return 0;
->>   	default:
->>   		return -ENODEV;
 > 
-> Hmm, there's a change in behaviour here (and also in the set function)
-> which is that unknown attributes now return -ENODEV for managed domains
-> instead of -EINVAL. I don't know if that's a problem, but I'd be inclined
-> to switch on the domain type and then have a nested switch for the supported
-> attributes.
+> Does this mean we end up over-invalidating when using short-descriptor?
+> Could we not bypass the flush queue in this case instead? Ideally, we'd
+> just reject the domain attribute but I don't know if we know about the
+> page-table format early enough for that. Alternatively, we could force
+> long format if the attribute is set.
+> 
+> What do you think?
 
-Sure, a nested switch did actually cross my mind, but I was worried it 
-might be a little boilerplate-heavy since there's still only one of each 
-case (and this quick'n'dirty copy-paste job didn't need any thought...)
+If someone manages to run an arm64 kernel on a theoretical SMMUv2 
+implementation which only supports short-descriptor, *and* explicitly 
+sets the command-line option, then yes, they'll get both the synchronous 
+TLBIs and the periodic TLBIALLs. As implied by the commit message, my 
+natural response is "don't do that".
 
-If that's your preference too, though, I'll respin both driver patches 
-that way.
+However, it will almost certainly take more effort to argue about it or 
+come up with other bodges than it will to just implement the quirk in 
+the v7s code, so if you really think it's a valid concern just shout.
 
 Robin.
