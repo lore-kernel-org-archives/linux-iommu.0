@@ -1,18 +1,18 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
-Date: Wed, 19 Sep 2018 13:35:39 -0600
-Message-ID: <20180919193539.GB809@jcrouse-lnx.qualcomm.com>
-References: <20180615105329.26800-1-vivek.gautam@codeaurora.org>
-	<20180615165232.GE2202@arm.com>
-	<CAFp+6iFm29ufb2Pr7Gb-2O_aN3GQLH4rcyWhbQGZ3QiwCC8vPg@mail.gmail.com>
-	<20180627163749.GA8729@arm.com>
-	<CAFp+6iHnA1Jj8wKO08YYEBKVF2_3oEuOQOcW2boL=AYZ9+b=UA@mail.gmail.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] vfio/pci: Some buggy virtual functions incorrectly
+	report 1 for intx.
+Date: Wed, 19 Sep 2018 12:46:17 -0700
+Message-ID: <20180919194617.GA14924@otc-nc-03>
+References: <1533843426-79170-1-git-send-email-ashok.raj@intel.com>
+	<20180809134417.50de7fe7@t450s.home>
+	<20180912174618.GA19551@araj-mobl1.jf.intel.com>
+	<20180918215957.0d155684@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAFp+6iHnA1Jj8wKO08YYEBKVF2_3oEuOQOcW2boL=AYZ9+b=UA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20180918215957.0d155684-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,100 +22,141 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gage Eads <gage.eads-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jul 24, 2018 at 03:13:37PM +0530, Vivek Gautam wrote:
-> Hi Will,
-> 
-> 
-> On Wed, Jun 27, 2018 at 10:07 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > Hi Vivek,
-> >
-> > On Tue, Jun 19, 2018 at 02:04:44PM +0530, Vivek Gautam wrote:
-> >> On Fri, Jun 15, 2018 at 10:22 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >> > On Fri, Jun 15, 2018 at 04:23:29PM +0530, Vivek Gautam wrote:
-> >> >> Qualcomm SoCs have an additional level of cache called as
-> >> >> System cache or Last level cache[1]. This cache sits right
-> >> >> before the DDR, and is tightly coupled with the memory
-> >> >> controller.
-> >> >> The cache is available to all the clients present in the
-> >> >> SoC system. The clients request their slices from this system
-> >> >> cache, make it active, and can then start using it. For these
-> >> >> clients with smmu, to start using the system cache for
-> >> >> dma buffers and related page tables [2], few of the memory
-> >> >> attributes need to be set accordingly.
-> >> >> This change makes the related memory Outer-Shareable, and
-> >> >> updates the MAIR with necessary protection.
-> >> >>
-> >> >> The MAIR attribute requirements are:
-> >> >>     Inner Cacheablity = 0
-> >> >>     Outer Cacheablity = 1, Write-Back Write Allocate
-> >> >>     Outer Shareablity = 1
-> >> >
-> >> > Hmm, so is this cache coherent with the CPU or not?
-> >>
-> >> Thanks for reviewing.
-> >> Yes, this LLC is cache coherent with CPU, so we mark for Outer-cacheable.
-> >> The different masters such as GPU as able to allocated and activate a slice
-> >> in this Last Level Cache.
-> >
-> > What I mean is, for example, if the CPU writes some data using Normal, Inner
-> > Shareable, Inner/Outer Cacheable, Inner/Outer Write-back, Non-transient
-> > Read/Write-allocate and a device reads that data using your MAIR encoding
-> > above, is the device guaranteed to see the CPU writes after the CPU has
-> > executed a DSB instruction?
-> >
-> > I don't think so, because the ARM ARM would say that there's a mismatch on
-> > the Inner Cacheability attribute.
-> >
-> >> > Why don't normal
-> >> > non-cacheable mappings allocated in the LLC by default?
-> >>
-> >> Sorry, I couldn't fully understand your question here.
-> >> Few of the masters on qcom socs are not io-coherent, so for them
-> >> the IC has to be marked as 0.
-> >
-> > By IC you mean Inner Cacheability? In your MAIR encoding above, it is zero
-> > so I don't understand the problem. What goes wrong if non-coherent devices
-> > use your MAIR encoding for their DMA buffers?
-> >
-> >> But they are able to use the LLC with OC marked as 1.
-> >
-> > The issue here is that whatever attributes we put in the SMMU need to align
-> > with the attributes used by the CPU in order to avoid introducing mismatched
-> > aliases. Currently, we support three types of mapping in the SMMU:
-> >
-> > 1. DMA non-coherent (e.g. "dma-coherent" is not set on the device)
-> >         Normal, Inner Shareable, Inner/Outer Non-Cacheable
-> >
-> > 2. DMA coherent (e.g. "dma-coherent" is set on the device) [IOMMU_CACHE]
-> >         Normal, Inner Shareable, Inner/Outer Cacheable, Inner/Outer
-> >         Write-back, Non-transient Read/Write-allocate
-> >
-> > 3. MMIO (e.g. MSI doorbell) [IOMMU_MMIO]
-> >         Device-nGnRE (Outer Shareable)
-> >
-> > So either you override one of these types (I was suggesting (1)) or you need
-> > to create a new memory type, along with the infrastructure for it to be
-> > recognised on a per-device basis and used by the DMA API so that we don't
-> > get mismatched aliases on the CPU.
-> 
-> My apologies for delay in responding to this thread.
-> I have been digging and getting in touch with internal tech teams
-> to get more information on this. I will update as soon as I have enough
-> details.
-> Thanks.
+Hi Alex
 
-Hi Vivek.  I want to revive this discussion. I believe that Andy has pulled
-in the base LLCC support so this the remaining dependency we need to implement
-the LLCC in the GPU driver. 
 
-Thanks,
-Jordan
+On Tue, Sep 18, 2018 at 09:59:57PM -0600, Alex Williamson wrote:
+> On Wed, 12 Sep 2018 10:46:19 -0700
+> "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> 
+> > On Thu, Aug 09, 2018 at 01:44:17PM -0600, Alex Williamson wrote:
+> > > On Thu,  9 Aug 2018 12:37:06 -0700
+> > > Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> > >   
+> > > > PCI_INTERRUPT_PIN should always read  0 for SRIOV Virtual
+> > > > Functions.
+> > > > 
+> > > > Some SRIOV devices have some bugs in RTL and VF's end up reading 1
+> > > > instead of 0 for the PIN.  
+> > > 
+> > > Hi Ashok,
+> > > 
+> > > One question, can we identify which VFs are known to have this
+> > > issue so that users (and downstreams) can know how to prioritize
+> > > this patch?  
+> > 
+> > Hi Alex
+> > 
+> > Sorry it took some time to hunt this down. 
+> > 
+> > The offending VF has a device ID : 0x270C
+> > The corresponding PF has a device ID: 0x270B.
+> 
+> Ok, I interpret Alan's previous comment about the patch[1] to suggest a
+> structure a bit more like that below.  IOW, we know that 8086:270c
+> inspires this change, but once it's included we won't know who else
+> relies on it.  We can perhaps encourage better hardware validation, or
+> at least better tracking of who needs this with a warning and
+> whitelist.  Testing, especially positive and negative testing against
+> the warning, and reviews welcome.  Thanks,
+> 
+> Alex
+> 
+> [1]https://lkml.org/lkml/2018/8/10/462
+> 
+> commit d780da26a81c6f47522ae0aeff03abd4d08b89b5
+> Author: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Date:   Tue Sep 18 21:27:57 2018 -0600
+> 
+>     vfio/pci: Mask buggy SR-IOV VF INTx support
+>     
+>     The SR-IOV spec requires that VFs must report zero for the INTx pin
+>     register as VFs are precluded from INTx support.  It's much easier for
+>     the host kernel to understand whether a device is a VF and therefore
+>     whether a non-zero pin register value is bogus than it is to do the
+>     same in userspace.  Override the INTx count for such devices and
+>     virtualize the pin register to provide a consistent view of the device
+>     to the user.
+>     
+>     As this is clearly a spec violation, warn about it to support hardware
+>     validation, but also provide a known whitelist as it doesn't do much
+>     good to continue complaining if the hardware vendor doesn't plan to
+>     fix it.
+>     
+>     Known devices with this issue: 8086:270c
+>     
+>     Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+This looks good and also addresses Alan's concern that don't silently 
+hide under the rug for all devices. We'll also queue it for testing
+just to confirm and keep you posted.
+
+Reviewed-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+> 
+> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+> index cddb453a1ba5..8af3f6f35f32 100644
+> --- a/drivers/vfio/pci/vfio_pci.c
+> +++ b/drivers/vfio/pci/vfio_pci.c
+> @@ -430,14 +430,41 @@ static int vfio_pci_open(void *device_data)
+>  	return ret;
+>  }
+>  
+> +static const struct pci_device_id known_bogus_vf_intx_pin[] = {
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x270c) },
+> +	{}
+> +};
+> +
+>  static int vfio_pci_get_irq_count(struct vfio_pci_device *vdev, int irq_type)
+>  {
+>  	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
+>  		u8 pin;
+> +
+> +		if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx)
+> +			return 0;
+> +
+>  		pci_read_config_byte(vdev->pdev, PCI_INTERRUPT_PIN, &pin);
+> -		if (IS_ENABLED(CONFIG_VFIO_PCI_INTX) && !vdev->nointx && pin)
+> -			return 1;
+>  
+> +		/*
+> +		 * Per SR-IOV spec rev 1.1, 3.4.1.18 the interrupt pin register
+> +		 * does not apply to VFs and VFs must implement this register
+> +		 * as read-only with value zero.  Userspace is not readily
+> +		 * able to identify a device as a VF and thus that the pin
+> +		 * definition on the device is bogus should a device violate
+> +		 * this requirement.  For such devices, override the bogus
+> +		 * value and provide a warning to support hardware validation
+> +		 * (or be quite if it's known).  PCI config space emulation
+> +		 * will virtualize this register for all VFs.
+> +		 */
+> +		if (pin && vdev->pdev->is_virtfn) {
+> +			if (!pci_match_id(known_bogus_vf_intx_pin, vdev->pdev))
+> +				dev_warn_once(&vdev->pdev->dev,
+> +					      "VF reports bogus INTx pin %d\n",
+> +					      pin);
+> +			return 0;
+> +		}
+> +
+> +		return pin ? 1 : 0;
+>  	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX) {
+>  		u8 pos;
+>  		u16 flags;
+> diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> index 62023b4a373b..25130fa6e265 100644
+> --- a/drivers/vfio/pci/vfio_pci_config.c
+> +++ b/drivers/vfio/pci/vfio_pci_config.c
+> @@ -1678,7 +1678,8 @@ int vfio_config_init(struct vfio_pci_device *vdev)
+>  		*(__le16 *)&vconfig[PCI_DEVICE_ID] = cpu_to_le16(pdev->device);
+>  	}
+>  
+> -	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx)
+> +	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx ||
+> +	    pdev->is_virtfn)
+>  		vconfig[PCI_INTERRUPT_PIN] = 0;
+>  
+>  	ret = vfio_cap_init(vdev);
