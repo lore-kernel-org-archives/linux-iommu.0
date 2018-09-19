@@ -1,132 +1,149 @@
-From: Ganapatrao Kulkarni <gklkml16@gmail.com>
-Subject: Re: [PATCH v4] iommu/iova: Optimise attempts to allocate iova from
- 32bit address range
-Date: Wed, 19 Sep 2018 09:08:25 +0530
-Message-ID: <CAKTKpr7SokNx304PbVzhn6Xj05m962tmsCzmBec1R0Q9Pon3Zw@mail.gmail.com>
-References: <20180905042736.11904-1-ganapatrao.kulkarni@cavium.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] vfio/pci: Some buggy virtual functions incorrectly
+	report 1 for intx.
+Date: Tue, 18 Sep 2018 21:59:57 -0600
+Message-ID: <20180918215957.0d155684@t450s.home>
+References: <1533843426-79170-1-git-send-email-ashok.raj@intel.com>
+	<20180809134417.50de7fe7@t450s.home>
+	<20180912174618.GA19551@araj-mobl1.jf.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180905042736.11904-1-ganapatrao.kulkarni@cavium.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert Richter <Robert.Richter@cavium.com>, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180912174618.GA19551-7RUrO8UaCDyr4tA6zuQqW9h3ngVCH38I@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Alan Cox <gnomes-qBU/x9rampVanCEyBjwyrvXRex20P6io@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Gage Eads <gage.eads-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Wed, 12 Sep 2018 10:46:19 -0700
+"Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
-can you please pull this patch?
+> On Thu, Aug 09, 2018 at 01:44:17PM -0600, Alex Williamson wrote:
+> > On Thu,  9 Aug 2018 12:37:06 -0700
+> > Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> >   
+> > > PCI_INTERRUPT_PIN should always read  0 for SRIOV Virtual
+> > > Functions.
+> > > 
+> > > Some SRIOV devices have some bugs in RTL and VF's end up reading 1
+> > > instead of 0 for the PIN.  
+> > 
+> > Hi Ashok,
+> > 
+> > One question, can we identify which VFs are known to have this
+> > issue so that users (and downstreams) can know how to prioritize
+> > this patch?  
+> 
+> Hi Alex
+> 
+> Sorry it took some time to hunt this down. 
+> 
+> The offending VF has a device ID : 0x270C
+> The corresponding PF has a device ID: 0x270B.
 
-On Wed, Sep 5, 2018 at 9:58 AM Ganapatrao Kulkarni
-<ganapatrao.kulkarni@cavium.com> wrote:
->
-> As an optimisation for PCI devices, there is always first attempt
-> been made to allocate iova from SAC address range. This will lead
-> to unnecessary attempts, when there are no free ranges
-> available. Adding fix to track recently failed iova address size and
-> allow further attempts, only if requested size is lesser than a failed
-> size. The size is updated when any replenish happens.
->
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> ---
-> v4:
->     Rebsaed to 4.19-rc2
-> v3:
->     Update with comments [3] from Robin Murphy <robin.murphy@arm.com>
->
-> [3] https://lkml.org/lkml/2018/8/13/116
->
-> v2: update with comments [2] from Robin Murphy <robin.murphy@arm.com>
->
-> [2] https://lkml.org/lkml/2018/8/7/166
->
-> v1: Based on comments from Robin Murphy <robin.murphy@arm.com>
-> for patch [1]
->
-> [1] https://lkml.org/lkml/2018/4/19/780
->
->  drivers/iommu/iova.c | 22 +++++++++++++++-------
->  include/linux/iova.h |  1 +
->  2 files changed, 16 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 83fe2621effe..f8d3ba247523 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -56,6 +56,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->         iovad->granule = granule;
->         iovad->start_pfn = start_pfn;
->         iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
-> +       iovad->max32_alloc_size = iovad->dma_32bit_pfn;
->         iovad->flush_cb = NULL;
->         iovad->fq = NULL;
->         iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
-> @@ -139,8 +140,10 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
->
->         cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
->         if (free->pfn_hi < iovad->dma_32bit_pfn &&
-> -           free->pfn_lo >= cached_iova->pfn_lo)
-> +           free->pfn_lo >= cached_iova->pfn_lo) {
->                 iovad->cached32_node = rb_next(&free->node);
-> +               iovad->max32_alloc_size = iovad->dma_32bit_pfn;
-> +       }
->
->         cached_iova = rb_entry(iovad->cached_node, struct iova, node);
->         if (free->pfn_lo >= cached_iova->pfn_lo)
-> @@ -190,6 +193,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->
->         /* Walk the tree backwards */
->         spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> +       if (limit_pfn <= iovad->dma_32bit_pfn &&
-> +                       size >= iovad->max32_alloc_size)
-> +               goto iova32_full;
-> +
->         curr = __get_cached_rbnode(iovad, limit_pfn);
->         curr_iova = rb_entry(curr, struct iova, node);
->         do {
-> @@ -200,10 +207,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->                 curr_iova = rb_entry(curr, struct iova, node);
->         } while (curr && new_pfn <= curr_iova->pfn_hi);
->
-> -       if (limit_pfn < size || new_pfn < iovad->start_pfn) {
-> -               spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> -               return -ENOMEM;
-> -       }
-> +       if (limit_pfn < size || new_pfn < iovad->start_pfn)
-> +               goto iova32_full;
->
->         /* pfn_lo will point to size aligned address if size_aligned is set */
->         new->pfn_lo = new_pfn;
-> @@ -214,9 +219,12 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->         __cached_rbnode_insert_update(iovad, new);
->
->         spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> -
-> -
->         return 0;
-> +
-> +iova32_full:
-> +       iovad->max32_alloc_size = size;
-> +       spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> +       return -ENOMEM;
->  }
->
->  static struct kmem_cache *iova_cache;
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 928442dda565..0b93bf96693e 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -75,6 +75,7 @@ struct iova_domain {
->         unsigned long   granule;        /* pfn granularity for this domain */
->         unsigned long   start_pfn;      /* Lower limit for this domain */
->         unsigned long   dma_32bit_pfn;
-> +       unsigned long   max32_alloc_size; /* Size of last failed allocation */
->         struct iova     anchor;         /* rbtree lookup anchor */
->         struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];  /* IOVA range caches */
->
-> --
-> 2.18.0
->
-thanks,
-Ganapat
+Ok, I interpret Alan's previous comment about the patch[1] to suggest a
+structure a bit more like that below.  IOW, we know that 8086:270c
+inspires this change, but once it's included we won't know who else
+relies on it.  We can perhaps encourage better hardware validation, or
+at least better tracking of who needs this with a warning and
+whitelist.  Testing, especially positive and negative testing against
+the warning, and reviews welcome.  Thanks,
+
+Alex
+
+[1]https://lkml.org/lkml/2018/8/10/462
+
+commit d780da26a81c6f47522ae0aeff03abd4d08b89b5
+Author: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Date:   Tue Sep 18 21:27:57 2018 -0600
+
+    vfio/pci: Mask buggy SR-IOV VF INTx support
+    
+    The SR-IOV spec requires that VFs must report zero for the INTx pin
+    register as VFs are precluded from INTx support.  It's much easier for
+    the host kernel to understand whether a device is a VF and therefore
+    whether a non-zero pin register value is bogus than it is to do the
+    same in userspace.  Override the INTx count for such devices and
+    virtualize the pin register to provide a consistent view of the device
+    to the user.
+    
+    As this is clearly a spec violation, warn about it to support hardware
+    validation, but also provide a known whitelist as it doesn't do much
+    good to continue complaining if the hardware vendor doesn't plan to
+    fix it.
+    
+    Known devices with this issue: 8086:270c
+    
+    Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index cddb453a1ba5..8af3f6f35f32 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -430,14 +430,41 @@ static int vfio_pci_open(void *device_data)
+ 	return ret;
+ }
+ 
++static const struct pci_device_id known_bogus_vf_intx_pin[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x270c) },
++	{}
++};
++
+ static int vfio_pci_get_irq_count(struct vfio_pci_device *vdev, int irq_type)
+ {
+ 	if (irq_type == VFIO_PCI_INTX_IRQ_INDEX) {
+ 		u8 pin;
++
++		if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx)
++			return 0;
++
+ 		pci_read_config_byte(vdev->pdev, PCI_INTERRUPT_PIN, &pin);
+-		if (IS_ENABLED(CONFIG_VFIO_PCI_INTX) && !vdev->nointx && pin)
+-			return 1;
+ 
++		/*
++		 * Per SR-IOV spec rev 1.1, 3.4.1.18 the interrupt pin register
++		 * does not apply to VFs and VFs must implement this register
++		 * as read-only with value zero.  Userspace is not readily
++		 * able to identify a device as a VF and thus that the pin
++		 * definition on the device is bogus should a device violate
++		 * this requirement.  For such devices, override the bogus
++		 * value and provide a warning to support hardware validation
++		 * (or be quite if it's known).  PCI config space emulation
++		 * will virtualize this register for all VFs.
++		 */
++		if (pin && vdev->pdev->is_virtfn) {
++			if (!pci_match_id(known_bogus_vf_intx_pin, vdev->pdev))
++				dev_warn_once(&vdev->pdev->dev,
++					      "VF reports bogus INTx pin %d\n",
++					      pin);
++			return 0;
++		}
++
++		return pin ? 1 : 0;
+ 	} else if (irq_type == VFIO_PCI_MSI_IRQ_INDEX) {
+ 		u8 pos;
+ 		u16 flags;
+diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+index 62023b4a373b..25130fa6e265 100644
+--- a/drivers/vfio/pci/vfio_pci_config.c
++++ b/drivers/vfio/pci/vfio_pci_config.c
+@@ -1678,7 +1678,8 @@ int vfio_config_init(struct vfio_pci_device *vdev)
+ 		*(__le16 *)&vconfig[PCI_DEVICE_ID] = cpu_to_le16(pdev->device);
+ 	}
+ 
+-	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx)
++	if (!IS_ENABLED(CONFIG_VFIO_PCI_INTX) || vdev->nointx ||
++	    pdev->is_virtfn)
+ 		vconfig[PCI_INTERRUPT_PIN] = 0;
+ 
+ 	ret = vfio_cap_init(vdev);
