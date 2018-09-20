@@ -1,58 +1,44 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 2/9] ia64: remove the dead iommu_sac_force variable
-Date: Thu, 20 Sep 2018 09:26:53 +0200
-Message-ID: <20180920072700.22396-3-hch@lst.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH 1/9] ia64: remove the kern_mem_attribute export
+Date: Thu, 20 Sep 2018 09:26:52 +0200
+Message-ID: <20180920072700.22396-2-hch@lst.de>
 References: <20180920072700.22396-1-hch@lst.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180920072700.22396-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
-Cc: linux-ia64@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180920072700.22396-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Looks like copy and paste from x86 that never actually got used.
+No actually used anywhere.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- arch/ia64/kernel/pci-dma.c | 19 -------------------
- 1 file changed, 19 deletions(-)
+ arch/ia64/kernel/efi.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
-index b5df084c0af4..50b6ad282a90 100644
---- a/arch/ia64/kernel/pci-dma.c
-+++ b/arch/ia64/kernel/pci-dma.c
-@@ -18,8 +18,6 @@
- dma_addr_t bad_dma_address __read_mostly;
- EXPORT_SYMBOL(bad_dma_address);
- 
--static int iommu_sac_force __read_mostly;
--
- int no_iommu __read_mostly;
- #ifdef CONFIG_IOMMU_DEBUG
- int force_iommu __read_mostly = 1;
-@@ -61,23 +59,6 @@ int iommu_dma_supported(struct device *dev, u64 mask)
- 	if (mask < DMA_BIT_MASK(24))
- 		return 0;
- 
--	/* Tell the device to use SAC when IOMMU force is on.  This
--	   allows the driver to use cheaper accesses in some cases.
--
--	   Problem with this is that if we overflow the IOMMU area and
--	   return DAC as fallback address the device may not handle it
--	   correctly.
--
--	   As a special case some controllers have a 39bit address
--	   mode that is as efficient as 32bit (aic79xx). Don't force
--	   SAC for these.  Assume all masks <= 40 bits are of this
--	   type. Normally this doesn't make any difference, but gives
--	   more gentle handling of IOMMU overflow. */
--	if (iommu_sac_force && (mask >= DMA_BIT_MASK(40))) {
--		dev_info(dev, "Force SAC with mask %llx\n", mask);
--		return 0;
--	}
--
- 	return 1;
+diff --git a/arch/ia64/kernel/efi.c b/arch/ia64/kernel/efi.c
+index 9c09bf390cce..f77d80edddfe 100644
+--- a/arch/ia64/kernel/efi.c
++++ b/arch/ia64/kernel/efi.c
+@@ -842,7 +842,6 @@ kern_mem_attribute (unsigned long phys_addr, unsigned long size)
+ 	} while (md);
+ 	return 0;	/* never reached */
  }
- EXPORT_SYMBOL(iommu_dma_supported);
+-EXPORT_SYMBOL(kern_mem_attribute);
+ 
+ int
+ valid_phys_addr_range (phys_addr_t phys_addr, unsigned long size)
 -- 
 2.18.0
