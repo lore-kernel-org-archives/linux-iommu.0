@@ -1,248 +1,217 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 04/13] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB mode
-Date: Thu, 20 Sep 2018 13:54:30 +0800
-Message-ID: <1537422870.17684.1.camel@mhfsdcap03>
-References: <1535954502-30646-1-git-send-email-yong.wu@mediatek.com>
-	<1535954502-30646-5-git-send-email-yong.wu@mediatek.com>
+From: Kenneth Lee <liguozhu@hisilicon.com>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Thu, 20 Sep 2018 13:55:43 +0800
+Message-ID: <20180920055543.GG207969@Turing-Arch-b>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+ <20180917014244.GA27596@redhat.com>
+ <20180917083940.GE207969@Turing-Arch-b>
+ <20180917123744.GA3605@redhat.com>
+ <20180918060014.GF207969@Turing-Arch-b>
+ <20180918130314.GA3500@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1535954502-30646-5-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180918130314.GA3500@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerome Glisse <jglisse@redhat.com>
+Cc: Kenneth Lee <nek.in.cn@gmail.com>, Alex Williamson <alex.williamson@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>, kvm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>, linux-doc@vger.kernel.org, Sanjay Kumar <sanjay.k.kumar@intel.com>, Hao Fang <fanghao11@huawei.com>, linux-kernel@vger.kernel.org, linuxarm@huawei.com, iommu@lists.linux-foundation.org, "David S . Miller" <davem@davemloft.net>, linux-crypto@vger.kernel.org, Zhou Wang <wangzhou1@hisilicon.com>, Philippe Ombredanne <pombredanne@nexb.com>, Thomas Gleixner <tglx@linutronix.de>, Zaibo Xu <xuzaibo@huawei.com>, linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Tue, Sep 18, 2018 at 09:03:14AM -0400, Jerome Glisse wrote:
+> Date: Tue, 18 Sep 2018 09:03:14 -0400
+> From: Jerome Glisse <jglisse@redhat.com>
+> To: Kenneth Lee <liguozhu@hisilicon.com>
+> CC: Kenneth Lee <nek.in.cn@gmail.com>, Alex Williamson
+>  <alex.williamson@redhat.com>, Herbert Xu <herbert@gondor.apana.org.au>,
+>  kvm@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>, Greg Kroah-Hartman
+>  <gregkh@linuxfoundation.org>, Joerg Roedel <joro@8bytes.org>,
+>  linux-doc@vger.kernel.org, Sanjay Kumar <sanjay.k.kumar@intel.com>, Hao
+>  Fang <fanghao11@huawei.com>, linux-kernel@vger.kernel.org,
+>  linuxarm@huawei.com, iommu@lists.linux-foundation.org, "David S . Miller"
+>  <davem@davemloft.net>, linux-crypto@vger.kernel.org, Zhou Wang
+>  <wangzhou1@hisilicon.com>, Philippe Ombredanne <pombredanne@nexb.com>,
+>  Thomas Gleixner <tglx@linutronix.de>, Zaibo Xu <xuzaibo@huawei.com>,
+>  linux-accelerators@lists.ozlabs.org, Lu Baolu <baolu.lu@linux.intel.com>
+> Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+> User-Agent: Mutt/1.10.1 (2018-07-13)
+> Message-ID: <20180918130314.GA3500@redhat.com>
+> 
+> On Tue, Sep 18, 2018 at 02:00:14PM +0800, Kenneth Lee wrote:
+> > On Mon, Sep 17, 2018 at 08:37:45AM -0400, Jerome Glisse wrote:
+> > > On Mon, Sep 17, 2018 at 04:39:40PM +0800, Kenneth Lee wrote:
+> > > > On Sun, Sep 16, 2018 at 09:42:44PM -0400, Jerome Glisse wrote:
+> > > > > So i want to summarize issues i have as this threads have dig deep into
+> > > > > details. For this i would like to differentiate two cases first the easy
+> > > > > one when relying on SVA/SVM. Then the second one when there is no SVA/SVM.
+> > > > 
+> > > > Thank you very much for the summary.
+> > > > 
+> > > > > In both cases your objectives as i understand them:
+> > > > > 
+> > > > > [R1]- expose a common user space API that make it easy to share boiler
+> > > > >       plate code accross many devices (discovering devices, opening
+> > > > >       device, creating context, creating command queue ...).
+> > > > > [R2]- try to share the device as much as possible up to device limits
+> > > > >       (number of independant queues the device has)
+> > > > > [R3]- minimize syscall by allowing user space to directly schedule on the
+> > > > >       device queue without a round trip to the kernel
+> > > > > 
+> > > > > I don't think i missed any.
+> > > > > 
+> > > > > 
+> > > > > (1) Device with SVA/SVM
+> > > > > 
+> > > > > For that case it is easy, you do not need to be in VFIO or part of any
+> > > > > thing specific in the kernel. There is no security risk (modulo bug in
+> > > > > the SVA/SVM silicon). Fork/exec is properly handle and binding a process
+> > > > > to a device is just couple dozen lines of code.
+> > > > > 
+> > > > 
+> > > > This is right...logically. But the kernel has no clear definition about "Device
+> > > > with SVA/SVM" and no boiler plate for doing so. Then VFIO may become one of the
+> > > > boiler plate.
+> > > > 
+> > > > VFIO is one of the wrappers for IOMMU for user space. And maybe it is the only
+> > > > one. If we add that support within VFIO, which solve most of the problem of
+> > > > SVA/SVM, it will save a lot of work in the future.
+> > > 
+> > > You do not need to "wrap" IOMMU for SVA/SVM. Existing upstream SVA/SVM user
+> > > all do the SVA/SVM setup in couple dozen lines and i failed to see how it
+> > > would require any more than that in your case.
+> > > 
+> > > 
+> > > > I think this is the key confliction between us. So could Alex please say
+> > > > something here? If the VFIO is going to take this into its scope, we can try
+> > > > together to solve all the problem on the way. If it it is not, it is also
+> > > > simple, we can just go to another way to fulfill this part of requirements even
+> > > > we have to duplicate most of the code.
+> > > > 
+> > > > Another point I need to emphasis here: because we have to replace the hardware
+> > > > queue when fork, so it won't be very simple even in SVA/SVM case.
+> > > 
+> > > I am assuming hardware queue can only be setup by the kernel and thus
+> > > you are totaly safe forkwise as the queue is setup against a PASID and
+> > > the child does not bind to any PASID and you use VM_DONTCOPY on the
+> > > mmap of the hardware MMIO queue because you should really use that flag
+> > > for that.
+> > > 
+> > > 
+> > > > > (2) Device does not have SVA/SVM (or it is disabled)
+> > > > > 
+> > > > > You want to still allow device to be part of your framework. However
+> > > > > here i see fundamentals securities issues and you move the burden of
+> > > > > being careful to user space which i think is a bad idea. We should
+> > > > > never trus the userspace from kernel space.
+> > > > > 
+> > > > > To keep the same API for the user space code you want a 1:1 mapping
+> > > > > between device physical address and process virtual address (ie if
+> > > > > device access device physical address A it is accessing the same
+> > > > > memory as what is backing the virtual address A in the process.
+> > > > > 
+> > > > > Security issues are on two things:
+> > > > > [I1]- fork/exec, a process who opened any such device and created an
+> > > > >       active queue can transfer without its knowledge control of its
+> > > > >       commands queue through COW. The parent map some anonymous region
+> > > > >       to the device as a command queue buffer but because of COW the
+> > > > >       parent can be the first to copy on write and thus the child can
+> > > > >       inherit the original pages that are mapped to the hardware.
+> > > > >       Here parent lose control and child gain it.
+> > > > 
+> > > > This is indeed an issue. But it remains an issue only if you continue to use the
+> > > > queue and the memory after fork. We can use at_fork kinds of gadget to fix it in
+> > > > user space.
+> > > 
+> > > Trusting user space is a no go from my point of view.
+> > 
+> > Can we dive deeper on this? Maybe we have different understanding on "Trusting
+> > user space". As my understanding, "trusting user space" means "no matter what
+> > the user process does, it should only hurt itself and anything give to it, no
+> > the kernel and the other process".
+> > 
+> > In our case, we create a channel between a process and the hardware. The process
+> > can do whateven it like to its own memory the channel itself. It won't hurt the
+> > other process and the kernel. And if the process fork a child and give the
+> > channel to the child, it should the freedom on those resource remain within the
+> > parent and the child. We are not trust another else.
+> > 
+> > So do you refer to something else here?
+> > 
+> 
+> I am refering to COW giving control to the child on to what happens
+> in the parent from device point of view. A process hurting itself is
+> fine, but if process now has to do special steps to protect from
+> its child ie make sure that its childs can not hurt it, then i see
+> that as a kernel bug. We can not ask user space process to know about
+> all the thousands things that needs to be done to avoid issues with
+> each device driver that the process may use (process can be totaly
+> ignorant it is using a device if that device is use by a library it
+> links to).
+> 
+> 
+> Maybe what needs to happen will explain it better. So if userspace
+> wants to be secure and protect itself from its child taking over the
+> device through COW:
+> 
+>     - parent opened a device and is using it
+> 
+>     ... when parent wants to fork/exec it must:
+> 
+>     - parent _must_ flush device command queue and wait for the
+>       device to finish all pending jobs
+> 
+>     - parent _must_ unmap all range mapped to the device
+> 
+>     - parent should first close device file (unless you force set
+>       the CLOEXEC flag in the kernel)/it could also just flush
+>       but if you are not mapping the device command queue with
+>       VM_DONTCOPY then you should really be closing the device
+> 
+>     - now parent can fork/exec
+> 
+>     - parent must force COW ie write at least one byte to _all_
+>       pages in the range it wants to use with the device
+> 
+>     - parent re-open the device and re-initialize everything
+> 
+> 
+> So this is putting quite a burden on a number of steps the parent
+> _must_ do in order to keep control of memory exposed to the device.
+> Not doing so can potentialy lead (it depends on who does the COW
+> first) to the child taking control of memory use by the device,
+> memory which was mapped by the parent before the child was created.
+> 
+> Forcing CLOEXEC and VM_DONTCOPY somewhat help to simplify this,
+> but you still need to stop, flush, unmap, before fork/exec and then
+> re-init everything after.
+> 
+> 
+> This is only when not using SVA/SVM, SVA/SVM is totaly fine from
+> that point of view, no issues whatsoever.
+> 
+> The solution i outlined in previous email do not have that above
+> issue either, no need to rely on user space doing that dance.
 
-   Could you help take a look at this patch since I changed the v7s
-here?
-   Thanks.
+Thank you. I get the point. I'm now trying to see if I can solve the problem by
+seting the vma to VM_SHARED when the portiong is "shared to the hardware".
 
-On Mon, 2018-09-03 at 14:01 +0800, Yong Wu wrote:
-> MediaTek extend the arm v7s descriptor to support the dram over 4GB.
 > 
-> In the mt2712 and mt8173, it's called "4GB mode", the physical address
-> is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
-> is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
-> bit32 is always enabled. thus, in the M4U, we always enable the bit9
-> for all PTEs which means to enable bit32 of physical address.
-> 
-> but in mt8183, M4U support the dram from 0x4000_0000 to 0x3_ffff_ffff
-> which isn't remaped. We extend the PTEs: the bit9 represent bit32 of
-> PA and the bit4 represent bit33 of PA. Meanwhile the iova still is
-> 32bits.
-> 
-> In order to unify code, in the "4GB mode", we add the bit32 for the
-> physical address manually in our driver.
-> 
-> Correspondingly, Adding bit32 and bit33 for the PA in the iova_to_phys
-> has to been moved into v7s.
-> 
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
-> In mt8183, the PA is from 0x4000_0000 to 0x3_ffff_ffff while the iova
-> still is 32bits. Acturally, our HW extend the v7s pgtable. currently
-> the lvl1 pgtable is 16KB, our HW double it. but 32bit iova is enough
-> for us currently, thus we don't change it.
-> ---
->  drivers/iommu/io-pgtable-arm-v7s.c | 38 ++++++++++++++++++++++++++++++--------
->  drivers/iommu/io-pgtable.h         |  8 ++++----
->  drivers/iommu/mtk_iommu.c          | 15 +++++++++------
->  drivers/iommu/mtk_iommu.h          |  1 +
->  4 files changed, 44 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index b5948ba..47538dd 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -124,7 +124,9 @@
->  #define ARM_V7S_TEX_MASK		0x7
->  #define ARM_V7S_ATTR_TEX(val)		(((val) & ARM_V7S_TEX_MASK) << ARM_V7S_TEX_SHIFT)
->  
-> -#define ARM_V7S_ATTR_MTK_4GB		BIT(9) /* MTK extend it for 4GB mode */
-> +/* MTK extend the two bits below for over 4GB mode */
-> +#define ARM_V7S_ATTR_MTK_PA_BIT32	BIT(9)
-> +#define ARM_V7S_ATTR_MTK_PA_BIT33	BIT(4)
->  
->  /* *well, except for TEX on level 2 large pages, of course :( */
->  #define ARM_V7S_CONT_PAGE_TEX_SHIFT	6
-> @@ -268,7 +270,8 @@ static void __arm_v7s_set_pte(arm_v7s_iopte *ptep, arm_v7s_iopte pte,
->  }
->  
->  static arm_v7s_iopte arm_v7s_prot_to_pte(int prot, int lvl,
-> -					 struct io_pgtable_cfg *cfg)
-> +					 struct io_pgtable_cfg *cfg,
-> +					 phys_addr_t paddr) /* Only for MTK */
->  {
->  	bool ap = !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS);
->  	arm_v7s_iopte pte = ARM_V7S_ATTR_NG | ARM_V7S_ATTR_S;
-> @@ -295,8 +298,12 @@ static arm_v7s_iopte arm_v7s_prot_to_pte(int prot, int lvl,
->  	if (lvl == 1 && (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS))
->  		pte |= ARM_V7S_ATTR_NS_SECTION;
->  
-> -	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)
-> -		pte |= ARM_V7S_ATTR_MTK_4GB;
-> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
-> +		if (paddr & BIT_ULL(32))
-> +			pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
-> +		if (paddr & BIT_ULL(33))
-> +			pte |= ARM_V7S_ATTR_MTK_PA_BIT33;
-> +	}
->  
->  	return pte;
->  }
-> @@ -392,7 +399,7 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
->  			return -EEXIST;
->  		}
->  
-> -	pte = arm_v7s_prot_to_pte(prot, lvl, cfg);
-> +	pte = arm_v7s_prot_to_pte(prot, lvl, cfg, paddr);
->  	if (num_entries > 1)
->  		pte = arm_v7s_pte_to_cont(pte, lvl);
->  
-> @@ -484,7 +491,11 @@ static int arm_v7s_map(struct io_pgtable_ops *ops, unsigned long iova,
->  	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
->  		return 0;
->  
-> -	if (WARN_ON(upper_32_bits(iova) || upper_32_bits(paddr)))
-> +	if (WARN_ON(upper_32_bits(iova)))
-> +		return -ERANGE;
-> +
-> +	if (WARN_ON(upper_32_bits(paddr) &&
-> +		    !(iop->cfg.quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)))
->  		return -ERANGE;
->  
->  	ret = __arm_v7s_map(data, iova, paddr, size, prot, 1, data->pgd);
-> @@ -563,7 +574,7 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
->  	num_entries = size >> ARM_V7S_LVL_SHIFT(2);
->  	unmap_idx = ARM_V7S_LVL_IDX(iova, 2);
->  
-> -	pte = arm_v7s_prot_to_pte(arm_v7s_pte_to_prot(blk_pte, 1), 2, cfg);
-> +	pte = arm_v7s_prot_to_pte(arm_v7s_pte_to_prot(blk_pte, 1), 2, cfg, 0);
->  	if (num_entries > 1)
->  		pte = arm_v7s_pte_to_cont(pte, 2);
->  
-> @@ -677,7 +688,9 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
->  					unsigned long iova)
->  {
->  	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
->  	arm_v7s_iopte *ptep = data->pgd, pte;
-> +	phys_addr_t paddr;
->  	int lvl = 0;
->  	u32 mask;
->  
-> @@ -693,7 +706,16 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
->  	mask = ARM_V7S_LVL_MASK(lvl);
->  	if (arm_v7s_pte_is_cont(pte, lvl))
->  		mask *= ARM_V7S_CONT_PAGES;
-> -	return (pte & mask) | (iova & ~mask);
-> +	paddr = (pte & mask) | (iova & ~mask);
-> +
-> +	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT) &&
-> +	    cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
-> +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
-> +			paddr |= BIT_ULL(32);
-> +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
-> +			paddr |= BIT_ULL(33);
-> +	}
-> +	return paddr;
->  }
->  
->  static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
-> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> index 2df7909..0eeed94 100644
-> --- a/drivers/iommu/io-pgtable.h
-> +++ b/drivers/iommu/io-pgtable.h
-> @@ -62,10 +62,10 @@ struct io_pgtable_cfg {
->  	 *	(unmapped) entries but the hardware might do so anyway, perform
->  	 *	TLB maintenance when mapping as well as when unmapping.
->  	 *
-> -	 * IO_PGTABLE_QUIRK_ARM_MTK_4GB: (ARM v7s format) Set bit 9 in all
-> -	 *	PTEs, for Mediatek IOMMUs which treat it as a 33rd address bit
-> -	 *	when the SoC is in "4GB mode" and they can only access the high
-> -	 *	remap of DRAM (0x1_00000000 to 0x1_ffffffff).
-> +	 * IO_PGTABLE_QUIRK_ARM_MTK_4GB: (ARM v7s format) Set bit 4 and 9 in all
-> +	 *	PTEs, for Mediatek IOMMUs which treat it as the 33rd and 32rd
-> +	 *	address bit when the SoC dram is over 4GB and they can access
-> +	 *	the physical address from 0x4000_0000 to 0x3_ffff_ffff.
->  	 *
->  	 * IO_PGTABLE_QUIRK_NO_DMA: Guarantees that the tables will only ever
->  	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index c0e2da5..86bf647 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -367,12 +367,17 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
->  			 phys_addr_t paddr, size_t size, int prot)
->  {
->  	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-> +	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
->  	unsigned long flags;
->  	int ret;
->  
-> +	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT) &&
-> +	    data->plat_data->has_4gb_mode &&
-> +	    data->enable_4GB)
-> +		paddr |= BIT_ULL(32);
-> +
->  	spin_lock_irqsave(&dom->pgtlock, flags);
-> -	ret = dom->iop->map(dom->iop, iova, paddr & DMA_BIT_MASK(32),
-> -			    size, prot);
-> +	ret = dom->iop->map(dom->iop, iova, paddr, size, prot);
->  	spin_unlock_irqrestore(&dom->pgtlock, flags);
->  
->  	return ret;
-> @@ -401,7 +406,6 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
->  					  dma_addr_t iova)
->  {
->  	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
-> -	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
->  	unsigned long flags;
->  	phys_addr_t pa;
->  
-> @@ -409,9 +413,6 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
->  	pa = dom->iop->iova_to_phys(dom->iop, iova);
->  	spin_unlock_irqrestore(&dom->pgtlock, flags);
->  
-> -	if (data->enable_4GB)
-> -		pa |= BIT_ULL(32);
-> -
->  	return pa;
->  }
->  
-> @@ -735,10 +736,12 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->  
->  static const struct mtk_iommu_plat_data mt2712_data = {
->  	.m4u_plat = M4U_MT2712,
-> +	.has_4gb_mode = true,
->  };
->  
->  static const struct mtk_iommu_plat_data mt8173_data = {
->  	.m4u_plat = M4U_MT8173,
-> +	.has_4gb_mode = true,
->  };
->  
->  static const struct of_device_id mtk_iommu_of_ids[] = {
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index 333a0ef..a243047 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -43,6 +43,7 @@ enum mtk_iommu_plat {
->  
->  struct mtk_iommu_plat_data {
->  	enum mtk_iommu_plat m4u_plat;
-> +	bool has_4gb_mode;
->  };
->  
->  struct mtk_iommu_domain;
+> Cheers,
+> Jérôme
+
+-- 
+			-Kenneth(Hisilicon)
+
+================================================================================
+本邮件及其附件含有华为公司的保密信息，仅限于发送给上面地址中列出的个人或群组。禁
+止任何其他人以任何形式使用（包括但不限于全部或部分地泄露、复制、或散发）本邮件中
+的信息。如果您错收了本邮件，请您立即电话或邮件通知发件人并删除本邮件！
+This e-mail and its attachments contain confidential information from HUAWEI,
+which is intended only for the person or entity whose address is listed above.
+Any use of the 
+information contained herein in any way (including, but not limited to, total or
+partial disclosure, reproduction, or dissemination) by persons other than the
+intended 
+recipient(s) is prohibited. If you receive this e-mail in error, please notify
+the sender by phone or email immediately and delete it!
