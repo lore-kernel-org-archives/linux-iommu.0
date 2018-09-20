@@ -1,273 +1,97 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [RFC v2 14/20] iommu: introduce device fault data
-Date: Thu, 20 Sep 2018 15:06:53 -0700
-Message-ID: <20180920150653.567287c5@jacob-builder>
-References: <20180918142457.3325-1-eric.auger@redhat.com>
-        <20180918142457.3325-15-eric.auger@redhat.com>
+From: Stephen Boyd <swboyd@chromium.org>
+Subject: [PATCH] dma-debug: Check for drivers mapping vmalloc addresses
+Date: Thu, 20 Sep 2018 15:35:59 -0700
+Message-ID: <20180920223559.136915-1-swboyd@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180918142457.3325-15-eric.auger@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, tianyu.lan@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org, jacob.jun.pan@linux.intel.com
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 18 Sep 2018 16:24:51 +0200
-Eric Auger <eric.auger@redhat.com> wrote:
+I recently debugged a DMA mapping oops where a driver was trying to map
+a buffer returned from request_firmware() with dma_map_single(). Memory
+returned from request_firmware() is mapped into the vmalloc region and
+this isn't a valid region to map with dma_map_single() per the DMA
+documentation's "What memory is DMA'able?" section.
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> 
-> Device faults detected by IOMMU can be reported outside IOMMU
-> subsystem for further processing. This patch intends to provide
-> a generic device fault data such that device drivers can be
-> communicated with IOMMU faults without model specific knowledge.
-> 
-> The proposed format is the result of discussion at:
-> https://lkml.org/lkml/2017/11/10/291
-> Part of the code is based on Jean-Philippe Brucker's patchset
-> (https://patchwork.kernel.org/patch/9989315/).
-> 
-> The assumption is that model specific IOMMU driver can filter and
-> handle most of the internal faults if the cause is within IOMMU driver
-> control. Therefore, the fault reasons can be reported are grouped
-> and generalized based common specifications such as PCI ATS.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> [moved part of the iommu_fault_event struct in the uapi, enriched
->  the fault reasons to be able to map unrecoverable SMMUv3 errors]
-Sounds good to me.
-There are also other "enrichment" we need to do to support mdev or
-finer granularity fault reporting below physical device. e.g. PASID
-level.
+Unfortunately, we don't really check that in the DMA debugging code, so
+enabling DMA debugging doesn't help catch this problem. Let's add a new
+DMA debug function to check for a vmalloc address and print a warning if
+this happens. This makes it a little easier to debug these sorts of
+problems, instead of seeing odd behavior or crashes when drivers attempt
+to map the vmalloc space for DMA.
 
-The current scheme works for PCIe physical device level, where each
-device registers a single handler only once. When device fault is
-detected by the IOMMU, it will find the matching handler and private
-data to report back. However, for devices partitioned by PASID and
-represented by mdev this may not work. Since IOMMU is not mdev aware
-and only works at physical device level.
-So I am thinking we should allow multiple registration of fault handler
-with different data and ID. i.e.
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
+ include/linux/dma-debug.h   |  8 ++++++++
+ include/linux/dma-mapping.h |  1 +
+ kernel/dma/debug.c          | 12 ++++++++++++
+ 3 files changed, 21 insertions(+)
 
-int iommu_register_device_fault_handler(struct device *dev,
-					iommu_dev_fault_handler_t handler,
-					int id,
-					void *data)
-
-where the new "id field" is
- * @id: Identification of the handler private data, will be used by fault
- *      reporting code to match the handler data to be returned. For page
- *      request, this can be the PASID. ID must be unique per device, i.e.
- *      each ID can only be registered once per device.
- *      - IOMMU_DEV_FAULT_ID_UNRECOVERY (~0U) is reserved for fault reporting
- *      w/o ID. e.g. unrecoverable faults.
-
-I am still testing, but just wanted to have feedback on this idea.
-
-Thanks,
-
-Jacob
-
-
-> ---
->  include/linux/iommu.h      | 55 ++++++++++++++++++++++++-
->  include/uapi/linux/iommu.h | 83
-> ++++++++++++++++++++++++++++++++++++++ 2 files changed, 136
-> insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 9bd3e63d562b..7529c14ff506 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -49,13 +49,17 @@ struct bus_type;
->  struct device;
->  struct iommu_domain;
->  struct notifier_block;
-> +struct iommu_fault_event;
->  
->  /* iommu fault flags */
-> -#define IOMMU_FAULT_READ	0x0
-> -#define IOMMU_FAULT_WRITE	0x1
-> +#define IOMMU_FAULT_READ		(1 << 0)
-> +#define IOMMU_FAULT_WRITE		(1 << 1)
-> +#define IOMMU_FAULT_EXEC		(1 << 2)
-> +#define IOMMU_FAULT_PRIV		(1 << 3)
->  
->  typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
->  			struct device *, unsigned long, int, void *);
-> +typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault_event *,
-> void *); 
->  struct iommu_domain_geometry {
->  	dma_addr_t aperture_start; /* First address that can be
-> mapped    */ @@ -262,6 +266,52 @@ struct iommu_device {
->  	struct device *dev;
->  };
->  
-> +/**
-> + * struct iommu_fault_event - Generic per device fault data
-> + *
-> + * - PCI and non-PCI devices
-> + * - Recoverable faults (e.g. page request), information based on
-> PCI ATS
-> + * and PASID spec.
-> + * - Un-recoverable faults of device interest
-> + * - DMA remapping and IRQ remapping faults
-> + *
-> + * @fault: fault descriptor
-> + * @device_private: if present, uniquely identify device-specific
-> + *                  private data for an individual page request.
-> + * @iommu_private: used by the IOMMU driver for storing
-> fault-specific
-> + *                 data. Users should not modify this field before
-> + *                 sending the fault response.
-> + */
-> +struct iommu_fault_event {
-> +	struct iommu_fault fault;
-> +	u64 device_private;
-> +	u64 iommu_private;
-> +};
-> +
-> +/**
-> + * struct iommu_fault_param - per-device IOMMU fault data
-> + * @dev_fault_handler: Callback function to handle IOMMU faults at
-> device level
-> + * @data: handler private data
-> + *
-> + */
-> +struct iommu_fault_param {
-> +	iommu_dev_fault_handler_t handler;
-> +	void *data;
-> +};
-> +
-> +/**
-> + * struct iommu_param - collection of per-device IOMMU data
-> + *
-> + * @fault_param: IOMMU detected device fault reporting data
-> + *
-> + * TODO: migrate other per device data pointers under
-> iommu_dev_data, e.g.
-> + *	struct iommu_group	*iommu_group;
-> + *	struct iommu_fwspec	*iommu_fwspec;
-> + */
-> +struct iommu_param {
-> +	struct iommu_fault_param *fault_param;
-> +};
-> +
->  int  iommu_device_register(struct iommu_device *iommu);
->  void iommu_device_unregister(struct iommu_device *iommu);
->  int  iommu_device_sysfs_add(struct iommu_device *iommu,
-> @@ -429,6 +479,7 @@ struct iommu_ops {};
->  struct iommu_group {};
->  struct iommu_fwspec {};
->  struct iommu_device {};
-> +struct iommu_fault_param {};
->  
->  static inline bool iommu_present(struct bus_type *bus)
->  {
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index 21adb2a964e5..a0fe5c2fb236 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -150,5 +150,88 @@ struct iommu_guest_msi_binding {
->  	__u64		gpa;
->  	__u32		granule;
->  };
-> +
-> +/*  Generic fault types, can be expanded IRQ remapping fault */
-> +enum iommu_fault_type {
-> +	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable fault */
-> +	IOMMU_FAULT_PAGE_REQ,		/* page request fault */
-> +};
-> +
-> +enum iommu_fault_reason {
-> +	IOMMU_FAULT_REASON_UNKNOWN = 0,
-> +
-> +	/* IOMMU internal error, no specific reason to report out */
-> +	IOMMU_FAULT_REASON_INTERNAL,
-> +
-> +	/* Could not access the PASID table (fetch caused external
-> abort) */
-> +	IOMMU_FAULT_REASON_PASID_FETCH,
-> +
-> +	/* could not access the device context (fetch caused
-> external abort) */
-> +	IOMMU_FAULT_REASON_DEVICE_CONTEXT_FETCH,
-> +
-> +	/* pasid entry is invalid or has configuration errors */
-> +	IOMMU_FAULT_REASON_BAD_PASID_ENTRY,
-> +
-> +	/* device context entry is invalid or has configuration
-> errors */
-> +	IOMMU_FAULT_REASON_BAD_DEVICE_CONTEXT_ENTRY,
-> +	/*
-> +	 * PASID is out of range (e.g. exceeds the maximum PASID
-> +	 * supported by the IOMMU) or disabled.
-> +	 */
-> +	IOMMU_FAULT_REASON_PASID_INVALID,
-> +
-> +	/* source id is out of range */
-> +	IOMMU_FAULT_REASON_SOURCEID_INVALID,
-> +
-> +	/*
-> +	 * An external abort occurred fetching (or updating) a
-> translation
-> +	 * table descriptor
-> +	 */
-> +	IOMMU_FAULT_REASON_WALK_EABT,
-> +
-> +	/*
-> +	 * Could not access the page table entry (Bad address),
-> +	 * actual translation fault
-> +	 */
-> +	IOMMU_FAULT_REASON_PTE_FETCH,
-> +
-> +	/* Protection flag check failed */
-> +	IOMMU_FAULT_REASON_PERMISSION,
-> +
-> +	/* access flag check failed */
-> +	IOMMU_FAULT_REASON_ACCESS,
-> +
-> +	/* Output address of a translation stage caused Address Size
-> fault */
-> +	IOMMU_FAULT_REASON_OOR_ADDRESS
-> +};
-> +
-> +/**
-> + * struct iommu_fault - Generic fault data
-> + *
-> + * @type contains fault type
-> + * @reason fault reasons if relevant outside IOMMU driver.
-> + * IOMMU driver internal faults are not reported.
-> + * @addr: tells the offending page address
-> + * @fetch_addr: tells the address that caused an abort, if any
-> + * @pasid: contains process address space ID, used in shared virtual
-> memory
-> + * @page_req_group_id: page request group index
-> + * @last_req: last request in a page request group
-> + * @pasid_valid: indicates if the PRQ has a valid PASID
-> + * @prot: page access protection flag:
-> + *	IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
-> + */
-> +
-> +struct iommu_fault {
-> +	__u32	type;   /* enum iommu_fault_type */
-> +	__u32	reason; /* enum iommu_fault_reason */
-> +	__u64	addr;
-> +	__u64	fetch_addr;
-> +	__u32	pasid;
-> +	__u32	page_req_group_id;
-> +	__u32	last_req;
-> +	__u32	pasid_valid;
-> +	__u32	prot;
-> +	__u32	access;
-> +};
->  #endif /* _UAPI_IOMMU_H */
->  
-
-[Jacob Pan]
+diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
+index a785f2507159..5aec2ca8a426 100644
+--- a/include/linux/dma-debug.h
++++ b/include/linux/dma-debug.h
+@@ -32,6 +32,9 @@ extern void dma_debug_add_bus(struct bus_type *bus);
+ 
+ extern int dma_debug_resize_entries(u32 num_entries);
+ 
++extern void debug_dma_check_vmalloc(struct device *dev, const void *addr,
++				    unsigned long len);
++
+ extern void debug_dma_map_page(struct device *dev, struct page *page,
+ 			       size_t offset, size_t size,
+ 			       int direction, dma_addr_t dma_addr,
+@@ -103,6 +106,11 @@ static inline int dma_debug_resize_entries(u32 num_entries)
+ 	return 0;
+ }
+ 
++static inline void debug_dma_check_vmalloc(struct device *dev, const void *addr,
++					   unsigned long len)
++{
++}
++
+ static inline void debug_dma_map_page(struct device *dev, struct page *page,
+ 				      size_t offset, size_t size,
+ 				      int direction, dma_addr_t dma_addr,
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index eafd6f318e78..a0e67fd5433c 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -232,6 +232,7 @@ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+ 	dma_addr_t addr;
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
++	debug_dma_check_vmalloc(dev, ptr, size);
+ 	addr = ops->map_page(dev, virt_to_page(ptr),
+ 			     offset_in_page(ptr), size,
+ 			     dir, attrs);
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index c007d25bee09..7ee7978868d4 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -1312,6 +1312,18 @@ static void check_sg_segment(struct device *dev, struct scatterlist *sg)
+ #endif
+ }
+ 
++void debug_dma_check_vmalloc(struct device *dev, const void *addr,
++		unsigned long len)
++{
++	if (unlikely(dma_debug_disabled()))
++		return;
++
++	if (is_vmalloc_addr(addr))
++		err_printk(dev, NULL, "DMA-API: device driver maps memory from vmalloc area [addr=%p] [len=%lu]\n",
++			   addr, len);
++}
++EXPORT_SYMBOL(debug_dma_check_vmalloc);
++
+ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+ 			size_t size, int direction, dma_addr_t dma_addr,
+ 			bool map_single)
+-- 
+Sent by a computer through tubes
