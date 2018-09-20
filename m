@@ -1,14 +1,15 @@
-From: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
-Date: Thu, 20 Sep 2018 14:03:36 +0200
-Message-ID: <CA+icZUW7YjPkZq5VPuwA6LFx9NhBf1hiRRQvN+zJaXHnuHJ7RA@mail.gmail.com>
-References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
-Reply-To: sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 0/3] iommu: Avoid DMA ops domain refcount contention
+Date: Thu, 20 Sep 2018 13:51:40 +0100
+Message-ID: <ba379973-2b34-2be4-7cdf-4ad3a3dd6dee@huawei.com>
+References: <cover.1536764440.git.robin.murphy@arm.com>
+	<20180914124858.GA4010@arm.com>
+	<dbb9e48f-e31b-b8a1-0287-378c35e9fdb9@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <dbb9e48f-e31b-b8a1-0287-378c35e9fdb9-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,57 +19,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 5, 2018 at 2:04 PM, Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> Hi Joerg,
+On 17/09/2018 12:20, John Garry wrote:
+> On 14/09/2018 13:48, Will Deacon wrote:
+>> Hi Robin,
+>>
 >
-> "intel_ioomu=on" was working fine here on my ThinkPad T470 with
-> debian/testing AMD64 with Linux v4.17.y and v4.18.y.
+> Hi Robin,
 >
-> With testing Linux v4.19-rc1 and v4.19-rc2 my machine is not booting -
-> black screen.
-> These kernels are built with LLVM/Clang v7.0.0rc2 (v4.18.y too).
+> I just spoke with Dongdong and we will test this version also so that we
+> may provide a "Tested-by" tag.
 >
-> Furthermore, I switched from GRUB to systemd-boot v239.
->
-> [ /boot/efi/loader/entries/debian.conf ]
->
-> title Debian GNU/Linux buster/sid [ debian kernel ]
-> linux /vmlinuz-4.17.0-3-amd64
-> initrd /initrd.img-4.17.0-3-amd64
-> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro intel_iommu=on
->
-> [ /boot/efi/loader/entries/debian-llvmlinux.conf ]
->
-> title Debian GNU/Linux buster/sid [ llvmlinux kernel (EXPERIMENTAL) ]
-> linux /vmlinuz-4.19.0-rc2-3-iniza-llvmlinux
-> initrd /initrd.img-4.19.0-rc2-3-iniza-llvmlinux
-> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro
->
-> Any hints or hints to debug this?
-> Any other kernel boot cheats [1] I can try?
->
-> My kernel-config and dmesg output is attached.
->
-> Thanks in advance.
->
-> Regards,
-> - Sedat -
->
->
-> Documentation/intel_txt.txt
-> Documentation/admin-guide/kernel-parameters.txt
-> Documentation/Intel-IOMMU.txt
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt#n1645
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/Intel-IOMMU.txt
-> [3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/intel_txt.txt
 
-[ TO JR @ SuSE ]
+I tested this, so for series:
+Tested-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 
-I still have this issue with Linux v4.19-rc4+.
+Thanks,
+John
 
-- Sedat -
+> Thanks,
+> John
+>
+>> On Wed, Sep 12, 2018 at 04:24:11PM +0100, Robin Murphy wrote:
+>>> John raised the issue[1] that we have some unnecessary refcount
+>>> contention
+>>> in the DMA ops path which shows scalability problems now that we have
+>>> more
+>>> real high-performance hardware using iommu-dma. The x86 IOMMU drivers
+>>> are
+>>> sidestepping this by stashing domain references in archdata, but since
+>>> that's not very nice for architecture-agnostic code, I think it's
+>>> time to
+>>> look at a generic API-level solution.
+>>>
+>>> These are a couple of quick patches based on the idea I had back when
+>>> first implementing iommu-dma, but didn't have any way to justify at the
+>>> time. However, the reports of 10-25% better networking performance on v1
+>>> suggest that it's very worthwhile (and far more significant than I ever
+>>> would have guessed).
+>>>
+>>> As far as merging goes, I don't mind at all whether this goes via IOMMU,
+>>> or via dma-mapping provided Joerg's happy to ack it.
+>>
+>> I think it makes most sense for Joerg to take this series via his tree.
+>>
+>> Anyway, I've been running them on my TX2 box and things are happy enough,
+>> so:
+>>
+>> Tested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>>
+>> Will
+>>
+>> .
+>>
+>
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
+> .
+>
