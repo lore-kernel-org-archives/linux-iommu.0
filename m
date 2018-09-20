@@ -1,148 +1,108 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v8 2/7] iommu/dma: Add support for non-strict mode
-Date: Thu, 20 Sep 2018 17:10:22 +0100
-Message-ID: <bd0efe2b9a26e35cfd9b4157bea3e6f21f4c8adf.1537458163.git.robin.murphy@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v8 3/7] iommu: Add "iommu.strict" command line option
+Date: Thu, 20 Sep 2018 17:10:23 +0100
+Message-ID: <799fad801970298385af3abc8ca82620ad62c000.1537458163.git.robin.murphy@arm.com>
 References: <cover.1537458163.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1537458163.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1537458163.git.robin.murphy@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, will.deacon@arm.com, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-With the flush queue infrastructure already abstracted into IOVA
-domains, hooking it up in iommu-dma is pretty simple. Since there is a
-degree of dependency on the IOMMU driver knowing what to do to play
-along, we key the whole thing off a domain attribute which will be set
-on default DMA ops domains to request non-strict invalidation. That way,
-drivers can indicate the appropriate support by acknowledging the
-attribute, and we can easily fall back to strict invalidation otherwise.
+Add a generic command line option to enable lazy unmapping via IOVA
+flush queues, which will initally be suuported by iommu-dma. This echoes
+the semantics of "intel_iommu=strict" (albeit with the opposite default
+value), but in the driver-agnostic fashion of "iommu.passthrough".
 
-The flush queue callback needs a handle on the iommu_domain which owns
-our cookie, so we have to add a pointer back to that, but neatly, that's
-also sufficient to indicate whether we're using a flush queue or not,
-and thus which way to release IOVAs. The only slight subtlety is
-switching __iommu_dma_unmap() from calling iommu_unmap() to explicit
-iommu_unmap_fast()/iommu_tlb_sync() so that we can elide the sync
-entirely in non-strict mode.
-
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-[rm: convert to domain attribute, tweak comments and commit message]
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+[rm: move handling out of SMMUv3 driver, clean up documentation]
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
 v8:
- - Rewrite commit message/comments
- - Don't initialise "attr" unnecessarily
- - Rename "domain" to "fq_domain" for clarity
- - Don't let init_iova_flush_queue() be called more than once
+ - Rename "non-strict" to "strict" to better match existing options
+ - Rewrite doc text/commit message
+ - Downgrade boot-time message from warn/taint to info
 
- drivers/iommu/dma-iommu.c | 32 +++++++++++++++++++++++++++++++-
- include/linux/iommu.h     |  1 +
- 2 files changed, 32 insertions(+), 1 deletion(-)
+ .../admin-guide/kernel-parameters.txt         | 12 ++++++++++
+ drivers/iommu/iommu.c                         | 23 +++++++++++++++++++
+ 2 files changed, 35 insertions(+)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 511ff9a1d6d9..cc1bf786cfac 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -55,6 +55,9 @@ struct iommu_dma_cookie {
- 	};
- 	struct list_head		msi_page_list;
- 	spinlock_t			msi_lock;
-+
-+	/* Domain for flush queue callback; NULL if flush queue not in use */
-+	struct iommu_domain		*fq_domain;
- };
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 9871e649ffef..92ae12aeabf4 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1749,6 +1749,18 @@
+ 		nobypass	[PPC/POWERNV]
+ 			Disable IOMMU bypass, using IOMMU for PCI devices.
  
- static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
-@@ -257,6 +260,20 @@ static int iova_reserve_iommu_regions(struct device *dev,
- 	return ret;
++	iommu.strict=	[ARM64] Configure TLB invalidation behaviour
++			Format: { "0" | "1" }
++			0 - Lazy mode.
++			  Request that DMA unmap operations use deferred
++			  invalidation of hardware TLBs, for increased
++			  throughput at the cost of reduced device isolation.
++			  Will fall back to strict mode if not supported by
++			  the relevant IOMMU driver.
++			1 - Strict mode (default).
++			  DMA unmap operations invalidate IOMMU hardware TLBs
++			  synchronously.
++
+ 	iommu.passthrough=
+ 			[ARM64] Configure DMA to bypass the IOMMU by default.
+ 			Format: { "0" | "1" }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8c15c5980299..02b6603f0616 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -41,6 +41,7 @@ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
+ #else
+ static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
+ #endif
++static bool iommu_dma_strict __read_mostly = true;
+ 
+ struct iommu_callback_data {
+ 	const struct iommu_ops *ops;
+@@ -131,6 +132,21 @@ static int __init iommu_set_def_domain_type(char *str)
  }
+ early_param("iommu.passthrough", iommu_set_def_domain_type);
  
-+static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
++static int __init iommu_dma_setup(char *str)
 +{
-+	struct iommu_dma_cookie *cookie;
-+	struct iommu_domain *domain;
++	int ret;
 +
-+	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
-+	domain = cookie->fq_domain;
-+	/*
-+	 * The IOMMU driver supporting DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-+	 * implies that ops->flush_iotlb_all must be non-NULL.
-+	 */
-+	domain->ops->flush_iotlb_all(domain);
++	ret = kstrtobool(str, &iommu_dma_strict);
++	if (ret)
++		return ret;
++
++	if (!iommu_dma_strict)
++		pr_info("Enabling deferred TLB invalidation for DMA; protection against malicious/malfunctioning devices may be reduced.\n");
++
++	return 0;
 +}
++early_param("iommu.strict", iommu_dma_setup);
 +
- /**
-  * iommu_dma_init_domain - Initialise a DMA mapping domain
-  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
-@@ -275,6 +292,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
- 	unsigned long order, base_pfn, end_pfn;
-+	int attr;
- 
- 	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
- 		return -EINVAL;
-@@ -308,6 +326,13 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ static ssize_t iommu_group_attr_show(struct kobject *kobj,
+ 				     struct attribute *__attr, char *buf)
+ {
+@@ -1072,6 +1088,13 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 		group->default_domain = dom;
+ 		if (!group->domain)
+ 			group->domain = dom;
++
++		if (dom && !iommu_dma_strict) {
++			int attr = 1;
++			iommu_domain_set_attr(dom,
++					      DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
++					      &attr);
++		}
  	}
  
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
-+
-+	if (!cookie->fq_domain && !iommu_domain_get_attr(domain,
-+			DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE, &attr) && attr) {
-+		cookie->fq_domain = domain;
-+		init_iova_flush_queue(iovad, iommu_dma_flush_iotlb_all, NULL);
-+	}
-+
- 	if (!dev)
- 		return 0;
- 
-@@ -393,6 +418,9 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
- 	/* The MSI case is only ever cleaning up its most recent allocation */
- 	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
- 		cookie->msi_iova -= size;
-+	else if (cookie->fq_domain)	/* non-strict mode */
-+		queue_iova(iovad, iova_pfn(iovad, iova),
-+				size >> iova_shift(iovad), 0);
- 	else
- 		free_iova_fast(iovad, iova_pfn(iovad, iova),
- 				size >> iova_shift(iovad));
-@@ -408,7 +436,9 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
- 	dma_addr -= iova_off;
- 	size = iova_align(iovad, size + iova_off);
- 
--	WARN_ON(iommu_unmap(domain, dma_addr, size) != size);
-+	WARN_ON(iommu_unmap_fast(domain, dma_addr, size) != size);
-+	if (!cookie->fq_domain)
-+		iommu_tlb_sync(domain);
- 	iommu_dma_free_iova(cookie, dma_addr, size);
- }
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 87994c265bf5..decabe8e8dbe 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -124,6 +124,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
- 	DOMAIN_ATTR_FSL_PAMUV1,
- 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
-+	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
- 	DOMAIN_ATTR_MAX,
- };
- 
+ 	ret = iommu_group_add_device(group, dev);
 -- 
 2.19.0.dirty
