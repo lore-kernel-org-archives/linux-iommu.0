@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v8 6/7] iommu/io-pgtable-arm-v7s: Add support for non-strict mode
-Date: Thu, 20 Sep 2018 17:10:26 +0100
-Message-ID: <b6f3140cb5f4f4beb24b507c16d8d142e7389d06.1537458163.git.robin.murphy@arm.com>
+Subject: [PATCH v8 7/7] iommu/arm-smmu: Support non-strict mode
+Date: Thu, 20 Sep 2018 17:10:27 +0100
+Message-ID: <c52126546bc7e5f9c01d07fd70675776877d020d.1537458163.git.robin.murphy@arm.com>
 References: <cover.1537458163.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,55 +12,180 @@ To: joro@8bytes.org, will.deacon@arm.com, thunder.leizhen@huawei.com, iommu@list
 Cc: linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-As for LPAE, it's simply a case of skipping the leaf invalidation for a
-regular unmap, and ensuring that the one in split_blk_unmap() is paired
-with an explicit sync ASAP rather than relying on one which might only
-eventually happen way down the line.
+All we need is to wire up .flush_iotlb_all properly and implement the
+domain attribute, and iommu-dma and io-pgtable will do the rest for us.
+The only real subtlety is documenting the barrier semantics we're
+introducing between io-pgtable and the drivers for non-strict flushes.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-v8: Do this properly instead of just hacking around not doing it
-    (look, it turns out barely any more complicated!)
+v8:
+ - Use nested switches for attrs
+ - Fix barriers
 
- drivers/iommu/io-pgtable-arm-v7s.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu.c | 93 ++++++++++++++++++++++++++++------------
+ 1 file changed, 66 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index b5948ba6b3b3..445c3bde0480 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -587,6 +587,7 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
- 	}
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index fd1b80ef9490..79ece565d96d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -246,6 +246,7 @@ struct arm_smmu_domain {
+ 	const struct iommu_gather_ops	*tlb_ops;
+ 	struct arm_smmu_cfg		cfg;
+ 	enum arm_smmu_domain_stage	stage;
++	bool				non_strict;
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+ 	struct iommu_domain		domain;
+@@ -447,7 +448,11 @@ static void arm_smmu_tlb_inv_context_s1(void *cookie)
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
  
- 	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
-+	io_pgtable_tlb_sync(&data->iop);
- 	return size;
+-	writel_relaxed(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
++	/*
++	 * NOTE: this is not a relaxed write; it needs to guarantee that PTEs
++	 * cleared by the current CPU are visible to the SMMU before the TLBI.
++	 */
++	writel(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
+ 	arm_smmu_tlb_sync_context(cookie);
  }
  
-@@ -642,6 +643,13 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
- 				io_pgtable_tlb_sync(iop);
- 				ptep = iopte_deref(pte[i], lvl);
- 				__arm_v7s_free_table(ptep, lvl + 1, data);
-+			} else if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT) {
-+				/*
-+				 * Order the PTE update against queueing the IOVA, to
-+				 * guarantee that a flush callback from a different CPU
-+				 * has observed it before the TLBIALL can be issued.
-+				 */
-+				smp_wmb();
- 			} else {
- 				io_pgtable_tlb_add_flush(iop, iova, blk_size,
- 							 blk_size, true);
-@@ -712,7 +720,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 			    IO_PGTABLE_QUIRK_NO_PERMS |
- 			    IO_PGTABLE_QUIRK_TLBI_ON_MAP |
- 			    IO_PGTABLE_QUIRK_ARM_MTK_4GB |
--			    IO_PGTABLE_QUIRK_NO_DMA))
-+			    IO_PGTABLE_QUIRK_NO_DMA |
-+			    IO_PGTABLE_QUIRK_NON_STRICT))
- 		return NULL;
+@@ -457,7 +462,8 @@ static void arm_smmu_tlb_inv_context_s2(void *cookie)
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	void __iomem *base = ARM_SMMU_GR0(smmu);
  
- 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+-	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
++	/* NOTE: see above */
++	writel(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
+ 	arm_smmu_tlb_sync_global(smmu);
+ }
+ 
+@@ -863,6 +869,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+ 		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+ 
++	if (smmu_domain->non_strict)
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
++
+ 	smmu_domain->smmu = smmu;
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops) {
+@@ -1252,6 +1261,14 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 	return ops->unmap(ops, iova, size);
+ }
+ 
++static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (smmu_domain->tlb_ops)
++		smmu_domain->tlb_ops->tlb_flush_all(smmu_domain);
++}
++
+ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+@@ -1470,15 +1487,27 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
+-	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+-		return -EINVAL;
+-
+-	switch (attr) {
+-	case DOMAIN_ATTR_NESTING:
+-		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+-		return 0;
++	switch(domain->type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		switch (attr) {
++		case DOMAIN_ATTR_NESTING:
++			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
++			return 0;
++		default:
++			return -ENODEV;
++		}
++		break;
++	case IOMMU_DOMAIN_DMA:
++		switch (attr) {
++		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
++			*(int *)data = smmu_domain->non_strict;
++			return 0;
++		default:
++			return -ENODEV;
++		}
++		break;
+ 	default:
+-		return -ENODEV;
++		return -EINVAL;
+ 	}
+ }
+ 
+@@ -1488,28 +1517,38 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 	int ret = 0;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
+-	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+-		return -EINVAL;
+-
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+-	switch (attr) {
+-	case DOMAIN_ATTR_NESTING:
+-		if (smmu_domain->smmu) {
+-			ret = -EPERM;
+-			goto out_unlock;
++	switch(domain->type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		switch (attr) {
++		case DOMAIN_ATTR_NESTING:
++			if (smmu_domain->smmu) {
++				ret = -EPERM;
++				goto out_unlock;
++			}
++
++			if (*(int *)data)
++				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
++			else
++				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
++			break;
++		default:
++			ret = -ENODEV;
++		}
++		break;
++	case IOMMU_DOMAIN_DMA:
++		switch (attr) {
++		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
++			smmu_domain->non_strict = *(int *)data;
++			break;
++		default:
++			ret = -ENODEV;
+ 		}
+-
+-		if (*(int *)data)
+-			smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+-		else
+-			smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+-
+ 		break;
+ 	default:
+-		ret = -ENODEV;
++		ret = -EINVAL;
+ 	}
+-
+ out_unlock:
+ 	mutex_unlock(&smmu_domain->init_mutex);
+ 	return ret;
+@@ -1562,7 +1601,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.attach_dev		= arm_smmu_attach_dev,
+ 	.map			= arm_smmu_map,
+ 	.unmap			= arm_smmu_unmap,
+-	.flush_iotlb_all	= arm_smmu_iotlb_sync,
++	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
+ 	.iotlb_sync		= arm_smmu_iotlb_sync,
+ 	.iova_to_phys		= arm_smmu_iova_to_phys,
+ 	.add_device		= arm_smmu_add_device,
 -- 
 2.19.0.dirty
