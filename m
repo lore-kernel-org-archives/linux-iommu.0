@@ -1,11 +1,58 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: misc ia64 cleanups (resend)
-Date: Thu, 20 Sep 2018 09:26:51 +0200
-Message-ID: <20180920072700.22396-1-hch@lst.de>
+Subject: [PATCH 2/9] ia64: remove the dead iommu_sac_force variable
+Date: Thu, 20 Sep 2018 09:26:53 +0200
+Message-ID: <20180920072700.22396-3-hch@lst.de>
+References: <20180920072700.22396-1-hch@lst.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180920072700.22396-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>
 Cc: linux-ia64@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-A couple random cleanups I stumbled upon when doing dma related work.
+Looks like copy and paste from x86 that never actually got used.
+
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/ia64/kernel/pci-dma.c | 19 -------------------
+ 1 file changed, 19 deletions(-)
+
+diff --git a/arch/ia64/kernel/pci-dma.c b/arch/ia64/kernel/pci-dma.c
+index b5df084c0af4..50b6ad282a90 100644
+--- a/arch/ia64/kernel/pci-dma.c
++++ b/arch/ia64/kernel/pci-dma.c
+@@ -18,8 +18,6 @@
+ dma_addr_t bad_dma_address __read_mostly;
+ EXPORT_SYMBOL(bad_dma_address);
+ 
+-static int iommu_sac_force __read_mostly;
+-
+ int no_iommu __read_mostly;
+ #ifdef CONFIG_IOMMU_DEBUG
+ int force_iommu __read_mostly = 1;
+@@ -61,23 +59,6 @@ int iommu_dma_supported(struct device *dev, u64 mask)
+ 	if (mask < DMA_BIT_MASK(24))
+ 		return 0;
+ 
+-	/* Tell the device to use SAC when IOMMU force is on.  This
+-	   allows the driver to use cheaper accesses in some cases.
+-
+-	   Problem with this is that if we overflow the IOMMU area and
+-	   return DAC as fallback address the device may not handle it
+-	   correctly.
+-
+-	   As a special case some controllers have a 39bit address
+-	   mode that is as efficient as 32bit (aic79xx). Don't force
+-	   SAC for these.  Assume all masks <= 40 bits are of this
+-	   type. Normally this doesn't make any difference, but gives
+-	   more gentle handling of IOMMU overflow. */
+-	if (iommu_sac_force && (mask >= DMA_BIT_MASK(40))) {
+-		dev_info(dev, "Force SAC with mask %llx\n", mask);
+-		return 0;
+-	}
+-
+ 	return 1;
+ }
+ EXPORT_SYMBOL(iommu_dma_supported);
+-- 
+2.18.0
