@@ -1,15 +1,11 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 0/3] iommu: Avoid DMA ops domain refcount contention
-Date: Thu, 20 Sep 2018 13:51:40 +0100
-Message-ID: <ba379973-2b34-2be4-7cdf-4ad3a3dd6dee@huawei.com>
-References: <cover.1536764440.git.robin.murphy@arm.com>
-	<20180914124858.GA4010@arm.com>
-	<dbb9e48f-e31b-b8a1-0287-378c35e9fdb9@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu: Fix passthrough option documentation
+Date: Thu, 20 Sep 2018 14:14:26 +0100
+Message-ID: <60d15534e43f7856ce2e436aff28465cd679bb1d.1537448341.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <dbb9e48f-e31b-b8a1-0287-378c35e9fdb9-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,68 +15,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, corbet-T1hC0tSOHrs@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/09/2018 12:20, John Garry wrote:
-> On 14/09/2018 13:48, Will Deacon wrote:
->> Hi Robin,
->>
->
-> Hi Robin,
->
-> I just spoke with Dongdong and we will test this version also so that we
-> may provide a "Tested-by" tag.
->
+Document that the default for "iommu.passthrough" is now configurable.
 
-I tested this, so for series:
-Tested-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Fixes: 58d1131777a4 ("iommu: Add config option to set passthrough as default")
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-Thanks,
-John
+Joerg, Jon, as a pure doc fix I'll leave it to your discretion as to
+whose tree is most appropriate (it shouldn't conflict with the other
+IOMMU patches I'm working on)
 
-> Thanks,
-> John
->
->> On Wed, Sep 12, 2018 at 04:24:11PM +0100, Robin Murphy wrote:
->>> John raised the issue[1] that we have some unnecessary refcount
->>> contention
->>> in the DMA ops path which shows scalability problems now that we have
->>> more
->>> real high-performance hardware using iommu-dma. The x86 IOMMU drivers
->>> are
->>> sidestepping this by stashing domain references in archdata, but since
->>> that's not very nice for architecture-agnostic code, I think it's
->>> time to
->>> look at a generic API-level solution.
->>>
->>> These are a couple of quick patches based on the idea I had back when
->>> first implementing iommu-dma, but didn't have any way to justify at the
->>> time. However, the reports of 10-25% better networking performance on v1
->>> suggest that it's very worthwhile (and far more significant than I ever
->>> would have guessed).
->>>
->>> As far as merging goes, I don't mind at all whether this goes via IOMMU,
->>> or via dma-mapping provided Joerg's happy to ack it.
->>
->> I think it makes most sense for Joerg to take this series via his tree.
->>
->> Anyway, I've been running them on my TX2 box and things are happy enough,
->> so:
->>
->> Tested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->>
->> Will
->>
->> .
->>
->
->
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
-> .
->
+ Documentation/admin-guide/kernel-parameters.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 406b91759b62..8ab2984692ff 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -1767,7 +1767,7 @@
+ 			Format: { "0" | "1" }
+ 			0 - Use IOMMU translation for DMA.
+ 			1 - Bypass the IOMMU for DMA.
+-			unset - Use IOMMU translation for DMA.
++			unset - Use value of CONFIG_IOMMU_DEFAULT_PASSTHROUGH.
+ 
+ 	io7=		[HW] IO7 for Marvel based alpha systems
+ 			See comment before marvel_specify_io7 in
+-- 
+2.19.0.dirty
