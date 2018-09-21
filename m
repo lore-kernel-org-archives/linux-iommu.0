@@ -1,19 +1,16 @@
-From: Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/3] xtensa: remove partial support for DMA buffers in
-	high memory
-Date: Fri, 21 Sep 2018 10:42:48 -0700
-Message-ID: <CAMo8BfKAqTf1O3nwYv4n=E14jNNn6r-jQ14FSGBYFTOOO5qg-A@mail.gmail.com>
-References: <20180920171540.2657-1-hch@lst.de>
-	<20180920171540.2657-2-hch@lst.de>
-	<CAMo8BfKyW+3t+L+oQ+nDyEs8KcASPC8CeUP3QPoANQC=XKP9hg@mail.gmail.com>
-	<20180920180833.GB27677@lst.de>
-	<CAMo8BfL5KsmgLLmtdj05NgYOOR8H5LdU46+oA4xw-c-W_0nRfg@mail.gmail.com>
-	<20180921065100.GA14246@lst.de>
+From: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+Subject: Re: [PATCH, for-4.19] dma-mapping: add the missing
+	ARCH_HAS_SYNC_DMA_FOR_CPU_ALL declaration
+Date: Fri, 21 Sep 2018 19:42:20 +0000
+Message-ID: <20180921194218.at7ejkmmiucmawzo@pburton-laptop>
+References: <20180911090049.10747-1-hch@lst.de> <20180921061052.GA13705@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180921065100.GA14246-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20180921061052.GA13705-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-US
+Content-ID: <CFF51622A9D0EB4C959480118C3EFF15-UmvZKMv7CrqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,32 +20,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 20, 2018 at 11:51 PM, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
-> On Thu, Sep 20, 2018 at 12:08:28PM -0700, Max Filippov wrote:
->> I'm not familiar with the details of alloc_contig_range implementation, but
->> I don't see how gfp_mask is used to limit allocation to non-high memory.
->> So when alloc_contig_range gets start and end PFNs in high memory
->> (from the CMA region allocated in high memory) it just returns high memory
->> pages -- that's what I see.
->
-> I can't see what prevents people from doing a CMA in high memory either,
-> which is bad as except for arm non of the callers handles it completely
-> (and that includes xtensa, more below).
+Hi Christoph,
 
-So far it was useful and sufficient for us.
+On Fri, Sep 21, 2018 at 08:10:52AM +0200, Christoph Hellwig wrote:
+> Paul, other mips folks, any comments?
+> 
+> At this point I'm tempted to just move it to 4.20 and add a stable
+> tag given that no one cared so far.
 
-> xtensa is partially prepared for
-> it as it can remap in dma_alloc, but it is missing handling in either
-> the ->mmap or ->get_sgtable methods.
+Copying Kevin & Florian as maintainers of the affected BMIPS systems in
+case they have anything to add.
 
-I'd rather implement the missing parts or put a WARN there if
-implementing it is too hard or impossible than remove the existing
-partial support.
+> On Tue, Sep 11, 2018 at 11:00:49AM +0200, Christoph Hellwig wrote:
+> > The patch adding the infrastructure failed to actually add the symbol
+> > declaration, oops..
+> > 
+> > Fixes: faef87723a ("dma-noncoherent: add a arch_sync_dma_for_cpu_all hook")
+> > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> > ---
+> >  kernel/dma/Kconfig | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> > index 9bd54304446f..1b1d63b3634b 100644
+> > --- a/kernel/dma/Kconfig
+> > +++ b/kernel/dma/Kconfig
+> > @@ -23,6 +23,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+> >  	bool
+> >  	select NEED_DMA_MAP_STATE
+> >  
+> > +config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+> > +	bool
+> > +
+> >  config DMA_DIRECT_OPS
+> >  	bool
+> >  	depends on HAS_DMA
 
--- 
-Thanks.
--- Max
+The change looks reasonable to me, so feel free to take your choice of:
+
+    Reviewed-by: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+    Acked-by: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
+
+My thought would be that it would be ideal to fix in 4.19 since that's
+where the breakage is, but having said that I don't have much insight
+into how bad the breakage is for the affected systems.
+
+Thanks,
+    Paul
