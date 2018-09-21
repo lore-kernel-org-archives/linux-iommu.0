@@ -1,53 +1,113 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v8 0/7] Add non-strict mode support for iommu-dma
-Date: Fri, 21 Sep 2018 12:03:52 +0100
-Message-ID: <61fb0f8f-a353-8ab6-f03d-b261da435c94@arm.com>
-References: <cover.1537458163.git.robin.murphy@arm.com>
- <fdfc05a4-283f-3ae2-7928-59e625c8f3b8@huawei.com>
- <50330f32-b051-bdf6-af26-3e24ed133480@arm.com>
+Subject: Re: [PATCH] dma-debug: Check for drivers mapping vmalloc addresses
+Date: Fri, 21 Sep 2018 12:09:50 +0100
+Message-ID: <ef22f1b4-a2c5-25a4-451e-9191b3579a26@arm.com>
+References: <20180920223559.136915-1-swboyd@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <50330f32-b051-bdf6-af26-3e24ed133480@arm.com>
+In-Reply-To: <20180920223559.136915-1-swboyd@chromium.org>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will.deacon@arm.com, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc: linuxarm@huawei.com, huawei.libin@huawei.com, guohanjun@huawei.com
+To: Stephen Boyd <swboyd@chromium.org>, Christoph Hellwig <hch@lst.de>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/09/18 10:29, Robin Murphy wrote:
-> Hi John,
-> 
-> On 2018-09-21 10:20 AM, John Garry wrote:
->> On 20/09/2018 17:10, Robin Murphy wrote:
->>> Hi all,
->>>
->>> Hopefully this is the last spin of the series - I've now dropped my 
->>> light
->>> touch and fixed up all the various prose text, plus implemented the 
->>> proper
->>> quirk support for short-descriptor because it's actually just a trivial
->>> cut-and-paste job.
->>>
->>> Robin.
->>>
->>
->> Hi Robin,
->>
->> JFYI, I'm trying to test this patchset to get some figures and provide 
->> a tested-by tag, but 4/8 seems to rely on "iommu/io-pgtable-arm: Fix 
->> race handling in split_blk_unmap()" - more specifically, it seems to 
->> rely on the version which Will rewrote in your patch review, and I am 
->> not sure on what branch it exists on, if any.
-> 
-> Sorry, I should have said this is based on Will's iommu/devel branch:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/devel 
+Hi Stephen,
 
-FWIW I've now pushed out a complete branch here:
+On 20/09/18 23:35, Stephen Boyd wrote:
+> I recently debugged a DMA mapping oops where a driver was trying to map
+> a buffer returned from request_firmware() with dma_map_single(). Memory
+> returned from request_firmware() is mapped into the vmalloc region and
+> this isn't a valid region to map with dma_map_single() per the DMA
+> documentation's "What memory is DMA'able?" section.
+> 
+> Unfortunately, we don't really check that in the DMA debugging code, so
+> enabling DMA debugging doesn't help catch this problem. Let's add a new
+> DMA debug function to check for a vmalloc address and print a warning if
+> this happens. This makes it a little easier to debug these sorts of
+> problems, instead of seeing odd behavior or crashes when drivers attempt
+> to map the vmalloc space for DMA.
 
-   git://linux-arm.org/linux-rm iommu/non-strict
+Good idea!
 
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>   include/linux/dma-debug.h   |  8 ++++++++
+>   include/linux/dma-mapping.h |  1 +
+>   kernel/dma/debug.c          | 12 ++++++++++++
+>   3 files changed, 21 insertions(+)
+
+However I can't help thinking this looks a little heavyweight for a 
+single specific check. It seems like it would be enough to simply pass 
+the VA as an extra argument to debug_dma_map_page(), since we already 
+have the map_single argument which would indicate when it's valid. What 
+do you reckon?
 
 Robin.
+
+> diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
+> index a785f2507159..5aec2ca8a426 100644
+> --- a/include/linux/dma-debug.h
+> +++ b/include/linux/dma-debug.h
+> @@ -32,6 +32,9 @@ extern void dma_debug_add_bus(struct bus_type *bus);
+>   
+>   extern int dma_debug_resize_entries(u32 num_entries);
+>   
+> +extern void debug_dma_check_vmalloc(struct device *dev, const void *addr,
+> +				    unsigned long len);
+> +
+>   extern void debug_dma_map_page(struct device *dev, struct page *page,
+>   			       size_t offset, size_t size,
+>   			       int direction, dma_addr_t dma_addr,
+> @@ -103,6 +106,11 @@ static inline int dma_debug_resize_entries(u32 num_entries)
+>   	return 0;
+>   }
+>   
+> +static inline void debug_dma_check_vmalloc(struct device *dev, const void *addr,
+> +					   unsigned long len)
+> +{
+> +}
+> +
+>   static inline void debug_dma_map_page(struct device *dev, struct page *page,
+>   				      size_t offset, size_t size,
+>   				      int direction, dma_addr_t dma_addr,
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index eafd6f318e78..a0e67fd5433c 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -232,6 +232,7 @@ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+>   	dma_addr_t addr;
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> +	debug_dma_check_vmalloc(dev, ptr, size);
+>   	addr = ops->map_page(dev, virt_to_page(ptr),
+>   			     offset_in_page(ptr), size,
+>   			     dir, attrs);
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index c007d25bee09..7ee7978868d4 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -1312,6 +1312,18 @@ static void check_sg_segment(struct device *dev, struct scatterlist *sg)
+>   #endif
+>   }
+>   
+> +void debug_dma_check_vmalloc(struct device *dev, const void *addr,
+> +		unsigned long len)
+> +{
+> +	if (unlikely(dma_debug_disabled()))
+> +		return;
+> +
+> +	if (is_vmalloc_addr(addr))
+> +		err_printk(dev, NULL, "DMA-API: device driver maps memory from vmalloc area [addr=%p] [len=%lu]\n",
+> +			   addr, len);
+> +}
+> +EXPORT_SYMBOL(debug_dma_check_vmalloc);
+> +
+>   void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+>   			size_t size, int direction, dma_addr_t dma_addr,
+>   			bool map_single)
+> 
