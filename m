@@ -1,183 +1,54 @@
-From: Stephen Boyd <swboyd@chromium.org>
-Subject: Re: [PATCH] dma-debug: Check for drivers mapping vmalloc addresses
-Date: Fri, 21 Sep 2018 10:39:53 -0700
-Message-ID: <153755159334.119890.13825040401066852769@swboyd.mtv.corp.google.com>
-References: <20180920223559.136915-1-swboyd@chromium.org>
- <ef22f1b4-a2c5-25a4-451e-9191b3579a26@arm.com>
+From: Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/3] xtensa: remove partial support for DMA buffers in
+	high memory
+Date: Fri, 21 Sep 2018 10:42:48 -0700
+Message-ID: <CAMo8BfKAqTf1O3nwYv4n=E14jNNn6r-jQ14FSGBYFTOOO5qg-A@mail.gmail.com>
+References: <20180920171540.2657-1-hch@lst.de>
+	<20180920171540.2657-2-hch@lst.de>
+	<CAMo8BfKyW+3t+L+oQ+nDyEs8KcASPC8CeUP3QPoANQC=XKP9hg@mail.gmail.com>
+	<20180920180833.GB27677@lst.de>
+	<CAMo8BfL5KsmgLLmtdj05NgYOOR8H5LdU46+oA4xw-c-W_0nRfg@mail.gmail.com>
+	<20180921065100.GA14246@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ef22f1b4-a2c5-25a4-451e-9191b3579a26@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180921065100.GA14246-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Michal Nazarewicz <mina86-deATy8a+UHjQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Quoting Robin Murphy (2018-09-21 04:09:50)
-> Hi Stephen,
-> =
+On Thu, Sep 20, 2018 at 11:51 PM, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
+> On Thu, Sep 20, 2018 at 12:08:28PM -0700, Max Filippov wrote:
+>> I'm not familiar with the details of alloc_contig_range implementation, but
+>> I don't see how gfp_mask is used to limit allocation to non-high memory.
+>> So when alloc_contig_range gets start and end PFNs in high memory
+>> (from the CMA region allocated in high memory) it just returns high memory
+>> pages -- that's what I see.
+>
+> I can't see what prevents people from doing a CMA in high memory either,
+> which is bad as except for arm non of the callers handles it completely
+> (and that includes xtensa, more below).
 
-> On 20/09/18 23:35, Stephen Boyd wrote:
-> > I recently debugged a DMA mapping oops where a driver was trying to map
-> > a buffer returned from request_firmware() with dma_map_single(). Memory
-> > returned from request_firmware() is mapped into the vmalloc region and
-> > this isn't a valid region to map with dma_map_single() per the DMA
-> > documentation's "What memory is DMA'able?" section.
-> > =
+So far it was useful and sufficient for us.
 
-> > Unfortunately, we don't really check that in the DMA debugging code, so
-> > enabling DMA debugging doesn't help catch this problem. Let's add a new
-> > DMA debug function to check for a vmalloc address and print a warning if
-> > this happens. This makes it a little easier to debug these sorts of
-> > problems, instead of seeing odd behavior or crashes when drivers attempt
-> > to map the vmalloc space for DMA.
-> =
+> xtensa is partially prepared for
+> it as it can remap in dma_alloc, but it is missing handling in either
+> the ->mmap or ->get_sgtable methods.
 
-> Good idea!
-> =
+I'd rather implement the missing parts or put a WARN there if
+implementing it is too hard or impossible than remove the existing
+partial support.
 
-> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> > ---
-> >   include/linux/dma-debug.h   |  8 ++++++++
-> >   include/linux/dma-mapping.h |  1 +
-> >   kernel/dma/debug.c          | 12 ++++++++++++
-> >   3 files changed, 21 insertions(+)
-> =
-
-> However I can't help thinking this looks a little heavyweight for a =
-
-> single specific check. It seems like it would be enough to simply pass =
-
-> the VA as an extra argument to debug_dma_map_page(), since we already =
-
-> have the map_single argument which would indicate when it's valid. What =
-
-> do you reckon?
-
-I thought about augmenting debug_dma_map_page() but that has another
-problem where those checks are done after the page has been mapped. The
-kernel can oops when it's operating on the incorrect page so we need to
-check things before calling the dma ops.
-
-So I split that check up into pre_map and post_map parts but then that
-seemed like overkill just to check for this vmalloc problem. Here's the
-patch if you're interested. I can make it a little nicer if you think
-it's also worthwhile.
-
----8<----
- include/linux/dma-debug.h   |  8 ++++++++
- include/linux/dma-mapping.h |  3 +++
- kernel/dma/debug.c          | 24 ++++++++++++++++--------
- 3 files changed, 27 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
-index 5aec2ca8a426..3287240a474c 100644
---- a/include/linux/dma-debug.h
-+++ b/include/linux/dma-debug.h
-@@ -35,6 +35,9 @@ extern int dma_debug_resize_entries(u32 num_entries);
- extern void debug_dma_check_vmalloc(struct device *dev, const void *addr,
- 				    unsigned long len);
- =
-
-+extern void debug_dma_pre_map_page(struct device *dev, struct page *page,
-+				   size_t offset, size_t size);
-+
- extern void debug_dma_map_page(struct device *dev, struct page *page,
- 			       size_t offset, size_t size,
- 			       int direction, dma_addr_t dma_addr,
-@@ -111,6 +114,11 @@ static inline void debug_dma_check_vmalloc(struct devi=
-ce *dev, const void *addr,
- {
- }
- =
-
-+static inline void debug_dma_pre_map_page(struct device *dev, struct page =
-*page,
-+					  size_t offset, size_t size)
-+{
-+}
-+
- static inline void debug_dma_map_page(struct device *dev, struct page *pag=
-e,
- 				      size_t offset, size_t size,
- 				      int direction, dma_addr_t dma_addr,
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index a0e67fd5433c..4839bbb4fdc7 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -233,6 +233,8 @@ static inline dma_addr_t dma_map_single_attrs(struct de=
-vice *dev, void *ptr,
- =
-
- 	BUG_ON(!valid_dma_direction(dir));
- 	debug_dma_check_vmalloc(dev, ptr, size);
-+	debug_dma_pre_map_page(dev, virt_to_page(ptr),
-+			       offset_in_page(ptr), size);
- 	addr =3D ops->map_page(dev, virt_to_page(ptr),
- 			     offset_in_page(ptr), size,
- 			     dir, attrs);
-@@ -296,6 +298,7 @@ static inline dma_addr_t dma_map_page_attrs(struct devi=
-ce *dev,
- 	dma_addr_t addr;
- =
-
- 	BUG_ON(!valid_dma_direction(dir));
-+	debug_dma_pre_map_page(dev, page, offset, size);
- 	addr =3D ops->map_page(dev, page, offset, size, dir, attrs);
- 	debug_dma_map_page(dev, page, offset, size, dir, addr, false);
- =
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 7ee7978868d4..dd1ff9f7d783 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1324,6 +1324,22 @@ void debug_dma_check_vmalloc(struct device *dev, con=
-st void *addr,
- }
- EXPORT_SYMBOL(debug_dma_check_vmalloc);
- =
-
-+void debug_dma_pre_map_page(struct device *dev, struct page *page, size_t =
-offset,
-+			    size_t size)
-+{
-+	if (unlikely(dma_debug_disabled()))
-+		return;
-+
-+	check_for_stack(dev, page, offset);
-+
-+	if (!PageHighMem(page)) {
-+		void *addr =3D page_address(page) + offset;
-+
-+		check_for_illegal_area(dev, addr, size);
-+	}
-+}
-+EXPORT_SYMBOL(debug_dma_pre_map_page);
-+
- void debug_dma_map_page(struct device *dev, struct page *page, size_t offs=
-et,
- 			size_t size, int direction, dma_addr_t dma_addr,
- 			bool map_single)
-@@ -1352,14 +1368,6 @@ void debug_dma_map_page(struct device *dev, struct p=
-age *page, size_t offset,
- 	if (map_single)
- 		entry->type =3D dma_debug_single;
- =
-
--	check_for_stack(dev, page, offset);
--
--	if (!PageHighMem(page)) {
--		void *addr =3D page_address(page) + offset;
--
--		check_for_illegal_area(dev, addr, size);
--	}
--
- 	add_dma_entry(entry);
- }
- EXPORT_SYMBOL(debug_dma_map_page);
--- =
-
-Sent by a computer through tubes
+-- 
+Thanks.
+-- Max
