@@ -1,12 +1,15 @@
-From: Jordan Glover via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
-Date: Sat, 22 Sep 2018 11:40:00 +0000
-Message-ID: <8esCLk0ZQi6fiXhFsoyacxQLvxGN9WlaudFeER-vkxD75O5tChbEykaZCvyDoSoP0TLD9ePd12_vDWH-KJsAQraYEW8W_xIvhwD9VpCtBCA=@protonmail.ch>
-Reply-To: Jordan Glover <Golden_Miller83-g/b1ySJe57IkP3XJZ0H8fw@public.gmane.org>
+From: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: Re: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to
+	command line
+Date: Sat, 22 Sep 2018 20:56:58 +0800
+Message-ID: <c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
+References: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1537154831-447363-1-git-send-email-zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,18 +19,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "kyle.d.pelton-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kyle.d.pelton-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-This is already reported at:
-https://bugs.freedesktop.org/show_bug.cgi?id=107783
-
-There is also patch posted which fixes this issue:
-https://lore.kernel.org/patchwork/patch/983690/
-
-Unfortunately that patch wasn't merged yet for unknown reasons.
-
-Jordan
+TWF5IEkgaGF2ZSB5b3VyIGlucHV0PwoKVGhhbmtzLApaaGUKCk9uIDIwMTjlubQwOeaciDE35pel
+IDExOjI3LCB6aGUuaGVAd2luZHJpdmVyLmNvbSB3cm90ZToKPiBGcm9tOiBIZSBaaGUgPHpoZS5o
+ZUB3aW5kcml2ZXIuY29tPgo+Cj4gc2V0dXBfaW9fdGxiX25wYWdlcyBkb2VzIG5vdCBjaGVjayBp
+bnB1dCBhcmd1bWVudCBiZWZvcmUgcGFzc2luZyBpdAo+IHRvIGlzZGlnaXQuIFRoZSBhcmd1bWVu
+dCB3b3VsZCBiZSBhIE5VTEwgcG9pbnRlciBpZiAic3dpb3RsYiIsIHdpdGhvdXQKPiBpdHMgdmFs
+dWUsIGlzIHNldCBpbiBjb21tYW5kIGxpbmUgYW5kIHRodXMgY2F1c2VzIHRoZSBmb2xsb3dpbmcg
+cGFuaWMuCj4KPiBQQU5JQzogZWFybHkgZXhjZXB0aW9uIDB4ZTMgSVAgMTA6ZmZmZmZmZmZiYjli
+OGU5ZiBlcnJvciAwIGNyMiAweDAKPiBbICAgIDAuMDAwMDAwXSBDUFU6IDAgUElEOiAwIENvbW06
+IHN3YXBwZXIgTm90IHRhaW50ZWQgNC4xOS4wLXJjMy15b2N0by1zdGFuZGFyZCsgIzkKPiBbICAg
+IDAuMDAwMDAwXSBSSVA6IDAwMTA6c2V0dXBfaW9fdGxiX25wYWdlcysweGYvMHg5NQo+IC4uLgo+
+IFsgICAgMC4wMDAwMDBdIENhbGwgVHJhY2U6Cj4gWyAgICAwLjAwMDAwMF0gIGRvX2Vhcmx5X3Bh
+cmFtKzB4NTcvMHg4ZQo+IFsgICAgMC4wMDAwMDBdICBwYXJzZV9hcmdzKzB4MjA4LzB4MzIwCj4g
+WyAgICAwLjAwMDAwMF0gID8gcmRpbml0X3NldHVwKzB4MzAvMHgzMAo+IFsgICAgMC4wMDAwMDBd
+ICBwYXJzZV9lYXJseV9vcHRpb25zKzB4MjkvMHgyZAo+IFsgICAgMC4wMDAwMDBdICA/IHJkaW5p
+dF9zZXR1cCsweDMwLzB4MzAKPiBbICAgIDAuMDAwMDAwXSAgcGFyc2VfZWFybHlfcGFyYW0rMHgz
+Ni8weDRkCj4gWyAgICAwLjAwMDAwMF0gIHNldHVwX2FyY2grMHgzMzYvMHg5OWUKPiBbICAgIDAu
+MDAwMDAwXSAgc3RhcnRfa2VybmVsKzB4NmYvMHg0ZTYKPiBbICAgIDAuMDAwMDAwXSAgeDg2XzY0
+X3N0YXJ0X3Jlc2VydmF0aW9ucysweDI0LzB4MjYKPiBbICAgIDAuMDAwMDAwXSAgeDg2XzY0X3N0
+YXJ0X2tlcm5lbCsweDZmLzB4NzIKPiBbICAgIDAuMDAwMDAwXSAgc2Vjb25kYXJ5X3N0YXJ0dXBf
+NjQrMHhhNC8weGIwCj4KPiBUaGlzIHBhdGNoIGFkZHMgYSBjaGVjayB0byBwcmV2ZW50IHRoZSBw
+YW5pYy4KPgo+IFNpZ25lZC1vZmYtYnk6IEhlIFpoZSA8emhlLmhlQHdpbmRyaXZlci5jb20+Cj4g
+Q2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcKPiBDYzoga29ucmFkLndpbGtAb3JhY2xlLmNvbQo+
+IENjOiBoY2hAbHN0LmRlCj4gQ2M6IG0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbQo+IENjOiByb2Jp
+bi5tdXJwaHlAYXJtLmNvbQo+IC0tLQo+ICBrZXJuZWwvZG1hL3N3aW90bGIuYyB8IDUgKysrKysK
+PiAgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+Cj4gZGlmZiAtLWdpdCBhL2tlcm5l
+bC9kbWEvc3dpb3RsYi5jIGIva2VybmVsL2RtYS9zd2lvdGxiLmMKPiBpbmRleCA0ZjhhNmRiLi40
+NmZjMzRlIDEwMDY0NAo+IC0tLSBhL2tlcm5lbC9kbWEvc3dpb3RsYi5jCj4gKysrIGIva2VybmVs
+L2RtYS9zd2lvdGxiLmMKPiBAQCAtMTA5LDYgKzEwOSwxMSBAQCBzdGF0aWMgaW50IGxhdGVfYWxs
+b2M7Cj4gIHN0YXRpYyBpbnQgX19pbml0Cj4gIHNldHVwX2lvX3RsYl9ucGFnZXMoY2hhciAqc3Ry
+KQo+ICB7Cj4gKwlpZiAoIXN0cikgewo+ICsJCXByX2VycigiQ29uZmlnIHN0cmluZyBub3QgcHJv
+dmlkZWRcbiIpOwo+ICsJCXJldHVybiAtRUlOVkFMOwo+ICsJfQo+ICsKPiAgCWlmIChpc2RpZ2l0
+KCpzdHIpKSB7Cj4gIAkJaW9fdGxiX25zbGFicyA9IHNpbXBsZV9zdHJ0b3VsKHN0ciwgJnN0ciwg
+MCk7Cj4gIAkJLyogYXZvaWQgdGFpbCBzZWdtZW50IG9mIHNpemUgPCBJT19UTEJfU0VHU0laRSAq
+LwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUg
+bWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlz
+dHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
