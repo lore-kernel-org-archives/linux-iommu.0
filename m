@@ -1,16 +1,12 @@
-From: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-Subject: Re: [PATCH, for-4.19] dma-mapping: add the missing
-	ARCH_HAS_SYNC_DMA_FOR_CPU_ALL declaration
-Date: Fri, 21 Sep 2018 19:42:20 +0000
-Message-ID: <20180921194218.at7ejkmmiucmawzo@pburton-laptop>
-References: <20180911090049.10747-1-hch@lst.de> <20180921061052.GA13705@lst.de>
+From: Jordan Glover via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
+Date: Sat, 22 Sep 2018 11:40:00 +0000
+Message-ID: <8esCLk0ZQi6fiXhFsoyacxQLvxGN9WlaudFeER-vkxD75O5tChbEykaZCvyDoSoP0TLD9ePd12_vDWH-KJsAQraYEW8W_xIvhwD9VpCtBCA=@protonmail.ch>
+Reply-To: Jordan Glover <Golden_Miller83-g/b1ySJe57IkP3XJZ0H8fw@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180921061052.GA13705-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
-Content-ID: <CFF51622A9D0EB4C959480118C3EFF15-UmvZKMv7CrqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,54 +16,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Kevin Cernekee <cernekee-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Florian Fainelli <f.fainelli-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org" <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "kyle.d.pelton-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kyle.d.pelton-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+Hi,
 
-On Fri, Sep 21, 2018 at 08:10:52AM +0200, Christoph Hellwig wrote:
-> Paul, other mips folks, any comments?
-> 
-> At this point I'm tempted to just move it to 4.20 and add a stable
-> tag given that no one cared so far.
+This is already reported at:
+https://bugs.freedesktop.org/show_bug.cgi?id=107783
 
-Copying Kevin & Florian as maintainers of the affected BMIPS systems in
-case they have anything to add.
+There is also patch posted which fixes this issue:
+https://lore.kernel.org/patchwork/patch/983690/
 
-> On Tue, Sep 11, 2018 at 11:00:49AM +0200, Christoph Hellwig wrote:
-> > The patch adding the infrastructure failed to actually add the symbol
-> > declaration, oops..
-> > 
-> > Fixes: faef87723a ("dma-noncoherent: add a arch_sync_dma_for_cpu_all hook")
-> > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> > ---
-> >  kernel/dma/Kconfig | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> > index 9bd54304446f..1b1d63b3634b 100644
-> > --- a/kernel/dma/Kconfig
-> > +++ b/kernel/dma/Kconfig
-> > @@ -23,6 +23,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
-> >  	bool
-> >  	select NEED_DMA_MAP_STATE
-> >  
-> > +config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
-> > +	bool
-> > +
-> >  config DMA_DIRECT_OPS
-> >  	bool
-> >  	depends on HAS_DMA
+Unfortunately that patch wasn't merged yet for unknown reasons.
 
-The change looks reasonable to me, so feel free to take your choice of:
-
-    Reviewed-by: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-    Acked-by: Paul Burton <paul.burton-8NJIiSa5LzA@public.gmane.org>
-
-My thought would be that it would be ideal to fix in 4.19 since that's
-where the breakage is, but having said that I don't have much insight
-into how bad the breakage is for the affected systems.
-
-Thanks,
-    Paul
+Jordan
