@@ -1,8 +1,7 @@
 From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 09/20] memory: tegra: Adapt to Tegra20 device-tree binding
-	changes
-Date: Mon, 24 Sep 2018 03:41:42 +0300
-Message-ID: <20180924004153.8232-10-digetx@gmail.com>
+Subject: [PATCH v4 10/20] memory: tegra: Read client ID on GART page fault
+Date: Mon, 24 Sep 2018 03:41:43 +0300
+Message-ID: <20180924004153.8232-11-digetx@gmail.com>
 References: <20180924004153.8232-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,98 +21,44 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jon
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The tegra20-mc device-tree binding has been changed, GART has been
-squashed into Memory Controller and now the clock property is mandatory
-for Tegra20, the DT compatible has been changed as well. Adapt driver to
-the DT changes.
+With the device tree binding changes, now Memory Controller has access to
+GART registers. Hence it is now possible to read client ID on GART page
+fault to get information about what memory client causes the fault.
 
 Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/memory/tegra/mc.c | 21 ++++++++-------------
- drivers/memory/tegra/mc.h |  6 ------
- include/soc/tegra/mc.h    |  2 +-
- 3 files changed, 9 insertions(+), 20 deletions(-)
+ drivers/memory/tegra/mc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-index e56862495f36..1b4ceefd82f9 100644
+index 1b4ceefd82f9..5454ffe5b2e0 100644
 --- a/drivers/memory/tegra/mc.c
 +++ b/drivers/memory/tegra/mc.c
-@@ -51,7 +51,7 @@
+@@ -38,6 +38,7 @@
  
- static const struct of_device_id tegra_mc_of_match[] = {
- #ifdef CONFIG_ARCH_TEGRA_2x_SOC
--	{ .compatible = "nvidia,tegra20-mc", .data = &tegra20_mc_soc },
-+	{ .compatible = "nvidia,tegra20-mc-gart", .data = &tegra20_mc_soc },
- #endif
- #ifdef CONFIG_ARCH_TEGRA_3x_SOC
- 	{ .compatible = "nvidia,tegra30-mc", .data = &tegra30_mc_soc },
-@@ -638,24 +638,19 @@ static int tegra_mc_probe(struct platform_device *pdev)
- 	if (IS_ERR(mc->regs))
- 		return PTR_ERR(mc->regs);
+ #define MC_ERR_ADR 0x0c
  
-+	mc->clk = devm_clk_get(&pdev->dev, "mc");
-+	if (IS_ERR(mc->clk)) {
-+		dev_err(&pdev->dev, "failed to get MC clock: %ld\n",
-+			PTR_ERR(mc->clk));
-+		return PTR_ERR(mc->clk);
-+	}
++#define MC_GART_ERROR_REQ		0x30
+ #define MC_DECERR_EMEM_OTHERS_STATUS	0x58
+ #define MC_SECURITY_VIOLATION_STATUS	0x74
+ 
+@@ -575,8 +576,15 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ 			break;
+ 
+ 		case MC_INT_INVALID_GART_PAGE:
+-			dev_err_ratelimited(mc->dev, "%s\n", error);
+-			continue;
++			reg = MC_GART_ERROR_REQ;
++			value = mc_readl(mc, reg);
 +
- #ifdef CONFIG_ARCH_TEGRA_2x_SOC
- 	if (mc->soc == &tegra20_mc_soc) {
--		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--		mc->regs2 = devm_ioremap_resource(&pdev->dev, res);
--		if (IS_ERR(mc->regs2))
--			return PTR_ERR(mc->regs2);
--
- 		isr = tegra20_mc_irq;
- 	} else
- #endif
- 	{
--		mc->clk = devm_clk_get(&pdev->dev, "mc");
--		if (IS_ERR(mc->clk)) {
--			dev_err(&pdev->dev, "failed to get MC clock: %ld\n",
--				PTR_ERR(mc->clk));
--			return PTR_ERR(mc->clk);
--		}
--
- 		err = tegra_mc_setup_latency_allowance(mc);
- 		if (err < 0) {
- 			dev_err(&pdev->dev, "failed to setup latency allowance: %d\n",
-diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
-index 01065f12ebeb..9856f085e487 100644
---- a/drivers/memory/tegra/mc.h
-+++ b/drivers/memory/tegra/mc.h
-@@ -26,18 +26,12 @@
++			id = (value >> 1) & mc->soc->client_id_mask;
++			desc = error_names[2];
++
++			if (value & BIT(0))
++				direction = "write";
++			break;
  
- static inline u32 mc_readl(struct tegra_mc *mc, unsigned long offset)
- {
--	if (mc->regs2 && offset >= 0x24)
--		return readl(mc->regs2 + offset - 0x3c);
--
- 	return readl(mc->regs + offset);
- }
- 
- static inline void mc_writel(struct tegra_mc *mc, u32 value,
- 			     unsigned long offset)
- {
--	if (mc->regs2 && offset >= 0x24)
--		return writel(value, mc->regs2 + offset - 0x3c);
--
- 	writel(value, mc->regs + offset);
- }
- 
-diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
-index b43f37fea096..db5bfdf589b4 100644
---- a/include/soc/tegra/mc.h
-+++ b/include/soc/tegra/mc.h
-@@ -144,7 +144,7 @@ struct tegra_mc_soc {
- struct tegra_mc {
- 	struct device *dev;
- 	struct tegra_smmu *smmu;
--	void __iomem *regs, *regs2;
-+	void __iomem *regs;
- 	struct clk *clk;
- 	int irq;
- 
+ 		case MC_INT_SECURITY_VIOLATION:
+ 			reg = MC_SECURITY_VIOLATION_STATUS;
 -- 
 2.19.0
