@@ -1,59 +1,81 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 04/20] iommu: Introduce iotlb_sync_map callback
-Date: Mon, 24 Sep 2018 12:06:28 +0200
-Message-ID: <20180924100628.GF21032@ulmo>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 05/20] iommu/tegra: gart: Optimize mapping / unmapping
+	performance
+Date: Mon, 24 Sep 2018 12:07:22 +0200
+Message-ID: <20180924100722.GG21032@ulmo>
 References: <20180924004153.8232-1-digetx@gmail.com>
- <20180924004153.8232-5-digetx@gmail.com>
+	<20180924004153.8232-6-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xkXJwpr35CY/Lc3I"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180924004153.8232-5-digetx@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Osipenko <digetx@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============5086462325038407650=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180924004153.8232-6-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---xkXJwpr35CY/Lc3I
+--===============5086462325038407650==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="RMedoP2+Pr6Rq0N2"
+Content-Disposition: inline
+
+
+--RMedoP2+Pr6Rq0N2
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 24, 2018 at 03:41:37AM +0300, Dmitry Osipenko wrote:
-> Introduce iotlb_sync_map() callback that is invoked in the end of
-> iommu_map(). This new callback allows IOMMU drivers to avoid syncing
-> after mapping of each contiguous chunk and sync only when the whole
-> mapping is completed, optimizing performance of the mapping operation.
+On Mon, Sep 24, 2018 at 03:41:38AM +0300, Dmitry Osipenko wrote:
+> Currently GART writes one page entry at a time. More optimal would be to
+> aggregate the writes and flush BUS buffer in the end, this gives map/unmap
+> 10-40% performance boost (depending on size of mapping) in comparison to
+> flushing after each page entry update.
 >=20
-> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/iommu/iommu.c | 8 ++++++--
->  include/linux/iommu.h | 1 +
->  2 files changed, 7 insertions(+), 2 deletions(-)
+>  drivers/iommu/tegra-gart.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 
-Reviewed-by: Thierry Reding <treding@nvidia.com>
+10-40% sounds really nice, great stuff:
 
---xkXJwpr35CY/Lc3I
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+--RMedoP2+Pr6Rq0N2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluotyQACgkQ3SOs138+
-s6Hu5Q/9Fao/qs6ZsPgCpKGQ5rCOFkk1DdOsQluo4ar889JUxblUq/sDiCIny3Cp
-RVoi8a9nZldE1uXIhUkJ8LMer8qZYNNfqTVs2VkB6NSBLJBuxnt1eZTK3mmSXPnj
-pWvuL5tBIVQmYQyp3qkeYdHkSFAoG7d1vq+7IgSduEBfCvo0Zw6b+5eyuAgQxVKc
-ibR+KRfWRK+YGrt28NkjfXrmEy5nCbqvxa3exs/LnGohehpRbl+7fPLSkEGMC/lW
-GuESgYxfBG67Zo1MDDFPiCp2JL5pqfgXE5dI4vstx68oPEULfdlaxfzHTTck+OBx
-uTRt5kImF4d9a7oD0XUplbo01bP7KEnBdDeEw2vNHXGjvbmqYxYqvaAb7I7iKbWV
-V5dXp3H8yG/o+5e8m9fh8NrLUmAMfu+LOGMGksZirtWLnLh6JfjqmM+zWgW/nHUv
-LjfEJCYH7GzH31BPPmI8e3PUmQByo1RZx+hUWaPyLdAmXsVCdlqI8BGeO8a82Td4
-4D1M6Gm2qguonHPQiJbYVzTff7PC4Axonb7JtYeDZlSjcQKjWZjAvUrQ4OQvxJa7
-k1Al+5C2Wau4UwsKoQECtYolEdEhCcSUFTNnhonUd8epAPB34z7RuIyo6jof6Bxm
-Sgh49Of1Rimye14XhJ7wFhjMLFgVFOElRM/5mbVoNbXitp6H8Wc=
-=Y+NX
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluot1kACgkQ3SOs138+
+s6GV3RAAp1rhOAm6sQZ32r7t5gQnDun3nb584/yANQ1Tkk/+d6uI4aQOwy09ittA
+NYLbF6UPJLyVA/U2JpOSPu7ZK1trJ3+8gWWdq+33KQv4mb/2xI1wGSEq2OpIs+3D
+hnj5iMP6AHB+EafsNUccvebGmkN1LvAVvK2oPSTDKVtH//0fFdMQqqlWMWKqxtlD
+WtTYKGeMnBwdezhtfS63+83og03QnTb4HLLh8RHZNyJZT7/HpUY5llOQnYy1bae0
+Q/L1jN/NQxekxbe2GtW5pmg6eZa0tW0nnzW2o7yfbB459cxyk8CYta+5JCfd0EEj
+6hBz3akItwNZDQwmLqumDBuaz02LlKDMgan/HWz0ZRxRa2kYqJCKdw10ReU15JWy
+AEWkzzqBVJzVvb1lIXfwl2hpNA2Z+ipkCZ5Atl+ND7C1wPfQQV8ddNblLwgfDYkv
+weopJzt8UwTWhO6TJ7t0HjSNEYpH0mxp7eWh0sYQ2UJaWY+Q25whHJU6tWQu4XWT
+LDHP83dFmjiJ4qkPZvkAjEJUMq7HlEfkDoAzNKM5ps8gjOYrvfaAW7dUy4bPDf6X
+N74+6M9DkgEwSp4yA4+J4/8ZOATDmkPu0MMlJDJe26rFTKLLOcsjr9M7yYrXIeu/
+13FfhXSNXC2V823XNJhLVoP8nQNM1ZRWjlmRqrV4Ka7er+kYwSs=
+=bqRd
 -----END PGP SIGNATURE-----
 
---xkXJwpr35CY/Lc3I--
+--RMedoP2+Pr6Rq0N2--
+
+--===============5086462325038407650==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5086462325038407650==--
