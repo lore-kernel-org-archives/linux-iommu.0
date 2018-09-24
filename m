@@ -1,81 +1,86 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v4 09/20] memory: tegra: Adapt to Tegra20 device-tree
- binding changes
-Date: Mon, 24 Sep 2018 16:22:42 +0300
-Message-ID: <bca7c87a-5f86-4a98-bb6b-411c641a0e80@gmail.com>
-References: <20180924004153.8232-1-digetx@gmail.com>
- <20180924004153.8232-10-digetx@gmail.com> <20180924100205.GB21032@ulmo>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 0/7] Add non-strict mode support for iommu-dma
+Date: Mon, 24 Sep 2018 15:35:20 +0100
+Message-ID: <796e20eb-a0bd-f559-6cf2-f97fddf0114e@huawei.com>
+References: <cover.1537458163.git.robin.murphy@arm.com>
+	<fdfc05a4-283f-3ae2-7928-59e625c8f3b8@huawei.com>
+	<50330f32-b051-bdf6-af26-3e24ed133480@arm.com>
+	<61fb0f8f-a353-8ab6-f03d-b261da435c94@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180924100205.GB21032@ulmo>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <61fb0f8f-a353-8ab6-f03d-b261da435c94-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: chenxiang <chenxiang66-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, huawei.libin-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 9/24/18 1:02 PM, Thierry Reding wrote:
-> On Mon, Sep 24, 2018 at 03:41:42AM +0300, Dmitry Osipenko wrote:
->> The tegra20-mc device-tree binding has been changed, GART has been
->> squashed into Memory Controller and now the clock property is mandatory
->> for Tegra20, the DT compatible has been changed as well. Adapt driver to
->> the DT changes.
+On 21/09/2018 12:03, Robin Murphy wrote:
+> On 21/09/18 10:29, Robin Murphy wrote:
+>> Hi John,
 >>
->> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
->> ---
->>   drivers/memory/tegra/mc.c | 21 ++++++++-------------
->>   drivers/memory/tegra/mc.h |  6 ------
->>   include/soc/tegra/mc.h    |  2 +-
->>   3 files changed, 9 insertions(+), 20 deletions(-)
+>> On 2018-09-21 10:20 AM, John Garry wrote:
+>>> On 20/09/2018 17:10, Robin Murphy wrote:
+>>>> Hi all,
+>>>>
+>>>> Hopefully this is the last spin of the series - I've now dropped my
+>>>> light
+>>>> touch and fixed up all the various prose text, plus implemented the
+>>>> proper
+>>>> quirk support for short-descriptor because it's actually just a trivial
+>>>> cut-and-paste job.
+>>>>
+>>>> Robin.
+>>>>
+>>>
+>>> Hi Robin,
+>>>
+>>> JFYI, I'm trying to test this patchset to get some figures and
+>>> provide a tested-by tag, but 4/8 seems to rely on
+>>> "iommu/io-pgtable-arm: Fix race handling in split_blk_unmap()" - more
+>>> specifically, it seems to rely on the version which Will rewrote in
+>>> your patch review, and I am not sure on what branch it exists on, if
+>>> any.
 >>
->> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
->> index e56862495f36..1b4ceefd82f9 100644
->> --- a/drivers/memory/tegra/mc.c
->> +++ b/drivers/memory/tegra/mc.c
->> @@ -51,7 +51,7 @@
->>   
->>   static const struct of_device_id tegra_mc_of_match[] = {
->>   #ifdef CONFIG_ARCH_TEGRA_2x_SOC
->> -	{ .compatible = "nvidia,tegra20-mc", .data = &tegra20_mc_soc },
->> +	{ .compatible = "nvidia,tegra20-mc-gart", .data = &tegra20_mc_soc },
-> 
-> Technically we now regress because we no longer support the older device
-> tree bindings. I know that it doesn't really matter because this driver
-> doesn't really do much interesting yet other than reporting memory
-> access violations, but if that's enough to warrant a change of the
-> compatible string, then I think we also need to preserve compatibility
-> in the code.
-> 
-> That said, I think compatibility would be easier to preserve if we stuck
-> with the old compatible string and used a "reg-names" property to
-> specify which version of the binding we're referring to.
-> 
-> For example, we could have:
-> 
-> 	memory-controller@7000f000 {
-> 		compatible = "nvidia,tegra20-mc";
-> 		reg = <0x7000f000 0x024
-> 		       0x7000f03c 0x3c4>;
-> 		...
-> 	};
-> 
-> for the old binding and:
-> 
-> 	memory-controller@7000f000 {
-> 		compatible = "nvidia,tegra20-mc";
-> 		reg = <0x7000f000 0x00000400>,
-> 		      <0x58000000 0x02000000>;
-> 		reg-names = "mc", "gart";
-> 		...
-> 	};
-> 
-> for the new binding. The driver can then easily check for the existence
-> of the reg-names property and take the legacy or new code paths.
+>> Sorry, I should have said this is based on Will's iommu/devel branch:
+>>
+>> https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=iommu/devel
+>
+>
+> FWIW I've now pushed out a complete branch here:
+>
+>   git://linux-arm.org/linux-rm iommu/non-strict
+>
 
-There is no problem with keeping compatibility for newer kernels with the older binding, 
-it just not worth the effort. The real problem is keeping compatibility of older kernels 
-with the new binding, the older kernels won't care about the reg-names and will treat GART 
-registers as the second registers bank of the Memory Controller. Unfortunately I don't see 
-how your suggestion is supposed to help with the problem.
+Cheers
+
+So for my network test scenario I was getting a boost @ 250K vs 160K 
+packet(s)/second with strict off/on
+
+For NVMe single disk performance, I was getting a boost @ 582K vs 370K 
+IOPS with strict off/on.
+
+I wasn't seeing such a boost for other storage controller scenario 
+(that's with 6 SSDs), with 776K vs 740K IOPS for strict off/on, but SMMU 
+off was ~800K IOPS.
+
+FWIW:
+Tested-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+
+Thanks,
+John
+
+>
+> Robin.
+>
+> .
+>
