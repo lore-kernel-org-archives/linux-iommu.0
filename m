@@ -1,49 +1,40 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 17/20] iommu/tegra: gart: Prepend error/debug messages
-	with "GART:"
-Date: Mon, 24 Sep 2018 21:09:36 +0300
-Message-ID: <32307503-bbd5-6ccc-39bd-b956465a9977@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v4 12/20] iommu/tegra: gart: Integrate with Memory
+ Controller driver
+Date: Mon, 24 Sep 2018 21:22:59 +0300
+Message-ID: <b2d283fc-ff52-3166-cd70-42f9cba93948@gmail.com>
 References: <20180924004153.8232-1-digetx@gmail.com>
-	<20180924004153.8232-18-digetx@gmail.com> <20180924105714.GN21032@ulmo>
+ <20180924004153.8232-13-digetx@gmail.com> <20180924102322.GI21032@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180924105714.GN21032@ulmo>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180924102322.GI21032@ulmo>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 9/24/18 1:57 PM, Thierry Reding wrote:
-> On Mon, Sep 24, 2018 at 03:41:50AM +0300, Dmitry Osipenko wrote:
->> GART became a part of Memory Controller, hence now the drivers device
->> is Memory Controller and not GART. As a result all printed messages are
->> prepended with the "tegra-mc 7000f000.memory-controller:", so let's
->> prepend GART's messages with "GART:" in order to differentiate them
->> from the MC.
+On 9/24/18 1:23 PM, Thierry Reding wrote:
+> On Mon, Sep 24, 2018 at 03:41:45AM +0300, Dmitry Osipenko wrote:
+>> The device-tree binding has been changed. There is no separate GART device
+>> anymore, it is squashed into the Memory Controller. Integrate GART module
+>> with the MC in a way it is done for the SMMU of Tegra30+.
 >>
->> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 >> ---
->>  drivers/iommu/tegra-gart.c | 36 ++++++++++++++++++------------------
->>  1 file changed, 18 insertions(+), 18 deletions(-)
+>>  drivers/iommu/Kconfig      |  1 +
+>>  drivers/iommu/tegra-gart.c | 98 ++++++++++----------------------------
+>>  drivers/memory/tegra/mc.c  | 41 ++++++++++++++++
+>>  include/soc/tegra/mc.h     | 27 +++++++++++
+>>  4 files changed, 93 insertions(+), 74 deletions(-)
 > 
-> There's a macro called dev_fmt (similar to pr_fmt) to do this for dev_*
-> printers. Also I think this would be more readable if the prefix was
-> "gart: " rather than "GART: ". At least from my personal experience I
-> get easily distracted by all-caps words in logs, because they usually
-> indicate something that requires immediate attention. I think it's
-> better to leave that up to higher level mechanisms, such as the color
-> keying of messages based on level by tools like dmesg.
+> I think this could technically have been two patches, but since they'd
+> have a compile-time dependency either way they need to be applied in the
+> correct order, so some coordination between IOMMU and Tegra trees is
+> going to have to happen anyway and might as well just stick this into a
+> single patch.
 
-The dev_fmt is a new thing, thank you for pointing at it. I'll try to
-switch to dev_fmt and lower the text case.
+I assume that Joerg will take the whole series once it's ready (no?),
+hence your ACK will be needed here and in other patches.
