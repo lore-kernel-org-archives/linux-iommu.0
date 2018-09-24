@@ -1,77 +1,87 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 11/20] memory: tegra: Use of_device_get_match_data()
-Date: Mon, 24 Sep 2018 12:13:54 +0200
-Message-ID: <20180924101354.GH21032@ulmo>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 12/20] iommu/tegra: gart: Integrate with Memory
+	Controller driver
+Date: Mon, 24 Sep 2018 12:23:22 +0200
+Message-ID: <20180924102322.GI21032@ulmo>
 References: <20180924004153.8232-1-digetx@gmail.com>
- <20180924004153.8232-12-digetx@gmail.com>
+	<20180924004153.8232-13-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="zq44+AAfm4giZpo5"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180924004153.8232-12-digetx@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Osipenko <digetx@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============1780108928371750234=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180924004153.8232-13-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---zq44+AAfm4giZpo5
+--===============1780108928371750234==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="9iyR+p8Z2cn535Lj"
+Content-Disposition: inline
+
+
+--9iyR+p8Z2cn535Lj
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 24, 2018 at 03:41:44AM +0300, Dmitry Osipenko wrote:
-> There is no need to match device with the DT node since it was already
-> matched, use of_device_get_match_data() helper to get the match-data.
+On Mon, Sep 24, 2018 at 03:41:45AM +0300, Dmitry Osipenko wrote:
+> The device-tree binding has been changed. There is no separate GART device
+> anymore, it is squashed into the Memory Controller. Integrate GART module
+> with the MC in a way it is done for the SMMU of Tegra30+.
 >=20
-> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/memory/tegra/mc.c | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-> index 5454ffe5b2e0..cdc33f93cf7c 100644
-> --- a/drivers/memory/tegra/mc.c
-> +++ b/drivers/memory/tegra/mc.c
-> @@ -11,8 +11,7 @@
->  #include <linux/interrupt.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> -#include <linux/of.h>
-> -#include <linux/platform_device.h>
+>  drivers/iommu/Kconfig      |  1 +
+>  drivers/iommu/tegra-gart.c | 98 ++++++++++----------------------------
+>  drivers/memory/tegra/mc.c  | 41 ++++++++++++++++
+>  include/soc/tegra/mc.h     | 27 +++++++++++
+>  4 files changed, 93 insertions(+), 74 deletions(-)
 
-It's better not to remove these two because the code still uses
-functions declared in them. If ever we were going to remove code using
-linux/of_device.h and then remove the linux/of_device.h include, we'd
-break the build and have to reintroduce the includes.
-
-The same would happen if linux/of_device.h were ever to stop including
-linux/platform_device.h or linux/of.h. That may sound unlikely, but it
-has happened in the past with other includes. It can also happen that
-some restructuring takes place in some headers that is not so obvious
-and then things can still start falling apart miles away.
+I think this could technically have been two patches, but since they'd
+have a compile-time dependency either way they need to be applied in the
+correct order, so some coordination between IOMMU and Tegra trees is
+going to have to happen anyway and might as well just stick this into a
+single patch.
 
 Thierry
 
---zq44+AAfm4giZpo5
+--9iyR+p8Z2cn535Lj
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluouOIACgkQ3SOs138+
-s6Gytg/+Ndah+5wwzzGFfwm+SNSWKxw4eueN/zWNhErt5qC9Q7Nli7pqMy4fYrBs
-LTiZd4Xlr/g5UztazLUbbSM0Dl6QFCKZktGlhmf/P5qh/Kaq0dGZm0aHAeaeaoFO
-PnHtGxBrwjf8SOR5XGXnfVrG+yqqh8EXtDWrrn0GoiNkd7Rmg7q9S/f4nc4XVjIZ
-jHe7oiqRce0fmCOui0nGcfDDkQRDlbLCd6EC+jp3XmWIm2Uh9cYi+HljtlTBlM09
-R+tSXfbev4WT1BbqYjGEojXM5MF8/4RkM5zheCKitoJ7laLx9G6cGQKHwNjtD5I9
-byNR9lJDB+G/3WFdk0GgVEQaopN5lRVgSZdm0ESv2qJ8WTWt3Rr8wY/vRf3NA0Mu
-+wYC1gIRT/H0Ipil6no6m3kveRc9Rvnw4t/APmM/hkzs4FC596z5s622eqwl7uaj
-xJI7IQfHiOFGQ7zfYk+2l7JQcyD6j6htGQ1kGUkmXcRlZwHNzQ+XIiEBIoRh58RP
-gQlNgBU+wM4ESeFRFmrSzQSh85RWT6PTSs05Ydaqq8LVdLVXc1exbk/+JsSbSVzb
-DuXOifJSkFw2N62kZJ3t7vNqWrfdo5uZuOXOMQ31UAjx1uqSH1S/msQzpEESyR8l
-UQn0zfTjcczs5uvqYUonUhVjESZ3RoqxAohWg+Ru+6DtV6HBEmg=
-=quUM
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluouxoACgkQ3SOs138+
+s6FIqRAAv1YXOG+5wSjtW+2I5DBn924yW8YAZ9x/j72Pf+1bNLaZ+o/zLBl82aHC
+PVVQMLjOCNSoozNRra27knqbUB/bogRvRQQAyjk01LeQzigTtJx3Gp5I1M+kKrzo
+jvDKUm3roJdHvJrAZewWwM5tEe7ODQhZ6dHW3gk9jBDcen8Qc4gacm4wKlb1z4PS
+LctjQf5QiYvhx6iPgW1pWRQG79TpHuG6SS1jHfVaw5fSGUDbco6asxqTLwdj6ZBc
+fI/k0faAW652NxxoQe7aq11yE41bZu+6oYwWGhT7F/ABwJKdDCBH14Bgwz5Fk5pq
+6onUtt42xw1wR9OwjtGv6zlVcZQcsQ7Fn/X2TQ3M/Fu/aY74u/DsLNeeqEZI0xsL
+I1+F4R8WCTmAqAOgdq7TeCJGUJRg43IykYYeJ9U6nXFyUhhpafza9uZXx/1f9OpF
+ntrM6S+nhRCyccytdYxFq6CKES8O6sPd7ER21a8DqkuIwQoe3/KwovTRoQU5fQrh
+0+XTaGTdo6PbWTxkkl7qJNZO+xcqn/ZickKtCZbbIZ334qxd94g7/R1N9VSIGul7
+IGmgngRQzQcEhCzK6JWClfWMBKnvuuflY6S60j+0o3WJiC6yJzo4pgpVDWqxRsc7
+iAyiVGx0VSzjhciA7VsPT5mwntGloKaUjD4kfO0UzuEeyhjgAt0=
+=wIFq
 -----END PGP SIGNATURE-----
 
---zq44+AAfm4giZpo5--
+--9iyR+p8Z2cn535Lj--
+
+--===============1780108928371750234==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1780108928371750234==--
