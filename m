@@ -1,76 +1,285 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 18/20] iommu/tegra: gart: Don't detach devices from
-	inactive domains
-Date: Mon, 24 Sep 2018 03:41:51 +0300
-Message-ID: <20180924004153.8232-19-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v4 19/20] iommu/tegra: gart: Simplify clients-tracking code
+Date: Mon, 24 Sep 2018 03:41:52 +0300
+Message-ID: <20180924004153.8232-20-digetx@gmail.com>
 References: <20180924004153.8232-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180924004153.8232-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180924004153.8232-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-There could be unlimited number of allocated domains, but only one domain
-can be active at a time. Hence devices must be detached only from the
-active domain.
+GART is a simple IOMMU provider that has single address space. There is
+no need to setup global clients list and manage it for tracking of the
+active domain, hence lot's of code could be safely removed and replaced
+with a simpler alternative.
 
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/iommu/tegra-gart.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/tegra-gart.c | 157 +++++++++----------------------------
+ 1 file changed, 39 insertions(+), 118 deletions(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 284cddf90888..306e9644a676 100644
+index 306e9644a676..7182445c3b76 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -167,7 +167,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+@@ -19,7 +19,6 @@
+ 
+ #include <linux/io.h>
+ #include <linux/iommu.h>
+-#include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+@@ -42,30 +41,20 @@
+ #define GART_PAGE_MASK						\
+ 	(~(GART_PAGE_SIZE - 1) & ~GART_ENTRY_PHYS_ADDR_VALID)
+ 
+-struct gart_client {
+-	struct device		*dev;
+-	struct list_head	list;
+-};
+-
+ struct gart_device {
+ 	void __iomem		*regs;
+ 	u32			*savedata;
+ 	u32			page_count;	/* total remappable size */
+ 	dma_addr_t		iovmm_base;	/* offset to vmm_area */
+ 	spinlock_t		pte_lock;	/* for pagetable */
+-	struct list_head	client;
+-	spinlock_t		client_lock;	/* for client list */
++	spinlock_t		dom_lock;	/* for active domain */
++	unsigned int		active_devices;	/* number of active devices */
+ 	struct iommu_domain	*active_domain;	/* current active domain */
+ 	struct device		*dev;
+ 
+ 	struct iommu_device	iommu;		/* IOMMU Core handle */
+ };
+ 
+-struct gart_domain {
+-	struct iommu_domain domain;		/* generic domain handle */
+-	struct gart_device *gart;		/* link to gart device   */
+-};
+-
+ static struct gart_device *gart_handle; /* unique for a system */
+ 
+ static bool gart_debug;
+@@ -73,11 +62,6 @@ static bool gart_debug;
+ #define GART_PTE(_pfn)						\
+ 	(GART_ENTRY_PHYS_ADDR_VALID | ((_pfn) << PAGE_SHIFT))
+ 
+-static struct gart_domain *to_gart_domain(struct iommu_domain *dom)
+-{
+-	return container_of(dom, struct gart_domain, domain);
+-}
+-
+ /*
+  * Any interaction between any block on PPSB and a block on APB or AHB
+  * must have these read-back to ensure the APB/AHB bus transaction is
+@@ -166,128 +150,69 @@ static inline bool gart_iova_range_valid(struct gart_device *gart,
+ static int gart_iommu_attach_dev(struct iommu_domain *domain,
  				 struct device *dev)
  {
- 	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+ 	struct gart_device *gart = gart_handle;
+-	struct gart_client *client, *c;
+-	int err = 0;
+-
+-	client = kzalloc(sizeof(*c), GFP_KERNEL);
+-	if (!client)
+-		return -ENOMEM;
+-	client->dev = dev;
+-
+-	spin_lock(&gart->client_lock);
+-	list_for_each_entry(c, &gart->client, list) {
+-		if (c->dev == dev) {
+-			dev_err(gart->dev, "GART: %s is already attached\n",
+-				dev_name(dev));
+-			err = -EINVAL;
+-			goto fail;
+-		}
+-	}
+-	if (gart->active_domain && gart->active_domain != domain) {
+-		dev_err(gart->dev,
+-			"GART: Only one domain can be active at a time\n");
+-		err = -EINVAL;
+-		goto fail;
+-	}
+-	gart->active_domain = domain;
+-	gart_domain->gart = gart;
+-	list_add(&client->list, &gart->client);
+-	spin_unlock(&gart->client_lock);
+-	dev_dbg(gart->dev, "GART: Attached %s\n", dev_name(dev));
+-	return 0;
++	int ret = 0;
+ 
+-fail:
+-	kfree(client);
+-	spin_unlock(&gart->client_lock);
+-	return err;
+-}
++	spin_lock(&gart->dom_lock);
+ 
+-static void __gart_iommu_detach_dev(struct iommu_domain *domain,
+-				    struct device *dev)
+-{
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
+-	struct gart_client *c;
+-
+-	list_for_each_entry(c, &gart->client, list) {
+-		if (c->dev == dev) {
+-			list_del(&c->list);
+-			kfree(c);
+-			if (list_empty(&gart->client)) {
+-				gart->active_domain = NULL;
+-				gart_domain->gart = NULL;
+-			}
+-			dev_dbg(gart->dev, "GART: Detached %s\n",
+-				dev_name(dev));
+-			return;
+-		}
++	if (gart->active_domain && gart->active_domain != domain) {
++		ret = -EBUSY;
++	} else if (dev->archdata.iommu != domain) {
++		dev->archdata.iommu = domain;
++		gart->active_domain = domain;
++		gart->active_devices++;
+ 	}
+ 
+-	dev_err(gart->dev, "GART: Couldn't find %s to detach\n",
+-		dev_name(dev));
++	spin_unlock(&gart->dom_lock);
++
++	return ret;
+ }
+ 
+ static void gart_iommu_detach_dev(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
 -	struct gart_device *gart = gart_domain->gart;
 +	struct gart_device *gart = gart_handle;
- 	struct gart_client *client, *c;
- 	int err = 0;
++
++	spin_lock(&gart->dom_lock);
  
-@@ -192,6 +192,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
- 		goto fail;
- 	}
- 	gart->active_domain = domain;
-+	gart_domain->gart = gart;
- 	list_add(&client->list, &gart->client);
- 	spin_unlock(&gart->client_lock);
- 	dev_dbg(gart->dev, "GART: Attached %s\n", dev_name(dev));
-@@ -214,8 +215,10 @@ static void __gart_iommu_detach_dev(struct iommu_domain *domain,
- 		if (c->dev == dev) {
- 			list_del(&c->list);
- 			kfree(c);
--			if (list_empty(&gart->client))
-+			if (list_empty(&gart->client)) {
- 				gart->active_domain = NULL;
-+				gart_domain->gart = NULL;
-+			}
- 			dev_dbg(gart->dev, "GART: Detached %s\n",
- 				dev_name(dev));
- 			return;
-@@ -253,7 +256,6 @@ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
- 	if (!gart_domain)
+-	spin_lock(&gart->client_lock);
+-	__gart_iommu_detach_dev(domain, dev);
+-	spin_unlock(&gart->client_lock);
++	if (dev->archdata.iommu == domain) {
++		dev->archdata.iommu = NULL;
++
++		if (--gart->active_devices == 0)
++			gart->active_domain = NULL;
++	}
++
++	spin_unlock(&gart->dom_lock);
+ }
+ 
+ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
+ {
+-	struct gart_domain *gart_domain;
+-	struct gart_device *gart;
++	struct gart_device *gart = gart_handle;
++	struct iommu_domain *domain;
+ 
+ 	if (type != IOMMU_DOMAIN_UNMANAGED)
  		return NULL;
  
--	gart_domain->gart = gart;
- 	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
- 	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
+-	gart = gart_handle;
+-	if (!gart)
+-		return NULL;
+-
+-	gart_domain = kzalloc(sizeof(*gart_domain), GFP_KERNEL);
+-	if (!gart_domain)
+-		return NULL;
+-
+-	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
+-	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
++	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
++	if (domain) {
++		domain->geometry.aperture_start = gart->iovmm_base;
++		domain->geometry.aperture_end = gart->iovmm_base +
  					gart->page_count * GART_PAGE_SIZE - 1;
+-	gart_domain->domain.geometry.force_aperture = true;
++		domain->geometry.force_aperture = true;
++	}
+ 
+-	return &gart_domain->domain;
++	return domain;
+ }
+ 
+ static void gart_iommu_domain_free(struct iommu_domain *domain)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
+-
+-	if (gart) {
+-		spin_lock(&gart->client_lock);
+-		if (!list_empty(&gart->client)) {
+-			struct gart_client *c, *tmp;
+-
+-			list_for_each_entry_safe(c, tmp, &gart->client, list)
+-				__gart_iommu_detach_dev(domain, c->dev);
+-		}
+-		spin_unlock(&gart->client_lock);
+-	}
+-
+-	kfree(gart_domain);
++	kfree(domain);
+ }
+ 
+ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 			  phys_addr_t pa, size_t bytes, int prot)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
++	struct gart_device *gart = gart_handle;
+ 	unsigned long flags;
+ 	unsigned long pfn;
+ 	unsigned long pte;
+@@ -318,8 +243,7 @@ static int gart_iommu_map(struct iommu_domain *domain, unsigned long iova,
+ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ 			       size_t bytes)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
++	struct gart_device *gart = gart_handle;
+ 	unsigned long flags;
+ 
+ 	if (!gart_iova_range_valid(gart, iova, bytes))
+@@ -334,8 +258,7 @@ static size_t gart_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
+ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
+ 					   dma_addr_t iova)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
++	struct gart_device *gart = gart_handle;
+ 	unsigned long pte;
+ 	phys_addr_t pa;
+ 	unsigned long flags;
+@@ -394,8 +317,7 @@ static int gart_iommu_of_xlate(struct device *dev,
+ 
+ static void gart_iommu_sync(struct iommu_domain *domain)
+ {
+-	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
++	struct gart_device *gart = gart_handle;
+ 
+ 	FLUSH_GART_REGS(gart);
+ }
+@@ -486,8 +408,7 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 	gart->dev = dev;
+ 	gart_regs = mc->regs + GART_REG_BASE;
+ 	spin_lock_init(&gart->pte_lock);
+-	spin_lock_init(&gart->client_lock);
+-	INIT_LIST_HEAD(&gart->client);
++	spin_lock_init(&gart->dom_lock);
+ 	gart->regs = gart_regs;
+ 	gart->iovmm_base = (dma_addr_t)res_remap->start;
+ 	gart->page_count = (resource_size(res_remap) >> GART_PAGE_SHIFT);
 -- 
 2.19.0
