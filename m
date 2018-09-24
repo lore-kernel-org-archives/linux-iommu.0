@@ -1,53 +1,81 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
-Date: Mon, 24 Sep 2018 13:07:47 +0100
-Message-ID: <7cbd503a-c79e-3c40-7388-ce6c23f7f536@arm.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
-	<cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v4 09/20] memory: tegra: Adapt to Tegra20 device-tree
+ binding changes
+Date: Mon, 24 Sep 2018 16:22:42 +0300
+Message-ID: <bca7c87a-5f86-4a98-bb6b-411c641a0e80@gmail.com>
+References: <20180924004153.8232-1-digetx@gmail.com>
+ <20180924004153.8232-10-digetx@gmail.com> <20180924100205.GB21032@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180924100205.GB21032@ulmo>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjMvMDkvMjAxOCAwNDowNSwgTHUgQmFvbHUgd3JvdGU6Cj4gSGksCj4gCj4gT24gMDkvMjEv
-MjAxOCAwMTowMCBBTSwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+PiBBZGQgYmluZCgp
-IGFuZCB1bmJpbmQoKSBvcGVyYXRpb25zIHRvIHRoZSBJT01NVSBBUEkuIEJpbmQoKSByZXR1cm5z
-IGEKPj4gUEFTSUQgdGhhdCBkcml2ZXJzIGNhbiBwcm9ncmFtIGluIGhhcmR3YXJlLCB0byBsZXQg
-dGhlaXIgZGV2aWNlcyBhY2Nlc3MgYW4KPj4gbW0uIFRoaXMgcGF0Y2ggb25seSBhZGRzIHNrZWxl
-dG9ucyBmb3IgdGhlIGRldmljZSBkcml2ZXIgQVBJLCBtb3N0IG9mIHRoZQo+PiBpbXBsZW1lbnRh
-dGlvbiBpcyBzdGlsbCBtaXNzaW5nLgo+IAo+IElzIGl0IHBvc3NpYmxlIHRoYXQgYSBtYWxpY2lv
-dXMgcHJvY2VzcyBjYW4gdW5iaW5kIGEgcGFzaWQgd2hpY2ggaXMKPiB1c2VkIGJ5IGFub3RoZXIg
-bm9ybWFsIHByb2Nlc3M/CgpZZXMsIGl0J3MgdXAgdG8gdGhlIGRldmljZSBkcml2ZXIgdGhhdCBj
-YWxscyB1bmJpbmQoKSB0byBjaGVjayB0aGF0IHRoZQpjYWxsZXIgaXMgYWxsb3dlZCB0byB1bmJp
-bmQgdGhpcyBQQVNJRC4gV2UgY2FuJ3QgZG8gaXQgb3Vyc2VsdmVzIHNpbmNlCnVuYmluZCgpIGNv
-dWxkIGFsc28gYmUgY2FsbGVkIGZyb20gYSBrZXJuZWwgdGhyZWFkIGZvciBleGFtcGxlIGZyb20g
-YQpjbGVhbnVwIGZ1bmN0aW9uIGluIHNvbWUgd29ya3F1ZXVlLCBvdXRzaWRlIHRoZSBjb250ZXh0
-IG9mIHRoZSBwcm9jZXNzCnRvIHVuYmluZC4KClRoYW5rcywKSmVhbgoKPiAKPiBJdCBtaWdodCBo
-YXBwZW4gaW4gYmVsb3cgc2VxdWVuY2U6Cj4gCj4gCj4gUHJvY2VzcyBBwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgUHJvY2VzcyBCCj4gPT09PT09PT09wqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgPT09PT09PT09Cj4gaW9tbXVf
-c3ZhX2luaXRfZGV2aWNlKGRldikKPiBpb21tdV9zdmFfYmluZF9kZXZpY2UoZGV2KQo+IC4uLi4K
-PiBkZXZpY2UgYWNjZXNzIG1tIG9mIEEgd2l0aAo+ICNQQVNJRCByZXR1cm5lZCBhYm92ZQo+IC4u
-Li4KPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBpb21tdV9zdmFfdW5iaW5kX2RldmljZShkZXYsICNQQVNJRCkKPiAuLi4uCj4g
-W3VucmVjb3ZlcmFibGUgZXJyb3JzXQo+IAo+IEkgZGlkbid0IGhhdmUgYSB0aG9yb3VnaCBjb25z
-aWRlcmF0aW9uIG9mIHRoaXMuIFNvcnJ5IGlmIHRoaXMgaGFzIGJlZW4KPiBwcmV2ZW50ZWQuCj4g
-Cj4gQmVzdCByZWdhcmRzLAo+IEx1IEJhb2x1Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
-aXN0aW5mby9pb21tdQ==
+On 9/24/18 1:02 PM, Thierry Reding wrote:
+> On Mon, Sep 24, 2018 at 03:41:42AM +0300, Dmitry Osipenko wrote:
+>> The tegra20-mc device-tree binding has been changed, GART has been
+>> squashed into Memory Controller and now the clock property is mandatory
+>> for Tegra20, the DT compatible has been changed as well. Adapt driver to
+>> the DT changes.
+>>
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>> ---
+>>   drivers/memory/tegra/mc.c | 21 ++++++++-------------
+>>   drivers/memory/tegra/mc.h |  6 ------
+>>   include/soc/tegra/mc.h    |  2 +-
+>>   3 files changed, 9 insertions(+), 20 deletions(-)
+>>
+>> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+>> index e56862495f36..1b4ceefd82f9 100644
+>> --- a/drivers/memory/tegra/mc.c
+>> +++ b/drivers/memory/tegra/mc.c
+>> @@ -51,7 +51,7 @@
+>>   
+>>   static const struct of_device_id tegra_mc_of_match[] = {
+>>   #ifdef CONFIG_ARCH_TEGRA_2x_SOC
+>> -	{ .compatible = "nvidia,tegra20-mc", .data = &tegra20_mc_soc },
+>> +	{ .compatible = "nvidia,tegra20-mc-gart", .data = &tegra20_mc_soc },
+> 
+> Technically we now regress because we no longer support the older device
+> tree bindings. I know that it doesn't really matter because this driver
+> doesn't really do much interesting yet other than reporting memory
+> access violations, but if that's enough to warrant a change of the
+> compatible string, then I think we also need to preserve compatibility
+> in the code.
+> 
+> That said, I think compatibility would be easier to preserve if we stuck
+> with the old compatible string and used a "reg-names" property to
+> specify which version of the binding we're referring to.
+> 
+> For example, we could have:
+> 
+> 	memory-controller@7000f000 {
+> 		compatible = "nvidia,tegra20-mc";
+> 		reg = <0x7000f000 0x024
+> 		       0x7000f03c 0x3c4>;
+> 		...
+> 	};
+> 
+> for the old binding and:
+> 
+> 	memory-controller@7000f000 {
+> 		compatible = "nvidia,tegra20-mc";
+> 		reg = <0x7000f000 0x00000400>,
+> 		      <0x58000000 0x02000000>;
+> 		reg-names = "mc", "gart";
+> 		...
+> 	};
+> 
+> for the new binding. The driver can then easily check for the existence
+> of the reg-names property and take the legacy or new code paths.
+
+There is no problem with keeping compatibility for newer kernels with the older binding, 
+it just not worth the effort. The real problem is keeping compatibility of older kernels 
+with the new binding, the older kernels won't care about the reg-names and will treat GART 
+registers as the second registers bank of the Memory Controller. Unfortunately I don't see 
+how your suggestion is supposed to help with the problem.
