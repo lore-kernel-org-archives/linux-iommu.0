@@ -1,15 +1,11 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
-Date: Sun, 23 Sep 2018 11:05:40 +0800
-Message-ID: <cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 00/20] IOMMU: Tegra GART driver clean up and optimization
+Date: Mon, 24 Sep 2018 03:41:33 +0300
+Message-ID: <20180924004153.8232-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180920170046.20154-3-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,267 +15,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hello,
 
-On 09/21/2018 01:00 AM, Jean-Philippe Brucker wrote:
-> Add bind() and unbind() operations to the IOMMU API. Bind() returns a
-> PASID that drivers can program in hardware, to let their devices access an
-> mm. This patch only adds skeletons for the device driver API, most of the
-> implementation is still missing.
+This patch-series integrates the GART (IOMMU) driver with the Memory
+Controller driver, that allows to report the name of a faulty memory
+client on GART page fault. A major cleanup of the code is performed by
+this series as well, it also optimizes performance of the GART driver.
 
-Is it possible that a malicious process can unbind a pasid which is
-used by another normal process?
+In the previous v2 iteration Thierry Reding suggested that it is better to
+break/change GART's device-tree ABI in order to integrate it with Memory
+Controller without much churning. This patch series includes patches that
+change the device tree binding in a way that updated driver will work only
+with the new binding and older kernels won't be broken by the new binding.
 
-It might happen in below sequence:
+Changelog:
 
+v4: In the v3 Rob Herring requested to make device-tree binding changes
+    backwards-compatible with the older kernels, that is achieved by
+    changing the 'compatible' value of the DT node.
 
-Process A			Process B
-=========			=========
-iommu_sva_init_device(dev)
-iommu_sva_bind_device(dev)
-....
-device access mm of A with
-#PASID returned above
-....
-				iommu_sva_unbind_device(dev, #PASID)
-....
-[unrecoverable errors]
+    The code-refactoring patches got some more (minor) polish.
 
-I didn't have a thorough consideration of this. Sorry if this has been
-prevented.
+    Added new patch "memory: tegra: Use of_device_get_match_data()".
 
-Best regards,
-Lu Baolu
+v3: Memory Controller integration part has been reworked and now GART's
+    device-tree binding is changed. Adding Rob Herring for the device-tree
+    changes reviewing.
 
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> ---
->   drivers/iommu/iommu-sva.c | 34 +++++++++++++++
->   drivers/iommu/iommu.c     | 90 +++++++++++++++++++++++++++++++++++++++
->   include/linux/iommu.h     | 37 ++++++++++++++++
->   3 files changed, 161 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 85ef98efede8..d60d4f0bb89e 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -8,6 +8,38 @@
->   #include <linux/iommu.h>
->   #include <linux/slab.h>
->   
-> +int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
-> +			    unsigned long flags, void *drvdata)
-> +{
-> +	return -ENOSYS; /* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_bind_device);
-> +
-> +int __iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENOSYS; /* TODO */
-> +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_unbind_device);
-> +
-> +static void __iommu_sva_unbind_device_all(struct device *dev)
-> +{
-> +	/* TODO */
-> +}
-> +
-> +/**
-> + * iommu_sva_unbind_device_all() - Detach all address spaces from this device
-> + * @dev: the device
-> + *
-> + * When detaching @dev from a domain, IOMMU drivers should use this helper.
-> + */
-> +void iommu_sva_unbind_device_all(struct device *dev)
-> +{
-> +	mutex_lock(&dev->iommu_param->sva_lock);
-> +	__iommu_sva_unbind_device_all(dev);
-> +	mutex_unlock(&dev->iommu_param->sva_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_device_all);
-> +
->   /**
->    * iommu_sva_init_device() - Initialize Shared Virtual Addressing for a device
->    * @dev: the device
-> @@ -96,6 +128,8 @@ void iommu_sva_shutdown_device(struct device *dev)
->   	if (!param)
->   		goto out_unlock;
->   
-> +	__iommu_sva_unbind_device_all(dev);
-> +
->   	if (domain->ops->sva_shutdown_device)
->   		domain->ops->sva_shutdown_device(dev);
->   
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index fa0561ed006f..aba3bf15d46c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2325,3 +2325,93 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
->   	return 0;
->   }
->   EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-> +
-> +/**
-> + * iommu_sva_bind_device() - Bind a process address space to a device
-> + * @dev: the device
-> + * @mm: the mm to bind, caller must hold a reference to it
-> + * @pasid: valid address where the PASID will be stored
-> + * @flags: bond properties
-> + * @drvdata: private data passed to the mm exit handler
-> + *
-> + * Create a bond between device and task, allowing the device to access the mm
-> + * using the returned PASID. If unbind() isn't called first, a subsequent bind()
-> + * for the same device and mm fails with -EEXIST.
-> + *
-> + * iommu_sva_init_device() must be called first, to initialize the required SVA
-> + * features. @flags must be a subset of these features.
-> + *
-> + * The caller must pin down using get_user_pages*() all mappings shared with the
-> + * device. mlock() isn't sufficient, as it doesn't prevent minor page faults
-> + * (e.g. copy-on-write).
-> + *
-> + * On success, 0 is returned and @pasid contains a valid ID. Otherwise, an error
-> + * is returned.
-> + */
-> +int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
-> +			  unsigned long flags, void *drvdata)
-> +{
-> +	int ret = -EINVAL;
-> +	struct iommu_group *group;
-> +
-> +	if (!pasid)
-> +		return -EINVAL;
-> +
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return -ENODEV;
-> +
-> +	/* Ensure device count and domain don't change while we're binding */
-> +	mutex_lock(&group->mutex);
-> +
-> +	/*
-> +	 * To keep things simple, SVA currently doesn't support IOMMU groups
-> +	 * with more than one device. Existing SVA-capable systems are not
-> +	 * affected by the problems that required IOMMU groups (lack of ACS
-> +	 * isolation, device ID aliasing and other hardware issues).
-> +	 */
-> +	if (iommu_group_device_count(group) != 1)
-> +		goto out_unlock;
-> +
-> +	ret = __iommu_sva_bind_device(dev, mm, pasid, flags, drvdata);
-> +
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_bind_device);
-> +
-> +/**
-> + * iommu_sva_unbind_device() - Remove a bond created with iommu_sva_bind_device
-> + * @dev: the device
-> + * @pasid: the pasid returned by bind()
-> + *
-> + * Remove bond between device and address space identified by @pasid. Users
-> + * should not call unbind() if the corresponding mm exited (as the PASID might
-> + * have been reallocated for another process).
-> + *
-> + * The device must not be issuing any more transaction for this PASID. All
-> + * outstanding page requests for this PASID must have been flushed to the IOMMU.
-> + *
-> + * Returns 0 on success, or an error value
-> + */
-> +int iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	int ret = -EINVAL;
-> +	struct iommu_group *group;
-> +
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return -ENODEV;
-> +
-> +	mutex_lock(&group->mutex);
-> +	ret = __iommu_sva_unbind_device(dev, pasid);
-> +	mutex_unlock(&group->mutex);
-> +
-> +	iommu_group_put(group);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 4c27cb347770..9c49877e37a5 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -586,6 +586,10 @@ void iommu_fwspec_free(struct device *dev);
->   int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
->   const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
->   
-> +extern int iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> +				int *pasid, unsigned long flags, void *drvdata);
-> +extern int iommu_sva_unbind_device(struct device *dev, int pasid);
-> +
->   #else /* CONFIG_IOMMU_API */
->   
->   struct iommu_ops {};
-> @@ -910,6 +914,18 @@ static inline int iommu_sva_invalidate(struct iommu_domain *domain,
->   	return -ENODEV;
->   }
->   
-> +static inline int iommu_sva_bind_device(struct device *dev,
-> +					struct mm_struct *mm, int *pasid,
-> +					unsigned long flags, void *drvdata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->   #endif /* CONFIG_IOMMU_API */
->   
->   #ifdef CONFIG_IOMMU_DEBUGFS
-> @@ -924,6 +940,11 @@ extern int iommu_sva_init_device(struct device *dev, unsigned long features,
->   				 unsigned int min_pasid,
->   				 unsigned int max_pasid);
->   extern void iommu_sva_shutdown_device(struct device *dev);
-> +extern int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> +				   int *pasid, unsigned long flags,
-> +				   void *drvdata);
-> +extern int __iommu_sva_unbind_device(struct device *dev, int pasid);
-> +extern void iommu_sva_unbind_device_all(struct device *dev);
->   #else /* CONFIG_IOMMU_SVA */
->   static inline int iommu_sva_init_device(struct device *dev,
->   					unsigned long features,
-> @@ -936,6 +957,22 @@ static inline int iommu_sva_init_device(struct device *dev,
->   static inline void iommu_sva_shutdown_device(struct device *dev)
->   {
->   }
-> +
-> +static inline int __iommu_sva_bind_device(struct device *dev,
-> +					  struct mm_struct *mm, int *pasid,
-> +					  unsigned long flags, void *drvdata)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline int __iommu_sva_unbind_device(struct device *dev, int pasid)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void iommu_sva_unbind_device_all(struct device *dev)
-> +{
-> +}
->   #endif /* CONFIG_IOMMU_SVA */
->   
->   #endif /* __LINUX_IOMMU_H */
-> 
+    GART now disallows more than one active domain at a time.
+
+    Fixed "spinlock recursion", "NULL pointer dereference" and "detaching
+    of all devices from inactive domains".
+
+    New code-refactoring patches.
+
+    The previously standalone patch "memory: tegra: Don't invoke Tegra30+
+    specific memory timing setup on Tegra20" is now included into this
+    series because there is a dependency on that patch and it wasn't applied
+    yet.
+
+v2: Addressed review comments from Robin Murphy to v1 by moving devices
+    iommu_fwspec check to gart_iommu_add_device().
+
+    Dropped the "Provide single domain and group for all devices" patch from
+    the series for now because after some more considering it became not
+    exactly apparent whether that is what we need, that was also suggested
+    by Robin Murphy in the review comment. Maybe something like a runtime
+    IOMMU usage for devices would be a better solution, allowing to implement
+    transparent context switching of virtual IOMMU domains.
+
+    Some very minor code cleanups, reworded commit messages.
+
+Dmitry Osipenko (20):
+  iommu/tegra: gart: Remove pr_fmt and clean up includes
+  iommu/tegra: gart: Clean up driver probe errors handling
+  iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+  iommu: Introduce iotlb_sync_map callback
+  iommu/tegra: gart: Optimize mapping / unmapping performance
+  dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+  ARM: dts: tegra20: Update Memory Controller node to the new binding
+  memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+    Tegra20
+  memory: tegra: Adapt to Tegra20 device-tree binding changes
+  memory: tegra: Read client ID on GART page fault
+  memory: tegra: Use of_device_get_match_data()
+  iommu/tegra: gart: Integrate with Memory Controller driver
+  iommu/tegra: gart: Fix spinlock recursion
+  iommu/tegra: gart: Fix NULL pointer dereference
+  iommu/tegra: gart: Allow only one active domain at a time
+  iommu/tegra: gart: Don't use managed resources
+  iommu/tegra: gart: Prepend error/debug messages with "GART:"
+  iommu/tegra: gart: Don't detach devices from inactive domains
+  iommu/tegra: gart: Simplify clients-tracking code
+  iommu/tegra: gart: Perform code refactoring
+
+ .../bindings/iommu/nvidia,tegra20-gart.txt    |  14 -
+ .../memory-controllers/nvidia,tegra20-mc.txt  |  27 +-
+ arch/arm/boot/dts/tegra20.dtsi                |  15 +-
+ drivers/iommu/Kconfig                         |   1 +
+ drivers/iommu/iommu.c                         |   8 +-
+ drivers/iommu/tegra-gart.c                    | 478 +++++++-----------
+ drivers/memory/tegra/mc.c                     |  95 +++-
+ drivers/memory/tegra/mc.h                     |   6 -
+ include/linux/iommu.h                         |   1 +
+ include/soc/tegra/mc.h                        |  29 +-
+ 10 files changed, 298 insertions(+), 376 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+
+-- 
+2.19.0
