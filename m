@@ -1,8 +1,8 @@
 From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 01/20] iommu/tegra: gart: Remove pr_fmt and clean up
-	includes
-Date: Mon, 24 Sep 2018 03:41:34 +0300
-Message-ID: <20180924004153.8232-2-digetx@gmail.com>
+Subject: [PATCH v4 02/20] iommu/tegra: gart: Clean up driver probe errors
+	handling
+Date: Mon, 24 Sep 2018 03:41:35 +0300
+Message-ID: <20180924004153.8232-3-digetx@gmail.com>
 References: <20180924004153.8232-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +22,61 @@ To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jon
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove unneeded headers inclusion and sort the headers in alphabet order.
-Remove pr_fmt macro since there is no pr_*() in the code and it doesn't
-affect dev_*() functions.
+Properly clean up allocated resources on the drivers probe failure and
+remove unneeded checks.
 
 Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ drivers/iommu/tegra-gart.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 7b1361d57a17..6dda7ee1d36c 100644
+index 6dda7ee1d36c..e9524ed264cf 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -17,21 +17,14 @@
-  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-  */
+@@ -408,9 +408,6 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	int ret;
  
--#define pr_fmt(fmt)	"%s(): " fmt, __func__
+-	if (gart_handle)
+-		return -EIO;
 -
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/list.h>
- #include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/spinlock.h>
-+#include <linux/of_device.h>
- #include <linux/slab.h>
-+#include <linux/spinlock.h>
- #include <linux/vmalloc.h>
--#include <linux/mm.h>
--#include <linux/list.h>
--#include <linux/device.h>
--#include <linux/io.h>
--#include <linux/iommu.h>
--#include <linux/of.h>
--
--#include <asm/cacheflush.h>
+ 	BUILD_BUG_ON(PAGE_SHIFT != GART_PAGE_SHIFT);
  
- /* bitmap of the page sizes currently supported */
- #define GART_IOMMU_PGSIZES	(SZ_4K)
+ 	/* the GART memory aperture is required */
+@@ -445,8 +442,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	ret = iommu_device_register(&gart->iommu);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register IOMMU\n");
+-		iommu_device_sysfs_remove(&gart->iommu);
+-		return ret;
++		goto remove_sysfs;
+ 	}
+ 
+ 	gart->dev = &pdev->dev;
+@@ -460,7 +456,8 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	gart->savedata = vmalloc(array_size(sizeof(u32), gart->page_count));
+ 	if (!gart->savedata) {
+ 		dev_err(dev, "failed to allocate context save area\n");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto unregister_iommu;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, gart);
+@@ -469,6 +466,13 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	gart_handle = gart;
+ 
+ 	return 0;
++
++unregister_iommu:
++	iommu_device_unregister(&gart->iommu);
++remove_sysfs:
++	iommu_device_sysfs_remove(&gart->iommu);
++
++	return ret;
+ }
+ 
+ static int tegra_gart_remove(struct platform_device *pdev)
 -- 
 2.19.0
