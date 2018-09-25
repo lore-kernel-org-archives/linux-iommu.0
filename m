@@ -1,86 +1,66 @@
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
-Date: Tue, 25 Sep 2018 15:17:11 -0700
-Message-ID: <20180925151711.7ea1cf75@jacob-builder>
-References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
-        <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
-        <130edd60-d92a-9871-334b-943fe8acffee@arm.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 01/10] iommu: Introduce Shared Virtual Addressing API
+Date: Tue, 25 Sep 2018 15:46:42 -0700
+Message-ID: <20180925154642.18a98849@jacob-builder>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-2-jean-philippe.brucker@arm.com>
+	<f406bcf7-4e54-9f1b-88eb-03fc642ffede@linux.intel.com>
+	<20180925131647.rygncwik5uszsm3n@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <130edd60-d92a-9871-334b-943fe8acffee@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, jacob.jun.pan@linux.intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180925131647.rygncwik5uszsm3n-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 25 Sep 2018 15:58:41 +0100
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+On Tue, 25 Sep 2018 15:16:47 +0200
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-> Hi Jacob,
+> On Sun, Sep 23, 2018 at 10:39:25AM +0800, Lu Baolu wrote:
+> > > +int iommu_sva_init_device(struct device *dev, unsigned long
+> > > features,
+> > > +		       unsigned int min_pasid, unsigned int
+> > > max_pasid) +{
+> > > +	int ret;
+> > > +	struct iommu_sva_param *param;
+> > > +	struct iommu_domain *domain =
+> > > iommu_get_domain_for_dev(dev);  
+> > 
+> > This doesn't work for vt-d. The domains for host iova are
+> > self-managed by vt-d driver itself. Hence,
+> > iommu_get_domain_for_dev() will always return NULL unless an
+> > UNMANAGED domain is attached to the device.
+> > 
+> > How about
+> > 
+> >       const struct iommu_ops *ops = dev->bus->iommu_ops;
+> > 
+> > instead?  
 > 
-> Just two minor things below, that I noticed while using fault handlers
-> for SVA. From my perspective the series is fine otherwise
+> The per-bus iommu-ops might go away sooner or later as we move to
+> per-device iommu-ops. How about fixing the VT-d driver to not keep
+> that domain internal to itself?
 > 
-> On 11/05/2018 21:54, Jacob Pan wrote:
-> > +int iommu_unregister_device_fault_handler(struct device *dev)
-> > +{
-> > +       struct iommu_param *param = dev->iommu_param;
-> > +       int ret = 0;
-> > +
-> > +       if (!param)
-> > +               return -EINVAL;
-> > +
-> > +       mutex_lock(&param->lock);  
-> 
-> Could we check that param->fault_param isn't NULL here, so that the
-> driver can call this function unconditionally in a cleanup path?
-> 
-sounds good.
+Just to understand more specifically, you mean let VT-d driver also
+support IOMMU_DOMAIN_DMA as default domain?
 
-	if (!param || param->fault_param)
-		return -EINVAL;
+But I think the ordering issue is still there in that the DOMAIN_DMA
+domain will not be created until DMA map call is invoked. I think
+sva_init_device should not depend on the default domain.
 
-> > +       /* we cannot unregister handler if there are pending faults
-> > */
-> > +       if (!list_empty(&param->fault_param->faults)) {
-> > +               ret = -EBUSY;
-> > +               goto unlock;
-> > +       }
-> > +
-> > +       kfree(param->fault_param);
-> > +       param->fault_param = NULL;
-> > +       put_device(dev);
-> > +unlock:
-> > +       mutex_unlock(&param->lock);
-> > +
-> > +       return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
-> > +
-> > +
-> > +/**
-> > + * iommu_report_device_fault() - Report fault event to device
-> > + * @dev: the device
-> > + * @evt: fault event data
-> > + *
-> > + * Called by IOMMU model specific drivers when fault is detected,
-> > typically
-> > + * in a threaded IRQ handler.
-> > + *
-> > + * Return 0 on success, or an error.
-> > + */
-> > +int iommu_report_device_fault(struct device *dev, struct
-> > iommu_fault_event *evt)
-> > +{
-> > +       int ret = 0;
-> > +       struct iommu_fault_event *evt_pending;
-> > +       struct iommu_fault_param *fparam;
-> > +
-> > +       /* iommu_param is allocated when device is added to group */
-> > +       if (!dev->iommu_param | !evt)  
+> Regards,
 > 
-> Should probably be ||
-> 
-your are right, thanks!
+> 	Joerg
+
+[Jacob Pan]
