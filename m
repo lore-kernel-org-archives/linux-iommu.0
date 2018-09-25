@@ -1,31 +1,22 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v9 2/2] iommu/amd: Add basic debugfs infrastructure for
- AMD IOMMU
-Date: Tue, 25 Sep 2018 09:51:04 +0200
-Message-ID: <20180925075104.GA18287@8bytes.org>
-References: <152883965482.1936.13657625103232933481.stgit@taos>
- <152883969032.1936.15155267369758178246.stgit@taos>
- <CAMuHMdVf-QDAVh-vHF_xyvX73_nsO9X7RnDc=yCK_FS68i6zTw@mail.gmail.com>
+Subject: Re: [PATCH v4] iommu/iova: Optimise attempts to allocate iova from
+ 32bit address range
+Date: Tue, 25 Sep 2018 10:18:48 +0200
+Message-ID: <20180925081848.fh32go4nwvtmfjn2@8bytes.org>
+References: <20180905042736.11904-1-ganapatrao.kulkarni@cavium.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAMuHMdVf-QDAVh-vHF_xyvX73_nsO9X7RnDc=yCK_FS68i6zTw@mail.gmail.com>
+In-Reply-To: <20180905042736.11904-1-ganapatrao.kulkarni@cavium.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: gary.hook@amd.com, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>, Masahiro Yamada <yamada.masahiro@socionext.com>, linux-kbuild <linux-kbuild@vger.kernel.org>
+To: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, tomasz.nowicki@cavium.com, jnair@caviumnetworks.com, Robert.Richter@cavium.com, Vadim.Lomovtsev@cavium.com, Jan.Glauber@cavium.com, gklkml16@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 27, 2018 at 08:56:50AM +0200, Geert Uytterhoeven wrote:
-> If it is that bad, shouldn't this option be protected by some Kconfig
-> trickery to avoid it being enabled in allmodconfig/allyesconfig builds?
+On Wed, Sep 05, 2018 at 09:57:36AM +0530, Ganapatrao Kulkarni wrote:
+>  drivers/iommu/iova.c | 22 +++++++++++++++-------
+>  include/linux/iova.h |  1 +
+>  2 files changed, 16 insertions(+), 7 deletions(-)
 
-It is fine to have it in allmodconfig/allyesconfig, I just don't want
-any distro-kernel enable it so that these internals become a user-space
-ABI or leak security sensitive data on everyones system. This is
-intended to be a pure debugging feature for development.
-
-
-Regards,
-
-	Joerg
+Applied, thanks.
