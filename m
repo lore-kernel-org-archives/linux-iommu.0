@@ -1,79 +1,88 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 12/20] iommu/tegra: gart: Integrate with Memory
- Controller driver
-Date: Tue, 25 Sep 2018 12:02:02 +0200
-Message-ID: <20180925100202.GE7097@ulmo>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 16/20] iommu/tegra: gart: Don't use managed resources
+Date: Tue, 25 Sep 2018 12:03:30 +0200
+Message-ID: <20180925100330.GF7097@ulmo>
 References: <20180924004153.8232-1-digetx@gmail.com>
- <20180924004153.8232-13-digetx@gmail.com>
- <20180924102322.GI21032@ulmo>
- <b2d283fc-ff52-3166-cd70-42f9cba93948@gmail.com>
+	<20180924004153.8232-17-digetx@gmail.com>
+	<20180924105246.GM21032@ulmo>
+	<a9e2943b-1139-8838-5440-bd6cf55e9a55@gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Qz2CZ664xQdCRdPu"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <b2d283fc-ff52-3166-cd70-42f9cba93948@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Osipenko <digetx@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="===============0129261916438940506=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <a9e2943b-1139-8838-5440-bd6cf55e9a55-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---Qz2CZ664xQdCRdPu
+--===============0129261916438940506==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="0rSojgWGcpz+ezC3"
+Content-Disposition: inline
+
+
+--0rSojgWGcpz+ezC3
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 24, 2018 at 09:22:59PM +0300, Dmitry Osipenko wrote:
-> On 9/24/18 1:23 PM, Thierry Reding wrote:
-> > On Mon, Sep 24, 2018 at 03:41:45AM +0300, Dmitry Osipenko wrote:
-> >> The device-tree binding has been changed. There is no separate GART de=
-vice
-> >> anymore, it is squashed into the Memory Controller. Integrate GART mod=
-ule
-> >> with the MC in a way it is done for the SMMU of Tegra30+.
+On Mon, Sep 24, 2018 at 09:57:10PM +0300, Dmitry Osipenko wrote:
+> On 9/24/18 1:52 PM, Thierry Reding wrote:
+> > On Mon, Sep 24, 2018 at 03:41:49AM +0300, Dmitry Osipenko wrote:
+> >> GART is a part of the Memory Controller driver that is always built-in,
+> >> hence there is no benefit from the use of managed resources.
 > >>
-> >> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> >> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > >> ---
-> >>  drivers/iommu/Kconfig      |  1 +
-> >>  drivers/iommu/tegra-gart.c | 98 ++++++++++----------------------------
-> >>  drivers/memory/tegra/mc.c  | 41 ++++++++++++++++
-> >>  include/soc/tegra/mc.h     | 27 +++++++++++
-> >>  4 files changed, 93 insertions(+), 74 deletions(-)
+> >>  drivers/iommu/tegra-gart.c | 12 +++++++-----
+> >>  1 file changed, 7 insertions(+), 5 deletions(-)
 > >=20
-> > I think this could technically have been two patches, but since they'd
-> > have a compile-time dependency either way they need to be applied in the
-> > correct order, so some coordination between IOMMU and Tegra trees is
-> > going to have to happen anyway and might as well just stick this into a
-> > single patch.
+> > One benefit would be cleanup on probe error. Also, we may eventually
+> > want to make even the memory controller driver buildable as a module.
 >=20
-> I assume that Joerg will take the whole series once it's ready (no?),
-> hence your ACK will be needed here and in other patches.
+> Please, let's keep that patch as is and re-introduce devm once it will
+> become really relevant.
 
-Yeah, either Joerg takes them all with my Acked-by's or provides his for
-the IOMMU bits and I take the batch through the Tegra tree. I don't have
-a strong preference.
+Alright, fine with me.
 
 Thierry
 
---Qz2CZ664xQdCRdPu
+--0rSojgWGcpz+ezC3
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluqB5oACgkQ3SOs138+
-s6Hkvw/5AWXy5G71xh8Re4QOcew+EqSH3Hh/AZ0z0t6SS3rJX6kjk6fiy39FHeb4
-ZHMqZf2bpJLTPea6QiiWJ7VUAYVgnyb1plfuvHGttu0CGpmoSWROMclkm4KNArNW
-XV7EDxbGbXpkfqm/uYMRQVMvYXn2malwgpXXVKgH8ABOaERTchxNJMoacuB7Y++b
-E2LBcoLQbjfZZumyYjqCRQbbEa1BHhGD0sBOW4klTGJZMHRnS3VPs5rsyxN8YdJY
-4+wz+00B4+JjNI5y13TynWL4ARLtGlwgAYZ6V1U09i+qQjUWsvFImrXGnxlt7aO9
-2kxS18zkV9Ak2uD2oUFR3Tng9u+VDXOGh/1syuQ8lVoi1CT2N0/Au5AjuDvzM6gq
-PrTHdrUtNQyU3chmLYBOfdfHuiaTgoTXgiw43AncaPWQyoLcjxwAYTnh+B1yuKqX
-01JABU6g/HMQjksEDJXb/mY7zQ2IRuJn0eOL5wx5GF1p8+pEiC2i6wQKnZ16Flnd
-k2xnwANk8i8vl+R4If9rJvMrc7FYOVSJbkkAopEozhvszsdn9sVbl708IiPesIi1
-mhtCOaEwDe7fgrvhB9h74IbPiS6eg3POIZf4mL2JNbdd7+dWjOrkFGy0lx6Gc5S6
-9YEjsHgopAg3zyB0eCBqAPXJo8lPGPPbT4NVbz9/9l8I839VyhQ=
-=NkBG
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluqB/IACgkQ3SOs138+
+s6HNoA/8CFbeEPyFp1VE67Jzl/fEMLQ6zRfF+06HOGCAeFnQ0qqvVGle6Il1QH1i
+N9HYw6xE11x2NZHngX+kYMw+b7B0cF4nT3CXLDa0GXTf4ZzqWkmDOwGPKaPMUl8e
+MCC2TEf6TIJl0SJy6X66Zoxc4wFof3WIUT2XzxlRR7vPwiRJj4NLyVqH2PEkxyQz
+eLhRE9ZNTQeA5GGUtizPZ2mePDMmK9r6wFRwfitoz1no0JuRVJtsVfdCcCa6zbhR
+dni5cyjGWiUDCxTS4OaUesNkTN8uYlVVZYGiglVDrgiz7ztA26Wp6JSZp9oaPDz2
+9LmA30NgzE3ja6tjd+vlBFc+k0LBwWpmphjG8kQWMaos+PoJypoaFu560aS7oF+r
+kTcBh7RLJo1JRu+jLx8P/iYEWth4/ZLkCTPqi7foJPwJb+qu7J0gUuFW+29UnX/U
+bDE2z/pRwggUCGpfKlqXz+EdqZ2+tgYwRaeLgrPmKs7HSHsqnzlV0jlkfaKABoP+
+Od2ftt1kkAobq0vUTwGLKKpWVJcQSxCX6HMkFvC7TTL1ntMZVSK1SqomA9geFo2k
+0YbywVOL6LBlyElwpWZ+oyemLb9IH5POnHnl+gCxYAqy3oIJg87+UTuMjnbHI3a9
+xRxdJhFy0jOLmtSlQTq9Q0HmKC+VfD+4kDOOPUFwV8lFDFCr3a4=
+=fmqX
 -----END PGP SIGNATURE-----
 
---Qz2CZ664xQdCRdPu--
+--0rSojgWGcpz+ezC3--
+
+--===============0129261916438940506==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0129261916438940506==--
