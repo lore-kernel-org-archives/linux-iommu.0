@@ -1,58 +1,103 @@
-From: Michael Ellerman <mpe@ellerman.id.au>
-Subject: Re: [PATCH 4/4] dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops
-Date: Tue, 25 Sep 2018 15:32:30 +1000
-Message-ID: <87r2hi3zwx.fsf@concordia.ellerman.id.au>
-References: <20180827084711.23407-1-hch@lst.de> <20180827084711.23407-5-hch@lst.de> <20180922150119.GA14761@roeck-us.net>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime
+ during probe, add/remove device
+Date: Tue, 25 Sep 2018 11:26:04 +0530
+Message-ID: <CAFp+6iFvhdSq7upbvsEWgMewhAaaRM91iw9p7qOFPYrUxis0Hg@mail.gmail.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
+ <20180830144541.17740-3-vivek.gautam@codeaurora.org>
+ <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
+ <3ccc3690-dc9d-56e7-e2d1-62e73a189bff@codeaurora.org>
+ <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ@mail.gmail.com>
+ <CAFp+6iE3+qn6-gpXEzxfoP5yPMARmUcJNn0AZk-kA2AreTLnng@mail.gmail.com>
+ <CAFp+6iHnHj_PkPFBUSTdJTW57K51wLqSEw6VOMKxAVo7O+ms9g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180922150119.GA14761@roeck-us.net>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Guenter Roeck <linux@roeck-us.net>, Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAFp+6iHnHj_PkPFBUSTdJTW57K51wLqSEw6VOMKxAVo7O+ms9g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Guenter Roeck <linux@roeck-us.net> writes:
-> Hi,
->
-> On Mon, Aug 27, 2018 at 10:47:11AM +0200, Christoph Hellwig wrote:
->> There is no reason to leave the per-device dma_ops around when
->> deconfiguring a device, so move this code from arm64 into the
->> common code.
->> Signed-off-by: Christoph Hellwig <hch@lst.de>
->> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
->
-> This patch causes various ppc images to crash in -next due to NULL
-> DMA ops in dma_alloc_attrs().
-
-I finally remembered where you autobuilder is :)
-
-https://kerneltests.org/builders/qemu-ppc-next/builds/970/steps/qemubuildcommand_1/logs/stdio
-
-Looks like mac99 at least is failing.
-
-Just reproduced it on my setup.
-
-> Looking into the code, the macio driver tries to instantiate on
-> the 0000:f0:0d.0 PCI address (the driver maps to all Apple PCI IDs)
-> and fails. This results in a call to arch_teardown_dma_ops(). Later,
-> the same device pointer is used to instantiate ohci-pci, which
-> crashes in probe because the dma_ops pointer has been cleared.
->
-> I don't claim to fully understand the code, but to me it looks like
-> the pci device is allocated and waiting for a driver to attach to.
-> See arch/powerpc/kernel/pci_of_scan.c:of_create_pci_dev().
-> If attaching a driver (here: macio) fails, the same device pointer
-> is then reused for the next matching driver until a match is found
-> and the device is successfully instantiated. Of course this fails
-> quite badly if the device pointer has been scrubbed after the first
-> failure.
->
-> I don't know if this is generic PCI behavior or ppc specific.
-> I am copying pci and ppc maintainers for additional input.
-
-I would guess this is some PPC special sauce  O_o
-
-Will have a look.
-
-cheers
+SGkgUm9iaW4sIFdpbGwsCgpPbiBUdWUsIFNlcCAxOCwgMjAxOCBhdCA4OjQxIEFNIFZpdmVrIEdh
+dXRhbQo8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPgo+IEhpIFJvYmluLAo+
+Cj4gT24gRnJpLCBTZXAgNywgMjAxOCBhdCAzOjUyIFBNIFZpdmVrIEdhdXRhbSA8dml2ZWsuZ2F1
+dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+Cj4gPiBPbiBGcmksIFNlcCA3LCAyMDE4IGF0
+IDM6MjIgUE0gVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4gd3JvdGU6Cj4gPiA+Cj4g
+PiA+IE9uIEZyaSwgU2VwIDcsIDIwMTggYXQgNjozOCBQTSBWaXZlayBHYXV0YW0gPHZpdmVrLmdh
+dXRhbUBjb2RlYXVyb3JhLm9yZz4gd3JvdGU6Cj4gPiA+ID4KPiA+ID4gPiBIaSBUb21hc3osCj4g
+PiA+ID4KPiA+ID4gPgo+ID4gPiA+IE9uIDkvNy8yMDE4IDI6NDYgUE0sIFRvbWFzeiBGaWdhIHdy
+b3RlOgo+ID4gPiA+ID4gSGkgVml2ZWssCj4gPiA+ID4gPgo+ID4gPiA+ID4gT24gVGh1LCBBdWcg
+MzAsIDIwMTggYXQgMTE6NDYgUE0gVml2ZWsgR2F1dGFtCj4gPiA+ID4gPiA8dml2ZWsuZ2F1dGFt
+QGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+ID4gPiA+PiBGcm9tOiBTcmljaGFyYW4gUiA8c3Jp
+Y2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+ID4gPiA+ID4+Cj4gPiA+ID4gPj4gVGhlIHNtbXUgZGV2
+aWNlIHByb2JlL3JlbW92ZSBhbmQgYWRkL3JlbW92ZSBtYXN0ZXIgZGV2aWNlIGNhbGxiYWNrcwo+
+ID4gPiA+ID4+IGdldHMgY2FsbGVkIHdoZW4gdGhlIHNtbXUgaXMgbm90IGxpbmtlZCB0byBpdHMg
+bWFzdGVyLCB0aGF0IGlzIHdpdGhvdXQKPiA+ID4gPiA+PiB0aGUgY29udGV4dCBvZiB0aGUgbWFz
+dGVyIGRldmljZS4gU28gY2FsbGluZyBydW50aW1lIGFwaXMgaW4gdGhvc2UgcGxhY2VzCj4gPiA+
+ID4gPj4gc2VwYXJhdGVseS4KPiA+ID4gPiA+PiBHbG9iYWwgbG9ja3MgYXJlIGFsc28gaW5pdGlh
+bGl6ZWQgYmVmb3JlIGVuYWJsaW5nIHJ1bnRpbWUgcG0gYXMgdGhlCj4gPiA+ID4gPj4gcnVudGlt
+ZV9yZXN1bWUoKSBjYWxscyBkZXZpY2VfcmVzZXQoKSB3aGljaCBkb2VzIHRsYl9zeW5jX2dsb2Jh
+bCgpCj4gPiA+ID4gPj4gdGhhdCB1bHRpbWF0ZWx5IHJlcXVpcmVzIGxvY2tzIHRvIGJlIGluaXRp
+YWxpemVkLgo+ID4gPiA+ID4+Cj4gPiA+ID4gPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIg
+PHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiA+ID4gPiA+PiBbdml2ZWs6IENsZWFudXAgcG0g
+cnVudGltZSBjYWxsc10KPiA+ID4gPiA+PiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZp
+dmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4KPiA+ID4gPiA+PiBSZXZpZXdlZC1ieTogVG9tYXN6
+IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4KPiA+ID4gPiA+PiBUZXN0ZWQtYnk6IFNyaW5pdmFz
+IEthbmRhZ2F0bGEgPHNyaW5pdmFzLmthbmRhZ2F0bGFAbGluYXJvLm9yZz4KPiA+ID4gPiA+PiAt
+LS0KPiA+ID4gPiA+PiAgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDg5ICsrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLQo+ID4gPiA+ID4+ICAgMSBmaWxl
+IGNoYW5nZWQsIDgxIGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCj4gPiA+ID4gPiBbc25p
+cF0KPiA+ID4gPiA+PiBAQCAtMjIxNSwxMCArMjI4MSwxNyBAQCBzdGF0aWMgaW50IGFybV9zbW11
+X2RldmljZV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiA+ID4gPiA+PiAg
+ICAgICAgICBpZiAoIWJpdG1hcF9lbXB0eShzbW11LT5jb250ZXh0X21hcCwgQVJNX1NNTVVfTUFY
+X0NCUykpCj4gPiA+ID4gPj4gICAgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJy
+ZW1vdmluZyBkZXZpY2Ugd2l0aCBhY3RpdmUgZG9tYWlucyFcbiIpOwo+ID4gPiA+ID4+Cj4gPiA+
+ID4gPj4gKyAgICAgICBhcm1fc21tdV9ycG1fZ2V0KHNtbXUpOwo+ID4gPiA+ID4+ICAgICAgICAg
+IC8qIFR1cm4gdGhlIHRoaW5nIG9mZiAqLwo+ID4gPiA+ID4+ICAgICAgICAgIHdyaXRlbChzQ1Iw
+X0NMSUVOVFBELCBBUk1fU01NVV9HUjBfTlMoc21tdSkgKyBBUk1fU01NVV9HUjBfc0NSMCk7Cj4g
+PiA+ID4gPj4gKyAgICAgICBhcm1fc21tdV9ycG1fcHV0KHNtbXUpOwo+ID4gPiA+ID4+ICsKPiA+
+ID4gPiA+PiArICAgICAgIGlmIChwbV9ydW50aW1lX2VuYWJsZWQoc21tdS0+ZGV2KSkKPiA+ID4g
+PiA+PiArICAgICAgICAgICAgICAgcG1fcnVudGltZV9mb3JjZV9zdXNwZW5kKHNtbXUtPmRldik7
+Cj4gPiA+ID4gPj4gKyAgICAgICBlbHNlCj4gPiA+ID4gPj4gKyAgICAgICAgICAgICAgIGNsa19i
+dWxrX2Rpc2FibGUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPiA+ID4+Cj4gPiA+
+ID4gPj4gLSAgICAgICBjbGtfYnVsa19kaXNhYmxlX3VucHJlcGFyZShzbW11LT5udW1fY2xrcywg
+c21tdS0+Y2xrcyk7Cj4gPiA+ID4gPj4gKyAgICAgICBjbGtfYnVsa191bnByZXBhcmUoc21tdS0+
+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPiA+ID4gQXJlbid0IHdlIG1pc3NpbmcgcG1fcnVu
+dGltZV9kaXNhYmxlKCkgaGVyZT8gV2UnbGwgaGF2ZSB0aGUgZW5hYmxlCj4gPiA+ID4gPiBjb3Vu
+dCB1bmJhbGFuY2VkIGlmIHRoZSBkcml2ZXIgaXMgcmVtb3ZlZCBhbmQgcHJvYmVkIGFnYWluLgo+
+ID4gPiA+Cj4gPiA+ID4gcG1fcnVudGltZV9mb3JjZV9zdXNwZW5kKCkgZG9lcyBhIHBtX3J1bnRp
+bWVfZGlzYWJsZSgpIGFsc28gaWYgaSBhbSBub3QKPiA+ID4gPiB3cm9uZy4KPiA+ID4gPiBBbmQs
+IGFzIG1lbnRpb25lZCBpbiBhIHByZXZpb3VzIHRocmVhZCBbMV0sIHdlIHdlcmUgc2VlaW5nIGEg
+d2FybmluZwo+ID4gPiA+IHdoaWNoIHdlIGF2b2lkZWQKPiA+ID4gPiBieSBrZWVwaW5nIGZvcmNl
+X3N1c3BlbmQoKS4KPiA+ID4gPgo+ID4gPiA+IFsxXSBodHRwczovL2xrbWwub3JnL2xrbWwvMjAx
+OC83LzgvMTI0Cj4gPiA+Cj4gPiA+IEkgc2VlLCB0aGFua3MuIEkgZGlkbid0IHJlYWxpemUgdGhh
+dCBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKQo+ID4gPiBhbHJlYWR5IGRpc2FibGVzIHJ1bnRp
+bWUgUE0gaW5kZWVkLiBTb3JyeSBmb3IgdGhlIG5vaXNlLgo+ID4KPiA+IEhpIFRvbWFzeiwKPiA+
+IE5vIHByb2JsZW0uIFRoYW5rcyBmb3IgbG9va2luZyBiYWNrIGF0IGl0Lgo+ID4KPiA+IEhpIFJv
+YmluLAo+ID4gSWYgeW91IGFyZSBmaW5lIHdpdGggdGhpcyBzZXJpZXMsIHRoZW4gY2FuIHlvdSBw
+bGVhc2UgY29uc2lkZXIgZ2l2aW5nCj4gPiBSZXZpZXdlZC1ieSwgc28gdGhhdCB3ZSBhcmUgY2Vy
+dGFpbiB0aGF0IHRoaXMgc2VyaWVzIHdpbGwgZ28gaW4gdGhlIG5leHQgbWVyZ2UKPiA+IHdpbmRv
+dy4KPiA+IFRoYW5rcwo+Cj4gR2VudGxlIHBpbmcuCj4gWW91IGFjayB3aWxsIGJlIHZlcnkgaGVs
+cGZ1bCBpbiBsZXR0aW5nIFdpbGwgcHVsbCB0aGlzIHNlcmllcyBmb3IgNC4yMC4KPiBUaGFua3Mu
+CgpJIHdvdWxkIHJlYWxseSBhcHByZWNpYXRlIGlmIHlvdSBjb3VsZCBwcm92aWRlIHlvdXIgYWNr
+IGZvciB0aGlzIHNlcmllcy4KT3IgaWYgdGhlcmUgYXJlIGFueSBjb25jZXJucywgSSBhbSB3aWxs
+aW5nIHRvIGFkZHJlc3MgdGhlbS4KVGhhbmtzLgoKQmVzdCByZWdhcmRzClZpdmVrCgoKCj4KPiAt
+LQo+IFFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50
+ZXIsIEluYy4gaXMgYSBtZW1iZXIKPiBvZiBDb2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVkIGJ5IFRo
+ZSBMaW51eCBGb3VuZGF0aW9uCgoKCi0tClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVh
+bGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJvcmEg
+Rm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVk
+cmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
+bWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
