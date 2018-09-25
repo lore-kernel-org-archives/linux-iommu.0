@@ -1,40 +1,61 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v2 0/4] Qcom smmu-500 TLB invalidation errata for sdm845
-Date: Tue, 25 Sep 2018 17:39:30 +0100
-Message-ID: <20180925163928.GA1839@brain-police>
-References: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
- <20180925120933.54xd72sv65d63tkl@8bytes.org>
+From: Jordan Glover via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
+Date: Tue, 25 Sep 2018 17:01:30 +0000
+Message-ID: <Y4FGoptRtN0PmXRXowjeM1LOeXvkP6eun7cr-EgiREHf4fyX3eYz75NTVIpu6VYe6cRIrcRD1Yxy5OiyG_7a1AnrOFKcQhuOGpTvSJlsvt4=@protonmail.ch>
+References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
+	<20180925115723.mf7njwpcmykbkpsu@8bytes.org>
+Reply-To: Jordan Glover <Golden_Miller83-g/b1ySJe57IkP3XJZ0H8fw@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20180925120933.54xd72sv65d63tkl@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, andy.gross@linaro.org, robin.murphy@arm.com, bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, david.brown@linaro.org, tfiga@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, robdclark@gmail.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180925115723.mf7njwpcmykbkpsu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 25, 2018 at 02:09:34PM +0200, Joerg Roedel wrote:
-> On Mon, Sep 10, 2018 at 11:55:47AM +0530, Vivek Gautam wrote:
-> > Vivek Gautam (4):
-> >   firmware: qcom_scm-64: Add atomic version of qcom_scm_call
-> >   firmware/qcom_scm: Add atomic version of io read/write APIs
-> >   firmware/qcom_scm: Add scm call to handle smmu errata
-> >   iommu/arm-smmu: Add support to handle Qcom's TLBI serialization errata
-> > 
-> >  drivers/firmware/qcom_scm-32.c |  17 ++++
-> >  drivers/firmware/qcom_scm-64.c | 181 +++++++++++++++++++++++++++++++----------
-> >  drivers/firmware/qcom_scm.c    |  18 ++++
-> >  drivers/firmware/qcom_scm.h    |   9 ++
-> >  drivers/iommu/arm-smmu-regs.h  |   2 +
-> >  drivers/iommu/arm-smmu.c       | 133 +++++++++++++++++++++++++++++-
-> >  include/linux/qcom_scm.h       |   6 ++
-> >  7 files changed, 320 insertions(+), 46 deletions(-)
-> 
-> Should this go through the iommu-tree? In that case I need Acked-by's
-> for the firmware code changes.
-
-Yup, and I'd also like Robin's ack on the arm-smmu*.c changes (I see he has
-some comments on the code as it stands).
-
-Will
+4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ4oCQIE9yaWdpbmFsIE1lc3NhZ2Ug4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ
+4oCQCk9uIFR1ZXNkYXksIFNlcHRlbWJlciAyNSwgMjAxOCAxOjU3IFBNLCBKb2VyZyBSb2VkZWwg
+PGpvcm9AOGJ5dGVzLm9yZz4gd3JvdGU6Cgo+IEx1LAo+Cj4gY2FuIHlvdSBwbGVhc2UgaGF2ZSBh
+IGxvb2sgYXQgdGhpcyBwcm9ibGVtPwo+Cj4gT24gV2VkLCBTZXAgMDUsIDIwMTggYXQgMDI6MDQ6
+MzhQTSArMDIwMCwgU2VkYXQgRGlsZWsgd3JvdGU6Cj4KPiA+IEhpIEpvZXJnLAo+ID4gImludGVs
+X2lvb211PW9uIiB3YXMgd29ya2luZyBmaW5lIGhlcmUgb24gbXkgVGhpbmtQYWQgVDQ3MCB3aXRo
+Cj4gPiBkZWJpYW4vdGVzdGluZyBBTUQ2NCB3aXRoIExpbnV4IHY0LjE3LnkgYW5kIHY0LjE4Lnku
+Cj4gPiBXaXRoIHRlc3RpbmcgTGludXggdjQuMTktcmMxIGFuZCB2NC4xOS1yYzIgbXkgbWFjaGlu
+ZSBpcyBub3QgYm9vdGluZyAtCj4gPiBibGFjayBzY3JlZW4uCj4gPiBUaGVzZSBrZXJuZWxzIGFy
+ZSBidWlsdCB3aXRoIExMVk0vQ2xhbmcgdjcuMC4wcmMyICh2NC4xOC55IHRvbykuCj4gPiBGdXJ0
+aGVybW9yZSwgSSBzd2l0Y2hlZCBmcm9tIEdSVUIgdG8gc3lzdGVtZC1ib290IHYyMzkuCj4gPiBb
+IC9ib290L2VmaS9sb2FkZXIvZW50cmllcy9kZWJpYW4uY29uZiBdCj4gPiB0aXRsZSBEZWJpYW4g
+R05VL0xpbnV4IGJ1c3Rlci9zaWQgWyBkZWJpYW4ga2VybmVsIF0KPiA+IGxpbnV4IC92bWxpbnV6
+LTQuMTcuMC0zLWFtZDY0Cj4gPiBpbml0cmQgL2luaXRyZC5pbWctNC4xNy4wLTMtYW1kNjQKPiA+
+IG9wdGlvbnMgcm9vdD1VVUlEPTRjMmFhNTQ0LTZlODYtNDRkMi05MzI5LTU3MjYyMzg2N2IzZCBy
+byBpbnRlbF9pb21tdT1vbgo+ID4gWyAvYm9vdC9lZmkvbG9hZGVyL2VudHJpZXMvZGViaWFuLWxs
+dm1saW51eC5jb25mIF0KPiA+IHRpdGxlIERlYmlhbiBHTlUvTGludXggYnVzdGVyL3NpZCBbIGxs
+dm1saW51eCBrZXJuZWwgKEVYUEVSSU1FTlRBTCkgXQo+ID4gbGludXggL3ZtbGludXotNC4xOS4w
+LXJjMi0zLWluaXphLWxsdm1saW51eAo+ID4gaW5pdHJkIC9pbml0cmQuaW1nLTQuMTkuMC1yYzIt
+My1pbml6YS1sbHZtbGludXgKPiA+IG9wdGlvbnMgcm9vdD1VVUlEPTRjMmFhNTQ0LTZlODYtNDRk
+Mi05MzI5LTU3MjYyMzg2N2IzZCBybwo+ID4gQW55IGhpbnRzIG9yIGhpbnRzIHRvIGRlYnVnIHRo
+aXM/Cj4gPiBBbnkgb3RoZXIga2VybmVsIGJvb3QgY2hlYXRzIFsxXSBJIGNhbiB0cnk/Cj4gPiBN
+eSBrZXJuZWwtY29uZmlnIGFuZCBkbWVzZyBvdXRwdXQgaXMgYXR0YWNoZWQuCj4gPiBUaGFua3Mg
+aW4gYWR2YW5jZS4KPiA+IFJlZ2FyZHMsCj4gPgo+ID4gLSAgIFNlZGF0IC0KPiA+CgpUaGlzIHdh
+cyByZXBvcnRlZCBjb3VwbGUgd2Vla3MgYWdvIGluIGZldyBwbGFjZXMsIGkuZS46Cmh0dHBzOi8v
+YnVncy5mcmVlZGVza3RvcC5vcmcvc2hvd19idWcuY2dpP2lkPTEwNzc4MwoKTHUgYWxyZWFkeSBw
+cmVwYXJlZCBmaXggd2hpY2ggeW91IHN1cHBvc2VkbHkgbWVyZ2VkOgpodHRwczovL2xvcmUua2Vy
+bmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTgwMDc3LyMxMTc1MDIwCgpUaGVyZSB3YXMgZXZlbiB2
+MiBvZiB0aGUgYWJvdmUgd2hpY2ggbGlua3MgdG8gYnVnIEkgcG9zdGVkOgpodHRwczovL2xvcmUu
+a2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTgzNjkwLwoKU2VkYXQgY29uZmlybWVkIGl0IGZp
+eGVzIHRoZSBpc3N1ZToKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL3BpcGVybWFp
+bC9pb21tdS8yMDE4LVNlcHRlbWJlci8wMzAxMzkuaHRtbAoKUGxlYXNlIGluY2x1ZGUgYWZvcmVt
+ZW50aW9uZWQgcGF0Y2ggaW4gaW9tbXUtZml4ZXMgYW5kIHNlbmQgaXQgdG8gR3JlZyBmb3IgLXJj
+Ni4KCkpvcmRhbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
+cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
