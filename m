@@ -1,103 +1,397 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime
- during probe, add/remove device
-Date: Tue, 25 Sep 2018 11:26:04 +0530
-Message-ID: <CAFp+6iFvhdSq7upbvsEWgMewhAaaRM91iw9p7qOFPYrUxis0Hg@mail.gmail.com>
-References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
- <20180830144541.17740-3-vivek.gautam@codeaurora.org>
- <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
- <3ccc3690-dc9d-56e7-e2d1-62e73a189bff@codeaurora.org>
- <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ@mail.gmail.com>
- <CAFp+6iE3+qn6-gpXEzxfoP5yPMARmUcJNn0AZk-kA2AreTLnng@mail.gmail.com>
- <CAFp+6iHnHj_PkPFBUSTdJTW57K51wLqSEw6VOMKxAVo7O+ms9g@mail.gmail.com>
+From: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+Date: Tue, 25 Sep 2018 13:55:09 +0800
+Message-ID: <20180925055509.GJ207969@Turing-Arch-b>
+References: <20180903005204.26041-1-nek.in.cn@gmail.com>
+	<20180917014244.GA27596@redhat.com>
+	<20180921100314.GH207969@Turing-Arch-b>
+	<20180921145201.GA3357@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAFp+6iHnHj_PkPFBUSTdJTW57K51wLqSEw6VOMKxAVo7O+ms9g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20180921145201.GA3357-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Herbert Xu <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sIFdpbGwsCgpPbiBUdWUsIFNlcCAxOCwgMjAxOCBhdCA4OjQxIEFNIFZpdmVrIEdh
-dXRhbQo8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPgo+IEhpIFJvYmluLAo+
-Cj4gT24gRnJpLCBTZXAgNywgMjAxOCBhdCAzOjUyIFBNIFZpdmVrIEdhdXRhbSA8dml2ZWsuZ2F1
-dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+Cj4gPiBPbiBGcmksIFNlcCA3LCAyMDE4IGF0
-IDM6MjIgUE0gVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4gd3JvdGU6Cj4gPiA+Cj4g
-PiA+IE9uIEZyaSwgU2VwIDcsIDIwMTggYXQgNjozOCBQTSBWaXZlayBHYXV0YW0gPHZpdmVrLmdh
-dXRhbUBjb2RlYXVyb3JhLm9yZz4gd3JvdGU6Cj4gPiA+ID4KPiA+ID4gPiBIaSBUb21hc3osCj4g
-PiA+ID4KPiA+ID4gPgo+ID4gPiA+IE9uIDkvNy8yMDE4IDI6NDYgUE0sIFRvbWFzeiBGaWdhIHdy
-b3RlOgo+ID4gPiA+ID4gSGkgVml2ZWssCj4gPiA+ID4gPgo+ID4gPiA+ID4gT24gVGh1LCBBdWcg
-MzAsIDIwMTggYXQgMTE6NDYgUE0gVml2ZWsgR2F1dGFtCj4gPiA+ID4gPiA8dml2ZWsuZ2F1dGFt
-QGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+ID4gPiA+PiBGcm9tOiBTcmljaGFyYW4gUiA8c3Jp
-Y2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+ID4gPiA+ID4+Cj4gPiA+ID4gPj4gVGhlIHNtbXUgZGV2
-aWNlIHByb2JlL3JlbW92ZSBhbmQgYWRkL3JlbW92ZSBtYXN0ZXIgZGV2aWNlIGNhbGxiYWNrcwo+
-ID4gPiA+ID4+IGdldHMgY2FsbGVkIHdoZW4gdGhlIHNtbXUgaXMgbm90IGxpbmtlZCB0byBpdHMg
-bWFzdGVyLCB0aGF0IGlzIHdpdGhvdXQKPiA+ID4gPiA+PiB0aGUgY29udGV4dCBvZiB0aGUgbWFz
-dGVyIGRldmljZS4gU28gY2FsbGluZyBydW50aW1lIGFwaXMgaW4gdGhvc2UgcGxhY2VzCj4gPiA+
-ID4gPj4gc2VwYXJhdGVseS4KPiA+ID4gPiA+PiBHbG9iYWwgbG9ja3MgYXJlIGFsc28gaW5pdGlh
-bGl6ZWQgYmVmb3JlIGVuYWJsaW5nIHJ1bnRpbWUgcG0gYXMgdGhlCj4gPiA+ID4gPj4gcnVudGlt
-ZV9yZXN1bWUoKSBjYWxscyBkZXZpY2VfcmVzZXQoKSB3aGljaCBkb2VzIHRsYl9zeW5jX2dsb2Jh
-bCgpCj4gPiA+ID4gPj4gdGhhdCB1bHRpbWF0ZWx5IHJlcXVpcmVzIGxvY2tzIHRvIGJlIGluaXRp
-YWxpemVkLgo+ID4gPiA+ID4+Cj4gPiA+ID4gPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIg
-PHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiA+ID4gPiA+PiBbdml2ZWs6IENsZWFudXAgcG0g
-cnVudGltZSBjYWxsc10KPiA+ID4gPiA+PiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZp
-dmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4KPiA+ID4gPiA+PiBSZXZpZXdlZC1ieTogVG9tYXN6
-IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4KPiA+ID4gPiA+PiBUZXN0ZWQtYnk6IFNyaW5pdmFz
-IEthbmRhZ2F0bGEgPHNyaW5pdmFzLmthbmRhZ2F0bGFAbGluYXJvLm9yZz4KPiA+ID4gPiA+PiAt
-LS0KPiA+ID4gPiA+PiAgIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDg5ICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLQo+ID4gPiA+ID4+ICAgMSBmaWxl
-IGNoYW5nZWQsIDgxIGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCj4gPiA+ID4gPiBbc25p
-cF0KPiA+ID4gPiA+PiBAQCAtMjIxNSwxMCArMjI4MSwxNyBAQCBzdGF0aWMgaW50IGFybV9zbW11
-X2RldmljZV9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiA+ID4gPiA+PiAg
-ICAgICAgICBpZiAoIWJpdG1hcF9lbXB0eShzbW11LT5jb250ZXh0X21hcCwgQVJNX1NNTVVfTUFY
-X0NCUykpCj4gPiA+ID4gPj4gICAgICAgICAgICAgICAgICBkZXZfZXJyKCZwZGV2LT5kZXYsICJy
-ZW1vdmluZyBkZXZpY2Ugd2l0aCBhY3RpdmUgZG9tYWlucyFcbiIpOwo+ID4gPiA+ID4+Cj4gPiA+
-ID4gPj4gKyAgICAgICBhcm1fc21tdV9ycG1fZ2V0KHNtbXUpOwo+ID4gPiA+ID4+ICAgICAgICAg
-IC8qIFR1cm4gdGhlIHRoaW5nIG9mZiAqLwo+ID4gPiA+ID4+ICAgICAgICAgIHdyaXRlbChzQ1Iw
-X0NMSUVOVFBELCBBUk1fU01NVV9HUjBfTlMoc21tdSkgKyBBUk1fU01NVV9HUjBfc0NSMCk7Cj4g
-PiA+ID4gPj4gKyAgICAgICBhcm1fc21tdV9ycG1fcHV0KHNtbXUpOwo+ID4gPiA+ID4+ICsKPiA+
-ID4gPiA+PiArICAgICAgIGlmIChwbV9ydW50aW1lX2VuYWJsZWQoc21tdS0+ZGV2KSkKPiA+ID4g
-PiA+PiArICAgICAgICAgICAgICAgcG1fcnVudGltZV9mb3JjZV9zdXNwZW5kKHNtbXUtPmRldik7
-Cj4gPiA+ID4gPj4gKyAgICAgICBlbHNlCj4gPiA+ID4gPj4gKyAgICAgICAgICAgICAgIGNsa19i
-dWxrX2Rpc2FibGUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPiA+ID4+Cj4gPiA+
-ID4gPj4gLSAgICAgICBjbGtfYnVsa19kaXNhYmxlX3VucHJlcGFyZShzbW11LT5udW1fY2xrcywg
-c21tdS0+Y2xrcyk7Cj4gPiA+ID4gPj4gKyAgICAgICBjbGtfYnVsa191bnByZXBhcmUoc21tdS0+
-bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+ID4gPiA+ID4gQXJlbid0IHdlIG1pc3NpbmcgcG1fcnVu
-dGltZV9kaXNhYmxlKCkgaGVyZT8gV2UnbGwgaGF2ZSB0aGUgZW5hYmxlCj4gPiA+ID4gPiBjb3Vu
-dCB1bmJhbGFuY2VkIGlmIHRoZSBkcml2ZXIgaXMgcmVtb3ZlZCBhbmQgcHJvYmVkIGFnYWluLgo+
-ID4gPiA+Cj4gPiA+ID4gcG1fcnVudGltZV9mb3JjZV9zdXNwZW5kKCkgZG9lcyBhIHBtX3J1bnRp
-bWVfZGlzYWJsZSgpIGFsc28gaWYgaSBhbSBub3QKPiA+ID4gPiB3cm9uZy4KPiA+ID4gPiBBbmQs
-IGFzIG1lbnRpb25lZCBpbiBhIHByZXZpb3VzIHRocmVhZCBbMV0sIHdlIHdlcmUgc2VlaW5nIGEg
-d2FybmluZwo+ID4gPiA+IHdoaWNoIHdlIGF2b2lkZWQKPiA+ID4gPiBieSBrZWVwaW5nIGZvcmNl
-X3N1c3BlbmQoKS4KPiA+ID4gPgo+ID4gPiA+IFsxXSBodHRwczovL2xrbWwub3JnL2xrbWwvMjAx
-OC83LzgvMTI0Cj4gPiA+Cj4gPiA+IEkgc2VlLCB0aGFua3MuIEkgZGlkbid0IHJlYWxpemUgdGhh
-dCBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKQo+ID4gPiBhbHJlYWR5IGRpc2FibGVzIHJ1bnRp
-bWUgUE0gaW5kZWVkLiBTb3JyeSBmb3IgdGhlIG5vaXNlLgo+ID4KPiA+IEhpIFRvbWFzeiwKPiA+
-IE5vIHByb2JsZW0uIFRoYW5rcyBmb3IgbG9va2luZyBiYWNrIGF0IGl0Lgo+ID4KPiA+IEhpIFJv
-YmluLAo+ID4gSWYgeW91IGFyZSBmaW5lIHdpdGggdGhpcyBzZXJpZXMsIHRoZW4gY2FuIHlvdSBw
-bGVhc2UgY29uc2lkZXIgZ2l2aW5nCj4gPiBSZXZpZXdlZC1ieSwgc28gdGhhdCB3ZSBhcmUgY2Vy
-dGFpbiB0aGF0IHRoaXMgc2VyaWVzIHdpbGwgZ28gaW4gdGhlIG5leHQgbWVyZ2UKPiA+IHdpbmRv
-dy4KPiA+IFRoYW5rcwo+Cj4gR2VudGxlIHBpbmcuCj4gWW91IGFjayB3aWxsIGJlIHZlcnkgaGVs
-cGZ1bCBpbiBsZXR0aW5nIFdpbGwgcHVsbCB0aGlzIHNlcmllcyBmb3IgNC4yMC4KPiBUaGFua3Mu
-CgpJIHdvdWxkIHJlYWxseSBhcHByZWNpYXRlIGlmIHlvdSBjb3VsZCBwcm92aWRlIHlvdXIgYWNr
-IGZvciB0aGlzIHNlcmllcy4KT3IgaWYgdGhlcmUgYXJlIGFueSBjb25jZXJucywgSSBhbSB3aWxs
-aW5nIHRvIGFkZHJlc3MgdGhlbS4KVGhhbmtzLgoKQmVzdCByZWdhcmRzClZpdmVrCgoKCj4KPiAt
-LQo+IFFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50
-ZXIsIEluYy4gaXMgYSBtZW1iZXIKPiBvZiBDb2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVkIGJ5IFRo
-ZSBMaW51eCBGb3VuZGF0aW9uCgoKCi0tClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2YgUXVh
-bGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJvcmEg
-Rm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVk
-cmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcv
-bWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+On Fri, Sep 21, 2018 at 10:52:01AM -0400, Jerome Glisse wrote:
+> Received: from popscn.huawei.com [10.3.17.45] by Turing-Arch-b with POP3
+>  (fetchmail-6.3.26) for <kenny@localhost> (single-drop); Fri, 21 Sep 2018
+>  23:00:01 +0800 (CST)
+> Received: from DGGEMM406-HUB.china.huawei.com (10.3.20.214) by
+>  DGGEML403-HUB.china.huawei.com (10.3.17.33) with Microsoft SMTP Server
+>  (TLS) id 14.3.399.0; Fri, 21 Sep 2018 22:52:20 +0800
+> Received: from dggwg01-in.huawei.com (172.30.65.38) by
+>  DGGEMM406-HUB.china.huawei.com (10.3.20.214) with Microsoft SMTP Server =
+id
+>  14.3.399.0; Fri, 21 Sep 2018 22:52:16 +0800
+> Received: from mx1.redhat.com (unknown [209.132.183.28])	by Forcepoint
+>  Email with ESMTPS id 912ECA2EC6662;	Fri, 21 Sep 2018 22:52:12 +0800 (CST)
+> Received: from smtp.corp.redhat.com
+>  (int-mx09.intmail.prod.int.phx2.redhat.com [10.5.11.24])	(using
+>  TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))	(No client
+>  certificate requested)	by mx1.redhat.com (Postfix) with ESMTPS id
+>  25BC0792BB;	Fri, 21 Sep 2018 14:52:10 +0000 (UTC)
+> Received: from redhat.com (ovpn-124-21.rdu2.redhat.com [10.10.124.21])
+> 	by smtp.corp.redhat.com (Postfix) with ESMTPS id 67B25308BDA0;
+> 	Fri, 21 Sep 2018 14:52:03 +0000 (UTC)
+> Date: Fri, 21 Sep 2018 10:52:01 -0400
+> From: Jerome Glisse <jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> To: Kenneth Lee <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+> CC: Kenneth Lee <nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Herbert Xu
+>  <herbert-lOAM2aK0SrRLBo1qDEOMRrpzq4S04n8Q@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet
+>  <corbet-T1hC0tSOHrs@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Joerg
+>  Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sanjay Kumar
+>  <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Hao Fang <fanghao11-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>,
+>  iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org,
+>  linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas
+>  Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-crypto-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zhou Wang
+>  <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Philippe Ombredanne <pombredanne-od1rfyK75/E@public.gmane.org>,
+>  Zaibo Xu <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "David S . Miller" <davem-fT/PcQaiUtIeIZ0/mPfg9Q@public.gmane.org>,
+>  linux-accelerators-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Subject: Re: [RFCv2 PATCH 0/7] A General Accelerator Framework, WarpDrive
+> Message-ID: <20180921145201.GA3357-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> References: <20180903005204.26041-1-nek.in.cn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>  <20180917014244.GA27596-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>  <20180921100314.GH207969@Turing-Arch-b>
+> Content-Type: text/plain; charset=3D"iso-8859-1"
+> Content-Disposition: inline
+> Content-Transfer-Encoding: 8bit
+> In-Reply-To: <20180921100314.GH207969@Turing-Arch-b>
+> User-Agent: Mutt/1.10.1 (2018-07-13)
+> X-Scanned-By: MIMEDefang 2.84 on 10.5.11.24
+> X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+>  (mx1.redhat.com [10.5.110.39]); Fri, 21 Sep 2018 14:52:10 +0000 (UTC)
+> Return-Path: jglisse-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+> X-MS-Exchange-Organization-AuthSource: DGGEMM406-HUB.china.huawei.com
+> X-MS-Exchange-Organization-AuthAs: Anonymous
+> MIME-Version: 1.0
+> =
+
+> On Fri, Sep 21, 2018 at 06:03:14PM +0800, Kenneth Lee wrote:
+> > On Sun, Sep 16, 2018 at 09:42:44PM -0400, Jerome Glisse wrote:
+> > > =
+
+> > > So i want to summarize issues i have as this threads have dig deep in=
+to
+> > > details. For this i would like to differentiate two cases first the e=
+asy
+> > > one when relying on SVA/SVM. Then the second one when there is no SVA=
+/SVM.
+> > > In both cases your objectives as i understand them:
+> > > =
+
+> > > [R1]- expose a common user space API that make it easy to share boiler
+> > >       plate code accross many devices (discovering devices, opening
+> > >       device, creating context, creating command queue ...).
+> > > [R2]- try to share the device as much as possible up to device limits
+> > >       (number of independant queues the device has)
+> > > [R3]- minimize syscall by allowing user space to directly schedule on=
+ the
+> > >       device queue without a round trip to the kernel
+> > > =
+
+> > > I don't think i missed any.
+> > > =
+
+> > > =
+
+> > > (1) Device with SVA/SVM
+> > > =
+
+> > > For that case it is easy, you do not need to be in VFIO or part of any
+> > > thing specific in the kernel. There is no security risk (modulo bug in
+> > > the SVA/SVM silicon). Fork/exec is properly handle and binding a proc=
+ess
+> > > to a device is just couple dozen lines of code.
+> > > =
+
+> > > =
+
+> > > (2) Device does not have SVA/SVM (or it is disabled)
+> > > =
+
+> > > You want to still allow device to be part of your framework. However
+> > > here i see fundamentals securities issues and you move the burden of
+> > > being careful to user space which i think is a bad idea. We should
+> > > never trus the userspace from kernel space.
+> > > =
+
+> > > To keep the same API for the user space code you want a 1:1 mapping
+> > > between device physical address and process virtual address (ie if
+> > > device access device physical address A it is accessing the same
+> > > memory as what is backing the virtual address A in the process.
+> > > =
+
+> > > Security issues are on two things:
+> > > [I1]- fork/exec, a process who opened any such device and created an
+> > >       active queue can transfer without its knowledge control of its
+> > >       commands queue through COW. The parent map some anonymous region
+> > >       to the device as a command queue buffer but because of COW the
+> > >       parent can be the first to copy on write and thus the child can
+> > >       inherit the original pages that are mapped to the hardware.
+> > >       Here parent lose control and child gain it.
+> > > =
+
+> > =
+
+> > Hi, Jerome, =
+
+> > =
+
+> > I reconsider your logic. I think the problem can be solved. Let us sepa=
+rate the
+> > SVA/SVM feature into two: fault-from-device and device-va-awareness. A =
+device
+> > with iommu can support only device-va-awareness or both.
+> =
+
+> Not sure i follow, are you also talking about the non SVA/SVM case here ?
+> Either device has SVA/SVM, either it does not. The fact that device can
+> use same physical address PA for its access as the process virtual address
+> VA does not change any of the issues listed here, same issues would apply
+> if device was using PA !=3D VA ...
+> =
+
+> =
+
+> > VFIO works on top of iommu, so it will support at least device-va-aware=
+ness. For
+> > the COW problem, it can be taken as a mmu synchronization issue. If the=
+ mmu page
+> > table is changed, it should be synchronize to iommu (via iommu_notifier=
+). In the
+> > case that the device support fault-from-device, it will work fine. In t=
+he case
+> > that it supports only device-va-awareness, we can prefault (handle_mm_f=
+ault)
+> > also via iommu_notifier and reset to iommu page table.
+> > =
+
+> > So this can be considered as a bug of VFIO, cannot it?
+> =
+
+> So again SVA/SVM is fine because it uses the same CPU page table so anyth=
+ing
+> done to the process address space reflect automaticly to the device. Noth=
+ing
+> to do for SVA/SVM.
+> =
+
+> For non SVA/SVM you _must_ unmap device command queues, flush and wait for
+> all pending commands, unmap all the IOMMU mapping and wait for the process
+> to fault on the unmapped device command queue before trying to restore any
+> thing. This would be terribly slow i described it in another email.
+> =
+
+> Also you can not fault inside a mmu_notifier it is illegal, all you can do
+> is unmap thing and wait for access to finish.
+> =
+
+> > > [I2]- Because of [R3] you want to allow userspace to schedule commands
+> > >       on the device without doing an ioctl and thus here user space
+> > >       can schedule any commands to the device with any address. What
+> > >       happens if that address have not been mapped by the user space
+> > >       is undefined and in fact can not be defined as what each IOMMU
+> > >       does on invalid address access is different from IOMMU to IOMMU.
+> > > =
+
+> > >       In case of a bad IOMMU, or simply an IOMMU improperly setup by
+> > >       the kernel, this can potentialy allow user space to DMA anywher=
+e.
+> > > =
+
+> > > [I3]- By relying on GUP in VFIO you are not abiding by the implicit
+> > >       contract (at least i hope it is implicit) that you should not
+> > >       try to map to the device any file backed vma (private or share).
+> > > =
+
+> > >       The VFIO code never check the vma controlling the addresses that
+> > >       are provided to VFIO_IOMMU_MAP_DMA ioctl. Which means that the
+> > >       user space can provide file backed range.
+> > > =
+
+> > >       I am guessing that the VFIO code never had any issues because i=
+ts
+> > >       number one user is QEMU and QEMU never does that (and that's go=
+od
+> > >       as no one should ever do that).
+> > > =
+
+> > >       So if process does that you are opening your self to serious fi=
+le
+> > >       system corruption (depending on file system this can lead to to=
+tal
+> > >       data loss for the filesystem).
+> > > =
+
+> > >       Issue is that once you GUP you never abide to file system flush=
+ing
+> > >       which write protect the page before writing to the disk. So
+> > >       because the page is still map with write permission to the devi=
+ce
+> > >       (assuming VFIO_IOMMU_MAP_DMA was a write map) then the device c=
+an
+> > >       write to the page while it is in the middle of being written ba=
+ck
+> > >       to disk. Consult your nearest file system specialist to ask him
+> > >       how bad that can be.
+> > =
+
+> > In the case, we cannot do anything if the device do not support
+> > fault-from-device. But we can reject write map with file-backed mapping.
+> =
+
+> Yes this would avoid most issues with file-backed mapping, truncate would
+> still cause weird behavior but only for your device. But then your non
+> SVA/SVM case does not behave as the SVA/SVM case so why not do what i out-
+> lined below that allow same behavior modulo command flushing ...
+> =
+
+> > It seems both issues can be solved under VFIO framework:) (But of cause=
+, I don't
+> > mean it has to)
+> =
+
+> The COW can not be solve without either the solution i described in this
+> previous mail below or the other one with mmu notifier. But the one below
+> is saner and has better performance.
+> =
+
+> =
+
+> > > =
+
+> > > [I4]- Design issue, mdev design As Far As I Understand It is about
+> > >       sharing a single device to multiple clients (most obvious case
+> > >       here is again QEMU guest). But you are going against that model,
+> > >       in fact AFAIUI you are doing the exect opposite. When there is
+> > >       no SVA/SVM you want only one mdev device that can not be share.
+> > > =
+
+> > >       So this is counter intuitive to the mdev existing design. It is
+> > >       not about sharing device among multiple users but about giving
+> > >       exclusive access to the device to one user.
+> > > =
+
+> > > =
+
+> > > =
+
+> > > All the reasons above is why i believe a different model would serve
+> > > you and your user better. Below is a design that avoids all of the
+> > > above issues and still delivers all of your objectives with the
+> > > exceptions of the third one [R3] when there is no SVA/SVM.
+> > > =
+
+> > > =
+
+> > > Create a subsystem (very much boiler plate code) which allow device to
+> > > register themself against (very much like what you do in your current
+> > > patchset but outside of VFIO).
+> > > =
+
+> > > That subsystem will create a device file for each registered system a=
+nd
+> > > expose a common API (ie set of ioctl) for each of those device files.
+> > > =
+
+> > > When user space create a queue (through an ioctl after opening the de=
+vice
+> > > file) the kernel can return -EBUSY if all the device queue are in use,
+> > > or create a device queue and return a flag like SYNC_ONLY for device =
+that
+> > > do not have SVA/SVM.
+> > > =
+
+> > > For device with SVA/SVM at the time the process create a queue you bi=
+nd
+> > > the process PASID to the device queue. From there on the userspace can
+> > > schedule commands and use the device without going to kernel space.
+> > > =
+
+> > > For device without SVA/SVM you create a fake queue that is just pure
+> > > memory is not related to the device. From there on the userspace must
+> > > call an ioctl every time it wants the device to consume its queue
+> > > (hence why the SYNC_ONLY flag for synchronous operation only). The
+> > > kernel portion read the fake queue expose to user space and copy
+> > > commands into the real hardware queue but first it properly map any
+> > > of the process memory needed for those commands to the device and
+> > > adjust the device physical address with the one it gets from dma_map
+> > > API.
+> > > =
+
+> > > With that model it is "easy" to listen to mmu_notifier and to abide by
+> > > them to avoid issues [I1], [I3] and [I4]. You obviously avoid the [I2]
+> > > issue by only mapping a fake device queue to userspace.
+> > > =
+
+> > > So yes with that models it means that every device that wish to suppo=
+rt
+> > > the non SVA/SVM case will have to do extra work (ie emulate its comma=
+nd
+> > > queue in software in the kernel). But by doing so, you support an
+> > > unlimited number of process on your device (ie all the process can sh=
+are
+> > > one single hardware command queues or multiple hardware queues).
+> > > =
+
+> > > The big advantages i see here is that the process do not have to worry
+> > > about doing something wrong. You are protecting yourself and your user
+> > > from stupid mistakes.
+> > > =
+
+> > > =
+
+> > > I hope this is useful to you.
+> > > =
+
+> > > Cheers,
+> > > J=E9r=F4me
+> > =
+
+> > Cheers
+> > -- =
+
+> > 			-Kenneth(Hisilicon)
+> > =
+
+
+Thank you very much. Jerome. I will push RFCv3 without VFIO soon.
+
+The basic idea will be:
+
+1. Make a chrdev interface for any WarpDrive device instance. Allocate queue
+   when it is openned.
+
+2. For device with SVA/SVM, the device (in the queue context) share
+   application's process page table via iommu.
+
+3. For device without SVA/SVM, the application can mmap any WarpDrive devic=
+e as
+   its "shared memory". The memory will be shared with any queue openned by=
+ this
+   process, before or after the queues are openned. The VAs will still be s=
+hared
+   with the hardware (by iommu or by kernel translation). This will fulfill=
+ the
+   requirement of "Sharing VA", but it will need the application to use tho=
+se
+   mmapped memory only.
+
+Cheers
+
+-- =
+
+			-Kenneth(Hisilicon)
