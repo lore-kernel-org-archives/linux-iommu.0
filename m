@@ -1,61 +1,69 @@
-From: Jordan Glover via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
-Date: Tue, 25 Sep 2018 17:01:30 +0000
-Message-ID: <Y4FGoptRtN0PmXRXowjeM1LOeXvkP6eun7cr-EgiREHf4fyX3eYz75NTVIpu6VYe6cRIrcRD1Yxy5OiyG_7a1AnrOFKcQhuOGpTvSJlsvt4=@protonmail.ch>
-References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
-	<20180925115723.mf7njwpcmykbkpsu@8bytes.org>
-Reply-To: Jordan Glover <Golden_Miller83-g/b1ySJe57IkP3XJZ0H8fw@public.gmane.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group
+ helpers
+Date: Tue, 25 Sep 2018 18:55:41 +0100
+Message-ID: <75517c87-6ffd-2023-a541-3c69ae52ef4b@arm.com>
+References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
+ <20180830040922.30426-9-baolu.lu@linux.intel.com>
+ <c5124ac1-65fe-7f89-265c-bef229bc5ce9@arm.com>
+ <a97c8f75-ff49-5b87-198f-d3c8950d4e90@linux.intel.com>
+ <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
+ <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D191305A74@SHSMSX101.ccr.corp.intel.com>
+ <f46bcf5f-002b-4269-a750-c4254c9fc89f@arm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19130EAD7@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180925115723.mf7njwpcmykbkpsu-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19130EAD7@SHSMSX101.ccr.corp.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ4oCQIE9yaWdpbmFsIE1lc3NhZ2Ug4oCQ4oCQ4oCQ4oCQ4oCQ4oCQ
-4oCQCk9uIFR1ZXNkYXksIFNlcHRlbWJlciAyNSwgMjAxOCAxOjU3IFBNLCBKb2VyZyBSb2VkZWwg
-PGpvcm9AOGJ5dGVzLm9yZz4gd3JvdGU6Cgo+IEx1LAo+Cj4gY2FuIHlvdSBwbGVhc2UgaGF2ZSBh
-IGxvb2sgYXQgdGhpcyBwcm9ibGVtPwo+Cj4gT24gV2VkLCBTZXAgMDUsIDIwMTggYXQgMDI6MDQ6
-MzhQTSArMDIwMCwgU2VkYXQgRGlsZWsgd3JvdGU6Cj4KPiA+IEhpIEpvZXJnLAo+ID4gImludGVs
-X2lvb211PW9uIiB3YXMgd29ya2luZyBmaW5lIGhlcmUgb24gbXkgVGhpbmtQYWQgVDQ3MCB3aXRo
-Cj4gPiBkZWJpYW4vdGVzdGluZyBBTUQ2NCB3aXRoIExpbnV4IHY0LjE3LnkgYW5kIHY0LjE4Lnku
-Cj4gPiBXaXRoIHRlc3RpbmcgTGludXggdjQuMTktcmMxIGFuZCB2NC4xOS1yYzIgbXkgbWFjaGlu
-ZSBpcyBub3QgYm9vdGluZyAtCj4gPiBibGFjayBzY3JlZW4uCj4gPiBUaGVzZSBrZXJuZWxzIGFy
-ZSBidWlsdCB3aXRoIExMVk0vQ2xhbmcgdjcuMC4wcmMyICh2NC4xOC55IHRvbykuCj4gPiBGdXJ0
-aGVybW9yZSwgSSBzd2l0Y2hlZCBmcm9tIEdSVUIgdG8gc3lzdGVtZC1ib290IHYyMzkuCj4gPiBb
-IC9ib290L2VmaS9sb2FkZXIvZW50cmllcy9kZWJpYW4uY29uZiBdCj4gPiB0aXRsZSBEZWJpYW4g
-R05VL0xpbnV4IGJ1c3Rlci9zaWQgWyBkZWJpYW4ga2VybmVsIF0KPiA+IGxpbnV4IC92bWxpbnV6
-LTQuMTcuMC0zLWFtZDY0Cj4gPiBpbml0cmQgL2luaXRyZC5pbWctNC4xNy4wLTMtYW1kNjQKPiA+
-IG9wdGlvbnMgcm9vdD1VVUlEPTRjMmFhNTQ0LTZlODYtNDRkMi05MzI5LTU3MjYyMzg2N2IzZCBy
-byBpbnRlbF9pb21tdT1vbgo+ID4gWyAvYm9vdC9lZmkvbG9hZGVyL2VudHJpZXMvZGViaWFuLWxs
-dm1saW51eC5jb25mIF0KPiA+IHRpdGxlIERlYmlhbiBHTlUvTGludXggYnVzdGVyL3NpZCBbIGxs
-dm1saW51eCBrZXJuZWwgKEVYUEVSSU1FTlRBTCkgXQo+ID4gbGludXggL3ZtbGludXotNC4xOS4w
-LXJjMi0zLWluaXphLWxsdm1saW51eAo+ID4gaW5pdHJkIC9pbml0cmQuaW1nLTQuMTkuMC1yYzIt
-My1pbml6YS1sbHZtbGludXgKPiA+IG9wdGlvbnMgcm9vdD1VVUlEPTRjMmFhNTQ0LTZlODYtNDRk
-Mi05MzI5LTU3MjYyMzg2N2IzZCBybwo+ID4gQW55IGhpbnRzIG9yIGhpbnRzIHRvIGRlYnVnIHRo
-aXM/Cj4gPiBBbnkgb3RoZXIga2VybmVsIGJvb3QgY2hlYXRzIFsxXSBJIGNhbiB0cnk/Cj4gPiBN
-eSBrZXJuZWwtY29uZmlnIGFuZCBkbWVzZyBvdXRwdXQgaXMgYXR0YWNoZWQuCj4gPiBUaGFua3Mg
-aW4gYWR2YW5jZS4KPiA+IFJlZ2FyZHMsCj4gPgo+ID4gLSAgIFNlZGF0IC0KPiA+CgpUaGlzIHdh
-cyByZXBvcnRlZCBjb3VwbGUgd2Vla3MgYWdvIGluIGZldyBwbGFjZXMsIGkuZS46Cmh0dHBzOi8v
-YnVncy5mcmVlZGVza3RvcC5vcmcvc2hvd19idWcuY2dpP2lkPTEwNzc4MwoKTHUgYWxyZWFkeSBw
-cmVwYXJlZCBmaXggd2hpY2ggeW91IHN1cHBvc2VkbHkgbWVyZ2VkOgpodHRwczovL2xvcmUua2Vy
-bmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTgwMDc3LyMxMTc1MDIwCgpUaGVyZSB3YXMgZXZlbiB2
-MiBvZiB0aGUgYWJvdmUgd2hpY2ggbGlua3MgdG8gYnVnIEkgcG9zdGVkOgpodHRwczovL2xvcmUu
-a2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTgzNjkwLwoKU2VkYXQgY29uZmlybWVkIGl0IGZp
-eGVzIHRoZSBpc3N1ZToKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL3BpcGVybWFp
-bC9pb21tdS8yMDE4LVNlcHRlbWJlci8wMzAxMzkuaHRtbAoKUGxlYXNlIGluY2x1ZGUgYWZvcmVt
-ZW50aW9uZWQgcGF0Y2ggaW4gaW9tbXUtZml4ZXMgYW5kIHNlbmQgaXQgdG8gR3JlZyBmb3IgLXJj
-Ni4KCkpvcmRhbgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
-cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 19/09/2018 00:26, Tian, Kevin wrote:
+>> If the core actually calls it, we can implement detach_dev :) The
+>> problem is that the core never calls detach_dev when default_domain is
+>> present (affects any IOMMU driver that relies on default_domain,
+>> including AMD), and even in case 4) the default_domain is present for
+>> the parent device
+> 
+> Then can we change that core logic so detach_dev is invoked in all
+> cases? yes there will be some changes in vendor drivers, but I expect
+> this change trivial (especially considering the gain in IOMMU API
+> simplicity side as described below).
+
+Thinking more about this, there might be a way that doesn't require too
+much rewriting of IOMMU drivers. When VFIO calls iommu_detach_group to
+detach a vfio-pci device from its domain, it could do detach_dev(dev,
+old_domain) followed by attach_dev(dev, default_domain) instead of only
+attach_dev(dev, default_domain), so:
+
+__iommu_attach_group(grp, unmanaged_domain)
+  ops->attach_dev(dev, unmanaged_domain)
+    -> IOMMU driver detaches from default_domain only if the dev isn't
+       in auxiliary mode
+
+__iommu_detach_group(grp, unmanaged_domain)
+  if (ops->detach_dev)
+      ops->detach_dev(dev, unmanaged_domain)
+  ops->attach_dev(dev, default_domain)
+    -> IOMMU driver ignores this if still attached to default_domain
+
+It's not trivial: since half the IOMMU drivers seem to be using default
+domain now, their detach_dev callback might have been dead code for a
+while (I can't find a path where it still gets called), so re-enabling
+it requires some attention. However, since most of them won't care about
+aux domains, maybe we could just remove their detach_dev pointer.
+
+The resulting logic of attach/detach_dev in IOMMU drivers that do use
+aux domains still seems unnecessarily convoluted. It could as well be
+done with separate attach_aux/detach_aux functions. If you want to keep
+it that way though, I think the above could work for us and I'll try to
+write an RFC.
+
+Thanks,
+Jean
