@@ -1,16 +1,16 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
-Date: Tue, 25 Sep 2018 11:32:32 +0100
-Message-ID: <5aff8dc0-9ce7-5018-e78e-770279681cbc@arm.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
-	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix race handling in
+	split_blk_unmap()
+Date: Tue, 25 Sep 2018 11:48:17 +0100
+Message-ID: <e86cd69f-4355-5078-890a-338756e325ba@arm.com>
+References: <f6700817286f60597f2a93835bf658f3ef3585ef.1535026499.git.robin.murphy@arm.com>
+	<20180925090138.h6tqvrvxy43ycp6g@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <09933fce-b959-32e1-b1f3-0d4389abf735-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20180925090138.h6tqvrvxy43ycp6g-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,50 +20,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjUvMDkvMjAxOCAwNDoxNSwgTHUgQmFvbHUgd3JvdGU6Cj4+ICvCoMKgwqDCoCAvKiBJZiBh
-biBpb19tbSBhbHJlYWR5IGV4aXN0cywgdXNlIGl0ICovCj4+ICvCoMKgwqDCoCBzcGluX2xvY2so
-JmlvbW11X3N2YV9sb2NrKTsKPj4gK8KgwqDCoMKgIGlkcl9mb3JfZWFjaF9lbnRyeSgmaW9tbXVf
-cGFzaWRfaWRyLCBpb19tbSwgaSkgewo+IAo+IFRoaXMgbWlnaHQgYmUgcHJvYmxlbWF0aWMgZm9y
-IHZ0LWQgKGFuZCBvdGhlciBwb3NzaWJsZSBhcmNoJ3Mgd2hpY2ggdXNlCj4gUEFTSUQgb3RoZXIg
-dGhhbiBTVkEpLiBXaGVuIHZ0LWQgaW9tbXUgd29ya3MgaW4gc2NhbGFibGUgbW9kZSwgYSBQQVNJ
-RAo+IG1pZ2h0IGJlIGFsbG9jYXRlZCBmb3I6Cj4gCj4gKDEpIFNWQQo+ICgyKSBEZXZpY2UgQXNz
-aWduYWJsZSBJbnRlcmZhY2UgKG1pZ2h0IGJlIGEgbWRldiBvciBkaXJlY3RseSBtYW5hZ2VkCj4g
-wqDCoMKgwqAgd2l0aGluIGEgZGV2aWNlIGRyaXZlcikuCj4gKDMpIFNWQSBpbiBWTSBndWVzdAo+
-ICg0KSBEZXZpY2UgQXNzaWduYWJsZSBJbnRlcmZhY2UgaW4gVk0gZ3Vlc3QKPiAKPiBTbyB3ZSBj
-YW4ndCBleHBlY3QgdGhhdCBhbiBpb19tbSBwb2ludGVyIHdhcyBhc3NvY2lhdGVkIHdpdGggZWFj
-aCBQQVNJRC4KClllcyBhcyBkaXNjdXNzZWQgb24gdGhlIHByZXZpb3VzIHNlcmllcywgd2UnbGwg
-bmVlZCB0byBtb3ZlIHRoZSBQQVNJRAphbGxvY2F0b3Igb3V0c2lkZSBvZiBpb21tdS1zdmEgYXQg
-c29tZSBwb2ludCwgYW5kIGV2ZW4gb3V0c2lkZSBvZgpkcml2ZXJzL2lvbW11IHNpbmNlIGRldmlj
-ZSBkcml2ZXIgbWlnaHQgd2FudCB0byB1c2UgdGhlIFBBU0lEIGFsbG9jYXRvcgp3aXRob3V0IGFu
-IElPTU1VLgoKVG8gYmUgdXNhYmxlIGJ5IGFsbCBjb25zdW1lcnMgb2YgUEFTSURzLCB0aGF0IGFs
-bG9jYXRvciB3aWxsIG5lZWQgdGhlCnNhbWUgaW50ZXJmYWNlIGFzIElEUiwgc28gSSBkb24ndCB0
-aGluayB3ZSBoYXZlIGEgcHJvYmxlbSBoZXJlLiBJCmhhdmVuJ3QgaGFkIHRpbWUgb3IgbmVlZCB0
-byB3cml0ZSBzdWNoIGFsbG9jYXRvciB5ZXQgKGFuZCBkb24ndCBwbGFuIHRvCmRvIGl0IGFzIHBh
-cnQgb2YgdGhpcyBzZXJpZXMpLCBidXQgSSBkcmFmdGVkIGFuIGludGVyZmFjZSwgdGhhdCBhdCBs
-ZWFzdApmdWxmaWxscyB0aGUgbmVlZHMgb2YgU1ZBLgoKKiBTaW5nbGUgc3lzdGVtLXdpZGUgUEFT
-SUQgc3BhY2UKKiBNdWx0aXBsZSBjb25zdW1lcnMsIGVhY2ggYXNzb2NpYXRpbmcgdGhlaXIgb3du
-IHN0cnVjdHVyZSB0byBQQVNJRHMuCiAgRWFjaCBjb25zdW1lciBnZXRzIGEgdG9rZW4uCiogRGV2
-aWNlIGRyaXZlcnMgbWlnaHQgd2FudCB0byB1c2UgYm90aCBTVkEgYW5kIHByaXZhdGUgUEFTSURz
-IGZvciBhCiAgZGV2aWNlIGF0IHRoZSBzYW1lIHRpbWUuCiogSW4gbXkgb3BpbmlvbiAicGFzaWQi
-IGlzbid0IHRoZSByaWdodCBuYW1lLCAiaW9hc2lkIiB3b3VsZCBiZSBiZXR0ZXIKICBidXQgdGhh
-dCdzIG5vdCBpbXBvcnRhbnQuCgp0eXBlZGVmIHVuc2lnbmVkIGludCBwYXNpZF90OwoKLyogUmV0
-dXJucyBjb25zdW1lciB0b2tlbiAqLwp2b2lkICpwYXNpZF9nZXRfY29uc3VtZXIoKTsKdm9pZCBw
-YXNpZF9wdXRfY29uc3VtZXIodm9pZCAqY29uc3VtZXIpOwoKLyogUmV0dXJucyBwYXNpZCBvciBp
-bnZhbGlkIChwYXNpZF90KSgtMSkgKi8KcGFzaWRfdCBwYXNpZF9hbGxvYyh2b2lkICpjb25zdW1l
-ciwgcGFzaWRfdCBtaW4sIHBhc2lkX3QgbWF4LAogICAgICAgICAgICAgICAgICAgIHZvaWQgKnBy
-aXZhdGUpOwp2b2lkIHBhc2lkX3JlbW92ZShwYXNpZF90IHBhc2lkKTsKCi8qIEl0ZXJhdGUgb3Zl
-ciBQQVNJRHMgZm9yIHRoaXMgY29uc3VtZXIuIEZ1bmMgcmV0dXJucyBub24temVybyB0byBzdG9w
-Cml0ZXJhdGluZyAqLwppbnQgcGFzaWRfZm9yX2VhY2godm9pZCAqY29uc3VtZXIsIHZvaWQgKml0
-ZXJfZGF0YSwKCQkgICBpbnQgKCpmdW5jKSh2b2lkICppdGVyX2RhdGEsIHBhc2lkX3QgcGFzaWQs
-CgkJCSAgICAgICB2b2lkICpwcml2YXRlKSk7Ci8qIFJldHVybnMgcHJpdiBkYXRhIG9yIE5VTEwg
-Ki8Kdm9pZCAqcGFzaWRfZmluZCh2b2lkICpjb25zdW1lciwgcGFzaWRfdCBwYXNpZCk7CgpUaGFu
-a3MsCkplYW4KCj4gQW5kIHRoaXMgY29kZSBtaWdodCBydW4gaW50byBwcm9ibGVtIGlmIHRoZSBw
-YXNpZCBpcyBhbGxvY2F0ZWQgZm9yCj4gdXNhZ2VzIG90aGVyIHRoYW4gU1ZBLgo+IAo+IEJlc3Qg
-cmVnYXJkcywKPiBMdSBCYW9sdQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+Hi Joerg,
+
+On 25/09/18 10:01, Joerg Roedel wrote:
+> Hey Robin,
+> 
+> On Thu, Aug 23, 2018 at 01:14:59PM +0100, Robin Murphy wrote:
+>> Fixes: 2c3d273eabe8 ("iommu/io-pgtable-arm: Support lockless operation")
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> 
+> I can't find a newer version of this in my inbox, do you plan to send
+> one or has it been addressed differently?
+
+Will has the cleaned-up version in his tree along with a couple of other 
+SMMU fixes, which I assume he's planning to send you a pull for (he's 
+off at yet another conference just now so I can't confirm offline). We 
+were planning for the non-strict stuff to come in as SMMU updates on top 
+of that (p.s. please shout if you have any objections on that series so 
+I can get on them ASAP!)
+
+Thanks,
+Robin.
