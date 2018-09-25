@@ -1,14 +1,17 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu: Tidy up window attributes
-Date: Tue, 25 Sep 2018 14:55:23 +0200
-Message-ID: <20180925125522.mzwsiao3ekqvcsuq@8bytes.org>
-References: <96e8371cc3143a58c7a142d9ff1134ba7331dd0a.1537351779.git.robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix race handling in
+	split_blk_unmap()
+Date: Tue, 25 Sep 2018 15:03:25 +0200
+Message-ID: <20180925130325.7w6hfqarnms2iozi@8bytes.org>
+References: <f6700817286f60597f2a93835bf658f3ef3585ef.1535026499.git.robin.murphy@arm.com>
+	<20180925090138.h6tqvrvxy43ycp6g@8bytes.org>
+	<e86cd69f-4355-5078-890a-338756e325ba@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <96e8371cc3143a58c7a142d9ff1134ba7331dd0a.1537351779.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <e86cd69f-4355-5078-890a-338756e325ba-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,23 +22,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 19, 2018 at 11:12:57AM +0100, Robin Murphy wrote:
-> The external interface to get/set window attributes is already
-> abstracted behind iommu_domain_{get,set}_attr(), so there's no real
-> reason for the internal interface to be different. Since we only have
-> one window-based driver anyway, clean up the core code by just moving
-> the DOMAIN_ATTR_WINDOWS handling directly into the PAMU driver.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> Just a cleanup opportunity I spotted whilst poking around in the area.
-> 
->  drivers/iommu/fsl_pamu_domain.c | 20 ++++++++++++++++++++
->  drivers/iommu/iommu.c           | 20 --------------------
->  2 files changed, 20 insertions(+), 20 deletions(-)
+Hi Robin,
 
-Nice cleanup, applied both patches, thanks Robin.
+On Tue, Sep 25, 2018 at 11:48:17AM +0100, Robin Murphy wrote:
+> Will has the cleaned-up version in his tree along with a couple of other
+> SMMU fixes, which I assume he's planning to send you a pull for (he's off at
+> yet another conference just now so I can't confirm offline).
+
+Okay, less work for me, fine.
+
+> We were planning for the non-strict stuff to come in as SMMU updates
+> on top of that (p.s. please shout if you have any objections on that
+> series so I can get on them ASAP!)
+
+No objections, I have suggested this change for quite some time now.
+Cool to see you implmented it :) I also looked at the patches and they
+look good to me.
+
+
+Regards,
+
+	Joerg
