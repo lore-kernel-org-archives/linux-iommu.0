@@ -1,41 +1,36 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: rockchip: Drop verbose prints in the interrupt
-	handler
-Date: Tue, 25 Sep 2018 13:29:30 +0200
-Message-ID: <20180925112930.u5kftmo3vhmdxji4@8bytes.org>
-References: <20180830222832.16766-1-ezequiel@collabora.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Handle memory shortage on pasid table
+ allocation
+Date: Tue, 25 Sep 2018 13:35:49 +0200
+Message-ID: <20180925113549.GB18287@8bytes.org>
+References: <20180901062416.6107-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20180830222832.16766-1-ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20180901062416.6107-1-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Aug 30, 2018 at 07:28:32PM -0300, Ezequiel Garcia wrote:
-> Printing verbosely via WARN macros and friends in interrupt handlers
-> is strongly discouraged. Drop them and use proper ratelimited
-> prints.
+On Sat, Sep 01, 2018 at 02:24:16PM +0800, Lu Baolu wrote:
+> Pasid table memory allocation could return failure due to memory
+> shortage. Limit the pasid table size to 1MiB because current 8MiB
+> contiguous physical memory allocation can be hard to come by. W/o
+> a PASID table, the device could continue to work with only shared
+> virtual memory impacted. So, let's go ahead with context mapping
+> even the memory allocation for pasid table failed.
 > 
-> Signed-off-by: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> Fixes: cc580e41260d ("iommu/vt-d: Per PCI device pasid table interfaces")
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Reported-and-tested-by: Pelton Kyle D <kyle.d.pelton@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/rockchip-iommu.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+>  drivers/iommu/intel-iommu.c | 6 +++---
+>  drivers/iommu/intel-pasid.h | 2 +-
+>  2 files changed, 4 insertions(+), 4 deletions(-)
 
-This doesn't apply cleanly to v4.19-rc5, can you please base the patch
-on that tag, add the Reviewed-by and re-send?
-
-Thanks,
-
-	Joerg
+Applied, thanks.
