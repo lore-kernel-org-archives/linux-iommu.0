@@ -1,33 +1,39 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH] iommu: Fix a typo
-Date: Tue, 25 Sep 2018 15:34:21 +0200
-Message-ID: <20180925133420.tm5czwusrzakhkcf@suse.de>
-References: <20180918143849.28491-1-ramirose@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v4 16/20] iommu/tegra: gart: Don't use managed resources
+Date: Tue, 25 Sep 2018 16:41:21 +0300
+Message-ID: <c803c9bb-dc98-0c5b-791c-0569f1d6346f@gmail.com>
+References: <20180924004153.8232-1-digetx@gmail.com>
+ <20180924004153.8232-17-digetx@gmail.com> <20180924105246.GM21032@ulmo>
+ <a9e2943b-1139-8838-5440-bd6cf55e9a55@gmail.com> <20180925100330.GF7097@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180918143849.28491-1-ramirose-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rami Rosen <ramirose-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180925100330.GF7097@ulmo>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 18, 2018 at 05:38:49PM +0300, Rami Rosen wrote:
-> This patch fixes a typo in iommu.c.
+On 9/25/18 1:03 PM, Thierry Reding wrote:
+> On Mon, Sep 24, 2018 at 09:57:10PM +0300, Dmitry Osipenko wrote:
+>> On 9/24/18 1:52 PM, Thierry Reding wrote:
+>>> On Mon, Sep 24, 2018 at 03:41:49AM +0300, Dmitry Osipenko wrote:
+>>>> GART is a part of the Memory Controller driver that is always built-in,
+>>>> hence there is no benefit from the use of managed resources.
+>>>>
+>>>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>>>> ---
+>>>>  drivers/iommu/tegra-gart.c | 12 +++++++-----
+>>>>  1 file changed, 7 insertions(+), 5 deletions(-)
+>>>
+>>> One benefit would be cleanup on probe error. Also, we may eventually
+>>> want to make even the memory controller driver buildable as a module.
+>>
+>> Please, let's keep that patch as is and re-introduce devm once it will
+>> become really relevant.
 > 
-> Signed-off-by: Rami Rosen <ramirose-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Alright, fine with me.
 
-Applied, thanks.
+Thanks, I'm taking that as ACK.
