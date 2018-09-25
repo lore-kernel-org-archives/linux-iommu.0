@@ -1,16 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix race handling in
-	split_blk_unmap()
-Date: Tue, 25 Sep 2018 11:48:17 +0100
-Message-ID: <e86cd69f-4355-5078-890a-338756e325ba@arm.com>
-References: <f6700817286f60597f2a93835bf658f3ef3585ef.1535026499.git.robin.murphy@arm.com>
-	<20180925090138.h6tqvrvxy43ycp6g@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu: rockchip: Drop verbose prints in the interrupt
+	handler
+Date: Tue, 25 Sep 2018 13:29:30 +0200
+Message-ID: <20180925112930.u5kftmo3vhmdxji4@8bytes.org>
+References: <20180830222832.16766-1-ezequiel@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180925090138.h6tqvrvxy43ycp6g-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20180830222832.16766-1-ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,28 +19,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On 25/09/18 10:01, Joerg Roedel wrote:
-> Hey Robin,
+On Thu, Aug 30, 2018 at 07:28:32PM -0300, Ezequiel Garcia wrote:
+> Printing verbosely via WARN macros and friends in interrupt handlers
+> is strongly discouraged. Drop them and use proper ratelimited
+> prints.
 > 
-> On Thu, Aug 23, 2018 at 01:14:59PM +0100, Robin Murphy wrote:
->> Fixes: 2c3d273eabe8 ("iommu/io-pgtable-arm: Support lockless operation")
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> 
-> I can't find a newer version of this in my inbox, do you plan to send
-> one or has it been addressed differently?
+> Signed-off-by: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> ---
+>  drivers/iommu/rockchip-iommu.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 
-Will has the cleaned-up version in his tree along with a couple of other 
-SMMU fixes, which I assume he's planning to send you a pull for (he's 
-off at yet another conference just now so I can't confirm offline). We 
-were planning for the non-strict stuff to come in as SMMU updates on top 
-of that (p.s. please shout if you have any objections on that series so 
-I can get on them ASAP!)
+This doesn't apply cleanly to v4.19-rc5, can you please base the patch
+on that tag, add the Reviewed-by and re-send?
 
 Thanks,
-Robin.
+
+	Joerg
