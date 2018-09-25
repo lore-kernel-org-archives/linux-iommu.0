@@ -1,17 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix race handling in
-	split_blk_unmap()
-Date: Tue, 25 Sep 2018 15:03:25 +0200
-Message-ID: <20180925130325.7w6hfqarnms2iozi@8bytes.org>
-References: <f6700817286f60597f2a93835bf658f3ef3585ef.1535026499.git.robin.murphy@arm.com>
-	<20180925090138.h6tqvrvxy43ycp6g@8bytes.org>
-	<e86cd69f-4355-5078-890a-338756e325ba@arm.com>
+Subject: Re: [PATCH v3 01/10] iommu: Introduce Shared Virtual Addressing API
+Date: Tue, 25 Sep 2018 15:16:47 +0200
+Message-ID: <20180925131647.rygncwik5uszsm3n@8bytes.org>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-2-jean-philippe.brucker@arm.com>
+	<f406bcf7-4e54-9f1b-88eb-03fc642ffede@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <e86cd69f-4355-5078-890a-338756e325ba-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <f406bcf7-4e54-9f1b-88eb-03fc642ffede-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,27 +20,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Sun, Sep 23, 2018 at 10:39:25AM +0800, Lu Baolu wrote:
+> > +int iommu_sva_init_device(struct device *dev, unsigned long features,
+> > +		       unsigned int min_pasid, unsigned int max_pasid)
+> > +{
+> > +	int ret;
+> > +	struct iommu_sva_param *param;
+> > +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+> 
+> This doesn't work for vt-d. The domains for host iova are self-managed
+> by vt-d driver itself. Hence, iommu_get_domain_for_dev() will always
+> return NULL unless an UNMANAGED domain is attached to the device.
+> 
+> How about
+> 
+>       const struct iommu_ops *ops = dev->bus->iommu_ops;
+> 
+> instead?
 
-On Tue, Sep 25, 2018 at 11:48:17AM +0100, Robin Murphy wrote:
-> Will has the cleaned-up version in his tree along with a couple of other
-> SMMU fixes, which I assume he's planning to send you a pull for (he's off at
-> yet another conference just now so I can't confirm offline).
-
-Okay, less work for me, fine.
-
-> We were planning for the non-strict stuff to come in as SMMU updates
-> on top of that (p.s. please shout if you have any objections on that
-> series so I can get on them ASAP!)
-
-No objections, I have suggested this change for quite some time now.
-Cool to see you implmented it :) I also looked at the patches and they
-look good to me.
-
+The per-bus iommu-ops might go away sooner or later as we move to
+per-device iommu-ops. How about fixing the VT-d driver to not keep that
+domain internal to itself?
 
 Regards,
 
