@@ -1,98 +1,79 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v4 11/20] memory: tegra: Use of_device_get_match_data()
-Date: Tue, 25 Sep 2018 12:00:46 +0200
-Message-ID: <20180925100046.GD7097@ulmo>
+Subject: Re: [PATCH v4 12/20] iommu/tegra: gart: Integrate with Memory
+ Controller driver
+Date: Tue, 25 Sep 2018 12:02:02 +0200
+Message-ID: <20180925100202.GE7097@ulmo>
 References: <20180924004153.8232-1-digetx@gmail.com>
- <20180924004153.8232-12-digetx@gmail.com>
- <20180924101354.GH21032@ulmo>
- <dcf439a0-249c-ff9f-292d-c807a736672a@gmail.com>
+ <20180924004153.8232-13-digetx@gmail.com>
+ <20180924102322.GI21032@ulmo>
+ <b2d283fc-ff52-3166-cd70-42f9cba93948@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="BI5RvnYi6R4T2M87"
+        protocol="application/pgp-signature"; boundary="Qz2CZ664xQdCRdPu"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <dcf439a0-249c-ff9f-292d-c807a736672a@gmail.com>
+In-Reply-To: <b2d283fc-ff52-3166-cd70-42f9cba93948@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Dmitry Osipenko <digetx@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Jonathan Hunter <jonathanh@nvidia.com>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---BI5RvnYi6R4T2M87
+--Qz2CZ664xQdCRdPu
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Sep 24, 2018 at 09:39:43PM +0300, Dmitry Osipenko wrote:
-> On 9/24/18 1:13 PM, Thierry Reding wrote:
-> > On Mon, Sep 24, 2018 at 03:41:44AM +0300, Dmitry Osipenko wrote:
-> >> There is no need to match device with the DT node since it was already
-> >> matched, use of_device_get_match_data() helper to get the match-data.
+On Mon, Sep 24, 2018 at 09:22:59PM +0300, Dmitry Osipenko wrote:
+> On 9/24/18 1:23 PM, Thierry Reding wrote:
+> > On Mon, Sep 24, 2018 at 03:41:45AM +0300, Dmitry Osipenko wrote:
+> >> The device-tree binding has been changed. There is no separate GART de=
+vice
+> >> anymore, it is squashed into the Memory Controller. Integrate GART mod=
+ule
+> >> with the MC in a way it is done for the SMMU of Tegra30+.
 > >>
 > >> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 > >> ---
-> >>  drivers/memory/tegra/mc.c | 10 ++--------
-> >>  1 file changed, 2 insertions(+), 8 deletions(-)
-> >>
-> >> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-> >> index 5454ffe5b2e0..cdc33f93cf7c 100644
-> >> --- a/drivers/memory/tegra/mc.c
-> >> +++ b/drivers/memory/tegra/mc.c
-> >> @@ -11,8 +11,7 @@
-> >>  #include <linux/interrupt.h>
-> >>  #include <linux/kernel.h>
-> >>  #include <linux/module.h>
-> >> -#include <linux/of.h>
-> >> -#include <linux/platform_device.h>
+> >>  drivers/iommu/Kconfig      |  1 +
+> >>  drivers/iommu/tegra-gart.c | 98 ++++++++++----------------------------
+> >>  drivers/memory/tegra/mc.c  | 41 ++++++++++++++++
+> >>  include/soc/tegra/mc.h     | 27 +++++++++++
+> >>  4 files changed, 93 insertions(+), 74 deletions(-)
 > >=20
-> > It's better not to remove these two because the code still uses
-> > functions declared in them. If ever we were going to remove code using
-> > linux/of_device.h and then remove the linux/of_device.h include, we'd
-> > break the build and have to reintroduce the includes.
+> > I think this could technically have been two patches, but since they'd
+> > have a compile-time dependency either way they need to be applied in the
+> > correct order, so some coordination between IOMMU and Tegra trees is
+> > going to have to happen anyway and might as well just stick this into a
+> > single patch.
 >=20
-> That doesn't sound like a good argument. You're way too picky here ;)
->=20
-> > The same would happen if linux/of_device.h were ever to stop including
-> > linux/platform_device.h or linux/of.h. That may sound unlikely, but it
-> > has happened in the past with other includes. It can also happen that
-> > some restructuring takes place in some headers that is not so obvious
-> > and then things can still start falling apart miles away.
->=20
-> Restructuring will be somebody else problem. Not sure that we really
-> should care about it, I think it is unnecessary. But since you're
-> insisting..
+> I assume that Joerg will take the whole series once it's ready (no?),
+> hence your ACK will be needed here and in other patches.
 
-It's actually a very common argument and I've seen patches in the past
-that add includes just for the purpose of making sure the right
-definitions get pulled in. This happens quite frequently as a preamble
-to some major rework of some header files that would otherwise cause a
-lot of breakage.
-
-So I think it's best to be proactive about this and make sure we
-explicitly pull in all the necessary headers in the first place,
-irrespective of whether or not they may already get pulled in indirectly
-by some other headers.
+Yeah, either Joerg takes them all with my Acked-by's or provides his for
+the IOMMU bits and I take the batch through the Tegra tree. I don't have
+a strong preference.
 
 Thierry
 
---BI5RvnYi6R4T2M87
+--Qz2CZ664xQdCRdPu
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluqB04ACgkQ3SOs138+
-s6Hyvg/9EeBObbdVirXsYp8DQaJ68XjG9k0VkZdp036X0ww9pWj9Kr+9A/6dVfBI
-SlK/+mFR5/RAHF/b/STNONtdu1TJV+TeeAuaZLfvIsS/KRoTXLpT4eC1kaFAGoun
-AH6rC68fNOSZoEmJbfSuAAbEhDLtNV4ITsW7ySwNB2Jn+TFAh3r/yd8WST769wY1
-ZULruEX1spgzlK8+ksF0lW4YDIRsb/MdlXgFC02nU4BpnlgaaUDXM16SsTnmVRQs
-jYC0WhFIXW+d9rebYDVdky/qQ7Eg5FtGDYXj6KBTGYVYenbB1HmXDm87rFUylIse
-mHZkZ3IzIVIOCcERDIc22gL6V78BViU0wfhtmGzpL+YK3BqWJ4TuDYuVuBz5AdGm
-NC7p4B+vNu7xULJpKrNgI1oGFmqE+NfyThmNMCoEEAbJ2ZRDrlTiPn6dQrM09irj
-NhY7/aCX8XSF8L25GCmZ3KOOlq+/kJdol6or76ON1hKdplvUxWsh2v6XwBOelM7C
-UhjbSvBZyTtUoWlly0dEB91Xrqbr4w4WH+Nu/Z2AQU/ue6itkTrwZK2RHF7uiBUI
-9X8hu8hO7ZCHgY9k1k/3Wl3S9eJ6lyJ5NI7JpqQ+dVX94H90cO+/+/bRczTLPQNI
-MBPx6I/hweSJ99xPdwgwIW1Uy2ce6VVFBclZI3LCpicXcgYKmyM=
-=YEyv
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAluqB5oACgkQ3SOs138+
+s6Hkvw/5AWXy5G71xh8Re4QOcew+EqSH3Hh/AZ0z0t6SS3rJX6kjk6fiy39FHeb4
+ZHMqZf2bpJLTPea6QiiWJ7VUAYVgnyb1plfuvHGttu0CGpmoSWROMclkm4KNArNW
+XV7EDxbGbXpkfqm/uYMRQVMvYXn2malwgpXXVKgH8ABOaERTchxNJMoacuB7Y++b
+E2LBcoLQbjfZZumyYjqCRQbbEa1BHhGD0sBOW4klTGJZMHRnS3VPs5rsyxN8YdJY
+4+wz+00B4+JjNI5y13TynWL4ARLtGlwgAYZ6V1U09i+qQjUWsvFImrXGnxlt7aO9
+2kxS18zkV9Ak2uD2oUFR3Tng9u+VDXOGh/1syuQ8lVoi1CT2N0/Au5AjuDvzM6gq
+PrTHdrUtNQyU3chmLYBOfdfHuiaTgoTXgiw43AncaPWQyoLcjxwAYTnh+B1yuKqX
+01JABU6g/HMQjksEDJXb/mY7zQ2IRuJn0eOL5wx5GF1p8+pEiC2i6wQKnZ16Flnd
+k2xnwANk8i8vl+R4If9rJvMrc7FYOVSJbkkAopEozhvszsdn9sVbl708IiPesIi1
+mhtCOaEwDe7fgrvhB9h74IbPiS6eg3POIZf4mL2JNbdd7+dWjOrkFGy0lx6Gc5S6
+9YEjsHgopAg3zyB0eCBqAPXJo8lPGPPbT4NVbz9/9l8I839VyhQ=
+=NkBG
 -----END PGP SIGNATURE-----
 
---BI5RvnYi6R4T2M87--
+--Qz2CZ664xQdCRdPu--
