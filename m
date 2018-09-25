@@ -1,62 +1,40 @@
-From: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-Subject: RE: [PATCH] iommu/amd: return devid as alias for ACPI HID devices
-Date: Tue, 25 Sep 2018 15:41:34 +0000
-Message-ID: <BLUPR12MB05166F5680FA08277A8CC4F99C160@BLUPR12MB0516.namprd12.prod.outlook.com>
-References: <20180918101058.2365-1-arindam.nath@amd.com>
-	<20180925133143.h46eopc5j7mnw5ac@suse.de>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2 0/4] Qcom smmu-500 TLB invalidation errata for sdm845
+Date: Tue, 25 Sep 2018 17:39:30 +0100
+Message-ID: <20180925163928.GA1839@brain-police>
+References: <20180910062551.28175-1-vivek.gautam@codeaurora.org>
+ <20180925120933.54xd72sv65d63tkl@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180925133143.h46eopc5j7mnw5ac-l3A5Bk7waGM@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180925120933.54xd72sv65d63tkl@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, andy.gross@linaro.org, robin.murphy@arm.com, bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, david.brown@linaro.org, tfiga@chromium.org, swboyd@chromium.org, linux-kernel@vger.kernel.org, robdclark@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-> -----Original Message-----
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Sent: Tuesday, September 25, 2018 7:02 PM
-> To: Nath, Arindam <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit, Suravee
-> <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> Subject: Re: [PATCH] iommu/amd: return devid as alias for ACPI HID devices
+On Tue, Sep 25, 2018 at 02:09:34PM +0200, Joerg Roedel wrote:
+> On Mon, Sep 10, 2018 at 11:55:47AM +0530, Vivek Gautam wrote:
+> > Vivek Gautam (4):
+> >   firmware: qcom_scm-64: Add atomic version of qcom_scm_call
+> >   firmware/qcom_scm: Add atomic version of io read/write APIs
+> >   firmware/qcom_scm: Add scm call to handle smmu errata
+> >   iommu/arm-smmu: Add support to handle Qcom's TLBI serialization errata
+> > 
+> >  drivers/firmware/qcom_scm-32.c |  17 ++++
+> >  drivers/firmware/qcom_scm-64.c | 181 +++++++++++++++++++++++++++++++----------
+> >  drivers/firmware/qcom_scm.c    |  18 ++++
+> >  drivers/firmware/qcom_scm.h    |   9 ++
+> >  drivers/iommu/arm-smmu-regs.h  |   2 +
+> >  drivers/iommu/arm-smmu.c       | 133 +++++++++++++++++++++++++++++-
+> >  include/linux/qcom_scm.h       |   6 ++
+> >  7 files changed, 320 insertions(+), 46 deletions(-)
 > 
-> Hi Arindam,
-> 
-> On Tue, Sep 18, 2018 at 03:40:58PM +0530, Arindam Nath wrote:
-> > @@ -246,7 +246,13 @@ static u16 get_alias(struct device *dev)
-> >
-> >  	/* The callers make sure that get_device_id() does not fail here */
-> >  	devid = get_device_id(dev);
-> > +
-> > +	/* For ACPI HID devices, we simply return the devid as such */
-> > +	if (!dev_is_pci(dev))
-> > +		return devid;
-> > +
-> 
-> Does this fix some bug? If there is no alias defined for the device-id,
-> it should just return the correct devid even without that change.
+> Should this go through the iommu-tree? In that case I need Acked-by's
+> for the firmware code changes.
 
-It does fix an issue where eMMC controller is an ACPI HID device and it fails to work with IOMMU enabled.
+Yup, and I'd also like Robin's ack on the arm-smmu*.c changes (I see he has
+some comments on the code as it stands).
 
-Since for the ACPI HID, there is no actual pci_dev backing it, there is a NULL pointer de-referencing inside pci_for_each_dma_alias() while trying to access pdev->bus->number.
-
-Thanks,
-Arindam
-
-> 
-> Regards,
-> 
-> 	Joerg
+Will
