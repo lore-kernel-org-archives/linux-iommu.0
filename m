@@ -1,16 +1,17 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 01/10] iommu: Introduce Shared Virtual Addressing API
-Date: Tue, 25 Sep 2018 15:46:42 -0700
-Message-ID: <20180925154642.18a98849@jacob-builder>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
+Date: Wed, 26 Sep 2018 07:33:35 +0800
+Message-ID: <b33a1911-e100-586b-b8df-eb04312ecffd@linux.intel.com>
 References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-2-jean-philippe.brucker@arm.com>
-	<f406bcf7-4e54-9f1b-88eb-03fc642ffede@linux.intel.com>
-	<20180925131647.rygncwik5uszsm3n@8bytes.org>
+	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
+	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
+	<20180925132627.vbdotr23o7lqrmnd@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180925131647.rygncwik5uszsm3n-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20180925132627.vbdotr23o7lqrmnd-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,43 +25,34 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 25 Sep 2018 15:16:47 +0200
-Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+Hi Joerg,
 
-> On Sun, Sep 23, 2018 at 10:39:25AM +0800, Lu Baolu wrote:
-> > > +int iommu_sva_init_device(struct device *dev, unsigned long
-> > > features,
-> > > +		       unsigned int min_pasid, unsigned int
-> > > max_pasid) +{
-> > > +	int ret;
-> > > +	struct iommu_sva_param *param;
-> > > +	struct iommu_domain *domain =
-> > > iommu_get_domain_for_dev(dev);  
-> > 
-> > This doesn't work for vt-d. The domains for host iova are
-> > self-managed by vt-d driver itself. Hence,
-> > iommu_get_domain_for_dev() will always return NULL unless an
-> > UNMANAGED domain is attached to the device.
-> > 
-> > How about
-> > 
-> >       const struct iommu_ops *ops = dev->bus->iommu_ops;
-> > 
-> > instead?  
+On 09/25/2018 09:26 PM, Joerg Roedel wrote:
+> On Tue, Sep 25, 2018 at 11:15:40AM +0800, Lu Baolu wrote:
+>> This might be problematic for vt-d (and other possible arch's which use
+>> PASID other than SVA). When vt-d iommu works in scalable mode, a PASID
+>> might be allocated for:
+>>
+>> (1) SVA
+>> (2) Device Assignable Interface (might be a mdev or directly managed
+>>      within a device driver).
+>> (3) SVA in VM guest
+>> (4) Device Assignable Interface in VM guest
+>>
+>> So we can't expect that an io_mm pointer was associated with each PASID.
+>> And this code might run into problem if the pasid is allocated for
+>> usages other than SVA.
 > 
-> The per-bus iommu-ops might go away sooner or later as we move to
-> per-device iommu-ops. How about fixing the VT-d driver to not keep
-> that domain internal to itself?
-> 
-Just to understand more specifically, you mean let VT-d driver also
-support IOMMU_DOMAIN_DMA as default domain?
+> So all of these use-cases above should work in parallel on the same
+> device, just with different PASIDs?
 
-But I think the ordering issue is still there in that the DOMAIN_DMA
-domain will not be created until DMA map call is invoked. I think
-sva_init_device should not depend on the default domain.
+No. It's not required.
 
-> Regards,
-> 
-> 	Joerg
+> Or is a device always using only one
+> of the above modes at the same time?
 
-[Jacob Pan]
+A device might use one or multiple modes described above at the same
+time.
+
+Best regards,
+Lu Baolu
