@@ -1,69 +1,103 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH v2 08/10] vfio/type1: Add domain at(de)taching group
- helpers
-Date: Tue, 25 Sep 2018 18:55:41 +0100
-Message-ID: <75517c87-6ffd-2023-a541-3c69ae52ef4b@arm.com>
-References: <20180830040922.30426-1-baolu.lu@linux.intel.com>
- <20180830040922.30426-9-baolu.lu@linux.intel.com>
- <c5124ac1-65fe-7f89-265c-bef229bc5ce9@arm.com>
- <a97c8f75-ff49-5b87-198f-d3c8950d4e90@linux.intel.com>
- <04f5dc9d-71b1-37ec-402b-fae5f9e08664@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191300D35@SHSMSX101.ccr.corp.intel.com>
- <c285871d-2ea0-5878-c7ac-ffa4ba8256ee@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D191305A74@SHSMSX101.ccr.corp.intel.com>
- <f46bcf5f-002b-4269-a750-c4254c9fc89f@arm.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19130EAD7@SHSMSX101.ccr.corp.intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime
+ during probe, add/remove device
+Date: Tue, 25 Sep 2018 19:55:33 +0100
+Message-ID: <aedf3f32-68ae-566a-3735-ca4ec5c7559a@arm.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
+ <20180830144541.17740-3-vivek.gautam@codeaurora.org>
+ <CAAFQd5B7YR03Jm1upOg2nsaKOb1iDD7-WGo-qx7S8m-nounCvA@mail.gmail.com>
+ <3ccc3690-dc9d-56e7-e2d1-62e73a189bff@codeaurora.org>
+ <CAAFQd5DMDWEeBU=fg6arye3pXnrCqOA4tDtMSGutXk7vSz-EtQ@mail.gmail.com>
+ <CAFp+6iE3+qn6-gpXEzxfoP5yPMARmUcJNn0AZk-kA2AreTLnng@mail.gmail.com>
+ <CAFp+6iHnHj_PkPFBUSTdJTW57K51wLqSEw6VOMKxAVo7O+ms9g@mail.gmail.com>
+ <CAFp+6iFvhdSq7upbvsEWgMewhAaaRM91iw9p7qOFPYrUxis0Hg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19130EAD7@SHSMSX101.ccr.corp.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "Bie, Tiwei" <tiwei.bie@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAFp+6iFvhdSq7upbvsEWgMewhAaaRM91iw9p7qOFPYrUxis0Hg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/09/2018 00:26, Tian, Kevin wrote:
->> If the core actually calls it, we can implement detach_dev :) The
->> problem is that the core never calls detach_dev when default_domain is
->> present (affects any IOMMU driver that relies on default_domain,
->> including AMD), and even in case 4) the default_domain is present for
->> the parent device
-> 
-> Then can we change that core logic so detach_dev is invoked in all
-> cases? yes there will be some changes in vendor drivers, but I expect
-> this change trivial (especially considering the gain in IOMMU API
-> simplicity side as described below).
-
-Thinking more about this, there might be a way that doesn't require too
-much rewriting of IOMMU drivers. When VFIO calls iommu_detach_group to
-detach a vfio-pci device from its domain, it could do detach_dev(dev,
-old_domain) followed by attach_dev(dev, default_domain) instead of only
-attach_dev(dev, default_domain), so:
-
-__iommu_attach_group(grp, unmanaged_domain)
-  ops->attach_dev(dev, unmanaged_domain)
-    -> IOMMU driver detaches from default_domain only if the dev isn't
-       in auxiliary mode
-
-__iommu_detach_group(grp, unmanaged_domain)
-  if (ops->detach_dev)
-      ops->detach_dev(dev, unmanaged_domain)
-  ops->attach_dev(dev, default_domain)
-    -> IOMMU driver ignores this if still attached to default_domain
-
-It's not trivial: since half the IOMMU drivers seem to be using default
-domain now, their detach_dev callback might have been dead code for a
-while (I can't find a path where it still gets called), so re-enabling
-it requires some attention. However, since most of them won't care about
-aux domains, maybe we could just remove their detach_dev pointer.
-
-The resulting logic of attach/detach_dev in IOMMU drivers that do use
-aux domains still seems unnecessarily convoluted. It could as well be
-done with separate attach_aux/detach_aux functions. If you want to keep
-it that way though, I think the above could work for us and I'll try to
-write an RFC.
-
-Thanks,
-Jean
+SGkgVml2ZWssCgpPbiAyMDE4LTA5LTI1IDY6NTYgQU0sIFZpdmVrIEdhdXRhbSB3cm90ZToKPiBI
+aSBSb2JpbiwgV2lsbCwKPiAKPiBPbiBUdWUsIFNlcCAxOCwgMjAxOCBhdCA4OjQxIEFNIFZpdmVr
+IEdhdXRhbQo+IDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+Pgo+PiBIaSBS
+b2JpbiwKPj4KPj4gT24gRnJpLCBTZXAgNywgMjAxOCBhdCAzOjUyIFBNIFZpdmVrIEdhdXRhbSA8
+dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPj4+Cj4+PiBPbiBGcmksIFNlcCA3
+LCAyMDE4IGF0IDM6MjIgUE0gVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4gd3JvdGU6
+Cj4+Pj4KPj4+PiBPbiBGcmksIFNlcCA3LCAyMDE4IGF0IDY6MzggUE0gVml2ZWsgR2F1dGFtIDx2
+aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+IHdyb3RlOgo+Pj4+Pgo+Pj4+PiBIaSBUb21hc3os
+Cj4+Pj4+Cj4+Pj4+Cj4+Pj4+IE9uIDkvNy8yMDE4IDI6NDYgUE0sIFRvbWFzeiBGaWdhIHdyb3Rl
+Ogo+Pj4+Pj4gSGkgVml2ZWssCj4+Pj4+Pgo+Pj4+Pj4gT24gVGh1LCBBdWcgMzAsIDIwMTggYXQg
+MTE6NDYgUE0gVml2ZWsgR2F1dGFtCj4+Pj4+PiA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3Jn
+PiB3cm90ZToKPj4+Pj4+PiBGcm9tOiBTcmljaGFyYW4gUiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEu
+b3JnPgo+Pj4+Pj4+Cj4+Pj4+Pj4gVGhlIHNtbXUgZGV2aWNlIHByb2JlL3JlbW92ZSBhbmQgYWRk
+L3JlbW92ZSBtYXN0ZXIgZGV2aWNlIGNhbGxiYWNrcwo+Pj4+Pj4+IGdldHMgY2FsbGVkIHdoZW4g
+dGhlIHNtbXUgaXMgbm90IGxpbmtlZCB0byBpdHMgbWFzdGVyLCB0aGF0IGlzIHdpdGhvdXQKPj4+
+Pj4+PiB0aGUgY29udGV4dCBvZiB0aGUgbWFzdGVyIGRldmljZS4gU28gY2FsbGluZyBydW50aW1l
+IGFwaXMgaW4gdGhvc2UgcGxhY2VzCj4+Pj4+Pj4gc2VwYXJhdGVseS4KPj4+Pj4+PiBHbG9iYWwg
+bG9ja3MgYXJlIGFsc28gaW5pdGlhbGl6ZWQgYmVmb3JlIGVuYWJsaW5nIHJ1bnRpbWUgcG0gYXMg
+dGhlCj4+Pj4+Pj4gcnVudGltZV9yZXN1bWUoKSBjYWxscyBkZXZpY2VfcmVzZXQoKSB3aGljaCBk
+b2VzIHRsYl9zeW5jX2dsb2JhbCgpCj4+Pj4+Pj4gdGhhdCB1bHRpbWF0ZWx5IHJlcXVpcmVzIGxv
+Y2tzIHRvIGJlIGluaXRpYWxpemVkLgo+Pj4+Pj4+Cj4+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogU3Jp
+Y2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPj4+Pj4+PiBbdml2ZWs6IENsZWFu
+dXAgcG0gcnVudGltZSBjYWxsc10KPj4+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0g
+PHZpdmVrLmdhdXRhbUBjb2RlYXVyb3JhLm9yZz4KPj4+Pj4+PiBSZXZpZXdlZC1ieTogVG9tYXN6
+IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4KPj4+Pj4+PiBUZXN0ZWQtYnk6IFNyaW5pdmFzIEth
+bmRhZ2F0bGEgPHNyaW5pdmFzLmthbmRhZ2F0bGFAbGluYXJvLm9yZz4KPj4+Pj4+PiAtLS0KPj4+
+Pj4+PiAgICBkcml2ZXJzL2lvbW11L2FybS1zbW11LmMgfCA4OSArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0KPj4+Pj4+PiAgICAxIGZpbGUgY2hhbmdlZCwg
+ODEgaW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkKPj4+Pj4+IFtzbmlwXQo+Pj4+Pj4+IEBA
+IC0yMjE1LDEwICsyMjgxLDE3IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX3JlbW92ZShz
+dHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+Pj4+Pj4+ICAgICAgICAgICBpZiAoIWJpdG1h
+cF9lbXB0eShzbW11LT5jb250ZXh0X21hcCwgQVJNX1NNTVVfTUFYX0NCUykpCj4+Pj4+Pj4gICAg
+ICAgICAgICAgICAgICAgZGV2X2VycigmcGRldi0+ZGV2LCAicmVtb3ZpbmcgZGV2aWNlIHdpdGgg
+YWN0aXZlIGRvbWFpbnMhXG4iKTsKPj4+Pj4+Pgo+Pj4+Pj4+ICsgICAgICAgYXJtX3NtbXVfcnBt
+X2dldChzbW11KTsKPj4+Pj4+PiAgICAgICAgICAgLyogVHVybiB0aGUgdGhpbmcgb2ZmICovCj4+
+Pj4+Pj4gICAgICAgICAgIHdyaXRlbChzQ1IwX0NMSUVOVFBELCBBUk1fU01NVV9HUjBfTlMoc21t
+dSkgKyBBUk1fU01NVV9HUjBfc0NSMCk7Cj4+Pj4+Pj4gKyAgICAgICBhcm1fc21tdV9ycG1fcHV0
+KHNtbXUpOwo+Pj4+Pj4+ICsKPj4+Pj4+PiArICAgICAgIGlmIChwbV9ydW50aW1lX2VuYWJsZWQo
+c21tdS0+ZGV2KSkKPj4+Pj4+PiArICAgICAgICAgICAgICAgcG1fcnVudGltZV9mb3JjZV9zdXNw
+ZW5kKHNtbXUtPmRldik7Cj4+Pj4+Pj4gKyAgICAgICBlbHNlCj4+Pj4+Pj4gKyAgICAgICAgICAg
+ICAgIGNsa19idWxrX2Rpc2FibGUoc21tdS0+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+Pj4+Pj4+
+Cj4+Pj4+Pj4gLSAgICAgICBjbGtfYnVsa19kaXNhYmxlX3VucHJlcGFyZShzbW11LT5udW1fY2xr
+cywgc21tdS0+Y2xrcyk7Cj4+Pj4+Pj4gKyAgICAgICBjbGtfYnVsa191bnByZXBhcmUoc21tdS0+
+bnVtX2Nsa3MsIHNtbXUtPmNsa3MpOwo+Pj4+Pj4gQXJlbid0IHdlIG1pc3NpbmcgcG1fcnVudGlt
+ZV9kaXNhYmxlKCkgaGVyZT8gV2UnbGwgaGF2ZSB0aGUgZW5hYmxlCj4+Pj4+PiBjb3VudCB1bmJh
+bGFuY2VkIGlmIHRoZSBkcml2ZXIgaXMgcmVtb3ZlZCBhbmQgcHJvYmVkIGFnYWluLgo+Pj4+Pgo+
+Pj4+PiBwbV9ydW50aW1lX2ZvcmNlX3N1c3BlbmQoKSBkb2VzIGEgcG1fcnVudGltZV9kaXNhYmxl
+KCkgYWxzbyBpZiBpIGFtIG5vdAo+Pj4+PiB3cm9uZy4KPj4+Pj4gQW5kLCBhcyBtZW50aW9uZWQg
+aW4gYSBwcmV2aW91cyB0aHJlYWQgWzFdLCB3ZSB3ZXJlIHNlZWluZyBhIHdhcm5pbmcKPj4+Pj4g
+d2hpY2ggd2UgYXZvaWRlZAo+Pj4+PiBieSBrZWVwaW5nIGZvcmNlX3N1c3BlbmQoKS4KPj4+Pj4K
+Pj4+Pj4gWzFdIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE4LzcvOC8xMjQKPj4+Pgo+Pj4+IEkg
+c2VlLCB0aGFua3MuIEkgZGlkbid0IHJlYWxpemUgdGhhdCBwbV9ydW50aW1lX2ZvcmNlX3N1c3Bl
+bmQoKQo+Pj4+IGFscmVhZHkgZGlzYWJsZXMgcnVudGltZSBQTSBpbmRlZWQuIFNvcnJ5IGZvciB0
+aGUgbm9pc2UuCj4+Pgo+Pj4gSGkgVG9tYXN6LAo+Pj4gTm8gcHJvYmxlbS4gVGhhbmtzIGZvciBs
+b29raW5nIGJhY2sgYXQgaXQuCj4+Pgo+Pj4gSGkgUm9iaW4sCj4+PiBJZiB5b3UgYXJlIGZpbmUg
+d2l0aCB0aGlzIHNlcmllcywgdGhlbiBjYW4geW91IHBsZWFzZSBjb25zaWRlciBnaXZpbmcKPj4+
+IFJldmlld2VkLWJ5LCBzbyB0aGF0IHdlIGFyZSBjZXJ0YWluIHRoYXQgdGhpcyBzZXJpZXMgd2ls
+bCBnbyBpbiB0aGUgbmV4dCBtZXJnZQo+Pj4gd2luZG93Lgo+Pj4gVGhhbmtzCj4+Cj4+IEdlbnRs
+ZSBwaW5nLgo+PiBZb3UgYWNrIHdpbGwgYmUgdmVyeSBoZWxwZnVsIGluIGxldHRpbmcgV2lsbCBw
+dWxsIHRoaXMgc2VyaWVzIGZvciA0LjIwLgo+PiBUaGFua3MuCj4gCj4gSSB3b3VsZCByZWFsbHkg
+YXBwcmVjaWF0ZSBpZiB5b3UgY291bGQgcHJvdmlkZSB5b3VyIGFjayBmb3IgdGhpcyBzZXJpZXMu
+Cj4gT3IgaWYgdGhlcmUgYXJlIGFueSBjb25jZXJucywgSSBhbSB3aWxsaW5nIHRvIGFkZHJlc3Mg
+dGhlbS4KCkFwb2xvZ2llcywgSSB0aG91Z2h0IEknZCByZXBsaWVkIHRvIHNheSBJJ2QgYmUgZ2V0
+dGluZyB0byB0aGlzIHNob3J0bHksIApidXQgYXBwYXJlbnRseSBub3QgOigKCkZXSVcsICJzaG9y
+dGx5IiBpcyBub3cgdG9tb3Jyb3cgLSBJIGRvbid0ICp0aGluayogdGhlcmUncyBhbnl0aGluZyAK
+b3V0c3RhbmRpbmcsIGJ1dCBnaXZlbiB0aGUgbnVtYmVyIG9mIHN1YnRsZXRpZXMgd2UndmUgdHVy
+bmVkIHVwIHNvIGZhciBJIApkbyBqdXN0IHdhbnQgb25lIGxhc3QgdGhvcm91Z2ggZG91YmxlLWNo
+ZWNrIHRvIG1ha2Ugc3VyZS4KClRoYW5rcywKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRyZW5v
+QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
