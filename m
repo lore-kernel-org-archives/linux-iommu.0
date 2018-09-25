@@ -1,142 +1,69 @@
-From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-Subject: Re: [PATCH 0/4 v7] Support kdump for AMD secure memory
- encryption(SME)
-Date: Tue, 25 Sep 2018 19:10:24 +0000
-Message-ID: <fd8af3af-3b7c-75a6-ad67-b2efe78011fb@amd.com>
-References: <20180907081805.368-1-lijiang@redhat.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2] drivers/vfio: Allow type-1 IOMMU instantiation with
+	all ARM/ARM64 IOMMUs
+Date: Tue, 25 Sep 2018 13:43:22 -0600
+Message-ID: <20180925134322.405ccae2@t450s.home>
+References: <20180913131529.11837-1-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180907081805.368-1-lijiang@redhat.com>
-Content-Language: en-US
-Content-ID: <6B6C6FDC6F76874C97E4CDE626906303@namprd12.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lianbo Jiang <lijiang@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: "mingo@redhat.com" <mingo@redhat.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "hpa@zytor.com" <hpa@zytor.com>, "ebiederm@xmission.com" <ebiederm@xmission.com>, "joro@8bytes.org" <joro@8bytes.org>, "dyoung@redhat.com" <dyoung@redhat.com>, "kexec@lists.infradead.org" <kexec@lists.infradead.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "bhe@redhat.com" <bhe@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180913131529.11837-1-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Howells <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDkvMDcvMjAxOCAwMzoxOCBBTSwgTGlhbmJvIEppYW5nIHdyb3RlOg0KPiBXaGVuIFNNRSBp
-cyBlbmFibGVkIG9uIEFNRCBtYWNoaW5lLCB3ZSBhbHNvIG5lZWQgdG8gc3VwcG9ydCBrZHVtcC4g
-QmVjYXVzZQ0KPiB0aGUgbWVtb3J5IGlzIGVuY3J5cHRlZCBpbiB0aGUgZmlyc3Qga2VybmVsLCB3
-ZSB3aWxsIHJlbWFwIHRoZSBvbGQgbWVtb3J5DQo+IHRvIHRoZSBrZHVtcCBrZXJuZWwgZm9yIGR1
-bXBpbmcgZGF0YSwgYW5kIFNNRSBpcyBhbHNvIGVuYWJsZWQgaW4gdGhlIGtkdW1wDQo+IGtlcm5l
-bCwgb3RoZXJ3aXNlIHRoZSBvbGQgbWVtb3J5IGNhbiBub3QgYmUgZGVjcnlwdGVkLg0KPiANCj4g
-Rm9yIHRoZSBrZHVtcCwgaXQgaXMgbmVjZXNzYXJ5IHRvIGRpc3Rpbmd1aXNoIHdoZXRoZXIgdGhl
-IG1lbW9yeSBpcyBlbmNyeXB0ZWQuDQo+IEZ1cnRoZXJtb3JlLCB3ZSBzaG91bGQgYWxzbyBrbm93
-IHdoaWNoIHBhcnQgb2YgdGhlIG1lbW9yeSBpcyBlbmNyeXB0ZWQgb3INCj4gZGVjcnlwdGVkLiBX
-ZSB3aWxsIGFwcHJvcHJpYXRlbHkgcmVtYXAgdGhlIG1lbW9yeSBhY2NvcmRpbmcgdG8gdGhlIHNw
-ZWNpZmljDQo+IHNpdHVhdGlvbiBpbiBvcmRlciB0byB0ZWxsIGNwdSBob3cgdG8gYWNjZXNzIHRo
-ZSBtZW1vcnkuDQo+IA0KPiBBcyB3ZSBrbm93LCBhIHBhZ2Ugb2YgbWVtb3J5IHRoYXQgaXMgbWFy
-a2VkIGFzIGVuY3J5cHRlZCwgd2hpY2ggd2lsbCBiZQ0KPiBhdXRvbWF0aWNhbGx5IGRlY3J5cHRl
-ZCB3aGVuIHJlYWQgZnJvbSBEUkFNLCBhbmQgd2lsbCBhbHNvIGJlIGF1dG9tYXRpY2FsbHkNCj4g
-ZW5jcnlwdGVkIHdoZW4gd3JpdHRlbiB0byBEUkFNLiBJZiB0aGUgb2xkIG1lbW9yeSBpcyBlbmNy
-eXB0ZWQsIHdlIGhhdmUgdG8NCj4gcmVtYXAgdGhlIG9sZCBtZW1vcnkgd2l0aCB0aGUgbWVtb3J5
-IGVuY3J5cHRpb24gbWFzaywgd2hpY2ggd2lsbCBhdXRvbWF0aWNhbGx5DQo+IGRlY3J5cHQgdGhl
-IG9sZCBtZW1vcnkgd2hlbiB3ZSByZWFkIHRob3NlIGRhdGEuDQo+IA0KPiBGb3Iga2R1bXAoU01F
-KSwgdGhlcmUgYXJlIHR3byBjYXNlcyB0aGF0IGRvZXNuJ3Qgc3VwcG9ydDoNCj4gDQo+ICAtLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IHwgZmlyc3Qta2Vy
-bmVsIHwgc2Vjb25kLWtlcm5lbCB8IGtkdW1wIHN1cHBvcnQgfA0KPiB8ICAgICAgKG1lbV9lbmNy
-eXB0PW9ufG9mZikgICAgfCAgICh5ZXN8bm8pICAgIHwNCj4gfC0tLS0tLS0tLS0tLS0tKy0tLS0t
-LS0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS18DQo+IHwgICAgIG9uICAgICAgIHwgICAgIG9uICAg
-ICAgICB8ICAgICB5ZXMgICAgICAgfA0KPiB8ICAgICBvZmYgICAgICB8ICAgICBvZmYgICAgICAg
-fCAgICAgeWVzICAgICAgIHwNCj4gfCAgICAgb24gICAgICAgfCAgICAgb2ZmICAgICAgIHwgICAg
-IG5vICAgICAgICB8DQo+IHwgICAgIG9mZiAgICAgIHwgICAgIG9uICAgICAgICB8ICAgICBubyAg
-ICAgICAgfA0KPiB8X19fX19fX19fX19fX198X19fX19fX19fX19fX19ffF9fX19fX19fX19fX19f
-X3wNCj4gDQo+IDEuIFNNRSBpcyBlbmFibGVkIGluIHRoZSBmaXJzdCBrZXJuZWwsIGJ1dCBTTUUg
-aXMgZGlzYWJsZWQgaW4ga2R1bXAga2VybmVsDQo+IEluIHRoaXMgY2FzZSwgYmVjYXVzZSB0aGUg
-b2xkIG1lbW9yeSBpcyBlbmNyeXB0ZWQsIHdlIGNhbid0IGRlY3J5cHQgdGhlDQo+IG9sZCBtZW1v
-cnkuDQo+IA0KPiAyLiBTTUUgaXMgZGlzYWJsZWQgaW4gdGhlIGZpcnN0IGtlcm5lbCwgYnV0IFNN
-RSBpcyBlbmFibGVkIGluIGtkdW1wIGtlcm5lbA0KPiBJdCBpcyB1bm5lY2Vzc2FyeSB0byBzdXBw
-b3J0IGluIHRoaXMgY2FzZSwgYmVjYXVzZSB0aGUgb2xkIG1lbW9yeSBpcw0KPiB1bmVuY3J5cHRl
-ZCwgdGhlIG9sZCBtZW1vcnkgY2FuIGJlIGR1bXBlZCBhcyB1c3VhbCwgd2UgZG9uJ3QgbmVlZCB0
-byBlbmFibGUNCj4gU01FIGluIGtkdW1wIGtlcm5lbC4gQW5vdGhlciwgSWYgd2UgbXVzdCBzdXBw
-b3J0IHRoZSBzY2VuYXJpbywgaXQgd2lsbA0KPiBpbmNyZWFzZSB0aGUgY29tcGxleGl0eSBvZiB0
-aGUgY29kZSwgd2Ugd2lsbCBoYXZlIHRvIGNvbnNpZGVyIGhvdyB0byBwYXNzDQo+IHRoZSBTTUUg
-ZmxhZyBmcm9tIHRoZSBmaXJzdCBrZXJuZWwgdG8gdGhlIGtkdW1wIGtlcm5lbCwgaW4gb3JkZXIg
-dG8gbGV0IHRoZQ0KPiBrZHVtcCBrZXJuZWwga25vdyB0aGF0IHdoZXRoZXIgdGhlIG9sZCBtZW1v
-cnkgaXMgZW5jcnlwdGVkLg0KPiANCj4gVGhlcmUgYXJlIHR3byBtZXRob2RzIHRvIHBhc3MgdGhl
-IFNNRSBmbGFnIHRvIHRoZSBrZHVtcCBrZXJuZWwuIFRoZSBmaXJzdA0KPiBtZXRob2QgaXMgdG8g
-bW9kaWZ5IHRoZSBhc3NlbWJseSBjb2RlLCB3aGljaCBpbmNsdWRlcyBzb21lIGNvbW1vbiBjb2Rl
-IGFuZA0KPiB0aGUgcGF0aCBpcyB0b28gbG9uZy4gVGhlIHNlY29uZCBtZXRob2QgaXMgdG8gdXNl
-IGtleGVjIHRvb2wsIHdoaWNoIGNvdWxkDQo+IHJlcXVpcmUgdGhlIFNNRSBmbGFnIHRvIGJlIGV4
-cG9ydGVkIGluIHRoZSBmaXJzdCBrZXJuZWwgYnkgInByb2MiIG9yICJzeXNmcyIsDQo+IGtleGVj
-IHRvb2xzIHdpbGwgcmVhZCB0aGUgU01FIGZsYWcgZnJvbSAicHJvYyIgb3IgInN5c2ZzIiB3aGVu
-IHdlIHVzZSBrZXhlYw0KPiB0b29scyB0byBsb2FkIGltYWdlLCBzdWJzZXF1ZW50bHkgdGhlIFNN
-RSBmbGFnIHdpbGwgYmUgc2F2ZWQgaW4gYm9vdF9wYXJhbXMsDQo+IHdlIGNhbiBwcm9wZXJseSBy
-ZW1hcCB0aGUgb2xkIG1lbW9yeSBhY2NvcmRpbmcgdG8gdGhlIHByZXZpb3VzbHkgc2F2ZWQgU01F
-DQo+IGZsYWcuIEJ1dCBpdCBpcyB0b28gZXhwZW5zaXZlIHRvIGRvIHRoaXMuDQo+IA0KPiBUaGlz
-IHBhdGNoZXMgYXJlIG9ubHkgZm9yIFNNRSBrZHVtcCwgdGhlIHBhdGNoZXMgZG9uJ3Qgc3VwcG9y
-dCBTRVYga2R1bXAuDQoNClJldmlld2VkLWJ5OiBUb20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNr
-eUBhbWQuY29tPg0KDQpKdXN0IGN1cmlvdXMsIGFyZSB5b3UgcGxhbm5pbmcgdG8gYWRkIFNFViBr
-ZHVtcCBzdXBwb3J0IGFmdGVyIHRoaXM/DQoNCkFsc28sIGEgcXVlc3Rpb24gYmVsb3cuLi4NCg0K
-PiANCj4gVGVzdCB0b29sczoNCj4gbWFrZWR1bXBmaWxlW3YxLjYuM106IGh0dHBzOi8vZ2l0aHVi
-LmNvbS9MaWFuYm9KL21ha2VkdW1wZmlsZQ0KPiBjb21taXQgZTFkZTEwM2VjYThmIChBIGRyYWZ0
-IGZvciBrZHVtcCB2bWNvcmUgYWJvdXQgQU1EIFNNRSkNCj4gTm90ZTogVGhpcyBwYXRjaCBjYW4g
-b25seSBkdW1wIHZtY29yZSBpbiB0aGUgY2FzZSBvZiBTTUUgZW5hYmxlZC4NCj4gDQo+IGNyYXNo
-LTcuMi4zOiBodHRwczovL2dpdGh1Yi5jb20vY3Jhc2gtdXRpbGl0eS9jcmFzaC5naXQNCj4gY29t
-bWl0IDAwMWY3N2EwNTU4NSAoRml4IGZvciBMaW51eCA0LjE5LXJjMSBhbmQgbGF0ZXIga2VybmVs
-cyB0aGF0IGNvbnRhaW4NCj4gICAgICAgICAgICAgICAgICAgICAga2VybmVsIGNvbW1pdDcyOTBk
-NTgwOTU3MTJhODlmODQ1ZTFiY2EwNTMzNDc5NmRkNDllZDIpDQo+IA0KPiBrZXhlYy10b29scy0y
-LjAuMTc6IGdpdDovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vdXRpbHMva2VybmVsL2tleGVjL2tl
-eGVjLXRvb2xzLmdpdA0KPiBjb21taXQgYjlkZTIxZWY1MWE3IChrZXhlYzogZml4IGZvciAiVW5o
-YW5kbGVkIHJlbGEgcmVsb2NhdGlvbjogUl9YODZfNjRfUExUMzIiIGVycm9yKQ0KPiBOb3RlOg0K
-PiBCZWZvcmUgeW91IGxvYWQgdGhlIGtlcm5lbCBhbmQgaW5pdHJhbWZzIGZvciBrZHVtcCwgdGhp
-cyBwYXRjaChodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9waXBlcm1haWwva2V4ZWMvMjAxOC1T
-ZXB0ZW1iZXIvMDIxNDYwLmh0bWwpDQo+IG11c3QgYmUgbWVyZ2VkIHRvIGtleGVjLXRvb2xzLCBh
-bmQgdGhlbiB0aGUga2R1bXAga2VybmVsIHdpbGwgd29yayB3ZWxsLiBCZWNhdXNlIHRoZXJlDQo+
-IGlzIGEgcGF0Y2ggd2hpY2ggaXMgcmVtb3ZlZCBiYXNlZCBvbiB2Nih4ODYvaW9yZW1hcDogc3Ry
-ZW5ndGhlbiB0aGUgbG9naWMgaW4gZWFybHlfbWVtcmVtYXBfcGdwcm90X2FkanVzdCgpDQo+IHRv
-IGFkanVzdCBlbmNyeXB0aW9uIG1hc2spLg0KPiANCj4gVGVzdCBlbnZpcm9ubWVudDoNCj4gSFAg
-UHJvTGlhbnQgREwzODVHZW4xMCBBTUQgRVBZQyA3MjUxDQo+IDgtQ29yZSBQcm9jZXNzb3INCj4g
-MzI3NjggTUIgbWVtb3J5DQo+IDYwMCBHQiBkaXNrIHNwYWNlDQo+IA0KPiBMaW51eCA0LjE5LXJj
-MjoNCj4gZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZh
-bGRzL2xpbnV4LmdpdA0KPiBjb21taXQgNTczNjE4NDZiNTJiYzY4NjExMmRhNmNhNTM2OGQxMTIx
-MDc5NjgwNA0KPiANCj4gUmVmZXJlbmNlOg0KPiBBTUQ2NCBBcmNoaXRlY3R1cmUgUHJvZ3JhbW1l
-cidzIE1hbnVhbA0KPiBodHRwczovL3N1cHBvcnQuYW1kLmNvbS9UZWNoRG9jcy8yNDU5My5wZGYN
-Cj4gDQo+IENoYW5nZXMgc2luY2UgdjY6DQo+IDEuIFRoZXJlIGlzIGEgcGF0Y2ggd2hpY2ggaXMg
-cmVtb3ZlZCBiYXNlZCBvbiB2Ni4NCj4gKHg4Ni9pb3JlbWFwOiBzdHJlbmd0aGVuIHRoZSBsb2dp
-YyBpbiBlYXJseV9tZW1yZW1hcF9wZ3Byb3RfYWRqdXN0KCkgdG8gYWRqdXN0IGVuY3J5cHRpb24g
-bWFzaykNCj4gRGF2ZSBZb3VuZyBzdWdnZXN0cyB0aGF0IHRoaXMgcGF0Y2ggY2FuIGJlIHJlbW92
-ZWQgYW5kIGZpeCB0aGUga2V4ZWMtdG9vbHMuDQo+IFJlZmVyZW5jZTogaHR0cDovL2xpc3RzLmlu
-ZnJhZGVhZC5vcmcvcGlwZXJtYWlsL2tleGVjLzIwMTgtU2VwdGVtYmVyLzAyMTQ2MC5odG1sKQ0K
-PiAyLiBVcGRhdGUgdGhlIHBhdGNoIGxvZy4NCj4gDQo+IFNvbWUga25vd24gaXNzdWVzOg0KPiAx
-LiBhYm91dCBTTUUNCj4gVXBzdHJlYW0ga2VybmVsIHdpbGwgaGFuZyBvbiBIUCBtYWNoaW5lKERM
-Mzg1R2VuMTAgQU1EIEVQWUMgNzI1MSkgd2hlbg0KPiB3ZSBleGVjdXRlIHRoZSBrZXhlYyBjb21t
-YW5kIGFzIGZvbGxvdzoNCj4gDQo+ICMga2V4ZWMgLWwgL2Jvb3Qvdm1saW51ei00LjE5LjAtcmMy
-KyAtLWluaXRyZD0vYm9vdC9pbml0cmFtZnMtNC4xOS4wLXJjMisuaW1nIC0tY29tbWFuZC1saW5l
-PSJyb290PS9kZXYvbWFwcGVyL3JoZWxfaHAtLWRsMzg1ZzEwLS0wMy1yb290IHJvIG1lbV9lbmNy
-eXB0PW9uIHJkLmx2bS5sdj1yaGVsX2hwLWRsMzg1ZzEwLTAzL3Jvb3QgcmQubHZtLmx2PXJoZWxf
-aHAtZGwzODVnMTAtMDMvc3dhcCBjb25zb2xlPXR0eVMwLDExNTIwMG44MSBMQU5HPWVuX1VTLlVU
-Ri04IGVhcmx5cHJpbnRrPXNlcmlhbCBkZWJ1ZyBub2thc2xyIg0KPiAjIGtleGVjIC1lIChvciBy
-ZWJvb3QpDQo+IA0KPiBCdXQgdGhpcyBpc3N1ZSBjYW4gbm90IGJlIHJlcHJvZHVjZWQgb24gc3Bl
-ZWR3YXkgbWFjaGluZSwgYW5kIHRoaXMgaXNzdWUNCj4gaXMgaXJyZWxldmFudCB0byBteSBwb3N0
-ZWQgcGF0Y2hlcy4NCj4gDQo+IFRoZSBrZXJuZWwgbG9nOg0KPiBbIDEyNDguOTMyMjM5XSBrZXhl
-Y19jb3JlOiBTdGFydGluZyBuZXcga2VybmVsDQo+IGVhcmx5IGNvbnNvbGUgaW4gZXh0cmFjdF9r
-ZXJuZWwNCj4gaW5wdXRfZGF0YTogMHgwMDAwMDAwODdlOTFjM2I0DQo+IGlucHV0X2xlbjogMHgw
-MDAwMDAwMDAwNjdmY2JkDQo+IG91dHB1dDogMHgwMDAwMDAwODdkNDAwMDAwDQo+IG91dHB1dF9s
-ZW46IDB4MDAwMDAwMDAwMWI2ZmE5MA0KPiBrZXJuZWxfdG90YWxfc2l6ZTogMHgwMDAwMDAwMDAx
-YTlkMDAwDQo+IHRyYW1wb2xpbmVfMzJiaXQ6IDB4MDAwMDAwMDAwMDA5OTAwMA0KPiANCj4gRGVj
-b21wcmVzc2luZyBMaW51eC4uLg0KPiBQYXJzaW5nIEVMRi4uLiAgICAgICAgWy0tLUhlcmUgdGhl
-IHN5c3RlbSB3aWxsIGhhbmddDQoNCkRvIHlvdSBrbm93IHRoZSByZWFzb24gZm9yIHRoZSBoYW5n
-PyAgSXQgbG9va3MgbGlrZSBpdCBpcyBoYW5naW5nIGluDQpwYXJzZV9lbGYoKS4gIENhbiB5b3Ug
-YWRkIHNvbWUgZGVidWcgdG8gcGFyc2VfZWxmKCkgdG8gc2VlIGlmIHRoZQ0KdmFsdWUgb2YgZWhk
-ci5lX3BobnVtIGlzIHZhbGlkIChtYXliZSBpdCBpcyBub3QgYSB2YWxpZCB2YWx1ZSBhbmQgc28N
-CnRoZSBsb29wIHRha2VzIGZvcmV2ZXIpPw0KDQpUaGFua3MsDQpUb20NCg0KPiANCj4gDQo+IExp
-YW5ibyBKaWFuZyAoNCk6DQo+ICAgeDg2L2lvcmVtYXA6IGFkZCBhIGZ1bmN0aW9uIGlvcmVtYXBf
-ZW5jcnlwdGVkKCkgdG8gcmVtYXAga2R1bXAgb2xkDQo+ICAgICBtZW1vcnkNCj4gICBrZXhlYzog
-YWxsb2NhdGUgdW5lbmNyeXB0ZWQgY29udHJvbCBwYWdlcyBmb3Iga2R1bXAgaW4gY2FzZSBTTUUg
-aXMNCj4gICAgIGVuYWJsZWQNCj4gICBhbWRfaW9tbXU6IHJlbWFwIHRoZSBkZXZpY2UgdGFibGUg
-b2YgSU9NTVUgd2l0aCB0aGUgbWVtb3J5IGVuY3J5cHRpb24NCj4gICAgIG1hc2sgZm9yIGtkdW1w
-DQo+ICAga2R1bXAvdm1jb3JlOiBzdXBwb3J0IGVuY3J5cHRlZCBvbGQgbWVtb3J5IHdpdGggU01F
-IGVuYWJsZWQNCj4gDQo+ICBhcmNoL3g4Ni9pbmNsdWRlL2FzbS9pby5oICAgICAgICAgICAgfCAg
-MyArKw0KPiAgYXJjaC94ODYva2VybmVsL01ha2VmaWxlICAgICAgICAgICAgIHwgIDEgKw0KPiAg
-YXJjaC94ODYva2VybmVsL2NyYXNoX2R1bXBfZW5jcnlwdC5jIHwgNTMgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKw0KPiAgYXJjaC94ODYvbW0vaW9yZW1hcC5jICAgICAgICAgICAgICAgIHwg
-MjUgKysrKysrKystLS0tLQ0KPiAgZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfaW5pdC5jICAgICAg
-IHwgMTQgKysrKysrLS0NCj4gIGZzL3Byb2Mvdm1jb3JlLmMgICAgICAgICAgICAgICAgICAgICB8
-IDIxICsrKysrKystLS0tDQo+ICBpbmNsdWRlL2xpbnV4L2NyYXNoX2R1bXAuaCAgICAgICAgICAg
-fCAxMiArKysrKysrDQo+ICBrZXJuZWwva2V4ZWNfY29yZS5jICAgICAgICAgICAgICAgICAgfCAx
-MiArKysrKysrDQo+ICA4IGZpbGVzIGNoYW5nZWQsIDEyNSBpbnNlcnRpb25zKCspLCAxNiBkZWxl
-dGlvbnMoLSkNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBhcmNoL3g4Ni9rZXJuZWwvY3Jhc2hfZHVt
-cF9lbmNyeXB0LmMNCj4gDQo=
+On Thu, 13 Sep 2018 15:15:29 +0200
+Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org> wrote:
+
+> Currently the type-1 IOMMU instantiation depends on "ARM_SMMU ||
+> ARM_SMMU_V3", while it applies to other ARM/ARM64 platforms with an
+> IOMMU (e.g. Renesas VMSA-compatible IPMMUs).
+> 
+> Instead of extending the list of IOMMU types on ARM platforms, replace
+> the list by "ARM || ARM64", like other architectures do.  The feature is
+> still restricted to ARM/ARM64 platforms with an IOMMU by the dependency
+> on IOMMU_API.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> ---
+> Tested with sata_rcar on Renesas R-Car H3 ES2.0.
+> 
+> This causes a trivial merge conflict with commit c01eaa95ad30897b ("Make
+> anon_inodes unconditional") in vfs/for-next.
+> 
+> v2:
+>   - Make the feature just depend on ARM || ARM64, instead of adding yet
+>     another IPMMU_VMSA dependency, as suggested by Robin Murphy
+>     <robin.murphy-5wv7dgnIgG8@public.gmane.org>.
+> ---
+>  drivers/vfio/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+> index c84333eb5eb59bef..9de5ed38da830a91 100644
+> --- a/drivers/vfio/Kconfig
+> +++ b/drivers/vfio/Kconfig
+> @@ -21,7 +21,7 @@ config VFIO_VIRQFD
+>  menuconfig VFIO
+>  	tristate "VFIO Non-Privileged userspace driver framework"
+>  	depends on IOMMU_API
+> -	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM_SMMU || ARM_SMMU_V3)
+> +	select VFIO_IOMMU_TYPE1 if (X86 || S390 || ARM || ARM64)
+>  	select ANON_INODES
+>  	help
+>  	  VFIO provides a framework for secure userspace device drivers.
+
+Applied to vfio next branch for v4.20 with Robin and Simon's R-b.
+Thanks,
+
+Alex
