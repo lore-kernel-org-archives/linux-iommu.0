@@ -1,75 +1,39 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
-Date: Wed, 26 Sep 2018 11:12:22 +0800
-Message-ID: <ac40a922-a1d3-6d74-cb4b-0c19972673a1@linux.intel.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
-	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
-	<5aff8dc0-9ce7-5018-e78e-770279681cbc@arm.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 4/4] dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops
+Date: Wed, 26 Sep 2018 14:20:19 +1000
+Message-ID: <87r2hgga9o.fsf@concordia.ellerman.id.au>
+References: <20180827084711.23407-1-hch@lst.de> <20180827084711.23407-5-hch@lst.de> <20180922150119.GA14761@roeck-us.net> <20180925201619.GB8413@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5aff8dc0-9ce7-5018-e78e-770279681cbc-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180925201619.GB8413@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAwOS8yNS8yMDE4IDA2OjMyIFBNLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIgd3JvdGU6
-Cj4gT24gMjUvMDkvMjAxOCAwNDoxNSwgTHUgQmFvbHUgd3JvdGU6Cj4+PiArwqDCoMKgwqAgLyog
-SWYgYW4gaW9fbW0gYWxyZWFkeSBleGlzdHMsIHVzZSBpdCAqLwo+Pj4gK8KgwqDCoMKgIHNwaW5f
-bG9jaygmaW9tbXVfc3ZhX2xvY2spOwo+Pj4gK8KgwqDCoMKgIGlkcl9mb3JfZWFjaF9lbnRyeSgm
-aW9tbXVfcGFzaWRfaWRyLCBpb19tbSwgaSkgewo+Pgo+PiBUaGlzIG1pZ2h0IGJlIHByb2JsZW1h
-dGljIGZvciB2dC1kIChhbmQgb3RoZXIgcG9zc2libGUgYXJjaCdzIHdoaWNoIHVzZQo+PiBQQVNJ
-RCBvdGhlciB0aGFuIFNWQSkuIFdoZW4gdnQtZCBpb21tdSB3b3JrcyBpbiBzY2FsYWJsZSBtb2Rl
-LCBhIFBBU0lECj4+IG1pZ2h0IGJlIGFsbG9jYXRlZCBmb3I6Cj4+Cj4+ICgxKSBTVkEKPj4gKDIp
-IERldmljZSBBc3NpZ25hYmxlIEludGVyZmFjZSAobWlnaHQgYmUgYSBtZGV2IG9yIGRpcmVjdGx5
-IG1hbmFnZWQKPj4gIMKgwqDCoMKgIHdpdGhpbiBhIGRldmljZSBkcml2ZXIpLgo+PiAoMykgU1ZB
-IGluIFZNIGd1ZXN0Cj4+ICg0KSBEZXZpY2UgQXNzaWduYWJsZSBJbnRlcmZhY2UgaW4gVk0gZ3Vl
-c3QKPj4KPj4gU28gd2UgY2FuJ3QgZXhwZWN0IHRoYXQgYW4gaW9fbW0gcG9pbnRlciB3YXMgYXNz
-b2NpYXRlZCB3aXRoIGVhY2ggUEFTSUQuCj4gCj4gWWVzIGFzIGRpc2N1c3NlZCBvbiB0aGUgcHJl
-dmlvdXMgc2VyaWVzLCB3ZSdsbCBuZWVkIHRvIG1vdmUgdGhlIFBBU0lECj4gYWxsb2NhdG9yIG91
-dHNpZGUgb2YgaW9tbXUtc3ZhIGF0IHNvbWUgcG9pbnQsIGFuZCBldmVuIG91dHNpZGUgb2YKPiBk
-cml2ZXJzL2lvbW11IHNpbmNlIGRldmljZSBkcml2ZXIgbWlnaHQgd2FudCB0byB1c2UgdGhlIFBB
-U0lEIGFsbG9jYXRvcgo+IHdpdGhvdXQgYW4gSU9NTVUuCj4gCj4gVG8gYmUgdXNhYmxlIGJ5IGFs
-bCBjb25zdW1lcnMgb2YgUEFTSURzLCB0aGF0IGFsbG9jYXRvciB3aWxsIG5lZWQgdGhlCj4gc2Ft
-ZSBpbnRlcmZhY2UgYXMgSURSLCBzbyBJIGRvbid0IHRoaW5rIHdlIGhhdmUgYSBwcm9ibGVtIGhl
-cmUuIEkKPiBoYXZlbid0IGhhZCB0aW1lIG9yIG5lZWQgdG8gd3JpdGUgc3VjaCBhbGxvY2F0b3Ig
-eWV0IChhbmQgZG9uJ3QgcGxhbiB0bwo+IGRvIGl0IGFzIHBhcnQgb2YgdGhpcyBzZXJpZXMpLCBi
-dXQgSSBkcmFmdGVkIGFuIGludGVyZmFjZSwgdGhhdCBhdCBsZWFzdAo+IGZ1bGZpbGxzIHRoZSBu
-ZWVkcyBvZiBTVkEuCgpJIGhhdmUgYSBwYXRjaCBzZXQgZm9yIHRoZSBnbG9iYWwgcGFzaWQgYWxs
-b2NhdG9yLiBJdCBtb3N0bHkgbWF0Y2hlcwp5b3VyIGlkZWEuIEkgY2FuIHNlbmQgaXQgb3V0IGZv
-ciBjb21tZW50cyBsYXRlci4KCkJlc3QgcmVnYXJkcywKTHUgQmFvbHUKCj4gCj4gKiBTaW5nbGUg
-c3lzdGVtLXdpZGUgUEFTSUQgc3BhY2UKPiAqIE11bHRpcGxlIGNvbnN1bWVycywgZWFjaCBhc3Nv
-Y2lhdGluZyB0aGVpciBvd24gc3RydWN0dXJlIHRvIFBBU0lEcy4KPiAgICBFYWNoIGNvbnN1bWVy
-IGdldHMgYSB0b2tlbi4KPiAqIERldmljZSBkcml2ZXJzIG1pZ2h0IHdhbnQgdG8gdXNlIGJvdGgg
-U1ZBIGFuZCBwcml2YXRlIFBBU0lEcyBmb3IgYQo+ICAgIGRldmljZSBhdCB0aGUgc2FtZSB0aW1l
-Lgo+ICogSW4gbXkgb3BpbmlvbiAicGFzaWQiIGlzbid0IHRoZSByaWdodCBuYW1lLCAiaW9hc2lk
-IiB3b3VsZCBiZSBiZXR0ZXIKPiAgICBidXQgdGhhdCdzIG5vdCBpbXBvcnRhbnQuCj4gCj4gdHlw
-ZWRlZiB1bnNpZ25lZCBpbnQgcGFzaWRfdDsKPiAKPiAvKiBSZXR1cm5zIGNvbnN1bWVyIHRva2Vu
-ICovCj4gdm9pZCAqcGFzaWRfZ2V0X2NvbnN1bWVyKCk7Cj4gdm9pZCBwYXNpZF9wdXRfY29uc3Vt
-ZXIodm9pZCAqY29uc3VtZXIpOwo+IAo+IC8qIFJldHVybnMgcGFzaWQgb3IgaW52YWxpZCAocGFz
-aWRfdCkoLTEpICovCj4gcGFzaWRfdCBwYXNpZF9hbGxvYyh2b2lkICpjb25zdW1lciwgcGFzaWRf
-dCBtaW4sIHBhc2lkX3QgbWF4LAo+ICAgICAgICAgICAgICAgICAgICAgIHZvaWQgKnByaXZhdGUp
-Owo+IHZvaWQgcGFzaWRfcmVtb3ZlKHBhc2lkX3QgcGFzaWQpOwo+IAo+IC8qIEl0ZXJhdGUgb3Zl
-ciBQQVNJRHMgZm9yIHRoaXMgY29uc3VtZXIuIEZ1bmMgcmV0dXJucyBub24temVybyB0byBzdG9w
-Cj4gaXRlcmF0aW5nICovCj4gaW50IHBhc2lkX2Zvcl9lYWNoKHZvaWQgKmNvbnN1bWVyLCB2b2lk
-ICppdGVyX2RhdGEsCj4gCQkgICBpbnQgKCpmdW5jKSh2b2lkICppdGVyX2RhdGEsIHBhc2lkX3Qg
-cGFzaWQsCj4gCQkJICAgICAgIHZvaWQgKnByaXZhdGUpKTsKPiAvKiBSZXR1cm5zIHByaXYgZGF0
-YSBvciBOVUxMICovCj4gdm9pZCAqcGFzaWRfZmluZCh2b2lkICpjb25zdW1lciwgcGFzaWRfdCBw
-YXNpZCk7Cj4gCj4gVGhhbmtzLAo+IEplYW4KPiAKPj4gQW5kIHRoaXMgY29kZSBtaWdodCBydW4g
-aW50byBwcm9ibGVtIGlmIHRoZSBwYXNpZCBpcyBhbGxvY2F0ZWQgZm9yCj4+IHVzYWdlcyBvdGhl
-ciB0aGFuIFNWQS4KPj4KPj4gQmVzdCByZWdhcmRzLAo+PiBMdSBCYW9sdQo+IAo+IApfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Christoph Hellwig <hch@lst.de> writes:
+
+> Looking at the code I think this commit is simply broken for
+> architectures not using arch_setup_dma_ops, but instead setting up
+> the dma ops through arch specific magic.
+
+I arch_setup_dma_ops() called from of_dma_configure(), but
+pci_dma_configure() doesn't call that for this device:
+
+static int pci_dma_configure(struct device *dev)
+{
+	...
+	if (IS_ENABLED(CONFIG_OF) && bridge->parent &&
+	    bridge->parent->of_node) {
+		ret = of_dma_configure(dev, bridge->parent->of_node, true);
+
+bridge->parent is NULL.
+
+So I don't think arch_setup_dma_ops() would help here?
+
+> I'll revert the patch.
+
+Thanks.
+
+cheers
