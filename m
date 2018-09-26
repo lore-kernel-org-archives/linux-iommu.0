@@ -1,69 +1,77 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v16 5/5] iommu/arm-smmu: Add support for
- qcom, smmu-v2 variant
-Date: Wed, 26 Sep 2018 16:59:09 +0100
-Message-ID: <80f7a7df-9a6d-9de3-4c7c-261d96fb04e4@arm.com>
-References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
- <20180830144541.17740-6-vivek.gautam@codeaurora.org>
+From: "Raj, Ashok" <ashok.raj@linux.intel.com>
+Subject: Re: [PATCH V3] PCI: Enable PASID when End-to-End TLP is supported by
+ all bridges
+Date: Wed, 26 Sep 2018 09:22:35 -0700
+Message-ID: <20180926162235.GA30177@araj-mobl1.jf.intel.com>
+References: <1530372264-20653-1-git-send-email-okaya@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20180830144541.17740-6-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1530372264-20653-1-git-send-email-okaya@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sinan Kaya <okaya@codeaurora.org>
+Cc: linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Bjorn Helgaas <bhelgaas@google.com>, open list <linux-kernel@vger.kernel.org>, Ashok Raj <ashok.raj@intel.com>, IOMMU Mailing List <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMzAvMDgvMTggMTU6NDUsIFZpdmVrIEdhdXRhbSB3cm90ZToKPiBxY29tLHNtbXUtdjIgaXMg
-YW4gYXJtLHNtbXUtdjIgaW1wbGVtZW50YXRpb24gd2l0aCBzcGVjaWZpYwo+IGNsb2NrIGFuZCBw
-b3dlciByZXF1aXJlbWVudHMuCj4gT24gbXNtODk5NiwgbXVsdGlwbGUgY29yZXMsIHZpei4gbWRz
-cywgdmlkZW8sIGV0Yy4gdXNlIHRoaXMKPiBzbW11LiBPbiBzZG04NDUsIHRoaXMgc21tdSBpcyB1
-c2VkIHdpdGggZ3B1Lgo+IEFkZCBiaW5kaW5ncyBmb3IgdGhlIHNhbWUuCj4gCj4gU2lnbmVkLW9m
-Zi1ieTogVml2ZWsgR2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+Cj4gUmV2aWV3
-ZWQtYnk6IFJvYiBIZXJyaW5nIDxyb2JoQGtlcm5lbC5vcmc+Cj4gUmV2aWV3ZWQtYnk6IFRvbWFz
-eiBGaWdhIDx0ZmlnYUBjaHJvbWl1bS5vcmc+Cj4gVGVzdGVkLWJ5OiBTcmluaXZhcyBLYW5kYWdh
-dGxhIDxzcmluaXZhcy5rYW5kYWdhdGxhQGxpbmFyby5vcmc+Cj4gLS0tCj4gICBkcml2ZXJzL2lv
-bW11L2FybS1zbW11LmMgfCAxMyArKysrKysrKysrKysrCj4gICAxIGZpbGUgY2hhbmdlZCwgMTMg
-aW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMg
-Yi9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiBpbmRleCAxNjZjOGM2ZGEyNGYuLjQxMWU1YWM1
-N2M2NCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiArKysgYi9kcml2
-ZXJzL2lvbW11L2FybS1zbW11LmMKPiBAQCAtMTE5LDYgKzExOSw3IEBAIGVudW0gYXJtX3NtbXVf
-aW1wbGVtZW50YXRpb24gewo+ICAgCUdFTkVSSUNfU01NVSwKPiAgIAlBUk1fTU1VNTAwLAo+ICAg
-CUNBVklVTV9TTU1VVjIsCj4gKwlRQ09NX1NNTVVWMiwKCkhtbSwgaXQgc2VlbXMgd2UgZG9uJ3Qg
-YWN0dWFsbHkgbmVlZCB0aGlzIHJpZ2h0IG5vdywgYnV0IG1heWJlIHRoYXQganVzdCAKbWVhbnMg
-dGhlcmUncyBtb3JlIGltcC1kZWYgcmVnaXN0ZXJzIGFuZC9vciBlcnJhdGEgdG8gY29tZSA7KQoK
-RWl0aGVyIHdheSBJIGd1ZXNzIHRoZXJlJ3Mgbm8gcmVhbCBoYXJtIGluIGhhdmluZyBpdC4KClJl
-dmlld2VkLWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPgoKPiAgIH07Cj4g
-ICAKPiAgIHN0cnVjdCBhcm1fc21tdV9zMmNyIHsKPiBAQCAtMTk3MCw2ICsxOTcxLDE3IEBAIEFS
-TV9TTU1VX01BVENIX0RBVEEoYXJtX21tdTQwMSwgQVJNX1NNTVVfVjFfNjRLLCBHRU5FUklDX1NN
-TVUpOwo+ICAgQVJNX1NNTVVfTUFUQ0hfREFUQShhcm1fbW11NTAwLCBBUk1fU01NVV9WMiwgQVJN
-X01NVTUwMCk7Cj4gICBBUk1fU01NVV9NQVRDSF9EQVRBKGNhdml1bV9zbW11djIsIEFSTV9TTU1V
-X1YyLCBDQVZJVU1fU01NVVYyKTsKPiAgIAo+ICtzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0IHFj
-b21fc21tdXYyX2Nsa3NbXSA9IHsKPiArCSJidXMiLCAiaWZhY2UiLAo+ICt9Owo+ICsKPiArc3Rh
-dGljIGNvbnN0IHN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhIHFjb21fc21tdXYyID0gewo+ICsJ
-LnZlcnNpb24gPSBBUk1fU01NVV9WMiwKPiArCS5tb2RlbCA9IFFDT01fU01NVVYyLAo+ICsJLmNs
-a3MgPSBxY29tX3NtbXV2Ml9jbGtzLAo+ICsJLm51bV9jbGtzID0gQVJSQVlfU0laRShxY29tX3Nt
-bXV2Ml9jbGtzKSwKPiArfTsKPiArCj4gICBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9p
-ZCBhcm1fc21tdV9vZl9tYXRjaFtdID0gewo+ICAgCXsgLmNvbXBhdGlibGUgPSAiYXJtLHNtbXUt
-djEiLCAuZGF0YSA9ICZzbW11X2dlbmVyaWNfdjEgfSwKPiAgIAl7IC5jb21wYXRpYmxlID0gImFy
-bSxzbW11LXYyIiwgLmRhdGEgPSAmc21tdV9nZW5lcmljX3YyIH0sCj4gQEAgLTE5NzcsNiArMTk4
-OSw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3Qgb2ZfZGV2aWNlX2lkIGFybV9zbW11X29mX21hdGNo
-W10gPSB7Cj4gICAJeyAuY29tcGF0aWJsZSA9ICJhcm0sbW11LTQwMSIsIC5kYXRhID0gJmFybV9t
-bXU0MDEgfSwKPiAgIAl7IC5jb21wYXRpYmxlID0gImFybSxtbXUtNTAwIiwgLmRhdGEgPSAmYXJt
-X21tdTUwMCB9LAo+ICAgCXsgLmNvbXBhdGlibGUgPSAiY2F2aXVtLHNtbXUtdjIiLCAuZGF0YSA9
-ICZjYXZpdW1fc21tdXYyIH0sCj4gKwl7IC5jb21wYXRpYmxlID0gInFjb20sc21tdS12MiIsIC5k
-YXRhID0gJnFjb21fc21tdXYyIH0sCj4gICAJeyB9LAo+ICAgfTsKPiAgIE1PRFVMRV9ERVZJQ0Vf
-VEFCTEUob2YsIGFybV9zbW11X29mX21hdGNoKTsKPiAKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9A
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxt
-YW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+Hi Sinan
+
++ IOMMU list.
+
+On Sat, Jun 30, 2018 at 11:24:24AM -0400, Sinan Kaya wrote:
+> A PCIe endpoint carries the process address space identifier (PASID) in
+> the TLP prefix as part of the memory read/write transaction. The address
+> information in the TLP is relevant only for a given PASID context.
+> 
+> An IOMMU takes PASID value and the address information from the
+> TLP to look up the physical address in the system.
+> 
+> PASID is an End-End TLP Prefix (PCIe r4.0, sec 6.20).  Sec 2.2.10.2 says
+> 
+>   It is an error to receive a TLP with an End-End TLP Prefix by a
+>   Receiver that does not support End-End TLP Prefixes. A TLP in
+>   violation of this rule is handled as a Malformed TLP. This is a
+>   reported error associated with the Receiving Port (see Section 6.2).
+> 
+> Prevent error condition by proactively requiring End-to-End TLP
+> prefix to be supported on the entire data path between the endpoint and
+> the root port before enabling PASID.
+> 
+> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+> ---
+>  
+> +static void pci_configure_eetlp_prefix(struct pci_dev *dev)
+> +{
+> +#ifdef CONFIG_PCI_PASID
+> +	struct pci_dev *bridge;
+> +	u32 cap;
+> +
+> +	if (!pci_is_pcie(dev))
+> +		return;
+> +
+> +	pcie_capability_read_dword(dev, PCI_EXP_DEVCAP2, &cap);
+> +	if (!(cap & PCI_EXP_DEVCAP2_E2ETLP))
+> +		return;
+
+Forgot to notice this.. I'm not sure if the same enforcement is 
+required for devices that are RCIEP. The spec isn't clear about calling
+any excemption. Although it should be simple for devices to expose
+e2etlp support, but if they don't that should be ok, since there are
+nothing between itself and the root port.
+
+We are seeking help from our SIG reps, but thought I'll ask here as well
+if there are other opinions.
+
+> +
+> +	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
+> +		dev->eetlp_prefix_path = 1;
+> +	else {
+> +		bridge = pci_upstream_bridge(dev);
+> +		if (bridge && bridge->eetlp_prefix_path)
+> +			dev->eetlp_prefix_path = 1;
+> +	}
+> +#endif
+> +}
+
+Cheers,
+Ashok
