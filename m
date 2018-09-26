@@ -1,93 +1,52 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.19-rc5
-Date: Wed, 26 Sep 2018 11:36:49 +0200
-Message-ID: <20180926093643.o67rf7q56fvfcrpt@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v5 13/23] iommu: introduce device fault report API
+Date: Wed, 26 Sep 2018 11:14:05 +0100
+Message-ID: <2842c93a-6252-225f-1595-296fe5bbb778@arm.com>
+References: <1526072055-86990-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1526072055-86990-14-git-send-email-jacob.jun.pan@linux.intel.com>
+ <130edd60-d92a-9871-334b-943fe8acffee@arm.com>
+ <20180925151711.7ea1cf75@jacob-builder>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="uywm56sl3lc6eur7"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20180925151711.7ea1cf75@jacob-builder>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Alex Williamson <alex.williamson@redhat.com>, Rafael Wysocki <rafael.j.wysocki@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>, Jean Delvare <khali@linux-fr.org>, Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
+On 25/09/2018 23:17, Jacob Pan wrote:
+> On Tue, 25 Sep 2018 15:58:41 +0100
+> Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+> 
+>> Hi Jacob,
+>> 
+>> Just two minor things below, that I noticed while using fault handlers
+>> for SVA. From my perspective the series is fine otherwise
+>> 
+>> On 11/05/2018 21:54, Jacob Pan wrote:
+>> > +int iommu_unregister_device_fault_handler(struct device *dev)
+>> > +{
+>> > +       struct iommu_param *param = dev->iommu_param;
+>> > +       int ret = 0;
+>> > +
+>> > +       if (!param)
+>> > +               return -EINVAL;
+>> > +
+>> > +       mutex_lock(&param->lock);  
+>> 
+>> Could we check that param->fault_param isn't NULL here, so that the
+>> driver can call this function unconditionally in a cleanup path?
+>> 
+> sounds good.
+> 
+>         if (!param || param->fault_param)
+>                 return -EINVAL;
 
---uywm56sl3lc6eur7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Greg,
-
-The following changes since commit 6bf4ca7fbc85d80446ac01c0d1d77db4d91a6d84:
-
-  Linux 4.19-rc5 (2018-09-23 19:15:18 +0200)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.19-rc5
-
-for you to fetch changes up to 5ebb1bc2d63d90dd204169e21fd7a0b4bb8c776e:
-
-  iommu/amd: Return devid as alias for ACPI HID devices (2018-09-26 09:41:11 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.19-rc5
-
-Three fixes queued up:
-
-	- Warning fix for Rockchip IOMMU where there were IRQ handlers
-	  for offlined hardware.
-
-	- Fix for Intel VT-d because recent changes caused boot failures
-	  on some machines because it tried to allocate to much
-	  contiguous memory.
-
-	- Fix for AMD IOMMU to handle eMMC devices correctly that appear
-	  as ACPI HID devices.
-
-----------------------------------------------------------------
-Arindam Nath (1):
-      iommu/amd: Return devid as alias for ACPI HID devices
-
-Heiko Stuebner (1):
-      iommu/rockchip: Free irqs in shutdown handler
-
-Lu Baolu (1):
-      iommu/vt-d: Handle memory shortage on pasid table allocation
-
- drivers/iommu/amd_iommu.c      | 6 ++++++
- drivers/iommu/intel-iommu.c    | 6 +++---
- drivers/iommu/intel-pasid.h    | 2 +-
- drivers/iommu/rockchip-iommu.c | 6 ++++++
- 4 files changed, 16 insertions(+), 4 deletions(-)
-
-Please pull.
+That would be too convenient... param needs to be checked before taking
+the lock, and fault_param accessed after
 
 Thanks,
-
-	Joerg
-
---uywm56sl3lc6eur7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJbq1MrAAoJECvwRC2XARrj8fIQALkXq/q5tpPoQ0UGuHotzsmj
-fNcMbQjNmQSejG5d7P0dEiGm0hCTz1B9+g2p2obRcKCPXtsSdUqzBvZabBsjOulg
-OhHNjUTU8f4GmZSzI1spnATv+9SejsaPZ1tiESTZ/GIOt4CcTqBLaPhjsrC/Mq+3
-EV0wL3saPoDj/AhLSZiBDrR+1uCzdnz67f4NAvk9KdLJkzSTbUACfkOoOr0j1zDs
-rNUKUuB2/eSIq1m56po2Je+IEkCK9goCi1udHA0zDVtPUhvqL/b9IhSJAWrnTT+x
-m0f9zxBah6zFYY3KXARAXAK+nnBv2tHIeBw7/0OC6AHCIOiU++ILrKBFQovqmXU2
-0nr68mBykBpWJF4/1Izgq8KPBo3JH3LN0SS4tDvras+Yuv6+239Lvyup8v30+0r0
-DV86iklqcEAceRSo9fdylPFXg28V/HLQ2qreDvw70gZDNyAuqC+3JLbvW3nqEo/a
-cO/cbhD1pcgqSMtHA/gUJE5/hqam3uth1DGTbnoK+Dgydyul/OA9kHp3LiqLwqug
-zQSaUqLUi7z5gHqLXYLFByA0juaJAhFa0OVHqxLMKH+mCeHiTPHdZ3ZjLoVxszey
-zdzmw64yQv7vDRD9n370yDlvdFI0DFdbjZU4VM5+XwnFLYqmvs9dcHHTuyqt35cp
-PgFyZr8wwDQwVQEIOATs
-=OzWo
------END PGP SIGNATURE-----
-
---uywm56sl3lc6eur7--
+Jean
