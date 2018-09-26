@@ -1,16 +1,15 @@
-From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
-Date: Wed, 26 Sep 2018 11:01:03 -0700
-Message-ID: <20180926110103.45b57f75@jacob-builder>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
-	<cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
-	<7cbd503a-c79e-3c40-7388-ce6c23f7f536@arm.com>
+From: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Subject: Re: [PATCH] iommu: rockchip: Drop verbose prints in the interrupt
+	handler
+Date: Wed, 26 Sep 2018 19:31:22 +0200
+Message-ID: <ea4d539ecbaf229bef8c0810c6a11cf824339b4b.camel@collabora.com>
+References: <20180830222832.16766-1-ezequiel@collabora.com>
+	<20180925112930.u5kftmo3vhmdxji4@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7cbd503a-c79e-3c40-7388-ce6c23f7f536-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20180925112930.u5kftmo3vhmdxji4-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,42 +19,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, enric.balletbo-ZGY8ohtN/8pPYcu2f3hruQ@public.gmane.org, kernel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCAyNCBTZXAgMjAxOCAxMzowNzo0NyArMDEwMApKZWFuLVBoaWxpcHBlIEJydWNrZXIg
-PGplYW4tcGhpbGlwcGUuYnJ1Y2tlckBhcm0uY29tPiB3cm90ZToKCj4gT24gMjMvMDkvMjAxOCAw
-NDowNSwgTHUgQmFvbHUgd3JvdGU6Cj4gPiBIaSwKPiA+IAo+ID4gT24gMDkvMjEvMjAxOCAwMTow
-MCBBTSwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOiAgCj4gPj4gQWRkIGJpbmQoKSBhbmQg
-dW5iaW5kKCkgb3BlcmF0aW9ucyB0byB0aGUgSU9NTVUgQVBJLiBCaW5kKCkKPiA+PiByZXR1cm5z
-IGEgUEFTSUQgdGhhdCBkcml2ZXJzIGNhbiBwcm9ncmFtIGluIGhhcmR3YXJlLCB0byBsZXQgdGhl
-aXIKPiA+PiBkZXZpY2VzIGFjY2VzcyBhbiBtbS4gVGhpcyBwYXRjaCBvbmx5IGFkZHMgc2tlbGV0
-b25zIGZvciB0aGUKPiA+PiBkZXZpY2UgZHJpdmVyIEFQSSwgbW9zdCBvZiB0aGUgaW1wbGVtZW50
-YXRpb24gaXMgc3RpbGwgbWlzc2luZy4gIAo+ID4gCj4gPiBJcyBpdCBwb3NzaWJsZSB0aGF0IGEg
-bWFsaWNpb3VzIHByb2Nlc3MgY2FuIHVuYmluZCBhIHBhc2lkIHdoaWNoIGlzCj4gPiB1c2VkIGJ5
-IGFub3RoZXIgbm9ybWFsIHByb2Nlc3M/ICAKPiAKPiBZZXMsIGl0J3MgdXAgdG8gdGhlIGRldmlj
-ZSBkcml2ZXIgdGhhdCBjYWxscyB1bmJpbmQoKSB0byBjaGVjayB0aGF0Cj4gdGhlIGNhbGxlciBp
-cyBhbGxvd2VkIHRvIHVuYmluZCB0aGlzIFBBU0lELiBXZSBjYW4ndCBkbyBpdCBvdXJzZWx2ZXMK
-PiBzaW5jZSB1bmJpbmQoKSBjb3VsZCBhbHNvIGJlIGNhbGxlZCBmcm9tIGEga2VybmVsIHRocmVh
-ZCBmb3IgZXhhbXBsZQo+IGZyb20gYSBjbGVhbnVwIGZ1bmN0aW9uIGluIHNvbWUgd29ya3F1ZXVl
-LCBvdXRzaWRlIHRoZSBjb250ZXh0IG9mIHRoZQo+IHByb2Nlc3MgdG8gdW5iaW5kLgo+IApJIGFt
-IHdvbmRlcmluZyBpZiB3ZSBjYW4gYXZvaWQgdGhlIGNvbXBsZXhpdHkgYXJvdW5kIHBlcm1pc3Np
-b24KY2hlY2tpbmcgYnkgc2ltcGx5IF9vbmx5XyBhbGxvdyBiaW5kL3VuYmluZCgpIG9uIGN1cnJl
-bnQgbW0/IHdoYXQgd291bGQKYmUgdGhlIG1pc3NpbmcgdXNlIGNhc2VzIGlmIHdlIGJpbmQgY3Vy
-cmVudCBvbmx5PwpJdCBjYW4gYWxzbyBhdm9pZCBvdGhlciByYWNlIHN1Y2ggYXMgdW5iaW5kIGFu
-ZCBtbXVfbm90aWZpZXIgcmVsZWFzZQpjYWxsLgoKPiBKZWFuCj4gCj4gPiAKPiA+IEl0IG1pZ2h0
-IGhhcHBlbiBpbiBiZWxvdyBzZXF1ZW5jZToKPiA+IAo+ID4gCj4gPiBQcm9jZXNzIEHCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBQcm9jZXNzIEIKPiA+ID09PT09
-PT09PcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgID09PT09PT09
-PQo+ID4gaW9tbXVfc3ZhX2luaXRfZGV2aWNlKGRldikKPiA+IGlvbW11X3N2YV9iaW5kX2Rldmlj
-ZShkZXYpCj4gPiAuLi4uCj4gPiBkZXZpY2UgYWNjZXNzIG1tIG9mIEEgd2l0aAo+ID4gI1BBU0lE
-IHJldHVybmVkIGFib3ZlCj4gPiAuLi4uCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdV9zdmFfdW5iaW5kX2Rldmlj
-ZShkZXYsICNQQVNJRCkKPiA+IC4uLi4KPiA+IFt1bnJlY292ZXJhYmxlIGVycm9yc10KPiA+IAo+
-ID4gSSBkaWRuJ3QgaGF2ZSBhIHRob3JvdWdoIGNvbnNpZGVyYXRpb24gb2YgdGhpcy4gU29ycnkg
-aWYgdGhpcyBoYXMKPiA+IGJlZW4gcHJldmVudGVkLgo+ID4gCj4gPiBCZXN0IHJlZ2FyZHMsCj4g
-PiBMdSBCYW9sdSAgCgpbSmFjb2IgUGFuXQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+On Tue, 2018-09-25 at 13:29 +0200, Joerg Roedel wrote:
+> On Thu, Aug 30, 2018 at 07:28:32PM -0300, Ezequiel Garcia wrote:
+> > Printing verbosely via WARN macros and friends in interrupt handlers
+> > is strongly discouraged. Drop them and use proper ratelimited
+> > prints.
+> > 
+> > Signed-off-by: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> > ---
+> >  drivers/iommu/rockchip-iommu.c | 10 ++++++----
+> >  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> This doesn't apply cleanly to v4.19-rc5, can you please base the patch
+> on that tag, add the Reviewed-by and re-send?
+> 
+
+Well, after looking at the latest code, now I'm wondering why Marc
+changed the WARN_ON with a WARN_ON_ONCE, instead of a less verbose
+ratelimited print.
