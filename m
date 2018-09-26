@@ -1,16 +1,16 @@
-From: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
-Date: Wed, 26 Sep 2018 08:52:27 +0200
-Message-ID: <CA+icZUUpm4hpvvSH=89f=m-17TCy-yaOpOov7hCWYcyQGSSCkw@mail.gmail.com>
-References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
-	<20180925115723.mf7njwpcmykbkpsu@8bytes.org>
-	<Y4FGoptRtN0PmXRXowjeM1LOeXvkP6eun7cr-EgiREHf4fyX3eYz75NTVIpu6VYe6cRIrcRD1Yxy5OiyG_7a1AnrOFKcQhuOGpTvSJlsvt4=@protonmail.ch>
-Reply-To: sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: return devid as alias for ACPI HID devices
+Date: Wed, 26 Sep 2018 09:42:46 +0200
+Message-ID: <20180926074246.5ykyikman6krvnv4@suse.de>
+References: <20180918101058.2365-1-arindam.nath@amd.com>
+	<20180925133143.h46eopc5j7mnw5ac@suse.de>
+	<BLUPR12MB05166F5680FA08277A8CC4F99C160@BLUPR12MB0516.namprd12.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <Y4FGoptRtN0PmXRXowjeM1LOeXvkP6eun7cr-EgiREHf4fyX3eYz75NTVIpu6VYe6cRIrcRD1Yxy5OiyG_7a1AnrOFKcQhuOGpTvSJlsvt4=@protonmail.ch>
+Content-Disposition: inline
+In-Reply-To: <BLUPR12MB05166F5680FA08277A8CC4F99C160-7LeqcoF/hwreJlb8bxc+dwdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,53 +20,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jordan Glover <Golden_Miller83-g/b1ySJe57IkP3XJZ0H8fw@public.gmane.org>
+To: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
 Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBTZXAgMjUsIDIwMTggYXQgNzowMSBQTSwgSm9yZGFuIEdsb3Zlcgo8R29sZGVuX01p
-bGxlcjgzQHByb3Rvbm1haWwuY2g+IHdyb3RlOgo+IOKAkOKAkOKAkOKAkOKAkOKAkOKAkCBPcmln
-aW5hbCBNZXNzYWdlIOKAkOKAkOKAkOKAkOKAkOKAkOKAkAo+IE9uIFR1ZXNkYXksIFNlcHRlbWJl
-ciAyNSwgMjAxOCAxOjU3IFBNLCBKb2VyZyBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz4gd3JvdGU6
-Cj4KPj4gTHUsCj4+Cj4+IGNhbiB5b3UgcGxlYXNlIGhhdmUgYSBsb29rIGF0IHRoaXMgcHJvYmxl
-bT8KPj4KPj4gT24gV2VkLCBTZXAgMDUsIDIwMTggYXQgMDI6MDQ6MzhQTSArMDIwMCwgU2VkYXQg
-RGlsZWsgd3JvdGU6Cj4+Cj4+ID4gSGkgSm9lcmcsCj4+ID4gImludGVsX2lvb211PW9uIiB3YXMg
-d29ya2luZyBmaW5lIGhlcmUgb24gbXkgVGhpbmtQYWQgVDQ3MCB3aXRoCj4+ID4gZGViaWFuL3Rl
-c3RpbmcgQU1ENjQgd2l0aCBMaW51eCB2NC4xNy55IGFuZCB2NC4xOC55Lgo+PiA+IFdpdGggdGVz
-dGluZyBMaW51eCB2NC4xOS1yYzEgYW5kIHY0LjE5LXJjMiBteSBtYWNoaW5lIGlzIG5vdCBib290
-aW5nIC0KPj4gPiBibGFjayBzY3JlZW4uCj4+ID4gVGhlc2Uga2VybmVscyBhcmUgYnVpbHQgd2l0
-aCBMTFZNL0NsYW5nIHY3LjAuMHJjMiAodjQuMTgueSB0b28pLgo+PiA+IEZ1cnRoZXJtb3JlLCBJ
-IHN3aXRjaGVkIGZyb20gR1JVQiB0byBzeXN0ZW1kLWJvb3QgdjIzOS4KPj4gPiBbIC9ib290L2Vm
-aS9sb2FkZXIvZW50cmllcy9kZWJpYW4uY29uZiBdCj4+ID4gdGl0bGUgRGViaWFuIEdOVS9MaW51
-eCBidXN0ZXIvc2lkIFsgZGViaWFuIGtlcm5lbCBdCj4+ID4gbGludXggL3ZtbGludXotNC4xNy4w
-LTMtYW1kNjQKPj4gPiBpbml0cmQgL2luaXRyZC5pbWctNC4xNy4wLTMtYW1kNjQKPj4gPiBvcHRp
-b25zIHJvb3Q9VVVJRD00YzJhYTU0NC02ZTg2LTQ0ZDItOTMyOS01NzI2MjM4NjdiM2Qgcm8gaW50
-ZWxfaW9tbXU9b24KPj4gPiBbIC9ib290L2VmaS9sb2FkZXIvZW50cmllcy9kZWJpYW4tbGx2bWxp
-bnV4LmNvbmYgXQo+PiA+IHRpdGxlIERlYmlhbiBHTlUvTGludXggYnVzdGVyL3NpZCBbIGxsdm1s
-aW51eCBrZXJuZWwgKEVYUEVSSU1FTlRBTCkgXQo+PiA+IGxpbnV4IC92bWxpbnV6LTQuMTkuMC1y
-YzItMy1pbml6YS1sbHZtbGludXgKPj4gPiBpbml0cmQgL2luaXRyZC5pbWctNC4xOS4wLXJjMi0z
-LWluaXphLWxsdm1saW51eAo+PiA+IG9wdGlvbnMgcm9vdD1VVUlEPTRjMmFhNTQ0LTZlODYtNDRk
-Mi05MzI5LTU3MjYyMzg2N2IzZCBybwo+PiA+IEFueSBoaW50cyBvciBoaW50cyB0byBkZWJ1ZyB0
-aGlzPwo+PiA+IEFueSBvdGhlciBrZXJuZWwgYm9vdCBjaGVhdHMgWzFdIEkgY2FuIHRyeT8KPj4g
-PiBNeSBrZXJuZWwtY29uZmlnIGFuZCBkbWVzZyBvdXRwdXQgaXMgYXR0YWNoZWQuCj4+ID4gVGhh
-bmtzIGluIGFkdmFuY2UuCj4+ID4gUmVnYXJkcywKPj4gPgo+PiA+IC0gICBTZWRhdCAtCj4+ID4K
-Pgo+IFRoaXMgd2FzIHJlcG9ydGVkIGNvdXBsZSB3ZWVrcyBhZ28gaW4gZmV3IHBsYWNlcywgaS5l
-LjoKPiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD0xMDc3ODMK
-Pgo+IEx1IGFscmVhZHkgcHJlcGFyZWQgZml4IHdoaWNoIHlvdSBzdXBwb3NlZGx5IG1lcmdlZDoK
-PiBodHRwczovL2xvcmUua2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTgwMDc3LyMxMTc1MDIw
-Cj4KPiBUaGVyZSB3YXMgZXZlbiB2MiBvZiB0aGUgYWJvdmUgd2hpY2ggbGlua3MgdG8gYnVnIEkg
-cG9zdGVkOgo+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3BhdGNod29yay9wYXRjaC85ODM2OTAv
-Cj4KPiBTZWRhdCBjb25maXJtZWQgaXQgZml4ZXMgdGhlIGlzc3VlOgo+IGh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9waXBlcm1haWwvaW9tbXUvMjAxOC1TZXB0ZW1iZXIvMDMwMTM5
-Lmh0bWwKPgo+IFBsZWFzZSBpbmNsdWRlIGFmb3JlbWVudGlvbmVkIHBhdGNoIGluIGlvbW11LWZp
-eGVzIGFuZCBzZW5kIGl0IHRvIEdyZWcgZm9yIC1yYzYuCj4KCkhlcmUgc29tZSBkZXRhaWxzOgoK
-IyBjYXQgL3Byb2MvdmVyc2lvbgpMaW51eCB2ZXJzaW9uIDQuMTkuMC1yYzUtMS1pbml6YS1sbHZt
-bGludXgKKHNlZGF0LmRpbGVrQGdtYWlsLmNvbUBpbml6YSkgKGNsYW5nIHZlcnNpb24gNy4wLjAt
-MgoodGFncy9SRUxFQVNFXzcwMC9maW5hbCkpICMxIFNNUCAyMDE4LTA5LTI0CgpbICAgIDAuMTQz
-ODgwXSBLZXJuZWwgY29tbWFuZCBsaW5lOgppbml0cmQ9XGluaXRyZC5pbWctNC4xOS4wLXJjNS0x
-LWluaXphLWxsdm1saW51eCByb290PVVVSUQ9bXlSb290RlNVVUlECnJvIGludGVsX2lvbW11PW9u
-ClsgICAgMC4xNDM5MDZdIERNQVI6IElPTU1VIGVuYWJsZWQKWyAgMTU1Ljc5NTM0N10gdmJveHBj
-aTogSU9NTVUgZm91bmQKClRoYW5rcywKLSBTZWRhdCAtCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, Sep 25, 2018 at 03:41:34PM +0000, Nath, Arindam wrote:
+> It does fix an issue where eMMC controller is an ACPI HID device and
+> it fails to work with IOMMU enabled.
+> 
+> Since for the ACPI HID, there is no actual pci_dev backing it, there
+> is a NULL pointer de-referencing inside pci_for_each_dma_alias() while
+> trying to access pdev->bus->number.
+
+Okay, added a Fixes: tag and applied for v4.19, thanks Arindam.
