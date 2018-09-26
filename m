@@ -1,16 +1,17 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/4 v7] x86/ioremap: add a function ioremap_encrypted()
-	to remap kdump old memory
-Date: Wed, 26 Sep 2018 10:21:23 +0800
-Message-ID: <20180926022123.GA2555@MiWiFi-R3L-srv>
-References: <20180907081805.368-1-lijiang@redhat.com>
-	<20180907081805.368-2-lijiang@redhat.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
+Date: Wed, 26 Sep 2018 11:12:22 +0800
+Message-ID: <ac40a922-a1d3-6d74-cb4b-0c19972673a1@linux.intel.com>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
+	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
+	<5aff8dc0-9ce7-5018-e78e-770279681cbc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20180907081805.368-2-lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <5aff8dc0-9ce7-5018-e78e-770279681cbc-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,137 +21,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lianbo,
-
-On 09/07/18 at 04:18pm, Lianbo Jiang wrote:
-> When SME is enabled on AMD machine, the memory is encrypted in the first
-> kernel. In this case, SME also needs to be enabled in kdump kernel, and
-> we have to remap the old memory with the memory encryption mask.
-
-This patch series looks good to me. One thing is in your v5 post, Boris
-reviewed and complained about the git log, we worked together to make an
-document to explain, wondering why you don't rearrange it into log of
-this patch. Other than this, all looks fine.
-
-http://lkml.kernel.org/r/53536964-2b57-4630-de91-3d4da2b643a8-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-
-
-> 
-> Signed-off-by: Lianbo Jiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->  arch/x86/include/asm/io.h |  3 +++
->  arch/x86/mm/ioremap.c     | 25 +++++++++++++++++--------
->  2 files changed, 20 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-> index 6de64840dd22..f8795f9581c7 100644
-> --- a/arch/x86/include/asm/io.h
-> +++ b/arch/x86/include/asm/io.h
-> @@ -192,6 +192,9 @@ extern void __iomem *ioremap_cache(resource_size_t offset, unsigned long size);
->  #define ioremap_cache ioremap_cache
->  extern void __iomem *ioremap_prot(resource_size_t offset, unsigned long size, unsigned long prot_val);
->  #define ioremap_prot ioremap_prot
-> +extern void __iomem *ioremap_encrypted(resource_size_t phys_addr,
-> +					unsigned long size);
-> +#define ioremap_encrypted ioremap_encrypted
->  
->  /**
->   * ioremap     -   map bus memory into CPU space
-> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
-> index c63a545ec199..e01e6c695add 100644
-> --- a/arch/x86/mm/ioremap.c
-> +++ b/arch/x86/mm/ioremap.c
-> @@ -24,6 +24,7 @@
->  #include <asm/pgalloc.h>
->  #include <asm/pat.h>
->  #include <asm/setup.h>
-> +#include <linux/crash_dump.h>
->  
->  #include "physaddr.h"
->  
-> @@ -131,7 +132,8 @@ static void __ioremap_check_mem(resource_size_t addr, unsigned long size,
->   * caller shouldn't need to know that small detail.
->   */
->  static void __iomem *__ioremap_caller(resource_size_t phys_addr,
-> -		unsigned long size, enum page_cache_mode pcm, void *caller)
-> +		unsigned long size, enum page_cache_mode pcm,
-> +		void *caller, bool encrypted)
->  {
->  	unsigned long offset, vaddr;
->  	resource_size_t last_addr;
-> @@ -199,7 +201,7 @@ static void __iomem *__ioremap_caller(resource_size_t phys_addr,
->  	 * resulting mapping.
->  	 */
->  	prot = PAGE_KERNEL_IO;
-> -	if (sev_active() && mem_flags.desc_other)
-> +	if ((sev_active() && mem_flags.desc_other) || encrypted)
->  		prot = pgprot_encrypted(prot);
->  
->  	switch (pcm) {
-> @@ -291,7 +293,7 @@ void __iomem *ioremap_nocache(resource_size_t phys_addr, unsigned long size)
->  	enum page_cache_mode pcm = _PAGE_CACHE_MODE_UC_MINUS;
->  
->  	return __ioremap_caller(phys_addr, size, pcm,
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_nocache);
->  
-> @@ -324,7 +326,7 @@ void __iomem *ioremap_uc(resource_size_t phys_addr, unsigned long size)
->  	enum page_cache_mode pcm = _PAGE_CACHE_MODE_UC;
->  
->  	return __ioremap_caller(phys_addr, size, pcm,
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL_GPL(ioremap_uc);
->  
-> @@ -341,7 +343,7 @@ EXPORT_SYMBOL_GPL(ioremap_uc);
->  void __iomem *ioremap_wc(resource_size_t phys_addr, unsigned long size)
->  {
->  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WC,
-> -					__builtin_return_address(0));
-> +					__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_wc);
->  
-> @@ -358,14 +360,21 @@ EXPORT_SYMBOL(ioremap_wc);
->  void __iomem *ioremap_wt(resource_size_t phys_addr, unsigned long size)
->  {
->  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WT,
-> -					__builtin_return_address(0));
-> +					__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_wt);
->  
-> +void __iomem *ioremap_encrypted(resource_size_t phys_addr, unsigned long size)
-> +{
-> +	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WB,
-> +				__builtin_return_address(0), true);
-> +}
-> +EXPORT_SYMBOL(ioremap_encrypted);
-> +
->  void __iomem *ioremap_cache(resource_size_t phys_addr, unsigned long size)
->  {
->  	return __ioremap_caller(phys_addr, size, _PAGE_CACHE_MODE_WB,
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_cache);
->  
-> @@ -374,7 +383,7 @@ void __iomem *ioremap_prot(resource_size_t phys_addr, unsigned long size,
->  {
->  	return __ioremap_caller(phys_addr, size,
->  				pgprot2cachemode(__pgprot(prot_val)),
-> -				__builtin_return_address(0));
-> +				__builtin_return_address(0), false);
->  }
->  EXPORT_SYMBOL(ioremap_prot);
->  
-> -- 
-> 2.17.1
-> 
+SGksCgpPbiAwOS8yNS8yMDE4IDA2OjMyIFBNLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIgd3JvdGU6
+Cj4gT24gMjUvMDkvMjAxOCAwNDoxNSwgTHUgQmFvbHUgd3JvdGU6Cj4+PiArwqDCoMKgwqAgLyog
+SWYgYW4gaW9fbW0gYWxyZWFkeSBleGlzdHMsIHVzZSBpdCAqLwo+Pj4gK8KgwqDCoMKgIHNwaW5f
+bG9jaygmaW9tbXVfc3ZhX2xvY2spOwo+Pj4gK8KgwqDCoMKgIGlkcl9mb3JfZWFjaF9lbnRyeSgm
+aW9tbXVfcGFzaWRfaWRyLCBpb19tbSwgaSkgewo+Pgo+PiBUaGlzIG1pZ2h0IGJlIHByb2JsZW1h
+dGljIGZvciB2dC1kIChhbmQgb3RoZXIgcG9zc2libGUgYXJjaCdzIHdoaWNoIHVzZQo+PiBQQVNJ
+RCBvdGhlciB0aGFuIFNWQSkuIFdoZW4gdnQtZCBpb21tdSB3b3JrcyBpbiBzY2FsYWJsZSBtb2Rl
+LCBhIFBBU0lECj4+IG1pZ2h0IGJlIGFsbG9jYXRlZCBmb3I6Cj4+Cj4+ICgxKSBTVkEKPj4gKDIp
+IERldmljZSBBc3NpZ25hYmxlIEludGVyZmFjZSAobWlnaHQgYmUgYSBtZGV2IG9yIGRpcmVjdGx5
+IG1hbmFnZWQKPj4gIMKgwqDCoMKgIHdpdGhpbiBhIGRldmljZSBkcml2ZXIpLgo+PiAoMykgU1ZB
+IGluIFZNIGd1ZXN0Cj4+ICg0KSBEZXZpY2UgQXNzaWduYWJsZSBJbnRlcmZhY2UgaW4gVk0gZ3Vl
+c3QKPj4KPj4gU28gd2UgY2FuJ3QgZXhwZWN0IHRoYXQgYW4gaW9fbW0gcG9pbnRlciB3YXMgYXNz
+b2NpYXRlZCB3aXRoIGVhY2ggUEFTSUQuCj4gCj4gWWVzIGFzIGRpc2N1c3NlZCBvbiB0aGUgcHJl
+dmlvdXMgc2VyaWVzLCB3ZSdsbCBuZWVkIHRvIG1vdmUgdGhlIFBBU0lECj4gYWxsb2NhdG9yIG91
+dHNpZGUgb2YgaW9tbXUtc3ZhIGF0IHNvbWUgcG9pbnQsIGFuZCBldmVuIG91dHNpZGUgb2YKPiBk
+cml2ZXJzL2lvbW11IHNpbmNlIGRldmljZSBkcml2ZXIgbWlnaHQgd2FudCB0byB1c2UgdGhlIFBB
+U0lEIGFsbG9jYXRvcgo+IHdpdGhvdXQgYW4gSU9NTVUuCj4gCj4gVG8gYmUgdXNhYmxlIGJ5IGFs
+bCBjb25zdW1lcnMgb2YgUEFTSURzLCB0aGF0IGFsbG9jYXRvciB3aWxsIG5lZWQgdGhlCj4gc2Ft
+ZSBpbnRlcmZhY2UgYXMgSURSLCBzbyBJIGRvbid0IHRoaW5rIHdlIGhhdmUgYSBwcm9ibGVtIGhl
+cmUuIEkKPiBoYXZlbid0IGhhZCB0aW1lIG9yIG5lZWQgdG8gd3JpdGUgc3VjaCBhbGxvY2F0b3Ig
+eWV0IChhbmQgZG9uJ3QgcGxhbiB0bwo+IGRvIGl0IGFzIHBhcnQgb2YgdGhpcyBzZXJpZXMpLCBi
+dXQgSSBkcmFmdGVkIGFuIGludGVyZmFjZSwgdGhhdCBhdCBsZWFzdAo+IGZ1bGZpbGxzIHRoZSBu
+ZWVkcyBvZiBTVkEuCgpJIGhhdmUgYSBwYXRjaCBzZXQgZm9yIHRoZSBnbG9iYWwgcGFzaWQgYWxs
+b2NhdG9yLiBJdCBtb3N0bHkgbWF0Y2hlcwp5b3VyIGlkZWEuIEkgY2FuIHNlbmQgaXQgb3V0IGZv
+ciBjb21tZW50cyBsYXRlci4KCkJlc3QgcmVnYXJkcywKTHUgQmFvbHUKCj4gCj4gKiBTaW5nbGUg
+c3lzdGVtLXdpZGUgUEFTSUQgc3BhY2UKPiAqIE11bHRpcGxlIGNvbnN1bWVycywgZWFjaCBhc3Nv
+Y2lhdGluZyB0aGVpciBvd24gc3RydWN0dXJlIHRvIFBBU0lEcy4KPiAgICBFYWNoIGNvbnN1bWVy
+IGdldHMgYSB0b2tlbi4KPiAqIERldmljZSBkcml2ZXJzIG1pZ2h0IHdhbnQgdG8gdXNlIGJvdGgg
+U1ZBIGFuZCBwcml2YXRlIFBBU0lEcyBmb3IgYQo+ICAgIGRldmljZSBhdCB0aGUgc2FtZSB0aW1l
+Lgo+ICogSW4gbXkgb3BpbmlvbiAicGFzaWQiIGlzbid0IHRoZSByaWdodCBuYW1lLCAiaW9hc2lk
+IiB3b3VsZCBiZSBiZXR0ZXIKPiAgICBidXQgdGhhdCdzIG5vdCBpbXBvcnRhbnQuCj4gCj4gdHlw
+ZWRlZiB1bnNpZ25lZCBpbnQgcGFzaWRfdDsKPiAKPiAvKiBSZXR1cm5zIGNvbnN1bWVyIHRva2Vu
+ICovCj4gdm9pZCAqcGFzaWRfZ2V0X2NvbnN1bWVyKCk7Cj4gdm9pZCBwYXNpZF9wdXRfY29uc3Vt
+ZXIodm9pZCAqY29uc3VtZXIpOwo+IAo+IC8qIFJldHVybnMgcGFzaWQgb3IgaW52YWxpZCAocGFz
+aWRfdCkoLTEpICovCj4gcGFzaWRfdCBwYXNpZF9hbGxvYyh2b2lkICpjb25zdW1lciwgcGFzaWRf
+dCBtaW4sIHBhc2lkX3QgbWF4LAo+ICAgICAgICAgICAgICAgICAgICAgIHZvaWQgKnByaXZhdGUp
+Owo+IHZvaWQgcGFzaWRfcmVtb3ZlKHBhc2lkX3QgcGFzaWQpOwo+IAo+IC8qIEl0ZXJhdGUgb3Zl
+ciBQQVNJRHMgZm9yIHRoaXMgY29uc3VtZXIuIEZ1bmMgcmV0dXJucyBub24temVybyB0byBzdG9w
+Cj4gaXRlcmF0aW5nICovCj4gaW50IHBhc2lkX2Zvcl9lYWNoKHZvaWQgKmNvbnN1bWVyLCB2b2lk
+ICppdGVyX2RhdGEsCj4gCQkgICBpbnQgKCpmdW5jKSh2b2lkICppdGVyX2RhdGEsIHBhc2lkX3Qg
+cGFzaWQsCj4gCQkJICAgICAgIHZvaWQgKnByaXZhdGUpKTsKPiAvKiBSZXR1cm5zIHByaXYgZGF0
+YSBvciBOVUxMICovCj4gdm9pZCAqcGFzaWRfZmluZCh2b2lkICpjb25zdW1lciwgcGFzaWRfdCBw
+YXNpZCk7Cj4gCj4gVGhhbmtzLAo+IEplYW4KPiAKPj4gQW5kIHRoaXMgY29kZSBtaWdodCBydW4g
+aW50byBwcm9ibGVtIGlmIHRoZSBwYXNpZCBpcyBhbGxvY2F0ZWQgZm9yCj4+IHVzYWdlcyBvdGhl
+ciB0aGFuIFNWQS4KPj4KPj4gQmVzdCByZWdhcmRzLAo+PiBMdSBCYW9sdQo+IAo+IApfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
