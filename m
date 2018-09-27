@@ -1,99 +1,92 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 2/5] dma-direct: add an explicit dma_direct_get_required_mask
-Date: Thu, 27 Sep 2018 15:35:36 -0700
-Message-ID: <20180927223539.28449-3-hch@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 3/5] dma-direct: refine dma_direct_alloc zone selection
+Date: Thu, 27 Sep 2018 15:35:37 -0700
+Message-ID: <20180927223539.28449-4-hch@lst.de>
 References: <20180927223539.28449-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180927223539.28449-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180927223539.28449-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is somewhat modelled after the powerpc version, and differs from
-the legacy fallback in use fls64 instead of pointlessly splitting up the
-address into low and high dwords and in that it takes (__)phys_to_dma
-into account.
+We need to take the DMA offset and encryption bit into account when
+selecting a zone.  User the opportunity to factor out the zone
+selection into a helper for reuse.
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Acked-by: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- include/linux/dma-direct.h |  1 +
- kernel/dma/direct.c        | 22 +++++++++++++++++++---
- 2 files changed, 20 insertions(+), 3 deletions(-)
+ kernel/dma/direct.c | 31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 86a59ba5a7f3..b79496d8c75b 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -55,6 +55,7 @@ static inline void dma_mark_clean(void *addr, size_t size)
- }
- #endif /* CONFIG_ARCH_HAS_DMA_MARK_CLEAN */
- 
-+u64 dma_direct_get_required_mask(struct device *dev);
- void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t gfp, unsigned long attrs);
- void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index c954f0a6dc62..f32b33cfa331 100644
+index f32b33cfa331..e78548397a92 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -4,6 +4,7 @@
-  *
-  * DMA operations that map physical memory directly without using an IOMMU.
-  */
-+#include <linux/bootmem.h> /* for max_pfn */
- #include <linux/export.h>
- #include <linux/mm.h>
- #include <linux/dma-direct.h>
-@@ -53,11 +54,25 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
- 	return true;
+@@ -69,6 +69,22 @@ u64 dma_direct_get_required_mask(struct device *dev)
+ 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
  }
  
-+static inline dma_addr_t phys_to_dma_direct(struct device *dev,
-+		phys_addr_t phys)
++static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
++		u64 *phys_mask)
 +{
 +	if (force_dma_unencrypted())
-+		return __phys_to_dma(dev, phys);
-+	return phys_to_dma(dev, phys);
-+}
++		*phys_mask = __dma_to_phys(dev, dma_mask);
++	else
++		*phys_mask = dma_to_phys(dev, dma_mask);
 +
-+u64 dma_direct_get_required_mask(struct device *dev)
-+{
-+	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
-+
-+	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
++	/* GFP_DMA32 and GFP_DMA are no ops without the corresponding zones: */
++	if (*phys_mask <= DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
++		return GFP_DMA;
++	if (*phys_mask <= DMA_BIT_MASK(32))
++		return GFP_DMA32;
++	return 0;
 +}
 +
  static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
  {
--	dma_addr_t addr = force_dma_unencrypted() ?
--		__phys_to_dma(dev, phys) : phys_to_dma(dev, phys);
--	return addr + size - 1 <= dev->coherent_dma_mask;
-+	return phys_to_dma_direct(dev, phys) + size - 1 <=
-+			dev->coherent_dma_mask;
- }
+ 	return phys_to_dma_direct(dev, phys) + size - 1 <=
+@@ -81,17 +97,13 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	int page_order = get_order(size);
+ 	struct page *page = NULL;
++	u64 phys_mask;
+ 	void *ret;
  
- void *dma_direct_alloc_pages(struct device *dev, size_t size,
-@@ -296,6 +311,7 @@ const struct dma_map_ops dma_direct_ops = {
- 	.unmap_page		= dma_direct_unmap_page,
- 	.unmap_sg		= dma_direct_unmap_sg,
- #endif
-+	.get_required_mask	= dma_direct_get_required_mask,
- 	.dma_supported		= dma_direct_supported,
- 	.mapping_error		= dma_direct_mapping_error,
- 	.cache_sync		= arch_dma_cache_sync,
+ 	/* we always manually zero the memory once we are done: */
+ 	gfp &= ~__GFP_ZERO;
+-
+-	/* GFP_DMA32 and GFP_DMA are no ops without the corresponding zones: */
+-	if (dev->coherent_dma_mask <= DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
+-		gfp |= GFP_DMA;
+-	if (dev->coherent_dma_mask <= DMA_BIT_MASK(32) && !(gfp & GFP_DMA))
+-		gfp |= GFP_DMA32;
+-
++	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
++			&phys_mask);
+ again:
+ 	/* CMA can be used only in the context which permits sleeping */
+ 	if (gfpflags_allow_blocking(gfp)) {
+@@ -110,15 +122,14 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		page = NULL;
+ 
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
+-		    dev->coherent_dma_mask < DMA_BIT_MASK(64) &&
++		    phys_mask < DMA_BIT_MASK(64) &&
+ 		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
+ 			gfp |= GFP_DMA32;
+ 			goto again;
+ 		}
+ 
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
+-		    dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
+-		    !(gfp & GFP_DMA)) {
++		    phys_mask < DMA_BIT_MASK(32) && !(gfp & GFP_DMA)) {
+ 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
+ 			goto again;
+ 		}
 -- 
 2.19.0
