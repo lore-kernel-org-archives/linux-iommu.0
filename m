@@ -1,17 +1,22 @@
-From: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
-Date: Thu, 27 Sep 2018 11:53:39 +0200
-Message-ID: <CA+icZUVAnskjdKnbQg8DZq7HpjgTwGpJpAG=siqD6Qorxdoudg@mail.gmail.com>
-References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
-	<20180925115723.mf7njwpcmykbkpsu@8bytes.org>
-	<Y4FGoptRtN0PmXRXowjeM1LOeXvkP6eun7cr-EgiREHf4fyX3eYz75NTVIpu6VYe6cRIrcRD1Yxy5OiyG_7a1AnrOFKcQhuOGpTvSJlsvt4=@protonmail.ch>
-	<CA+icZUUpm4hpvvSH=89f=m-17TCy-yaOpOov7hCWYcyQGSSCkw@mail.gmail.com>
-Reply-To: sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
+Date: Thu, 27 Sep 2018 14:37:54 +0100
+Message-ID: <9aedb22e-ff28-7bfd-feeb-ae86802e6400@arm.com>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
+	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
+	<20180925132627.vbdotr23o7lqrmnd@8bytes.org>
+	<b33a1911-e100-586b-b8df-eb04312ecffd@linux.intel.com>
+	<754d495d-d016-f42f-5682-ba4a75a618e0@arm.com>
+	<20180926124527.GD18287@8bytes.org>
+	<1f53c6f1-4e7a-1451-1abc-a7bca4a2359d@arm.com>
+	<A2975661238FB949B60364EF0F2C257439D0CC48@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CA+icZUUpm4hpvvSH=89f=m-17TCy-yaOpOov7hCWYcyQGSSCkw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D0CC48-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,60 +26,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jordan Glover <Golden_Miller83-g/b1ySJe57IkP3XJZ0H8fw@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBTZXAgMjYsIDIwMTggYXQgODo1MiBBTSwgU2VkYXQgRGlsZWsgPHNlZGF0LmRpbGVr
-QGdtYWlsLmNvbT4gd3JvdGU6Cj4gT24gVHVlLCBTZXAgMjUsIDIwMTggYXQgNzowMSBQTSwgSm9y
-ZGFuIEdsb3Zlcgo+IDxHb2xkZW5fTWlsbGVyODNAcHJvdG9ubWFpbC5jaD4gd3JvdGU6Cj4+IOKA
-kOKAkOKAkOKAkOKAkOKAkOKAkCBPcmlnaW5hbCBNZXNzYWdlIOKAkOKAkOKAkOKAkOKAkOKAkOKA
-kAo+PiBPbiBUdWVzZGF5LCBTZXB0ZW1iZXIgMjUsIDIwMTggMTo1NyBQTSwgSm9lcmcgUm9lZGVs
-IDxqb3JvQDhieXRlcy5vcmc+IHdyb3RlOgo+Pgo+Pj4gTHUsCj4+Pgo+Pj4gY2FuIHlvdSBwbGVh
-c2UgaGF2ZSBhIGxvb2sgYXQgdGhpcyBwcm9ibGVtPwo+Pj4KPj4+IE9uIFdlZCwgU2VwIDA1LCAy
-MDE4IGF0IDAyOjA0OjM4UE0gKzAyMDAsIFNlZGF0IERpbGVrIHdyb3RlOgo+Pj4KPj4+ID4gSGkg
-Sm9lcmcsCj4+PiA+ICJpbnRlbF9pb29tdT1vbiIgd2FzIHdvcmtpbmcgZmluZSBoZXJlIG9uIG15
-IFRoaW5rUGFkIFQ0NzAgd2l0aAo+Pj4gPiBkZWJpYW4vdGVzdGluZyBBTUQ2NCB3aXRoIExpbnV4
-IHY0LjE3LnkgYW5kIHY0LjE4LnkuCj4+PiA+IFdpdGggdGVzdGluZyBMaW51eCB2NC4xOS1yYzEg
-YW5kIHY0LjE5LXJjMiBteSBtYWNoaW5lIGlzIG5vdCBib290aW5nIC0KPj4+ID4gYmxhY2sgc2Ny
-ZWVuLgo+Pj4gPiBUaGVzZSBrZXJuZWxzIGFyZSBidWlsdCB3aXRoIExMVk0vQ2xhbmcgdjcuMC4w
-cmMyICh2NC4xOC55IHRvbykuCj4+PiA+IEZ1cnRoZXJtb3JlLCBJIHN3aXRjaGVkIGZyb20gR1JV
-QiB0byBzeXN0ZW1kLWJvb3QgdjIzOS4KPj4+ID4gWyAvYm9vdC9lZmkvbG9hZGVyL2VudHJpZXMv
-ZGViaWFuLmNvbmYgXQo+Pj4gPiB0aXRsZSBEZWJpYW4gR05VL0xpbnV4IGJ1c3Rlci9zaWQgWyBk
-ZWJpYW4ga2VybmVsIF0KPj4+ID4gbGludXggL3ZtbGludXotNC4xNy4wLTMtYW1kNjQKPj4+ID4g
-aW5pdHJkIC9pbml0cmQuaW1nLTQuMTcuMC0zLWFtZDY0Cj4+PiA+IG9wdGlvbnMgcm9vdD1VVUlE
-PTRjMmFhNTQ0LTZlODYtNDRkMi05MzI5LTU3MjYyMzg2N2IzZCBybyBpbnRlbF9pb21tdT1vbgo+
-Pj4gPiBbIC9ib290L2VmaS9sb2FkZXIvZW50cmllcy9kZWJpYW4tbGx2bWxpbnV4LmNvbmYgXQo+
-Pj4gPiB0aXRsZSBEZWJpYW4gR05VL0xpbnV4IGJ1c3Rlci9zaWQgWyBsbHZtbGludXgga2VybmVs
-IChFWFBFUklNRU5UQUwpIF0KPj4+ID4gbGludXggL3ZtbGludXotNC4xOS4wLXJjMi0zLWluaXph
-LWxsdm1saW51eAo+Pj4gPiBpbml0cmQgL2luaXRyZC5pbWctNC4xOS4wLXJjMi0zLWluaXphLWxs
-dm1saW51eAo+Pj4gPiBvcHRpb25zIHJvb3Q9VVVJRD00YzJhYTU0NC02ZTg2LTQ0ZDItOTMyOS01
-NzI2MjM4NjdiM2Qgcm8KPj4+ID4gQW55IGhpbnRzIG9yIGhpbnRzIHRvIGRlYnVnIHRoaXM/Cj4+
-PiA+IEFueSBvdGhlciBrZXJuZWwgYm9vdCBjaGVhdHMgWzFdIEkgY2FuIHRyeT8KPj4+ID4gTXkg
-a2VybmVsLWNvbmZpZyBhbmQgZG1lc2cgb3V0cHV0IGlzIGF0dGFjaGVkLgo+Pj4gPiBUaGFua3Mg
-aW4gYWR2YW5jZS4KPj4+ID4gUmVnYXJkcywKPj4+ID4KPj4+ID4gLSAgIFNlZGF0IC0KPj4+ID4K
-Pj4KPj4gVGhpcyB3YXMgcmVwb3J0ZWQgY291cGxlIHdlZWtzIGFnbyBpbiBmZXcgcGxhY2VzLCBp
-LmUuOgo+PiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD0xMDc3
-ODMKPj4KPj4gTHUgYWxyZWFkeSBwcmVwYXJlZCBmaXggd2hpY2ggeW91IHN1cHBvc2VkbHkgbWVy
-Z2VkOgo+PiBodHRwczovL2xvcmUua2VybmVsLm9yZy9wYXRjaHdvcmsvcGF0Y2gvOTgwMDc3LyMx
-MTc1MDIwCj4+Cj4+IFRoZXJlIHdhcyBldmVuIHYyIG9mIHRoZSBhYm92ZSB3aGljaCBsaW5rcyB0
-byBidWcgSSBwb3N0ZWQ6Cj4+IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL3BhdGNod29yay9wYXRj
-aC85ODM2OTAvCj4+Cj4+IFNlZGF0IGNvbmZpcm1lZCBpdCBmaXhlcyB0aGUgaXNzdWU6Cj4+IGh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9waXBlcm1haWwvaW9tbXUvMjAxOC1TZXB0
-ZW1iZXIvMDMwMTM5Lmh0bWwKPj4KPj4gUGxlYXNlIGluY2x1ZGUgYWZvcmVtZW50aW9uZWQgcGF0
-Y2ggaW4gaW9tbXUtZml4ZXMgYW5kIHNlbmQgaXQgdG8gR3JlZyBmb3IgLXJjNi4KPj4KPgo+IEhl
-cmUgc29tZSBkZXRhaWxzOgo+Cj4gIyBjYXQgL3Byb2MvdmVyc2lvbgo+IExpbnV4IHZlcnNpb24g
-NC4xOS4wLXJjNS0xLWluaXphLWxsdm1saW51eAo+IChzZWRhdC5kaWxla0BnbWFpbC5jb21AaW5p
-emEpIChjbGFuZyB2ZXJzaW9uIDcuMC4wLTIKPiAodGFncy9SRUxFQVNFXzcwMC9maW5hbCkpICMx
-IFNNUCAyMDE4LTA5LTI0Cj4KPiBbICAgIDAuMTQzODgwXSBLZXJuZWwgY29tbWFuZCBsaW5lOgo+
-IGluaXRyZD1caW5pdHJkLmltZy00LjE5LjAtcmM1LTEtaW5pemEtbGx2bWxpbnV4IHJvb3Q9VVVJ
-RD1teVJvb3RGU1VVSUQKPiBybyBpbnRlbF9pb21tdT1vbgo+IFsgICAgMC4xNDM5MDZdIERNQVI6
-IElPTU1VIGVuYWJsZWQKPiBbICAxNTUuNzk1MzQ3XSB2Ym94cGNpOiBJT01NVSBmb3VuZAo+Cj4g
-VGhhbmtzLAo+IC0gU2VkYXQgLQoKSnVzdCBmb3IgdGhlIHJlY29yZHMgYW5kIGZvbGxvd2VycyBv
-ZiB0aGlzIHRocmVhZDoKCmNvbW1pdCBiZTllNjU5OGFlYjBkYjcwYTc5MjdkNmIzYmI0ZDNkNmZi
-MWMzZTEKImlvbW11L3Z0LWQ6IEhhbmRsZSBtZW1vcnkgc2hvcnRhZ2Ugb24gcGFzaWQgdGFibGUg
-YWxsb2NhdGlvbiIKClsxXSBodHRwczovL2dpdC5rZXJuZWwub3JnL2xpbnVzL2JlOWU2NTk4YWVi
-MGRiNzBhNzkyN2Q2YjNiYjRkM2Q2ZmIxYzNlMTgKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
-LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2lvbW11
+On 27/09/2018 04:22, Liu, Yi L wrote:
+>> For the "classic" vfio-pci case, "SVA in guest" still means giving the
+>> guest control over the whole PASID table.
+> 
+> No, if giving guest control over the whole PASID table, it means guest may have
+> its own PASID namespace. right? And for vfio-mdev case, it gets PASID from host.
+> So there would be multiple PASID namespaces. Thinking about the following scenario:
+> 
+> A PF/VF assigned to a VM via "classic" vfio-pci. And an assignable-device-interface
+> assigned to this VM via vfio-mdev. If an application in this VM tries to manipulate
+> these two "devices", it should have the same PASID programmed to them. right?
+> But as the above comments mentioned, for vfio-pci case, it would get a PASID from
+> its own PASID namespace. While the vfio-mdev case would get a PASID from host.
+> This would result in conflict.
+
+Ah I see, if the host assigns an ADI via vfio-mdev and a PCI function
+via vfio-pci to the same VM, the guest needs to use the paravirtualized
+PASID allocator for the PCI device as well, not just the ADI. In fact
+all guest PASIDs need to be allocated through one PV channel, even if
+the VM has other vIOMMUs that don't support PV. But I suppose that kind
+of VM is unrealistic. However for SMMUv3 we'll still use the
+bind_pasid_table for vfio-pci and let the guest allocate PASIDs, since
+the PASID table lives in guest-physical space.
+
+In any case, for the patch series at hand, it means that iommu-sva will
+need assistance from the vt-d driver to allocate PASIDs: host uses the
+generic allocator, guest uses the PV one. I guess the mm_alloc() op
+could do that?
+
+Thanks,
+Jean
