@@ -1,19 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] dma-direct: implement complete bus_dma_mask handling
-Date: Thu, 27 Sep 2018 17:41:36 +0100
-Message-ID: <b87ef7ac-81fc-c649-7ffb-73017ec99790@arm.com>
-References: <20180920185247.20037-1-hch@lst.de>
-	<20180920185247.20037-5-hch@lst.de>
-	<a7626d1b-4dd8-abc4-0ab0-21ab7e5d1a4c@arm.com>
-	<20180927153252.GE10566@lst.de>
-	<967e98b1-99ab-8f95-4c89-6156ce489b93@arm.com>
-	<20180927162737.GA11974@lst.de>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 06/20] dt-bindings: memory: tegra: Squash tegra20-gart
+	into tegra20-mc
+Date: Thu, 27 Sep 2018 13:41:21 -0500
+Message-ID: <20180927184121.GA2459@bogus>
+References: <20180924004153.8232-1-digetx@gmail.com>
+	<20180924004153.8232-7-digetx@gmail.com>
+	<20180924095530.GA21032@ulmo>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180927162737.GA11974-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20180924095530.GA21032@ulmo>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,28 +21,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/09/18 17:27, Christoph Hellwig wrote:
-> On Thu, Sep 27, 2018 at 05:14:56PM +0100, Robin Murphy wrote:
->>> This just seemed more readable to me than min_not_zero, but if others
->>> prefer min_not_zero I can switch.
->>
->> Nah, just checking whether there were any intentionally different
->> assumptions compared to the couple of other places in the patch where
->> min_not_zero() *is* used. If it's purely a style thing then no worries
->> (personally I'd have written it yet another way anyway).
+On Mon, Sep 24, 2018 at 11:55:30AM +0200, Thierry Reding wrote:
+> On Mon, Sep 24, 2018 at 03:41:39AM +0300, Dmitry Osipenko wrote:
+> > Splitting GART and Memory Controller wasn't a good decision that was made
+> > back in the day. Given that the GART driver wasn't ever been used by
+> > anything in the kernel, we decided that it will be better to correct the
+> > mistakes of the past and merge two bindings into a single one. As a result
+> > there is a DT ABI change for the Memory Controller that allows not to
+> > break newer kernels using older DT and not to break older kernels using
+> > newer DT, that is done by changing the 'compatible' of the node to
+> > 'tegra20-mc-gart' and adding a new-required clock property. The new clock
+> > property also puts the tegra20-mc binding in line with the bindings of the
+> > later Tegra generations.
+> > 
+> > Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > ---
+> >  .../bindings/iommu/nvidia,tegra20-gart.txt    | 14 ----------
+> >  .../memory-controllers/nvidia,tegra20-mc.txt  | 27 +++++++++++++------
+> >  2 files changed, 19 insertions(+), 22 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+> > deleted file mode 100644
+> > index 099d9362ebc1..000000000000
+> > --- a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+> > +++ /dev/null
+> > @@ -1,14 +0,0 @@
+> > -NVIDIA Tegra 20 GART
+> > -
+> > -Required properties:
+> > -- compatible: "nvidia,tegra20-gart"
+> > -- reg: Two pairs of cells specifying the physical address and size of
+> > -  the memory controller registers and the GART aperture respectively.
+> > -
+> > -Example:
+> > -
+> > -	gart {
+> > -		compatible = "nvidia,tegra20-gart";
+> > -		reg = <0x7000f024 0x00000018	/* controller registers */
+> > -		       0x58000000 0x02000000>;	/* GART aperture */
+> > -	};
+> > diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
+> > index 7d60a50a4fa1..e55328237df4 100644
+> > --- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
+> > +++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
+> > @@ -1,26 +1,37 @@
+> >  NVIDIA Tegra20 MC(Memory Controller)
+> >  
+> >  Required properties:
+> > -- compatible : "nvidia,tegra20-mc"
+> > -- reg : Should contain 2 register ranges(address and length); see the
+> > -  example below. Note that the MC registers are interleaved with the
+> > -  GART registers, and hence must be represented as multiple ranges.
+> > +- compatible : "nvidia,tegra20-mc-gart"
+> > +- reg : Should contain 2 register ranges: physical base address and length of
+> > +  the controller's registers and the GART aperture respectively.
 > 
-> I'm curious: how would you have written it?
+> Couldn't we have achieved the same thing by adding a reg-names property
+> instead of using a different compatible string? After all we only change
+> what information the DT provides, but the device is still a "tegra20-mc"
+> device.
 
-Come to think of it, I actually already have, in iommu-dma:
+Yes, if we were adding a reg field, but we're changing what the 2 reg 
+fields contain, so I think a new compatible is best.
 
-	if (dev->bus_dma_mask)
-		mask &= dev->bus_dma_mask;
-
-but of course it's not so pretty for those cases where you don't already 
-have the local variable ready to go.
-
-Robin.
+Rob
