@@ -1,84 +1,98 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v3 03/10] iommu/sva: Manage process address spaces
-Date: Thu, 27 Sep 2018 03:22:46 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439D0CC48@SHSMSX104.ccr.corp.intel.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
-	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
-	<20180925132627.vbdotr23o7lqrmnd@8bytes.org>
-	<b33a1911-e100-586b-b8df-eb04312ecffd@linux.intel.com>
-	<754d495d-d016-f42f-5682-ba4a75a618e0@arm.com>
-	<20180926124527.GD18287@8bytes.org>
-	<1f53c6f1-4e7a-1451-1abc-a7bca4a2359d@arm.com>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: Re: [PATCH v16 5/5] iommu/arm-smmu: Add support for qcom,smmu-v2 variant
+Date: Thu, 27 Sep 2018 12:25:43 +0530
+Message-ID: <CAFp+6iGrvVL-tbD=Mx3NV2BqRQo=7f5qh8raaYNT-oFEav+2Ug@mail.gmail.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
+ <20180830144541.17740-6-vivek.gautam@codeaurora.org> <80f7a7df-9a6d-9de3-4c7c-261d96fb04e4@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1f53c6f1-4e7a-1451-1abc-a7bca4a2359d-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <80f7a7df-9a6d-9de3-4c7c-261d96fb04e4@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, robh+dt <robh+dt@kernel.org>, Will Deacon <will.deacon@arm.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Linux PM <linux-pm@vger.kernel.org>, sboyd@kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, alex.williamson@redhat.com, linux-arm-msm <linux-arm-msm@vger.kernel.org>, freedreno <freedreno@lists.freedesktop.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Jean-Philippe Brucker
-> Sent: Wednesday, September 26, 2018 9:50 PM
-> Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
-> 
-> On 26/09/2018 13:45, Joerg Roedel wrote:
-> > On Wed, Sep 26, 2018 at 11:20:34AM +0100, Jean-Philippe Brucker wrote:
-> >> Yes, at the moment it's difficult to guess what device drivers will
-> >> want, but I can imagine some driver offering SVA to userspace, while
-> >> keeping a few PASIDs for themselves to map kernel memory. Or create mdev
-> >> devices for virtualization while also allowing bare-metal SVA. So I
-> >> think we should aim at enabling these use-cases in parallel, even if it
-> >> doesn't necessarily need to be possible right now.
+Hi Robin,
+
+On Wed, Sep 26, 2018 at 9:29 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 30/08/18 15:45, Vivek Gautam wrote:
+> > qcom,smmu-v2 is an arm,smmu-v2 implementation with specific
+> > clock and power requirements.
+> > On msm8996, multiple cores, viz. mdss, video, etc. use this
+> > smmu. On sdm845, this smmu is used with gpu.
+> > Add bindings for the same.
 > >
-> > Yeah okay, but allowing these use-cases in parallel basically disallows
-> > giving any guest control over a device's pasid-table, no?
-> All of these use-cases require the host to manage the PASID tables, so
-> while any one of them is enabled, we can't give a guest control over the
-> PASID tables. But allowing these use-cases in parallel doesn't change that.
-> 
-> There is an ambiguity: I understand "(3) SVA in VM guest" as SVA for a
-> device-assignable interface assigned to a guest, using vfio-mdev and the
-> new Intel vt-d architecture (right?). That case does require the host to
-> allocate and manage PASIDs (because the PCI device is shared between
-> multiple VMs).
+> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> > Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> > ---
+> >   drivers/iommu/arm-smmu.c | 13 +++++++++++++
+> >   1 file changed, 13 insertions(+)
+> >
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 166c8c6da24f..411e5ac57c64 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -119,6 +119,7 @@ enum arm_smmu_implementation {
+> >       GENERIC_SMMU,
+> >       ARM_MMU500,
+> >       CAVIUM_SMMUV2,
+> > +     QCOM_SMMUV2,
+>
+> Hmm, it seems we don't actually need this right now, but maybe that just
+> means there's more imp-def registers and/or errata to come ;)
+>
+> Either way I guess there's no real harm in having it.
 
-Correct. For such case, we give host the charge to allocate and manage PASIDs.
-And the reason is correct.
+Thanks for the review.
 
-> 
-> For the "classic" vfio-pci case, "SVA in guest" still means giving the
-> guest control over the whole PASID table.
+Best regards
+Vivek
 
-No, if giving guest control over the whole PASID table, it means guest may have
-its own PASID namespace. right? And for vfio-mdev case, it gets PASID from host.
-So there would be multiple PASID namespaces. Thinking about the following scenario:
+>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+>
+> >   };
+> >
+> >   struct arm_smmu_s2cr {
+> > @@ -1970,6 +1971,17 @@ ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
+> >   ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
+> >   ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
+> >
+> > +static const char * const qcom_smmuv2_clks[] = {
+> > +     "bus", "iface",
+> > +};
+> > +
+> > +static const struct arm_smmu_match_data qcom_smmuv2 = {
+> > +     .version = ARM_SMMU_V2,
+> > +     .model = QCOM_SMMUV2,
+> > +     .clks = qcom_smmuv2_clks,
+> > +     .num_clks = ARRAY_SIZE(qcom_smmuv2_clks),
+> > +};
+> > +
+> >   static const struct of_device_id arm_smmu_of_match[] = {
+> >       { .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
+> >       { .compatible = "arm,smmu-v2", .data = &smmu_generic_v2 },
+> > @@ -1977,6 +1989,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
+> >       { .compatible = "arm,mmu-401", .data = &arm_mmu401 },
+> >       { .compatible = "arm,mmu-500", .data = &arm_mmu500 },
+> >       { .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
+> > +     { .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
+> >       { },
+> >   };
+> >   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+> >
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
-A PF/VF assigned to a VM via "classic" vfio-pci. And an assignable-device-interface
-assigned to this VM via vfio-mdev. If an application in this VM tries to manipulate
-these two "devices", it should have the same PASID programmed to them. right?
-But as the above comments mentioned, for vfio-pci case, it would get a PASID from
-its own PASID namespace. While the vfio-mdev case would get a PASID from host.
-This would result in conflict.
 
-So I would like we get host to allocate and manage the whole PASID table, so that
-to cover possible combinations of vfio-pci passthru and vfio-mdev passthru.
 
-> 
-> Thanks,
-> Jean
-
-Regards,
-Yi Liu
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
