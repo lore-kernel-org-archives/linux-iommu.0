@@ -1,105 +1,90 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH, RFC] unicore32: remove swiotlb support
-Date: Thu, 27 Sep 2018 06:54:34 -0700
-Message-ID: <20180927135434.6866-1-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/5] dma-direct: add an explicit
+ dma_direct_get_required_mask
+Date: Thu, 27 Sep 2018 15:12:25 +0100
+Message-ID: <02ce2ecc-281d-7b7f-6d30-8d246acd1eaa@arm.com>
+References: <20180920185247.20037-1-hch@lst.de>
+ <20180920185247.20037-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180920185247.20037-3-hch@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Guan Xuetao <gxt@pku.edu.cn>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-unicore32 is a bog standard 32-bit port without larger physical address
-space, highmem or any other obvious addressing limitation.  There should
-be no need to bounce buffer using swiotlb.
+On 20/09/18 19:52, Christoph Hellwig wrote:
+> This is somewhat modelled after the powerpc version, and differs from
+> the legacy fallback in use fls64 instead of pointlessly splitting up the
+> address into low and high dwords and in that it takes (__)phys_to_dma
+> into account.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   include/linux/dma-direct.h |  1 +
+>   kernel/dma/direct.c        | 21 ++++++++++++++++++---
+>   2 files changed, 19 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index 86a59ba5a7f3..b79496d8c75b 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -55,6 +55,7 @@ static inline void dma_mark_clean(void *addr, size_t size)
+>   }
+>   #endif /* CONFIG_ARCH_HAS_DMA_MARK_CLEAN */
+>   
+> +u64 dma_direct_get_required_mask(struct device *dev);
+>   void *dma_direct_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   		gfp_t gfp, unsigned long attrs);
+>   void dma_direct_free(struct device *dev, size_t size, void *cpu_addr,
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index c954f0a6dc62..81b73a5bba54 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -53,11 +53,25 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
+>   	return true;
+>   }
+>   
+> +static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+> +		phys_addr_t phys)
+> +{
+> +	if (force_dma_unencrypted())
+> +		return __phys_to_dma(dev, phys);
+> +	return phys_to_dma(dev, phys);
+> +}
+> +
+> +u64 dma_direct_get_required_mask(struct device *dev)
+> +{
+> +	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
+> +
+> +	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
+I think that may as well just use __fls64() - it seems reasonable to 
+assume max_dma > 0. Otherwise,
 
-Guan, can you double check my assumptions?  I really can't find a
-reason why unicore32 would need swiotlb.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
- arch/unicore32/Kconfig                   |  2 +-
- arch/unicore32/include/asm/Kbuild        |  1 +
- arch/unicore32/include/asm/dma-mapping.h | 22 ----------------------
- arch/unicore32/mm/init.c                 |  3 ---
- 4 files changed, 2 insertions(+), 26 deletions(-)
- delete mode 100644 arch/unicore32/include/asm/dma-mapping.h
-
-diff --git a/arch/unicore32/Kconfig b/arch/unicore32/Kconfig
-index 60eae744d8fd..3a3b40f79558 100644
---- a/arch/unicore32/Kconfig
-+++ b/arch/unicore32/Kconfig
-@@ -4,6 +4,7 @@ config UNICORE32
- 	select ARCH_HAS_DEVMEM_IS_ALLOWED
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_MIGHT_HAVE_PC_SERIO
-+	select DMA_DIRECT_OPS
- 	select HAVE_MEMBLOCK
- 	select HAVE_GENERIC_DMA_COHERENT
- 	select HAVE_KERNEL_GZIP
-@@ -20,7 +21,6 @@ config UNICORE32
- 	select GENERIC_IOMAP
- 	select MODULES_USE_ELF_REL
- 	select NEED_DMA_MAP_STATE
--	select SWIOTLB
- 	help
- 	  UniCore-32 is 32-bit Instruction Set Architecture,
- 	  including a series of low-power-consumption RISC chip
-diff --git a/arch/unicore32/include/asm/Kbuild b/arch/unicore32/include/asm/Kbuild
-index bfc7abe77905..1372553dc0a9 100644
---- a/arch/unicore32/include/asm/Kbuild
-+++ b/arch/unicore32/include/asm/Kbuild
-@@ -4,6 +4,7 @@ generic-y += compat.h
- generic-y += current.h
- generic-y += device.h
- generic-y += div64.h
-+generic-y += dma-mapping.h
- generic-y += emergency-restart.h
- generic-y += exec.h
- generic-y += extable.h
-diff --git a/arch/unicore32/include/asm/dma-mapping.h b/arch/unicore32/include/asm/dma-mapping.h
-deleted file mode 100644
-index 790bc2ef4af2..000000000000
---- a/arch/unicore32/include/asm/dma-mapping.h
-+++ /dev/null
-@@ -1,22 +0,0 @@
--/*
-- * linux/arch/unicore32/include/asm/dma-mapping.h
-- *
-- * Code specific to PKUnity SoC and UniCore ISA
-- *
-- * Copyright (C) 2001-2010 GUAN Xue-tao
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 as
-- * published by the Free Software Foundation.
-- */
--#ifndef __UNICORE_DMA_MAPPING_H__
--#define __UNICORE_DMA_MAPPING_H__
--
--#include <linux/swiotlb.h>
--
--static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
--{
--	return &swiotlb_dma_ops;
--}
--
--#endif
-diff --git a/arch/unicore32/mm/init.c b/arch/unicore32/mm/init.c
-index f4950fbfe574..5f72a8d1d953 100644
---- a/arch/unicore32/mm/init.c
-+++ b/arch/unicore32/mm/init.c
-@@ -234,9 +234,6 @@ void __init bootmem_init(void)
- 
- 	uc32_bootmem_init(min, max_low);
- 
--#ifdef CONFIG_SWIOTLB
--	swiotlb_init(1);
--#endif
- 	/*
- 	 * Sparsemem tries to allocate bootmem in memory_present(),
- 	 * so must be done after the fixed reservations
--- 
-2.19.0
+> +}
+> +
+>   static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
+>   {
+> -	dma_addr_t addr = force_dma_unencrypted() ?
+> -		__phys_to_dma(dev, phys) : phys_to_dma(dev, phys);
+> -	return addr + size - 1 <= dev->coherent_dma_mask;
+> +	return phys_to_dma_direct(dev, phys) + size - 1 <=
+> +			dev->coherent_dma_mask;
+>   }
+>   
+>   void *dma_direct_alloc_pages(struct device *dev, size_t size,
+> @@ -296,6 +310,7 @@ const struct dma_map_ops dma_direct_ops = {
+>   	.unmap_page		= dma_direct_unmap_page,
+>   	.unmap_sg		= dma_direct_unmap_sg,
+>   #endif
+> +	.get_required_mask	= dma_direct_get_required_mask,
+>   	.dma_supported		= dma_direct_supported,
+>   	.mapping_error		= dma_direct_mapping_error,
+>   	.cache_sync		= arch_dma_cache_sync,
+> 
