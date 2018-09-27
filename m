@@ -1,72 +1,59 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
-Date: Thu, 27 Sep 2018 16:06:06 +0100
-Message-ID: <79c0e0e1-691e-b8e1-0e68-21876135d2ab@arm.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
-	<cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
-	<7cbd503a-c79e-3c40-7388-ce6c23f7f536@arm.com>
-	<20180926110103.45b57f75@jacob-builder>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 5/5] dma-direct: always allow dma mask <= physiscal memory
+ size
+Date: Thu, 27 Sep 2018 16:07:50 +0100
+Message-ID: <7a34c74f-7c83-84bb-441b-a729adce2beb@arm.com>
+References: <20180920185247.20037-1-hch@lst.de>
+ <20180920185247.20037-6-hch@lst.de>
+ <985079efc3296ac45de1e6344d7916c42fc7cbdd.camel@kernel.crashing.org>
+ <20180927134954.GB8281@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180926110103.45b57f75@jacob-builder>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180927134954.GB8281@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjYvMDkvMjAxOCAxOTowMSwgSmFjb2IgUGFuIHdyb3RlOgo+IE9uIE1vbiwgMjQgU2VwIDIw
-MTggMTM6MDc6NDcgKzAxMDAKPiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGUu
-YnJ1Y2tlckBhcm0uY29tPiB3cm90ZToKPiAKPj4gT24gMjMvMDkvMjAxOCAwNDowNSwgTHUgQmFv
-bHUgd3JvdGU6Cj4+ID4gSGksCj4+ID4gCj4+ID4gT24gMDkvMjEvMjAxOCAwMTowMCBBTSwgSmVh
-bi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOsKgIAo+PiA+PiBBZGQgYmluZCgpIGFuZCB1bmJpbmQo
-KSBvcGVyYXRpb25zIHRvIHRoZSBJT01NVSBBUEkuIEJpbmQoKQo+PiA+PiByZXR1cm5zIGEgUEFT
-SUQgdGhhdCBkcml2ZXJzIGNhbiBwcm9ncmFtIGluIGhhcmR3YXJlLCB0byBsZXQgdGhlaXIKPj4g
-Pj4gZGV2aWNlcyBhY2Nlc3MgYW4gbW0uIFRoaXMgcGF0Y2ggb25seSBhZGRzIHNrZWxldG9ucyBm
-b3IgdGhlCj4+ID4+IGRldmljZSBkcml2ZXIgQVBJLCBtb3N0IG9mIHRoZSBpbXBsZW1lbnRhdGlv
-biBpcyBzdGlsbCBtaXNzaW5nLsKgIAo+PiA+IAo+PiA+IElzIGl0IHBvc3NpYmxlIHRoYXQgYSBt
-YWxpY2lvdXMgcHJvY2VzcyBjYW4gdW5iaW5kIGEgcGFzaWQgd2hpY2ggaXMKPj4gPiB1c2VkIGJ5
-IGFub3RoZXIgbm9ybWFsIHByb2Nlc3M/wqAgCj4+IAo+PiBZZXMsIGl0J3MgdXAgdG8gdGhlIGRl
-dmljZSBkcml2ZXIgdGhhdCBjYWxscyB1bmJpbmQoKSB0byBjaGVjayB0aGF0Cj4+IHRoZSBjYWxs
-ZXIgaXMgYWxsb3dlZCB0byB1bmJpbmQgdGhpcyBQQVNJRC4gV2UgY2FuJ3QgZG8gaXQgb3Vyc2Vs
-dmVzCj4+IHNpbmNlIHVuYmluZCgpIGNvdWxkIGFsc28gYmUgY2FsbGVkIGZyb20gYSBrZXJuZWwg
-dGhyZWFkIGZvciBleGFtcGxlCj4+IGZyb20gYSBjbGVhbnVwIGZ1bmN0aW9uIGluIHNvbWUgd29y
-a3F1ZXVlLCBvdXRzaWRlIHRoZSBjb250ZXh0IG9mIHRoZQo+PiBwcm9jZXNzIHRvIHVuYmluZC4K
-CkFjdHVhbGx5IEknbSBub3QgdG9vIGNvbmNlcm5lZCBhYm91dCBhIHByb2Nlc3MgdW5iaW5kaW5n
-IGFub3RoZXIgb25lLApzaW5jZSBpbiBnZW5lcmFsIG9ubHkgdGhlIGtlcm5lbCB3aWxsIGhvbGQg
-dGhlIFBBU0lEIHZhbHVlcy4gVXNlcnNwYWNlCnNob3VsZG4ndCBldmVuIG5lZWQgdG8gc2VlIHRo
-ZW0sIHNvIGlzc3VpbmcgdW5iaW5kKCkgd2l0aCB0aGUgd3JvbmcKUEFTSUQgaXNuJ3QgYW4gZWFz
-eSBtaXN0YWtlLgoKPiBJIGFtIHdvbmRlcmluZyBpZiB3ZSBjYW4gYXZvaWQgdGhlIGNvbXBsZXhp
-dHkgYXJvdW5kIHBlcm1pc3Npb24KPiBjaGVja2luZyBieSBzaW1wbHkgX29ubHlfIGFsbG93IGJp
-bmQvdW5iaW5kKCkgb24gY3VycmVudCBtbT8gd2hhdCB3b3VsZAo+IGJlIHRoZSBtaXNzaW5nIHVz
-ZSBjYXNlcyBpZiB3ZSBiaW5kIGN1cnJlbnQgb25seT8KPiBJdCBjYW4gYWxzbyBhdm9pZCBvdGhl
-ciByYWNlIHN1Y2ggYXMgdW5iaW5kIGFuZCBtbXVfbm90aWZpZXIgcmVsZWFzZQo+IGNhbGwuCgpU
-aGF0J3MgdGVtcHRpbmcgYnV0IG1heSBiZSB0b28gcmVzdHJpY3RpdmUuIEkganVzdCB0cmllZCB0
-byBjb3B5IHdoYXQKdGhlIGN1cnJlbnQgQU1EIGFuZCBJbnRlbCBkcml2ZXJzIGRvIGluIHRoZWly
-IFNWQSBpbXBsZW1lbnRhdGlvbiwgYnV0IEkKZG9uJ3Qga25vdyBpZiB1c2VycyB3aWxsIG5lZWQg
-YWxsIG9mIGl0LiBBdCB0aGUgbW9tZW50IHRoZSBhbWRrZmQgZHJpdmVyCmRvZXMgdW5iaW5kKCkg
-ZnJvbSBhIHdvcmtxdWV1ZSwgYWx0aG91Z2ggbW92aW5nIHRvIHRoZSBnZW5lcmljIEFQSSBtaWdo
-dApzaW1wbGlmeSB0aGluZ3MgdGhlcmUuCgpDYWxsZXJzIGNhbiBlYXNpbHkgZW5mb3JjZSB0aGF0
-IG9ubHkgY3VycmVudC0+bW0gaXMgcGFzc2VkIHRvIGJpbmQoKS4gSQpkb24ndCBrbm93IGlmIGFs
-bG93aW5nIGEgcHJvY2VzcyB0byBiaW5kIGFub3RoZXIgb25lIGlzIGEgcmVhbCB1c2UtY2FzZSwK
-YnV0IHRoZSBwZXJtaXNzaW9uIGNoZWNrIG9uIHRoZSBkZXZpY2UgZHJpdmVyIHNpZGUgaXMgZmFp
-cmx5IGVhc3ksIGFuZApkaXNhbGxvd2luZyBpdCB3b3VsZG4ndCBzaW1wbGlmeSBpb21tdS1zdmEu
-CgpFdmVuIGlmIHdlIGFsbG93IGJpbmQoKSBvbmx5IG9uIGN1cnJlbnQsIGZvcmNpbmcgdW5iaW5k
-KCkgdG8gYmUgZG9uZSBvbgpjdXJyZW50IG1lYW5zIHRoYXQgdGhlIGRyaXZlciBjYW4ndCBjbGVh
-biB0aGluZ3MgdXAgZnJvbSBhIHdvcmtxdWV1ZS4KQnV0IHlvdSdyZSByaWdodCB0aGF0IHRoaXMg
-cmVzdHJpY3Rpb24gd291bGQgbWFrZSB0aGluZ3MgKm11Y2gqIHNpbXBsZXIKZm9yIHRoZSBleGl0
-KCkvdW5iaW5kKCkgcmFjZS4KClRoYW5rcywKSmVhbgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
-YW4vbGlzdGluZm8vaW9tbXU=
+[ oops, I should have looked at the replies first, now I see Ben already 
+had the same thing to say about #3... ]
+
+On 27/09/18 14:49, Christoph Hellwig wrote:
+> On Thu, Sep 27, 2018 at 11:50:14AM +1000, Benjamin Herrenschmidt wrote:
+>>> -	 * to be able to satisfy them - either by not supporting more physical
+>>> -	 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+>>> -	 * architecture needs to use an IOMMU instead of the direct mapping.
+>>> -	 */
+>>> -	if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
+>>> +	u64 min_mask;
+>>> +
+>>> +	if (IS_ENABLED(CONFIG_ZONE_DMA))
+>>> +		min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
+>>> +	else
+>>> +		min_mask = min_t(u64, DMA_BIT_MASK(32),
+>>> +				 (max_pfn - 1) << PAGE_SHIFT);
+>>> +
+>>> +	if (mask >= phys_to_dma(dev, min_mask))
+>>>   		return 0;
+>>
+>> nitpick ... to be completely "correct", I would have written
+>>
+>> 	if (IS_ENABLED(CONFIG_ZONE_DMA))
+>> 		min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
+>> 	else
+>> 		min_mask = DMA_BIT_MASK(32);
+>>
+>> 	min_mask = min_t(u64, min_mask,	(max_pfn - 1) << PAGE_SHIFT);
+>>
+>> In "theory" it's also ok to have a mask < ZONE_DMA_BITS as long as it's
+>> big enough to fit all memory :-)
+> 
+> Yeah, we could do that.
+
+FWIW I like it even if just for looking slightly more readable. With 
+that fixup,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
