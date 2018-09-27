@@ -1,15 +1,18 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] dma-direct: implement complete bus_dma_mask handling
-Date: Thu, 27 Sep 2018 15:58:04 +0100
-Message-ID: <a7626d1b-4dd8-abc4-0ab0-21ab7e5d1a4c@arm.com>
-References: <20180920185247.20037-1-hch@lst.de>
-	<20180920185247.20037-5-hch@lst.de>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
+Date: Thu, 27 Sep 2018 16:06:06 +0100
+Message-ID: <79c0e0e1-691e-b8e1-0e68-21876135d2ab@arm.com>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
+	<cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
+	<7cbd503a-c79e-3c40-7388-ce6c23f7f536@arm.com>
+	<20180926110103.45b57f75@jacob-builder>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180920185247.20037-5-hch-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <20180926110103.45b57f75@jacob-builder>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,110 +22,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/09/18 19:52, Christoph Hellwig wrote:
-> Instead of rejecting devices with a too small bus_dma_mask we can handle
-> by taking the bus dma_mask into account for allocations and bounce
-> buffering decisions.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->   include/linux/dma-direct.h |  3 ++-
->   kernel/dma/direct.c        | 21 +++++++++++----------
->   2 files changed, 13 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index b79496d8c75b..fbca184ff5a0 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -27,7 +27,8 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
->   	if (!dev->dma_mask)
->   		return false;
->   
-> -	return addr + size - 1 <= *dev->dma_mask;
-> +	return addr + size - 1 <=
-> +		min_not_zero(*dev->dma_mask, dev->bus_dma_mask);
->   }
->   #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
->   
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 3c404e33d946..64466b7ef67b 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -43,10 +43,11 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
->   			return false;
->   		}
->   
-> -		if (*dev->dma_mask >= DMA_BIT_MASK(32)) {
-> +		if (*dev->dma_mask >= DMA_BIT_MASK(32) || dev->bus_dma_mask) {
-
-Hmm... say *dev->dma_mask is 31 bits and dev->bus_dma_mask is 40 bits 
-due to a global DT property, we'll now scream where we didn't before 
-even though the bus mask is almost certainly irrelevant - is that desirable?
-
->   			dev_err(dev,
-> -				"%s: overflow %pad+%zu of device mask %llx\n",
-> -				caller, &dma_addr, size, *dev->dma_mask);
-> +				"%s: overflow %pad+%zu of device mask %llx bus mask %llx\n",
-> +				caller, &dma_addr, size,
-> +				*dev->dma_mask, dev->bus_dma_mask);
->   		}
->   		return false;
->   	}
-> @@ -65,12 +66,18 @@ u64 dma_direct_get_required_mask(struct device *dev)
->   {
->   	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
->   
-> +	if (dev->bus_dma_mask && dev->bus_dma_mask < max_dma)
-> +		max_dma = dev->bus_dma_mask;
-
-Again, I think we could just do another min_not_zero() here. A device 
-wired to address only one single page of RAM isn't a realistic prospect 
-(and we could just flip the -1 and the shift in the max_dma calculation 
-if we *really* wanted to support such things).
-
-> +
->   	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
->   }
->   
->   static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
->   		u64 *phys_mask)
->   {
-> +	if (dev->bus_dma_mask && dev->bus_dma_mask < dma_mask)
-> +		dma_mask = dev->bus_dma_mask;
-> +
-
-Similarly, can't we assume dma_mask to be nonzero here too? It feels 
-like we really shouldn't have managed to get this far without one.
-
-Robin.
-
->   	if (force_dma_unencrypted())
->   		*phys_mask = __dma_to_phys(dev, dma_mask);
->   	else
-> @@ -87,7 +94,7 @@ static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
->   static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->   {
->   	return phys_to_dma_direct(dev, phys) + size - 1 <=
-> -			dev->coherent_dma_mask;
-> +			min_not_zero(dev->coherent_dma_mask, dev->bus_dma_mask);
->   }
->   
->   void *dma_direct_alloc_pages(struct device *dev, size_t size,
-> @@ -291,12 +298,6 @@ int dma_direct_supported(struct device *dev, u64 mask)
->   	if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
->   		return 0;
->   #endif
-> -	/*
-> -	 * Upstream PCI/PCIe bridges or SoC interconnects may not carry
-> -	 * as many DMA address bits as the device itself supports.
-> -	 */
-> -	if (dev->bus_dma_mask && mask > dev->bus_dma_mask)
-> -		return 0;
->   	return 1;
->   }
->   
-> 
+T24gMjYvMDkvMjAxOCAxOTowMSwgSmFjb2IgUGFuIHdyb3RlOgo+IE9uIE1vbiwgMjQgU2VwIDIw
+MTggMTM6MDc6NDcgKzAxMDAKPiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGUu
+YnJ1Y2tlckBhcm0uY29tPiB3cm90ZToKPiAKPj4gT24gMjMvMDkvMjAxOCAwNDowNSwgTHUgQmFv
+bHUgd3JvdGU6Cj4+ID4gSGksCj4+ID4gCj4+ID4gT24gMDkvMjEvMjAxOCAwMTowMCBBTSwgSmVh
+bi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOsKgIAo+PiA+PiBBZGQgYmluZCgpIGFuZCB1bmJpbmQo
+KSBvcGVyYXRpb25zIHRvIHRoZSBJT01NVSBBUEkuIEJpbmQoKQo+PiA+PiByZXR1cm5zIGEgUEFT
+SUQgdGhhdCBkcml2ZXJzIGNhbiBwcm9ncmFtIGluIGhhcmR3YXJlLCB0byBsZXQgdGhlaXIKPj4g
+Pj4gZGV2aWNlcyBhY2Nlc3MgYW4gbW0uIFRoaXMgcGF0Y2ggb25seSBhZGRzIHNrZWxldG9ucyBm
+b3IgdGhlCj4+ID4+IGRldmljZSBkcml2ZXIgQVBJLCBtb3N0IG9mIHRoZSBpbXBsZW1lbnRhdGlv
+biBpcyBzdGlsbCBtaXNzaW5nLsKgIAo+PiA+IAo+PiA+IElzIGl0IHBvc3NpYmxlIHRoYXQgYSBt
+YWxpY2lvdXMgcHJvY2VzcyBjYW4gdW5iaW5kIGEgcGFzaWQgd2hpY2ggaXMKPj4gPiB1c2VkIGJ5
+IGFub3RoZXIgbm9ybWFsIHByb2Nlc3M/wqAgCj4+IAo+PiBZZXMsIGl0J3MgdXAgdG8gdGhlIGRl
+dmljZSBkcml2ZXIgdGhhdCBjYWxscyB1bmJpbmQoKSB0byBjaGVjayB0aGF0Cj4+IHRoZSBjYWxs
+ZXIgaXMgYWxsb3dlZCB0byB1bmJpbmQgdGhpcyBQQVNJRC4gV2UgY2FuJ3QgZG8gaXQgb3Vyc2Vs
+dmVzCj4+IHNpbmNlIHVuYmluZCgpIGNvdWxkIGFsc28gYmUgY2FsbGVkIGZyb20gYSBrZXJuZWwg
+dGhyZWFkIGZvciBleGFtcGxlCj4+IGZyb20gYSBjbGVhbnVwIGZ1bmN0aW9uIGluIHNvbWUgd29y
+a3F1ZXVlLCBvdXRzaWRlIHRoZSBjb250ZXh0IG9mIHRoZQo+PiBwcm9jZXNzIHRvIHVuYmluZC4K
+CkFjdHVhbGx5IEknbSBub3QgdG9vIGNvbmNlcm5lZCBhYm91dCBhIHByb2Nlc3MgdW5iaW5kaW5n
+IGFub3RoZXIgb25lLApzaW5jZSBpbiBnZW5lcmFsIG9ubHkgdGhlIGtlcm5lbCB3aWxsIGhvbGQg
+dGhlIFBBU0lEIHZhbHVlcy4gVXNlcnNwYWNlCnNob3VsZG4ndCBldmVuIG5lZWQgdG8gc2VlIHRo
+ZW0sIHNvIGlzc3VpbmcgdW5iaW5kKCkgd2l0aCB0aGUgd3JvbmcKUEFTSUQgaXNuJ3QgYW4gZWFz
+eSBtaXN0YWtlLgoKPiBJIGFtIHdvbmRlcmluZyBpZiB3ZSBjYW4gYXZvaWQgdGhlIGNvbXBsZXhp
+dHkgYXJvdW5kIHBlcm1pc3Npb24KPiBjaGVja2luZyBieSBzaW1wbHkgX29ubHlfIGFsbG93IGJp
+bmQvdW5iaW5kKCkgb24gY3VycmVudCBtbT8gd2hhdCB3b3VsZAo+IGJlIHRoZSBtaXNzaW5nIHVz
+ZSBjYXNlcyBpZiB3ZSBiaW5kIGN1cnJlbnQgb25seT8KPiBJdCBjYW4gYWxzbyBhdm9pZCBvdGhl
+ciByYWNlIHN1Y2ggYXMgdW5iaW5kIGFuZCBtbXVfbm90aWZpZXIgcmVsZWFzZQo+IGNhbGwuCgpU
+aGF0J3MgdGVtcHRpbmcgYnV0IG1heSBiZSB0b28gcmVzdHJpY3RpdmUuIEkganVzdCB0cmllZCB0
+byBjb3B5IHdoYXQKdGhlIGN1cnJlbnQgQU1EIGFuZCBJbnRlbCBkcml2ZXJzIGRvIGluIHRoZWly
+IFNWQSBpbXBsZW1lbnRhdGlvbiwgYnV0IEkKZG9uJ3Qga25vdyBpZiB1c2VycyB3aWxsIG5lZWQg
+YWxsIG9mIGl0LiBBdCB0aGUgbW9tZW50IHRoZSBhbWRrZmQgZHJpdmVyCmRvZXMgdW5iaW5kKCkg
+ZnJvbSBhIHdvcmtxdWV1ZSwgYWx0aG91Z2ggbW92aW5nIHRvIHRoZSBnZW5lcmljIEFQSSBtaWdo
+dApzaW1wbGlmeSB0aGluZ3MgdGhlcmUuCgpDYWxsZXJzIGNhbiBlYXNpbHkgZW5mb3JjZSB0aGF0
+IG9ubHkgY3VycmVudC0+bW0gaXMgcGFzc2VkIHRvIGJpbmQoKS4gSQpkb24ndCBrbm93IGlmIGFs
+bG93aW5nIGEgcHJvY2VzcyB0byBiaW5kIGFub3RoZXIgb25lIGlzIGEgcmVhbCB1c2UtY2FzZSwK
+YnV0IHRoZSBwZXJtaXNzaW9uIGNoZWNrIG9uIHRoZSBkZXZpY2UgZHJpdmVyIHNpZGUgaXMgZmFp
+cmx5IGVhc3ksIGFuZApkaXNhbGxvd2luZyBpdCB3b3VsZG4ndCBzaW1wbGlmeSBpb21tdS1zdmEu
+CgpFdmVuIGlmIHdlIGFsbG93IGJpbmQoKSBvbmx5IG9uIGN1cnJlbnQsIGZvcmNpbmcgdW5iaW5k
+KCkgdG8gYmUgZG9uZSBvbgpjdXJyZW50IG1lYW5zIHRoYXQgdGhlIGRyaXZlciBjYW4ndCBjbGVh
+biB0aGluZ3MgdXAgZnJvbSBhIHdvcmtxdWV1ZS4KQnV0IHlvdSdyZSByaWdodCB0aGF0IHRoaXMg
+cmVzdHJpY3Rpb24gd291bGQgbWFrZSB0aGluZ3MgKm11Y2gqIHNpbXBsZXIKZm9yIHRoZSBleGl0
+KCkvdW5iaW5kKCkgcmFjZS4KClRoYW5rcywKSmVhbgpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
+YW4vbGlzdGluZm8vaW9tbXU=
