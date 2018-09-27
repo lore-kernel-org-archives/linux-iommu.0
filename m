@@ -1,68 +1,38 @@
-From: Robin Murphy <robin.murphy@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 Subject: Re: [PATCH 4/5] dma-direct: implement complete bus_dma_mask handling
-Date: Thu, 27 Sep 2018 17:14:56 +0100
-Message-ID: <967e98b1-99ab-8f95-4c89-6156ce489b93@arm.com>
+Date: Thu, 27 Sep 2018 18:27:37 +0200
+Message-ID: <20180927162737.GA11974@lst.de>
 References: <20180920185247.20037-1-hch@lst.de>
- <20180920185247.20037-5-hch@lst.de>
- <a7626d1b-4dd8-abc4-0ab0-21ab7e5d1a4c@arm.com>
- <20180927153252.GE10566@lst.de>
+	<20180920185247.20037-5-hch@lst.de>
+	<a7626d1b-4dd8-abc4-0ab0-21ab7e5d1a4c@arm.com>
+	<20180927153252.GE10566@lst.de>
+	<967e98b1-99ab-8f95-4c89-6156ce489b93@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180927153252.GE10566@lst.de>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <967e98b1-99ab-8f95-4c89-6156ce489b93-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/09/18 16:32, Christoph Hellwig wrote:
-> On Thu, Sep 27, 2018 at 03:58:04PM +0100, Robin Murphy wrote:
->>>    }
->>>    #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
->>>    diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->>> index 3c404e33d946..64466b7ef67b 100644
->>> --- a/kernel/dma/direct.c
->>> +++ b/kernel/dma/direct.c
->>> @@ -43,10 +43,11 @@ check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
->>>    			return false;
->>>    		}
->>>    -		if (*dev->dma_mask >= DMA_BIT_MASK(32)) {
->>> +		if (*dev->dma_mask >= DMA_BIT_MASK(32) || dev->bus_dma_mask) {
->>
->> Hmm... say *dev->dma_mask is 31 bits and dev->bus_dma_mask is 40 bits due
->> to a global DT property, we'll now scream where we didn't before even
->> though the bus mask is almost certainly irrelevant - is that desirable?
-> 
-> This is just the reporting in the error case - we'll only hit this
-> IFF dma_capable already returned false.  But if you don't want a message
-> here we can probably drop this hunk.
+On Thu, Sep 27, 2018 at 05:14:56PM +0100, Robin Murphy wrote:
+>> This just seemed more readable to me than min_not_zero, but if others
+>> prefer min_not_zero I can switch.
+>
+> Nah, just checking whether there were any intentionally different 
+> assumptions compared to the couple of other places in the patch where 
+> min_not_zero() *is* used. If it's purely a style thing then no worries 
+> (personally I'd have written it yet another way anyway).
 
-It was only a question of consistency - whatever the reason was to avoid 
-warning for small device masks before, it's not obvious why it wouldn't 
-still apply in the presence of nonzero but larger bus mask. The fact 
-that the current check is there at all implied to me that we're 
-expecting less-capable device to hit this often and thus wanted to avoid 
-being noisy. If that's not the case then it's fine as-is AFAIC.
-
->>> @@ -65,12 +66,18 @@ u64 dma_direct_get_required_mask(struct device *dev)
->>>    {
->>>    	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
->>>    +	if (dev->bus_dma_mask && dev->bus_dma_mask < max_dma)
->>> +		max_dma = dev->bus_dma_mask;
->>
->> Again, I think we could just do another min_not_zero() here. A device wired
->> to address only one single page of RAM isn't a realistic prospect (and we
->> could just flip the -1 and the shift in the max_dma calculation if we
->> *really* wanted to support such things).
-> 
-> This just seemed more readable to me than min_not_zero, but if others
-> prefer min_not_zero I can switch.
-
-Nah, just checking whether there were any intentionally different 
-assumptions compared to the couple of other places in the patch where 
-min_not_zero() *is* used. If it's purely a style thing then no worries 
-(personally I'd have written it yet another way anyway).
-
-Robin.
+I'm curious: how would you have written it?
