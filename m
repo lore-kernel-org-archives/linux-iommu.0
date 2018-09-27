@@ -1,46 +1,105 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 5/5] dma-direct: always allow dma mask <= physiscal
- memory size
-Date: Thu, 27 Sep 2018 15:49:54 +0200
-Message-ID: <20180927134954.GB8281@lst.de>
-References: <20180920185247.20037-1-hch@lst.de> <20180920185247.20037-6-hch@lst.de> <985079efc3296ac45de1e6344d7916c42fc7cbdd.camel@kernel.crashing.org>
+Subject: [PATCH, RFC] unicore32: remove swiotlb support
+Date: Thu, 27 Sep 2018 06:54:34 -0700
+Message-ID: <20180927135434.6866-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <985079efc3296ac45de1e6344d7916c42fc7cbdd.camel@kernel.crashing.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+To: Guan Xuetao <gxt@pku.edu.cn>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 27, 2018 at 11:50:14AM +1000, Benjamin Herrenschmidt wrote:
-> > -	 * to be able to satisfy them - either by not supporting more physical
-> > -	 * memory, or by providing a ZONE_DMA32.  If neither is the case, the
-> > -	 * architecture needs to use an IOMMU instead of the direct mapping.
-> > -	 */
-> > -	if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
-> > +	u64 min_mask;
-> > +
-> > +	if (IS_ENABLED(CONFIG_ZONE_DMA))
-> > +		min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
-> > +	else
-> > +		min_mask = min_t(u64, DMA_BIT_MASK(32),
-> > +				 (max_pfn - 1) << PAGE_SHIFT);
-> > +
-> > +	if (mask >= phys_to_dma(dev, min_mask))
-> >  		return 0;
-> 
-> nitpick ... to be completely "correct", I would have written
-> 
-> 	if (IS_ENABLED(CONFIG_ZONE_DMA))
-> 		min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
-> 	else
-> 		min_mask = DMA_BIT_MASK(32);
-> 
-> 	min_mask = min_t(u64, min_mask,	(max_pfn - 1) << PAGE_SHIFT);
-> 
-> In "theory" it's also ok to have a mask < ZONE_DMA_BITS as long as it's
-> big enough to fit all memory :-)
+unicore32 is a bog standard 32-bit port without larger physical address
+space, highmem or any other obvious addressing limitation.  There should
+be no need to bounce buffer using swiotlb.
 
-Yeah, we could do that.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+
+Guan, can you double check my assumptions?  I really can't find a
+reason why unicore32 would need swiotlb.
+
+ arch/unicore32/Kconfig                   |  2 +-
+ arch/unicore32/include/asm/Kbuild        |  1 +
+ arch/unicore32/include/asm/dma-mapping.h | 22 ----------------------
+ arch/unicore32/mm/init.c                 |  3 ---
+ 4 files changed, 2 insertions(+), 26 deletions(-)
+ delete mode 100644 arch/unicore32/include/asm/dma-mapping.h
+
+diff --git a/arch/unicore32/Kconfig b/arch/unicore32/Kconfig
+index 60eae744d8fd..3a3b40f79558 100644
+--- a/arch/unicore32/Kconfig
++++ b/arch/unicore32/Kconfig
+@@ -4,6 +4,7 @@ config UNICORE32
+ 	select ARCH_HAS_DEVMEM_IS_ALLOWED
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_MIGHT_HAVE_PC_SERIO
++	select DMA_DIRECT_OPS
+ 	select HAVE_MEMBLOCK
+ 	select HAVE_GENERIC_DMA_COHERENT
+ 	select HAVE_KERNEL_GZIP
+@@ -20,7 +21,6 @@ config UNICORE32
+ 	select GENERIC_IOMAP
+ 	select MODULES_USE_ELF_REL
+ 	select NEED_DMA_MAP_STATE
+-	select SWIOTLB
+ 	help
+ 	  UniCore-32 is 32-bit Instruction Set Architecture,
+ 	  including a series of low-power-consumption RISC chip
+diff --git a/arch/unicore32/include/asm/Kbuild b/arch/unicore32/include/asm/Kbuild
+index bfc7abe77905..1372553dc0a9 100644
+--- a/arch/unicore32/include/asm/Kbuild
++++ b/arch/unicore32/include/asm/Kbuild
+@@ -4,6 +4,7 @@ generic-y += compat.h
+ generic-y += current.h
+ generic-y += device.h
+ generic-y += div64.h
++generic-y += dma-mapping.h
+ generic-y += emergency-restart.h
+ generic-y += exec.h
+ generic-y += extable.h
+diff --git a/arch/unicore32/include/asm/dma-mapping.h b/arch/unicore32/include/asm/dma-mapping.h
+deleted file mode 100644
+index 790bc2ef4af2..000000000000
+--- a/arch/unicore32/include/asm/dma-mapping.h
++++ /dev/null
+@@ -1,22 +0,0 @@
+-/*
+- * linux/arch/unicore32/include/asm/dma-mapping.h
+- *
+- * Code specific to PKUnity SoC and UniCore ISA
+- *
+- * Copyright (C) 2001-2010 GUAN Xue-tao
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- */
+-#ifndef __UNICORE_DMA_MAPPING_H__
+-#define __UNICORE_DMA_MAPPING_H__
+-
+-#include <linux/swiotlb.h>
+-
+-static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+-{
+-	return &swiotlb_dma_ops;
+-}
+-
+-#endif
+diff --git a/arch/unicore32/mm/init.c b/arch/unicore32/mm/init.c
+index f4950fbfe574..5f72a8d1d953 100644
+--- a/arch/unicore32/mm/init.c
++++ b/arch/unicore32/mm/init.c
+@@ -234,9 +234,6 @@ void __init bootmem_init(void)
+ 
+ 	uc32_bootmem_init(min, max_low);
+ 
+-#ifdef CONFIG_SWIOTLB
+-	swiotlb_init(1);
+-#endif
+ 	/*
+ 	 * Sparsemem tries to allocate bootmem in memory_present(),
+ 	 * so must be done after the fixed reservations
+-- 
+2.19.0
