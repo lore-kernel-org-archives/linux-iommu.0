@@ -1,16 +1,20 @@
-From: lijiang <lijiang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 3/4 v7] amd_iommu: remap the device table of IOMMU with
-	the memory encryption mask for kdump
-Date: Thu, 27 Sep 2018 10:40:49 +0800
-Message-ID: <bc9973a2-d3d3-19c2-11ab-3299ad2105c9@redhat.com>
-References: <20180907081805.368-1-lijiang@redhat.com>
-	<20180907081805.368-4-lijiang@redhat.com>
-	<20180925120442.wmh6fjpdghxjyvio@8bytes.org>
+From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v3 03/10] iommu/sva: Manage process address spaces
+Date: Thu, 27 Sep 2018 03:22:46 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439D0CC48@SHSMSX104.ccr.corp.intel.com>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
+	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
+	<20180925132627.vbdotr23o7lqrmnd@8bytes.org>
+	<b33a1911-e100-586b-b8df-eb04312ecffd@linux.intel.com>
+	<754d495d-d016-f42f-5682-ba4a75a618e0@arm.com>
+	<20180926124527.GD18287@8bytes.org>
+	<1f53c6f1-4e7a-1451-1abc-a7bca4a2359d@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180925120442.wmh6fjpdghxjyvio-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1f53c6f1-4e7a-1451-1abc-a7bca4a2359d-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -21,23 +25,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: thomas.lendacky-5C7GfCeVMHo@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ebiederm-aS9lmoZGLiVWk0Htik3J/w@public.gmane.org, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-5ZyoIDIwMTjlubQwOeaciDI15pelIDIwOjA0LCBKb2VyZyBSb2VkZWwg5YaZ6YGTOgo+IE9uIEZy
-aSwgU2VwIDA3LCAyMDE4IGF0IDA0OjE4OjA0UE0gKzA4MDAsIExpYW5ibyBKaWFuZyB3cm90ZToK
-Pj4gSW4ga2R1bXAga2VybmVsLCBpdCB3aWxsIGNvcHkgdGhlIGRldmljZSB0YWJsZSBvZiBJT01N
-VSBmcm9tIHRoZSBvbGQgZGV2aWNlCj4+IHRhYmxlLCB3aGljaCBpcyBlbmNyeXB0ZWQgd2hlbiBT
-TUUgaXMgZW5hYmxlZCBpbiB0aGUgZmlyc3Qga2VybmVsLiBTbyB3ZQo+PiBoYXZlIHRvIHJlbWFw
-IHRoZSBvbGQgZGV2aWNlIHRhYmxlIHdpdGggdGhlIG1lbW9yeSBlbmNyeXB0aW9uIG1hc2suCj4+
-Cj4+IFNpZ25lZC1vZmYtYnk6IExpYW5ibyBKaWFuZyA8bGlqaWFuZ0ByZWRoYXQuY29tPgo+IAo+
-IFBsZWFzZSBjaGFuZ2UgdGhlIHN1YmplY3QgdG86Cj4gCj4gCWlvbW11L2FtZDogUmVtYXAgdGhl
-IGRldmljZSB0YWJsZSBvZiBJT01NVSB3aXRoIHRoZSBtZW1vcnkgZW5jcnlwdGlvbiBtYXNrIGZv
-ciBrZHVtcAo+IAo+IFdpdGggdGhhdCB5b3UgY2FuIGFkZCBteToKPiAKPiBBY2tlZC1ieTogSm9l
-cmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+Cj4gCgpUaGFuayB5b3UsIEpvZXJnLgpTb3JyeSBm
-b3IgbXkgbGF0ZSByZXBseS4gSSB3aWxsIGNoYW5nZSB0aGUgc3ViamVjdCBhbmQgcmVzZW5kIHRo
-aXMgcGF0Y2guCgpUaGFua3MuCkxpYW5ibwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Jean-Philippe Brucker
+> Sent: Wednesday, September 26, 2018 9:50 PM
+> Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
+> 
+> On 26/09/2018 13:45, Joerg Roedel wrote:
+> > On Wed, Sep 26, 2018 at 11:20:34AM +0100, Jean-Philippe Brucker wrote:
+> >> Yes, at the moment it's difficult to guess what device drivers will
+> >> want, but I can imagine some driver offering SVA to userspace, while
+> >> keeping a few PASIDs for themselves to map kernel memory. Or create mdev
+> >> devices for virtualization while also allowing bare-metal SVA. So I
+> >> think we should aim at enabling these use-cases in parallel, even if it
+> >> doesn't necessarily need to be possible right now.
+> >
+> > Yeah okay, but allowing these use-cases in parallel basically disallows
+> > giving any guest control over a device's pasid-table, no?
+> All of these use-cases require the host to manage the PASID tables, so
+> while any one of them is enabled, we can't give a guest control over the
+> PASID tables. But allowing these use-cases in parallel doesn't change that.
+> 
+> There is an ambiguity: I understand "(3) SVA in VM guest" as SVA for a
+> device-assignable interface assigned to a guest, using vfio-mdev and the
+> new Intel vt-d architecture (right?). That case does require the host to
+> allocate and manage PASIDs (because the PCI device is shared between
+> multiple VMs).
+
+Correct. For such case, we give host the charge to allocate and manage PASIDs.
+And the reason is correct.
+
+> 
+> For the "classic" vfio-pci case, "SVA in guest" still means giving the
+> guest control over the whole PASID table.
+
+No, if giving guest control over the whole PASID table, it means guest may have
+its own PASID namespace. right? And for vfio-mdev case, it gets PASID from host.
+So there would be multiple PASID namespaces. Thinking about the following scenario:
+
+A PF/VF assigned to a VM via "classic" vfio-pci. And an assignable-device-interface
+assigned to this VM via vfio-mdev. If an application in this VM tries to manipulate
+these two "devices", it should have the same PASID programmed to them. right?
+But as the above comments mentioned, for vfio-pci case, it would get a PASID from
+its own PASID namespace. While the vfio-mdev case would get a PASID from host.
+This would result in conflict.
+
+So I would like we get host to allocate and manage the whole PASID table, so that
+to cover possible combinations of vfio-pci passthru and vfio-mdev passthru.
+
+> 
+> Thanks,
+> Jean
+
+Regards,
+Yi Liu
