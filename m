@@ -1,69 +1,54 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu: arm-smmu: Set SCTLR.HUPCF bit
-Date: Thu, 27 Sep 2018 18:46:07 -0400
-Message-ID: <20180927224609.19515-1-robdclark@gmail.com>
+From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
+Subject: Re: [PATCH 3/5] dma-direct: refine dma_direct_alloc zone selection
+Date: Fri, 28 Sep 2018 10:06:48 +1000
+Message-ID: <514bd29960cb1573ead2f3956f18e1cbaa5f32f7.camel@kernel.crashing.org>
+References: <20180920185247.20037-1-hch@lst.de>
+	<20180920185247.20037-4-hch@lst.de>
+	<1811156d5a1df1166c7ab7522525619b951f047d.camel@kernel.crashing.org>
+	<20180927134922.GA8281@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180927134922.GA8281-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-V2Ugc2VlbSB0byBuZWVkIHRvIHNldCBlaXRoZXIgdGhpcyBvciBDRkNGRyAoc3RhbGwpLCBvdGhl
-cndpc2UgZ3B1CmZhdWx0cyB0cmlnZ2VyIHByb2JsZW1zIHdpdGggb3RoZXIgaW4tZmxpZ2h0IHRy
-YW5zYWN0aW9ucyBmcm9tIHRoZQpHUFUgY2F1c2luZyBDUCBlcnJvcnMsIGV0Yy4KCkluIHRoZSBB
-Uk0gU01NVSBzcGVjLCB0aGUgJ0hpdCB1bmRlciBwcmV2aW91cyBjb250ZXh0IGZhdWx0JyBiaXQg
-aXMKZGVzY3JpYmVkIGFzOgoKICcwJyAtIFN0YWxsIG9yIHRlcm1pbmF0ZSBzdWJzZXF1ZW50IHRy
-YW5zYWN0aW9ucyBpbiB0aGUgcHJlc2VuY2UKICAgICAgIG9mIGFuIG91dHN0YW5kaW5nIGNvbnRl
-eHQgZmF1bHQKICcxJyAtIFByb2Nlc3MgYWxsIHN1YnNlcXVlbnQgdHJhbnNhY3Rpb25zIGluZGVw
-ZW5kZW50bHkgb2YgYW55CiAgICAgICBvdXRzdGFuZGluZyBjb250ZXh0IGZhdWx0LgoKU2luY2Ug
-d2UgZG9uJ3QgZW5hYmxlIENGQ0ZHIChzdGFsbCkgdGhlIGJlaGF2aW9yIG9mIHRlcm1pbmF0aW5n
-Cm90aGVyIHRyYW5zYWN0aW9ucyBtYWtlcyBzZW5zZS4gIEFuZCBpcyBwcm9iYWJseSBub3Qgd2hh
-dCB3ZSB3YW50CihhbmQgZGVmaW5hdGVseSBub3Qgd2hhdCB3ZSB3YW50IGZvciBHUFUpLgoKU2ln
-bmVkLW9mZi1ieTogUm9iIENsYXJrIDxyb2JkY2xhcmtAZ21haWwuY29tPgotLS0KU28gSSBoaXQg
-dGhpcyBpc3N1ZSBhIGxvbmcgdGltZSBiYWNrIG9uIDgyMCAobXNtODk5NikgYW5kIGF0IHRoZQp0
-aW1lIEkgc29sdmVkIGl0IHdpdGggYSBwYXRjaCB0aGF0IGVuYWJsZWQgQ0ZDRkcuICBBbmQgaXQg
-cmVzdXJmYWNlZAptb3JlIHJlY2VudGx5IG9uIHNkbTg0NS4gIEJ1dCBhdCB0aGUgdGltZSBDRkNG
-RyB3YXMgcmVqZWN0ZWQsIGlpcmMKYmVjYXVzZSBvZiBjb25jZXJuIHRoYXQgaXQgd291bGQgY2F1
-c2UgcHJvYmxlbXMgb24gb3RoZXIgbm9uLXFjb20KYXJtIHNtbXUgaW1wbGVtZW50YXRpb25zLiAg
-QW5kIEkgdGhpbmsgSSBmb3Jnb3QgdG8gc2VuZCB0aGlzIHZlcnNpb24Kb2YgdGhlIHNvbHV0aW9u
-LgoKSWYgZW5hYmxpbmcgSFVQQ0YgaXMgYW50aWNpcGF0ZWQgdG8gY2F1c2UgcHJvYmxlbXMgb24g
-b3RoZXIgQVJNClNNTVUgaW1wbGVtZW50YXRpb25zLCBJIHRoaW5rIEkgY2FuIGNvbWUgdXAgd2l0
-aCBhIHZhcmlhbnQgb2YgdGhpcwpwYXRjaCB3aGljaCBjb25kaXRpb25hbGx5IGVuYWJsZXMgaXQg
-Zm9yIHNuYXBkcmFnb24uCgpFaXRoZXIgd2F5LCBJJ2QgcmVhbGx5IGxpa2UgdG8gZ2V0IHNvbWUg
-dmFyaWFudCBvZiB0aGlzIGZpeCBtZXJnZWQKKGFuZCBwcm9iYWJseSBpdCB3b3VsZCBiZSBhIGdv
-b2QgaWRlYSBmb3Igc3RhYmxlIGtlcm5lbCBicmFuY2hlcwp0b28pLCBzaW5jZSBjdXJyZW50IGJl
-aGF2aW91ciB3aXRoIHRoZSBHUFUgbWVhbnMgZmF1bHRzIHR1cm4gaW50bwphIGZhbnRhc3RpYyBj
-YXNjYWRlIG9mIGZhaWwuCgogZHJpdmVycy9pb21tdS9hcm0tc21tdS1yZWdzLmggfCAxICsKIGRy
-aXZlcnMvaW9tbXUvYXJtLXNtbXUuYyAgICAgIHwgMiArLQogMiBmaWxlcyBjaGFuZ2VkLCAyIGlu
-c2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2Fy
-bS1zbW11LXJlZ3MuaCBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCmluZGV4IGExMjI2
-ZTRhYjVmOC4uMjI5MTkyNWViODAwIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11
-LXJlZ3MuaAorKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXJlZ3MuaApAQCAtMTc4LDYgKzE3
-OCw3IEBAIGVudW0gYXJtX3NtbXVfczJjcl9wcml2Y2ZnIHsKICNkZWZpbmUgQVJNX1NNTVVfQ0Jf
-QVRTUgkJMHg4ZjAKIAogI2RlZmluZSBTQ1RMUl9TMV9BU0lEUE5FCQkoMSA8PCAxMikKKyNkZWZp
-bmUgU0NUTFJfSFVQQ0YJCQkoMSA8PCA4KQogI2RlZmluZSBTQ1RMUl9DRkNGRwkJCSgxIDw8IDcp
-CiAjZGVmaW5lIFNDVExSX0NGSUUJCQkoMSA8PCA2KQogI2RlZmluZSBTQ1RMUl9DRlJFCQkJKDEg
-PDwgNSkKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9t
-bXUvYXJtLXNtbXUuYwppbmRleCBmN2E5NmJjZjk0YTYuLjQ3ZmZjOWFhZGU3MiAxMDA2NDQKLS0t
-IGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUu
-YwpAQCAtNzEzLDkgKzcxMyw5IEBAIHN0YXRpYyB2b2lkIGFybV9zbW11X3dyaXRlX2NvbnRleHRf
-YmFuayhzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LCBpbnQgaWR4KQogCXJlZyA9IFNDVExS
-X0NGSUUgfCBTQ1RMUl9DRlJFIHwgU0NUTFJfQUZFIHwgU0NUTFJfVFJFIHwgU0NUTFJfTTsKIAlp
-ZiAoc3RhZ2UxKQogCQlyZWcgfD0gU0NUTFJfUzFfQVNJRFBORTsKKwlyZWcgfD0gU0NUTFJfSFVQ
-Q0Y7CiAJaWYgKElTX0VOQUJMRUQoQ09ORklHX0NQVV9CSUdfRU5ESUFOKSkKIAkJcmVnIHw9IFND
-VExSX0U7Ci0KIAl3cml0ZWxfcmVsYXhlZChyZWcsIGNiX2Jhc2UgKyBBUk1fU01NVV9DQl9TQ1RM
-Uik7CiB9CiAKLS0gCjIuMTcuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8v
-ZnJlZWRyZW5vCg==
+On Thu, 2018-09-27 at 15:49 +0200, Christoph Hellwig wrote:
+> On Thu, Sep 27, 2018 at 11:45:15AM +1000, Benjamin Herrenschmidt wrote:
+> > I'm not sure this is entirely right.
+> > 
+> > Let's say the mask is 30 bits. You will return GFP_DMA32, which will
+> > fail if you allocate something above 1G (which is legit for
+> > ZONE_DMA32).
+> 
+> And then we will try GFP_DMA further down in the function:
+> 
+> 		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
+> 		    dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
+> 		    !(gfp & GFP_DMA)) {
+> 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
+> 			goto again;
+> 		}
+> 
+> This is and old optimization from x86, because chances are high that
+> GFP_DMA32 will give you suitable memory for the infamous 31-bit
+> dma mask devices (at least at boot time) and thus we don't have
+> to deplete the tiny ZONE_DMA pool.
+
+I see, it's rather confusing :-) Wouldn't it be better to check against
+top of 32-bit memory instead here too ?
+
+
+Cheers,
+Ben.
