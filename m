@@ -1,16 +1,19 @@
-From: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH 3/5] dma-direct: refine dma_direct_alloc zone selection
-Date: Fri, 28 Sep 2018 10:06:48 +1000
-Message-ID: <514bd29960cb1573ead2f3956f18e1cbaa5f32f7.camel@kernel.crashing.org>
-References: <20180920185247.20037-1-hch@lst.de>
-	<20180920185247.20037-4-hch@lst.de>
-	<1811156d5a1df1166c7ab7522525619b951f047d.camel@kernel.crashing.org>
-	<20180927134922.GA8281@lst.de>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
+Date: Fri, 28 Sep 2018 01:14:17 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1913438B3@SHSMSX101.ccr.corp.intel.com>
+References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
+	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
+	<cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
+	<7cbd503a-c79e-3c40-7388-ce6c23f7f536@arm.com>
+	<20180926110103.45b57f75@jacob-builder>
+	<79c0e0e1-691e-b8e1-0e68-21876135d2ab@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180927134922.GA8281-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <79c0e0e1-691e-b8e1-0e68-21876135d2ab-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,35 +23,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2018-09-27 at 15:49 +0200, Christoph Hellwig wrote:
-> On Thu, Sep 27, 2018 at 11:45:15AM +1000, Benjamin Herrenschmidt wrote:
-> > I'm not sure this is entirely right.
-> > 
-> > Let's say the mask is 30 bits. You will return GFP_DMA32, which will
-> > fail if you allocate something above 1G (which is legit for
-> > ZONE_DMA32).
+> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, September 27, 2018 11:06 PM
 > 
-> And then we will try GFP_DMA further down in the function:
+> On 26/09/2018 19:01, Jacob Pan wrote:
+> > On Mon, 24 Sep 2018 13:07:47 +0100
+> > Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+> >
+> >> On 23/09/2018 04:05, Lu Baolu wrote:
+> >> > Hi,
+> >> >
+> >> > On 09/21/2018 01:00 AM, Jean-Philippe Brucker wrote:
+> >> >> Add bind() and unbind() operations to the IOMMU API. Bind()
+> >> >> returns a PASID that drivers can program in hardware, to let their
+> >> >> devices access an mm. This patch only adds skeletons for the
+> >> >> device driver API, most of the implementation is still missing.
+> >> >
+> >> > Is it possible that a malicious process can unbind a pasid which is
+> >> > used by another normal process?
+> >>
+> >> Yes, it's up to the device driver that calls unbind() to check that
+> >> the caller is allowed to unbind this PASID. We can't do it ourselves
+> >> since unbind() could also be called from a kernel thread for example
+> >> from a cleanup function in some workqueue, outside the context of the
+> >> process to unbind.
 > 
-> 		if (IS_ENABLED(CONFIG_ZONE_DMA) &&
-> 		    dev->coherent_dma_mask < DMA_BIT_MASK(32) &&
-> 		    !(gfp & GFP_DMA)) {
-> 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
-> 			goto again;
-> 		}
+> Actually I'm not too concerned about a process unbinding another one,
+> since in general only the kernel will hold the PASID values. Userspace
+> shouldn't even need to see them, so issuing unbind() with the wrong
+> PASID isn't an easy mistake.
 > 
-> This is and old optimization from x86, because chances are high that
-> GFP_DMA32 will give you suitable memory for the infamous 31-bit
-> dma mask devices (at least at boot time) and thus we don't have
-> to deplete the tiny ZONE_DMA pool.
 
-I see, it's rather confusing :-) Wouldn't it be better to check against
-top of 32-bit memory instead here too ?
+well, it depends on which scenario is talked here.
 
+for native SVA with device driver in kernel, your description is correct.
 
-Cheers,
-Ben.
+for native SVA with device driver in user space, then user space needs to
+see/hold PASIDs and program them to device specific register.
+
+for virtual SVA (vtd case), Qemu needs to see/hold PASIDs and pass to 
+guest upon any PASID allocation request thru a PV channel, as you just 
+saw in another thread. :-)
+
+Thanks
+Kevin
