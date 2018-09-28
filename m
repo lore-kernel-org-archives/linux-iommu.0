@@ -1,86 +1,58 @@
-From: Stephen Boyd <swboyd@chromium.org>
-Subject: Re: [PATCH] dma-debug: Check for drivers mapping vmalloc addresses
-Date: Fri, 28 Sep 2018 09:19:14 -0700
-Message-ID: <153815155438.119890.4863330936629381207@swboyd.mtv.corp.google.com>
-References: <20180920223559.136915-1-swboyd@chromium.org>
- <ef22f1b4-a2c5-25a4-451e-9191b3579a26@arm.com>
- <153755159334.119890.13825040401066852769@swboyd.mtv.corp.google.com>
- <f513d72b-3eec-1ddc-a318-9f3d17efe16e@arm.com>
+From: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Subject: Re: Explicit IOVA management from a PCIe endpoint driver
+Date: Fri, 28 Sep 2018 14:39:36 -0600
+Message-ID: <4dc0ffa8-7b16-9063-2aba-b8249a09885f@wwwdotorg.org>
+References: <3e9950c5-4986-6b0d-74c8-97014530c132@wwwdotorg.org>
+	<a0d97ebd-c77e-400a-29cd-9524e9f47dbc@arm.com>
+	<52dc4d4b-b521-17a5-dc93-e2992e481083@wwwdotorg.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f513d72b-3eec-1ddc-a318-9f3d17efe16e@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <52dc4d4b-b521-17a5-dc93-e2992e481083-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kishon Vijay Abraham I <kishon-l0cyMroinI0@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Joao Pinto <Joao.Pinto-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Jingoo Han <jingoohan1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Vidya Sagar <vidyas-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Quoting Robin Murphy (2018-09-26 06:24:42)
-> On 21/09/18 18:39, Stephen Boyd wrote:
-> > Quoting Robin Murphy (2018-09-21 04:09:50)
-> >> Hi Stephen,
-> >>
-> >> On 20/09/18 23:35, Stephen Boyd wrote:
-> >>> I recently debugged a DMA mapping oops where a driver was trying to m=
-ap
-> >>> a buffer returned from request_firmware() with dma_map_single(). Memo=
-ry
-> >>> returned from request_firmware() is mapped into the vmalloc region and
-> >>> this isn't a valid region to map with dma_map_single() per the DMA
-> >>> documentation's "What memory is DMA'able?" section.
-> >>>
-> >>> Unfortunately, we don't really check that in the DMA debugging code, =
-so
-> >>> enabling DMA debugging doesn't help catch this problem. Let's add a n=
-ew
-> >>> DMA debug function to check for a vmalloc address and print a warning=
- if
-> >>> this happens. This makes it a little easier to debug these sorts of
-> >>> problems, instead of seeing odd behavior or crashes when drivers atte=
-mpt
-> >>> to map the vmalloc space for DMA.
-> >>
-> >> Good idea!
-> >>
-> >>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> >>> Cc: Robin Murphy <robin.murphy@arm.com>
-> >>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> >>> ---
-> >>>    include/linux/dma-debug.h   |  8 ++++++++
-> >>>    include/linux/dma-mapping.h |  1 +
-> >>>    kernel/dma/debug.c          | 12 ++++++++++++
-> >>>    3 files changed, 21 insertions(+)
-> >>
-> >> However I can't help thinking this looks a little heavyweight for a
-> >> single specific check. It seems like it would be enough to simply pass
-> >> the VA as an extra argument to debug_dma_map_page(), since we already
-> >> have the map_single argument which would indicate when it's valid. What
-> >> do you reckon?
-> > =
+On 09/18/2018 12:16 PM, Stephen Warren wrote:
+> On 09/18/2018 04:59 AM, Robin Murphy wrote:
+>> Hi Stephen,
+>>
+>> On 17/09/18 22:36, Stephen Warren wrote:
+>>> Joerg, Christoph, Marek, Robin,
+>>>
+>>> I believe that the driver for our PCIe endpoint controller hardware 
+>>> will need to explicitly manage its IOVA space more than current APIs 
+>>> allow. I'd like to discuss how to make that possible.
+...
+>>> Does this API proposal sound reasonable?
+>>
+>> Indeed, as I say apart from using streaming DMA for coherency 
+>> management (which I think could be added in pretty much orthogonally 
+>> later), this sounds like something you could plumb into the endpoint 
+>> framework right now with no dependent changes elsewhere.
+> 
+> Great. I'll take a look at Oza's code and see about getting this 
+> implemented.
 
-> > I thought about augmenting debug_dma_map_page() but that has another
-> > problem where those checks are done after the page has been mapped. The
-> > kernel can oops when it's operating on the incorrect page so we need to
-> > check things before calling the dma ops.
-> =
+I took a longer look at the various APIs in iommu.h and dma-iommh.h. As 
+you said, I think most of it is already there. I think we just need to 
+add functions iommu_dma_alloc/free_iova() [1] that drivers can call to 
+acquire an IOVA range that is guaranteed not be used by any other device 
+that shares the same IOVA domain (i.e. IOMMU ASID). After the driver 
+calls that, it can just use iommu_map() and iommu_map_sg() on the IOVA 
+range that was reserved. Does that sound reasonable?
 
-> Oh, right, as usual I've managed to overlook a subtlety :)
-> =
-
-> In fact, with memory now jogged, I think the virt_to_page() itself is =
-
-> allowed to blow up if !virt_addr_valid(), so we probably do need =
-
-> something like your original idea to be properly robust. I guess it =
-
-> probably makes sense to implement that as debug_dma_map_single() then, =
-
-> since the purpose is really to cover any VA checks specific to that case =
-
-> which debug_dma_map_page() can't be expected to do after the fact.
-> =
-
-
-Ok. I can rename it to dma_debug_map_single() and throw in a
-virt_addr_valid() check too. Thanks for the suggestion.
+[1] there's already a static function of that name for internal use in 
+dma-iommu.c. I guess I'd rename that to __iommu_dma_alloc_iova() and 
+have the new function be a thin wrapper on top of it.
