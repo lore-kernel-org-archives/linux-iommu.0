@@ -1,73 +1,123 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v3 02/10] iommu/sva: Bind process address spaces to devices
-Date: Fri, 28 Sep 2018 01:14:17 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D1913438B3@SHSMSX101.ccr.corp.intel.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-3-jean-philippe.brucker@arm.com>
-	<cdcd4083-ef28-4c5e-4a2c-5b93e61a86b4@linux.intel.com>
-	<7cbd503a-c79e-3c40-7388-ce6c23f7f536@arm.com>
-	<20180926110103.45b57f75@jacob-builder>
-	<79c0e0e1-691e-b8e1-0e68-21876135d2ab@arm.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Fri, 28 Sep 2018 13:59:35 +0200
+Message-ID: <CAPDyKFohpvEMfDoDooYEyxPMeQ+9dU71qz7ZAZxQ1rzyW-w8iA@mail.gmail.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org> <20180830144541.17740-2-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <79c0e0e1-691e-b8e1-0e68-21876135d2ab-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20180830144541.17740-2-vivek.gautam@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, DTML <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Alex Williamson <alex.williamson@redhat.com>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, robdclark@gmail.com, Linux PM <linux-pm@vger.kernel.org>, freedreno@lists.freedesktop.org, Stephen Boyd <sboyd@kernel.org>, Tomasz Figa <tfiga@chromium.org>, Jordan Crouse <jcrouse@codeaurora.org>, Sricharan <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, architt@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Thursday, September 27, 2018 11:06 PM
-> 
-> On 26/09/2018 19:01, Jacob Pan wrote:
-> > On Mon, 24 Sep 2018 13:07:47 +0100
-> > Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-> >
-> >> On 23/09/2018 04:05, Lu Baolu wrote:
-> >> > Hi,
-> >> >
-> >> > On 09/21/2018 01:00 AM, Jean-Philippe Brucker wrote:
-> >> >> Add bind() and unbind() operations to the IOMMU API. Bind()
-> >> >> returns a PASID that drivers can program in hardware, to let their
-> >> >> devices access an mm. This patch only adds skeletons for the
-> >> >> device driver API, most of the implementation is still missing.
-> >> >
-> >> > Is it possible that a malicious process can unbind a pasid which is
-> >> > used by another normal process?
-> >>
-> >> Yes, it's up to the device driver that calls unbind() to check that
-> >> the caller is allowed to unbind this PASID. We can't do it ourselves
-> >> since unbind() could also be called from a kernel thread for example
-> >> from a cleanup function in some workqueue, outside the context of the
-> >> process to unbind.
-> 
-> Actually I'm not too concerned about a process unbinding another one,
-> since in general only the kernel will hold the PASID values. Userspace
-> shouldn't even need to see them, so issuing unbind() with the wrong
-> PASID isn't an easy mistake.
-> 
+On 30 August 2018 at 16:45, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
+> From: Sricharan R <sricharan@codeaurora.org>
+>
+> The smmu needs to be functional only when the respective
+> master's using it are active. The device_link feature
+> helps to track such functional dependencies, so that the
+> iommu gets powered when the master device enables itself
+> using pm_runtime. So by adapting the smmu driver for
+> runtime pm, above said dependency can be addressed.
+>
+> This patch adds the pm runtime/sleep callbacks to the
+> driver and also the functions to parse the smmu clocks
+> from DT and enable them in resume/suspend.
+>
+> Also, while we enable the runtime pm add a pm sleep suspend
+> callback that pushes devices to low power state by turning
+> the clocks off in a system sleep.
+> Also add corresponding clock enable path in resume callback.
+>
+> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+> Signed-off-by: Archit Taneja <architt@codeaurora.org>
+> [vivek: rework for clock and pm ops]
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 77 ++++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 74 insertions(+), 3 deletions(-)
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
 
-well, it depends on which scenario is talked here.
+[...]
 
-for native SVA with device driver in kernel, your description is correct.
+> -static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+> +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
+>  {
+>         struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> +       int ret;
+> +
+> +       ret = clk_bulk_enable(smmu->num_clks, smmu->clks);
+> +       if (ret)
+> +               return ret;
+>
+>         arm_smmu_device_reset(smmu);
+> +
+>         return 0;
+>  }
+>
+> -static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
+> +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+> +{
+> +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> +
+> +       clk_bulk_disable(smmu->num_clks, smmu->clks);
+> +
+> +       return 0;
+> +}
+> +
+> +static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+> +{
+> +       if (pm_runtime_suspended(dev))
+> +               return 0;
 
-for native SVA with device driver in user space, then user space needs to
-see/hold PASIDs and program them to device specific register.
+Looks like you should be able use pm_runtime_force_resume(), instead
+of using this local trick. Unless I am missing something, of course.
 
-for virtual SVA (vtd case), Qemu needs to see/hold PASIDs and pass to 
-guest upon any PASID allocation request thru a PV channel, as you just 
-saw in another thread. :-)
+In other words, just assign the system sleep callbacks for resume, to
+pm_runtime_force_resume(). And vice verse for the system suspend
+callbacks, pm_runtime_force_suspend(), of course.
 
-Thanks
-Kevin
+> +
+> +       return arm_smmu_runtime_resume(dev);
+> +}
+> +
+> +static int __maybe_unused arm_smmu_pm_suspend(struct device *dev)
+> +{
+> +       if (pm_runtime_suspended(dev))
+> +               return 0;
+> +
+> +       return arm_smmu_runtime_suspend(dev);
+> +}
+> +
+> +static const struct dev_pm_ops arm_smmu_pm_ops = {
+> +       SET_SYSTEM_SLEEP_PM_OPS(arm_smmu_pm_suspend, arm_smmu_pm_resume)
+
+I am wondering if using the ->suspend|resume() callback is really
+"late/early" enough in the device suspend phase?
+
+Others is using the noirq phase and some is even using the syscore
+ops. Of course it depends on the behavior of the consumers of iommu
+device, and I guess not everyone is using device links, which for sure
+improves things in this regards as well.
+
+> +       SET_RUNTIME_PM_OPS(arm_smmu_runtime_suspend,
+> +                          arm_smmu_runtime_resume, NULL)
+> +};
+>
+>  static struct platform_driver arm_smmu_driver = {
+>         .driver = {
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
+>
+
+BTW, apologize for very late review comments.
+
+Besides the above comments, the series looks good to me.
+
+Kind regards
+Uffe
