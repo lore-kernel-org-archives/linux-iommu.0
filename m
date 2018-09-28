@@ -1,52 +1,73 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] iommu/dma: Use fast DMA domain lookup
-Date: Fri, 28 Sep 2018 16:46:47 +0100
-Message-ID: <973e866f-2a92-b92e-8844-0b5a91edcb00@arm.com>
-References: <cover.1536764440.git.robin.murphy@arm.com>
-	<CGME20180912152438epcas5p175098b44c3f7232302e10b087279bd3c@epcas5p1.samsung.com>
-	<e42771992a73620f23128c0479b2ae91b3e177bf.1536764440.git.robin.murphy@arm.com>
-	<20180928132605eucas1p1d39fedc3be3e4e2c16035c01a40cfab6~Ykz2Rax6e0538205382eucas1p17@eucas1p1.samsung.com>
-	<78a5b373-d569-4461-e258-3104286ba322@arm.com>
-	<20180928142148eucas1p17d6ecbd5c98b3fe1bf008dbcf0626c76~YlkfonoPN1120711207eucas1p1u@eucas1p1.samsung.com>
-	<a9eb4b79-1fb8-eec7-0566-966f84022d7b@arm.com>
-	<20180928153334.GA9462@lst.de>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH] drm/exynos: Use selected dma_dev default iommu domain
+ instead of a fake one
+Date: Fri, 28 Sep 2018 18:09:23 +0200
+Message-ID: <20180928160923.12311-1-m.szyprowski@samsung.com>
+References: <a9eb4b79-1fb8-eec7-0566-966f84022d7b@arm.com>
+ <CGME20180928160945eucas1p17ff77fe34854548719880638ecb9c54d@eucas1p1.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180928153334.GA9462-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, =?UTF-8?B?64yA7J246riw?= <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-reply-to: <a9eb4b79-1fb8-eec7-0566-966f84022d7b@arm.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org
+Cc: linux-samsung-soc@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Robin Murphy <robin.murphy@arm.com>, hch@lst.de, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/09/18 16:33, Christoph Hellwig wrote:
-> On Fri, Sep 28, 2018 at 04:31:10PM +0100, Robin Murphy wrote:
->> The tricky part is how to reconcile that with those other drivers which
->> want to do explicit IOMMU management with their own domain but still use
->> the DMA API for coherency of the underlying memory. I do have a couple of
->> half-formed ideas, but they're not quite there yet.
-> 
-> It think the only sensible answer is that they can't, and we'll need
-> coherency API in the iommu API (or augmenting it).  Which might be a
-> real possibility now that I'm almost done lifting the coherency
-> management to arch hooks instead of dma op methods.
-
-I reckon it seems feasible if the few clients that want to had a way to 
-allocate their own proper managed domains, and the IOMMU API knew how to 
-swizzle between iommu_dma_ops and dma_direct_ops upon attach depending 
-on whether the target domain was managed or unmanaged. The worst part is 
-liekly to be the difference between that lovely conceptual 
-"iommu_dma_ops" and the cross-architecture mess of reality, plus where 
-identity domains with a possible need for SWIOTLB come into it.
-
-Robin.
+SW5zdGVhZCBvZiBhbGxvY2F0aW5nIGEgZmFrZSBJT01NVSBkb21haW4gZm9yIGFsbCBFeHlub3Mg
+RFJNIGNvbXBvbmVudHMsCnNpbXBseSByZXVzZSB0aGUgZGVmYXVsdCBJT01NVSBkb21haW4gb2Yg
+dGhlIGFscmVhZHkgc2VsZWN0ZWQgRE1BIGRldmljZS4KVGhpcyBhbGxvd3Mgc29tZSBkZXNpZ24g
+Y2hhbmdlcyBpbiBJT01NVSBmcmFtZXdvcmsgd2l0aG91dCBicmVha2luZyBJT01NVQpzdXBwb3J0
+IGluIEV4eW5vcyBEUk0uCgpTaWduZWQtb2ZmLWJ5OiBNYXJlayBTenlwcm93c2tpIDxtLnN6eXBy
+b3dza2lAc2Ftc3VuZy5jb20+Ci0tLQpJbmtpOgpJZiBwb3NzaWJsZSwgcGxlYXNlIGNvbnNpZGVy
+IHRoaXMgcGF0Y2ggYXMgYSBmaXggZm9yIHY0LjE5LXJjLCB0aGlzIHdpbGwKaGVscCBkb2luZyBh
+IHJld29yayBpbiBJT01NVSBhbmQgRE1BLUlPTU1VIGZyYW1ld29ya3MgaW4gdjQuMjAgd2l0aG91
+dApicmVha2luZyBFeHlub3MgRFJNLiBJdCB3b3JrZWQgZm9yIGN1cnJlbnQgSU9NTVUgY29kZSwg
+YnV0IHN1Y2ggdXNhZ2UgaXMKY29uc2lkZXJlZCBhcyBhIGhhY2suCi0tLQogZHJpdmVycy9ncHUv
+ZHJtL2V4eW5vcy9leHlub3NfZHJtX2lvbW11LmggfCAzNCArKysrLS0tLS0tLS0tLS0tLS0tLS0t
+LQogMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMjggZGVsZXRpb25zKC0pCgpkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2lvbW11LmggYi9kcml2
+ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1faW9tbXUuaAppbmRleCA4N2Y2YjU2NzJlMTEu
+Ljc5N2Q5ZWU1ZjE1YSAxMDA2NDQKLS0tIGEvZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3Nf
+ZHJtX2lvbW11LmgKKysrIGIvZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2lvbW11
+LmgKQEAgLTU1LDM3ICs1NSwxMiBAQCBzdGF0aWMgaW5saW5lIHZvaWQgX19leHlub3NfaW9tbXVf
+ZGV0YWNoKHN0cnVjdCBleHlub3NfZHJtX3ByaXZhdGUgKnByaXYsCiBzdGF0aWMgaW5saW5lIGlu
+dCBfX2V4eW5vc19pb21tdV9jcmVhdGVfbWFwcGluZyhzdHJ1Y3QgZXh5bm9zX2RybV9wcml2YXRl
+ICpwcml2LAogCQkJCQl1bnNpZ25lZCBsb25nIHN0YXJ0LCB1bnNpZ25lZCBsb25nIHNpemUpCiB7
+Ci0Jc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluOwotCWludCByZXQ7Ci0KLQlkb21haW4gPSBp
+b21tdV9kb21haW5fYWxsb2MocHJpdi0+ZG1hX2Rldi0+YnVzKTsKLQlpZiAoIWRvbWFpbikKLQkJ
+cmV0dXJuIC1FTk9NRU07Ci0KLQlyZXQgPSBpb21tdV9nZXRfZG1hX2Nvb2tpZShkb21haW4pOwot
+CWlmIChyZXQpCi0JCWdvdG8gZnJlZV9kb21haW47Ci0KLQlyZXQgPSBpb21tdV9kbWFfaW5pdF9k
+b21haW4oZG9tYWluLCBzdGFydCwgc2l6ZSwgTlVMTCk7Ci0JaWYgKHJldCkKLQkJZ290byBwdXRf
+Y29va2llOwotCi0JcHJpdi0+bWFwcGluZyA9IGRvbWFpbjsKKwlwcml2LT5tYXBwaW5nID0gaW9t
+bXVfZ2V0X2RvbWFpbl9mb3JfZGV2KHByaXYtPmRtYV9kZXYpOwogCXJldHVybiAwOwotCi1wdXRf
+Y29va2llOgotCWlvbW11X3B1dF9kbWFfY29va2llKGRvbWFpbik7Ci1mcmVlX2RvbWFpbjoKLQlp
+b21tdV9kb21haW5fZnJlZShkb21haW4pOwotCXJldHVybiByZXQ7CiB9CiAKIHN0YXRpYyBpbmxp
+bmUgdm9pZCBfX2V4eW5vc19pb21tdV9yZWxlYXNlX21hcHBpbmcoc3RydWN0IGV4eW5vc19kcm1f
+cHJpdmF0ZSAqcHJpdikKIHsKLQlzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4gPSBwcml2LT5t
+YXBwaW5nOwotCi0JaW9tbXVfcHV0X2RtYV9jb29raWUoZG9tYWluKTsKLQlpb21tdV9kb21haW5f
+ZnJlZShkb21haW4pOwogCXByaXYtPm1hcHBpbmcgPSBOVUxMOwogfQogCkBAIC05NCw3ICs2OSw5
+IEBAIHN0YXRpYyBpbmxpbmUgaW50IF9fZXh5bm9zX2lvbW11X2F0dGFjaChzdHJ1Y3QgZXh5bm9z
+X2RybV9wcml2YXRlICpwcml2LAogewogCXN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiA9IHBy
+aXYtPm1hcHBpbmc7CiAKLQlyZXR1cm4gaW9tbXVfYXR0YWNoX2RldmljZShkb21haW4sIGRldik7
+CisJaWYgKGRldiAhPSBwcml2LT5kbWFfZGV2KQorCQlyZXR1cm4gaW9tbXVfYXR0YWNoX2Rldmlj
+ZShkb21haW4sIGRldik7CisJcmV0dXJuIDA7CiB9CiAKIHN0YXRpYyBpbmxpbmUgdm9pZCBfX2V4
+eW5vc19pb21tdV9kZXRhY2goc3RydWN0IGV4eW5vc19kcm1fcHJpdmF0ZSAqcHJpdiwKQEAgLTEw
+Miw3ICs3OSw4IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBfX2V4eW5vc19pb21tdV9kZXRhY2goc3Ry
+dWN0IGV4eW5vc19kcm1fcHJpdmF0ZSAqcHJpdiwKIHsKIAlzdHJ1Y3QgaW9tbXVfZG9tYWluICpk
+b21haW4gPSBwcml2LT5tYXBwaW5nOwogCi0JaW9tbXVfZGV0YWNoX2RldmljZShkb21haW4sIGRl
+dik7CisJaWYgKGRldiAhPSBwcml2LT5kbWFfZGV2KQorCQlpb21tdV9kZXRhY2hfZGV2aWNlKGRv
+bWFpbiwgZGV2KTsKIH0KICNlbHNlCiAjZXJyb3IgVW5zdXBwb3J0ZWQgYXJjaGl0ZWN0dXJlIGFu
+ZCBJT01NVS9ETUEtbWFwcGluZyBnbHVlIGNvZGUKLS0gCjIuMTcuMQoKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApk
+cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Au
+b3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
