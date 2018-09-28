@@ -1,163 +1,86 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] iommu/dma: Use fast DMA domain lookup
-Date: Fri, 28 Sep 2018 18:18:33 +0200
-Message-ID: <20180928161835eucas1p283072c72df1043b180ba55bba32bce65~YnKdLKRbM0111401114eucas1p2P@eucas1p2.samsung.com>
-References: <cover.1536764440.git.robin.murphy@arm.com>
-	<CGME20180912152438epcas5p175098b44c3f7232302e10b087279bd3c@epcas5p1.samsung.com>
-	<e42771992a73620f23128c0479b2ae91b3e177bf.1536764440.git.robin.murphy@arm.com>
-	<20180928132605eucas1p1d39fedc3be3e4e2c16035c01a40cfab6~Ykz2Rax6e0538205382eucas1p17@eucas1p1.samsung.com>
-	<78a5b373-d569-4461-e258-3104286ba322@arm.com>
-	<20180928142148eucas1p17d6ecbd5c98b3fe1bf008dbcf0626c76~YlkfonoPN1120711207eucas1p1u@eucas1p1.samsung.com>
-	<a9eb4b79-1fb8-eec7-0566-966f84022d7b@arm.com>
+From: Stephen Boyd <swboyd@chromium.org>
+Subject: Re: [PATCH] dma-debug: Check for drivers mapping vmalloc addresses
+Date: Fri, 28 Sep 2018 09:19:14 -0700
+Message-ID: <153815155438.119890.4863330936629381207@swboyd.mtv.corp.google.com>
+References: <20180920223559.136915-1-swboyd@chromium.org>
+ <ef22f1b4-a2c5-25a4-451e-9191b3579a26@arm.com>
+ <153755159334.119890.13825040401066852769@swboyd.mtv.corp.google.com>
+ <f513d72b-3eec-1ddc-a318-9f3d17efe16e@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <a9eb4b79-1fb8-eec7-0566-966f84022d7b-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
-Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, =?UTF-8?B?64yA7J246riw?= <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f513d72b-3eec-1ddc-a318-9f3d17efe16e@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgpPbiAyMDE4LTA5LTI4IDE3OjMxLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24g
-MjgvMDkvMTggMTU6MjEsIE1hcmVrIFN6eXByb3dza2kgd3JvdGU6Cj4+IE9uIDIwMTgtMDktMjgg
-MTU6NTIsIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDI4LzA5LzE4IDE0OjI2LCBNYXJlayBT
-enlwcm93c2tpIHdyb3RlOgo+Pj4+IE9uIDIwMTgtMDktMTIgMTc6MjQsIFJvYmluIE11cnBoeSB3
-cm90ZToKPj4+Pj4gTW9zdCBwYXJ0cyBvZiBpb21tdS1kbWEgYWxyZWFkeSBhc3N1bWUgdGhleSBh
-cmUgb3BlcmF0aW5nIG9uIGEKPj4+Pj4gZGVmYXVsdAo+Pj4+PiBkb21haW4gc2V0IHVwIGJ5IGlv
-bW11X2RtYV9pbml0X2RvbWFpbigpLCBhbmQgY2FuIGJlIGNvbnZlcnRlZAo+Pj4+PiBzdHJhaWdo
-dAo+Pj4+PiBvdmVyIHRvIGF2b2lkIHRoZSByZWZjb3VudGluZyBib3R0bGVuZWNrLiBNU0kgcGFn
-ZSBtYXBwaW5ncyBtYXkgYmUgaW4KPj4+Pj4gYW4gdW5tYW5hZ2VkIGRvbWFpbiB3aXRoIGFuIGV4
-cGxpY2l0IE1TSS1vbmx5IGNvb2tpZSwgc28gcmV0YWluIHRoZQo+Pj4+PiBub24tc3BlY2lmaWMg
-bG9va3VwLCBidXQgdGhhdCdzIE9LIHNpbmNlIHRoZXkncmUgZmFyIGZyb20gYSBjb250ZW5kZWQK
-Pj4+Pj4gZmFzdCBwYXRoIGVpdGhlciB3YXkuCj4+Pj4+Cj4+Pj4+IFNpZ25lZC1vZmYtYnk6IFJv
-YmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+Pj4KPj4+PiBUaGlzIGJyZWFrcyBF
-eHlub3MgRFJNIGRyaXZlciB3aXRoIEV4eW5vcyBJT01NVSBvbiBBUk02NCAoRXh5bm9zNTQzMyku
-Cj4+Pj4gRXh5bm9zIERSTSBjcmVhdGVzIGl0J3Mgb3duIGRvbWFpbiwgYXR0YWNoIGFsbCBkZXZp
-Y2VzIHdoaWNoIHBlcmZvcm1zCj4+Pj4gRE1BIGFjY2VzcyAodHlwaWNhbGx5IENSVEMgZGV2aWNl
-cykgdG8gaXQgYW5kIHVzZXMgc3RhbmRhcmQKPj4+PiBETUEtbWFwcGluZwo+Pj4+IGNhbGxzIHRv
-IGFsbG9jYXRlL21hcCBidWZmZXJzLiBUaGlzIHdheSBpdCBjYW4gdXNlIHRoZSBzYW1lIG9uZSBE
-TUEKPj4+PiBhZGRyZXNzIGZvciBlYWNoIGJ1ZmZlciByZWdhcmRsZXNzIG9mIHRoZSBDUlRDL2Rp
-c3BsYXkvcHJvY2Vzc2luZwo+Pj4+IGRldmljZS4KPj4+Pgo+Pj4+IFRoaXMgbm8gbG9uZ2VyIHdv
-cmtzIHdpdGggdGhpcyBwYXRjaC4gVGhlIHNpbXBsZXN0IHNvbHV0aW9uIHRvIGZpeAo+Pj4+IHRo
-aXMKPj4+PiBpcyBhZGQgQVBJIHRvIGNoYW5nZSBkZWZhdWx0X2RvbWFpbiB0byB0aGUgb25lIGFs
-bG9jYXRlZCBieSB0aGUgRXh5bm9zCj4+Pj4gRFJNIGRyaXZlci4KPj4+Cj4+PiBVZ2gsIEkgaGFk
-bid0IHJlYWxpc2VkIHRoZXJlIHdlcmUgYW55IGRyaXZlcnMgdHJ5aW5nIHRvIGZha2UgdXAgdGhl
-aXIKPj4+IG93biBkZWZhdWx0IGRvbWFpbnMgLSB0aGF0J3MgYWx3YXlzIGdvaW5nIHRvIGJlIGZy
-YWdpbGUuIEluIGZhY3QsIG9uZQo+Pj4gb2YgbXkgcHJvcG9zYWxzIGZvciB1bi1icmVha2luZyBU
-ZWdyYSBhbmQgb3RoZXIgRFJNIGRyaXZlcnMgaW52b2x2ZXMKPj4+IHByZXZlbnRpbmcgaW9tbXUt
-ZG1hIGZyb20gdHJ5aW5nIHRvIG9wZXJhdGUgb24gbm9uLUlPTU1VX0RPTUFJTl9ETUEKPj4+IGRv
-bWFpbnMgYXQgYWxsLCB3aGljaCB3b3VsZCBzdG9wIHRoYXQgZnJvbSB3b3JraW5nIHBlcm1hbmVu
-dGx5Lgo+Pgo+PiBJTUhPIHRoZXJlIHNob3VsZCBiZSBhIHdheSB0byBsZXQgZHJpdmVycyBsaWtl
-IERSTSB0byB1c2UgRE1BLW1hcHBpbmcKPj4gaW5mcmFzdHJ1Y3R1cmUgb24gdGhlaXIgb3duIGlv
-bW11IGRvbWFpbi4gQmV0dGVyIHByb3ZpZGUgc3VjaCBBUEkgdG8KPj4gYXZvaWQgaGFja2luZyBp
-biB0aGUgRFJNIGRyaXZlcnMgdG8gZ2V0IHRoaXMgZG9uZSB3aXRob3V0IGhlbHAgZnJvbQo+PiBJ
-T01NVSBjb3JlLgo+Cj4gVGhlIHRyaWNreSBwYXJ0IGlzIGhvdyB0byByZWNvbmNpbGUgdGhhdCB3
-aXRoIHRob3NlIG90aGVyIGRyaXZlcnMKPiB3aGljaCB3YW50IHRvIGRvIGV4cGxpY2l0IElPTU1V
-IG1hbmFnZW1lbnQgd2l0aCB0aGVpciBvd24gZG9tYWluIGJ1dAo+IHN0aWxsIHVzZSB0aGUgRE1B
-IEFQSSBmb3IgY29oZXJlbmN5IG9mIHRoZSB1bmRlcmx5aW5nIG1lbW9yeS4gSSBkbwo+IGhhdmUg
-YSBjb3VwbGUgb2YgaGFsZi1mb3JtZWQgaWRlYXMsIGJ1dCB0aGV5J3JlIG5vdCBxdWl0ZSB0aGVy
-ZSB5ZXQuCgpUaGUgb25seSBpZGVhIEkgaGF2ZSBoZXJlIGlzIHRvIGFkZCBzb21lIGZsYWdzIHRv
-IHN0cnVjdCBkcml2ZXIgdG8gbGV0CmRldmljZSBjb3JlIGFuZCBmcmFtZXdvcmtzIG5vdGUgdGhh
-dCB0aGlzIGRyaXZlciB3YW50cyB0byBtYW5hZ2UKZXZlcnl0aGluZyBvbiB0aGVpciBvd24uIFRo
-ZW4gc3VjaCBkcml2ZXJzLCBvbmNlIHRoZXkgc2V0dGxlIHRoZWlyIElPTU1VCmRvbWFpbiwgc2hv
-dWxkIGNhbGwgc29tZSBzaW1wbGUgQVBJIHRvIGJsZXNzIGl0IGZvciBETUEgQVBJLgoKPgo+Pj4g
-Q2FuIEV4eW5vcyBub3QgcHV0IGFsbCB0aGUgRFJNIGNvbXBvbmVudHMgaW50byBhIHNpbmdsZSBn
-cm91cCwgb3IgYXQKPj4+IGxlYXN0IGp1c3QgcGljayBvbmUgb2YgdGhlIHJlYWwgZGVmYXVsdCBk
-b21haW5zIHRvIGF0dGFjaCBldmVyeW9uZSB0bwo+Pj4gaW5zdGVhZCBvZiBhbGxvY2F0aW5nIGEg
-ZmFrZSBvbmU/Cj4+Cj4+IEV4eW5vcyBEUk0gY29tcG9uZW50cyBhcmUgbm90IGluIHRoZSBzaW5n
-bGUgZ3JvdXAuIEN1cnJlbnRseQo+PiBpb21tdS1ncm91cHMgaGF2ZSBubyBtZWFuaW5nIG9uIEV4
-eW5vczU0MzMgYW5kIEV4eW5vcyBJT01NVSBzaW1wbHkKPj4gYWxsb2NhdGUgb25lIGdyb3VwIHBl
-ciBlYWNoIGlvbW11LW1hc3RlciBkZXZpY2UgaW4gdGhlIHN5c3RlbS4KPgo+IFllYWgsIGEgZ3Jv
-dXAgc3Bhbm5pbmcgbXVsdGlwbGUgSU9NTVUgZGV2aWNlcyB3b3VsZCBoYXZlIGJlZW4gYSBiaXQg
-b2YKPiBhIGhhY2sgZm9yIHlvdXIgdG9wb2xvZ3ksIGJ1dCBzdGlsbCAqdGVjaG5pY2FsbHkqIHBv
-c3NpYmxlIDspCgpUaGUgcXVlc3Rpb24gaWYgSSB3YW50IHRvIHB1dCBhbGwgRFJNIGNvbXBvbmVu
-dHMgaW50byBzaW5nbGUgSU9NTVUKZ3JvdXAsIGhvdyB0byBwcm9wYWdhdGUgc3VjaCBrbm93bGVk
-Z2UgZnJvbSBFeHlub3MgRFJNIGRyaXZlciB0byBFeHlub3MKSU9NTVUgZHJpdmVyIChncm91cHMg
-YXJlIGNyZWF0ZWQgYnkgSU9NTVUgZHJpdmVyKT8gQW55d2F5LCBJIGRvbid0IHNlZQphbnkgYmVu
-ZWZpdHMgZnJvbSB1c2luZyBJT01NVSBncm91cHMgYXMgZm9yIG5vdywgZXNwZWNpYWxseSB3aGVu
-IGVhY2gKRXh5bm9zIERSTSBjb21wb25lbnQgaGFzIGl0cyBvd24sIHNlcGFyYXRlIElPTU1VIChv
-ciBldmVuIG1vcmUgdGhhbiBvbmUsCmJ1dCB0aGF0IGEgZGlmZmVyZW50IHN0b3J5KS4KCj4+IEV4
-eW5vcyBEUk0gYWxyZWFkeSBzZWxlY3RzIG9uZSBvZiBpdHMgY29tcG9uZW50IGRldmljZXMgYXMg
-dGhlICdtYWluIERNQQo+PiBkZXZpY2UnLiBJdCBpcyBiZWluZyB1c2VkIGZvciBtYW5hZ2luZyBi
-dWZmZXJzIGlmIG5vIElPTU1VIGlzIGF2YWlsYWJsZSwKPj4gc28gaXQgY2FuIGFsc28gdXNlIGl0
-cyBpb21tdSBkb21haW4gaW5zdGVhZCBvZiBhbGxvY2F0aW5nIGEgZmFrZSBvbmUuCj4+IEkndmUg
-Y2hlY2tlZCBhbmQgaXQgZml4ZXMgRXh5bm9zIERSTSBub3cuIFRoZSBxdWVzdGlvbiBpcyBob3cg
-dG8gbWVyZ2UKPj4gdGhpcyBmaXggdG8ga2VlcCBiaXNlY3RhYmlsaXR5Lgo+Pgo+PiBGcm9tOiBN
-YXJlayBTenlwcm93c2tpIDxtLnN6eXByb3dza2lAc2Ftc3VuZy5jb20+Cj4+IERhdGU6IEZyaSwg
-MjggU2VwIDIwMTggMTY6MTc6MjcgKzAyMDAKPj4gU3ViamVjdDogW1BBVENIXSBkcm0vZXh5bm9z
-OiBVc2Ugc2VsZWN0ZWQgZG1hX2RldiBkZWZhdWx0IGlvbW11IGRvbWFpbgo+PiBpbnN0ZWFkCj4+
-IMKgIMKgb2YgYSBmYWtlIG9uZQo+Pgo+PiBJbnN0ZWFkIG9mIGFsbG9jYXRpbmcgYSBmYWtlIElP
-TU1VIGRvbWFpbiBmb3IgYWxsIEV4eW5vcyBEUk0gY29tcG9uZW50cywKPj4gc2ltcGx5IHJldXNl
-IHRoZSBkZWZhdWx0IElPTU1VIGRvbWFpbiBvZiB0aGUgYWxyZWFkeSBzZWxlY3RlZCBETUEKPj4g
-ZGV2aWNlLgo+PiBUaGlzIGFsbG93cyBzb21lIGRlc2lnbiBjaGFuZ2VzIGluIElPTU1VIGZyYW1l
-d29yayB3aXRob3V0IGJyZWFraW5nCj4+IElPTU1VCj4+IHN1cHBvcnQgaW4gRXh5bm9zIERSTS4K
-Pj4KPj4gU2lnbmVkLW9mZi1ieTogTWFyZWsgU3p5cHJvd3NraSA8bS5zenlwcm93c2tpQHNhbXN1
-bmcuY29tPgo+PiAtLS0KPj4gwqAgwqBkcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1f
-aW9tbXUuaCB8IDM0Cj4+ICsrKystLS0tLS0tLS0tLS0tLS0tLS0tCj4+IMKgIMKgMSBmaWxlIGNo
-YW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMjggZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1naXQg
-YS9kcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1faW9tbXUuaAo+PiBiL2RyaXZlcnMv
-Z3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9pb21tdS5oCj4+IGluZGV4IDg3ZjZiNTY3MmUxMS4u
-NTFkM2I3ZGNkNTI5IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5v
-c19kcm1faW9tbXUuaAo+PiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1f
-aW9tbXUuaAo+PiBAQCAtNTUsMzcgKzU1LDEyIEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBfX2V4eW5v
-c19pb21tdV9kZXRhY2goc3RydWN0Cj4+IGV4eW5vc19kcm1fcHJpdmF0ZSAqcHJpdiwKPj4gwqAg
-wqBzdGF0aWMgaW5saW5lIGludCBfX2V4eW5vc19pb21tdV9jcmVhdGVfbWFwcGluZyhzdHJ1Y3QK
-Pj4gZXh5bm9zX2RybV9wcml2YXRlICpwcml2LAo+PiDCoCDCoMKgwqDCoCDCoMKgwqAgwqDCoMKg
-IMKgwqDCoCDCoMKgwqAgdW5zaWduZWQgbG9uZyBzdGFydCwgdW5zaWduZWQgbG9uZyBzaXplKQo+
-PiDCoCDCoHsKPj4gLcKgwqDCoCBzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4+IC3CoMKg
-wqAgaW50IHJldDsKPj4gLQo+PiAtwqDCoMKgIGRvbWFpbiA9IGlvbW11X2RvbWFpbl9hbGxvYyhw
-cml2LT5kbWFfZGV2LT5idXMpOwo+PiAtwqDCoMKgIGlmICghZG9tYWluKQo+PiAtwqDCoMKgIMKg
-wqDCoCByZXR1cm4gLUVOT01FTTsKPj4gLQo+PiAtwqDCoMKgIHJldCA9IGlvbW11X2dldF9kbWFf
-Y29va2llKGRvbWFpbik7Cj4+IC3CoMKgwqAgaWYgKHJldCkKPj4gLcKgwqDCoCDCoMKgwqAgZ290
-byBmcmVlX2RvbWFpbjsKPj4gLQo+PiAtwqDCoMKgIHJldCA9IGlvbW11X2RtYV9pbml0X2RvbWFp
-bihkb21haW4sIHN0YXJ0LCBzaXplLCBOVUxMKTsKPj4gLcKgwqDCoCBpZiAocmV0KQo+PiAtwqDC
-oMKgIMKgwqDCoCBnb3RvIHB1dF9jb29raWU7Cj4+IC0KPj4gLcKgwqDCoCBwcml2LT5tYXBwaW5n
-ID0gZG9tYWluOwo+PiArwqDCoMKgIHByaXYtPm1hcHBpbmcgPSBpb21tdV9nZXRfZG1hX2RvbWFp
-bihwcml2LT5kbWFfZGV2KTsKPgo+IGlvbW11X2dldF9kb21haW5fZm9yX2RldigpLCBwbGVhc2Ug
-LSB0aGlzIGlzbid0IGEgcGVyZm9ybWFuY2UtY3JpdGljYWwKPiBwYXRoIGluc2lkZSBhIERNQSBB
-UEkgaW1wbGVtZW50YXRpb24sIHBsdXMgd2l0aG91dCBhbiBhY3R1YWwKPiBkZXBlbmRlbmN5IG9u
-IHRoaXMgc2VyaWVzIG1heWJlIHRoZXJlJ3MgYSBjaGFuY2Ugb2Ygc25lYWtpbmcgaXQgaW50bwo+
-IDQuMTk/Cj4KPiAoeW91IGNvdWxkIGFsd2F5cyBzdGlsbCBjaGVjayBkb21haW4tPnR5cGUgPT0g
-SU9NTVVfRE9NQUlOX0RNQSBpZiB5b3UKPiB3YW50IHRvIGJlIHJlYWxseSByZWFsbHkgcGFyYW5v
-aWQuKQo+CgpJJ3ZlIHNlbnQgYSBwYXRjaC4gSSBob3BlIHdlIHdpbGwgbWFuYWdlIHRvIGdldCBp
-dCBhcyBhIGZpeCBpbnRvIHY0LjE5LApzbyBpdCB3b24ndCBibG9jayB5b3VyIGNoYW5nZXMgaW4g
-djQuMjAuCgo+PiDCoCDCoMKgwqDCoCByZXR1cm4gMDsKPj4gLQo+PiAtcHV0X2Nvb2tpZToKPj4g
-LcKgwqDCoCBpb21tdV9wdXRfZG1hX2Nvb2tpZShkb21haW4pOwo+PiAtZnJlZV9kb21haW46Cj4+
-IC3CoMKgwqAgaW9tbXVfZG9tYWluX2ZyZWUoZG9tYWluKTsKPj4gLcKgwqDCoCByZXR1cm4gcmV0
-Owo+PiDCoCDCoH0KPj4KPj4gwqAgwqBzdGF0aWMgaW5saW5lIHZvaWQgX19leHlub3NfaW9tbXVf
-cmVsZWFzZV9tYXBwaW5nKHN0cnVjdAo+PiBleHlub3NfZHJtX3ByaXZhdGUgKnByaXYpCj4+IMKg
-IMKgewo+PiAtwqDCoMKgIHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiA9IHByaXYtPm1hcHBp
-bmc7Cj4+IC0KPj4gLcKgwqDCoCBpb21tdV9wdXRfZG1hX2Nvb2tpZShkb21haW4pOwo+PiAtwqDC
-oMKgIGlvbW11X2RvbWFpbl9mcmVlKGRvbWFpbik7Cj4+IMKgIMKgwqDCoMKgIHByaXYtPm1hcHBp
-bmcgPSBOVUxMOwo+PiDCoCDCoH0KPj4KPj4gQEAgLTk0LDcgKzY5LDkgQEAgc3RhdGljIGlubGlu
-ZSBpbnQgX19leHlub3NfaW9tbXVfYXR0YWNoKHN0cnVjdAo+PiBleHlub3NfZHJtX3ByaXZhdGUg
-KnByaXYsCj4+IMKgIMKgewo+PiDCoCDCoMKgwqDCoCBzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21h
-aW4gPSBwcml2LT5tYXBwaW5nOwo+Pgo+PiAtwqDCoMKgIHJldHVybiBpb21tdV9hdHRhY2hfZGV2
-aWNlKGRvbWFpbiwgZGV2KTsKPj4gK8KgwqDCoCBpZiAoZGV2ICE9IHByaXYtPmRtYV9kZXYpCj4+
-ICvCoMKgwqAgwqDCoMKgIHJldHVybiBpb21tdV9hdHRhY2hfZGV2aWNlKGRvbWFpbiwgZGV2KTsK
-Pj4gK8KgwqDCoCByZXR1cm4gMDsKPj4gwqAgwqB9Cj4+Cj4+IMKgIMKgc3RhdGljIGlubGluZSB2
-b2lkIF9fZXh5bm9zX2lvbW11X2RldGFjaChzdHJ1Y3QgZXh5bm9zX2RybV9wcml2YXRlCj4+ICpw
-cml2LAo+PiBAQCAtMTAyLDcgKzc5LDggQEAgc3RhdGljIGlubGluZSB2b2lkIF9fZXh5bm9zX2lv
-bW11X2RldGFjaChzdHJ1Y3QKPj4gZXh5bm9zX2RybV9wcml2YXRlICpwcml2LAo+PiDCoCDCoHsK
-Pj4gwqAgwqDCoMKgwqAgc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluID0gcHJpdi0+bWFwcGlu
-ZzsKPj4KPj4gLcKgwqDCoCBpb21tdV9kZXRhY2hfZGV2aWNlKGRvbWFpbiwgZGV2KTsKPj4gK8Kg
-wqDCoCBpZiAoZGV2ICE9IHByaXYtPmRtYV9kZXYpCj4+ICvCoMKgwqAgwqDCoMKgIGlvbW11X2Rl
-dGFjaF9kZXZpY2UoZG9tYWluLCBkZXYpOwo+Cj4gU3RyaWN0bHkgeW91IGNvdWxkIHNraXAgdGhh
-dCBjaGVjaywgYXMgZGV0YWNoaW5nIHRoZSBtYXN0ZXIgZGV2aWNlCj4gZnJvbSBpdHMgcmVhbCBk
-ZWZhdWx0IGRvbWFpbiBpcyBqdXN0IGEgbm8tb3AsIGJ1dCBJIGd1ZXNzIG1haW50YWluaW5nCj4g
-dGhlIHN5bW1ldHJ5IGlzIHByb2JhYmx5IG1vcmUgaW50dWl0aXZlLgoKSSB3b3VsZCBsaWtlIHRv
-IGtlZXAgdGhlIHN5bW1ldHJ5LgoKPiAuLi4KCkJlc3QgcmVnYXJkcwotLSAKTWFyZWsgU3p5cHJv
-d3NraSwgUGhEClNhbXN1bmcgUiZEIEluc3RpdHV0ZSBQb2xhbmQKCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Quoting Robin Murphy (2018-09-26 06:24:42)
+> On 21/09/18 18:39, Stephen Boyd wrote:
+> > Quoting Robin Murphy (2018-09-21 04:09:50)
+> >> Hi Stephen,
+> >>
+> >> On 20/09/18 23:35, Stephen Boyd wrote:
+> >>> I recently debugged a DMA mapping oops where a driver was trying to m=
+ap
+> >>> a buffer returned from request_firmware() with dma_map_single(). Memo=
+ry
+> >>> returned from request_firmware() is mapped into the vmalloc region and
+> >>> this isn't a valid region to map with dma_map_single() per the DMA
+> >>> documentation's "What memory is DMA'able?" section.
+> >>>
+> >>> Unfortunately, we don't really check that in the DMA debugging code, =
+so
+> >>> enabling DMA debugging doesn't help catch this problem. Let's add a n=
+ew
+> >>> DMA debug function to check for a vmalloc address and print a warning=
+ if
+> >>> this happens. This makes it a little easier to debug these sorts of
+> >>> problems, instead of seeing odd behavior or crashes when drivers atte=
+mpt
+> >>> to map the vmalloc space for DMA.
+> >>
+> >> Good idea!
+> >>
+> >>> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> >>> Cc: Robin Murphy <robin.murphy@arm.com>
+> >>> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> >>> ---
+> >>>    include/linux/dma-debug.h   |  8 ++++++++
+> >>>    include/linux/dma-mapping.h |  1 +
+> >>>    kernel/dma/debug.c          | 12 ++++++++++++
+> >>>    3 files changed, 21 insertions(+)
+> >>
+> >> However I can't help thinking this looks a little heavyweight for a
+> >> single specific check. It seems like it would be enough to simply pass
+> >> the VA as an extra argument to debug_dma_map_page(), since we already
+> >> have the map_single argument which would indicate when it's valid. What
+> >> do you reckon?
+> > =
+
+> > I thought about augmenting debug_dma_map_page() but that has another
+> > problem where those checks are done after the page has been mapped. The
+> > kernel can oops when it's operating on the incorrect page so we need to
+> > check things before calling the dma ops.
+> =
+
+> Oh, right, as usual I've managed to overlook a subtlety :)
+> =
+
+> In fact, with memory now jogged, I think the virt_to_page() itself is =
+
+> allowed to blow up if !virt_addr_valid(), so we probably do need =
+
+> something like your original idea to be properly robust. I guess it =
+
+> probably makes sense to implement that as debug_dma_map_single() then, =
+
+> since the purpose is really to cover any VA checks specific to that case =
+
+> which debug_dma_map_page() can't be expected to do after the fact.
+> =
+
+
+Ok. I can rename it to dma_debug_map_single() and throw in a
+virt_addr_valid() check too. Thanks for the suggestion.
