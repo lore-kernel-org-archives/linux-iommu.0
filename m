@@ -1,123 +1,73 @@
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v16 1/5] iommu/arm-smmu: Add pm_runtime/sleep ops
-Date: Fri, 28 Sep 2018 13:59:35 +0200
-Message-ID: <CAPDyKFohpvEMfDoDooYEyxPMeQ+9dU71qz7ZAZxQ1rzyW-w8iA@mail.gmail.com>
-References: <20180830144541.17740-1-vivek.gautam@codeaurora.org> <20180830144541.17740-2-vivek.gautam@codeaurora.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v8 4/7] iommu/io-pgtable-arm: Add support for non-strict
+ mode
+Date: Fri, 28 Sep 2018 13:17:38 +0100
+Message-ID: <20180928121738.GA1577@brain-police>
+References: <cover.1537458163.git.robin.murphy@arm.com>
+ <9a666d63a96ab97dc53df2a64b3a8d22a0986423.1537458163.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180830144541.17740-2-vivek.gautam@codeaurora.org>
+Content-Disposition: inline
+In-Reply-To: <9a666d63a96ab97dc53df2a64b3a8d22a0986423.1537458163.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, DTML <devicetree@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Alex Williamson <alex.williamson@redhat.com>, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, robdclark@gmail.com, Linux PM <linux-pm@vger.kernel.org>, freedreno@lists.freedesktop.org, Stephen Boyd <sboyd@kernel.org>, Tomasz Figa <tfiga@chromium.org>, Jordan Crouse <jcrouse@codeaurora.org>, Sricharan <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, architt@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 30 August 2018 at 16:45, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
-> From: Sricharan R <sricharan@codeaurora.org>
->
-> The smmu needs to be functional only when the respective
-> master's using it are active. The device_link feature
-> helps to track such functional dependencies, so that the
-> iommu gets powered when the master device enables itself
-> using pm_runtime. So by adapting the smmu driver for
-> runtime pm, above said dependency can be addressed.
->
-> This patch adds the pm runtime/sleep callbacks to the
-> driver and also the functions to parse the smmu clocks
-> from DT and enable them in resume/suspend.
->
-> Also, while we enable the runtime pm add a pm sleep suspend
-> callback that pushes devices to low power state by turning
-> the clocks off in a system sleep.
-> Also add corresponding clock enable path in resume callback.
->
-> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> Signed-off-by: Archit Taneja <architt@codeaurora.org>
-> [vivek: rework for clock and pm ops]
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
-> Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+On Thu, Sep 20, 2018 at 05:10:24PM +0100, Robin Murphy wrote:
+> From: Zhen Lei <thunder.leizhen@huawei.com>
+> 
+> Non-strict mode is simply a case of skipping 'regular' leaf TLBIs, since
+> the sync is already factored out into ops->iotlb_sync at the core API
+> level. Non-leaf invalidations where we change the page table structure
+> itself still have to be issued synchronously in order to maintain walk
+> caches correctly.
+> 
+> To save having to reason about it too much, make sure the invalidation
+> in arm_lpae_split_blk_unmap() just performs its own unconditional sync
+> to minimise the window in which we're technically violating the break-
+> before-make requirement on a live mapping. This might work out redundant
+> with an outer-level sync for strict unmaps, but we'll never be splitting
+> blocks on a DMA fastpath anyway.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> [rm: tweak comment, commit message, split_blk_unmap logic and barriers]
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/iommu/arm-smmu.c | 77 ++++++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 74 insertions(+), 3 deletions(-)
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> 
+> v8: Add barrier for the fiddly cross-cpu flush case
+> 
+>  drivers/iommu/io-pgtable-arm.c | 14 ++++++++++++--
+>  drivers/iommu/io-pgtable.h     |  5 +++++
+>  2 files changed, 17 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 2f79efd16a05..237cacd4a62b 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -576,6 +576,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+>  		tablep = iopte_deref(pte, data);
+>  	} else if (unmap_idx >= 0) {
+>  		io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+> +		io_pgtable_tlb_sync(&data->iop);
+>  		return size;
+>  	}
+>  
+> @@ -609,6 +610,13 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+>  			io_pgtable_tlb_sync(iop);
+>  			ptep = iopte_deref(pte, data);
+>  			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
+> +		} else if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT) {
+> +			/*
+> +			 * Order the PTE update against queueing the IOVA, to
+> +			 * guarantee that a flush callback from a different CPU
+> +			 * has observed it before the TLBIALL can be issued.
+> +			 */
+> +			smp_wmb();
 
-[...]
+Looks good to me. In the case that everything happens on the same CPU, are
+we relying on the TLB invalidation code in the SMMU driver(s) to provide the
+DSB for pushing the new entry out to the walker?
 
-> -static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
-> +static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
->  {
->         struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> +       int ret;
-> +
-> +       ret = clk_bulk_enable(smmu->num_clks, smmu->clks);
-> +       if (ret)
-> +               return ret;
->
->         arm_smmu_device_reset(smmu);
-> +
->         return 0;
->  }
->
-> -static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
-> +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
-> +{
-> +       struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> +
-> +       clk_bulk_disable(smmu->num_clks, smmu->clks);
-> +
-> +       return 0;
-> +}
-> +
-> +static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
-> +{
-> +       if (pm_runtime_suspended(dev))
-> +               return 0;
-
-Looks like you should be able use pm_runtime_force_resume(), instead
-of using this local trick. Unless I am missing something, of course.
-
-In other words, just assign the system sleep callbacks for resume, to
-pm_runtime_force_resume(). And vice verse for the system suspend
-callbacks, pm_runtime_force_suspend(), of course.
-
-> +
-> +       return arm_smmu_runtime_resume(dev);
-> +}
-> +
-> +static int __maybe_unused arm_smmu_pm_suspend(struct device *dev)
-> +{
-> +       if (pm_runtime_suspended(dev))
-> +               return 0;
-> +
-> +       return arm_smmu_runtime_suspend(dev);
-> +}
-> +
-> +static const struct dev_pm_ops arm_smmu_pm_ops = {
-> +       SET_SYSTEM_SLEEP_PM_OPS(arm_smmu_pm_suspend, arm_smmu_pm_resume)
-
-I am wondering if using the ->suspend|resume() callback is really
-"late/early" enough in the device suspend phase?
-
-Others is using the noirq phase and some is even using the syscore
-ops. Of course it depends on the behavior of the consumers of iommu
-device, and I guess not everyone is using device links, which for sure
-improves things in this regards as well.
-
-> +       SET_RUNTIME_PM_OPS(arm_smmu_runtime_suspend,
-> +                          arm_smmu_runtime_resume, NULL)
-> +};
->
->  static struct platform_driver arm_smmu_driver = {
->         .driver = {
-> --
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
->
-
-BTW, apologize for very late review comments.
-
-Besides the above comments, the series looks good to me.
-
-Kind regards
-Uffe
+Will
