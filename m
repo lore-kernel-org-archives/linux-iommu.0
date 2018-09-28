@@ -1,163 +1,61 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] iommu/dma: Use fast DMA domain lookup
-Date: Fri, 28 Sep 2018 14:52:36 +0100
-Message-ID: <78a5b373-d569-4461-e258-3104286ba322@arm.com>
-References: <cover.1536764440.git.robin.murphy@arm.com>
-	<CGME20180912152438epcas5p175098b44c3f7232302e10b087279bd3c@epcas5p1.samsung.com>
-	<e42771992a73620f23128c0479b2ae91b3e177bf.1536764440.git.robin.murphy@arm.com>
-	<20180928132605eucas1p1d39fedc3be3e4e2c16035c01a40cfab6~Ykz2Rax6e0538205382eucas1p17@eucas1p1.samsung.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v8 5/7] iommu/arm-smmu-v3: Add support for non-strict mode
+Date: Fri, 28 Sep 2018 14:55:32 +0100
+Message-ID: <20180928135532.GA1581@brain-police>
+References: <cover.1537458163.git.robin.murphy@arm.com>
+ <b98f8f695178c9c9ac6e081680090d5ac97e8d7c.1537458163.git.robin.murphy@arm.com>
+ <20180928121900.GB1577@brain-police>
+ <1d2b57f7-be4e-39c5-4981-7f8e2f601b6a@arm.com>
+ <20180928124704.GC1577@brain-police>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180928132605eucas1p1d39fedc3be3e4e2c16035c01a40cfab6~Ykz2Rax6e0538205382eucas1p17-MHMrYXj8g+pqW5MlFJXMulaTQe2KTcn/@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
-Cc: 'Linux Samsung SOC' <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, =?UTF-8?B?64yA7J246riw?= <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20180928124704.GC1577@brain-police>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, thunder.leizhen@huawei.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com, guohanjun@huawei.com, huawei.libin@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/09/18 14:26, Marek Szyprowski wrote:
-> Hi All,
+On Fri, Sep 28, 2018 at 01:47:04PM +0100, Will Deacon wrote:
+> On Fri, Sep 28, 2018 at 01:26:00PM +0100, Robin Murphy wrote:
+> > On 28/09/18 13:19, Will Deacon wrote:
+> > > On Thu, Sep 20, 2018 at 05:10:25PM +0100, Robin Murphy wrote:
+> > > > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> > > > index f10c852479fc..db402e8b068b 100644
+> > > > --- a/drivers/iommu/arm-smmu-v3.c
+> > > > +++ b/drivers/iommu/arm-smmu-v3.c
+> > > > @@ -612,6 +612,7 @@ struct arm_smmu_domain {
+> > > >   	struct mutex			init_mutex; /* Protects smmu pointer */
+> > > >   	struct io_pgtable_ops		*pgtbl_ops;
+> > > > +	bool				non_strict;
+> > > >   	enum arm_smmu_domain_stage	stage;
+> > > >   	union {
+> > > > @@ -1407,6 +1408,12 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+> > > >   		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+> > > >   	}
+> > > > +	/*
+> > > > +	 * NOTE: when io-pgtable is in non-strict mode, we may get here with
+> > > > +	 * PTEs previously cleared by unmaps on the current CPU not yet visible
+> > > > +	 * to the SMMU. We are relying on the DSB implicit in queue_inc_prod()
+> > > > +	 * to guarantee those are observed before the TLBI. Do be careful, 007.
+> > > > +	 */
+> > > 
+> > > Good, so you can ignore my comment on the previous patch :)
+> > 
+> > Well, I suppose that comment in io-pgtable *could* have explicitly noted
+> > that same-CPU order is dealt with elsewhere - feel free to fix it up if you
+> > think it would be a helpful reminder for the future.
 > 
-> On 2018-09-12 17:24, Robin Murphy wrote:
->> Most parts of iommu-dma already assume they are operating on a default
->> domain set up by iommu_dma_init_domain(), and can be converted straight
->> over to avoid the refcounting bottleneck. MSI page mappings may be in
->> an unmanaged domain with an explicit MSI-only cookie, so retain the
->> non-specific lookup, but that's OK since they're far from a contended
->> fast path either way.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> 
-> This breaks Exynos DRM driver with Exynos IOMMU on ARM64 (Exynos5433).
-> Exynos DRM creates it's own domain, attach all devices which performs
-> DMA access (typically CRTC devices) to it and uses standard DMA-mapping
-> calls to allocate/map buffers. This way it can use the same one DMA
-> address for each buffer regardless of the CRTC/display/processing
-> device.
-> 
-> This no longer works with this patch. The simplest solution to fix this
-> is add API to change default_domain to the one allocated by the Exynos
-> DRM driver.
+> I think I'll move it into the documentation for the new attribute, so that
+> any driver authors wanting to enable lazy invalidation know that they need
+> to provide this guarantee in their full TLB invalidation callback.
 
-Ugh, I hadn't realised there were any drivers trying to fake up their 
-own default domains - that's always going to be fragile. In fact, one of 
-my proposals for un-breaking Tegra and other DRM drivers involves 
-preventing iommu-dma from trying to operate on non-IOMMU_DOMAIN_DMA 
-domains at all, which would stop that from working permanently.
+Hmm, so I started doing this but then realised we already required this
+behaviour for tlb_add_flush() afaict. That would mean that mainline
+currently has a bug for arm-smmu.c, because we use the _relaxed I/O
+accessors in there and there's no DSB after clearing the PTE on unmap().
 
-Can Exynos not put all the DRM components into a single group, or at 
-least just pick one of the real default domains to attach everyone to 
-instead of allocating a fake one?
+Am I missing something?
 
-Robin.
-
->> ---
->>    drivers/iommu/dma-iommu.c | 23 ++++++++++++-----------
->>    1 file changed, 12 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 511ff9a1d6d9..320f9ea82f3f 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -491,7 +491,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
->>    void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
->>    		dma_addr_t *handle)
->>    {
->> -	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), *handle, size);
->> +	__iommu_dma_unmap(iommu_get_dma_domain(dev), *handle, size);
->>    	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
->>    	*handle = IOMMU_MAPPING_ERROR;
->>    }
->> @@ -518,7 +518,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->>    		unsigned long attrs, int prot, dma_addr_t *handle,
->>    		void (*flush_page)(struct device *, const void *, phys_addr_t))
->>    {
->> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
->>    	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>    	struct iova_domain *iovad = &cookie->iovad;
->>    	struct page **pages;
->> @@ -606,9 +606,8 @@ int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
->>    }
->>    
->>    static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->> -		size_t size, int prot)
->> +		size_t size, int prot, struct iommu_domain *domain)
->>    {
->> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->>    	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>    	size_t iova_off = 0;
->>    	dma_addr_t iova;
->> @@ -632,13 +631,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->>    dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
->>    		unsigned long offset, size_t size, int prot)
->>    {
->> -	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot);
->> +	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot,
->> +			iommu_get_dma_domain(dev));
->>    }
->>    
->>    void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
->>    		enum dma_data_direction dir, unsigned long attrs)
->>    {
->> -	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle, size);
->> +	__iommu_dma_unmap(iommu_get_dma_domain(dev), handle, size);
->>    }
->>    
->>    /*
->> @@ -726,7 +726,7 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
->>    int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->>    		int nents, int prot)
->>    {
->> -	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
->>    	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>    	struct iova_domain *iovad = &cookie->iovad;
->>    	struct scatterlist *s, *prev = NULL;
->> @@ -811,20 +811,21 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
->>    		sg = tmp;
->>    	}
->>    	end = sg_dma_address(sg) + sg_dma_len(sg);
->> -	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), start, end - start);
->> +	__iommu_dma_unmap(iommu_get_dma_domain(dev), start, end - start);
->>    }
->>    
->>    dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
->>    		size_t size, enum dma_data_direction dir, unsigned long attrs)
->>    {
->>    	return __iommu_dma_map(dev, phys, size,
->> -			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
->> +			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
->> +			iommu_get_dma_domain(dev));
->>    }
->>    
->>    void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
->>    		size_t size, enum dma_data_direction dir, unsigned long attrs)
->>    {
->> -	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle, size);
->> +	__iommu_dma_unmap(iommu_get_dma_domain(dev), handle, size);
->>    }
->>    
->>    int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
->> @@ -850,7 +851,7 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
->>    	if (!msi_page)
->>    		return NULL;
->>    
->> -	iova = __iommu_dma_map(dev, msi_addr, size, prot);
->> +	iova = __iommu_dma_map(dev, msi_addr, size, prot, domain);
->>    	if (iommu_dma_mapping_error(dev, iova))
->>    		goto out_free_page;
->>    
-> 
-> Best regards
-> 
+Will
