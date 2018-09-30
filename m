@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v5 12/21] memory: tegra: Use relaxed versions of readl/writel
-Date: Mon,  1 Oct 2018 01:48:24 +0300
-Message-ID: <20180930224833.28809-13-digetx@gmail.com>
+Subject: [PATCH v5 10/21] memory: tegra: Read client ID on GART page fault
+Date: Mon,  1 Oct 2018 01:48:22 +0300
+Message-ID: <20180930224833.28809-11-digetx@gmail.com>
 References: <20180930224833.28809-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,33 +12,44 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-There is no need for inserting of memory barriers to access registers of
-Memory Controller. Hence use the relaxed versions of the accessors.
+With the device tree binding changes, now Memory Controller has access to
+GART registers. Hence it is now possible to read client ID on GART page
+fault to get information about what memory client causes the fault.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/memory/tegra/mc.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/memory/tegra/mc.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
-index 9856f085e487..887a3b07334f 100644
---- a/drivers/memory/tegra/mc.h
-+++ b/drivers/memory/tegra/mc.h
-@@ -26,13 +26,13 @@
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index 1b4ceefd82f9..5454ffe5b2e0 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -38,6 +38,7 @@
  
- static inline u32 mc_readl(struct tegra_mc *mc, unsigned long offset)
- {
--	return readl(mc->regs + offset);
-+	return readl_relaxed(mc->regs + offset);
- }
+ #define MC_ERR_ADR 0x0c
  
- static inline void mc_writel(struct tegra_mc *mc, u32 value,
- 			     unsigned long offset)
- {
--	writel(value, mc->regs + offset);
-+	writel_relaxed(value, mc->regs + offset);
- }
++#define MC_GART_ERROR_REQ		0x30
+ #define MC_DECERR_EMEM_OTHERS_STATUS	0x58
+ #define MC_SECURITY_VIOLATION_STATUS	0x74
  
- extern const struct tegra_mc_reset_ops terga_mc_reset_ops_common;
+@@ -575,8 +576,15 @@ static __maybe_unused irqreturn_t tegra20_mc_irq(int irq, void *data)
+ 			break;
+ 
+ 		case MC_INT_INVALID_GART_PAGE:
+-			dev_err_ratelimited(mc->dev, "%s\n", error);
+-			continue;
++			reg = MC_GART_ERROR_REQ;
++			value = mc_readl(mc, reg);
++
++			id = (value >> 1) & mc->soc->client_id_mask;
++			desc = error_names[2];
++
++			if (value & BIT(0))
++				direction = "write";
++			break;
+ 
+ 		case MC_INT_SECURITY_VIOLATION:
+ 			reg = MC_SECURITY_VIOLATION_STATUS;
 -- 
 2.19.0
