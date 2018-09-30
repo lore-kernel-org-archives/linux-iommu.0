@@ -1,57 +1,20 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v5 01/21] iommu/tegra: gart: Remove pr_fmt and clean up includes
-Date: Mon,  1 Oct 2018 01:48:13 +0300
-Message-ID: <20180930224833.28809-2-digetx@gmail.com>
-References: <20180930224833.28809-1-digetx@gmail.com>
+From: christoph hellwig <hch@lst.de>
+Subject: Re: [PATCH, RFC] unicore32: remove swiotlb support
+Date: Mon, 1 Oct 2018 01:08:18 +0200
+Message-ID: <20180930230818.GA20776@lst.de>
+References: <20180927135434.6866-1-hch@lst.de> <467b89ea.5028.166258f1945.Coremail.gxt@pku.edu.cn>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180930224833.28809-1-digetx@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <467b89ea.5028.166258f1945.Coremail.gxt@pku.edu.cn>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Guan Xuetao <gxt@pku.edu.cn>
+Cc: christoph hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove unneeded headers inclusion and sort the headers in alphabet order.
-Remove pr_fmt macro since there is no pr_*() in the code and it doesn't
-affect dev_*() functions.
+On Sat, Sep 29, 2018 at 09:40:27PM +0800, Guan Xuetao wrote:
+> That's right and really good to use direct.c, not swiotlb.c
+> No special limitation for dma zone in unicore32.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Acked-by: Thierry Reding <treding@nvidia.com>
----
- drivers/iommu/tegra-gart.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 7b1361d57a17..6dda7ee1d36c 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -17,21 +17,14 @@
-  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-  */
- 
--#define pr_fmt(fmt)	"%s(): " fmt, __func__
--
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/list.h>
- #include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/spinlock.h>
-+#include <linux/of_device.h>
- #include <linux/slab.h>
-+#include <linux/spinlock.h>
- #include <linux/vmalloc.h>
--#include <linux/mm.h>
--#include <linux/list.h>
--#include <linux/device.h>
--#include <linux/io.h>
--#include <linux/iommu.h>
--#include <linux/of.h>
--
--#include <asm/cacheflush.h>
- 
- /* bitmap of the page sizes currently supported */
- #define GART_IOMMU_PGSIZES	(SZ_4K)
--- 
-2.19.0
+Thanks.  Added to the dma-mapping tree for 4.20.
