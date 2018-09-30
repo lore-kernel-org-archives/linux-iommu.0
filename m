@@ -1,79 +1,102 @@
-From: "Guan Xuetao" <gxt@pku.edu.cn>
-Subject: Re: [PATCH, RFC] unicore32: remove swiotlb support
-Date: Sat, 29 Sep 2018 21:40:27 +0800 (GMT+08:00)
-Message-ID: <467b89ea.5028.166258f1945.Coremail.gxt@pku.edu.cn>
-References: <20180927135434.6866-1-hch@lst.de>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v5 00/21] IOMMU: Tegra GART driver clean up and optimization
+Date: Mon,  1 Oct 2018 01:48:12 +0300
+Message-ID: <20180930224833.28809-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20180927135434.6866-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: christoph hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhhdCdzIHJpZ2h0IGFuZCByZWFsbHkgZ29vZCB0byB1c2UgZGlyZWN0LmMsIG5vdCBzd2lvdGxi
-LmMKTm8gc3BlY2lhbCBsaW1pdGF0aW9uIGZvciBkbWEgem9uZSBpbiB1bmljb3JlMzIuCgpBY2tl
-ZC1ieTogR3VhbiBYdWV0YW8gPGd4dEBwa3UuZWR1LmNuPgoKVGhhbmtzLAoKR3VhbiBYdWV0YW8K
-Cj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlcy0tLS0tCj4gRnJvbTogIkNocmlzdG9waCBIZWxsd2ln
-IiA8aGNoQGxzdC5kZT4KPiBTZW50IFRpbWU6IDIwMTgtMDktMjcgMjE6NTQ6MzQgKFRodXJzZGF5
-KQo+IFRvOiAiR3VhbiBYdWV0YW8iIDxneHRAcGt1LmVkdS5jbj4KPiBDYzogaW9tbXVAbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmcsIGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKPiBTdWJq
-ZWN0OiBbUEFUQ0gsIFJGQ10gdW5pY29yZTMyOiByZW1vdmUgc3dpb3RsYiBzdXBwb3J0Cj4gCj4g
-dW5pY29yZTMyIGlzIGEgYm9nIHN0YW5kYXJkIDMyLWJpdCBwb3J0IHdpdGhvdXQgbGFyZ2VyIHBo
-eXNpY2FsIGFkZHJlc3MKPiBzcGFjZSwgaGlnaG1lbSBvciBhbnkgb3RoZXIgb2J2aW91cyBhZGRy
-ZXNzaW5nIGxpbWl0YXRpb24uICBUaGVyZSBzaG91bGQKPiBiZSBubyBuZWVkIHRvIGJvdW5jZSBi
-dWZmZXIgdXNpbmcgc3dpb3RsYi4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBDaHJpc3RvcGggSGVsbHdp
-ZyA8aGNoQGxzdC5kZT4KPiAtLS0KPiAKPiBHdWFuLCBjYW4geW91IGRvdWJsZSBjaGVjayBteSBh
-c3N1bXB0aW9ucz8gIEkgcmVhbGx5IGNhbid0IGZpbmQgYQo+IHJlYXNvbiB3aHkgdW5pY29yZTMy
-IHdvdWxkIG5lZWQgc3dpb3RsYi4KPiAKPiAgYXJjaC91bmljb3JlMzIvS2NvbmZpZyAgICAgICAg
-ICAgICAgICAgICB8ICAyICstCj4gIGFyY2gvdW5pY29yZTMyL2luY2x1ZGUvYXNtL0tidWlsZCAg
-ICAgICAgfCAgMSArCj4gIGFyY2gvdW5pY29yZTMyL2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmgg
-fCAyMiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gIGFyY2gvdW5pY29yZTMyL21tL2luaXQuYyAg
-ICAgICAgICAgICAgICAgfCAgMyAtLS0KPiAgNCBmaWxlcyBjaGFuZ2VkLCAyIGluc2VydGlvbnMo
-KyksIDI2IGRlbGV0aW9ucygtKQo+ICBkZWxldGUgbW9kZSAxMDA2NDQgYXJjaC91bmljb3JlMzIv
-aW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaAo+IAo+IGRpZmYgLS1naXQgYS9hcmNoL3VuaWNvcmUz
-Mi9LY29uZmlnIGIvYXJjaC91bmljb3JlMzIvS2NvbmZpZwo+IGluZGV4IDYwZWFlNzQ0ZDhmZC4u
-M2EzYjQwZjc5NTU4IDEwMDY0NAo+IC0tLSBhL2FyY2gvdW5pY29yZTMyL0tjb25maWcKPiArKysg
-Yi9hcmNoL3VuaWNvcmUzMi9LY29uZmlnCj4gQEAgLTQsNiArNCw3IEBAIGNvbmZpZyBVTklDT1JF
-MzIKPiAgCXNlbGVjdCBBUkNIX0hBU19ERVZNRU1fSVNfQUxMT1dFRAo+ICAJc2VsZWN0IEFSQ0hf
-TUlHSFRfSEFWRV9QQ19QQVJQT1JUCj4gIAlzZWxlY3QgQVJDSF9NSUdIVF9IQVZFX1BDX1NFUklP
-Cj4gKwlzZWxlY3QgRE1BX0RJUkVDVF9PUFMKPiAgCXNlbGVjdCBIQVZFX01FTUJMT0NLCj4gIAlz
-ZWxlY3QgSEFWRV9HRU5FUklDX0RNQV9DT0hFUkVOVAo+ICAJc2VsZWN0IEhBVkVfS0VSTkVMX0da
-SVAKPiBAQCAtMjAsNyArMjEsNiBAQCBjb25maWcgVU5JQ09SRTMyCj4gIAlzZWxlY3QgR0VORVJJ
-Q19JT01BUAo+ICAJc2VsZWN0IE1PRFVMRVNfVVNFX0VMRl9SRUwKPiAgCXNlbGVjdCBORUVEX0RN
-QV9NQVBfU1RBVEUKPiAtCXNlbGVjdCBTV0lPVExCCj4gIAloZWxwCj4gIAkgIFVuaUNvcmUtMzIg
-aXMgMzItYml0IEluc3RydWN0aW9uIFNldCBBcmNoaXRlY3R1cmUsCj4gIAkgIGluY2x1ZGluZyBh
-IHNlcmllcyBvZiBsb3ctcG93ZXItY29uc3VtcHRpb24gUklTQyBjaGlwCj4gZGlmZiAtLWdpdCBh
-L2FyY2gvdW5pY29yZTMyL2luY2x1ZGUvYXNtL0tidWlsZCBiL2FyY2gvdW5pY29yZTMyL2luY2x1
-ZGUvYXNtL0tidWlsZAo+IGluZGV4IGJmYzdhYmU3NzkwNS4uMTM3MjU1M2RjMGE5IDEwMDY0NAo+
-IC0tLSBhL2FyY2gvdW5pY29yZTMyL2luY2x1ZGUvYXNtL0tidWlsZAo+ICsrKyBiL2FyY2gvdW5p
-Y29yZTMyL2luY2x1ZGUvYXNtL0tidWlsZAo+IEBAIC00LDYgKzQsNyBAQCBnZW5lcmljLXkgKz0g
-Y29tcGF0LmgKPiAgZ2VuZXJpYy15ICs9IGN1cnJlbnQuaAo+ICBnZW5lcmljLXkgKz0gZGV2aWNl
-LmgKPiAgZ2VuZXJpYy15ICs9IGRpdjY0LmgKPiArZ2VuZXJpYy15ICs9IGRtYS1tYXBwaW5nLmgK
-PiAgZ2VuZXJpYy15ICs9IGVtZXJnZW5jeS1yZXN0YXJ0LmgKPiAgZ2VuZXJpYy15ICs9IGV4ZWMu
-aAo+ICBnZW5lcmljLXkgKz0gZXh0YWJsZS5oCj4gZGlmZiAtLWdpdCBhL2FyY2gvdW5pY29yZTMy
-L2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmggYi9hcmNoL3VuaWNvcmUzMi9pbmNsdWRlL2FzbS9k
-bWEtbWFwcGluZy5oCj4gZGVsZXRlZCBmaWxlIG1vZGUgMTAwNjQ0Cj4gaW5kZXggNzkwYmMyZWY0
-YWYyLi4wMDAwMDAwMDAwMDAKPiAtLS0gYS9hcmNoL3VuaWNvcmUzMi9pbmNsdWRlL2FzbS9kbWEt
-bWFwcGluZy5oCj4gKysrIC9kZXYvbnVsbAo+IEBAIC0xLDIyICswLDAgQEAKPiAtLyoKPiAtICog
-bGludXgvYXJjaC91bmljb3JlMzIvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaAo+IC0gKgo+IC0g
-KiBDb2RlIHNwZWNpZmljIHRvIFBLVW5pdHkgU29DIGFuZCBVbmlDb3JlIElTQQo+IC0gKgo+IC0g
-KiBDb3B5cmlnaHQgKEMpIDIwMDEtMjAxMCBHVUFOIFh1ZS10YW8KPiAtICoKPiAtICogVGhpcyBw
-cm9ncmFtIGlzIGZyZWUgc29mdHdhcmU7IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBt
-b2RpZnkKPiAtICogaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMg
-TGljZW5zZSB2ZXJzaW9uIDIgYXMKPiAtICogcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJl
-IEZvdW5kYXRpb24uCj4gLSAqLwo+IC0jaWZuZGVmIF9fVU5JQ09SRV9ETUFfTUFQUElOR19IX18K
-PiAtI2RlZmluZSBfX1VOSUNPUkVfRE1BX01BUFBJTkdfSF9fCj4gLQo+IC0jaW5jbHVkZSA8bGlu
-dXgvc3dpb3RsYi5oPgo+IC0KPiAtc3RhdGljIGlubGluZSBjb25zdCBzdHJ1Y3QgZG1hX21hcF9v
-cHMgKmdldF9hcmNoX2RtYV9vcHMoc3RydWN0IGJ1c190eXBlICpidXMpCj4gLXsKPiAtCXJldHVy
-biAmc3dpb3RsYl9kbWFfb3BzOwo+IC19Cj4gLQo+IC0jZW5kaWYKPiBkaWZmIC0tZ2l0IGEvYXJj
-aC91bmljb3JlMzIvbW0vaW5pdC5jIGIvYXJjaC91bmljb3JlMzIvbW0vaW5pdC5jCj4gaW5kZXgg
-ZjQ5NTBmYmZlNTc0Li41ZjcyYThkMWQ5NTMgMTAwNjQ0Cj4gLS0tIGEvYXJjaC91bmljb3JlMzIv
-bW0vaW5pdC5jCj4gKysrIGIvYXJjaC91bmljb3JlMzIvbW0vaW5pdC5jCj4gQEAgLTIzNCw5ICsy
-MzQsNiBAQCB2b2lkIF9faW5pdCBib290bWVtX2luaXQodm9pZCkKPiAgCj4gIAl1YzMyX2Jvb3Rt
-ZW1faW5pdChtaW4sIG1heF9sb3cpOwo+ICAKPiAtI2lmZGVmIENPTkZJR19TV0lPVExCCj4gLQlz
-d2lvdGxiX2luaXQoMSk7Cj4gLSNlbmRpZgo+ICAJLyoKPiAgCSAqIFNwYXJzZW1lbSB0cmllcyB0
-byBhbGxvY2F0ZSBib290bWVtIGluIG1lbW9yeV9wcmVzZW50KCksCj4gIAkgKiBzbyBtdXN0IGJl
-IGRvbmUgYWZ0ZXIgdGhlIGZpeGVkIHJlc2VydmF0aW9ucwo+IC0tIAo+IDIuMTkuMAo=
+Hello,
+
+This patch-series integrates the GART (IOMMU) driver with the Memory
+Controller driver, that allows to report the name of a faulty memory
+client on GART page fault. A major code clean up and performance
+optimization is performed in this series as well.
+
+Changelog:
+
+v5: Addressed review comments from Thierry Reding to v4. Added WARN_ON() to
+    make sure that active domain isn't getting released, kept include headers
+    where necessary, etc.. All changes are quite minor.
+
+    Added new patch "memory: tegra: Use relaxed versions of readl/writel".
+
+v4: In the v3 Rob Herring requested to make device-tree binding changes
+    backwards-compatible with the older kernels, that is achieved by
+    changing the 'compatible' value of the DT node.
+
+    The code-refactoring patches got some more (minor) polish.
+
+    Added new patch "memory: tegra: Use of_device_get_match_data()".
+
+v3: Memory Controller integration part has been reworked and now GART's
+    device-tree binding is changed. Adding Rob Herring for the device-tree
+    changes reviewing.
+
+    GART now disallows more than one active domain at a time.
+
+    Fixed "spinlock recursion", "NULL pointer dereference" and "detaching
+    of all devices from inactive domains".
+
+    New code-refactoring patches.
+
+    The previously standalone patch "memory: tegra: Don't invoke Tegra30+
+    specific memory timing setup on Tegra20" is now included into this
+    series because there is a dependency on that patch and it wasn't applied
+    yet.
+
+v2: Addressed review comments from Robin Murphy to v1 by moving devices
+    iommu_fwspec check to gart_iommu_add_device().
+
+    Dropped the "Provide single domain and group for all devices" patch from
+    the series for now because after some more considering it became not
+    exactly apparent whether that is what we need, that was also suggested
+    by Robin Murphy in the review comment. Maybe something like a runtime
+    IOMMU usage for devices would be a better solution, allowing to implement
+    transparent context switching of virtual IOMMU domains.
+
+    Some very minor code cleanups, reworded commit messages.
+
+Dmitry Osipenko (21):
+  iommu/tegra: gart: Remove pr_fmt and clean up includes
+  iommu/tegra: gart: Clean up driver probe errors handling
+  iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+  iommu: Introduce iotlb_sync_map callback
+  iommu/tegra: gart: Optimize mapping / unmapping performance
+  dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+  ARM: dts: tegra20: Update Memory Controller node to the new binding
+  memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+    Tegra20
+  memory: tegra: Adapt to Tegra20 device-tree binding changes
+  memory: tegra: Read client ID on GART page fault
+  memory: tegra: Use of_device_get_match_data()
+  memory: tegra: Use relaxed versions of readl/writel
+  iommu/tegra: gart: Integrate with Memory Controller driver
+  iommu/tegra: gart: Fix spinlock recursion
+  iommu/tegra: gart: Fix NULL pointer dereference
+  iommu/tegra: gart: Allow only one active domain at a time
+  iommu/tegra: gart: Don't use managed resources
+  iommu/tegra: gart: Prepend error/debug messages with "gart:"
+  iommu/tegra: gart: Don't detach devices from inactive domains
+  iommu/tegra: gart: Simplify clients-tracking code
+  iommu/tegra: gart: Perform code refactoring
+
+ .../bindings/iommu/nvidia,tegra20-gart.txt    |  14 -
+ .../memory-controllers/nvidia,tegra20-mc.txt  |  27 +-
+ arch/arm/boot/dts/tegra20.dtsi                |  15 +-
+ drivers/iommu/Kconfig                         |   1 +
+ drivers/iommu/iommu.c                         |   8 +-
+ drivers/iommu/tegra-gart.c                    | 489 +++++++-----------
+ drivers/memory/tegra/mc.c                     |  93 +++-
+ drivers/memory/tegra/mc.h                     |  10 +-
+ include/linux/iommu.h                         |   1 +
+ include/soc/tegra/mc.h                        |  29 +-
+ 10 files changed, 306 insertions(+), 381 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+
+-- 
+2.19.0
