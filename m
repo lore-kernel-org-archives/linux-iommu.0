@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v5 07/21] ARM: dts: tegra20: Update Memory Controller node to the new binding
-Date: Mon,  1 Oct 2018 01:48:19 +0300
-Message-ID: <20180930224833.28809-8-digetx@gmail.com>
+Subject: [PATCH v5 03/21] iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+Date: Mon,  1 Oct 2018 01:48:15 +0300
+Message-ID: <20180930224833.28809-4-digetx@gmail.com>
 References: <20180930224833.28809-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,42 +12,62 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Device tree binding of Memory Controller has been changed: GART has been
-squashed into the MC, there are a new mandatory clock and #iommu-cells
-properties, the compatible has been changed to 'tegra20-mc-gart'.
+GART can't handle all devices, hence ignore devices that aren't related
+to GART. IOMMU phandle must be explicitly assign to devices in the device
+tree.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- arch/arm/boot/dts/tegra20.dtsi | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/iommu/tegra-gart.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
-index dcad6d6128cf..8c942e60703e 100644
---- a/arch/arm/boot/dts/tegra20.dtsi
-+++ b/arch/arm/boot/dts/tegra20.dtsi
-@@ -616,17 +616,14 @@
- 	};
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index e9524ed264cf..f6cf5cd5aaca 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -342,8 +342,12 @@ static bool gart_iommu_capable(enum iommu_cap cap)
  
- 	mc: memory-controller@7000f000 {
--		compatible = "nvidia,tegra20-mc";
--		reg = <0x7000f000 0x024
--		       0x7000f03c 0x3c4>;
-+		compatible = "nvidia,tegra20-mc-gart";
-+		reg = <0x7000f000 0x400		/* controller registers */
-+		       0x58000000 0x02000000>;	/* GART aperture */
-+		clocks = <&tegra_car TEGRA20_CLK_MC>;
-+		clock-names = "mc";
- 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
- 		#reset-cells = <1>;
--	};
--
--	iommu@7000f024 {
--		compatible = "nvidia,tegra20-gart";
--		reg = <0x7000f024 0x00000018	/* controller registers */
--		       0x58000000 0x02000000>;	/* GART aperture */
-+		#iommu-cells = <0>;
- 	};
+ static int gart_iommu_add_device(struct device *dev)
+ {
+-	struct iommu_group *group = iommu_group_get_for_dev(dev);
++	struct iommu_group *group;
  
- 	memory-controller@7000f400 {
++	if (!dev->iommu_fwspec)
++		return -ENODEV;
++
++	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+ 
+@@ -360,6 +364,12 @@ static void gart_iommu_remove_device(struct device *dev)
+ 	iommu_device_unlink(&gart_handle->iommu, dev);
+ }
+ 
++static int gart_iommu_of_xlate(struct device *dev,
++			       struct of_phandle_args *args)
++{
++	return 0;
++}
++
+ static const struct iommu_ops gart_iommu_ops = {
+ 	.capable	= gart_iommu_capable,
+ 	.domain_alloc	= gart_iommu_domain_alloc,
+@@ -373,6 +383,7 @@ static const struct iommu_ops gart_iommu_ops = {
+ 	.unmap		= gart_iommu_unmap,
+ 	.iova_to_phys	= gart_iommu_iova_to_phys,
+ 	.pgsize_bitmap	= GART_IOMMU_PGSIZES,
++	.of_xlate	= gart_iommu_of_xlate,
+ };
+ 
+ static int tegra_gart_suspend(struct device *dev)
+@@ -438,6 +449,7 @@ static int tegra_gart_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
++	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
+ 
+ 	ret = iommu_device_register(&gart->iommu);
+ 	if (ret) {
 -- 
 2.19.0
