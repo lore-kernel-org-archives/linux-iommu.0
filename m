@@ -1,54 +1,88 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v16 2/5] iommu/arm-smmu: Invoke pm_runtime
- during probe, add/remove device
-Date: Mon, 1 Oct 2018 13:58:55 +0100
-Message-ID: <20181001125854.GB31488@arm.com>
-References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
- <20180830144541.17740-3-vivek.gautam@codeaurora.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.20
+Date: Mon, 1 Oct 2018 15:27:06 +0100
+Message-ID: <20181001142706.GB9716@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <20180830144541.17740-3-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVml2ZWssCgpPbiBUaHUsIEF1ZyAzMCwgMjAxOCBhdCAwODoxNTozOFBNICswNTMwLCBWaXZl
-ayBHYXV0YW0gd3JvdGU6Cj4gRnJvbTogU3JpY2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3Jh
-Lm9yZz4KPiAKPiBUaGUgc21tdSBkZXZpY2UgcHJvYmUvcmVtb3ZlIGFuZCBhZGQvcmVtb3ZlIG1h
-c3RlciBkZXZpY2UgY2FsbGJhY2tzCj4gZ2V0cyBjYWxsZWQgd2hlbiB0aGUgc21tdSBpcyBub3Qg
-bGlua2VkIHRvIGl0cyBtYXN0ZXIsIHRoYXQgaXMgd2l0aG91dAo+IHRoZSBjb250ZXh0IG9mIHRo
-ZSBtYXN0ZXIgZGV2aWNlLiBTbyBjYWxsaW5nIHJ1bnRpbWUgYXBpcyBpbiB0aG9zZSBwbGFjZXMK
-PiBzZXBhcmF0ZWx5Lgo+IEdsb2JhbCBsb2NrcyBhcmUgYWxzbyBpbml0aWFsaXplZCBiZWZvcmUg
-ZW5hYmxpbmcgcnVudGltZSBwbSBhcyB0aGUKPiBydW50aW1lX3Jlc3VtZSgpIGNhbGxzIGRldmlj
-ZV9yZXNldCgpIHdoaWNoIGRvZXMgdGxiX3N5bmNfZ2xvYmFsKCkKPiB0aGF0IHVsdGltYXRlbHkg
-cmVxdWlyZXMgbG9ja3MgdG8gYmUgaW5pdGlhbGl6ZWQuCj4gCj4gU2lnbmVkLW9mZi1ieTogU3Jp
-Y2hhcmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPiBbdml2ZWs6IENsZWFudXAgcG0g
-cnVudGltZSBjYWxsc10KPiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdhdXRh
-bUBjb2RlYXVyb3JhLm9yZz4KPiBSZXZpZXdlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9t
-aXVtLm9yZz4KPiBUZXN0ZWQtYnk6IFNyaW5pdmFzIEthbmRhZ2F0bGEgPHNyaW5pdmFzLmthbmRh
-Z2F0bGFAbGluYXJvLm9yZz4KPiAtLS0KPiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgODkg
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tCj4gIDEgZmls
-ZSBjaGFuZ2VkLCA4MSBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygtKQoKVGhpcyBkb2Vzbid0
-IGFwcGx5IG9uIG15IHRyZWVbMV0sIHBvc3NpYmx5IGJlY2F1c2UgSSd2ZSBnb3QgUm9iaW4ncyBu
-b24tc3RyaWN0CmludmFsaWRhdGlvbiBxdWV1ZWQgdGhlcmUuIEhvd2V2ZXIsIHRoYXQgZ290IG1l
-IHRoaW5raW5nIC0tIGhvdyBkb2VzIHRoaXMKd29yayBpbiBjb25qdW5jdGlvbiB3aXRoIHRoZSB0
-aW1lci1iYXNlZCBUTEIgaW52YWxpZGF0aW9uPyBEbyB3ZSBuZWVkIHRvCnJwbV97Z2V0LHB1dH0g
-YXJvdW5kIGZsdXNoX2lvdGxiX2FsbCgpPyBJZiBzbywgZG8gd2Ugc3RpbGwgbmVlZCB0aGUgY2Fs
-bHMKaW4gbWFwL3VubWFwIHdoZW4gbm9uLXN0cmljdCBtb2RlIGlzIGluIHVzZT8KCldpbGwKClsx
-XSBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC93aWxsL2xp
-bnV4LmdpdC9sb2cvP2g9Zm9yLWpvZXJnL2FybS1zbW11L3VwZGF0ZXMKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApG
-cmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+Hi Joerg
+
+Please pull these Arm SMMU updates for 4.20. The big thing here is the
+long-awaited "lazy" invalidation mode, using the generic timer-based
+infrastructure for moving TLB invalidation out of the fast-path. Thanks
+to Zhen Lei for the initial work here, and to Robin for getting it into
+shape for upstream.
+
+We've also got some minor fixes dotted around, some of which address
+issues that were found by code inspection during the lazy invalidation
+code review.
+
+I didn't manage to queue Vivek's runtime PM patches this time around.
+This was partly because we ran out of review bandwidth earlier in the
+cycle but also because the interaction with the lazy invalidation is
+unclear at the moment.
+
+Cheers,
+
+Will
+
+--->8
+
+The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
+
+  Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 44f6876a00e83df5fd28681502b19b0f51e4a3c6:
+
+  iommu/arm-smmu: Support non-strict mode (2018-10-01 13:01:34 +0100)
+
+----------------------------------------------------------------
+John Garry (1):
+      iommu/arm-smmu-v3: Fix a couple of minor comment typos
+
+Robin Murphy (3):
+      iommu/io-pgtable-arm: Fix race handling in split_blk_unmap()
+      iommu/io-pgtable-arm-v7s: Add support for non-strict mode
+      iommu/arm-smmu: Support non-strict mode
+
+Will Deacon (1):
+      iommu/arm-smmu: Ensure that page-table updates are visible before TLBI
+
+Zhen Lei (7):
+      iommu/arm-smmu-v3: Fix unexpected CMD_SYNC timeout
+      iommu/arm-smmu-v3: Avoid back-to-back CMD_SYNC operations
+      iommu/arm-smmu-v3: Implement flush_iotlb_all hook
+      iommu/dma: Add support for non-strict mode
+      iommu: Add "iommu.strict" command line option
+      iommu/io-pgtable-arm: Add support for non-strict mode
+      iommu/arm-smmu-v3: Add support for non-strict mode
+
+ Documentation/admin-guide/kernel-parameters.txt |  12 +++
+ drivers/iommu/arm-smmu-v3.c                     | 115 +++++++++++++++++-------
+ drivers/iommu/arm-smmu.c                        |  99 ++++++++++++++------
+ drivers/iommu/dma-iommu.c                       |  32 ++++++-
+ drivers/iommu/io-pgtable-arm-v7s.c              |  11 ++-
+ drivers/iommu/io-pgtable-arm.c                  |  23 +++--
+ drivers/iommu/io-pgtable.h                      |   5 ++
+ drivers/iommu/iommu.c                           |  14 +++
+ include/linux/iommu.h                           |   1 +
+ 9 files changed, 243 insertions(+), 69 deletions(-)
