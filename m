@@ -1,49 +1,33 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 4.20
-Date: Mon, 1 Oct 2018 17:32:07 +0200
-Message-ID: <20181001153207.GA27372@8bytes.org>
-References: <20181001142706.GB9716@arm.com>
+From: Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v16 4/5] dt-bindings: arm-smmu: Add bindings for qcom,smmu-v2
+Date: Mon, 1 Oct 2018 12:36:09 -0500
+Message-ID: <CAL_Jsq+dSGXCiWsjLt00wu=s-ZW8M1pkQqKFWboc54M8gHFTYg@mail.gmail.com>
+References: <20180830144541.17740-1-vivek.gautam@codeaurora.org>
+ <20180830144541.17740-5-vivek.gautam@codeaurora.org> <20181001121857.GA31488@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <20181001142706.GB9716@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181001121857.GA31488@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Will Deacon <will.deacon@arm.com>
-Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
+Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, devicetree@vger.kernel.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, alex.williamson@redhat.com, Mark Rutland <mark.rutland@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Rob Clark <robdclark@gmail.com>, "open list:THERMAL" <linux-pm@vger.kernel.org>, freedreno <freedreno@lists.freedesktop.org>, Stephen Boyd <sboyd@kernel.org>, Tomasz Figa <tfiga@chromium.org>, Jordan Crouse <jcrouse@codeaurora.org>, Sricharan <sricharan@codeaurora.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Archit Taneja <architt@codeaurora.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Mon, Oct 1, 2018 at 7:18 AM Will Deacon <will.deacon@arm.com> wrote:
+>
+> On Thu, Aug 30, 2018 at 08:15:40PM +0530, Vivek Gautam wrote:
+> > Add bindings doc for Qcom's smmu-v2 implementation.
+> >
+> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> > Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> > Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> > ---
+> >  .../devicetree/bindings/iommu/arm,smmu.txt         | 39 ++++++++++++++++++++++
+> >  1 file changed, 39 insertions(+)
+>
+> It would be nice to have an Ack from a DT maintainer on this, since it's
+> adding new compatible strings...
 
-On Mon, Oct 01, 2018 at 03:27:06PM +0100, Will Deacon wrote:
-> Please pull these Arm SMMU updates for 4.20. The big thing here is the
-> long-awaited "lazy" invalidation mode, using the generic timer-based
-> infrastructure for moving TLB invalidation out of the fast-path. Thanks
-> to Zhen Lei for the initial work here, and to Robin for getting it into
-> shape for upstream.
+I did...
 
-I am glad to see this used on ARM now too :)
-
-> The following changes since commit 5b394b2ddf0347bef56e50c69a58773c94343ff3:
-> 
->   Linux 4.19-rc1 (2018-08-26 14:11:59 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
-
-Pulled, thanks.
-
-
-Regards,
-
-	Joerg
+Rob
