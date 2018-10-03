@@ -1,98 +1,74 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 03/10] iommu/sva: Manage process address spaces
-Date: Wed, 3 Oct 2018 18:52:16 +0100
-Message-ID: <8ebfd3b5-9e16-85f6-a9f9-2627fb4b5b03@arm.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
-	<20180926153544.54884f88@jacob-builder>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] dma-direct: always allow dma mask <= physiscal memory
+ size
+Date: Wed, 3 Oct 2018 11:46:45 -0700
+Message-ID: <20181003184645.GA25639@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180926153544.54884f88@jacob-builder>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 26/09/2018 23:35, Jacob Pan wrote:
-> On Thu, 20 Sep 2018 18:00:39 +0100
-> Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
+On Fri, Sep 07, 2018 at 09:31:58AM +0200, Christoph Hellwig wrote:
+> This way an architecture with less than 4G of RAM can support dma_mask
+> smaller than 32-bit without a ZONE_DMA.  Apparently that is a common
+> case on powerpc.
 > 
->> +
->> +static int io_mm_attach(struct iommu_domain *domain, struct device
->> *dev,
->> +			struct io_mm *io_mm, void *drvdata)
->> +{
->> +	int ret;
->> +	bool attach_domain = true;
->> +	int pasid = io_mm->pasid;
->> +	struct iommu_bond *bond, *tmp;
->> +	struct iommu_sva_param *param = dev->iommu_param->sva_param;
->> +
->> +	if (!domain->ops->mm_attach || !domain->ops->mm_detach)
->> +		return -ENODEV;
->> +
->> +	if (pasid > param->max_pasid || pasid < param->min_pasid)
->> +		return -ERANGE;
->> +
->> +	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
->> +	if (!bond)
->> +		return -ENOMEM;
->> +
->> +	bond->domain		= domain;
->> +	bond->io_mm		= io_mm;
->> +	bond->dev		= dev;
->> +	bond->drvdata		= drvdata;
->> +
->> +	spin_lock(&iommu_sva_lock);
->> +	/*
->> +	 * Check if this io_mm is already bound to the domain. In
->> which case the
->> +	 * IOMMU driver doesn't have to install the PASID table
->> entry.
->> +	 */
->> +	list_for_each_entry(tmp, &domain->mm_list, domain_head) {
->> +		if (tmp->io_mm == io_mm) {
->> +			attach_domain = false;
->> +			break;
->> +		}
->> +	}
->> +
->> +	ret = domain->ops->mm_attach(domain, dev, io_mm,
->> attach_domain);
->> +	if (ret) {
->> +		kfree(bond);
->> +		goto out_unlock;
->> +	}
->> +
->> +	list_add(&bond->mm_head, &io_mm->devices);
->> +	list_add(&bond->domain_head, &domain->mm_list);
->> +	list_add(&bond->dev_head, &param->mm_list);
->> +
-> 
-> I am trying to understand if mm_list is needed for both per device and
-> per domain. Do you always unbind and detach domain? Seems device could
-> use the domain->mm_list to track all mm's, true?
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-We need to track bonds per devices, since the bind/unbind() user interface
-in on devices. Tracking per domain is just a helper, so IOMMU drivers that
-have a single PASID table per domain know when they need to install a new
-entry (the attach_domain parameter above) and remove it. I think my code
-is wrong here: if binding two devices that are in the same domain to the
-same process we shouldn't add the io_mm to domain->mm_list twice.
+This patch causes widespread boot failures on mips and x86_64.
 
-I'm still not sure if I should remove domains handling here though, could
-you confirm if you're planning to support iommu_get_domain_for_dev for vt-d?
+Common denominators:
 
-Thanks,
-Jean
+ahci 0002:01:00.0: 32-bit DMA enable failed
+ahci: probe of 0002:01:00.0 failed with error -5
+
+sym0: No suitable DMA available
+sym0: giving up ...
+
+pcnet32 0000:00:0b.0: enabling device (0000 -> 0003)
+pcnet32: architecture does not support 32bit PCI busmaster DMA
+pcnet32: probe of 0000:00:0b.0 failed with error -5
+
+There may be others; I didn't check all the logs.
+
+Sample bisect log is attached (from mips64). Bisect on x86_64 points to
+the same patch as culprit.
+
+Guenter
+
+---
+# bad: [8f84a21675f06c8aea55148ce37a618c6fe52a0b] Add linux-next specific files for 20181003
+# good: [17b57b1883c1285f3d0dc2266e8f79286a7bef38] Linux 4.19-rc6
+git bisect start 'HEAD' 'v4.19-rc6'
+# bad: [ab92e1776a64d9894166e771faaaeecff890ec6e] Merge remote-tracking branch 'crypto/master'
+git bisect bad ab92e1776a64d9894166e771faaaeecff890ec6e
+# bad: [c850e425cfa466e5ce1d59dd3aad73ae4fd52ba9] Merge remote-tracking branch 'xfs/for-next'
+git bisect bad c850e425cfa466e5ce1d59dd3aad73ae4fd52ba9
+# good: [56fc7d0094442afc18b5106b8df7c59a3c36869d] arm-soc: document merges
+git bisect good 56fc7d0094442afc18b5106b8df7c59a3c36869d
+# bad: [4a83c1f489745f8e520a0686235f3a95b9374aab] Merge remote-tracking branch 'arm64/for-next/core'
+git bisect bad 4a83c1f489745f8e520a0686235f3a95b9374aab
+# bad: [6de4dcae0d1577efb3a551c7933945da033e9717] Merge remote-tracking branch 'dma-mapping/for-next'
+git bisect bad 6de4dcae0d1577efb3a551c7933945da033e9717
+# good: [ce41c6b97f00e24bb23412e17eb0d992a97ffb48] Merge remote-tracking branch 'net/master'
+git bisect good ce41c6b97f00e24bb23412e17eb0d992a97ffb48
+# good: [06f60b8cb4f884ae0c37b8f7095e021a7531cb87] Merge remote-tracking branch 'scsi-fixes/fixes'
+git bisect good 06f60b8cb4f884ae0c37b8f7095e021a7531cb87
+# good: [f9d39ce558b1455f8f91387d7238eb837735e325] Merge remote-tracking branch 'leaks/leaks-next'
+git bisect good f9d39ce558b1455f8f91387d7238eb837735e325
+# good: [f3ecc0ff0457eae93503792c6fc35921fa8a6204] dma-mapping: move the dma_coherent flag to struct device
+git bisect good f3ecc0ff0457eae93503792c6fc35921fa8a6204
+# good: [c6d4381220a0087ce19dbf6984d92c451bd6b364] dma-mapping: make the get_required_mask method available unconditionally
+git bisect good c6d4381220a0087ce19dbf6984d92c451bd6b364
+# good: [b4ebe6063204da58e48600b810a97c29ae9e5d12] dma-direct: implement complete bus_dma_mask handling
+git bisect good b4ebe6063204da58e48600b810a97c29ae9e5d12
+# bad: [6db37ad7c27bda2f62d1ef6ad0496e359c562c1a] dma-mapping: move dma_default_get_required_mask under ifdef
+git bisect bad 6db37ad7c27bda2f62d1ef6ad0496e359c562c1a
+# bad: [9d7a224b463e1cf1178570b57b6497240fd79bc3] dma-direct: always allow dma mask <= physiscal memory size
+git bisect bad 9d7a224b463e1cf1178570b57b6497240fd79bc3
+# first bad commit: [9d7a224b463e1cf1178570b57b6497240fd79bc3] dma-direct: always allow dma mask <= physiscal memory size
