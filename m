@@ -1,106 +1,76 @@
-From: thor.thayer@linux.intel.com
-Subject: [PATCHv3 1/2] arm64: dts: stratix10: Add Stratix10 SMMU support
-Date: Wed,  3 Oct 2018 17:28:12 -0500
-Message-ID: <1538605693-22073-2-git-send-email-thor.thayer@linux.intel.com>
-References: <1538605693-22073-1-git-send-email-thor.thayer@linux.intel.com>
+From: Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH 5/5] dma-direct: always allow dma mask <= physiscal memory size
+Date: Wed, 3 Oct 2018 16:10:42 -0700
+Message-ID: <CAKgT0Ucii29i7S8eCj20D=a+=DeyKxREG0U2DBNRp3jFpgLu_A@mail.gmail.com>
+References: <20180927223539.28449-1-hch@lst.de> <20180927223539.28449-6-hch@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1538605693-22073-1-git-send-email-thor.thayer@linux.intel.com>
+In-Reply-To: <20180927223539.28449-6-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: dinguyen@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, aisheng.dong@nxp.com, sboyd@kernel.org
-Cc: vivek.gautam@codeaurora.org, linux-clk@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Thor Thayer <thor.thayer@linux.intel.com>
+To: Christoph Hellwig <hch@lst.de>, Guenter Roeck <linux@roeck-us.net>
+Cc: "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev@lists.ozlabs.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Thor Thayer <thor.thayer@linux.intel.com>
+On Thu, Sep 27, 2018 at 3:38 PM Christoph Hellwig <hch@lst.de> wrote:
+>
+> This way an architecture with less than 4G of RAM can support dma_mask
+> smaller than 32-bit without a ZONE_DMA.  Apparently that is a common
+> case on powerpc.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  kernel/dma/direct.c | 28 ++++++++++++++++------------
+>  1 file changed, 16 insertions(+), 12 deletions(-)
+>
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 60c433b880e0..170bd322a94a 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -284,21 +284,25 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+>         return nents;
+>  }
+>
+> +/*
+> + * Because 32-bit DMA masks are so common we expect every architecture to be
+> + * able to satisfy them - either by not supporting more physical memory, or by
+> + * providing a ZONE_DMA32.  If neither is the case, the architecture needs to
+> + * use an IOMMU instead of the direct mapping.
+> + */
+>  int dma_direct_supported(struct device *dev, u64 mask)
+>  {
+> -#ifdef CONFIG_ZONE_DMA
+> -       if (mask < phys_to_dma(dev, DMA_BIT_MASK(ARCH_ZONE_DMA_BITS)))
+> -               return 0;
+> -#else
+> -       /*
+> -        * Because 32-bit DMA masks are so common we expect every architecture
+> -        * to be able to satisfy them - either by not supporting more physical
+> -        * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+> -        * architecture needs to use an IOMMU instead of the direct mapping.
+> -        */
+> -       if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
+> +       u64 min_mask;
+> +
+> +       if (IS_ENABLED(CONFIG_ZONE_DMA))
+> +               min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
+> +       else
+> +               min_mask = DMA_BIT_MASK(32);
+> +
+> +       min_mask = min_t(u64, min_mask, (max_pfn - 1) << PAGE_SHIFT);
+> +
+> +       if (mask >= phys_to_dma(dev, min_mask))
+>                 return 0;
+> -#endif
+>         return 1;
+>  }
 
-Add SMMU support to the Stratix10 Device Tree which
-includes adding the SMMU node and adding IOMMU stream
-ids to the SMMU peripherals.
+So I believe I have run into the same issue that Guenter reported. On
+an x86_64 system w/ Intel IOMMU. I wasn't able to complete boot and
+all probe attempts for various devices were failing with -EIO errors.
 
-Signed-off-by: Thor Thayer <thor.thayer@linux.intel.com>
----
- arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 28 +++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+I believe the last mask check should be "if (mask < phys_to_dma(dev,
+min_mask))" not a ">=" check.
 
-diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-index 42c411dd35b9..aa870a768996 100644
---- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-@@ -137,6 +137,7 @@
- 			reset-names = "stmmaceth", "stmmaceth-ocp";
- 			clocks = <&clkmgr STRATIX10_EMAC0_CLK>;
- 			clock-names = "stmmaceth";
-+			iommus = <&smmu 1>;
- 			status = "disabled";
- 		};
- 
-@@ -150,6 +151,7 @@
- 			reset-names = "stmmaceth", "stmmaceth-ocp";
- 			clocks = <&clkmgr STRATIX10_EMAC1_CLK>;
- 			clock-names = "stmmaceth";
-+			iommus = <&smmu 2>;
- 			status = "disabled";
- 		};
- 
-@@ -163,6 +165,7 @@
- 			reset-names = "stmmaceth", "stmmaceth-ocp";
- 			clocks = <&clkmgr STRATIX10_EMAC2_CLK>;
- 			clock-names = "stmmaceth";
-+			iommus = <&smmu 3>;
- 			status = "disabled";
- 		};
- 
-@@ -273,6 +276,7 @@
- 			clocks = <&clkmgr STRATIX10_L4_MP_CLK>,
- 				 <&clkmgr STRATIX10_SDMMC_CLK>;
- 			clock-names = "biu", "ciu";
-+			iommus = <&smmu 5>;
- 			status = "disabled";
- 		};
- 
-@@ -307,6 +311,28 @@
- 			altr,modrst-offset = <0x20>;
- 		};
- 
-+		smmu: iommu@fa000000 {
-+			compatible = "arm,mmu-500", "arm,smmu-v2";
-+			reg = <0xfa000000 0x40000>;
-+			#global-interrupts = <2>;
-+			#iommu-cells = <1>;
-+			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
-+			interrupt-parent = <&intc>;
-+			interrupts = <0 128 4>,	/* Global Secure Fault */
-+				<0 129 4>, /* Global Non-secure Fault */
-+				/* Non-secure Context Interrupts (32) */
-+				<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
-+				<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
-+				<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
-+				<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
-+				<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
-+				<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
-+				<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
-+				<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
-+			stream-match-mask = <0x7ff0>;
-+			status = "disabled";
-+		};
-+
- 		spi0: spi@ffda4000 {
- 			compatible = "snps,dw-apb-ssi";
- 			#address-cells = <1>;
-@@ -416,6 +442,7 @@
- 			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
- 			reset-names = "dwc2", "dwc2-ecc";
- 			clocks = <&clkmgr STRATIX10_USB_CLK>;
-+			iommus = <&smmu 6>;
- 			status = "disabled";
- 		};
- 
-@@ -428,6 +455,7 @@
- 			resets = <&rst USB1_RESET>, <&rst USB1_OCP_RESET>;
- 			reset-names = "dwc2", "dwc2-ecc";
- 			clocks = <&clkmgr STRATIX10_USB_CLK>;
-+			iommus = <&smmu 7>;
- 			status = "disabled";
- 		};
- 
--- 
-2.7.4
+- Alex
