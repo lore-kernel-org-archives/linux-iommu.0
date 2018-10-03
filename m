@@ -1,46 +1,58 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 3/4] [media] dt-bindings: mediatek: Add JPEG Decoder binding
-	for MT7623
-Date: Wed,  3 Oct 2018 11:09:11 +0200
-Message-ID: <20181003090912.30501-4-matthias.bgg@gmail.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH 4/4] dt-bindings: mediatek: Add bindig for MT7623 IOMMU and SMI
+Date: Wed,  3 Oct 2018 11:09:12 +0200
+Message-ID: <20181003090912.30501-5-matthias.bgg@gmail.com>
 References: <20181003090912.30501-1-matthias.bgg@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181003090912.30501-1-matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: bin.liu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ryder.lee-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, weiyi.lu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, rick.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sean.wang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, chen.zhong-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181003090912.30501-1-matthias.bgg@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: robh+dt@kernel.org, mark.rutland@arm.com, joro@8bytes.org, arnd@arndb.de
+Cc: rick.chang@mediatek.com, bin.liu@mediatek.com, mchehab@kernel.org, matthias.bgg@gmail.com, sboyd@codeaurora.org, sean.wang@mediatek.com, chen.zhong@mediatek.com, weiyi.lu@mediatek.com, ryder.lee@mediatek.com, yong.wu@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds a binding documentation for the JPEG Decoder of the
-MT7623 SoC.
+This patch add the binding documentation for the iommu and smi
+devices on the MT7623 SoC.
 
-Signed-off-by: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Matthias Brugger <matthias.bgg@gmail.com>
 ---
- .../devicetree/bindings/media/mediatek-jpeg-decoder.txt          | 1 +
- 1 file changed, 1 insertion(+)
+ .../bindings/memory-controllers/mediatek,smi-common.txt        | 1 +
+ .../bindings/memory-controllers/mediatek,smi-larb.txt          | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.txt b/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.txt
-index 3813947b4d4f..044b11913c49 100644
---- a/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.txt
-+++ b/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.txt
-@@ -5,6 +5,7 @@ Mediatek JPEG Decoder is the JPEG decode hardware present in Mediatek SoCs
- Required properties:
- - compatible : must be one of the following string:
- 	"mediatek,mt8173-jpgdec"
-+	"mediatek,mt7623-jpgdec", "mediatek,mt2701-jpgdec"
- 	"mediatek,mt2701-jpgdec"
- - reg : physical base address of the jpeg decoder registers and length of
-   memory mapped region.
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+index 615abdd0eb0d..e937ddd871a6 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+@@ -17,6 +17,7 @@ Required properties:
+ - compatible : must be one of :
+ 	"mediatek,mt2701-smi-common"
+ 	"mediatek,mt2712-smi-common"
++	"mediatek,mt7623-smi-common", "mediatek,mt2701-smi-common"
+ 	"mediatek,mt8173-smi-common"
+ - reg : the register and size of the SMI block.
+ - power-domains : a phandle to the power domain of this local arbiter.
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+index 083155cdc2a0..94eddcae77ab 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+@@ -6,6 +6,7 @@ Required properties:
+ - compatible : must be one of :
+ 		"mediatek,mt2701-smi-larb"
+ 		"mediatek,mt2712-smi-larb"
++		"mediatek,mt7623-smi-larb", "mediatek,mt2701-smi-larb"
+ 		"mediatek,mt8173-smi-larb"
+ - reg : the register and size of this local arbiter.
+ - mediatek,smi : a phandle to the smi_common node.
+@@ -16,7 +17,7 @@ Required properties:
+ 	    the register.
+   - "smi" : It's the clock for transfer data and command.
+ 
+-Required property for mt2701 and mt2712:
++Required property for mt2701, mt2712 and mt7623:
+ - mediatek,larb-id :the hardware id of this larb.
+ 
+ Example:
 -- 
 2.19.0
