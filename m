@@ -1,7 +1,7 @@
 From: thor.thayer@linux.intel.com
-Subject: [PATCHv3 2/2] iommu/arm-smmu: Add SMMU clock
-Date: Wed,  3 Oct 2018 17:28:13 -0500
-Message-ID: <1538605693-22073-3-git-send-email-thor.thayer@linux.intel.com>
+Subject: [PATCHv3 1/2] arm64: dts: stratix10: Add Stratix10 SMMU support
+Date: Wed,  3 Oct 2018 17:28:12 -0500
+Message-ID: <1538605693-22073-2-git-send-email-thor.thayer@linux.intel.com>
 References: <1538605693-22073-1-git-send-email-thor.thayer@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1538605693-22073-1-git-send-email-thor.thayer@linux.intel.com>
@@ -12,75 +12,95 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thor Thayer <thor.thayer@linux.intel.com>
 
-Add a clock to the SMMU structure. In the device tree case,
-check for a clock node and enable the clock if found.
-
-This patch is dependent upon the following patches that add
-a device tree bulk clock function.
-"[V6, 1/4] clk: bulk: add of_clk_bulk_get()"
-https://patchwork.kernel.org/patch/10583133/
-"[V6, 2/4] clk: add new APIs to operation on all available
-clocks"
-https://patchwork.kernel.org/patch/10583131/
-"[V6, 3/4] clk: add managerged version of clk_bulk_get_all"
-https://patchwork.kernel.org/patch/10583139/
+Add SMMU support to the Stratix10 Device Tree which
+includes adding the SMMU node and adding IOMMU stream
+ids to the SMMU peripherals.
 
 Signed-off-by: Thor Thayer <thor.thayer@linux.intel.com>
 ---
- drivers/iommu/arm-smmu.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 28 +++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5a28ae892504..0f4596b42ca7 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -213,6 +213,8 @@ struct arm_smmu_device {
+diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+index 42c411dd35b9..aa870a768996 100644
+--- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
++++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+@@ -137,6 +137,7 @@
+ 			reset-names = "stmmaceth", "stmmaceth-ocp";
+ 			clocks = <&clkmgr STRATIX10_EMAC0_CLK>;
+ 			clock-names = "stmmaceth";
++			iommus = <&smmu 1>;
+ 			status = "disabled";
+ 		};
  
- 	/* IOMMU core code handle */
- 	struct iommu_device		iommu;
-+	int				num_clks;
-+	struct clk_bulk_data		*clks;
- };
+@@ -150,6 +151,7 @@
+ 			reset-names = "stmmaceth", "stmmaceth-ocp";
+ 			clocks = <&clkmgr STRATIX10_EMAC1_CLK>;
+ 			clock-names = "stmmaceth";
++			iommus = <&smmu 2>;
+ 			status = "disabled";
+ 		};
  
- enum arm_smmu_context_fmt {
-@@ -2038,6 +2040,17 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
- 	const struct arm_smmu_match_data *data;
- 	struct device *dev = &pdev->dev;
- 	bool legacy_binding;
-+	int ret;
+@@ -163,6 +165,7 @@
+ 			reset-names = "stmmaceth", "stmmaceth-ocp";
+ 			clocks = <&clkmgr STRATIX10_EMAC2_CLK>;
+ 			clock-names = "stmmaceth";
++			iommus = <&smmu 3>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -273,6 +276,7 @@
+ 			clocks = <&clkmgr STRATIX10_L4_MP_CLK>,
+ 				 <&clkmgr STRATIX10_SDMMC_CLK>;
+ 			clock-names = "biu", "ciu";
++			iommus = <&smmu 5>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -307,6 +311,28 @@
+ 			altr,modrst-offset = <0x20>;
+ 		};
+ 
++		smmu: iommu@fa000000 {
++			compatible = "arm,mmu-500", "arm,smmu-v2";
++			reg = <0xfa000000 0x40000>;
++			#global-interrupts = <2>;
++			#iommu-cells = <1>;
++			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
++			interrupt-parent = <&intc>;
++			interrupts = <0 128 4>,	/* Global Secure Fault */
++				<0 129 4>, /* Global Non-secure Fault */
++				/* Non-secure Context Interrupts (32) */
++				<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
++				<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
++				<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
++				<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
++				<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
++				<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
++				<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
++				<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
++			stream-match-mask = <0x7ff0>;
++			status = "disabled";
++		};
 +
-+	/* If a clock is declared, enable it */
-+	ret = devm_clk_bulk_get_all(smmu->dev, &smmu->clks);
-+	if (IS_ERR(ret)) {
-+		smmu->clks = NULL;
-+		dev_dbg(dev, "cannot get smmu clock\n");
-+	} else {
-+		smmu->num_clks = ret;
-+		clk_bulk_prepare_enable(smmu->num_clks, smmu->clks);
-+	}
+ 		spi0: spi@ffda4000 {
+ 			compatible = "snps,dw-apb-ssi";
+ 			#address-cells = <1>;
+@@ -416,6 +442,7 @@
+ 			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
+ 			reset-names = "dwc2", "dwc2-ecc";
+ 			clocks = <&clkmgr STRATIX10_USB_CLK>;
++			iommus = <&smmu 6>;
+ 			status = "disabled";
+ 		};
  
- 	if (of_property_read_u32(dev->of_node, "#global-interrupts",
- 				 &smmu->num_global_irqs)) {
-@@ -2236,6 +2249,10 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+@@ -428,6 +455,7 @@
+ 			resets = <&rst USB1_RESET>, <&rst USB1_OCP_RESET>;
+ 			reset-names = "dwc2", "dwc2-ecc";
+ 			clocks = <&clkmgr STRATIX10_USB_CLK>;
++			iommus = <&smmu 7>;
+ 			status = "disabled";
+ 		};
  
- 	/* Turn the thing off */
- 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-+
-+	if (smmu->clks)
-+		clk_bulk_disable_unprepare(smmu->num_clks, smmu->clks);
-+
- 	return 0;
- }
- 
-@@ -2248,6 +2265,9 @@ static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
- {
- 	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
- 
-+	if (smmu->clks)
-+		clk_bulk_prepare_enable(smmu->num_clks, smmu->clks);
-+
- 	arm_smmu_device_reset(smmu);
- 	return 0;
- }
 -- 
 2.7.4
