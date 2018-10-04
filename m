@@ -1,7 +1,7 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu: Do physical merging in iommu_map_sg()
-Date: Thu,  4 Oct 2018 16:47:37 +0100
-Message-ID: <1be92cab99ba7fc82cc355bdda239f2ddcb92db0.1538667993.git.robin.murphy@arm.com>
+From: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Subject: [PATCH] dt-bindings: iommu: ipmmu-vmsa: Add r8a7744 support
+Date: Thu,  4 Oct 2018 17:25:47 +0100
+Message-ID: <1538670347-48201-1-git-send-email-biju.das@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,90 +15,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The original motivation for iommu_map_sg() was to give IOMMU drivers the
-chance to map an IOVA-contiguous scatterlist as efficiently as they
-could. It turns out that there isn't really much driver-specific
-business involved there, so now that the default implementation is
-mandatory let's just improve that - the main thing we're after is to use
-larger pages wherever possible, and as long as domain->pgsize_bitmap
-reflects reality, iommu_map() can already do that in a generic way. All
-we need to do is detect physically-contiguous segments and batch them
-into a single map operation, since whatever we do here is transparent to
-our caller and not bound by any segment-length restrictions on the list
-itself.
+Document RZ/G1N (R8A7744) SoC bindings.
 
-Speaking of efficiency, there's really very little point in duplicating
-the checks that iommu_map() is going to do anyway, so those get cleared
-up in the process.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Reviewed-by: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 42 ++++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 20 deletions(-)
+This patch is tested against next-20181004
+---
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8c15c5980299..8b22e0502349 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1677,33 +1677,35 @@ size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 		    struct scatterlist *sg, unsigned int nents, int prot)
- {
- 	struct scatterlist *s;
--	size_t mapped = 0;
--	unsigned int i, min_pagesz;
-+	size_t len = 0, mapped = 0;
-+	phys_addr_t start;
-+	unsigned int i;
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+index c6e2d85..377ee63 100644
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+@@ -12,6 +12,7 @@ Required Properties:
  
--	if (unlikely(domain->pgsize_bitmap == 0UL))
--		return 0;
--
--	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
--
- 	for_each_sg(sg, s, nents, i) {
--		phys_addr_t phys = page_to_phys(sg_page(s)) + s->offset;
-+		phys_addr_t s_phys = sg_phys(s);
- 
--		/*
--		 * We are mapping on IOMMU page boundaries, so offset within
--		 * the page must be 0. However, the IOMMU may support pages
--		 * smaller than PAGE_SIZE, so s->offset may still represent
--		 * an offset of that boundary within the CPU page.
--		 */
--		if (!IS_ALIGNED(s->offset, min_pagesz))
--			goto out_err;
-+		if (len && s_phys != start + len) {
-+do_map:
-+			ret = iommu_map(domain, iova + mapped, start, len, prot);
-+			if (ret)
-+				goto out_err;
- 
--		ret = iommu_map(domain, iova + mapped, phys, s->length, prot);
--		if (ret)
--			goto out_err;
-+			mapped += len;
-+			len = 0;
-+			if (!s)
-+				break;
-+		}
- 
--		mapped += s->length;
-+		if (len) {
-+			len += s->length;
-+		} else {
-+			len = s->length;
-+			start = s_phys;
-+		}
- 	}
-+	if (len)
-+		goto do_map;
- 
- 	return mapped;
- 
+     - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
+     - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
++    - "renesas,ipmmu-r8a7744" for the R8A7744 (RZ/G1N) IPMMU.
+     - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
+     - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
+     - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
 -- 
-2.19.0.dirty
+2.7.4
