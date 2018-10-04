@@ -1,11 +1,15 @@
-From: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: [PATCH] dt-bindings: iommu: ipmmu-vmsa: Add r8a7744 support
-Date: Thu,  4 Oct 2018 17:25:47 +0100
-Message-ID: <1538670347-48201-1-git-send-email-biju.das@bp.renesas.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCHv3 2/2] iommu/arm-smmu: Add SMMU clock
+Date: Fri, 5 Oct 2018 00:19:37 +0530
+Message-ID: <1898b9fb-0523-4de4-741a-a52de5fdab70@codeaurora.org>
+References: <1538605693-22073-1-git-send-email-thor.thayer@linux.intel.com>
+	<1538605693-22073-3-git-send-email-thor.thayer@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1538605693-22073-3-git-send-email-thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,31 +19,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, dinguyen-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, aisheng.dong-3arQi8VN3Tc@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Document RZ/G1N (R8A7744) SoC bindings.
+Hi Thor,
 
-Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Reviewed-by: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
----
-This patch is tested against next-20181004
----
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-index c6e2d85..377ee63 100644
---- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-+++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-@@ -12,6 +12,7 @@ Required Properties:
- 
-     - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-     - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
-+    - "renesas,ipmmu-r8a7744" for the R8A7744 (RZ/G1N) IPMMU.
-     - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
-     - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
-     - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
--- 
-2.7.4
+On 10/4/2018 3:58 AM, thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org wrote:
+> From: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>
+> Add a clock to the SMMU structure. In the device tree case,
+> check for a clock node and enable the clock if found.
+>
+> This patch is dependent upon the following patches that add
+> a device tree bulk clock function.
+> "[V6, 1/4] clk: bulk: add of_clk_bulk_get()"
+> https://patchwork.kernel.org/patch/10583133/
+> "[V6, 2/4] clk: add new APIs to operation on all available
+> clocks"
+> https://patchwork.kernel.org/patch/10583131/
+> "[V6, 3/4] clk: add managerged version of clk_bulk_get_all"
+> https://patchwork.kernel.org/patch/10583139/
+>
+> Signed-off-by: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> ---
+>   drivers/iommu/arm-smmu.c | 20 ++++++++++++++++++++
+>   1 file changed, 20 insertions(+)
+
+The clock part is already handled by one of the patch in the
+runtime pm series of arm-smmu [1]. This patch should not be needed.
+
+[1] https://patchwork.kernel.org/patch/10581899/
+
+[...]
+
+Regards
+Vivek
