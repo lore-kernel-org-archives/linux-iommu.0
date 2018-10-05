@@ -1,7 +1,7 @@
 From: thor.thayer@linux.intel.com
-Subject: [PATCHv4 1/2] arm64: dts: stratix10: Add Stratix10 SMMU support
-Date: Fri,  5 Oct 2018 15:56:59 -0500
-Message-ID: <1538773020-27784-2-git-send-email-thor.thayer@linux.intel.com>
+Subject: [PATCHv4 2/2] iommu/arm-smmu: Get clock config from device tree
+Date: Fri,  5 Oct 2018 15:57:00 -0500
+Message-ID: <1538773020-27784-3-git-send-email-thor.thayer@linux.intel.com>
 References: <1538773020-27784-1-git-send-email-thor.thayer@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1538773020-27784-1-git-send-email-thor.thayer@linux.intel.com>
@@ -12,102 +12,94 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Thor Thayer <thor.thayer@linux.intel.com>
 
-Add SMMU support to the Stratix10 Device Tree which
-includes adding the SMMU node and adding IOMMU stream
-ids to the SMMU peripherals.
+Currently the clocks are specified in a structure as well as
+in the device tree. Since all the information about clocks can be
+pulled from the device tree, parse the device tree for the clock
+information if specified.
+
+This patch is dependent upon the following patch series that
+adds clocks to the driver.
+"[v16,0/5] iommu/arm-smmu: Add runtime pm/sleep support"
+https://patchwork.kernel.org/cover/10581891/
+
+particularly this patch which adds the clocks:
+"[v16,1/5] iommu/arm-smmu: Add pm_runtime/sleep ops"
+https://patchwork.kernel.org/patch/10581899/
+
+Request testing on different platforms for verification.
+This patch was tested on a Stratix10 SOCFPGA.
 
 Signed-off-by: Thor Thayer <thor.thayer@linux.intel.com>
 ---
-v4  Add clock-name since clk_bulk_get() needs name
-    for clock.
-v3  Remove bindings changes since not adding new structure.
-    Remove new compatible string - use default "arm,mmu-500"
-v2  Add bindings changes and compatible string for SOCFPGA.
+v4  Change dependency on pending patch series that adds clocks.
+    Add code for parsing device tree for the clocks.
+v3  Change dependency on device tree bulk clock patches.
+v2  Add structure for SOCFPGA and add dependency on clock patch.
 ---
- arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 29 +++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ drivers/iommu/arm-smmu.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-index d033da401c26..f58f7601ab88 100644
---- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-+++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
-@@ -137,6 +137,7 @@
- 			reset-names = "stmmaceth", "stmmaceth-ocp";
- 			clocks = <&clkmgr STRATIX10_EMAC0_CLK>;
- 			clock-names = "stmmaceth";
-+			iommus = <&smmu 1>;
- 			status = "disabled";
- 		};
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index d315ca637097..3dd10663b09c 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -44,6 +44,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/of_clk.h>
+ #include <linux/of_device.h>
+ #include <linux/of_iommu.h>
+ #include <linux/pci.h>
+@@ -2139,6 +2140,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ 	const struct arm_smmu_match_data *data;
+ 	struct device *dev = &pdev->dev;
+ 	bool legacy_binding;
++	const char **parent_names;
  
-@@ -150,6 +151,7 @@
- 			reset-names = "stmmaceth", "stmmaceth-ocp";
- 			clocks = <&clkmgr STRATIX10_EMAC1_CLK>;
- 			clock-names = "stmmaceth";
-+			iommus = <&smmu 2>;
- 			status = "disabled";
- 		};
- 
-@@ -163,6 +165,7 @@
- 			reset-names = "stmmaceth", "stmmaceth-ocp";
- 			clocks = <&clkmgr STRATIX10_EMAC2_CLK>;
- 			clock-names = "stmmaceth";
-+			iommus = <&smmu 3>;
- 			status = "disabled";
- 		};
- 
-@@ -273,6 +276,7 @@
- 			clocks = <&clkmgr STRATIX10_L4_MP_CLK>,
- 				 <&clkmgr STRATIX10_SDMMC_CLK>;
- 			clock-names = "biu", "ciu";
-+			iommus = <&smmu 5>;
- 			status = "disabled";
- 		};
- 
-@@ -307,6 +311,29 @@
- 			altr,modrst-offset = <0x20>;
- 		};
- 
-+		smmu: iommu@fa000000 {
-+			compatible = "arm,mmu-500", "arm,smmu-v2";
-+			reg = <0xfa000000 0x40000>;
-+			#global-interrupts = <2>;
-+			#iommu-cells = <1>;
-+			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
-+			clock-names = "iommu";
-+			interrupt-parent = <&intc>;
-+			interrupts = <0 128 4>,	/* Global Secure Fault */
-+				<0 129 4>, /* Global Non-secure Fault */
-+				/* Non-secure Context Interrupts (32) */
-+				<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
-+				<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
-+				<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
-+				<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
-+				<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
-+				<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
-+				<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
-+				<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
-+			stream-match-mask = <0x7ff0>;
-+			status = "disabled";
-+		};
+ 	if (of_property_read_u32(dev->of_node, "#global-interrupts",
+ 				 &smmu->num_global_irqs)) {
+@@ -2149,9 +2151,25 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ 	data = of_device_get_match_data(dev);
+ 	smmu->version = data->version;
+ 	smmu->model = data->model;
+-	smmu->num_clks = data->num_clks;
+-
+-	arm_smmu_fill_clk_data(smmu, data->clks);
++	smmu->num_clks = of_clk_get_parent_count(dev->of_node);
++	/* check to see if clocks were specified in DT */
++	if (smmu->num_clks) {
++		unsigned int i;
 +
- 		spi0: spi@ffda4000 {
- 			compatible = "snps,dw-apb-ssi";
- 			#address-cells = <1>;
-@@ -416,6 +443,7 @@
- 			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
- 			reset-names = "dwc2", "dwc2-ecc";
- 			clocks = <&clkmgr STRATIX10_USB_CLK>;
-+			iommus = <&smmu 6>;
- 			status = "disabled";
- 		};
++		parent_names = kmalloc_array(smmu->num_clks,
++					     sizeof(*parent_names),
++					     GFP_KERNEL);
++		if (!parent_names)
++			goto fail_clk_name;
++
++		for (i = 0; i < smmu->num_clks; i++) {
++			if (of_property_read_string_index(dev->of_node,
++							  "clock-names", i,
++							  &parent_names[i]))
++				goto fail_clk_name;
++		}
++		arm_smmu_fill_clk_data(smmu, parent_names);
++	}
  
-@@ -428,6 +456,7 @@
- 			resets = <&rst USB1_RESET>, <&rst USB1_OCP_RESET>;
- 			reset-names = "dwc2", "dwc2-ecc";
- 			clocks = <&clkmgr STRATIX10_USB_CLK>;
-+			iommus = <&smmu 7>;
- 			status = "disabled";
- 		};
+ 	parse_driver_options(smmu);
  
+@@ -2171,6 +2189,12 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
+ 
+ 	return 0;
++
++fail_clk_name:
++	kfree(parent_names);
++	/* clock-names required for clocks in devm_clk_bulk_get() */
++	dev_err(dev, "Error: clock-name required in device tree\n");
++	return -ENOMEM;
+ }
+ 
+ static void arm_smmu_bus_init(void)
 -- 
 2.7.4
