@@ -1,15 +1,19 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: Do physical merging in iommu_map_sg()
-Date: Fri, 5 Oct 2018 11:57:57 +0100
-Message-ID: <13093b94-be59-030d-7176-16dab22bcdce@arm.com>
-References: <1be92cab99ba7fc82cc355bdda239f2ddcb92db0.1538667993.git.robin.murphy@arm.com>
-	<20181005071934.GA9238@infradead.org>
+From: Alexander Duyck <alexander.h.duyck-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: linux-next: Tree for Oct 4
+Date: Fri, 5 Oct 2018 07:27:29 -0700
+Message-ID: <72f64b32-20f0-0e9a-a8f6-3e0845abb586@linux.intel.com>
+References: <20181004183449.36bcc93b@canb.auug.org.au>
+	<20181004134644.GA9130@roeck-us.net>
+	<CAMuHMdXfhbFi8HYtqd6BeACyG64_eQvoiSQ7DMpyOmdXEXPymg@mail.gmail.com>
+	<20181005094445.4d0b68bc@canb.auug.org.au>
+	<01c4a73c-7901-2fbb-8f87-95ff21dc5126@roeck-us.net>
+	<20181005153905.126a005e@canb.auug.org.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181005071934.GA9238-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Content-Language: en-GB
+In-Reply-To: <20181005153905.126a005e-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,81 +23,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Cc: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Linus PPC <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux-Next <linux-next-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Greg KH <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/10/18 08:19, Christoph Hellwig wrote:
-> On Thu, Oct 04, 2018 at 04:47:37PM +0100, Robin Murphy wrote:
->> The original motivation for iommu_map_sg() was to give IOMMU drivers the
->> chance to map an IOVA-contiguous scatterlist as efficiently as they
->> could. It turns out that there isn't really much driver-specific
->> business involved there, so now that the default implementation is
->> mandatory let's just improve that - the main thing we're after is to use
->> larger pages wherever possible, and as long as domain->pgsize_bitmap
->> reflects reality, iommu_map() can already do that in a generic way. All
->> we need to do is detect physically-contiguous segments and batch them
->> into a single map operation, since whatever we do here is transparent to
->> our caller and not bound by any segment-length restrictions on the list
->> itself.
->>
->> Speaking of efficiency, there's really very little point in duplicating
->> the checks that iommu_map() is going to do anyway, so those get cleared
->> up in the process.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On 10/4/2018 10:39 PM, Stephen Rothwell wrote:
+> Hi Guenter,
 > 
-> I like the idea, but I find the goto usage to jump back into the just
-> terminated loop highly confusing.  Would it be that much worse to simply
-> duplicate the iommu_map call?
+> On Thu, 4 Oct 2018 18:33:02 -0700 Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org> wrote:
+>>
+>> Most of the boot failures are hopefully fixed with
+>> https://lore.kernel.org/patchwork/patch/995254/
+> 
+> I have added that commit to linux-next today.
+> 
 
-Yeah, I fiddled around for ages trying to find the cleanest approach, 
-but really there just doesn't seem to be one - I'd say the worst bit of 
-that goto is the even-more-subtle need for the explicit break. FWIW the 
-naive diff below is only actually +2 source lines, but the duplication 
-does also carry through to the object code (at least for my arm64 GCC7 
-build). I might have a quick hack around to see if I can do any better 
-with a do...while loop - of course what I *really* want is nested 
-function definitions, but that might just be brain damage from doing too 
-much MATLAB in the past ;)
+After getting over that I ended up running into an issues with a NULL 
+pointer dereference updating static keys/jump labels that was fixed by:
+https://lore.kernel.org/patchwork/patch/993864/
 
-Robin.
+Thanks.
 
------>8-----
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b22e0502349..4d43146720e9 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1686,15 +1686,12 @@ size_t iommu_map_sg(struct iommu_domain *domain, 
-unsigned long iova,
-  		phys_addr_t s_phys = sg_phys(s);
-
-  		if (len && s_phys != start + len) {
--do_map:
-  			ret = iommu_map(domain, iova + mapped, start, len, prot);
-  			if (ret)
-  				goto out_err;
-
-  			mapped += len;
-  			len = 0;
--			if (!s)
--				break;
-  		}
-
-  		if (len) {
-@@ -1704,8 +1701,13 @@ size_t iommu_map_sg(struct iommu_domain *domain, 
-unsigned long iova,
-  			start = s_phys;
-  		}
-  	}
--	if (len)
--		goto do_map;
-+	if (len) {
-+		ret = iommu_map(domain, iova + mapped, start, len, prot);
-+		if (ret)
-+			goto out_err;
-+
-+		mapped += len;
-+	}
-
-  	return mapped;
+- Alex
