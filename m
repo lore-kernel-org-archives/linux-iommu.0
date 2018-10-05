@@ -1,48 +1,31 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.19-rc6
-Date: Fri, 5 Oct 2018 10:30:09 +0200
-Message-ID: <20181005083005.ctclagex4fu73tvf@8bytes.org>
+Subject: Re: [PATCH] iommu/amd: Clear memory encryption mask from physical
+ address
+Date: Fri, 5 Oct 2018 10:31:01 +0200
+Message-ID: <20181005083101.GD3630@8bytes.org>
+References: <1538689210-14524-1-git-send-email-brijesh.singh@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <1538689210-14524-1-git-send-email-brijesh.singh@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: "Singh, Brijesh" <brijesh.singh@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, Borislav Petkov <bp@suse.de>, Paolo Bonzini <pbonzini@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "# 4 . 14+" <stable@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Greg,
+On Thu, Oct 04, 2018 at 09:40:23PM +0000, Singh, Brijesh wrote:
+> Boris Ostrovsky reported a memory leak with device passthrough when SME
+> is active.
+> 
+> The VFIO driver uses iommu_iova_to_phys() to get the physical address for
+> an iova. This physical address is later passed into vfio_unmap_unpin() to
+> unpin the memory. The vfio_unmap_unpin() uses pfn_valid() before unpinning
+> the memory. The pfn_valid() check was failing because encryption mask was
+> part of the physical address returned. This resulted in the memory not
+> being unpinned and therefore leaked after the guest terminates.
+> 
+> The memory encryption mask must be cleared from the physical address in
+> iommu_iova_to_phys().
 
-The following changes since commit 17b57b1883c1285f3d0dc2266e8f79286a7bef38:
-
-  Linux 4.19-rc6 (2018-09-30 07:15:35 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.19-rc6
-
-for you to fetch changes up to b3e9b515b08e407ab3a026dc2e4d935c48d05f69:
-
-  iommu/amd: Clear memory encryption mask from physical address (2018-10-05 10:20:24 +0200)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v4.19-rc6
-
-One important fix:
-
-	- Fix a memory leak with AMD IOMMU when SME is active and a VM
-	  has assigned devices. In that case the complete guest memory
-	  will be leaked without this fix.
-
-----------------------------------------------------------------
-Singh, Brijesh (1):
-      iommu/amd: Clear memory encryption mask from physical address
-
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
+Merged and on its way upstream, thanks Brijesh.
