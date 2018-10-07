@@ -1,84 +1,38 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 08/12] iommu/vt-d: Pass pasid table to context mapping
-Date: Sun,  7 Oct 2018 13:28:49 +0800
-Message-ID: <20181007052853.25940-9-baolu.lu@linux.intel.com>
-References: <20181007052853.25940-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181007052853.25940-1-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH] iommu: Do physical merging in iommu_map_sg()
+Date: Sun, 7 Oct 2018 03:38:02 -0700
+Message-ID: <20181007103802.GA20091@infradead.org>
+References: <1be92cab99ba7fc82cc355bdda239f2ddcb92db0.1538667993.git.robin.murphy@arm.com>
+	<20181005071934.GA9238@infradead.org>
+	<13093b94-be59-030d-7176-16dab22bcdce@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <13093b94-be59-030d-7176-16dab22bcdce-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-So that the pasid related info, such as the pasid table and the
-maximum of pasid could be used during setting up scalable mode
-context.
+On Fri, Oct 05, 2018 at 11:57:57AM +0100, Robin Murphy wrote:
+> Yeah, I fiddled around for ages trying to find the cleanest approach, but
+> really there just doesn't seem to be one - I'd say the worst bit of that
+> goto is the even-more-subtle need for the explicit break. FWIW the naive
+> diff below is only actually +2 source lines, but the duplication does also
+> carry through to the object code (at least for my arm64 GCC7 build). I might
+> have a quick hack around to see if I can do any better with a do...while
+> loop - of course what I *really* want is nested function definitions, but
+> that might just be brain damage from doing too much MATLAB in the past ;)
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- drivers/iommu/intel-iommu.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2762b076eee6..0b22fd300842 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1917,6 +1917,7 @@ static void domain_exit(struct dmar_domain *domain)
- 
- static int domain_context_mapping_one(struct dmar_domain *domain,
- 				      struct intel_iommu *iommu,
-+				      struct pasid_table *table,
- 				      u8 bus, u8 devfn)
- {
- 	u16 did = domain->iommu_did[iommu->seq_id];
-@@ -2039,6 +2040,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- struct domain_context_mapping_data {
- 	struct dmar_domain *domain;
- 	struct intel_iommu *iommu;
-+	struct pasid_table *table;
- };
- 
- static int domain_context_mapping_cb(struct pci_dev *pdev,
-@@ -2047,25 +2049,31 @@ static int domain_context_mapping_cb(struct pci_dev *pdev,
- 	struct domain_context_mapping_data *data = opaque;
- 
- 	return domain_context_mapping_one(data->domain, data->iommu,
--					  PCI_BUS_NUM(alias), alias & 0xff);
-+					  data->table, PCI_BUS_NUM(alias),
-+					  alias & 0xff);
- }
- 
- static int
- domain_context_mapping(struct dmar_domain *domain, struct device *dev)
- {
-+	struct domain_context_mapping_data data;
-+	struct pasid_table *table;
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
--	struct domain_context_mapping_data data;
- 
- 	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
- 		return -ENODEV;
- 
-+	table = intel_pasid_get_table(dev);
-+
- 	if (!dev_is_pci(dev))
--		return domain_context_mapping_one(domain, iommu, bus, devfn);
-+		return domain_context_mapping_one(domain, iommu, table,
-+						  bus, devfn);
- 
- 	data.domain = domain;
- 	data.iommu = iommu;
-+	data.table = table;
- 
- 	return pci_for_each_dma_alias(to_pci_dev(dev),
- 				      &domain_context_mapping_cb, &data);
--- 
-2.17.1
+I much prefer this version, even if it leads to slightly larger object
+code.
