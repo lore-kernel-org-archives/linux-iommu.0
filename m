@@ -1,19 +1,32 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v3] dma-debug: Check for drivers mapping invalid
- addresses in dma_map_single()
-Date: Mon, 8 Oct 2018 09:45:04 +0200
-Message-ID: <20181008074504.GA3857@lst.de>
-References: <20181008072007.26387-1-swboyd@chromium.org>
+Subject: move swiotlb noncoherent dma support from arm64 to generic code V2
+Date: Mon,  8 Oct 2018 10:02:36 +0200
+Message-ID: <20181008080246.20543-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181008072007.26387-1-swboyd@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <swboyd@chromium.org>
-Cc: Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+To: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks,
+Hi all,
 
-applied to the dma-mapping tree for 4.20.
+this series starts with various swiotlb cleanups, then adds support for
+non-cache coherent devices to the generic swiotlb support, and finally
+switches arm64 to use the generic code.
+
+Given that this series depends on patches in the dma-mapping tree, or
+pending for it I've also published a git tree here:
+
+    git://git.infradead.org/users/hch/misc.git swiotlb-noncoherent.2
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/swiotlb-noncoherent.2
+
+Changes since v1:
+ - make sure arm64 always calls dma_direct_alloc_pages to avoid
+   circular calling conventions
+ - add a patch in to stop dipping into the swiotlb pool for coherent
+   allocations - this just depletes the swiotlb pool for no good reason
