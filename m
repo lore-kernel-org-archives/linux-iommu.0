@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 07/10] swiotlb: refactor swiotlb_map_page
-Date: Mon,  8 Oct 2018 10:02:43 +0200
-Message-ID: <20181008080246.20543-8-hch@lst.de>
+Subject: [PATCH 08/10] swiotlb: don't dip into swiotlb pool for coherent allocations
+Date: Mon,  8 Oct 2018 10:02:44 +0200
+Message-ID: <20181008080246.20543-9-hch@lst.de>
 References: <20181008080246.20543-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,124 +12,192 @@ To: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>
 Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove the somewhat useless map_single function, and replace it with a
-swiotlb_bounce_page handler that handles everything related to actually
-bouncing a page.
+All architectures that support swiotlb also have a zone that backs up
+these less than full addressing allocations (usually ZONE_DMA32).
+
+Because of that it is rather pointless to fall back to the global swiotlb
+buffer if the normal dma direct allocation failed - the only thing this
+will do is to eat up bounce buffers that would be more useful to serve
+streaming mappings.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/swiotlb.c | 77 +++++++++++++++++++++-----------------------
- 1 file changed, 36 insertions(+), 41 deletions(-)
+ arch/arm64/mm/dma-mapping.c |   6 +--
+ include/linux/swiotlb.h     |   5 --
+ kernel/dma/swiotlb.c        | 105 +-----------------------------------
+ 3 files changed, 5 insertions(+), 111 deletions(-)
 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 8d91b927e09e..eee6cfcfde9e 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -112,7 +112,7 @@ static void *__dma_alloc(struct device *dev, size_t size,
+ 		return addr;
+ 	}
+ 
+-	ptr = swiotlb_alloc(dev, size, dma_handle, flags, attrs);
++	ptr = dma_direct_alloc_pages(dev, size, dma_handle, flags, attrs);
+ 	if (!ptr)
+ 		goto no_mem;
+ 
+@@ -133,7 +133,7 @@ static void *__dma_alloc(struct device *dev, size_t size,
+ 	return coherent_ptr;
+ 
+ no_map:
+-	swiotlb_free(dev, size, ptr, *dma_handle, attrs);
++	dma_direct_free_pages(dev, size, ptr, *dma_handle, attrs);
+ no_mem:
+ 	return NULL;
+ }
+@@ -151,7 +151,7 @@ static void __dma_free(struct device *dev, size_t size,
+ 			return;
+ 		vunmap(vaddr);
+ 	}
+-	swiotlb_free(dev, size, swiotlb_addr, dma_handle, attrs);
++	dma_direct_free_pages(dev, size, swiotlb_addr, dma_handle, attrs);
+ }
+ 
+ static dma_addr_t __swiotlb_map_page(struct device *dev, struct page *page,
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index f847c1b265c4..a387b59640a4 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -67,11 +67,6 @@ extern void swiotlb_tbl_sync_single(struct device *hwdev,
+ 
+ /* Accessory functions. */
+ 
+-void *swiotlb_alloc(struct device *hwdev, size_t size, dma_addr_t *dma_handle,
+-		gfp_t flags, unsigned long attrs);
+-void swiotlb_free(struct device *dev, size_t size, void *vaddr,
+-		dma_addr_t dma_addr, unsigned long attrs);
+-
+ extern dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+ 				   unsigned long offset, size_t size,
+ 				   enum dma_data_direction dir,
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 15755d7a5242..4d7a4d85d71e 100644
+index 4d7a4d85d71e..475a41eff3dc 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -543,26 +543,6 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
- 	return tlb_addr;
+@@ -622,78 +622,6 @@ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
+ 	}
  }
  
--/*
-- * Allocates bounce buffer and returns its physical address.
-- */
--static phys_addr_t
--map_single(struct device *hwdev, phys_addr_t phys, size_t size,
--	   enum dma_data_direction dir, unsigned long attrs)
+-static inline bool dma_coherent_ok(struct device *dev, dma_addr_t addr,
+-		size_t size)
 -{
--	dma_addr_t start_dma_addr;
+-	u64 mask = DMA_BIT_MASK(32);
 -
--	if (swiotlb_force == SWIOTLB_NO_FORCE) {
--		dev_warn_ratelimited(hwdev, "Cannot do DMA to address %pa\n",
--				     &phys);
--		return SWIOTLB_MAP_ERROR;
--	}
--
--	start_dma_addr = __phys_to_dma(hwdev, io_tlb_start);
--	return swiotlb_tbl_map_single(hwdev, start_dma_addr, phys, size,
--				      dir, attrs);
+-	if (dev && dev->coherent_dma_mask)
+-		mask = dev->coherent_dma_mask;
+-	return addr + size - 1 <= mask;
 -}
 -
- /*
-  * tlb_addr is the physical address of the bounce buffer to unmap.
-  */
-@@ -714,6 +694,34 @@ static bool swiotlb_free_buffer(struct device *dev, size_t size,
- 	return true;
- }
- 
-+static dma_addr_t swiotlb_bounce_page(struct device *dev, phys_addr_t *phys,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	dma_addr_t dma_addr;
-+
-+	if (unlikely(swiotlb_force == SWIOTLB_NO_FORCE)) {
-+		dev_warn_ratelimited(dev,
-+			"Cannot do DMA to address %pa\n", phys);
-+		return DIRECT_MAPPING_ERROR;
-+	}
-+
-+	/* Oh well, have to allocate and map a bounce buffer. */
-+	*phys = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
-+			*phys, size, dir, attrs);
-+	if (*phys == SWIOTLB_MAP_ERROR)
-+		return DIRECT_MAPPING_ERROR;
-+
-+	/* Ensure that the address returned is DMA'ble */
-+	dma_addr = __phys_to_dma(dev, *phys);
-+	if (unlikely(!dma_capable(dev, dma_addr, size))) {
-+		swiotlb_tbl_unmap_single(dev, *phys, size, dir,
-+			attrs | DMA_ATTR_SKIP_CPU_SYNC);
-+		return DIRECT_MAPPING_ERROR;
-+	}
-+
-+	return dma_addr;
-+}
-+
- /*
-  * Map a single buffer of the indicated size for DMA in streaming mode.  The
-  * physical address to use is returned.
-@@ -726,8 +734,8 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
- 			    enum dma_data_direction dir,
- 			    unsigned long attrs)
+-static void *
+-swiotlb_alloc_buffer(struct device *dev, size_t size, dma_addr_t *dma_handle,
+-		unsigned long attrs)
+-{
+-	phys_addr_t phys_addr;
+-
+-	if (swiotlb_force == SWIOTLB_NO_FORCE)
+-		goto out_warn;
+-
+-	phys_addr = swiotlb_tbl_map_single(dev,
+-			__phys_to_dma(dev, io_tlb_start),
+-			0, size, DMA_FROM_DEVICE, attrs);
+-	if (phys_addr == SWIOTLB_MAP_ERROR)
+-		goto out_warn;
+-
+-	*dma_handle = __phys_to_dma(dev, phys_addr);
+-	if (!dma_coherent_ok(dev, *dma_handle, size))
+-		goto out_unmap;
+-
+-	memset(phys_to_virt(phys_addr), 0, size);
+-	return phys_to_virt(phys_addr);
+-
+-out_unmap:
+-	dev_warn(dev, "hwdev DMA mask = 0x%016Lx, dev_addr = 0x%016Lx\n",
+-		(unsigned long long)dev->coherent_dma_mask,
+-		(unsigned long long)*dma_handle);
+-
+-	/*
+-	 * DMA_TO_DEVICE to avoid memcpy in unmap_single.
+-	 * DMA_ATTR_SKIP_CPU_SYNC is optional.
+-	 */
+-	swiotlb_tbl_unmap_single(dev, phys_addr, size, DMA_TO_DEVICE,
+-			DMA_ATTR_SKIP_CPU_SYNC);
+-out_warn:
+-	if (!(attrs & DMA_ATTR_NO_WARN) && printk_ratelimit()) {
+-		dev_warn(dev,
+-			"swiotlb: coherent allocation failed, size=%zu\n",
+-			size);
+-		dump_stack();
+-	}
+-	return NULL;
+-}
+-
+-static bool swiotlb_free_buffer(struct device *dev, size_t size,
+-		dma_addr_t dma_addr)
+-{
+-	phys_addr_t phys_addr = dma_to_phys(dev, dma_addr);
+-
+-	WARN_ON_ONCE(irqs_disabled());
+-
+-	if (!is_swiotlb_buffer(phys_addr))
+-		return false;
+-
+-	/*
+-	 * DMA_TO_DEVICE to avoid memcpy in swiotlb_tbl_unmap_single.
+-	 * DMA_ATTR_SKIP_CPU_SYNC is optional.
+-	 */
+-	swiotlb_tbl_unmap_single(dev, phys_addr, size, DMA_TO_DEVICE,
+-				 DMA_ATTR_SKIP_CPU_SYNC);
+-	return true;
+-}
+-
+ static dma_addr_t swiotlb_bounce_page(struct device *dev, phys_addr_t *phys,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
  {
--	phys_addr_t map, phys = page_to_phys(page) + offset;
--	dma_addr_t dev_addr = phys_to_dma(dev, phys);
-+	phys_addr_t phys = page_to_phys(page) + offset;
-+	dma_addr_t dma_addr = phys_to_dma(dev, phys);
- 
- 	BUG_ON(dir == DMA_NONE);
- 	/*
-@@ -735,26 +743,13 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
- 	 * we can safely return the device addr and not worry about bounce
- 	 * buffering it.
- 	 */
--	if (dma_capable(dev, dev_addr, size) && swiotlb_force != SWIOTLB_FORCE)
--		return dev_addr;
--
--	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
--
--	/* Oh well, have to allocate and map a bounce buffer. */
--	map = map_single(dev, phys, size, dir, attrs);
--	if (map == SWIOTLB_MAP_ERROR)
--		return DIRECT_MAPPING_ERROR;
--
--	dev_addr = __phys_to_dma(dev, map);
--
--	/* Ensure that the address returned is DMA'ble */
--	if (dma_capable(dev, dev_addr, size))
--		return dev_addr;
--
--	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
--	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
-+	if (!dma_capable(dev, dma_addr, size) ||
-+	    swiotlb_force == SWIOTLB_FORCE) {
-+		trace_swiotlb_bounced(dev, dma_addr, size, swiotlb_force);
-+		dma_addr = swiotlb_bounce_page(dev, &phys, size, dir, attrs);
-+	}
- 
--	return DIRECT_MAPPING_ERROR;
-+	return dma_addr;
+@@ -928,39 +856,10 @@ swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ 	return __phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
  }
  
- /*
+-void *swiotlb_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+-		gfp_t gfp, unsigned long attrs)
+-{
+-	void *vaddr;
+-
+-	/* temporary workaround: */
+-	if (gfp & __GFP_NOWARN)
+-		attrs |= DMA_ATTR_NO_WARN;
+-
+-	/*
+-	 * Don't print a warning when the first allocation attempt fails.
+-	 * swiotlb_alloc_coherent() will print a warning when the DMA memory
+-	 * allocation ultimately failed.
+-	 */
+-	gfp |= __GFP_NOWARN;
+-
+-	vaddr = dma_direct_alloc(dev, size, dma_handle, gfp, attrs);
+-	if (!vaddr)
+-		vaddr = swiotlb_alloc_buffer(dev, size, dma_handle, attrs);
+-	return vaddr;
+-}
+-
+-void swiotlb_free(struct device *dev, size_t size, void *vaddr,
+-		dma_addr_t dma_addr, unsigned long attrs)
+-{
+-	if (!swiotlb_free_buffer(dev, size, dma_addr))
+-		dma_direct_free(dev, size, vaddr, dma_addr, attrs);
+-}
+-
+ const struct dma_map_ops swiotlb_dma_ops = {
+ 	.mapping_error		= dma_direct_mapping_error,
+-	.alloc			= swiotlb_alloc,
+-	.free			= swiotlb_free,
++	.alloc			= dma_direct_alloc,
++	.free			= dma_direct_free,
+ 	.sync_single_for_cpu	= swiotlb_sync_single_for_cpu,
+ 	.sync_single_for_device	= swiotlb_sync_single_for_device,
+ 	.sync_sg_for_cpu	= swiotlb_sync_sg_for_cpu,
 -- 
 2.19.0
