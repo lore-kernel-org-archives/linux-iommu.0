@@ -1,12 +1,14 @@
-From: Stephen Boyd <swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH v3] dma-debug: Check for drivers mapping invalid addresses in
-	dma_map_single()
-Date: Mon,  8 Oct 2018 00:20:07 -0700
-Message-ID: <20181008072007.26387-1-swboyd@chromium.org>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH] dt-bindings: iommu: ipmmu-vmsa: Add r8a7744 support
+Date: Mon, 8 Oct 2018 09:38:55 +0200
+Message-ID: <20181008073854.2pxr7suuvdd43lv7@verge.net.au>
+References: <1538670347-48201-1-git-send-email-biju.das@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1538670347-48201-1-git-send-email-biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,105 +18,14 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-I recently debugged a DMA mapping oops where a driver was trying to map
-a buffer returned from request_firmware() with dma_map_single(). Memory
-returned from request_firmware() is mapped into the vmalloc region and
-this isn't a valid region to map with dma_map_single() per the DMA
-documentation's "What memory is DMA'able?" section.
+On Thu, Oct 04, 2018 at 05:25:47PM +0100, Biju Das wrote:
+> Document RZ/G1N (R8A7744) SoC bindings.
+> 
+> Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> Reviewed-by: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 
-Unfortunately, we don't really check that in the DMA debugging code, so
-enabling DMA debugging doesn't help catch this problem. Let's add a new
-DMA debug function to check for a vmalloc address or an invalid virtual
-address and print a warning if this happens. This makes it a little
-easier to debug these sorts of problems, instead of seeing odd behavior
-or crashes when drivers attempt to map the vmalloc space for DMA.
-
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Stephen Boyd <swboyd-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
----
-
-Changes from v2:
- * Rename function properly and actually test it!
- * Add Robin's reviewed-by tag
-
-Changes from v1:                                                                                                                    
- * Update code to check for invalid virtual address too                                                                             
- * Rename function to debug_dma_map_single()    
-
- include/linux/dma-debug.h   |  8 ++++++++
- include/linux/dma-mapping.h |  1 +
- kernel/dma/debug.c          | 16 ++++++++++++++++
- 3 files changed, 25 insertions(+)
-
-diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
-index a785f2507159..30213adbb6b9 100644
---- a/include/linux/dma-debug.h
-+++ b/include/linux/dma-debug.h
-@@ -32,6 +32,9 @@ extern void dma_debug_add_bus(struct bus_type *bus);
- 
- extern int dma_debug_resize_entries(u32 num_entries);
- 
-+extern void debug_dma_map_single(struct device *dev, const void *addr,
-+				 unsigned long len);
-+
- extern void debug_dma_map_page(struct device *dev, struct page *page,
- 			       size_t offset, size_t size,
- 			       int direction, dma_addr_t dma_addr,
-@@ -103,6 +106,11 @@ static inline int dma_debug_resize_entries(u32 num_entries)
- 	return 0;
- }
- 
-+static inline void debug_dma_map_single(struct device *dev, const void *addr,
-+					unsigned long len)
-+{
-+}
-+
- static inline void debug_dma_map_page(struct device *dev, struct page *page,
- 				      size_t offset, size_t size,
- 				      int direction, dma_addr_t dma_addr,
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 562af6b45f23..547a48bcfa3d 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -229,6 +229,7 @@ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
- 	dma_addr_t addr;
- 
- 	BUG_ON(!valid_dma_direction(dir));
-+	debug_dma_map_single(dev, ptr, size);
- 	addr = ops->map_page(dev, virt_to_page(ptr),
- 			     offset_in_page(ptr), size,
- 			     dir, attrs);
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index c007d25bee09..231ca4628062 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1312,6 +1312,22 @@ static void check_sg_segment(struct device *dev, struct scatterlist *sg)
- #endif
- }
- 
-+void debug_dma_map_single(struct device *dev, const void *addr,
-+			    unsigned long len)
-+{
-+	if (unlikely(dma_debug_disabled()))
-+		return;
-+
-+	if (!virt_addr_valid(addr))
-+		err_printk(dev, NULL, "DMA-API: device driver maps memory from invalid area [addr=%p] [len=%lu]\n",
-+			   addr, len);
-+
-+	if (is_vmalloc_addr(addr))
-+		err_printk(dev, NULL, "DMA-API: device driver maps memory from vmalloc area [addr=%p] [len=%lu]\n",
-+			   addr, len);
-+}
-+EXPORT_SYMBOL(debug_dma_map_single);
-+
- void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
- 			size_t size, int direction, dma_addr_t dma_addr,
- 			bool map_single)
--- 
-Sent by a computer through tubes
+Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
