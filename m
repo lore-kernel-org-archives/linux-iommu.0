@@ -1,60 +1,64 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.18 156/168] iommu/amd: Clear memory encryption mask from
-	physical address
-Date: Mon,  8 Oct 2018 20:32:16 +0200
-Message-ID: <20181008175625.978463772@linuxfoundation.org>
-References: <20181008175620.043587728@linuxfoundation.org>
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Subject: Re: [PATCH] dma-direct: document the zone selection logic
+Date: Tue, 09 Oct 2018 09:56:28 +1100
+Message-ID: <a0b5a36fa34c2707d829ff47fb7ebb3adf0d78b2.camel@kernel.crashing.org>
+References: <20181001201016.32639-1-hch@lst.de>
+         <20181001201016.32639-2-hch@lst.de> <20181008070327.GA3134@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181008175620.043587728-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181008070327.GA3134@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-NC4xOC1zdGFibGUgcmV2aWV3IHBhdGNoLiAgSWYgYW55b25lIGhhcyBhbnkgb2JqZWN0aW9ucywg
-cGxlYXNlIGxldCBtZSBrbm93LgoKLS0tLS0tLS0tLS0tLS0tLS0tCgpGcm9tOiBTaW5naCwgQnJp
-amVzaCA8YnJpamVzaC5zaW5naEBhbWQuY29tPgoKY29tbWl0IGIzZTliNTE1YjA4ZTQwN2FiM2Ew
-MjZkYzJlNGQ5MzVjNDhkMDVmNjkgdXBzdHJlYW0uCgpCb3JpcyBPc3Ryb3Zza3kgcmVwb3J0ZWQg
-YSBtZW1vcnkgbGVhayB3aXRoIGRldmljZSBwYXNzdGhyb3VnaCB3aGVuIFNNRQppcyBhY3RpdmUu
-CgpUaGUgVkZJTyBkcml2ZXIgdXNlcyBpb21tdV9pb3ZhX3RvX3BoeXMoKSB0byBnZXQgdGhlIHBo
-eXNpY2FsIGFkZHJlc3MgZm9yCmFuIGlvdmEuIFRoaXMgcGh5c2ljYWwgYWRkcmVzcyBpcyBsYXRl
-ciBwYXNzZWQgaW50byB2ZmlvX3VubWFwX3VucGluKCkgdG8KdW5waW4gdGhlIG1lbW9yeS4gVGhl
-IHZmaW9fdW5tYXBfdW5waW4oKSB1c2VzIHBmbl92YWxpZCgpIGJlZm9yZSB1bnBpbm5pbmcKdGhl
-IG1lbW9yeS4gVGhlIHBmbl92YWxpZCgpIGNoZWNrIHdhcyBmYWlsaW5nIGJlY2F1c2UgZW5jcnlw
-dGlvbiBtYXNrIHdhcwpwYXJ0IG9mIHRoZSBwaHlzaWNhbCBhZGRyZXNzIHJldHVybmVkLiBUaGlz
-IHJlc3VsdGVkIGluIHRoZSBtZW1vcnkgbm90CmJlaW5nIHVucGlubmVkIGFuZCB0aGVyZWZvcmUg
-bGVha2VkIGFmdGVyIHRoZSBndWVzdCB0ZXJtaW5hdGVzLgoKVGhlIG1lbW9yeSBlbmNyeXB0aW9u
-IG1hc2sgbXVzdCBiZSBjbGVhcmVkIGZyb20gdGhlIHBoeXNpY2FsIGFkZHJlc3MgaW4KaW9tbXVf
-aW92YV90b19waHlzKCkuCgpGaXhlczogMjU0M2E3ODZhYTI1ICgiaW9tbXUvYW1kOiBBbGxvdyB0
-aGUgQU1EIElPTU1VIHRvIHdvcmsgd2l0aCBtZW1vcnkgZW5jcnlwdGlvbiIpClJlcG9ydGVkLWJ5
-OiBCb3JpcyBPc3Ryb3Zza3kgPGJvcmlzLm9zdHJvdnNreUBvcmFjbGUuY29tPgpDYzogVG9tIExl
-bmRhY2t5IDx0aG9tYXMubGVuZGFja3lAYW1kLmNvbT4KQ2M6IEpvZXJnIFJvZWRlbCA8am9yb0A4
-Ynl0ZXMub3JnPgpDYzogPGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnPgpDYzogQm9y
-aXNsYXYgUGV0a292IDxicEBzdXNlLmRlPgpDYzogUGFvbG8gQm9uemluaSA8cGJvbnppbmlAcmVk
-aGF0LmNvbT4KQ2M6IFJhZGltIEtyxI1tw6HFmSA8cmtyY21hckByZWRoYXQuY29tPgpDYzoga3Zt
-QHZnZXIua2VybmVsLm9yZwpDYzogQm9yaXMgT3N0cm92c2t5IDxib3Jpcy5vc3Ryb3Zza3lAb3Jh
-Y2xlLmNvbT4KQ2M6IDxzdGFibGVAdmdlci5rZXJuZWwub3JnPiAjIDQuMTQrClNpZ25lZC1vZmYt
-Ynk6IEJyaWplc2ggU2luZ2ggPGJyaWplc2guc2luZ2hAYW1kLmNvbT4KU2lnbmVkLW9mZi1ieTog
-Sm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+ClNpZ25lZC1vZmYtYnk6IEdyZWcgS3JvYWgt
-SGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+CgotLS0KIGRyaXZlcnMvaW9tbXUv
-YW1kX2lvbW11LmMgfCAgICAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEg
-ZGVsZXRpb24oLSkKCi0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMKKysrIGIvZHJpdmVy
-cy9pb21tdS9hbWRfaW9tbXUuYwpAQCAtMzA3Myw3ICszMDczLDcgQEAgc3RhdGljIHBoeXNfYWRk
-cl90IGFtZF9pb21tdV9pb3ZhX3RvX3BoeQogCQlyZXR1cm4gMDsKIAogCW9mZnNldF9tYXNrID0g
-cHRlX3Bnc2l6ZSAtIDE7Ci0JX19wdGUJICAgID0gKnB0ZSAmIFBNX0FERFJfTUFTSzsKKwlfX3B0
-ZQkgICAgPSBfX3NtZV9jbHIoKnB0ZSAmIFBNX0FERFJfTUFTSyk7CiAKIAlyZXR1cm4gKF9fcHRl
-ICYgfm9mZnNldF9tYXNrKSB8IChpb3ZhICYgb2Zmc2V0X21hc2spOwogfQoKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Mon, 2018-10-08 at 09:03 +0200, Christoph Hellwig wrote:
+> Ben, does this resolve your issues with the confusing zone selection?
+
+The comment does make things a tad clearer yes :)
+
+Thanks !
+
+Cheers,
+Ben.
+
+> On Mon, Oct 01, 2018 at 01:10:16PM -0700, Christoph Hellwig wrote:
+> > What we are doing here isn't quite obvious, so add a comment explaining
+> > it.
+> > 
+> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > ---
+> >  kernel/dma/direct.c | 9 ++++++++-
+> >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > index ba6f5956a291..14b966e2349a 100644
+> > --- a/kernel/dma/direct.c
+> > +++ b/kernel/dma/direct.c
+> > @@ -84,7 +84,14 @@ static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+> >  	else
+> >  		*phys_mask = dma_to_phys(dev, dma_mask);
+> >  
+> > -	/* GFP_DMA32 and GFP_DMA are no ops without the corresponding zones: */
+> > +	/*
+> > +	 * Optimistically try the zone that the physicall address mask falls
+> > +	 * into first.  If that returns memory that isn't actually addressable
+> > +	 * we will fallback to the next lower zone and try again.
+> > +	 *
+> > +	 * Note that GFP_DMA32 and GFP_DMA are no ops without the corresponding
+> > +	 * zones.
+> > +	 */
+> >  	if (*phys_mask <= DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
+> >  		return GFP_DMA;
+> >  	if (*phys_mask <= DMA_BIT_MASK(32))
+> > -- 
+> > 2.19.0
+> > 
+> > _______________________________________________
+> > iommu mailing list
+> > iommu@lists.linux-foundation.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
+> ---end quoted text---
