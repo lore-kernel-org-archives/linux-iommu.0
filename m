@@ -1,23 +1,14 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v3 03/10] iommu/sva: Manage process address spaces
-Date: Mon, 8 Oct 2018 08:29:07 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439D2682F@SHSMSX104.ccr.corp.intel.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-4-jean-philippe.brucker@arm.com>
-	<09933fce-b959-32e1-b1f3-0d4389abf735@linux.intel.com>
-	<20180925132627.vbdotr23o7lqrmnd@8bytes.org>
-	<b33a1911-e100-586b-b8df-eb04312ecffd@linux.intel.com>
-	<754d495d-d016-f42f-5682-ba4a75a618e0@arm.com>
-	<20180926124527.GD18287@8bytes.org>
-	<1f53c6f1-4e7a-1451-1abc-a7bca4a2359d@arm.com>
-	<A2975661238FB949B60364EF0F2C257439D0CC48@SHSMSX104.ccr.corp.intel.com>
-	<9aedb22e-ff28-7bfd-feeb-ae86802e6400@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] dt-bindings: iommu: ipmmu-vmsa: Add r8a7744 support
+Date: Mon, 8 Oct 2018 16:46:08 +0200
+Message-ID: <20181008144608.sg2gohw3tkydnjhn@8bytes.org>
+References: <1538670347-48201-1-git-send-email-biju.das@bp.renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9aedb22e-ff28-7bfd-feeb-ae86802e6400-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1538670347-48201-1-git-send-email-biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,51 +18,14 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org" <liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
+To: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSmVhbiwNCg0KPiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBo
-aWxpcHBlLmJydWNrZXJAYXJtLmNvbV0NCj4gU2VudDogVGh1cnNkYXksIFNlcHRlbWJlciAyNywg
-MjAxOCA5OjM4IFBNDQo+IFRvOiBMaXUsIFlpIEwgPHlpLmwubGl1QGludGVsLmNvbT47IEpvZXJn
-IFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIHYzIDAzLzEw
-XSBpb21tdS9zdmE6IE1hbmFnZSBwcm9jZXNzIGFkZHJlc3Mgc3BhY2VzDQo+IA0KPiBPbiAyNy8w
-OS8yMDE4IDA0OjIyLCBMaXUsIFlpIEwgd3JvdGU6DQo+ID4+IEZvciB0aGUgImNsYXNzaWMiIHZm
-aW8tcGNpIGNhc2UsICJTVkEgaW4gZ3Vlc3QiIHN0aWxsIG1lYW5zIGdpdmluZyB0aGUNCj4gPj4g
-Z3Vlc3QgY29udHJvbCBvdmVyIHRoZSB3aG9sZSBQQVNJRCB0YWJsZS4NCj4gPg0KPiA+IE5vLCBp
-ZiBnaXZpbmcgZ3Vlc3QgY29udHJvbCBvdmVyIHRoZSB3aG9sZSBQQVNJRCB0YWJsZSwgaXQgbWVh
-bnMgZ3Vlc3QgbWF5IGhhdmUNCj4gPiBpdHMgb3duIFBBU0lEIG5hbWVzcGFjZS4gcmlnaHQ/IEFu
-ZCBmb3IgdmZpby1tZGV2IGNhc2UsIGl0IGdldHMgUEFTSUQgZnJvbSBob3N0Lg0KPiA+IFNvIHRo
-ZXJlIHdvdWxkIGJlIG11bHRpcGxlIFBBU0lEIG5hbWVzcGFjZXMuIFRoaW5raW5nIGFib3V0IHRo
-ZSBmb2xsb3dpbmcNCj4gc2NlbmFyaW86DQo+ID4NCj4gPiBBIFBGL1ZGIGFzc2lnbmVkIHRvIGEg
-Vk0gdmlhICJjbGFzc2ljIiB2ZmlvLXBjaS4gQW5kIGFuIGFzc2lnbmFibGUtZGV2aWNlLWludGVy
-ZmFjZQ0KPiA+IGFzc2lnbmVkIHRvIHRoaXMgVk0gdmlhIHZmaW8tbWRldi4gSWYgYW4gYXBwbGlj
-YXRpb24gaW4gdGhpcyBWTSB0cmllcyB0byBtYW5pcHVsYXRlDQo+ID4gdGhlc2UgdHdvICJkZXZp
-Y2VzIiwgaXQgc2hvdWxkIGhhdmUgdGhlIHNhbWUgUEFTSUQgcHJvZ3JhbW1lZCB0byB0aGVtLiBy
-aWdodD8NCj4gPiBCdXQgYXMgdGhlIGFib3ZlIGNvbW1lbnRzIG1lbnRpb25lZCwgZm9yIHZmaW8t
-cGNpIGNhc2UsIGl0IHdvdWxkIGdldCBhIFBBU0lEDQo+IGZyb20NCj4gPiBpdHMgb3duIFBBU0lE
-IG5hbWVzcGFjZS4gV2hpbGUgdGhlIHZmaW8tbWRldiBjYXNlIHdvdWxkIGdldCBhIFBBU0lEIGZy
-b20gaG9zdC4NCj4gPiBUaGlzIHdvdWxkIHJlc3VsdCBpbiBjb25mbGljdC4NCj4gDQo+IEFoIEkg
-c2VlLCBpZiB0aGUgaG9zdCBhc3NpZ25zIGFuIEFESSB2aWEgdmZpby1tZGV2IGFuZCBhIFBDSSBm
-dW5jdGlvbg0KPiB2aWEgdmZpby1wY2kgdG8gdGhlIHNhbWUgVk0sIHRoZSBndWVzdCBuZWVkcyB0
-byB1c2UgdGhlIHBhcmF2aXJ0dWFsaXplZA0KPiBQQVNJRCBhbGxvY2F0b3IgZm9yIHRoZSBQQ0kg
-ZGV2aWNlIGFzIHdlbGwsIG5vdCBqdXN0IHRoZSBBREkuIEluIGZhY3QNCj4gYWxsIGd1ZXN0IFBB
-U0lEcyBuZWVkIHRvIGJlIGFsbG9jYXRlZCB0aHJvdWdoIG9uZSBQViBjaGFubmVsLCBldmVuIGlm
-DQo+IHRoZSBWTSBoYXMgb3RoZXIgdklPTU1VcyB0aGF0IGRvbid0IHN1cHBvcnQgUFYuIEJ1dCBJ
-IHN1cHBvc2UgdGhhdCBraW5kDQo+IG9mIFZNIGlzIHVucmVhbGlzdGljLg0KDQp5ZXMsIHN1Y2gg
-a2luZCBvZiBWTSBpcyB1bnJlYWxpc3RpYy4gOikNCg0KPiBIb3dldmVyIGZvciBTTU1VdjMgd2Un
-bGwgc3RpbGwgdXNlIHRoZQ0KPiBiaW5kX3Bhc2lkX3RhYmxlIGZvciB2ZmlvLXBjaSBhbmQgbGV0
-IHRoZSBndWVzdCBhbGxvY2F0ZSBQQVNJRHMsIHNpbmNlDQo+IHRoZSBQQVNJRCB0YWJsZSBsaXZl
-cyBpbiBndWVzdC1waHlzaWNhbCBzcGFjZS4NCg0KSSB0aGluayBpdCdzIG9rLiBUaGlzIGRvZXNu
-4oCZdCByZXN1bHQgaW4gYW55IGNvbmZsaWN0Lg0KDQo+IA0KPiBJbiBhbnkgY2FzZSwgZm9yIHRo
-ZSBwYXRjaCBzZXJpZXMgYXQgaGFuZCwgaXQgbWVhbnMgdGhhdCBpb21tdS1zdmEgd2lsbA0KPiBu
-ZWVkIGFzc2lzdGFuY2UgZnJvbSB0aGUgdnQtZCBkcml2ZXIgdG8gYWxsb2NhdGUgUEFTSURzOiBo
-b3N0IHVzZXMgdGhlDQo+IGdlbmVyaWMgYWxsb2NhdG9yLCBndWVzdCB1c2VzIHRoZSBQViBvbmUu
-DQoNCkV4YWN0bHkuDQoNCj4gSSBndWVzcyB0aGUgbW1fYWxsb2MoKSBvcCBjb3VsZCBkbyB0aGF0
-Pw0KDQpEbyB5b3UgbWVhbiB0aGUgaW9fbW1fYWxsb2MgaW4geW91ciBTVkEgcGF0Y2ggc2VyaWVz
-PyBXZSd2ZSBnb3QNCnNvbWUgcGF0Y2ggZm9yIHRoZSBQViBvbmUuIEFsbGVuIChCYW9sdSBMdSkg
-aXMgcHJlcGFyaW5nIHRvIHNlbmQgaXQgb3V0DQpmb3IgcmV2aWV3LiBJIGd1ZXNzIHdlIGNhbiBo
-YXZlIG1vcmUgYWxpZ25tZW50IGR1cmluZyB0aGF0IHBhdGNoDQpyZXZpZXdpbmcuDQoNClRoYW5r
-cywNCllpIExpdQ0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Oct 04, 2018 at 05:25:47PM +0100, Biju Das wrote:
+> Document RZ/G1N (R8A7744) SoC bindings.
+> 
+> Signed-off-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> Reviewed-by: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+
+Applied, thanks.
