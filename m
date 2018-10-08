@@ -1,22 +1,54 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2] dma-debug: Check for drivers mapping invalid
- addresses in dma_map_single()
-Date: Mon, 8 Oct 2018 08:36:13 +0200
-Message-ID: <20181008063613.GA2411@lst.de>
-References: <20181001215337.13358-1-swboyd@chromium.org> <62816605-0cc9-3743-e98c-682bf7996c6c@arm.com> <153897315026.119890.9913725764215566223@swboyd.mtv.corp.google.com>
+Subject: Re: [PATCH] dma-direct: document the zone selection logic
+Date: Mon, 8 Oct 2018 09:03:27 +0200
+Message-ID: <20181008070327.GA3134@lst.de>
+References: <20181001201016.32639-1-hch@lst.de> <20181001201016.32639-2-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <153897315026.119890.9913725764215566223@swboyd.mtv.corp.google.com>
+In-Reply-To: <20181001201016.32639-2-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <swboyd@chromium.org>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Oct 07, 2018 at 09:32:30PM -0700, Stephen Boyd wrote:
-> > Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> Thanks for checking! ;)
+Ben, does this resolve your issues with the confusing zone selection?
 
-Can you resend the fixed version to make my life easier?
+On Mon, Oct 01, 2018 at 01:10:16PM -0700, Christoph Hellwig wrote:
+> What we are doing here isn't quite obvious, so add a comment explaining
+> it.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  kernel/dma/direct.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index ba6f5956a291..14b966e2349a 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -84,7 +84,14 @@ static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+>  	else
+>  		*phys_mask = dma_to_phys(dev, dma_mask);
+>  
+> -	/* GFP_DMA32 and GFP_DMA are no ops without the corresponding zones: */
+> +	/*
+> +	 * Optimistically try the zone that the physicall address mask falls
+> +	 * into first.  If that returns memory that isn't actually addressable
+> +	 * we will fallback to the next lower zone and try again.
+> +	 *
+> +	 * Note that GFP_DMA32 and GFP_DMA are no ops without the corresponding
+> +	 * zones.
+> +	 */
+>  	if (*phys_mask <= DMA_BIT_MASK(ARCH_ZONE_DMA_BITS))
+>  		return GFP_DMA;
+>  	if (*phys_mask <= DMA_BIT_MASK(32))
+> -- 
+> 2.19.0
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+---end quoted text---
