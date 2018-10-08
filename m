@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.14 84/94] iommu/amd: Clear memory encryption mask from
+Subject: [PATCH 4.18 156/168] iommu/amd: Clear memory encryption mask from
 	physical address
-Date: Mon,  8 Oct 2018 20:32:05 +0200
-Message-ID: <20181008175610.535775320@linuxfoundation.org>
-References: <20181008175605.067676667@linuxfoundation.org>
+Date: Mon,  8 Oct 2018 20:32:16 +0200
+Message-ID: <20181008175625.978463772@linuxfoundation.org>
+References: <20181008175620.043587728@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181008175605.067676667-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20181008175620.043587728-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,7 +22,7 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-NC4xNC1zdGFibGUgcmV2aWV3IHBhdGNoLiAgSWYgYW55b25lIGhhcyBhbnkgb2JqZWN0aW9ucywg
+NC4xOC1zdGFibGUgcmV2aWV3IHBhdGNoLiAgSWYgYW55b25lIGhhcyBhbnkgb2JqZWN0aW9ucywg
 cGxlYXNlIGxldCBtZSBrbm93LgoKLS0tLS0tLS0tLS0tLS0tLS0tCgpGcm9tOiBTaW5naCwgQnJp
 amVzaCA8YnJpamVzaC5zaW5naEBhbWQuY29tPgoKY29tbWl0IGIzZTliNTE1YjA4ZTQwN2FiM2Ew
 MjZkYzJlNGQ5MzVjNDhkMDVmNjkgdXBzdHJlYW0uCgpCb3JpcyBPc3Ryb3Zza3kgcmVwb3J0ZWQg
@@ -50,7 +50,7 @@ Sm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+ClNpZ25lZC1vZmYtYnk6IEdyZWcgS3JvYWgt
 SGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+CgotLS0KIGRyaXZlcnMvaW9tbXUv
 YW1kX2lvbW11LmMgfCAgICAyICstCiAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEg
 ZGVsZXRpb24oLSkKCi0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMKKysrIGIvZHJpdmVy
-cy9pb21tdS9hbWRfaW9tbXUuYwpAQCAtMzA3MSw3ICszMDcxLDcgQEAgc3RhdGljIHBoeXNfYWRk
+cy9pb21tdS9hbWRfaW9tbXUuYwpAQCAtMzA3Myw3ICszMDczLDcgQEAgc3RhdGljIHBoeXNfYWRk
 cl90IGFtZF9pb21tdV9pb3ZhX3RvX3BoeQogCQlyZXR1cm4gMDsKIAogCW9mZnNldF9tYXNrID0g
 cHRlX3Bnc2l6ZSAtIDE7Ci0JX19wdGUJICAgID0gKnB0ZSAmIFBNX0FERFJfTUFTSzsKKwlfX3B0
 ZQkgICAgPSBfX3NtZV9jbHIoKnB0ZSAmIFBNX0FERFJfTUFTSyk7CiAKIAlyZXR1cm4gKF9fcHRl
