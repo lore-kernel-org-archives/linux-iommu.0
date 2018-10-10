@@ -1,55 +1,32 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 25/33] cxl: drop the dma_set_mask callback from vphb
-Date: Tue,  9 Oct 2018 15:24:52 +0200
-Message-ID: <20181009132500.17643-26-hch@lst.de>
-References: <20181009132500.17643-1-hch@lst.de>
+From: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 0/2] iommu/arm-smmu-v3: Miscellaneous clean up
+Date: Wed, 10 Oct 2018 11:29:25 +0100
+Message-ID: <1539167367-20471-1-git-send-email-andrew.murray@arm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181009132500.17643-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>
-Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The CXL code never even looks at the dma mask, so there is no good
-reason for this sanity check.  Remove it because it gets in the way
-of the dma ops refactoring.
+Remove unnecessary code and license text.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/misc/cxl/vphb.c | 12 ------------
- 1 file changed, 12 deletions(-)
+Andrew Murray (2):
+  iommu/arm-smmu-v3: Add SPDX header
+  iommu/arm-smmu-v3: Remove unnecessary wrapper function
 
-diff --git a/drivers/misc/cxl/vphb.c b/drivers/misc/cxl/vphb.c
-index 7908633d9204..49da2f744bbf 100644
---- a/drivers/misc/cxl/vphb.c
-+++ b/drivers/misc/cxl/vphb.c
-@@ -11,17 +11,6 @@
- #include <misc/cxl.h>
- #include "cxl.h"
- 
--static int cxl_dma_set_mask(struct pci_dev *pdev, u64 dma_mask)
--{
--	if (dma_mask < DMA_BIT_MASK(64)) {
--		pr_info("%s only 64bit DMA supported on CXL", __func__);
--		return -EIO;
--	}
--
--	*(pdev->dev.dma_mask) = dma_mask;
--	return 0;
--}
--
- static int cxl_pci_probe_mode(struct pci_bus *bus)
- {
- 	return PCI_PROBE_NORMAL;
-@@ -220,7 +209,6 @@ static struct pci_controller_ops cxl_pci_controller_ops =
- 	.reset_secondary_bus = cxl_pci_reset_secondary_bus,
- 	.setup_msi_irqs = cxl_setup_msi_irqs,
- 	.teardown_msi_irqs = cxl_teardown_msi_irqs,
--	.dma_set_mask = cxl_dma_set_mask,
- };
- 
- int cxl_pci_vphb_add(struct cxl_afu *afu)
+ drivers/iommu/arm-smmu-v3.c | 25 +++++--------------------
+ 1 file changed, 5 insertions(+), 20 deletions(-)
+
 -- 
-2.19.0
+2.7.4
