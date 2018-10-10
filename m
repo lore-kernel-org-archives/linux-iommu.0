@@ -1,81 +1,33 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: Remove unnecessary wrapper function
-Date: Wed, 10 Oct 2018 11:42:30 +0100
-Message-ID: <0ec6edcf-1ac6-7dfd-c494-a006ab9538b1@arm.com>
-References: <1539167367-20471-1-git-send-email-andrew.murray@arm.com>
-	<1539167367-20471-3-git-send-email-andrew.murray@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1539167367-20471-3-git-send-email-andrew.murray-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Subject: [PATCH] iommu: arm-smmu: handle client iommu translation fault handlers
+Date: Wed, 10 Oct 2018 17:44:07 +0300
+Message-ID: <20181010144407.23336-1-stanimir.varbanov@linaro.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, Stanimir Varbanov <stanimir.varbanov@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/10/18 11:29, Andrew Murray wrote:
-> Simplify the code by removing an unnecessary wrapper function.
-> 
-> This was left behind by commit 2f657add07a8
-> ("iommu/arm-smmu-v3: Specialise CMD_SYNC handling")
+Call iommu client translation fault handler(s).
 
-Oops, sorry about that ;)
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+---
+ drivers/iommu/arm-smmu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-> Signed-off-by: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>
-> ---
->   drivers/iommu/arm-smmu-v3.c | 12 ++++--------
->   1 file changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index c7bd18e..6947ccf 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -1371,15 +1371,11 @@ static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
->   }
->   
->   /* IO_PGTABLE API */
-> -static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
-> -{
-> -	arm_smmu_cmdq_issue_sync(smmu);
-> -}
-> -
->   static void arm_smmu_tlb_sync(void *cookie)
->   {
->   	struct arm_smmu_domain *smmu_domain = cookie;
-> -	__arm_smmu_tlb_sync(smmu_domain->smmu);
-> +
-> +	arm_smmu_cmdq_issue_sync(smmu_domain->smmu);
->   }
->   
->   static void arm_smmu_tlb_inv_context(void *cookie)
-> @@ -1404,7 +1400,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->   	 * to guarantee those are observed before the TLBI. Do be careful, 007.
->   	 */
->   	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> -	__arm_smmu_tlb_sync(smmu);
-> +	arm_smmu_cmdq_issue_sync(smmu);
->   }
->   
->   static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-> @@ -1793,7 +1789,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
->   	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
->   
->   	if (smmu)
-> -		__arm_smmu_tlb_sync(smmu);
-> +		arm_smmu_cmdq_issue_sync(smmu);
->   }
->   
->   static phys_addr_t
-> 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 066f4c8daf4e..02a8aab0cc59 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -568,6 +568,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 			    fsr, iova, fsynr, cfg->cbndx);
+ 
+ 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
++
++	report_iommu_fault(domain, smmu->dev, iova, 0);
++
+ 	return IRQ_HANDLED;
+ }
+ 
+-- 
+2.17.1
