@@ -1,52 +1,49 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: arm-smmu: handle client iommu translation fault
-	handlers
-Date: Wed, 10 Oct 2018 18:08:37 +0100
-Message-ID: <20181010170837.GC16512@arm.com>
-References: <20181010144407.23336-1-stanimir.varbanov@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181010144407.23336-1-stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
+Subject: [PATCH v4 0/2] Enable smmu support on sdm845
+Date: Thu, 11 Oct 2018 15:12:43 +0530
+Message-ID: <20181011094245.7943-1-vivek.gautam@codeaurora.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, robh+dt@kernel.org, andy.gross@linaro.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc: mark.rutland@arm.com, david.brown@linaro.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, will.deacon@arm.com, dianders@chromium.org, Vivek Gautam <vivek.gautam@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 10, 2018 at 05:44:07PM +0300, Stanimir Varbanov wrote:
-> Call iommu client translation fault handler(s).
-> 
-> Signed-off-by: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 066f4c8daf4e..02a8aab0cc59 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -568,6 +568,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->  			    fsr, iova, fsynr, cfg->cbndx);
->  
->  	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
-> +
-> +	report_iommu_fault(domain, smmu->dev, iova, 0);
+This series enables apps-smmu, the "arm,mmu-500" instance
+on sdm845.
 
-Who's using this? Generally, the callback here isn't so useful because it's
-called in irq context. We also don't enable stalling since 3714ce1d6655.
+Changes since v3:
+ - Refined the dt binding documentation more to align with
+   Rob's comments for qcom,smmu-v2 binding documentation [1]
+   on SoC specific compatibles and state things similar
+   to qcom,smmu-v2 [2].
 
-We previously had fairly detailed discussions on the list with Rob Clark
-about alternative ways to design this, but I don't remember where it ended
-up.
+Changes since v2:
+ - Dropped patch for gpu-smmu [3] as the same has been pushed by
+   Jordan [4] after incorporating the dt binding update.
+ - Updated binding doc to include valid value for '<soc>'
+   in "qcom,<soc>-smmu-500" compatible string.
 
-Will
+Changes since v1:
+ - Addressed Rob's review comments by adding a SoC specific compatible.
+   Have added a new dt-bindings patch for this.
+ - Updated node name to 'iommu'.
+ - Addressed Doug's review comment about removing status property from
+   smmu's nodes, as smmu is either present on the soc or not. Enabling
+   it is not a board-level decision.
+
+[1] https://patchwork.kernel.org/patch/10576937/
+[1] https://patchwork.kernel.org/patch/10581911/
+[3] https://patchwork.kernel.org/patch/10565295/
+[4] https://patchwork.kernel.org/patch/10577297/
+
+Vivek Gautam (2):
+  dt-bindings: arm-smmu: Add binding doc for Qcom smmu-500
+  dts: arm64/sdm845: Add node for arm,mmu-500
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  4 ++
+ arch/arm64/boot/dts/qcom/sdm845.dtsi               | 72 ++++++++++++++++++++++
+ 2 files changed, 76 insertions(+)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
