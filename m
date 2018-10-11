@@ -1,279 +1,439 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 04/10] swiotlb: remove the overflow buffer
-Date: Thu, 11 Oct 2018 19:19:35 +0100
-Message-ID: <d0c80b04-4558-a7a0-915d-9971919551ac@arm.com>
-References: <20181008080246.20543-1-hch@lst.de>
- <20181008080246.20543-5-hch@lst.de>
+From: Jerry Snitselaar <jsnitsel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: source-id verification failures
+Date: Thu, 11 Oct 2018 12:09:16 -0700
+Message-ID: <20181011190916.zwei4ouxqv5vfjo7@cantor>
+References: <20181002172529.fjapu46h5y57m3f7@cantor>
+	<20181004090753.GC3630@8bytes.org>
+	<20181004205724.4kqntecb6m7gcgu6@cantor>
+	<20181005114338.234e39ee@jacob-builder>
+Reply-To: Jerry Snitselaar <jsnitsel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181008080246.20543-5-hch@lst.de>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20181005114338.234e39ee@jacob-builder>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/10/18 09:02, Christoph Hellwig wrote:
-> Like all other dma mapping drivers just return an error code instead
-> of an actual memory buffer.  The reason for the overflow buffer was
-> that at the time swiotlb was invented there was no way to check for
-> dma mapping errors, but this has long been fixed.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   arch/arm64/mm/dma-mapping.c       |  2 +-
->   arch/powerpc/kernel/dma-swiotlb.c |  4 +--
->   include/linux/dma-direct.h        |  2 ++
->   include/linux/swiotlb.h           |  3 --
->   kernel/dma/direct.c               |  2 --
->   kernel/dma/swiotlb.c              | 59 ++-----------------------------
->   6 files changed, 8 insertions(+), 64 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 072c51fb07d7..8d91b927e09e 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -324,7 +324,7 @@ static int __swiotlb_dma_supported(struct device *hwdev, u64 mask)
->   static int __swiotlb_dma_mapping_error(struct device *hwdev, dma_addr_t addr)
->   {
->   	if (swiotlb)
+On Fri Oct 05 18, Jacob Pan wrote:
+>On Thu, 4 Oct 2018 13:57:24 -0700
+>Jerry Snitselaar <jsnitsel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>
+>> >
+>> >On Tue, Oct 02, 2018 at 10:25:29AM -0700, Jerry Snitselaar wrote:
+>> >> I've been trying to track down a problem where an hp dl380 gen8
+>> >> with a Cavium QLogic BR-1860 Fabric Adapter is getting source-id
+>> >> verification failures when running dhclient against that
+>> >> interface. This started showing up when I backported the iova
+>> >> deferred flushing patches. So far this has only been seen on this
+>> >> one system, but I'm trying to understand why it appears with the
+>> >> new deferred flushing code. I also see it with both 4.18.10, and
+>> >> 4.19.0-rc6 kernels.
+>> >>
+>Hi Jerry,
+>Could you confirm that you see this failure in v4.19-rc6 kernel only
+>without "strict" mode? I don't see a connection between deferred
+>flushing and IR here, AFAIK deferred flush only affects DMA remapping.
+>
+>Also, does the SID failure occur on other devices under the same IOMMU?
+>
+>
+>Thanks,
+>
+>Jacob
+>
 
- From a bit of archaeology, I think io_tlb_overflow_buffer being 
-uninitialised was the reason this needed fixing in adbe7e26f425. Given 
-that, you could as well just nuke this whole helper and install 
-dma_direct_mapping_error in the ops like the other users, although I 
-appreciate it's only really a bisection thing so may not matter much.
+Confirmed the system doesn't see the problem with intel_iommu=strict.
+We've only seen SID failures occur for the 2 ports on the brocade device.
 
-With the caveat that it's late and I may technically have missed 
-something, but have at least found the branch to boot-test OK:
+Another data point is that there is a dl388 gen8 with the same card,
+and we don't see any problems there. I'd say it is something with
+this system, but it is odd that the problem starts showing itself
+when I add those patches.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-> -		return swiotlb_dma_mapping_error(hwdev, addr);
-> +		return dma_direct_mapping_error(hwdev, addr);
->   	return 0;
->   }
->   
-> diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
-> index 88f3963ca30f..5fc335f4d9cd 100644
-> --- a/arch/powerpc/kernel/dma-swiotlb.c
-> +++ b/arch/powerpc/kernel/dma-swiotlb.c
-> @@ -11,7 +11,7 @@
->    *
->    */
->   
-> -#include <linux/dma-mapping.h>
-> +#include <linux/dma-direct.h>
->   #include <linux/memblock.h>
->   #include <linux/pfn.h>
->   #include <linux/of_platform.h>
-> @@ -59,7 +59,7 @@ const struct dma_map_ops powerpc_swiotlb_dma_ops = {
->   	.sync_single_for_device = swiotlb_sync_single_for_device,
->   	.sync_sg_for_cpu = swiotlb_sync_sg_for_cpu,
->   	.sync_sg_for_device = swiotlb_sync_sg_for_device,
-> -	.mapping_error = swiotlb_dma_mapping_error,
-> +	.mapping_error = dma_direct_mapping_error,
->   	.get_required_mask = swiotlb_powerpc_get_required,
->   };
->   
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index fbca184ff5a0..bd73e7a91410 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -5,6 +5,8 @@
->   #include <linux/dma-mapping.h>
->   #include <linux/mem_encrypt.h>
->   
-> +#define DIRECT_MAPPING_ERROR		0
-> +
->   #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
->   #include <asm/dma-direct.h>
->   #else
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index 7ef541ce8f34..f847c1b265c4 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -106,9 +106,6 @@ extern void
->   swiotlb_sync_sg_for_device(struct device *hwdev, struct scatterlist *sg,
->   			   int nelems, enum dma_data_direction dir);
->   
-> -extern int
-> -swiotlb_dma_mapping_error(struct device *hwdev, dma_addr_t dma_addr);
-> -
->   extern int
->   swiotlb_dma_supported(struct device *hwdev, u64 mask);
->   
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 674a8da22844..12798abba55e 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -14,8 +14,6 @@
->   #include <linux/pfn.h>
->   #include <linux/set_memory.h>
->   
-> -#define DIRECT_MAPPING_ERROR		0
-> -
->   /*
->    * Most architectures use ZONE_DMA for the first 16 Megabytes, but
->    * some use it for entirely different regions:
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 69bf305ee5f8..11dbcd80b4a6 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -72,13 +72,6 @@ static phys_addr_t io_tlb_start, io_tlb_end;
->    */
->   static unsigned long io_tlb_nslabs;
->   
-> -/*
-> - * When the IOMMU overflows we return a fallback buffer. This sets the size.
-> - */
-> -static unsigned long io_tlb_overflow = 32*1024;
-> -
-> -static phys_addr_t io_tlb_overflow_buffer;
-> -
->   /*
->    * This is a free list describing the number of free entries available from
->    * each index
-> @@ -126,7 +119,6 @@ setup_io_tlb_npages(char *str)
->   	return 0;
->   }
->   early_param("swiotlb", setup_io_tlb_npages);
-> -/* make io_tlb_overflow tunable too? */
->   
->   unsigned long swiotlb_nr_tbl(void)
->   {
-> @@ -194,16 +186,10 @@ void __init swiotlb_update_mem_attributes(void)
->   	bytes = PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT);
->   	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
->   	memset(vaddr, 0, bytes);
-> -
-> -	vaddr = phys_to_virt(io_tlb_overflow_buffer);
-> -	bytes = PAGE_ALIGN(io_tlb_overflow);
-> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
-> -	memset(vaddr, 0, bytes);
->   }
->   
->   int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
->   {
-> -	void *v_overflow_buffer;
->   	unsigned long i, bytes;
->   
->   	bytes = nslabs << IO_TLB_SHIFT;
-> @@ -212,17 +198,6 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
->   	io_tlb_start = __pa(tlb);
->   	io_tlb_end = io_tlb_start + bytes;
->   
-> -	/*
-> -	 * Get the overflow emergency buffer
-> -	 */
-> -	v_overflow_buffer = memblock_virt_alloc_low_nopanic(
-> -						PAGE_ALIGN(io_tlb_overflow),
-> -						PAGE_SIZE);
-> -	if (!v_overflow_buffer)
-> -		return -ENOMEM;
-> -
-> -	io_tlb_overflow_buffer = __pa(v_overflow_buffer);
-> -
->   	/*
->   	 * Allocate and initialize the free list array.  This array is used
->   	 * to find contiguous free memory regions of size up to IO_TLB_SEGSIZE
-> @@ -330,7 +305,6 @@ int
->   swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->   {
->   	unsigned long i, bytes;
-> -	unsigned char *v_overflow_buffer;
->   
->   	bytes = nslabs << IO_TLB_SHIFT;
->   
-> @@ -341,19 +315,6 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->   	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
->   	memset(tlb, 0, bytes);
->   
-> -	/*
-> -	 * Get the overflow emergency buffer
-> -	 */
-> -	v_overflow_buffer = (void *)__get_free_pages(GFP_DMA,
-> -						     get_order(io_tlb_overflow));
-> -	if (!v_overflow_buffer)
-> -		goto cleanup2;
-> -
-> -	set_memory_decrypted((unsigned long)v_overflow_buffer,
-> -			io_tlb_overflow >> PAGE_SHIFT);
-> -	memset(v_overflow_buffer, 0, io_tlb_overflow);
-> -	io_tlb_overflow_buffer = virt_to_phys(v_overflow_buffer);
-> -
->   	/*
->   	 * Allocate and initialize the free list array.  This array is used
->   	 * to find contiguous free memory regions of size up to IO_TLB_SEGSIZE
-> @@ -390,10 +351,6 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->   	                                                 sizeof(int)));
->   	io_tlb_list = NULL;
->   cleanup3:
-> -	free_pages((unsigned long)v_overflow_buffer,
-> -		   get_order(io_tlb_overflow));
-> -	io_tlb_overflow_buffer = 0;
-> -cleanup2:
->   	io_tlb_end = 0;
->   	io_tlb_start = 0;
->   	io_tlb_nslabs = 0;
-> @@ -407,8 +364,6 @@ void __init swiotlb_exit(void)
->   		return;
->   
->   	if (late_alloc) {
-> -		free_pages((unsigned long)phys_to_virt(io_tlb_overflow_buffer),
-> -			   get_order(io_tlb_overflow));
->   		free_pages((unsigned long)io_tlb_orig_addr,
->   			   get_order(io_tlb_nslabs * sizeof(phys_addr_t)));
->   		free_pages((unsigned long)io_tlb_list, get_order(io_tlb_nslabs *
-> @@ -416,8 +371,6 @@ void __init swiotlb_exit(void)
->   		free_pages((unsigned long)phys_to_virt(io_tlb_start),
->   			   get_order(io_tlb_nslabs << IO_TLB_SHIFT));
->   	} else {
-> -		memblock_free_late(io_tlb_overflow_buffer,
-> -				   PAGE_ALIGN(io_tlb_overflow));
->   		memblock_free_late(__pa(io_tlb_orig_addr),
->   				   PAGE_ALIGN(io_tlb_nslabs * sizeof(phys_addr_t)));
->   		memblock_free_late(__pa(io_tlb_list),
-> @@ -790,7 +743,7 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->   	/* Oh well, have to allocate and map a bounce buffer. */
->   	map = map_single(dev, phys, size, dir, attrs);
->   	if (map == SWIOTLB_MAP_ERROR)
-> -		return __phys_to_dma(dev, io_tlb_overflow_buffer);
-> +		return DIRECT_MAPPING_ERROR;
->   
->   	dev_addr = __phys_to_dma(dev, map);
->   
-> @@ -801,7 +754,7 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->   	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
->   	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
->   
-> -	return __phys_to_dma(dev, io_tlb_overflow_buffer);
-> +	return DIRECT_MAPPING_ERROR;
->   }
->   
->   /*
-> @@ -985,12 +938,6 @@ swiotlb_sync_sg_for_device(struct device *hwdev, struct scatterlist *sg,
->   	swiotlb_sync_sg(hwdev, sg, nelems, dir, SYNC_FOR_DEVICE);
->   }
->   
-> -int
-> -swiotlb_dma_mapping_error(struct device *hwdev, dma_addr_t dma_addr)
-> -{
-> -	return (dma_addr == __phys_to_dma(hwdev, io_tlb_overflow_buffer));
-> -}
-> -
->   /*
->    * Return whether the given device DMA address mask can be supported
->    * properly.  For example, if your device can only drive the low 24-bits
-> @@ -1033,7 +980,7 @@ void swiotlb_free(struct device *dev, size_t size, void *vaddr,
->   }
->   
->   const struct dma_map_ops swiotlb_dma_ops = {
-> -	.mapping_error		= swiotlb_dma_mapping_error,
-> +	.mapping_error		= dma_direct_mapping_error,
->   	.alloc			= swiotlb_alloc,
->   	.free			= swiotlb_free,
->   	.sync_single_for_cpu	= swiotlb_sync_single_for_cpu,
-> 
+# cat ir_translation_struct 
+Remapped Interrupt supported on IOMMU: dmar0
+ IR table address:42f200000
+ Entry SrcID   DstID    Vct IRTE_high		IRTE_low
+ 2     24:00.0 00020001 21  0000000000042400	000200010021000d
+ 3     24:00.0 00020200 28  0000000000042400	000202000028000d
+ 4     24:00.0 00020800 28  0000000000042400	000208000028000d
+ 5     24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 6     24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 7     24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 8     24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 9     24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 10    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 11    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 12    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 13    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 14    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 15    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 16    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 17    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 18    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 19    24:00.0 00000001 ef  0000000000042400	0000000100ef000d
+ 20    24:00.1 00020004 25  0000000000042401	000200040025000d
+ 21    24:00.1 00020001 29  0000000000042401	000200010029000d
+ 22    24:00.1 00020004 29  0000000000042401	000200040029000d
+ 23    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 24    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 25    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 26    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 27    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 28    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 29    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 30    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 31    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 32    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 33    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 34    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 35    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 36    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 37    24:00.1 00000001 ef  0000000000042401	0000000100ef000d
+ 39    20:04.0 00020010 28  0000000000042020	000200100028000d
+ 41    20:04.1 00020040 28  0000000000042021	000200400028000d
+ 42    20:04.2 00020100 28  0000000000042022	000201000028000d
+ 43    20:04.3 00020400 28  0000000000042023	000204000028000d
+ 44    20:04.4 00020002 28  0000000000042024	000200020028000d
+ 45    20:04.5 00020008 28  0000000000042025	000200080028000d
+ 46    20:04.6 00020020 28  0000000000042026	000200200028000d
+ 47    20:04.7 00020080 28  0000000000042027	000200800028000d
+
+Remapped Interrupt supported on IOMMU: dmar1
+ IR table address:42e800000
+ Entry SrcID   DstID    Vct IRTE_high		IRTE_low
+ 0     00:1e.1 00020020 2a  00000000000400f1	00020020002a000d
+ 1     00:1e.1 00000001 30  00000000000400f1	000000010030000d
+ 2     00:1e.1 00020200 2a  00000000000400f1	00020200002a000d
+ 7     00:1e.1 00020004 2b  00000000000400f1	00020004002b000d
+ 8     00:1e.1 00020040 2b  00000000000400f1	00020040002b000d
+ 11    00:1e.1 00020100 2b  00000000000400f1	00020100002b000d
+ 17    00:1e.1 00020010 29  00000000000400f1	000200100029000d
+ 18    00:1e.1 00000010 21  00000000000400f1	000000100021000d
+ 19    00:1e.1 00000040 21  00000000000400f1	000000400021000d
+ 22    00:1e.1 00000400 2d  00000000000400f1	00000400002d000d
+ 25    02:00.0 00000001 23  0000000000040200	000000010023000d
+ 26    02:00.0 00000004 22  0000000000040200	000000040022000d
+ 27    02:00.0 00000010 22  0000000000040200	000000100022000d
+ 28    02:00.0 00000040 22  0000000000040200	000000400022000d
+ 29    02:00.0 00000100 22  0000000000040200	000001000022000d
+ 30    02:00.0 00000400 22  0000000000040200	000004000022000d
+ 31    02:00.0 00000002 22  0000000000040200	000000020022000d
+ 32    02:00.0 00000008 22  0000000000040200	000000080022000d
+ 33    02:00.0 00000020 22  0000000000040200	000000200022000d
+ 34    02:00.0 00000080 22  0000000000040200	000000800022000d
+ 35    02:00.0 00000200 21  0000000000040200	000002000021000d
+ 36    02:00.0 00000800 21  0000000000040200	000008000021000d
+ 37    02:00.0 00020001 22  0000000000040200	000200010022000d
+ 38    02:00.0 00020004 21  0000000000040200	000200040021000d
+ 39    02:00.0 00020010 21  0000000000040200	000200100021000d
+ 40    02:00.0 00020040 21  0000000000040200	000200400021000d
+ 41    02:00.0 00020100 21  0000000000040200	000201000021000d
+ 42    02:00.0 00020400 21  0000000000040200	000204000021000d
+ 43    02:00.0 00020002 21  0000000000040200	000200020021000d
+ 44    02:00.0 00020008 21  0000000000040200	000200080021000d
+ 45    02:00.0 00020020 21  0000000000040200	000200200021000d
+ 46    02:00.0 00020080 21  0000000000040200	000200800021000d
+ 47    02:00.0 00020200 21  0000000000040200	000202000021000d
+ 48    02:00.0 00020800 21  0000000000040200	000208000021000d
+ 49    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 50    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 51    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 52    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 53    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 54    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 55    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 56    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 57    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 58    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 59    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 60    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 61    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 62    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 63    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 64    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 65    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 66    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 67    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 68    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 69    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 70    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 71    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 72    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 73    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 74    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 75    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 76    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 77    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 78    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 79    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 80    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 81    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 82    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 83    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 84    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 85    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 86    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 87    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 88    02:00.0 00000001 ef  0000000000040200	0000000100ef000d
+ 90    07:00.2 00000001 24  0000000000040702	000000010024000d
+ 91    07:00.2 00000001 25  0000000000040702	000000010025000d
+ 92    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 93    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 94    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 95    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 96    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 97    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 98    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 99    07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 100   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 101   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 102   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 103   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 104   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 105   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 106   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 107   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 108   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 109   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 110   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 111   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 112   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 113   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 114   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 115   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 116   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 117   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 118   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 119   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 120   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 121   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 122   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 123   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 124   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 125   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 126   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 127   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 128   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 129   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 130   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 131   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 132   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 133   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 134   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 135   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 136   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 137   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 138   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 139   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 140   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 141   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 142   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 143   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 144   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 145   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 146   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 147   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 148   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 149   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 150   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 151   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 152   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 153   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 154   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 155   07:00.2 00000001 ef  0000000000040702	0000000100ef000d
+ 158   07:00.3 00000001 26  0000000000040703	000000010026000d
+ 159   07:00.3 00000001 27  0000000000040703	000000010027000d
+ 160   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 161   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 162   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 163   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 164   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 165   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 166   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 167   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 168   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 169   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 170   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 171   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 172   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 173   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 174   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 175   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 176   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 177   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 178   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 179   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 180   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 181   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 182   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 183   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 184   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 185   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 186   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 187   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 188   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 189   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 190   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 191   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 192   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 193   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 194   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 195   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 196   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 197   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 198   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 199   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 200   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 201   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 202   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 203   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 204   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 205   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 206   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 207   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 208   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 209   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 210   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 211   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 212   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 213   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 214   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 215   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 216   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 217   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 218   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 219   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 220   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 221   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 222   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 223   07:00.3 00000001 ef  0000000000040703	0000000100ef000d
+ 225   00:04.0 00020100 29  0000000000040020	000201000029000d
+ 227   00:04.1 00020010 2a  0000000000040021	00020010002a000d
+ 228   00:04.2 00020040 29  0000000000040022	000200400029000d
+ 229   00:04.3 00020008 29  0000000000040023	000200080029000d
+ 230   00:04.4 00000040 29  0000000000040024	000000400029000d
+ 231   00:04.5 00000100 29  0000000000040025	000001000029000d
+ 232   00:04.6 00020002 2a  0000000000040026	00020002002a000d
+ 233   00:04.7 00000002 29  0000000000040027	000000020029000d
+ 234   07:00.0 00020080 2a  0000000000040700	00020080002a000d
+ 235   07:00.0 00020040 2a  0000000000040700	00020040002a000d
+ 236   07:00.0 00000200 28  0000000000040700	000002000028000d
+ 237   07:00.0 00000001 2c  0000000000040700	00000001002c000d
+ 238   07:00.0 00020400 2a  0000000000040700	00020400002a000d
+ 239   07:00.0 00020800 29  0000000000040700	000208000029000d
+ 240   07:00.0 00000400 2c  0000000000040700	00000400002c000d
+ 241   07:00.0 00000008 2c  0000000000040700	00000008002c000d
+ 242   07:00.1 00000080 21  0000000000040701	000000800021000d
+ 243   07:00.1 00000800 28  0000000000040701	000008000028000d
+ 244   07:00.1 00020010 2b  0000000000040701	00020010002b000d
+ 245   07:00.1 00020001 2b  0000000000040701	00020001002b000d
+ 246   07:00.1 00000010 29  0000000000040701	000000100029000d
+ 247   07:00.1 00000100 21  0000000000040701	000001000021000d
+ 248   07:00.1 00020008 2a  0000000000040701	00020008002a000d
+ 249   07:00.1 00020100 2a  0000000000040701	00020100002a000d
+ 250   03:00.0 00020400 29  0000000000040300	000204000029000d
+ 251   03:00.0 00000010 2d  0000000000040300	00000010002d000d
+ 252   03:00.0 00000008 2d  0000000000040300	00000008002d000d
+ 253   03:00.0 00000001 2a  0000000000040300	00000001002a000d
+ 254   03:00.0 00020080 29  0000000000040300	000200800029000d
+ 255   03:00.1 00020200 29  0000000000040301	000202000029000d
+ 256   03:00.1 00000020 29  0000000000040301	000000200029000d
+ 257   03:00.1 00000040 2a  0000000000040301	00000040002a000d
+ 258   03:00.1 00020002 29  0000000000040301	000200020029000d
+ 259   03:00.1 00020004 2a  0000000000040301	00020004002a000d
+ 260   03:00.2 00020080 2b  0000000000040302	00020080002b000d
+ 261   03:00.2 00000008 29  0000000000040302	000000080029000d
+ 262   03:00.2 00000001 2b  0000000000040302	00000001002b000d
+ 263   03:00.2 00000400 2a  0000000000040302	00000400002a000d
+ 264   03:00.2 00020800 2a  0000000000040302	00020800002a000d
+ 265   03:00.3 00020001 2a  0000000000040303	00020001002a000d
+ 266   03:00.3 00000010 2b  0000000000040303	00000010002b000d
+ 267   03:00.3 00020020 29  0000000000040303	000200200029000d
+ 268   03:00.3 00000002 2c  0000000000040303	00000002002c000d
+ 269   03:00.3 00000004 29  0000000000040303	000000040029000d
+
+****
+
+
+
+# cat dmar_translation_struct 
+IOMMU dmar0: Root Table Address:429c28000
+Root Table Entries:
+ Bus: 32 H: 0 L: 82b287001
+ Context Table Entries for Bus: 32
+  Entry	B:D.F	High	Low
+  32   	20:04.0	302   	82b286001
+  33   	20:04.1	402   	82522f001
+  34   	20:04.2	502   	82b387001
+  35   	20:04.3	602   	826160001
+  36   	20:04.4	702   	824f7c001
+  37   	20:04.5	802   	82abdf001
+  38   	20:04.6	902   	82aad4001
+  39   	20:04.7	a02   	824497001
+
+ Bus: 36 H: 0 L: 4292a5001
+ Context Table Entries for Bus: 36
+  Entry	B:D.F	High	Low
+  0    	24:00.0	102   	4292a4005
+  1    	24:00.1	202   	4293e9005
+
+
+IOMMU dmar1: Root Table Address:429c29000
+Root Table Entries:
+ Bus: 0 H: 0 L: 42983e001
+ Context Table Entries for Bus: 0
+  Entry	B:D.F	High	Low
+  32   	00:04.0	1102  	42b606001
+  33   	00:04.1	1202  	427390001
+  34   	00:04.2	1302  	428751001
+  35   	00:04.3	1402  	425582001
+  36   	00:04.4	1502  	42695a001
+  37   	00:04.5	1602  	4281dc001
+  38   	00:04.6	1702  	426801001
+  39   	00:04.7	1802  	42a5e3001
+  208  	00:1a.0	e02   	428ccf001
+  232  	00:1d.0	f02   	428e13001
+  248  	00:1f.0	1002  	428f37001
+  250  	00:1f.2	402   	42983d001
+
+ Bus: 1 H: 0 L: 429cee001
+ Context Table Entries for Bus: 1
+  Entry	B:D.F	High	Low
+  0    	01:00.0	102   	429cec001
+  2    	01:00.2	202   	429e32001
+  4    	01:00.4	302   	429ef9001
+
+ Bus: 2 H: 0 L: 429909001
+ Context Table Entries for Bus: 2
+  Entry	B:D.F	High	Low
+  0    	02:00.0	502   	429908001
+
+ Bus: 3 H: 0 L: 429a60001
+ Context Table Entries for Bus: 3
+  Entry	B:D.F	High	Low
+  0    	03:00.0	602   	429a5f001
+  1    	03:00.1	702   	429b86001
+  2    	03:00.2	802   	42944a001
+  3    	03:00.3	902   	429590001
+
+ Bus: 7 H: 0 L: 429656001
+ Context Table Entries for Bus: 7
+  Entry	B:D.F	High	Low
+  0    	07:00.0	a02   	429655001
+  1    	07:00.1	b02   	4297d2001
+  2    	07:00.2	c02   	42909a001
+  3    	07:00.3	d02   	4291de001
