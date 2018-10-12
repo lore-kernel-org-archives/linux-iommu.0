@@ -1,11 +1,13 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
-Date: Fri, 12 Oct 2018 13:16:24 +0800
-Message-ID: <20181012051632.26064-1-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 1/8] iommu: Add APIs for multiple domains per device
+Date: Fri, 12 Oct 2018 13:16:25 +0800
+Message-ID: <20181012051632.26064-2-baolu.lu@linux.intel.com>
+References: <20181012051632.26064-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181012051632.26064-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,84 +21,26 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Sharing a physical PCI device in a finer-granularity way
+is becoming a consensus in the industry. IOMMU vendors
+are also engaging efforts to support such sharing as well
+as possible. Among the efforts, the capability of support
+finer-granularity DMA isolation is a common requirement
+due to the security consideration. With finer-granularity
+DMA isolation, all DMA requests out of or to a subset of
+a physical PCI device can be protected by the IOMMU. As a
+result, there is a request in software to attach multiple
+domains to a physical PCI device. One example of such use
+model is the Intel Scalable IOV [1] [2]. The Intel vt-d
+3.0 spec [3] introduces the scalable mode which enables
+PASID granularity DMA isolation.
 
-The Mediate Device is a framework for fine-grained physical device
-sharing across the isolated domains. Currently the mdev framework
-is designed to be independent of the platform IOMMU support. As the
-result, the DMA isolation relies on the mdev parent device in a
-vendor specific way.
+This adds the APIs to support multiple domains per device.
+In order to ease the discussions, we call it 'a domain in
+auxiliary mode' or simply 'auxiliary domain' when multiple
+domains are attached to a physical device.
 
-There are several cases where a mediated device could be protected
-and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
-[1] introduces a new translation mode called 'scalable mode', which
-enables PASID-granular translations. The vt-d scalable mode is the
-key ingredient for Scalable I/O Virtualization [2] [3] which allows
-sharing a device in minimal possible granularity (ADI - Assignable
-Device Interface).
-
-A mediated device backed by an ADI could be protected and isolated
-by the IOMMU since 1) the parent device supports tagging an unique
-PASID to all DMA traffic out of the mediated device; and 2) the DMA
-translation unit (IOMMU) supports the PASID granular translation.
-We can apply IOMMU protection and isolation to this kind of devices
-just as what we are doing with an assignable PCI device.
-
-In order to distinguish the IOMMU-capable mediated devices from those
-which still need to rely on parent devices, this patch set adds two
-new members in struct mdev_device.
-
-* iommu_device
-  - This, if set, indicates that the mediated device could
-    be fully isolated and protected by IOMMU via attaching
-    an iommu domain to this device. If empty, it indicates
-    using vendor defined isolation.
-
-* iommu_domain
-  - This is a place holder for an iommu domain. A domain
-    could be store here for later use once it has been
-    attached to the iommu_device of this mdev.
-
-Below helpers are added to set and get above iommu device
-and iommu domain pointers in mdev core implementation.
-
-* mdev_set/get_iommu_device(dev, iommu_device)
-  - Set or get the iommu device which represents this mdev
-    in IOMMU's device scope. Drivers don't need to set the
-    iommu device if it uses vendor defined isolation.
-
-* mdev_set/get_iommu_domain(domain)
-  - A iommu domain which has been attached to the iommu
-    device in order to protect and isolate the mediated
-    device will be kept in the mdev data structure and
-    could be retrieved later.
-
-The mdev parent device driver could opt-in that the mdev could be
-fully isolated and protected by the IOMMU when the mdev is being
-created by invoking mdev_set_iommu_device() in its @create().
-
-In the vfio_iommu_type1_attach_group(), a domain allocated through
-iommu_domain_alloc() will be attached to the mdev iommu device if
-an iommu device has been set. Otherwise, the dummy external domain
-will be used and all the DMA isolation and protection are routed to
-parent driver as the result.
-
-On IOMMU side, a basic requirement is allowing to attach multiple
-domains to a PCI device if the device advertises the capability
-and the IOMMU hardware supports finer granularity translations than
-the normal PCI Source ID based translation.
-
-As the result, a PCI device could work in two modes: normal mode
-and auxiliary mode. In the normal mode, a pci device could be
-isolated in the Source ID granularity; the pci device itself could
-be assigned to a user application by attaching a single domain
-to it. In the auxiliary mode, a pci device could be isolated in
-finer granularity, hence subsets of the device could be assigned
-to different user level application by attaching a different domain
-to each subset.
-
-The device driver is able to switch between above two modes with
-below interfaces:
+The APIs includes:
 
 * iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_CAPABILITY)
   - Represents the ability of supporting multiple domains
@@ -112,79 +56,151 @@ below interfaces:
 
 * iommu_domain_get_attr(domain, DOMAIN_ATTR_AUXD_ID)
   - Return ID used for finer-granularity DMA translation.
+    For the Intel Scalable IOV usage model, this will be
+    a PASID. The device which supports Scalalbe IOV needs
+    to writes this ID to the device register so that DMA
+    requests could be tagged with a right PASID prefix.
 
-The existing interfaces for attaching/detaching domains keep the
-same as before. The different behaviors between the normal mode
-and the auxiliary mode are handled in the vendor specific iommu
-drivers.
+Many people involved in discussions of this design.
 
-In order for the ease of discussion, sometimes we call "a domain in
-auxiliary mode' or simply 'an auxiliary domain' when a domain is
-attached to a device for finer granularity translations. But we need
-to keep in mind that this doesn't mean there is a differnt domain
-type. A same domain could be bound to a device for Source ID based
-translation, and bound to another device for finer granularity
-translation at the same time.
+Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 
-This patch series extends both IOMMU and vfio components to support
-mdev device passing through when it could be isolated and protected
-by the IOMMU units. The first part of this series (PATCH 1/08~5/08)
-adds the interfaces and implementation of the multiple domains per
-device. The second part (PATCH 6/08~8/08) adds the iommu device
-attribute to each mdev, determines isolation type according to the
-existence of an iommu device when attaching group in vfio type1 iommu
-module, and attaches the domain to iommu aware mediated devices.
+and some discussions can be found here [4].
 
-This patch series depends on a patch set posted here [4] for discussion
-which added scalable mode support in Intel IOMMU driver.
+[1] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+[2] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+[3] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+[4] https://lkml.org/lkml/2018/7/26/4
 
-References:
-[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-[4] https://lkml.org/lkml/2018/10/7/54
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Suggested-by: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Suggested-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/iommu.c | 25 +++++++++++++++++++++++++
+ include/linux/iommu.h | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+)
 
-Best regards,
-Lu Baolu
-
-Change log:
-  v2->v3:
-  - Remove domain type enum and use a pointer on mdev_device instead.
-  - Add a generic interface for getting/setting per device iommu
-    attributions. And use it for query aux domain capability, enable
-    aux domain and disable aux domain purpose.
-  - Reuse iommu_domain_get_attr() to retrieve the id in a aux domain.
-  - We discussed the impact of the default domain implementation
-    on reusing iommu_at(de)tach_device() interfaces. We agreed
-    that reusing iommu_at(de)tach_device() interfaces is the right
-    direction and we could tweak the code to remove the impact.
-    https://www.spinics.net/lists/kvm/msg175285.html  
-  - Removed the RFC tag since no objections received.
-  - This patch has been submitted separately.
-    https://www.spinics.net/lists/kvm/msg173936.html
-
-  v1->v2:
-  - Rewrite the patches with the concept of auxiliary domains.
-
-Lu Baolu (8):
-  iommu: Add APIs for multiple domains per device
-  iommu/vt-d: Add multiple domains per device query
-  iommu/vt-d: Enable/disable multiple domains per device
-  iommu/vt-d: Attach/detach domains in auxiliary mode
-  iommu/vt-d: Return ID associated with an auxiliary domain
-  vfio/mdev: Add iommu place holders in mdev_device
-  vfio/type1: Add domain at(de)taching group helpers
-  vfio/type1: Handle different mdev isolation type
-
- drivers/iommu/intel-iommu.c      | 249 ++++++++++++++++++++++++++++++-
- drivers/iommu/iommu.c            |  25 ++++
- drivers/vfio/mdev/mdev_core.c    |  36 +++++
- drivers/vfio/mdev/mdev_private.h |   2 +
- drivers/vfio/vfio_iommu_type1.c  | 146 ++++++++++++++++--
- include/linux/intel-iommu.h      |  11 ++
- include/linux/iommu.h            |  33 ++++
- include/linux/mdev.h             |  23 +++
- 8 files changed, 509 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8c15c5980299..d06cfdcf38a7 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2014,3 +2014,28 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
++
++/*
++ * Generic interfaces to get or set per device IOMMU attributions.
++ */
++int iommu_get_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++
++	if (ops && ops->get_dev_attr)
++		return ops->get_dev_attr(dev, attr, data);
++
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(iommu_get_dev_attr);
++
++int iommu_set_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++
++	if (ops && ops->set_dev_attr)
++		return ops->set_dev_attr(dev, attr, data);
++
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(iommu_set_dev_attr);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 87994c265bf5..0230b64cc6e9 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -125,6 +125,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_MAX,
++	DOMAIN_ATTR_AUXD_ID,
+ };
+ 
+ /* These are the possible reserved region types */
+@@ -155,6 +156,13 @@ struct iommu_resv_region {
+ 	enum iommu_resv_type	type;
+ };
+ 
++/* Per device IOMMU attributions */
++enum iommu_dev_attr {
++	IOMMU_DEV_ATTR_AUXD_CAPABILITY,
++	IOMMU_DEV_ATTR_AUXD_ENABLE,
++	IOMMU_DEV_ATTR_AUXD_DISABLE,
++};
++
+ #ifdef CONFIG_IOMMU_API
+ 
+ /**
+@@ -184,6 +192,8 @@ struct iommu_resv_region {
+  * @domain_set_windows: Set the number of windows for a domain
+  * @domain_get_windows: Return the number of windows for a domain
+  * @of_xlate: add OF master IDs to iommu grouping
++ * @get_dev_attr: get per device IOMMU attributions
++ * @set_dev_attr: set per device IOMMU attributions
+  * @pgsize_bitmap: bitmap of all possible supported page sizes
+  */
+ struct iommu_ops {
+@@ -231,6 +241,12 @@ struct iommu_ops {
+ 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+ 	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+ 
++	/* Get/set per device IOMMU attributions */
++	int (*get_dev_attr)(struct device *dev,
++			    enum iommu_dev_attr attr, void *data);
++	int (*set_dev_attr)(struct device *dev,
++			    enum iommu_dev_attr attr, void *data);
++
+ 	unsigned long pgsize_bitmap;
+ };
+ 
+@@ -400,6 +416,11 @@ void iommu_fwspec_free(struct device *dev);
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+ 
++int iommu_get_dev_attr(struct device *dev,
++		       enum iommu_dev_attr attr, void *data);
++int iommu_set_dev_attr(struct device *dev,
++		       enum iommu_dev_attr attr, void *data);
++
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+@@ -684,6 +705,18 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ 	return NULL;
+ }
+ 
++static inline int
++iommu_get_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
++{
++	return -EINVAL;
++}
++
++static inline int
++iommu_set_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
++{
++	return -EINVAL;
++}
++
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #ifdef CONFIG_IOMMU_DEBUGFS
 -- 
 2.17.1
