@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 5/8] iommu/vt-d: Return ID associated with an auxiliary domain
-Date: Fri, 12 Oct 2018 13:16:29 +0800
-Message-ID: <20181012051632.26064-6-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 6/8] vfio/mdev: Add iommu place holders in mdev_device
+Date: Fri, 12 Oct 2018 13:16:30 +0800
+Message-ID: <20181012051632.26064-7-baolu.lu@linux.intel.com>
 References: <20181012051632.26064-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181012051632.26064-1-baolu.lu@linux.intel.com>
@@ -10,60 +10,149 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex 
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds support to return the default pasid associated with
-an auxiliary domain. The PCI device which is bound with this
-domain should use this value as the pasid for all DMA requests
-of the subset of device which is isolated and protected with
-this domain.
+A parent device might create different types of mediated
+devices. For example, a mediated device could be created
+by the parent device with full isolation and protection
+provided by the IOMMU. One usage case could be found on
+Intel platforms where a mediated device is an assignable
+subset of a PCI, the DMA requests on behalf of it are all
+tagged with a PASID. Since IOMMU supports PASID-granular
+translations (scalable mode in vt-d 3.0), this mediated
+device could be individually protected and isolated by an
+IOMMU.
+
+This patch adds two new members in struct mdev_device:
+* iommu_device
+  - This, if set, indicates that the mediated device could
+    be fully isolated and protected by IOMMU via attaching
+    an iommu domain to this device. If empty, it indicates
+    using vendor defined isolation.
+
+* iommu_domain
+  - This is a place holder for an iommu domain. A domain
+    could be store here for later use once it has been
+    attached to the iommu_device of this mdev.
+
+Below helpers are added to set and get above iommu device
+and iommu domain pointers.
+
+* mdev_set/get_iommu_device(dev, iommu_device)
+  - Set or get the iommu device which represents this mdev
+    in IOMMU's device scope. Drivers don't need to set the
+    iommu device if it uses vendor defined isolation.
+
+* mdev_set/get_iommu_domain(domain)
+  - A iommu domain which has been attached to the iommu
+    device in order to protect and isolate the mediated
+    device will be kept in the mdev data structure and
+    could be retrieved later.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
 Cc: Liu Yi L <yi.l.liu@intel.com>
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Suggested-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/vfio/mdev/mdev_core.c    | 36 ++++++++++++++++++++++++++++++++
+ drivers/vfio/mdev/mdev_private.h |  2 ++
+ include/linux/mdev.h             | 23 ++++++++++++++++++++
+ 3 files changed, 61 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3ca42b0e80df..4dc41232a0d6 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5553,6 +5553,27 @@ static int intel_iommu_set_dev_attr(struct device *dev,
- 	return ret;
+diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+index 0212f0ee8aea..5119809225c5 100644
+--- a/drivers/vfio/mdev/mdev_core.c
++++ b/drivers/vfio/mdev/mdev_core.c
+@@ -390,6 +390,42 @@ int mdev_device_remove(struct device *dev, bool force_remove)
+ 	return 0;
  }
  
-+static int intel_iommu_domain_get_attr(struct iommu_domain *domain,
-+				       enum iommu_attr attr, void *data)
++int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
 +{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	int ret = -EINVAL, *id;
++	struct mdev_device *mdev = to_mdev_device(dev);
 +
-+	switch (attr) {
-+	case DOMAIN_ATTR_AUXD_ID:
-+		if (dmar_domain->default_pasid > 0) {
-+			ret = 0;
-+			id = data;
-+			*id = dmar_domain->default_pasid;
-+		}
-+		break;
-+	default:
-+		break;
-+	}
++	mdev->iommu_device = iommu_device;
 +
-+	return ret;
++	return 0;
 +}
++EXPORT_SYMBOL(mdev_set_iommu_device);
 +
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -5567,6 +5588,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.put_resv_regions	= intel_iommu_put_resv_regions,
- 	.device_group		= pci_device_group,
-+	.domain_get_attr	= intel_iommu_domain_get_attr,
- 	.get_dev_attr		= intel_iommu_get_dev_attr,
- 	.set_dev_attr		= intel_iommu_set_dev_attr,
- 	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
++struct device *mdev_get_iommu_device(struct device *dev)
++{
++	struct mdev_device *mdev = to_mdev_device(dev);
++
++	return mdev->iommu_device;
++}
++EXPORT_SYMBOL(mdev_get_iommu_device);
++
++int mdev_set_iommu_domain(struct device *dev, void *domain)
++{
++	struct mdev_device *mdev = to_mdev_device(dev);
++
++	mdev->iommu_domain = domain;
++
++	return 0;
++}
++EXPORT_SYMBOL(mdev_set_iommu_domain);
++
++void *mdev_get_iommu_domain(struct device *dev)
++{
++	struct mdev_device *mdev = to_mdev_device(dev);
++
++	return mdev->iommu_domain;
++}
++EXPORT_SYMBOL(mdev_get_iommu_domain);
++
+ static int __init mdev_init(void)
+ {
+ 	return mdev_bus_register();
+diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
+index b5819b7d7ef7..c01518068e84 100644
+--- a/drivers/vfio/mdev/mdev_private.h
++++ b/drivers/vfio/mdev/mdev_private.h
+@@ -34,6 +34,8 @@ struct mdev_device {
+ 	struct list_head next;
+ 	struct kobject *type_kobj;
+ 	bool active;
++	struct device *iommu_device;
++	void *iommu_domain;
+ };
+ 
+ #define to_mdev_device(dev)	container_of(dev, struct mdev_device, dev)
+diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+index b6e048e1045f..c46777d3e568 100644
+--- a/include/linux/mdev.h
++++ b/include/linux/mdev.h
+@@ -14,6 +14,29 @@
+ #define MDEV_H
+ 
+ struct mdev_device;
++struct iommu_domain;
++
++/*
++ * Called by the parent device driver to set the PCI device which represents
++ * this mdev in iommu protection scope. By default, the iommu device is NULL,
++ * that indicates using vendor defined isolation.
++ *
++ * @dev: the mediated device that iommu will isolate.
++ * @iommu_device: a pci device which represents the iommu for @dev.
++ *
++ * Return 0 for success, otherwise negative error value.
++ */
++int mdev_set_iommu_device(struct device *dev, struct device *iommu_device);
++
++struct device *mdev_get_iommu_device(struct device *dev);
++
++/*
++ * Called by vfio iommu modules to save the iommu domain after a domain being
++ * attached to the mediated device.
++ */
++int mdev_set_iommu_domain(struct device *dev, void *domain);
++
++void *mdev_get_iommu_domain(struct device *dev);
+ 
+ /**
+  * struct mdev_parent_ops - Structure to be registered for each parent device to
 -- 
 2.17.1
