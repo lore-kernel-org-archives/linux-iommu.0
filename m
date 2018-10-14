@@ -1,13 +1,11 @@
-From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
-Date: Sat, 13 Oct 2018 16:25:45 +0800
-Message-ID: <5BC1AC09.1060507@huawei.com>
-References: <20181012051632.26064-1-baolu.lu@linux.intel.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
+Date: Sun, 14 Oct 2018 09:52:08 +0200
+Message-ID: <20181014075208.2715-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181012051632.26064-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,187 +15,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+We already build the swiotlb code for 32b-t kernels with PAE support,
+but the code to actually use swiotlb has only been enabled for 64-bit
+kernel for an unknown reason.
 
-On 2018/10/12 13:16, Lu Baolu wrote:
-> Hi,
->
-> The Mediate Device is a framework for fine-grained physical device
-> sharing across the isolated domains. Currently the mdev framework
-> is designed to be independent of the platform IOMMU support. As the
-> result, the DMA isolation relies on the mdev parent device in a
-> vendor specific way.
->
-> There are several cases where a mediated device could be protected
-> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
-> [1] introduces a new translation mode called 'scalable mode', which
-> enables PASID-granular translations. The vt-d scalable mode is the
-> key ingredient for Scalable I/O Virtualization [2] [3] which allows
-> sharing a device in minimal possible granularity (ADI - Assignable
-> Device Interface).
->
-> A mediated device backed by an ADI could be protected and isolated
-> by the IOMMU since 1) the parent device supports tagging an unique
-> PASID to all DMA traffic out of the mediated device; and 2) the DMA
-> translation unit (IOMMU) supports the PASID granular translation.
-> We can apply IOMMU protection and isolation to this kind of devices
-> just as what we are doing with an assignable PCI device.
->
-> In order to distinguish the IOMMU-capable mediated devices from those
-> which still need to rely on parent devices, this patch set adds two
-> new members in struct mdev_device.
->
-> * iommu_device
->    - This, if set, indicates that the mediated device could
->      be fully isolated and protected by IOMMU via attaching
->      an iommu domain to this device. If empty, it indicates
->      using vendor defined isolation.
->
-> * iommu_domain
->    - This is a place holder for an iommu domain. A domain
->      could be store here for later use once it has been
->      attached to the iommu_device of this mdev.
->
-> Below helpers are added to set and get above iommu device
-> and iommu domain pointers in mdev core implementation.
->
-> * mdev_set/get_iommu_device(dev, iommu_device)
->    - Set or get the iommu device which represents this mdev
->      in IOMMU's device scope. Drivers don't need to set the
->      iommu device if it uses vendor defined isolation.
->
-> * mdev_set/get_iommu_domain(domain)
->    - A iommu domain which has been attached to the iommu
->      device in order to protect and isolate the mediated
->      device will be kept in the mdev data structure and
->      could be retrieved later.
->
-> The mdev parent device driver could opt-in that the mdev could be
-> fully isolated and protected by the IOMMU when the mdev is being
-> created by invoking mdev_set_iommu_device() in its @create().
-I just cannot understand here, how to get an iommu_device while I create 
-mediated
-device in my parent device driver?
+Before Linux 4.18 we papers over this fact because the networking code,
+the scsi layer and some random block drivers implenented their own
+bounce buffering scheme.
 
-And why not reuse the device of MDEV instread of adding a new device here?
+Fixes: 21e07dba ("scsi: reduce use of block bounce buffers")
+Fixes: ab74cfeb ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+Reported-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Tested-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ arch/x86/kernel/pci-swiotlb.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks,
-Zaibo
-
-.
->
-> In the vfio_iommu_type1_attach_group(), a domain allocated through
-> iommu_domain_alloc() will be attached to the mdev iommu device if
-> an iommu device has been set. Otherwise, the dummy external domain
-> will be used and all the DMA isolation and protection are routed to
-> parent driver as the result.
->
-> On IOMMU side, a basic requirement is allowing to attach multiple
-> domains to a PCI device if the device advertises the capability
-> and the IOMMU hardware supports finer granularity translations than
-> the normal PCI Source ID based translation.
->
-> As the result, a PCI device could work in two modes: normal mode
-> and auxiliary mode. In the normal mode, a pci device could be
-> isolated in the Source ID granularity; the pci device itself could
-> be assigned to a user application by attaching a single domain
-> to it. In the auxiliary mode, a pci device could be isolated in
-> finer granularity, hence subsets of the device could be assigned
-> to different user level application by attaching a different domain
-> to each subset.
->
-> The device driver is able to switch between above two modes with
-> below interfaces:
->
-> * iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_CAPABILITY)
->    - Represents the ability of supporting multiple domains
->      per device.
->
-> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLE)
->    - Enable the multiple domains capability for the device
->      referenced by @dev.
->
-> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_DISABLE)
->    - Disable the multiple domains capability for the device
->      referenced by @dev.
->
-> * iommu_domain_get_attr(domain, DOMAIN_ATTR_AUXD_ID)
->    - Return ID used for finer-granularity DMA translation.
->
-> The existing interfaces for attaching/detaching domains keep the
-> same as before. The different behaviors between the normal mode
-> and the auxiliary mode are handled in the vendor specific iommu
-> drivers.
->
-> In order for the ease of discussion, sometimes we call "a domain in
-> auxiliary mode' or simply 'an auxiliary domain' when a domain is
-> attached to a device for finer granularity translations. But we need
-> to keep in mind that this doesn't mean there is a differnt domain
-> type. A same domain could be bound to a device for Source ID based
-> translation, and bound to another device for finer granularity
-> translation at the same time.
->
-> This patch series extends both IOMMU and vfio components to support
-> mdev device passing through when it could be isolated and protected
-> by the IOMMU units. The first part of this series (PATCH 1/08~5/08)
-> adds the interfaces and implementation of the multiple domains per
-> device. The second part (PATCH 6/08~8/08) adds the iommu device
-> attribute to each mdev, determines isolation type according to the
-> existence of an iommu device when attaching group in vfio type1 iommu
-> module, and attaches the domain to iommu aware mediated devices.
->
-> This patch series depends on a patch set posted here [4] for discussion
-> which added scalable mode support in Intel IOMMU driver.
->
-> References:
-> [1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-> [2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-> [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-> [4] https://lkml.org/lkml/2018/10/7/54
->
-> Best regards,
-> Lu Baolu
->
-> Change log:
->    v2->v3:
->    - Remove domain type enum and use a pointer on mdev_device instead.
->    - Add a generic interface for getting/setting per device iommu
->      attributions. And use it for query aux domain capability, enable
->      aux domain and disable aux domain purpose.
->    - Reuse iommu_domain_get_attr() to retrieve the id in a aux domain.
->    - We discussed the impact of the default domain implementation
->      on reusing iommu_at(de)tach_device() interfaces. We agreed
->      that reusing iommu_at(de)tach_device() interfaces is the right
->      direction and we could tweak the code to remove the impact.
->      https://www.spinics.net/lists/kvm/msg175285.html
->    - Removed the RFC tag since no objections received.
->    - This patch has been submitted separately.
->      https://www.spinics.net/lists/kvm/msg173936.html
->
->    v1->v2:
->    - Rewrite the patches with the concept of auxiliary domains.
->
-> Lu Baolu (8):
->    iommu: Add APIs for multiple domains per device
->    iommu/vt-d: Add multiple domains per device query
->    iommu/vt-d: Enable/disable multiple domains per device
->    iommu/vt-d: Attach/detach domains in auxiliary mode
->    iommu/vt-d: Return ID associated with an auxiliary domain
->    vfio/mdev: Add iommu place holders in mdev_device
->    vfio/type1: Add domain at(de)taching group helpers
->    vfio/type1: Handle different mdev isolation type
->
->   drivers/iommu/intel-iommu.c      | 249 ++++++++++++++++++++++++++++++-
->   drivers/iommu/iommu.c            |  25 ++++
->   drivers/vfio/mdev/mdev_core.c    |  36 +++++
->   drivers/vfio/mdev/mdev_private.h |   2 +
->   drivers/vfio/vfio_iommu_type1.c  | 146 ++++++++++++++++--
->   include/linux/intel-iommu.h      |  11 ++
->   include/linux/iommu.h            |  33 ++++
->   include/linux/mdev.h             |  23 +++
->   8 files changed, 509 insertions(+), 16 deletions(-)
->
+diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
+index 661583662430..71c0b01d93b1 100644
+--- a/arch/x86/kernel/pci-swiotlb.c
++++ b/arch/x86/kernel/pci-swiotlb.c
+@@ -42,10 +42,8 @@ IOMMU_INIT_FINISH(pci_swiotlb_detect_override,
+ int __init pci_swiotlb_detect_4gb(void)
+ {
+ 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+-#ifdef CONFIG_X86_64
+ 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+ 		swiotlb = 1;
+-#endif
+ 
+ 	/*
+ 	 * If SME is active then swiotlb will be set to 1 so that bounce
+-- 
+2.19.1
