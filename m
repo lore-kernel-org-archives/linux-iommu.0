@@ -1,94 +1,29 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
-Date: Mon, 15 Oct 2018 10:48:04 +0800
-Message-ID: <f3ffd1a3-be4b-f041-e4da-2bbf065aa065@linux.intel.com>
-References: <20181012051632.26064-1-baolu.lu@linux.intel.com>
- <5BC1AC09.1060507@huawei.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 16/33] powerpc/powernv: remove dead npu-dma code
+Date: Mon, 15 Oct 2018 07:50:08 +0200
+Message-ID: <20181015055008.GA23344@lst.de>
+References: <20181009132500.17643-1-hch@lst.de> <20181009132500.17643-17-hch@lst.de> <7709932d-efb8-2c9b-5128-99cc491c302b@ozlabs.ru>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5BC1AC09.1060507@huawei.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <7709932d-efb8-2c9b-5128-99cc491c302b@ozlabs.ru>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Xu Zaibo <xuzaibo@huawei.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: baolu.lu@linux.intel.com, kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
+To: Alexey Kardashevskiy <aik@ozlabs.ru>
+Cc: Christoph Hellwig <hch@lst.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On 10/13/2018 04:25 PM, Xu Zaibo wrote:
-> Hi,
+On Mon, Oct 15, 2018 at 12:34:02PM +1100, Alexey Kardashevskiy wrote:
 > 
-> On 2018/10/12 13:16, Lu Baolu wrote:
->> Hi,
->>
->> The Mediate Device is a framework for fine-grained physical device
->> sharing across the isolated domains. Currently the mdev framework
->> is designed to be independent of the platform IOMMU support. As the
->> result, the DMA isolation relies on the mdev parent device in a
->> vendor specific way.
->>
->> There are several cases where a mediated device could be protected
->> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
->> [1] introduces a new translation mode called 'scalable mode', which
->> enables PASID-granular translations. The vt-d scalable mode is the
->> key ingredient for Scalable I/O Virtualization [2] [3] which allows
->> sharing a device in minimal possible granularity (ADI - Assignable
->> Device Interface).
->>
->> A mediated device backed by an ADI could be protected and isolated
->> by the IOMMU since 1) the parent device supports tagging an unique
->> PASID to all DMA traffic out of the mediated device; and 2) the DMA
->> translation unit (IOMMU) supports the PASID granular translation.
->> We can apply IOMMU protection and isolation to this kind of devices
->> just as what we are doing with an assignable PCI device.
->>
->> In order to distinguish the IOMMU-capable mediated devices from those
->> which still need to rely on parent devices, this patch set adds two
->> new members in struct mdev_device.
->>
->> * iommu_device
->>    - This, if set, indicates that the mediated device could
->>      be fully isolated and protected by IOMMU via attaching
->>      an iommu domain to this device. If empty, it indicates
->>      using vendor defined isolation.
->>
->> * iommu_domain
->>    - This is a place holder for an iommu domain. A domain
->>      could be store here for later use once it has been
->>      attached to the iommu_device of this mdev.
->>
->> Below helpers are added to set and get above iommu device
->> and iommu domain pointers in mdev core implementation.
->>
->> * mdev_set/get_iommu_device(dev, iommu_device)
->>    - Set or get the iommu device which represents this mdev
->>      in IOMMU's device scope. Drivers don't need to set the
->>      iommu device if it uses vendor defined isolation.
->>
->> * mdev_set/get_iommu_domain(domain)
->>    - A iommu domain which has been attached to the iommu
->>      device in order to protect and isolate the mediated
->>      device will be kept in the mdev data structure and
->>      could be retrieved later.
->>
->> The mdev parent device driver could opt-in that the mdev could be
->> fully isolated and protected by the IOMMU when the mdev is being
->> created by invoking mdev_set_iommu_device() in its @create().
-> I just cannot understand here, how to get an iommu_device while I create 
-> mediated
-> device in my parent device driver?
-
-When you are creating an mdev in your parent driver, you should know
-which PCI device this mdev belonging to.
-
+> On 10/10/2018 00:24, Christoph Hellwig wrote:
+> > This code has been unused since it was merged and is in the way of
+> > cleaning up the DMA code, thus remove it.
+> > 
+> > This effectively reverts commit 5d2aa710 ("powerpc/powernv: Add support
+> > for Nvlink NPUs").
 > 
-> And why not reuse the device of MDEV instread of adding a new device here?
+> 
+> This code is heavily used by the NVIDIA GPU driver.
 
-iommu_device in the mdev_device structure represents the PCI device
-that represents this mdev in iommu's device scope. IOMMU is only aware
-of pci devices, it's not aware of mdev device.
-
-Best regards,
-Lu Baolu
+Not by the that actually exists in the kernel tree, so it simply doesn't
+matter.
