@@ -1,68 +1,109 @@
-From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/1] iommu/arm-smmu-v3: eliminate a potential memory
-	corruption on Hi16xx soc
-Date: Mon, 15 Oct 2018 16:36:16 +0800
-Message-ID: <1539592576-24352-1-git-send-email-thunder.leizhen@huawei.com>
+From: Xu Zaibo <xuzaibo@huawei.com>
+Subject: Re: [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
+Date: Mon, 15 Oct 2018 16:50:39 +0800
+Message-ID: <5BC454DF.6010109@huawei.com>
+References: <20181012051632.26064-1-baolu.lu@linux.intel.com>
+ <5BC1AC09.1060507@huawei.com>
+ <f3ffd1a3-be4b-f041-e4da-2bbf065aa065@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: LinuxArm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f3ffd1a3-be4b-f041-e4da-2bbf065aa065@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-ITS translation register map:
-0x0000-0x003C	Reserved
-0x0040		GITS_TRANSLATER
-0x0044-0xFFFC	Reserved
+Hi,
 
-The standard GITS_TRANSLATER register in ITS is only 4 bytes, but Hisilicon
-expands the next 4 bytes to carry some IMPDEF information. That means, 8 bytes
-data will be written to MSIAddress each time.
+On 2018/10/15 10:48, Lu Baolu wrote:
+> Hi,
+>
+> On 10/13/2018 04:25 PM, Xu Zaibo wrote:
+>> Hi,
+>>
+>> On 2018/10/12 13:16, Lu Baolu wrote:
+>>> Hi,
+>>>
+>>> The Mediate Device is a framework for fine-grained physical device
+>>> sharing across the isolated domains. Currently the mdev framework
+>>> is designed to be independent of the platform IOMMU support. As the
+>>> result, the DMA isolation relies on the mdev parent device in a
+>>> vendor specific way.
+>>>
+>>> There are several cases where a mediated device could be protected
+>>> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
+>>> [1] introduces a new translation mode called 'scalable mode', which
+>>> enables PASID-granular translations. The vt-d scalable mode is the
+>>> key ingredient for Scalable I/O Virtualization [2] [3] which allows
+>>> sharing a device in minimal possible granularity (ADI - Assignable
+>>> Device Interface).
+>>>
+>>> A mediated device backed by an ADI could be protected and isolated
+>>> by the IOMMU since 1) the parent device supports tagging an unique
+>>> PASID to all DMA traffic out of the mediated device; and 2) the DMA
+>>> translation unit (IOMMU) supports the PASID granular translation.
+>>> We can apply IOMMU protection and isolation to this kind of devices
+>>> just as what we are doing with an assignable PCI device.
+>>>
+>>> In order to distinguish the IOMMU-capable mediated devices from those
+>>> which still need to rely on parent devices, this patch set adds two
+>>> new members in struct mdev_device.
+>>>
+>>> * iommu_device
+>>>    - This, if set, indicates that the mediated device could
+>>>      be fully isolated and protected by IOMMU via attaching
+>>>      an iommu domain to this device. If empty, it indicates
+>>>      using vendor defined isolation.
+>>>
+>>> * iommu_domain
+>>>    - This is a place holder for an iommu domain. A domain
+>>>      could be store here for later use once it has been
+>>>      attached to the iommu_device of this mdev.
+>>>
+>>> Below helpers are added to set and get above iommu device
+>>> and iommu domain pointers in mdev core implementation.
+>>>
+>>> * mdev_set/get_iommu_device(dev, iommu_device)
+>>>    - Set or get the iommu device which represents this mdev
+>>>      in IOMMU's device scope. Drivers don't need to set the
+>>>      iommu device if it uses vendor defined isolation.
+>>>
+>>> * mdev_set/get_iommu_domain(domain)
+>>>    - A iommu domain which has been attached to the iommu
+>>>      device in order to protect and isolate the mediated
+>>>      device will be kept in the mdev data structure and
+>>>      could be retrieved later.
+>>>
+>>> The mdev parent device driver could opt-in that the mdev could be
+>>> fully isolated and protected by the IOMMU when the mdev is being
+>>> created by invoking mdev_set_iommu_device() in its @create().
+>> I just cannot understand here, how to get an iommu_device while I 
+>> create mediated
+>> device in my parent device driver?
+>
+> When you are creating an mdev in your parent driver, you should know
+> which PCI device this mdev belonging to.
+>
 
-MSIAddr: |----4bytes----|----4bytes----|
-	 |    MSIData   |    IMPDEF    |
+So, generally, I can set the parent device as mdev's iommu_device?
+If that, however, Mdev already holds its parent device. So, I just 
+figure what
+differences between Mdev's parent device and iommu_device are.
+>>
+>> And why not reuse the device of MDEV instread of adding a new device 
+>> here?
+>
+> iommu_device in the mdev_device structure represents the PCI device
+> that represents this mdev in iommu's device scope. IOMMU is only aware
+> of pci devices, it's not aware of mdev device.
 
-There is no problem for ITS, because the next 4 bytes space is reserved in ITS.
-But it will overwrite the 4 bytes memory following "sync_count". It's very
-luckly that the previous and the next neighbour of "sync_count" are both aligned
-by 8 bytes, so no problem is met now.
+Could I understand like that: IOMMU can be aware of the parent device of 
+Mdev?
+And more, I am doubting the necessary of iommu_device in Mdev.
 
-It's good to explicitly add a workaround:
-1. Add gcc __attribute__((aligned(8))) to make sure that "sync_count" is always
-   aligned by 8 bytes.
-2. Add a "u64" union member to make sure the 4 bytes padding is always exist.
+Thanks,
+Zaibo
 
-There is no functional change.
-
-Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5059d09..a07bc0d 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -586,7 +586,10 @@ struct arm_smmu_device {
- 
- 	struct arm_smmu_strtab_cfg	strtab_cfg;
- 
-+	union {
-+	u64				padding; /* workaround for Hisilicon */
- 	u32				sync_count;
-+	} __attribute__((aligned(8)));
- 
- 	/* IOMMU core code handle */
- 	struct iommu_device		iommu;
--- 
-1.8.3
+.
