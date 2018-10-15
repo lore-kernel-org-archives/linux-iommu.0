@@ -1,109 +1,132 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 3/7] PCI: OF: Allow endpoints to bypass the iommu
-Date: Mon, 15 Oct 2018 12:32:51 +0100
-Message-ID: <33bd48e9-a061-e97d-ff00-daf5097b8e1f@arm.com>
-References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
-	<20181012145917.6840-4-jean-philippe.brucker@arm.com>
-	<20181012194158.GX5906@bhelgaas-glaptop.roam.corp.google.com>
+From: <hannah@marvell.com>
+Subject: [PATCH 1/4] iommu/arm-smmu: introduce wrapper for writeq/readq
+Date: Mon, 15 Oct 2018 15:00:43 +0300
+Message-ID: <1539604846-21151-2-git-send-email-hannah@marvell.com>
+References: <1539604846-21151-1-git-send-email-hannah@marvell.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181012194158.GX5906-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.orgnd-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1539604846-21151-1-git-send-email-hannah@marvell.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: catalin.marinas@arm.com, will.deacon@arm.com, corbet@lwn.net, joro@8bytes.org, robh+dt@kernel.org, gregory.clement@bootlin.com, mark.rutland@arm.com, jason@lakedaemon.net, andrew@lunn.ch, sebastian.hesselbarth@gmail.com, robin.murphy@arm.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com, nadavh@marvell.com, omrii@marvell.com, Hanna Hawa <hannah@marvell.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/10/18 20:41, Bjorn Helgaas wrote:
-> s/iommu/IOMMU/ in subject
-> 
-> On Fri, Oct 12, 2018 at 03:59:13PM +0100, Jean-Philippe Brucker wrote:
->> Using the iommu-map binding, endpoints in a given PCI domain can be
->> managed by different IOMMUs. Some virtual machines may allow a subset of
->> endpoints to bypass the IOMMU. In some case the IOMMU itself is presented
-> 
-> s/case/cases/
-> 
->> as a PCI endpoint (e.g. AMD IOMMU and virtio-iommu). Currently, when a
->> PCI root complex has an iommu-map property, the driver requires all
->> endpoints to be described by the property. Allow the iommu-map property to
->> have gaps.
-> 
-> I'm not an IOMMU or virtio expert, so it's not obvious to me why it is
-> safe to allow devices to bypass the IOMMU.  Does this mean a typo in
-> iommu-map could inadvertently allow devices to bypass it?  Should we
-> indicate something in dmesg (and/or sysfs) about devices that bypass
-> it?
+From: Hanna Hawa <hannah@marvell.com>
 
-It's not really "allow devices to bypass the IOMMU" so much as "allow DT 
-to describe devices which the IOMMU doesn't translate". It's a bit of an 
-edge case for not-really-PCI devices, but FWIW I can certainly think of 
-several ways to build real hardware like that. As for inadvertent errors 
-leaving out IDs which *should* be in the map, that really depends on the 
-IOMMU/driver implementation - e.g. SMMUv2 with arm-smmu.disable_bypass=0 
-would treat the device as untranslated, whereas SMMUv3 would always 
-generate a fault upon any transaction due to no valid stream table entry 
-being programmed (not even a bypass one).
+This patch introduce the smmu_writeq_relaxed/smmu_readq_relaxed
+helpers, as preparation to add specific Marvell work-around for
+accessing 64bit width registers of ARM SMMU.
 
-I reckon it's a sufficiently unusual case that keeping some sort of 
-message probably is worthwhile (at pr_info rather than pr_err) in case 
-someone does hit it by mistake.
+Signed-off-by: Hanna Hawa <hannah@marvell.com>
+---
+ drivers/iommu/arm-smmu.c | 36 +++++++++++++++++++++++++++---------
+ 1 file changed, 27 insertions(+), 9 deletions(-)
 
->> Relaxing of_pci_map_rid also allows the msi-map property to have gaps,
-
-At worst, I suppose we could always add yet another parameter for each 
-caller to choose whether a missing entry is considered an error or not.
-
-Robin.
-
-> s/of_pci_map_rid/of_pci_map_rid()/
-> 
->> which is invalid since MSIs always reach an MSI controller. Thankfully
->> Linux will error out later, when attempting to find an MSI domain for the
->> device.
-> 
-> Not clear to me what "error out" means here.  In a userspace program,
-> I would infer that the program exits with an error message, but I
-> doubt you mean that Linux exits.
-> 
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
->> ---
->>   drivers/pci/of.c | 7 ++++---
->>   1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
->> index 1836b8ddf292..2f5015bdb256 100644
->> --- a/drivers/pci/of.c
->> +++ b/drivers/pci/of.c
->> @@ -451,9 +451,10 @@ int of_pci_map_rid(struct device_node *np, u32 rid,
->>   		return 0;
->>   	}
->>   
->> -	pr_err("%pOF: Invalid %s translation - no match for rid 0x%x on %pOF\n",
->> -		np, map_name, rid, target && *target ? *target : NULL);
->> -	return -EFAULT;
->> +	/* Bypasses translation */
->> +	if (id_out)
->> +		*id_out = rid;
->> +	return 0;
->>   }
->>   
->>   #if IS_ENABLED(CONFIG_OF_IRQ)
->> -- 
->> 2.19.1
->>
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index fd1b80e..fccb1d4 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -88,9 +88,11 @@
+  * therefore this actually makes more sense than it might first appear.
+  */
+ #ifdef CONFIG_64BIT
+-#define smmu_write_atomic_lq		writeq_relaxed
++#define smmu_write_atomic_lq(smmu, val, reg)	\
++					smmu_writeq_relaxed(smmu, val, reg)
+ #else
+-#define smmu_write_atomic_lq		writel_relaxed
++#define smmu_write_atomic_lq(smmu, val, reg)	\
++					writel_relaxed(val, reg)
+ #endif
+ 
+ /* Translation context bank */
+@@ -270,6 +272,19 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+ 	return container_of(dom, struct arm_smmu_domain, domain);
+ }
+ 
++static inline void smmu_writeq_relaxed(struct arm_smmu_device *smmu,
++				       u64 val,
++				       void __iomem *addr)
++{
++	writeq_relaxed(val, addr);
++}
++
++static inline u64 smmu_readq_relaxed(struct arm_smmu_device *smmu,
++				     void __iomem *addr)
++{
++	return readq_relaxed(addr);
++}
++
+ static void parse_driver_options(struct arm_smmu_device *smmu)
+ {
+ 	int i = 0;
+@@ -465,6 +480,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 					  size_t granule, bool leaf, void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+ 	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
+@@ -483,7 +499,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 			iova >>= 12;
+ 			iova |= (u64)cfg->asid << 48;
+ 			do {
+-				writeq_relaxed(iova, reg);
++				smmu_writeq_relaxed(smmu, iova, reg);
+ 				iova += granule >> 12;
+ 			} while (size -= granule);
+ 		}
+@@ -492,7 +508,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 			      ARM_SMMU_CB_S2_TLBIIPAS2;
+ 		iova >>= 12;
+ 		do {
+-			smmu_write_atomic_lq(iova, reg);
++			smmu_write_atomic_lq(smmu, iova, reg);
+ 			iova += granule >> 12;
+ 		} while (size -= granule);
+ 	}
+@@ -548,7 +564,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 		return IRQ_NONE;
+ 
+ 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+-	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
++	iova = smmu_readq_relaxed(smmu, cb_base + ARM_SMMU_CB_FAR);
+ 
+ 	dev_err_ratelimited(smmu->dev,
+ 	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+@@ -698,9 +714,11 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
+ 		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
+ 	} else {
+-		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
++		smmu_writeq_relaxed(smmu, cb->ttbr[0],
++				    cb_base + ARM_SMMU_CB_TTBR0);
+ 		if (stage1)
+-			writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
++			smmu_writeq_relaxed(smmu, cb->ttbr[1],
++					    cb_base + ARM_SMMU_CB_TTBR1);
+ 	}
+ 
+ 	/* MAIRs (stage-1 only) */
+@@ -1279,7 +1297,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 	/* ATS1 registers can only be written atomically */
+ 	va = iova & ~0xfffUL;
+ 	if (smmu->version == ARM_SMMU_V2)
+-		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
++		smmu_write_atomic_lq(smmu, va, cb_base + ARM_SMMU_CB_ATS1PR);
+ 	else /* Register is only 32-bit in v1 */
+ 		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
+ 
+@@ -1292,7 +1310,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
+ 		return ops->iova_to_phys(ops, iova);
+ 	}
+ 
+-	phys = readq_relaxed(cb_base + ARM_SMMU_CB_PAR);
++	phys = smmu_readq_relaxed(smmu, cb_base + ARM_SMMU_CB_PAR);
+ 	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
+ 	if (phys & CB_PAR_F) {
+ 		dev_err(dev, "translation fault!\n");
+-- 
+1.9.1
