@@ -1,109 +1,61 @@
-From: Xu Zaibo <xuzaibo@huawei.com>
-Subject: Re: [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
-Date: Mon, 15 Oct 2018 16:50:39 +0800
-Message-ID: <5BC454DF.6010109@huawei.com>
-References: <20181012051632.26064-1-baolu.lu@linux.intel.com>
- <5BC1AC09.1060507@huawei.com>
- <f3ffd1a3-be4b-f041-e4da-2bbf065aa065@linux.intel.com>
+From: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: [PATCH] iommu/ipmmu-vmsa: Hook up r8a77990 DT matching code
+Date: Mon, 15 Oct 2018 11:55:57 +0200
+Message-ID: <20181015095557.25135-1-horms+renesas@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f3ffd1a3-be4b-f041-e4da-2bbf065aa065@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, Kazuya Mizuguchi <kazuya.mizuguchi.ks-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Hai Nguyen Pham <hai.pham.ud-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 
-On 2018/10/15 10:48, Lu Baolu wrote:
-> Hi,
->
-> On 10/13/2018 04:25 PM, Xu Zaibo wrote:
->> Hi,
->>
->> On 2018/10/12 13:16, Lu Baolu wrote:
->>> Hi,
->>>
->>> The Mediate Device is a framework for fine-grained physical device
->>> sharing across the isolated domains. Currently the mdev framework
->>> is designed to be independent of the platform IOMMU support. As the
->>> result, the DMA isolation relies on the mdev parent device in a
->>> vendor specific way.
->>>
->>> There are several cases where a mediated device could be protected
->>> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
->>> [1] introduces a new translation mode called 'scalable mode', which
->>> enables PASID-granular translations. The vt-d scalable mode is the
->>> key ingredient for Scalable I/O Virtualization [2] [3] which allows
->>> sharing a device in minimal possible granularity (ADI - Assignable
->>> Device Interface).
->>>
->>> A mediated device backed by an ADI could be protected and isolated
->>> by the IOMMU since 1) the parent device supports tagging an unique
->>> PASID to all DMA traffic out of the mediated device; and 2) the DMA
->>> translation unit (IOMMU) supports the PASID granular translation.
->>> We can apply IOMMU protection and isolation to this kind of devices
->>> just as what we are doing with an assignable PCI device.
->>>
->>> In order to distinguish the IOMMU-capable mediated devices from those
->>> which still need to rely on parent devices, this patch set adds two
->>> new members in struct mdev_device.
->>>
->>> * iommu_device
->>>    - This, if set, indicates that the mediated device could
->>>      be fully isolated and protected by IOMMU via attaching
->>>      an iommu domain to this device. If empty, it indicates
->>>      using vendor defined isolation.
->>>
->>> * iommu_domain
->>>    - This is a place holder for an iommu domain. A domain
->>>      could be store here for later use once it has been
->>>      attached to the iommu_device of this mdev.
->>>
->>> Below helpers are added to set and get above iommu device
->>> and iommu domain pointers in mdev core implementation.
->>>
->>> * mdev_set/get_iommu_device(dev, iommu_device)
->>>    - Set or get the iommu device which represents this mdev
->>>      in IOMMU's device scope. Drivers don't need to set the
->>>      iommu device if it uses vendor defined isolation.
->>>
->>> * mdev_set/get_iommu_domain(domain)
->>>    - A iommu domain which has been attached to the iommu
->>>      device in order to protect and isolate the mediated
->>>      device will be kept in the mdev data structure and
->>>      could be retrieved later.
->>>
->>> The mdev parent device driver could opt-in that the mdev could be
->>> fully isolated and protected by the IOMMU when the mdev is being
->>> created by invoking mdev_set_iommu_device() in its @create().
->> I just cannot understand here, how to get an iommu_device while I 
->> create mediated
->> device in my parent device driver?
->
-> When you are creating an mdev in your parent driver, you should know
-> which PCI device this mdev belonging to.
->
+Support the r8a77990 IPMMU and update IPMMU_OF_DECLARE to hook up
+the updated compat string.
 
-So, generally, I can set the parent device as mdev's iommu_device?
-If that, however, Mdev already holds its parent device. So, I just 
-figure what
-differences between Mdev's parent device and iommu_device are.
->>
->> And why not reuse the device of MDEV instread of adding a new device 
->> here?
->
-> iommu_device in the mdev_device structure represents the PCI device
-> that represents this mdev in iommu's device scope. IOMMU is only aware
-> of pci devices, it's not aware of mdev device.
+Signed-off-by: Hai Nguyen Pham <hai.pham.ud-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+[simon: rebased; dropped no longer required IOMMU_OF_DECLARE hunk]
+Signed-off-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+---
+ drivers/iommu/ipmmu-vmsa.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Could I understand like that: IOMMU can be aware of the parent device of 
-Mdev?
-And more, I am doubting the necessary of iommu_device in Mdev.
+ This is based on the next branch pf Joerg Roedel's iommu tree:
+ 2f2fbfb71ecc ("Merge branches 'arm/renesas', 'arm/smmu', 'ppc/pamu', 'x86/vt-d', 'x86/amd' and 'core' into next")
 
-Thanks,
-Zaibo
-
-.
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index b98a03189580..e0adf5d6c13c 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -762,6 +762,7 @@ static const struct soc_device_attribute soc_rcar_gen3[] = {
+ 	{ .soc_id = "r8a7796", },
+ 	{ .soc_id = "r8a77965", },
+ 	{ .soc_id = "r8a77970", },
++	{ .soc_id = "r8a77990", },
+ 	{ .soc_id = "r8a77995", },
+ 	{ /* sentinel */ }
+ };
+@@ -950,6 +951,9 @@ static const struct of_device_id ipmmu_of_ids[] = {
+ 		.compatible = "renesas,ipmmu-r8a77970",
+ 		.data = &ipmmu_features_rcar_gen3,
+ 	}, {
++		.compatible = "renesas,ipmmu-r8a77990",
++		.data = &ipmmu_features_rcar_gen3,
++	}, {
+ 		.compatible = "renesas,ipmmu-r8a77995",
+ 		.data = &ipmmu_features_rcar_gen3,
+ 	}, {
+-- 
+2.11.0
