@@ -1,85 +1,54 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: eliminate a potential memory
- corruption on Hi16xx soc
-Date: Tue, 16 Oct 2018 11:08:00 +0100
-Message-ID: <20181016100800.GA28150@arm.com>
-References: <1539592576-24352-1-git-send-email-thunder.leizhen@huawei.com>
- <20181015172146.GD31305@brain-police>
- <5fa2a259-b070-f8de-77d3-73eb8ac14d59@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Fix big-endian CMD_SYNC writes
+Date: Tue, 16 Oct 2018 12:31:07 +0100
+Message-ID: <e14feb6f7dedc90d181e20fbeaaba49156b03b09.1539689371.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5fa2a259-b070-f8de-77d3-73eb8ac14d59@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 15, 2018 at 06:36:52PM +0100, Robin Murphy wrote:
-> On 15/10/18 18:21, Will Deacon wrote:
-> >On Mon, Oct 15, 2018 at 04:36:16PM +0800, Zhen Lei wrote:
-> >>ITS translation register map:
-> >>0x0000-0x003C	Reserved
-> >>0x0040		GITS_TRANSLATER
-> >>0x0044-0xFFFC	Reserved
-> >>
-> >>The standard GITS_TRANSLATER register in ITS is only 4 bytes, but Hisilicon
-> >>expands the next 4 bytes to carry some IMPDEF information. That means, 8 bytes
-> >>data will be written to MSIAddress each time.
-> >>
-> >>MSIAddr: |----4bytes----|----4bytes----|
-> >>	 |    MSIData   |    IMPDEF    |
-> >>
-> >>There is no problem for ITS, because the next 4 bytes space is reserved in ITS.
-> >>But it will overwrite the 4 bytes memory following "sync_count". It's very
-> >>luckly that the previous and the next neighbour of "sync_count" are both aligned
-> >>by 8 bytes, so no problem is met now.
-> >>
-> >>It's good to explicitly add a workaround:
-> >>1. Add gcc __attribute__((aligned(8))) to make sure that "sync_count" is always
-> >>    aligned by 8 bytes.
-> >>2. Add a "u64" union member to make sure the 4 bytes padding is always exist.
-> >>
-> >>There is no functional change.
-> >>
-> >>Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> >>---
-> >>  drivers/iommu/arm-smmu-v3.c | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >>
-> >>diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> >>index 5059d09..a07bc0d 100644
-> >>--- a/drivers/iommu/arm-smmu-v3.c
-> >>+++ b/drivers/iommu/arm-smmu-v3.c
-> >>@@ -586,7 +586,10 @@ struct arm_smmu_device {
-> >>  	struct arm_smmu_strtab_cfg	strtab_cfg;
-> >>+	union {
-> >>+	u64				padding; /* workaround for Hisilicon */
-> >>  	u32				sync_count;
-> >>+	} __attribute__((aligned(8)));
-> >
-> >Won't this already be aligned by the ABI?
-> >
-> >Anyway, you'll need to swizzle things for big-endian, I suspect. Maybe you
-> >can do something clever like making sync_count an array of two elements
-> >and determining the offset based on the endianness. Or just keep it simple
-> >like we do for things like struct qrwlock and struct qspinlock and use
-> >#ifdefs.
-> 
-> I don't think so - the CPUs should only ever be making word accesses to the
-> u32 member, while the SMMU expects to be writing little-endian data to an
-> ITS, so AFAICS the data word will always be at the lower address either way.
+When we insert the sync sequence number into the CMD_SYNC.MSIData field,
+we do so in CPU-native byte order, before writing out the whole command
+as explicitly little-endian dwords. Thus on big-endian systems, the SMMU
+will receive and write back a byteswapped version of sync_nr, which would
+be perfect if it were targeting a similarly-little-endian ITS, but since
+it's actually writing back to memory being polled by the CPUs, they're
+going to end up seeing the wrong thing.
 
-Yes, thanks. I'd actually got the union layout wrong in my head and not
-realised that both member will start at the same address. Ok, so that works.
+Since the SMMU doesn't care what the MSIData actually contains, the
+minimal-overhead solution is to simply add an extra byteswap initially,
+such that it then writes back the big-endian format directly.
 
-> Although now that it's come up, the pre-existing issue of whether the byte
-> order *within* that u32 comes out correct after its round-trip through the
-> SMMU is something I need to run away and hurriedly think about...
+Fixes: 37de98f8f1cf ("iommu/arm-smmu-v3: Use CMD_SYNC completion MSI")
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ha, oops! Everything going into the command queue is swabbed, so I guess we
-need to swab the data again in smp_cond_load_acquire(). I'll leave it with
-you...
-
-Will
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index db402e8b068b..867ba548c2cc 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -952,7 +952,7 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+ 	struct arm_smmu_cmdq_ent ent = {
+ 		.opcode = CMDQ_OP_CMD_SYNC,
+ 		.sync	= {
+-			.msiaddr = virt_to_phys(&smmu->sync_count),
++			.msiaddr = cpu_to_le32(virt_to_phys(&smmu->sync_count)),
+ 		},
+ 	};
+ 
+-- 
+2.19.1.dirty
