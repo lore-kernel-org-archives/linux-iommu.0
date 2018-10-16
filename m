@@ -1,145 +1,114 @@
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu-v3: eliminate a potential memory
- corruption on Hi16xx soc
-Date: Tue, 16 Oct 2018 17:19:14 +0800
-Message-ID: <5BC5AD12.1010701@huawei.com>
-References: <1539592576-24352-1-git-send-email-thunder.leizhen@huawei.com>
- <4583617a-49ad-00b5-97fc-1ea35568c5cd@huawei.com>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 0/7] Add virtio-iommu driver
+Date: Tue, 16 Oct 2018 11:25:42 +0200
+Message-ID: <7874471b-3711-ca44-d220-5e756ac7db8c@redhat.com>
+References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4583617a-49ad-00b5-97fc-1ea35568c5cd@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: LinuxArm <linuxarm@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181012145917.6840-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Jean,
 
-
-On 2018/10/15 19:17, John Garry wrote:
-> On 15/10/2018 09:36, Zhen Lei wrote:
->> ITS translation register map:
->> 0x0000-0x003C    Reserved
->> 0x0040        GITS_TRANSLATER
->> 0x0044-0xFFFC    Reserved
->>
+On 10/12/18 4:59 PM, Jean-Philippe Brucker wrote:
+> Implement the virtio-iommu driver, following specification v0.8 [1].
+> Changes since v2 [2]:
 > 
-> Can you add a better opening than the ITS translation register map?
+> * Patches 2-4 allow virtio-iommu to use the PCI transport, since QEMU
+>   would like to phase out the MMIO transport. This produces a complex
+>   topology where the programming interface of the IOMMU could appear
+>   lower than the endpoints that it translates. It's not unheard of (e.g.
+>   AMD IOMMU), and the guest easily copes with this.
+>   
+>   The "Firmware description" section of the specification has been
+>   updated with all combinations of PCI, MMIO and DT, ACPI.
 
-OK
+I have a question wrt the FW specification. The IOMMU consumes 1 slot in
+the PCI domain and one needs to leave a RID hole in the iommu-map.  It
+is not obvious to me that this RID always is predictable given the pcie
+enumeration mechanism. Generally we have a coarse grain mapping of RID
+onto iommu phandles/STREAMIDs. Here, if I understand correctly we need
+to precisely identify the RID granted to the iommu. On QEMU this may
+depend on the instantiation order of the virtio-pci device right? So
+this does not look trivial to build this info. Isn't it possible to do
+this exclusion at kernel level instead?
 
+Thanks
+
+Eric
 > 
->> The standard GITS_TRANSLATER register in ITS is only 4 bytes, but Hisilicon
->> expands the next 4 bytes to carry some IMPDEF information. That means, 8 bytes
->> data will be written to MSIAddress each time.
->>
->> MSIAddr: |----4bytes----|----4bytes----|
->>      |    MSIData   |    IMPDEF    |
->>
->> There is no problem for ITS, because the next 4 bytes space is reserved in ITS.
->> But it will overwrite the 4 bytes memory following "sync_count". It's very
+> * Fix structures layout, they don't need the "packed" attribute anymore.
 > 
-> I think arm_smmu_device.sync_count is better, or "sync_count member in the the smmu driver control struct".
-
-OK, I will use "struct" in v2.
-
-+	struct {
- 	u32				sync_count;
-+	u32				padding;
-+	} __attribute__((aligned(8)));
-
+> * While we're at it, add domain parameter to DETACH request, and leave
+>   some padding. This way the next version, that adds PASID support,
+>   won't have to introduce a "DETACH2" request to stay backward
+>   compatible.
 > 
->> luckly that the previous and the next neighbour of "sync_count" are both aligned
+> * Require virtio device 1.0+. Remove legacy transport notes from the
+>   specification.
 > 
-> /s/luckly/luckily or fortunately/
-
-OK, thanks
-
+> * Request timeout is now only enabled with DEBUG.
 > 
->> by 8 bytes, so no problem is met now.
->>
->> It's good to explicitly add a workaround:
->> 1. Add gcc __attribute__((aligned(8))) to make sure that "sync_count" is always
->>    aligned by 8 bytes.
->> 2. Add a "u64" union member to make sure the 4 bytes padding is always exist.
->>
->> There is no functional change.
->>
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 5059d09..a07bc0d 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -586,7 +586,10 @@ struct arm_smmu_device {
->>
->>      struct arm_smmu_strtab_cfg    strtab_cfg;
->>
->> +    union {
->> +    u64                padding; /* workaround for Hisilicon */
+> * The patch for VFIO Kconfig (previously patch 5/5) is in next.
 > 
-> I think that a more detailed comment is required.
-
-OK, I will try to describe it more clearly.
-
+> You can find Linux driver and kvmtool device on branches
+> virtio-iommu/v0.8 [3] (currently based on 4.19-rc7 but rebasing onto
+> next only produced a trivial conflict). Branch virtio-iommu/devel
+> contains a few patches that I'd like to send once the base is upstream:
 > 
->>      u32                sync_count;
+> * virtio-iommu as a module. It got *much* nicer after Rob's probe
+>   deferral rework, but I still have a bug to fix when re-loading the
+>   virtio-iommu module.
 > 
-> Can you indent these 2 members? However - as discussed internally - this may have endian issue so better to declare full 64b struct.
-
-These indent is inherited, to keep aligning with other members.
-
-There is no endian issue, I have tested it on both little-endian and big-endian.
-
-$gdb vmlinux
-......
-(gdb) p &((struct arm_smmu_device *)0)->sync_count
-$1 = (u32 *) 0x4178
-(gdb) p &((struct arm_smmu_device *)0)->tst1
-$2 = (int *) 0x4170
-(gdb) p &((struct arm_smmu_device *)0)->tst2
-$3 = (int *) 0x4180
-
-------------testcase--------
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5059d09..7c6f7ac 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -586,7 +586,14 @@ struct arm_smmu_device {
-
-        struct arm_smmu_strtab_cfg      strtab_cfg;
-
-+ int                         tst1;
-+
-+ union {
-+ u64                         padding;
-        u32                             sync_count;
-+ } __attribute__((aligned(8)));
-+
-+ int                         tst2;
-
-        /* IOMMU core code handle */
-        struct iommu_device             iommu;
-
+> * ACPI support requires a minor IORT spec update (reservation of node
+>   ID). I think it should be easier to obtain once the device and drivers
+>   are upstream.
 > 
->> +    } __attribute__((aligned(8)));
->>
->>      /* IOMMU core code handle */
->>      struct iommu_device        iommu;
->>
-> Thanks
+> [1] Virtio-iommu specification v0.8, diff from v0.7, and sources
+>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.8
+>     http://jpbrucker.net/virtio-iommu/spec/v0.8/virtio-iommu-v0.8.pdf
+>     http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.7-v0.8.pdf
 > 
+> [2] [PATCH v2 0/5] Add virtio-iommu driver
+>     https://www.spinics.net/lists/kvm/msg170655.html
 > 
+> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.8
+>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.8
 > 
+> Jean-Philippe Brucker (7):
+>   dt-bindings: virtio-mmio: Add IOMMU description
+>   dt-bindings: virtio: Add virtio-pci-iommu node
+>   PCI: OF: allow endpoints to bypass the iommu
+>   PCI: OF: Initialize dev->fwnode appropriately
+>   iommu: Add virtio-iommu driver
+>   iommu/virtio: Add probe request
+>   iommu/virtio: Add event queue
 > 
-> .
+>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
+>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
+>  MAINTAINERS                                   |    7 +
+>  drivers/iommu/Kconfig                         |   11 +
+>  drivers/iommu/Makefile                        |    1 +
+>  drivers/iommu/virtio-iommu.c                  | 1171 +++++++++++++++++
+>  drivers/pci/of.c                              |   14 +-
+>  include/uapi/linux/virtio_ids.h               |    1 +
+>  include/uapi/linux/virtio_iommu.h             |  159 +++
+>  9 files changed, 1457 insertions(+), 3 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+>  create mode 100644 drivers/iommu/virtio-iommu.c
+>  create mode 100644 include/uapi/linux/virtio_iommu.h
 > 
-
--- 
-Thanks!
-BestRegards
