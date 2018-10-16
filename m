@@ -1,194 +1,175 @@
-From: Hanna Hawa <hannah@marvell.com>
-Subject: Re: [PATCH 2/4] iommu/arm-smmu: Workaround for Marvell Armada-AP806
- SoC erratum #582743
-Date: Tue, 16 Oct 2018 11:25:47 +0300
-Message-ID: <2e4f2b02-4b02-877d-1f51-c617170398a6@marvell.com>
-References: <1539604846-21151-1-git-send-email-hannah@marvell.com>
- <1539604846-21151-3-git-send-email-hannah@marvell.com>
- <8a7eefcf-6a77-8dc1-2ce9-9bb7395a3bb7@arm.com>
+From: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
+Date: Tue, 16 Oct 2018 10:41:17 +0200
+Message-ID: <CA+icZUXdr7_3BcunvQ8D8JE1KYhyVoERKBbLzANOR5D7GgZKuA@mail.gmail.com>
+References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
+	<95f69db6-becd-adce-5477-264de839bcd8@linux.intel.com>
+	<CA+icZUV8rEsY890jSd7K1+KQFUNC4MQk3z9MPBT8fpdTEG3X_w@mail.gmail.com>
+	<cc4d8a8e-bf00-7a43-f022-baeb7628a238@linux.intel.com>
+Reply-To: sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <8a7eefcf-6a77-8dc1-2ce9-9bb7395a3bb7@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com, will.deacon@arm.com, corbet@lwn.net, joro@8bytes.org, robh+dt@kernel.org, gregory.clement@bootlin.com, mark.rutland@arm.com, jason@lakedaemon.net, andrew@lunn.ch, sebastian.hesselbarth@gmail.com
-Cc: devicetree@vger.kernel.org, linux-doc@vger.kernel.org, omrii@marvell.com, linux-kernel@vger.kernel.org, nadavh@marvell.com, iommu@lists.linux-foundation.org, thomas.petazzoni@bootlin.com, nd@arm.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <cc4d8a8e-bf00-7a43-f022-baeb7628a238-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Tue, Oct 16, 2018 at 10:03 AM Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+>
+> Hi,
+>
+> On 10/16/18 3:56 PM, Sedat Dilek wrote:
+> > On Tue, Oct 16, 2018 at 8:37 AM Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> >>
+> >> Hi Sedat,
+> >>
+> >> Sorry for late reply.
+> >>
+> >> Do you still have this issue with newer rc's (like 4.19-rc8)?
+> >>
+> >> I checked the dmesg log you attached there, it seems that the vt-d was
+> >> not on actually.
+> >>
+> >
+> > Hi Lu,
+> >
+> > Thanks for asking.
+> >
+> > I am running a Clang-7 compiled Linux 4.19-rc6 and VirtualBox is
+> > reporting "IOMMU found".
+> >
+> > root@iniza:~# dmesg | grep -i iommu
+> > [    0.000000] Command line: initrd=\initrd.img-4.19.0-rc6-1-amd64-cbl
+> > root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro intel_iommu=on
+> > [    0.145385] Kernel command line:
+> > initrd=\initrd.img-4.19.0-rc6-1-amd64-cbl
+> > root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro intel_iommu=on
+> > [    0.145411] DMAR: IOMMU enabled
+> > [    0.243068] DMAR-IR: IOAPIC id 2 under DRHD base  0xfed91000 IOMMU 1
+> > [    0.893466] iommu: Adding device 0000:00:00.0 to group 0
+> > [    0.893475] iommu: Adding device 0000:00:02.0 to group 1
+> > [    0.893490] iommu: Adding device 0000:00:14.0 to group 2
+> > [    0.893498] iommu: Adding device 0000:00:14.2 to group 2
+> > [    0.893508] iommu: Adding device 0000:00:15.0 to group 3
+> > [    0.893519] iommu: Adding device 0000:00:16.0 to group 4
+> > [    0.893545] iommu: Adding device 0000:00:1c.0 to group 5
+> > [    0.893564] iommu: Adding device 0000:00:1c.6 to group 6
+> > [    0.893580] iommu: Adding device 0000:00:1d.0 to group 7
+> > [    0.893598] iommu: Adding device 0000:00:1d.2 to group 8
+> > [    0.893624] iommu: Adding device 0000:00:1f.0 to group 9
+> > [    0.893632] iommu: Adding device 0000:00:1f.2 to group 9
+> > [    0.893640] iommu: Adding device 0000:00:1f.3 to group 9
+> > [    0.893648] iommu: Adding device 0000:00:1f.4 to group 9
+> > [    0.893656] iommu: Adding device 0000:00:1f.6 to group 9
+> > [    0.893676] iommu: Adding device 0000:04:00.0 to group 10
+> > [    0.893693] iommu: Adding device 0000:3e:00.0 to group 11
+> > [    1.116440] AMD IOMMUv2 driver by Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> > [    1.116463] AMD IOMMUv2 functionality not available on this system
+> > [   42.117773] vboxpci: IOMMU found
+> >
+> > How can I be sure Intel-IOMMU is working correctly beyond checking dmesg logs?
+>
+> Perhaps you need to check whether you've configured your VirtualBox to
+> simulate an Intel-IOMMU device.
+>
 
+Checking [1]...
+[ Unfortunately, I have the German VirtualBox version. ]
 
-On 10/15/2018 04:00 PM, Robin Murphy wrote:
-> Hi Hanna,
->
-> On 15/10/18 13:00, hannah@marvell.com wrote:
->> From: Hanna Hawa <hannah@marvell.com>
->>
->> Due to erratum #582743, the Marvell Armada-AP806 can't access 64bit
->> to ARM SMMUv2 registers.
->> This patch split the writeq/readq to two accesses of writel/readl.
->>
->> Note that separate writes/reads to 2 is not problem regards to atomicity,
->> because the driver use the readq/writeq while initialize the SMMU, report
->> for SMMU fault, and use spinlock in one case (iova_to_phys).
->
-> In general, this doesn't work. Here's what the SMMU spec says about
-> SMMU_CBn_TLBIVA, but others are similar:
->
-> "If SMMU_CBA2Rn.VA64 is one, then AArch64 format is selected. The
-> programmer should use 64 bit accesses to this register. If 32-bit
-> accesses are used then writes to the top 32 bits are ignored and writes
-> to the lower 32 bits are zero extended."
->
-> If your interconnect won't let 64-bit transactions through, then you
-> can't use AArch64 format at stage 1 at all, since there's no way to
-> invalidate entries with the correct ASID, and you'll have to restrict
-> stage 2 formats to at most 44-bit IOVAs in order for TLBIIPAS2{L} not to
-> invalidate the wrong thing.
-Thanks for your suggestion.
+System > Acceleration > Activate VT-x (here: yes)
 
-To restrict the IOVAs i need to add another work-around to the driver to 
-limit the va_size, is that acceptable?
+[ dmesg ]
+[   11.521117] [drm] VT-d active for gfx access
 
-What the different in the driver between AARCH32_L & AARCH32_S?
+[ vbox version ]
+[   42.048419] vboxdrv: Successfully loaded version 5.2.18_Debian
+(interface 0x00290001)
 
->
->> Signed-off-by: Hanna Hawa <hannah@marvell.com>
->> ---
->>   Documentation/arm64/silicon-errata.txt |  2 ++
->>   drivers/iommu/arm-smmu.c               | 33
->> +++++++++++++++++++++++++++++----
->>   2 files changed, 31 insertions(+), 4 deletions(-)
->>
->> diff --git a/Documentation/arm64/silicon-errata.txt
->> b/Documentation/arm64/silicon-errata.txt
->> index 3b2f2dd..fc3f2a0 100644
->> --- a/Documentation/arm64/silicon-errata.txt
->> +++ b/Documentation/arm64/silicon-errata.txt
->> @@ -67,6 +67,8 @@ stable kernels.
->>   | Cavium         | ThunderX2 SMMUv3| #74             |
->> N/A                         |
->>   | Cavium         | ThunderX2 SMMUv3| #126            |
->> N/A                         |
->>   |                |                 |
->> |                             |
->> +| Marvell        | ARM-MMU-500     | #582743         |
->> N/A                         |
->> +|                |                 |
->> |                             |
->
-> Nit: the convention here seems to be at least alphabetically sorted by
-> Implementer.
->
->>   | Freescale/NXP  | LS2080A/LS1043A | A-008585        |
->> FSL_ERRATUM_A008585         |
->>   |                |                 |
->> |                             |
->>   | Hisilicon      | Hip0{5,6,7}     | #161010101      |
->> HISILICON_ERRATUM_161010101 |
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index fccb1d4..d64f892 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -119,6 +119,7 @@ enum arm_smmu_arch_version {
->>   enum arm_smmu_implementation {
->>       GENERIC_SMMU,
->>       ARM_MMU500,
->> +    MRVL_MMU500,
->
-> Is there any actually modification to the MMU-500 RTL itself here, or is
-> the problem just in the interconnect in front of the SMMU programming
-> interface? I would normally assume the latter, in which case treating it
-> as a separate implementation isn't really accurate, and I'd much rather
-> handle any workaround via smmu->options, just like the secure access
-> workaround (which is a similar integration issue).
-No actual modification to the RTL, i'll use the smmu->option
-Thanks for your review & suggestions.
+- sed@ -
 
-Hanna
+[1] https://www.virtualbox.org/manual/ch09.html#pcipassthrough
+
+> Best regards,
+> Lu Baolu
 >
-> Robin.
->
->>       CAVIUM_SMMUV2,
->>   };
->>   @@ -276,13 +277,35 @@ static inline void smmu_writeq_relaxed(struct
->> arm_smmu_device *smmu,
->>                          u64 val,
->>                          void __iomem *addr)
->>   {
->> -    writeq_relaxed(val, addr);
->> +    /*
->> +     * Marvell Armada-AP806 erratum #582743.
->> +     * Split all the writeq to double writel
->> +     */
->> +    if (smmu->model != MRVL_MMU500) {
->> +        writeq_relaxed(val, addr);
->> +        return;
->> +    }
->> +
->> +    writel_relaxed(upper_32_bits(val), addr + 4);
->> +    writel_relaxed(lower_32_bits(val), addr);
->>   }
->>     static inline u64 smmu_readq_relaxed(struct arm_smmu_device *smmu,
->>                        void __iomem *addr)
->>   {
->> -    return readq_relaxed(addr);
->> +    u64 val;
->> +
->> +    /*
->> +     * Marvell Armada-AP806 erratum #582743.
->> +     * Split all the readq to double readl
->> +     */
->> +    if (smmu->model != MRVL_MMU500)
->> +        return readq_relaxed(addr);
->> +
->> +    val = (u64)readl_relaxed(addr + 4) << 32;
->> +    val |= readl_relaxed(addr);
->> +
->> +    return val;
->>   }
->>     static void parse_driver_options(struct arm_smmu_device *smmu)
->> @@ -1611,7 +1634,7 @@ static void arm_smmu_device_reset(struct
->> arm_smmu_device *smmu)
->>       for (i = 0; i < smmu->num_mapping_groups; ++i)
->>           arm_smmu_write_sme(smmu, i);
->>   -    if (smmu->model == ARM_MMU500) {
->> +    if (smmu->model == ARM_MMU500 || smmu->model == MRVL_MMU500) {
->>           /*
->>            * Before clearing ARM_MMU500_ACTLR_CPRE, need to
->>            * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
->> @@ -1640,7 +1663,7 @@ static void arm_smmu_device_reset(struct
->> arm_smmu_device *smmu)
->>            * Disable MMU-500's not-particularly-beneficial next-page
->>            * prefetcher for the sake of errata #841119 and #826419.
->>            */
->> -        if (smmu->model == ARM_MMU500) {
->> +        if (smmu->model == ARM_MMU500 || smmu->model == MRVL_MMU500) {
->>               reg = readl_relaxed(cb_base + ARM_SMMU_CB_ACTLR);
->>               reg &= ~ARM_MMU500_ACTLR_CPRE;
->>               writel_relaxed(reg, cb_base + ARM_SMMU_CB_ACTLR);
->> @@ -1923,6 +1946,7 @@ struct arm_smmu_match_data {
->>   ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
->>   ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
->>   ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
->> +ARM_SMMU_MATCH_DATA(mrvl_mmu500, ARM_SMMU_V2, MRVL_MMU500);
->>   ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
->>     static const struct of_device_id arm_smmu_of_match[] = {
->> @@ -1931,6 +1955,7 @@ struct arm_smmu_match_data {
->>       { .compatible = "arm,mmu-400", .data = &smmu_generic_v1 },
->>       { .compatible = "arm,mmu-401", .data = &arm_mmu401 },
->>       { .compatible = "arm,mmu-500", .data = &arm_mmu500 },
->> +    { .compatible = "marvell,mmu-500", .data = &mrvl_mmu500 },
->>       { .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
->>       { },
->>   };
->>
+> >
+> > [1] recommends to check...
+> >
+> > root@iniza:~# find /sys | grep dmar
+> >
+> > Shall I re-check with Linux v4.19-rc8?
+> >
+> > Thanks in advance.
+> >
+> > Regards,
+> > - Sedat -
+> >
+> > [1] https://stackoverflow.com/questions/44286683/check-for-iommu-support-on-linux
+> > [2] https://www.kernel.org/doc/Documentation/Intel-IOMMU.txt
+> >
+> >> Best regards,
+> >> Lu Baolu
+> >>
+> >> On 9/5/18 8:04 PM, Sedat Dilek wrote:
+> >>> Hi Joerg,
+> >>>
+> >>> "intel_ioomu=on" was working fine here on my ThinkPad T470 with
+> >>> debian/testing AMD64 with Linux v4.17.y and v4.18.y.
+> >>>
+> >>> With testing Linux v4.19-rc1 and v4.19-rc2 my machine is not booting -
+> >>> black screen.
+> >>> These kernels are built with LLVM/Clang v7.0.0rc2 (v4.18.y too).
+> >>>
+> >>> Furthermore, I switched from GRUB to systemd-boot v239.
+> >>>
+> >>> [ /boot/efi/loader/entries/debian.conf ]
+> >>>
+> >>> title Debian GNU/Linux buster/sid [ debian kernel ]
+> >>> linux /vmlinuz-4.17.0-3-amd64
+> >>> initrd /initrd.img-4.17.0-3-amd64
+> >>> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro intel_iommu=on
+> >>>
+> >>> [ /boot/efi/loader/entries/debian-llvmlinux.conf ]
+> >>>
+> >>> title Debian GNU/Linux buster/sid [ llvmlinux kernel (EXPERIMENTAL) ]
+> >>> linux /vmlinuz-4.19.0-rc2-3-iniza-llvmlinux
+> >>> initrd /initrd.img-4.19.0-rc2-3-iniza-llvmlinux
+> >>> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro
+> >>>
+> >>> Any hints or hints to debug this?
+> >>> Any other kernel boot cheats [1] I can try?
+> >>>
+> >>> My kernel-config and dmesg output is attached.
+> >>>
+> >>> Thanks in advance.
+> >>>
+> >>> Regards,
+> >>> - Sedat -
+> >>>
+> >>>
+> >>> Documentation/intel_txt.txt
+> >>> Documentation/admin-guide/kernel-parameters.txt
+> >>> Documentation/Intel-IOMMU.txt
+> >>>
+> >>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt#n1645
+> >>> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/Intel-IOMMU.txt
+> >>> [3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/intel_txt.txt
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> iommu mailing list
+> >>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> >>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> >>>
+> >
