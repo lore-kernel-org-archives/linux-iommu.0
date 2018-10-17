@@ -1,88 +1,82 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC PATCH v3 10/10] iommu/sva: Add support for private PASIDs
-Date: Wed, 17 Oct 2018 09:07:52 -0600
-Message-ID: <20181017150751.GF4751@jcrouse-lnx.qualcomm.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-11-jean-philippe.brucker@arm.com>
-	<20181012143229.GI9977@jcrouse-lnx.qualcomm.com>
-	<3e1b58bb-eb16-5855-2922-2b15b37ba971@arm.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v3 3/7] PCI: OF: Allow endpoints to bypass the iommu
+Date: Wed, 17 Oct 2018 11:14:05 -0400
+Message-ID: <20181017111100-mutt-send-email-mst@kernel.org>
+References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
+	<20181012145917.6840-4-jean-philippe.brucker@arm.com>
+	<20181012194158.GX5906@bhelgaas-glaptop.roam.corp.google.com>
+	<20181015065024-mutt-send-email-mst@kernel.org>
+	<482d0eb9-8c4c-9d64-7b32-25d5d11a8b8f@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
 Content-Disposition: inline
-In-Reply-To: <3e1b58bb-eb16-5855-2922-2b15b37ba971-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+In-Reply-To: <482d0eb9-8c4c-9d64-7b32-25d5d11a8b8f@gmail.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Jean-philippe Brucker <jphilippe.brucker@gmail.com>
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, tnowicki@caviumnetworks.com, peter.maydell@linaro.org, marc.zyngier@arm.com, linux-pci@vger.kernel.org, will.deacon@arm.com, virtualization@lists.linux-foundation.org, jean-philippe.brucker@arm.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org, Bjorn Helgaas <helgaas@kernel.org>, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 17, 2018 at 03:21:43PM +0100, Jean-Philippe Brucker wrote:
-> Hi Jordan,
+On Mon, Oct 15, 2018 at 08:46:41PM +0100, Jean-philippe Brucker wrote:
+> [Replying with my personal address because we're having SMTP issues]
 > 
-> On 12/10/2018 15:32, Jordan Crouse wrote:
-> > On Thu, Sep 20, 2018 at 06:00:46PM +0100, Jean-Philippe Brucker wrote:
-> >> Provide an API for allocating PASIDs and populating them manually. To ease
-> >> cleanup and factor allocation code, reuse the io_mm structure for private
-> >> PASID. Private io_mm has a NULL mm_struct pointer, and cannot be bound to
-> >> multiple devices. The mm_alloc() IOMMU op must now check if the mm
-> >> argument is NULL, in which case it should allocate io_pgtables instead of
-> >> binding to an mm.
+> On 15/10/2018 11:52, Michael S. Tsirkin wrote:
+> > On Fri, Oct 12, 2018 at 02:41:59PM -0500, Bjorn Helgaas wrote:
+> >> s/iommu/IOMMU/ in subject
 > >>
-> >> Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-> >> ---
-> >> Sadly this probably won't be the final thing. The API in this patch is
-> >> used like this:
+> >> On Fri, Oct 12, 2018 at 03:59:13PM +0100, Jean-Philippe Brucker wrote:
+> >>> Using the iommu-map binding, endpoints in a given PCI domain can be
+> >>> managed by different IOMMUs. Some virtual machines may allow a subset of
+> >>> endpoints to bypass the IOMMU. In some case the IOMMU itself is presented
 > >>
-> >>         iommu_sva_alloc_pasid(dev, &io_mm) -> PASID
-> >>         iommu_sva_map(io_mm, ...)
-> >>         iommu_sva_unmap(io_mm, ...)
-> >>         iommu_sva_free_pasid(dev, io_mm)
+> >> s/case/cases/
 > >>
-> >> The proposed API for auxiliary domains is in an early stage but might
-> >> replace this patch and could be used like this:
+> >>> as a PCI endpoint (e.g. AMD IOMMU and virtio-iommu). Currently, when a
+> >>> PCI root complex has an iommu-map property, the driver requires all
+> >>> endpoints to be described by the property. Allow the iommu-map property to
+> >>> have gaps.
 > >>
-> >>         iommu_enable_aux_domain(dev)
-> >>         d = iommu_domain_alloc()
-> >>         iommu_attach_aux(dev, d)
-> >>         iommu_aux_id(d) -> PASID
-> >>         iommu_map(d, ...)
-> >>         iommu_unmap(d, ...)
-> >>         iommu_detach_aux(dev, d)
-> >>         iommu_domain_free(d)
-> >>
-> >> The advantage being that the driver doesn't have to use a special
-> >> version of map/unmap/etc.
-> >
-> > Hi Jean-Phillippe -
-> >
-> > Have you thought about this any more? I want to send out a
-> > refresh for the per-context pagetables for arm-smmu so if we want to change
-> > the underlying assumptions this would be a great time.
-> >
-> > For my part I'm okay with either model. In fact the second one is closer
-> > to the original implementation that I sent out so I have a clear development
-> > path in mind for either option depending on what the community decides.
+> >> I'm not an IOMMU or virtio expert, so it's not obvious to me why it is
+> >> safe to allow devices to bypass the IOMMU.  Does this mean a typo in
+> >> iommu-map could inadvertently allow devices to bypass it?
+> > 
+> > 
+> > Thinking about this comment, I would like to ask: can't the
+> > virtio device indicate the ranges in a portable way?
+> > This would minimize the dependency on dt bindings and ACPI,
+> > enabling support for systems that have neither but do
+> > have virtio e.g. through pci.
 > 
-> We'll probably go with the second model. I'm trying to make the latest
-> version work with SMMUv3
-> (https://lwn.net/ml/linux-kernel/20181012051632.26064-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org/)
-> and I'd like to send an RFC soon
+> I thought about adding a PROBE request for this in virtio-iommu, but it
+> wouldn't be usable by a Linux guest because of a bootstrapping problem.
 
-Okay. When you do, I'll try to add the v2 code and make it work with the Adreno
-GPU.
+Hmm. At some level it seems wrong to design hardware interfaces
+around how Linux happens to probe things. That can change at any time
+...
 
-Jordan
+> Early on, Linux needs a description of device dependencies, to determine
+> in which order to probe them. If the device dependency was described by
+> virtio-iommu itself, the guest could for example initialize a NIC,
+> allocate buffers and start DMA on the physical address space (which aborts
+> if the IOMMU implementation disallows DMA by default), only to find out
+> once the virtio-iommu module is loaded that it needs to cancel all DMA and
+> reconfigure the NIC. With a static description such as iommu-map in DT or
+> ACPI remapping tables, the guest can defer probing of the NIC until the
+> IOMMU is initialized.
+> 
+> Thanks,
+> Jean
+
+Could you point me at the code you refer to here?
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+MST
