@@ -1,52 +1,105 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
-Date: Wed, 17 Oct 2018 12:16:29 +0200 (CEST)
-Message-ID: <alpine.DEB.2.21.1810171216040.6000@nanos.tec.linutronix.de>
-References: <20181014075208.2715-1-hch@lst.de>
-	<CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v3 0/7] Add virtio-iommu driver
+Date: Wed, 17 Oct 2018 12:54:28 +0100
+Message-ID: <40dddb20-6248-5bb0-e0ed-48bacd1867a1@arm.com>
+References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
+	<7874471b-3711-ca44-d220-5e756ac7db8c@redhat.com>
+	<b2f929c3-b0df-acdc-c5e8-0d7ddf7ed964@arm.com>
+	<c7167c51-d864-08f5-c128-f4b3257840ce@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: whiteheadm-HInyCGIudOg@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <c7167c51-d864-08f5-c128-f4b3257840ce@redhat.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Auger Eric <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Cc: Mark Rutland <Mark.Rutland@arm.com>, "peter.maydell@linaro.org" <peter.maydell@linaro.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "mst@redhat.com" <mst@redhat.com>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Will Deacon <Will.Deacon@arm.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Robin Murphy <Robin.Murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 16 Oct 2018, tedheadster wrote:
-> On Sun, Oct 14, 2018 at 3:52 AM Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
-> >
-> > We already build the swiotlb code for 32b-t kernels with PAE support,
-> > but the code to actually use swiotlb has only been enabled for 64-bit
-> > kernel for an unknown reason.
-> >
-> > Before Linux 4.18 we papers over this fact because the networking code,
-> > the scsi layer and some random block drivers implenented their own
-> > bounce buffering scheme.
-> >
-> > Fixes: 21e07dba ("scsi: reduce use of block bounce buffers")
-> > Fixes: ab74cfeb ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
-> > Reported-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> > Tested-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> > ---
-> >
-> 
-> Christoph,
->   this fix has causes performance to decrease dramatically. Kernel
-> builds that used to take 10-15 minutes are now taking 45-60 minutes on
-> the same machine.
-
-Christoph, can you have a look please?
-
-Thanks,
-
-	tglx
+T24gMTYvMTAvMjAxOCAyMTozMSwgQXVnZXIgRXJpYyB3cm90ZToKPiBIaSBKZWFuLAo+IAo+IE9u
+IDEwLzE2LzE4IDg6NDQgUE0sIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciB3cm90ZToKPj4gT24gMTYv
+MTAvMjAxOCAxMDoyNSwgQXVnZXIgRXJpYyB3cm90ZToKPj4+IEhpIEplYW4sCj4+Pgo+Pj4gT24g
+MTAvMTIvMTggNDo1OSBQTSwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+Pj4+IEltcGxl
+bWVudCB0aGUgdmlydGlvLWlvbW11IGRyaXZlciwgZm9sbG93aW5nIHNwZWNpZmljYXRpb24gdjAu
+OCBbMV0uCj4+Pj4gQ2hhbmdlcyBzaW5jZSB2MiBbMl06Cj4+Pj4KPj4+PiAqIFBhdGNoZXMgMi00
+IGFsbG93IHZpcnRpby1pb21tdSB0byB1c2UgdGhlIFBDSSB0cmFuc3BvcnQsIHNpbmNlIFFFTVUK
+Pj4+PiDCoMKgIHdvdWxkIGxpa2UgdG8gcGhhc2Ugb3V0IHRoZSBNTUlPIHRyYW5zcG9ydC4gVGhp
+cyBwcm9kdWNlcyBhIGNvbXBsZXgKPj4+PiDCoMKgIHRvcG9sb2d5IHdoZXJlIHRoZSBwcm9ncmFt
+bWluZyBpbnRlcmZhY2Ugb2YgdGhlIElPTU1VIGNvdWxkIGFwcGVhcgo+Pj4+IMKgwqAgbG93ZXIg
+dGhhbiB0aGUgZW5kcG9pbnRzIHRoYXQgaXQgdHJhbnNsYXRlcy4gSXQncyBub3QgdW5oZWFyZCBv
+ZiAoZS5nLgo+Pj4+IMKgwqAgQU1EIElPTU1VKSwgYW5kIHRoZSBndWVzdCBlYXNpbHkgY29wZXMg
+d2l0aCB0aGlzLgo+Pj4+IMKgwqAgCj4+Pj4gwqDCoCBUaGUgIkZpcm13YXJlIGRlc2NyaXB0aW9u
+IiBzZWN0aW9uIG9mIHRoZSBzcGVjaWZpY2F0aW9uIGhhcyBiZWVuCj4+Pj4gwqDCoCB1cGRhdGVk
+IHdpdGggYWxsIGNvbWJpbmF0aW9ucyBvZiBQQ0ksIE1NSU8gYW5kIERULCBBQ1BJLgo+Pj4KPj4+
+IEkgaGF2ZSBhIHF1ZXN0aW9uIHdydCB0aGUgRlcgc3BlY2lmaWNhdGlvbi4gVGhlIElPTU1VIGNv
+bnN1bWVzIDEgc2xvdCBpbgo+Pj4gdGhlIFBDSSBkb21haW4gYW5kIG9uZSBuZWVkcyB0byBsZWF2
+ZSBhIFJJRCBob2xlIGluIHRoZSBpb21tdS1tYXAuwqAgSXQKPj4+IGlzIG5vdCBvYnZpb3VzIHRv
+IG1lIHRoYXQgdGhpcyBSSUQgYWx3YXlzIGlzIHByZWRpY3RhYmxlIGdpdmVuIHRoZSBwY2llCj4+
+PiBlbnVtZXJhdGlvbiBtZWNoYW5pc20uIEdlbmVyYWxseSB3ZSBoYXZlIGEgY29hcnNlIGdyYWlu
+IG1hcHBpbmcgb2YgUklECj4+PiBvbnRvIGlvbW11IHBoYW5kbGVzL1NUUkVBTUlEcy4gSGVyZSwg
+aWYgSSB1bmRlcnN0YW5kIGNvcnJlY3RseSB3ZSBuZWVkCj4+PiB0byBwcmVjaXNlbHkgaWRlbnRp
+ZnkgdGhlIFJJRCBncmFudGVkIHRvIHRoZSBpb21tdS4gT24gUUVNVSB0aGlzIG1heQo+Pj4gZGVw
+ZW5kIG9uIHRoZSBpbnN0YW50aWF0aW9uIG9yZGVyIG9mIHRoZSB2aXJ0aW8tcGNpIGRldmljZSBy
+aWdodD8KPj4gCj4+IFllcywgYWx0aG91Z2ggaXQgc2hvdWxkIGFsbCBoYXBwZW4gYmVmb3JlIHlv
+dSBib290IHRoZSBndWVzdCwgc2luY2UKPj4gdGhlcmUgaXMgbm8gaG90cGx1Z2dpbmcgYW4gSU9N
+TVUuIENvdWxkIHlvdSByZXNlcnZlIGEgUENJIHNsb3QgdXBmcm9udAo+PiBhbmQgdXNlIGl0IGZv
+ciB2aXJ0aW8taW9tbXUgbGF0ZXI/IE9yIGdlbmVyYXRlIHRoZSBpb21tdS1tYXAgYXQgdGhlIHNh
+bWUKPj4gdGltZSBhcyBnZW5lcmF0aW5nIHRoZSBjaGlsZCBub2RlIG9mIHRoZSBQQ0kgUkM/Cj4g
+Cj4gRXZlbiB3aGVuIGNvbGQtcGx1Z2dpbmcgdGhlIFBDSWUgZGV2aWNlcyB0aHJvdWdoIHFlbXUg
+Q0xJLCB0aGlzIGRlcGVuZHMKPiBvbiB0aGUgb3JkZXIgb2YgdGhlIHBjaWUgZGV2aWNlcyBpbiB0
+aGUgbGlzdCBJIGd1ZXNzLiBJIG5lZWQgdG8gZnVydGhlcgo+IGV4cGVyaW1lbnQuCgpQbGVhc2Ug
+bGV0IG1lIGtub3cgaG93IGl0IGdvZXMuIEkgZ3Vlc3MgdGhlIHByb2JsZW0gd2lsbCBiZSB0aGUg
+c2FtZSBmb3IKYnVpbGRpbmcgSU9SVCB0YWJsZXM/IFlvdSdyZSBhbHNvIGdvaW5nIHRvIG5lZWQg
+YSBob2xlIGluIHRoZSBJRAptYXBwaW5ncyBvZiB0aGUgUENJIHJvb3QgY29tcGxleCBub2RlLgoK
+Pj4+IFNvCj4+PiB0aGlzIGRvZXMgbm90IGxvb2sgdHJpdmlhbCB0byBidWlsZCB0aGlzIGluZm8u
+IElzbid0IGl0IHBvc3NpYmxlIHRvIGRvCj4+PiB0aGlzIGV4Y2x1c2lvbiBhdCBrZXJuZWwgbGV2
+ZWwgaW5zdGVhZD8KPj4gCj4+IFNvIGluIHRoZW9yeSBWSVJUSU9fRl9JT01NVV9QTEFURk9STSBh
+bHJlYWR5IGRvZXMgdGhhdDoKPj4gCj4+IFZJUlRJT19GX0lPTU1VX1BMQVRGT1JNKDMzKQo+PsKg
+wqDCoMKgIFRoaXMgZmVhdHVyZSBpbmRpY2F0ZXMgdGhhdCB0aGUgZGV2aWNlIGlzIGJlaGluZCBh
+biBJT01NVSB0aGF0Cj4+wqDCoMKgwqAgdHJhbnNsYXRlcyBidXMgYWRkcmVzc2VzIGZyb20gdGhl
+IGRldmljZSBpbnRvIHBoeXNpY2FsIGFkZHJlc3NlcyBpbgo+PsKgwqDCoMKgIG1lbW9yeS4gSWYg
+dGhpcyBmZWF0dXJlIGJpdCBpcyBzZXQgdG8gMCwgdGhlbiB0aGUgZGV2aWNlIGVtaXRzCj4+wqDC
+oMKgwqAgcGh5c2ljYWwgYWRkcmVzc2VzIHdoaWNoIGFyZSBub3QgdHJhbnNsYXRlZCBmdXJ0aGVy
+LCBldmVuIHRob3VnaCBhbgo+PsKgwqDCoMKgIElPTU1VIG1heSBiZSBwcmVzZW50Lgo+IAo+IFRo
+aXMgdGVsbHMgdGhlIGRyaXZlciB0byB1c2UgdGhlIGRtYSBhcGksIHJpZ2h0PyAKClRoYXQncyBo
+b3cgTGludXggaW1wbGVtZW50cyB0aGUgYml0LCBpbnN0YWxsIGN1c3RvbSBETUEgb3BzIHdoZW4g
+dGhlIGJpdAppcyBhYnNlbnQuIEJ1dCBpdCBkb2Vzbid0IHdvcmsgZm9yIGV2ZXJ5b25lIGFuZCBo
+YXMgY2F1c2VkIGEgbG90IG9mCmRlYmF0ZSAoaHR0cHM6Ly9wYXRjaHdvcmsub3psYWJzLm9yZy9j
+b3Zlci85NDY3MDgvKQoKPiBFZmZlY3RpdmVseSB0aGlzCj4gZXhwbGljaXRseSBzYXlzIHdoZXRo
+ZXIgdGhlIGRldmljZSBpcyBzdXBwb3NlZCB0byBiZSB1cGZyb250IGFuIElPTU1VLgoKWWVzLiBJ
+dCdzIHF1aXRlIHN0cmFuZ2UgaWYgeW91IGNvbnNpZGVyIGhvdHBsdWdnYWJsZSBoYXJkd2FyZSwg
+c2luY2UKdGhvc2UgZGV2aWNlcyBzaG91bGRuJ3QgZ2V0IHRvIGNob29zZSB3aGV0aGVyIHRoZXkg
+YXJlIG1hbmFnZWQgYnkgYW4KSU9NTVUuIEZvciB0aGUgSU9NTVUgaXRzZWxmLCBpdCBzaG91bGQg
+YmUgZmluZQoKPj4gRm9yIGJldHRlciBvciBmb3Igd29yc2UsIHRoZSBndWVzdCBoYXMgdG8gaW1w
+bGVtZW50IGl0LiBJZiB0aGlzIGZlYXR1cmUKPj4gYml0IGlzIHVuc2V0IGZvciB2aXJ0aW8taW9t
+bXUsIGl0IGRvZXMgRE1BIG9uIHRoZSBwaHlzaWNhbCBhZGRyZXNzCj4+IHNwYWNlLCByZWdhcmRs
+ZXNzIG9mIHdoYXQgdGhlIHN0YXRpYyB0b3BvbG9neSBkZXNjcmlwdGlvbiBzYXlzLgo+PiAKPj4g
+SW4gcHJhY3RpY2UgaXQgZG9lc24ndCBxdWl0ZSB3b3JrLiBJZiB5b3VyIGlvbW11LW1hcCBkZXNj
+cmliZXMgdGhlIElPTU1VCj4+IGFzIHRyYW5zbGF0aW5nIGl0c2VsZiwgTGludXgnIE9GIGNvZGUg
+d2lsbCB3YWl0IGZvciB0aGUgSU9NTVUgdG8gYmUKPj4gcHJvYmVkIGJlZm9yZSBwcm9iaW5nIHRo
+ZSBJT01NVS4gV29ya2luZyBhcm91bmQgdGhpcyB3aXRoIGhhY2tzIGlzCj4+IHBvc3NpYmxlLCBi
+dXQgSSBkb24ndCB3YW50IHRvIGludHJvZHVjZSBtb3JlIHF1ZXN0aW9uYWJsZSBjb2RlIHRvIE9G
+IGFuZAo+PiBkZXZpY2UgdHJlZSBiaW5kaW5ncyBpZiB0aGVyZSBpcyBhbnkgb3RoZXIgd2F5Lgo+
+IEh1bSBvay4gSSBjYW5ub3QgcmVhbGx5IGNvbW1lbnQgb24gdGhpcy4KPiAKPiBJIGp1c3Qgd2Fu
+dGVkIHRvIHJhaXNlIHRoaXMgY29uY2VybiBhYm91dCBSSUQgaWRlbnRmaWNhdGlvbi4KCldlIGNh
+biBhbHdheXMgdHJ5LiBSZWxheGluZyBpb21tdS1tYXAgZnVydGhlciB3b3VsZCBiZSBvbmUgYWRk
+aXRpb25hbApwYXRjaCB0byBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcGNpL3Bj
+aS1pb21tdS50eHQsIGFuZCBvbmUgdG8KZHJpdmVycy9pb21tdS9vZi1pb21tdS5jLiBJJ2QgcmF0
+aGVyIG1ha2UgaXQgYSBzZXBhcmF0ZSBSRkMuCgpTaW5jZSB3ZSBuZWVkIGFja3MgZnJvbSBhbiBP
+RiBtYWludGFpbmVyIGFuZCBJJ2QgYWxzbyBsaWtlIEpvZXJnJ3MKYXBwcm92YWwgZm9yIGFkZGlu
+ZyBhIG5ldyBkcml2ZXIgdG8gdGhlIElPTU1VIHRyZWUsIEkgdGhpbmsgaXQncyB0b28KbGF0ZSBm
+b3IgdGhpcyBpdGVyYXRpb24uIEkgd2Fzbid0IGludGVuZGluZyBmb3IgdGhpcyB0byBnbyBpbnRv
+IDQuMjAsCmp1c3QgaGF2ZSBzb21ldGhpbmcgdG8gZGlzY3VzcyBhdCBLVk0gZm9ydW0gbmV4dCB3
+ZWVrLgoKVGhhbmtzLApKZWFuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fClZpcnR1YWxpemF0aW9uIG1haWxpbmcgbGlzdApWaXJ0dWFsaXphdGlvbkBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby92aXJ0dWFsaXphdGlvbg==
