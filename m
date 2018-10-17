@@ -1,17 +1,15 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v3 10/10] iommu/sva: Add support for private PASIDs
-Date: Wed, 17 Oct 2018 15:24:16 +0100
-Message-ID: <3ab968f0-4da5-eba8-94a1-8f42b8af8a49@arm.com>
-References: <20180920170046.20154-1-jean-philippe.brucker@arm.com>
-	<20180920170046.20154-11-jean-philippe.brucker@arm.com>
-	<20181012143229.GI9977@jcrouse-lnx.qualcomm.com>
-	<3e1b58bb-eb16-5855-2922-2b15b37ba971@arm.com>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 2/2] iommu/arm-smmu-v3: Reunify
+	arm_smmu_cmdq_issue_sync()
+Date: Wed, 17 Oct 2018 15:38:57 +0100
+Message-ID: <b35bb171-013b-3cb7-9a99-78505b9fdd18@huawei.com>
+References: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy@arm.com>
+	<fe1b23d1980dd110eb2e8ffc01c2dd68632566d1.1539782799.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3e1b58bb-eb16-5855-2922-2b15b37ba971-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <fe1b23d1980dd110eb2e8ffc01c2dd68632566d1.1539782799.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,67 +19,148 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Jonathan.Cameron-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, andrew.murray-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, liguozhu-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, bharatku-gjFFaj9aHVfQT0dZR+AlfA@public.gmane.org, ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, shunyong.yang-PT9Dzx9SjPiXmMXjJBpWqg@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/10/2018 15:21, Jean-Philippe Brucker wrote:
-> Hi Jordan,
-> 
-> On 12/10/2018 15:32, Jordan Crouse wrote:
->> On Thu, Sep 20, 2018 at 06:00:46PM +0100, Jean-Philippe Brucker wrote:
->>> Provide an API for allocating PASIDs and populating them manually. To ease
->>> cleanup and factor allocation code, reuse the io_mm structure for private
->>> PASID. Private io_mm has a NULL mm_struct pointer, and cannot be bound to
->>> multiple devices. The mm_alloc() IOMMU op must now check if the mm
->>> argument is NULL, in which case it should allocate io_pgtables instead of
->>> binding to an mm.
->>>
->>> Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
->>> ---
->>> Sadly this probably won't be the final thing. The API in this patch is
->>> used like this:
->>>
->>>         iommu_sva_alloc_pasid(dev, &io_mm) -> PASID
->>>         iommu_sva_map(io_mm, ...)
->>>         iommu_sva_unmap(io_mm, ...)
->>>         iommu_sva_free_pasid(dev, io_mm)
->>>
->>> The proposed API for auxiliary domains is in an early stage but might
->>> replace this patch and could be used like this:
->>>
->>>         iommu_enable_aux_domain(dev)
->>>         d = iommu_domain_alloc()
->>>         iommu_attach_aux(dev, d)
->>>         iommu_aux_id(d) -> PASID
->>>         iommu_map(d, ...)
->>>         iommu_unmap(d, ...)
->>>         iommu_detach_aux(dev, d)
->>>         iommu_domain_free(d)
->>>
->>> The advantage being that the driver doesn't have to use a special
->>> version of map/unmap/etc.
->>
->> Hi Jean-Phillippe -
->>
->> Have you thought about this any more? I want to send out a
->> refresh for the per-context pagetables for arm-smmu so if we want to change
->> the underlying assumptions this would be a great time.
->>
->> For my part I'm okay with either model. In fact the second one is closer
->> to the original implementation that I sent out so I have a clear development
->> path in mind for either option depending on what the community decides.
-> 
-> We'll probably go with the second model. I'm trying to make the latest
-> version work with SMMUv3
-> (https://lwn.net/ml/linux-kernel/20181012051632.26064-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org/)
-> and I'd like to send an RFC soon
-> 
-> Thanks,
-> Jean
-> IMPORTANT NOTICE: The contents of this email and any attachments are confidential and may also be privileged. If you are not the intended recipient, please notify the sender immediately and do not disclose the contents to any other person, use it for any purpose, or store or copy the information in any medium. Thank you.
+On 17/10/2018 14:56, Robin Murphy wrote:
+> Now that both sync methods are more or less the same shape, we can save
+> some code and levels of indirection by rolling them up together again,
+> with just a couple of simple conditionals to discriminate the MSI and
+> queue-polling specifics.
 
-Ugh. Please disregard this notice.
+Hi Robin, Will,
+
+I had been thinking of this other patch previously:
+
+iommu/arm-smmu-v3: Stop rebuilding non-MSI CMD_SYNC commands
+
+The contents of the non-MSI CMD_SYNC command are fixed. This patch 
+offers a small optimisation by keeping a sample of this command on the 
+heap for re-use, thereby avoiding unnecessary re-building.
+
+Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6947ccf..9d86c29 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -963,14 +963,16 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct 
+arm_smmu_device *smmu)
+
+  static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+  {
+-       u64 cmd[CMDQ_ENT_DWORDS];
++       static u64 cmd[CMDQ_ENT_DWORDS] = {
++              FIELD_PREP(CMDQ_0_OP, CMDQ_OP_CMD_SYNC) |
++              FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV) |
++              FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH) |
++              FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB),
++           0};
+         unsigned long flags;
+         bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+-       struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+         int ret;
+
+-       arm_smmu_cmdq_build_cmd(cmd, &ent);
+-
+         spin_lock_irqsave(&smmu->cmdq.lock, flags);
+         arm_smmu_cmdq_insert_cmd(smmu, cmd);
+         ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
+
+But it seems that combining the the MSI and non-MSI methods would block 
+this.
+
+How do you feel about this?
 
 Thanks,
-Jean
+John
+
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 49 +++++++++----------------------------
+>  1 file changed, 12 insertions(+), 37 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index da8a91d116bf..36db63e3afcf 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -933,7 +933,7 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
+>   * The difference between val and sync_idx is bounded by the maximum size of
+>   * a queue at 2^20 entries, so 32 bits is plenty for wrap-safe arithmetic.
+>   */
+> -static int __arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+> +static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+>  {
+>  	ktime_t timeout;
+>  	u32 val;
+> @@ -988,16 +988,17 @@ static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
+>  	return -ETIMEDOUT;
+>  }
+>
+> -static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+> +static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+>  {
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+>  	unsigned long flags;
+> -	struct arm_smmu_cmdq_ent ent = {
+> -		.opcode = CMDQ_OP_CMD_SYNC,
+> -		.sync	= {
+> -			.msiaddr = cpu_to_le32(virt_to_phys(&smmu->sync_count)),
+> -		},
+> -	};
+> +	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
+> +		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
+> +	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+> +	int ret, sync_idx, sync_gen;
+> +
+> +	if (msi)
+> +		ent.sync.msiaddr = cpu_to_le32(virt_to_phys(&smmu->sync_count));
+>
+>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+>
+> @@ -1009,39 +1010,13 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>  		arm_smmu_cmdq_build_cmd(cmd, &ent);
+>  		arm_smmu_cmdq_insert_cmd(smmu, cmd);
+>  	}
+> -
+> -	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+> -
+> -	return __arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
+> -}
+> -
+> -static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+> -{
+> -	u64 cmd[CMDQ_ENT_DWORDS];
+> -	unsigned long flags;
+> -	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+> -	int sync_idx, sync_gen;
+> -
+> -	arm_smmu_cmdq_build_cmd(cmd, &ent);
+> -
+> -	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> -	if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC)
+> -		arm_smmu_cmdq_insert_cmd(smmu, cmd);
+>  	sync_idx = smmu->cmdq.q.prod;
+>  	sync_gen = READ_ONCE(smmu->cmdq_generation);
+> +
+>  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>
+> -	return arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
+> -}
+> -
+> -static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+> -{
+> -	int ret;
+> -	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
+> -		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
+> -
+> -	ret = msi ? __arm_smmu_cmdq_issue_sync_msi(smmu)
+> -		  : __arm_smmu_cmdq_issue_sync(smmu);
+> +	ret = msi ? arm_smmu_sync_poll_msi(smmu, ent.sync.msidata)
+> +		  : arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
+>  	if (ret)
+>  		dev_err_ratelimited(smmu->dev, "CMD_SYNC timeout\n");
+>  }
+>
