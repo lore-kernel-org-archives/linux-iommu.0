@@ -1,15 +1,14 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Hook up r8a77990 DT matching code
-Date: Wed, 17 Oct 2018 11:13:49 +0200
-Message-ID: <20181017091348.gg4rifioitndu3am@verge.net.au>
-References: <20181015095557.25135-1-horms+renesas@verge.net.au>
-	<c90c9a8b-d101-280f-7ee6-67e6cc473e64@cogentembedded.com>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
+Date: Wed, 17 Oct 2018 12:16:29 +0200 (CEST)
+Message-ID: <alpine.DEB.2.21.1810171216040.6000@nanos.tec.linutronix.de>
+References: <20181014075208.2715-1-hch@lst.de>
+	<CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <c90c9a8b-d101-280f-7ee6-67e6cc473e64-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,34 +18,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sergei Shtylyov <sergei.shtylyov-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>
-Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kazuya Mizuguchi <kazuya.mizuguchi.ks-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+To: whiteheadm-HInyCGIudOg@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 15, 2018 at 01:56:18PM +0300, Sergei Shtylyov wrote:
-> Hello!
+On Tue, 16 Oct 2018, tedheadster wrote:
+> On Sun, Oct 14, 2018 at 3:52 AM Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
+> >
+> > We already build the swiotlb code for 32b-t kernels with PAE support,
+> > but the code to actually use swiotlb has only been enabled for 64-bit
+> > kernel for an unknown reason.
+> >
+> > Before Linux 4.18 we papers over this fact because the networking code,
+> > the scsi layer and some random block drivers implenented their own
+> > bounce buffering scheme.
+> >
+> > Fixes: 21e07dba ("scsi: reduce use of block bounce buffers")
+> > Fixes: ab74cfeb ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+> > Reported-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Tested-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > ---
+> >
 > 
-> On 10/15/2018 12:55 PM, Simon Horman wrote:
-> 
-> > From: Hai Nguyen Pham <hai.pham.ud-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-> > 
-> > Support the r8a77990 IPMMU and update IPMMU_OF_DECLARE to hook up
-> 
->    That macro is gone, you need to update the description.
+> Christoph,
+>   this fix has causes performance to decrease dramatically. Kernel
+> builds that used to take 10-15 minutes are now taking 45-60 minutes on
+> the same machine.
 
-Thanks, v2 sent.
+Christoph, can you have a look please?
 
-> 
-> > the updated compat string.
-> > 
-> > Signed-off-by: Hai Nguyen Pham <hai.pham.ud-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-> > Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-> > [simon: rebased; dropped no longer required IOMMU_OF_DECLARE hunk]
-> 
->    Yet you didn't drop it from the description. :-)
-> 
-> > Signed-off-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-> [...]
-> 
-> MBR, Sergei
-> 
+Thanks,
+
+	tglx
