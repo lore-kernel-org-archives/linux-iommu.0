@@ -1,98 +1,228 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 3/7] PCI: OF: Allow endpoints to bypass the iommu
-Date: Thu, 18 Oct 2018 11:47:18 +0100
-Message-ID: <e609de5e-1be2-594e-a4a9-ec1a40d997ab@arm.com>
-References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
- <20181012145917.6840-4-jean-philippe.brucker@arm.com>
- <20181012194158.GX5906@bhelgaas-glaptop.roam.corp.google.com>
- <20181015065024-mutt-send-email-mst@kernel.org>
- <482d0eb9-8c4c-9d64-7b32-25d5d11a8b8f@gmail.com>
- <20181017111100-mutt-send-email-mst@kernel.org>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 1/2] iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq
+	lock
+Date: Thu, 18 Oct 2018 11:55:47 +0100
+Message-ID: <2c4e00a2-cd53-a6f5-8561-97379dcf9c02@huawei.com>
+References: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <20181017111100-mutt-send-email-mst@kernel.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: "Michael S. Tsirkin" <mst@redhat.com>, Jean-philippe Brucker <jphilippe.brucker@gmail.com>
-Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, tnowicki@caviumnetworks.com, marc.zyngier@arm.com, linux-pci@vger.kernel.org, jasowang@redhat.com, will.deacon@arm.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, Bjorn Helgaas <helgaas@kernel.org>, kvmarm@lists.cs.columbia.edu
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/10/18 16:14, Michael S. Tsirkin wrote:
-> On Mon, Oct 15, 2018 at 08:46:41PM +0100, Jean-philippe Brucker wrote:
->> [Replying with my personal address because we're having SMTP issues]
->>
->> On 15/10/2018 11:52, Michael S. Tsirkin wrote:
->>> On Fri, Oct 12, 2018 at 02:41:59PM -0500, Bjorn Helgaas wrote:
->>>> s/iommu/IOMMU/ in subject
->>>>
->>>> On Fri, Oct 12, 2018 at 03:59:13PM +0100, Jean-Philippe Brucker wrote:
->>>>> Using the iommu-map binding, endpoints in a given PCI domain can be
->>>>> managed by different IOMMUs. Some virtual machines may allow a subset of
->>>>> endpoints to bypass the IOMMU. In some case the IOMMU itself is presented
->>>>
->>>> s/case/cases/
->>>>
->>>>> as a PCI endpoint (e.g. AMD IOMMU and virtio-iommu). Currently, when a
->>>>> PCI root complex has an iommu-map property, the driver requires all
->>>>> endpoints to be described by the property. Allow the iommu-map property to
->>>>> have gaps.
->>>>
->>>> I'm not an IOMMU or virtio expert, so it's not obvious to me why it is
->>>> safe to allow devices to bypass the IOMMU.  Does this mean a typo in
->>>> iommu-map could inadvertently allow devices to bypass it?
->>>
->>>
->>> Thinking about this comment, I would like to ask: can't the
->>> virtio device indicate the ranges in a portable way?
->>> This would minimize the dependency on dt bindings and ACPI,
->>> enabling support for systems that have neither but do
->>> have virtio e.g. through pci.
->>
->> I thought about adding a PROBE request for this in virtio-iommu, but it
->> wouldn't be usable by a Linux guest because of a bootstrapping problem.
-> 
-> Hmm. At some level it seems wrong to design hardware interfaces
-> around how Linux happens to probe things. That can change at any time
-> ...
+On 17/10/2018 14:56, Robin Murphy wrote:
+> Even without the MSI trick, we can still do a lot better than hogging
+> the entire queue while it drains. All we actually need to do for the
+> necessary guarantee of completion is wait for our particular command to
+> have been consumed - as long as we keep track of where we inserted it,
+> there is no need to block other CPUs from adding further commands in the
+> meantime. There is one theoretical (but incredibly unlikely) edge case
+> to avoid, where cons has wrapped twice to still appear 'behind' the sync
+> position - this is easily disambiguated by adding a generation count to
+> the queue to indicate when prod wraps, since cons cannot wrap twice
+> without prod having wrapped at least once.
+>
+> This also makes it reasonable to separate the two conceptually different
+> modes of polling such that command insertion - which really wants to be
+> fair and have minimal latency - is not subject to exponential backoff,
+> and returns to its original implementation.
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>
+> v5:
+>  - Rework to incorporate the back-to-back sync elision.
+>  - Refactor the generation count slightly to preemptively help with
+>    the HiSilicon MSI workaround.
+>  - Split the cleanup into a separate patch for ease of review (it could
+>    happily be squashed when applied).
+>
+> The fundamental logic is copied directly from v4, but I've dropped the
+> previous tested-by since there are a fair few subtle changes in how it's
+> integrated. Patches are based on Will's iommu/devel branch plus my "Fix
+> big-endian CMD_SYNC writes" patch.
+>
+> Robin.
+>
+>  drivers/iommu/arm-smmu-v3.c | 94 +++++++++++++++++++++++++++----------
+>  1 file changed, 69 insertions(+), 25 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 867ba548c2cc..da8a91d116bf 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -588,6 +588,7 @@ struct arm_smmu_device {
+>  	struct arm_smmu_strtab_cfg	strtab_cfg;
+>
+>  	u32				sync_count;
+> +	int				cmdq_generation;
+>
+>  	/* IOMMU core code handle */
+>  	struct iommu_device		iommu;
+> @@ -676,6 +677,17 @@ static bool queue_empty(struct arm_smmu_queue *q)
+>  	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
+>  }
+>
+> +static bool queue_behind(struct arm_smmu_queue *q, u32 idx)
+> +{
+> +	return Q_IDX(q, q->cons) < Q_IDX(q, idx);
+> +}
+> +
+> +static bool queue_ahead_not_wrapped(struct arm_smmu_queue *q, u32 idx)
+> +{
+> +	return Q_IDX(q, q->cons) >= Q_IDX(q, idx) &&
+> +	       Q_WRP(q, q->cons) == Q_WRP(q, idx);
+> +}
+> +
+>  static void queue_sync_cons(struct arm_smmu_queue *q)
+>  {
+>  	q->cons = readl_relaxed(q->cons_reg);
+> @@ -709,33 +721,19 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+>  	writel(q->prod, q->prod_reg);
+>  }
+>
+> -/*
+> - * Wait for the SMMU to consume items. If sync is true, wait until the queue
+> - * is empty. Otherwise, wait until there is at least one free slot.
+> - */
+> -static int queue_poll_cons(struct arm_smmu_queue *q, bool sync, bool wfe)
+> +static int queue_poll_cons(struct arm_smmu_queue *q, bool wfe)
+>  {
+> -	ktime_t timeout;
+> -	unsigned int delay = 1, spin_cnt = 0;
+> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
+>
+> -	/* Wait longer if it's a CMD_SYNC */
+> -	timeout = ktime_add_us(ktime_get(), sync ?
+> -					    ARM_SMMU_CMDQ_SYNC_TIMEOUT_US :
+> -					    ARM_SMMU_POLL_TIMEOUT_US);
+> -
+> -	while (queue_sync_cons(q), (sync ? !queue_empty(q) : queue_full(q))) {
+> +	while (queue_sync_cons(q), queue_full(q)) {
+>  		if (ktime_compare(ktime_get(), timeout) > 0)
+>  			return -ETIMEDOUT;
+>
+>  		if (wfe) {
+>  			wfe();
+> -		} else if (++spin_cnt < ARM_SMMU_CMDQ_SYNC_SPIN_COUNT) {
+> -			cpu_relax();
+> -			continue;
+>  		} else {
+> -			udelay(delay);
+> -			delay *= 2;
+> -			spin_cnt = 0;
+> +			cpu_relax();
+> +			udelay(1);
+>  		}
+>  	}
+>
+> @@ -905,8 +903,11 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
+>
+>  	smmu->prev_cmd_opcode = FIELD_GET(CMDQ_0_OP, cmd[0]);
+>
+> +	if (Q_IDX(q, q->prod + 1) == 0)
+> +		WRITE_ONCE(smmu->cmdq_generation, smmu->cmdq_generation + 1);
+> +
+>  	while (queue_insert_raw(q, cmd) == -ENOSPC) {
+> -		if (queue_poll_cons(q, false, wfe))
+> +		if (queue_poll_cons(q, wfe))
+>  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+>  	}
+>  }
+> @@ -945,6 +946,48 @@ static int __arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+>  	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
+>  }
+>
+> +static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
+> +				   int sync_gen)
+> +{
+> +	struct arm_smmu_queue *q = &smmu->cmdq.q;
+> +	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+> +	unsigned int delay = 1, spin_cnt = 0;
+> +	ktime_t timeout;
+> +
+> +	timeout = ktime_add_us(ktime_get(), ARM_SMMU_CMDQ_SYNC_TIMEOUT_US);
+> +	do {
+> +		queue_sync_cons(q);
+> +		/*
+> +		 * If we see updates quickly enough, cons has passed sync_idx,
+> +		 * but not yet wrapped. At worst, cons might have actually
+> +		 * wrapped an even number of times, but that still guarantees
+> +		 * the original sync must have been consumed.
+> +		 */
+> +		if (queue_ahead_not_wrapped(q, sync_idx))
+> +			return 0;
+> +		/*
+> +		 * Otherwise, cons may have passed sync_idx and wrapped one or
+> +		 * more times to appear behind it again, but in that case prod
+> +		 * must also be one or more generations ahead.
+> +		 */
+> +		if (queue_behind(q, sync_idx) &&
+> +		    READ_ONCE(smmu->cmdq_generation) != sync_gen)
+> +			return 0;
+> +
+> +		if (wfe) {
+> +			wfe();
+> +		} else if (++spin_cnt < ARM_SMMU_CMDQ_SYNC_SPIN_COUNT) {
+> +			cpu_relax();
+> +		} else {
+> +			udelay(delay);
+> +			delay *= 2;
+> +			spin_cnt = 0;
+> +		}
+> +	} while (ktime_before(ktime_get(), timeout));
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+>  static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>  {
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+> @@ -976,18 +1019,19 @@ static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+>  {
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+>  	unsigned long flags;
+> -	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+>  	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+> -	int ret;
+> +	int sync_idx, sync_gen;
+>
+>  	arm_smmu_cmdq_build_cmd(cmd, &ent);
+>
+>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> -	arm_smmu_cmdq_insert_cmd(smmu, cmd);
+> -	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
+> +	if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC)
+> +		arm_smmu_cmdq_insert_cmd(smmu, cmd);
 
-This isn't Linux-specific though. In general it's somewhere between 
-difficult and impossible to pull in an IOMMU underneath a device after 
-at device is active, so if any OS wants to use an IOMMU, it's going to 
-want to know up-front that it's there and which devices it translates so 
-that it can program said IOMMU appropriately *before* potentially 
-starting DMA and/or interrupts from the relevant devices. Linux happens 
-to do things in that order (either by firmware-driven probe-deferral or 
-just perilous initcall ordering) because it is the only reasonable order 
-in which to do them. AFAIK the platforms which don't rely on any 
-firmware description of their IOMMU tend to have a fairly static system 
-architecture (such that the OS simply makes hard-coded assumptions), so 
-it's not necessarily entirely clear how they would cope with 
-virtio-iommu either way.
+Hi Robin,
 
-Robin.
+If we did stop rebuilding the non-MSI command as I suggested, then we 
+would not have the case of building the command and then discarding it, 
+right?
 
->> Early on, Linux needs a description of device dependencies, to determine
->> in which order to probe them. If the device dependency was described by
->> virtio-iommu itself, the guest could for example initialize a NIC,
->> allocate buffers and start DMA on the physical address space (which aborts
->> if the IOMMU implementation disallows DMA by default), only to find out
->> once the virtio-iommu module is loaded that it needs to cancel all DMA and
->> reconfigure the NIC. With a static description such as iommu-map in DT or
->> ACPI remapping tables, the guest can defer probing of the NIC until the
->> IOMMU is initialized.
->>
->> Thanks,
->> Jean
-> 
-> Could you point me at the code you refer to here?
-> 
+Thanks,
+John
+
+> +	sync_idx = smmu->cmdq.q.prod;
+> +	sync_gen = READ_ONCE(smmu->cmdq_generation);
+>  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>
+> -	return ret;
+> +	return arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
+>  }
+>
+>  static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+>
