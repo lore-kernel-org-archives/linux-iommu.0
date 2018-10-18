@@ -1,145 +1,44 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 07/10] swiotlb: refactor swiotlb_map_page
-Date: Thu, 18 Oct 2018 19:09:53 +0100
-Message-ID: <35016142-f06d-e424-5afe-6026b6d57eda@arm.com>
-References: <20181008080246.20543-1-hch@lst.de>
- <20181008080246.20543-8-hch@lst.de>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 3/4] dt-bindings: iommu/arm, smmu: add compatible string
+ for Marvell
+Date: Thu, 18 Oct 2018 15:48:01 -0500
+Message-ID: <20181018204801.GA2009@bogus>
+References: <1539604846-21151-1-git-send-email-hannah@marvell.com>
+ <1539604846-21151-4-git-send-email-hannah@marvell.com>
+ <3ce1d67a-4e3c-e8d8-f7fc-79649f1def68@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181008080246.20543-8-hch@lst.de>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <3ce1d67a-4e3c-e8d8-f7fc-79649f1def68@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: hannah@marvell.com, catalin.marinas@arm.com, will.deacon@arm.com, corbet@lwn.net, joro@8bytes.org, gregory.clement@bootlin.com, mark.rutland@arm.com, jason@lakedaemon.net, andrew@lunn.ch, sebastian.hesselbarth@gmail.com, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, omrii@marvell.com, linux-kernel@vger.kernel.org, nadavh@marvell.com, iommu@lists.linux-foundation.org, thomas.petazzoni@bootlin.com, linux-arm-kernel@lists.infradead.orgnd@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/10/18 09:02, Christoph Hellwig wrote:
-> Remove the somewhat useless map_single function, and replace it with a
-> swiotlb_bounce_page handler that handles everything related to actually
-> bouncing a page.
+On Mon, Oct 15, 2018 at 02:11:52PM +0100, Robin Murphy wrote:
+> On 15/10/18 13:00, hannah@marvell.com wrote:
+> > From: Hanna Hawa <hannah@marvell.com>
+> > 
+> > Add specific compatible string for Marvell usage due errata of
+> > accessing 64bit registers of ARM SMMU, in AP806.
+> > 
+> > AP806 SOC use the generic ARM-MMU500, and there's no specific
+> > implementation of Marvell, this compatible is used for errata only.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   kernel/dma/swiotlb.c | 77 +++++++++++++++++++++-----------------------
->   1 file changed, 36 insertions(+), 41 deletions(-)
+> Given that, I think something more specific like:
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 15755d7a5242..4d7a4d85d71e 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -543,26 +543,6 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
->   	return tlb_addr;
->   }
->   
-> -/*
-> - * Allocates bounce buffer and returns its physical address.
-> - */
-> -static phys_addr_t
-> -map_single(struct device *hwdev, phys_addr_t phys, size_t size,
-> -	   enum dma_data_direction dir, unsigned long attrs)
-> -{
-> -	dma_addr_t start_dma_addr;
-> -
-> -	if (swiotlb_force == SWIOTLB_NO_FORCE) {
-> -		dev_warn_ratelimited(hwdev, "Cannot do DMA to address %pa\n",
-> -				     &phys);
-> -		return SWIOTLB_MAP_ERROR;
-> -	}
-> -
-> -	start_dma_addr = __phys_to_dma(hwdev, io_tlb_start);
-> -	return swiotlb_tbl_map_single(hwdev, start_dma_addr, phys, size,
-> -				      dir, attrs);
-> -}
-> -
->   /*
->    * tlb_addr is the physical address of the bounce buffer to unmap.
->    */
-> @@ -714,6 +694,34 @@ static bool swiotlb_free_buffer(struct device *dev, size_t size,
->   	return true;
->   }
->   
-> +static dma_addr_t swiotlb_bounce_page(struct device *dev, phys_addr_t *phys,
-> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	dma_addr_t dma_addr;
-> +
-> +	if (unlikely(swiotlb_force == SWIOTLB_NO_FORCE)) {
-> +		dev_warn_ratelimited(dev,
-> +			"Cannot do DMA to address %pa\n", phys);
-> +		return DIRECT_MAPPING_ERROR;
-> +	}
-> +
-> +	/* Oh well, have to allocate and map a bounce buffer. */
-> +	*phys = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
-> +			*phys, size, dir, attrs);
-> +	if (*phys == SWIOTLB_MAP_ERROR)
-> +		return DIRECT_MAPPING_ERROR;
-> +
-> +	/* Ensure that the address returned is DMA'ble */
-> +	dma_addr = __phys_to_dma(dev, *phys);
-> +	if (unlikely(!dma_capable(dev, dma_addr, size))) {
-> +		swiotlb_tbl_unmap_single(dev, *phys, size, dir,
-> +			attrs | DMA_ATTR_SKIP_CPU_SYNC);
-> +		return DIRECT_MAPPING_ERROR;
-> +	}
-> +
-> +	return dma_addr;
-> +}
-> +
->   /*
->    * Map a single buffer of the indicated size for DMA in streaming mode.  The
->    * physical address to use is returned.
-> @@ -726,8 +734,8 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->   			    enum dma_data_direction dir,
->   			    unsigned long attrs)
->   {
-> -	phys_addr_t map, phys = page_to_phys(page) + offset;
-> -	dma_addr_t dev_addr = phys_to_dma(dev, phys);
-> +	phys_addr_t phys = page_to_phys(page) + offset;
-> +	dma_addr_t dma_addr = phys_to_dma(dev, phys);
->   
->   	BUG_ON(dir == DMA_NONE);
->   	/*
-> @@ -735,26 +743,13 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->   	 * we can safely return the device addr and not worry about bounce
->   	 * buffering it.
->   	 */
-> -	if (dma_capable(dev, dev_addr, size) && swiotlb_force != SWIOTLB_FORCE)
-> -		return dev_addr;
-> -
-> -	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
-> -
-> -	/* Oh well, have to allocate and map a bounce buffer. */
-> -	map = map_single(dev, phys, size, dir, attrs);
-> -	if (map == SWIOTLB_MAP_ERROR)
-> -		return DIRECT_MAPPING_ERROR;
-> -
-> -	dev_addr = __phys_to_dma(dev, map);
-> -
-> -	/* Ensure that the address returned is DMA'ble */
-> -	if (dma_capable(dev, dev_addr, size))
-> -		return dev_addr;
-> -
-> -	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
-> -	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
-> +	if (!dma_capable(dev, dma_addr, size) ||
-> +	    swiotlb_force == SWIOTLB_FORCE) {
-> +		trace_swiotlb_bounced(dev, dma_addr, size, swiotlb_force);
-> +		dma_addr = swiotlb_bounce_page(dev, &phys, size, dir, attrs);
-> +	}
-
-FWIW I prefer the inverse condition and early return of the original 
-code here, which also then allows a tail-call to swiotlb_bounce_page() 
-(and saves a couple of lines), but it's no biggie.
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
->   
-> -	return DIRECT_MAPPING_ERROR;
-> +	return dma_addr;
->   }
->   
->   /*
+> 	"marvell,ap806-smmu", "arm,mmu-500";
 > 
+> would be most appropriate. Otherwise, if some future Marvell SoC were to
+> ever come out with a *different* MMU-500 integration problem, you'd already
+> have painted yourself into a corner.
+> 
+> Alternatively (or additionally), we could perhaps consider a separate
+> property like "marvell,32bit-config-access", to mirror the existing handling
+> of the secure integration bug.
+
+The former please. We have learned our lesson there (though for some 
+reason, that was the *only* SMMU problem in Calxeda Midway ;) ).
+
+Rob
