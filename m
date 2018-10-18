@@ -1,45 +1,109 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 2/7] dt-bindings: virtio: Add virtio-pci-iommu node
-Date: Wed, 17 Oct 2018 19:35:02 -0500
-Message-ID: <20181018003502.GA28260@bogus>
-References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
- <20181012145917.6840-3-jean-philippe.brucker@arm.com>
+From: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
+Date: Thu, 18 Oct 2018 08:12:09 +0200
+Message-ID: <20181018061209.GC62071@gmail.com>
+References: <20181014075208.2715-1-hch@lst.de>
+	<CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20181012145917.6840-3-jean-philippe.brucker@arm.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: kevin.tian@intel.com, lorenzo.pieralisi@arm.com, tnowicki@caviumnetworks.com, devicetree@vger.kernel.org, jasowang@redhat.com, linux-pci@vger.kernel.org, joro@8bytes.org, mst@redhat.com, will.deacon@arm.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, marc.zyngier@arm.com, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu
+In-Reply-To: <CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: whiteheadm-HInyCGIudOg@public.gmane.org
+Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 12 Oct 2018 15:59:12 +0100, Jean-Philippe Brucker wrote:
-> Some systems implement virtio-iommu as a PCI endpoint. The operating
-> systems needs to discover the relationship between IOMMU and masters long
-> before the PCI endpoint gets probed. Add a PCI child node to describe the
-> virtio-iommu device.
-> 
-> The virtio-pci-iommu is conceptually split between a PCI programming
-> interface and a translation component on the parent bus. The latter
-> doesn't have a node in the device tree. The virtio-pci-iommu node
-> describes both, by linking the PCI endpoint to "iommus" property of DMA
-> master nodes and to "iommu-map" properties of bus nodes.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> ---
->  .../devicetree/bindings/virtio/iommu.txt      | 66 +++++++++++++++++++
->  1 file changed, 66 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
-> 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+* tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+
+> On Sun, Oct 14, 2018 at 3:52 AM Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
+> >
+> > We already build the swiotlb code for 32b-t kernels with PAE support,
+> > but the code to actually use swiotlb has only been enabled for 64-bit
+> > kernel for an unknown reason.
+> >
+> > Before Linux 4.18 we papers over this fact because the networking code,
+> > the scsi layer and some random block drivers implenented their own
+> > bounce buffering scheme.
+> >
+> > Fixes: 21e07dba ("scsi: reduce use of block bounce buffers")
+> > Fixes: ab74cfeb ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+> > Reported-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Tested-by: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > ---
+> >
+> 
+> Christoph,
+>   this fix has causes performance to decrease dramatically. Kernel
+> builds that used to take 10-15 minutes are now taking 45-60 minutes on
+> the same machine.
+
+Ok, this is way too severe regression, and because the two offending 
+commits:
+
+ Fixes: 21e07dba9fb1 ("scsi: reduce use of block bounce buffers")
+ Fixes: ab74cfebafa3 ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+
+... are from half a year ago and are in v4.18 already. Fixes should not 
+cause new regressions in any case.
+
+So I've removed this patch from tip:x86/urgent for now, could you please 
+re-apply it when you do your testing? I've attached it below.
+
+Thanks,
+
+	Ingo
+
+===================>
+>From 6f3bc8028570e4c326030e8795dbcd57c561b723 Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Date: Sun, 14 Oct 2018 09:52:08 +0200
+Subject: [PATCH] x86/swiotlb: Enable swiotlb for > 4GiG ram on 32-bit kernels
+
+We already build the swiotlb code for 32b-t kernels with PAE support,
+but the code to actually use swiotlb has only been enabled for 64-bit
+kernel for an unknown reason.
+
+Before Linux 4.18 we paper over this fact because the networking code,
+the scsi layer and some random block drivers implemented their own
+bounce buffering scheme.
+
+Fixes: 21e07dba9fb1 ("scsi: reduce use of block bounce buffers")
+Fixes: ab74cfebafa3 ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+Reported-by: Matthew Whitehead <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Tested-by: Matthew Whitehead <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Link: https://lkml.kernel.org/r/20181014075208.2715-1-hch-jcswGhMUV9g@public.gmane.org
+---
+ arch/x86/kernel/pci-swiotlb.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
+index 661583662430..71c0b01d93b1 100644
+--- a/arch/x86/kernel/pci-swiotlb.c
++++ b/arch/x86/kernel/pci-swiotlb.c
+@@ -42,10 +42,8 @@ IOMMU_INIT_FINISH(pci_swiotlb_detect_override,
+ int __init pci_swiotlb_detect_4gb(void)
+ {
+ 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+-#ifdef CONFIG_X86_64
+ 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+ 		swiotlb = 1;
+-#endif
+ 
+ 	/*
+ 	 * If SME is active then swiotlb will be set to 1 so that bounce
