@@ -1,14 +1,11 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 1/2] iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq
-	lock
-Date: Thu, 18 Oct 2018 11:55:47 +0100
-Message-ID: <2c4e00a2-cd53-a6f5-8561-97379dcf9c02@huawei.com>
-References: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v2] iommu/mediatek: Constify iommu_ops
+Date: Thu, 18 Oct 2018 19:13:38 +0800
+Message-ID: <1539861218-14937-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,211 +15,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/10/2018 14:56, Robin Murphy wrote:
-> Even without the MSI trick, we can still do a lot better than hogging
-> the entire queue while it drains. All we actually need to do for the
-> necessary guarantee of completion is wait for our particular command to
-> have been consumed - as long as we keep track of where we inserted it,
-> there is no need to block other CPUs from adding further commands in the
-> meantime. There is one theoretical (but incredibly unlikely) edge case
-> to avoid, where cons has wrapped twice to still appear 'behind' the sync
-> position - this is easily disambiguated by adding a generation count to
-> the queue to indicate when prod wraps, since cons cannot wrap twice
-> without prod having wrapped at least once.
->
-> This also makes it reasonable to separate the two conceptually different
-> modes of polling such that command insertion - which really wants to be
-> fair and have minimal latency - is not subject to exponential backoff,
-> and returns to its original implementation.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->
-> v5:
->  - Rework to incorporate the back-to-back sync elision.
->  - Refactor the generation count slightly to preemptively help with
->    the HiSilicon MSI workaround.
->  - Split the cleanup into a separate patch for ease of review (it could
->    happily be squashed when applied).
->
-> The fundamental logic is copied directly from v4, but I've dropped the
-> previous tested-by since there are a fair few subtle changes in how it's
-> integrated. Patches are based on Will's iommu/devel branch plus my "Fix
-> big-endian CMD_SYNC writes" patch.
->
-> Robin.
->
->  drivers/iommu/arm-smmu-v3.c | 94 +++++++++++++++++++++++++++----------
->  1 file changed, 69 insertions(+), 25 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 867ba548c2cc..da8a91d116bf 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -588,6 +588,7 @@ struct arm_smmu_device {
->  	struct arm_smmu_strtab_cfg	strtab_cfg;
->
->  	u32				sync_count;
-> +	int				cmdq_generation;
->
->  	/* IOMMU core code handle */
->  	struct iommu_device		iommu;
-> @@ -676,6 +677,17 @@ static bool queue_empty(struct arm_smmu_queue *q)
->  	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
->  }
->
-> +static bool queue_behind(struct arm_smmu_queue *q, u32 idx)
-> +{
-> +	return Q_IDX(q, q->cons) < Q_IDX(q, idx);
-> +}
-> +
-> +static bool queue_ahead_not_wrapped(struct arm_smmu_queue *q, u32 idx)
-> +{
-> +	return Q_IDX(q, q->cons) >= Q_IDX(q, idx) &&
-> +	       Q_WRP(q, q->cons) == Q_WRP(q, idx);
-> +}
-> +
->  static void queue_sync_cons(struct arm_smmu_queue *q)
->  {
->  	q->cons = readl_relaxed(q->cons_reg);
-> @@ -709,33 +721,19 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
->  	writel(q->prod, q->prod_reg);
->  }
->
-> -/*
-> - * Wait for the SMMU to consume items. If sync is true, wait until the queue
-> - * is empty. Otherwise, wait until there is at least one free slot.
-> - */
-> -static int queue_poll_cons(struct arm_smmu_queue *q, bool sync, bool wfe)
-> +static int queue_poll_cons(struct arm_smmu_queue *q, bool wfe)
->  {
-> -	ktime_t timeout;
-> -	unsigned int delay = 1, spin_cnt = 0;
-> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
->
-> -	/* Wait longer if it's a CMD_SYNC */
-> -	timeout = ktime_add_us(ktime_get(), sync ?
-> -					    ARM_SMMU_CMDQ_SYNC_TIMEOUT_US :
-> -					    ARM_SMMU_POLL_TIMEOUT_US);
-> -
-> -	while (queue_sync_cons(q), (sync ? !queue_empty(q) : queue_full(q))) {
-> +	while (queue_sync_cons(q), queue_full(q)) {
->  		if (ktime_compare(ktime_get(), timeout) > 0)
->  			return -ETIMEDOUT;
->
->  		if (wfe) {
->  			wfe();
-> -		} else if (++spin_cnt < ARM_SMMU_CMDQ_SYNC_SPIN_COUNT) {
-> -			cpu_relax();
-> -			continue;
->  		} else {
-> -			udelay(delay);
-> -			delay *= 2;
-> -			spin_cnt = 0;
-> +			cpu_relax();
-> +			udelay(1);
->  		}
->  	}
->
-> @@ -905,8 +903,11 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
->
->  	smmu->prev_cmd_opcode = FIELD_GET(CMDQ_0_OP, cmd[0]);
->
-> +	if (Q_IDX(q, q->prod + 1) == 0)
-> +		WRITE_ONCE(smmu->cmdq_generation, smmu->cmdq_generation + 1);
-> +
->  	while (queue_insert_raw(q, cmd) == -ENOSPC) {
-> -		if (queue_poll_cons(q, false, wfe))
-> +		if (queue_poll_cons(q, wfe))
->  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
->  	}
->  }
-> @@ -945,6 +946,48 @@ static int __arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
->  	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
->  }
->
-> +static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
-> +				   int sync_gen)
-> +{
-> +	struct arm_smmu_queue *q = &smmu->cmdq.q;
-> +	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
-> +	unsigned int delay = 1, spin_cnt = 0;
-> +	ktime_t timeout;
-> +
-> +	timeout = ktime_add_us(ktime_get(), ARM_SMMU_CMDQ_SYNC_TIMEOUT_US);
-> +	do {
-> +		queue_sync_cons(q);
-> +		/*
-> +		 * If we see updates quickly enough, cons has passed sync_idx,
-> +		 * but not yet wrapped. At worst, cons might have actually
-> +		 * wrapped an even number of times, but that still guarantees
-> +		 * the original sync must have been consumed.
-> +		 */
-> +		if (queue_ahead_not_wrapped(q, sync_idx))
-> +			return 0;
-> +		/*
-> +		 * Otherwise, cons may have passed sync_idx and wrapped one or
-> +		 * more times to appear behind it again, but in that case prod
-> +		 * must also be one or more generations ahead.
-> +		 */
-> +		if (queue_behind(q, sync_idx) &&
-> +		    READ_ONCE(smmu->cmdq_generation) != sync_gen)
-> +			return 0;
-> +
-> +		if (wfe) {
-> +			wfe();
-> +		} else if (++spin_cnt < ARM_SMMU_CMDQ_SYNC_SPIN_COUNT) {
-> +			cpu_relax();
-> +		} else {
-> +			udelay(delay);
-> +			delay *= 2;
-> +			spin_cnt = 0;
-> +		}
-> +	} while (ktime_before(ktime_get(), timeout));
-> +
-> +	return -ETIMEDOUT;
-> +}
-> +
->  static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->  {
->  	u64 cmd[CMDQ_ENT_DWORDS];
-> @@ -976,18 +1019,19 @@ static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
->  {
->  	u64 cmd[CMDQ_ENT_DWORDS];
->  	unsigned long flags;
-> -	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
->  	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
-> -	int ret;
-> +	int sync_idx, sync_gen;
->
->  	arm_smmu_cmdq_build_cmd(cmd, &ent);
->
->  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
-> -	arm_smmu_cmdq_insert_cmd(smmu, cmd);
-> -	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
-> +	if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC)
-> +		arm_smmu_cmdq_insert_cmd(smmu, cmd);
+From: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-Hi Robin,
+iommu_ops are not supposed to change at runtime.
+Functions 'iommu_device_set_ops' and 'bus_set_iommu' working with
+const iommu_ops provided by <linux/iommu.h>. So mark the non-const
+structs as const.
 
-If we did stop rebuilding the non-MSI command as I suggested, then we 
-would not have the case of building the command and then discarding it, 
-right?
+Signed-off-by: Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+(Change the title to iommu/mediatek: xx)
+---
+v2: 1) rebase on v4.19
+    2) change the title.
 
-Thanks,
-John
+v1: https://patchwork.kernel.org/patch/9925413/
+---
+ drivers/iommu/mtk_iommu.c    | 4 ++--
+ drivers/iommu/mtk_iommu_v1.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-> +	sync_idx = smmu->cmdq.q.prod;
-> +	sync_gen = READ_ONCE(smmu->cmdq_generation);
->  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
->
-> -	return ret;
-> +	return arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
->  }
->
->  static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
->
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index f9f69f7..fa63c56 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -113,7 +113,7 @@ struct mtk_iommu_domain {
+ 	struct iommu_domain		domain;
+ };
+ 
+-static struct iommu_ops mtk_iommu_ops;
++static const struct iommu_ops mtk_iommu_ops;
+ 
+ static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
+ 
+@@ -488,7 +488,7 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+ }
+ 
+-static struct iommu_ops mtk_iommu_ops = {
++static const struct iommu_ops mtk_iommu_ops = {
+ 	.domain_alloc	= mtk_iommu_domain_alloc,
+ 	.domain_free	= mtk_iommu_domain_free,
+ 	.attach_dev	= mtk_iommu_attach_device,
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 676c029..25d793c 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -362,7 +362,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return pa;
+ }
+ 
+-static struct iommu_ops mtk_iommu_ops;
++static const struct iommu_ops mtk_iommu_ops;
+ 
+ /*
+  * MTK generation one iommu HW only support one iommu domain, and all the client
+@@ -524,7 +524,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 	return 0;
+ }
+ 
+-static struct iommu_ops mtk_iommu_ops = {
++static const struct iommu_ops mtk_iommu_ops = {
+ 	.domain_alloc	= mtk_iommu_domain_alloc,
+ 	.domain_free	= mtk_iommu_domain_free,
+ 	.attach_dev	= mtk_iommu_attach_device,
+-- 
+1.9.1
