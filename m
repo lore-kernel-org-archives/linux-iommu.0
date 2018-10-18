@@ -1,16 +1,15 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
-Date: Thu, 18 Oct 2018 15:04:35 +0800
-Message-ID: <0696f645-d2df-23fd-d268-233a748ffff5@linux.intel.com>
-References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
-	<95f69db6-becd-adce-5477-264de839bcd8@linux.intel.com>
-	<CA+icZUWQL=aMY39k3zUK1KWn0ec-4wsDA8Djmz-7hN9uBJWFcQ@mail.gmail.com>
+From: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 1/2] iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq
+	lock
+Date: Thu, 18 Oct 2018 09:56:21 +0100
+Message-ID: <20181018085620.GI12972@e119886-lin.cambridge.arm.com>
+References: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CA+icZUWQL=aMY39k3zUK1KWn0ec-4wsDA8Djmz-7hN9uBJWFcQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,84 +19,210 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On 10/18/18 2:52 PM, Sedat Dilek wrote:
-> On Tue, Oct 16, 2018 at 8:37 AM Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
->>
->> Hi Sedat,
->>
->> Sorry for late reply.
->>
->> Do you still have this issue with newer rc's (like 4.19-rc8)?
->>
->> I checked the dmesg log you attached there, it seems that the vt-d was
->> not on actually.
->>
+On Wed, Oct 17, 2018 at 02:56:06PM +0100, Robin Murphy wrote:
+> Even without the MSI trick, we can still do a lot better than hogging
+> the entire queue while it drains. All we actually need to do for the
+> necessary guarantee of completion is wait for our particular command to
+> have been consumed - as long as we keep track of where we inserted it,
+> there is no need to block other CPUs from adding further commands in the
+> meantime. There is one theoretical (but incredibly unlikely) edge case
+> to avoid, where cons has wrapped twice to still appear 'behind' the sync
+> position - this is easily disambiguated by adding a generation count to
+> the queue to indicate when prod wraps, since cons cannot wrap twice
+> without prod having wrapped at least once.
 > 
-> Here my kernel-config and dmesg-logs for Linux v4.19-rc8.
+> This also makes it reasonable to separate the two conceptually different
+> modes of polling such that command insertion - which really wants to be
+> fair and have minimal latency - is not subject to exponential backoff,
+> and returns to its original implementation.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> v5:
+>  - Rework to incorporate the back-to-back sync elision.
+>  - Refactor the generation count slightly to preemptively help with
+>    the HiSilicon MSI workaround.
+>  - Split the cleanup into a separate patch for ease of review (it could
+>    happily be squashed when applied).
+> 
+> The fundamental logic is copied directly from v4, but I've dropped the
+> previous tested-by since there are a fair few subtle changes in how it's
+> integrated. Patches are based on Will's iommu/devel branch plus my "Fix
+> big-endian CMD_SYNC writes" patch.
 
-Any issues are you seeing? I didn't see any error in the dmesg dump.
+Reviewed-by: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>
 
-Best regards,
-Lu Baolu
+Thanks,
+
+Andrew Murray
 
 > 
-> - sed@ -
+> Robin.
 > 
->>
->> On 9/5/18 8:04 PM, Sedat Dilek wrote:
->>> Hi Joerg,
->>>
->>> "intel_ioomu=on" was working fine here on my ThinkPad T470 with
->>> debian/testing AMD64 with Linux v4.17.y and v4.18.y.
->>>
->>> With testing Linux v4.19-rc1 and v4.19-rc2 my machine is not booting -
->>> black screen.
->>> These kernels are built with LLVM/Clang v7.0.0rc2 (v4.18.y too).
->>>
->>> Furthermore, I switched from GRUB to systemd-boot v239.
->>>
->>> [ /boot/efi/loader/entries/debian.conf ]
->>>
->>> title Debian GNU/Linux buster/sid [ debian kernel ]
->>> linux /vmlinuz-4.17.0-3-amd64
->>> initrd /initrd.img-4.17.0-3-amd64
->>> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro intel_iommu=on
->>>
->>> [ /boot/efi/loader/entries/debian-llvmlinux.conf ]
->>>
->>> title Debian GNU/Linux buster/sid [ llvmlinux kernel (EXPERIMENTAL) ]
->>> linux /vmlinuz-4.19.0-rc2-3-iniza-llvmlinux
->>> initrd /initrd.img-4.19.0-rc2-3-iniza-llvmlinux
->>> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro
->>>
->>> Any hints or hints to debug this?
->>> Any other kernel boot cheats [1] I can try?
->>>
->>> My kernel-config and dmesg output is attached.
->>>
->>> Thanks in advance.
->>>
->>> Regards,
->>> - Sedat -
->>>
->>>
->>> Documentation/intel_txt.txt
->>> Documentation/admin-guide/kernel-parameters.txt
->>> Documentation/Intel-IOMMU.txt
->>>
->>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt#n1645
->>> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/Intel-IOMMU.txt
->>> [3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/intel_txt.txt
->>>
->>>
->>> _______________________________________________
->>> iommu mailing list
->>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>>
+>  drivers/iommu/arm-smmu-v3.c | 94 +++++++++++++++++++++++++++----------
+>  1 file changed, 69 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 867ba548c2cc..da8a91d116bf 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -588,6 +588,7 @@ struct arm_smmu_device {
+>  	struct arm_smmu_strtab_cfg	strtab_cfg;
+>  
+>  	u32				sync_count;
+> +	int				cmdq_generation;
+>  
+>  	/* IOMMU core code handle */
+>  	struct iommu_device		iommu;
+> @@ -676,6 +677,17 @@ static bool queue_empty(struct arm_smmu_queue *q)
+>  	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
+>  }
+>  
+> +static bool queue_behind(struct arm_smmu_queue *q, u32 idx)
+> +{
+> +	return Q_IDX(q, q->cons) < Q_IDX(q, idx);
+> +}
+> +
+> +static bool queue_ahead_not_wrapped(struct arm_smmu_queue *q, u32 idx)
+> +{
+> +	return Q_IDX(q, q->cons) >= Q_IDX(q, idx) &&
+> +	       Q_WRP(q, q->cons) == Q_WRP(q, idx);
+> +}
+> +
+>  static void queue_sync_cons(struct arm_smmu_queue *q)
+>  {
+>  	q->cons = readl_relaxed(q->cons_reg);
+> @@ -709,33 +721,19 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+>  	writel(q->prod, q->prod_reg);
+>  }
+>  
+> -/*
+> - * Wait for the SMMU to consume items. If sync is true, wait until the queue
+> - * is empty. Otherwise, wait until there is at least one free slot.
+> - */
+> -static int queue_poll_cons(struct arm_smmu_queue *q, bool sync, bool wfe)
+> +static int queue_poll_cons(struct arm_smmu_queue *q, bool wfe)
+>  {
+> -	ktime_t timeout;
+> -	unsigned int delay = 1, spin_cnt = 0;
+> +	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
+>  
+> -	/* Wait longer if it's a CMD_SYNC */
+> -	timeout = ktime_add_us(ktime_get(), sync ?
+> -					    ARM_SMMU_CMDQ_SYNC_TIMEOUT_US :
+> -					    ARM_SMMU_POLL_TIMEOUT_US);
+> -
+> -	while (queue_sync_cons(q), (sync ? !queue_empty(q) : queue_full(q))) {
+> +	while (queue_sync_cons(q), queue_full(q)) {
+>  		if (ktime_compare(ktime_get(), timeout) > 0)
+>  			return -ETIMEDOUT;
+>  
+>  		if (wfe) {
+>  			wfe();
+> -		} else if (++spin_cnt < ARM_SMMU_CMDQ_SYNC_SPIN_COUNT) {
+> -			cpu_relax();
+> -			continue;
+>  		} else {
+> -			udelay(delay);
+> -			delay *= 2;
+> -			spin_cnt = 0;
+> +			cpu_relax();
+> +			udelay(1);
+>  		}
+>  	}
+>  
+> @@ -905,8 +903,11 @@ static void arm_smmu_cmdq_insert_cmd(struct arm_smmu_device *smmu, u64 *cmd)
+>  
+>  	smmu->prev_cmd_opcode = FIELD_GET(CMDQ_0_OP, cmd[0]);
+>  
+> +	if (Q_IDX(q, q->prod + 1) == 0)
+> +		WRITE_ONCE(smmu->cmdq_generation, smmu->cmdq_generation + 1);
+> +
+>  	while (queue_insert_raw(q, cmd) == -ENOSPC) {
+> -		if (queue_poll_cons(q, false, wfe))
+> +		if (queue_poll_cons(q, wfe))
+>  			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+>  	}
+>  }
+> @@ -945,6 +946,48 @@ static int __arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
+>  	return (int)(val - sync_idx) < 0 ? -ETIMEDOUT : 0;
+>  }
+>  
+> +static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
+> +				   int sync_gen)
+> +{
+> +	struct arm_smmu_queue *q = &smmu->cmdq.q;
+> +	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+> +	unsigned int delay = 1, spin_cnt = 0;
+> +	ktime_t timeout;
+> +
+> +	timeout = ktime_add_us(ktime_get(), ARM_SMMU_CMDQ_SYNC_TIMEOUT_US);
+> +	do {
+> +		queue_sync_cons(q);
+> +		/*
+> +		 * If we see updates quickly enough, cons has passed sync_idx,
+> +		 * but not yet wrapped. At worst, cons might have actually
+> +		 * wrapped an even number of times, but that still guarantees
+> +		 * the original sync must have been consumed.
+> +		 */
+> +		if (queue_ahead_not_wrapped(q, sync_idx))
+> +			return 0;
+> +		/*
+> +		 * Otherwise, cons may have passed sync_idx and wrapped one or
+> +		 * more times to appear behind it again, but in that case prod
+> +		 * must also be one or more generations ahead.
+> +		 */
+> +		if (queue_behind(q, sync_idx) &&
+> +		    READ_ONCE(smmu->cmdq_generation) != sync_gen)
+> +			return 0;
+> +
+> +		if (wfe) {
+> +			wfe();
+> +		} else if (++spin_cnt < ARM_SMMU_CMDQ_SYNC_SPIN_COUNT) {
+> +			cpu_relax();
+> +		} else {
+> +			udelay(delay);
+> +			delay *= 2;
+> +			spin_cnt = 0;
+> +		}
+> +	} while (ktime_before(ktime_get(), timeout));
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+>  static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
+>  {
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+> @@ -976,18 +1019,19 @@ static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+>  {
+>  	u64 cmd[CMDQ_ENT_DWORDS];
+>  	unsigned long flags;
+> -	bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
+>  	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
+> -	int ret;
+> +	int sync_idx, sync_gen;
+>  
+>  	arm_smmu_cmdq_build_cmd(cmd, &ent);
+>  
+>  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
+> -	arm_smmu_cmdq_insert_cmd(smmu, cmd);
+> -	ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
+> +	if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC)
+> +		arm_smmu_cmdq_insert_cmd(smmu, cmd);
+> +	sync_idx = smmu->cmdq.q.prod;
+> +	sync_gen = READ_ONCE(smmu->cmdq_generation);
+>  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
+>  
+> -	return ret;
+> +	return arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
+>  }
+>  
+>  static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
+> -- 
+> 2.19.1.dirty
+> 
