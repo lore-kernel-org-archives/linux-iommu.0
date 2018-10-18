@@ -1,16 +1,17 @@
-From: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 2/2] iommu/arm-smmu-v3: Reunify
-	arm_smmu_cmdq_issue_sync()
-Date: Thu, 18 Oct 2018 09:58:52 +0100
-Message-ID: <20181018085852.GJ12972@e119886-lin.cambridge.arm.com>
-References: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy@arm.com>
-	<fe1b23d1980dd110eb2e8ffc01c2dd68632566d1.1539782799.git.robin.murphy@arm.com>
+From: Sedat Dilek <sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [Linux-4.19] ThinkPad T470 not booting with "intel_iommu=on"
+Date: Thu, 18 Oct 2018 10:59:46 +0200
+Message-ID: <CA+icZUXN-kgFOQGzhRr9+Hu2=7vjyeiwkczvtg2RA+DLog5OQQ@mail.gmail.com>
+References: <CA+icZUXnB2LbB-X_pQeM=OQDEVcWQdUr9TLbG1cXnpwuTe=mNw@mail.gmail.com>
+	<95f69db6-becd-adce-5477-264de839bcd8@linux.intel.com>
+	<CA+icZUWQL=aMY39k3zUK1KWn0ec-4wsDA8Djmz-7hN9uBJWFcQ@mail.gmail.com>
+	<0696f645-d2df-23fd-d268-233a748ffff5@linux.intel.com>
+Reply-To: sedat.dilek-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <fe1b23d1980dd110eb2e8ffc01c2dd68632566d1.1539782799.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <0696f645-d2df-23fd-d268-233a748ffff5-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,113 +21,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 17, 2018 at 02:56:07PM +0100, Robin Murphy wrote:
-> Now that both sync methods are more or less the same shape, we can save
-> some code and levels of indirection by rolling them up together again,
-> with just a couple of simple conditionals to discriminate the MSI and
-> queue-polling specifics.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 49 +++++++++----------------------------
->  1 file changed, 12 insertions(+), 37 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index da8a91d116bf..36db63e3afcf 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -933,7 +933,7 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
->   * The difference between val and sync_idx is bounded by the maximum size of
->   * a queue at 2^20 entries, so 32 bits is plenty for wrap-safe arithmetic.
->   */
-> -static int __arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
-> +static int arm_smmu_sync_poll_msi(struct arm_smmu_device *smmu, u32 sync_idx)
->  {
->  	ktime_t timeout;
->  	u32 val;
-> @@ -988,16 +988,17 @@ static int arm_smmu_sync_poll_cons(struct arm_smmu_device *smmu, u32 sync_idx,
->  	return -ETIMEDOUT;
->  }
->  
-> -static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
-> +static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
->  {
->  	u64 cmd[CMDQ_ENT_DWORDS];
->  	unsigned long flags;
-> -	struct arm_smmu_cmdq_ent ent = {
-> -		.opcode = CMDQ_OP_CMD_SYNC,
-> -		.sync	= {
-> -			.msiaddr = cpu_to_le32(virt_to_phys(&smmu->sync_count)),
-> -		},
+On Thu, Oct 18, 2018 at 9:06 AM Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+>
+> Hi,
+>
+> On 10/18/18 2:52 PM, Sedat Dilek wrote:
+> > On Tue, Oct 16, 2018 at 8:37 AM Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
+> >>
+> >> Hi Sedat,
+> >>
+> >> Sorry for late reply.
+> >>
+> >> Do you still have this issue with newer rc's (like 4.19-rc8)?
+> >>
+> >> I checked the dmesg log you attached there, it seems that the vt-d was
+> >> not on actually.
+> >>
+> >
+> > Here my kernel-config and dmesg-logs for Linux v4.19-rc8.
+>
+> Any issues are you seeing? I didn't see any error in the dmesg dump.
+>
 
-You indicated that "Patches are based on Will's iommu/devel branch plus my
-"Fix big-endian CMD_SYNC writes" patch." - However your v2 of that patch didn't
-include this cpu_to_le32 hunk. 
+No issues, looks and feels good :-).
 
-Reviewed-by: Andrew Murray <andrew.murray-5wv7dgnIgG8@public.gmane.org>
+Thanks Lu.
 
-Thanks,
+- sed@ -
 
-Andrew Murray
-
-> -	};
-> +	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
-> +		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
-> +	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
-> +	int ret, sync_idx, sync_gen;
-> +
-> +	if (msi)
-> +		ent.sync.msiaddr = cpu_to_le32(virt_to_phys(&smmu->sync_count));
->  
->  	spin_lock_irqsave(&smmu->cmdq.lock, flags);
->  
-> @@ -1009,39 +1010,13 @@ static int __arm_smmu_cmdq_issue_sync_msi(struct arm_smmu_device *smmu)
->  		arm_smmu_cmdq_build_cmd(cmd, &ent);
->  		arm_smmu_cmdq_insert_cmd(smmu, cmd);
->  	}
-> -
-> -	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
-> -
-> -	return __arm_smmu_sync_poll_msi(smmu, ent.sync.msidata);
-> -}
-> -
-> -static int __arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
-> -{
-> -	u64 cmd[CMDQ_ENT_DWORDS];
-> -	unsigned long flags;
-> -	struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
-> -	int sync_idx, sync_gen;
-> -
-> -	arm_smmu_cmdq_build_cmd(cmd, &ent);
-> -
-> -	spin_lock_irqsave(&smmu->cmdq.lock, flags);
-> -	if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC)
-> -		arm_smmu_cmdq_insert_cmd(smmu, cmd);
->  	sync_idx = smmu->cmdq.q.prod;
->  	sync_gen = READ_ONCE(smmu->cmdq_generation);
-> +
->  	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
->  
-> -	return arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
-> -}
-> -
-> -static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
-> -{
-> -	int ret;
-> -	bool msi = (smmu->features & ARM_SMMU_FEAT_MSI) &&
-> -		   (smmu->features & ARM_SMMU_FEAT_COHERENCY);
-> -
-> -	ret = msi ? __arm_smmu_cmdq_issue_sync_msi(smmu)
-> -		  : __arm_smmu_cmdq_issue_sync(smmu);
-> +	ret = msi ? arm_smmu_sync_poll_msi(smmu, ent.sync.msidata)
-> +		  : arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
->  	if (ret)
->  		dev_err_ratelimited(smmu->dev, "CMD_SYNC timeout\n");
->  }
-> -- 
-> 2.19.1.dirty
-> 
+> Best regards,
+> Lu Baolu
+>
+> >
+> > - sed@ -
+> >
+> >>
+> >> On 9/5/18 8:04 PM, Sedat Dilek wrote:
+> >>> Hi Joerg,
+> >>>
+> >>> "intel_ioomu=on" was working fine here on my ThinkPad T470 with
+> >>> debian/testing AMD64 with Linux v4.17.y and v4.18.y.
+> >>>
+> >>> With testing Linux v4.19-rc1 and v4.19-rc2 my machine is not booting -
+> >>> black screen.
+> >>> These kernels are built with LLVM/Clang v7.0.0rc2 (v4.18.y too).
+> >>>
+> >>> Furthermore, I switched from GRUB to systemd-boot v239.
+> >>>
+> >>> [ /boot/efi/loader/entries/debian.conf ]
+> >>>
+> >>> title Debian GNU/Linux buster/sid [ debian kernel ]
+> >>> linux /vmlinuz-4.17.0-3-amd64
+> >>> initrd /initrd.img-4.17.0-3-amd64
+> >>> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro intel_iommu=on
+> >>>
+> >>> [ /boot/efi/loader/entries/debian-llvmlinux.conf ]
+> >>>
+> >>> title Debian GNU/Linux buster/sid [ llvmlinux kernel (EXPERIMENTAL) ]
+> >>> linux /vmlinuz-4.19.0-rc2-3-iniza-llvmlinux
+> >>> initrd /initrd.img-4.19.0-rc2-3-iniza-llvmlinux
+> >>> options root=UUID=4c2aa544-6e86-44d2-9329-572623867b3d ro
+> >>>
+> >>> Any hints or hints to debug this?
+> >>> Any other kernel boot cheats [1] I can try?
+> >>>
+> >>> My kernel-config and dmesg output is attached.
+> >>>
+> >>> Thanks in advance.
+> >>>
+> >>> Regards,
+> >>> - Sedat -
+> >>>
+> >>>
+> >>> Documentation/intel_txt.txt
+> >>> Documentation/admin-guide/kernel-parameters.txt
+> >>> Documentation/Intel-IOMMU.txt
+> >>>
+> >>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/admin-guide/kernel-parameters.txt#n1645
+> >>> [2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/Intel-IOMMU.txt
+> >>> [3] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/intel_txt.txt
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> iommu mailing list
+> >>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> >>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> >>>
