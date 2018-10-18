@@ -1,84 +1,52 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v5 1/2] iommu/arm-smmu-v3: Poll for CMD_SYNC outside cmdq
- lock
-Date: Thu, 18 Oct 2018 12:48:07 +0100
-Message-ID: <3e52b993-a850-301e-85e1-71597df45dc5@huawei.com>
-References: <61b4c3e5f1322dfe96ca2062a7fe058298340996.1539782799.git.robin.murphy@arm.com>
- <2c4e00a2-cd53-a6f5-8561-97379dcf9c02@huawei.com>
- <535fd13d-4cc5-e551-01d9-f7eb05c3ddb0@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
+Date: Thu, 18 Oct 2018 14:51:16 +0200
+Message-ID: <20181018125116.GA24676@lst.de>
+References: <20181014075208.2715-1-hch@lst.de>
+	<CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw@mail.gmail.com>
+	<20181017163351.GA23719@lst.de>
+	<CAP8WD_boL-DxEXxa-ci382Ff8yTdMS9T+sy2Y0-LEX-WPc8L_g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <535fd13d-4cc5-e551-01d9-f7eb05c3ddb0@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>, will.deacon@arm.com
-Cc: iommu@lists.linux-foundation.org, Linuxarm <linuxarm@huawei.com>, linux-arm-kernel@lists.infradead.org, "thunder.leizhen@huawei.com" <thunder.leizhen@huawei.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAP8WD_boL-DxEXxa-ci382Ff8yTdMS9T+sy2Y0-LEX-WPc8L_g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: whiteheadm-HInyCGIudOg@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/10/2018 12:19, Robin Murphy wrote:
-> On 18/10/18 11:55, John Garry wrote:
-> [...]
->>> @@ -976,18 +1019,19 @@ static int __arm_smmu_cmdq_issue_sync(struct
->>> arm_smmu_device *smmu)
->>>  {
->>>      u64 cmd[CMDQ_ENT_DWORDS];
->>>      unsigned long flags;
->>> -    bool wfe = !!(smmu->features & ARM_SMMU_FEAT_SEV);
->>>      struct arm_smmu_cmdq_ent ent = { .opcode = CMDQ_OP_CMD_SYNC };
->>> -    int ret;
->>> +    int sync_idx, sync_gen;
->>>
->>>      arm_smmu_cmdq_build_cmd(cmd, &ent);
->>>
->>>      spin_lock_irqsave(&smmu->cmdq.lock, flags);
->>> -    arm_smmu_cmdq_insert_cmd(smmu, cmd);
->>> -    ret = queue_poll_cons(&smmu->cmdq.q, true, wfe);
->>> +    if (smmu->prev_cmd_opcode != CMDQ_OP_CMD_SYNC)
->>> +        arm_smmu_cmdq_insert_cmd(smmu, cmd);
->>
->> Hi Robin,
->>
->> If we did stop rebuilding the non-MSI command as I suggested, then we
->> would not have the case of building the command and then discarding
->> it, right?
->
-> I suppose so. But that build/discard case can also be avoided by
-> applying patch 2/2 of this series ;)
+On Wed, Oct 17, 2018 at 01:41:49PM -0400, tedheadster wrote:
+> > What is the comparism?  Is this on a non-aic7xxx kernel with and without
+> > the fix?
+> 
+> Christoph,
+>   I will try and do some strict before-and-after benchmarking of your
+> patch. It will take a few days because I am on travel. This is on an
+> aic7xxx (it does have that controller) kernel with and without the
+> fix.
 
-OK, I'll check it more detail. TBH, I found 2/2 hard to follow from just 
-the diff.
+But you said without the fix it doesn't work at all?  Or is this
+the same box, just with the aic7xxx controller disabled?
 
-Thanks,
-John
+In general the patch should only have two effects:
 
->
-> Robin.
->
->>
->> Thanks,
->> John
->>
->>> +    sync_idx = smmu->cmdq.q.prod;
->>> +    sync_gen = READ_ONCE(smmu->cmdq_generation);
->>>      spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
->>>
->>> -    return ret;
->>> +    return arm_smmu_sync_poll_cons(smmu, sync_idx, sync_gen);
->>>  }
->>>
->>>  static void arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
->>>
->>
->>
->
-> .
->
+ - set a small amount of memory aside for bounce buffering
+ - switch the default dma_ops from dma_direct_ops to swiotlb_ops
+
+I can't really see how either could have such a huge effect, even with
+swiotlb having a couple more wired up ops for which we'd enable spectre
+mitigations.
+
+So a strict before and after would be very interesting, if it is really
+just this one change that causes such a huge drop we have hidden dragons
+somewhere..
