@@ -1,11 +1,13 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Fri, 19 Oct 2018 19:11:52 +0100
-Message-ID: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 1/6] iommu: Adapt attach/detach_dev() for auxiliary domains
+Date: Fri, 19 Oct 2018 19:11:53 +0100
+Message-ID: <20181019181158.2395-2-jean-philippe.brucker@arm.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181019181158.2395-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,121 +21,157 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is a first prototype adding auxiliary domain support to Arm SMMUv3,
-following Lu Baolu's latest proposal for IOMMU aware mediated devices
-[1]. It works, but the attach() API still doesn't feel right. See (2)
-below.
+The same set of functions, iommu_attach/detach_device/group, is used
+both to change a device's domain (let's call it "main domain") and to
+add auxiliary domains. The former is used by vfio-pci for example, to
+assign the whole device to userspace. The latter is used by vfio-mdev to
+assign partitions of devices using PASIDs. Device drivers set or unset
+the 'AUXD' device attribute to switch between these modes.
 
-Patch 1 adapts iommu.c to the current proposal for auxiliary domains.
-Patches 2-4 rework the PASID allocator to make it usable for SVA and
-AUXD simultaneously. Patches 5-6 add AUXD support to SMMUv3.
+Supporting both auxiliary and main domain through the same callback
+requires some core changes. For an IOMMU driver that supports both, the
+new semantics of attach_dev() and detach_dev() ops are:
 
+attach_dev(dev, new_domain)
+ (1) When auxd is disabled, detach from the current domain and attach to
+     the new domain.
 
-When a device can have multiple address space, for instance with PCI
-PASID, an auxiliary domain (AUXD) is the IOMMU representation of one
-address space. I distinguish auxiliary from "main" domain, which
-represents the non-PASID address space but also (at least for SMMUv3)
-the whole device context, PASID tables etc.
+ (2) When auxd is enabled, keep the current domain and attach to the new
+     domain.
 
-Auxiliary domains will be used by VFIO for IOMMU-aware mdev, and by any
-other device driver that wants to use PASID for private address spaces
-(as opposed to SVA [2]). The following API is available to device
-drivers:
+detach_dev(dev, new_domain)
+ (3) When auxd is disabled, detach from the domain. Previously the core
+     didn't call detach_dev explicitly when a device has a default domain,
+     since case (1) already takes care of it. But in order to also handle
+     case (4), we now need to always call detach_dev.
 
-(1) Enable AUXD for a device. Enable PASID if necessary and set an AUXD
-    flag on the IOMMU data associated to a device.
+ (4) When auxd is enabled, detach from the given domain, but stay attached
+     to the default domain.
 
-    For my own convenience I've been using the SVA infrastructure since
-    I already had the locking and IOMMU ops in place. The proposed
-    interface is also missing min_pasid and max_pasid parameters, which
-    could be needed by device drivers to enforce PASID limits.
-    iommu_sva_init_device() without arguments already enables PASID, so
-    I just added an AUXD flag to SVA features:
+attach_dev() now returns a value greater than 0 if the domain is in
+auxiliary mode. This allows the core to know if the main domain
+(group->domain) is affected. detach_dev() should probably do the same
+(currently group->domain is always cleared on detach), but that requires
+changing all IOMMU drivers.
 
-      iommu_sva_init_device(dev, IOMMU_SVA_FEAT_AUXD,
-                            min_pasid, max_pasid, NULL)
-      iommu_sva_shutdown_device(dev)
+Since the core doesn't know about auxiliary domains when attaching, we
+have to relax attach_dev a bit: we can't check if the user is trying to
+replace the main domain with a new unmanaged domain anymore.
 
-    Or as proposed in [1]:
+IOMMU drivers that don't support auxiliary domains are also affected by
+the change in (3). Those that support default_domain now get
+detach_dev() followed by attach_dev() callback on iommu_detach_device(),
+instead of just attach_dev().
 
-      iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLE, NULL)
-      iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_DISABLE, NULL)
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/iommu.c | 58 ++++++++++++++++++++++++++++++-------------
+ 1 file changed, 41 insertions(+), 17 deletions(-)
 
-    Finding a compromise for this interface should be easy.
-
-(2) Allocate a domain and attach it to the device.
-
-      dom = iommu_domain_alloc()
-      iommu_attach_device(dom, dev)
-
-    I still have concerns about this part, which are highlighted by the
-    messy changes of patch 1. I think it would make more sense to
-    introduce new attach/detach_dev_aux() functions instead of reusing
-    attach/detach_dev()
-
-    Can we reconsider this and avoid unnecessary complications in IOMMU
-    core and drivers? Does the VFIO code greatly benefit from using the
-    same attach() function? It could as well use a different one for
-    devices in AUXD mode, which the mediating driver could tell by
-    adding a flag in mdev_set_iommu_device(), for example.
-
-    And I don't think other users of AUXD would benefit from using the
-    same attach() function, since they will know whether they want to be
-    using main or auxiliary domain when doing attach().
-
-(3) Get the PASID, and program it in the device
-
-      iommu_domain_get_attr(dom, DOMAIN_ATTR_AUXD_ID, &pasid)
-
-(4) Create DMA mappings
-
-      iommu_map(dom, ...)
-      iommu_unmap(dom, ...)
-
-    Ultimately it would be nice to add PASID support to the DMA API as
-    well. For now drivers allocate IOVAs and pages themselves.
-
-
-For vfio-mdev, a driver that wants to create mdevs only performs steps (1)
-and (3):
-
-* When initializing the parent device, enable AUXD (1)
-* In mdev_parent_ops::create(), call mdev_set_iommu_device(mdev_dev(mdev),
-  mdev_parent_dev(mdev)).
-* In mdev_parent_ops::open(), get the PASID (3) and install it in the
-  parent device.
-* In mdev_parent_ops::close(), clear the PASID
-
-
-This code and the many patches it depends on can be found on my
-iommu/auxd branch:
-	git://linux-arm.org/linux-jpb.git iommu/auxd
-
-[1] [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
-    https://lwn.net/ml/linux-kernel/20181012051632.26064-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org/
-[2] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
-    https://www.spinics.net/lists/iommu/msg30076.html
-
-Jean-Philippe Brucker (6):
-  iommu: Adapt attach/detach_dev() for auxiliary domains
-  drivers core: Add I/O ASID allocator
-  iommu/sva: Use external PASID allocator
-  iommu/sva: Support AUXD feature
-  iommu/arm-smmu-v3: Implement detach_dev op
-  iommu/arm-smmu-v3: Add support for auxiliary domains
-
- drivers/base/Kconfig        |   7 ++
- drivers/base/Makefile       |   1 +
- drivers/base/ioasid.c       | 140 ++++++++++++++++++++++++++++++
- drivers/iommu/Kconfig       |   1 +
- drivers/iommu/arm-smmu-v3.c | 164 ++++++++++++++++++++++++++++++++++--
- drivers/iommu/iommu-sva.c   | 113 +++++++++++++++++--------
- drivers/iommu/iommu.c       |  58 +++++++++----
- include/linux/ioasid.h      |  45 ++++++++++
- include/linux/iommu.h       |  12 +++
- 9 files changed, 479 insertions(+), 62 deletions(-)
- create mode 100644 drivers/base/ioasid.c
- create mode 100644 include/linux/ioasid.h
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a8a144dded52..667ccfc6d3fd 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1553,7 +1553,7 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 		return -ENODEV;
+ 
+ 	ret = domain->ops->attach_dev(domain, dev);
+-	if (!ret)
++	if (ret >= 0)
+ 		trace_attach_device_to_domain(dev);
+ 	return ret;
+ }
+@@ -1726,6 +1726,12 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+ 
++struct iommu_attach_group_info {
++	struct iommu_domain *domain;
++	unsigned long count;
++	int ret;
++};
++
+ /*
+  * IOMMU groups are really the natrual working unit of the IOMMU, but
+  * the IOMMU API works on domains and devices.  Bridge that gap by
+@@ -1738,20 +1744,31 @@ EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+  */
+ static int iommu_group_do_attach_device(struct device *dev, void *data)
+ {
+-	struct iommu_domain *domain = data;
++	int ret;
++	struct iommu_attach_group_info *info = data;
+ 
+-	return __iommu_attach_device(domain, dev);
++	ret = __iommu_attach_device(info->domain, dev);
++	if (ret < 0)
++		return ret;
++
++	/* Can't mix auxiliary and main domain within a group */
++	if (info->count++ && ret != info->ret)
++		/* TODO: rollback */
++		return -ENODEV;
++	info->ret = ret;
++
++	return 0;
+ }
+ 
+ static int __iommu_attach_group(struct iommu_domain *domain,
+ 				struct iommu_group *group)
+ {
+ 	int ret;
++	struct iommu_attach_group_info info = {
++		.domain = domain,
++	};
+ 
+-	if (group->default_domain && group->domain != group->default_domain)
+-		return -EBUSY;
+-
+-	ret = __iommu_group_for_each_dev(group, domain,
++	ret = __iommu_group_for_each_dev(group, &info,
+ 					 iommu_group_do_attach_device);
+ 	if (ret == 0)
+ 		group->domain = domain;
+@@ -1784,23 +1801,30 @@ static void __iommu_detach_group(struct iommu_domain *domain,
+ 				 struct iommu_group *group)
+ {
+ 	int ret;
++	struct iommu_attach_group_info info = {
++		.domain = group->default_domain,
++	};
+ 
++	__iommu_group_for_each_dev(group, domain, iommu_group_do_detach_device);
+ 	if (!group->default_domain) {
+-		__iommu_group_for_each_dev(group, domain,
+-					   iommu_group_do_detach_device);
++		/*
++		 * If detach returned, then we're not removing the main domain
++		 * but an auxiliary one.
++		 *
++		 * FIXME: don't clear domain!
++		 */
+ 		group->domain = NULL;
+ 		return;
+ 	}
+ 
+-	if (group->domain == group->default_domain)
+-		return;
+-
+-	/* Detach by re-attaching to the default domain */
+-	ret = __iommu_group_for_each_dev(group, group->default_domain,
++	/*
++	 * Detach by re-attaching to the default domain. If the device is
++	 * already attached, then @domain was in auxiliary mode and the driver
++	 * returns a value > 0.
++	 */
++	ret = __iommu_group_for_each_dev(group, &info,
+ 					 iommu_group_do_attach_device);
+-	if (ret != 0)
+-		WARN_ON(1);
+-	else
++	if (ret == 0)
+ 		group->domain = group->default_domain;
+ }
+ 
 -- 
 2.19.1
