@@ -1,77 +1,95 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH 05/10] swiotlb: merge swiotlb_unmap_page and unmap_single
-Date: Thu, 18 Oct 2018 20:25:35 -0400
-Message-ID: <20181019002535.GG1251@char.us.oracle.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+	swiotlb_map_sg_attrs
+Date: Thu, 18 Oct 2018 20:33:08 -0400
+Message-ID: <20181019003308.GH1251@char.us.oracle.com>
 References: <20181008080246.20543-1-hch@lst.de>
- <20181008080246.20543-6-hch@lst.de>
+	<20181008080246.20543-7-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20181008080246.20543-6-hch@lst.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20181008080246.20543-7-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 08, 2018 at 10:02:41AM +0200, Christoph Hellwig wrote:
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+On Mon, Oct 08, 2018 at 10:02:42AM +0200, Christoph Hellwig wrote:
+> No need to duplicate the code - map_sg is equivalent to map_page
+> for each page in the scatterlist.
+> 
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
 Thank you!
 > ---
->  kernel/dma/swiotlb.c | 15 ++++-----------
->  1 file changed, 4 insertions(+), 11 deletions(-)
+>  kernel/dma/swiotlb.c | 34 ++++++++++++----------------------
+>  1 file changed, 12 insertions(+), 22 deletions(-)
 > 
 > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 11dbcd80b4a6..15335f3a1bf3 100644
+> index 15335f3a1bf3..15755d7a5242 100644
 > --- a/kernel/dma/swiotlb.c
 > +++ b/kernel/dma/swiotlb.c
-> @@ -765,9 +765,9 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->   * After this call, reads by the cpu to the buffer are guaranteed to see
->   * whatever the device wrote there.
+> @@ -845,37 +845,27 @@ swiotlb_sync_single_for_device(struct device *hwdev, dma_addr_t dev_addr,
+>   * same here.
 >   */
-> -static void unmap_single(struct device *hwdev, dma_addr_t dev_addr,
-> -			 size_t size, enum dma_data_direction dir,
-> -			 unsigned long attrs)
-> +void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
-> +			size_t size, enum dma_data_direction dir,
-> +			unsigned long attrs)
+>  int
+> -swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl, int nelems,
+> +swiotlb_map_sg_attrs(struct device *dev, struct scatterlist *sgl, int nelems,
+>  		     enum dma_data_direction dir, unsigned long attrs)
 >  {
->  	phys_addr_t paddr = dma_to_phys(hwdev, dev_addr);
+>  	struct scatterlist *sg;
+>  	int i;
 >  
-> @@ -790,13 +790,6 @@ static void unmap_single(struct device *hwdev, dma_addr_t dev_addr,
->  	dma_mark_clean(phys_to_virt(paddr), size);
->  }
->  
-> -void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
-> -			size_t size, enum dma_data_direction dir,
-> -			unsigned long attrs)
-> -{
-> -	unmap_single(hwdev, dev_addr, size, dir, attrs);
-> -}
+> -	BUG_ON(dir == DMA_NONE);
 > -
->  /*
->   * Make physical memory consistent for a single streaming mode DMA translation
->   * after a transfer.
-> @@ -900,7 +893,7 @@ swiotlb_unmap_sg_attrs(struct device *hwdev, struct scatterlist *sgl,
->  	BUG_ON(dir == DMA_NONE);
->  
->  	for_each_sg(sgl, sg, nelems, i)
-> -		unmap_single(hwdev, sg->dma_address, sg_dma_len(sg), dir,
-> +		swiotlb_unmap_page(hwdev, sg->dma_address, sg_dma_len(sg), dir,
->  			     attrs);
+>  	for_each_sg(sgl, sg, nelems, i) {
+> -		phys_addr_t paddr = sg_phys(sg);
+> -		dma_addr_t dev_addr = phys_to_dma(hwdev, paddr);
+> -
+> -		if (swiotlb_force == SWIOTLB_FORCE ||
+> -		    !dma_capable(hwdev, dev_addr, sg->length)) {
+> -			phys_addr_t map = map_single(hwdev, sg_phys(sg),
+> -						     sg->length, dir, attrs);
+> -			if (map == SWIOTLB_MAP_ERROR) {
+> -				/* Don't panic here, we expect map_sg users
+> -				   to do proper error handling. */
+> -				attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+> -				swiotlb_unmap_sg_attrs(hwdev, sgl, i, dir,
+> -						       attrs);
+> -				sg_dma_len(sgl) = 0;
+> -				return 0;
+> -			}
+> -			sg->dma_address = __phys_to_dma(hwdev, map);
+> -		} else
+> -			sg->dma_address = dev_addr;
+> +		sg->dma_address = swiotlb_map_page(dev, sg_page(sg), sg->offset,
+> +				sg->length, dir, attrs);
+> +		if (sg->dma_address == DIRECT_MAPPING_ERROR)
+> +			goto out_error;
+>  		sg_dma_len(sg) = sg->length;
+>  	}
+> +
+>  	return nelems;
+> +
+> +out_error:
+> +	swiotlb_unmap_sg_attrs(dev, sgl, i, dir,
+> +			attrs | DMA_ATTR_SKIP_CPU_SYNC);
+> +	sg_dma_len(sgl) = 0;
+> +	return 0;
 >  }
 >  
+>  /*
 > -- 
 > 2.19.0
 > 
