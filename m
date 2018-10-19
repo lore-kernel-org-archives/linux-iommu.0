@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 1/6] iommu: Adapt attach/detach_dev() for auxiliary domains
-Date: Fri, 19 Oct 2018 19:11:53 +0100
-Message-ID: <20181019181158.2395-2-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
+Date: Fri, 19 Oct 2018 19:11:54 +0100
+Message-ID: <20181019181158.2395-3-jean-philippe.brucker@arm.com>
 References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,157 +21,261 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The same set of functions, iommu_attach/detach_device/group, is used
-both to change a device's domain (let's call it "main domain") and to
-add auxiliary domains. The former is used by vfio-pci for example, to
-assign the whole device to userspace. The latter is used by vfio-mdev to
-assign partitions of devices using PASIDs. Device drivers set or unset
-the 'AUXD' device attribute to switch between these modes.
+Some devices might support multiple DMA address spaces, in particular
+those that have the PCI PASID feature. PASID (Process Address Space ID)
+allows to share process address spaces with devices (SVA), partition a
+device into VM-assignable entities (VFIO mdev) or simply provide
+multiple DMA address space to kernel drivers. Add a global PASID
+allocator usable by different drivers at the same time. Name it I/O ASID
+to avoid confusion with ASIDs allocated by arch code, which are usually
+a separate ID space.
 
-Supporting both auxiliary and main domain through the same callback
-requires some core changes. For an IOMMU driver that supports both, the
-new semantics of attach_dev() and detach_dev() ops are:
+The IOASID space is global. Each device can have its own PASID space,
+but by convention the IOMMU ended up having a global PASID space, so
+that with SVA, each mm_struct is associated to a single PASID.
 
-attach_dev(dev, new_domain)
- (1) When auxd is disabled, detach from the current domain and attach to
-     the new domain.
-
- (2) When auxd is enabled, keep the current domain and attach to the new
-     domain.
-
-detach_dev(dev, new_domain)
- (3) When auxd is disabled, detach from the domain. Previously the core
-     didn't call detach_dev explicitly when a device has a default domain,
-     since case (1) already takes care of it. But in order to also handle
-     case (4), we now need to always call detach_dev.
-
- (4) When auxd is enabled, detach from the given domain, but stay attached
-     to the default domain.
-
-attach_dev() now returns a value greater than 0 if the domain is in
-auxiliary mode. This allows the core to know if the main domain
-(group->domain) is affected. detach_dev() should probably do the same
-(currently group->domain is always cleared on detach), but that requires
-changing all IOMMU drivers.
-
-Since the core doesn't know about auxiliary domains when attaching, we
-have to relax attach_dev a bit: we can't check if the user is trying to
-replace the main domain with a new unmanaged domain anymore.
-
-IOMMU drivers that don't support auxiliary domains are also affected by
-the change in (3). Those that support default_domain now get
-detach_dev() followed by attach_dev() callback on iommu_detach_device(),
-instead of just attach_dev().
+The allocator doesn't really belong in drivers/iommu because some
+drivers would like to allocate PASIDs for devices that aren't managed by
+an IOMMU, using the same ID space as IOMMU. It doesn't really belong in
+drivers/pci either since platform device also support PASID. Add the
+allocator in drivers/base.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 58 ++++++++++++++++++++++++++++++-------------
- 1 file changed, 41 insertions(+), 17 deletions(-)
+ drivers/base/Kconfig   |   7 +++
+ drivers/base/Makefile  |   1 +
+ drivers/base/ioasid.c  | 140 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/ioasid.h |  45 +++++++++++++
+ 4 files changed, 193 insertions(+)
+ create mode 100644 drivers/base/ioasid.c
+ create mode 100644 include/linux/ioasid.h
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a8a144dded52..667ccfc6d3fd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1553,7 +1553,7 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- 		return -ENODEV;
+diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
+index 3e63a900b330..9e41653467d7 100644
+--- a/drivers/base/Kconfig
++++ b/drivers/base/Kconfig
+@@ -182,6 +182,13 @@ config DMA_SHARED_BUFFER
+ 	  APIs extension; the file's descriptor can then be passed on to other
+ 	  driver.
  
- 	ret = domain->ops->attach_dev(domain, dev);
--	if (!ret)
-+	if (ret >= 0)
- 		trace_attach_device_to_domain(dev);
- 	return ret;
- }
-@@ -1726,6 +1726,12 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
++config IOASID
++	bool
++	default n
++	help
++	  Enable the I/O Address Space ID allocator. A single ID space shared
++	  between different users.
++
+ config DMA_FENCE_TRACE
+ 	bool "Enable verbose DMA_FENCE_TRACE messages"
+ 	depends on DMA_SHARED_BUFFER
+diff --git a/drivers/base/Makefile b/drivers/base/Makefile
+index 704f44295810..79e83a1b344b 100644
+--- a/drivers/base/Makefile
++++ b/drivers/base/Makefile
+@@ -23,6 +23,7 @@ obj-$(CONFIG_PINCTRL) += pinctrl.o
+ obj-$(CONFIG_DEV_COREDUMP) += devcoredump.o
+ obj-$(CONFIG_GENERIC_MSI_IRQ_DOMAIN) += platform-msi.o
+ obj-$(CONFIG_GENERIC_ARCH_TOPOLOGY) += arch_topology.o
++obj-$(CONFIG_IOASID) += ioasid.o
  
-+struct iommu_attach_group_info {
-+	struct iommu_domain *domain;
-+	unsigned long count;
-+	int ret;
+ obj-y			+= test/
+ 
+diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
+new file mode 100644
+index 000000000000..71ab7ee73ecb
+--- /dev/null
++++ b/drivers/base/ioasid.c
+@@ -0,0 +1,140 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * I/O Address Space ID allocator. There is one global IOASID space, split into
++ * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
++ * free IOASIDs with ioasid_alloc and ioasid_free.
++ */
++#include <linux/idr.h>
++#include <linux/ioasid.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++
++struct ioasid_data {
++	ioasid_t id;
++	struct ioasid_set *set;
++	void *private;
 +};
 +
- /*
-  * IOMMU groups are really the natrual working unit of the IOMMU, but
-  * the IOMMU API works on domains and devices.  Bridge that gap by
-@@ -1738,20 +1744,31 @@ EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
-  */
- static int iommu_group_do_attach_device(struct device *dev, void *data)
- {
--	struct iommu_domain *domain = data;
++static DEFINE_IDR(ioasid_idr);
++
++/**
++ * ioasid_alloc - Allocate an IOASID
++ * @set: the IOASID set
++ * @min: the minimum ID (inclusive)
++ * @max: the maximum ID (exclusive)
++ * @private: data private to the caller
++ *
++ * Allocate an ID between @min and @max (or %0 and %INT_MAX). Return the
++ * allocated ID on success, or INVALID_IOASID on failure. The @private pointer
++ * is stored internally and can be retrieved with ioasid_find().
++ */
++ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
++		      void *private)
++{
++	int id;
++	struct ioasid_data *data;
++
++	data = kzalloc(sizeof(*data), GFP_KERNEL);
++	if (!data)
++		return INVALID_IOASID;
++
++	data->set = set;
++	data->private = private;
++
++	idr_preload(GFP_KERNEL);
++	idr_lock(&ioasid_idr);
++	data->id = id = idr_alloc(&ioasid_idr, data, min, max, GFP_ATOMIC);
++	idr_unlock(&ioasid_idr);
++	idr_preload_end();
++
++	if (id < 0) {
++		kfree(data);
++		return INVALID_IOASID;
++	}
++
++	return data->id;
++}
++EXPORT_SYMBOL_GPL(ioasid_alloc);
++
++/**
++ * ioasid_free - Free an IOASID
++ * @ioasid: the ID to remove
++ */
++void ioasid_free(ioasid_t ioasid)
++{
++	struct ioasid_data *ioasid_data;
++
++	idr_lock(&ioasid_idr);
++	ioasid_data = idr_remove(&ioasid_idr, ioasid);
++	idr_unlock(&ioasid_idr);
++
++	kfree(ioasid_data);
++}
++EXPORT_SYMBOL_GPL(ioasid_free);
++
++struct ioasid_iter_data {
++	struct ioasid_set *set;
++	ioasid_iter_t func;
++	void *data;
++};
++
++static int ioasid_iter(int ioasid, void *p, void *data)
++{
++	struct ioasid_iter_data *iter_data = data;
++	struct ioasid_data *ioasid_data = p;
++
++	if (iter_data->set != ioasid_data->set)
++		return 0;
++
++	return iter_data->func(ioasid, ioasid_data->private, iter_data->data);
++}
++
++/**
++ * ioasid_for_each - Iterate over IOASIDs for this set.
++ * @set: the IOASID set
++ * @func: called for each matching IOASID.
++ * @data: data passed to the callback
++ *
++ * Execute @func for all IOASIDs in the given set. If @func returns anything
++ * other than %0, the iteration stops and that value is returned from this
++ * function.
++ */
++int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func, void *data)
++{
 +	int ret;
-+	struct iommu_attach_group_info *info = data;
- 
--	return __iommu_attach_device(domain, dev);
-+	ret = __iommu_attach_device(info->domain, dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Can't mix auxiliary and main domain within a group */
-+	if (info->count++ && ret != info->ret)
-+		/* TODO: rollback */
-+		return -ENODEV;
-+	info->ret = ret;
-+
-+	return 0;
- }
- 
- static int __iommu_attach_group(struct iommu_domain *domain,
- 				struct iommu_group *group)
- {
- 	int ret;
-+	struct iommu_attach_group_info info = {
-+		.domain = domain,
++	struct ioasid_iter_data iter_data = {
++		.set	= set,
++		.func	= func,
++		.data	= data,
 +	};
- 
--	if (group->default_domain && group->domain != group->default_domain)
--		return -EBUSY;
--
--	ret = __iommu_group_for_each_dev(group, domain,
-+	ret = __iommu_group_for_each_dev(group, &info,
- 					 iommu_group_do_attach_device);
- 	if (ret == 0)
- 		group->domain = domain;
-@@ -1784,23 +1801,30 @@ static void __iommu_detach_group(struct iommu_domain *domain,
- 				 struct iommu_group *group)
- {
- 	int ret;
-+	struct iommu_attach_group_info info = {
-+		.domain = group->default_domain,
-+	};
- 
-+	__iommu_group_for_each_dev(group, domain, iommu_group_do_detach_device);
- 	if (!group->default_domain) {
--		__iommu_group_for_each_dev(group, domain,
--					   iommu_group_do_detach_device);
-+		/*
-+		 * If detach returned, then we're not removing the main domain
-+		 * but an auxiliary one.
-+		 *
-+		 * FIXME: don't clear domain!
-+		 */
- 		group->domain = NULL;
- 		return;
- 	}
- 
--	if (group->domain == group->default_domain)
--		return;
--
--	/* Detach by re-attaching to the default domain */
--	ret = __iommu_group_for_each_dev(group, group->default_domain,
-+	/*
-+	 * Detach by re-attaching to the default domain. If the device is
-+	 * already attached, then @domain was in auxiliary mode and the driver
-+	 * returns a value > 0.
-+	 */
-+	ret = __iommu_group_for_each_dev(group, &info,
- 					 iommu_group_do_attach_device);
--	if (ret != 0)
--		WARN_ON(1);
--	else
-+	if (ret == 0)
- 		group->domain = group->default_domain;
- }
- 
++
++	idr_lock(&ioasid_idr);
++	ret = idr_for_each(&ioasid_idr, ioasid_iter, &iter_data);
++	idr_unlock(&ioasid_idr);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(ioasid_for_each);
++
++/**
++ * ioasid_find - Find IOASID data
++ * @set: the IOASID set
++ * @ioasid: the IOASID to find
++ *
++ * If the IOASID has been allocated for this set, return the private pointer
++ * passed to ioasid_alloc. Otherwise return NULL.
++ */
++void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
++{
++	void *priv = NULL;
++	struct ioasid_data *ioasid_data;
++
++	idr_lock(&ioasid_idr);
++	ioasid_data = idr_find(&ioasid_idr, ioasid);
++	if (ioasid_data && ioasid_data->set == set)
++		priv = ioasid_data->private;
++	idr_unlock(&ioasid_idr);
++
++	return priv;
++}
++EXPORT_SYMBOL_GPL(ioasid_find);
+diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
+new file mode 100644
+index 000000000000..cf6fb3496692
+--- /dev/null
++++ b/include/linux/ioasid.h
+@@ -0,0 +1,45 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __LINUX_IOASID_H
++#define __LINUX_IOASID_H
++
++#define INVALID_IOASID ((ioasid_t)-1)
++typedef unsigned int ioasid_t;
++typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
++
++struct ioasid_set {
++	int dummy;
++};
++
++#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
++
++#ifdef CONFIG_IOASID
++ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
++		      void *private);
++void ioasid_free(ioasid_t ioasid);
++
++int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func, void *data);
++void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid);
++
++#else /* !CONFIG_IOASID */
++static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
++				    ioasid_t max, void *private)
++{
++	return INVALID_IOASID;
++}
++
++static inline void ioasid_free(ioasid_t ioasid)
++{
++}
++
++static inline int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func,
++				  void *data)
++{
++	return -ESRCH;
++}
++
++static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
++{
++	return -ESRCH;
++}
++#endif /* CONFIG_IOASID */
++#endif /* __LINUX_IOASID_H */
 -- 
 2.19.1
