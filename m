@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
-Date: Fri, 19 Oct 2018 19:11:54 +0100
-Message-ID: <20181019181158.2395-3-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 3/6] iommu/sva: Use external PASID allocator
+Date: Fri, 19 Oct 2018 19:11:55 +0100
+Message-ID: <20181019181158.2395-4-jean-philippe.brucker@arm.com>
 References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,261 +21,180 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Some devices might support multiple DMA address spaces, in particular
-those that have the PCI PASID feature. PASID (Process Address Space ID)
-allows to share process address spaces with devices (SVA), partition a
-device into VM-assignable entities (VFIO mdev) or simply provide
-multiple DMA address space to kernel drivers. Add a global PASID
-allocator usable by different drivers at the same time. Name it I/O ASID
-to avoid confusion with ASIDs allocated by arch code, which are usually
-a separate ID space.
-
-The IOASID space is global. Each device can have its own PASID space,
-but by convention the IOMMU ended up having a global PASID space, so
-that with SVA, each mm_struct is associated to a single PASID.
-
-The allocator doesn't really belong in drivers/iommu because some
-drivers would like to allocate PASIDs for devices that aren't managed by
-an IOMMU, using the same ID space as IOMMU. It doesn't really belong in
-drivers/pci either since platform device also support PASID. Add the
-allocator in drivers/base.
+Now that the IOASID allocator is in place, use it to allocate shared
+PASIDs.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/base/Kconfig   |   7 +++
- drivers/base/Makefile  |   1 +
- drivers/base/ioasid.c  | 140 +++++++++++++++++++++++++++++++++++++++++
- include/linux/ioasid.h |  45 +++++++++++++
- 4 files changed, 193 insertions(+)
- create mode 100644 drivers/base/ioasid.c
- create mode 100644 include/linux/ioasid.h
+ drivers/iommu/Kconfig     |  1 +
+ drivers/iommu/iommu-sva.c | 80 ++++++++++++++++++++++-----------------
+ 2 files changed, 46 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
-index 3e63a900b330..9e41653467d7 100644
---- a/drivers/base/Kconfig
-+++ b/drivers/base/Kconfig
-@@ -182,6 +182,13 @@ config DMA_SHARED_BUFFER
- 	  APIs extension; the file's descriptor can then be passed on to other
- 	  driver.
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e89f5a97d3c4..83a62634bbc4 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -116,6 +116,7 @@ config IOMMU_SVA
+ 	bool
+ 	select IOMMU_API
+ 	select MMU_NOTIFIER
++	select IOASID
  
-+config IOASID
-+	bool
-+	default n
-+	help
-+	  Enable the I/O Address Space ID allocator. A single ID space shared
-+	  between different users.
-+
- config DMA_FENCE_TRACE
- 	bool "Enable verbose DMA_FENCE_TRACE messages"
- 	depends on DMA_SHARED_BUFFER
-diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-index 704f44295810..79e83a1b344b 100644
---- a/drivers/base/Makefile
-+++ b/drivers/base/Makefile
-@@ -23,6 +23,7 @@ obj-$(CONFIG_PINCTRL) += pinctrl.o
- obj-$(CONFIG_DEV_COREDUMP) += devcoredump.o
- obj-$(CONFIG_GENERIC_MSI_IRQ_DOMAIN) += platform-msi.o
- obj-$(CONFIG_GENERIC_ARCH_TOPOLOGY) += arch_topology.o
-+obj-$(CONFIG_IOASID) += ioasid.o
+ config IOMMU_PAGE_FAULT
+ 	bool
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index ea34e7383ab4..28eaa617b4f0 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -6,6 +6,7 @@
+  */
  
- obj-y			+= test/
- 
-diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
-new file mode 100644
-index 000000000000..71ab7ee73ecb
---- /dev/null
-+++ b/drivers/base/ioasid.c
-@@ -0,0 +1,140 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * I/O Address Space ID allocator. There is one global IOASID space, split into
-+ * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-+ * free IOASIDs with ioasid_alloc and ioasid_free.
-+ */
-+#include <linux/idr.h>
+ #include <linux/idr.h>
 +#include <linux/ioasid.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+
-+struct ioasid_data {
-+	ioasid_t id;
-+	struct ioasid_set *set;
-+	void *private;
+ #include <linux/iommu.h>
+ #include <linux/mmu_notifier.h>
+ #include <linux/sched/mm.h>
+@@ -115,12 +116,7 @@ struct iommu_bond {
+ 	void			*drvdata;
+ };
+ 
+-/*
+- * Because we're using an IDR, PASIDs are limited to 31 bits (the sign bit is
+- * used for returning errors). In practice implementations will use at most 20
+- * bits, which is the PCI limit.
+- */
+-static DEFINE_IDR(iommu_pasid_idr);
++static DECLARE_IOASID_SET(ioasid_shared);
+ 
+ /*
+  * For the moment this is an all-purpose lock. It serializes
+@@ -163,18 +159,13 @@ static struct io_mm *io_mm_alloc(struct device *dev, struct mm_struct *mm,
+ 	INIT_LIST_HEAD(&io_mm->devices);
+ 	/* Leave kref as zero until the io_mm is fully initialized */
+ 
+-	idr_preload(GFP_KERNEL);
+-	spin_lock(&iommu_sva_lock);
+-	pasid = idr_alloc(&iommu_pasid_idr, io_mm, param->min_pasid,
+-			  param->max_pasid + 1, GFP_ATOMIC);
+-	io_mm->pasid = pasid;
+-	spin_unlock(&iommu_sva_lock);
+-	idr_preload_end();
+-
++	pasid = ioasid_alloc(&ioasid_shared, param->min_pasid,
++			     param->max_pasid + 1, io_mm);
+ 	if (pasid < 0) {
+ 		ret = pasid;
+ 		goto err_free_mm;
+ 	}
++	io_mm->pasid = pasid;
+ 
+ 	ret = mmu_notifier_register(&io_mm->notifier, mm);
+ 	if (ret)
+@@ -201,7 +192,7 @@ static struct io_mm *io_mm_alloc(struct device *dev, struct mm_struct *mm,
+ 	 * 0 so no user could get a reference to it. Free it manually.
+ 	 */
+ 	spin_lock(&iommu_sva_lock);
+-	idr_remove(&iommu_pasid_idr, io_mm->pasid);
++	ioasid_free(pasid);
+ 	spin_unlock(&iommu_sva_lock);
+ 
+ err_free_mm:
+@@ -231,7 +222,7 @@ static void io_mm_release(struct kref *kref)
+ 	io_mm = container_of(kref, struct io_mm, kref);
+ 	WARN_ON(!list_empty(&io_mm->devices));
+ 
+-	idr_remove(&iommu_pasid_idr, io_mm->pasid);
++	ioasid_free(io_mm->pasid);
+ 
+ 	/*
+ 	 * If we're being released from mm exit, the notifier callback ->release
+@@ -491,15 +482,44 @@ static struct mmu_notifier_ops iommu_mmu_notifier = {
+ 	.invalidate_range	= iommu_notifier_invalidate_range,
+ };
+ 
++struct io_mm_bond_info {
++	struct device *dev;
++	struct mm_struct *mm;
++	struct io_mm *io_mm;
 +};
 +
-+static DEFINE_IDR(ioasid_idr);
-+
-+/**
-+ * ioasid_alloc - Allocate an IOASID
-+ * @set: the IOASID set
-+ * @min: the minimum ID (inclusive)
-+ * @max: the maximum ID (exclusive)
-+ * @private: data private to the caller
-+ *
-+ * Allocate an ID between @min and @max (or %0 and %INT_MAX). Return the
-+ * allocated ID on success, or INVALID_IOASID on failure. The @private pointer
-+ * is stored internally and can be retrieved with ioasid_find().
-+ */
-+ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
-+		      void *private)
++static int io_mm_compare_bond(ioasid_t pasid, void *priv, void *data)
 +{
-+	int id;
-+	struct ioasid_data *data;
++	struct iommu_bond *bond;
++	struct io_mm *io_mm = priv;
++	struct io_mm_bond_info *info = data;
 +
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return INVALID_IOASID;
-+
-+	data->set = set;
-+	data->private = private;
-+
-+	idr_preload(GFP_KERNEL);
-+	idr_lock(&ioasid_idr);
-+	data->id = id = idr_alloc(&ioasid_idr, data, min, max, GFP_ATOMIC);
-+	idr_unlock(&ioasid_idr);
-+	idr_preload_end();
-+
-+	if (id < 0) {
-+		kfree(data);
-+		return INVALID_IOASID;
-+	}
-+
-+	return data->id;
-+}
-+EXPORT_SYMBOL_GPL(ioasid_alloc);
-+
-+/**
-+ * ioasid_free - Free an IOASID
-+ * @ioasid: the ID to remove
-+ */
-+void ioasid_free(ioasid_t ioasid)
-+{
-+	struct ioasid_data *ioasid_data;
-+
-+	idr_lock(&ioasid_idr);
-+	ioasid_data = idr_remove(&ioasid_idr, ioasid);
-+	idr_unlock(&ioasid_idr);
-+
-+	kfree(ioasid_data);
-+}
-+EXPORT_SYMBOL_GPL(ioasid_free);
-+
-+struct ioasid_iter_data {
-+	struct ioasid_set *set;
-+	ioasid_iter_t func;
-+	void *data;
-+};
-+
-+static int ioasid_iter(int ioasid, void *p, void *data)
-+{
-+	struct ioasid_iter_data *iter_data = data;
-+	struct ioasid_data *ioasid_data = p;
-+
-+	if (iter_data->set != ioasid_data->set)
++	if (io_mm->mm != info->mm || !io_mm_get_locked(io_mm))
++		/* Keep looking */
 +		return 0;
 +
-+	return iter_data->func(ioasid, ioasid_data->private, iter_data->data);
++	/* Is it already bound to this device? */
++	list_for_each_entry(bond, &io_mm->devices, mm_head) {
++		if (bond->dev == info->dev) {
++			io_mm_put_locked(io_mm);
++			return -EEXIST;
++		}
++	}
++	info->io_mm = io_mm;
++	return 1;
 +}
 +
-+/**
-+ * ioasid_for_each - Iterate over IOASIDs for this set.
-+ * @set: the IOASID set
-+ * @func: called for each matching IOASID.
-+ * @data: data passed to the callback
-+ *
-+ * Execute @func for all IOASIDs in the given set. If @func returns anything
-+ * other than %0, the iteration stops and that value is returned from this
-+ * function.
-+ */
-+int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func, void *data)
-+{
-+	int ret;
-+	struct ioasid_iter_data iter_data = {
-+		.set	= set,
-+		.func	= func,
-+		.data	= data,
+ int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid,
+ 			    unsigned long flags, void *drvdata)
+ {
+-	int i;
+ 	int ret = 0;
+-	struct iommu_bond *bond;
+-	struct io_mm *io_mm = NULL;
++	struct io_mm *io_mm;
+ 	struct iommu_sva_param *param;
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	struct io_mm_bond_info bond_info = {
++		.dev = dev,
++		.mm = mm,
 +	};
+ 
+ 	if (!ops || !dev->iommu_param)
+ 		return -ENODEV;
+@@ -511,25 +531,15 @@ int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, int *pasid
+ 		goto out_unlock;
+ 	}
+ 
+-	/* If an io_mm already exists, use it */
++	/* If an io_mm already exists, get a reference and use it */
+ 	spin_lock(&iommu_sva_lock);
+-	idr_for_each_entry(&iommu_pasid_idr, io_mm, i) {
+-		if (io_mm->mm == mm && io_mm_get_locked(io_mm)) {
+-			/* ... Unless it's already bound to this device */
+-			list_for_each_entry(bond, &io_mm->devices, mm_head) {
+-				if (bond->dev == dev) {
+-					ret = -EEXIST;
+-					io_mm_put_locked(io_mm);
+-					break;
+-				}
+-			}
+-			break;
+-		}
+-	}
++	ret = ioasid_for_each(&ioasid_shared, io_mm_compare_bond, &bond_info);
+ 	spin_unlock(&iommu_sva_lock);
+-	if (ret)
++	if (ret < 0)
+ 		goto out_unlock;
+ 
++	io_mm = bond_info.io_mm;
 +
-+	idr_lock(&ioasid_idr);
-+	ret = idr_for_each(&ioasid_idr, ioasid_iter, &iter_data);
-+	idr_unlock(&ioasid_idr);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ioasid_for_each);
-+
-+/**
-+ * ioasid_find - Find IOASID data
-+ * @set: the IOASID set
-+ * @ioasid: the IOASID to find
-+ *
-+ * If the IOASID has been allocated for this set, return the private pointer
-+ * passed to ioasid_alloc. Otherwise return NULL.
-+ */
-+void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
-+{
-+	void *priv = NULL;
-+	struct ioasid_data *ioasid_data;
-+
-+	idr_lock(&ioasid_idr);
-+	ioasid_data = idr_find(&ioasid_idr, ioasid);
-+	if (ioasid_data && ioasid_data->set == set)
-+		priv = ioasid_data->private;
-+	idr_unlock(&ioasid_idr);
-+
-+	return priv;
-+}
-+EXPORT_SYMBOL_GPL(ioasid_find);
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-new file mode 100644
-index 000000000000..cf6fb3496692
---- /dev/null
-+++ b/include/linux/ioasid.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __LINUX_IOASID_H
-+#define __LINUX_IOASID_H
-+
-+#define INVALID_IOASID ((ioasid_t)-1)
-+typedef unsigned int ioasid_t;
-+typedef int (*ioasid_iter_t)(ioasid_t ioasid, void *private, void *data);
-+
-+struct ioasid_set {
-+	int dummy;
-+};
-+
-+#define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
-+
-+#ifdef CONFIG_IOASID
-+ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
-+		      void *private);
-+void ioasid_free(ioasid_t ioasid);
-+
-+int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func, void *data);
-+void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid);
-+
-+#else /* !CONFIG_IOASID */
-+static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-+				    ioasid_t max, void *private)
-+{
-+	return INVALID_IOASID;
-+}
-+
-+static inline void ioasid_free(ioasid_t ioasid)
-+{
-+}
-+
-+static inline int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func,
-+				  void *data)
-+{
-+	return -ESRCH;
-+}
-+
-+static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
-+{
-+	return -ESRCH;
-+}
-+#endif /* CONFIG_IOASID */
-+#endif /* __LINUX_IOASID_H */
+ 	/* Require identical features within an io_mm for now */
+ 	if (io_mm && (flags != io_mm->flags)) {
+ 		io_mm_put(io_mm);
+@@ -640,7 +650,7 @@ struct mm_struct *iommu_sva_find(int pasid)
+ 	struct mm_struct *mm = NULL;
+ 
+ 	spin_lock(&iommu_sva_lock);
+-	io_mm = idr_find(&iommu_pasid_idr, pasid);
++	io_mm = ioasid_find(&ioasid_shared, pasid);
+ 	if (io_mm && io_mm_get_locked(io_mm)) {
+ 		if (mmget_not_zero(io_mm->mm))
+ 			mm = io_mm->mm;
 -- 
 2.19.1
