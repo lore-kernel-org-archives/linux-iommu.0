@@ -1,95 +1,54 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: Re: [PATCH 09/10] swiotlb: add support for non-coherent DMA
-Date: Thu, 18 Oct 2018 20:49:43 -0400
-Message-ID: <20181019004943.GK1251@char.us.oracle.com>
-References: <20181008080246.20543-1-hch@lst.de>
- <20181008080246.20543-10-hch@lst.de>
+From: tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
+Date: Thu, 18 Oct 2018 21:00:07 -0400
+Message-ID: <CAP8WD_Z2XvLsqimSnODwr5gj6GRuzh4SMKN56n6Y0JzufG=E8A@mail.gmail.com>
+References: <20181014075208.2715-1-hch@lst.de>
+	<CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw@mail.gmail.com>
+	<20181017163351.GA23719@lst.de>
+	<CAP8WD_boL-DxEXxa-ci382Ff8yTdMS9T+sy2Y0-LEX-WPc8L_g@mail.gmail.com>
+	<20181018125116.GA24676@lst.de>
+Reply-To: whiteheadm-HInyCGIudOg@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181008080246.20543-10-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181018125116.GA24676-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Matthew Whitehead <whiteheadm-HInyCGIudOg@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 08, 2018 at 10:02:45AM +0200, Christoph Hellwig wrote:
-> Handle architectures that are not cache coherent directly in the main
-> swiotlb code by calling arch_sync_dma_for_{device,cpu} in all the right
-> places from the various dma_map/unmap/sync methods when the device is
-> non-coherent.
-> 
-> Because swiotlb now uses dma_direct_alloc for the coherent allocation
-> that side is already taken care of by the dma-direct code calling into
-> arch_dma_{alloc,free} for devices that are non-coherent.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> But you said without the fix it doesn't work at all?  Or is this
+> the same box, just with the aic7xxx controller disabled?
+>
+> In general the patch should only have two effects:
+>
+>  - set a small amount of memory aside for bounce buffering
+>  - switch the default dma_ops from dma_direct_ops to swiotlb_ops
+>
+> I can't really see how either could have such a huge effect, even with
+> swiotlb having a couple more wired up ops for which we'd enable spectre
+> mitigations.
+>
+> So a strict before and after would be very interesting, if it is really
+> just this one change that causes such a huge drop we have hidden dragons
+> somewhere..
 
-Thank you!
-> ---
->  kernel/dma/swiotlb.c | 23 +++++++++++++++++------
->  1 file changed, 17 insertions(+), 6 deletions(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 475a41eff3dc..52885b274368 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -21,6 +21,7 @@
->  
->  #include <linux/cache.h>
->  #include <linux/dma-direct.h>
-> +#include <linux/dma-noncoherent.h>
->  #include <linux/mm.h>
->  #include <linux/export.h>
->  #include <linux/spinlock.h>
-> @@ -677,6 +678,10 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->  		dma_addr = swiotlb_bounce_page(dev, &phys, size, dir, attrs);
->  	}
->  
-> +	if (!dev_is_dma_coherent(dev) &&
-> +	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-> +		arch_sync_dma_for_device(dev, phys, size, dir);
-> +
->  	return dma_addr;
->  }
->  
-> @@ -696,6 +701,10 @@ void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
->  
->  	BUG_ON(dir == DMA_NONE);
->  
-> +	if (!dev_is_dma_coherent(hwdev) &&
-> +	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-> +		arch_sync_dma_for_cpu(hwdev, paddr, size, dir);
-> +
->  	if (is_swiotlb_buffer(paddr)) {
->  		swiotlb_tbl_unmap_single(hwdev, paddr, size, dir, attrs);
->  		return;
-> @@ -732,15 +741,17 @@ swiotlb_sync_single(struct device *hwdev, dma_addr_t dev_addr,
->  
->  	BUG_ON(dir == DMA_NONE);
->  
-> -	if (is_swiotlb_buffer(paddr)) {
-> +	if (!dev_is_dma_coherent(hwdev) && target == SYNC_FOR_CPU)
-> +		arch_sync_dma_for_cpu(hwdev, paddr, size, dir);
-> +
-> +	if (is_swiotlb_buffer(paddr))
->  		swiotlb_tbl_sync_single(hwdev, paddr, size, dir, target);
-> -		return;
-> -	}
->  
-> -	if (dir != DMA_FROM_DEVICE)
-> -		return;
-> +	if (!dev_is_dma_coherent(hwdev) && target == SYNC_FOR_DEVICE)
-> +		arch_sync_dma_for_device(hwdev, paddr, size, dir);
->  
-> -	dma_mark_clean(phys_to_virt(paddr), size);
-> +	if (!is_swiotlb_buffer(paddr) && dir == DMA_FROM_DEVICE)
-> +		dma_mark_clean(phys_to_virt(paddr), size);
->  }
->  
->  void
-> -- 
-> 2.19.0
-> 
+Christoph,
+  I did a very controlled before-and-after and got very sensible
+results. All compiles were close in time with patched and un-patched
+kernels.
+
+I must have screwed something up with my last round of testing.
+
+Ingo: I am confident this patch should be accepted.
+
+- Matthew Whitehead
