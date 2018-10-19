@@ -1,60 +1,36 @@
-From: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] x86: enable swiotlb for > 4GiG ram on 32-bit kernels
-Date: Fri, 19 Oct 2018 07:51:22 +0200
-Message-ID: <20181019055122.GA71532@gmail.com>
-References: <20181014075208.2715-1-hch@lst.de>
-	<CAP8WD_Zj5aMcTCVtV-hot3zLNfNuMzHyeogm0Lqb=+XZ1LdkKw@mail.gmail.com>
-	<20181017163351.GA23719@lst.de>
-	<CAP8WD_boL-DxEXxa-ci382Ff8yTdMS9T+sy2Y0-LEX-WPc8L_g@mail.gmail.com>
-	<20181018125116.GA24676@lst.de>
-	<CAP8WD_Z2XvLsqimSnODwr5gj6GRuzh4SMKN56n6Y0JzufG=E8A@mail.gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 03/10] swiotlb: do not panic on mapping failures
+Date: Fri, 19 Oct 2018 08:04:25 +0200
+Message-ID: <20181019060425.GA28108@lst.de>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-4-hch@lst.de> <20181019001714.GD1251@char.us.oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAP8WD_Z2XvLsqimSnODwr5gj6GRuzh4SMKN56n6Y0JzufG=E8A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: whiteheadm-HInyCGIudOg@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+In-Reply-To: <20181019001714.GD1251@char.us.oracle.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-* tedheadster <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-
-> > But you said without the fix it doesn't work at all?  Or is this
-> > the same box, just with the aic7xxx controller disabled?
-> >
-> > In general the patch should only have two effects:
-> >
-> >  - set a small amount of memory aside for bounce buffering
-> >  - switch the default dma_ops from dma_direct_ops to swiotlb_ops
-> >
-> > I can't really see how either could have such a huge effect, even with
-> > swiotlb having a couple more wired up ops for which we'd enable spectre
-> > mitigations.
-> >
-> > So a strict before and after would be very interesting, if it is really
-> > just this one change that causes such a huge drop we have hidden dragons
-> > somewhere..
+On Thu, Oct 18, 2018 at 08:17:14PM -0400, Konrad Rzeszutek Wilk wrote:
+> On Mon, Oct 08, 2018 at 10:02:39AM +0200, Christoph Hellwig wrote:
+> > All properly written drivers now have error handling in the
+> > dma_map_single / dma_map_page callers.  As swiotlb_tbl_map_single already
+> > prints a useful warning when running out of swiotlb pool swace we can
 > 
-> Christoph,
->   I did a very controlled before-and-after and got very sensible
-> results. All compiles were close in time with patched and un-patched
-> kernels.
+> s/swace/space/
 > 
-> I must have screwed something up with my last round of testing.
+> > also remove swiotlb_full entirely as it serves no purpose now.
 > 
-> Ingo: I am confident this patch should be accepted.
+> The panic albeit was useful for those drivers that didn't handle it.
+> 
+> Thoughts? I am kind of thinking screw them but then I am not too thrilled
+> about silent data corruption errors.
 
-Thanks for the update, I've re-applied this to tip:x86/urgent.
+I can add an (optional) panic back in common code so that the different
+mapping types are covered.
 
-	Ingo
+Btw, are you fine with taking this through the dma mapping tree for
+this merge window?  I'd probably leave it in linux-next for another
+week or so and don't send it with the first pull request on Monday.
