@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 4/6] iommu/sva: Support AUXD feature
-Date: Fri, 19 Oct 2018 19:11:56 +0100
-Message-ID: <20181019181158.2395-5-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 5/6] iommu/arm-smmu-v3: Implement detach_dev op
+Date: Fri, 19 Oct 2018 19:11:57 +0100
+Message-ID: <20181019181158.2395-6-jean-philippe.brucker@arm.com>
 References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,109 +21,54 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add IOMMU_SVA_FEAT_AUXD and small helpers to SVA, to setup PASID with
-the sva_init_device() IOMMU op and allocate PASIDs.
+To prepare for auxiliary domains, add detach_dev() to the IOMMU ops.
+There shouldn't be any functional change.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iommu-sva.c | 33 ++++++++++++++++++++++++++++++++-
- include/linux/iommu.h     | 12 ++++++++++++
- 2 files changed, 44 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 28eaa617b4f0..7c5176e2e113 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -117,6 +117,7 @@ struct iommu_bond {
- };
- 
- static DECLARE_IOASID_SET(ioasid_shared);
-+static DECLARE_IOASID_SET(ioasid_private);
- 
- /*
-  * For the moment this is an all-purpose lock. It serializes
-@@ -663,6 +664,36 @@ struct mm_struct *iommu_sva_find(int pasid)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 1da41fb8111e..665365b5f02e 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2202,7 +2202,7 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+ 	}
  }
- EXPORT_SYMBOL_GPL(iommu_sva_find);
  
-+int iommu_sva_alloc_pasid(struct device *dev)
-+{
-+	int ret;
-+	struct iommu_sva_param *param;
-+
-+	if (!dev->iommu_param)
-+		return -EINVAL;
-+
-+	mutex_lock(&dev->iommu_param->sva_lock);
-+	param = dev->iommu_param->sva_param;
-+	if (!param) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	ret = ioasid_alloc(&ioasid_private, param->min_pasid,
-+			   param->max_pasid + 1, NULL);
-+out_unlock:
-+	mutex_unlock(&dev->iommu_param->sva_lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
-+
-+void iommu_sva_free_pasid(int pasid)
-+{
-+	ioasid_free(pasid);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_free_pasid);
-+
- /**
-  * iommu_sva_init_device() - Initialize Shared Virtual Addressing for a device
-  * @dev: the device
-@@ -711,7 +742,7 @@ int iommu_sva_init_device(struct device *dev, unsigned long features,
- 	if (!dev->iommu_param || !ops || !ops->sva_init_device)
- 		return -ENODEV;
- 
--	if (features & ~IOMMU_SVA_FEAT_IOPF)
-+	if (features & ~(IOMMU_SVA_FEAT_IOPF | IOMMU_SVA_FEAT_AUXD))
- 		return -EINVAL;
- 
- 	param = kzalloc(sizeof(*param), GFP_KERNEL);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 67bbc5320c9d..bfa70b1f8897 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -66,6 +66,7 @@ typedef int (*iommu_mm_exit_handler_t)(struct device *dev, int pasid, void *);
- #define IOMMU_PASID_INVALID		(-1)
- 
- #define IOMMU_SVA_FEAT_IOPF		(1 << 0)
-+#define IOMMU_SVA_FEAT_AUXD		(1 << 1)
- 
- struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
-@@ -1035,6 +1036,8 @@ extern int __iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
- extern int __iommu_sva_unbind_device(struct device *dev, int pasid);
- extern void iommu_sva_unbind_device_all(struct device *dev);
- extern struct mm_struct *iommu_sva_find(int pasid);
-+extern int iommu_sva_alloc_pasid(struct device *dev);
-+extern void iommu_sva_free_pasid(int pasid);
- 
- #else /* CONFIG_IOMMU_SVA */
- static inline int iommu_sva_init_device(struct device *dev,
-@@ -1070,6 +1073,15 @@ static inline struct mm_struct *iommu_sva_find(int pasid)
+-static void arm_smmu_detach_dev(struct device *dev)
++static void arm_smmu_detach_dev(struct iommu_domain *domain, struct device *dev)
  {
- 	return NULL;
- }
-+
-+static inline int iommu_sva_alloc_pasid(struct device *dev)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_sva_free_pasid(int pasid)
-+{
-+}
- #endif /* CONFIG_IOMMU_SVA */
+ 	unsigned long flags;
+ 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
+@@ -2241,8 +2241,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	ste = &master->ste;
  
- #ifdef CONFIG_IOMMU_PAGE_FAULT
+ 	/* Already attached to a different domain? */
+-	if (ste->assigned)
+-		arm_smmu_detach_dev(dev);
++	if (master->domain)
++		arm_smmu_detach_dev(&master->domain->domain, dev);
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+@@ -2833,7 +2833,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	smmu = master->smmu;
+ 	iopf_queue_remove_device(dev);
+ 	if (master->ste.assigned)
+-		arm_smmu_detach_dev(dev);
++		arm_smmu_detach_dev(&master->domain->domain, dev);
+ 	iommu_group_remove_device(dev);
+ 	arm_smmu_remove_master(smmu, master);
+ 	iommu_device_unlink(&smmu->iommu, dev);
+@@ -2947,6 +2947,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+ 	.domain_free		= arm_smmu_domain_free,
+ 	.attach_dev		= arm_smmu_attach_dev,
++	.detach_dev		= arm_smmu_detach_dev,
+ 	.sva_init_device	= arm_smmu_sva_init,
+ 	.sva_shutdown_device	= arm_smmu_sva_shutdown,
+ 	.mm_alloc		= arm_smmu_mm_alloc,
 -- 
 2.19.1
