@@ -1,160 +1,69 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: [GIT PULL] first round of dma mapping updates for 4.20
-Date: Mon, 22 Oct 2018 10:07:33 +0200
-Message-ID: <20181022080733.GA1960@infradead.org>
+From: Shayan Doust <shayan.doust-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 10/10] x86/swiotlb: Enable swiotlb for > 4GiG RAM on 32-bit
+	kernels
+Date: Sat, 20 Oct 2018 23:52:59 +0000
+Message-ID: <AM2PR08MB0195C661C75DDCA22CBF88A487FA0@AM2PR08MB0195.eurprd08.prod.outlook.com>
+References: <20181020235230.37324-1-shayan.doust@outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181020235230.37324-1-shayan.doust-1ViLX0X+lBJBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "hello-+2Af08X+J7zOVGE6+1PSpQ@public.gmane.org" <hello-+2Af08X+J7zOVGE6+1PSpQ@public.gmane.org>
+Cc: "konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org" <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Linus, below is the first round of dma-mapping updates for 4.20.
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
-There will be a second PR as some big changes were only applied just
-before the end of the merge window, and I want to give them a few
-more days in linux-next.
+We already build the swiotlb code for 32-bit kernels with PAE support,
+but the code to actually use swiotlb has only been enabled for 64-bit
+kernels for an unknown reason.
 
-Note that "dma-mapping: add the missing ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
-declaration" was applied here and later cherry picked into 4.19, so it
-will show up as a duplicate commit.  That also causes an easy to solve
-merge conflict in kernel/dma/Kconfig (just make sure there are no
-duplicate symbols).
+Before Linux v4.18 we paper over this fact because the networking code,
+the SCSI layer and some random block drivers implemented their own
+bounce buffering scheme.
 
-There also are some Kconfig conflicts in linux-next for the architecture
-Kconfig files, but those are only due to non-related symbols close to
-each other, and trivial to resolve.
+[ mingo: Changelog fixes. ]
 
-The following changes since commit d7b686ebf704e3d91925a535a0905ba6be23757c:
+Fixes: 21e07dba9fb1 ("scsi: reduce use of block bounce buffers")
+Fixes: ab74cfebafa3 ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+Reported-by: Matthew Whitehead <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Tested-by: Matthew Whitehead <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Link: https://lkml.kernel.org/r/20181014075208.2715-1-hch-jcswGhMUV9g@public.gmane.org
+Signed-off-by: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ arch/x86/kernel/pci-swiotlb.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-  Merge branch 'i2c/for-current' of git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux (2018-09-07 17:30:40 -0700)
-
-are available in the Git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.20
-
-for you to fetch changes up to b9fd04262a8abc366f40a9e97598e94591352c26:
-
-  dma-direct: respect DMA_ATTR_NO_WARN (2018-10-09 15:08:46 +0200)
-
-----------------------------------------------------------------
-First batch of dma-mapping changes for 4.20:
-
- - mostly more consolidation of the direct mapping code, including
-   converting over hexagon, and merging the coherent and non-coherent
-   code into a single dma_map_ops instance (me)
- - cleanups for the dma_configure/dma_unconfigure callchains (me)
- - better handling of dma_masks in odd setups (me, Alexander Duyck)
- - better debugging of passing vmalloc address to the DMA API
-   (Stephen Boyd)
- - CMA command line parsing fix (He Zhe)
-
-----------------------------------------------------------------
-Alexander Duyck (1):
-      dma-direct: fix return value of dma_direct_supported
-
-Christoph Hellwig (24):
-      hexagon: remove the sync_single_for_cpu DMA operation
-      hexagon: implement the sync_sg_for_device DMA operation
-      hexagon: use generic dma_noncoherent_ops
-      arm-nommu: don't define arch_teardown_dma_ops
-      dma-mapping: remove dma_configure
-      dma-mapping: remove dma_deconfigure
-      dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops
-      dma-mapping: add the missing ARCH_HAS_SYNC_DMA_FOR_CPU_ALL declaration
-      MIPS: don't select DMA_MAYBE_COHERENT from DMA_PERDEV_COHERENT
-      dma-mapping: move the dma_coherent flag to struct device
-      dma-mapping: merge direct and noncoherent ops
-      dma-mapping: consolidate the dma mmap implementations
-      dma-mapping: support non-coherent devices in dma_common_get_sgtable
-      Revert "dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops"
-      unicore32: remove swiotlb support
-      dma-mapping: make the get_required_mask method available unconditionally
-      dma-direct: add an explicit dma_direct_get_required_mask
-      dma-direct: refine dma_direct_alloc zone selection
-      dma-direct: implement complete bus_dma_mask handling
-      dma-direct: always allow dma mask <= physiscal memory size
-      dma-mapping: move dma_default_get_required_mask under ifdef
-      dma-direct: document the zone selection logic
-      dma-mapping: translate __GFP_NOFAIL to DMA_ATTR_NO_WARN
-      dma-direct: respect DMA_ATTR_NO_WARN
-
-He Zhe (1):
-      dma-mapping: fix panic caused by passing empty cma command line argument
-
-Stephen Boyd (1):
-      dma-debug: Check for drivers mapping invalid addresses in dma_map_single()
-
- arch/arc/Kconfig                         |   4 +-
- arch/arc/mm/dma.c                        |  41 ++----
- arch/arm/include/asm/dma-mapping.h       |   2 +
- arch/arm/mm/dma-mapping-nommu.c          |  11 +-
- arch/c6x/Kconfig                         |   2 +-
- arch/hexagon/Kconfig                     |   2 +
- arch/hexagon/include/asm/Kbuild          |   1 +
- arch/hexagon/include/asm/dma-mapping.h   |  40 ------
- arch/hexagon/kernel/dma.c                | 143 ++------------------
- arch/ia64/include/asm/dma-mapping.h      |   2 -
- arch/ia64/include/asm/machvec.h          |   7 -
- arch/ia64/include/asm/machvec_init.h     |   1 -
- arch/ia64/include/asm/machvec_sn2.h      |   2 -
- arch/ia64/pci/pci.c                      |  26 ----
- arch/ia64/sn/pci/pci_dma.c               |   4 +-
- arch/m68k/Kconfig                        |   2 +-
- arch/microblaze/Kconfig                  |   4 +-
- arch/microblaze/include/asm/pgtable.h    |   2 -
- arch/microblaze/kernel/dma.c             |  22 ---
- arch/microblaze/mm/consistent.c          |   3 +-
- arch/mips/Kconfig                        |   7 +-
- arch/mips/include/asm/Kbuild             |   1 +
- arch/mips/include/asm/device.h           |  19 ---
- arch/mips/include/asm/dma-coherence.h    |   6 +
- arch/mips/include/asm/dma-mapping.h      |   4 +-
- arch/mips/jazz/jazzdma.c                 |   7 +-
- arch/mips/kernel/setup.c                 |   2 +-
- arch/mips/mm/c-r4k.c                     |  17 ++-
- arch/mips/mm/dma-noncoherent.c           |  79 +++--------
- arch/nds32/Kconfig                       |   2 +-
- arch/nios2/Kconfig                       |   2 +-
- arch/openrisc/Kconfig                    |   2 +-
- arch/parisc/Kconfig                      |   2 +-
- arch/parisc/kernel/setup.c               |   2 +-
- arch/sh/Kconfig                          |   3 +-
- arch/sparc/Kconfig                       |   2 +-
- arch/sparc/include/asm/dma-mapping.h     |   4 +-
- arch/unicore32/Kconfig                   |   2 +-
- arch/unicore32/include/asm/Kbuild        |   1 +
- arch/unicore32/include/asm/dma-mapping.h |  22 ---
- arch/unicore32/mm/init.c                 |   3 -
- arch/x86/kernel/amd_gart_64.c            |   6 +-
- arch/xtensa/Kconfig                      |   2 +-
- drivers/acpi/arm64/iort.c                |   2 +-
- drivers/acpi/scan.c                      |  10 --
- drivers/base/dd.c                        |  12 +-
- drivers/base/platform.c                  |  11 +-
- drivers/of/device.c                      |  12 --
- drivers/pci/controller/vmd.c             |   4 -
- drivers/xen/swiotlb-xen.c                |   4 +-
- include/acpi/acpi_bus.h                  |   1 -
- include/asm-generic/dma-mapping.h        |   9 --
- include/linux/acpi.h                     |   2 -
- include/linux/device.h                   |   7 +
- include/linux/dma-debug.h                |   8 ++
- include/linux/dma-direct.h               |   8 +-
- include/linux/dma-mapping.h              |  42 +++---
- include/linux/dma-noncoherent.h          |  27 +++-
- include/linux/of_device.h                |   3 -
- kernel/dma/Kconfig                       |  19 +--
- kernel/dma/Makefile                      |   1 -
- kernel/dma/contiguous.c                  |   6 +-
- kernel/dma/debug.c                       |  16 +++
- kernel/dma/direct.c                      | 222 +++++++++++++++++++++++++------
- kernel/dma/mapping.c                     |  71 +++++-----
- kernel/dma/noncoherent.c                 | 106 ---------------
- 66 files changed, 423 insertions(+), 698 deletions(-)
- delete mode 100644 arch/hexagon/include/asm/dma-mapping.h
- delete mode 100644 arch/mips/include/asm/device.h
- delete mode 100644 arch/unicore32/include/asm/dma-mapping.h
- delete mode 100644 kernel/dma/noncoherent.c
+diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
+index 661583662430..71c0b01d93b1 100644
+--- a/arch/x86/kernel/pci-swiotlb.c
++++ b/arch/x86/kernel/pci-swiotlb.c
+@@ -42,10 +42,8 @@ IOMMU_INIT_FINISH(pci_swiotlb_detect_override,
+ int __init pci_swiotlb_detect_4gb(void)
+ {
+ 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+-#ifdef CONFIG_X86_64
+ 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+ 		swiotlb = 1;
+-#endif
+ 
+ 	/*
+ 	 * If SME is active then swiotlb will be set to 1 so that bounce
+-- 
+2.17.1
