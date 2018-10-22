@@ -1,187 +1,160 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Mon, 22 Oct 2018 06:53:34 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] first round of dma mapping updates for 4.20
+Date: Mon, 22 Oct 2018 10:07:33 +0200
+Message-ID: <20181022080733.GA1960@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181019181158.2395-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
-> Sent: Saturday, October 20, 2018 2:12 AM
-> 
-> This is a first prototype adding auxiliary domain support to Arm SMMUv3,
-> following Lu Baolu's latest proposal for IOMMU aware mediated devices
-> [1]. It works, but the attach() API still doesn't feel right. See (2)
-> below.
-> 
-> Patch 1 adapts iommu.c to the current proposal for auxiliary domains.
-> Patches 2-4 rework the PASID allocator to make it usable for SVA and
-> AUXD simultaneously. Patches 5-6 add AUXD support to SMMUv3.
-> 
-> 
-> When a device can have multiple address space, for instance with PCI
-> PASID, an auxiliary domain (AUXD) is the IOMMU representation of one
-> address space. I distinguish auxiliary from "main" domain, which
-> represents the non-PASID address space but also (at least for SMMUv3)
-> the whole device context, PASID tables etc.
+Hi Linus, below is the first round of dma-mapping updates for 4.20.
 
-I'd like to clarify a bit. :-)
+There will be a second PR as some big changes were only applied just
+before the end of the merge window, and I want to give them a few
+more days in linux-next.
 
-a domain can always represent one or more address spaces, where an 
-address space could be for IOVA or GPA and/or other address spaces for 
-SVA. Address spaces may be chained together in so-called nested mode.
+Note that "dma-mapping: add the missing ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+declaration" was applied here and later cherry picked into 4.19, so it
+will show up as a duplicate commit.  That also causes an easy to solve
+merge conflict in kernel/dma/Kconfig (just make sure there are no
+duplicate symbols).
 
-a domain can be associated with a full device (in BDF granular), and/or 
-with a partition of a device (say in PASID granular). In the former case,
-the domain becomes the master (or primary) domain of the device. In
-the latter case, the domain becomes the auxiliary domain of the device.
+There also are some Kconfig conflicts in linux-next for the architecture
+Kconfig files, but those are only due to non-related symbols close to
+each other, and trivial to resolve.
 
-vendor domain structure may include vendor-specific states which
-are applied to device context at attach time, e.g. PASID table (SMMUv3) 
-if representing as master domain, or PASID value (VT-d scalable mode)
-if representing as auxiliary domain.
+The following changes since commit d7b686ebf704e3d91925a535a0905ba6be23757c:
 
-so the domain definition is never changed with the introduction of
-AUXD. 'auxiliary' is a per-device attribute which takes effect when at
-domain attach time. A domain is perfectly sane to represent as a
-master domain to deviceA and an auxiliary domain to deviceB at the
-same time (say when device A and a mdev on deviceB are assigned to
-same VM), while supporting one or more address spaces.
+  Merge branch 'i2c/for-current' of git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux (2018-09-07 17:30:40 -0700)
 
-I explained above concept in my KVM forum session:
+are available in the Git repository at:
 
-https://events.linuxfoundation.org/wp-content/uploads/2017/12/Hardware-Assisted-Mediated-Pass-Through-with-VFIO-Kevin-Tian-Intel.pdf (slide 16/17)
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.20
 
-> 
-> Auxiliary domains will be used by VFIO for IOMMU-aware mdev, and by
-> any
-> other device driver that wants to use PASID for private address spaces
-> (as opposed to SVA [2]). The following API is available to device
-> drivers:
-> 
-> (1) Enable AUXD for a device. Enable PASID if necessary and set an AUXD
->     flag on the IOMMU data associated to a device.
-> 
->     For my own convenience I've been using the SVA infrastructure since
->     I already had the locking and IOMMU ops in place. The proposed
->     interface is also missing min_pasid and max_pasid parameters, which
->     could be needed by device drivers to enforce PASID limits.
->     iommu_sva_init_device() without arguments already enables PASID, so
->     I just added an AUXD flag to SVA features:
-> 
->       iommu_sva_init_device(dev, IOMMU_SVA_FEAT_AUXD,
->                             min_pasid, max_pasid, NULL)
->       iommu_sva_shutdown_device(dev)
-> 
->     Or as proposed in [1]:
-> 
->       iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLE, NULL)
->       iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_DISABLE, NULL)
-> 
->     Finding a compromise for this interface should be easy.
-> 
-> (2) Allocate a domain and attach it to the device.
-> 
->       dom = iommu_domain_alloc()
->       iommu_attach_device(dom, dev)
-> 
->     I still have concerns about this part, which are highlighted by the
->     messy changes of patch 1. I think it would make more sense to
->     introduce new attach/detach_dev_aux() functions instead of reusing
->     attach/detach_dev()
-> 
->     Can we reconsider this and avoid unnecessary complications in IOMMU
->     core and drivers? Does the VFIO code greatly benefit from using the
->     same attach() function? It could as well use a different one for
->     devices in AUXD mode, which the mediating driver could tell by
->     adding a flag in mdev_set_iommu_device(), for example.
+for you to fetch changes up to b9fd04262a8abc366f40a9e97598e94591352c26:
 
-Baolu gave some recommendations to patch 1. Please check whether it can
-help reduce the mess.
+  dma-direct: respect DMA_ATTR_NO_WARN (2018-10-09 15:08:46 +0200)
 
-IMO using same API is conceptually clearer to VFIO... let's gather in KVM
-forum to have a conclusion, with Alex being there.
+----------------------------------------------------------------
+First batch of dma-mapping changes for 4.20:
 
-Thanks
-Kevin
+ - mostly more consolidation of the direct mapping code, including
+   converting over hexagon, and merging the coherent and non-coherent
+   code into a single dma_map_ops instance (me)
+ - cleanups for the dma_configure/dma_unconfigure callchains (me)
+ - better handling of dma_masks in odd setups (me, Alexander Duyck)
+ - better debugging of passing vmalloc address to the DMA API
+   (Stephen Boyd)
+ - CMA command line parsing fix (He Zhe)
 
-> 
->     And I don't think other users of AUXD would benefit from using the
->     same attach() function, since they will know whether they want to be
->     using main or auxiliary domain when doing attach().
-> 
-> (3) Get the PASID, and program it in the device
-> 
->       iommu_domain_get_attr(dom, DOMAIN_ATTR_AUXD_ID, &pasid)
-> 
-> (4) Create DMA mappings
-> 
->       iommu_map(dom, ...)
->       iommu_unmap(dom, ...)
-> 
->     Ultimately it would be nice to add PASID support to the DMA API as
->     well. For now drivers allocate IOVAs and pages themselves.
-> 
-> 
-> For vfio-mdev, a driver that wants to create mdevs only performs steps (1)
-> and (3):
-> 
-> * When initializing the parent device, enable AUXD (1)
-> * In mdev_parent_ops::create(), call
-> mdev_set_iommu_device(mdev_dev(mdev),
->   mdev_parent_dev(mdev)).
-> * In mdev_parent_ops::open(), get the PASID (3) and install it in the
->   parent device.
-> * In mdev_parent_ops::close(), clear the PASID
-> 
-> 
-> This code and the many patches it depends on can be found on my
-> iommu/auxd branch:
-> 	git://linux-arm.org/linux-jpb.git iommu/auxd
-> 
-> [1] [PATCH v3 0/8] vfio/mdev: IOMMU aware mediated device
->     https://lwn.net/ml/linux-kernel/20181012051632.26064-1-
-> baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org/
-> [2] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
->     https://www.spinics.net/lists/iommu/msg30076.html
-> 
-> Jean-Philippe Brucker (6):
->   iommu: Adapt attach/detach_dev() for auxiliary domains
->   drivers core: Add I/O ASID allocator
->   iommu/sva: Use external PASID allocator
->   iommu/sva: Support AUXD feature
->   iommu/arm-smmu-v3: Implement detach_dev op
->   iommu/arm-smmu-v3: Add support for auxiliary domains
-> 
->  drivers/base/Kconfig        |   7 ++
->  drivers/base/Makefile       |   1 +
->  drivers/base/ioasid.c       | 140 ++++++++++++++++++++++++++++++
->  drivers/iommu/Kconfig       |   1 +
->  drivers/iommu/arm-smmu-v3.c | 164
-> ++++++++++++++++++++++++++++++++++--
->  drivers/iommu/iommu-sva.c   | 113 +++++++++++++++++--------
->  drivers/iommu/iommu.c       |  58 +++++++++----
->  include/linux/ioasid.h      |  45 ++++++++++
->  include/linux/iommu.h       |  12 +++
->  9 files changed, 479 insertions(+), 62 deletions(-)
->  create mode 100644 drivers/base/ioasid.c
->  create mode 100644 include/linux/ioasid.h
-> 
-> --
-> 2.19.1
+----------------------------------------------------------------
+Alexander Duyck (1):
+      dma-direct: fix return value of dma_direct_supported
+
+Christoph Hellwig (24):
+      hexagon: remove the sync_single_for_cpu DMA operation
+      hexagon: implement the sync_sg_for_device DMA operation
+      hexagon: use generic dma_noncoherent_ops
+      arm-nommu: don't define arch_teardown_dma_ops
+      dma-mapping: remove dma_configure
+      dma-mapping: remove dma_deconfigure
+      dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops
+      dma-mapping: add the missing ARCH_HAS_SYNC_DMA_FOR_CPU_ALL declaration
+      MIPS: don't select DMA_MAYBE_COHERENT from DMA_PERDEV_COHERENT
+      dma-mapping: move the dma_coherent flag to struct device
+      dma-mapping: merge direct and noncoherent ops
+      dma-mapping: consolidate the dma mmap implementations
+      dma-mapping: support non-coherent devices in dma_common_get_sgtable
+      Revert "dma-mapping: clear dev->dma_ops in arch_teardown_dma_ops"
+      unicore32: remove swiotlb support
+      dma-mapping: make the get_required_mask method available unconditionally
+      dma-direct: add an explicit dma_direct_get_required_mask
+      dma-direct: refine dma_direct_alloc zone selection
+      dma-direct: implement complete bus_dma_mask handling
+      dma-direct: always allow dma mask <= physiscal memory size
+      dma-mapping: move dma_default_get_required_mask under ifdef
+      dma-direct: document the zone selection logic
+      dma-mapping: translate __GFP_NOFAIL to DMA_ATTR_NO_WARN
+      dma-direct: respect DMA_ATTR_NO_WARN
+
+He Zhe (1):
+      dma-mapping: fix panic caused by passing empty cma command line argument
+
+Stephen Boyd (1):
+      dma-debug: Check for drivers mapping invalid addresses in dma_map_single()
+
+ arch/arc/Kconfig                         |   4 +-
+ arch/arc/mm/dma.c                        |  41 ++----
+ arch/arm/include/asm/dma-mapping.h       |   2 +
+ arch/arm/mm/dma-mapping-nommu.c          |  11 +-
+ arch/c6x/Kconfig                         |   2 +-
+ arch/hexagon/Kconfig                     |   2 +
+ arch/hexagon/include/asm/Kbuild          |   1 +
+ arch/hexagon/include/asm/dma-mapping.h   |  40 ------
+ arch/hexagon/kernel/dma.c                | 143 ++------------------
+ arch/ia64/include/asm/dma-mapping.h      |   2 -
+ arch/ia64/include/asm/machvec.h          |   7 -
+ arch/ia64/include/asm/machvec_init.h     |   1 -
+ arch/ia64/include/asm/machvec_sn2.h      |   2 -
+ arch/ia64/pci/pci.c                      |  26 ----
+ arch/ia64/sn/pci/pci_dma.c               |   4 +-
+ arch/m68k/Kconfig                        |   2 +-
+ arch/microblaze/Kconfig                  |   4 +-
+ arch/microblaze/include/asm/pgtable.h    |   2 -
+ arch/microblaze/kernel/dma.c             |  22 ---
+ arch/microblaze/mm/consistent.c          |   3 +-
+ arch/mips/Kconfig                        |   7 +-
+ arch/mips/include/asm/Kbuild             |   1 +
+ arch/mips/include/asm/device.h           |  19 ---
+ arch/mips/include/asm/dma-coherence.h    |   6 +
+ arch/mips/include/asm/dma-mapping.h      |   4 +-
+ arch/mips/jazz/jazzdma.c                 |   7 +-
+ arch/mips/kernel/setup.c                 |   2 +-
+ arch/mips/mm/c-r4k.c                     |  17 ++-
+ arch/mips/mm/dma-noncoherent.c           |  79 +++--------
+ arch/nds32/Kconfig                       |   2 +-
+ arch/nios2/Kconfig                       |   2 +-
+ arch/openrisc/Kconfig                    |   2 +-
+ arch/parisc/Kconfig                      |   2 +-
+ arch/parisc/kernel/setup.c               |   2 +-
+ arch/sh/Kconfig                          |   3 +-
+ arch/sparc/Kconfig                       |   2 +-
+ arch/sparc/include/asm/dma-mapping.h     |   4 +-
+ arch/unicore32/Kconfig                   |   2 +-
+ arch/unicore32/include/asm/Kbuild        |   1 +
+ arch/unicore32/include/asm/dma-mapping.h |  22 ---
+ arch/unicore32/mm/init.c                 |   3 -
+ arch/x86/kernel/amd_gart_64.c            |   6 +-
+ arch/xtensa/Kconfig                      |   2 +-
+ drivers/acpi/arm64/iort.c                |   2 +-
+ drivers/acpi/scan.c                      |  10 --
+ drivers/base/dd.c                        |  12 +-
+ drivers/base/platform.c                  |  11 +-
+ drivers/of/device.c                      |  12 --
+ drivers/pci/controller/vmd.c             |   4 -
+ drivers/xen/swiotlb-xen.c                |   4 +-
+ include/acpi/acpi_bus.h                  |   1 -
+ include/asm-generic/dma-mapping.h        |   9 --
+ include/linux/acpi.h                     |   2 -
+ include/linux/device.h                   |   7 +
+ include/linux/dma-debug.h                |   8 ++
+ include/linux/dma-direct.h               |   8 +-
+ include/linux/dma-mapping.h              |  42 +++---
+ include/linux/dma-noncoherent.h          |  27 +++-
+ include/linux/of_device.h                |   3 -
+ kernel/dma/Kconfig                       |  19 +--
+ kernel/dma/Makefile                      |   1 -
+ kernel/dma/contiguous.c                  |   6 +-
+ kernel/dma/debug.c                       |  16 +++
+ kernel/dma/direct.c                      | 222 +++++++++++++++++++++++++------
+ kernel/dma/mapping.c                     |  71 +++++-----
+ kernel/dma/noncoherent.c                 | 106 ---------------
+ 66 files changed, 423 insertions(+), 698 deletions(-)
+ delete mode 100644 arch/hexagon/include/asm/dma-mapping.h
+ delete mode 100644 arch/mips/include/asm/device.h
+ delete mode 100644 arch/unicore32/include/asm/dma-mapping.h
+ delete mode 100644 kernel/dma/noncoherent.c
