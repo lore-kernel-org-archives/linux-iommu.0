@@ -1,19 +1,15 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 3/7] PCI: OF: Allow endpoints to bypass the iommu
-Date: Mon, 22 Oct 2018 12:27:50 +0100
-Message-ID: <e5c44d21-7b43-32dd-4f5f-3136bacb07e0@arm.com>
-References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
-	<20181012145917.6840-4-jean-philippe.brucker@arm.com>
-	<20181012194158.GX5906@bhelgaas-glaptop.roam.corp.google.com>
-	<20181015065024-mutt-send-email-mst@kernel.org>
-	<482d0eb9-8c4c-9d64-7b32-25d5d11a8b8f@gmail.com>
-	<20181017111100-mutt-send-email-mst@kernel.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Mon, 22 Oct 2018 12:50:56 +0100
+Message-ID: <11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181017111100-mutt-send-email-mst-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,63 +19,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-philippe Brucker <jphilippe.brucker-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/10/2018 16:14, Michael S. Tsirkin wrote:
->>> Thinking about this comment, I would like to ask: can't the
->>> virtio device indicate the ranges in a portable way?
->>> This would minimize the dependency on dt bindings and ACPI,
->>> enabling support for systems that have neither but do
->>> have virtio e.g. through pci.
+On 22/10/2018 07:53, Tian, Kevin wrote:
+>> From: Jean-Philippe Brucker [mailto:jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org]
+>> Sent: Saturday, October 20, 2018 2:12 AM
 >>
->> I thought about adding a PROBE request for this in virtio-iommu, but it
->> wouldn't be usable by a Linux guest because of a bootstrapping problem.
-> 
-> Hmm. At some level it seems wrong to design hardware interfaces
-> around how Linux happens to probe things. That can change at any time
-> ...
-
-I suspect that most other OS will also solve this class of problem using
-a standard such as DT or ACPI, because they also provide dependency for
-clock, interrupts, power management, etc. We can add a self-contained
-PROBE method if someone makes a case for it, but it's unlikely to get
-used at all, and nearly impossible to implement in Linux. The host would
-still need a method to tell the guest which device to probe first, for
-example with kernel parameters.
-
->> Early on, Linux needs a description of device dependencies, to determine
->> in which order to probe them. If the device dependency was described by
->> virtio-iommu itself, the guest could for example initialize a NIC,
->> allocate buffers and start DMA on the physical address space (which aborts
->> if the IOMMU implementation disallows DMA by default), only to find out
->> once the virtio-iommu module is loaded that it needs to cancel all DMA and
->> reconfigure the NIC. With a static description such as iommu-map in DT or
->> ACPI remapping tables, the guest can defer probing of the NIC until the
->> IOMMU is initialized.
+>> This is a first prototype adding auxiliary domain support to Arm SMMUv3,
+>> following Lu Baolu's latest proposal for IOMMU aware mediated devices
+>> [1]. It works, but the attach() API still doesn't feel right. See (2)
+>> below.
 >>
->> Thanks,
->> Jean
+>> Patch 1 adapts iommu.c to the current proposal for auxiliary domains.
+>> Patches 2-4 rework the PASID allocator to make it usable for SVA and
+>> AUXD simultaneously. Patches 5-6 add AUXD support to SMMUv3.
+>>
+>>
+>> When a device can have multiple address space, for instance with PCI
+>> PASID, an auxiliary domain (AUXD) is the IOMMU representation of one
+>> address space. I distinguish auxiliary from "main" domain, which
+>> represents the non-PASID address space but also (at least for SMMUv3)
+>> the whole device context, PASID tables etc.
 > 
-> Could you point me at the code you refer to here?
+> I'd like to clarify a bit. :-)
+> 
+> a domain can always represent one or more address spaces, where an
+> address space could be for IOVA or GPA and/or other address spaces for
+> SVA. Address spaces may be chained together in so-called nested mode.
+> 
+> a domain can be associated with a full device (in BDF granular), and/or
+> with a partition of a device (say in PASID granular). In the former case,
+> the domain becomes the master (or primary) domain of the device. In
+> the latter case, the domain becomes the auxiliary domain of the device.
+> 
+> vendor domain structure may include vendor-specific states which
+> are applied to device context at attach time, e.g. PASID table (SMMUv3)
+> if representing as master domain, or PASID value (VT-d scalable mode)
+> if representing as auxiliary domain.
+> 
+> so the domain definition is never changed with the introduction of
+> AUXD. 'auxiliary' is a per-device attribute which takes effect when at
+> domain attach time. A domain is perfectly sane to represent as a
+> master domain to deviceA and an auxiliary domain to deviceB at the
+> same time (say when device A and a mdev on deviceB are assigned to
+> same VM), while supporting one or more address spaces.
 
-In drivers/base/dd.c, really_probe() calls dma_configure() before the
-device driver's probe(). dma_configure() ends up calling either
-of_dma_configure() or acpi_dma_configure(), which return -EPROBE_DEFER
-if the device's IOMMU isn't yet available. In that case the device is
-added to the deferred pending list.
+To me, that sounds like a very good argument for having separate "attach 
+as primary domain" and "attach as aux domain" APIs. Say a driver wants 
+to use multiple aux domains itself to isolate logically-separate 
+transaction streams, but still also needs to control the main domain for 
+transactions without PASID (interrupts?) - having to juggle some 
+invisible device state around multiple iommu_{attach,detach}_group() 
+calls which look identical but are expected to behave differently at 
+runtime sounds like a recipe for unmaintainable code.
 
-After another device is successfully bound to a driver, all devices on
-the pending list are retried (driver_deferred_probe_trigger()), and if
-the dependency has been resolved, then dma_configure() succeeds.
+I don't think it's necessarily safe to assume that 
+one-struct-device-per-PASID will be the only usage model.
 
-Another method (used by Intel and AMD IOMMU drivers) is to initialize
-the IOMMU as early as possible, after discovering it in the ACPI tables
-and before probing other devices. This can't work for virtio-iommu
-because the driver might be a module, in which case early init isn't
-possible. We have to defer probe of all dependent devices until the
-virtio and virtio-iommu modules are loaded.
-
-Thanks,
-Jean
+Robin.
