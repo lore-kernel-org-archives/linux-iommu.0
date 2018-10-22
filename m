@@ -1,62 +1,207 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Mon, 22 Oct 2018 10:48:34 -0600
-Message-ID: <20181022164834.GH26762@jcrouse-lnx.qualcomm.com>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 09/10] swiotlb: add support for non-coherent DMA
+Date: Mon, 22 Oct 2018 18:11:04 +0100
+Message-ID: <9ea28547-dd1a-b4bd-2e91-f71e70417e7d@arm.com>
+References: <20181008080246.20543-1-hch@lst.de>
+ <20181008080246.20543-10-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181019181158.2395-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181008080246.20543-10-hch@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 19, 2018 at 07:11:52PM +0100, Jean-Philippe Brucker wrote:
-
-> (2) Allocate a domain and attach it to the device.
+On 08/10/2018 09:02, Christoph Hellwig wrote:
+> Handle architectures that are not cache coherent directly in the main
+> swiotlb code by calling arch_sync_dma_for_{device,cpu} in all the right
+> places from the various dma_map/unmap/sync methods when the device is
+> non-coherent.
 > 
->       dom = iommu_domain_alloc()
->       iommu_attach_device(dom, dev)
+> Because swiotlb now uses dma_direct_alloc for the coherent allocation
+> that side is already taken care of by the dma-direct code calling into
+> arch_dma_{alloc,free} for devices that are non-coherent.
 > 
->     I still have concerns about this part, which are highlighted by the
->     messy changes of patch 1. I think it would make more sense to
->     introduce new attach/detach_dev_aux() functions instead of reusing
->     attach/detach_dev()
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   kernel/dma/swiotlb.c | 23 +++++++++++++++++------
+>   1 file changed, 17 insertions(+), 6 deletions(-)
 > 
->     Can we reconsider this and avoid unnecessary complications in IOMMU
->     core and drivers? Does the VFIO code greatly benefit from using the
->     same attach() function? It could as well use a different one for
->     devices in AUXD mode, which the mediating driver could tell by
->     adding a flag in mdev_set_iommu_device(), for example.
-> 
->     And I don't think other users of AUXD would benefit from using the
->     same attach() function, since they will know whether they want to be
->     using main or auxiliary domain when doing attach().
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 475a41eff3dc..52885b274368 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -21,6 +21,7 @@
+>   
+>   #include <linux/cache.h>
+>   #include <linux/dma-direct.h>
+> +#include <linux/dma-noncoherent.h>
+>   #include <linux/mm.h>
+>   #include <linux/export.h>
+>   #include <linux/spinlock.h>
+> @@ -677,6 +678,10 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+>   		dma_addr = swiotlb_bounce_page(dev, &phys, size, dir, attrs);
+>   	}
+>   
+> +	if (!dev_is_dma_coherent(dev) &&
+> +	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
 
-I second this. For the arm-smmu-v2 multiple-pagetable model we would either need
-new API functions or do something along the lines of 
+Nit: other parts of the file are already using the "!(...)" style rather 
+than "(...) == 0".
 
-dom = iommu_domain_alloc()
-iommu_set_attr(dom, DOMAIN_ATTR_I_WANT_TO_BE_AUX)
-iommu_attach_device(dom,dev)
+> +		arch_sync_dma_for_device(dev, phys, size, dir);
+> +
+>   	return dma_addr;
+>   }
+>   
+> @@ -696,6 +701,10 @@ void swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+>   
+>   	BUG_ON(dir == DMA_NONE);
+>   
+> +	if (!dev_is_dma_coherent(hwdev) &&
+> +	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
+> +		arch_sync_dma_for_cpu(hwdev, paddr, size, dir);
+> +
+>   	if (is_swiotlb_buffer(paddr)) {
+>   		swiotlb_tbl_unmap_single(hwdev, paddr, size, dir, attrs);
+>   		return;
+> @@ -732,15 +741,17 @@ swiotlb_sync_single(struct device *hwdev, dma_addr_t dev_addr,
+>   
+>   	BUG_ON(dir == DMA_NONE);
+>   
+> -	if (is_swiotlb_buffer(paddr)) {
+> +	if (!dev_is_dma_coherent(hwdev) && target == SYNC_FOR_CPU)
+> +		arch_sync_dma_for_cpu(hwdev, paddr, size, dir);
+> +
+> +	if (is_swiotlb_buffer(paddr))
+>   		swiotlb_tbl_sync_single(hwdev, paddr, size, dir, target);
+> -		return;
+> -	}
+>   
+> -	if (dir != DMA_FROM_DEVICE)
+> -		return;
+> +	if (!dev_is_dma_coherent(hwdev) && target == SYNC_FOR_DEVICE)
+> +		arch_sync_dma_for_device(hwdev, paddr, size, dir);
+>   
+> -	dma_mark_clean(phys_to_virt(paddr), size);
+> +	if (!is_swiotlb_buffer(paddr) && dir == DMA_FROM_DEVICE)
+> +		dma_mark_clean(phys_to_virt(paddr), size);
+>   }
 
-Either that or do some some dummy device magic that I haven't started to work
-out in my head. Having aux specific functions just for this step would make the
-arm-smmu-v2 version work out much cleaner.
+All these "if"s end up pretty hard to follow at first glance :(
 
-Jordan
+I had a quick play at moving the cache maintenance here out into the 
+callers, which comes out arguably looking perhaps a little cleaner (only 
++1 source line overall, and actually reduces text size by 32 bytes for 
+my build), but sadly I can't really see any way of doing the equivalent 
+for map/unmap short of duplicating the whole 3-line arch_sync_*() block, 
+which just makes for a different readability problem. As you mentioned 
+on patch #7, I guess this really is just one of those things which has 
+no nice solution, so cosmetics aside,
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+FWIW, below is my "cleanup" attempt (diff on top of the 
+swiotlb-noncoherent.3 branch).
+
+Robin.
+
+----->8-----
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 52885b274368..43ee29969fdd 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -741,23 +741,24 @@ swiotlb_sync_single(struct device *hwdev, 
+dma_addr_t dev_addr,
+
+  	BUG_ON(dir == DMA_NONE);
+
+-	if (!dev_is_dma_coherent(hwdev) && target == SYNC_FOR_CPU)
+-		arch_sync_dma_for_cpu(hwdev, paddr, size, dir);
+-
+-	if (is_swiotlb_buffer(paddr))
++	if (is_swiotlb_buffer(paddr)) {
+  		swiotlb_tbl_sync_single(hwdev, paddr, size, dir, target);
++		return;
++	}
+
+-	if (!dev_is_dma_coherent(hwdev) && target == SYNC_FOR_DEVICE)
+-		arch_sync_dma_for_device(hwdev, paddr, size, dir);
++	if (dir != DMA_FROM_DEVICE)
++		return;
+
+-	if (!is_swiotlb_buffer(paddr) && dir == DMA_FROM_DEVICE)
+-		dma_mark_clean(phys_to_virt(paddr), size);
++	dma_mark_clean(phys_to_virt(paddr), size);
+  }
+
+  void
+  swiotlb_sync_single_for_cpu(struct device *hwdev, dma_addr_t dev_addr,
+  			    size_t size, enum dma_data_direction dir)
+  {
++	if (!dev_is_dma_coherent(hwdev))
++		arch_sync_dma_for_cpu(hwdev, dma_to_phys(hwdev, dev_addr),
++				      size, dir);
+  	swiotlb_sync_single(hwdev, dev_addr, size, dir, SYNC_FOR_CPU);
+  }
+
+@@ -766,6 +767,9 @@ swiotlb_sync_single_for_device(struct device *hwdev, 
+dma_addr_t dev_addr,
+  			       size_t size, enum dma_data_direction dir)
+  {
+  	swiotlb_sync_single(hwdev, dev_addr, size, dir, SYNC_FOR_DEVICE);
++	if (!dev_is_dma_coherent(hwdev))
++		arch_sync_dma_for_device(hwdev, dma_to_phys(hwdev, dev_addr),
++					 size, dir);
+  }
+
+  /*
+@@ -828,31 +832,28 @@ swiotlb_unmap_sg_attrs(struct device *hwdev, 
+struct scatterlist *sgl,
+   * The same as swiotlb_sync_single_* but for a scatter-gather list, 
+same rules
+   * and usage.
+   */
+-static void
+-swiotlb_sync_sg(struct device *hwdev, struct scatterlist *sgl,
+-		int nelems, enum dma_data_direction dir,
+-		enum dma_sync_target target)
++void
++swiotlb_sync_sg_for_cpu(struct device *hwdev, struct scatterlist *sgl,
++			int nelems, enum dma_data_direction dir)
+  {
+  	struct scatterlist *sg;
+  	int i;
+
+  	for_each_sg(sgl, sg, nelems, i)
+-		swiotlb_sync_single(hwdev, sg->dma_address,
+-				    sg_dma_len(sg), dir, target);
++		swiotlb_sync_single_for_cpu(hwdev, sg->dma_address,
++					    sg_dma_len(sg), dir);
+  }
+
+  void
+-swiotlb_sync_sg_for_cpu(struct device *hwdev, struct scatterlist *sg,
+-			int nelems, enum dma_data_direction dir)
+-{
+-	swiotlb_sync_sg(hwdev, sg, nelems, dir, SYNC_FOR_CPU);
+-}
+-
+-void
+-swiotlb_sync_sg_for_device(struct device *hwdev, struct scatterlist *sg,
++swiotlb_sync_sg_for_device(struct device *hwdev, struct scatterlist *sgl,
+  			   int nelems, enum dma_data_direction dir)
+  {
+-	swiotlb_sync_sg(hwdev, sg, nelems, dir, SYNC_FOR_DEVICE);
++	struct scatterlist *sg;
++	int i;
++
++	for_each_sg(sgl, sg, nelems, i)
++		swiotlb_sync_single_for_device(hwdev, sg->dma_address,
++					       sg_dma_len(sg), dir);
+  }
+
+  /*
