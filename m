@@ -1,14 +1,16 @@
 From: "Raj, Ashok" <ashok.raj-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Mon, 22 Oct 2018 03:07:43 -0700
-Message-ID: <20181021194426.GA11201@araj-mobl1.jf.intel.com>
+Subject: Re: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
+Date: Mon, 22 Oct 2018 03:22:54 -0700
+Message-ID: <20181022102254.GA25399@araj-mobl1.jf.intel.com>
 References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
+	<9c6cd6c1-3569-4251-8344-fc9df0e743bc@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20181019181158.2395-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <9c6cd6c1-3569-4251-8344-fc9df0e743bc-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,65 +20,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 19, 2018 at 07:11:52PM +0100, Jean-Philippe Brucker wrote:
-> This is a first prototype adding auxiliary domain support to Arm SMMUv3,
-> following Lu Baolu's latest proposal for IOMMU aware mediated devices
-> [1]. It works, but the attach() API still doesn't feel right. See (2)
-> below.
+On Mon, Oct 22, 2018 at 12:49:47PM +0800, Lu Baolu wrote:
+> Hi,
 > 
-> Patch 1 adapts iommu.c to the current proposal for auxiliary domains.
-> Patches 2-4 rework the PASID allocator to make it usable for SVA and
-> AUXD simultaneously. Patches 5-6 add AUXD support to SMMUv3.
+> On 10/20/18 2:11 AM, Jean-Philippe Brucker wrote:
+> > Some devices might support multiple DMA address spaces, in particular
+> > those that have the PCI PASID feature. PASID (Process Address Space ID)
+> > allows to share process address spaces with devices (SVA), partition a
+> > device into VM-assignable entities (VFIO mdev) or simply provide
+> > multiple DMA address space to kernel drivers. Add a global PASID
+> > allocator usable by different drivers at the same time. Name it I/O ASID
+> > to avoid confusion with ASIDs allocated by arch code, which are usually
+> > a separate ID space.
+> > 
+> > The IOASID space is global. Each device can have its own PASID space,
+> > but by convention the IOMMU ended up having a global PASID space, so
+> > that with SVA, each mm_struct is associated to a single PASID.
+> > 
+> > The allocator doesn't really belong in drivers/iommu because some
+> > drivers would like to allocate PASIDs for devices that aren't managed by
+> > an IOMMU, using the same ID space as IOMMU. It doesn't really belong in
+> > drivers/pci either since platform device also support PASID. Add the
+> > allocator in drivers/base.
 > 
+> One concern of moving pasid allocator here is about paravirtual
+> allocation of pasid.
 > 
-> When a device can have multiple address space, for instance with PCI
-> PASID, an auxiliary domain (AUXD) is the IOMMU representation of one
-> address space. I distinguish auxiliary from "main" domain, which
-> represents the non-PASID address space but also (at least for SMMUv3)
-> the whole device context, PASID tables etc.
+> Since there is only a single set of pasid tables which is controlled by
+
+Minor correction: Single system wide PASID namespace, but PASID tables
+would be created ideally per-bdf for isolation purposes. 
+
+I'm sure you meant name space, but didn't want that to be mis-interpreted.
+
+
+> the host, the pasid is a system wide resource. When a driver running in
+> a guest VM wants to consume a pasid, it must be intercepted by the
+> simulation software and routed the allocation to the host via VFIO. Some
+> iommu arch's provide mechanisms to aid this, for example, the virtual
+> command interfaces defined in vt-d 3.0. Any pasid used in guest VM
+> should go through the virtual command interfaces.
 > 
-> Auxiliary domains will be used by VFIO for IOMMU-aware mdev, and by any
-> other device driver that wants to use PASID for private address spaces
-> (as opposed to SVA [2]). The following API is available to device
-> drivers:
-> 
-> (1) Enable AUXD for a device. Enable PASID if necessary and set an AUXD
->     flag on the IOMMU data associated to a device.
-> 
->     For my own convenience I've been using the SVA infrastructure since
->     I already had the locking and IOMMU ops in place. The proposed
->     interface is also missing min_pasid and max_pasid parameters, which
->     could be needed by device drivers to enforce PASID limits.
-
-Variable PASID limits per-device is hard to manage. I suppose we can play
-some games to get this right, but I suspect that wont be very useful in 
-the long run.
-
-#1: Given that PASID is a system wide resource, during boot iommu driver needs 
-to scan and set the max PASID to be no more than min(iommu_supported_max_pasid) 
-of all available IOMMU's. 
-
-#2: In addition if any device supports less than the choosen system max PASID
-we should simply disable PASID on that device.
-
-The reason is if the process were to bind to 2 or more accelerators and
-the second device has a limit smaller than the first that the application
-already attached, the second attemt to bind would fail. (Because
-we would use the same PASID for a single process)
-
-In addition for Intel IOMMU's PASID is a system wide resource. We have
-a virtual capability for vIOMMU's to allocate PASID's. At the time of
-allocation we don't know what device this PASID is even being allocated 
-for. Certainly we could add other intelligence to pass a hint for 
-max_pasid in the virtiual interface. 
-
-I suppose when this becomes real, most serious accelerators will 
-support the full width. Hence doing #1 and #2 above should be good
-for most cases.
 
 Cheers,
 Ashok
