@@ -1,13 +1,15 @@
-From: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] dma-mapping: move the remap helpers to a separate file
-Date: Sun, 21 Oct 2018 00:41:42 -0700
-Message-ID: <e2a05b3e-7306-4710-1591-0a39278b5002@redhat.com>
-References: <20181014181651.22971-1-hch@lst.de>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC PATCH 1/6] iommu: Adapt attach/detach_dev() for auxiliary
+	domains
+Date: Mon, 22 Oct 2018 10:32:50 +0800
+Message-ID: <f757bbfb-6a04-0560-87e1-6544a92dab91@linux.intel.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181019181158.2395-2-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181014181651.22971-1-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20181019181158.2395-2-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,280 +20,184 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/14/2018 11:16 AM, Christoph Hellwig wrote:
-> The dma remap code only really makes sense for not cache coherent
-> architectures, and currently is only used by arm, arm64 and xtensa.
-> Split it out into a separate file with a separate Kconfig symbol.
+Hi,
+
+On 10/20/18 2:11 AM, Jean-Philippe Brucker wrote:
+> The same set of functions, iommu_attach/detach_device/group, is used
+> both to change a device's domain (let's call it "main domain") and to
+> add auxiliary domains. The former is used by vfio-pci for example, to
+> assign the whole device to userspace. The latter is used by vfio-mdev to
+> assign partitions of devices using PASIDs. Device drivers set or unset
+> the 'AUXD' device attribute to switch between these modes.
 > 
-> [Laura: you wrote this code back then, do you have a sensible
->   copyright statement to add, given that the mapping.c statement
->   obviously does not match your code that was written much later]
+> Supporting both auxiliary and main domain through the same callback
+> requires some core changes. For an IOMMU driver that supports both, the
+> new semantics of attach_dev() and detach_dev() ops are:
 > 
+> attach_dev(dev, new_domain)
+>   (1) When auxd is disabled, detach from the current domain and attach to
+>       the new domain.
+> 
+>   (2) When auxd is enabled, keep the current domain and attach to the new
+>       domain.
 
-Hmmmmm, that was written and committed via my codeaurora.org e-mail
-address. Probably best to use "Copyright (c) 2014, The Linux Foundation"
-since that was the standard. If you want,
+When auxd is enabled, the "main domain" is not affected. An auxiliary
+domain is added.
 
-Acked-by: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> 
+> detach_dev(dev, new_domain)
+>   (3) When auxd is disabled, detach from the domain. Previously the core
+>       didn't call detach_dev explicitly when a device has a default domain,
+>       since case (1) already takes care of it. But in order to also handle
+>       case (4), we now need to always call detach_dev.
+> 
+>   (4) When auxd is enabled, detach from the given domain, but stay attached
+>       to the default domain.
 
-Thanks,
-Laura
+When auxd is enabled, the "main domain" is not affected. An auxiliary
+domain is removed.
 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> 
+> attach_dev() now returns a value greater than 0 if the domain is in
+> auxiliary mode. This allows the core to know if the main domain
+> (group->domain) is affected. detach_dev() should probably do the same
+> (currently group->domain is always cleared on detach), but that requires
+> changing all IOMMU drivers.
+> 
+> Since the core doesn't know about auxiliary domains when attaching, we
+> have to relax attach_dev a bit: we can't check if the user is trying to
+> replace the main domain with a new unmanaged domain anymore.
+
+The core can know about the auxiliary domain by calling:
+
+iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLED)
+
+> 
+> IOMMU drivers that don't support auxiliary domains are also affected by
+> the change in (3). Those that support default_domain now get
+> detach_dev() followed by attach_dev() callback on iommu_detach_device(),
+> instead of just attach_dev().
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 > ---
->   arch/arm/Kconfig     |  1 +
->   arch/arm64/Kconfig   |  1 +
->   arch/xtensa/Kconfig  |  1 +
->   kernel/dma/Kconfig   |  4 +++
->   kernel/dma/Makefile  |  2 +-
->   kernel/dma/mapping.c | 84 -------------------------------------------
->   kernel/dma/remap.c   | 85 ++++++++++++++++++++++++++++++++++++++++++++
->   7 files changed, 93 insertions(+), 85 deletions(-)
->   create mode 100644 kernel/dma/remap.c
+>   drivers/iommu/iommu.c | 58 ++++++++++++++++++++++++++++++-------------
+>   1 file changed, 41 insertions(+), 17 deletions(-)
 > 
-> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-> index e8cd55a5b04c..cf54e572dafd 100644
-> --- a/arch/arm/Kconfig
-> +++ b/arch/arm/Kconfig
-> @@ -30,6 +30,7 @@ config ARM
->   	select CPU_PM if (SUSPEND || CPU_IDLE)
->   	select DCACHE_WORD_ACCESS if HAVE_EFFICIENT_UNALIGNED_ACCESS
->   	select DMA_DIRECT_OPS if !MMU
-> +	select DMA_REMAP if MMU
->   	select EDAC_SUPPORT
->   	select EDAC_ATOMIC_SCRUB
->   	select GENERIC_ALLOCATOR
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 1b1a0e95c751..179994b67d11 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -77,6 +77,7 @@ config ARM64
->   	select CPU_PM if (SUSPEND || CPU_IDLE)
->   	select DCACHE_WORD_ACCESS
->   	select DMA_DIRECT_OPS
-> +	select DMA_REMAP
->   	select EDAC_SUPPORT
->   	select FRAME_POINTER
->   	select GENERIC_ALLOCATOR
-> diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-> index 9a7c654a7654..d57abe4cad0f 100644
-> --- a/arch/xtensa/Kconfig
-> +++ b/arch/xtensa/Kconfig
-> @@ -10,6 +10,7 @@ config XTENSA
->   	select CLONE_BACKWARDS
->   	select COMMON_CLK
->   	select DMA_DIRECT_OPS
-> +	select DMA_REMAP if MMU
->   	select GENERIC_ATOMIC64
->   	select GENERIC_CLOCKEVENTS
->   	select GENERIC_IRQ_SHOW
-> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> index 645c7a2ecde8..c92e08173ed8 100644
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -51,3 +51,7 @@ config SWIOTLB
->   	bool
->   	select DMA_DIRECT_OPS
->   	select NEED_DMA_MAP_STATE
-> +
-> +config DMA_REMAP
-> +	depends on MMU
-> +	bool
-> diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
-> index 7d581e4eea4a..f4feeceb8020 100644
-> --- a/kernel/dma/Makefile
-> +++ b/kernel/dma/Makefile
-> @@ -7,4 +7,4 @@ obj-$(CONFIG_DMA_DIRECT_OPS)		+= direct.o
->   obj-$(CONFIG_DMA_VIRT_OPS)		+= virt.o
->   obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
->   obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
-> -
-> +obj-$(CONFIG_DMA_REMAP)			+= remap.o
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 58dec7a92b7b..dfbc3deb95cd 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -262,87 +262,3 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
->   #endif /* !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index a8a144dded52..667ccfc6d3fd 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1553,7 +1553,7 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>   		return -ENODEV;
+>   
+>   	ret = domain->ops->attach_dev(domain, dev);
+> -	if (!ret)
+> +	if (ret >= 0)
+>   		trace_attach_device_to_domain(dev);
+>   	return ret;
 >   }
->   EXPORT_SYMBOL(dma_common_mmap);
+> @@ -1726,6 +1726,12 @@ struct iommu_domain *iommu_get_domain_for_dev(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+>   
+> +struct iommu_attach_group_info {
+> +	struct iommu_domain *domain;
+> +	unsigned long count;
+> +	int ret;
+> +};
+> +
+>   /*
+>    * IOMMU groups are really the natrual working unit of the IOMMU, but
+>    * the IOMMU API works on domains and devices.  Bridge that gap by
+> @@ -1738,20 +1744,31 @@ EXPORT_SYMBOL_GPL(iommu_get_domain_for_dev);
+>    */
+>   static int iommu_group_do_attach_device(struct device *dev, void *data)
+>   {
+> -	struct iommu_domain *domain = data;
+> +	int ret;
+> +	struct iommu_attach_group_info *info = data;
+>   
+> -	return __iommu_attach_device(domain, dev);
+> +	ret = __iommu_attach_device(info->domain, dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Can't mix auxiliary and main domain within a group */
+> +	if (info->count++ && ret != info->ret)
+> +		/* TODO: rollback */
+> +		return -ENODEV;
+
+To make it simple, we can disable the AUXD feature on devices which
+share its group with other devices.
+
+Best regards,
+Lu Baolu
+
+
+> +	info->ret = ret;
+> +
+> +	return 0;
+>   }
+>   
+>   static int __iommu_attach_group(struct iommu_domain *domain,
+>   				struct iommu_group *group)
+>   {
+>   	int ret;
+> +	struct iommu_attach_group_info info = {
+> +		.domain = domain,
+> +	};
+>   
+> -	if (group->default_domain && group->domain != group->default_domain)
+> -		return -EBUSY;
 > -
-> -#ifdef CONFIG_MMU
-> -static struct vm_struct *__dma_common_pages_remap(struct page **pages,
-> -			size_t size, unsigned long vm_flags, pgprot_t prot,
-> -			const void *caller)
-> -{
-> -	struct vm_struct *area;
-> -
-> -	area = get_vm_area_caller(size, vm_flags, caller);
-> -	if (!area)
-> -		return NULL;
-> -
-> -	if (map_vm_area(area, prot, pages)) {
-> -		vunmap(area->addr);
-> -		return NULL;
-> -	}
-> -
-> -	return area;
-> -}
-> -
-> -/*
-> - * remaps an array of PAGE_SIZE pages into another vm_area
-> - * Cannot be used in non-sleeping contexts
-> - */
-> -void *dma_common_pages_remap(struct page **pages, size_t size,
-> -			unsigned long vm_flags, pgprot_t prot,
-> -			const void *caller)
-> -{
-> -	struct vm_struct *area;
-> -
-> -	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
-> -	if (!area)
-> -		return NULL;
-> -
-> -	area->pages = pages;
-> -
-> -	return area->addr;
-> -}
-> -
-> -/*
-> - * remaps an allocated contiguous region into another vm_area.
-> - * Cannot be used in non-sleeping contexts
-> - */
-> -
-> -void *dma_common_contiguous_remap(struct page *page, size_t size,
-> -			unsigned long vm_flags,
-> -			pgprot_t prot, const void *caller)
-> -{
-> -	int i;
-> -	struct page **pages;
-> -	struct vm_struct *area;
-> -
-> -	pages = kmalloc(sizeof(struct page *) << get_order(size), GFP_KERNEL);
-> -	if (!pages)
-> -		return NULL;
-> -
-> -	for (i = 0; i < (size >> PAGE_SHIFT); i++)
-> -		pages[i] = nth_page(page, i);
-> -
-> -	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
-> -
-> -	kfree(pages);
-> -
-> -	if (!area)
-> -		return NULL;
-> -	return area->addr;
-> -}
-> -
-> -/*
-> - * unmaps a range previously mapped by dma_common_*_remap
-> - */
-> -void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
-> -{
-> -	struct vm_struct *area = find_vm_area(cpu_addr);
-> -
-> -	if (!area || (area->flags & vm_flags) != vm_flags) {
-> -		WARN(1, "trying to free invalid coherent area: %p\n", cpu_addr);
+> -	ret = __iommu_group_for_each_dev(group, domain,
+> +	ret = __iommu_group_for_each_dev(group, &info,
+>   					 iommu_group_do_attach_device);
+>   	if (ret == 0)
+>   		group->domain = domain;
+> @@ -1784,23 +1801,30 @@ static void __iommu_detach_group(struct iommu_domain *domain,
+>   				 struct iommu_group *group)
+>   {
+>   	int ret;
+> +	struct iommu_attach_group_info info = {
+> +		.domain = group->default_domain,
+> +	};
+>   
+> +	__iommu_group_for_each_dev(group, domain, iommu_group_do_detach_device);
+>   	if (!group->default_domain) {
+> -		__iommu_group_for_each_dev(group, domain,
+> -					   iommu_group_do_detach_device);
+> +		/*
+> +		 * If detach returned, then we're not removing the main domain
+> +		 * but an auxiliary one.
+> +		 *
+> +		 * FIXME: don't clear domain!
+> +		 */
+>   		group->domain = NULL;
+>   		return;
+>   	}
+>   
+> -	if (group->domain == group->default_domain)
 > -		return;
-> -	}
 > -
-> -	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
-> -	vunmap(cpu_addr);
-> -}
-> -#endif
-> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-> new file mode 100644
-> index 000000000000..33dff4096d46
-> --- /dev/null
-> +++ b/kernel/dma/remap.c
-> @@ -0,0 +1,85 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/dma-mapping.h>
-> +#include <linux/slab.h>
-> +#include <linux/vmalloc.h>
-> +
-> +static struct vm_struct *__dma_common_pages_remap(struct page **pages,
-> +			size_t size, unsigned long vm_flags, pgprot_t prot,
-> +			const void *caller)
-> +{
-> +	struct vm_struct *area;
-> +
-> +	area = get_vm_area_caller(size, vm_flags, caller);
-> +	if (!area)
-> +		return NULL;
-> +
-> +	if (map_vm_area(area, prot, pages)) {
-> +		vunmap(area->addr);
-> +		return NULL;
-> +	}
-> +
-> +	return area;
-> +}
-> +
-> +/*
-> + * remaps an array of PAGE_SIZE pages into another vm_area
-> + * Cannot be used in non-sleeping contexts
-> + */
-> +void *dma_common_pages_remap(struct page **pages, size_t size,
-> +			unsigned long vm_flags, pgprot_t prot,
-> +			const void *caller)
-> +{
-> +	struct vm_struct *area;
-> +
-> +	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
-> +	if (!area)
-> +		return NULL;
-> +
-> +	area->pages = pages;
-> +
-> +	return area->addr;
-> +}
-> +
-> +/*
-> + * Remaps an allocated contiguous region into another vm_area.
-> + * Cannot be used in non-sleeping contexts
-> + */
-> +void *dma_common_contiguous_remap(struct page *page, size_t size,
-> +			unsigned long vm_flags,
-> +			pgprot_t prot, const void *caller)
-> +{
-> +	int i;
-> +	struct page **pages;
-> +	struct vm_struct *area;
-> +
-> +	pages = kmalloc(sizeof(struct page *) << get_order(size), GFP_KERNEL);
-> +	if (!pages)
-> +		return NULL;
-> +
-> +	for (i = 0; i < (size >> PAGE_SHIFT); i++)
-> +		pages[i] = nth_page(page, i);
-> +
-> +	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
-> +
-> +	kfree(pages);
-> +
-> +	if (!area)
-> +		return NULL;
-> +	return area->addr;
-> +}
-> +
-> +/*
-> + * Unmaps a range previously mapped by dma_common_*_remap
-> + */
-> +void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
-> +{
-> +	struct vm_struct *area = find_vm_area(cpu_addr);
-> +
-> +	if (!area || (area->flags & vm_flags) != vm_flags) {
-> +		WARN(1, "trying to free invalid coherent area: %p\n", cpu_addr);
-> +		return;
-> +	}
-> +
-> +	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
-> +	vunmap(cpu_addr);
-> +}
+> -	/* Detach by re-attaching to the default domain */
+> -	ret = __iommu_group_for_each_dev(group, group->default_domain,
+> +	/*
+> +	 * Detach by re-attaching to the default domain. If the device is
+> +	 * already attached, then @domain was in auxiliary mode and the driver
+> +	 * returns a value > 0.
+> +	 */
+> +	ret = __iommu_group_for_each_dev(group, &info,
+>   					 iommu_group_do_attach_device);
+> -	if (ret != 0)
+> -		WARN_ON(1);
+> -	else
+> +	if (ret == 0)
+>   		group->domain = group->default_domain;
+>   }
+>   
 > 
