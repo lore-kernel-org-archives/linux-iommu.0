@@ -1,17 +1,17 @@
-From: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: Re: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to
-	command line
-Date: Tue, 23 Oct 2018 19:14:38 +0800
-Message-ID: <87ee40fa-7a01-4d4c-7fa3-81aafc93e14f@windriver.com>
-References: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
-	<c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
-	<20181022192921.GA20677@dhcp-10-175-29-12.vpn.oracle.com>
+From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Tue, 23 Oct 2018 17:16:31 +0000
+Message-ID: <1540314963.21962.20.camel@intel.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181021194426.GA11201@araj-mobl1.jf.intel.com>
+	<d45c5222-68e9-1d6e-730b-bb8dbc060586@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181022192921.GA20677-opBMJL+S1+nQ9WkVDsLzkxXsgy71PS11DgX97ZZ8RBg@public.gmane.org>
+In-Reply-To: <d45c5222-68e9-1d6e-730b-bb8dbc060586-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-US
+Content-ID: <59093E400187754C817BA4C9EFD810A0-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,54 +21,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
-Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+To: "jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org" <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAyMDE4LzEwLzIzIDAzOjI5LCBLb25yYWQgUnplc3p1dGVrIFdpbGsgd3JvdGU6Cj4gT24g
-U2F0LCBTZXAgMjIsIDIwMTggYXQgMDg6NTY6NThQTSArMDgwMCwgSGUgWmhlIHdyb3RlOgo+PiBN
-YXkgSSBoYXZlIHlvdXIgaW5wdXQ/Cj4gQWx0ZXJuYXRpdmVseSB3b3VsZCBpdCBtYWtlIG1vcmUg
-c2Vuc2UgZm9yIGl0IHRvIGFzc3VtZSBzb21lIGRlZmF1bHQKPiB2YWx1ZT8KCk1heWJlLCBidXQg
-dGhlIG9yaWdpbmFsIGNvZGUgaGFzIG5vIGRlZmF1bHQgdmFsdWUgYW5kIEkgaGF2ZSBubyBpZGVh
-CndoYXQgZGVmYXVsdCB2YWx1ZSBpcyBwcm9wZXIgaGVyZS4KClpoZQoKPj4gVGhhbmtzLAo+PiBa
-aGUKPj4KPj4gT24gMjAxOOW5tDA55pyIMTfml6UgMTE6MjcsIHpoZS5oZUB3aW5kcml2ZXIuY29t
-IHdyb3RlOgo+Pj4gRnJvbTogSGUgWmhlIDx6aGUuaGVAd2luZHJpdmVyLmNvbT4KPj4+Cj4+PiBz
-ZXR1cF9pb190bGJfbnBhZ2VzIGRvZXMgbm90IGNoZWNrIGlucHV0IGFyZ3VtZW50IGJlZm9yZSBw
-YXNzaW5nIGl0Cj4+PiB0byBpc2RpZ2l0LiBUaGUgYXJndW1lbnQgd291bGQgYmUgYSBOVUxMIHBv
-aW50ZXIgaWYgInN3aW90bGIiLCB3aXRob3V0Cj4+PiBpdHMgdmFsdWUsIGlzIHNldCBpbiBjb21t
-YW5kIGxpbmUgYW5kIHRodXMgY2F1c2VzIHRoZSBmb2xsb3dpbmcgcGFuaWMuCj4+Pgo+Pj4gUEFO
-SUM6IGVhcmx5IGV4Y2VwdGlvbiAweGUzIElQIDEwOmZmZmZmZmZmYmI5YjhlOWYgZXJyb3IgMCBj
-cjIgMHgwCj4+PiBbICAgIDAuMDAwMDAwXSBDUFU6IDAgUElEOiAwIENvbW06IHN3YXBwZXIgTm90
-IHRhaW50ZWQgNC4xOS4wLXJjMy15b2N0by1zdGFuZGFyZCsgIzkKPj4+IFsgICAgMC4wMDAwMDBd
-IFJJUDogMDAxMDpzZXR1cF9pb190bGJfbnBhZ2VzKzB4Zi8weDk1Cj4+PiAuLi4KPj4+IFsgICAg
-MC4wMDAwMDBdIENhbGwgVHJhY2U6Cj4+PiBbICAgIDAuMDAwMDAwXSAgZG9fZWFybHlfcGFyYW0r
-MHg1Ny8weDhlCj4+PiBbICAgIDAuMDAwMDAwXSAgcGFyc2VfYXJncysweDIwOC8weDMyMAo+Pj4g
-WyAgICAwLjAwMDAwMF0gID8gcmRpbml0X3NldHVwKzB4MzAvMHgzMAo+Pj4gWyAgICAwLjAwMDAw
-MF0gIHBhcnNlX2Vhcmx5X29wdGlvbnMrMHgyOS8weDJkCj4+PiBbICAgIDAuMDAwMDAwXSAgPyBy
-ZGluaXRfc2V0dXArMHgzMC8weDMwCj4+PiBbICAgIDAuMDAwMDAwXSAgcGFyc2VfZWFybHlfcGFy
-YW0rMHgzNi8weDRkCj4+PiBbICAgIDAuMDAwMDAwXSAgc2V0dXBfYXJjaCsweDMzNi8weDk5ZQo+
-Pj4gWyAgICAwLjAwMDAwMF0gIHN0YXJ0X2tlcm5lbCsweDZmLzB4NGU2Cj4+PiBbICAgIDAuMDAw
-MDAwXSAgeDg2XzY0X3N0YXJ0X3Jlc2VydmF0aW9ucysweDI0LzB4MjYKPj4+IFsgICAgMC4wMDAw
-MDBdICB4ODZfNjRfc3RhcnRfa2VybmVsKzB4NmYvMHg3Mgo+Pj4gWyAgICAwLjAwMDAwMF0gIHNl
-Y29uZGFyeV9zdGFydHVwXzY0KzB4YTQvMHhiMAo+Pj4KPj4+IFRoaXMgcGF0Y2ggYWRkcyBhIGNo
-ZWNrIHRvIHByZXZlbnQgdGhlIHBhbmljLgo+Pj4KPj4+IFNpZ25lZC1vZmYtYnk6IEhlIFpoZSA8
-emhlLmhlQHdpbmRyaXZlci5jb20+Cj4+PiBDYzogc3RhYmxlQHZnZXIua2VybmVsLm9yZwo+Pj4g
-Q2M6IGtvbnJhZC53aWxrQG9yYWNsZS5jb20KPj4+IENjOiBoY2hAbHN0LmRlCj4+PiBDYzogbS5z
-enlwcm93c2tpQHNhbXN1bmcuY29tCj4+PiBDYzogcm9iaW4ubXVycGh5QGFybS5jb20KPj4+IC0t
-LQo+Pj4gIGtlcm5lbC9kbWEvc3dpb3RsYi5jIHwgNSArKysrKwo+Pj4gIDEgZmlsZSBjaGFuZ2Vk
-LCA1IGluc2VydGlvbnMoKykKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2RtYS9zd2lvdGxi
-LmMgYi9rZXJuZWwvZG1hL3N3aW90bGIuYwo+Pj4gaW5kZXggNGY4YTZkYi4uNDZmYzM0ZSAxMDA2
-NDQKPj4+IC0tLSBhL2tlcm5lbC9kbWEvc3dpb3RsYi5jCj4+PiArKysgYi9rZXJuZWwvZG1hL3N3
-aW90bGIuYwo+Pj4gQEAgLTEwOSw2ICsxMDksMTEgQEAgc3RhdGljIGludCBsYXRlX2FsbG9jOwo+
-Pj4gIHN0YXRpYyBpbnQgX19pbml0Cj4+PiAgc2V0dXBfaW9fdGxiX25wYWdlcyhjaGFyICpzdHIp
-Cj4+PiAgewo+Pj4gKwlpZiAoIXN0cikgewo+Pj4gKwkJcHJfZXJyKCJDb25maWcgc3RyaW5nIG5v
-dCBwcm92aWRlZFxuIik7Cj4+PiArCQlyZXR1cm4gLUVJTlZBTDsKPj4+ICsJfQo+Pj4gKwo+Pj4g
-IAlpZiAoaXNkaWdpdCgqc3RyKSkgewo+Pj4gIAkJaW9fdGxiX25zbGFicyA9IHNpbXBsZV9zdHJ0
-b3VsKHN0ciwgJnN0ciwgMCk7Cj4+PiAgCQkvKiBhdm9pZCB0YWlsIHNlZ21lbnQgb2Ygc2l6ZSA8
-IElPX1RMQl9TRUdTSVpFICovCj4+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCj4+IGlvbW11IG1haWxpbmcgbGlzdAo+PiBpb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwo+PiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+On Mon, 2018-10-22 at 17:03 +0100, Jean-Philippe Brucker wrote:
+> On 22/10/2018 11:07, Raj, Ashok wrote:
+> > >     For my own convenience I've been using the SVA infrastructure
+> > > since
+> > >     I already had the locking and IOMMU ops in place. The
+> > > proposed
+> > >     interface is also missing min_pasid and max_pasid parameters,
+> > > which
+> > >     could be needed by device drivers to enforce PASID limits.
+> > 
+> > Variable PASID limits per-device is hard to manage. I suppose we
+> > can play
+> > some games to get this right, but I suspect that wont be very
+> > useful in 
+> > the long run.
+> 
+> Devices may have PASID limits that are not discoverable with the PCI
+> PASID capability (https://patchwork.kernel.org/patch/9989307/#2138957
+> 1).
+> Even if we simply reject devices that don't support enough PASIDs, I
+> think it's still better to return an error on bind or init_device
+> than
+> to return a valid PASID that they can't use
+
+That sounds reasonable. What I meant was that trying to do similar
+things like what we do for IOVA (Reserving from high etc) may not work
+when a process might need to share the same PASID between 2
+accelerators.
+
+
+> 
+> > #1: Given that PASID is a system wide resource, during boot iommu
+> > driver needs 
+> > to scan and set the max PASID to be no more than
+> > min(iommu_supported_max_pasid) 
+> > of all available IOMMU's. 
+> > 
+> > #2: In addition if any device supports less than the choosen system
+> > max PASID
+> > we should simply disable PASID on that device.
+> > 
+> > The reason is if the process were to bind to 2 or more accelerators
+> > and
+> > the second device has a limit smaller than the first that the
+> > application
+> > already attached, the second attemt to bind would fail. (Because
+> > we would use the same PASID for a single process)
+> 
+> But that's not reason enough to completely disable PASID for the
+> device,
+> it could be the only one bound to that process, or PASID could be
+> only
+> used privately by the host device driver.
+
+Agree, there could be other use cases. 
+
+If the device was already attached during boot the driver comes early
+to get the low PASID space. If the device was hot-added and the PASID
+supported by device wasn't available its going to fail.
+
+Enforcing something that will always work will be more reliable. But i
+agree it maybe too strict for some cases. 
+
+Maybe its a IOMMU enforced limit for the platform on the minimum
+requirement for consistency. 
+
+> 
+> > In addition for Intel IOMMU's PASID is a system wide resource. We
+> > have
+> > a virtual capability for vIOMMU's to allocate PASID's. At the time
+> > of
+> > allocation we don't know what device this PASID is even being
+> > allocated 
+> > for. 
+> 
+> Ah, I had missed that part, I thought the PV allocation had the
+> device
+> ID as well. That's a significant change.
+> 
+> I was still hoping that we could go back to per-device PASID spaces
+> in
+> the host, since I still haven't seen any convincing argument in favor
+> of
+> system-wide PASID. Get rid of #1 in order to solve #2, and as a bonus
+> support more PASIDs in total. Until now PASID was a per-device
+> resource
+> except for choices made when writing the IOMMU driver.
+
+A global shared PASID table is designed with a future ISA extension for
+PASID isolation. 
+> 
+> > Certainly we could add other intelligence to pass a hint for 
+> > max_pasid in the virtiual interface. 
+> > 
+> > I suppose when this becomes real, most serious accelerators will 
+> > support the full width.
+> 
+> I don't know if that's obvious from the device perspective. If I had
+> to
+> implement one, I would simply size my PASIDs to the number of
+> contexts
+> supported by my device (which might be especially small in the
+> embedded
+> space), given that technically nothing prevents software from
+> supporting
+> that and the specification allows me to choose a width.
+
+That's very reasonable. But supporting a smaller number of contexts
+is different from supporting smaller number of PASID's. A device could
+support the full PASID width, but limit the number of contexts to a
+smaller number. Certainly if the device vendors don't know upfront that
+could be an issue. 
+
+> 
+> This was the intended model for PCI, but thankfully version 4.0 added
+> an
+> implementation note (6.20.2.1 - PASID Field) advising against this
+> approach, and to instead support 20 bits for interoperability. Maybe
+> it
+> will set a trend for non-PCI devices as well.
+
+That's a great suggestion. In fact we have already made this suggestion
+ to our PCI WG rep. For Scalable IOV devices the white-paper we
+published should hint that we expect devices to support the full 20 bit
+PASID width.
+
+> 
+> Thanks,
+> Jean
