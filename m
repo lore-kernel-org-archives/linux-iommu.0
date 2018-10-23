@@ -1,7 +1,7 @@
 From: Krishna Reddy <vdumpa@nvidia.com>
-Subject: [PATCH 2/3] iommu/arm-smmu: Prepare fault, probe, sync functions for sharing code
-Date: Tue, 23 Oct 2018 15:39:06 -0700
-Message-ID: <1540334347-7178-3-git-send-email-vdumpa@nvidia.com>
+Subject: [PATCH 3/3] iommu/tegra194_smmu: Add Tegra194 SMMU driver
+Date: Tue, 23 Oct 2018 15:39:07 -0700
+Message-ID: <1540334347-7178-4-git-send-email-vdumpa@nvidia.com>
 References: <1540334347-7178-1-git-send-email-vdumpa@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain
@@ -12,180 +12,236 @@ To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
 Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, treding@nvidia.com, yhsu@nvidia.com, snikam@nvidia.com, praithatha@nvidia.com, talho@nvidia.com, avanbrunt@nvidia.com, Krishna Reddy <vdumpa@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Prepare fault handling, probe and tlb sync functions to allow sharing
-code between ARM SMMU driver and Tegra194 SMMU driver.
+Tegra194 SMMU driver supports Dual ARM SMMU configuration
+supported in Tegra194 SOC.
+The IOVA accesses from HW devices are interleaved across two
+ARM SMMU devices.
 
 Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
 ---
- drivers/iommu/arm-smmu-common.c | 53 +++++++++++++++++++++++++++++++++++++++--
- drivers/iommu/arm-smmu.c        | 42 +++++++-------------------------
- 2 files changed, 60 insertions(+), 35 deletions(-)
+ drivers/iommu/Makefile        |   1 +
+ drivers/iommu/tegra194-smmu.c | 201 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 202 insertions(+)
+ create mode 100644 drivers/iommu/tegra194-smmu.c
 
-diff --git a/drivers/iommu/arm-smmu-common.c b/drivers/iommu/arm-smmu-common.c
-index 1ad8e5f..0166319 100644
---- a/drivers/iommu/arm-smmu-common.c
-+++ b/drivers/iommu/arm-smmu-common.c
-@@ -166,7 +166,7 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
- {
- 	unsigned int spin_cnt, delay;
- 
--	writel_relaxed(0, sync);
-+	writel_relaxed_one(0, sync);
- 	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
- 		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
- 			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-@@ -287,6 +287,52 @@ static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v1 = {
- 	.tlb_sync	= arm_smmu_tlb_sync_vmid,
- };
- 
-+static irqreturn_t arm_smmu_context_fault_common(struct arm_smmu_device *smmu,
-+	struct arm_smmu_cfg *cfg, void __iomem *cb_base)
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index a158a68..84da9f9 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -28,6 +28,7 @@ obj-$(CONFIG_OMAP_IOMMU_DEBUG) += omap-iommu-debug.o
+ obj-$(CONFIG_ROCKCHIP_IOMMU) += rockchip-iommu.o
+ obj-$(CONFIG_TEGRA_IOMMU_GART) += tegra-gart.o
+ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
++obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra194-smmu.o
+ obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
+ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
+ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+diff --git a/drivers/iommu/tegra194-smmu.c b/drivers/iommu/tegra194-smmu.c
+new file mode 100644
+index 0000000..02109c8
+--- /dev/null
++++ b/drivers/iommu/tegra194-smmu.c
+@@ -0,0 +1,201 @@
++/*
++ * IOMMU API for Tegra194 Dual ARM SMMU implementation.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * Copyright (C) 2018 Nvidia Corporation
++ *
++ * Author: Krishna Reddy <vdumpa@nvidia.com>
++ */
++
++#define pr_fmt(fmt) "tegra194-smmu: " fmt
++
++#include "arm-smmu-common.h"
++
++/* Tegra194 has three SMMU instances.
++ * Two of the SMMU instances are used by specific set of devices to
++ * access IOVA addresses in interleaved fashion.
++ * The 3rd SMMU instance is used alone by specific set of devices.
++ * This driver only support Dual SMMU configuration which interleaves
++ * IOVA accesses across two SMMU's.
++ * For the 3rd SMMU instance, Default ARM SMMU driver is used.
++ */
++#define NUM_SMMU_INSTANCES 2
++
++struct tegra194_smmu {
++	void __iomem			*bases[NUM_SMMU_INSTANCES];
++	struct arm_smmu_device		*smmu;
++};
++
++static struct tegra194_smmu t194_smmu;
++
++static inline void writel_one(u32 val, volatile void __iomem *virt_addr)
 +{
-+	u32 fsr, fsynr;
-+	unsigned long iova;
-+
-+	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
-+	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
-+
-+	if (!(fsr & FSR_FAULT))
-+		return IRQ_NONE;
-+
-+	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
-+	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-+
-+	dev_err_ratelimited(smmu->dev,
-+	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
-+			    fsr, iova, fsynr, cfg->cbndx);
-+
-+	writel_one(fsr, cb_base + ARM_SMMU_CB_FSR);
-+	return IRQ_HANDLED;
++	writel(val, virt_addr);
 +}
 +
-+static irqreturn_t arm_smmu_global_fault_common(
-+	struct arm_smmu_device *smmu, void __iomem *gr0_base)
++static inline void writel_relaxed_one(u32 val,
++			volatile void __iomem *virt_addr)
 +{
-+	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
-+
-+	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
-+	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
-+	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
-+	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
-+
-+	if (!gfsr)
-+		return IRQ_NONE;
-+
-+	dev_err_ratelimited(smmu->dev,
-+		"Unexpected global fault, this could be serious\n");
-+	dev_err_ratelimited(smmu->dev,
-+		"\tGFSR 0x%08x, GFSYNR0 0x%08x, GFSYNR1 0x%08x, GFSYNR2 0x%08x\n",
-+		gfsr, gfsynr0, gfsynr1, gfsynr2);
-+
-+	writel_one(gfsr, gr0_base + ARM_SMMU_GR0_sGFSR);
-+	return IRQ_HANDLED;
++	writel_relaxed(val, virt_addr);
 +}
 +
- static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 				       struct io_pgtable_cfg *pgtbl_cfg)
- {
-@@ -1757,7 +1803,8 @@ static void arm_smmu_bus_init(void)
- #endif
- }
- 
--static int arm_smmu_device_probe(struct platform_device *pdev)
-+static int arm_smmu_device_probe_common(struct platform_device *pdev,
-+					  void __iomem **pbase)
- {
- 	struct resource *res;
- 	resource_size_t ioaddr;
-@@ -1786,6 +1833,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (IS_ERR(smmu->base))
- 		return PTR_ERR(smmu->base);
- 	smmu->cb_base = smmu->base + resource_size(res) / 2;
-+	if (pbase)
-+		*pbase = smmu->base;
- 
- 	num_irqs = 0;
- 	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a341c9f..d076b3b 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -31,6 +31,8 @@
- 
- #include "arm-smmu-common.h"
- 
-+#define writel_one writel
-+#define writel_relaxed_one writel_relaxed
- #include "arm-smmu-common.c"
- 
- static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
-@@ -59,8 +61,6 @@ static void arm_smmu_tlb_sync_context(void *cookie)
- 
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- {
--	u32 fsr, fsynr;
--	unsigned long iova;
- 	struct iommu_domain *domain = dev;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-@@ -68,44 +68,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	void __iomem *cb_base;
- 
- 	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
--	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
--
--	if (!(fsr & FSR_FAULT))
--		return IRQ_NONE;
--
--	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
--	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
--
--	dev_err_ratelimited(smmu->dev,
--	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cfg->cbndx);
--
--	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
--	return IRQ_HANDLED;
-+	return arm_smmu_context_fault_common(smmu, cfg, cb_base);
- }
- 
- static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
- {
--	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
- 	struct arm_smmu_device *smmu = dev;
- 	void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
- 
--	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
--	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
--	gfsynr1 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR1);
--	gfsynr2 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR2);
--
--	if (!gfsr)
--		return IRQ_NONE;
--
--	dev_err_ratelimited(smmu->dev,
--		"Unexpected global fault, this could be serious\n");
--	dev_err_ratelimited(smmu->dev,
--		"\tGFSR 0x%08x, GFSYNR0 0x%08x, GFSYNR1 0x%08x, GFSYNR2 0x%08x\n",
--		gfsr, gfsynr0, gfsynr1, gfsynr2);
--
--	writel(gfsr, gr0_base + ARM_SMMU_GR0_sGFSR);
--	return IRQ_HANDLED;
-+	return arm_smmu_global_fault_common(smmu, gr0_base);
- }
- 
- ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
-@@ -125,6 +96,11 @@ static const struct of_device_id arm_smmu_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
- 
-+static int arm_smmu_device_probe(struct platform_device *pdev)
-+{
-+	return arm_smmu_device_probe_common(pdev, NULL);
++#define WRITEL_FN(fn, call, type) \
++static inline void fn(type val, volatile void __iomem *virt_addr) \
++{ \
++	int i; \
++	u32 offset = abs(virt_addr - t194_smmu.bases[0]); \
++	for (i = 0; i < NUM_SMMU_INSTANCES; i++) \
++		call(val, t194_smmu.bases[i] + offset); \
 +}
 +
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
- 		.name		= "arm-smmu",
++/* Override writel* macros to program all the smmu instances
++ * transparently through arm-smmu-common.c code.
++ */
++WRITEL_FN(writel_relaxed_all, writel_relaxed, u32);
++WRITEL_FN(writeq_relaxed_all, writeq_relaxed, u64);
++WRITEL_FN(writel_all, writel, u32);
++
++#undef writel_relaxed
++#undef writeq_relaxed
++#undef writel
++#define writel_relaxed writel_relaxed_all
++#define writeq_relaxed writeq_relaxed_all
++#define writel writel_all
++
++#include "arm-smmu-common.c"
++
++#define TO_INSTANCE(addr, inst) \
++	(addr - t194_smmu.bases[0] + t194_smmu.bases[inst])
++
++static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
++{
++	int i;
++	void __iomem *base;
++	unsigned long flags;
++
++	spin_lock_irqsave(&smmu->global_sync_lock, flags);
++	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++		base = t194_smmu.bases[i];
++		__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_GR0_sTLBGSYNC,
++				    base + ARM_SMMU_GR0_sTLBGSTATUS);
++	}
++	spin_unlock_irqrestore(&smmu->global_sync_lock, flags);
++}
++
++static void arm_smmu_tlb_sync_context(void *cookie)
++{
++	int i;
++	struct arm_smmu_domain *smmu_domain = cookie;
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	void __iomem *base;
++	unsigned long flags;
++
++	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
++	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++		base = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
++		base = TO_INSTANCE(base, i);
++		__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_CB_TLBSYNC,
++				    base + ARM_SMMU_CB_TLBSTATUS);
++	}
++	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
++}
++
++static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
++{
++	int i;
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(dev);
++	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	void __iomem *cb_base;
++	irqreturn_t irq_state;
++
++	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++		cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
++		cb_base = TO_INSTANCE(cb_base, i);
++
++		irq_state = arm_smmu_context_fault_common(smmu, cfg, cb_base);
++
++		if (irq_state == IRQ_HANDLED)
++			break;
++	}
++
++	return irq_state;
++}
++
++static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
++{
++	int i;
++	struct arm_smmu_device *smmu = dev;
++	irqreturn_t irq_state;
++
++	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++		void __iomem *gr0_base = t194_smmu.bases[i];
++
++		irq_state = arm_smmu_global_fault_common(smmu, gr0_base);
++
++		if (irq_state == IRQ_HANDLED)
++			break;
++	}
++
++	return irq_state;
++}
++
++ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
++
++static const struct of_device_id t194_smmu_of_match[] = {
++	{ .compatible = "tegra194,arm,mmu-500", .data = &arm_mmu500 },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, t194_smmu_of_match);
++
++static int t194_smmu_device_probe(struct platform_device *pdev)
++{
++	struct resource *res;
++	struct device *dev = &pdev->dev;
++	int i, err;
++
++	if (t194_smmu.smmu) {
++		pr_err("One instance of Tegra194 SMMU platform device is allowed\n");
++		return -ENODEV;
++	}
++
++	for (i = 1; i < NUM_SMMU_INSTANCES; i++) {
++		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
++		if (!res)
++			return -ENODEV;
++		t194_smmu.bases[i] = devm_ioremap_resource(dev, res);
++		if (IS_ERR(t194_smmu.bases[i]))
++			return PTR_ERR(t194_smmu.bases[i]);
++	}
++
++	err = arm_smmu_device_probe_common(pdev, &t194_smmu.bases[0]);
++	if (err)
++		return err;
++
++	t194_smmu.smmu = platform_get_drvdata(pdev);
++	return 0;
++}
++
++static struct platform_driver arm_smmu_driver = {
++	.driver	= {
++		.name		= "tegra194-arm-smmu",
++		.of_match_table	= of_match_ptr(t194_smmu_of_match),
++		.pm		= &arm_smmu_pm_ops,
++	},
++	.probe	= t194_smmu_device_probe,
++	.remove	= arm_smmu_device_remove,
++	.shutdown = arm_smmu_device_shutdown,
++};
++module_platform_driver(arm_smmu_driver);
++
++MODULE_DESCRIPTION("IOMMU API for Tegra194 SMMU implementation");
++MODULE_AUTHOR("Krishna Reddy <vdumpa@nvidia.com>");
++MODULE_LICENSE("GPL v2");
 -- 
 2.1.4
