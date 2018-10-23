@@ -1,84 +1,178 @@
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Subject: Re: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to
- command line
-Date: Mon, 22 Oct 2018 15:29:23 -0400
-Message-ID: <20181022192921.GA20677@dhcp-10-175-29-12.vpn.oracle.com>
-References: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
- <c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
+Date: Tue, 23 Oct 2018 13:15:06 +0900
+Message-ID: <CAAFQd5AMirap5vjVC+73cv_KzE=-+EUD6TWd_NHRDw_m-sXDrw@mail.gmail.com>
+References: <20180615105329.26800-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
+In-Reply-To: <20180615105329.26800-1-vivek.gautam@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: He Zhe <zhe.he@windriver.com>
-Cc: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <joro@8bytes.org>, pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Sep 22, 2018 at 08:56:58PM +0800, He Zhe wrote:
-> May I have your input?
+Hi Vivek,
 
-Alternatively would it make more sense for it to assume some default
-value?
-> 
-> Thanks,
-> Zhe
-> 
-> On 2018年09月17日 11:27, zhe.he@windriver.com wrote:
-> > From: He Zhe <zhe.he@windriver.com>
-> >
-> > setup_io_tlb_npages does not check input argument before passing it
-> > to isdigit. The argument would be a NULL pointer if "swiotlb", without
-> > its value, is set in command line and thus causes the following panic.
-> >
-> > PANIC: early exception 0xe3 IP 10:ffffffffbb9b8e9f error 0 cr2 0x0
-> > [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.19.0-rc3-yocto-standard+ #9
-> > [    0.000000] RIP: 0010:setup_io_tlb_npages+0xf/0x95
-> > ...
-> > [    0.000000] Call Trace:
-> > [    0.000000]  do_early_param+0x57/0x8e
-> > [    0.000000]  parse_args+0x208/0x320
-> > [    0.000000]  ? rdinit_setup+0x30/0x30
-> > [    0.000000]  parse_early_options+0x29/0x2d
-> > [    0.000000]  ? rdinit_setup+0x30/0x30
-> > [    0.000000]  parse_early_param+0x36/0x4d
-> > [    0.000000]  setup_arch+0x336/0x99e
-> > [    0.000000]  start_kernel+0x6f/0x4e6
-> > [    0.000000]  x86_64_start_reservations+0x24/0x26
-> > [    0.000000]  x86_64_start_kernel+0x6f/0x72
-> > [    0.000000]  secondary_startup_64+0xa4/0xb0
-> >
-> > This patch adds a check to prevent the panic.
-> >
-> > Signed-off-by: He Zhe <zhe.he@windriver.com>
-> > Cc: stable@vger.kernel.org
-> > Cc: konrad.wilk@oracle.com
-> > Cc: hch@lst.de
-> > Cc: m.szyprowski@samsung.com
-> > Cc: robin.murphy@arm.com
-> > ---
-> >  kernel/dma/swiotlb.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > index 4f8a6db..46fc34e 100644
-> > --- a/kernel/dma/swiotlb.c
-> > +++ b/kernel/dma/swiotlb.c
-> > @@ -109,6 +109,11 @@ static int late_alloc;
-> >  static int __init
-> >  setup_io_tlb_npages(char *str)
-> >  {
-> > +	if (!str) {
-> > +		pr_err("Config string not provided\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> >  	if (isdigit(*str)) {
-> >  		io_tlb_nslabs = simple_strtoul(str, &str, 0);
-> >  		/* avoid tail segment of size < IO_TLB_SEGSIZE */
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+On Fri, Jun 15, 2018 at 7:53 PM Vivek Gautam
+<vivek.gautam@codeaurora.org> wrote:
+>
+> Qualcomm SoCs have an additional level of cache called as
+> System cache or Last level cache[1]. This cache sits right
+> before the DDR, and is tightly coupled with the memory
+> controller.
+> The cache is available to all the clients present in the
+> SoC system. The clients request their slices from this system
+> cache, make it active, and can then start using it. For these
+> clients with smmu, to start using the system cache for
+> dma buffers and related page tables [2], few of the memory
+> attributes need to be set accordingly.
+> This change makes the related memory Outer-Shareable, and
+> updates the MAIR with necessary protection.
+>
+> The MAIR attribute requirements are:
+>     Inner Cacheablity = 0
+>     Outer Cacheablity = 1, Write-Back Write Allocate
+>     Outer Shareablity = 1
+>
+> This change is a realisation of following changes
+> from downstream msm-4.9:
+> iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT
+> iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT
+
+Would you be able to provide links to those 2 downstream changes?
+
+>
+> [1] https://patchwork.kernel.org/patch/10422531/
+> [2] https://patchwork.kernel.org/patch/10302791/
+>
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> ---
+>  drivers/iommu/arm-smmu.c       | 14 ++++++++++++++
+>  drivers/iommu/io-pgtable-arm.c | 24 +++++++++++++++++++-----
+>  drivers/iommu/io-pgtable.h     |  4 ++++
+>  include/linux/iommu.h          |  4 ++++
+>  4 files changed, 41 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index f7a96bcf94a6..8058e7205034 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -249,6 +249,7 @@ struct arm_smmu_domain {
+>         struct mutex                    init_mutex; /* Protects smmu pointer */
+>         spinlock_t                      cb_lock; /* Serialises ATS1* ops and TLB syncs */
+>         struct iommu_domain             domain;
+> +       bool                            has_sys_cache;
+>  };
+>
+>  struct arm_smmu_option_prop {
+> @@ -862,6 +863,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>
+>         if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
+>                 pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
+> +       if (smmu_domain->has_sys_cache)
+> +               pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_SYS_CACHE;
+>
+>         smmu_domain->smmu = smmu;
+>         pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+> @@ -1477,6 +1480,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>         case DOMAIN_ATTR_NESTING:
+>                 *(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+>                 return 0;
+> +       case DOMAIN_ATTR_USE_SYS_CACHE:
+> +               *((int *)data) = smmu_domain->has_sys_cache;
+> +               return 0;
+>         default:
+>                 return -ENODEV;
+>         }
+> @@ -1506,6 +1512,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>                         smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+>
+>                 break;
+> +       case DOMAIN_ATTR_USE_SYS_CACHE:
+> +               if (smmu_domain->smmu) {
+> +                       ret = -EPERM;
+> +                       goto out_unlock;
+> +               }
+> +               if (*((int *)data))
+> +                       smmu_domain->has_sys_cache = true;
+> +               break;
+>         default:
+>                 ret = -ENODEV;
+>         }
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 010a254305dd..b2aee1828524 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -169,9 +169,11 @@
+>  #define ARM_LPAE_MAIR_ATTR_DEVICE      0x04
+>  #define ARM_LPAE_MAIR_ATTR_NC          0x44
+>  #define ARM_LPAE_MAIR_ATTR_WBRWA       0xff
+> +#define ARM_LPAE_MAIR_ATTR_SYS_CACHE   0xf4
+>  #define ARM_LPAE_MAIR_ATTR_IDX_NC      0
+>  #define ARM_LPAE_MAIR_ATTR_IDX_CACHE   1
+>  #define ARM_LPAE_MAIR_ATTR_IDX_DEV     2
+> +#define ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE       3
+>
+>  /* IOPTE accessors */
+>  #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+> @@ -442,6 +444,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>                 else if (prot & IOMMU_CACHE)
+>                         pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+>                                 << ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +               else if (prot & IOMMU_SYS_CACHE)
+> +                       pte |= (ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE
+> +                               << ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +
+
+Okay, so we favor the full caching (IC WBRWA, OC WBRWA, OS) first if
+requested or otherwise try to use system cache (IC NC, OC WBWA?, OS)?
+Sounds fine.
+
+nit: Unnecessary blank line.
+
+>         } else {
+>                 pte = ARM_LPAE_PTE_HAP_FAULT;
+>                 if (prot & IOMMU_READ)
+> @@ -771,7 +777,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>         u64 reg;
+>         struct arm_lpae_io_pgtable *data;
+>
+> -       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
+> +       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+> +                           IO_PGTABLE_QUIRK_SYS_CACHE))
+>                 return NULL;
+>
+>         data = arm_lpae_alloc_pgtable(cfg);
+> @@ -779,9 +786,14 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>                 return NULL;
+>
+>         /* TCR */
+> -       reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+> -             (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+> -             (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+> +       if (cfg->quirks & IO_PGTABLE_QUIRK_SYS_CACHE) {
+> +               reg = (ARM_LPAE_TCR_SH_OS << ARM_LPAE_TCR_SH0_SHIFT) |
+> +                     (ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT);
+
+Contrary to the earlier code which favored IC/IS if possible, here we
+seem to disable IC/IS if the SYS_CACHE quirk is requested, regardless
+of whether it could still be desirable to use IC/IS. Perhaps rather
+than
+IO_PGTABLE_QUIRK_SYS_CACHE, we need something like
+IO_PGTABLE_QUIRK_NO_INNER_CACHE?
+
+> +       } else {
+> +               reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+> +                     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT);
+> +       }
+> +       reg |= (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+>
+
+[keeping the context]
+
+Best regards,
+Tomasz
