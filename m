@@ -1,4386 +1,878 @@
-From: Krishna Reddy <vdumpa@nvidia.com>
-Subject: [PATCH 1/3] iommu/arm-smmu: rearrange arm-smmu.c code
-Date: Tue, 23 Oct 2018 15:39:05 -0700
-Message-ID: <1540334347-7178-2-git-send-email-vdumpa@nvidia.com>
-References: <1540334347-7178-1-git-send-email-vdumpa@nvidia.com>
+From: kbuild test robot <lkp@intel.com>
+Subject: Re: [PATCH 3/3] iommu/tegra194_smmu: Add Tegra194 SMMU driver
+Date: Wed, 24 Oct 2018 15:22:27 +0800
+Message-ID: <201810241524.jCAbYVLi%fengguang.wu@intel.com>
+References: <1540334347-7178-4-git-send-email-vdumpa@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/mixed; boundary="J2SCkAp4GZ/dPZZf"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1540334347-7178-1-git-send-email-vdumpa@nvidia.com>
+Content-Disposition: inline
+In-Reply-To: <1540334347-7178-4-git-send-email-vdumpa@nvidia.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, treding@nvidia.com, yhsu@nvidia.com, snikam@nvidia.com, praithatha@nvidia.com, talho@nvidia.com, avanbrunt@nvidia.com, Krishna Reddy <vdumpa@nvidia.com>
+Cc: kbuild-all@01.org, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, treding@nvidia.com, yhsu@nvidia.com, snikam@nvidia.com, praithatha@nvidia.com, talho@nvidia.com, avanbrunt@nvidia.com, Krishna Reddy <vdumpa@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Rearrange arm-smmu.c code into arm-smmu-common.h, arm-smmu-common.c
-and arm-smmu.c.
-This patch rearranges the arm-smmu.c code to allow sharing the ARM SMMU
-driver code with dual ARM SMMU based Tegra194 SMMU driver.
 
-Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
+--J2SCkAp4GZ/dPZZf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Krishna,
+
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on iommu/next]
+[also build test ERROR on next-20181019]
+[cannot apply to v4.19]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+
+url:    https://github.com/0day-ci/linux/commits/Krishna-Reddy/Add-Tegra194-Dual-ARM-SMMU-driver/20181024-123501
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
+config: arm-multi_v7_defconfig (attached as .config)
+compiler: arm-linux-gnueabi-gcc (Debian 7.2.0-11) 7.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # save the attached .config to linux build tree
+        GCC_VERSION=7.2.0 make.cross ARCH=arm 
+
+All errors (new ones prefixed by >>):
+
+   drivers/iommu/tegra194-smmu.o: In function `arm_smmu_attach_dev':
+>> tegra194-smmu.c:(.text+0x1800): undefined reference to `alloc_io_pgtable_ops'
+   drivers/iommu/tegra194-smmu.o: In function `arm_smmu_domain_free':
+>> tegra194-smmu.c:(.text+0x1af8): undefined reference to `free_io_pgtable_ops'
+
 ---
- drivers/iommu/arm-smmu-common.c | 1922 +++++++++++++++++++++++++++++++++++
- drivers/iommu/arm-smmu-common.h |  256 +++++
- drivers/iommu/arm-smmu.c        | 2133 +--------------------------------------
- 3 files changed, 2180 insertions(+), 2131 deletions(-)
- create mode 100644 drivers/iommu/arm-smmu-common.c
- create mode 100644 drivers/iommu/arm-smmu-common.h
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
-diff --git a/drivers/iommu/arm-smmu-common.c b/drivers/iommu/arm-smmu-common.c
-new file mode 100644
-index 0000000..1ad8e5f
---- /dev/null
-+++ b/drivers/iommu/arm-smmu-common.c
-@@ -0,0 +1,1922 @@
-+/*
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ *
-+ * Copyright (C) 2013 ARM Limited
-+ *
-+ * Author: Will Deacon <will.deacon@arm.com>
-+ */
-+
-+static int force_stage;
-+module_param(force_stage, int, S_IRUGO);
-+MODULE_PARM_DESC(force_stage,
-+	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
-+static bool disable_bypass;
-+module_param(disable_bypass, bool, S_IRUGO);
-+MODULE_PARM_DESC(disable_bypass,
-+	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
-+
-+#define ARM_SMMU_MATCH_DATA(name, ver, imp)	\
-+static struct arm_smmu_match_data name = { .version = ver, .model = imp }
-+
-+static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu);
-+static void arm_smmu_tlb_sync_context(void *cookie);
-+static irqreturn_t arm_smmu_context_fault(int irq, void *dev);
-+static irqreturn_t arm_smmu_global_fault(int irq, void *dev);
-+
-+static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-+{
-+	return container_of(dom, struct arm_smmu_domain, domain);
-+}
-+
-+static void parse_driver_options(struct arm_smmu_device *smmu)
-+{
-+	int i = 0;
-+
-+	do {
-+		if (of_property_read_bool(smmu->dev->of_node,
-+						arm_smmu_options[i].prop)) {
-+			smmu->options |= arm_smmu_options[i].opt;
-+			dev_notice(smmu->dev, "option %s\n",
-+				arm_smmu_options[i].prop);
-+		}
-+	} while (arm_smmu_options[++i].opt);
-+}
-+
-+static struct device_node *dev_get_dev_node(struct device *dev)
-+{
-+	if (dev_is_pci(dev)) {
-+		struct pci_bus *bus = to_pci_dev(dev)->bus;
-+
-+		while (!pci_is_root_bus(bus))
-+			bus = bus->parent;
-+		return of_node_get(bus->bridge->parent->of_node);
-+	}
-+
-+	return of_node_get(dev->of_node);
-+}
-+
-+static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void *data)
-+{
-+	*((__be32 *)data) = cpu_to_be32(alias);
-+	return 0; /* Continue walking */
-+}
-+
-+static int __find_legacy_master_phandle(struct device *dev, void *data)
-+{
-+	struct of_phandle_iterator *it = *(void **)data;
-+	struct device_node *np = it->node;
-+	int err;
-+
-+	of_for_each_phandle(it, err, dev->of_node, "mmu-masters",
-+			    "#stream-id-cells", 0)
-+		if (it->node == np) {
-+			*(void **)data = dev;
-+			return 1;
-+		}
-+	it->node = np;
-+	return err == -ENOENT ? 0 : err;
-+}
-+
-+static struct platform_driver arm_smmu_driver;
-+static struct iommu_ops arm_smmu_ops;
-+
-+static int arm_smmu_register_legacy_master(struct device *dev,
-+					   struct arm_smmu_device **smmu)
-+{
-+	struct device *smmu_dev;
-+	struct device_node *np;
-+	struct of_phandle_iterator it;
-+	void *data = &it;
-+	u32 *sids;
-+	__be32 pci_sid;
-+	int err;
-+
-+	np = dev_get_dev_node(dev);
-+	if (!np || !of_find_property(np, "#stream-id-cells", NULL)) {
-+		of_node_put(np);
-+		return -ENODEV;
-+	}
-+
-+	it.node = np;
-+	err = driver_for_each_device(&arm_smmu_driver.driver, NULL, &data,
-+				     __find_legacy_master_phandle);
-+	smmu_dev = data;
-+	of_node_put(np);
-+	if (err == 0)
-+		return -ENODEV;
-+	if (err < 0)
-+		return err;
-+
-+	if (dev_is_pci(dev)) {
-+		/* "mmu-masters" assumes Stream ID == Requester ID */
-+		pci_for_each_dma_alias(to_pci_dev(dev), __arm_smmu_get_pci_sid,
-+				       &pci_sid);
-+		it.cur = &pci_sid;
-+		it.cur_count = 1;
-+	}
-+
-+	err = iommu_fwspec_init(dev, &smmu_dev->of_node->fwnode,
-+				&arm_smmu_ops);
-+	if (err)
-+		return err;
-+
-+	sids = kcalloc(it.cur_count, sizeof(*sids), GFP_KERNEL);
-+	if (!sids)
-+		return -ENOMEM;
-+
-+	*smmu = dev_get_drvdata(smmu_dev);
-+	of_phandle_iterator_args(&it, sids, it.cur_count);
-+	err = iommu_fwspec_add_ids(dev, sids, it.cur_count);
-+	kfree(sids);
-+	return err;
-+}
-+
-+static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
-+{
-+	int idx;
-+
-+	do {
-+		idx = find_next_zero_bit(map, end, start);
-+		if (idx == end)
-+			return -ENOSPC;
-+	} while (test_and_set_bit(idx, map));
-+
-+	return idx;
-+}
-+
-+static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
-+{
-+	clear_bit(idx, map);
-+}
-+
-+/* Wait for any pending TLB invalidations to complete */
-+static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
-+				void __iomem *sync, void __iomem *status)
-+{
-+	unsigned int spin_cnt, delay;
-+
-+	writel_relaxed(0, sync);
-+	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-+		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-+			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-+				return;
-+			cpu_relax();
-+		}
-+		udelay(delay);
-+	}
-+	dev_err_ratelimited(smmu->dev,
-+			    "TLB sync timed out -- SMMU may be deadlocked\n");
-+}
-+
-+static void arm_smmu_tlb_sync_vmid(void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+
-+	arm_smmu_tlb_sync_global(smmu_domain->smmu);
-+}
-+
-+static void arm_smmu_tlb_inv_context_s1(void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
-+
-+	/*
-+	 * NOTE: this is not a relaxed write; it needs to guarantee that PTEs
-+	 * cleared by the current CPU are visible to the SMMU before the TLBI.
-+	 */
-+	writel(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
-+	arm_smmu_tlb_sync_context(cookie);
-+}
-+
-+static void arm_smmu_tlb_inv_context_s2(void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	void __iomem *base = ARM_SMMU_GR0(smmu);
-+
-+	/* NOTE: see above */
-+	writel(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
-+	arm_smmu_tlb_sync_global(smmu);
-+}
-+
-+static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-+					  size_t granule, bool leaf, void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
-+
-+	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-+		wmb();
-+
-+	if (stage1) {
-+		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
-+
-+		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
-+			iova &= ~12UL;
-+			iova |= cfg->asid;
-+			do {
-+				writel_relaxed(iova, reg);
-+				iova += granule;
-+			} while (size -= granule);
-+		} else {
-+			iova >>= 12;
-+			iova |= (u64)cfg->asid << 48;
-+			do {
-+				writeq_relaxed(iova, reg);
-+				iova += granule >> 12;
-+			} while (size -= granule);
-+		}
-+	} else {
-+		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
-+			      ARM_SMMU_CB_S2_TLBIIPAS2;
-+		iova >>= 12;
-+		do {
-+			smmu_write_atomic_lq(iova, reg);
-+			iova += granule >> 12;
-+		} while (size -= granule);
-+	}
-+}
-+
-+/*
-+ * On MMU-401 at least, the cost of firing off multiple TLBIVMIDs appears
-+ * almost negligible, but the benefit of getting the first one in as far ahead
-+ * of the sync as possible is significant, hence we don't just make this a
-+ * no-op and set .tlb_sync to arm_smmu_inv_context_s2() as you might think.
-+ */
-+static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
-+					 size_t granule, bool leaf, void *cookie)
-+{
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	void __iomem *base = ARM_SMMU_GR0(smmu_domain->smmu);
-+
-+	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-+		wmb();
-+
-+	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
-+}
-+
-+static const struct iommu_gather_ops arm_smmu_s1_tlb_ops = {
-+	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
-+	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-+	.tlb_sync	= arm_smmu_tlb_sync_context,
-+};
-+
-+static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v2 = {
-+	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-+	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
-+	.tlb_sync	= arm_smmu_tlb_sync_context,
-+};
-+
-+static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v1 = {
-+	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
-+	.tlb_add_flush	= arm_smmu_tlb_inv_vmid_nosync,
-+	.tlb_sync	= arm_smmu_tlb_sync_vmid,
-+};
-+
-+static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
-+				       struct io_pgtable_cfg *pgtbl_cfg)
-+{
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
-+	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+
-+	cb->cfg = cfg;
-+
-+	/* TTBCR */
-+	if (stage1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
-+		} else {
-+			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-+			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
-+			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
-+			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+				cb->tcr[1] |= TTBCR2_AS;
-+		}
-+	} else {
-+		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
-+	}
-+
-+	/* TTBRs */
-+	if (stage1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-+			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-+		} else {
-+			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-+			cb->ttbr[0] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
-+			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-+			cb->ttbr[1] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
-+		}
-+	} else {
-+		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-+	}
-+
-+	/* MAIRs (stage-1 only) */
-+	if (stage1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
-+			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
-+		} else {
-+			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-+			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-+		}
-+	}
-+}
-+
-+static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
-+{
-+	u32 reg;
-+	bool stage1;
-+	struct arm_smmu_cb *cb = &smmu->cbs[idx];
-+	struct arm_smmu_cfg *cfg = cb->cfg;
-+	void __iomem *cb_base, *gr1_base;
-+
-+	cb_base = ARM_SMMU_CB(smmu, idx);
-+
-+	/* Unassigned context banks only need disabling */
-+	if (!cfg) {
-+		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-+		return;
-+	}
-+
-+	gr1_base = ARM_SMMU_GR1(smmu);
-+	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-+
-+	/* CBA2R */
-+	if (smmu->version > ARM_SMMU_V1) {
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+			reg = CBA2R_RW64_64BIT;
-+		else
-+			reg = CBA2R_RW64_32BIT;
-+		/* 16-bit VMIDs live in CBA2R */
-+		if (smmu->features & ARM_SMMU_FEAT_VMID16)
-+			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
-+
-+		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
-+	}
-+
-+	/* CBAR */
-+	reg = cfg->cbar;
-+	if (smmu->version < ARM_SMMU_V2)
-+		reg |= cfg->irptndx << CBAR_IRPTNDX_SHIFT;
-+
-+	/*
-+	 * Use the weakest shareability/memory types, so they are
-+	 * overridden by the ttbcr/pte.
-+	 */
-+	if (stage1) {
-+		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
-+			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
-+	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
-+		/* 8-bit VMIDs live in CBAR */
-+		reg |= cfg->vmid << CBAR_VMID_SHIFT;
-+	}
-+	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
-+
-+	/*
-+	 * TTBCR
-+	 * We must write this before the TTBRs, since it determines the
-+	 * access behaviour of some fields (in particular, ASID[15:8]).
-+	 */
-+	if (stage1 && smmu->version > ARM_SMMU_V1)
-+		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
-+	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
-+
-+	/* TTBRs */
-+	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-+		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-+		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
-+	} else {
-+		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-+		if (stage1)
-+			writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
-+	}
-+
-+	/* MAIRs (stage-1 only) */
-+	if (stage1) {
-+		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
-+		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
-+	}
-+
-+	/* SCTLR */
-+	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
-+	if (stage1)
-+		reg |= SCTLR_S1_ASIDPNE;
-+	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
-+		reg |= SCTLR_E;
-+
-+	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
-+}
-+
-+static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-+					struct arm_smmu_device *smmu)
-+{
-+	int irq, start, ret = 0;
-+	unsigned long ias, oas;
-+	struct io_pgtable_ops *pgtbl_ops;
-+	struct io_pgtable_cfg pgtbl_cfg;
-+	enum io_pgtable_fmt fmt;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+
-+	mutex_lock(&smmu_domain->init_mutex);
-+	if (smmu_domain->smmu)
-+		goto out_unlock;
-+
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-+		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
-+		smmu_domain->smmu = smmu;
-+		goto out_unlock;
-+	}
-+
-+	/*
-+	 * Mapping the requested stage onto what we support is surprisingly
-+	 * complicated, mainly because the spec allows S1+S2 SMMUs without
-+	 * support for nested translation. That means we end up with the
-+	 * following table:
-+	 *
-+	 * Requested        Supported        Actual
-+	 *     S1               N              S1
-+	 *     S1             S1+S2            S1
-+	 *     S1               S2             S2
-+	 *     S1               S1             S1
-+	 *     N                N              N
-+	 *     N              S1+S2            S2
-+	 *     N                S2             S2
-+	 *     N                S1             S1
-+	 *
-+	 * Note that you can't actually request stage-2 mappings.
-+	 */
-+	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
-+		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
-+	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
-+		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-+
-+	/*
-+	 * Choosing a suitable context format is even more fiddly. Until we
-+	 * grow some way for the caller to express a preference, and/or move
-+	 * the decision into the io-pgtable code where it arguably belongs,
-+	 * just aim for the closest thing to the rest of the system, and hope
-+	 * that the hardware isn't esoteric enough that we can't assume AArch64
-+	 * support to be a superset of AArch32 support...
-+	 */
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
-+		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
-+	if (IS_ENABLED(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) &&
-+	    !IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_ARM_LPAE) &&
-+	    (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S) &&
-+	    (smmu_domain->stage == ARM_SMMU_DOMAIN_S1))
-+		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_S;
-+	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
-+	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
-+			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
-+			       ARM_SMMU_FEAT_FMT_AARCH64_4K)))
-+		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
-+
-+	if (cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	switch (smmu_domain->stage) {
-+	case ARM_SMMU_DOMAIN_S1:
-+		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
-+		start = smmu->num_s2_context_banks;
-+		ias = smmu->va_size;
-+		oas = smmu->ipa_size;
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
-+			fmt = ARM_64_LPAE_S1;
-+		} else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
-+			fmt = ARM_32_LPAE_S1;
-+			ias = min(ias, 32UL);
-+			oas = min(oas, 40UL);
-+		} else {
-+			fmt = ARM_V7S;
-+			ias = min(ias, 32UL);
-+			oas = min(oas, 32UL);
-+		}
-+		smmu_domain->tlb_ops = &arm_smmu_s1_tlb_ops;
-+		break;
-+	case ARM_SMMU_DOMAIN_NESTED:
-+		/*
-+		 * We will likely want to change this if/when KVM gets
-+		 * involved.
-+		 */
-+	case ARM_SMMU_DOMAIN_S2:
-+		cfg->cbar = CBAR_TYPE_S2_TRANS;
-+		start = 0;
-+		ias = smmu->ipa_size;
-+		oas = smmu->pa_size;
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
-+			fmt = ARM_64_LPAE_S2;
-+		} else {
-+			fmt = ARM_32_LPAE_S2;
-+			ias = min(ias, 40UL);
-+			oas = min(oas, 40UL);
-+		}
-+		if (smmu->version == ARM_SMMU_V2)
-+			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v2;
-+		else
-+			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v1;
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
-+				      smmu->num_context_banks);
-+	if (ret < 0)
-+		goto out_unlock;
-+
-+	cfg->cbndx = ret;
-+	if (smmu->version < ARM_SMMU_V2) {
-+		cfg->irptndx = atomic_inc_return(&smmu->irptndx);
-+		cfg->irptndx %= smmu->num_context_irqs;
-+	} else {
-+		cfg->irptndx = cfg->cbndx;
-+	}
-+
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
-+		cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
-+	else
-+		cfg->asid = cfg->cbndx + smmu->cavium_id_base;
-+
-+	pgtbl_cfg = (struct io_pgtable_cfg) {
-+		.pgsize_bitmap	= smmu->pgsize_bitmap,
-+		.ias		= ias,
-+		.oas		= oas,
-+		.tlb		= smmu_domain->tlb_ops,
-+		.iommu_dev	= smmu->dev,
-+	};
-+
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-+		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
-+
-+	if (smmu_domain->non_strict)
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+
-+	smmu_domain->smmu = smmu;
-+	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
-+	if (!pgtbl_ops) {
-+		ret = -ENOMEM;
-+		goto out_clear_smmu;
-+	}
-+
-+	/* Update the domain's page sizes to reflect the page table format */
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+	domain->geometry.aperture_end = (1UL << ias) - 1;
-+	domain->geometry.force_aperture = true;
-+
-+	/* Initialise the context bank with our page table cfg */
-+	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-+	arm_smmu_write_context_bank(smmu, cfg->cbndx);
-+
-+	/*
-+	 * Request context fault interrupt. Do this last to avoid the
-+	 * handler seeing a half-initialised domain state.
-+	 */
-+	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-+	ret = devm_request_irq(smmu->dev, irq, arm_smmu_context_fault,
-+			       IRQF_SHARED, "arm-smmu-context-fault", domain);
-+	if (ret < 0) {
-+		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
-+			cfg->irptndx, irq);
-+		cfg->irptndx = INVALID_IRPTNDX;
-+	}
-+
-+	mutex_unlock(&smmu_domain->init_mutex);
-+
-+	/* Publish page table ops for map/unmap */
-+	smmu_domain->pgtbl_ops = pgtbl_ops;
-+	return 0;
-+
-+out_clear_smmu:
-+	smmu_domain->smmu = NULL;
-+out_unlock:
-+	mutex_unlock(&smmu_domain->init_mutex);
-+	return ret;
-+}
-+
-+static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	int irq;
-+
-+	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
-+		return;
-+
-+	/*
-+	 * Disable the context bank and free the page tables before freeing
-+	 * it.
-+	 */
-+	smmu->cbs[cfg->cbndx].cfg = NULL;
-+	arm_smmu_write_context_bank(smmu, cfg->cbndx);
-+
-+	if (cfg->irptndx != INVALID_IRPTNDX) {
-+		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-+		devm_free_irq(smmu->dev, irq, domain);
-+	}
-+
-+	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
-+	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
-+}
-+
-+static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-+{
-+	struct arm_smmu_domain *smmu_domain;
-+
-+	if (type != IOMMU_DOMAIN_UNMANAGED &&
-+	    type != IOMMU_DOMAIN_DMA &&
-+	    type != IOMMU_DOMAIN_IDENTITY)
-+		return NULL;
-+	/*
-+	 * Allocate the domain and initialise some of its data structures.
-+	 * We can't really do anything meaningful until we've added a
-+	 * master.
-+	 */
-+	smmu_domain = kzalloc(sizeof(*smmu_domain), GFP_KERNEL);
-+	if (!smmu_domain)
-+		return NULL;
-+
-+	if (type == IOMMU_DOMAIN_DMA && (using_legacy_binding ||
-+	    iommu_get_dma_cookie(&smmu_domain->domain))) {
-+		kfree(smmu_domain);
-+		return NULL;
-+	}
-+
-+	mutex_init(&smmu_domain->init_mutex);
-+	spin_lock_init(&smmu_domain->cb_lock);
-+
-+	return &smmu_domain->domain;
-+}
-+
-+static void arm_smmu_domain_free(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	/*
-+	 * Free the domain resources. We assume that all devices have
-+	 * already been detached.
-+	 */
-+	iommu_put_dma_cookie(domain);
-+	arm_smmu_destroy_domain_context(domain);
-+	kfree(smmu_domain);
-+}
-+
-+static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
-+{
-+	struct arm_smmu_smr *smr = smmu->smrs + idx;
-+	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
-+
-+	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
-+		reg |= SMR_VALID;
-+	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
-+}
-+
-+static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
-+{
-+	struct arm_smmu_s2cr *s2cr = smmu->s2crs + idx;
-+	u32 reg = (s2cr->type & S2CR_TYPE_MASK) << S2CR_TYPE_SHIFT |
-+		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
-+		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
-+
-+	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
-+	    smmu->smrs[idx].valid)
-+		reg |= S2CR_EXIDVALID;
-+	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
-+}
-+
-+static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
-+{
-+	arm_smmu_write_s2cr(smmu, idx);
-+	if (smmu->smrs)
-+		arm_smmu_write_smr(smmu, idx);
-+}
-+
-+/*
-+ * The width of SMR's mask field depends on sCR0_EXIDENABLE, so this function
-+ * should be called after sCR0 is written.
-+ */
-+static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
-+{
-+	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-+	u32 smr;
-+
-+	if (!smmu->smrs)
-+		return;
-+
-+	/*
-+	 * SMR.ID bits may not be preserved if the corresponding MASK
-+	 * bits are set, so check each one separately. We can reject
-+	 * masters later if they try to claim IDs outside these masks.
-+	 */
-+	smr = smmu->streamid_mask << SMR_ID_SHIFT;
-+	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smmu->streamid_mask = smr >> SMR_ID_SHIFT;
-+
-+	smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-+	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
-+}
-+
-+static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
-+{
-+	struct arm_smmu_smr *smrs = smmu->smrs;
-+	int i, free_idx = -ENOSPC;
-+
-+	/* Stream indexing is blissfully easy */
-+	if (!smrs)
-+		return id;
-+
-+	/* Validating SMRs is... less so */
-+	for (i = 0; i < smmu->num_mapping_groups; ++i) {
-+		if (!smrs[i].valid) {
-+			/*
-+			 * Note the first free entry we come across, which
-+			 * we'll claim in the end if nothing else matches.
-+			 */
-+			if (free_idx < 0)
-+				free_idx = i;
-+			continue;
-+		}
-+		/*
-+		 * If the new entry is _entirely_ matched by an existing entry,
-+		 * then reuse that, with the guarantee that there also cannot
-+		 * be any subsequent conflicting entries. In normal use we'd
-+		 * expect simply identical entries for this case, but there's
-+		 * no harm in accommodating the generalisation.
-+		 */
-+		if ((mask & smrs[i].mask) == mask &&
-+		    !((id ^ smrs[i].id) & ~smrs[i].mask))
-+			return i;
-+		/*
-+		 * If the new entry has any other overlap with an existing one,
-+		 * though, then there always exists at least one stream ID
-+		 * which would cause a conflict, and we can't allow that risk.
-+		 */
-+		if (!((id ^ smrs[i].id) & ~(smrs[i].mask | mask)))
-+			return -EINVAL;
-+	}
-+
-+	return free_idx;
-+}
-+
-+static bool arm_smmu_free_sme(struct arm_smmu_device *smmu, int idx)
-+{
-+	if (--smmu->s2crs[idx].count)
-+		return false;
-+
-+	smmu->s2crs[idx] = s2cr_init_val;
-+	if (smmu->smrs)
-+		smmu->smrs[idx].valid = false;
-+
-+	return true;
-+}
-+
-+static int arm_smmu_master_alloc_smes(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
-+	struct arm_smmu_device *smmu = cfg->smmu;
-+	struct arm_smmu_smr *smrs = smmu->smrs;
-+	struct iommu_group *group;
-+	int i, idx, ret;
-+
-+	mutex_lock(&smmu->stream_map_mutex);
-+	/* Figure out a viable stream map entry allocation */
-+	for_each_cfg_sme(fwspec, i, idx) {
-+		u16 sid = fwspec->ids[i];
-+		u16 mask = fwspec->ids[i] >> SMR_MASK_SHIFT;
-+
-+		if (idx != INVALID_SMENDX) {
-+			ret = -EEXIST;
-+			goto out_err;
-+		}
-+
-+		ret = arm_smmu_find_sme(smmu, sid, mask);
-+		if (ret < 0)
-+			goto out_err;
-+
-+		idx = ret;
-+		if (smrs && smmu->s2crs[idx].count == 0) {
-+			smrs[idx].id = sid;
-+			smrs[idx].mask = mask;
-+			smrs[idx].valid = true;
-+		}
-+		smmu->s2crs[idx].count++;
-+		cfg->smendx[i] = (s16)idx;
-+	}
-+
-+	group = iommu_group_get_for_dev(dev);
-+	if (!group)
-+		group = ERR_PTR(-ENOMEM);
-+	if (IS_ERR(group)) {
-+		ret = PTR_ERR(group);
-+		goto out_err;
-+	}
-+	iommu_group_put(group);
-+
-+	/* It worked! Now, poke the actual hardware */
-+	for_each_cfg_sme(fwspec, i, idx) {
-+		arm_smmu_write_sme(smmu, idx);
-+		smmu->s2crs[idx].group = group;
-+	}
-+
-+	mutex_unlock(&smmu->stream_map_mutex);
-+	return 0;
-+
-+out_err:
-+	while (i--) {
-+		arm_smmu_free_sme(smmu, cfg->smendx[i]);
-+		cfg->smendx[i] = INVALID_SMENDX;
-+	}
-+	mutex_unlock(&smmu->stream_map_mutex);
-+	return ret;
-+}
-+
-+static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
-+{
-+	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-+	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
-+	int i, idx;
-+
-+	mutex_lock(&smmu->stream_map_mutex);
-+	for_each_cfg_sme(fwspec, i, idx) {
-+		if (arm_smmu_free_sme(smmu, idx))
-+			arm_smmu_write_sme(smmu, idx);
-+		cfg->smendx[i] = INVALID_SMENDX;
-+	}
-+	mutex_unlock(&smmu->stream_map_mutex);
-+}
-+
-+static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
-+				      struct iommu_fwspec *fwspec)
-+{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
-+	u8 cbndx = smmu_domain->cfg.cbndx;
-+	enum arm_smmu_s2cr_type type;
-+	int i, idx;
-+
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
-+		type = S2CR_TYPE_BYPASS;
-+	else
-+		type = S2CR_TYPE_TRANS;
-+
-+	for_each_cfg_sme(fwspec, i, idx) {
-+		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
-+			continue;
-+
-+		s2cr[idx].type = type;
-+		s2cr[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
-+		s2cr[idx].cbndx = cbndx;
-+		arm_smmu_write_s2cr(smmu, idx);
-+	}
-+	return 0;
-+}
-+
-+static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-+{
-+	int ret;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct arm_smmu_device *smmu;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
-+		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
-+		return -ENXIO;
-+	}
-+
-+	/*
-+	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
-+	 * domains between of_xlate() and add_device() - we have no way to cope
-+	 * with that, so until ARM gets converted to rely on groups and default
-+	 * domains, just say no (but more politely than by dereferencing NULL).
-+	 * This should be at least a WARN_ON once that's sorted.
-+	 */
-+	if (!fwspec->iommu_priv)
-+		return -ENODEV;
-+
-+	smmu = fwspec_smmu(fwspec);
-+	/* Ensure that the domain is finalised */
-+	ret = arm_smmu_init_domain_context(domain, smmu);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Sanity check the domain. We don't support domains across
-+	 * different SMMUs.
-+	 */
-+	if (smmu_domain->smmu != smmu) {
-+		dev_err(dev,
-+			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
-+			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
-+		return -EINVAL;
-+	}
-+
-+	/* Looks ok, so add the device to the domain */
-+	return arm_smmu_domain_add_master(smmu_domain, fwspec);
-+}
-+
-+static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
-+			phys_addr_t paddr, size_t size, int prot)
-+{
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-+
-+	if (!ops)
-+		return -ENODEV;
-+
-+	return ops->map(ops, iova, paddr, size, prot);
-+}
-+
-+static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
-+			     size_t size)
-+{
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-+
-+	if (!ops)
-+		return 0;
-+
-+	return ops->unmap(ops, iova, size);
-+}
-+
-+static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (smmu_domain->tlb_ops)
-+		smmu_domain->tlb_ops->tlb_flush_all(smmu_domain);
-+}
-+
-+static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (smmu_domain->tlb_ops)
-+		smmu_domain->tlb_ops->tlb_sync(smmu_domain);
-+}
-+
-+static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
-+					      dma_addr_t iova)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
-+	struct device *dev = smmu->dev;
-+	void __iomem *cb_base;
-+	u32 tmp;
-+	u64 phys;
-+	unsigned long va, flags;
-+
-+	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
-+
-+	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-+	/* ATS1 registers can only be written atomically */
-+	va = iova & ~0xfffUL;
-+	if (smmu->version == ARM_SMMU_V2)
-+		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
-+	else /* Register is only 32-bit in v1 */
-+		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
-+
-+	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
-+				      !(tmp & ATSR_ACTIVE), 5, 50)) {
-+		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-+		dev_err(dev,
-+			"iova to phys timed out on %pad. Falling back to software table walk.\n",
-+			&iova);
-+		return ops->iova_to_phys(ops, iova);
-+	}
-+
-+	phys = readq_relaxed(cb_base + ARM_SMMU_CB_PAR);
-+	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-+	if (phys & CB_PAR_F) {
-+		dev_err(dev, "translation fault!\n");
-+		dev_err(dev, "PAR = 0x%llx\n", phys);
-+		return 0;
-+	}
-+
-+	return (phys & GENMASK_ULL(39, 12)) | (iova & 0xfff);
-+}
-+
-+static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
-+					dma_addr_t iova)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY)
-+		return iova;
-+
-+	if (!ops)
-+		return 0;
-+
-+	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS &&
-+			smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
-+		return arm_smmu_iova_to_phys_hard(domain, iova);
-+
-+	return ops->iova_to_phys(ops, iova);
-+}
-+
-+static bool arm_smmu_capable(enum iommu_cap cap)
-+{
-+	switch (cap) {
-+	case IOMMU_CAP_CACHE_COHERENCY:
-+		/*
-+		 * Return true here as the SMMU can always send out coherent
-+		 * requests.
-+		 */
-+		return true;
-+	case IOMMU_CAP_NOEXEC:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static int arm_smmu_match_node(struct device *dev, void *data)
-+{
-+	return dev->fwnode == data;
-+}
-+
-+static
-+struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
-+{
-+	struct device *dev = driver_find_device(&arm_smmu_driver.driver, NULL,
-+						fwnode, arm_smmu_match_node);
-+	put_device(dev);
-+	return dev ? dev_get_drvdata(dev) : NULL;
-+}
-+
-+static int arm_smmu_add_device(struct device *dev)
-+{
-+	struct arm_smmu_device *smmu;
-+	struct arm_smmu_master_cfg *cfg;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	int i, ret;
-+
-+	if (using_legacy_binding) {
-+		ret = arm_smmu_register_legacy_master(dev, &smmu);
-+
-+		/*
-+		 * If dev->iommu_fwspec is initally NULL, arm_smmu_register_legacy_master()
-+		 * will allocate/initialise a new one. Thus we need to update fwspec for
-+		 * later use.
-+		 */
-+		fwspec = dev->iommu_fwspec;
-+		if (ret)
-+			goto out_free;
-+	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
-+		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-+	} else {
-+		return -ENODEV;
-+	}
-+
-+	ret = -EINVAL;
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		u16 sid = fwspec->ids[i];
-+		u16 mask = fwspec->ids[i] >> SMR_MASK_SHIFT;
-+
-+		if (sid & ~smmu->streamid_mask) {
-+			dev_err(dev, "stream ID 0x%x out of range for SMMU (0x%x)\n",
-+				sid, smmu->streamid_mask);
-+			goto out_free;
-+		}
-+		if (mask & ~smmu->smr_mask_mask) {
-+			dev_err(dev, "SMR mask 0x%x out of range for SMMU (0x%x)\n",
-+				mask, smmu->smr_mask_mask);
-+			goto out_free;
-+		}
-+	}
-+
-+	ret = -ENOMEM;
-+	cfg = kzalloc(offsetof(struct arm_smmu_master_cfg, smendx[i]),
-+		      GFP_KERNEL);
-+	if (!cfg)
-+		goto out_free;
-+
-+	cfg->smmu = smmu;
-+	fwspec->iommu_priv = cfg;
-+	while (i--)
-+		cfg->smendx[i] = INVALID_SMENDX;
-+
-+	ret = arm_smmu_master_alloc_smes(dev);
-+	if (ret)
-+		goto out_cfg_free;
-+
-+	iommu_device_link(&smmu->iommu, dev);
-+
-+	return 0;
-+
-+out_cfg_free:
-+	kfree(cfg);
-+out_free:
-+	iommu_fwspec_free(dev);
-+	return ret;
-+}
-+
-+static void arm_smmu_remove_device(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct arm_smmu_master_cfg *cfg;
-+	struct arm_smmu_device *smmu;
-+
-+
-+	if (!fwspec || fwspec->ops != &arm_smmu_ops)
-+		return;
-+
-+	cfg  = fwspec->iommu_priv;
-+	smmu = cfg->smmu;
-+
-+	iommu_device_unlink(&smmu->iommu, dev);
-+	arm_smmu_master_free_smes(fwspec);
-+	iommu_group_remove_device(dev);
-+	kfree(fwspec->iommu_priv);
-+	iommu_fwspec_free(dev);
-+}
-+
-+static struct iommu_group *arm_smmu_device_group(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-+	struct iommu_group *group = NULL;
-+	int i, idx;
-+
-+	for_each_cfg_sme(fwspec, i, idx) {
-+		if (group && smmu->s2crs[idx].group &&
-+		    group != smmu->s2crs[idx].group)
-+			return ERR_PTR(-EINVAL);
-+
-+		group = smmu->s2crs[idx].group;
-+	}
-+
-+	if (group)
-+		return iommu_group_ref_get(group);
-+
-+	if (dev_is_pci(dev))
-+		group = pci_device_group(dev);
-+	else if (dev_is_fsl_mc(dev))
-+		group = fsl_mc_device_group(dev);
-+	else
-+		group = generic_device_group(dev);
-+
-+	return group;
-+}
-+
-+static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-+				    enum iommu_attr attr, void *data)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	switch(domain->type) {
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		switch (attr) {
-+		case DOMAIN_ATTR_NESTING:
-+			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
-+			return 0;
-+		default:
-+			return -ENODEV;
-+		}
-+		break;
-+	case IOMMU_DOMAIN_DMA:
-+		switch (attr) {
-+		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
-+			*(int *)data = smmu_domain->non_strict;
-+			return 0;
-+		default:
-+			return -ENODEV;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
-+				    enum iommu_attr attr, void *data)
-+{
-+	int ret = 0;
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	mutex_lock(&smmu_domain->init_mutex);
-+
-+	switch(domain->type) {
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		switch (attr) {
-+		case DOMAIN_ATTR_NESTING:
-+			if (smmu_domain->smmu) {
-+				ret = -EPERM;
-+				goto out_unlock;
-+			}
-+
-+			if (*(int *)data)
-+				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
-+			else
-+				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-+			break;
-+		default:
-+			ret = -ENODEV;
-+		}
-+		break;
-+	case IOMMU_DOMAIN_DMA:
-+		switch (attr) {
-+		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
-+			smmu_domain->non_strict = *(int *)data;
-+			break;
-+		default:
-+			ret = -ENODEV;
-+		}
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+out_unlock:
-+	mutex_unlock(&smmu_domain->init_mutex);
-+	return ret;
-+}
-+
-+static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
-+{
-+	u32 mask, fwid = 0;
-+
-+	if (args->args_count > 0)
-+		fwid |= (u16)args->args[0];
-+
-+	if (args->args_count > 1)
-+		fwid |= (u16)args->args[1] << SMR_MASK_SHIFT;
-+	else if (!of_property_read_u32(args->np, "stream-match-mask", &mask))
-+		fwid |= (u16)mask << SMR_MASK_SHIFT;
-+
-+	return iommu_fwspec_add_ids(dev, &fwid, 1);
-+}
-+
-+static void arm_smmu_get_resv_regions(struct device *dev,
-+				      struct list_head *head)
-+{
-+	struct iommu_resv_region *region;
-+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+
-+	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+					 prot, IOMMU_RESV_SW_MSI);
-+	if (!region)
-+		return;
-+
-+	list_add_tail(&region->list, head);
-+
-+	iommu_dma_get_resv_regions(dev, head);
-+}
-+
-+static void arm_smmu_put_resv_regions(struct device *dev,
-+				      struct list_head *head)
-+{
-+	struct iommu_resv_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, head, list)
-+		kfree(entry);
-+}
-+
-+static struct iommu_ops arm_smmu_ops = {
-+	.capable		= arm_smmu_capable,
-+	.domain_alloc		= arm_smmu_domain_alloc,
-+	.domain_free		= arm_smmu_domain_free,
-+	.attach_dev		= arm_smmu_attach_dev,
-+	.map			= arm_smmu_map,
-+	.unmap			= arm_smmu_unmap,
-+	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
-+	.iotlb_sync		= arm_smmu_iotlb_sync,
-+	.iova_to_phys		= arm_smmu_iova_to_phys,
-+	.add_device		= arm_smmu_add_device,
-+	.remove_device		= arm_smmu_remove_device,
-+	.device_group		= arm_smmu_device_group,
-+	.domain_get_attr	= arm_smmu_domain_get_attr,
-+	.domain_set_attr	= arm_smmu_domain_set_attr,
-+	.of_xlate		= arm_smmu_of_xlate,
-+	.get_resv_regions	= arm_smmu_get_resv_regions,
-+	.put_resv_regions	= arm_smmu_put_resv_regions,
-+	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-+};
-+
-+static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
-+{
-+	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-+	int i;
-+	u32 reg, major;
-+
-+	/* clear global FSR */
-+	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-+	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-+
-+	/*
-+	 * Reset stream mapping groups: Initial values mark all SMRn as
-+	 * invalid and all S2CRn as bypass unless overridden.
-+	 */
-+	for (i = 0; i < smmu->num_mapping_groups; ++i)
-+		arm_smmu_write_sme(smmu, i);
-+
-+	if (smmu->model == ARM_MMU500) {
-+		/*
-+		 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
-+		 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
-+		 * bit is only present in MMU-500r2 onwards.
-+		 */
-+		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
-+		major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
-+		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
-+		if (major >= 2)
-+			reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-+		/*
-+		 * Allow unmatched Stream IDs to allocate bypass
-+		 * TLB entries for reduced latency.
-+		 */
-+		reg |= ARM_MMU500_ACR_SMTNMB_TLBEN | ARM_MMU500_ACR_S2CRB_TLBEN;
-+		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-+	}
-+
-+	/* Make sure all context banks are disabled and clear CB_FSR  */
-+	for (i = 0; i < smmu->num_context_banks; ++i) {
-+		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
-+
-+		arm_smmu_write_context_bank(smmu, i);
-+		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
-+		/*
-+		 * Disable MMU-500's not-particularly-beneficial next-page
-+		 * prefetcher for the sake of errata #841119 and #826419.
-+		 */
-+		if (smmu->model == ARM_MMU500) {
-+			reg = readl_relaxed(cb_base + ARM_SMMU_CB_ACTLR);
-+			reg &= ~ARM_MMU500_ACTLR_CPRE;
-+			writel_relaxed(reg, cb_base + ARM_SMMU_CB_ACTLR);
-+		}
-+	}
-+
-+	/* Invalidate the TLB, just in case */
-+	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
-+	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
-+
-+	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-+
-+	/* Enable fault reporting */
-+	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
-+
-+	/* Disable TLB broadcasting. */
-+	reg |= (sCR0_VMIDPNE | sCR0_PTM);
-+
-+	/* Enable client access, handling unmatched streams as appropriate */
-+	reg &= ~sCR0_CLIENTPD;
-+	if (disable_bypass)
-+		reg |= sCR0_USFCFG;
-+	else
-+		reg &= ~sCR0_USFCFG;
-+
-+	/* Disable forced broadcasting */
-+	reg &= ~sCR0_FB;
-+
-+	/* Don't upgrade barriers */
-+	reg &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
-+
-+	if (smmu->features & ARM_SMMU_FEAT_VMID16)
-+		reg |= sCR0_VMID16EN;
-+
-+	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
-+		reg |= sCR0_EXIDENABLE;
-+
-+	/* Push the button */
-+	arm_smmu_tlb_sync_global(smmu);
-+	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-+}
-+
-+static int arm_smmu_id_size_to_bits(int size)
-+{
-+	switch (size) {
-+	case 0:
-+		return 32;
-+	case 1:
-+		return 36;
-+	case 2:
-+		return 40;
-+	case 3:
-+		return 42;
-+	case 4:
-+		return 44;
-+	case 5:
-+	default:
-+		return 48;
-+	}
-+}
-+
-+static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
-+{
-+	unsigned long size;
-+	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-+	u32 id;
-+	bool cttw_reg, cttw_fw = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK;
-+	int i;
-+
-+	dev_notice(smmu->dev, "probing hardware configuration...\n");
-+	dev_notice(smmu->dev, "SMMUv%d with:\n",
-+			smmu->version == ARM_SMMU_V2 ? 2 : 1);
-+
-+	/* ID0 */
-+	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID0);
-+
-+	/* Restrict available stages based on module parameter */
-+	if (force_stage == 1)
-+		id &= ~(ID0_S2TS | ID0_NTS);
-+	else if (force_stage == 2)
-+		id &= ~(ID0_S1TS | ID0_NTS);
-+
-+	if (id & ID0_S1TS) {
-+		smmu->features |= ARM_SMMU_FEAT_TRANS_S1;
-+		dev_notice(smmu->dev, "\tstage 1 translation\n");
-+	}
-+
-+	if (id & ID0_S2TS) {
-+		smmu->features |= ARM_SMMU_FEAT_TRANS_S2;
-+		dev_notice(smmu->dev, "\tstage 2 translation\n");
-+	}
-+
-+	if (id & ID0_NTS) {
-+		smmu->features |= ARM_SMMU_FEAT_TRANS_NESTED;
-+		dev_notice(smmu->dev, "\tnested translation\n");
-+	}
-+
-+	if (!(smmu->features &
-+		(ARM_SMMU_FEAT_TRANS_S1 | ARM_SMMU_FEAT_TRANS_S2))) {
-+		dev_err(smmu->dev, "\tno translation support!\n");
-+		return -ENODEV;
-+	}
-+
-+	if ((id & ID0_S1TS) &&
-+		((smmu->version < ARM_SMMU_V2) || !(id & ID0_ATOSNS))) {
-+		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
-+		dev_notice(smmu->dev, "\taddress translation ops\n");
-+	}
-+
-+	/*
-+	 * In order for DMA API calls to work properly, we must defer to what
-+	 * the FW says about coherency, regardless of what the hardware claims.
-+	 * Fortunately, this also opens up a workaround for systems where the
-+	 * ID register value has ended up configured incorrectly.
-+	 */
-+	cttw_reg = !!(id & ID0_CTTW);
-+	if (cttw_fw || cttw_reg)
-+		dev_notice(smmu->dev, "\t%scoherent table walk\n",
-+			   cttw_fw ? "" : "non-");
-+	if (cttw_fw != cttw_reg)
-+		dev_notice(smmu->dev,
-+			   "\t(IDR0.CTTW overridden by FW configuration)\n");
-+
-+	/* Max. number of entries we have for stream matching/indexing */
-+	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
-+		smmu->features |= ARM_SMMU_FEAT_EXIDS;
-+		size = 1 << 16;
-+	} else {
-+		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-+	}
-+	smmu->streamid_mask = size - 1;
-+	if (id & ID0_SMS) {
-+		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
-+		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
-+		if (size == 0) {
-+			dev_err(smmu->dev,
-+				"stream-matching supported, but no SMRs present!\n");
-+			return -ENODEV;
-+		}
-+
-+		/* Zero-initialised to mark as invalid */
-+		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
-+					  GFP_KERNEL);
-+		if (!smmu->smrs)
-+			return -ENOMEM;
-+
-+		dev_notice(smmu->dev,
-+			   "\tstream matching with %lu register groups", size);
-+	}
-+	/* s2cr->type == 0 means translation, so initialise explicitly */
-+	smmu->s2crs = devm_kmalloc_array(smmu->dev, size, sizeof(*smmu->s2crs),
-+					 GFP_KERNEL);
-+	if (!smmu->s2crs)
-+		return -ENOMEM;
-+	for (i = 0; i < size; i++)
-+		smmu->s2crs[i] = s2cr_init_val;
-+
-+	smmu->num_mapping_groups = size;
-+	mutex_init(&smmu->stream_map_mutex);
-+	spin_lock_init(&smmu->global_sync_lock);
-+
-+	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
-+		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
-+		if (!(id & ID0_PTFS_NO_AARCH32S))
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_S;
-+	}
-+
-+	/* ID1 */
-+	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID1);
-+	smmu->pgshift = (id & ID1_PAGESIZE) ? 16 : 12;
-+
-+	/* Check for size mismatch of SMMU address space from mapped region */
-+	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
-+	size <<= smmu->pgshift;
-+	if (smmu->cb_base != gr0_base + size)
-+		dev_warn(smmu->dev,
-+			"SMMU address space size (0x%lx) differs from mapped region size (0x%tx)!\n",
-+			size * 2, (smmu->cb_base - gr0_base) * 2);
-+
-+	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) & ID1_NUMS2CB_MASK;
-+	smmu->num_context_banks = (id >> ID1_NUMCB_SHIFT) & ID1_NUMCB_MASK;
-+	if (smmu->num_s2_context_banks > smmu->num_context_banks) {
-+		dev_err(smmu->dev, "impossible number of S2 context banks!\n");
-+		return -ENODEV;
-+	}
-+	dev_notice(smmu->dev, "\t%u context banks (%u stage-2 only)\n",
-+		   smmu->num_context_banks, smmu->num_s2_context_banks);
-+	/*
-+	 * Cavium CN88xx erratum #27704.
-+	 * Ensure ASID and VMID allocation is unique across all SMMUs in
-+	 * the system.
-+	 */
-+	if (smmu->model == CAVIUM_SMMUV2) {
-+		smmu->cavium_id_base =
-+			atomic_add_return(smmu->num_context_banks,
-+					  &cavium_smmu_context_count);
-+		smmu->cavium_id_base -= smmu->num_context_banks;
-+		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
-+	}
-+	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
-+				 sizeof(*smmu->cbs), GFP_KERNEL);
-+	if (!smmu->cbs)
-+		return -ENOMEM;
-+
-+	/* ID2 */
-+	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
-+	size = arm_smmu_id_size_to_bits((id >> ID2_IAS_SHIFT) & ID2_IAS_MASK);
-+	smmu->ipa_size = size;
-+
-+	/* The output mask is also applied for bypass */
-+	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
-+	smmu->pa_size = size;
-+
-+	if (id & ID2_VMID16)
-+		smmu->features |= ARM_SMMU_FEAT_VMID16;
-+
-+	/*
-+	 * What the page table walker can address actually depends on which
-+	 * descriptor format is in use, but since a) we don't know that yet,
-+	 * and b) it can vary per context bank, this will have to do...
-+	 */
-+	if (dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(size)))
-+		dev_warn(smmu->dev,
-+			 "failed to set DMA mask for table walker\n");
-+
-+	if (smmu->version < ARM_SMMU_V2) {
-+		smmu->va_size = smmu->ipa_size;
-+		if (smmu->version == ARM_SMMU_V1_64K)
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
-+	} else {
-+		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
-+		smmu->va_size = arm_smmu_id_size_to_bits(size);
-+		if (id & ID2_PTFS_4K)
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_4K;
-+		if (id & ID2_PTFS_16K)
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_16K;
-+		if (id & ID2_PTFS_64K)
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
-+	}
-+
-+	/* Now we've corralled the various formats, what'll it do? */
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
-+		smmu->pgsize_bitmap |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
-+	if (smmu->features &
-+	    (ARM_SMMU_FEAT_FMT_AARCH32_L | ARM_SMMU_FEAT_FMT_AARCH64_4K))
-+		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K)
-+		smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K)
-+		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
-+
-+	if (arm_smmu_ops.pgsize_bitmap == -1UL)
-+		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
-+	else
-+		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
-+	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n",
-+		   smmu->pgsize_bitmap);
-+
-+
-+	if (smmu->features & ARM_SMMU_FEAT_TRANS_S1)
-+		dev_notice(smmu->dev, "\tStage-1: %lu-bit VA -> %lu-bit IPA\n",
-+			   smmu->va_size, smmu->ipa_size);
-+
-+	if (smmu->features & ARM_SMMU_FEAT_TRANS_S2)
-+		dev_notice(smmu->dev, "\tStage-2: %lu-bit IPA -> %lu-bit PA\n",
-+			   smmu->ipa_size, smmu->pa_size);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_ACPI
-+static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
-+{
-+	int ret = 0;
-+
-+	switch (model) {
-+	case ACPI_IORT_SMMU_V1:
-+	case ACPI_IORT_SMMU_CORELINK_MMU400:
-+		smmu->version = ARM_SMMU_V1;
-+		smmu->model = GENERIC_SMMU;
-+		break;
-+	case ACPI_IORT_SMMU_CORELINK_MMU401:
-+		smmu->version = ARM_SMMU_V1_64K;
-+		smmu->model = GENERIC_SMMU;
-+		break;
-+	case ACPI_IORT_SMMU_V2:
-+		smmu->version = ARM_SMMU_V2;
-+		smmu->model = GENERIC_SMMU;
-+		break;
-+	case ACPI_IORT_SMMU_CORELINK_MMU500:
-+		smmu->version = ARM_SMMU_V2;
-+		smmu->model = ARM_MMU500;
-+		break;
-+	case ACPI_IORT_SMMU_CAVIUM_THUNDERX:
-+		smmu->version = ARM_SMMU_V2;
-+		smmu->model = CAVIUM_SMMUV2;
-+		break;
-+	default:
-+		ret = -ENODEV;
-+	}
-+
-+	return ret;
-+}
-+
-+static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-+				      struct arm_smmu_device *smmu)
-+{
-+	struct device *dev = smmu->dev;
-+	struct acpi_iort_node *node =
-+		*(struct acpi_iort_node **)dev_get_platdata(dev);
-+	struct acpi_iort_smmu *iort_smmu;
-+	int ret;
-+
-+	/* Retrieve SMMU1/2 specific data */
-+	iort_smmu = (struct acpi_iort_smmu *)node->node_data;
-+
-+	ret = acpi_smmu_get_data(iort_smmu->model, smmu);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Ignore the configuration access interrupt */
-+	smmu->num_global_irqs = 1;
-+
-+	if (iort_smmu->flags & ACPI_IORT_SMMU_COHERENT_WALK)
-+		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
-+
-+	return 0;
-+}
-+#else
-+static inline int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-+					     struct arm_smmu_device *smmu)
-+{
-+	return -ENODEV;
-+}
-+#endif
-+
-+static int arm_smmu_device_dt_probe(struct platform_device *pdev,
-+				    struct arm_smmu_device *smmu)
-+{
-+	const struct arm_smmu_match_data *data;
-+	struct device *dev = &pdev->dev;
-+	bool legacy_binding;
-+
-+	if (of_property_read_u32(dev->of_node, "#global-interrupts",
-+				 &smmu->num_global_irqs)) {
-+		dev_err(dev, "missing #global-interrupts property\n");
-+		return -ENODEV;
-+	}
-+
-+	data = of_device_get_match_data(dev);
-+	smmu->version = data->version;
-+	smmu->model = data->model;
-+
-+	parse_driver_options(smmu);
-+
-+	legacy_binding = of_find_property(dev->of_node, "mmu-masters", NULL);
-+	if (legacy_binding && !using_generic_binding) {
-+		if (!using_legacy_binding)
-+			pr_notice("deprecated \"mmu-masters\" DT property in use; DMA API support unavailable\n");
-+		using_legacy_binding = true;
-+	} else if (!legacy_binding && !using_legacy_binding) {
-+		using_generic_binding = true;
-+	} else {
-+		dev_err(dev, "not probing due to mismatched DT properties\n");
-+		return -ENODEV;
-+	}
-+
-+	if (of_dma_is_coherent(dev->of_node))
-+		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
-+
-+	return 0;
-+}
-+
-+static void arm_smmu_bus_init(void)
-+{
-+	/* Oh, for a proper bus abstraction */
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
-+#ifdef CONFIG_ARM_AMBA
-+	if (!iommu_present(&amba_bustype))
-+		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
-+#endif
-+#ifdef CONFIG_PCI
-+	if (!iommu_present(&pci_bus_type)) {
-+		pci_request_acs();
-+		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-+	}
-+#endif
-+#ifdef CONFIG_FSL_MC_BUS
-+	if (!iommu_present(&fsl_mc_bus_type))
-+		bus_set_iommu(&fsl_mc_bus_type, &arm_smmu_ops);
-+#endif
-+}
-+
-+static int arm_smmu_device_probe(struct platform_device *pdev)
-+{
-+	struct resource *res;
-+	resource_size_t ioaddr;
-+	struct arm_smmu_device *smmu;
-+	struct device *dev = &pdev->dev;
-+	int num_irqs, i, err;
-+
-+	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
-+	if (!smmu) {
-+		dev_err(dev, "failed to allocate arm_smmu_device\n");
-+		return -ENOMEM;
-+	}
-+	smmu->dev = dev;
-+
-+	if (dev->of_node)
-+		err = arm_smmu_device_dt_probe(pdev, smmu);
-+	else
-+		err = arm_smmu_device_acpi_probe(pdev, smmu);
-+
-+	if (err)
-+		return err;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	ioaddr = res->start;
-+	smmu->base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(smmu->base))
-+		return PTR_ERR(smmu->base);
-+	smmu->cb_base = smmu->base + resource_size(res) / 2;
-+
-+	num_irqs = 0;
-+	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
-+		num_irqs++;
-+		if (num_irqs > smmu->num_global_irqs)
-+			smmu->num_context_irqs++;
-+	}
-+
-+	if (!smmu->num_context_irqs) {
-+		dev_err(dev, "found %d interrupts but expected at least %d\n",
-+			num_irqs, smmu->num_global_irqs + 1);
-+		return -ENODEV;
-+	}
-+
-+	smmu->irqs = devm_kcalloc(dev, num_irqs, sizeof(*smmu->irqs),
-+				  GFP_KERNEL);
-+	if (!smmu->irqs) {
-+		dev_err(dev, "failed to allocate %d irqs\n", num_irqs);
-+		return -ENOMEM;
-+	}
-+
-+	for (i = 0; i < num_irqs; ++i) {
-+		int irq = platform_get_irq(pdev, i);
-+
-+		if (irq < 0) {
-+			dev_err(dev, "failed to get irq index %d\n", i);
-+			return -ENODEV;
-+		}
-+		smmu->irqs[i] = irq;
-+	}
-+
-+	err = arm_smmu_device_cfg_probe(smmu);
-+	if (err)
-+		return err;
-+
-+	if (smmu->version == ARM_SMMU_V2) {
-+		if (smmu->num_context_banks > smmu->num_context_irqs) {
-+			dev_err(dev,
-+			      "found only %d context irq(s) but %d required\n",
-+			      smmu->num_context_irqs, smmu->num_context_banks);
-+			return -ENODEV;
-+		}
-+
-+		/* Ignore superfluous interrupts */
-+		smmu->num_context_irqs = smmu->num_context_banks;
-+	}
-+
-+	for (i = 0; i < smmu->num_global_irqs; ++i) {
-+		err = devm_request_irq(smmu->dev, smmu->irqs[i],
-+				       arm_smmu_global_fault,
-+				       IRQF_SHARED,
-+				       "arm-smmu global fault",
-+				       smmu);
-+		if (err) {
-+			dev_err(dev, "failed to request global IRQ %d (%u)\n",
-+				i, smmu->irqs[i]);
-+			return err;
-+		}
-+	}
-+
-+	err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
-+				     "smmu.%pa", &ioaddr);
-+	if (err) {
-+		dev_err(dev, "Failed to register iommu in sysfs\n");
-+		return err;
-+	}
-+
-+	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
-+	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
-+
-+	err = iommu_device_register(&smmu->iommu);
-+	if (err) {
-+		dev_err(dev, "Failed to register iommu\n");
-+		return err;
-+	}
-+
-+	platform_set_drvdata(pdev, smmu);
-+	arm_smmu_device_reset(smmu);
-+	arm_smmu_test_smr_masks(smmu);
-+
-+	/*
-+	 * For ACPI and generic DT bindings, an SMMU will be probed before
-+	 * any device which might need it, so we want the bus ops in place
-+	 * ready to handle default domain setup as soon as any SMMU exists.
-+	 */
-+	if (!using_legacy_binding)
-+		arm_smmu_bus_init();
-+
-+	return 0;
-+}
-+
-+/*
-+ * With the legacy DT binding in play, though, we have no guarantees about
-+ * probe order, but then we're also not doing default domains, so we can
-+ * delay setting bus ops until we're sure every possible SMMU is ready,
-+ * and that way ensure that no add_device() calls get missed.
-+ */
-+static int arm_smmu_legacy_bus_init(void)
-+{
-+	if (using_legacy_binding)
-+		arm_smmu_bus_init();
-+	return 0;
-+}
-+device_initcall_sync(arm_smmu_legacy_bus_init);
-+
-+static int arm_smmu_device_remove(struct platform_device *pdev)
-+{
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
-+
-+	if (!smmu)
-+		return -ENODEV;
-+
-+	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
-+		dev_err(&pdev->dev, "removing device with active domains!\n");
-+
-+	/* Turn the thing off */
-+	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-+	return 0;
-+}
-+
-+static void arm_smmu_device_shutdown(struct platform_device *pdev)
-+{
-+	arm_smmu_device_remove(pdev);
-+}
-+
-+static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
-+{
-+	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-+
-+	arm_smmu_device_reset(smmu);
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
-diff --git a/drivers/iommu/arm-smmu-common.h b/drivers/iommu/arm-smmu-common.h
-new file mode 100644
-index 0000000..33feefd
---- /dev/null
-+++ b/drivers/iommu/arm-smmu-common.h
-@@ -0,0 +1,256 @@
-+/*
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ *
-+ * Copyright (C) 2013 ARM Limited
-+ *
-+ * Author: Will Deacon <will.deacon@arm.com>
-+ */
-+
-+#ifndef __ARM_SMMU_COMMON_H
-+#define __ARM_SMMU_COMMON_H
-+
-+#include <linux/acpi.h>
-+#include <linux/acpi_iort.h>
-+#include <linux/atomic.h>
-+#include <linux/amba/bus.h>
-+#include <linux/delay.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/err.h>
-+#include <linux/fsl/mc.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/io-64-nonatomic-hi-lo.h>
-+#include <linux/iommu.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
-+#include <linux/of_iommu.h>
-+#include <linux/pci.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+
-+#include "arm-smmu-regs.h"
-+#include "io-pgtable.h"
-+
-+#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
-+
-+#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
-+#define ARM_MMU500_ACR_S2CRB_TLBEN	(1 << 10)
-+#define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
-+
-+#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-+#define TLB_SPIN_COUNT			10
-+
-+/* Maximum number of context banks per SMMU */
-+#define ARM_SMMU_MAX_CBS		128
-+
-+/* SMMU global address space */
-+#define ARM_SMMU_GR0(smmu)		((smmu)->base)
-+#define ARM_SMMU_GR1(smmu)		((smmu)->base + (1 << (smmu)->pgshift))
-+
-+/*
-+ * SMMU global address space with conditional offset to access secure
-+ * aliases of non-secure registers (e.g. nsCR0: 0x400, nsGFSR: 0x448,
-+ * nsGFSYNR0: 0x450)
-+ */
-+#define ARM_SMMU_GR0_NS(smmu)						\
-+	((smmu)->base +							\
-+		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
-+			? 0x400 : 0))
-+
-+/*
-+ * Some 64-bit registers only make sense to write atomically, but in such
-+ * cases all the data relevant to AArch32 formats lies within the lower word,
-+ * therefore this actually makes more sense than it might first appear.
-+ */
-+#ifdef CONFIG_64BIT
-+#define smmu_write_atomic_lq		writeq_relaxed
-+#else
-+#define smmu_write_atomic_lq		writel_relaxed
-+#endif
-+
-+/* Translation context bank */
-+#define ARM_SMMU_CB(smmu, n)	((smmu)->cb_base + ((n) << (smmu)->pgshift))
-+
-+#define MSI_IOVA_BASE			0x8000000
-+#define MSI_IOVA_LENGTH			0x100000
-+
-+enum arm_smmu_arch_version {
-+	ARM_SMMU_V1,
-+	ARM_SMMU_V1_64K,
-+	ARM_SMMU_V2,
-+};
-+
-+enum arm_smmu_implementation {
-+	GENERIC_SMMU,
-+	ARM_MMU500,
-+	CAVIUM_SMMUV2,
-+};
-+
-+struct arm_smmu_s2cr {
-+	struct iommu_group		*group;
-+	int				count;
-+	enum arm_smmu_s2cr_type		type;
-+	enum arm_smmu_s2cr_privcfg	privcfg;
-+	u8				cbndx;
-+};
-+
-+#define s2cr_init_val (struct arm_smmu_s2cr){				\
-+	.type = disable_bypass ? S2CR_TYPE_FAULT : S2CR_TYPE_BYPASS,	\
-+}
-+
-+struct arm_smmu_smr {
-+	u16				mask;
-+	u16				id;
-+	bool				valid;
-+};
-+
-+struct arm_smmu_cb {
-+	u64				ttbr[2];
-+	u32				tcr[2];
-+	u32				mair[2];
-+	struct arm_smmu_cfg		*cfg;
-+};
-+
-+struct arm_smmu_master_cfg {
-+	struct arm_smmu_device		*smmu;
-+	s16				smendx[];
-+};
-+#define INVALID_SMENDX			-1
-+#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
-+#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
-+#define fwspec_smendx(fw, i) \
-+	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
-+#define for_each_cfg_sme(fw, i, idx) \
-+	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
-+
-+struct arm_smmu_device {
-+	struct device			*dev;
-+
-+	void __iomem			*base;
-+	void __iomem			*cb_base;
-+	unsigned long			pgshift;
-+
-+#define ARM_SMMU_FEAT_COHERENT_WALK	(1 << 0)
-+#define ARM_SMMU_FEAT_STREAM_MATCH	(1 << 1)
-+#define ARM_SMMU_FEAT_TRANS_S1		(1 << 2)
-+#define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
-+#define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
-+#define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
-+#define ARM_SMMU_FEAT_VMID16		(1 << 6)
-+#define ARM_SMMU_FEAT_FMT_AARCH64_4K	(1 << 7)
-+#define ARM_SMMU_FEAT_FMT_AARCH64_16K	(1 << 8)
-+#define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
-+#define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
-+#define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
-+#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
-+	u32				features;
-+
-+#define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-+	u32				options;
-+	enum arm_smmu_arch_version	version;
-+	enum arm_smmu_implementation	model;
-+
-+	u32				num_context_banks;
-+	u32				num_s2_context_banks;
-+	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
-+	struct arm_smmu_cb		*cbs;
-+	atomic_t			irptndx;
-+
-+	u32				num_mapping_groups;
-+	u16				streamid_mask;
-+	u16				smr_mask_mask;
-+	struct arm_smmu_smr		*smrs;
-+	struct arm_smmu_s2cr		*s2crs;
-+	struct mutex			stream_map_mutex;
-+
-+	unsigned long			va_size;
-+	unsigned long			ipa_size;
-+	unsigned long			pa_size;
-+	unsigned long			pgsize_bitmap;
-+
-+	u32				num_global_irqs;
-+	u32				num_context_irqs;
-+	unsigned int			*irqs;
-+
-+	u32				cavium_id_base; /* Specific to Cavium */
-+
-+	spinlock_t			global_sync_lock;
-+
-+	/* IOMMU core code handle */
-+	struct iommu_device		iommu;
-+};
-+
-+enum arm_smmu_context_fmt {
-+	ARM_SMMU_CTX_FMT_NONE,
-+	ARM_SMMU_CTX_FMT_AARCH64,
-+	ARM_SMMU_CTX_FMT_AARCH32_L,
-+	ARM_SMMU_CTX_FMT_AARCH32_S,
-+};
-+
-+struct arm_smmu_cfg {
-+	u8				cbndx;
-+	u8				irptndx;
-+	union {
-+		u16			asid;
-+		u16			vmid;
-+	};
-+	u32				cbar;
-+	enum arm_smmu_context_fmt	fmt;
-+};
-+#define INVALID_IRPTNDX			0xff
-+
-+enum arm_smmu_domain_stage {
-+	ARM_SMMU_DOMAIN_S1 = 0,
-+	ARM_SMMU_DOMAIN_S2,
-+	ARM_SMMU_DOMAIN_NESTED,
-+	ARM_SMMU_DOMAIN_BYPASS,
-+};
-+
-+struct arm_smmu_domain {
-+	struct arm_smmu_device		*smmu;
-+	struct io_pgtable_ops		*pgtbl_ops;
-+	const struct iommu_gather_ops	*tlb_ops;
-+	struct arm_smmu_cfg		cfg;
-+	enum arm_smmu_domain_stage	stage;
-+	bool				non_strict;
-+	struct mutex			init_mutex; /* Protects smmu pointer */
-+	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
-+	struct iommu_domain		domain;
-+};
-+
-+struct arm_smmu_option_prop {
-+	u32 opt;
-+	const char *prop;
-+};
-+
-+static atomic_t cavium_smmu_context_count = ATOMIC_INIT(0);
-+
-+static bool using_legacy_binding, using_generic_binding;
-+
-+static struct arm_smmu_option_prop arm_smmu_options[] = {
-+	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
-+	{ 0, NULL},
-+};
-+
-+struct arm_smmu_match_data {
-+	enum arm_smmu_arch_version version;
-+	enum arm_smmu_implementation model;
-+};
-+
-+#endif /* __ARM_SMMU_COMMON_H */
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5a28ae8..a341c9f 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -29,388 +29,9 @@
- 
- #define pr_fmt(fmt) "arm-smmu: " fmt
- 
--#include <linux/acpi.h>
--#include <linux/acpi_iort.h>
--#include <linux/atomic.h>
--#include <linux/delay.h>
--#include <linux/dma-iommu.h>
--#include <linux/dma-mapping.h>
--#include <linux/err.h>
--#include <linux/interrupt.h>
--#include <linux/io.h>
--#include <linux/io-64-nonatomic-hi-lo.h>
--#include <linux/iommu.h>
--#include <linux/iopoll.h>
--#include <linux/module.h>
--#include <linux/of.h>
--#include <linux/of_address.h>
--#include <linux/of_device.h>
--#include <linux/of_iommu.h>
--#include <linux/pci.h>
--#include <linux/platform_device.h>
--#include <linux/slab.h>
--#include <linux/spinlock.h>
-+#include "arm-smmu-common.h"
- 
--#include <linux/amba/bus.h>
--#include <linux/fsl/mc.h>
--
--#include "io-pgtable.h"
--#include "arm-smmu-regs.h"
--
--#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
--
--#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
--#define ARM_MMU500_ACR_S2CRB_TLBEN	(1 << 10)
--#define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
--
--#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
--#define TLB_SPIN_COUNT			10
--
--/* Maximum number of context banks per SMMU */
--#define ARM_SMMU_MAX_CBS		128
--
--/* SMMU global address space */
--#define ARM_SMMU_GR0(smmu)		((smmu)->base)
--#define ARM_SMMU_GR1(smmu)		((smmu)->base + (1 << (smmu)->pgshift))
--
--/*
-- * SMMU global address space with conditional offset to access secure
-- * aliases of non-secure registers (e.g. nsCR0: 0x400, nsGFSR: 0x448,
-- * nsGFSYNR0: 0x450)
-- */
--#define ARM_SMMU_GR0_NS(smmu)						\
--	((smmu)->base +							\
--		((smmu->options & ARM_SMMU_OPT_SECURE_CFG_ACCESS)	\
--			? 0x400 : 0))
--
--/*
-- * Some 64-bit registers only make sense to write atomically, but in such
-- * cases all the data relevant to AArch32 formats lies within the lower word,
-- * therefore this actually makes more sense than it might first appear.
-- */
--#ifdef CONFIG_64BIT
--#define smmu_write_atomic_lq		writeq_relaxed
--#else
--#define smmu_write_atomic_lq		writel_relaxed
--#endif
--
--/* Translation context bank */
--#define ARM_SMMU_CB(smmu, n)	((smmu)->cb_base + ((n) << (smmu)->pgshift))
--
--#define MSI_IOVA_BASE			0x8000000
--#define MSI_IOVA_LENGTH			0x100000
--
--static int force_stage;
--module_param(force_stage, int, S_IRUGO);
--MODULE_PARM_DESC(force_stage,
--	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
--static bool disable_bypass;
--module_param(disable_bypass, bool, S_IRUGO);
--MODULE_PARM_DESC(disable_bypass,
--	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
--
--enum arm_smmu_arch_version {
--	ARM_SMMU_V1,
--	ARM_SMMU_V1_64K,
--	ARM_SMMU_V2,
--};
--
--enum arm_smmu_implementation {
--	GENERIC_SMMU,
--	ARM_MMU500,
--	CAVIUM_SMMUV2,
--};
--
--struct arm_smmu_s2cr {
--	struct iommu_group		*group;
--	int				count;
--	enum arm_smmu_s2cr_type		type;
--	enum arm_smmu_s2cr_privcfg	privcfg;
--	u8				cbndx;
--};
--
--#define s2cr_init_val (struct arm_smmu_s2cr){				\
--	.type = disable_bypass ? S2CR_TYPE_FAULT : S2CR_TYPE_BYPASS,	\
--}
--
--struct arm_smmu_smr {
--	u16				mask;
--	u16				id;
--	bool				valid;
--};
--
--struct arm_smmu_cb {
--	u64				ttbr[2];
--	u32				tcr[2];
--	u32				mair[2];
--	struct arm_smmu_cfg		*cfg;
--};
--
--struct arm_smmu_master_cfg {
--	struct arm_smmu_device		*smmu;
--	s16				smendx[];
--};
--#define INVALID_SMENDX			-1
--#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
--#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
--#define fwspec_smendx(fw, i) \
--	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
--#define for_each_cfg_sme(fw, i, idx) \
--	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
--
--struct arm_smmu_device {
--	struct device			*dev;
--
--	void __iomem			*base;
--	void __iomem			*cb_base;
--	unsigned long			pgshift;
--
--#define ARM_SMMU_FEAT_COHERENT_WALK	(1 << 0)
--#define ARM_SMMU_FEAT_STREAM_MATCH	(1 << 1)
--#define ARM_SMMU_FEAT_TRANS_S1		(1 << 2)
--#define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
--#define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
--#define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
--#define ARM_SMMU_FEAT_VMID16		(1 << 6)
--#define ARM_SMMU_FEAT_FMT_AARCH64_4K	(1 << 7)
--#define ARM_SMMU_FEAT_FMT_AARCH64_16K	(1 << 8)
--#define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
--#define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
--#define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
--#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
--	u32				features;
--
--#define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
--	u32				options;
--	enum arm_smmu_arch_version	version;
--	enum arm_smmu_implementation	model;
--
--	u32				num_context_banks;
--	u32				num_s2_context_banks;
--	DECLARE_BITMAP(context_map, ARM_SMMU_MAX_CBS);
--	struct arm_smmu_cb		*cbs;
--	atomic_t			irptndx;
--
--	u32				num_mapping_groups;
--	u16				streamid_mask;
--	u16				smr_mask_mask;
--	struct arm_smmu_smr		*smrs;
--	struct arm_smmu_s2cr		*s2crs;
--	struct mutex			stream_map_mutex;
--
--	unsigned long			va_size;
--	unsigned long			ipa_size;
--	unsigned long			pa_size;
--	unsigned long			pgsize_bitmap;
--
--	u32				num_global_irqs;
--	u32				num_context_irqs;
--	unsigned int			*irqs;
--
--	u32				cavium_id_base; /* Specific to Cavium */
--
--	spinlock_t			global_sync_lock;
--
--	/* IOMMU core code handle */
--	struct iommu_device		iommu;
--};
--
--enum arm_smmu_context_fmt {
--	ARM_SMMU_CTX_FMT_NONE,
--	ARM_SMMU_CTX_FMT_AARCH64,
--	ARM_SMMU_CTX_FMT_AARCH32_L,
--	ARM_SMMU_CTX_FMT_AARCH32_S,
--};
--
--struct arm_smmu_cfg {
--	u8				cbndx;
--	u8				irptndx;
--	union {
--		u16			asid;
--		u16			vmid;
--	};
--	u32				cbar;
--	enum arm_smmu_context_fmt	fmt;
--};
--#define INVALID_IRPTNDX			0xff
--
--enum arm_smmu_domain_stage {
--	ARM_SMMU_DOMAIN_S1 = 0,
--	ARM_SMMU_DOMAIN_S2,
--	ARM_SMMU_DOMAIN_NESTED,
--	ARM_SMMU_DOMAIN_BYPASS,
--};
--
--struct arm_smmu_domain {
--	struct arm_smmu_device		*smmu;
--	struct io_pgtable_ops		*pgtbl_ops;
--	const struct iommu_gather_ops	*tlb_ops;
--	struct arm_smmu_cfg		cfg;
--	enum arm_smmu_domain_stage	stage;
--	bool				non_strict;
--	struct mutex			init_mutex; /* Protects smmu pointer */
--	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
--	struct iommu_domain		domain;
--};
--
--struct arm_smmu_option_prop {
--	u32 opt;
--	const char *prop;
--};
--
--static atomic_t cavium_smmu_context_count = ATOMIC_INIT(0);
--
--static bool using_legacy_binding, using_generic_binding;
--
--static struct arm_smmu_option_prop arm_smmu_options[] = {
--	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
--	{ 0, NULL},
--};
--
--static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
--{
--	return container_of(dom, struct arm_smmu_domain, domain);
--}
--
--static void parse_driver_options(struct arm_smmu_device *smmu)
--{
--	int i = 0;
--
--	do {
--		if (of_property_read_bool(smmu->dev->of_node,
--						arm_smmu_options[i].prop)) {
--			smmu->options |= arm_smmu_options[i].opt;
--			dev_notice(smmu->dev, "option %s\n",
--				arm_smmu_options[i].prop);
--		}
--	} while (arm_smmu_options[++i].opt);
--}
--
--static struct device_node *dev_get_dev_node(struct device *dev)
--{
--	if (dev_is_pci(dev)) {
--		struct pci_bus *bus = to_pci_dev(dev)->bus;
--
--		while (!pci_is_root_bus(bus))
--			bus = bus->parent;
--		return of_node_get(bus->bridge->parent->of_node);
--	}
--
--	return of_node_get(dev->of_node);
--}
--
--static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void *data)
--{
--	*((__be32 *)data) = cpu_to_be32(alias);
--	return 0; /* Continue walking */
--}
--
--static int __find_legacy_master_phandle(struct device *dev, void *data)
--{
--	struct of_phandle_iterator *it = *(void **)data;
--	struct device_node *np = it->node;
--	int err;
--
--	of_for_each_phandle(it, err, dev->of_node, "mmu-masters",
--			    "#stream-id-cells", 0)
--		if (it->node == np) {
--			*(void **)data = dev;
--			return 1;
--		}
--	it->node = np;
--	return err == -ENOENT ? 0 : err;
--}
--
--static struct platform_driver arm_smmu_driver;
--static struct iommu_ops arm_smmu_ops;
--
--static int arm_smmu_register_legacy_master(struct device *dev,
--					   struct arm_smmu_device **smmu)
--{
--	struct device *smmu_dev;
--	struct device_node *np;
--	struct of_phandle_iterator it;
--	void *data = &it;
--	u32 *sids;
--	__be32 pci_sid;
--	int err;
--
--	np = dev_get_dev_node(dev);
--	if (!np || !of_find_property(np, "#stream-id-cells", NULL)) {
--		of_node_put(np);
--		return -ENODEV;
--	}
--
--	it.node = np;
--	err = driver_for_each_device(&arm_smmu_driver.driver, NULL, &data,
--				     __find_legacy_master_phandle);
--	smmu_dev = data;
--	of_node_put(np);
--	if (err == 0)
--		return -ENODEV;
--	if (err < 0)
--		return err;
--
--	if (dev_is_pci(dev)) {
--		/* "mmu-masters" assumes Stream ID == Requester ID */
--		pci_for_each_dma_alias(to_pci_dev(dev), __arm_smmu_get_pci_sid,
--				       &pci_sid);
--		it.cur = &pci_sid;
--		it.cur_count = 1;
--	}
--
--	err = iommu_fwspec_init(dev, &smmu_dev->of_node->fwnode,
--				&arm_smmu_ops);
--	if (err)
--		return err;
--
--	sids = kcalloc(it.cur_count, sizeof(*sids), GFP_KERNEL);
--	if (!sids)
--		return -ENOMEM;
--
--	*smmu = dev_get_drvdata(smmu_dev);
--	of_phandle_iterator_args(&it, sids, it.cur_count);
--	err = iommu_fwspec_add_ids(dev, sids, it.cur_count);
--	kfree(sids);
--	return err;
--}
--
--static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
--{
--	int idx;
--
--	do {
--		idx = find_next_zero_bit(map, end, start);
--		if (idx == end)
--			return -ENOSPC;
--	} while (test_and_set_bit(idx, map));
--
--	return idx;
--}
--
--static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
--{
--	clear_bit(idx, map);
--}
--
--/* Wait for any pending TLB invalidations to complete */
--static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
--				void __iomem *sync, void __iomem *status)
--{
--	unsigned int spin_cnt, delay;
--
--	writel_relaxed(0, sync);
--	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
--		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
--			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
--				return;
--			cpu_relax();
--		}
--		udelay(delay);
--	}
--	dev_err_ratelimited(smmu->dev,
--			    "TLB sync timed out -- SMMU may be deadlocked\n");
--}
-+#include "arm-smmu-common.c"
- 
- static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
- {
-@@ -436,114 +57,6 @@ static void arm_smmu_tlb_sync_context(void *cookie)
- 	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
- }
- 
--static void arm_smmu_tlb_sync_vmid(void *cookie)
--{
--	struct arm_smmu_domain *smmu_domain = cookie;
--
--	arm_smmu_tlb_sync_global(smmu_domain->smmu);
--}
--
--static void arm_smmu_tlb_inv_context_s1(void *cookie)
--{
--	struct arm_smmu_domain *smmu_domain = cookie;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
--
--	/*
--	 * NOTE: this is not a relaxed write; it needs to guarantee that PTEs
--	 * cleared by the current CPU are visible to the SMMU before the TLBI.
--	 */
--	writel(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
--	arm_smmu_tlb_sync_context(cookie);
--}
--
--static void arm_smmu_tlb_inv_context_s2(void *cookie)
--{
--	struct arm_smmu_domain *smmu_domain = cookie;
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	void __iomem *base = ARM_SMMU_GR0(smmu);
--
--	/* NOTE: see above */
--	writel(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
--	arm_smmu_tlb_sync_global(smmu);
--}
--
--static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
--					  size_t granule, bool leaf, void *cookie)
--{
--	struct arm_smmu_domain *smmu_domain = cookie;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
--	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
--
--	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
--		wmb();
--
--	if (stage1) {
--		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
--
--		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
--			iova &= ~12UL;
--			iova |= cfg->asid;
--			do {
--				writel_relaxed(iova, reg);
--				iova += granule;
--			} while (size -= granule);
--		} else {
--			iova >>= 12;
--			iova |= (u64)cfg->asid << 48;
--			do {
--				writeq_relaxed(iova, reg);
--				iova += granule >> 12;
--			} while (size -= granule);
--		}
--	} else {
--		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
--			      ARM_SMMU_CB_S2_TLBIIPAS2;
--		iova >>= 12;
--		do {
--			smmu_write_atomic_lq(iova, reg);
--			iova += granule >> 12;
--		} while (size -= granule);
--	}
--}
--
--/*
-- * On MMU-401 at least, the cost of firing off multiple TLBIVMIDs appears
-- * almost negligible, but the benefit of getting the first one in as far ahead
-- * of the sync as possible is significant, hence we don't just make this a
-- * no-op and set .tlb_sync to arm_smmu_inv_context_s2() as you might think.
-- */
--static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
--					 size_t granule, bool leaf, void *cookie)
--{
--	struct arm_smmu_domain *smmu_domain = cookie;
--	void __iomem *base = ARM_SMMU_GR0(smmu_domain->smmu);
--
--	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
--		wmb();
--
--	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
--}
--
--static const struct iommu_gather_ops arm_smmu_s1_tlb_ops = {
--	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
--	.tlb_sync	= arm_smmu_tlb_sync_context,
--};
--
--static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v2 = {
--	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
--	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
--	.tlb_sync	= arm_smmu_tlb_sync_context,
--};
--
--static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v1 = {
--	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
--	.tlb_add_flush	= arm_smmu_tlb_inv_vmid_nosync,
--	.tlb_sync	= arm_smmu_tlb_sync_vmid,
--};
--
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- {
- 	u32 fsr, fsynr;
-@@ -595,1360 +108,6 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
--static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
--				       struct io_pgtable_cfg *pgtbl_cfg)
--{
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
--	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
--
--	cb->cfg = cfg;
--
--	/* TTBCR */
--	if (stage1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--			cb->tcr[0] = pgtbl_cfg->arm_v7s_cfg.tcr;
--		} else {
--			cb->tcr[0] = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
--			cb->tcr[1] = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
--			cb->tcr[1] |= TTBCR2_SEP_UPSTREAM;
--			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
--				cb->tcr[1] |= TTBCR2_AS;
--		}
--	} else {
--		cb->tcr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
--	}
--
--	/* TTBRs */
--	if (stage1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
--			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
--		} else {
--			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
--			cb->ttbr[0] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
--			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
--			cb->ttbr[1] |= (u64)cfg->asid << TTBRn_ASID_SHIFT;
--		}
--	} else {
--		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
--	}
--
--	/* MAIRs (stage-1 only) */
--	if (stage1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
--			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
--		} else {
--			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
--			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
--		}
--	}
--}
--
--static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
--{
--	u32 reg;
--	bool stage1;
--	struct arm_smmu_cb *cb = &smmu->cbs[idx];
--	struct arm_smmu_cfg *cfg = cb->cfg;
--	void __iomem *cb_base, *gr1_base;
--
--	cb_base = ARM_SMMU_CB(smmu, idx);
--
--	/* Unassigned context banks only need disabling */
--	if (!cfg) {
--		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
--		return;
--	}
--
--	gr1_base = ARM_SMMU_GR1(smmu);
--	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
--
--	/* CBA2R */
--	if (smmu->version > ARM_SMMU_V1) {
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
--			reg = CBA2R_RW64_64BIT;
--		else
--			reg = CBA2R_RW64_32BIT;
--		/* 16-bit VMIDs live in CBA2R */
--		if (smmu->features & ARM_SMMU_FEAT_VMID16)
--			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
--
--		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
--	}
--
--	/* CBAR */
--	reg = cfg->cbar;
--	if (smmu->version < ARM_SMMU_V2)
--		reg |= cfg->irptndx << CBAR_IRPTNDX_SHIFT;
--
--	/*
--	 * Use the weakest shareability/memory types, so they are
--	 * overridden by the ttbcr/pte.
--	 */
--	if (stage1) {
--		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
--			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
--	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
--		/* 8-bit VMIDs live in CBAR */
--		reg |= cfg->vmid << CBAR_VMID_SHIFT;
--	}
--	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
--
--	/*
--	 * TTBCR
--	 * We must write this before the TTBRs, since it determines the
--	 * access behaviour of some fields (in particular, ASID[15:8]).
--	 */
--	if (stage1 && smmu->version > ARM_SMMU_V1)
--		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
--	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
--
--	/* TTBRs */
--	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
--		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
--		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
--		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
--	} else {
--		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
--		if (stage1)
--			writeq_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
--	}
--
--	/* MAIRs (stage-1 only) */
--	if (stage1) {
--		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
--		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
--	}
--
--	/* SCTLR */
--	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
--	if (stage1)
--		reg |= SCTLR_S1_ASIDPNE;
--	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
--		reg |= SCTLR_E;
--
--	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
--}
--
--static int arm_smmu_init_domain_context(struct iommu_domain *domain,
--					struct arm_smmu_device *smmu)
--{
--	int irq, start, ret = 0;
--	unsigned long ias, oas;
--	struct io_pgtable_ops *pgtbl_ops;
--	struct io_pgtable_cfg pgtbl_cfg;
--	enum io_pgtable_fmt fmt;
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--
--	mutex_lock(&smmu_domain->init_mutex);
--	if (smmu_domain->smmu)
--		goto out_unlock;
--
--	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
--		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
--		smmu_domain->smmu = smmu;
--		goto out_unlock;
--	}
--
--	/*
--	 * Mapping the requested stage onto what we support is surprisingly
--	 * complicated, mainly because the spec allows S1+S2 SMMUs without
--	 * support for nested translation. That means we end up with the
--	 * following table:
--	 *
--	 * Requested        Supported        Actual
--	 *     S1               N              S1
--	 *     S1             S1+S2            S1
--	 *     S1               S2             S2
--	 *     S1               S1             S1
--	 *     N                N              N
--	 *     N              S1+S2            S2
--	 *     N                S2             S2
--	 *     N                S1             S1
--	 *
--	 * Note that you can't actually request stage-2 mappings.
--	 */
--	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S1))
--		smmu_domain->stage = ARM_SMMU_DOMAIN_S2;
--	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
--		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
--
--	/*
--	 * Choosing a suitable context format is even more fiddly. Until we
--	 * grow some way for the caller to express a preference, and/or move
--	 * the decision into the io-pgtable code where it arguably belongs,
--	 * just aim for the closest thing to the rest of the system, and hope
--	 * that the hardware isn't esoteric enough that we can't assume AArch64
--	 * support to be a superset of AArch32 support...
--	 */
--	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
--		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
--	if (IS_ENABLED(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) &&
--	    !IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_ARM_LPAE) &&
--	    (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S) &&
--	    (smmu_domain->stage == ARM_SMMU_DOMAIN_S1))
--		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_S;
--	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
--	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
--			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
--			       ARM_SMMU_FEAT_FMT_AARCH64_4K)))
--		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
--
--	if (cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
--		ret = -EINVAL;
--		goto out_unlock;
--	}
--
--	switch (smmu_domain->stage) {
--	case ARM_SMMU_DOMAIN_S1:
--		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
--		start = smmu->num_s2_context_banks;
--		ias = smmu->va_size;
--		oas = smmu->ipa_size;
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
--			fmt = ARM_64_LPAE_S1;
--		} else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
--			fmt = ARM_32_LPAE_S1;
--			ias = min(ias, 32UL);
--			oas = min(oas, 40UL);
--		} else {
--			fmt = ARM_V7S;
--			ias = min(ias, 32UL);
--			oas = min(oas, 32UL);
--		}
--		smmu_domain->tlb_ops = &arm_smmu_s1_tlb_ops;
--		break;
--	case ARM_SMMU_DOMAIN_NESTED:
--		/*
--		 * We will likely want to change this if/when KVM gets
--		 * involved.
--		 */
--	case ARM_SMMU_DOMAIN_S2:
--		cfg->cbar = CBAR_TYPE_S2_TRANS;
--		start = 0;
--		ias = smmu->ipa_size;
--		oas = smmu->pa_size;
--		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
--			fmt = ARM_64_LPAE_S2;
--		} else {
--			fmt = ARM_32_LPAE_S2;
--			ias = min(ias, 40UL);
--			oas = min(oas, 40UL);
--		}
--		if (smmu->version == ARM_SMMU_V2)
--			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v2;
--		else
--			smmu_domain->tlb_ops = &arm_smmu_s2_tlb_ops_v1;
--		break;
--	default:
--		ret = -EINVAL;
--		goto out_unlock;
--	}
--	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
--				      smmu->num_context_banks);
--	if (ret < 0)
--		goto out_unlock;
--
--	cfg->cbndx = ret;
--	if (smmu->version < ARM_SMMU_V2) {
--		cfg->irptndx = atomic_inc_return(&smmu->irptndx);
--		cfg->irptndx %= smmu->num_context_irqs;
--	} else {
--		cfg->irptndx = cfg->cbndx;
--	}
--
--	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S2)
--		cfg->vmid = cfg->cbndx + 1 + smmu->cavium_id_base;
--	else
--		cfg->asid = cfg->cbndx + smmu->cavium_id_base;
--
--	pgtbl_cfg = (struct io_pgtable_cfg) {
--		.pgsize_bitmap	= smmu->pgsize_bitmap,
--		.ias		= ias,
--		.oas		= oas,
--		.tlb		= smmu_domain->tlb_ops,
--		.iommu_dev	= smmu->dev,
--	};
--
--	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
--		pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
--
--	if (smmu_domain->non_strict)
--		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
--
--	smmu_domain->smmu = smmu;
--	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
--	if (!pgtbl_ops) {
--		ret = -ENOMEM;
--		goto out_clear_smmu;
--	}
--
--	/* Update the domain's page sizes to reflect the page table format */
--	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
--	domain->geometry.aperture_end = (1UL << ias) - 1;
--	domain->geometry.force_aperture = true;
--
--	/* Initialise the context bank with our page table cfg */
--	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
--	arm_smmu_write_context_bank(smmu, cfg->cbndx);
--
--	/*
--	 * Request context fault interrupt. Do this last to avoid the
--	 * handler seeing a half-initialised domain state.
--	 */
--	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
--	ret = devm_request_irq(smmu->dev, irq, arm_smmu_context_fault,
--			       IRQF_SHARED, "arm-smmu-context-fault", domain);
--	if (ret < 0) {
--		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
--			cfg->irptndx, irq);
--		cfg->irptndx = INVALID_IRPTNDX;
--	}
--
--	mutex_unlock(&smmu_domain->init_mutex);
--
--	/* Publish page table ops for map/unmap */
--	smmu_domain->pgtbl_ops = pgtbl_ops;
--	return 0;
--
--out_clear_smmu:
--	smmu_domain->smmu = NULL;
--out_unlock:
--	mutex_unlock(&smmu_domain->init_mutex);
--	return ret;
--}
--
--static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	int irq;
--
--	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
--		return;
--
--	/*
--	 * Disable the context bank and free the page tables before freeing
--	 * it.
--	 */
--	smmu->cbs[cfg->cbndx].cfg = NULL;
--	arm_smmu_write_context_bank(smmu, cfg->cbndx);
--
--	if (cfg->irptndx != INVALID_IRPTNDX) {
--		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
--		devm_free_irq(smmu->dev, irq, domain);
--	}
--
--	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
--	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
--}
--
--static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
--{
--	struct arm_smmu_domain *smmu_domain;
--
--	if (type != IOMMU_DOMAIN_UNMANAGED &&
--	    type != IOMMU_DOMAIN_DMA &&
--	    type != IOMMU_DOMAIN_IDENTITY)
--		return NULL;
--	/*
--	 * Allocate the domain and initialise some of its data structures.
--	 * We can't really do anything meaningful until we've added a
--	 * master.
--	 */
--	smmu_domain = kzalloc(sizeof(*smmu_domain), GFP_KERNEL);
--	if (!smmu_domain)
--		return NULL;
--
--	if (type == IOMMU_DOMAIN_DMA && (using_legacy_binding ||
--	    iommu_get_dma_cookie(&smmu_domain->domain))) {
--		kfree(smmu_domain);
--		return NULL;
--	}
--
--	mutex_init(&smmu_domain->init_mutex);
--	spin_lock_init(&smmu_domain->cb_lock);
--
--	return &smmu_domain->domain;
--}
--
--static void arm_smmu_domain_free(struct iommu_domain *domain)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	/*
--	 * Free the domain resources. We assume that all devices have
--	 * already been detached.
--	 */
--	iommu_put_dma_cookie(domain);
--	arm_smmu_destroy_domain_context(domain);
--	kfree(smmu_domain);
--}
--
--static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
--{
--	struct arm_smmu_smr *smr = smmu->smrs + idx;
--	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
--
--	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
--		reg |= SMR_VALID;
--	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
--}
--
--static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
--{
--	struct arm_smmu_s2cr *s2cr = smmu->s2crs + idx;
--	u32 reg = (s2cr->type & S2CR_TYPE_MASK) << S2CR_TYPE_SHIFT |
--		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
--		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
--
--	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
--	    smmu->smrs[idx].valid)
--		reg |= S2CR_EXIDVALID;
--	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
--}
--
--static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
--{
--	arm_smmu_write_s2cr(smmu, idx);
--	if (smmu->smrs)
--		arm_smmu_write_smr(smmu, idx);
--}
--
--/*
-- * The width of SMR's mask field depends on sCR0_EXIDENABLE, so this function
-- * should be called after sCR0 is written.
-- */
--static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
--{
--	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
--	u32 smr;
--
--	if (!smmu->smrs)
--		return;
--
--	/*
--	 * SMR.ID bits may not be preserved if the corresponding MASK
--	 * bits are set, so check each one separately. We can reject
--	 * masters later if they try to claim IDs outside these masks.
--	 */
--	smr = smmu->streamid_mask << SMR_ID_SHIFT;
--	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
--	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
--	smmu->streamid_mask = smr >> SMR_ID_SHIFT;
--
--	smr = smmu->streamid_mask << SMR_MASK_SHIFT;
--	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
--	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
--	smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
--}
--
--static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
--{
--	struct arm_smmu_smr *smrs = smmu->smrs;
--	int i, free_idx = -ENOSPC;
--
--	/* Stream indexing is blissfully easy */
--	if (!smrs)
--		return id;
--
--	/* Validating SMRs is... less so */
--	for (i = 0; i < smmu->num_mapping_groups; ++i) {
--		if (!smrs[i].valid) {
--			/*
--			 * Note the first free entry we come across, which
--			 * we'll claim in the end if nothing else matches.
--			 */
--			if (free_idx < 0)
--				free_idx = i;
--			continue;
--		}
--		/*
--		 * If the new entry is _entirely_ matched by an existing entry,
--		 * then reuse that, with the guarantee that there also cannot
--		 * be any subsequent conflicting entries. In normal use we'd
--		 * expect simply identical entries for this case, but there's
--		 * no harm in accommodating the generalisation.
--		 */
--		if ((mask & smrs[i].mask) == mask &&
--		    !((id ^ smrs[i].id) & ~smrs[i].mask))
--			return i;
--		/*
--		 * If the new entry has any other overlap with an existing one,
--		 * though, then there always exists at least one stream ID
--		 * which would cause a conflict, and we can't allow that risk.
--		 */
--		if (!((id ^ smrs[i].id) & ~(smrs[i].mask | mask)))
--			return -EINVAL;
--	}
--
--	return free_idx;
--}
--
--static bool arm_smmu_free_sme(struct arm_smmu_device *smmu, int idx)
--{
--	if (--smmu->s2crs[idx].count)
--		return false;
--
--	smmu->s2crs[idx] = s2cr_init_val;
--	if (smmu->smrs)
--		smmu->smrs[idx].valid = false;
--
--	return true;
--}
--
--static int arm_smmu_master_alloc_smes(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
--	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
--	struct arm_smmu_device *smmu = cfg->smmu;
--	struct arm_smmu_smr *smrs = smmu->smrs;
--	struct iommu_group *group;
--	int i, idx, ret;
--
--	mutex_lock(&smmu->stream_map_mutex);
--	/* Figure out a viable stream map entry allocation */
--	for_each_cfg_sme(fwspec, i, idx) {
--		u16 sid = fwspec->ids[i];
--		u16 mask = fwspec->ids[i] >> SMR_MASK_SHIFT;
--
--		if (idx != INVALID_SMENDX) {
--			ret = -EEXIST;
--			goto out_err;
--		}
--
--		ret = arm_smmu_find_sme(smmu, sid, mask);
--		if (ret < 0)
--			goto out_err;
--
--		idx = ret;
--		if (smrs && smmu->s2crs[idx].count == 0) {
--			smrs[idx].id = sid;
--			smrs[idx].mask = mask;
--			smrs[idx].valid = true;
--		}
--		smmu->s2crs[idx].count++;
--		cfg->smendx[i] = (s16)idx;
--	}
--
--	group = iommu_group_get_for_dev(dev);
--	if (!group)
--		group = ERR_PTR(-ENOMEM);
--	if (IS_ERR(group)) {
--		ret = PTR_ERR(group);
--		goto out_err;
--	}
--	iommu_group_put(group);
--
--	/* It worked! Now, poke the actual hardware */
--	for_each_cfg_sme(fwspec, i, idx) {
--		arm_smmu_write_sme(smmu, idx);
--		smmu->s2crs[idx].group = group;
--	}
--
--	mutex_unlock(&smmu->stream_map_mutex);
--	return 0;
--
--out_err:
--	while (i--) {
--		arm_smmu_free_sme(smmu, cfg->smendx[i]);
--		cfg->smendx[i] = INVALID_SMENDX;
--	}
--	mutex_unlock(&smmu->stream_map_mutex);
--	return ret;
--}
--
--static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
--{
--	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
--	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
--	int i, idx;
--
--	mutex_lock(&smmu->stream_map_mutex);
--	for_each_cfg_sme(fwspec, i, idx) {
--		if (arm_smmu_free_sme(smmu, idx))
--			arm_smmu_write_sme(smmu, idx);
--		cfg->smendx[i] = INVALID_SMENDX;
--	}
--	mutex_unlock(&smmu->stream_map_mutex);
--}
--
--static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
--				      struct iommu_fwspec *fwspec)
--{
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
--	u8 cbndx = smmu_domain->cfg.cbndx;
--	enum arm_smmu_s2cr_type type;
--	int i, idx;
--
--	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
--		type = S2CR_TYPE_BYPASS;
--	else
--		type = S2CR_TYPE_TRANS;
--
--	for_each_cfg_sme(fwspec, i, idx) {
--		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
--			continue;
--
--		s2cr[idx].type = type;
--		s2cr[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
--		s2cr[idx].cbndx = cbndx;
--		arm_smmu_write_s2cr(smmu, idx);
--	}
--	return 0;
--}
--
--static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
--{
--	int ret;
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
--	struct arm_smmu_device *smmu;
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
--		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
--		return -ENXIO;
--	}
--
--	/*
--	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
--	 * domains between of_xlate() and add_device() - we have no way to cope
--	 * with that, so until ARM gets converted to rely on groups and default
--	 * domains, just say no (but more politely than by dereferencing NULL).
--	 * This should be at least a WARN_ON once that's sorted.
--	 */
--	if (!fwspec->iommu_priv)
--		return -ENODEV;
--
--	smmu = fwspec_smmu(fwspec);
--	/* Ensure that the domain is finalised */
--	ret = arm_smmu_init_domain_context(domain, smmu);
--	if (ret < 0)
--		return ret;
--
--	/*
--	 * Sanity check the domain. We don't support domains across
--	 * different SMMUs.
--	 */
--	if (smmu_domain->smmu != smmu) {
--		dev_err(dev,
--			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
--			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
--		return -EINVAL;
--	}
--
--	/* Looks ok, so add the device to the domain */
--	return arm_smmu_domain_add_master(smmu_domain, fwspec);
--}
--
--static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
--			phys_addr_t paddr, size_t size, int prot)
--{
--	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
--
--	if (!ops)
--		return -ENODEV;
--
--	return ops->map(ops, iova, paddr, size, prot);
--}
--
--static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
--			     size_t size)
--{
--	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
--
--	if (!ops)
--		return 0;
--
--	return ops->unmap(ops, iova, size);
--}
--
--static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	if (smmu_domain->tlb_ops)
--		smmu_domain->tlb_ops->tlb_flush_all(smmu_domain);
--}
--
--static void arm_smmu_iotlb_sync(struct iommu_domain *domain)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	if (smmu_domain->tlb_ops)
--		smmu_domain->tlb_ops->tlb_sync(smmu_domain);
--}
--
--static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
--					      dma_addr_t iova)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
--	struct device *dev = smmu->dev;
--	void __iomem *cb_base;
--	u32 tmp;
--	u64 phys;
--	unsigned long va, flags;
--
--	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
--
--	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
--	/* ATS1 registers can only be written atomically */
--	va = iova & ~0xfffUL;
--	if (smmu->version == ARM_SMMU_V2)
--		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
--	else /* Register is only 32-bit in v1 */
--		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
--
--	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
--				      !(tmp & ATSR_ACTIVE), 5, 50)) {
--		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
--		dev_err(dev,
--			"iova to phys timed out on %pad. Falling back to software table walk.\n",
--			&iova);
--		return ops->iova_to_phys(ops, iova);
--	}
--
--	phys = readq_relaxed(cb_base + ARM_SMMU_CB_PAR);
--	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
--	if (phys & CB_PAR_F) {
--		dev_err(dev, "translation fault!\n");
--		dev_err(dev, "PAR = 0x%llx\n", phys);
--		return 0;
--	}
--
--	return (phys & GENMASK_ULL(39, 12)) | (iova & 0xfff);
--}
--
--static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
--					dma_addr_t iova)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
--
--	if (domain->type == IOMMU_DOMAIN_IDENTITY)
--		return iova;
--
--	if (!ops)
--		return 0;
--
--	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_TRANS_OPS &&
--			smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
--		return arm_smmu_iova_to_phys_hard(domain, iova);
--
--	return ops->iova_to_phys(ops, iova);
--}
--
--static bool arm_smmu_capable(enum iommu_cap cap)
--{
--	switch (cap) {
--	case IOMMU_CAP_CACHE_COHERENCY:
--		/*
--		 * Return true here as the SMMU can always send out coherent
--		 * requests.
--		 */
--		return true;
--	case IOMMU_CAP_NOEXEC:
--		return true;
--	default:
--		return false;
--	}
--}
--
--static int arm_smmu_match_node(struct device *dev, void *data)
--{
--	return dev->fwnode == data;
--}
--
--static
--struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
--{
--	struct device *dev = driver_find_device(&arm_smmu_driver.driver, NULL,
--						fwnode, arm_smmu_match_node);
--	put_device(dev);
--	return dev ? dev_get_drvdata(dev) : NULL;
--}
--
--static int arm_smmu_add_device(struct device *dev)
--{
--	struct arm_smmu_device *smmu;
--	struct arm_smmu_master_cfg *cfg;
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
--	int i, ret;
--
--	if (using_legacy_binding) {
--		ret = arm_smmu_register_legacy_master(dev, &smmu);
--
--		/*
--		 * If dev->iommu_fwspec is initally NULL, arm_smmu_register_legacy_master()
--		 * will allocate/initialise a new one. Thus we need to update fwspec for
--		 * later use.
--		 */
--		fwspec = dev->iommu_fwspec;
--		if (ret)
--			goto out_free;
--	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
--		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
--	} else {
--		return -ENODEV;
--	}
--
--	ret = -EINVAL;
--	for (i = 0; i < fwspec->num_ids; i++) {
--		u16 sid = fwspec->ids[i];
--		u16 mask = fwspec->ids[i] >> SMR_MASK_SHIFT;
--
--		if (sid & ~smmu->streamid_mask) {
--			dev_err(dev, "stream ID 0x%x out of range for SMMU (0x%x)\n",
--				sid, smmu->streamid_mask);
--			goto out_free;
--		}
--		if (mask & ~smmu->smr_mask_mask) {
--			dev_err(dev, "SMR mask 0x%x out of range for SMMU (0x%x)\n",
--				mask, smmu->smr_mask_mask);
--			goto out_free;
--		}
--	}
--
--	ret = -ENOMEM;
--	cfg = kzalloc(offsetof(struct arm_smmu_master_cfg, smendx[i]),
--		      GFP_KERNEL);
--	if (!cfg)
--		goto out_free;
--
--	cfg->smmu = smmu;
--	fwspec->iommu_priv = cfg;
--	while (i--)
--		cfg->smendx[i] = INVALID_SMENDX;
--
--	ret = arm_smmu_master_alloc_smes(dev);
--	if (ret)
--		goto out_cfg_free;
--
--	iommu_device_link(&smmu->iommu, dev);
--
--	return 0;
--
--out_cfg_free:
--	kfree(cfg);
--out_free:
--	iommu_fwspec_free(dev);
--	return ret;
--}
--
--static void arm_smmu_remove_device(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
--	struct arm_smmu_master_cfg *cfg;
--	struct arm_smmu_device *smmu;
--
--
--	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return;
--
--	cfg  = fwspec->iommu_priv;
--	smmu = cfg->smmu;
--
--	iommu_device_unlink(&smmu->iommu, dev);
--	arm_smmu_master_free_smes(fwspec);
--	iommu_group_remove_device(dev);
--	kfree(fwspec->iommu_priv);
--	iommu_fwspec_free(dev);
--}
--
--static struct iommu_group *arm_smmu_device_group(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
--	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
--	struct iommu_group *group = NULL;
--	int i, idx;
--
--	for_each_cfg_sme(fwspec, i, idx) {
--		if (group && smmu->s2crs[idx].group &&
--		    group != smmu->s2crs[idx].group)
--			return ERR_PTR(-EINVAL);
--
--		group = smmu->s2crs[idx].group;
--	}
--
--	if (group)
--		return iommu_group_ref_get(group);
--
--	if (dev_is_pci(dev))
--		group = pci_device_group(dev);
--	else if (dev_is_fsl_mc(dev))
--		group = fsl_mc_device_group(dev);
--	else
--		group = generic_device_group(dev);
--
--	return group;
--}
--
--static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
--				    enum iommu_attr attr, void *data)
--{
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	switch(domain->type) {
--	case IOMMU_DOMAIN_UNMANAGED:
--		switch (attr) {
--		case DOMAIN_ATTR_NESTING:
--			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
--			return 0;
--		default:
--			return -ENODEV;
--		}
--		break;
--	case IOMMU_DOMAIN_DMA:
--		switch (attr) {
--		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
--			*(int *)data = smmu_domain->non_strict;
--			return 0;
--		default:
--			return -ENODEV;
--		}
--		break;
--	default:
--		return -EINVAL;
--	}
--}
--
--static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
--				    enum iommu_attr attr, void *data)
--{
--	int ret = 0;
--	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--
--	mutex_lock(&smmu_domain->init_mutex);
--
--	switch(domain->type) {
--	case IOMMU_DOMAIN_UNMANAGED:
--		switch (attr) {
--		case DOMAIN_ATTR_NESTING:
--			if (smmu_domain->smmu) {
--				ret = -EPERM;
--				goto out_unlock;
--			}
--
--			if (*(int *)data)
--				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
--			else
--				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
--			break;
--		default:
--			ret = -ENODEV;
--		}
--		break;
--	case IOMMU_DOMAIN_DMA:
--		switch (attr) {
--		case DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE:
--			smmu_domain->non_strict = *(int *)data;
--			break;
--		default:
--			ret = -ENODEV;
--		}
--		break;
--	default:
--		ret = -EINVAL;
--	}
--out_unlock:
--	mutex_unlock(&smmu_domain->init_mutex);
--	return ret;
--}
--
--static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
--{
--	u32 mask, fwid = 0;
--
--	if (args->args_count > 0)
--		fwid |= (u16)args->args[0];
--
--	if (args->args_count > 1)
--		fwid |= (u16)args->args[1] << SMR_MASK_SHIFT;
--	else if (!of_property_read_u32(args->np, "stream-match-mask", &mask))
--		fwid |= (u16)mask << SMR_MASK_SHIFT;
--
--	return iommu_fwspec_add_ids(dev, &fwid, 1);
--}
--
--static void arm_smmu_get_resv_regions(struct device *dev,
--				      struct list_head *head)
--{
--	struct iommu_resv_region *region;
--	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
--
--	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_SW_MSI);
--	if (!region)
--		return;
--
--	list_add_tail(&region->list, head);
--
--	iommu_dma_get_resv_regions(dev, head);
--}
--
--static void arm_smmu_put_resv_regions(struct device *dev,
--				      struct list_head *head)
--{
--	struct iommu_resv_region *entry, *next;
--
--	list_for_each_entry_safe(entry, next, head, list)
--		kfree(entry);
--}
--
--static struct iommu_ops arm_smmu_ops = {
--	.capable		= arm_smmu_capable,
--	.domain_alloc		= arm_smmu_domain_alloc,
--	.domain_free		= arm_smmu_domain_free,
--	.attach_dev		= arm_smmu_attach_dev,
--	.map			= arm_smmu_map,
--	.unmap			= arm_smmu_unmap,
--	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
--	.iotlb_sync		= arm_smmu_iotlb_sync,
--	.iova_to_phys		= arm_smmu_iova_to_phys,
--	.add_device		= arm_smmu_add_device,
--	.remove_device		= arm_smmu_remove_device,
--	.device_group		= arm_smmu_device_group,
--	.domain_get_attr	= arm_smmu_domain_get_attr,
--	.domain_set_attr	= arm_smmu_domain_set_attr,
--	.of_xlate		= arm_smmu_of_xlate,
--	.get_resv_regions	= arm_smmu_get_resv_regions,
--	.put_resv_regions	= arm_smmu_put_resv_regions,
--	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
--};
--
--static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
--{
--	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
--	int i;
--	u32 reg, major;
--
--	/* clear global FSR */
--	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
--	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
--
--	/*
--	 * Reset stream mapping groups: Initial values mark all SMRn as
--	 * invalid and all S2CRn as bypass unless overridden.
--	 */
--	for (i = 0; i < smmu->num_mapping_groups; ++i)
--		arm_smmu_write_sme(smmu, i);
--
--	if (smmu->model == ARM_MMU500) {
--		/*
--		 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
--		 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
--		 * bit is only present in MMU-500r2 onwards.
--		 */
--		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
--		major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
--		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
--		if (major >= 2)
--			reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
--		/*
--		 * Allow unmatched Stream IDs to allocate bypass
--		 * TLB entries for reduced latency.
--		 */
--		reg |= ARM_MMU500_ACR_SMTNMB_TLBEN | ARM_MMU500_ACR_S2CRB_TLBEN;
--		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
--	}
--
--	/* Make sure all context banks are disabled and clear CB_FSR  */
--	for (i = 0; i < smmu->num_context_banks; ++i) {
--		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
--
--		arm_smmu_write_context_bank(smmu, i);
--		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
--		/*
--		 * Disable MMU-500's not-particularly-beneficial next-page
--		 * prefetcher for the sake of errata #841119 and #826419.
--		 */
--		if (smmu->model == ARM_MMU500) {
--			reg = readl_relaxed(cb_base + ARM_SMMU_CB_ACTLR);
--			reg &= ~ARM_MMU500_ACTLR_CPRE;
--			writel_relaxed(reg, cb_base + ARM_SMMU_CB_ACTLR);
--		}
--	}
--
--	/* Invalidate the TLB, just in case */
--	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
--	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
--
--	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
--
--	/* Enable fault reporting */
--	reg |= (sCR0_GFRE | sCR0_GFIE | sCR0_GCFGFRE | sCR0_GCFGFIE);
--
--	/* Disable TLB broadcasting. */
--	reg |= (sCR0_VMIDPNE | sCR0_PTM);
--
--	/* Enable client access, handling unmatched streams as appropriate */
--	reg &= ~sCR0_CLIENTPD;
--	if (disable_bypass)
--		reg |= sCR0_USFCFG;
--	else
--		reg &= ~sCR0_USFCFG;
--
--	/* Disable forced broadcasting */
--	reg &= ~sCR0_FB;
--
--	/* Don't upgrade barriers */
--	reg &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
--
--	if (smmu->features & ARM_SMMU_FEAT_VMID16)
--		reg |= sCR0_VMID16EN;
--
--	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
--		reg |= sCR0_EXIDENABLE;
--
--	/* Push the button */
--	arm_smmu_tlb_sync_global(smmu);
--	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
--}
--
--static int arm_smmu_id_size_to_bits(int size)
--{
--	switch (size) {
--	case 0:
--		return 32;
--	case 1:
--		return 36;
--	case 2:
--		return 40;
--	case 3:
--		return 42;
--	case 4:
--		return 44;
--	case 5:
--	default:
--		return 48;
--	}
--}
--
--static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
--{
--	unsigned long size;
--	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
--	u32 id;
--	bool cttw_reg, cttw_fw = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK;
--	int i;
--
--	dev_notice(smmu->dev, "probing hardware configuration...\n");
--	dev_notice(smmu->dev, "SMMUv%d with:\n",
--			smmu->version == ARM_SMMU_V2 ? 2 : 1);
--
--	/* ID0 */
--	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID0);
--
--	/* Restrict available stages based on module parameter */
--	if (force_stage == 1)
--		id &= ~(ID0_S2TS | ID0_NTS);
--	else if (force_stage == 2)
--		id &= ~(ID0_S1TS | ID0_NTS);
--
--	if (id & ID0_S1TS) {
--		smmu->features |= ARM_SMMU_FEAT_TRANS_S1;
--		dev_notice(smmu->dev, "\tstage 1 translation\n");
--	}
--
--	if (id & ID0_S2TS) {
--		smmu->features |= ARM_SMMU_FEAT_TRANS_S2;
--		dev_notice(smmu->dev, "\tstage 2 translation\n");
--	}
--
--	if (id & ID0_NTS) {
--		smmu->features |= ARM_SMMU_FEAT_TRANS_NESTED;
--		dev_notice(smmu->dev, "\tnested translation\n");
--	}
--
--	if (!(smmu->features &
--		(ARM_SMMU_FEAT_TRANS_S1 | ARM_SMMU_FEAT_TRANS_S2))) {
--		dev_err(smmu->dev, "\tno translation support!\n");
--		return -ENODEV;
--	}
--
--	if ((id & ID0_S1TS) &&
--		((smmu->version < ARM_SMMU_V2) || !(id & ID0_ATOSNS))) {
--		smmu->features |= ARM_SMMU_FEAT_TRANS_OPS;
--		dev_notice(smmu->dev, "\taddress translation ops\n");
--	}
--
--	/*
--	 * In order for DMA API calls to work properly, we must defer to what
--	 * the FW says about coherency, regardless of what the hardware claims.
--	 * Fortunately, this also opens up a workaround for systems where the
--	 * ID register value has ended up configured incorrectly.
--	 */
--	cttw_reg = !!(id & ID0_CTTW);
--	if (cttw_fw || cttw_reg)
--		dev_notice(smmu->dev, "\t%scoherent table walk\n",
--			   cttw_fw ? "" : "non-");
--	if (cttw_fw != cttw_reg)
--		dev_notice(smmu->dev,
--			   "\t(IDR0.CTTW overridden by FW configuration)\n");
--
--	/* Max. number of entries we have for stream matching/indexing */
--	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
--		smmu->features |= ARM_SMMU_FEAT_EXIDS;
--		size = 1 << 16;
--	} else {
--		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
--	}
--	smmu->streamid_mask = size - 1;
--	if (id & ID0_SMS) {
--		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
--		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
--		if (size == 0) {
--			dev_err(smmu->dev,
--				"stream-matching supported, but no SMRs present!\n");
--			return -ENODEV;
--		}
--
--		/* Zero-initialised to mark as invalid */
--		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
--					  GFP_KERNEL);
--		if (!smmu->smrs)
--			return -ENOMEM;
--
--		dev_notice(smmu->dev,
--			   "\tstream matching with %lu register groups", size);
--	}
--	/* s2cr->type == 0 means translation, so initialise explicitly */
--	smmu->s2crs = devm_kmalloc_array(smmu->dev, size, sizeof(*smmu->s2crs),
--					 GFP_KERNEL);
--	if (!smmu->s2crs)
--		return -ENOMEM;
--	for (i = 0; i < size; i++)
--		smmu->s2crs[i] = s2cr_init_val;
--
--	smmu->num_mapping_groups = size;
--	mutex_init(&smmu->stream_map_mutex);
--	spin_lock_init(&smmu->global_sync_lock);
--
--	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
--		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
--		if (!(id & ID0_PTFS_NO_AARCH32S))
--			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_S;
--	}
--
--	/* ID1 */
--	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID1);
--	smmu->pgshift = (id & ID1_PAGESIZE) ? 16 : 12;
--
--	/* Check for size mismatch of SMMU address space from mapped region */
--	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
--	size <<= smmu->pgshift;
--	if (smmu->cb_base != gr0_base + size)
--		dev_warn(smmu->dev,
--			"SMMU address space size (0x%lx) differs from mapped region size (0x%tx)!\n",
--			size * 2, (smmu->cb_base - gr0_base) * 2);
--
--	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) & ID1_NUMS2CB_MASK;
--	smmu->num_context_banks = (id >> ID1_NUMCB_SHIFT) & ID1_NUMCB_MASK;
--	if (smmu->num_s2_context_banks > smmu->num_context_banks) {
--		dev_err(smmu->dev, "impossible number of S2 context banks!\n");
--		return -ENODEV;
--	}
--	dev_notice(smmu->dev, "\t%u context banks (%u stage-2 only)\n",
--		   smmu->num_context_banks, smmu->num_s2_context_banks);
--	/*
--	 * Cavium CN88xx erratum #27704.
--	 * Ensure ASID and VMID allocation is unique across all SMMUs in
--	 * the system.
--	 */
--	if (smmu->model == CAVIUM_SMMUV2) {
--		smmu->cavium_id_base =
--			atomic_add_return(smmu->num_context_banks,
--					  &cavium_smmu_context_count);
--		smmu->cavium_id_base -= smmu->num_context_banks;
--		dev_notice(smmu->dev, "\tenabling workaround for Cavium erratum 27704\n");
--	}
--	smmu->cbs = devm_kcalloc(smmu->dev, smmu->num_context_banks,
--				 sizeof(*smmu->cbs), GFP_KERNEL);
--	if (!smmu->cbs)
--		return -ENOMEM;
--
--	/* ID2 */
--	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID2);
--	size = arm_smmu_id_size_to_bits((id >> ID2_IAS_SHIFT) & ID2_IAS_MASK);
--	smmu->ipa_size = size;
--
--	/* The output mask is also applied for bypass */
--	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
--	smmu->pa_size = size;
--
--	if (id & ID2_VMID16)
--		smmu->features |= ARM_SMMU_FEAT_VMID16;
--
--	/*
--	 * What the page table walker can address actually depends on which
--	 * descriptor format is in use, but since a) we don't know that yet,
--	 * and b) it can vary per context bank, this will have to do...
--	 */
--	if (dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(size)))
--		dev_warn(smmu->dev,
--			 "failed to set DMA mask for table walker\n");
--
--	if (smmu->version < ARM_SMMU_V2) {
--		smmu->va_size = smmu->ipa_size;
--		if (smmu->version == ARM_SMMU_V1_64K)
--			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
--	} else {
--		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
--		smmu->va_size = arm_smmu_id_size_to_bits(size);
--		if (id & ID2_PTFS_4K)
--			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_4K;
--		if (id & ID2_PTFS_16K)
--			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_16K;
--		if (id & ID2_PTFS_64K)
--			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
--	}
--
--	/* Now we've corralled the various formats, what'll it do? */
--	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
--		smmu->pgsize_bitmap |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
--	if (smmu->features &
--	    (ARM_SMMU_FEAT_FMT_AARCH32_L | ARM_SMMU_FEAT_FMT_AARCH64_4K))
--		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
--	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K)
--		smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
--	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K)
--		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
--
--	if (arm_smmu_ops.pgsize_bitmap == -1UL)
--		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
--	else
--		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
--	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n",
--		   smmu->pgsize_bitmap);
--
--
--	if (smmu->features & ARM_SMMU_FEAT_TRANS_S1)
--		dev_notice(smmu->dev, "\tStage-1: %lu-bit VA -> %lu-bit IPA\n",
--			   smmu->va_size, smmu->ipa_size);
--
--	if (smmu->features & ARM_SMMU_FEAT_TRANS_S2)
--		dev_notice(smmu->dev, "\tStage-2: %lu-bit IPA -> %lu-bit PA\n",
--			   smmu->ipa_size, smmu->pa_size);
--
--	return 0;
--}
--
--struct arm_smmu_match_data {
--	enum arm_smmu_arch_version version;
--	enum arm_smmu_implementation model;
--};
--
--#define ARM_SMMU_MATCH_DATA(name, ver, imp)	\
--static struct arm_smmu_match_data name = { .version = ver, .model = imp }
--
- ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
-@@ -1966,294 +125,6 @@ static const struct of_device_id arm_smmu_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
- 
--#ifdef CONFIG_ACPI
--static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
--{
--	int ret = 0;
--
--	switch (model) {
--	case ACPI_IORT_SMMU_V1:
--	case ACPI_IORT_SMMU_CORELINK_MMU400:
--		smmu->version = ARM_SMMU_V1;
--		smmu->model = GENERIC_SMMU;
--		break;
--	case ACPI_IORT_SMMU_CORELINK_MMU401:
--		smmu->version = ARM_SMMU_V1_64K;
--		smmu->model = GENERIC_SMMU;
--		break;
--	case ACPI_IORT_SMMU_V2:
--		smmu->version = ARM_SMMU_V2;
--		smmu->model = GENERIC_SMMU;
--		break;
--	case ACPI_IORT_SMMU_CORELINK_MMU500:
--		smmu->version = ARM_SMMU_V2;
--		smmu->model = ARM_MMU500;
--		break;
--	case ACPI_IORT_SMMU_CAVIUM_THUNDERX:
--		smmu->version = ARM_SMMU_V2;
--		smmu->model = CAVIUM_SMMUV2;
--		break;
--	default:
--		ret = -ENODEV;
--	}
--
--	return ret;
--}
--
--static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
--				      struct arm_smmu_device *smmu)
--{
--	struct device *dev = smmu->dev;
--	struct acpi_iort_node *node =
--		*(struct acpi_iort_node **)dev_get_platdata(dev);
--	struct acpi_iort_smmu *iort_smmu;
--	int ret;
--
--	/* Retrieve SMMU1/2 specific data */
--	iort_smmu = (struct acpi_iort_smmu *)node->node_data;
--
--	ret = acpi_smmu_get_data(iort_smmu->model, smmu);
--	if (ret < 0)
--		return ret;
--
--	/* Ignore the configuration access interrupt */
--	smmu->num_global_irqs = 1;
--
--	if (iort_smmu->flags & ACPI_IORT_SMMU_COHERENT_WALK)
--		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
--
--	return 0;
--}
--#else
--static inline int arm_smmu_device_acpi_probe(struct platform_device *pdev,
--					     struct arm_smmu_device *smmu)
--{
--	return -ENODEV;
--}
--#endif
--
--static int arm_smmu_device_dt_probe(struct platform_device *pdev,
--				    struct arm_smmu_device *smmu)
--{
--	const struct arm_smmu_match_data *data;
--	struct device *dev = &pdev->dev;
--	bool legacy_binding;
--
--	if (of_property_read_u32(dev->of_node, "#global-interrupts",
--				 &smmu->num_global_irqs)) {
--		dev_err(dev, "missing #global-interrupts property\n");
--		return -ENODEV;
--	}
--
--	data = of_device_get_match_data(dev);
--	smmu->version = data->version;
--	smmu->model = data->model;
--
--	parse_driver_options(smmu);
--
--	legacy_binding = of_find_property(dev->of_node, "mmu-masters", NULL);
--	if (legacy_binding && !using_generic_binding) {
--		if (!using_legacy_binding)
--			pr_notice("deprecated \"mmu-masters\" DT property in use; DMA API support unavailable\n");
--		using_legacy_binding = true;
--	} else if (!legacy_binding && !using_legacy_binding) {
--		using_generic_binding = true;
--	} else {
--		dev_err(dev, "not probing due to mismatched DT properties\n");
--		return -ENODEV;
--	}
--
--	if (of_dma_is_coherent(dev->of_node))
--		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
--
--	return 0;
--}
--
--static void arm_smmu_bus_init(void)
--{
--	/* Oh, for a proper bus abstraction */
--	if (!iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
--#ifdef CONFIG_ARM_AMBA
--	if (!iommu_present(&amba_bustype))
--		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
--#endif
--#ifdef CONFIG_PCI
--	if (!iommu_present(&pci_bus_type)) {
--		pci_request_acs();
--		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
--	}
--#endif
--#ifdef CONFIG_FSL_MC_BUS
--	if (!iommu_present(&fsl_mc_bus_type))
--		bus_set_iommu(&fsl_mc_bus_type, &arm_smmu_ops);
--#endif
--}
--
--static int arm_smmu_device_probe(struct platform_device *pdev)
--{
--	struct resource *res;
--	resource_size_t ioaddr;
--	struct arm_smmu_device *smmu;
--	struct device *dev = &pdev->dev;
--	int num_irqs, i, err;
--
--	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
--	if (!smmu) {
--		dev_err(dev, "failed to allocate arm_smmu_device\n");
--		return -ENOMEM;
--	}
--	smmu->dev = dev;
--
--	if (dev->of_node)
--		err = arm_smmu_device_dt_probe(pdev, smmu);
--	else
--		err = arm_smmu_device_acpi_probe(pdev, smmu);
--
--	if (err)
--		return err;
--
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ioaddr = res->start;
--	smmu->base = devm_ioremap_resource(dev, res);
--	if (IS_ERR(smmu->base))
--		return PTR_ERR(smmu->base);
--	smmu->cb_base = smmu->base + resource_size(res) / 2;
--
--	num_irqs = 0;
--	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
--		num_irqs++;
--		if (num_irqs > smmu->num_global_irqs)
--			smmu->num_context_irqs++;
--	}
--
--	if (!smmu->num_context_irqs) {
--		dev_err(dev, "found %d interrupts but expected at least %d\n",
--			num_irqs, smmu->num_global_irqs + 1);
--		return -ENODEV;
--	}
--
--	smmu->irqs = devm_kcalloc(dev, num_irqs, sizeof(*smmu->irqs),
--				  GFP_KERNEL);
--	if (!smmu->irqs) {
--		dev_err(dev, "failed to allocate %d irqs\n", num_irqs);
--		return -ENOMEM;
--	}
--
--	for (i = 0; i < num_irqs; ++i) {
--		int irq = platform_get_irq(pdev, i);
--
--		if (irq < 0) {
--			dev_err(dev, "failed to get irq index %d\n", i);
--			return -ENODEV;
--		}
--		smmu->irqs[i] = irq;
--	}
--
--	err = arm_smmu_device_cfg_probe(smmu);
--	if (err)
--		return err;
--
--	if (smmu->version == ARM_SMMU_V2) {
--		if (smmu->num_context_banks > smmu->num_context_irqs) {
--			dev_err(dev,
--			      "found only %d context irq(s) but %d required\n",
--			      smmu->num_context_irqs, smmu->num_context_banks);
--			return -ENODEV;
--		}
--
--		/* Ignore superfluous interrupts */
--		smmu->num_context_irqs = smmu->num_context_banks;
--	}
--
--	for (i = 0; i < smmu->num_global_irqs; ++i) {
--		err = devm_request_irq(smmu->dev, smmu->irqs[i],
--				       arm_smmu_global_fault,
--				       IRQF_SHARED,
--				       "arm-smmu global fault",
--				       smmu);
--		if (err) {
--			dev_err(dev, "failed to request global IRQ %d (%u)\n",
--				i, smmu->irqs[i]);
--			return err;
--		}
--	}
--
--	err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
--				     "smmu.%pa", &ioaddr);
--	if (err) {
--		dev_err(dev, "Failed to register iommu in sysfs\n");
--		return err;
--	}
--
--	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	err = iommu_device_register(&smmu->iommu);
--	if (err) {
--		dev_err(dev, "Failed to register iommu\n");
--		return err;
--	}
--
--	platform_set_drvdata(pdev, smmu);
--	arm_smmu_device_reset(smmu);
--	arm_smmu_test_smr_masks(smmu);
--
--	/*
--	 * For ACPI and generic DT bindings, an SMMU will be probed before
--	 * any device which might need it, so we want the bus ops in place
--	 * ready to handle default domain setup as soon as any SMMU exists.
--	 */
--	if (!using_legacy_binding)
--		arm_smmu_bus_init();
--
--	return 0;
--}
--
--/*
-- * With the legacy DT binding in play, though, we have no guarantees about
-- * probe order, but then we're also not doing default domains, so we can
-- * delay setting bus ops until we're sure every possible SMMU is ready,
-- * and that way ensure that no add_device() calls get missed.
-- */
--static int arm_smmu_legacy_bus_init(void)
--{
--	if (using_legacy_binding)
--		arm_smmu_bus_init();
--	return 0;
--}
--device_initcall_sync(arm_smmu_legacy_bus_init);
--
--static int arm_smmu_device_remove(struct platform_device *pdev)
--{
--	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
--
--	if (!smmu)
--		return -ENODEV;
--
--	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
--		dev_err(&pdev->dev, "removing device with active domains!\n");
--
--	/* Turn the thing off */
--	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
--	return 0;
--}
--
--static void arm_smmu_device_shutdown(struct platform_device *pdev)
--{
--	arm_smmu_device_remove(pdev);
--}
--
--static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
--{
--	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
--
--	arm_smmu_device_reset(smmu);
--	return 0;
--}
--
--static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
--
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
- 		.name		= "arm-smmu",
--- 
-2.1.4
+--J2SCkAp4GZ/dPZZf
+Content-Type: application/gzip
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
+
+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
+
+--J2SCkAp4GZ/dPZZf--
