@@ -1,214 +1,283 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
-Date: Wed, 24 Oct 2018 23:18:27 +0530
-Message-ID: <CAFp+6iFWZ9DGGHedqVLrGZqXPsS9RMbe4QgpJr5skJdd4m+RSA@mail.gmail.com>
-References: <20180615105329.26800-1-vivek.gautam@codeaurora.org> <CAAFQd5AMirap5vjVC+73cv_KzE=-+EUD6TWd_NHRDw_m-sXDrw@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC v2 12/20] dma-iommu: Implement NESTED_MSI cookie
+Date: Wed, 24 Oct 2018 19:02:59 +0100
+Message-ID: <bd90bf0e-1bf6-244b-0ed6-0018ddc25eb4@arm.com>
+References: <20180918142457.3325-1-eric.auger@redhat.com>
+	<20180918142457.3325-13-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAAFQd5AMirap5vjVC+73cv_KzE=-+EUD6TWd_NHRDw_m-sXDrw@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20180918142457.3325-13-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
+Hi Eric,
 
-On Tue, Oct 23, 2018 at 9:45 AM Tomasz Figa <tfiga@chromium.org> wrote:
->
-> Hi Vivek,
->
-> On Fri, Jun 15, 2018 at 7:53 PM Vivek Gautam
-> <vivek.gautam@codeaurora.org> wrote:
-> >
-> > Qualcomm SoCs have an additional level of cache called as
-> > System cache or Last level cache[1]. This cache sits right
-> > before the DDR, and is tightly coupled with the memory
-> > controller.
-> > The cache is available to all the clients present in the
-> > SoC system. The clients request their slices from this system
-> > cache, make it active, and can then start using it. For these
-> > clients with smmu, to start using the system cache for
-> > dma buffers and related page tables [2], few of the memory
-> > attributes need to be set accordingly.
-> > This change makes the related memory Outer-Shareable, and
-> > updates the MAIR with necessary protection.
-> >
-> > The MAIR attribute requirements are:
-> >     Inner Cacheablity = 0
-> >     Outer Cacheablity = 1, Write-Back Write Allocate
-> >     Outer Shareablity = 1
-> >
-> > This change is a realisation of following changes
-> > from downstream msm-4.9:
-> > iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT
-> > iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT
->
-> Would you be able to provide links to those 2 downstream changes?
+On 2018-09-18 3:24 pm, Eric Auger wrote:
+> Up to now, when the type was UNMANAGED, we used to
+> allocate IOVA pages within a range provided by the user.
+> This does not work in nested mode.
+> 
+> If both the host and the guest are exposed with SMMUs, each
+> would allocate an IOVA. The guest allocates an IOVA (gIOVA)
+> to map onto the guest MSI doorbell (gDB). The Host allocates
+> another IOVA (hIOVA) to map onto the physical doorbell (hDB).
+> 
+> So we end up with 2 unrelated mappings, at S1 and S2:
+>           S1             S2
+> gIOVA    ->     gDB
+>                 hIOVA    ->    hDB
+> 
+> The PCI device would be programmed with hIOVA.
+> 
+> iommu_dma_bind_doorbell allows to pass gIOVA/gDB to the host
+> so that gIOVA can be used by the host instead of re-allocating
+> a new IOVA. That way the host can create the following nested
+> mapping:
+> 
+>           S1           S2
+> gIOVA    ->    gDB    ->    hDB
+> 
+> this time, the PCI device will be programmed with the gIOVA MSI
+> doorbell which is correctly map through the 2 stages.
 
-Thanks for the review.
-Here are the links for the changes:
-[1] -- iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT
-[2] -- iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT
+If I'm understanding things correctly, this plus a couple of the 
+preceding patches all add up to a rather involved way of coercing an 
+automatic allocator to only "allocate" predetermined addresses in an 
+entirely known-ahead-of-time manner. Given that the guy calling 
+iommu_dma_bind_doorbell() could seemingly just as easily call 
+iommu_map() at that point and not bother with an allocator cookie and 
+all this machinery at all, what am I missing?
 
-[1] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
-[2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
+Robin.
 
->
-> >
-> > [1] https://patchwork.kernel.org/patch/10422531/
-> > [2] https://patchwork.kernel.org/patch/10302791/
-> >
-> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> > ---
-> >  drivers/iommu/arm-smmu.c       | 14 ++++++++++++++
-> >  drivers/iommu/io-pgtable-arm.c | 24 +++++++++++++++++++-----
-> >  drivers/iommu/io-pgtable.h     |  4 ++++
-> >  include/linux/iommu.h          |  4 ++++
-> >  4 files changed, 41 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index f7a96bcf94a6..8058e7205034 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -249,6 +249,7 @@ struct arm_smmu_domain {
-> >         struct mutex                    init_mutex; /* Protects smmu pointer */
-> >         spinlock_t                      cb_lock; /* Serialises ATS1* ops and TLB syncs */
-> >         struct iommu_domain             domain;
-> > +       bool                            has_sys_cache;
-> >  };
-> >
-> >  struct arm_smmu_option_prop {
-> > @@ -862,6 +863,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-> >
-> >         if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-> >                 pgtbl_cfg.quirks = IO_PGTABLE_QUIRK_NO_DMA;
-> > +       if (smmu_domain->has_sys_cache)
-> > +               pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_SYS_CACHE;
-> >
-> >         smmu_domain->smmu = smmu;
-> >         pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
-> > @@ -1477,6 +1480,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> >         case DOMAIN_ATTR_NESTING:
-> >                 *(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
-> >                 return 0;
-> > +       case DOMAIN_ATTR_USE_SYS_CACHE:
-> > +               *((int *)data) = smmu_domain->has_sys_cache;
-> > +               return 0;
-> >         default:
-> >                 return -ENODEV;
-> >         }
-> > @@ -1506,6 +1512,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
-> >                         smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-> >
-> >                 break;
-> > +       case DOMAIN_ATTR_USE_SYS_CACHE:
-> > +               if (smmu_domain->smmu) {
-> > +                       ret = -EPERM;
-> > +                       goto out_unlock;
-> > +               }
-> > +               if (*((int *)data))
-> > +                       smmu_domain->has_sys_cache = true;
-> > +               break;
-> >         default:
-> >                 ret = -ENODEV;
-> >         }
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > index 010a254305dd..b2aee1828524 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -169,9 +169,11 @@
-> >  #define ARM_LPAE_MAIR_ATTR_DEVICE      0x04
-> >  #define ARM_LPAE_MAIR_ATTR_NC          0x44
-> >  #define ARM_LPAE_MAIR_ATTR_WBRWA       0xff
-> > +#define ARM_LPAE_MAIR_ATTR_SYS_CACHE   0xf4
-> >  #define ARM_LPAE_MAIR_ATTR_IDX_NC      0
-> >  #define ARM_LPAE_MAIR_ATTR_IDX_CACHE   1
-> >  #define ARM_LPAE_MAIR_ATTR_IDX_DEV     2
-> > +#define ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE       3
-> >
-> >  /* IOPTE accessors */
-> >  #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
-> > @@ -442,6 +444,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
-> >                 else if (prot & IOMMU_CACHE)
-> >                         pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
-> >                                 << ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> > +               else if (prot & IOMMU_SYS_CACHE)
-> > +                       pte |= (ARM_LPAE_MAIR_ATTR_IDX_SYS_CACHE
-> > +                               << ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> > +
->
-> Okay, so we favor the full caching (IC WBRWA, OC WBRWA, OS) first if
-> requested or otherwise try to use system cache (IC NC, OC WBWA?, OS)?
-> Sounds fine.
-
-That's right. When devices can use full caching, the system cache will
-also be used. Otherwise when devices can't allocate/use inner caches,
-system cache (Outer WBRWA, and IC NC) is the option.
-
->
-> nit: Unnecessary blank line.
-
-will remove it.
-
->
-> >         } else {
-> >                 pte = ARM_LPAE_PTE_HAP_FAULT;
-> >                 if (prot & IOMMU_READ)
-> > @@ -771,7 +777,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >         u64 reg;
-> >         struct arm_lpae_io_pgtable *data;
-> >
-> > -       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA))
-> > +       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
-> > +                           IO_PGTABLE_QUIRK_SYS_CACHE))
-> >                 return NULL;
-> >
-> >         data = arm_lpae_alloc_pgtable(cfg);
-> > @@ -779,9 +786,14 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >                 return NULL;
-> >
-> >         /* TCR */
-> > -       reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > -             (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
-> > -             (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
-> > +       if (cfg->quirks & IO_PGTABLE_QUIRK_SYS_CACHE) {
-> > +               reg = (ARM_LPAE_TCR_SH_OS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > +                     (ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT);
->
-> Contrary to the earlier code which favored IC/IS if possible, here we
-> seem to disable IC/IS if the SYS_CACHE quirk is requested, regardless
-> of whether it could still be desirable to use IC/IS. Perhaps rather
-> than
-> IO_PGTABLE_QUIRK_SYS_CACHE, we need something like
-> IO_PGTABLE_QUIRK_NO_INNER_CACHE?
-
-IIUC, with QUIRK_NO_INNER_CACHE, we would explicitly handle the case
-of non I/O-coherent devices that can't use inner caches.
-Other devices will have coherent view of inner as well as outer caches
-(including system cache).
-Do I understand you correctly?
-
-Best regards
-Vivek
->
-> > +       } else {
-> > +               reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > +                     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT);
-> > +       }
-> > +       reg |= (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
-> >
->
-> [keeping the context]
->
-> Best regards,
-> Tomasz
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
---
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> 
+> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> 
+> ---
+> 
+> v1 -> v2:
+> - unmap stage2 on put()
+> ---
+>   drivers/iommu/dma-iommu.c | 97 +++++++++++++++++++++++++++++++++++++--
+>   include/linux/dma-iommu.h | 11 +++++
+>   2 files changed, 105 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 511ff9a1d6d9..53444c3e8f2f 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -37,12 +37,14 @@
+>   struct iommu_dma_msi_page {
+>   	struct list_head	list;
+>   	dma_addr_t		iova;
+> +	dma_addr_t		ipa;
+>   	phys_addr_t		phys;
+>   };
+>   
+>   enum iommu_dma_cookie_type {
+>   	IOMMU_DMA_IOVA_COOKIE,
+>   	IOMMU_DMA_MSI_COOKIE,
+> +	IOMMU_DMA_NESTED_MSI_COOKIE,
+>   };
+>   
+>   struct iommu_dma_cookie {
+> @@ -109,14 +111,17 @@ EXPORT_SYMBOL(iommu_get_dma_cookie);
+>    *
+>    * Users who manage their own IOVA allocation and do not want DMA API support,
+>    * but would still like to take advantage of automatic MSI remapping, can use
+> - * this to initialise their own domain appropriately. Users should reserve a
+> + * this to initialise their own domain appropriately. Users may reserve a
+>    * contiguous IOVA region, starting at @base, large enough to accommodate the
+>    * number of PAGE_SIZE mappings necessary to cover every MSI doorbell address
+> - * used by the devices attached to @domain.
+> + * used by the devices attached to @domain. The other way round is to provide
+> + * usable iova pages through the iommu_dma_bind_doorbell API (nested stages
+> + * use case)
+>    */
+>   int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+>   {
+>   	struct iommu_dma_cookie *cookie;
+> +	int nesting, ret;
+>   
+>   	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+>   		return -EINVAL;
+> @@ -124,7 +129,12 @@ int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+>   	if (domain->iova_cookie)
+>   		return -EEXIST;
+>   
+> -	cookie = cookie_alloc(IOMMU_DMA_MSI_COOKIE);
+> +	ret =  iommu_domain_get_attr(domain, DOMAIN_ATTR_NESTING, &nesting);
+> +	if (!ret && nesting)
+> +		cookie = cookie_alloc(IOMMU_DMA_NESTED_MSI_COOKIE);
+> +	else
+> +		cookie = cookie_alloc(IOMMU_DMA_MSI_COOKIE);
+> +
+>   	if (!cookie)
+>   		return -ENOMEM;
+>   
+> @@ -145,6 +155,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   {
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>   	struct iommu_dma_msi_page *msi, *tmp;
+> +	bool s2_unmap = false;
+>   
+>   	if (!cookie)
+>   		return;
+> @@ -152,7 +163,15 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
+>   		put_iova_domain(&cookie->iovad);
+>   
+> +	if (cookie->type == IOMMU_DMA_NESTED_MSI_COOKIE)
+> +		s2_unmap = true;
+> +
+>   	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
+> +		if (s2_unmap && msi->phys) {
+> +			size_t size = cookie_msi_granule(cookie);
+> +
+> +			WARN_ON(iommu_unmap(domain, msi->ipa, size) != size);
+> +		}
+>   		list_del(&msi->list);
+>   		kfree(msi);
+>   	}
+> @@ -161,6 +180,50 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   }
+>   EXPORT_SYMBOL(iommu_put_dma_cookie);
+>   
+> +/**
+> + * iommu_dma_bind_doorbell - Allows to provide a usable IOVA page
+> + * @domain: domain handle
+> + * @binding: IOVA/IPA binding
+> + *
+> + * In nested stage use case, the user can provide IOVA/IPA bindings
+> + * corresponding to a guest MSI stage 1 mapping. When the host needs
+> + * to map its own MSI doorbells, it can use the IPA as stage 2 input
+> + * and map it onto the physical MSI doorbell.
+> + */
+> +int iommu_dma_bind_doorbell(struct iommu_domain *domain,
+> +			    struct iommu_guest_msi_binding *binding)
+> +{
+> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> +	struct iommu_dma_msi_page *msi;
+> +	dma_addr_t ipa, iova;
+> +	size_t size;
+> +
+> +	if (!cookie)
+> +		return -EINVAL;
+> +
+> +	if (cookie->type != IOMMU_DMA_NESTED_MSI_COOKIE)
+> +		return -EINVAL;
+> +
+> +	size = 1 << binding->granule;
+> +	iova = binding->iova & ~(phys_addr_t)(size - 1);
+> +	ipa = binding->gpa & ~(phys_addr_t)(size - 1);
+> +
+> +	list_for_each_entry(msi, &cookie->msi_page_list, list) {
+> +		if (msi->iova == iova)
+> +			return 0; /* this page is already registered */
+> +	}
+> +
+> +	msi = kzalloc(sizeof(*msi), GFP_KERNEL);
+> +	if (!msi)
+> +		return -ENOMEM;
+> +
+> +	msi->iova = iova;
+> +	msi->ipa = ipa;
+> +	list_add(&msi->list, &cookie->msi_page_list);
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(iommu_dma_bind_doorbell);
+> +
+>   /**
+>    * iommu_dma_get_resv_regions - Reserved region driver helper
+>    * @dev: Device from iommu_get_resv_regions()
+> @@ -846,6 +909,34 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   		if (msi_page->phys == msi_addr)
+>   			return msi_page;
+>   
+> +	/*
+> +	 * In nested stage mode, we do not allocate an MSI page in
+> +	 * a range provided by the user. Instead, IOVA/IPA bindings are
+> +	 * individually provided. We reuse thise IOVAs to build the
+> +	 * IOVA -> IPA -> MSI PA nested stage mapping.
+> +	 */
+> +	if (cookie->type == IOMMU_DMA_NESTED_MSI_COOKIE) {
+> +		list_for_each_entry(msi_page, &cookie->msi_page_list, list)
+> +			if (!msi_page->phys) { /* this binding is free to use */
+> +				dma_addr_t ipa = msi_page->ipa;
+> +				int ret;
+> +
+> +				msi_page->phys = msi_addr;
+> +
+> +				/* do the stage 2 mapping */
+> +				ret = iommu_map(domain, ipa, msi_addr, size,
+> +						IOMMU_MMIO | IOMMU_WRITE);
+> +				if (ret) {
+> +					pr_warn("MSI S2 mapping failed (%d)\n",
+> +						ret);
+> +					return NULL;
+> +				}
+> +				return msi_page;
+> +			}
+> +		pr_warn("%s no MSI binding found\n", __func__);
+> +		return NULL;
+> +	}
+> +
+>   	msi_page = kzalloc(sizeof(*msi_page), GFP_ATOMIC);
+>   	if (!msi_page)
+>   		return NULL;
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index e8ca5e654277..324745eef644 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -24,6 +24,7 @@
+>   #include <linux/dma-mapping.h>
+>   #include <linux/iommu.h>
+>   #include <linux/msi.h>
+> +#include <uapi/linux/iommu.h>
+>   
+>   int iommu_dma_init(void);
+>   
+> @@ -74,12 +75,15 @@ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+>   /* The DMA API isn't _quite_ the whole story, though... */
+>   void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+>   void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+> +int iommu_dma_bind_doorbell(struct iommu_domain *domain,
+> +			    struct iommu_guest_msi_binding *binding);
+>   
+>   #else
+>   
+>   struct iommu_domain;
+>   struct msi_msg;
+>   struct device;
+> +struct iommu_guest_msi_binding;
+>   
+>   static inline int iommu_dma_init(void)
+>   {
+> @@ -104,6 +108,13 @@ static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+>   {
+>   }
+>   
+> +static inline int
+> +iommu_dma_bind_doorbell(struct iommu_domain *domain,
+> +			struct iommu_guest_msi_binding *binding)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>   static inline void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+>   {
+>   }
+> 
