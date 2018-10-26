@@ -1,30 +1,21 @@
-From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Subject: Re: [git pull] IOMMU Updates for Linux v4.20
-Date: Fri, 26 Oct 2018 10:51:39 -0700
-Message-ID: <CAHk-=wgKcUShuiJhh04xA0TKw8ssWL=o8O3mAxa+pJqy75EkaA@mail.gmail.com>
-References: <20181026112710.iot2ti47chcf6w5f@8bytes.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [GIT PULL] second round of dma mapping updates for 4.20
+Date: Fri, 26 Oct 2018 11:30:19 -0700
+Message-ID: <CAHk-=wjPr1PLVcCpXDMUqu1FcyFBp4XOw9i9zue8hkJY8fZgOg@mail.gmail.com>
+References: <20181026132403.GA23693@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181026112710.iot2ti47chcf6w5f-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181026132403.GA23693@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, konrad.wilk@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 26, 2018 at 4:27 AM Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+On Fri, Oct 26, 2018 at 6:24 AM Christoph Hellwig <hch@infradead.org> wrote:
 >
-> IOMMU Updates for Linux v4.20
+> Second batch of dma-mapping updates for 4.20:
 
-Thanks, pulled,
+Pulled,
 
-                   Linus
+                Linus
