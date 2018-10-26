@@ -1,189 +1,41 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Updates for Linux v4.20
-Date: Fri, 26 Oct 2018 13:27:15 +0200
-Message-ID: <20181026112710.iot2ti47chcf6w5f@8bytes.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 10/10] arm64: use the generic swiotlb_dma_ops
+Date: Fri, 26 Oct 2018 14:44:55 +0200
+Message-ID: <20181026124455.GA28571@lst.de>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-11-hch@lst.de> <738dfd71-f78b-1d73-712c-73a4b6d4141c@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="6skzxuasedco4yjk"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <738dfd71-f78b-1d73-712c-73a4b6d4141c@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Mon, Oct 22, 2018 at 06:52:51PM +0100, Robin Murphy wrote:
+>> scatterlist *sgl,
+>> -				  int nelems, enum dma_data_direction dir,
+>> -				  unsigned long attrs)
+>> +long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
+>
+> I realise I'm spotting this a bit late, but does this interface really need 
+> somewhat-atypical signed PFNs?
 
---6skzxuasedco4yjk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+It has been a while since I wrote this code, and I can't remember the
+reason for it except that I'm pretty sure I copy and pasted it from
+existing code somewhere.
 
-Hi Linus,
+Switching it to unsigned long should be fine, and patches are welcome.
 
-The following changes since commit 0238df646e6224016a45505d2c111a24669ebe21:
+>> +static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
+>> +				      struct page *page, size_t size)
+>
+> If __iommu_get_sgtable() is now the only user, I'd say just inline these 
+> remnants there (or let that case call dma_common_sgtable() if that's what 
+> swiotlb_dma_ops are now relying on). Either way the "__swiotlb" is now a 
+> complete misnomer.
 
-  Linux 4.19-rc7 (2018-10-07 17:26:02 +0200)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.20
-
-for you to fetch changes up to 2f2fbfb71ecc221352d84ae6430b42031ae5b654:
-
-  Merge branches 'arm/renesas', 'arm/smmu', 'ppc/pamu', 'x86/vt-d', 'x86/amd' and 'core' into next (2018-10-10 18:09:37 +0200)
-
-----------------------------------------------------------------
-IOMMU Updates for Linux v4.20
-
-These updates bring:
-
-	- Debugfs support for the Intel VT-d driver. When enabled, it
-	  now also exposes some of its internal data structures to
-	  user-space for debugging purposes.
-
-	- ARM-SMMU driver now uses the generic deferred flushing
-	  and fast-path iova allocation code. This is expected to be a
-	  major performance improvement, as this allocation path scales
-	  a lot better.
-
-	- Support for r8a7744 in the Renesas iommu driver
-
-	- Couple of minor fixes and improvements all over the place
-
-----------------------------------------------------------------
-Andrew Murray (2):
-      iommu/arm-smmu-v3: Add SPDX header
-      iommu/arm-smmu-v3: Remove unnecessary wrapper function
-
-Biju Das (1):
-      dt-bindings: iommu: ipmmu-vmsa: Add r8a7744 support
-
-Colin Ian King (1):
-      iommu/fsl: Fix spelling mistake pci_endpt_partioning -> pci_endpt_partitioning
-
-Ganapatrao Kulkarni (1):
-      iommu/iova: Optimise attempts to allocate iova from 32bit address range
-
-Gayatri Kammela (1):
-      iommu/vt-d: Add debugfs support to show register contents
-
-Joerg Roedel (3):
-      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
-      iommu/amd: Move iommu_init_pci() to .init section
-      Merge branches 'arm/renesas', 'arm/smmu', 'ppc/pamu', 'x86/vt-d', 'x86/amd' and 'core' into next
-
-John Garry (1):
-      iommu/arm-smmu-v3: Fix a couple of minor comment typos
-
-Kuninori Morimoto (1):
-      iommu/ipmmu-vmsa: Convert to SPDX identifiers
-
-Lu Baolu (1):
-      iommu/amd: Add default branch in amd_iommu_capable()
-
-Nipun Gupta (7):
-      Documentation: fsl-mc: add iommu-map device-tree binding for fsl-mc bus
-      iommu/of: make of_pci_map_rid() available for other devices too
-      iommu/of: support iommu configuration for fsl-mc devices
-      iommu/arm-smmu: Add support for the fsl-mc bus
-      bus/fsl-mc: support dma configure for devices on fsl-mc bus
-      bus/fsl-mc: set coherent dma mask for devices on fsl-mc bus
-      arm64: dts: ls208xa: comply with the iommu map binding for fsl_mc
-
-Rami Rosen (1):
-      iommu: Fix a typo
-
-Robin Murphy (8):
-      iommu: Add fast hook for getting DMA domains
-      iommu/dma: Use fast DMA domain lookup
-      arm64/dma-mapping: Mildly optimise non-coherent IOMMU ops
-      iommu: Tidy up window attributes
-      iommu: Remove .domain_{get,set}_windows
-      iommu/io-pgtable-arm: Fix race handling in split_blk_unmap()
-      iommu/io-pgtable-arm-v7s: Add support for non-strict mode
-      iommu/arm-smmu: Support non-strict mode
-
-Sohil Mehta (5):
-      iommu/vt-d: Relocate struct/function declarations to its header files
-      iommu/vt-d: Update register definitions to VT-d 3.0 specification
-      iommu/vt-d: Enable base Intel IOMMU debugfs support
-      iommu/vt-d: Add debugfs support for Interrupt remapping
-      iommu/vt-d: Add debugfs support to show context internals
-
-Will Deacon (1):
-      iommu/arm-smmu: Ensure that page-table updates are visible before TLBI
-
-Zhen Lei (7):
-      iommu/arm-smmu-v3: Fix unexpected CMD_SYNC timeout
-      iommu/arm-smmu-v3: Avoid back-to-back CMD_SYNC operations
-      iommu/arm-smmu-v3: Implement flush_iotlb_all hook
-      iommu/dma: Add support for non-strict mode
-      iommu: Add "iommu.strict" command line option
-      iommu/io-pgtable-arm: Add support for non-strict mode
-      iommu/arm-smmu-v3: Add support for non-strict mode
-
- Documentation/admin-guide/kernel-parameters.txt    |  12 +
- .../bindings/iommu/renesas,ipmmu-vmsa.txt          |   1 +
- .../devicetree/bindings/misc/fsl,qoriq-mc.txt      |  39 +++
- arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi     |   7 +-
- arch/arm64/mm/dma-mapping.c                        |  10 +-
- arch/x86/include/asm/irq_remapping.h               |   2 +
- drivers/bus/fsl-mc/fsl-mc-bus.c                    |  16 +-
- drivers/iommu/Kconfig                              |  13 +
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/amd_iommu.c                          |   2 +
- drivers/iommu/amd_iommu_init.c                     |   2 +-
- drivers/iommu/arm-smmu-v3.c                        | 140 +++++----
- drivers/iommu/arm-smmu.c                           | 106 +++++--
- drivers/iommu/dma-iommu.c                          |  55 +++-
- drivers/iommu/fsl_pamu_domain.c                    | 119 ++++----
- drivers/iommu/intel-iommu-debugfs.c                | 314 +++++++++++++++++++++
- drivers/iommu/intel-iommu.c                        |  32 +--
- drivers/iommu/intel_irq_remapping.c                |   2 +-
- drivers/iommu/io-pgtable-arm-v7s.c                 |  11 +-
- drivers/iommu/io-pgtable-arm.c                     |  23 +-
- drivers/iommu/io-pgtable.h                         |   5 +
- drivers/iommu/iommu.c                              |  58 ++--
- drivers/iommu/iova.c                               |  22 +-
- drivers/iommu/ipmmu-vmsa.c                         |   5 +-
- drivers/iommu/of_iommu.c                           |  25 +-
- drivers/of/base.c                                  | 102 +++++++
- drivers/of/irq.c                                   |   5 +-
- drivers/pci/of.c                                   | 101 -------
- include/linux/fsl/mc.h                             |   8 +
- include/linux/intel-iommu.h                        |  72 +++++
- include/linux/iommu.h                              |  10 +-
- include/linux/iova.h                               |   1 +
- include/linux/of.h                                 |  11 +
- include/linux/of_pci.h                             |  10 -
- 34 files changed, 986 insertions(+), 356 deletions(-)
- create mode 100644 drivers/iommu/intel-iommu-debugfs.c
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---6skzxuasedco4yjk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJb0voOAAoJECvwRC2XARrjJ78QALz/U3srKR6wKPMO8Gk1EXaG
-J2eMTvrN6em/YsnsYMOWoPpMWnlOUYJC2rorau2PPBK5VpugFJAmsk4mFTaDVaZP
-nEMIGYBq89zI6PQ3UikJ+GO3IuREexkfBXUK2CmZRCepawH4FUhc6T2gCGR/JTRM
-LN+ZRTaPBwnyHeThn3LMp+0cJ/7dw2nPNTJ6zlscrImXNo0UTVlDgjiyMIEDobYu
-WawS+7A6YCJxcOWY+CspQfJy8tlnMo0Ums52OYMANkumOiC7lgYxu6jdy4nLKYWW
-3kKnfWRNT+jXwhsvPni2NZI8eLjDFPnUneyW+q96/CNZ4/7wYMfCXAzcWLmYdWpc
-C7CbjEcrtHFiaM5kCgWRkaB+6WUwuIoYuvmExdVdMS79ZczjQcZ7KSO+dah5VsAh
-o0S3jUdH6LL4R8+PH4YkBzy5PLIVJ8laELE2mp2hIM4+xnFOTOAqmVp2ZLIFHV7j
-Xbfi2vv5tEAv5gEbg/k7mPfsvw2/LToYwl5CmC7fPNL2od9jZ1dx9ZlnVRH+h3S2
-OcjRFgt54tVjry8XyOnaj1HExcbP7aIeeiflVmGjY9PnGJrgyJgqizm67BT8Kdc6
-yjAsMgTIxzP45U5DqxYz99fMB6MCpUPKjeEZbbrqvmHp3ZNyB+jkvjp7zhhYrHCk
-N6gWQfIVOFP2I++a0c9y
-=kQ3Q
------END PGP SIGNATURE-----
-
---6skzxuasedco4yjk--
+It is.  But we hopefully kill both the only user and this helper in
+the 4.21 merge window when moving the iommu dma api wrappers to common
+code.
