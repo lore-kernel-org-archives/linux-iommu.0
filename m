@@ -1,41 +1,57 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 10/10] arm64: use the generic swiotlb_dma_ops
-Date: Fri, 26 Oct 2018 14:44:55 +0200
-Message-ID: <20181026124455.GA28571@lst.de>
-References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-11-hch@lst.de> <738dfd71-f78b-1d73-712c-73a4b6d4141c@arm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] second round of dma mapping updates for 4.20
+Date: Fri, 26 Oct 2018 15:24:03 +0200
+Message-ID: <20181026132403.GA23693@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <738dfd71-f78b-1d73-712c-73a4b6d4141c@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 22, 2018 at 06:52:51PM +0100, Robin Murphy wrote:
->> scatterlist *sgl,
->> -				  int nelems, enum dma_data_direction dir,
->> -				  unsigned long attrs)
->> +long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
->
-> I realise I'm spotting this a bit late, but does this interface really need 
-> somewhat-atypical signed PFNs?
+The following changes since commit b9fd04262a8abc366f40a9e97598e94591352c26:
 
-It has been a while since I wrote this code, and I can't remember the
-reason for it except that I'm pretty sure I copy and pasted it from
-existing code somewhere.
+  dma-direct: respect DMA_ATTR_NO_WARN (2018-10-09 15:08:46 +0200)
 
-Switching it to unsigned long should be fine, and patches are welcome.
+are available in the Git repository at:
 
->> +static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
->> +				      struct page *page, size_t size)
->
-> If __iommu_get_sgtable() is now the only user, I'd say just inline these 
-> remnants there (or let that case call dma_common_sgtable() if that's what 
-> swiotlb_dma_ops are now relying on). Either way the "__swiotlb" is now a 
-> complete misnomer.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.20-1
 
-It is.  But we hopefully kill both the only user and this helper in
-the 4.21 merge window when moving the iommu dma api wrappers to common
-code.
+for you to fetch changes up to 886643b766321f15f63bd950be618cbb6dd22bbc:
+
+  arm64: use the generic swiotlb_dma_ops (2018-10-19 08:53:24 +0200)
+
+----------------------------------------------------------------
+Second batch of dma-mapping updates for 4.20:
+
+ - various swiotlb cleanups
+ - do not dip into the ѕwiotlb pool for dma coherent allocations
+ - add support for not cache coherent DMA to swiotlb
+ - switch ARM64 to use the generic swiotlb_dma_ops
+
+----------------------------------------------------------------
+Christoph Hellwig (10):
+      swiotlb: remove a pointless comment
+      swiotlb: mark is_swiotlb_buffer static
+      swiotlb: do not panic on mapping failures
+      swiotlb: remove the overflow buffer
+      swiotlb: merge swiotlb_unmap_page and unmap_single
+      swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs
+      swiotlb: refactor swiotlb_map_page
+      swiotlb: don't dip into swiotlb pool for coherent allocations
+      swiotlb: add support for non-coherent DMA
+      arm64: use the generic swiotlb_dma_ops
+
+ arch/arm64/Kconfig                   |   4 +
+ arch/arm64/include/asm/device.h      |   1 -
+ arch/arm64/include/asm/dma-mapping.h |   7 +-
+ arch/arm64/mm/dma-mapping.c          | 257 ++++++---------------------
+ arch/powerpc/kernel/dma-swiotlb.c    |   4 +-
+ include/linux/dma-direct.h           |   2 +
+ include/linux/swiotlb.h              |   9 -
+ kernel/dma/direct.c                  |   2 -
+ kernel/dma/swiotlb.c                 | 326 +++++++----------------------------
+ 9 files changed, 123 insertions(+), 489 deletions(-)
