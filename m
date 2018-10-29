@@ -1,104 +1,75 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v2 12/20] dma-iommu: Implement NESTED_MSI cookie
-Date: Sat, 27 Oct 2018 11:24:52 +0200
-Message-ID: <1d5181dd-86c6-ffe7-df27-0c8362342039@redhat.com>
-References: <20180918142457.3325-1-eric.auger@redhat.com>
- <20180918142457.3325-13-eric.auger@redhat.com>
- <bd90bf0e-1bf6-244b-0ed6-0018ddc25eb4@arm.com>
- <167b1683-9dfe-d471-da2e-37bf53278007@redhat.com>
- <70ff6bee-5775-cccb-b74a-db915c907bcd@arm.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: eliminate a potential memory
+ corruption on Hi16xx soc
+Date: Mon, 29 Oct 2018 17:59:05 +0000
+Message-ID: <20181029175905.GC16739@arm.com>
+References: <1540021014-8176-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <70ff6bee-5775-cccb-b74a-db915c907bcd@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Robin Murphy <robin.murphy@arm.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com
-Cc: tianyu.lan@intel.com, marc.zyngier@arm.com, ashok.raj@intel.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1540021014-8176-1-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgpPbiAxMC8yNS8xOCAxMjowNSBBTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9u
-IDIwMTgtMTAtMjQgNzo0NCBwbSwgQXVnZXIgRXJpYyB3cm90ZToKPj4gSGkgUm9iaW4sCj4+Cj4+
-IE9uIDEwLzI0LzE4IDg6MDIgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IEhpIEVyaWMsCj4+
-Pgo+Pj4gT24gMjAxOC0wOS0xOCAzOjI0IHBtLCBFcmljIEF1Z2VyIHdyb3RlOgo+Pj4+IFVwIHRv
-IG5vdywgd2hlbiB0aGUgdHlwZSB3YXMgVU5NQU5BR0VELCB3ZSB1c2VkIHRvCj4+Pj4gYWxsb2Nh
-dGUgSU9WQSBwYWdlcyB3aXRoaW4gYSByYW5nZSBwcm92aWRlZCBieSB0aGUgdXNlci4KPj4+PiBU
-aGlzIGRvZXMgbm90IHdvcmsgaW4gbmVzdGVkIG1vZGUuCj4+Pj4KPj4+PiBJZiBib3RoIHRoZSBo
-b3N0IGFuZCB0aGUgZ3Vlc3QgYXJlIGV4cG9zZWQgd2l0aCBTTU1VcywgZWFjaAo+Pj4+IHdvdWxk
-IGFsbG9jYXRlIGFuIElPVkEuIFRoZSBndWVzdCBhbGxvY2F0ZXMgYW4gSU9WQSAoZ0lPVkEpCj4+
-Pj4gdG8gbWFwIG9udG8gdGhlIGd1ZXN0IE1TSSBkb29yYmVsbCAoZ0RCKS4gVGhlIEhvc3QgYWxs
-b2NhdGVzCj4+Pj4gYW5vdGhlciBJT1ZBIChoSU9WQSkgdG8gbWFwIG9udG8gdGhlIHBoeXNpY2Fs
-IGRvb3JiZWxsIChoREIpLgo+Pj4+Cj4+Pj4gU28gd2UgZW5kIHVwIHdpdGggMiB1bnJlbGF0ZWQg
-bWFwcGluZ3MsIGF0IFMxIGFuZCBTMjoKPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoCBTMcKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBTMgo+Pj4+IGdJT1ZBwqDCoMKgIC0+wqDCoMKgwqAgZ0RCCj4+
-Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaElPVkHCoMKgwqAgLT7CoMKgwqAg
-aERCCj4+Pj4KPj4+PiBUaGUgUENJIGRldmljZSB3b3VsZCBiZSBwcm9ncmFtbWVkIHdpdGggaElP
-VkEuCj4+Pj4KPj4+PiBpb21tdV9kbWFfYmluZF9kb29yYmVsbCBhbGxvd3MgdG8gcGFzcyBnSU9W
-QS9nREIgdG8gdGhlIGhvc3QKPj4+PiBzbyB0aGF0IGdJT1ZBIGNhbiBiZSB1c2VkIGJ5IHRoZSBo
-b3N0IGluc3RlYWQgb2YgcmUtYWxsb2NhdGluZwo+Pj4+IGEgbmV3IElPVkEuIFRoYXQgd2F5IHRo
-ZSBob3N0IGNhbiBjcmVhdGUgdGhlIGZvbGxvd2luZyBuZXN0ZWQKPj4+PiBtYXBwaW5nOgo+Pj4+
-Cj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqAgUzHCoMKgwqDCoMKgwqDCoMKgwqDCoCBTMgo+Pj4+
-IGdJT1ZBwqDCoMKgIC0+wqDCoMKgIGdEQsKgwqDCoCAtPsKgwqDCoCBoREIKPj4+Pgo+Pj4+IHRo
-aXMgdGltZSwgdGhlIFBDSSBkZXZpY2Ugd2lsbCBiZSBwcm9ncmFtbWVkIHdpdGggdGhlIGdJT1ZB
-IE1TSQo+Pj4+IGRvb3JiZWxsIHdoaWNoIGlzIGNvcnJlY3RseSBtYXAgdGhyb3VnaCB0aGUgMiBz
-dGFnZXMuCj4+Pgo+Pj4gSWYgSSdtIHVuZGVyc3RhbmRpbmcgdGhpbmdzIGNvcnJlY3RseSwgdGhp
-cyBwbHVzIGEgY291cGxlIG9mIHRoZQo+Pj4gcHJlY2VkaW5nIHBhdGNoZXMgYWxsIGFkZCB1cCB0
-byBhIHJhdGhlciBpbnZvbHZlZCB3YXkgb2YgY29lcmNpbmcgYW4KPj4+IGF1dG9tYXRpYyBhbGxv
-Y2F0b3IgdG8gb25seSAiYWxsb2NhdGUiIHByZWRldGVybWluZWQgYWRkcmVzc2VzIGluIGFuCj4+
-PiBlbnRpcmVseSBrbm93bi1haGVhZC1vZi10aW1lIG1hbm5lci4KPj4gYWdyZWVkCj4+IMKgIEdp
-dmVuIHRoYXQgdGhlIGd1eSBjYWxsaW5nCj4+PiBpb21tdV9kbWFfYmluZF9kb29yYmVsbCgpIGNv
-dWxkIHNlZW1pbmdseSBqdXN0IGFzIGVhc2lseSBjYWxsCj4+PiBpb21tdV9tYXAoKSBhdCB0aGF0
-IHBvaW50IGFuZCBub3QgYm90aGVyIHdpdGggYW4gYWxsb2NhdG9yIGNvb2tpZSBhbmQKPj4+IGFs
-bCB0aGlzIG1hY2hpbmVyeSBhdCBhbGwsIHdoYXQgYW0gSSBtaXNzaW5nPwo+PiBXZWxsIGlvbW11
-X2RtYV9tYXBfbXNpX21zZygpIGdldHMgY2FsbGVkIGFuZCBpcyBwYXJ0IG9mIHRoaXMgZXhpc3Rp
-bmcKPj4gTVNJIG1hcHBpbmcgbWFjaGluZXJ5LiBJZiB3ZSBkbyBub3QgZG8gYW55dGhpbmcgdGhp
-cyBmdW5jdGlvbiBhbGxvY2F0ZXMKPj4gYW4gaElPVkEgdGhhdCBpcyBub3QgaW52b2x2ZWQgaW4g
-YW55IG5lc3RlZCBzZXR1cC4gU28gZWl0aGVyIHdlIGNvZXJjZQo+PiB0aGUgYWxsb2NhdG9yIGlu
-IHBsYWNlICh3aGljaCBpcyB3aGF0IHRoaXMgc2VyaWVzIGRvZXMpIG9yIHdlIHVucGx1ZyB0aGUK
-Pj4gYWxsb2NhdG9yIHRvIHJlcGxhY2UgdGhpcyBsYXR0ZXIgd2l0aCBhIHNpbXBsZSBTMiBtYXBw
-aW5nLCBhcyB5b3UKPj4gc3VnZ2VzdCwgaWUuIGlvbW11X21hcChnREIsIGhEQikuIEFzc3VtaW5n
-IHdlIHVucGx1ZyB0aGUgYWxsb2NhdG9yLCB0aGUKPj4gZ3V5IHdobyBhY3R1YWxseSBjYWxsc8Kg
-IGlvbW11X2RtYV9iaW5kX2Rvb3JiZWxsKCkga25vd3MgZ0RCIGJ1dCBkb2VzIG5vdAo+PiBrbm93
-IGhEQi4gU28gSSBkb24ndCByZWFsbHkgZ2V0IGhvdyB3ZSBjYW4gc2ltcGxpZnkgdGhpbmdzLgo+
-IAo+IE9LLCB0aGVyZSdzIHdoYXQgSSB3YXMgbWlzc2luZyA6RAo+IAo+IEJ1dCB0aGF0IHRoZW4g
-c2VlbXMgdG8gcmV2ZWFsIGEgc29tZXdoYXQgYmlnZ2VyIHByb2JsZW0gLSBpZiB0aGUgY2FsbGVy
-cwo+IGFyZSBzaW1wbHkgcmVnaXN0ZXJpbmcgSVBBcywgYW5kIHJlbHlpbmcgb24gdGhlIElUUyBk
-cml2ZXIgdG8gZ3JhYiBhbgo+IGVudHJ5IGFuZCBmaWxsIGluIGEgUEEgbGF0ZXIsIHRoZW4gaG93
-IGRvZXMgZWl0aGVyIG9uZSBrbm93ICp3aGljaCogUEEKPiBpcyBzdXBwb3NlZCB0byBiZWxvbmcg
-dG8gYSBnaXZlbiBJUEEgaW4gdGhlIGNhc2Ugd2hlcmUgeW91IGhhdmUgbXVsdGlwbGUKPiBkZXZp
-Y2VzIHdpdGggZGlmZmVyZW50IElUUyB0YXJnZXRzIGFzc2lnbmVkIHRvIHRoZSBzYW1lIGd1ZXN0
-PwoKWW91J3JlIGRlZmluaXRpdmVseSByaWdodCBoZXJlLiBJIHRoaW5rIHRoaXMgY2FuIGJlIHJl
-c29sdmVkIGJ5IHBhc3NpbmcKdGhlIHN0cnVjdCBkZXZpY2UgaGFuZGxlIGFsb25nIHdpdGggdGhl
-IHN0YWdlMSBtYXBwaW5nIGFuZCBzdG9yaW5nIHRoZQppbmZvIHRvZ2V0aGVyLiBUaGVuIHdoZW4g
-dGhlIGhvc3QgTVNJIGNvbnRyb2xsZXIgbG9va3MgZm9yIGEgZnJlZQp1bm1hcHBlZCBpb3ZhLCBp
-dCBtdXN0IGFsc28gY2hlY2sgd2hldGhlciB0aGUgZGV2aWNlIGJlbG9uZ3MgdG8gaXRzIE1TSQpk
-b21haW4uCgogKGFuZCBpZgo+IGl0J3MgcG9zc2libGUgdG8gYXNzdW1lIGEgZ3Vlc3Qgd2lsbCB1
-c2UgcGVyLWRldmljZSBzdGFnZSAxIG1hcHBpbmdzIGFuZAo+IHByZXNlbnQgaXQgd2l0aCBhIHNp
-bmdsZSB2SVRTIGJhY2tlZCBieSBtdWx0aXBsZSBwSVRTZXMsIEkgdGhpbmsgdGhpbmdzCj4gc3Rh
-cnQgYnJlYWtpbmcgZXZlbiBoYXJkZXIuKQoKSSBkb24ndCByZWFsbHkgZ2V0IHlvdXIgcG9pbnQg
-aGVyZS4gQXNzaWduZWQgZGV2aWNlcyBvbiBndWVzdCBzaWRlCnNob3VsZCBiZSBpbiBzZXBhcmF0
-ZSBpb21tdSBkb21haW4gYmVjYXVzZSB3ZSB3YW50IHRoZW0gdG8gZ2V0IGlzb2xhdGVkCmZyb20g
-ZWFjaCBvdGhlci4gVGhlcmUgaXMgYSBzaW5nbGUgdklUUyBhcyBvZiBub3cgYW5kIEkgZG9uJ3Qg
-dGhpbmsgd2UKd2lsbCBjaGFuZ2UgdGhhdCBhbnl0aW1lIHNvb24uIFRoZSB2SVRTIGRyaXZlciBp
-cyBhbGxvY2F0aW5nIGEgZ0lPVkEgZm9yCmVhY2ggc2VwYXJhdGUgZG9tYWluIGFuZCBJIGN1cnJl
-bnRseSAidHJhcCIgdGhlIGdJT1ZBL2dQQSBtYXBwaW5nIG9uCmlycWZkIHJvdXRpbmcgc2V0dXAu
-IFRoaXMgbWFwcGluZyBnZXRzIGFzc29jaWF0ZWQgdG8gYSBWRklPIElPTU1VLCBvbmUKcGVyIGFz
-c2lnbmVkIGRldmljZSwgc28gd2UgaGF2ZSBkaWZmZXJlbnQgdmZpbyBjb250YWluZXJzIGZvciBl
-YWNoIG9mCnRoZW0uIElmIEkgdGhlbiBlbnVtZXJhdGUgYWxsIHRoZSBkZXZpY2VzIGF0dGFjaGVk
-IHRvIHRoZSBjb250YWluZXJzIGFuZApwYXNzIHRoaXMgc3RhZ2UxIGJpbmRpbmcgYWxvbmcgd2l0
-aCB0aGUgZGV2aWNlIHN0cnVjdCwgSSB0aGluayB3ZSBzaG91bGQKYmUgT0s/CgpUaGFua3MKCkVy
-aWMKCj4gCj4gT3RoZXIgdGhhbiBhbGxvd2luZyBhcmJpdHJhcnkgZGlzam9pbnQgSU9WQSBwYWdl
-cywgSSdtIG5vdCBzdXJlIHRoaXMKPiByZWFsbHkgd29ya3MgYW55IGRpZmZlcmVudGx5IGZyb20g
-dGhlIGV4aXN0aW5nIE1TSSBjb29raWUgbm93IHRoYXQgSQo+IGxvb2sgbW9yZSBjbG9zZWx5IDov
-Cj4gCj4gUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCmt2bWFybSBtYWlsaW5nIGxpc3QKa3ZtYXJtQGxpc3RzLmNzLmNvbHVtYmlhLmVkdQpodHRw
-czovL2xpc3RzLmNzLmNvbHVtYmlhLmVkdS9tYWlsbWFuL2xpc3RpbmZvL2t2bWFybQo=
+On Sat, Oct 20, 2018 at 03:36:54PM +0800, Zhen Lei wrote:
+> The standard GITS_TRANSLATER register in ITS is only 4 bytes, but
+> Hisilicon expands the next 4 bytes to carry some IMPDEF information. That
+> means, total 8 bytes data will be written to MSIAddress each time.
+> 
+> MSIAddr: |----4bytes----|----4bytes----|
+> 	 |    MSIData   |    IMPDEF    |
+> 
+> There is no problem for ITS, because the next 4 bytes space is reserved
+> in ITS. But it will overwrite the 4 bytes memory following "sync_count".
+> It's very fortunately that the previous and the next neighbour of the
+> "sync_count" are both aligned by 8 bytes, so no problem is met now.
+> 
+> It's good to explicitly add a workaround:
+> 1. Add gcc __attribute__((aligned(8))) to make sure that "sync_count" is
+>    always aligned by 8 bytes.
+> 2. Add a "int" struct member to make sure the 4 bytes padding is always
+>    exist.
+> 
+> There is no functional change.
+> 
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 5059d09..624fdd0 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -586,7 +586,20 @@ struct arm_smmu_device {
+>  
+>  	struct arm_smmu_strtab_cfg	strtab_cfg;
+>  
+> -	u32				sync_count;
+> +	/*
+> +	 * The alignment and padding is required by Hi16xx of Hisilicon.
+> +	 * Because the ITS hardware on Hi16xx will truncate the MSIAddress(Here
+> +	 * it's the address of "sync_count") to 8 bytes boundary first, then
+> +	 * write 32 bits MSIdata at offset 0, and 32 bits IMPDEF data at offset
+> +	 * 4. Without this workaround, the adjacent member maybe overwritten.
+> +	 *
+> +	 *                    |---4bytes---|---4bytes---|
+> +	 * MSIAddress & (~0x7):   MSIdata  | IMPDEF data|
+> +	 */
+> +	struct {
+> +		u32			sync_count;
+> +		int			padding;
+> +	} __attribute__((aligned(8)));
+
+I thought the conclusion after reviewing your original patch was to maintain
+the union and drop the alignment directive? e.g.
+
+	union {
+		u32	sync_count;
+		u64	padding; /* Hi16xx writes an extra 32 bits of goodness */
+	};
+
+Will
