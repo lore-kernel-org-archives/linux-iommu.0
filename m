@@ -1,75 +1,77 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v2 1/1] iommu/arm-smmu-v3: eliminate a potential memory
- corruption on Hi16xx soc
-Date: Mon, 29 Oct 2018 17:59:05 +0000
-Message-ID: <20181029175905.GC16739@arm.com>
-References: <1540021014-8176-1-git-send-email-thunder.leizhen@huawei.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: Set SCTLR.HUPCF bit
+Date: Mon, 29 Oct 2018 19:10:00 +0000
+Message-ID: <20181029191000.GD16739@arm.com>
+References: <20180927224609.19515-1-robdclark@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1540021014-8176-1-git-send-email-thunder.leizhen@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>, LinuxArm <linuxarm@huawei.com>
+In-Reply-To: <20180927224609.19515-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Oct 20, 2018 at 03:36:54PM +0800, Zhen Lei wrote:
-> The standard GITS_TRANSLATER register in ITS is only 4 bytes, but
-> Hisilicon expands the next 4 bytes to carry some IMPDEF information. That
-> means, total 8 bytes data will be written to MSIAddress each time.
-> 
-> MSIAddr: |----4bytes----|----4bytes----|
-> 	 |    MSIData   |    IMPDEF    |
-> 
-> There is no problem for ITS, because the next 4 bytes space is reserved
-> in ITS. But it will overwrite the 4 bytes memory following "sync_count".
-> It's very fortunately that the previous and the next neighbour of the
-> "sync_count" are both aligned by 8 bytes, so no problem is met now.
-> 
-> It's good to explicitly add a workaround:
-> 1. Add gcc __attribute__((aligned(8))) to make sure that "sync_count" is
->    always aligned by 8 bytes.
-> 2. Add a "int" struct member to make sure the 4 bytes padding is always
->    exist.
-> 
-> There is no functional change.
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++++-
->  1 file changed, 14 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 5059d09..624fdd0 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -586,7 +586,20 @@ struct arm_smmu_device {
->  
->  	struct arm_smmu_strtab_cfg	strtab_cfg;
->  
-> -	u32				sync_count;
-> +	/*
-> +	 * The alignment and padding is required by Hi16xx of Hisilicon.
-> +	 * Because the ITS hardware on Hi16xx will truncate the MSIAddress(Here
-> +	 * it's the address of "sync_count") to 8 bytes boundary first, then
-> +	 * write 32 bits MSIdata at offset 0, and 32 bits IMPDEF data at offset
-> +	 * 4. Without this workaround, the adjacent member maybe overwritten.
-> +	 *
-> +	 *                    |---4bytes---|---4bytes---|
-> +	 * MSIAddress & (~0x7):   MSIdata  | IMPDEF data|
-> +	 */
-> +	struct {
-> +		u32			sync_count;
-> +		int			padding;
-> +	} __attribute__((aligned(8)));
-
-I thought the conclusion after reviewing your original patch was to maintain
-the union and drop the alignment directive? e.g.
-
-	union {
-		u32	sync_count;
-		u64	padding; /* Hi16xx writes an extra 32 bits of goodness */
-	};
-
-Will
+T24gVGh1LCBTZXAgMjcsIDIwMTggYXQgMDY6NDY6MDdQTSAtMDQwMCwgUm9iIENsYXJrIHdyb3Rl
+Ogo+IFdlIHNlZW0gdG8gbmVlZCB0byBzZXQgZWl0aGVyIHRoaXMgb3IgQ0ZDRkcgKHN0YWxsKSwg
+b3RoZXJ3aXNlIGdwdQo+IGZhdWx0cyB0cmlnZ2VyIHByb2JsZW1zIHdpdGggb3RoZXIgaW4tZmxp
+Z2h0IHRyYW5zYWN0aW9ucyBmcm9tIHRoZQo+IEdQVSBjYXVzaW5nIENQIGVycm9ycywgZXRjLgo+
+IAo+IEluIHRoZSBBUk0gU01NVSBzcGVjLCB0aGUgJ0hpdCB1bmRlciBwcmV2aW91cyBjb250ZXh0
+IGZhdWx0JyBiaXQgaXMKPiBkZXNjcmliZWQgYXM6Cj4gCj4gICcwJyAtIFN0YWxsIG9yIHRlcm1p
+bmF0ZSBzdWJzZXF1ZW50IHRyYW5zYWN0aW9ucyBpbiB0aGUgcHJlc2VuY2UKPiAgICAgICAgb2Yg
+YW4gb3V0c3RhbmRpbmcgY29udGV4dCBmYXVsdAo+ICAnMScgLSBQcm9jZXNzIGFsbCBzdWJzZXF1
+ZW50IHRyYW5zYWN0aW9ucyBpbmRlcGVuZGVudGx5IG9mIGFueQo+ICAgICAgICBvdXRzdGFuZGlu
+ZyBjb250ZXh0IGZhdWx0Lgo+IAo+IFNpbmNlIHdlIGRvbid0IGVuYWJsZSBDRkNGRyAoc3RhbGwp
+IHRoZSBiZWhhdmlvciBvZiB0ZXJtaW5hdGluZwo+IG90aGVyIHRyYW5zYWN0aW9ucyBtYWtlcyBz
+ZW5zZS4gIEFuZCBpcyBwcm9iYWJseSBub3Qgd2hhdCB3ZSB3YW50Cj4gKGFuZCBkZWZpbmF0ZWx5
+IG5vdCB3aGF0IHdlIHdhbnQgZm9yIEdQVSkuCj4gCj4gU2lnbmVkLW9mZi1ieTogUm9iIENsYXJr
+IDxyb2JkY2xhcmtAZ21haWwuY29tPgo+IC0tLQo+IFNvIEkgaGl0IHRoaXMgaXNzdWUgYSBsb25n
+IHRpbWUgYmFjayBvbiA4MjAgKG1zbTg5OTYpIGFuZCBhdCB0aGUKPiB0aW1lIEkgc29sdmVkIGl0
+IHdpdGggYSBwYXRjaCB0aGF0IGVuYWJsZWQgQ0ZDRkcuICBBbmQgaXQgcmVzdXJmYWNlZAo+IG1v
+cmUgcmVjZW50bHkgb24gc2RtODQ1LiAgQnV0IGF0IHRoZSB0aW1lIENGQ0ZHIHdhcyByZWplY3Rl
+ZCwgaWlyYwo+IGJlY2F1c2Ugb2YgY29uY2VybiB0aGF0IGl0IHdvdWxkIGNhdXNlIHByb2JsZW1z
+IG9uIG90aGVyIG5vbi1xY29tCj4gYXJtIHNtbXUgaW1wbGVtZW50YXRpb25zLiAgQW5kIEkgdGhp
+bmsgSSBmb3Jnb3QgdG8gc2VuZCB0aGlzIHZlcnNpb24KPiBvZiB0aGUgc29sdXRpb24uCj4gCj4g
+SWYgZW5hYmxpbmcgSFVQQ0YgaXMgYW50aWNpcGF0ZWQgdG8gY2F1c2UgcHJvYmxlbXMgb24gb3Ro
+ZXIgQVJNCj4gU01NVSBpbXBsZW1lbnRhdGlvbnMsIEkgdGhpbmsgSSBjYW4gY29tZSB1cCB3aXRo
+IGEgdmFyaWFudCBvZiB0aGlzCj4gcGF0Y2ggd2hpY2ggY29uZGl0aW9uYWxseSBlbmFibGVzIGl0
+IGZvciBzbmFwZHJhZ29uLgo+IAo+IEVpdGhlciB3YXksIEknZCByZWFsbHkgbGlrZSB0byBnZXQg
+c29tZSB2YXJpYW50IG9mIHRoaXMgZml4IG1lcmdlZAo+IChhbmQgcHJvYmFibHkgaXQgd291bGQg
+YmUgYSBnb29kIGlkZWEgZm9yIHN0YWJsZSBrZXJuZWwgYnJhbmNoZXMKPiB0b28pLCBzaW5jZSBj
+dXJyZW50IGJlaGF2aW91ciB3aXRoIHRoZSBHUFUgbWVhbnMgZmF1bHRzIHR1cm4gaW50bwo+IGEg
+ZmFudGFzdGljIGNhc2NhZGUgb2YgZmFpbC4KCkNhbiB5b3UgZGVzY3JpYmUgaG93IHRoaXMgZmFu
+dGFzdGljIGNhc2NhZGUgb2YgZmFpbCBpbXByb3ZlcyB3aXRoIHRoaXMKcGF0Y2gsIHBsZWFzZT8g
+SWYgeW91J3JlIGdldHRpbmcgY29udGV4dCBmYXVsdHMgdGhlbiBzb21ldGhpbmcgaGFzIGFscmVh
+ZHkKZ29uZSBob3JyaWJseSB3cm9uZywgc28gSSdtIHRyeWluZyB0byB3b3JrIG91dCBob3cgdGhp
+cyBpbXByb3ZlcyB0aGluZ3MuCgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11
+LXJlZ3MuaCBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtcmVncy5oCj4gaW5kZXggYTEyMjZlNGFi
+NWY4Li4yMjkxOTI1ZWI4MDAgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS1y
+ZWdzLmgKPiArKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXJlZ3MuaAo+IEBAIC0xNzgsNiAr
+MTc4LDcgQEAgZW51bSBhcm1fc21tdV9zMmNyX3ByaXZjZmcgewo+ICAjZGVmaW5lIEFSTV9TTU1V
+X0NCX0FUU1IJCTB4OGYwCj4gIAo+ICAjZGVmaW5lIFNDVExSX1MxX0FTSURQTkUJCSgxIDw8IDEy
+KQo+ICsjZGVmaW5lIFNDVExSX0hVUENGCQkJKDEgPDwgOCkKPiAgI2RlZmluZSBTQ1RMUl9DRkNG
+RwkJCSgxIDw8IDcpCj4gICNkZWZpbmUgU0NUTFJfQ0ZJRQkJCSgxIDw8IDYpCj4gICNkZWZpbmUg
+U0NUTFJfQ0ZSRQkJCSgxIDw8IDUpCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNt
+bXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IGluZGV4IGY3YTk2YmNmOTRhNi4uNDdm
+ZmM5YWFkZTcyIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+ICsrKyBi
+L2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwo+IEBAIC03MTMsOSArNzEzLDkgQEAgc3RhdGljIHZv
+aWQgYXJtX3NtbXVfd3JpdGVfY29udGV4dF9iYW5rKHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNt
+bXUsIGludCBpZHgpCj4gIAlyZWcgPSBTQ1RMUl9DRklFIHwgU0NUTFJfQ0ZSRSB8IFNDVExSX0FG
+RSB8IFNDVExSX1RSRSB8IFNDVExSX007Cj4gIAlpZiAoc3RhZ2UxKQo+ICAJCXJlZyB8PSBTQ1RM
+Ul9TMV9BU0lEUE5FOwo+ICsJcmVnIHw9IFNDVExSX0hVUENGOwoKTWF5YmUganVzdCB0aHJvdyB0
+aGlzIGludG8gdGhlIGFzc2lnbm1lbnQgYSBjb3VwbGUgb2YgbGluZXMgYWJvdmU/Cgo+ICAJaWYg
+KElTX0VOQUJMRUQoQ09ORklHX0NQVV9CSUdfRU5ESUFOKSkKPiAgCQlyZWcgfD0gU0NUTFJfRTsK
+PiAtCgpSYW5kb20gd2hpdGVzcGFjZSBjaGFuZ2UuCgpXaWxsCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRy
+ZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
