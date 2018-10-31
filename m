@@ -1,75 +1,40 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 1/1] iommu/arm-smmu-v3: eliminate a potential memory
- corruption on hi1620 and earlier
-Date: Wed, 31 Oct 2018 11:43:50 +0000
-Message-ID: <ba9a0f3b-d150-c066-91a4-9ed9a380670b@arm.com>
-References: <1540958527-15408-1-git-send-email-thunder.leizhen@huawei.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: Re: [PATCH 4/6] dma-mapping: merge direct and noncoherent ops
+Date: Wed, 31 Oct 2018 14:24:13 +0000 (GMT)
+Message-ID: <alpine.LFD.2.21.1810311414200.20378@eddie.linux-mips.org>
+References: <20180914095808.22202-1-hch@lst.de> <20180914095808.22202-5-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1540958527-15408-1-git-send-email-thunder.leizhen@huawei.com>
-Content-Language: en-GB
+In-Reply-To: <20180914095808.22202-5-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Zhen Lei <thunder.leizhen@huawei.com>, John Garry <john.garry@huawei.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
-Cc: LinuxArm <linuxarm@huawei.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Paul Burton <paul.burton@mips.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 31/10/2018 04:02, Zhen Lei wrote:
-> The standard GITS_TRANSLATER register in ITS is only 4 bytes, but
-> Hisilicon expands the next 4 bytes to carry some IMPDEF information. That
-> means, total 8 bytes data will be written to MSIAddress each time.
-> 
-> MSIAddr: |----4bytes----|----4bytes----|
-> 	 |    MSIData   |    IMPDEF    |
-> 
-> There is no problem for ITS, because the next 4 bytes space is reserved
-> in ITS. But it will overwrite the 4 bytes memory following "sync_count".
-> It's very fortunately that the previous and the next neighbour of the
-> "sync_count" are both aligned by 8 bytes, so no problem is met now.
-> 
-> It's good to explicitly add a workaround. Let's enclose the "sync_count"
-> into a union and companion with a new member "padding" of type u64.
-> 
-> There is no functional change.
+Hi Christoph,
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+On Fri, 14 Sep 2018, Christoph Hellwig wrote:
 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->   drivers/iommu/arm-smmu-v3.c | 18 +++++++++++++++++-
->   1 file changed, 17 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 6947ccf..4e94730 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -576,7 +576,23 @@ struct arm_smmu_device {
-> 
->   	struct arm_smmu_strtab_cfg	strtab_cfg;
-> 
-> -	u32				sync_count;
-> +	/*
-> +	 * The member "padding" is used to make sure the member "sync_count" to
-> +	 * be aligned at 8 bytes boundary, and 4 bytes padding memory followed.
-> +	 *
-> +	 * These are required by hi1620 and earlier of Hisilicon. Because the
-> +	 * ITS hardware on hi1620 and earlier will truncate the MSIAddress(Here
-> +	 * it's the address of "sync_count") to 8 bytes boundary first, then
-> +	 * write 32 bits MSIdata at offset 0, and 32 bits IMPDEF data at offset
-> +	 * 4. Without this workaround, the adjacent member maybe overwritten.
-> +	 *
-> +	 *                    |---4bytes---|---4bytes---|
-> +	 * MSIAddress & (~0x7):   MSIdata  | IMPDEF data|
-> +	 */
-> +	union {
-> +		u32			sync_count;
-> +		u64			padding;
-> +	};
-> 
->   	/* IOMMU core code handle */
->   	struct iommu_device		iommu;
-> --
-> 1.8.3
-> 
-> 
+> All the cache maintainance is already stubbed out when not enabled,
+> but merging the two allows us to nicely handle the case where
+> cache maintainance is required for some devices, but not others.
+
+ FYI, you commit bc3ec75de545 ("dma-mapping: merge direct and noncoherent 
+ops") has caused:
+
+fddi0: DMA command request failed!
+fddi0: Adapter open failed!
+
+with the `defxx' driver on my R4400SC TURBOchannel DECstation (but not the 
+R3400 one) and consequently the interface does not work anymore.  Both are 
+non-coherent cache systems, however the R3400 implements the write-through 
+policy while the policy of the R4400SC is write-back (it also has 1MiB of 
+secondary cache), which I suspect is the reason of the difference.
+
+ I'll be experimenting with this commit to figure out what the real cause 
+is, but it'll take a while as my resources are limited, so I'm sending 
+this early heads-up in case you or someone else has an idea what might be 
+going wrong here.
+
+  Maciej
