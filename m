@@ -1,108 +1,231 @@
-From: Robin Murphy <Robin.Murphy@arm.com>
-Subject: Re: [PATCH v2 04/14] iommu/io-pgtable-arm-v7s: Add paddr_to_iopte and
- iopte_to_paddr helpers
-Date: Thu, 1 Nov 2018 16:34:21 +0000
-Message-ID: <d24bd2a4-1030-e255-b339-d02eadc93f28@arm.com>
+From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 05/14] iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB
+	Mode
+Date: Thu, 1 Nov 2018 16:35:06 +0000
+Message-ID: <2033be12-3d32-3155-4202-386281cbbaa0@arm.com>
 References: <1537779534-23575-1-git-send-email-yong.wu@mediatek.com>
- <1537779534-23575-5-git-send-email-yong.wu@mediatek.com>
+	<1537779534-23575-6-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1537779534-23575-5-git-send-email-yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1537779534-23575-6-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Content-Language: en-US
-Content-ID: <5DDAA7D9DB79C44FB3F9453451D57CBC@eurprd08.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>
-Cc: "youlin.pei@mediatek.com" <youlin.pei@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>, Will Deacon <Will.Deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@google.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, "yingjoe.chen@mediatek.com" <yingjoe.chen@mediatek.com>, Daniel Kurtz <djkurtz@google.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, nd <nd@arm.com>
+Content-ID: <E0C20E122E6A604C849404E2A946D510-R04qaBv3nuicE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, "srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org" <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, nd <nd-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-WyBhcG9sb2dpZXMgaWYgYW55b25lIGdldHMgdGhpcyB0d2ljZSwgbG9va3MgbGlrZSBvdXIgZW1h
-aWwncyBlYXRlbiANCml0c2VsZiBhZ2Fpbi4uLiBdDQoNCk9uIDI0LzA5LzIwMTggMDk6NTgsIFlv
-bmcgV3Ugd3JvdGU6DQo+IEFkZCB0d28gaGVscGVyIGZ1bmN0aW9uczogcGFkZHJfdG9faW9wdGUg
-YW5kIGlvcHRlX3RvX3BhZGRyLg0KDQpOaWNlIGFuZCB0aWR5ISAoYWx0aG91Z2ggaXQgd2lsbCBu
-ZWVkIHJlYmFzaW5nIG5vdywgYnV0IEkgdGhpbmsgdGhhdCdzIA0KanVzdCBjb250ZXh0IGNvbmZs
-aWN0cykNCg0KPiBTaWduZWQtb2ZmLWJ5OiBZb25nIFd1IDx5b25nLnd1QG1lZGlhdGVrLmNvbT4N
-Cj4gLS0tDQo+ICAgZHJpdmVycy9pb21tdS9pby1wZ3RhYmxlLWFybS12N3MuYyB8IDQ1ICsrKysr
-KysrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDMz
-IGluc2VydGlvbnMoKyksIDEyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdzLmMgYi9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUt
-YXJtLXY3cy5jDQo+IGluZGV4IGI1OTQ4YmEuLmZhM2I5ZWMgMTAwNjQ0DQo+IC0tLSBhL2RyaXZl
-cnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0tdjdzLmMNCj4gKysrIGIvZHJpdmVycy9pb21tdS9pby1w
-Z3RhYmxlLWFybS12N3MuYw0KPiBAQCAtMTczLDE4ICsxNzMsMzggQEAgc3RydWN0IGFybV92N3Nf
-aW9fcGd0YWJsZSB7DQo+ICAgCXNwaW5sb2NrX3QJCXNwbGl0X2xvY2s7DQo+ICAgfTsNCj4gICAN
-Cj4gK3N0YXRpYyBib29sIGFybV92N3NfcHRlX2lzX2NvbnQoYXJtX3Y3c19pb3B0ZSBwdGUsIGlu
-dCBsdmwpOw0KPiArDQo+ICAgc3RhdGljIGRtYV9hZGRyX3QgX19hcm1fdjdzX2RtYV9hZGRyKHZv
-aWQgKnBhZ2VzKQ0KPiAgIHsNCj4gICAJcmV0dXJuIChkbWFfYWRkcl90KXZpcnRfdG9fcGh5cyhw
-YWdlcyk7DQo+ICAgfQ0KPiAgIA0KPiAtc3RhdGljIGFybV92N3NfaW9wdGUgKmlvcHRlX2RlcmVm
-KGFybV92N3NfaW9wdGUgcHRlLCBpbnQgbHZsKQ0KPiArc3RhdGljIGFybV92N3NfaW9wdGUgcGFk
-ZHJfdG9faW9wdGUocGh5c19hZGRyX3QgcGFkZHIsIGludCBsdmwsDQo+ICsJCQkJICAgIHN0cnVj
-dCBhcm1fdjdzX2lvX3BndGFibGUgKmRhdGEpDQoNCk5pdDogaXQgc2VlbXMgdG8gd29yayBvdXQg
-YSBsaXR0bGUgY2xlYW5lciBpZiB3ZSBwYXNzIHRoZSBpb19wZ3RhYmxlX2NmZyANCnRvIHRoZXNl
-IGhlbHBlcnMgZGlyZWN0bHksIHJhdGhlciB0aGFuIHJlLWRlcml2aW5nIGl0IGZyb20gZGF0YSBl
-YWNoIHRpbWUuDQoNCk90aGVyd2lzZSwgdGhvdWdoLA0KDQpSZXZpZXdlZC1ieTogUm9iaW4gTXVy
-cGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4NCg0KPiAgIHsNCj4gKwlyZXR1cm4gcGFkZHIgJiBB
-Uk1fVjdTX0xWTF9NQVNLKGx2bCk7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBwaHlzX2FkZHJfdCBp
-b3B0ZV90b19wYWRkcihhcm1fdjdzX2lvcHRlIHB0ZSwgaW50IGx2bCwNCj4gKwkJCQkgIHN0cnVj
-dCBhcm1fdjdzX2lvX3BndGFibGUgKmRhdGEpDQo+ICt7DQo+ICsJYXJtX3Y3c19pb3B0ZSBtYXNr
-Ow0KPiArDQo+ICAgCWlmIChBUk1fVjdTX1BURV9JU19UQUJMRShwdGUsIGx2bCkpDQo+IC0JCXB0
-ZSAmPSBBUk1fVjdTX1RBQkxFX01BU0s7DQo+ICsJCW1hc2sgPSBBUk1fVjdTX1RBQkxFX01BU0s7
-DQo+ICsJZWxzZSBpZiAoYXJtX3Y3c19wdGVfaXNfY29udChwdGUsIGx2bCkpDQo+ICsJCW1hc2sg
-PSBBUk1fVjdTX0xWTF9NQVNLKGx2bCkgKiBBUk1fVjdTX0NPTlRfUEFHRVM7DQo+ICAgCWVsc2UN
-Cj4gLQkJcHRlICY9IEFSTV9WN1NfTFZMX01BU0sobHZsKTsNCj4gLQlyZXR1cm4gcGh5c190b192
-aXJ0KHB0ZSk7DQo+ICsJCW1hc2sgPSBBUk1fVjdTX0xWTF9NQVNLKGx2bCk7DQo+ICsNCj4gKwly
-ZXR1cm4gcHRlICYgbWFzazsNCj4gK30NCj4gKw0KPiArc3RhdGljIGFybV92N3NfaW9wdGUgKmlv
-cHRlX2RlcmVmKGFybV92N3NfaW9wdGUgcHRlLCBpbnQgbHZsLA0KPiArCQkJCSAgc3RydWN0IGFy
-bV92N3NfaW9fcGd0YWJsZSAqZGF0YSkNCj4gK3sNCj4gKwlyZXR1cm4gcGh5c190b192aXJ0KGlv
-cHRlX3RvX3BhZGRyKHB0ZSwgbHZsLCBkYXRhKSk7DQo+ICAgfQ0KPiAgIA0KPiAgIHN0YXRpYyB2
-b2lkICpfX2FybV92N3NfYWxsb2NfdGFibGUoaW50IGx2bCwgZ2ZwX3QgZ2ZwLA0KPiBAQCAtMzk2
-LDcgKzQxNiw3IEBAIHN0YXRpYyBpbnQgYXJtX3Y3c19pbml0X3B0ZShzdHJ1Y3QgYXJtX3Y3c19p
-b19wZ3RhYmxlICpkYXRhLA0KPiAgIAlpZiAobnVtX2VudHJpZXMgPiAxKQ0KPiAgIAkJcHRlID0g
-YXJtX3Y3c19wdGVfdG9fY29udChwdGUsIGx2bCk7DQo+ICAgDQo+IC0JcHRlIHw9IHBhZGRyICYg
-QVJNX1Y3U19MVkxfTUFTSyhsdmwpOw0KPiArCXB0ZSB8PSBwYWRkcl90b19pb3B0ZShwYWRkciwg
-bHZsLCBkYXRhKTsNCj4gICANCj4gICAJX19hcm1fdjdzX3NldF9wdGUocHRlcCwgcHRlLCBudW1f
-ZW50cmllcywgY2ZnKTsNCj4gICAJcmV0dXJuIDA7DQo+IEBAIC00NjIsNyArNDgyLDcgQEAgc3Rh
-dGljIGludCBfX2FybV92N3NfbWFwKHN0cnVjdCBhcm1fdjdzX2lvX3BndGFibGUgKmRhdGEsIHVu
-c2lnbmVkIGxvbmcgaW92YSwNCj4gICAJfQ0KPiAgIA0KPiAgIAlpZiAoQVJNX1Y3U19QVEVfSVNf
-VEFCTEUocHRlLCBsdmwpKSB7DQo+IC0JCWNwdGVwID0gaW9wdGVfZGVyZWYocHRlLCBsdmwpOw0K
-PiArCQljcHRlcCA9IGlvcHRlX2RlcmVmKHB0ZSwgbHZsLCBkYXRhKTsNCj4gICAJfSBlbHNlIGlm
-IChwdGUpIHsNCj4gICAJCS8qIFdlIHJlcXVpcmUgYW4gdW5tYXAgZmlyc3QgKi8NCj4gICAJCVdB
-Uk5fT04oIXNlbGZ0ZXN0X3J1bm5pbmcpOw0KPiBAQCAtNTEyLDcgKzUzMiw4IEBAIHN0YXRpYyB2
-b2lkIGFybV92N3NfZnJlZV9wZ3RhYmxlKHN0cnVjdCBpb19wZ3RhYmxlICppb3ApDQo+ICAgCQlh
-cm1fdjdzX2lvcHRlIHB0ZSA9IGRhdGEtPnBnZFtpXTsNCj4gICANCj4gICAJCWlmIChBUk1fVjdT
-X1BURV9JU19UQUJMRShwdGUsIDEpKQ0KPiAtCQkJX19hcm1fdjdzX2ZyZWVfdGFibGUoaW9wdGVf
-ZGVyZWYocHRlLCAxKSwgMiwgZGF0YSk7DQo+ICsJCQlfX2FybV92N3NfZnJlZV90YWJsZShpb3B0
-ZV9kZXJlZihwdGUsIDEsIGRhdGEpLA0KPiArCQkJCQkgICAgIDIsIGRhdGEpOw0KPiAgIAl9DQo+
-ICAgCV9fYXJtX3Y3c19mcmVlX3RhYmxlKGRhdGEtPnBnZCwgMSwgZGF0YSk7DQo+ICAgCWttZW1f
-Y2FjaGVfZGVzdHJveShkYXRhLT5sMl90YWJsZXMpOw0KPiBAQCAtNTgyLDcgKzYwMyw3IEBAIHN0
-YXRpYyBzaXplX3QgYXJtX3Y3c19zcGxpdF9ibGtfdW5tYXAoc3RydWN0IGFybV92N3NfaW9fcGd0
-YWJsZSAqZGF0YSwNCj4gICAJCWlmICghQVJNX1Y3U19QVEVfSVNfVEFCTEUocHRlLCAxKSkNCj4g
-ICAJCQlyZXR1cm4gMDsNCj4gICANCj4gLQkJdGFibGVwID0gaW9wdGVfZGVyZWYocHRlLCAxKTsN
-Cj4gKwkJdGFibGVwID0gaW9wdGVfZGVyZWYocHRlLCAxLCBkYXRhKTsNCj4gICAJCXJldHVybiBf
-X2FybV92N3NfdW5tYXAoZGF0YSwgaW92YSwgc2l6ZSwgMiwgdGFibGVwKTsNCj4gICAJfQ0KPiAg
-IA0KPiBAQCAtNjQwLDcgKzY2MSw3IEBAIHN0YXRpYyBzaXplX3QgX19hcm1fdjdzX3VubWFwKHN0
-cnVjdCBhcm1fdjdzX2lvX3BndGFibGUgKmRhdGEsDQo+ICAgCQkJCWlvX3BndGFibGVfdGxiX2Fk
-ZF9mbHVzaChpb3AsIGlvdmEsIGJsa19zaXplLA0KPiAgIAkJCQkJQVJNX1Y3U19CTE9DS19TSVpF
-KGx2bCArIDEpLCBmYWxzZSk7DQo+ICAgCQkJCWlvX3BndGFibGVfdGxiX3N5bmMoaW9wKTsNCj4g
-LQkJCQlwdGVwID0gaW9wdGVfZGVyZWYocHRlW2ldLCBsdmwpOw0KPiArCQkJCXB0ZXAgPSBpb3B0
-ZV9kZXJlZihwdGVbaV0sIGx2bCwgZGF0YSk7DQo+ICAgCQkJCV9fYXJtX3Y3c19mcmVlX3RhYmxl
-KHB0ZXAsIGx2bCArIDEsIGRhdGEpOw0KPiAgIAkJCX0gZWxzZSB7DQo+ICAgCQkJCWlvX3BndGFi
-bGVfdGxiX2FkZF9mbHVzaChpb3AsIGlvdmEsIGJsa19zaXplLA0KPiBAQCAtNjU4LDcgKzY3OSw3
-IEBAIHN0YXRpYyBzaXplX3QgX19hcm1fdjdzX3VubWFwKHN0cnVjdCBhcm1fdjdzX2lvX3BndGFi
-bGUgKmRhdGEsDQo+ICAgCX0NCj4gICANCj4gICAJLyogS2VlcCBvbiB3YWxraW4nICovDQo+IC0J
-cHRlcCA9IGlvcHRlX2RlcmVmKHB0ZVswXSwgbHZsKTsNCj4gKwlwdGVwID0gaW9wdGVfZGVyZWYo
-cHRlWzBdLCBsdmwsIGRhdGEpOw0KPiAgIAlyZXR1cm4gX19hcm1fdjdzX3VubWFwKGRhdGEsIGlv
-dmEsIHNpemUsIGx2bCArIDEsIHB0ZXApOw0KPiAgIH0NCj4gICANCj4gQEAgLTY4NCw3ICs3MDUs
-NyBAQCBzdGF0aWMgcGh5c19hZGRyX3QgYXJtX3Y3c19pb3ZhX3RvX3BoeXMoc3RydWN0IGlvX3Bn
-dGFibGVfb3BzICpvcHMsDQo+ICAgCWRvIHsNCj4gICAJCXB0ZXAgKz0gQVJNX1Y3U19MVkxfSURY
-KGlvdmEsICsrbHZsKTsNCj4gICAJCXB0ZSA9IFJFQURfT05DRSgqcHRlcCk7DQo+IC0JCXB0ZXAg
-PSBpb3B0ZV9kZXJlZihwdGUsIGx2bCk7DQo+ICsJCXB0ZXAgPSBpb3B0ZV9kZXJlZihwdGUsIGx2
-bCwgZGF0YSk7DQo+ICAgCX0gd2hpbGUgKEFSTV9WN1NfUFRFX0lTX1RBQkxFKHB0ZSwgbHZsKSk7
-DQo+ICAgDQo+ICAgCWlmICghQVJNX1Y3U19QVEVfSVNfVkFMSUQocHRlKSkNCj4gQEAgLTY5Myw3
-ICs3MTQsNyBAQCBzdGF0aWMgcGh5c19hZGRyX3QgYXJtX3Y3c19pb3ZhX3RvX3BoeXMoc3RydWN0
-IGlvX3BndGFibGVfb3BzICpvcHMsDQo+ICAgCW1hc2sgPSBBUk1fVjdTX0xWTF9NQVNLKGx2bCk7
-DQo+ICAgCWlmIChhcm1fdjdzX3B0ZV9pc19jb250KHB0ZSwgbHZsKSkNCj4gICAJCW1hc2sgKj0g
-QVJNX1Y3U19DT05UX1BBR0VTOw0KPiAtCXJldHVybiAocHRlICYgbWFzaykgfCAoaW92YSAmIH5t
-YXNrKTsNCj4gKwlyZXR1cm4gaW9wdGVfdG9fcGFkZHIocHRlLCBsdmwsIGRhdGEpIHwgKGlvdmEg
-JiB+bWFzayk7DQo+ICAgfQ0KPiAgIA0KPiAgIHN0YXRpYyBzdHJ1Y3QgaW9fcGd0YWJsZSAqYXJt
-X3Y3c19hbGxvY19wZ3RhYmxlKHN0cnVjdCBpb19wZ3RhYmxlX2NmZyAqY2ZnLA0KPiANCg==
+On 24/09/2018 09:58, Yong Wu wrote:
+> MediaTek extend the arm v7s descriptor to support the dram over 4GB.
+> 
+> In the mt2712 and mt8173, it's called "4GB mode", the physical address
+> is from 0x4000_0000 to 0x1_3fff_ffff, but from EMI point of view, it
+> is remapped to high address from 0x1_0000_0000 to 0x1_ffff_ffff, the
+> bit32 is always enabled. thus, in the M4U, we always enable the bit9
+> for all PTEs which means to enable bit32 of physical address.
+> 
+> but in mt8183, M4U support the dram from 0x4000_0000 to 0x3_ffff_ffff
+> which isn't remaped. We extend the PTEs: the bit9 represent bit32 of
+> PA and the bit4 represent bit33 of PA. Meanwhile the iova still is
+> 32bits.
+> 
+> In order to unify code, in the "4GB mode", we add the bit32 for the
+> physical address manually in our driver.
+> 
+> Correspondingly, Adding bit32 and bit33 for the PA in the iova_to_phys
+> has to been moved into v7s.
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+>   drivers/iommu/io-pgtable-arm-v7s.c | 34 +++++++++++++++++++++++++++-------
+>   drivers/iommu/io-pgtable.h         |  7 +++----
+>   drivers/iommu/mtk_iommu.c          | 16 ++++++++++------
+>   drivers/iommu/mtk_iommu.h          |  1 +
+>   4 files changed, 41 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> index fa3b9ec..3679a5f 100644
+> --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> @@ -124,7 +124,9 @@
+>   #define ARM_V7S_TEX_MASK		0x7
+>   #define ARM_V7S_ATTR_TEX(val)		(((val) & ARM_V7S_TEX_MASK) << ARM_V7S_TEX_SHIFT)
+>   
+> -#define ARM_V7S_ATTR_MTK_4GB		BIT(9) /* MTK extend it for 4GB mode */
+> +/* MediaTek extend the two bits below for over 4GB mode */
+> +#define ARM_V7S_ATTR_MTK_PA_BIT32	BIT(9)
+> +#define ARM_V7S_ATTR_MTK_PA_BIT33	BIT(4)
+>   
+>   /* *well, except for TEX on level 2 large pages, of course :( */
+>   #define ARM_V7S_CONT_PAGE_TEX_SHIFT	6
+> @@ -183,13 +185,24 @@ static dma_addr_t __arm_v7s_dma_addr(void *pages)
+>   static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+>   				    struct arm_v7s_io_pgtable *data)
+>   {
+> -	return paddr & ARM_V7S_LVL_MASK(lvl);
+> +	arm_v7s_iopte pte = paddr & ARM_V7S_LVL_MASK(lvl);
+> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> +
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
+> +		if (paddr & BIT_ULL(32))
+> +			pte |= ARM_V7S_ATTR_MTK_PA_BIT32;
+> +		if (paddr & BIT_ULL(33))
+> +			pte |= ARM_V7S_ATTR_MTK_PA_BIT33;
+> +	}
+> +	return pte;
+>   }
+>   
+>   static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+>   				  struct arm_v7s_io_pgtable *data)
+>   {
+> +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>   	arm_v7s_iopte mask;
+> +	phys_addr_t paddr;
+>   
+>   	if (ARM_V7S_PTE_IS_TABLE(pte, lvl))
+>   		mask = ARM_V7S_TABLE_MASK;
+> @@ -198,7 +211,15 @@ static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+>   	else
+>   		mask = ARM_V7S_LVL_MASK(lvl);
+>   
+> -	return pte & mask;
+> +	paddr = pte & mask;
+> +	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT) &&
+
+I don't think we need this IS_ENABLED() check - we don't have one in the 
+equivalent paddr_to_iopte() case above, and what it's protecting is 
+clearly a no-op anyway when paddr has a 32-bit type (a GCC 7 build for 
+non-LPAE arch/arm doesn't complain with the check removed).
+
+Other than that, though, the rest looks good now;
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+> +	    cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB) {
+> +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT32)
+> +			paddr |= BIT_ULL(32);
+> +		if (pte & ARM_V7S_ATTR_MTK_PA_BIT33)
+> +			paddr |= BIT_ULL(33);
+> +	}
+> +	return paddr;
+>   }
+>   
+>   static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
+> @@ -315,9 +336,6 @@ static arm_v7s_iopte arm_v7s_prot_to_pte(int prot, int lvl,
+>   	if (lvl == 1 && (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS))
+>   		pte |= ARM_V7S_ATTR_NS_SECTION;
+>   
+> -	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)
+> -		pte |= ARM_V7S_ATTR_MTK_4GB;
+> -
+>   	return pte;
+>   }
+>   
+> @@ -504,7 +522,9 @@ static int arm_v7s_map(struct io_pgtable_ops *ops, unsigned long iova,
+>   	if (!(prot & (IOMMU_READ | IOMMU_WRITE)))
+>   		return 0;
+>   
+> -	if (WARN_ON(upper_32_bits(iova) || upper_32_bits(paddr)))
+> +	if (WARN_ON(upper_32_bits(iova)) ||
+> +	    WARN_ON(upper_32_bits(paddr) &&
+> +		    !(iop->cfg.quirks & IO_PGTABLE_QUIRK_ARM_MTK_4GB)))
+>   		return -ERANGE;
+>   
+>   	ret = __arm_v7s_map(data, iova, paddr, size, prot, 1, data->pgd);
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index 2df7909..ee7beb5 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -62,10 +62,9 @@ struct io_pgtable_cfg {
+>   	 *	(unmapped) entries but the hardware might do so anyway, perform
+>   	 *	TLB maintenance when mapping as well as when unmapping.
+>   	 *
+> -	 * IO_PGTABLE_QUIRK_ARM_MTK_4GB: (ARM v7s format) Set bit 9 in all
+> -	 *	PTEs, for Mediatek IOMMUs which treat it as a 33rd address bit
+> -	 *	when the SoC is in "4GB mode" and they can only access the high
+> -	 *	remap of DRAM (0x1_00000000 to 0x1_ffffffff).
+> +	 * IO_PGTABLE_QUIRK_ARM_MTK_4GB: (ARM v7s format) MediaTek IOMMUs extend
+> +	 *	to support up to 34 bits PA where the bit32 and bit33 are
+> +	 *	encoded in the bit9 and bit4 of the PTE respectively.
+>   	 *
+>   	 * IO_PGTABLE_QUIRK_NO_DMA: Guarantees that the tables will only ever
+>   	 *	be accessed by a fully cache-coherent IOMMU or CPU (e.g. for a
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index c0e2da5..84a12ed 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -367,12 +367,18 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   			 phys_addr_t paddr, size_t size, int prot)
+>   {
+>   	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+> +	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+>   	unsigned long flags;
+>   	int ret;
+>   
+> +	/* The "4GB mode" M4U physically can not use the lower remap of Dram. */
+> +	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT) &&
+> +	    data->plat_data->has_4gb_mode &&
+> +	    data->enable_4GB)
+> +		paddr |= BIT_ULL(32);
+> +
+>   	spin_lock_irqsave(&dom->pgtlock, flags);
+> -	ret = dom->iop->map(dom->iop, iova, paddr & DMA_BIT_MASK(32),
+> -			    size, prot);
+> +	ret = dom->iop->map(dom->iop, iova, paddr, size, prot);
+>   	spin_unlock_irqrestore(&dom->pgtlock, flags);
+>   
+>   	return ret;
+> @@ -401,7 +407,6 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+>   					  dma_addr_t iova)
+>   {
+>   	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+> -	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+>   	unsigned long flags;
+>   	phys_addr_t pa;
+>   
+> @@ -409,9 +414,6 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+>   	pa = dom->iop->iova_to_phys(dom->iop, iova);
+>   	spin_unlock_irqrestore(&dom->pgtlock, flags);
+>   
+> -	if (data->enable_4GB)
+> -		pa |= BIT_ULL(32);
+> -
+>   	return pa;
+>   }
+>   
+> @@ -735,10 +737,12 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>   
+>   static const struct mtk_iommu_plat_data mt2712_data = {
+>   	.m4u_plat = M4U_MT2712,
+> +	.has_4gb_mode = true,
+>   };
+>   
+>   static const struct mtk_iommu_plat_data mt8173_data = {
+>   	.m4u_plat = M4U_MT8173,
+> +	.has_4gb_mode = true,
+>   };
+>   
+>   static const struct of_device_id mtk_iommu_of_ids[] = {
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index 333a0ef..a243047 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -43,6 +43,7 @@ enum mtk_iommu_plat {
+>   
+>   struct mtk_iommu_plat_data {
+>   	enum mtk_iommu_plat m4u_plat;
+> +	bool has_4gb_mode;
+>   };
+>   
+>   struct mtk_iommu_domain;
+> 
