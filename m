@@ -1,69 +1,43 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH RFC] dma-direct: do not allocate a single page from CMA
-	area
-Date: Thu, 1 Nov 2018 14:07:55 +0000
-Message-ID: <13d60076-33ad-b542-4d17-4d717d5aa4d3@arm.com>
-References: <20181031200355.19945-1-nicoleotsuka@gmail.com>
+From: "Maciej W. Rozycki" <macro@linux-mips.org>
+Subject: Re: [PATCH] MIPS: Fix `dma_alloc_coherent' returning a non-coherent
+ allocation
+Date: Thu, 1 Nov 2018 14:30:34 +0000 (GMT)
+Message-ID: <alpine.LFD.2.21.1811011405530.20378@eddie.linux-mips.org>
+References: <20180914095808.22202-1-hch@lst.de> <20180914095808.22202-5-hch@lst.de> <alpine.LFD.2.21.1810311414200.20378@eddie.linux-mips.org> <alpine.LFD.2.21.1810311559590.20378@eddie.linux-mips.org> <20181031203206.GA28337@lst.de>
+ <alpine.LFD.2.21.1810312043250.20378@eddie.linux-mips.org> <20181101051359.GA4164@lst.de> <alpine.LFD.2.21.1811010523440.20378@eddie.linux-mips.org> <20181101083346.GA7136@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181031200355.19945-1-nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=US-ASCII
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181101083346.GA7136@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Paul Burton <paul.burton@mips.com>, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 31/10/2018 20:03, Nicolin Chen wrote:
-> The addresses within a single page are always contiguous, so it's
-> not so necessary to allocate one single page from CMA area. Since
-> the CMA area has a limited predefined size of space, it might run
-> out of space in some heavy use case, where there might be quite a
-> lot CMA pages being allocated for single pages.
-> 
-> This patch tries to skip CMA allocations of single pages and lets
-> them go through normal page allocations. This would save resource
-> in the CMA area for further more CMA allocations.
+On Thu, 1 Nov 2018, Christoph Hellwig wrote:
 
-In general, this seems to make sense to me. It does represent a 
-theoretical change in behaviour for devices which have their own CMA 
-area somewhere other than kernel memory, and only ever make non-atomic 
-allocations, but I'm not sure whether that's a realistic or common 
-enough case to really worry about.
+> Oops, yes this looks good:
 
-Robin.
+ BTW, for anyone missing hardware suitable for serious DMA testing I can 
+recommend getting a pair of DEFPA cards, the ubiquitous PCI version of 
+this board, cheaply available, which is the same except for a different 
+host bus bridge ASIC, developed later.  They can be wired back to back 
+similarly to Ethernet adapters (or in a loop if you have 2 or more dual 
+attachment versions), no other hardware is required save for patch cords.
+Version 3 (DEFPA-xC) boards support universal PCI signalling, older ones 
+are 5V-only.
 
-> Signed-off-by: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->   kernel/dma/direct.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 22a12ab5a5e9..14c5d49eded2 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -120,8 +120,12 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
->   	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
->   			&phys_mask);
->   again:
-> -	/* CMA can be used only in the context which permits sleeping */
-> -	if (gfpflags_allow_blocking(gfp)) {
-> +	/*
-> +	 * CMA can be used only in the context which permits sleeping.
-> +	 * Since addresses within one PAGE are always contiguous, skip
-> +	 * CMA allocation for a single page to save CMA reserved space
-> +	 */
-> +	if (gfpflags_allow_blocking(gfp) && count > 1) {
->   		page = dma_alloc_from_contiguous(dev, count, page_order,
->   						 gfp & __GFP_NOWARN);
->   		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-> 
+ These devices are a stellar example of fine engineering[1].  Our `defxx' 
+driver, which I believe has been adapted from the DEC OSF/1 one referred 
+in the said document, has some latency and other issues that I plan to 
+address sometime, once I have sorted higher-priority issues, however 
+hardware itself is excellent.
+
+References:
+
+[1] Chran-Ham Chang et al., "High-performance TCP/IP and UDP/IP Networking 
+    in DEC OSF/1 for Alpha AXP", Digital Technical Journal, vol. 5, no. 1 
+    (Winter 1993), "Network Adapter Characteristics", p. 7
+    <ftp://ftp.linux-mips.org/pub/linux/mips/people/macro/DEC/DTJ/DTJ904/DTJ904PF.PDF>
+
+  Maciej
