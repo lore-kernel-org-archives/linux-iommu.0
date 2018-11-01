@@ -1,190 +1,37 @@
-From: Krishna Reddy <vdumpa@nvidia.com>
-Subject: [PATCH v2 5/5] arm64: tegra: Add SMMU nodes to Tegra194 device tree
-Date: Wed, 31 Oct 2018 16:48:36 -0700
-Message-ID: <1541029716-14353-6-git-send-email-vdumpa@nvidia.com>
-References: <1541029716-14353-2-git-send-email-vdumpa@nvidia.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 4/6] dma-mapping: merge direct and noncoherent ops
+Date: Thu, 1 Nov 2018 06:13:59 +0100
+Message-ID: <20181101051359.GA4164@lst.de>
+References: <20180914095808.22202-1-hch@lst.de> <20180914095808.22202-5-hch@lst.de> <alpine.LFD.2.21.1810311414200.20378@eddie.linux-mips.org> <alpine.LFD.2.21.1810311559590.20378@eddie.linux-mips.org> <20181031203206.GA28337@lst.de> <alpine.LFD.2.21.1810312043250.20378@eddie.linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1541029716-14353-2-git-send-email-vdumpa@nvidia.com>
+Content-Disposition: inline
+In-Reply-To: <alpine.LFD.2.21.1810312043250.20378@eddie.linux-mips.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, treding@nvidia.com, yhsu@nvidia.com, snikam@nvidia.com, praithatha@nvidia.com, talho@nvidia.com, avanbrunt@nvidia.com, nicolinc@nvidia.com, Krishna Reddy <vdumpa@nvidia.com>
+To: "Maciej W. Rozycki" <macro@linux-mips.org>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Paul Burton <paul.burton@mips.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add SMMU nodes and dma-ranges to Tegra194 device tree.
-Tegra194 has three ARM SMMU Instances. Two of them are used
-together to access IOVA interleaved. The third one is used
-as regular ARM SMMU.
+On Wed, Oct 31, 2018 at 08:50:53PM +0000, Maciej W. Rozycki wrote:
+> On Wed, 31 Oct 2018, Christoph Hellwig wrote:
+> 
+> > Can you send me your .config?
+> 
+>  Sure, attached.
+> 
+>  This is an updated 4.19 defconfig I was going to submit as I tripped over 
+> this problem, so just rename it to .config and use `make olddefconfig' to 
+> regenerate a full version.
 
-Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 148 +++++++++++++++++++++++++++++++
- 1 file changed, 148 insertions(+)
+Fails to compile for me with:
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index 9fc14bb..03fe2b4 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -10,6 +10,7 @@
- 	interrupt-parent = <&gic>;
- 	#address-cells = <2>;
- 	#size-cells = <2>;
-+	dma-ranges = <0x0 0x0 0x0 0x0 0x8 0x0>;
- 
- 	/* control backbone */
- 	cbb {
-@@ -447,4 +448,151 @@
- 				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
- 		interrupt-parent = <&gic>;
- 	};
-+
-+	dualsmmu: iommu@12000000 {
-+		compatible = "tegra194,arm,mmu-500";
-+		reg = <0 0x12000000 0 0x800000>,
-+		      <0 0x11000000 0 0x800000>;
-+		interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
-+		stream-match-mask = <0x7f80>;
-+		#global-interrupts = <1>;
-+		#iommu-cells = <1>;
-+	};
-+
-+	smmu: iommu@10000000 {
-+		compatible = "arm,mmu-500";
-+		reg = <0 0x10000000 0 0x800000>;
-+		interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+			     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
-+		stream-match-mask = <0x7f80>;
-+		#global-interrupts = <1>;
-+		#iommu-cells = <1>;
-+	};
- };
--- 
-2.1.4
+cc1: error: ‘-march=r3000’ requires ‘-mfp32’
+
+using the x86_64 corss gcc 8 from Debian testing.
+
+Either way the config looks like we have all the required bits for
+non-coherent dma support.  The only guess is that somehow
+dma_cache_wback_inv aren't hooked up to the right functions for some
+reason, but I can't really think off why.
