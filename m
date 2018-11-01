@@ -1,36 +1,69 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] MIPS: Fix `dma_alloc_coherent' returning a
- non-coherent allocation
-Date: Thu, 1 Nov 2018 09:33:46 +0100
-Message-ID: <20181101083346.GA7136@lst.de>
-References: <20180914095808.22202-1-hch@lst.de> <20180914095808.22202-5-hch@lst.de> <alpine.LFD.2.21.1810311414200.20378@eddie.linux-mips.org> <alpine.LFD.2.21.1810311559590.20378@eddie.linux-mips.org> <20181031203206.GA28337@lst.de> <alpine.LFD.2.21.1810312043250.20378@eddie.linux-mips.org> <20181101051359.GA4164@lst.de> <alpine.LFD.2.21.1811010523440.20378@eddie.linux-mips.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH RFC] dma-direct: do not allocate a single page from CMA
+	area
+Date: Thu, 1 Nov 2018 14:07:55 +0000
+Message-ID: <13d60076-33ad-b542-4d17-4d717d5aa4d3@arm.com>
+References: <20181031200355.19945-1-nicoleotsuka@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.21.1811010523440.20378@eddie.linux-mips.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Maciej W. Rozycki" <macro@linux-mips.org>
-Cc: Christoph Hellwig <hch@lst.de>, Paul Burton <paul.burton@mips.com>, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-mips@linux-mips.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181031200355.19945-1-nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 01, 2018 at 07:54:24AM +0000, Maciej W. Rozycki wrote:
-> Fix a MIPS `dma_alloc_coherent' regression from commit bc3ec75de545 
-> ("dma-mapping: merge direct and noncoherent ops") that causes a cached 
-> allocation to be returned on noncoherent cache systems.
+On 31/10/2018 20:03, Nicolin Chen wrote:
+> The addresses within a single page are always contiguous, so it's
+> not so necessary to allocate one single page from CMA area. Since
+> the CMA area has a limited predefined size of space, it might run
+> out of space in some heavy use case, where there might be quite a
+> lot CMA pages being allocated for single pages.
 > 
-> This is due to an inverted check now used in the MIPS implementation of 
-> `arch_dma_alloc' on the result from `dma_direct_alloc_pages' before 
-> doing the cached-to-uncached mapping of the allocation address obtained.  
-> The mapping has to be done for a non-NULL rather than NULL result, 
-> because a NULL result means the allocation has failed.
-> 
-> Invert the check for correct operation then.
-> 
-> Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
-> Fixes: bc3ec75de545 ("dma-mapping: merge direct and noncoherent ops")
-> Cc: stable@vger.kernel.org # 4.19+
+> This patch tries to skip CMA allocations of single pages and lets
+> them go through normal page allocations. This would save resource
+> in the CMA area for further more CMA allocations.
 
-Oops, yes this looks good:
+In general, this seems to make sense to me. It does represent a 
+theoretical change in behaviour for devices which have their own CMA 
+area somewhere other than kernel memory, and only ever make non-atomic 
+allocations, but I'm not sure whether that's a realistic or common 
+enough case to really worry about.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Robin.
+
+> Signed-off-by: Nicolin Chen <nicoleotsuka-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>   kernel/dma/direct.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 22a12ab5a5e9..14c5d49eded2 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -120,8 +120,12 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+>   	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
+>   			&phys_mask);
+>   again:
+> -	/* CMA can be used only in the context which permits sleeping */
+> -	if (gfpflags_allow_blocking(gfp)) {
+> +	/*
+> +	 * CMA can be used only in the context which permits sleeping.
+> +	 * Since addresses within one PAGE are always contiguous, skip
+> +	 * CMA allocation for a single page to save CMA reserved space
+> +	 */
+> +	if (gfpflags_allow_blocking(gfp) && count > 1) {
+>   		page = dma_alloc_from_contiguous(dev, count, page_order,
+>   						 gfp & __GFP_NOWARN);
+>   		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+> 
