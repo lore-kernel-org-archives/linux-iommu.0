@@ -1,65 +1,174 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Fri, 2 Nov 2018 11:19:39 +0800
-Message-ID: <b45673a5-48d5-e2ff-0425-aa3e6e024d30@linux.intel.com>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
-	<20181022164834.GH26762@jcrouse-lnx.qualcomm.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v2 04/14] iommu/io-pgtable-arm-v7s: Add paddr_to_iopte
+ and iopte_to_paddr helpers
+Date: Fri, 2 Nov 2018 14:23:31 +0800
+Message-ID: <1541139811.22369.11.camel@mhfsdcap03>
+References: <1537779534-23575-1-git-send-email-yong.wu@mediatek.com>
+         <1537779534-23575-5-git-send-email-yong.wu@mediatek.com>
+         <d24bd2a4-1030-e255-b339-d02eadc93f28@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181022164834.GH26762-9PYrDHPZ2Orvke4nUoYGnHL1okKdlPRT@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, andrew.murray-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <d24bd2a4-1030-e255-b339-d02eadc93f28@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <Robin.Murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, "youlin.pei@mediatek.com" <youlin.pei@mediatek.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "arnd@arndb.de" <arnd@arndb.de>, "srv_heupstream@mediatek.com" <srv_heupstream@mediatek.com>, Will Deacon <Will.Deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@google.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, Daniel Kurtz <djkurtz@google.com>, "yingjoe.chen@mediatek.com" <yingjoe.chen@mediatek.com>, nd <nd@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@l>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Robin,
 
-On 10/23/18 12:48 AM, Jordan Crouse wrote:
-> On Fri, Oct 19, 2018 at 07:11:52PM +0100, Jean-Philippe Brucker wrote:
-> 
->> (2) Allocate a domain and attach it to the device.
->>
->>        dom = iommu_domain_alloc()
->>        iommu_attach_device(dom, dev)
->>
->>      I still have concerns about this part, which are highlighted by the
->>      messy changes of patch 1. I think it would make more sense to
->>      introduce new attach/detach_dev_aux() functions instead of reusing
->>      attach/detach_dev()
->>
->>      Can we reconsider this and avoid unnecessary complications in IOMMU
->>      core and drivers? Does the VFIO code greatly benefit from using the
->>      same attach() function? It could as well use a different one for
->>      devices in AUXD mode, which the mediating driver could tell by
->>      adding a flag in mdev_set_iommu_device(), for example.
->>
->>      And I don't think other users of AUXD would benefit from using the
->>      same attach() function, since they will know whether they want to be
->>      using main or auxiliary domain when doing attach().
-> 
-> I second this. For the arm-smmu-v2 multiple-pagetable model we would either need
-> new API functions or do something along the lines of
-> 
-> dom = iommu_domain_alloc()
-> iommu_set_attr(dom, DOMAIN_ATTR_I_WANT_TO_BE_AUX)
-> iommu_attach_device(dom,dev)
-> 
-> Either that or do some some dummy device magic that I haven't started to work
-> out in my head. Having aux specific functions just for this step would make the
-> arm-smmu-v2 version work out much cleaner.
+Thanks very much for your review.
 
-Okay! If there are no more comments, I will prepare a new version with
-aux specific functions.
+On Thu, 2018-11-01 at 16:34 +0000, Robin Murphy wrote:
+> [ apologies if anyone gets this twice, looks like our email's eaten 
+> itself again... ]
+> 
+> On 24/09/2018 09:58, Yong Wu wrote:
+> > Add two helper functions: paddr_to_iopte and iopte_to_paddr.
+> 
+> Nice and tidy! (although it will need rebasing now, but I think that's 
+> just context conflicts)
+> 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >   drivers/iommu/io-pgtable-arm-v7s.c | 45 ++++++++++++++++++++++++++++----------
+> >   1 file changed, 33 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> > index b5948ba..fa3b9ec 100644
+> > --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> > +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> > @@ -173,18 +173,38 @@ struct arm_v7s_io_pgtable {
+> >   	spinlock_t		split_lock;
+> >   };
+> >   
+> > +static bool arm_v7s_pte_is_cont(arm_v7s_iopte pte, int lvl);
+> > +
+> >   static dma_addr_t __arm_v7s_dma_addr(void *pages)
+> >   {
+> >   	return (dma_addr_t)virt_to_phys(pages);
+> >   }
+> >   
+> > -static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl)
+> > +static arm_v7s_iopte paddr_to_iopte(phys_addr_t paddr, int lvl,
+> > +				    struct arm_v7s_io_pgtable *data)
+> 
+> Nit: it seems to work out a little cleaner if we pass the io_pgtable_cfg 
+> to these helpers directly, rather than re-deriving it from data each time.
 
-Best regards,
-Lu Baolu
+I will use "io_pgtable_cfg" instead of "arm_v7s_io_pgtable" in the next
+version. This is a minor change and I will keep your R-b.
+
+> 
+> Otherwise, though,
+> 
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> 
+> >   {
+> > +	return paddr & ARM_V7S_LVL_MASK(lvl);
+> > +}
+> > +
+> > +static phys_addr_t iopte_to_paddr(arm_v7s_iopte pte, int lvl,
+> > +				  struct arm_v7s_io_pgtable *data)
+> > +{
+> > +	arm_v7s_iopte mask;
+> > +
+> >   	if (ARM_V7S_PTE_IS_TABLE(pte, lvl))
+> > -		pte &= ARM_V7S_TABLE_MASK;
+> > +		mask = ARM_V7S_TABLE_MASK;
+> > +	else if (arm_v7s_pte_is_cont(pte, lvl))
+> > +		mask = ARM_V7S_LVL_MASK(lvl) * ARM_V7S_CONT_PAGES;
+> >   	else
+> > -		pte &= ARM_V7S_LVL_MASK(lvl);
+> > -	return phys_to_virt(pte);
+> > +		mask = ARM_V7S_LVL_MASK(lvl);
+> > +
+> > +	return pte & mask;
+> > +}
+> > +
+> > +static arm_v7s_iopte *iopte_deref(arm_v7s_iopte pte, int lvl,
+> > +				  struct arm_v7s_io_pgtable *data)
+> > +{
+> > +	return phys_to_virt(iopte_to_paddr(pte, lvl, data));
+> >   }
+> >   
+> >   static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+> > @@ -396,7 +416,7 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+> >   	if (num_entries > 1)
+> >   		pte = arm_v7s_pte_to_cont(pte, lvl);
+> >   
+> > -	pte |= paddr & ARM_V7S_LVL_MASK(lvl);
+> > +	pte |= paddr_to_iopte(paddr, lvl, data);
+> >   
+> >   	__arm_v7s_set_pte(ptep, pte, num_entries, cfg);
+> >   	return 0;
+> > @@ -462,7 +482,7 @@ static int __arm_v7s_map(struct arm_v7s_io_pgtable *data, unsigned long iova,
+> >   	}
+> >   
+> >   	if (ARM_V7S_PTE_IS_TABLE(pte, lvl)) {
+> > -		cptep = iopte_deref(pte, lvl);
+> > +		cptep = iopte_deref(pte, lvl, data);
+> >   	} else if (pte) {
+> >   		/* We require an unmap first */
+> >   		WARN_ON(!selftest_running);
+> > @@ -512,7 +532,8 @@ static void arm_v7s_free_pgtable(struct io_pgtable *iop)
+> >   		arm_v7s_iopte pte = data->pgd[i];
+> >   
+> >   		if (ARM_V7S_PTE_IS_TABLE(pte, 1))
+> > -			__arm_v7s_free_table(iopte_deref(pte, 1), 2, data);
+> > +			__arm_v7s_free_table(iopte_deref(pte, 1, data),
+> > +					     2, data);
+> >   	}
+> >   	__arm_v7s_free_table(data->pgd, 1, data);
+> >   	kmem_cache_destroy(data->l2_tables);
+> > @@ -582,7 +603,7 @@ static size_t arm_v7s_split_blk_unmap(struct arm_v7s_io_pgtable *data,
+> >   		if (!ARM_V7S_PTE_IS_TABLE(pte, 1))
+> >   			return 0;
+> >   
+> > -		tablep = iopte_deref(pte, 1);
+> > +		tablep = iopte_deref(pte, 1, data);
+> >   		return __arm_v7s_unmap(data, iova, size, 2, tablep);
+> >   	}
+> >   
+> > @@ -640,7 +661,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+> >   				io_pgtable_tlb_add_flush(iop, iova, blk_size,
+> >   					ARM_V7S_BLOCK_SIZE(lvl + 1), false);
+> >   				io_pgtable_tlb_sync(iop);
+> > -				ptep = iopte_deref(pte[i], lvl);
+> > +				ptep = iopte_deref(pte[i], lvl, data);
+> >   				__arm_v7s_free_table(ptep, lvl + 1, data);
+> >   			} else {
+> >   				io_pgtable_tlb_add_flush(iop, iova, blk_size,
+> > @@ -658,7 +679,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+> >   	}
+> >   
+> >   	/* Keep on walkin' */
+> > -	ptep = iopte_deref(pte[0], lvl);
+> > +	ptep = iopte_deref(pte[0], lvl, data);
+> >   	return __arm_v7s_unmap(data, iova, size, lvl + 1, ptep);
+> >   }
+> >   
+> > @@ -684,7 +705,7 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+> >   	do {
+> >   		ptep += ARM_V7S_LVL_IDX(iova, ++lvl);
+> >   		pte = READ_ONCE(*ptep);
+> > -		ptep = iopte_deref(pte, lvl);
+> > +		ptep = iopte_deref(pte, lvl, data);
+> >   	} while (ARM_V7S_PTE_IS_TABLE(pte, lvl));
+> >   
+> >   	if (!ARM_V7S_PTE_IS_VALID(pte))
+> > @@ -693,7 +714,7 @@ static phys_addr_t arm_v7s_iova_to_phys(struct io_pgtable_ops *ops,
+> >   	mask = ARM_V7S_LVL_MASK(lvl);
+> >   	if (arm_v7s_pte_is_cont(pte, lvl))
+> >   		mask *= ARM_V7S_CONT_PAGES;
+> > -	return (pte & mask) | (iova & ~mask);
+> > +	return iopte_to_paddr(pte, lvl, data) | (iova & ~mask);
+> >   }
+> >   
+> >   static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+> > 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
