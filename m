@@ -1,75 +1,81 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: [PATCH] iommu/dma: Zero pages manually in a length of scatterlist
-Date: Thu,  1 Nov 2018 14:35:00 -0700
-Message-ID: <20181101213500.21800-1-nicoleotsuka@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: vdumpa@nvidia.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
+Date: Fri, 2 Nov 2018 10:41:12 +0800
+Message-ID: <5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
+References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <44573340-5652-42F1-A4B8-102AEF5C162A-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The __GFP_ZERO will be passed down to the generic page allocation
-routine which zeros everything page by page. This is safe to be a
-generic way but not efficient for iommu allocation that organizes
-contiguous pages using scatterlist.
-
-So this changes drops __GFP_ZERO from the flag, and adds a manual
-memset after page/sg allocations, using the length of scatterlist.
-
-My test result of a 2.5MB size allocation shows iommu_dma_alloc()
-takes 46% less time, reduced from averagely 925 usec to 500 usec.
-
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
- drivers/iommu/dma-iommu.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b04753b204..e48d995e65c5 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -551,10 +551,13 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
-+	struct scatterlist *s;
- 	struct page **pages;
- 	struct sg_table sgt;
- 	dma_addr_t iova;
- 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
-+	bool gfp_zero = false;
-+	int i;
- 
- 	*handle = IOMMU_MAPPING_ERROR;
- 
-@@ -568,6 +571,15 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 	if (attrs & DMA_ATTR_ALLOC_SINGLE_PAGES)
- 		alloc_sizes = min_size;
- 
-+	/*
-+	 * The generic zeroing in a length of one page size is slow,
-+	 * so do it manually in a length of scatterlist size instead
-+	 */
-+	if (gfp & __GFP_ZERO) {
-+		gfp &= ~__GFP_ZERO;
-+		gfp_zero = true;
-+	}
-+
- 	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
- 	if (!pages)
-@@ -581,6 +593,12 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
- 		goto out_free_iova;
- 
-+	if (gfp_zero) {
-+		/* Now zero all the pages in the scatterlist */
-+		for_each_sg(sgt.sgl, s, sgt.orig_nents, i)
-+			memset(sg_virt(s), 0, s->length);
-+	}
-+
- 	if (!(prot & IOMMU_CACHE)) {
- 		struct sg_mapping_iter miter;
- 		/*
--- 
-2.17.1
+SGksCgpPbiAxMC8zMC8xOCAxMDoxOCBQTSwgSmFtZXMgU2V3YXJ0IHZpYSBpb21tdSB3cm90ZToK
+PiBIZXksCj4gCj4gSeKAmXZlIGJlZW4gaW52ZXN0aWdhdGluZyB0aGUgcmVsYXRpb25zaGlwIGJl
+dHdlZW4gaW9tbXUgZ3JvdXBzIGFuZCBkb21haW5zCj4gb24gb3VyIHN5c3RlbXMgYW5kIGhhdmUg
+YSBmZXcgcXVlc3Rpb24uIFdoeSBkb2VzIHRoZSBpbnRlbCBpb21tdSBjb2RlIG5vdAo+IGFsbG93
+IGFsbG9jYXRpbmcgSU9NTVVfRE9NQUlOX0RNQT8gUmV0dXJuaW5nIE5VTEwgd2hlbiBnaXZlbiB0
+aGlzIGRvbWFpbgo+IHR5cGUgaGFzIHRoZSBzaWRlIGVmZmVjdCB0aGF0IHRoZSBkZWZhdWx0X2Rv
+bWFpbiBmb3IgYW4gaW9tbXUgZ3JvdXAgaXMgbm90Cj4gc2V0LCB3aGljaCwgd2hlbiB1c2luZyBm
+b3IgZS5nLiBkbWFfbWFwX29wcy5tYXBfcGFnZSwgbWVhbnMgYSBkb21haW4gaXMKPiBhbGxvY2F0
+ZWQgcGVyIGRldmljZS4KCkludGVsIHZ0LWQgZHJpdmVyIGRvZXNuJ3QgaW1wbGVtZW50IHRoZSBk
+ZWZhdWx0IGRvbWFpbiBhbmQgYWxsb2NhdGVzCmRvbWFpbiBvbmx5IG9uIGRlbWFuZGVkLiBUaGVy
+ZSBhcmUgbG90cyBvZiB0aGluZ3MgdG8gZG8gYmVmb3JlIHdlIGFsbG93CmlvbW11IEFQSSB0byBh
+bGxvY2F0ZSBkb21haW5zIG90aGVyIHRoYW4gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRC4KCkJlc3Qg
+cmVnYXJkcywKTHUgQmFvbHUKCj4gCj4gVGhpcyBzZWVtcyB0byBiZSB0aGUgb3Bwb3NpdGUgYmVo
+YXZpb3VyIHRvIHRoZSBBTUQgaW9tbXUgY29kZSB3aGljaAo+IHN1cHBvcnRzIGFsbG9jYXRpbmcg
+YW4gSU9NTVVfRE9NQUlOX0RNQSBhbmQgd2lsbCBvbmx5IGxvb2sgdG8gdGhlIGlvbW11Cj4gZ3Jv
+dXAgaWYgYSBkb21haW4gaXMgbm90IGF0dGFjaGVkIHRvIHRoZSBkZXZpY2UgcmF0aGVyIHRoYW4g
+YWxsb2NhdGluZyBhCj4gbmV3IG9uZS4gT24gQU1EIGV2ZXJ5IGRldmljZSBpbiBhbiBpb21tdSBn
+cm91cCB3aWxsIHNoYXJlIHRoZSBzYW1lIGRvbWFpbi4KPiAKPiBBcHBlbmRlZCBpcyB3aGF0IEkg
+dGhpbmsgYSBwYXRjaCB0byBpbXBsZW1lbnQgZG9tYWluX2FsbG9jIGZvcgo+IElPTU1VX0RPTUFJ
+Tl9ETUEgYW5kIGFsc28gSU9NTVVfRE9NQUlOX0lERU5USVRZIHdvdWxkIGxvb2sgbGlrZS4gVGVz
+dGluZwo+IHNob3dzIGVhY2ggZGV2aWNlIGluIGEgZ3JvdXAgd2lsbCBzaGFyZSBhIGRvbWFpbiBi
+eSBkZWZhdWx0LCBpdCBhbHNvCj4gYWxsb3dzIGFsbG9jYXRpbmcgYSBuZXcgZG1hIGRvbWFpbiB0
+aGF0IGNhbiBiZSBzdWNjZXNzZnVsbHkgYXR0YWNoZWQgdG8gYQo+IGdyb3VwIHdpdGggaW9tbXVf
+YXR0YWNoX2dyb3VwLgo+IAo+IExvb2tpbmcgZm9yIGNvbW1lbnQgb24gd2h5IHRoZSBiZWhhdmlv
+dXIgaXMgaG93IGl0IGlzIGN1cnJlbnRseSBhbmQgaWYKPiB0aGVyZSBhcmUgYW55IGlzc3VlcyB3
+aXRoIHRoZSBzb2x1dGlvbiBJ4oCZdmUgYmVlbiB0ZXN0aW5nLgo+IAo+IENoZWVycywKPiBKYW1l
+cy4KPiAKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJp
+dmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4gaW5kZXggYmZmMmFiZDYuLjNhNTgzODlmIDEwMDY0
+NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9t
+bXUvaW50ZWwtaW9tbXUuYwo+IEBAIC01MTcwLDEwICs1MTcwLDE1IEBAIHN0YXRpYyBzdHJ1Y3Qg
+aW9tbXVfZG9tYWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlwZSkKPiAg
+IAlzdHJ1Y3QgZG1hcl9kb21haW4gKmRtYXJfZG9tYWluOwo+ICAgCXN0cnVjdCBpb21tdV9kb21h
+aW4gKmRvbWFpbjsKPiAgIAo+IC0JaWYgKHR5cGUgIT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkK
+PiArCWlmICh0eXBlID09IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4gKwkJZG1hcl9kb21haW4g
+PSBhbGxvY19kb21haW4oRE9NQUlOX0ZMQUdfVklSVFVBTF9NQUNISU5FKTsKPiArCWVsc2UgaWYo
+dHlwZSA9PSBJT01NVV9ET01BSU5fRE1BKQo+ICsJCWRtYXJfZG9tYWluID0gYWxsb2NfZG9tYWlu
+KDApOwo+ICsJZWxzZSBpZih0eXBlID09IElPTU1VX0RPTUFJTl9JREVOVElUWSkKPiArCQlkbWFy
+X2RvbWFpbiA9IGFsbG9jX2RvbWFpbihET01BSU5fRkxBR19TVEFUSUNfSURFTlRJVFkpOwo+ICsJ
+ZWxzZQo+ICAgCQlyZXR1cm4gTlVMTDsKPiAgIAo+IC0JZG1hcl9kb21haW4gPSBhbGxvY19kb21h
+aW4oRE9NQUlOX0ZMQUdfVklSVFVBTF9NQUNISU5FKTsKPiAgIAlpZiAoIWRtYXJfZG9tYWluKSB7
+Cj4gICAJCXByX2VycigiQ2FuJ3QgYWxsb2NhdGUgZG1hcl9kb21haW5cbiIpOwo+ICAgCQlyZXR1
+cm4gTlVMTDsKPiBAQCAtNTE4Niw5ICs1MTkxLDEyIEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9t
+YWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlwZSkKPiAgIAlkb21haW5f
+dXBkYXRlX2lvbW11X2NhcChkbWFyX2RvbWFpbik7Cj4gICAKPiAgIAlkb21haW4gPSAmZG1hcl9k
+b21haW4tPmRvbWFpbjsKPiAtCWRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSAwOwo+
+IC0JZG9tYWluLT5nZW9tZXRyeS5hcGVydHVyZV9lbmQgICA9IF9fRE9NQUlOX01BWF9BRERSKGRt
+YXJfZG9tYWluLT5nYXcpOwo+IC0JZG9tYWluLT5nZW9tZXRyeS5mb3JjZV9hcGVydHVyZSA9IHRy
+dWU7Cj4gKwo+ICsJaWYgKHR5cGUgPT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkgewo+ICsJCWRv
+bWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSAwOwo+ICsJCWRvbWFpbi0+Z2VvbWV0cnku
+YXBlcnR1cmVfZW5kICAgPSBfX0RPTUFJTl9NQVhfQUREUihkbWFyX2RvbWFpbi0+Z2F3KTsKPiAr
+CQlkb21haW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsKPiArCX0KPiAgIAo+ICAg
+CXJldHVybiBkb21haW47Cj4gICB9Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KPiBpb21tdSBtYWlsaW5nIGxpc3QKPiBpb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwo+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2lvbW11Cj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
