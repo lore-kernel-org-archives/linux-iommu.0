@@ -1,13 +1,14 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
-Date: Fri, 2 Nov 2018 10:41:12 +0800
-Message-ID: <5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
-References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Fri, 2 Nov 2018 11:19:39 +0800
+Message-ID: <b45673a5-48d5-e2ff-0425-aa3e6e024d30@linux.intel.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181022164834.GH26762@jcrouse-lnx.qualcomm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <44573340-5652-42F1-A4B8-102AEF5C162A-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20181022164834.GH26762-9PYrDHPZ2Orvke4nUoYGnHL1okKdlPRT@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,64 +19,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, andrew.murray-5wv7dgnIgG8@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAxMC8zMC8xOCAxMDoxOCBQTSwgSmFtZXMgU2V3YXJ0IHZpYSBpb21tdSB3cm90ZToK
-PiBIZXksCj4gCj4gSeKAmXZlIGJlZW4gaW52ZXN0aWdhdGluZyB0aGUgcmVsYXRpb25zaGlwIGJl
-dHdlZW4gaW9tbXUgZ3JvdXBzIGFuZCBkb21haW5zCj4gb24gb3VyIHN5c3RlbXMgYW5kIGhhdmUg
-YSBmZXcgcXVlc3Rpb24uIFdoeSBkb2VzIHRoZSBpbnRlbCBpb21tdSBjb2RlIG5vdAo+IGFsbG93
-IGFsbG9jYXRpbmcgSU9NTVVfRE9NQUlOX0RNQT8gUmV0dXJuaW5nIE5VTEwgd2hlbiBnaXZlbiB0
-aGlzIGRvbWFpbgo+IHR5cGUgaGFzIHRoZSBzaWRlIGVmZmVjdCB0aGF0IHRoZSBkZWZhdWx0X2Rv
-bWFpbiBmb3IgYW4gaW9tbXUgZ3JvdXAgaXMgbm90Cj4gc2V0LCB3aGljaCwgd2hlbiB1c2luZyBm
-b3IgZS5nLiBkbWFfbWFwX29wcy5tYXBfcGFnZSwgbWVhbnMgYSBkb21haW4gaXMKPiBhbGxvY2F0
-ZWQgcGVyIGRldmljZS4KCkludGVsIHZ0LWQgZHJpdmVyIGRvZXNuJ3QgaW1wbGVtZW50IHRoZSBk
-ZWZhdWx0IGRvbWFpbiBhbmQgYWxsb2NhdGVzCmRvbWFpbiBvbmx5IG9uIGRlbWFuZGVkLiBUaGVy
-ZSBhcmUgbG90cyBvZiB0aGluZ3MgdG8gZG8gYmVmb3JlIHdlIGFsbG93CmlvbW11IEFQSSB0byBh
-bGxvY2F0ZSBkb21haW5zIG90aGVyIHRoYW4gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRC4KCkJlc3Qg
-cmVnYXJkcywKTHUgQmFvbHUKCj4gCj4gVGhpcyBzZWVtcyB0byBiZSB0aGUgb3Bwb3NpdGUgYmVo
-YXZpb3VyIHRvIHRoZSBBTUQgaW9tbXUgY29kZSB3aGljaAo+IHN1cHBvcnRzIGFsbG9jYXRpbmcg
-YW4gSU9NTVVfRE9NQUlOX0RNQSBhbmQgd2lsbCBvbmx5IGxvb2sgdG8gdGhlIGlvbW11Cj4gZ3Jv
-dXAgaWYgYSBkb21haW4gaXMgbm90IGF0dGFjaGVkIHRvIHRoZSBkZXZpY2UgcmF0aGVyIHRoYW4g
-YWxsb2NhdGluZyBhCj4gbmV3IG9uZS4gT24gQU1EIGV2ZXJ5IGRldmljZSBpbiBhbiBpb21tdSBn
-cm91cCB3aWxsIHNoYXJlIHRoZSBzYW1lIGRvbWFpbi4KPiAKPiBBcHBlbmRlZCBpcyB3aGF0IEkg
-dGhpbmsgYSBwYXRjaCB0byBpbXBsZW1lbnQgZG9tYWluX2FsbG9jIGZvcgo+IElPTU1VX0RPTUFJ
-Tl9ETUEgYW5kIGFsc28gSU9NTVVfRE9NQUlOX0lERU5USVRZIHdvdWxkIGxvb2sgbGlrZS4gVGVz
-dGluZwo+IHNob3dzIGVhY2ggZGV2aWNlIGluIGEgZ3JvdXAgd2lsbCBzaGFyZSBhIGRvbWFpbiBi
-eSBkZWZhdWx0LCBpdCBhbHNvCj4gYWxsb3dzIGFsbG9jYXRpbmcgYSBuZXcgZG1hIGRvbWFpbiB0
-aGF0IGNhbiBiZSBzdWNjZXNzZnVsbHkgYXR0YWNoZWQgdG8gYQo+IGdyb3VwIHdpdGggaW9tbXVf
-YXR0YWNoX2dyb3VwLgo+IAo+IExvb2tpbmcgZm9yIGNvbW1lbnQgb24gd2h5IHRoZSBiZWhhdmlv
-dXIgaXMgaG93IGl0IGlzIGN1cnJlbnRseSBhbmQgaWYKPiB0aGVyZSBhcmUgYW55IGlzc3VlcyB3
-aXRoIHRoZSBzb2x1dGlvbiBJ4oCZdmUgYmVlbiB0ZXN0aW5nLgo+IAo+IENoZWVycywKPiBKYW1l
-cy4KPiAKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJp
-dmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4gaW5kZXggYmZmMmFiZDYuLjNhNTgzODlmIDEwMDY0
-NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ICsrKyBiL2RyaXZlcnMvaW9t
-bXUvaW50ZWwtaW9tbXUuYwo+IEBAIC01MTcwLDEwICs1MTcwLDE1IEBAIHN0YXRpYyBzdHJ1Y3Qg
-aW9tbXVfZG9tYWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlwZSkKPiAg
-IAlzdHJ1Y3QgZG1hcl9kb21haW4gKmRtYXJfZG9tYWluOwo+ICAgCXN0cnVjdCBpb21tdV9kb21h
-aW4gKmRvbWFpbjsKPiAgIAo+IC0JaWYgKHR5cGUgIT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkK
-PiArCWlmICh0eXBlID09IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4gKwkJZG1hcl9kb21haW4g
-PSBhbGxvY19kb21haW4oRE9NQUlOX0ZMQUdfVklSVFVBTF9NQUNISU5FKTsKPiArCWVsc2UgaWYo
-dHlwZSA9PSBJT01NVV9ET01BSU5fRE1BKQo+ICsJCWRtYXJfZG9tYWluID0gYWxsb2NfZG9tYWlu
-KDApOwo+ICsJZWxzZSBpZih0eXBlID09IElPTU1VX0RPTUFJTl9JREVOVElUWSkKPiArCQlkbWFy
-X2RvbWFpbiA9IGFsbG9jX2RvbWFpbihET01BSU5fRkxBR19TVEFUSUNfSURFTlRJVFkpOwo+ICsJ
-ZWxzZQo+ICAgCQlyZXR1cm4gTlVMTDsKPiAgIAo+IC0JZG1hcl9kb21haW4gPSBhbGxvY19kb21h
-aW4oRE9NQUlOX0ZMQUdfVklSVFVBTF9NQUNISU5FKTsKPiAgIAlpZiAoIWRtYXJfZG9tYWluKSB7
-Cj4gICAJCXByX2VycigiQ2FuJ3QgYWxsb2NhdGUgZG1hcl9kb21haW5cbiIpOwo+ICAgCQlyZXR1
-cm4gTlVMTDsKPiBAQCAtNTE4Niw5ICs1MTkxLDEyIEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9t
-YWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlwZSkKPiAgIAlkb21haW5f
-dXBkYXRlX2lvbW11X2NhcChkbWFyX2RvbWFpbik7Cj4gICAKPiAgIAlkb21haW4gPSAmZG1hcl9k
-b21haW4tPmRvbWFpbjsKPiAtCWRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSAwOwo+
-IC0JZG9tYWluLT5nZW9tZXRyeS5hcGVydHVyZV9lbmQgICA9IF9fRE9NQUlOX01BWF9BRERSKGRt
-YXJfZG9tYWluLT5nYXcpOwo+IC0JZG9tYWluLT5nZW9tZXRyeS5mb3JjZV9hcGVydHVyZSA9IHRy
-dWU7Cj4gKwo+ICsJaWYgKHR5cGUgPT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkgewo+ICsJCWRv
-bWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSAwOwo+ICsJCWRvbWFpbi0+Z2VvbWV0cnku
-YXBlcnR1cmVfZW5kICAgPSBfX0RPTUFJTl9NQVhfQUREUihkbWFyX2RvbWFpbi0+Z2F3KTsKPiAr
-CQlkb21haW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsKPiArCX0KPiAgIAo+ICAg
-CXJldHVybiBkb21haW47Cj4gICB9Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KPiBpb21tdSBtYWlsaW5nIGxpc3QKPiBpb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZwo+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2lvbW11Cj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+Hi,
+
+On 10/23/18 12:48 AM, Jordan Crouse wrote:
+> On Fri, Oct 19, 2018 at 07:11:52PM +0100, Jean-Philippe Brucker wrote:
+> 
+>> (2) Allocate a domain and attach it to the device.
+>>
+>>        dom = iommu_domain_alloc()
+>>        iommu_attach_device(dom, dev)
+>>
+>>      I still have concerns about this part, which are highlighted by the
+>>      messy changes of patch 1. I think it would make more sense to
+>>      introduce new attach/detach_dev_aux() functions instead of reusing
+>>      attach/detach_dev()
+>>
+>>      Can we reconsider this and avoid unnecessary complications in IOMMU
+>>      core and drivers? Does the VFIO code greatly benefit from using the
+>>      same attach() function? It could as well use a different one for
+>>      devices in AUXD mode, which the mediating driver could tell by
+>>      adding a flag in mdev_set_iommu_device(), for example.
+>>
+>>      And I don't think other users of AUXD would benefit from using the
+>>      same attach() function, since they will know whether they want to be
+>>      using main or auxiliary domain when doing attach().
+> 
+> I second this. For the arm-smmu-v2 multiple-pagetable model we would either need
+> new API functions or do something along the lines of
+> 
+> dom = iommu_domain_alloc()
+> iommu_set_attr(dom, DOMAIN_ATTR_I_WANT_TO_BE_AUX)
+> iommu_attach_device(dom,dev)
+> 
+> Either that or do some some dummy device magic that I haven't started to work
+> out in my head. Having aux specific functions just for this step would make the
+> arm-smmu-v2 version work out much cleaner.
+
+Okay! If there are no more comments, I will prepare a new version with
+aux specific functions.
+
+Best regards,
+Lu Baolu
