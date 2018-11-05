@@ -1,66 +1,129 @@
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [PATCH 1/1] iommu/vtd: Fix NULL pointer dereference in
-        prq_event_thread()
-Date: Mon, 5 Nov 2018 05:21:35 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439D5DF53@SHSMSX104.ccr.corp.intel.com>
-References: <20181105021858.16958-1-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v4 00/12] iommu/vt-d: Add scalable mode support
+Date: Mon,  5 Nov 2018 13:31:39 +0800
+Message-ID: <20181105053151.7173-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181105021858.16958-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baolu,
+Hi,
 
-> From: iommu-bounces@lists.linux-foundation.org [mailto:iommu-
-> bounces@lists.linux-foundation.org] On Behalf Of Lu Baolu
-> Sent: Monday, November 5, 2018 10:19 AM
-> To: Joerg Roedel <joro@8bytes.org>; David Woodhouse <dwmw2@infradead.org>
-> Cc: Raj, Ashok <ashok.raj@intel.com>; linux-kernel@vger.kernel.org;
-> iommu@lists.linux-foundation.org
-> Subject: [PATCH 1/1] iommu/vtd: Fix NULL pointer dereference in prq_event_thread()
-> 
-> When handling page request without pasid event, go to "no_pasid"
-> branch instead of "bad_req". Otherwise, a NULL pointer deference will happen there.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Sohil Mehta <sohil.mehta@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel-svm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c index
-> db301efe126d..887150907526 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -595,7 +595,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  			pr_err("%s: Page request without PASID: %08llx %08llx\n",
->  			       iommu->name, ((unsigned long long *)req)[0],
->  			       ((unsigned long long *)req)[1]);
-> -			goto bad_req;
-> +			goto no_pasid;
->  		}
-> 
->  		if (!svm || svm->pasid != req->pasid) {
-> --
+Intel vt-d rev3.0 [1] introduces a new translation mode called
+'scalable mode', which enables PASID-granular translations for
+first level, second level, nested and pass-through modes. The
+vt-d scalable mode is the key ingredient to enable Scalable I/O
+Virtualization (Scalable IOV) [2] [3], which allows sharing a
+device in minimal possible granularity (ADI - Assignable Device
+Interface). It also includes all the capabilities required to
+enable Shared Virtual Addressing (SVA). As a result, previous
+Extended Context (ECS) mode is deprecated (no production ever
+implements ECS).
 
-I'm afraid it is still necessary to goto "bad_req". The following code behind
-"bad_req" will trigger fault_cb registered by in-kernel drivers. It is reasonable
-that PRQ without PASID can be handled by such callbacks. So I would suggest
-to keep the existing logic.
+Each scalable mode pasid table entry is 64 bytes in length, with
+fields point to the first level page table and the second level
+page table. The PGTT (Pasid Granular Translation Type) field is
+used by hardware to determine the translation type.
 
-                if (sdev && sdev->ops && sdev->ops->fault_cb) {
-                        int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
-                                 (req->exe_req << 1) | (req->priv_req);
-                        sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
-                 }
 
-Thanks,
-Yi Liu
+          A Scalable Mode            .-------------.
+           PASID Entry             .-|             |
+       .------------------.      .-| | 1st Level   |
+      7|                  |      | | | Page Table  |
+       .------------------.      | | |             |
+      6|                  |      | | |             |
+       '------------------'      | | '-------------'
+      5|                  |      | '-------------'
+       '------------------'      '-------------'
+      4|                  |    ^
+       '------------------'   /
+      3|                  |  /       .-------------.
+       .----.-------.-----. /      .-|             |
+      2|    | FLPTR |     |/     .-| | 2nd Level   |
+       .----'-------'-----.      | | | Page Table  |
+      1|                  |      | | |             |
+       .-.-------..------..      | | |             |
+      0| | SLPTR || PGTT ||----> | | '-------------'
+       '-'-------''------''      | '-------------'
+       6             |    0      '-------------'
+       3             v
+             .------------------------------------.
+             | PASID Granular Translation Type    |
+             |                                    |
+             | 001b: 1st level translation only   |
+             | 101b: 2nd level translation only   |
+             | 011b: Nested translation           |
+             | 100b: Pass through                 |
+             '------------------------------------'
+
+This patch series adds the scalable mode support in the Intel
+IOMMU driver. It will make all the Intel IOMMU features work
+in scalable mode. The changes are all constrained within the
+Intel IOMMU driver, as it's purely internal format change.
+
+References:
+[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+
+Change log:
+v3->v4:
+  - Rebase all patches to 4.20-rc1.
+  - Use the right PASID directory table size.
+  - Add a function for pass through translation setting up.
+  - Refine the parameters passed to first level translation
+    mode interface.
+
+v2->v3:
+  - Rebase all patches on top of vt-d branch of iommu repo.
+  - Set the pasid directory table size to 1 page for devices
+    which have no pasid support.
+  - Fix various comments received during v2 review period.
+    All were code style related.
+
+v1->v2:
+  - Rebase all patches on top of v4.19-rc1;
+  - Add 256-bit invalidation descriptor support;
+  - Reserve a domain id for first level and pass-through
+    usage to make hardware cache entries more efficiently;
+  - Various code refinements.
+
+Lu Baolu (12):
+  iommu/vt-d: Enumerate the scalable mode capability
+  iommu/vt-d: Manage scalalble mode PASID tables
+  iommu/vt-d: Move page table helpers into header
+  iommu/vt-d: Add 256-bit invalidation descriptor support
+  iommu/vt-d: Reserve a domain id for FL and PT modes
+  iommu/vt-d: Add second level page table interface
+  iommu/vt-d: Setup pasid entry for RID2PASID support
+  iommu/vt-d: Pass pasid table to context mapping
+  iommu/vt-d: Setup context and enable RID2PASID support
+  iommu/vt-d: Add first level page table interface
+  iommu/vt-d: Shared virtual address in scalable mode
+  iommu/vt-d: Remove deferred invalidation
+
+ .../admin-guide/kernel-parameters.txt         |  12 +-
+ drivers/iommu/dmar.c                          |  83 ++--
+ drivers/iommu/intel-iommu.c                   | 309 ++++++------
+ drivers/iommu/intel-pasid.c                   | 447 +++++++++++++++++-
+ drivers/iommu/intel-pasid.h                   |  40 +-
+ drivers/iommu/intel-svm.c                     | 168 +++----
+ drivers/iommu/intel_irq_remapping.c           |   6 +-
+ include/linux/dma_remapping.h                 |   9 +-
+ include/linux/intel-iommu.h                   |  66 ++-
+ 9 files changed, 805 insertions(+), 335 deletions(-)
+
+-- 
+2.17.1
