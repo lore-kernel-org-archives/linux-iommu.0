@@ -1,28 +1,37 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH] iommu/dma: Zero pages manually in a length of scatterlist
-Date: Sun, 4 Nov 2018 07:50:01 -0800
-Message-ID: <20181104155001.GA25794@infradead.org>
-References: <20181101213500.21800-1-nicoleotsuka@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vtd: Fix NULL pointer dereference in prq_event_thread()
+Date: Mon,  5 Nov 2018 10:18:58 +0800
+Message-ID: <20181105021858.16958-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181101213500.21800-1-nicoleotsuka@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Sohil Mehta <sohil.mehta@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 01, 2018 at 02:35:00PM -0700, Nicolin Chen wrote:
-> The __GFP_ZERO will be passed down to the generic page allocation
-> routine which zeros everything page by page. This is safe to be a
-> generic way but not efficient for iommu allocation that organizes
-> contiguous pages using scatterlist.
-> 
-> So this changes drops __GFP_ZERO from the flag, and adds a manual
-> memset after page/sg allocations, using the length of scatterlist.
-> 
-> My test result of a 2.5MB size allocation shows iommu_dma_alloc()
-> takes 46% less time, reduced from averagely 925 usec to 500 usec.
+When handling page request without pasid event, go to "no_pasid"
+branch instead of "bad_req". Otherwise, a NULL pointer deference
+will happen there.
 
-And in what case does dma_alloc_* performance even matter?
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Sohil Mehta <sohil.mehta@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel-svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index db301efe126d..887150907526 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -595,7 +595,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 			pr_err("%s: Page request without PASID: %08llx %08llx\n",
+ 			       iommu->name, ((unsigned long long *)req)[0],
+ 			       ((unsigned long long *)req)[1]);
+-			goto bad_req;
++			goto no_pasid;
+ 		}
+ 
+ 		if (!svm || svm->pasid != req->pasid) {
+-- 
+2.17.1
