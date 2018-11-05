@@ -1,142 +1,88 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 12/12] iommu/vt-d: Remove deferred invalidation
-Date: Mon,  5 Nov 2018 13:31:51 +0800
-Message-ID: <20181105053151.7173-13-baolu.lu@linux.intel.com>
-References: <20181105053151.7173-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181105053151.7173-1-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/vtd: Fix NULL pointer dereference in
+	prq_event_thread()
+Date: Mon, 5 Nov 2018 13:44:44 +0800
+Message-ID: <f35802b2-124f-ff54-5be3-a1fb99b2b2c6@linux.intel.com>
+References: <20181105021858.16958-1-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439D5DF53@SHSMSX104.ccr.corp.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D5DF53-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Deferred invalidation is an ECS specific feature. It will not be
-supported when IOMMU works in scalable mode. As we deprecated the
-ECS support, remove deferred invalidation and cleanup the code.
+Hi Yi,
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
----
- drivers/iommu/intel-iommu.c |  1 -
- drivers/iommu/intel-svm.c   | 45 -------------------------------------
- include/linux/intel-iommu.h |  8 -------
- 3 files changed, 54 deletions(-)
+On 11/5/18 1:21 PM, Liu, Yi L wrote:
+> Hi Baolu,
+> 
+>> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+>> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Lu Baolu
+>> Sent: Monday, November 5, 2018 10:19 AM
+>> To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+>> Cc: Raj, Ashok <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> Subject: [PATCH 1/1] iommu/vtd: Fix NULL pointer dereference in prq_event_thread()
+>>
+>> When handling page request without pasid event, go to "no_pasid"
+>> branch instead of "bad_req". Otherwise, a NULL pointer deference will happen there.
+>>
+>> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> ---
+>>   drivers/iommu/intel-svm.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c index
+>> db301efe126d..887150907526 100644
+>> --- a/drivers/iommu/intel-svm.c
+>> +++ b/drivers/iommu/intel-svm.c
+>> @@ -595,7 +595,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+>>   			pr_err("%s: Page request without PASID: %08llx %08llx\n",
+>>   			       iommu->name, ((unsigned long long *)req)[0],
+>>   			       ((unsigned long long *)req)[1]);
+>> -			goto bad_req;
+>> +			goto no_pasid;
+>>   		}
+>>
+>>   		if (!svm || svm->pasid != req->pasid) {
+>> --
+> 
+> I'm afraid it is still necessary to goto "bad_req". The following code behind
+> "bad_req" will trigger fault_cb registered by in-kernel drivers. It is reasonable
+> that PRQ without PASID can be handled by such callbacks. So I would suggest
+> to keep the existing logic.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3c3a882964a0..5e149d26ea9b 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1697,7 +1697,6 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	if (pasid_supported(iommu)) {
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
--		intel_svm_exit(iommu);
- 	}
- #endif
- }
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 4187a91592c1..27cf1963207d 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -31,15 +31,8 @@
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--struct pasid_state_entry {
--	u64 val;
--};
--
- int intel_svm_init(struct intel_iommu *iommu)
- {
--	struct page *pages;
--	int order;
--
- 	if (cpu_feature_enabled(X86_FEATURE_GBPAGES) &&
- 			!cap_fl1gp_support(iommu->cap))
- 		return -EINVAL;
-@@ -48,39 +41,6 @@ int intel_svm_init(struct intel_iommu *iommu)
- 			!cap_5lp_support(iommu->cap))
- 		return -EINVAL;
- 
--	/* Start at 2 because it's defined as 2^(1+PSS) */
--	iommu->pasid_max = 2 << ecap_pss(iommu->ecap);
--
--	/* Eventually I'm promised we will get a multi-level PASID table
--	 * and it won't have to be physically contiguous. Until then,
--	 * limit the size because 8MiB contiguous allocations can be hard
--	 * to come by. The limit of 0x20000, which is 1MiB for each of
--	 * the PASID and PASID-state tables, is somewhat arbitrary. */
--	if (iommu->pasid_max > 0x20000)
--		iommu->pasid_max = 0x20000;
--
--	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--	if (ecap_dis(iommu->ecap)) {
--		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
--		if (pages)
--			iommu->pasid_state_table = page_address(pages);
--		else
--			pr_warn("IOMMU: %s: Failed to allocate PASID state table\n",
--				iommu->name);
--	}
--
--	return 0;
--}
--
--int intel_svm_exit(struct intel_iommu *iommu)
--{
--	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--
--	if (iommu->pasid_state_table) {
--		free_pages((unsigned long)iommu->pasid_state_table, order);
--		iommu->pasid_state_table = NULL;
--	}
--
- 	return 0;
- }
- 
-@@ -214,11 +174,6 @@ static void intel_flush_svm_range(struct intel_svm *svm, unsigned long address,
- {
- 	struct intel_svm_dev *sdev;
- 
--	/* Try deferred invalidate if available */
--	if (svm->iommu->pasid_state_table &&
--	    !cmpxchg64(&svm->iommu->pasid_state_table[svm->pasid].val, 0, 1ULL << 63))
--		return;
--
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(sdev, &svm->devs, list)
- 		intel_flush_svm_range_dev(svm, sdev, address, pages, ih, gl);
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index b3f7cabdf6d7..d174724e131f 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -522,15 +522,8 @@ struct intel_iommu {
- 	struct iommu_flush flush;
- #endif
- #ifdef CONFIG_INTEL_IOMMU_SVM
--	/* These are large and need to be contiguous, so we allocate just
--	 * one for now. We'll maybe want to rethink that if we truly give
--	 * devices away to userspace processes (e.g. for DPDK) and don't
--	 * want to trust that userspace will use *only* the PASID it was
--	 * told to. But while it's all driver-arbitrated, we're fine. */
--	struct pasid_state_entry *pasid_state_table;
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
--	u32 pasid_max;
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
-@@ -644,7 +637,6 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu);
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
- int intel_svm_init(struct intel_iommu *iommu);
--int intel_svm_exit(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
- 
--- 
-2.17.1
+A page fault without a pasid is triggered by a DMA transfer without
+PASID. It doesn't relate to the SVM functionality hence there's no
+@svm or @sdev related to it. It's unnecessary to report it to the
+drivers as far as I can see.
+
+Best regards,
+Lu Baolu
+
+> 
+>                  if (sdev && sdev->ops && sdev->ops->fault_cb) {
+>                          int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
+>                                   (req->exe_req << 1) | (req->priv_req);
+>                          sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
+>                   }
+> 
+> Thanks,
+> Yi Liu
+> 
