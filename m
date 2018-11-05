@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v4 2/8] iommu/vt-d: Add multiple domains per device query
-Date: Mon,  5 Nov 2018 15:34:02 +0800
-Message-ID: <20181105073408.21815-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 3/8] iommu/vt-d: Enable/disable multiple domains per device
+Date: Mon,  5 Nov 2018 15:34:03 +0800
+Message-ID: <20181105073408.21815-4-baolu.lu@linux.intel.com>
 References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181105073408.21815-1-baolu.lu@linux.intel.com>
@@ -10,8 +10,8 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex 
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add the response to IOMMU_DEV_ATTR_AUXD_CAPABILITY capability query
-through iommu_get_dev_attr().
+Add iommu ops for enabling and disabling multiple domains per
+device.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -19,52 +19,39 @@ Cc: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 38 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ drivers/iommu/intel-iommu.c | 65 ++++++++++++++++++++++++++++++++++++-
+ include/linux/intel-iommu.h |  1 +
+ 2 files changed, 65 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5e149d26ea9b..298f7a3fafe8 100644
+index 298f7a3fafe8..2c86ac71c774 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -5167,6 +5167,24 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
- 	return phys;
- }
+@@ -2476,6 +2476,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	info->domain = domain;
+ 	info->iommu = iommu;
+ 	info->pasid_table = NULL;
++	info->auxd_enabled = 0;
  
-+static inline bool scalable_mode_support(void)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	bool ret = true;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!sm_supported(iommu)) {
-+			ret = false;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
- static bool intel_iommu_capable(enum iommu_cap cap)
+ 	if (dev && dev_is_pci(dev)) {
+ 		struct pci_dev *pdev = to_pci_dev(info->dev);
+@@ -5353,13 +5354,74 @@ static int intel_iommu_get_dev_attr(struct device *dev,
+ 				    enum iommu_dev_attr attr, void *data)
  {
- 	if (cap == IOMMU_CAP_CACHE_COHERENCY)
-@@ -5331,6 +5349,25 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
- }
- #endif /* CONFIG_INTEL_IOMMU_SVM */
+ 	int ret = 0;
+-	bool *auxd_capable;
++	struct device_domain_info *info;
++	bool *auxd_capable, *auxd_enabled;
  
-+static int intel_iommu_get_dev_attr(struct device *dev,
-+				    enum iommu_dev_attr attr, void *data)
-+{
-+	int ret = 0;
-+	bool *auxd_capable;
-+
-+	switch (attr) {
-+	case IOMMU_DEV_ATTR_AUXD_CAPABILITY:
-+		auxd_capable = data;
-+		*auxd_capable = scalable_mode_support();
+ 	switch (attr) {
+ 	case IOMMU_DEV_ATTR_AUXD_CAPABILITY:
+ 		auxd_capable = data;
+ 		*auxd_capable = scalable_mode_support();
+ 		break;
++	case IOMMU_DEV_ATTR_AUXD_ENABLED:
++		auxd_enabled = data;
++		info = dev->archdata.iommu;
++		*auxd_enabled = info && info->auxd_enabled;
 +		break;
 +	default:
 +		ret = -EINVAL;
@@ -74,16 +61,75 @@ index 5e149d26ea9b..298f7a3fafe8 100644
 +	return ret;
 +}
 +
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -5345,6 +5382,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
++static int intel_iommu_enable_auxd(struct device *dev)
++{
++	struct device_domain_info *info;
++	struct dmar_domain *domain;
++	unsigned long flags;
++
++	if (!scalable_mode_support())
++		return -ENODEV;
++
++	domain = get_valid_domain_for_dev(dev);
++	if (!domain)
++		return -ENODEV;
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	info = dev->archdata.iommu;
++	info->auxd_enabled = 1;
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	return 0;
++}
++
++static int intel_iommu_disable_auxd(struct device *dev)
++{
++	struct device_domain_info *info;
++	unsigned long flags;
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	info = dev->archdata.iommu;
++	if (!WARN_ON(!info))
++		info->auxd_enabled = 0;
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	return 0;
++}
++
++static int intel_iommu_set_dev_attr(struct device *dev,
++				    enum iommu_dev_attr attr, void *data)
++{
++	int ret = 0;
++
++	switch (attr) {
++	case IOMMU_DEV_ATTR_AUXD_ENABLE:
++		ret = intel_iommu_enable_auxd(dev);
++		break;
++	case IOMMU_DEV_ATTR_AUXD_DISABLE:
++		ret = intel_iommu_disable_auxd(dev);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -5383,6 +5445,7 @@ const struct iommu_ops intel_iommu_ops = {
  	.put_resv_regions	= intel_iommu_put_resv_regions,
  	.device_group		= pci_device_group,
-+	.get_dev_attr		= intel_iommu_get_dev_attr,
+ 	.get_dev_attr		= intel_iommu_get_dev_attr,
++	.set_dev_attr		= intel_iommu_set_dev_attr,
  	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
  };
  
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index d174724e131f..6b198e13e75e 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -552,6 +552,7 @@ struct device_domain_info {
+ 	u8 pri_enabled:1;
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
++	u8 auxd_enabled:1;	/* Multiple domains per device */
+ 	u8 ats_qdep;
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+ 	struct intel_iommu *iommu; /* IOMMU used by this device */
 -- 
 2.17.1
