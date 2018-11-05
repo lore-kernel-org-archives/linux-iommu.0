@@ -1,41 +1,51 @@
-From: Guo Ren <ren_guo@c-sky.com>
-Subject: Re: [PATCH 8/9] csky: don't use GFP_DMA in atomic_pool_init
-Date: Mon, 5 Nov 2018 23:47:50 +0800
-Message-ID: <20181105154750.GB25126@guoren-Inspiron-7460>
-References: <20181105121931.13481-1-hch@lst.de>
- <20181105121931.13481-9-hch@lst.de>
+From: Paul Burton <paul.burton@mips.com>
+Subject: Re: [PATCH] MIPS: Fix `dma_alloc_coherent' returning a non-coherent
+ allocation
+Date: Mon, 5 Nov 2018 18:10:38 +0000
+Message-ID: <20181105181037.m2hxoosf7z2bz7lu@pburton-laptop>
+References: <20180914095808.22202-1-hch@lst.de>
+ <20180914095808.22202-5-hch@lst.de>
+ <alpine.LFD.2.21.1810311414200.20378@eddie.linux-mips.org>
+ <alpine.LFD.2.21.1810311559590.20378@eddie.linux-mips.org>
+ <20181031203206.GA28337@lst.de>
+ <alpine.LFD.2.21.1810312043250.20378@eddie.linux-mips.org>
+ <20181101051359.GA4164@lst.de>
+ <alpine.LFD.2.21.1811010523440.20378@eddie.linux-mips.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181105121931.13481-9-hch@lst.de>
+In-Reply-To: <alpine.LFD.2.21.1811010523440.20378@eddie.linux-mips.org>
+Content-Language: en-US
+Content-ID: <A5FB772CC972D748A869B1B81057D179@namprd22.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: "Maciej W. Rozycki" <macro@linux-mips.org>
+Cc: Christoph Hellwig <hch@lst.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "linux-mips@linux-mips.org" <linux-mips@linux-mips.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 05, 2018 at 01:19:30PM +0100, Christoph Hellwig wrote:
-> csky does not implement ZONE_DMA, which means passing GFP_DMA is a no-op.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/csky/mm/dma-mapping.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/csky/mm/dma-mapping.c b/arch/csky/mm/dma-mapping.c
-> index 85437b21e045..ad4046939713 100644
-> --- a/arch/csky/mm/dma-mapping.c
-> +++ b/arch/csky/mm/dma-mapping.c
-> @@ -35,7 +35,7 @@ static int __init atomic_pool_init(void)
->  	if (!atomic_pool)
->  		BUG();
->  
-> -	page = alloc_pages(GFP_KERNEL | GFP_DMA, get_order(size));
-> +	page = alloc_pages(GFP_KERNEL, get_order(size));
->  	if (!page)
->  		BUG();
->  
-> -- 
-> 2.19.1
+Hi Maciej,
 
-Acked-by: Guo Ren <ren_guo@c-sky.com>
+On Thu, Nov 01, 2018 at 07:54:24AM +0000, Maciej W. Rozycki wrote:
+> Fix a MIPS `dma_alloc_coherent' regression from commit bc3ec75de545=20
+> ("dma-mapping: merge direct and noncoherent ops") that causes a cached=20
+> allocation to be returned on noncoherent cache systems.
+>=20
+> This is due to an inverted check now used in the MIPS implementation of=20
+> `arch_dma_alloc' on the result from `dma_direct_alloc_pages' before=20
+> doing the cached-to-uncached mapping of the allocation address obtained. =
+=20
+> The mapping has to be done for a non-NULL rather than NULL result,=20
+> because a NULL result means the allocation has failed.
+>=20
+> Invert the check for correct operation then.
+>=20
+> Signed-off-by: Maciej W. Rozycki <macro@linux-mips.org>
+> Fixes: bc3ec75de545 ("dma-mapping: merge direct and noncoherent ops")
+> Cc: stable@vger.kernel.org # 4.19+
+> ---
+>  arch/mips/mm/dma-noncoherent.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Thanks, nice catch! Applied to mips-fixes.
+
+Paul
