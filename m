@@ -1,26 +1,32 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v4 6/8] vfio/mdev: Add iommu place holders in mdev_device
-Date: Mon, 5 Nov 2018 06:51:53 -0800
-Message-ID: <20181105145153.GA24925@infradead.org>
-References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
-	<20181105073408.21815-7-baolu.lu@linux.intel.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH] iommu/dma: Zero pages manually in a length of scatterlist
+Date: Mon, 5 Nov 2018 06:58:47 -0800
+Message-ID: <20181105145847.GA31337@infradead.org>
+References: <20181101213500.21800-1-nicoleotsuka@gmail.com>
+ <63184c22-4587-be2b-8089-d2e4e0b5482d@arm.com>
+ <20181102233613.GA26856@Asurada-Nvidia.nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181105073408.21815-7-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+In-Reply-To: <20181102233613.GA26856@Asurada-Nvidia.nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolin Chen <nicoleotsuka@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Please use EXPORT_SYMBOL_GPL like most of the vfio code.
+On Fri, Nov 02, 2018 at 04:36:13PM -0700, Nicolin Chen wrote:
+> > What if the pages came from highmem? I know that doesn't happen on arm64
+> > today, but the point of this code *is* to be generic, and other users will
+> > arrive eventually.
+> 
+> Hmm, so it probably should use sg_miter_start/stop() too? Looking
+> at the flush routine doing in PAGE_SIZE for each iteration, would
+> be possible to map and memset contiguous pages together? Actually
+> the flush routine might be also optimized if we can map contiguous
+> pages.
+
+FYI, I have patches I plan to submit soon that gets rid of the
+struct scatterlist use in this code to simplify it:
+
+http://git.infradead.org/users/hch/misc.git/commitdiff/84e837fc3248b513f73adde49e04e7c58f605113
