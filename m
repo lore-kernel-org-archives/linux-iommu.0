@@ -1,141 +1,79 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: Zero pages manually in a length of scatterlist
-Date: Tue, 6 Nov 2018 18:27:39 +0000
-Message-ID: <d232ee7a-40de-5b32-39ab-222b773e9bb2@arm.com>
-References: <20181101213500.21800-1-nicoleotsuka@gmail.com>
- <63184c22-4587-be2b-8089-d2e4e0b5482d@arm.com>
- <20181102233613.GA26856@Asurada-Nvidia.nvidia.com>
+From: Aaro Koskinen <aaro.koskinen@iki.fi>
+Subject: Re: [PATCH] of/device: Really only set bus DMA mask when appropriate
+Date: Tue, 6 Nov 2018 21:16:56 +0200
+Message-ID: <20181106191655.GB14958@darkstar.musicnaut.iki.fi>
+References: <b06321ac25a1211e572e650a630e5e1aa9f8173f.1541504601.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181102233613.GA26856@Asurada-Nvidia.nvidia.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <b06321ac25a1211e572e650a630e5e1aa9f8173f.1541504601.git.robin.murphy@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: devicetree@vger.kernel.org, linux-mips@linux-mips.org, jean-philippe.brucker@arm.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org, john.stultz@linaro.org, hch@lst.de, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/11/2018 23:36, Nicolin Chen wrote:
-> On Fri, Nov 02, 2018 at 04:54:07PM +0000, Robin Murphy wrote:
->> On 01/11/2018 21:35, Nicolin Chen wrote:
->>> The __GFP_ZERO will be passed down to the generic page allocation
->>> routine which zeros everything page by page. This is safe to be a
->>> generic way but not efficient for iommu allocation that organizes
->>> contiguous pages using scatterlist.
->>>
->>> So this changes drops __GFP_ZERO from the flag, and adds a manual
->>> memset after page/sg allocations, using the length of scatterlist.
->>>
->>> My test result of a 2.5MB size allocation shows iommu_dma_alloc()
->>> takes 46% less time, reduced from averagely 925 usec to 500 usec.
->>
->> Assuming this is for arm64, I'm somewhat surprised that memset() could be
->> that much faster than clear_page(), since they should effectively amount to
->> the same thing (a DC ZVA loop). What hardware is this on? Profiling to try
+Hi,
+
+On Tue, Nov 06, 2018 at 11:54:15AM +0000, Robin Murphy wrote:
+> of_dma_configure() was *supposed* to be following the same logic as
+> acpi_dma_configure() and only setting bus_dma_mask if some range was
+> specified by the firmware. However, it seems that subtlety got lost in
+> the process of fitting it into the differently-shaped control flow, and
+> as a result the force_dma==true case ends up always setting the bus mask
+> to the 32-bit default, which is not what anyone wants.
 > 
-> I am running with tegra186-p2771-0000.dtb so it's arm64 yes.
+> Make sure we only touch it if the DT actually said so.
 > 
->> and see exactly where the extra time goes would be interesting too.
+> Fixes: 6c2fb2ea7636 ("of/device: Set bus DMA mask as appropriate")
+> Reported-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+> Reported-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+
+Tested-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+
+This fixes the MMC driver DMA mask issue on OCTEON.
+
+Thanks,
+
+A.
+
+> ---
 > 
-> I re-ran the test to get some accuracy within the function and got:
-> 1) pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
->     // reduced from 422 usec to 56 usec == 366 usec less
-> 2) if (!(prot & IOMMU_CACHE)) {...}	//flush routine
->     // reduced from 439 usec to 236 usec == 203 usec less
-> Note: new memset takes about 164 usec, resulting in 400 usec diff
->        for the entire iommu_dma_alloc() function call.
+> Sorry about that... I guess I only have test setups that either have
+> dma-ranges or where a 32-bit bus mask goes unnoticed :(
 > 
-> It looks like this might be more than the diff between clear_page
-> and memset, and might be related to mapping and cache. Any idea?
-
-Hmm, I guess it might not be so much clear_page() itself as all the 
-gubbins involved in getting there from prep_new_page(). I could perhaps 
-make some vague guesses about how the A57 cores might get tickled by the 
-different code patterns, but the Denver cores are well beyond my ability 
-to reason about. Out of even further curiosity, how does the quick hack 
-below compare?
-
->>> @@ -568,6 +571,15 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->>>    	if (attrs & DMA_ATTR_ALLOC_SINGLE_PAGES)
->>>    		alloc_sizes = min_size;
->>> +	/*
->>> +	 * The generic zeroing in a length of one page size is slow,
->>> +	 * so do it manually in a length of scatterlist size instead
->>> +	 */
->>> +	if (gfp & __GFP_ZERO) {
->>> +		gfp &= ~__GFP_ZERO;
->>> +		gfp_zero = true;
->>> +	}
->>
->> Or just mask it out in __iommu_dma_alloc_pages()?
+> The Octeon and SMMU issues sound like they're purely down to this, and
+> it's probably related to at least one of John's Hikey woes.
 > 
-> Yea, the change here would be neater then.
+> Robin.
 > 
->>> @@ -581,6 +593,12 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->>>    	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
->>>    		goto out_free_iova;
->>> +	if (gfp_zero) {
->>> +		/* Now zero all the pages in the scatterlist */
->>> +		for_each_sg(sgt.sgl, s, sgt.orig_nents, i)
->>> +			memset(sg_virt(s), 0, s->length);
->>
->> What if the pages came from highmem? I know that doesn't happen on arm64
->> today, but the point of this code *is* to be generic, and other users will
->> arrive eventually.
+>  drivers/of/device.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> Hmm, so it probably should use sg_miter_start/stop() too? Looking
-> at the flush routine doing in PAGE_SIZE for each iteration, would
-> be possible to map and memset contiguous pages together? Actually
-> the flush routine might be also optimized if we can map contiguous
-> pages.
-
-I suppose the ideal point at which to do it would be after the remapping 
-when we have the entire buffer contiguous in vmalloc space and can make 
-best use of prefetchers etc. - DMA_ATTR_NO_KERNEL_MAPPING is a bit of a 
-spanner in the works, but we could probably accommodate a special case 
-for that. As Christoph points out, this isn't really the place to be 
-looking for performance anyway (unless it's pathologically bad as per 
-the DMA_ATTR_ALLOC_SINGLE_PAGES fun), but if we're looking at pulling 
-the remapping out of the arch code, maybe we could aim to rework the 
-zeroing completely as part of that.
-
-Robin.
-
------>8-----
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b04753b204..7d28db3bf4bf 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -569,7 +569,7 @@ struct page **iommu_dma_alloc(struct device *dev, 
-size_t size, gfp_t gfp,
-  		alloc_sizes = min_size;
-
-  	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
-+	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp 
-& ~__GFP_ZERO);
-  	if (!pages)
-  		return NULL;
-
-@@ -581,15 +581,18 @@ struct page **iommu_dma_alloc(struct device *dev, 
-size_t size, gfp_t gfp,
-  	if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
-  		goto out_free_iova;
-
--	if (!(prot & IOMMU_CACHE)) {
-+	{
-  		struct sg_mapping_iter miter;
-  		/*
-  		 * The CPU-centric flushing implied by SG_MITER_TO_SG isn't
-  		 * sufficient here, so skip it by using the "wrong" direction.
-  		 */
-  		sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
--		while (sg_miter_next(&miter))
-+		while (sg_miter_next(&miter)) {
-+			clear_page(miter.addr);
-+			if (!(prot & IOMMU_CACHE))
-  			flush_page(dev, miter.addr, page_to_phys(miter.page));
-+		}
-  		sg_miter_stop(&miter);
-  	}
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 0f27fad9fe94..757ae867674f 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -149,7 +149,8 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
+>  	 * set by the driver.
+>  	 */
+>  	mask = DMA_BIT_MASK(ilog2(dma_addr + size - 1) + 1);
+> -	dev->bus_dma_mask = mask;
+> +	if (!ret)
+> +		dev->bus_dma_mask = mask;
+>  	dev->coherent_dma_mask &= mask;
+>  	*dev->dma_mask &= mask;
+>  
+> -- 
+> 2.19.1.dirty
+> 
