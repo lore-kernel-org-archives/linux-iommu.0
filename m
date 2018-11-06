@@ -1,218 +1,92 @@
-From: Guo Ren <ren_guo@c-sky.com>
-Subject: Re: [PATCH 9/9] csky: use the generic remapping dma alloc
- implementation
-Date: Tue, 6 Nov 2018 15:01:41 +0800
-Message-ID: <20181106070140.GA6232@guoren-Inspiron-7460>
-References: <20181105121931.13481-1-hch@lst.de>
- <20181105121931.13481-10-hch@lst.de>
+From: James Sewart via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
+Date: Tue, 6 Nov 2018 10:40:04 +0000
+Message-ID: <CALwnD_qUhQu-fwOObth-DWzSNoARZ_ERuNwyS8r73C0yhw7jGQ@mail.gmail.com>
+References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
+	<5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
+Reply-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181105121931.13481-10-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5695aa18-3248-b611-a286-111de7e5a8f5-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 05, 2018 at 01:19:31PM +0100, Christoph Hellwig wrote:
-> The csky code was largely copied from arm/arm64, so switch to the
-> generic arm64-based implementation instead.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/csky/Kconfig          |   2 +-
->  arch/csky/mm/dma-mapping.c | 142 +------------------------------------
->  2 files changed, 3 insertions(+), 141 deletions(-)
-> 
-> diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-> index c0cf8e948821..ea74f3a9eeaf 100644
-> --- a/arch/csky/Kconfig
-> +++ b/arch/csky/Kconfig
-> @@ -8,7 +8,7 @@ config CSKY
->  	select CLKSRC_MMIO
->  	select CLKSRC_OF
->  	select DMA_DIRECT_OPS
-> -	select DMA_REMAP
-> +	select DMA_DIRECT_REMAP
->  	select IRQ_DOMAIN
->  	select HANDLE_DOMAIN_IRQ
->  	select DW_APB_TIMER_OF
-> diff --git a/arch/csky/mm/dma-mapping.c b/arch/csky/mm/dma-mapping.c
-> index ad4046939713..80783bb71c5c 100644
-> --- a/arch/csky/mm/dma-mapping.c
-> +++ b/arch/csky/mm/dma-mapping.c
-> @@ -14,73 +14,13 @@
->  #include <linux/version.h>
->  #include <asm/cache.h>
->  
-> -static struct gen_pool *atomic_pool;
-> -static size_t atomic_pool_size __initdata = SZ_256K;
-> -
-> -static int __init early_coherent_pool(char *p)
-> -{
-> -	atomic_pool_size = memparse(p, &p);
-> -	return 0;
-> -}
-> -early_param("coherent_pool", early_coherent_pool);
-> -
->  static int __init atomic_pool_init(void)
->  {
-> -	struct page *page;
-> -	size_t size = atomic_pool_size;
-> -	void *ptr;
-> -	int ret;
-> -
-> -	atomic_pool = gen_pool_create(PAGE_SHIFT, -1);
-> -	if (!atomic_pool)
-> -		BUG();
-> -
-> -	page = alloc_pages(GFP_KERNEL, get_order(size));
-> -	if (!page)
-> -		BUG();
-> -
-> -	ptr = dma_common_contiguous_remap(page, size, VM_ALLOC,
-> -					  pgprot_noncached(PAGE_KERNEL),
-> -					  __builtin_return_address(0));
-> -	if (!ptr)
-> -		BUG();
-> -
-> -	ret = gen_pool_add_virt(atomic_pool, (unsigned long)ptr,
-> -				page_to_phys(page), atomic_pool_size, -1);
-> -	if (ret)
-> -		BUG();
-> -
-> -	gen_pool_set_algo(atomic_pool, gen_pool_first_fit_order_align, NULL);
-> -
-> -	pr_info("DMA: preallocated %zu KiB pool for atomic coherent pool\n",
-> -		atomic_pool_size / 1024);
-> -
-> -	pr_info("DMA: vaddr: 0x%x phy: 0x%lx,\n", (unsigned int)ptr,
-> -		page_to_phys(page));
-> -
-> -	return 0;
-> +	return dma_atomic_pool_init(GFP_KERNEL, pgprot_noncached(PAGE_KERNEL));
->  }
->  postcore_initcall(atomic_pool_init);
-Seems also could remove atomic_pool_init from csky, why not put them in
-common?
-
->  
-> -static void *csky_dma_alloc_atomic(struct device *dev, size_t size,
-> -				   dma_addr_t *dma_handle)
-> -{
-> -	unsigned long addr;
-> -
-> -	addr = gen_pool_alloc(atomic_pool, size);
-> -	if (addr)
-> -		*dma_handle = gen_pool_virt_to_phys(atomic_pool, addr);
-> -
-> -	return (void *)addr;
-> -}
-> -
-> -static void csky_dma_free_atomic(struct device *dev, size_t size, void *vaddr,
-> -				 dma_addr_t dma_handle, unsigned long attrs)
-> -{
-> -	gen_pool_free(atomic_pool, (unsigned long)vaddr, size);
-> -}
-> -
-> -static void __dma_clear_buffer(struct page *page, size_t size)
-> +void arch_dma_prep_coherent(struct page *page, size_t size)
->  {
->  	if (PageHighMem(page)) {
->  		unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> @@ -107,84 +47,6 @@ static void __dma_clear_buffer(struct page *page, size_t size)
->  	}
->  }
->  
-> -static void *csky_dma_alloc_nonatomic(struct device *dev, size_t size,
-> -				      dma_addr_t *dma_handle, gfp_t gfp,
-> -				      unsigned long attrs)
-> -{
-> -	void  *vaddr;
-> -	struct page *page;
-> -	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -
-> -	if (DMA_ATTR_NON_CONSISTENT & attrs) {
-> -		pr_err("csky %s can't support DMA_ATTR_NON_CONSISTENT.\n", __func__);
-> -		return NULL;
-> -	}
-> -
-> -	if (IS_ENABLED(CONFIG_DMA_CMA))
-> -		page = dma_alloc_from_contiguous(dev, count, get_order(size),
-> -						 gfp);
-> -	else
-> -		page = alloc_pages(gfp, get_order(size));
-> -
-> -	if (!page) {
-> -		pr_err("csky %s no more free pages.\n", __func__);
-> -		return NULL;
-> -	}
-> -
-> -	*dma_handle = page_to_phys(page);
-> -
-> -	__dma_clear_buffer(page, size);
-> -
-> -	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
-> -		return page;
-> -
-> -	vaddr = dma_common_contiguous_remap(page, PAGE_ALIGN(size), VM_USERMAP,
-> -		pgprot_noncached(PAGE_KERNEL), __builtin_return_address(0));
-> -	if (!vaddr)
-> -		BUG();
-> -
-> -	return vaddr;
-> -}
-> -
-> -static void csky_dma_free_nonatomic(
-> -	struct device *dev,
-> -	size_t size,
-> -	void *vaddr,
-> -	dma_addr_t dma_handle,
-> -	unsigned long attrs
-> -	)
-> -{
-> -	struct page *page = phys_to_page(dma_handle);
-> -	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -
-> -	if ((unsigned int)vaddr >= VMALLOC_START)
-> -		dma_common_free_remap(vaddr, size, VM_USERMAP);
-> -
-> -	if (IS_ENABLED(CONFIG_DMA_CMA))
-> -		dma_release_from_contiguous(dev, page, count);
-> -	else
-> -		__free_pages(page, get_order(size));
-> -}
-> -
-> -void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> -		     gfp_t gfp, unsigned long attrs)
-> -{
-> -	if (gfpflags_allow_blocking(gfp))
-> -		return csky_dma_alloc_nonatomic(dev, size, dma_handle, gfp,
-> -						attrs);
-> -	else
-> -		return csky_dma_alloc_atomic(dev, size, dma_handle);
-> -}
-> -
-> -void arch_dma_free(struct device *dev, size_t size, void *vaddr,
-> -		   dma_addr_t dma_handle, unsigned long attrs)
-> -{
-> -	if (!addr_in_gen_pool(atomic_pool, (unsigned int) vaddr, size))
-> -		csky_dma_free_nonatomic(dev, size, vaddr, dma_handle, attrs);
-> -	else
-> -		csky_dma_free_atomic(dev, size, vaddr, dma_handle, attrs);
-> -}
-> -
->  static inline void cache_op(phys_addr_t paddr, size_t size,
->  			    void (*fn)(unsigned long start, unsigned long end))
->  {
-> -- 
-> 2.19.1
-
-Reviewed-by: Guo Ren <ren_guo@c-sky.com>
-
-Compile is OK, qemu boot OK. Functions are the same and just move to common.
-
-Looks good for me.
-
- Guo Ren
+SGV5IEx1LAoKV291bGQgeW91IGJlIGFibGUgdG8gZ28gaW50byBtb3JlIGRldGFpbCBhYm91dCB0
+aGUgaXNzdWVzIHdpdGgKYWxsb3dpbmcgSU9NTVVfRE9NQUlOX0RNQSB0byBiZSBhbGxvY2F0ZWQg
+dmlhIGRvbWFpbl9hbGxvYz8KCgpDaGVlcnMsCkphbWVzLgpPbiBGcmksIE5vdiAyLCAyMDE4IGF0
+IDI6NDMgQU0gTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4gd3JvdGU6Cj4KPiBI
+aSwKPgo+IE9uIDEwLzMwLzE4IDEwOjE4IFBNLCBKYW1lcyBTZXdhcnQgdmlhIGlvbW11IHdyb3Rl
+Ogo+ID4gSGV5LAo+ID4KPiA+IEnigJl2ZSBiZWVuIGludmVzdGlnYXRpbmcgdGhlIHJlbGF0aW9u
+c2hpcCBiZXR3ZWVuIGlvbW11IGdyb3VwcyBhbmQgZG9tYWlucwo+ID4gb24gb3VyIHN5c3RlbXMg
+YW5kIGhhdmUgYSBmZXcgcXVlc3Rpb24uIFdoeSBkb2VzIHRoZSBpbnRlbCBpb21tdSBjb2RlIG5v
+dAo+ID4gYWxsb3cgYWxsb2NhdGluZyBJT01NVV9ET01BSU5fRE1BPyBSZXR1cm5pbmcgTlVMTCB3
+aGVuIGdpdmVuIHRoaXMgZG9tYWluCj4gPiB0eXBlIGhhcyB0aGUgc2lkZSBlZmZlY3QgdGhhdCB0
+aGUgZGVmYXVsdF9kb21haW4gZm9yIGFuIGlvbW11IGdyb3VwIGlzIG5vdAo+ID4gc2V0LCB3aGlj
+aCwgd2hlbiB1c2luZyBmb3IgZS5nLiBkbWFfbWFwX29wcy5tYXBfcGFnZSwgbWVhbnMgYSBkb21h
+aW4gaXMKPiA+IGFsbG9jYXRlZCBwZXIgZGV2aWNlLgo+Cj4gSW50ZWwgdnQtZCBkcml2ZXIgZG9l
+c24ndCBpbXBsZW1lbnQgdGhlIGRlZmF1bHQgZG9tYWluIGFuZCBhbGxvY2F0ZXMKPiBkb21haW4g
+b25seSBvbiBkZW1hbmRlZC4gVGhlcmUgYXJlIGxvdHMgb2YgdGhpbmdzIHRvIGRvIGJlZm9yZSB3
+ZSBhbGxvdwo+IGlvbW11IEFQSSB0byBhbGxvY2F0ZSBkb21haW5zIG90aGVyIHRoYW4gSU9NTVVf
+RE9NQUlOX1VOTUFOQUdFRC4KPgo+IEJlc3QgcmVnYXJkcywKPiBMdSBCYW9sdQo+Cj4gPgo+ID4g
+VGhpcyBzZWVtcyB0byBiZSB0aGUgb3Bwb3NpdGUgYmVoYXZpb3VyIHRvIHRoZSBBTUQgaW9tbXUg
+Y29kZSB3aGljaAo+ID4gc3VwcG9ydHMgYWxsb2NhdGluZyBhbiBJT01NVV9ET01BSU5fRE1BIGFu
+ZCB3aWxsIG9ubHkgbG9vayB0byB0aGUgaW9tbXUKPiA+IGdyb3VwIGlmIGEgZG9tYWluIGlzIG5v
+dCBhdHRhY2hlZCB0byB0aGUgZGV2aWNlIHJhdGhlciB0aGFuIGFsbG9jYXRpbmcgYQo+ID4gbmV3
+IG9uZS4gT24gQU1EIGV2ZXJ5IGRldmljZSBpbiBhbiBpb21tdSBncm91cCB3aWxsIHNoYXJlIHRo
+ZSBzYW1lIGRvbWFpbi4KPiA+Cj4gPiBBcHBlbmRlZCBpcyB3aGF0IEkgdGhpbmsgYSBwYXRjaCB0
+byBpbXBsZW1lbnQgZG9tYWluX2FsbG9jIGZvcgo+ID4gSU9NTVVfRE9NQUlOX0RNQSBhbmQgYWxz
+byBJT01NVV9ET01BSU5fSURFTlRJVFkgd291bGQgbG9vayBsaWtlLiBUZXN0aW5nCj4gPiBzaG93
+cyBlYWNoIGRldmljZSBpbiBhIGdyb3VwIHdpbGwgc2hhcmUgYSBkb21haW4gYnkgZGVmYXVsdCwg
+aXQgYWxzbwo+ID4gYWxsb3dzIGFsbG9jYXRpbmcgYSBuZXcgZG1hIGRvbWFpbiB0aGF0IGNhbiBi
+ZSBzdWNjZXNzZnVsbHkgYXR0YWNoZWQgdG8gYQo+ID4gZ3JvdXAgd2l0aCBpb21tdV9hdHRhY2hf
+Z3JvdXAuCj4gPgo+ID4gTG9va2luZyBmb3IgY29tbWVudCBvbiB3aHkgdGhlIGJlaGF2aW91ciBp
+cyBob3cgaXQgaXMgY3VycmVudGx5IGFuZCBpZgo+ID4gdGhlcmUgYXJlIGFueSBpc3N1ZXMgd2l0
+aCB0aGUgc29sdXRpb24gSeKAmXZlIGJlZW4gdGVzdGluZy4KPiA+Cj4gPiBDaGVlcnMsCj4gPiBK
+YW1lcy4KPiA+Cj4gPgo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUu
+YyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ID4gaW5kZXggYmZmMmFiZDYuLjNhNTgz
+ODlmIDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4gPiArKysg
+Yi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPiA+IEBAIC01MTcwLDEwICs1MTcwLDE1IEBA
+IHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2ModW5z
+aWduZWQgdHlwZSkKPiA+ICAgICAgIHN0cnVjdCBkbWFyX2RvbWFpbiAqZG1hcl9kb21haW47Cj4g
+PiAgICAgICBzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4gPgo+ID4gLSAgICAgaWYgKHR5
+cGUgIT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkKPiA+ICsgICAgIGlmICh0eXBlID09IElPTU1V
+X0RPTUFJTl9VTk1BTkFHRUQpCj4gPiArICAgICAgICAgICAgIGRtYXJfZG9tYWluID0gYWxsb2Nf
+ZG9tYWluKERPTUFJTl9GTEFHX1ZJUlRVQUxfTUFDSElORSk7Cj4gPiArICAgICBlbHNlIGlmKHR5
+cGUgPT0gSU9NTVVfRE9NQUlOX0RNQSkKPiA+ICsgICAgICAgICAgICAgZG1hcl9kb21haW4gPSBh
+bGxvY19kb21haW4oMCk7Cj4gPiArICAgICBlbHNlIGlmKHR5cGUgPT0gSU9NTVVfRE9NQUlOX0lE
+RU5USVRZKQo+ID4gKyAgICAgICAgICAgICBkbWFyX2RvbWFpbiA9IGFsbG9jX2RvbWFpbihET01B
+SU5fRkxBR19TVEFUSUNfSURFTlRJVFkpOwo+ID4gKyAgICAgZWxzZQo+ID4gICAgICAgICAgICAg
+ICByZXR1cm4gTlVMTDsKPiA+Cj4gPiAtICAgICBkbWFyX2RvbWFpbiA9IGFsbG9jX2RvbWFpbihE
+T01BSU5fRkxBR19WSVJUVUFMX01BQ0hJTkUpOwo+ID4gICAgICAgaWYgKCFkbWFyX2RvbWFpbikg
+ewo+ID4gICAgICAgICAgICAgICBwcl9lcnIoIkNhbid0IGFsbG9jYXRlIGRtYXJfZG9tYWluXG4i
+KTsKPiA+ICAgICAgICAgICAgICAgcmV0dXJuIE5VTEw7Cj4gPiBAQCAtNTE4Niw5ICs1MTkxLDEy
+IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2Mo
+dW5zaWduZWQgdHlwZSkKPiA+ICAgICAgIGRvbWFpbl91cGRhdGVfaW9tbXVfY2FwKGRtYXJfZG9t
+YWluKTsKPiA+Cj4gPiAgICAgICBkb21haW4gPSAmZG1hcl9kb21haW4tPmRvbWFpbjsKPiA+IC0g
+ICAgIGRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSAwOwo+ID4gLSAgICAgZG9tYWlu
+LT5nZW9tZXRyeS5hcGVydHVyZV9lbmQgICA9IF9fRE9NQUlOX01BWF9BRERSKGRtYXJfZG9tYWlu
+LT5nYXcpOwo+ID4gLSAgICAgZG9tYWluLT5nZW9tZXRyeS5mb3JjZV9hcGVydHVyZSA9IHRydWU7
+Cj4gPiArCj4gPiArICAgICBpZiAodHlwZSA9PSBJT01NVV9ET01BSU5fVU5NQU5BR0VEKSB7Cj4g
+PiArICAgICAgICAgICAgIGRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPSAwOwo+ID4g
+KyAgICAgICAgICAgICBkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX2VuZCAgID0gX19ET01BSU5f
+TUFYX0FERFIoZG1hcl9kb21haW4tPmdhdyk7Cj4gPiArICAgICAgICAgICAgIGRvbWFpbi0+Z2Vv
+bWV0cnkuZm9yY2VfYXBlcnR1cmUgPSB0cnVlOwo+ID4gKyAgICAgfQo+ID4KPiA+ICAgICAgIHJl
+dHVybiBkb21haW47Cj4gPiAgIH0KPiA+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCj4gPiBpb21tdSBtYWlsaW5nIGxpc3QKPiA+IGlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCj4gPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcv
+bWFpbG1hbi9saXN0aW5mby9pb21tdQo+ID4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2lvbW11
