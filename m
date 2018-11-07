@@ -1,52 +1,31 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] of/device: Really only set bus DMA mask when appropriate
-Date: Wed, 7 Nov 2018 09:52:35 -0600
-Message-ID: <20181107155235.GA18618@bogus>
-References: <b06321ac25a1211e572e650a630e5e1aa9f8173f.1541504601.git.robin.murphy@arm.com>
-	<20181107080335.GA24511@lst.de>
-	<22cbe798-612f-8c88-90e7-388202f603cf@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Fix crash on early domain free
+Date: Wed, 7 Nov 2018 17:03:41 +0100
+Message-ID: <20181107160341.pfpukoqhyhapfzpn@8bytes.org>
+References: <20181107131850.11584-1-geert+renesas@glider.be>
+ <e4dcd8b2-768e-b11d-b6de-337b7e942050@arm.com>
+ <20181107153418.cge2dj5zmztahxrf@8bytes.org>
+ <CAMuHMdWPkMtnGrxrtFGmyJ5NEvSSCiMUVXXBWX+NS-J4tQXLAw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <22cbe798-612f-8c88-90e7-388202f603cf-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aaro.koskinen-X3B1VOXEql0@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <CAMuHMdWPkMtnGrxrtFGmyJ5NEvSSCiMUVXXBWX+NS-J4tQXLAw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 07, 2018 at 12:56:49PM +0000, Robin Murphy wrote:
-> On 2018-11-07 8:03 am, Christoph Hellwig wrote:
-> > On Tue, Nov 06, 2018 at 11:54:15AM +0000, Robin Murphy wrote:
-> > > of_dma_configure() was *supposed* to be following the same logic as
-> > > acpi_dma_configure() and only setting bus_dma_mask if some range was
-> > > specified by the firmware. However, it seems that subtlety got lost in
-> > > the process of fitting it into the differently-shaped control flow, and
-> > > as a result the force_dma==true case ends up always setting the bus mask
-> > > to the 32-bit default, which is not what anyone wants.
-> > > 
-> > > Make sure we only touch it if the DT actually said so.
-> > 
-> > This looks good, but I think it could really use a comment as the use
-> > of ret all the way down the function isn't exactly obvious.
-> 
-> Fair point.
-> 
-> > Let me now if you want this picked up through the OF or DMA trees.
-> 
-> I don't mind either way; I figure I'll wait a bit longer to see if Rob has
-> any preference, then resend with the comment and the tags picked up so it
-> can hopefully make rc2.
+On Wed, Nov 07, 2018 at 04:50:40PM +0100, Geert Uytterhoeven wrote:
+> It only got triggered by the combination of commits 6c2fb2ea76361da9
+> ("of/device: Set bus DMA mask as appropriate") and b4ebe6063204da58
+> ("dma-direct: implement complete bus_dma_mask handling"), which is being
+> fixed by "of/device: Really only set bus DMA mask when
+> appropriate" (https://patchwork.kernel.org/patch/10670177/).
 
-I have other fixes to send, so I can take it.
+Okay, but the bug is triggered since 6c2fb2ea76361da9, so I took this
+one for the fixes-tag.
 
-Rob
+Thanks,
+
+	Joerg
