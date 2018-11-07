@@ -1,48 +1,53 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] of/device: Really only set bus DMA mask when appropriate
-Date: Wed, 7 Nov 2018 12:56:49 +0000
-Message-ID: <22cbe798-612f-8c88-90e7-388202f603cf@arm.com>
-References: <b06321ac25a1211e572e650a630e5e1aa9f8173f.1541504601.git.robin.murphy@arm.com>
-	<20181107080335.GA24511@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181107080335.GA24511-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, aaro.koskinen-X3B1VOXEql0@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] iommu/ipmmu-vmsa: Fix crash on early domain free
+Date: Wed,  7 Nov 2018 14:18:50 +0100
+Message-ID: <20181107131850.11584-1-geert+renesas@glider.be>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-11-07 8:03 am, Christoph Hellwig wrote:
-> On Tue, Nov 06, 2018 at 11:54:15AM +0000, Robin Murphy wrote:
->> of_dma_configure() was *supposed* to be following the same logic as
->> acpi_dma_configure() and only setting bus_dma_mask if some range was
->> specified by the firmware. However, it seems that subtlety got lost in
->> the process of fitting it into the differently-shaped control flow, and
->> as a result the force_dma==true case ends up always setting the bus mask
->> to the 32-bit default, which is not what anyone wants.
->>
->> Make sure we only touch it if the DT actually said so.
-> 
-> This looks good, but I think it could really use a comment as the use
-> of ret all the way down the function isn't exactly obvious.
+If iommu_ops.add_device() fails, iommu_ops.domain_free() is still
+called, leading to a crash, as the domain was only partially
+initialized:
 
-Fair point.
+    ipmmu-vmsa e67b0000.mmu: Cannot accommodate DMA translation for IOMMU page tables
+    sata_rcar ee300000.sata: Unable to initialize IPMMU context
+    iommu: Failed to add device ee300000.sata to group 0: -22
+    Unable to handle kernel NULL pointer dereference at virtual address 0000000000000038
+    ...
+    Call trace:
+     ipmmu_domain_free+0x1c/0xa0
+     iommu_group_release+0x48/0x68
+     kobject_put+0x74/0xe8
+     kobject_del.part.0+0x3c/0x50
+     kobject_put+0x60/0xe8
+     iommu_group_get_for_dev+0xa8/0x1f0
+     ipmmu_add_device+0x1c/0x40
+     of_iommu_configure+0x118/0x190
 
-> Let me now if you want this picked up through the OF or DMA trees.
+Fix this by checking if the domain's context already exists, before
+trying to destroy it.
 
-I don't mind either way; I figure I'll wait a bit longer to see if Rob 
-has any preference, then resend with the comment and the tags picked up 
-so it can hopefully make rc2.
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/iommu/ipmmu-vmsa.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Robin.
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index c4114b92652eb0c9..a8b2c649c1d1f1b9 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -498,6 +498,9 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ 
+ static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
+ {
++	if (!domain->mmu)
++		return;
++
+ 	/*
+ 	 * Disable the context. Flush the TLB as required when modifying the
+ 	 * context registers.
+-- 
+2.17.1
