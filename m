@@ -1,54 +1,198 @@
-From: John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs
-Date: Tue, 6 Nov 2018 17:27:14 -0800
-Message-ID: <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
-References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 6/8] vfio/mdev: Add iommu place holders in mdev_device
+Date: Wed, 7 Nov 2018 09:48:51 +0800
+Message-ID: <edadb198-e4ab-ac23-4520-28bfcac252c3@linux.intel.com>
+References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+ <20181105073408.21815-7-baolu.lu@linux.intel.com>
+ <20181106165356.44b59ec3@w520.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181008080246.20543-7-hch@lst.de>
+In-Reply-To: <20181106165356.44b59ec3@w520.home>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de
-Cc: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, robin.murphy@arm.com, konrad.wilk@oracle.com, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 8, 2018 at 1:04 AM Christoph Hellwig <hch@lst.de> wrote:
->
-> No need to duplicate the code - map_sg is equivalent to map_page
-> for each page in the scatterlist.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  kernel/dma/swiotlb.c | 34 ++++++++++++----------------------
->  1 file changed, 12 insertions(+), 22 deletions(-)
+Hi Alex,
 
-Hey all,
+On 11/7/18 7:53 AM, Alex Williamson wrote:
+> On Mon,  5 Nov 2018 15:34:06 +0800
+> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> 
+>> A parent device might create different types of mediated
+>> devices. For example, a mediated device could be created
+>> by the parent device with full isolation and protection
+>> provided by the IOMMU. One usage case could be found on
+>> Intel platforms where a mediated device is an assignable
+>> subset of a PCI, the DMA requests on behalf of it are all
+>> tagged with a PASID. Since IOMMU supports PASID-granular
+>> translations (scalable mode in vt-d 3.0), this mediated
+>> device could be individually protected and isolated by an
+>> IOMMU.
+>>
+>> This patch adds two new members in struct mdev_device:
+>> * iommu_device
+>>    - This, if set, indicates that the mediated device could
+>>      be fully isolated and protected by IOMMU via attaching
+>>      an iommu domain to this device. If empty, it indicates
+>>      using vendor defined isolation.
+>>
+>> * iommu_domain
+>>    - This is a place holder for an iommu domain. A domain
+>>      could be store here for later use once it has been
+>>      attached to the iommu_device of this mdev.
+>>
+>> Below helpers are added to set and get above iommu device
+>> and iommu domain pointers.
+>>
+>> * mdev_set/get_iommu_device(dev, iommu_device)
+>>    - Set or get the iommu device which represents this mdev
+>>      in IOMMU's device scope. Drivers don't need to set the
+>>      iommu device if it uses vendor defined isolation.
+>>
+>> * mdev_set/get_iommu_domain(domain)
+>>    - A iommu domain which has been attached to the iommu
+>>      device in order to protect and isolate the mediated
+>>      device will be kept in the mdev data structure and
+>>      could be retrieved later.
+>>
+>> Cc: Ashok Raj <ashok.raj@intel.com>
+>> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>> Cc: Kevin Tian <kevin.tian@intel.com>
+>> Cc: Liu Yi L <yi.l.liu@intel.com>
+>> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+>> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/vfio/mdev/mdev_core.c    | 36 ++++++++++++++++++++++++++++++++
+>>   drivers/vfio/mdev/mdev_private.h |  2 ++
+>>   include/linux/mdev.h             | 23 ++++++++++++++++++++
+>>   3 files changed, 61 insertions(+)
+>>
+>> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+>> index 0212f0ee8aea..5119809225c5 100644
+>> --- a/drivers/vfio/mdev/mdev_core.c
+>> +++ b/drivers/vfio/mdev/mdev_core.c
+>> @@ -390,6 +390,42 @@ int mdev_device_remove(struct device *dev, bool force_remove)
+>>   	return 0;
+>>   }
+>>   
+>> +int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
+>> +{
+>> +	struct mdev_device *mdev = to_mdev_device(dev);
+>> +
+>> +	mdev->iommu_device = iommu_device;
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL(mdev_set_iommu_device);
+>> +
+>> +struct device *mdev_get_iommu_device(struct device *dev)
+>> +{
+>> +	struct mdev_device *mdev = to_mdev_device(dev);
+>> +
+>> +	return mdev->iommu_device;
+>> +}
+>> +EXPORT_SYMBOL(mdev_get_iommu_device);
+>> +
+>> +int mdev_set_iommu_domain(struct device *dev, void *domain)
+>> +{
+>> +	struct mdev_device *mdev = to_mdev_device(dev);
+>> +
+>> +	mdev->iommu_domain = domain;
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL(mdev_set_iommu_domain);
+>> +
+>> +void *mdev_get_iommu_domain(struct device *dev)
+>> +{
+>> +	struct mdev_device *mdev = to_mdev_device(dev);
+>> +
+>> +	return mdev->iommu_domain;
+>> +}
+>> +EXPORT_SYMBOL(mdev_get_iommu_domain);
+>> +
+>>   static int __init mdev_init(void)
+>>   {
+>>   	return mdev_bus_register();
+>> diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
+>> index b5819b7d7ef7..c01518068e84 100644
+>> --- a/drivers/vfio/mdev/mdev_private.h
+>> +++ b/drivers/vfio/mdev/mdev_private.h
+>> @@ -34,6 +34,8 @@ struct mdev_device {
+>>   	struct list_head next;
+>>   	struct kobject *type_kobj;
+>>   	bool active;
+>> +	struct device *iommu_device;
+>> +	void *iommu_domain;
+>>   };
+>>   
+>>   #define to_mdev_device(dev)	container_of(dev, struct mdev_device, dev)
+>> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+>> index b6e048e1045f..c46777d3e568 100644
+>> --- a/include/linux/mdev.h
+>> +++ b/include/linux/mdev.h
+>> @@ -14,6 +14,29 @@
+>>   #define MDEV_H
+>>   
+>>   struct mdev_device;
+>> +struct iommu_domain;
+>> +
+>> +/*
+>> + * Called by the parent device driver to set the PCI device which represents
+> 
+> s/PCI //
+> 
+> There is no requirement or expectation that the device is PCI.
+> 
 
-So, I've found this patch seems to break userspace booting on the
-HiKey960 board. Initially I thought this was an issue with the mali
-drivers, and have worked w/ the mali team to try to find a solution,
-but I've since found that booting just the upstream kernel (with no
-graphics support) will see userland hang/block unless this patch is
-reverted.
+Fair enough.
 
-When I see the hangs, it seems like the filesystems are stuck or
-something, as kernel messages still show up and sometimes I can get to
-a shell, but commands that I run in that shell (like ls) just hang. I
-don't see any other error messages.
+>> + * this mdev in iommu protection scope. By default, the iommu device is NULL,
+>> + * that indicates using vendor defined isolation.
+>> + *
+>> + * @dev: the mediated device that iommu will isolate.
+>> + * @iommu_device: a pci device which represents the iommu for @dev.
+>> + *
+>> + * Return 0 for success, otherwise negative error value.
+>> + */
+>> +int mdev_set_iommu_device(struct device *dev, struct device *iommu_device);
+>> +
+>> +struct device *mdev_get_iommu_device(struct device *dev);
+>> +
+>> +/*
+>> + * Called by vfio iommu modules to save the iommu domain after a domain being
+>> + * attached to the mediated device.
+>> + */
+>> +int mdev_set_iommu_domain(struct device *dev, void *domain);
+>> +
+>> +void *mdev_get_iommu_domain(struct device *dev);
+> 
+> I can't say I really understand the purpose of this, the cover letter
+> indicates this is a placeholder, should we add it separately when we
+> have a requirement for it?
 
-Reverting this patch then gets it work. In order to cleanly revert the
-patch, I have to revert the following set:
-  "arm64: use the generic swiotlb_dma_ops"
-  "swiotlb: add support for non-coherent DMA"
-  "swiotlb: don't dip into swiotlb pool for coherent allocations"
-  "swiotlb: refactor swiotlb_map_page"
-  "swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs"
+Oh, I am sorry that I used a wrong word. It's not a placeholder for
+something designed for future, but adding two members that will be used
+in the following patches. Since they will be used in anther modules
+(like vfio_iommu), we need function interfaces to get and set them.
 
-But at that point if I just re-apply "swiotlb: use swiotlb_map_page in
-swiotlb_map_sg_attrs", I reproduce the hangs.
+mdev->iommu_device:
+  -  This, if set, indicates that the mediated device could
+     be fully isolated and protected by IOMMU via attaching
+     an iommu domain to this device. If empty, it indicates
+     using vendor defined isolation.
 
-Any suggestions for how to further debug what might be going wrong
-would be appreciated!
+mdev->iommu_domain:
+   - This is used to save the pointer of an iommu domain. Once
+     a domain has been attached to the iommu_device, it should
+     be stored here.
 
-thanks
--john
+Sorry for the confusion.
+
+Best regards,
+Lu Baolu
