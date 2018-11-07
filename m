@@ -1,17 +1,15 @@
-From: James Sewart via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
-Date: Wed, 7 Nov 2018 17:55:29 +0000
-Message-ID: <A393DB8A-BFC6-40C2-B9E8-6667A927957E@arista.com>
-References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
-	<5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
-	<CALwnD_qUhQu-fwOObth-DWzSNoARZ_ERuNwyS8r73C0yhw7jGQ@mail.gmail.com>
-	<b92b1739-dc3e-9515-a6f1-e4c00f53882b@linux.intel.com>
-Reply-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2] of/device: Really only set bus DMA mask when
+	appropriate
+Date: Wed, 7 Nov 2018 14:48:24 -0600
+Message-ID: <20181107204824.GA15825@bogus>
+References: <43b231d67abf2dc589af1c3b9d4f01211cda0b89.1541608043.git.robin.murphy@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <b92b1739-dc3e-9515-a6f1-e4c00f53882b-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <43b231d67abf2dc589af1c3b9d4f01211cda0b89.1541608043.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,97 +19,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGV5LAoKPiBPbiA3IE5vdiAyMDE4LCBhdCAwMjoxMCwgTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4
-LmludGVsLmNvbT4gd3JvdGU6Cj4gCj4gSGksCj4gCj4gT24gMTEvNi8xOCA2OjQwIFBNLCBKYW1l
-cyBTZXdhcnQgd3JvdGU6Cj4+IEhleSBMdSwKPj4gV291bGQgeW91IGJlIGFibGUgdG8gZ28gaW50
-byBtb3JlIGRldGFpbCBhYm91dCB0aGUgaXNzdWVzIHdpdGgKPj4gYWxsb3dpbmcgSU9NTVVfRE9N
-QUlOX0RNQSB0byBiZSBhbGxvY2F0ZWQgdmlhIGRvbWFpbl9hbGxvYz8KPiAKPiBUaGlzIGRvb3Ig
-aXMgY2xvc2VkIGJlY2F1c2UgaW50ZWwgaW9tbXUgZHJpdmVyIGRvZXMgZXZlcnl0aGluZyBmb3IK
-PiBJT01NVV9ET01BSU5fRE1BOiBhbGxvY2F0aW5nIGEgZG9tYWluIGFuZCBzZXR1cCB0aGUgY29u
-dGV4dCBlbnRyaWVzCj4gZm9yIHRoZSBkb21haW4uCgpBcyBmYXIgYXMgSSBjYW4gdGVsbCwgYXR0
-YWNoX2RldmljZSBpbiB0aGUgaW50ZWwgZHJpdmVyIHdpbGwgaGFuZGxlIApjbGVhbmluZyB1cCBh
-bnkgb2xkIGRvbWFpbiBjb250ZXh0IG1hcHBpbmcgYW5kIGVuc3VyZSB0aGUgbmV3IGRvbWFpbiBp
-cyAKbWFwcGVkIHdpdGggY2FsbHMgdG8gZG1hcl9yZW1vdmVfb25lX2Rldl9pbmZvIGFuZCBkb21h
-aW5fYWRkX2Rldl9pbmZvLgoKPiAKPiBXaHkgZG8gd2Ugd2FudCB0byBvcGVuIHRoaXMgZG9vcj8g
-UHJvYmFibHkgd2Ugd2FudCB0aGUgZ2VuZXJpYyBpb21tdQo+IGxheWVyIHRvIGhhbmRsZSB0aGVz
-ZSB0aGluZ3MgKGl0J3MgY2FsbGVkIGRlZmF1bHQgZG9tYWluKS4KCknigJlkIGxpa2UgdG8gYWxs
-b2NhdGUgYSBkb21haW4gYW5kIGF0dGFjaCBpdCB0byBtdWx0aXBsZSBkZXZpY2VzIGluIGEgCmdy
-b3VwL211bHRpcGxlIGdyb3VwcyBzbyB0aGF0IHRoZXkgc2hhcmUgYWRkcmVzcyB0cmFuc2xhdGlv
-biwgYnV0IHN0aWxsIAphbGxvdyBkcml2ZXJzIGZvciBkZXZpY2VzIGluIHRob3NlIGdyb3VwcyB0
-byB1c2UgdGhlIGRtYV9tYXBfb3BzIGFwaS4KCj4gU28gd2UgY2FuJ3QganVzdCBvcGVuIHRoZSBk
-b29yIGJ1dCBub3QgY2xlYW51cCB0aGUgdGhpbmdzIHJpZ2h0PwoKQSB1c2VyIG9mIGRvbWFpbl9h
-bGxvYyBhbmQgYXR0YWNoX2RldmljZSBpcyByZXNwb25zaWJsZSBmb3IgZGV0YWNoaW5nIGEgCmRv
-bWFpbiBpZiBpdCBpcyBubyBsb25nZXIgbmVlZGVkIGFuZCBjYWxsaW5nIGRvbWFpbl9mcmVlLgoK
-Q2hlZXJzLApKYW1lcy4KCgo+IAo+IEkgaGF2ZW4ndCBzcGVudCB0aW1lIG9uIGRldGFpbHMuIFNv
-IEkgY2MnZWQgSmFjb2IgZm9yIGNvcnJlY3Rpb25zLgo+IAo+IEJlc3QgcmVnYXJkcywKPiBMdSBC
-YW9sdQo+IAo+PiBDaGVlcnMsCj4+IEphbWVzLgo+PiBPbiBGcmksIE5vdiAyLCAyMDE4IGF0IDI6
-NDMgQU0gTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4gd3JvdGU6Cj4+PiAKPj4+
-IEhpLAo+Pj4gCj4+PiBPbiAxMC8zMC8xOCAxMDoxOCBQTSwgSmFtZXMgU2V3YXJ0IHZpYSBpb21t
-dSB3cm90ZToKPj4+PiBIZXksCj4+Pj4gCj4+Pj4gSeKAmXZlIGJlZW4gaW52ZXN0aWdhdGluZyB0
-aGUgcmVsYXRpb25zaGlwIGJldHdlZW4gaW9tbXUgZ3JvdXBzIGFuZCBkb21haW5zCj4+Pj4gb24g
-b3VyIHN5c3RlbXMgYW5kIGhhdmUgYSBmZXcgcXVlc3Rpb24uIFdoeSBkb2VzIHRoZSBpbnRlbCBp
-b21tdSBjb2RlIG5vdAo+Pj4+IGFsbG93IGFsbG9jYXRpbmcgSU9NTVVfRE9NQUlOX0RNQT8gUmV0
-dXJuaW5nIE5VTEwgd2hlbiBnaXZlbiB0aGlzIGRvbWFpbgo+Pj4+IHR5cGUgaGFzIHRoZSBzaWRl
-IGVmZmVjdCB0aGF0IHRoZSBkZWZhdWx0X2RvbWFpbiBmb3IgYW4gaW9tbXUgZ3JvdXAgaXMgbm90
-Cj4+Pj4gc2V0LCB3aGljaCwgd2hlbiB1c2luZyBmb3IgZS5nLiBkbWFfbWFwX29wcy5tYXBfcGFn
-ZSwgbWVhbnMgYSBkb21haW4gaXMKPj4+PiBhbGxvY2F0ZWQgcGVyIGRldmljZS4KPj4+IAo+Pj4g
-SW50ZWwgdnQtZCBkcml2ZXIgZG9lc24ndCBpbXBsZW1lbnQgdGhlIGRlZmF1bHQgZG9tYWluIGFu
-ZCBhbGxvY2F0ZXMKPj4+IGRvbWFpbiBvbmx5IG9uIGRlbWFuZGVkLiBUaGVyZSBhcmUgbG90cyBv
-ZiB0aGluZ3MgdG8gZG8gYmVmb3JlIHdlIGFsbG93Cj4+PiBpb21tdSBBUEkgdG8gYWxsb2NhdGUg
-ZG9tYWlucyBvdGhlciB0aGFuIElPTU1VX0RPTUFJTl9VTk1BTkFHRUQuCj4+PiAKPj4+IEJlc3Qg
-cmVnYXJkcywKPj4+IEx1IEJhb2x1Cj4+PiAKPj4+PiAKPj4+PiBUaGlzIHNlZW1zIHRvIGJlIHRo
-ZSBvcHBvc2l0ZSBiZWhhdmlvdXIgdG8gdGhlIEFNRCBpb21tdSBjb2RlIHdoaWNoCj4+Pj4gc3Vw
-cG9ydHMgYWxsb2NhdGluZyBhbiBJT01NVV9ET01BSU5fRE1BIGFuZCB3aWxsIG9ubHkgbG9vayB0
-byB0aGUgaW9tbXUKPj4+PiBncm91cCBpZiBhIGRvbWFpbiBpcyBub3QgYXR0YWNoZWQgdG8gdGhl
-IGRldmljZSByYXRoZXIgdGhhbiBhbGxvY2F0aW5nIGEKPj4+PiBuZXcgb25lLiBPbiBBTUQgZXZl
-cnkgZGV2aWNlIGluIGFuIGlvbW11IGdyb3VwIHdpbGwgc2hhcmUgdGhlIHNhbWUgZG9tYWluLgo+
-Pj4+IAo+Pj4+IEFwcGVuZGVkIGlzIHdoYXQgSSB0aGluayBhIHBhdGNoIHRvIGltcGxlbWVudCBk
-b21haW5fYWxsb2MgZm9yCj4+Pj4gSU9NTVVfRE9NQUlOX0RNQSBhbmQgYWxzbyBJT01NVV9ET01B
-SU5fSURFTlRJVFkgd291bGQgbG9vayBsaWtlLiBUZXN0aW5nCj4+Pj4gc2hvd3MgZWFjaCBkZXZp
-Y2UgaW4gYSBncm91cCB3aWxsIHNoYXJlIGEgZG9tYWluIGJ5IGRlZmF1bHQsIGl0IGFsc28KPj4+
-PiBhbGxvd3MgYWxsb2NhdGluZyBhIG5ldyBkbWEgZG9tYWluIHRoYXQgY2FuIGJlIHN1Y2Nlc3Nm
-dWxseSBhdHRhY2hlZCB0byBhCj4+Pj4gZ3JvdXAgd2l0aCBpb21tdV9hdHRhY2hfZ3JvdXAuCj4+
-Pj4gCj4+Pj4gTG9va2luZyBmb3IgY29tbWVudCBvbiB3aHkgdGhlIGJlaGF2aW91ciBpcyBob3cg
-aXQgaXMgY3VycmVudGx5IGFuZCBpZgo+Pj4+IHRoZXJlIGFyZSBhbnkgaXNzdWVzIHdpdGggdGhl
-IHNvbHV0aW9uIEnigJl2ZSBiZWVuIHRlc3RpbmcuCj4+Pj4gCj4+Pj4gQ2hlZXJzLAo+Pj4+IEph
-bWVzLgo+Pj4+IAo+Pj4+IAo+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsLWlv
-bW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPj4+PiBpbmRleCBiZmYyYWJkNi4u
-M2E1ODM4OWYgMTAwNjQ0Cj4+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+
-Pj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+Pj4gQEAgLTUxNzAsMTAgKzUx
-NzAsMTUgQEAgc3RhdGljIHN0cnVjdCBpb21tdV9kb21haW4gKmludGVsX2lvbW11X2RvbWFpbl9h
-bGxvYyh1bnNpZ25lZCB0eXBlKQo+Pj4+ICAgICAgIHN0cnVjdCBkbWFyX2RvbWFpbiAqZG1hcl9k
-b21haW47Cj4+Pj4gICAgICAgc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluOwo+Pj4+IAo+Pj4+
-IC0gICAgIGlmICh0eXBlICE9IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4+Pj4gKyAgICAgaWYg
-KHR5cGUgPT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkKPj4+PiArICAgICAgICAgICAgIGRtYXJf
-ZG9tYWluID0gYWxsb2NfZG9tYWluKERPTUFJTl9GTEFHX1ZJUlRVQUxfTUFDSElORSk7Cj4+Pj4g
-KyAgICAgZWxzZSBpZih0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpCj4+Pj4gKyAgICAgICAgICAg
-ICBkbWFyX2RvbWFpbiA9IGFsbG9jX2RvbWFpbigwKTsKPj4+PiArICAgICBlbHNlIGlmKHR5cGUg
-PT0gSU9NTVVfRE9NQUlOX0lERU5USVRZKQo+Pj4+ICsgICAgICAgICAgICAgZG1hcl9kb21haW4g
-PSBhbGxvY19kb21haW4oRE9NQUlOX0ZMQUdfU1RBVElDX0lERU5USVRZKTsKPj4+PiArICAgICBl
-bHNlCj4+Pj4gICAgICAgICAgICAgICByZXR1cm4gTlVMTDsKPj4+PiAKPj4+PiAtICAgICBkbWFy
-X2RvbWFpbiA9IGFsbG9jX2RvbWFpbihET01BSU5fRkxBR19WSVJUVUFMX01BQ0hJTkUpOwo+Pj4+
-ICAgICAgIGlmICghZG1hcl9kb21haW4pIHsKPj4+PiAgICAgICAgICAgICAgIHByX2VycigiQ2Fu
-J3QgYWxsb2NhdGUgZG1hcl9kb21haW5cbiIpOwo+Pj4+ICAgICAgICAgICAgICAgcmV0dXJuIE5V
-TEw7Cj4+Pj4gQEAgLTUxODYsOSArNTE5MSwxMiBAQCBzdGF0aWMgc3RydWN0IGlvbW11X2RvbWFp
-biAqaW50ZWxfaW9tbXVfZG9tYWluX2FsbG9jKHVuc2lnbmVkIHR5cGUpCj4+Pj4gICAgICAgZG9t
-YWluX3VwZGF0ZV9pb21tdV9jYXAoZG1hcl9kb21haW4pOwo+Pj4+IAo+Pj4+ICAgICAgIGRvbWFp
-biA9ICZkbWFyX2RvbWFpbi0+ZG9tYWluOwo+Pj4+IC0gICAgIGRvbWFpbi0+Z2VvbWV0cnkuYXBl
-cnR1cmVfc3RhcnQgPSAwOwo+Pj4+IC0gICAgIGRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfZW5k
-ICAgPSBfX0RPTUFJTl9NQVhfQUREUihkbWFyX2RvbWFpbi0+Z2F3KTsKPj4+PiAtICAgICBkb21h
-aW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsKPj4+PiArCj4+Pj4gKyAgICAgaWYg
-KHR5cGUgPT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCkgewo+Pj4+ICsgICAgICAgICAgICAgZG9t
-YWluLT5nZW9tZXRyeS5hcGVydHVyZV9zdGFydCA9IDA7Cj4+Pj4gKyAgICAgICAgICAgICBkb21h
-aW4tPmdlb21ldHJ5LmFwZXJ0dXJlX2VuZCAgID0gX19ET01BSU5fTUFYX0FERFIoZG1hcl9kb21h
-aW4tPmdhdyk7Cj4+Pj4gKyAgICAgICAgICAgICBkb21haW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0
-dXJlID0gdHJ1ZTsKPj4+PiArICAgICB9Cj4+Pj4gCj4+Pj4gICAgICAgcmV0dXJuIGRvbWFpbjsK
-Pj4+PiAgIH0KPj4+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwo+Pj4+IGlvbW11IG1haWxpbmcgbGlzdAo+Pj4+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
-YXRpb24ub3JnCj4+Pj4gaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXUKPj4+PiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pb21tdQ==
+On Wed, Nov 07, 2018 at 04:30:32PM +0000, Robin Murphy wrote:
+> of_dma_configure() was *supposed* to be following the same logic as
+> acpi_dma_configure() and only setting bus_dma_mask if some range was
+> specified by the firmware. However, it seems that subtlety got lost in
+> the process of fitting it into the differently-shaped control flow, and
+> as a result the force_dma==true case ends up always setting the bus mask
+> to the 32-bit default, which is not what anyone wants.
+> 
+> Make sure we only touch it if the DT actually said so.
+> 
+> Fixes: 6c2fb2ea7636 ("of/device: Set bus DMA mask as appropriate")
+> Reported-by: Aaro Koskinen <aaro.koskinen-X3B1VOXEql0@public.gmane.org>
+> Reported-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> Tested-by: Aaro Koskinen <aaro.koskinen-X3B1VOXEql0@public.gmane.org>
+> Tested-by: John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Tested-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Tested-by: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+>  v2: Add comment, collect tested-by tags
+> 
+>  drivers/of/device.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+
+Applied, thanks.
+
+Rob
