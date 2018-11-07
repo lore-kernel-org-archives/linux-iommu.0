@@ -1,15 +1,15 @@
 From: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [PATCH v4 04/12] iommu/vt-d: Add 256-bit invalidation
- descriptor support
-Date: Wed, 7 Nov 2018 06:07:07 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439D5FAA2@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [PATCH v4 05/12] iommu/vt-d: Reserve a domain id for FL and PT
+ modes
+Date: Wed, 7 Nov 2018 06:55:38 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439D5FAE7@SHSMSX104.ccr.corp.intel.com>
 References: <20181105053151.7173-1-baolu.lu@linux.intel.com>
- <20181105053151.7173-5-baolu.lu@linux.intel.com>
+ <20181105053151.7173-6-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181105053151.7173-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20181105053151.7173-6-baolu.lu@linux.intel.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
@@ -20,118 +20,70 @@ Hi Baolu,
 
 > From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
 > Sent: Monday, November 5, 2018 1:32 PM
-
-[...]
-
+> Subject: [PATCH v4 05/12] iommu/vt-d: Reserve a domain id for FL and PT modes
+> 
+> Vt-d spec rev3.0 (section 6.2.3.1) requires that each pasid
+> entry for first-level or pass-through translation should be
+> programmed with a domain id different from those used for
+> second-level or nested translation. It is recommended that
+> software could use a same domain id for all first-only and
+> pass-through translations.
+> 
+> This reserves a domain id for first-level and pass-through
+> translations.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Cc: Sanjay Kumar <sanjay.k.kumar@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/dmar.c                | 83 +++++++++++++++++++----------
->  drivers/iommu/intel-svm.c           | 76 ++++++++++++++++----------
->  drivers/iommu/intel_irq_remapping.c |  6 ++-
->  include/linux/intel-iommu.h         |  9 +++-
->  4 files changed, 115 insertions(+), 59 deletions(-)
+>  drivers/iommu/intel-iommu.c | 10 ++++++++++
+>  drivers/iommu/intel-pasid.h |  6 ++++++
+>  2 files changed, 16 insertions(+)
 > 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index d9c748b6f9e4..ec10427b98ac 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1160,6 +1160,7 @@ static int qi_check_fault(struct intel_iommu *iommu, int
-> index)
->  	int head, tail;
->  	struct q_inval *qi = iommu->qi;
->  	int wait_index = (index + 1) % QI_LENGTH;
-> +	int shift = qi_shift(iommu);
-> 
->  	if (qi->desc_status[wait_index] == QI_ABORT)
->  		return -EAGAIN;
-> @@ -1173,13 +1174,15 @@ static int qi_check_fault(struct intel_iommu *iommu,
-> int index)
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 9331240c70b8..2f7455ee4e7a 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1618,6 +1618,16 @@ static int iommu_init_domains(struct intel_iommu
+> *iommu)
 >  	 */
->  	if (fault & DMA_FSTS_IQE) {
->  		head = readl(iommu->reg + DMAR_IQH_REG);
-> -		if ((head >> DMAR_IQ_SHIFT) == index) {
-> +		if ((head >> shift) == index) {
-> +			struct qi_desc *desc = qi->desc + head;
-> +
->  			pr_err("VT-d detected invalid descriptor: "
->  				"low=%llx, high=%llx\n",
-> -				(unsigned long long)qi->desc[index].low,
-> -				(unsigned long long)qi->desc[index].high);
-> -			memcpy(&qi->desc[index], &qi->desc[wait_index],
-> -					sizeof(struct qi_desc));
-> +				(unsigned long long)desc->qw0,
-> +				(unsigned long long)desc->qw1);
+>  	set_bit(0, iommu->domain_ids);
+> 
+> +	/*
+> +	 * Vt-d spec rev3.0 (section 6.2.3.1) requires that each pasid
+> +	 * entry for first-level or pass-through translation modes should
+> +	 * be programmed with a domain id different from those used for
+> +	 * second-level or nested translation. We reserve a domain id for
+> +	 * this purpose.
+> +	 */
+> +	if (sm_supported(iommu))
+> +		set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
 
-Still missing qw2 and qw3. May make the print differ based on if smts is configed.
+"FLPT_DEFAULT_DID" looks very likely for first level translation. How about
+"PT_FL_DEFAULT_DID"?
 
-> +			memcpy(desc, qi->desc + (wait_index << shift),
+>  	return 0;
+>  }
+> 
+> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+> index 12f480c2bb8b..03c1612d173c 100644
+> --- a/drivers/iommu/intel-pasid.h
+> +++ b/drivers/iommu/intel-pasid.h
+> @@ -17,6 +17,12 @@
+>  #define PDE_PFN_MASK			PAGE_MASK
+>  #define PASID_PDE_SHIFT			6
+> 
+> +/*
+> + * Domain ID reserved for pasid entries programmed for first-level
+> + * only and pass-through transfer modes.
+> + */
+> +#define FLPT_DEFAULT_DID		1
 
-Would "memcpy(desc, (unsigned long long) (qi->desc +  (wait_index << shift)," be
-more safe?
+Would be helpful to elaborate why DID 1 is selected in the patch
+description.
 
-> +			       1 << shift);
->  			writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
->  			return -EINVAL;
->  		}
-> @@ -1191,10 +1194,10 @@ static int qi_check_fault(struct intel_iommu *iommu,
-> int index)
->  	 */
->  	if (fault & DMA_FSTS_ITE) {
->  		head = readl(iommu->reg + DMAR_IQH_REG);
-> -		head = ((head >> DMAR_IQ_SHIFT) - 1 + QI_LENGTH) % QI_LENGTH;
-> +		head = ((head >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
->  		head |= 1;
->  		tail = readl(iommu->reg + DMAR_IQT_REG);
-> -		tail = ((tail >> DMAR_IQ_SHIFT) - 1 + QI_LENGTH) % QI_LENGTH;
-> +		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
-> 
->  		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
-> 
-> @@ -1222,15 +1225,14 @@ int qi_submit_sync(struct qi_desc *desc, struct
-> intel_iommu *iommu)
->  {
->  	int rc;
->  	struct q_inval *qi = iommu->qi;
-> -	struct qi_desc *hw, wait_desc;
-> +	int offset, shift, length;
-> +	struct qi_desc wait_desc;
->  	int wait_index, index;
->  	unsigned long flags;
-> 
->  	if (!qi)
->  		return 0;
-> 
-> -	hw = qi->desc;
-> -
->  restart:
->  	rc = 0;
-> 
-> @@ -1243,16 +1245,21 @@ int qi_submit_sync(struct qi_desc *desc, struct
-> intel_iommu *iommu)
-> 
->  	index = qi->free_head;
->  	wait_index = (index + 1) % QI_LENGTH;
-> +	shift = qi_shift(iommu);
-> +	length = 1 << shift;
-> 
->  	qi->desc_status[index] = qi->desc_status[wait_index] = QI_IN_USE;
-> 
-> -	hw[index] = *desc;
-> -
-> -	wait_desc.low = QI_IWD_STATUS_DATA(QI_DONE) |
-> +	offset = index << shift;
-> +	memcpy(qi->desc + offset, desc, length);
-> +	wait_desc.qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
->  			QI_IWD_STATUS_WRITE | QI_IWD_TYPE;
-> -	wait_desc.high = virt_to_phys(&qi->desc_status[wait_index]);
-> +	wait_desc.qw1 = virt_to_phys(&qi->desc_status[wait_index]);
-> +	wait_desc.qw2 = 0;
-> +	wait_desc.qw3 = 0;
-> 
-> -	hw[wait_index] = wait_desc;
-> +	offset = wait_index << shift;
-> +	memcpy(qi->desc + offset, &wait_desc, length);
-
-same question with above one.
-
-Thanks,
+Regards,
 Yi Liu
