@@ -1,35 +1,74 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Fix crash on early domain free
-Date: Wed, 7 Nov 2018 17:53:36 +0100
-Message-ID: <20181107165336.GB19831@8bytes.org>
-References: <20181107131850.11584-1-geert+renesas@glider.be>
- <e4dcd8b2-768e-b11d-b6de-337b7e942050@arm.com>
- <20181107153418.cge2dj5zmztahxrf@8bytes.org>
- <CAMuHMdWPkMtnGrxrtFGmyJ5NEvSSCiMUVXXBWX+NS-J4tQXLAw@mail.gmail.com>
- <20181107160341.pfpukoqhyhapfzpn@8bytes.org>
- <f8259910-3e07-497b-9f18-6bcb47430cff@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Wed, 7 Nov 2018 10:23:07 -0700
+Message-ID: <20181107102307.602f3b9f@w520.home>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
+	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
+	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
+	<20181107164323.GA19831@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <f8259910-3e07-497b-9f18-6bcb47430cff@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181107164323.GA19831-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 07, 2018 at 04:17:09PM +0000, Robin Murphy wrote:
-> FWIW it looks like it *has* always been possible to hit this crash by
-> allocating a domain and freeing it again without attaching any devices, it's
-> just highly improbable for any sane code to do that explicitly, so the real
-> latent triggers are failure paths in external callers (which in this case
-> are themselves only being reached thanks to my bug elsewhere).
+On Wed, 7 Nov 2018 17:43:23 +0100
+"joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-Okay, given this, it probably makes more sense to change the fixes tag.
-This is what I just committed:
+> Hi,
+> 
+> On Wed, Nov 07, 2018 at 11:40:30AM +0800, Lu Baolu wrote:
+> > Hi Joerg,
+> > 
+> > On 11/7/18 12:25 AM, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org wrote:
+> > Nowadays, we can find PASID granular DMA translation on both ARM and x86
+> > platforms. With PASID granular DMA translation supported in system iommu, if
+> > a device divides itself into multiple subsets and tag the DMA
+> > transfers of each subset with a unique PASID, each subset become
+> > assignable. We call the assignable subset as an ADI (Assignable Device
+> > Interface). As the result, each ADI could be attached with a domain.  
+> 
+> Yeah, I know the background. The point is, the IOMMU-API as of today
+> implements a strict one-to-one relationship between domains and devices,
+> every device can only have one domain assigned at a given time. If we
+> assign a new domain to a device, the old gets unassigned.
+> 
+> If we allow to attach multiple domains to a single device we
+> fundamentally break that semantic.
+> 
+> Therefore I think it is better is support the ADI devices with
+> subdomains and a new set of functions in the API to handle only these
+> sub-domains.
+> 
+> > Further more, a single domain might be attached to an ADI of device A,
+> > while attached to another legacy device B which doesn't support PASID
+> > features. In this case, we say "Domain 4" is attached to ADI(PASID#x) in
+> > aux mode and attached to device B in primary mode.  
+> 
+> This will of course not work with subdomains, but is that really
+> necessary? VFIO already allocates a separate domain for each device
+> anyway (iirc), so it is unlikely that is uses the same domain for a
+> legacy and an ADI device.
 
-Fixes: d25a2a16f0889 ('iommu: Add driver for Renesas VMSA-compatible IPMMU')
+VFIO will attempt to use the same domain for all groups within a
+container, only falling back to separate domains if there's an
+incompatibility.  Multiple domains means that we need to mirror mapping
+and unmapping across each domain, so there's more work to do and
+theoretically more overhead in the IOMMU implementation assuming those
+domains land on the same IOMMU driver.  Thanks,
 
-Regards,
-
-	Joerg
+Alex
