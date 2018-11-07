@@ -1,15 +1,16 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
-Date: Wed, 7 Nov 2018 10:10:01 +0800
-Message-ID: <b92b1739-dc3e-9515-a6f1-e4c00f53882b@linux.intel.com>
-References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
-	<5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
-	<CALwnD_qUhQu-fwOObth-DWzSNoARZ_ERuNwyS8r73C0yhw7jGQ@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Wed, 7 Nov 2018 11:40:30 +0800
+Message-ID: <e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
+	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CALwnD_qUhQu-fwOObth-DWzSNoARZ_ERuNwyS8r73C0yhw7jGQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20181106162539.4gmkvg57mja3bn7k-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,83 +21,132 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAxMS82LzE4IDY6NDAgUE0sIEphbWVzIFNld2FydCB3cm90ZToKPiBIZXkgTHUsCj4g
-Cj4gV291bGQgeW91IGJlIGFibGUgdG8gZ28gaW50byBtb3JlIGRldGFpbCBhYm91dCB0aGUgaXNz
-dWVzIHdpdGgKPiBhbGxvd2luZyBJT01NVV9ET01BSU5fRE1BIHRvIGJlIGFsbG9jYXRlZCB2aWEg
-ZG9tYWluX2FsbG9jPwoKVGhpcyBkb29yIGlzIGNsb3NlZCBiZWNhdXNlIGludGVsIGlvbW11IGRy
-aXZlciBkb2VzIGV2ZXJ5dGhpbmcgZm9yCklPTU1VX0RPTUFJTl9ETUE6IGFsbG9jYXRpbmcgYSBk
-b21haW4gYW5kIHNldHVwIHRoZSBjb250ZXh0IGVudHJpZXMKZm9yIHRoZSBkb21haW4uCgpXaHkg
-ZG8gd2Ugd2FudCB0byBvcGVuIHRoaXMgZG9vcj8gUHJvYmFibHkgd2Ugd2FudCB0aGUgZ2VuZXJp
-YyBpb21tdQpsYXllciB0byBoYW5kbGUgdGhlc2UgdGhpbmdzIChpdCdzIGNhbGxlZCBkZWZhdWx0
-IGRvbWFpbikuCgpTbyB3ZSBjYW4ndCBqdXN0IG9wZW4gdGhlIGRvb3IgYnV0IG5vdCBjbGVhbnVw
-IHRoZSB0aGluZ3MgcmlnaHQ/CgpJIGhhdmVuJ3Qgc3BlbnQgdGltZSBvbiBkZXRhaWxzLiBTbyBJ
-IGNjJ2VkIEphY29iIGZvciBjb3JyZWN0aW9ucy4KCkJlc3QgcmVnYXJkcywKTHUgQmFvbHUKCj4g
-Cj4gCj4gQ2hlZXJzLAo+IEphbWVzLgo+IE9uIEZyaSwgTm92IDIsIDIwMTggYXQgMjo0MyBBTSBM
-dSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPiB3cm90ZToKPj4KPj4gSGksCj4+Cj4+
-IE9uIDEwLzMwLzE4IDEwOjE4IFBNLCBKYW1lcyBTZXdhcnQgdmlhIGlvbW11IHdyb3RlOgo+Pj4g
-SGV5LAo+Pj4KPj4+IEnigJl2ZSBiZWVuIGludmVzdGlnYXRpbmcgdGhlIHJlbGF0aW9uc2hpcCBi
-ZXR3ZWVuIGlvbW11IGdyb3VwcyBhbmQgZG9tYWlucwo+Pj4gb24gb3VyIHN5c3RlbXMgYW5kIGhh
-dmUgYSBmZXcgcXVlc3Rpb24uIFdoeSBkb2VzIHRoZSBpbnRlbCBpb21tdSBjb2RlIG5vdAo+Pj4g
-YWxsb3cgYWxsb2NhdGluZyBJT01NVV9ET01BSU5fRE1BPyBSZXR1cm5pbmcgTlVMTCB3aGVuIGdp
-dmVuIHRoaXMgZG9tYWluCj4+PiB0eXBlIGhhcyB0aGUgc2lkZSBlZmZlY3QgdGhhdCB0aGUgZGVm
-YXVsdF9kb21haW4gZm9yIGFuIGlvbW11IGdyb3VwIGlzIG5vdAo+Pj4gc2V0LCB3aGljaCwgd2hl
-biB1c2luZyBmb3IgZS5nLiBkbWFfbWFwX29wcy5tYXBfcGFnZSwgbWVhbnMgYSBkb21haW4gaXMK
-Pj4+IGFsbG9jYXRlZCBwZXIgZGV2aWNlLgo+Pgo+PiBJbnRlbCB2dC1kIGRyaXZlciBkb2Vzbid0
-IGltcGxlbWVudCB0aGUgZGVmYXVsdCBkb21haW4gYW5kIGFsbG9jYXRlcwo+PiBkb21haW4gb25s
-eSBvbiBkZW1hbmRlZC4gVGhlcmUgYXJlIGxvdHMgb2YgdGhpbmdzIHRvIGRvIGJlZm9yZSB3ZSBh
-bGxvdwo+PiBpb21tdSBBUEkgdG8gYWxsb2NhdGUgZG9tYWlucyBvdGhlciB0aGFuIElPTU1VX0RP
-TUFJTl9VTk1BTkFHRUQuCj4+Cj4+IEJlc3QgcmVnYXJkcywKPj4gTHUgQmFvbHUKPj4KPj4+Cj4+
-PiBUaGlzIHNlZW1zIHRvIGJlIHRoZSBvcHBvc2l0ZSBiZWhhdmlvdXIgdG8gdGhlIEFNRCBpb21t
-dSBjb2RlIHdoaWNoCj4+PiBzdXBwb3J0cyBhbGxvY2F0aW5nIGFuIElPTU1VX0RPTUFJTl9ETUEg
-YW5kIHdpbGwgb25seSBsb29rIHRvIHRoZSBpb21tdQo+Pj4gZ3JvdXAgaWYgYSBkb21haW4gaXMg
-bm90IGF0dGFjaGVkIHRvIHRoZSBkZXZpY2UgcmF0aGVyIHRoYW4gYWxsb2NhdGluZyBhCj4+PiBu
-ZXcgb25lLiBPbiBBTUQgZXZlcnkgZGV2aWNlIGluIGFuIGlvbW11IGdyb3VwIHdpbGwgc2hhcmUg
-dGhlIHNhbWUgZG9tYWluLgo+Pj4KPj4+IEFwcGVuZGVkIGlzIHdoYXQgSSB0aGluayBhIHBhdGNo
-IHRvIGltcGxlbWVudCBkb21haW5fYWxsb2MgZm9yCj4+PiBJT01NVV9ET01BSU5fRE1BIGFuZCBh
-bHNvIElPTU1VX0RPTUFJTl9JREVOVElUWSB3b3VsZCBsb29rIGxpa2UuIFRlc3RpbmcKPj4+IHNo
-b3dzIGVhY2ggZGV2aWNlIGluIGEgZ3JvdXAgd2lsbCBzaGFyZSBhIGRvbWFpbiBieSBkZWZhdWx0
-LCBpdCBhbHNvCj4+PiBhbGxvd3MgYWxsb2NhdGluZyBhIG5ldyBkbWEgZG9tYWluIHRoYXQgY2Fu
-IGJlIHN1Y2Nlc3NmdWxseSBhdHRhY2hlZCB0byBhCj4+PiBncm91cCB3aXRoIGlvbW11X2F0dGFj
-aF9ncm91cC4KPj4+Cj4+PiBMb29raW5nIGZvciBjb21tZW50IG9uIHdoeSB0aGUgYmVoYXZpb3Vy
-IGlzIGhvdyBpdCBpcyBjdXJyZW50bHkgYW5kIGlmCj4+PiB0aGVyZSBhcmUgYW55IGlzc3VlcyB3
-aXRoIHRoZSBzb2x1dGlvbiBJ4oCZdmUgYmVlbiB0ZXN0aW5nLgo+Pj4KPj4+IENoZWVycywKPj4+
-IEphbWVzLgo+Pj4KPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21t
-dS5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+PiBpbmRleCBiZmYyYWJkNi4uM2E1
-ODM4OWYgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPj4+ICsr
-KyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+Pj4gQEAgLTUxNzAsMTAgKzUxNzAsMTUg
-QEAgc3RhdGljIHN0cnVjdCBpb21tdV9kb21haW4gKmludGVsX2lvbW11X2RvbWFpbl9hbGxvYyh1
-bnNpZ25lZCB0eXBlKQo+Pj4gICAgICAgIHN0cnVjdCBkbWFyX2RvbWFpbiAqZG1hcl9kb21haW47
-Cj4+PiAgICAgICAgc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluOwo+Pj4KPj4+IC0gICAgIGlm
-ICh0eXBlICE9IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4+PiArICAgICBpZiAodHlwZSA9PSBJ
-T01NVV9ET01BSU5fVU5NQU5BR0VEKQo+Pj4gKyAgICAgICAgICAgICBkbWFyX2RvbWFpbiA9IGFs
-bG9jX2RvbWFpbihET01BSU5fRkxBR19WSVJUVUFMX01BQ0hJTkUpOwo+Pj4gKyAgICAgZWxzZSBp
-Zih0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpCj4+PiArICAgICAgICAgICAgIGRtYXJfZG9tYWlu
-ID0gYWxsb2NfZG9tYWluKDApOwo+Pj4gKyAgICAgZWxzZSBpZih0eXBlID09IElPTU1VX0RPTUFJ
-Tl9JREVOVElUWSkKPj4+ICsgICAgICAgICAgICAgZG1hcl9kb21haW4gPSBhbGxvY19kb21haW4o
-RE9NQUlOX0ZMQUdfU1RBVElDX0lERU5USVRZKTsKPj4+ICsgICAgIGVsc2UKPj4+ICAgICAgICAg
-ICAgICAgIHJldHVybiBOVUxMOwo+Pj4KPj4+IC0gICAgIGRtYXJfZG9tYWluID0gYWxsb2NfZG9t
-YWluKERPTUFJTl9GTEFHX1ZJUlRVQUxfTUFDSElORSk7Cj4+PiAgICAgICAgaWYgKCFkbWFyX2Rv
-bWFpbikgewo+Pj4gICAgICAgICAgICAgICAgcHJfZXJyKCJDYW4ndCBhbGxvY2F0ZSBkbWFyX2Rv
-bWFpblxuIik7Cj4+PiAgICAgICAgICAgICAgICByZXR1cm4gTlVMTDsKPj4+IEBAIC01MTg2LDkg
-KzUxOTEsMTIgQEAgc3RhdGljIHN0cnVjdCBpb21tdV9kb21haW4gKmludGVsX2lvbW11X2RvbWFp
-bl9hbGxvYyh1bnNpZ25lZCB0eXBlKQo+Pj4gICAgICAgIGRvbWFpbl91cGRhdGVfaW9tbXVfY2Fw
-KGRtYXJfZG9tYWluKTsKPj4+Cj4+PiAgICAgICAgZG9tYWluID0gJmRtYXJfZG9tYWluLT5kb21h
-aW47Cj4+PiAtICAgICBkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX3N0YXJ0ID0gMDsKPj4+IC0g
-ICAgIGRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfZW5kICAgPSBfX0RPTUFJTl9NQVhfQUREUihk
-bWFyX2RvbWFpbi0+Z2F3KTsKPj4+IC0gICAgIGRvbWFpbi0+Z2VvbWV0cnkuZm9yY2VfYXBlcnR1
-cmUgPSB0cnVlOwo+Pj4gKwo+Pj4gKyAgICAgaWYgKHR5cGUgPT0gSU9NTVVfRE9NQUlOX1VOTUFO
-QUdFRCkgewo+Pj4gKyAgICAgICAgICAgICBkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX3N0YXJ0
-ID0gMDsKPj4+ICsgICAgICAgICAgICAgZG9tYWluLT5nZW9tZXRyeS5hcGVydHVyZV9lbmQgICA9
-IF9fRE9NQUlOX01BWF9BRERSKGRtYXJfZG9tYWluLT5nYXcpOwo+Pj4gKyAgICAgICAgICAgICBk
-b21haW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsKPj4+ICsgICAgIH0KPj4+Cj4+
-PiAgICAgICAgcmV0dXJuIGRvbWFpbjsKPj4+ICAgIH0KPj4+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+PiBpb21tdSBtYWlsaW5nIGxpc3QKPj4+IGlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+PiBodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+Pj4KPiAKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Joerg,
+
+On 11/7/18 12:25 AM, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org wrote:
+> On Mon, Oct 22, 2018 at 12:50:56PM +0100, Robin Murphy wrote:
+>> To me, that sounds like a very good argument for having separate "attach as
+>> primary domain" and "attach as aux domain" APIs.
+> 
+> I agree with that, overloading iommu_attach_device() to support
+> aux-domains is not going to be a maintainable solution. I'd like this
+> to be a two-level approach, where the aux-domains are sub-domains of a
+> primary domain (naming is still to-be-improved):
+> 
+> 
+> 	struct iommu_domain *domain;
+> 
+> 	domain = iommu_alloc_aux_domain();
+> 
+> 	iommu_attach_device(pdev, domain); /* Fails if device has not
+> 					      support for this
+> 					      domain-type */
+> 
+> 	/* Bind a process address space to the aux-domain */
+> 	sva_handle = iommu_sva_bind_mm(domain, current, ...);
+> 	pasid = iommu_sva_get_pasid(sva_handle);
+> 
+> 	mdev_handle = iommu_mdev_alloc_domain(domain);
+> 	iommu_mdev_map(mdev_handle, ...);
+> 	iommu_mdev_unmap(mdev_handle, ...);
+> 
+> 	/* Do more work */
+> 
+> 	iommu_sva_unbind_mm(sva_handle);
+> 
+> 	iommu_mdev_free_domain(mdev_handle);
+> 
+> 	iommu_detach_device(domain, pdev);
+> 
+
+Aux-domain is not used for sva case. Please allow me to introduce some
+backgrounds of the aux-domain.
+
+Previously we have RID (Request ID) granular DMA translation, hence only
+a single domain might be attached to a device. The same domain could be
+attached to multiple devices if they are configured to be assigned to a
+same application (or VM).
+
+    .--------------.                            .--------------.
+    | PCI device A |    .------------------.    | PCI device B |
+    |              |<---|   Domain         |--->|              |
+    |              |    '------------------'    |              |
+    |              |                            |              |
+    |              |                            |              |
+    |              |                            |              |
+    |              |                            |              |
+    '--------------'                            '--------------'
+
+Nowadays, we can find PASID granular DMA translation on both ARM and x86
+platforms. With PASID granular DMA translation supported in system 
+iommu, if a device divides itself into multiple subsets and tag the DMA
+transfers of each subset with a unique PASID, each subset become
+assignable. We call the assignable subset as an ADI (Assignable Device
+Interface). As the result, each ADI could be attached with a domain.
+
+So for a device described above, a primary domain will be attached to it
+for DMA transfers without PASID, and an aux-domain might be attached to
+each ADI for transfers tagged with a PASID#xyz.
+
+      .--------------.     .------------------.
+      | PCI device A |<----| Primary Domain   |
+      |              |     '------------------'
+      .--------------.     .------------------.
+      | ADI(PASID#x) |<----| Aux Domain1      |
+      .--------------.     .------------------.
+      | ADI(PASID#y) |<----| Aux Domain2      |
+      .--------------.     .------------------.
+      | ADI(PASID#z) |<----| Aux Domain3      |
+      '--------------'     '------------------'
+      |              |
+      '--------------'
+
+Conceptually, if we look a domain as an address boundary of each
+assignable element, there is no difference between a primary domain and
+an aux domain. The difference exists only in the vendor specific iommu
+driver, say primary domains and aux domains use different translation
+tables.
+
+Further more, a single domain might be attached to an ADI of device A,
+while attached to another legacy device B which doesn't support PASID
+features. In this case, we say "Domain 4" is attached to ADI(PASID#x) in
+aux mode and attached to device B in primary mode.
+
+      .--------------.     .------------------.     .---------------.
+      | PCI device A |<----| Primary Domain   |     | PCI device B  |
+      |              |     '------------------'     |               |
+      .--------------.     .------------------.     |               |
+      | ADI(PASID#x) |<----|   Domain 4       |---->|               |
+      .--------------.     .------------------.     |               |
+      | ADI(PASID#y) |<----| Aux Domain2      |     |               |
+      .--------------.     .------------------.     |               |
+      | ADI(PASID#z) |<----| Aux Domain3      |     |               |
+      '--------------'     '------------------'     |               |
+      |              |                              |               |
+      '--------------'                              '---------------'
+
+Based on this, actually we can reuse all existing domain APIs for aux
+domain.
+
+     iommu_domain_alloc()
+     iommu_domain_free()
+     iommu_attach_device()
+     iommu_detach_device()
+     iommu_map()
+     iommu_unmap()
+
+During discussion, we found that reusing iommu_at(de)tach_device() will
+cause some changes in iommu core due to the implementation of default
+domain. So Jean suggested in this thread that we could consider to use
+aux domain specific interfaces for domain attaching and detaching.
+We followed Jean's suggestion and submitted a new version with aux
+domain specific interfaces for domain attaching and detaching.
+
+https://lkml.org/lkml/2018/11/5/209
+
+Best regards,
+Lu Baolu
