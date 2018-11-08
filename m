@@ -1,17 +1,16 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
-Date: Thu, 8 Nov 2018 09:42:57 +0800
-Message-ID: <14cb4192-8557-72e1-ef26-4155b2cd7e63@linux.intel.com>
-References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
-	<5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
-	<CALwnD_qUhQu-fwOObth-DWzSNoARZ_ERuNwyS8r73C0yhw7jGQ@mail.gmail.com>
-	<b92b1739-dc3e-9515-a6f1-e4c00f53882b@linux.intel.com>
-	<A393DB8A-BFC6-40C2-B9E8-6667A927957E@arista.com>
+Subject: Re: [PATCH v4 04/12] iommu/vt-d: Add 256-bit invalidation descriptor
+	support
+Date: Thu, 8 Nov 2018 10:16:51 +0800
+Message-ID: <a6e43ddd-0889-4a4a-b908-993db28c6d87@linux.intel.com>
+References: <20181105053151.7173-1-baolu.lu@linux.intel.com>
+	<20181105053151.7173-5-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439D5FAA2@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A393DB8A-BFC6-40C2-B9E8-6667A927957E-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D5FAA2-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -22,113 +21,142 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAxMS84LzE4IDE6NTUgQU0sIEphbWVzIFNld2FydCB3cm90ZToKPiBIZXksCj4gCj4+
-IE9uIDcgTm92IDIwMTgsIGF0IDAyOjEwLCBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwu
-Y29tPiB3cm90ZToKPj4KPj4gSGksCj4+Cj4+IE9uIDExLzYvMTggNjo0MCBQTSwgSmFtZXMgU2V3
-YXJ0IHdyb3RlOgo+Pj4gSGV5IEx1LAo+Pj4gV291bGQgeW91IGJlIGFibGUgdG8gZ28gaW50byBt
-b3JlIGRldGFpbCBhYm91dCB0aGUgaXNzdWVzIHdpdGgKPj4+IGFsbG93aW5nIElPTU1VX0RPTUFJ
-Tl9ETUEgdG8gYmUgYWxsb2NhdGVkIHZpYSBkb21haW5fYWxsb2M/Cj4+Cj4+IFRoaXMgZG9vciBp
-cyBjbG9zZWQgYmVjYXVzZSBpbnRlbCBpb21tdSBkcml2ZXIgZG9lcyBldmVyeXRoaW5nIGZvcgo+
-PiBJT01NVV9ET01BSU5fRE1BOiBhbGxvY2F0aW5nIGEgZG9tYWluIGFuZCBzZXR1cCB0aGUgY29u
-dGV4dCBlbnRyaWVzCj4+IGZvciB0aGUgZG9tYWluLgo+IAo+IEFzIGZhciBhcyBJIGNhbiB0ZWxs
-LCBhdHRhY2hfZGV2aWNlIGluIHRoZSBpbnRlbCBkcml2ZXIgd2lsbCBoYW5kbGUKPiBjbGVhbmlu
-ZyB1cCBhbnkgb2xkIGRvbWFpbiBjb250ZXh0IG1hcHBpbmcgYW5kIGVuc3VyZSB0aGUgbmV3IGRv
-bWFpbiBpcwo+IG1hcHBlZCB3aXRoIGNhbGxzIHRvIGRtYXJfcmVtb3ZlX29uZV9kZXZfaW5mbyBh
-bmQgZG9tYWluX2FkZF9kZXZfaW5mby4KClRoYXQncyBvbmx5IGZvciBkb21haW5zIG9mIElPTU1V
-X0RPTUFJTl9VTk1BTkFHRUQsIHJpZ2h0PwoKPiAKPj4KPj4gV2h5IGRvIHdlIHdhbnQgdG8gb3Bl
-biB0aGlzIGRvb3I/IFByb2JhYmx5IHdlIHdhbnQgdGhlIGdlbmVyaWMgaW9tbXUKPj4gbGF5ZXIg
-dG8gaGFuZGxlIHRoZXNlIHRoaW5ncyAoaXQncyBjYWxsZWQgZGVmYXVsdCBkb21haW4pLgo+IAo+
-IEnigJlkIGxpa2UgdG8gYWxsb2NhdGUgYSBkb21haW4gYW5kIGF0dGFjaCBpdCB0byBtdWx0aXBs
-ZSBkZXZpY2VzIGluIGEKPiBncm91cC9tdWx0aXBsZSBncm91cHMgc28gdGhhdCB0aGV5IHNoYXJl
-IGFkZHJlc3MgdHJhbnNsYXRpb24sIGJ1dCBzdGlsbAo+IGFsbG93IGRyaXZlcnMgZm9yIGRldmlj
-ZXMgaW4gdGhvc2UgZ3JvdXBzIHRvIHVzZSB0aGUgZG1hX21hcF9vcHMgYXBpLgoKSnVzdCBvdXQg
-b2YgY3VyaW9zaXR5LCB3aHkgZG8geW91IHdhbnQgdG8gc2hhcmUgYSBzaW5nbGUgZG9tYWluIGFj
-cm9zcwptdWx0aXBsZSBncm91cHM/IEJ5IGRlZmF1bHQsIHRoZSBncm91cHMgYW5kIERNQSBkb21h
-aW5zIGFyZSBub3JtYWxseQoxLTEgbWFwcGVkLCByaWdodD8KCj4gCj4+IFNvIHdlIGNhbid0IGp1
-c3Qgb3BlbiB0aGUgZG9vciBidXQgbm90IGNsZWFudXAgdGhlIHRoaW5ncyByaWdodD8KPiAKPiBB
-IHVzZXIgb2YgZG9tYWluX2FsbG9jIGFuZCBhdHRhY2hfZGV2aWNlIGlzIHJlc3BvbnNpYmxlIGZv
-ciBkZXRhY2hpbmcgYQo+IGRvbWFpbiBpZiBpdCBpcyBubyBsb25nZXIgbmVlZGVkIGFuZCBjYWxs
-aW5nIGRvbWFpbl9mcmVlLgoKQ3VycmVudGx5IERNQSBBUEkgY2FsbHMgZ2V0X3ZhbGlkX2RvbWFp
-bl9mb3JfZGV2KCkgdG8gcmV0cmlldmUgYSBETUEKZG9tYWluLiBJZiB0aGUgZG9tYWluIGhhcyBh
-bHJlYWR5IGJlZW4gYWxsb2NhdGVkLCByZXR1cm4gZGlyZWN0bHkuCk90aGVyd2lzZSwgYWxsb2Nh
-dGUgYW5kIGluaXRpYWxpemUgYSBuZXcgb25lIGZvciB0aGUgZGV2aWNlLiBMZXQncyBjYWxsCmRv
-bWFpbnMgYWxsb2NhdGVkIGJ5IGdldF92YWxpZF9kb21haW5fZm9yX2RldigpIGFzICJBIi4KCklm
-IHdlIG9wZW4gdGhlIGRvb3IgYW5kIGFsbG93IGFub3RoZXIgY29tcG9uZW50IHRvIG1hbmFnZSB0
-aGUgRE1BCmRvbWFpbnMgdGhyb3VnaCBkb21haW4gaW9tbXVfZG9tYWluX2FsbG9jL2ZyZWUoKS4g
-TGV0J3MgY2FsbCBkb21haW5zCmFsbG9jYXRlZCB0aHJvdWdoIGlvbW11X2RvbWFpbl9hbGxvYygp
-IGFzICJCIi4KClNvIGhvdyBjYW4gd2Ugc3luYyBiZXR3ZWVuIEEgYW5kIEI/CgpOZWVkIHRvIGdv
-IHRocm91Z2ggdGhlIGNvZGUgdG8gZmluZCBvdXQgbW9yZS4KCkJlc3QgcmVnYXJkcywKTHUgQmFv
-bHUKPiAKPiBDaGVlcnMsCj4gSmFtZXMuCj4gCj4gCj4+Cj4+IEkgaGF2ZW4ndCBzcGVudCB0aW1l
-IG9uIGRldGFpbHMuIFNvIEkgY2MnZWQgSmFjb2IgZm9yIGNvcnJlY3Rpb25zLgo+Pgo+PiBCZXN0
-IHJlZ2FyZHMsCj4+IEx1IEJhb2x1Cj4+Cj4+PiBDaGVlcnMsCj4+PiBKYW1lcy4KPj4+IE9uIEZy
-aSwgTm92IDIsIDIwMTggYXQgMjo0MyBBTSBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwu
-Y29tPiB3cm90ZToKPj4+Pgo+Pj4+IEhpLAo+Pj4+Cj4+Pj4gT24gMTAvMzAvMTggMTA6MTggUE0s
-IEphbWVzIFNld2FydCB2aWEgaW9tbXUgd3JvdGU6Cj4+Pj4+IEhleSwKPj4+Pj4KPj4+Pj4gSeKA
-mXZlIGJlZW4gaW52ZXN0aWdhdGluZyB0aGUgcmVsYXRpb25zaGlwIGJldHdlZW4gaW9tbXUgZ3Jv
-dXBzIGFuZCBkb21haW5zCj4+Pj4+IG9uIG91ciBzeXN0ZW1zIGFuZCBoYXZlIGEgZmV3IHF1ZXN0
-aW9uLiBXaHkgZG9lcyB0aGUgaW50ZWwgaW9tbXUgY29kZSBub3QKPj4+Pj4gYWxsb3cgYWxsb2Nh
-dGluZyBJT01NVV9ET01BSU5fRE1BPyBSZXR1cm5pbmcgTlVMTCB3aGVuIGdpdmVuIHRoaXMgZG9t
-YWluCj4+Pj4+IHR5cGUgaGFzIHRoZSBzaWRlIGVmZmVjdCB0aGF0IHRoZSBkZWZhdWx0X2RvbWFp
-biBmb3IgYW4gaW9tbXUgZ3JvdXAgaXMgbm90Cj4+Pj4+IHNldCwgd2hpY2gsIHdoZW4gdXNpbmcg
-Zm9yIGUuZy4gZG1hX21hcF9vcHMubWFwX3BhZ2UsIG1lYW5zIGEgZG9tYWluIGlzCj4+Pj4+IGFs
-bG9jYXRlZCBwZXIgZGV2aWNlLgo+Pj4+Cj4+Pj4gSW50ZWwgdnQtZCBkcml2ZXIgZG9lc24ndCBp
-bXBsZW1lbnQgdGhlIGRlZmF1bHQgZG9tYWluIGFuZCBhbGxvY2F0ZXMKPj4+PiBkb21haW4gb25s
-eSBvbiBkZW1hbmRlZC4gVGhlcmUgYXJlIGxvdHMgb2YgdGhpbmdzIHRvIGRvIGJlZm9yZSB3ZSBh
-bGxvdwo+Pj4+IGlvbW11IEFQSSB0byBhbGxvY2F0ZSBkb21haW5zIG90aGVyIHRoYW4gSU9NTVVf
-RE9NQUlOX1VOTUFOQUdFRC4KPj4+Pgo+Pj4+IEJlc3QgcmVnYXJkcywKPj4+PiBMdSBCYW9sdQo+
-Pj4+Cj4+Pj4+Cj4+Pj4+IFRoaXMgc2VlbXMgdG8gYmUgdGhlIG9wcG9zaXRlIGJlaGF2aW91ciB0
-byB0aGUgQU1EIGlvbW11IGNvZGUgd2hpY2gKPj4+Pj4gc3VwcG9ydHMgYWxsb2NhdGluZyBhbiBJ
-T01NVV9ET01BSU5fRE1BIGFuZCB3aWxsIG9ubHkgbG9vayB0byB0aGUgaW9tbXUKPj4+Pj4gZ3Jv
-dXAgaWYgYSBkb21haW4gaXMgbm90IGF0dGFjaGVkIHRvIHRoZSBkZXZpY2UgcmF0aGVyIHRoYW4g
-YWxsb2NhdGluZyBhCj4+Pj4+IG5ldyBvbmUuIE9uIEFNRCBldmVyeSBkZXZpY2UgaW4gYW4gaW9t
-bXUgZ3JvdXAgd2lsbCBzaGFyZSB0aGUgc2FtZSBkb21haW4uCj4+Pj4+Cj4+Pj4+IEFwcGVuZGVk
-IGlzIHdoYXQgSSB0aGluayBhIHBhdGNoIHRvIGltcGxlbWVudCBkb21haW5fYWxsb2MgZm9yCj4+
-Pj4+IElPTU1VX0RPTUFJTl9ETUEgYW5kIGFsc28gSU9NTVVfRE9NQUlOX0lERU5USVRZIHdvdWxk
-IGxvb2sgbGlrZS4gVGVzdGluZwo+Pj4+PiBzaG93cyBlYWNoIGRldmljZSBpbiBhIGdyb3VwIHdp
-bGwgc2hhcmUgYSBkb21haW4gYnkgZGVmYXVsdCwgaXQgYWxzbwo+Pj4+PiBhbGxvd3MgYWxsb2Nh
-dGluZyBhIG5ldyBkbWEgZG9tYWluIHRoYXQgY2FuIGJlIHN1Y2Nlc3NmdWxseSBhdHRhY2hlZCB0
-byBhCj4+Pj4+IGdyb3VwIHdpdGggaW9tbXVfYXR0YWNoX2dyb3VwLgo+Pj4+Pgo+Pj4+PiBMb29r
-aW5nIGZvciBjb21tZW50IG9uIHdoeSB0aGUgYmVoYXZpb3VyIGlzIGhvdyBpdCBpcyBjdXJyZW50
-bHkgYW5kIGlmCj4+Pj4+IHRoZXJlIGFyZSBhbnkgaXNzdWVzIHdpdGggdGhlIHNvbHV0aW9uIEni
-gJl2ZSBiZWVuIHRlc3RpbmcuCj4+Pj4+Cj4+Pj4+IENoZWVycywKPj4+Pj4gSmFtZXMuCj4+Pj4+
-Cj4+Pj4+Cj4+Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgYi9k
-cml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPj4+Pj4gaW5kZXggYmZmMmFiZDYuLjNhNTgzODlm
-IDEwMDY0NAo+Pj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPj4+Pj4gKysr
-IGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+Pj4+IEBAIC01MTcwLDEwICs1MTcwLDE1
-IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2Mo
-dW5zaWduZWQgdHlwZSkKPj4+Pj4gICAgICAgIHN0cnVjdCBkbWFyX2RvbWFpbiAqZG1hcl9kb21h
-aW47Cj4+Pj4+ICAgICAgICBzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4+Pj4+Cj4+Pj4+
-IC0gICAgIGlmICh0eXBlICE9IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4+Pj4+ICsgICAgIGlm
-ICh0eXBlID09IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4+Pj4+ICsgICAgICAgICAgICAgZG1h
-cl9kb21haW4gPSBhbGxvY19kb21haW4oRE9NQUlOX0ZMQUdfVklSVFVBTF9NQUNISU5FKTsKPj4+
-Pj4gKyAgICAgZWxzZSBpZih0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpCj4+Pj4+ICsgICAgICAg
-ICAgICAgZG1hcl9kb21haW4gPSBhbGxvY19kb21haW4oMCk7Cj4+Pj4+ICsgICAgIGVsc2UgaWYo
-dHlwZSA9PSBJT01NVV9ET01BSU5fSURFTlRJVFkpCj4+Pj4+ICsgICAgICAgICAgICAgZG1hcl9k
-b21haW4gPSBhbGxvY19kb21haW4oRE9NQUlOX0ZMQUdfU1RBVElDX0lERU5USVRZKTsKPj4+Pj4g
-KyAgICAgZWxzZQo+Pj4+PiAgICAgICAgICAgICAgICByZXR1cm4gTlVMTDsKPj4+Pj4KPj4+Pj4g
-LSAgICAgZG1hcl9kb21haW4gPSBhbGxvY19kb21haW4oRE9NQUlOX0ZMQUdfVklSVFVBTF9NQUNI
-SU5FKTsKPj4+Pj4gICAgICAgIGlmICghZG1hcl9kb21haW4pIHsKPj4+Pj4gICAgICAgICAgICAg
-ICAgcHJfZXJyKCJDYW4ndCBhbGxvY2F0ZSBkbWFyX2RvbWFpblxuIik7Cj4+Pj4+ICAgICAgICAg
-ICAgICAgIHJldHVybiBOVUxMOwo+Pj4+PiBAQCAtNTE4Niw5ICs1MTkxLDEyIEBAIHN0YXRpYyBz
-dHJ1Y3QgaW9tbXVfZG9tYWluICppbnRlbF9pb21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlw
-ZSkKPj4+Pj4gICAgICAgIGRvbWFpbl91cGRhdGVfaW9tbXVfY2FwKGRtYXJfZG9tYWluKTsKPj4+
-Pj4KPj4+Pj4gICAgICAgIGRvbWFpbiA9ICZkbWFyX2RvbWFpbi0+ZG9tYWluOwo+Pj4+PiAtICAg
-ICBkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX3N0YXJ0ID0gMDsKPj4+Pj4gLSAgICAgZG9tYWlu
-LT5nZW9tZXRyeS5hcGVydHVyZV9lbmQgICA9IF9fRE9NQUlOX01BWF9BRERSKGRtYXJfZG9tYWlu
-LT5nYXcpOwo+Pj4+PiAtICAgICBkb21haW4tPmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1
-ZTsKPj4+Pj4gKwo+Pj4+PiArICAgICBpZiAodHlwZSA9PSBJT01NVV9ET01BSU5fVU5NQU5BR0VE
-KSB7Cj4+Pj4+ICsgICAgICAgICAgICAgZG9tYWluLT5nZW9tZXRyeS5hcGVydHVyZV9zdGFydCA9
-IDA7Cj4+Pj4+ICsgICAgICAgICAgICAgZG9tYWluLT5nZW9tZXRyeS5hcGVydHVyZV9lbmQgICA9
-IF9fRE9NQUlOX01BWF9BRERSKGRtYXJfZG9tYWluLT5nYXcpOwo+Pj4+PiArICAgICAgICAgICAg
-IGRvbWFpbi0+Z2VvbWV0cnkuZm9yY2VfYXBlcnR1cmUgPSB0cnVlOwo+Pj4+PiArICAgICB9Cj4+
-Pj4+Cj4+Pj4+ICAgICAgICByZXR1cm4gZG9tYWluOwo+Pj4+PiAgICB9Cj4+Pj4+IF9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4+Pj4+IGlvbW11IG1haWxp
-bmcgbGlzdAo+Pj4+PiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwo+Pj4+PiBodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+Pj4+
-Pgo+IAo+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi Yi,
+
+On 11/7/18 2:07 PM, Liu, Yi L wrote:
+> Hi Baolu,
+> 
+>> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
+>> Sent: Monday, November 5, 2018 1:32 PM
+> 
+> [...]
+> 
+>> ---
+>>   drivers/iommu/dmar.c                | 83 +++++++++++++++++++----------
+>>   drivers/iommu/intel-svm.c           | 76 ++++++++++++++++----------
+>>   drivers/iommu/intel_irq_remapping.c |  6 ++-
+>>   include/linux/intel-iommu.h         |  9 +++-
+>>   4 files changed, 115 insertions(+), 59 deletions(-)
+>>
+>> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+>> index d9c748b6f9e4..ec10427b98ac 100644
+>> --- a/drivers/iommu/dmar.c
+>> +++ b/drivers/iommu/dmar.c
+>> @@ -1160,6 +1160,7 @@ static int qi_check_fault(struct intel_iommu *iommu, int
+>> index)
+>>   	int head, tail;
+>>   	struct q_inval *qi = iommu->qi;
+>>   	int wait_index = (index + 1) % QI_LENGTH;
+>> +	int shift = qi_shift(iommu);
+>>
+>>   	if (qi->desc_status[wait_index] == QI_ABORT)
+>>   		return -EAGAIN;
+>> @@ -1173,13 +1174,15 @@ static int qi_check_fault(struct intel_iommu *iommu,
+>> int index)
+>>   	 */
+>>   	if (fault & DMA_FSTS_IQE) {
+>>   		head = readl(iommu->reg + DMAR_IQH_REG);
+>> -		if ((head >> DMAR_IQ_SHIFT) == index) {
+>> +		if ((head >> shift) == index) {
+>> +			struct qi_desc *desc = qi->desc + head;
+>> +
+>>   			pr_err("VT-d detected invalid descriptor: "
+>>   				"low=%llx, high=%llx\n",
+>> -				(unsigned long long)qi->desc[index].low,
+>> -				(unsigned long long)qi->desc[index].high);
+>> -			memcpy(&qi->desc[index], &qi->desc[wait_index],
+>> -					sizeof(struct qi_desc));
+>> +				(unsigned long long)desc->qw0,
+>> +				(unsigned long long)desc->qw1);
+> 
+> Still missing qw2 and qw3. May make the print differ based on if smts is configed.
+
+qw2 and qw3 are reserved from software point of view. We don't need to
+print it for information.
+
+> 
+>> +			memcpy(desc, qi->desc + (wait_index << shift),
+> 
+> Would "memcpy(desc, (unsigned long long) (qi->desc +  (wait_index << shift)," be
+> more safe?
+
+Can that be compiled? memcpy() requires a "const void *" for the second
+parameter. By the way, why it's safer with this casting?
+
+> 
+>> +			       1 << shift);
+>>   			writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
+>>   			return -EINVAL;
+>>   		}
+>> @@ -1191,10 +1194,10 @@ static int qi_check_fault(struct intel_iommu *iommu,
+>> int index)
+>>   	 */
+>>   	if (fault & DMA_FSTS_ITE) {
+>>   		head = readl(iommu->reg + DMAR_IQH_REG);
+>> -		head = ((head >> DMAR_IQ_SHIFT) - 1 + QI_LENGTH) % QI_LENGTH;
+>> +		head = ((head >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>>   		head |= 1;
+>>   		tail = readl(iommu->reg + DMAR_IQT_REG);
+>> -		tail = ((tail >> DMAR_IQ_SHIFT) - 1 + QI_LENGTH) % QI_LENGTH;
+>> +		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>>
+>>   		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>>
+>> @@ -1222,15 +1225,14 @@ int qi_submit_sync(struct qi_desc *desc, struct
+>> intel_iommu *iommu)
+>>   {
+>>   	int rc;
+>>   	struct q_inval *qi = iommu->qi;
+>> -	struct qi_desc *hw, wait_desc;
+>> +	int offset, shift, length;
+>> +	struct qi_desc wait_desc;
+>>   	int wait_index, index;
+>>   	unsigned long flags;
+>>
+>>   	if (!qi)
+>>   		return 0;
+>>
+>> -	hw = qi->desc;
+>> -
+>>   restart:
+>>   	rc = 0;
+>>
+>> @@ -1243,16 +1245,21 @@ int qi_submit_sync(struct qi_desc *desc, struct
+>> intel_iommu *iommu)
+>>
+>>   	index = qi->free_head;
+>>   	wait_index = (index + 1) % QI_LENGTH;
+>> +	shift = qi_shift(iommu);
+>> +	length = 1 << shift;
+>>
+>>   	qi->desc_status[index] = qi->desc_status[wait_index] = QI_IN_USE;
+>>
+>> -	hw[index] = *desc;
+>> -
+>> -	wait_desc.low = QI_IWD_STATUS_DATA(QI_DONE) |
+>> +	offset = index << shift;
+>> +	memcpy(qi->desc + offset, desc, length);
+>> +	wait_desc.qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
+>>   			QI_IWD_STATUS_WRITE | QI_IWD_TYPE;
+>> -	wait_desc.high = virt_to_phys(&qi->desc_status[wait_index]);
+>> +	wait_desc.qw1 = virt_to_phys(&qi->desc_status[wait_index]);
+>> +	wait_desc.qw2 = 0;
+>> +	wait_desc.qw3 = 0;
+>>
+>> -	hw[wait_index] = wait_desc;
+>> +	offset = wait_index << shift;
+>> +	memcpy(qi->desc + offset, &wait_desc, length);
+> 
+> same question with above one.
+> 
+
+Ditto.
+
+Best regards,
+Lu Baolu
