@@ -1,16 +1,15 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH v4 05/12] iommu/vt-d: Reserve a domain id for FL and PT
-	modes
-Date: Thu, 8 Nov 2018 10:22:14 +0800
-Message-ID: <855f56ac-80be-8179-ba99-45ef99ccb87f@linux.intel.com>
+Subject: Re: [PATCH v4 06/12] iommu/vt-d: Add second level page table interface
+Date: Thu, 8 Nov 2018 10:27:58 +0800
+Message-ID: <e987773c-a547-01e4-a04f-1f34506420ac@linux.intel.com>
 References: <20181105053151.7173-1-baolu.lu@linux.intel.com>
-	<20181105053151.7173-6-baolu.lu@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439D5FAE7@SHSMSX104.ccr.corp.intel.com>
+	<20181105053151.7173-7-baolu.lu@linux.intel.com>
+	<A2975661238FB949B60364EF0F2C257439D5FB11@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439D5FAE7-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D5FB11-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -29,81 +28,43 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-On 11/7/18 2:55 PM, Liu, Yi L wrote:
+On 11/7/18 3:13 PM, Liu, Yi L wrote:
 > Hi Baolu,
 > 
 >> From: Lu Baolu [mailto:baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org]
 >> Sent: Monday, November 5, 2018 1:32 PM
->> Subject: [PATCH v4 05/12] iommu/vt-d: Reserve a domain id for FL and PT modes
 >>
->> Vt-d spec rev3.0 (section 6.2.3.1) requires that each pasid
->> entry for first-level or pass-through translation should be
->> programmed with a domain id different from those used for
->> second-level or nested translation. It is recommended that
->> software could use a same domain id for all first-only and
->> pass-through translations.
->>
->> This reserves a domain id for first-level and pass-through
->> translations.
->>
+>> This adds the interfaces to setup or tear down the structures
+>> for second level page table translations. This includes types
+>> of second level only translation and pass through.
+> 
+> A little bit refining to the description:)
+> "This patch adds interfaces for setup or tear down second level
+> translation in PASID granularity. Translation type includes second
+> level only type and pass-through type."
+> 
 >> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 >> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 >> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 >> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Cc: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->> ---
->>   drivers/iommu/intel-iommu.c | 10 ++++++++++
->>   drivers/iommu/intel-pasid.h |  6 ++++++
->>   2 files changed, 16 insertions(+)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 9331240c70b8..2f7455ee4e7a 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -1618,6 +1618,16 @@ static int iommu_init_domains(struct intel_iommu
->> *iommu)
->>   	 */
->>   	set_bit(0, iommu->domain_ids);
->>
->> +	/*
->> +	 * Vt-d spec rev3.0 (section 6.2.3.1) requires that each pasid
->> +	 * entry for first-level or pass-through translation modes should
->> +	 * be programmed with a domain id different from those used for
->> +	 * second-level or nested translation. We reserve a domain id for
->> +	 * this purpose.
->> +	 */
->> +	if (sm_supported(iommu))
->> +		set_bit(FLPT_DEFAULT_DID, iommu->domain_ids);
+>> Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > 
-> "FLPT_DEFAULT_DID" looks very likely for first level translation. How about
-> "PT_FL_DEFAULT_DID"?
-
-We have comments above it, so people won't be confused.
-
+> [...]
 > 
->>   	return 0;
->>   }
->>
->> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
->> index 12f480c2bb8b..03c1612d173c 100644
->> --- a/drivers/iommu/intel-pasid.h
->> +++ b/drivers/iommu/intel-pasid.h
->> @@ -17,6 +17,12 @@
->>   #define PDE_PFN_MASK			PAGE_MASK
->>   #define PASID_PDE_SHIFT			6
->>
->> +/*
->> + * Domain ID reserved for pasid entries programmed for first-level
->> + * only and pass-through transfer modes.
->> + */
->> +#define FLPT_DEFAULT_DID		1
+>> +
+>> +void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+>> +				 struct device *dev, int pasid)
+>> +{
+>> +	struct pasid_entry *pte;
 > 
-> Would be helpful to elaborate why DID 1 is selected in the patch
-> description.
+> pte is confusing as it is similar with pte in paging structures. may use
+> pt_entry or just pasid_entry. This comment applies to other "pte"s in
+> this patch.
 
-Yeah. DID 0 has been caved out for caching mode and we start from 1 for
-this.
+"pte" in this file means "pasid table entry", not "page table entry".
+This file holds code to handle pasid table related staff. It has nothing
+to do with paging structure. I think there should be no confusion here.
+:-)
 
 Best regards,
 Lu Baolu
