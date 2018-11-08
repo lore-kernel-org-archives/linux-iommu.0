@@ -1,22 +1,27 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2] iommu/vt-d: respect max guest address width in agaw
-Date: Thu, 8 Nov 2018 10:27:02 +0100
-Message-ID: <20181108092702.GC19831@8bytes.org>
-References: <1541544435-52624-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <20181107160428.awgpvo73mp3lbdro@8bytes.org>
- <20181107141225.2339ca4f@jacob-builder>
+Subject: Re: [PATCH -next] iommu/amd: remove set but not used variable 'tag'
+Date: Thu, 8 Nov 2018 10:32:37 +0100
+Message-ID: <20181108093237.GE19831@8bytes.org>
+References: <1541657560-73681-1-git-send-email-yuehaibing@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181107141225.2339ca4f@jacob-builder>
+In-Reply-To: <1541657560-73681-1-git-send-email-yuehaibing@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Mehta, Sohil" <sohil.mehta@intel.com>, Ashok Raj <ashok.raj@intel.com>
+To: YueHaibing <yuehaibing@huawei.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 07, 2018 at 02:12:25PM -0800, Jacob Pan wrote:
-> We have found some issues with this patch on some platforms. Please
-> disregard this patch.
+On Thu, Nov 08, 2018 at 06:12:40AM +0000, YueHaibing wrote:
+> -		tag = event[1] & 0x03FF;
+>  		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+>  			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+>  			pasid, address, flags);
 
-Patch dropped.
+This looks like tag was just missed in the error message. It is better
+to add it there instead of removing it.
+
+Regards,
+
+	Joerg
