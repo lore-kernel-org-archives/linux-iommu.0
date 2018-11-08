@@ -1,22 +1,11 @@
-From: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v4 04/12] iommu/vt-d: Add 256-bit invalidation
-	descriptor support
-Date: Thu, 8 Nov 2018 07:20:44 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C257439D6061D@SHSMSX104.ccr.corp.intel.com>
-References: <20181105053151.7173-1-baolu.lu@linux.intel.com>
-	<20181105053151.7173-5-baolu.lu@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439D5FAA2@SHSMSX104.ccr.corp.intel.com>
-	<a6e43ddd-0889-4a4a-b908-993db28c6d87@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439D604DF@SHSMSX104.ccr.corp.intel.com>
-	<915876cd-6a1f-097b-b9be-9cb3df18a1df@linux.intel.com>
-	<A2975661238FB949B60364EF0F2C257439D60581@SHSMSX104.ccr.corp.intel.com>
-	<ad4f7e5b-9af1-7134-a573-6e78184de0ee@linux.intel.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: iommu/io-pgtable-arm-v7s: About pagetable 33bit PA
+Date: Thu, 8 Nov 2018 15:31:32 +0800
+Message-ID: <1541662292.22369.22.camel@mhfsdcap03>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ad4f7e5b-9af1-7134-a573-6e78184de0ee-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,77 +15,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
-	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGksDQoNCj4gRnJvbTogTHUgQmFvbHUgW21haWx0bzpiYW9sdS5sdUBsaW51eC5pbnRlbC5jb21d
-DQo+IFNlbnQ6IFRodXJzZGF5LCBOb3ZlbWJlciA4LCAyMDE4IDI6MTQgUE0NCj4gDQo+IEhpLA0K
-PiANCj4gT24gMTEvOC8xOCAxOjQ1IFBNLCBMaXUsIFlpIEwgd3JvdGU6DQo+ID4+IEZyb206IEx1
-IEJhb2x1IFttYWlsdG86YmFvbHUubHVAbGludXguaW50ZWwuY29tXQ0KPiA+PiBTZW50OiBUaHVy
-c2RheSwgTm92ZW1iZXIgOCwgMjAxOCAxOjI1IFBNDQo+ID4+IFN1YmplY3Q6IFJlOiBbUEFUQ0gg
-djQgMDQvMTJdIGlvbW11L3Z0LWQ6IEFkZCAyNTYtYml0IGludmFsaWRhdGlvbg0KPiA+PiBkZXNj
-cmlwdG9yIHN1cHBvcnQNCj4gPj4NCj4gPj4gSGksDQo+ID4+DQo+ID4+IE9uIDExLzgvMTggMTE6
-NDkgQU0sIExpdSwgWWkgTCB3cm90ZToNCj4gPj4+IEhpLA0KPiA+Pj4NCj4gPj4+PiBGcm9tOiBM
-dSBCYW9sdSBbbWFpbHRvOmJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbV0NCj4gPj4+PiBTZW50OiBU
-aHVyc2RheSwgTm92ZW1iZXIgOCwgMjAxOCAxMDoxNyBBTQ0KPiA+Pj4+IFN1YmplY3Q6IFJlOiBb
-UEFUQ0ggdjQgMDQvMTJdIGlvbW11L3Z0LWQ6IEFkZCAyNTYtYml0IGludmFsaWRhdGlvbg0KPiA+
-Pj4+IGRlc2NyaXB0b3Igc3VwcG9ydA0KPiA+Pj4+DQo+ID4+Pj4gSGkgWWksDQo+ID4+Pj4NCj4g
-Pj4+PiBPbiAxMS83LzE4IDI6MDcgUE0sIExpdSwgWWkgTCB3cm90ZToNCj4gPj4+Pj4gSGkgQmFv
-bHUsDQo+ID4+Pj4+DQo+ID4+Pj4+PiBGcm9tOiBMdSBCYW9sdSBbbWFpbHRvOmJhb2x1Lmx1QGxp
-bnV4LmludGVsLmNvbV0NCj4gPj4+Pj4+IFNlbnQ6IE1vbmRheSwgTm92ZW1iZXIgNSwgMjAxOCAx
-OjMyIFBNDQo+ID4+Pj4+IFsuLi5dDQo+ID4+Pj4+DQo+ID4+Pj4+PiAtLS0NCj4gPj4+Pj4+ICAg
-ICBkcml2ZXJzL2lvbW11L2RtYXIuYyAgICAgICAgICAgICAgICB8IDgzICsrKysrKysrKysrKysr
-KysrKystLS0tLS0tLS0tDQo+ID4+Pj4+PiAgICAgZHJpdmVycy9pb21tdS9pbnRlbC1zdm0uYyAg
-ICAgICAgICAgfCA3NiArKysrKysrKysrKysrKysrLS0tLS0tLS0tLQ0KPiA+Pj4+Pj4gICAgIGRy
-aXZlcnMvaW9tbXUvaW50ZWxfaXJxX3JlbWFwcGluZy5jIHwgIDYgKystDQo+ID4+Pj4+PiAgICAg
-aW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oICAgICAgICAgfCAgOSArKystDQo+ID4+Pj4+PiAg
-ICAgNCBmaWxlcyBjaGFuZ2VkLCAxMTUgaW5zZXJ0aW9ucygrKSwgNTkgZGVsZXRpb25zKC0pDQo+
-ID4+Pj4+Pg0KPiA+Pj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvZG1hci5jIGIvZHJp
-dmVycy9pb21tdS9kbWFyLmMgaW5kZXgNCj4gPj4+Pj4+IGQ5Yzc0OGI2ZjllNC4uZWMxMDQyN2I5
-OGFjIDEwMDY0NA0KPiA+Pj4+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9kbWFyLmMNCj4gPj4+Pj4+
-ICsrKyBiL2RyaXZlcnMvaW9tbXUvZG1hci5jDQo+ID4+Pj4+PiBAQCAtMTE2MCw2ICsxMTYwLDcg
-QEAgc3RhdGljIGludCBxaV9jaGVja19mYXVsdChzdHJ1Y3QNCj4gPj4+Pj4+IGludGVsX2lvbW11
-ICppb21tdSwgaW50DQo+ID4+Pj4+PiBpbmRleCkNCj4gPj4+Pj4+ICAgICAJaW50IGhlYWQsIHRh
-aWw7DQo+ID4+Pj4+PiAgICAgCXN0cnVjdCBxX2ludmFsICpxaSA9IGlvbW11LT5xaTsNCj4gPj4+
-Pj4+ICAgICAJaW50IHdhaXRfaW5kZXggPSAoaW5kZXggKyAxKSAlIFFJX0xFTkdUSDsNCj4gPj4+
-Pj4+ICsJaW50IHNoaWZ0ID0gcWlfc2hpZnQoaW9tbXUpOw0KPiA+Pj4+Pj4NCj4gPj4+Pj4+ICAg
-ICAJaWYgKHFpLT5kZXNjX3N0YXR1c1t3YWl0X2luZGV4XSA9PSBRSV9BQk9SVCkNCj4gPj4+Pj4+
-ICAgICAJCXJldHVybiAtRUFHQUlOOw0KPiA+Pj4+Pj4gQEAgLTExNzMsMTMgKzExNzQsMTUgQEAg
-c3RhdGljIGludCBxaV9jaGVja19mYXVsdChzdHJ1Y3QNCj4gPj4+Pj4+IGludGVsX2lvbW11ICpp
-b21tdSwgaW50IGluZGV4KQ0KPiA+Pj4+Pj4gICAgIAkgKi8NCj4gPj4+Pj4+ICAgICAJaWYgKGZh
-dWx0ICYgRE1BX0ZTVFNfSVFFKSB7DQo+ID4+Pj4+PiAgICAgCQloZWFkID0gcmVhZGwoaW9tbXUt
-PnJlZyArIERNQVJfSVFIX1JFRyk7DQo+ID4+Pj4+PiAtCQlpZiAoKGhlYWQgPj4gRE1BUl9JUV9T
-SElGVCkgPT0gaW5kZXgpIHsNCj4gPj4+Pj4+ICsJCWlmICgoaGVhZCA+PiBzaGlmdCkgPT0gaW5k
-ZXgpIHsNCj4gPj4+Pj4+ICsJCQlzdHJ1Y3QgcWlfZGVzYyAqZGVzYyA9IHFpLT5kZXNjICsgaGVh
-ZDsNCj4gPj4+Pj4+ICsNCj4gPj4+Pj4+ICAgICAJCQlwcl9lcnIoIlZULWQgZGV0ZWN0ZWQgaW52
-YWxpZCBkZXNjcmlwdG9yOiAiDQo+ID4+Pj4+PiAgICAgCQkJCSJsb3c9JWxseCwgaGlnaD0lbGx4
-XG4iLA0KPiA+Pj4+Pj4gLQkJCQkodW5zaWduZWQgbG9uZyBsb25nKXFpLT5kZXNjW2luZGV4XS5s
-b3csDQo+ID4+Pj4+PiAtCQkJCSh1bnNpZ25lZCBsb25nIGxvbmcpcWktPmRlc2NbaW5kZXhdLmhp
-Z2gpOw0KPiA+Pj4+Pj4gLQkJCW1lbWNweSgmcWktPmRlc2NbaW5kZXhdLCAmcWktPmRlc2Nbd2Fp
-dF9pbmRleF0sDQo+ID4+Pj4+PiAtCQkJCQlzaXplb2Yoc3RydWN0IHFpX2Rlc2MpKTsNCj4gPj4+
-Pj4+ICsJCQkJKHVuc2lnbmVkIGxvbmcgbG9uZylkZXNjLT5xdzAsDQo+ID4+Pj4+PiArCQkJCSh1
-bnNpZ25lZCBsb25nIGxvbmcpZGVzYy0+cXcxKTsNCj4gPj4+Pj4gU3RpbGwgbWlzc2luZyBxdzIg
-YW5kIHF3My4gTWF5IG1ha2UgdGhlIHByaW50IGRpZmZlciBiYXNlZCBvbiBpZiBzbXRzIGlzDQo+
-IGNvbmZpZ2VkLg0KPiA+Pj4+IHF3MiBhbmQgcXczIGFyZSByZXNlcnZlZCBmcm9tIHNvZnR3YXJl
-IHBvaW50IG9mIHZpZXcuIFdlIGRvbid0IG5lZWQNCj4gPj4+PiB0byBwcmludCBpdCBmb3IgaW5m
-b3JtYXRpb24uDQo+ID4+PiBCdXQgZm9yIFNjYWxhYmxlIG1vZGUsIGl0IHNob3VsZCBiZSB2YWxp
-ZD8NCj4gPj4gTm8uIEl0J3MgcmVzZXJ2ZWQgZm9yIHNvZnR3YXJlLg0KPiA+IE5vLCBJIGRvbuKA
-mXQgdGhpbmsgc28uIFBSUSByZXNwb25zZSB3b3VsZCBhbHNvIGJlIHF1ZXVlZCB0byBoYXJkd2Fy
-ZSBieQ0KPiA+IFFJLiBGb3Igc3VjaCBRSSBkZXNjcmlwdG9ycywgdGhlIGhpZ2ggYml0cyBhcmUg
-bm90IHJlc2VydmVkLg0KPiA+DQo+IA0KPiBEbyB5b3UgbWVhbiB0aGUgcHJpdmF0ZSBkYXRhIGZp
-ZWxkcyBvZiBhIHBhZ2UgcmVxdWVzdCBkZXNjcmlwdG9yIG9yIGEgcGFnZSBncm91cA0KPiByZXNw
-b25zZSBkZXNjcmlwdG9yPyBUaG9zZSBmaWVsZHMgY29udGFpbnMgc29mdHdhcmUgZGVmaW5lZCBw
-cml2YXRlIGRhdGEgKG1pZ2h0IGENCj4ga2VybmVsIHBvaW50ZXI/KS4gV2Ugc2hvdWxkIGF2b2lk
-IGxlYWtpbmcgc3VjaCBpbmZvcm1hdGlvbiBpbiB0aGUgZ2VuZXJpYyBrZXJuZWwNCj4gbWVzc2Fn
-ZSBmb3Igc2VjdXJpdHkgY29uc2lkZXJhdGlvbi4NCj4gT3IgYW55dGhpbmcgSSBtaXNzZWQ/DQoN
-CnllcywgSSdtIG5vdCBzdXJlIHdoYXQga2luZCBvZiBkYXRhIGl0IG1heSBiZSBpbiB0aGUgcHJp
-dmF0ZSBkYXRhIGZpZWxkLiBGcm9tIHNvZnR3YXJlDQpwb2ludCBvZiB2aWV3LCBpdCBtYXkgYmUg
-aGVscGZ1bCB0byBzaG93IHRoZSBmdWxsIGNvbnRlbnQgb2YgdGhlIFFJIGRlc2NyaXB0b3IgZm9y
-IGVycm9yDQp0cmlhZ2UuIFBlcnNvbmFsbHksIEknbSBmaW5lIGlmIHlvdSBrZWVwIGl0IG9uIHRo
-aXMgcG9pbnQuDQoNClJlZ2FyZHMsDQpZaSBMaXUNCl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+Hi Robin,
+
+After the commit ad67f5a6545f ("arm64: replace ZONE_DMA with
+ZONE_DMA32"), we don't have ZONE_DMA in aarch64, but
+__arm_v7s_alloc_table[1] use the GFP_DMA to expect the physical address
+of pagetable should be 32bit.
+
+Right now we meet a issue that the lvl1 pagetable PA is 0x1_3ab6_0000 in
+the 4GB broad. then the IOMMU initialize failed.(This issue can be fixed
+if we revert ad67f5a6545f.)
+
+I planed to add GFP_DMA32 for pagetable allocation. the level1 was
+ok but level2 was failed. It looks that slab don't like GFP_DMA32[2].
+this is the warning log:
+=====
+Unexpected gfp: 0x4 (GFP_DMA32). Fixing up to gfp: 0x488020 (GFP_ATOMIC|
+__GFP_ZERO). Fix your code!
+=====
+I don't know why slab don't allow GFP_DMA32, the gfp flags seems only
+be bypassed to alloc_page. Is it possible that let slab allow GFP_DMA32
+for aarch64?
+
+We notice that this has been discussed[3]. but if we use alloc_page for
+the level2 pagetable, It may waste lots of memory.
+
+Any suggestion is appreciated.
+
+
+Reported-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+
+[1]
+https://elixir.bootlin.com/linux/v4.20-rc1/source/drivers/iommu/io-pgtable-arm-v7s.c#L200
+[2] https://elixir.bootlin.com/linux/v4.20-rc1/source/mm/internal.h#L37
+[3] https://patchwork.kernel.org/patch/10474289/
