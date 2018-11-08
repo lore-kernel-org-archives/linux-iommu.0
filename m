@@ -1,45 +1,93 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v3 5/7] iommu: Add virtio-iommu driver
-Date: Thu, 8 Nov 2018 16:46:19 +0000
-Message-ID: <eebdbcd4-e7eb-d5cf-3cc9-6223d9bcfbe0@arm.com>
-References: <20181012145917.6840-1-jean-philippe.brucker@arm.com>
- <20181012145917.6840-6-jean-philippe.brucker@arm.com>
- <20181012120953-mutt-send-email-mst@kernel.org>
- <60605670-0419-3f64-a379-9c4057d90db1@redhat.com>
+From: <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: Patch "x86/swiotlb: Enable swiotlb for > 4GiG RAM on 32-bit kernels"
+	has been added to the 4.18-stable tree
+Date: Thu, 08 Nov 2018 09:35:41 -0800
+Message-ID: <15416985412114@kroah.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <60605670-0419-3f64-a379-9c4057d90db1@redhat.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Auger Eric <eric.auger@redhat.com>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc: lorenzo.pieralisi@arm.com, tnowicki@caviumnetworks.com, devicetree@vger.kernel.org, marc.zyngier@arm.com, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 20181014075208.2715-1-hch-jcswGhMUV9g@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.orghch-jcswGhMUV9g@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
+Cc: stable-commits-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/11/2018 14:51, Auger Eric wrote:
->>> +/*
->>> + * viommu_replay_mappings - re-send MAP requests
->>> + *
->>> + * When reattaching a domain that was previously detached from all endpoints,
->>> + * mappings were deleted from the device. Re-create the mappings available in
->>> + * the internal tree.
->>> + */
->>> +static int viommu_replay_mappings(struct viommu_domain *vdomain)
->>> +{
->>> +	int ret;
-> ret needs to be initialized here. Otherwise this can lead to a crash in
-> viommu_add_device.
 
-I actually hit this one while testing the other day :) Fixed in next version
+This is a note to let you know that I've just added the patch titled
 
-Thanks,
-Jean
+    x86/swiotlb: Enable swiotlb for > 4GiG RAM on 32-bit kernels
+
+to the 4.18-stable tree which can be found at:
+    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
+
+The filename of the patch is:
+     x86-swiotlb-enable-swiotlb-for-4gig-ram-on-32-bit-kernels.patch
+and it can be found in the queue-4.18 subdirectory.
+
+If you, or anyone else, feels it should not be added to the stable tree,
+please let <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org> know about it.
+
+
+>From 485734f3fc77c1eb77ffe138c027b9a4bf0178f3 Mon Sep 17 00:00:00 2001
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Date: Sun, 14 Oct 2018 09:52:08 +0200
+Subject: x86/swiotlb: Enable swiotlb for > 4GiG RAM on 32-bit kernels
+
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+
+commit 485734f3fc77c1eb77ffe138c027b9a4bf0178f3 upstream.
+
+We already build the swiotlb code for 32-bit kernels with PAE support,
+but the code to actually use swiotlb has only been enabled for 64-bit
+kernels for an unknown reason.
+
+Before Linux v4.18 we paper over this fact because the networking code,
+the SCSI layer and some random block drivers implemented their own
+bounce buffering scheme.
+
+[ mingo: Changelog fixes. ]
+
+Fixes: 21e07dba9fb1 ("scsi: reduce use of block bounce buffers")
+Fixes: ab74cfebafa3 ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+Reported-by: Matthew Whitehead <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Signed-off-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Tested-by: Matthew Whitehead <tedheadster-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Link: https://lkml.kernel.org/r/20181014075208.2715-1-hch-jcswGhMUV9g@public.gmane.org
+Signed-off-by: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+
+---
+ arch/x86/kernel/pci-swiotlb.c |    2 --
+ 1 file changed, 2 deletions(-)
+
+--- a/arch/x86/kernel/pci-swiotlb.c
++++ b/arch/x86/kernel/pci-swiotlb.c
+@@ -42,10 +42,8 @@ IOMMU_INIT_FINISH(pci_swiotlb_detect_ove
+ int __init pci_swiotlb_detect_4gb(void)
+ {
+ 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+-#ifdef CONFIG_X86_64
+ 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+ 		swiotlb = 1;
+-#endif
+ 
+ 	/*
+ 	 * If SME is active then swiotlb will be set to 1 so that bounce
+
+
+Patches currently in stable-queue which might be from hch-jcswGhMUV9g@public.gmane.org are
+
+queue-4.18/block-don-t-deal-with-discard-limit-in-blkdev_issue_discard.patch
+queue-4.18/x86-swiotlb-enable-swiotlb-for-4gig-ram-on-32-bit-kernels.patch
