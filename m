@@ -1,26 +1,18 @@
-From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-Subject: RE: [PATCH v2 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
-Date: Thu, 8 Nov 2018 11:22:55 +0000
-Message-ID: <TY1PR01MB1770B9A0AEF082A9CBF5B0E8C0C50@TY1PR01MB1770.jpnprd01.prod.outlook.com>
-References: <CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA@mail.gmail.com>
-	<1535038384-27080-1-git-send-email-fabrizio.castro@bp.renesas.com>
+From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+Subject: RE: [PATCH 2/2] dt-bindings: iommu: ipmmu-vmsa: Add r8a774a1 support
+Date: Thu, 8 Nov 2018 11:23:58 +0000
+Message-ID: <TY1PR01MB177011B91A9CA579E01760A4C0C50@TY1PR01MB1770.jpnprd01.prod.outlook.com>
+References: <1534516265-10059-1-git-send-email-fabrizio.castro@bp.renesas.com>
+ <1534516265-10059-3-git-send-email-fabrizio.castro@bp.renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1535038384-27080-1-git-send-email-fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1534516265-10059-3-git-send-email-fabrizio.castro@bp.renesas.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Fabrizio Castro <fabrizio.castro@bp.renesas.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Simon Horman <horms@verge.net.au>, Geert Uytterhoeven <geert+renesas@glider.be>, Chris Paterson <Chris.Paterson2@renesas.com>, Biju Das <biju.das@bp.renesas.com>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Dear All,
@@ -30,47 +22,40 @@ Who is the best person to take this patch?
 Thanks,
 Fab
 
-> From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> Sent: 23 August 2018 16:33
-> Subject: [PATCH v2 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
+> From: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Sent: 17 August 2018 15:31
+> Subject: [PATCH 2/2] dt-bindings: iommu: ipmmu-vmsa: Add r8a774a1 support
 >
-> Add support for RZ/G2M (R8A774A1) SoC IPMMUs.
+> Document RZ/G2M (R8A774A1) SoC bindings.
 >
-> Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
-> Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das@bp.renesas.com>
 > ---
-> v1-v2:
-> * taken out IOMMU_OF_DECLARE
+> This patch applies on top of next-20180817
 >
->  drivers/iommu/ipmmu-vmsa.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 51af2c5..331562f 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -761,6 +761,7 @@ static bool ipmmu_slave_whitelist(struct device *dev)
->  }
->
->  static const struct soc_device_attribute soc_rcar_gen3[] = {
-> +{ .soc_id = "r8a774a1", },
->  { .soc_id = "r8a7795", },
->  { .soc_id = "r8a7796", },
->  { .soc_id = "r8a77965", },
-> @@ -942,6 +943,9 @@ static const struct of_device_id ipmmu_of_ids[] = {
->  .compatible = "renesas,ipmmu-vmsa",
->  .data = &ipmmu_features_default,
->  }, {
-> +.compatible = "renesas,ipmmu-r8a774a1",
-> +.data = &ipmmu_features_rcar_gen3,
-> +}, {
->  .compatible = "renesas,ipmmu-r8a7795",
->  .data = &ipmmu_features_rcar_gen3,
->  }, {
+> diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.t=
+xt
+> b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> index ffadb7c..68446dd 100644
+> --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> @@ -13,6 +13,7 @@ Required Properties:
+>      - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
+>      - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
+>      - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
+> +    - "renesas,ipmmu-r8a774a1" for the R8A774A1 (RZ/G2M) IPMMU.
+>      - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
+>      - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
+>      - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
 > --
 > 2.7.4
 
 
 
 
-Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
+Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, B=
+uckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered=
+ No. 04586709.
