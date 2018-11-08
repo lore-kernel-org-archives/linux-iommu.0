@@ -1,47 +1,83 @@
-From: YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH -next] iommu/amd: Add missed 'tag' to error msg in iommu_print_event
-Date: Thu, 8 Nov 2018 11:57:33 +0000
-Message-ID: <1541678253-143948-1-git-send-email-yuehaibing@huawei.com>
-References: <1541657560-73681-1-git-send-email-yuehaibing@huawei.com>
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
+Date: Thu, 8 Nov 2018 13:28:03 +0100
+Message-ID: <20181108122802.q6kye2tzy6ofod5q@verge.net.au>
+References: <CAMuHMdUe=p42Bp6xgmvrNwPKs=VHUP2BezDBPPn9KgPawvOtgA@mail.gmail.com>
+	<1535038384-27080-1-git-send-email-fabrizio.castro@bp.renesas.com>
+	<TY1PR01MB1770B9A0AEF082A9CBF5B0E8C0C50@TY1PR01MB1770.jpnprd01.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1541657560-73681-1-git-send-email-yuehaibing@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: YueHaibing <yuehaibing@huawei.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <TY1PR01MB1770B9A0AEF082A9CBF5B0E8C0C50-5SGCI54O2uKdL+CyFhO9sXcolHNk5qUtvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+Cc: Chris Paterson <Chris.Paterson2-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+Hi Fabrizio,
 
-drivers/iommu/amd_iommu.c: In function 'iommu_print_event':
-drivers/iommu/amd_iommu.c:550:33: warning:
- variable 'tag' set but not used [-Wunused-but-set-variable]
+I believe this one is for Joerg.
 
-It was introduced in
-  e7f63ffc1bf1 ("iommu/amd: Update logging information for new event type")
-
-seems just missed in the error message, add it as suggested by Joerg.
-
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/iommu/amd_iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1167ff0..872b76e 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -622,9 +622,9 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 		pasid = ((event[0] >> 16) & 0xFFFF)
- 			| ((event[1] << 6) & 0xF0000);
- 		tag = event[1] & 0x03FF;
--		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
-+		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x tag=0x%08x]\n",
- 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--			pasid, address, flags);
-+			pasid, address, flags, tag);
- 		break;
- 	default:
- 		dev_err(dev, "UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+On Thu, Nov 08, 2018 at 11:22:55AM +0000, Fabrizio Castro wrote:
+> Dear All,
+> 
+> Who is the best person to take this patch?
+> 
+> Thanks,
+> Fab
+> 
+> > From: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > Sent: 23 August 2018 16:33
+> > Subject: [PATCH v2 1/2] iommu/ipmmu-vmsa: Hook up R8A774A1 DT maching code
+> >
+> > Add support for RZ/G2M (R8A774A1) SoC IPMMUs.
+> >
+> > Signed-off-by: Fabrizio Castro <fabrizio.castro-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > Reviewed-by: Biju Das <biju.das-kTT6dE0pTRh9uiUsa/gSgQ@public.gmane.org>
+> > ---
+> > v1-v2:
+> > * taken out IOMMU_OF_DECLARE
+> >
+> >  drivers/iommu/ipmmu-vmsa.c | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index 51af2c5..331562f 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -761,6 +761,7 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+> >  }
+> >
+> >  static const struct soc_device_attribute soc_rcar_gen3[] = {
+> > +{ .soc_id = "r8a774a1", },
+> >  { .soc_id = "r8a7795", },
+> >  { .soc_id = "r8a7796", },
+> >  { .soc_id = "r8a77965", },
+> > @@ -942,6 +943,9 @@ static const struct of_device_id ipmmu_of_ids[] = {
+> >  .compatible = "renesas,ipmmu-vmsa",
+> >  .data = &ipmmu_features_default,
+> >  }, {
+> > +.compatible = "renesas,ipmmu-r8a774a1",
+> > +.data = &ipmmu_features_rcar_gen3,
+> > +}, {
+> >  .compatible = "renesas,ipmmu-r8a7795",
+> >  .data = &ipmmu_features_rcar_gen3,
+> >  }, {
+> > --
+> > 2.7.4
+> 
+> 
+> 
+> 
+> Renesas Electronics Europe Ltd, Dukes Meadow, Millboard Road, Bourne End, Buckinghamshire, SL8 5FH, UK. Registered in England & Wales under Registered No. 04586709.
+> 
