@@ -1,39 +1,63 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
-Date: Thu, 8 Nov 2018 18:51:45 +0000
-Message-ID: <cb4f1ede-642a-4c93-17e5-c79ed0bb5847@arm.com>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
-	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
-	<fb2bd5fe-5742-fcd8-b8f0-1885040e8d4f@linux.intel.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 4.18 33/34] x86/swiotlb: Enable swiotlb for > 4GiG RAM on 32-bit kernels
+Date: Thu,  8 Nov 2018 13:53:02 -0800
+Message-ID: <20181108215140.924758534@linuxfoundation.org>
+References: <20181108215138.892971755@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <fb2bd5fe-5742-fcd8-b8f0-1885040e8d4f-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181108215138.892971755@linuxfoundation.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Matthew Whitehead <tedheadster@gmail.com>, Christoph Hellwig <hch@lst.de>, Thomas Gleixner <tglx@linutronix.de>, konrad.wilk@oracle.com, iommu@lists.linux-foundation.org, Ingo Molnar <mingo@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 07/11/2018 04:53, Lu Baolu wrote:
-> Hi,
-> 
-> On 10/20/18 2:11 AM, Jean-Philippe Brucker wrote:
->> +static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
->> +{
->> +	return -ESRCH;
-> 
-> return NULL;
+4.18-stable review patch.  If anyone has any objections, please let me know.
 
-I'll fix it, thanks
+------------------
 
-Jean
+From: Christoph Hellwig <hch@lst.de>
+
+commit 485734f3fc77c1eb77ffe138c027b9a4bf0178f3 upstream.
+
+We already build the swiotlb code for 32-bit kernels with PAE support,
+but the code to actually use swiotlb has only been enabled for 64-bit
+kernels for an unknown reason.
+
+Before Linux v4.18 we paper over this fact because the networking code,
+the SCSI layer and some random block drivers implemented their own
+bounce buffering scheme.
+
+[ mingo: Changelog fixes. ]
+
+Fixes: 21e07dba9fb1 ("scsi: reduce use of block bounce buffers")
+Fixes: ab74cfebafa3 ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
+Reported-by: Matthew Whitehead <tedheadster@gmail.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Matthew Whitehead <tedheadster@gmail.com>
+Cc: konrad.wilk@oracle.com
+Cc: iommu@lists.linux-foundation.org
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20181014075208.2715-1-hch@lst.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/pci-swiotlb.c |    2 --
+ 1 file changed, 2 deletions(-)
+
+--- a/arch/x86/kernel/pci-swiotlb.c
++++ b/arch/x86/kernel/pci-swiotlb.c
+@@ -42,10 +42,8 @@ IOMMU_INIT_FINISH(pci_swiotlb_detect_ove
+ int __init pci_swiotlb_detect_4gb(void)
+ {
+ 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+-#ifdef CONFIG_X86_64
+ 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+ 		swiotlb = 1;
+-#endif
+ 
+ 	/*
+ 	 * If SME is active then swiotlb will be set to 1 so that bounce
