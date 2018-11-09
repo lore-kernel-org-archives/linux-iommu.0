@@ -1,31 +1,30 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH] iommu/dma: Zero pages manually in a length of scatterlist
-Date: Thu, 8 Nov 2018 23:45:10 -0800
-Message-ID: <20181109074510.GA27623@infradead.org>
-References: <20181101213500.21800-1-nicoleotsuka@gmail.com>
- <63184c22-4587-be2b-8089-d2e4e0b5482d@arm.com>
- <20181102233613.GA26856@Asurada-Nvidia.nvidia.com>
- <20181105145847.GA31337@infradead.org>
- <afdc0e33-db18-6ad9-61cd-919fe3df1b4e@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+ swiotlb_map_sg_attrs
+Date: Fri, 9 Nov 2018 08:49:55 +0100
+Message-ID: <20181109074955.GA27489@lst.de>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de> <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <afdc0e33-db18-6ad9-61cd-919fe3df1b4e@arm.com>
+In-Reply-To: <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@infradead.org>, Nicolin Chen <nicoleotsuka@gmail.com>, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: John Stultz <john.stultz@linaro.org>
+Cc: hch@lst.de, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, robin.murphy@arm.com, konrad.wilk@oracle.com, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 06, 2018 at 02:39:26PM +0000, Robin Murphy wrote:
-> ...and I have some significant objections to that simplification which I
-> plan to respond with ;)
+On Tue, Nov 06, 2018 at 05:27:14PM -0800, John Stultz wrote:
+> But at that point if I just re-apply "swiotlb: use swiotlb_map_page in
+> swiotlb_map_sg_attrs", I reproduce the hangs.
 > 
-> (namely that it defaults the whole higher-order page allocation business
-> which will have varying degrees of performance impact on certain cases)
+> Any suggestions for how to further debug what might be going wrong
+> would be appreciated!
 
-Well, please place your objection there.  The behavior does match what
-every other iommu-based dma ops implementation ouside of arm/arm64 does,
-so there is some precedent for it to say the least.  But if the only
-current users objects I'll surely find a way to accomodate it, but a
-good rationale including numbers would be useful to document it.
+Very odd.  In the end map_sg and map_page are defined to do the same
+things to start with.  The only real issue we had in this area was:
+
+"[PATCH v2] of/device: Really only set bus DMA mask when appropriate"
+
+so with current mainline + that you still see a problem, and if you
+rever the commit we are replying to it still goes away?
