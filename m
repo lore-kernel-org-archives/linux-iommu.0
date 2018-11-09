@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 7/7] vfio/type1: Remove map_try_harder() code path
-Date: Fri,  9 Nov 2018 12:07:12 +0100
-Message-ID: <20181109110712.12469-8-joro@8bytes.org>
+Subject: [PATCH 2/7] iommu/amd: Introduce free_sub_pt() function
+Date: Fri,  9 Nov 2018 12:07:07 +0100
+Message-ID: <20181109110712.12469-3-joro@8bytes.org>
 References: <20181109110712.12469-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181109110712.12469-1-joro@8bytes.org>
@@ -12,65 +12,51 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-The AMD IOMMU driver can now map a huge-page where smaller
-mappings existed before, so this code-path is no longer
-triggered.
+The function is a more generic version of free_pagetable()
+and will be used to free only specific sub-trees of a
+page-table.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/vfio/vfio_iommu_type1.c | 33 ++-------------------------------
- 1 file changed, 2 insertions(+), 31 deletions(-)
+ drivers/iommu/amd_iommu.c | 18 +++++++++++++-----
+ 1 file changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index d9fd3188615d..7651cfb14836 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -978,32 +978,6 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
- 	return ret;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 2655bd91af93..1186571f77e1 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1367,12 +1367,10 @@ DEFINE_FREE_PT_FN(l4, free_pt_l3)
+ DEFINE_FREE_PT_FN(l5, free_pt_l4)
+ DEFINE_FREE_PT_FN(l6, free_pt_l5)
+ 
+-static void free_pagetable(struct protection_domain *domain)
++static struct page *free_sub_pt(unsigned long root, int mode,
++				struct page *freelist)
+ {
+-	unsigned long root = (unsigned long)domain->pt_root;
+-	struct page *freelist = NULL;
+-
+-	switch (domain->mode) {
++	switch (mode) {
+ 	case PAGE_MODE_NONE:
+ 		break;
+ 	case PAGE_MODE_1_LEVEL:
+@@ -1397,6 +1395,16 @@ static void free_pagetable(struct protection_domain *domain)
+ 		BUG();
+ 	}
+ 
++	return freelist;
++}
++
++static void free_pagetable(struct protection_domain *domain)
++{
++	unsigned long root = (unsigned long)domain->pt_root;
++	struct page *freelist = NULL;
++
++	free_sub_pt(root, domain->mode, freelist);
++
+ 	free_page_list(freelist);
  }
  
--/*
-- * Turns out AMD IOMMU has a page table bug where it won't map large pages
-- * to a region that previously mapped smaller pages.  This should be fixed
-- * soon, so this is just a temporary workaround to break mappings down into
-- * PAGE_SIZE.  Better to map smaller pages than nothing.
-- */
--static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
--			  unsigned long pfn, long npage, int prot)
--{
--	long i;
--	int ret = 0;
--
--	for (i = 0; i < npage; i++, pfn++, iova += PAGE_SIZE) {
--		ret = iommu_map(domain->domain, iova,
--				(phys_addr_t)pfn << PAGE_SHIFT,
--				PAGE_SIZE, prot | domain->prot);
--		if (ret)
--			break;
--	}
--
--	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
--		iommu_unmap(domain->domain, iova, PAGE_SIZE);
--
--	return ret;
--}
--
- static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
- 			  unsigned long pfn, long npage, int prot)
- {
-@@ -1013,11 +987,8 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
- 	list_for_each_entry(d, &iommu->domain_list, next) {
- 		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
- 				npage << PAGE_SHIFT, prot | d->prot);
--		if (ret) {
--			if (ret != -EBUSY ||
--			    map_try_harder(d, iova, pfn, npage, prot))
--				goto unwind;
--		}
-+		if (ret)
-+			goto unwind;
- 
- 		cond_resched();
- 	}
 -- 
 2.17.1
