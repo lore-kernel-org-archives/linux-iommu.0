@@ -1,92 +1,52 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 7/7] vfio/type1: Remove map_try_harder() code path
-Date: Fri, 9 Nov 2018 09:23:29 -0700
-Message-ID: <20181109092329.79b0fe91@t450s.home>
-References: <20181109110712.12469-1-joro@8bytes.org>
-        <20181109110712.12469-8-joro@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+ swiotlb_map_sg_attrs
+Date: Fri, 9 Nov 2018 16:37:54 +0000
+Message-ID: <9922f377-ee87-ba36-8d28-26af0f7822e5@arm.com>
+References: <20181008080246.20543-1-hch@lst.de>
+ <20181008080246.20543-7-hch@lst.de>
+ <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
+ <20181109074955.GA27489@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181109110712.12469-8-joro@8bytes.org>
+In-Reply-To: <20181109074955.GA27489@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, jroedel@suse.de
+To: Christoph Hellwig <hch@lst.de>, John Stultz <john.stultz@linaro.org>
+Cc: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, konrad.wilk@oracle.com, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri,  9 Nov 2018 12:07:12 +0100
-Joerg Roedel <joro@8bytes.org> wrote:
-
-> From: Joerg Roedel <jroedel@suse.de>
+On 09/11/2018 07:49, Christoph Hellwig wrote:
+> On Tue, Nov 06, 2018 at 05:27:14PM -0800, John Stultz wrote:
+>> But at that point if I just re-apply "swiotlb: use swiotlb_map_page in
+>> swiotlb_map_sg_attrs", I reproduce the hangs.
+>>
+>> Any suggestions for how to further debug what might be going wrong
+>> would be appreciated!
 > 
-> The AMD IOMMU driver can now map a huge-page where smaller
-> mappings existed before, so this code-path is no longer
-> triggered.
+> Very odd.  In the end map_sg and map_page are defined to do the same
+> things to start with.  The only real issue we had in this area was:
 > 
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 33 ++-------------------------------
->  1 file changed, 2 insertions(+), 31 deletions(-)
+> "[PATCH v2] of/device: Really only set bus DMA mask when appropriate"
+> 
+> so with current mainline + that you still see a problem, and if you
+> rever the commit we are replying to it still goes away?
 
-Cool, glad to see this finally fixed.  My "should be fixed soon"
-comment turned out to be a little optimistic with the fix finally
-coming 5 years later.  We could of course keep this code as it really
-doesn't harm anything, but I'm in favor trying to remove it if we think
-it's dead now.  In order to expedite into one pull:
+OK, after quite a bit of trying I have managed to provoke a 
+similar-looking problem with straight 4.20-rc1 on my Juno board - so far 
+my "reproducer" is to decompress a ~10GB .tar.xz off an external USB 
+hard disk, wherein after somewhere between 5 minutes and half an hour or 
+so it tends to falls over with xz choking on corrupt data and/or a USB 
+error.
 
-Acked-by: Alex Williamson <alex.williamson@redhat.com>
+ From the presentation, this really smells like there's some corner in 
+which we're either missing cache maintenance or doing it to the wrong 
+address - I've not seen any issues with Juno's main PCIe-attached I/O, 
+but the EHCI here is non-coherent (and 32-bit, so the bus_dma_mask thing 
+doesn't matter) as are the HiKey UFS and SD controller.
 
-Thanks,
-Alex
- 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index d9fd3188615d..7651cfb14836 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -978,32 +978,6 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
->  	return ret;
->  }
->  
-> -/*
-> - * Turns out AMD IOMMU has a page table bug where it won't map large pages
-> - * to a region that previously mapped smaller pages.  This should be fixed
-> - * soon, so this is just a temporary workaround to break mappings down into
-> - * PAGE_SIZE.  Better to map smaller pages than nothing.
-> - */
-> -static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
-> -			  unsigned long pfn, long npage, int prot)
-> -{
-> -	long i;
-> -	int ret = 0;
-> -
-> -	for (i = 0; i < npage; i++, pfn++, iova += PAGE_SIZE) {
-> -		ret = iommu_map(domain->domain, iova,
-> -				(phys_addr_t)pfn << PAGE_SHIFT,
-> -				PAGE_SIZE, prot | domain->prot);
-> -		if (ret)
-> -			break;
-> -	}
-> -
-> -	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
-> -		iommu_unmap(domain->domain, iova, PAGE_SIZE);
-> -
-> -	return ret;
-> -}
-> -
->  static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
->  			  unsigned long pfn, long npage, int prot)
->  {
-> @@ -1013,11 +987,8 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
->  	list_for_each_entry(d, &iommu->domain_list, next) {
->  		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
->  				npage << PAGE_SHIFT, prot | d->prot);
-> -		if (ret) {
-> -			if (ret != -EBUSY ||
-> -			    map_try_harder(d, iova, pfn, npage, prot))
-> -				goto unwind;
-> -		}
-> +		if (ret)
-> +			goto unwind;
->  
->  		cond_resched();
->  	}
+I'll keep digging...
+
+Robin.
