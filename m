@@ -1,59 +1,126 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH RFC 1/3] mm: When CONFIG_ZONE_DMA32 is set, use DMA32 for
- SLAB_CACHE_DMA
-Date: Fri, 9 Nov 2018 13:14:41 +0100
-Message-ID: <8f58b778-f8ef-d32e-8803-2a20f171a0b1@suse.cz>
-References: <20181109082448.150302-1-drinkcat@chromium.org>
- <20181109082448.150302-2-drinkcat@chromium.org>
- <00afe803-22dd-5a75-70aa-dda0c7752470@suse.cz>
- <CANMq1KB84Lpe_QbiuaKaBOwSsYr9Cis-gv5xpXaV5qjU=ON=7w@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/2] dma-mapping: remove ->mapping_error
+Date: Fri, 9 Nov 2018 14:41:18 +0000
+Message-ID: <75c72464-1ff6-7c53-2cdb-0c5882c190aa@arm.com>
+References: <20181109084632.22848-1-hch@lst.de>
+ <20181109084632.22848-2-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CANMq1KB84Lpe_QbiuaKaBOwSsYr9Cis-gv5xpXaV5qjU=ON=7w@mail.gmail.com>
-Content-Language: en-US
+In-Reply-To: <20181109084632.22848-2-hch@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, cl@linux.com, penberg@kernel.org, rientjes@google.com, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, mhocko@suse.com, mgorman@techsingularity.net, yehs1@lenovo.com, rppt@linux.vnet.ibm.com, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, yong.wu@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, tfiga@google.com, yingjoe.chen@mediatek.com, Alexander.Levin@microsoft.com
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: linux-arch@vger.kernel.org, x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/9/18 12:57 PM, Nicolas Boichat wrote:
-> On Fri, Nov 9, 2018 at 6:43 PM Vlastimil Babka <vbabka@suse.cz> wrote:
->> Also I'm probably missing the point of this all. In patch 3 you use
->> __get_dma32_pages() thus __get_free_pages(__GFP_DMA32), which uses
->> alloc_pages, thus the page allocator directly, and there's no slab
->> caches involved.
-> 
-> __get_dma32_pages fixes level 1 page allocations in the patch 3.
-> 
-> This change fixes level 2 page allocations
-> (kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA)), by transparently
-> remapping GFP_DMA to an underlying ZONE_DMA32.
-> 
-> The alternative would be to create a new SLAB_CACHE_DMA32 when
-> CONFIG_ZONE_DMA32 is defined, but then I'm concerned that the callers
-> would need to choose between the 2 (GFP_DMA or GFP_DMA32...), and also
-> need to use some ifdefs (but maybe that's not a valid concern?).
-> 
->> It makes little sense to involve slab for page table
->> allocations anyway, as those tend to be aligned to a page size (or
->> high-order page size). So what am I missing?
-> 
-> Level 2 tables are ARM_V7S_TABLE_SIZE(2) => 1kb, so we'd waste 3kb if
-> we allocated a full page.
+On 09/11/2018 08:46, Christoph Hellwig wrote:
+[...]
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 1167ff0416cf..cfb422e17049 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -55,8 +55,6 @@
+>   #include "amd_iommu_types.h"
+>   #include "irq_remapping.h"
+>   
+> -#define AMD_IOMMU_MAPPING_ERROR	0
+> -
+>   #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+>   
+>   #define LOOP_TIMEOUT	100000
+> @@ -2339,7 +2337,7 @@ static dma_addr_t __map_single(struct device *dev,
+>   	paddr &= PAGE_MASK;
+>   
+>   	address = dma_ops_alloc_iova(dev, dma_dom, pages, dma_mask);
+> -	if (address == AMD_IOMMU_MAPPING_ERROR)
+> +	if (address == DMA_MAPPING_ERROR)
 
-Oh, I see.
+This for one is clearly broken, because the IOVA allocator still returns 
+0 on failure here...
 
-Well, I think indeed the most transparent would be to support
-SLAB_CACHE_DMA32. The callers of kmem_cache_zalloc() would then need not
-add anything special to gfp, as that's stored internally upon
-kmem_cache_create(). Of course SLAB_BUG_MASK would no longer have to
-treat __GFP_DMA32 as unexpected. It would be unexpected when passed to
-kmalloc() which doesn't have special dma32 caches, but for a cache
-explicitly created to allocate from ZONE_DMA32, I don't see why not. I'm
-somewhat surprised that there wouldn't be a need for this earlier, so
-maybe I'm still missing something.
+>   		goto out;
+>   
+>   	prot = dir2prot(direction);
+> @@ -2376,7 +2374,7 @@ static dma_addr_t __map_single(struct device *dev,
+>   
+>   	dma_ops_free_iova(dma_dom, address, pages);
+>   
+> -	return AMD_IOMMU_MAPPING_ERROR;
+> +	return DMA_MAPPING_ERROR;
+>   }
+>   
+>   /*
+> @@ -2427,7 +2425,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+>   	if (PTR_ERR(domain) == -EINVAL)
+>   		return (dma_addr_t)paddr;
+>   	else if (IS_ERR(domain))
+> -		return AMD_IOMMU_MAPPING_ERROR;
+> +		return DMA_MAPPING_ERROR;
+>   
+>   	dma_mask = *dev->dma_mask;
+>   	dma_dom = to_dma_ops_domain(domain);
+> @@ -2504,7 +2502,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+>   	npages = sg_num_pages(dev, sglist, nelems);
+>   
+>   	address = dma_ops_alloc_iova(dev, dma_dom, npages, dma_mask);
+> -	if (address == AMD_IOMMU_MAPPING_ERROR)
+> +	if (address == DMA_MAPPING_ERROR)
 
-> Thanks,
-> 
+..and here.
+
+I very much agree with the concept, but I think the way to go about it 
+is to convert the implementations which need it to the standardised 
+*_MAPPING_ERROR value one-by-one, and only then then do the big sweep to 
+remove them all. That has more of a chance of getting worthwhile review 
+and testing from the respective relevant parties (I'll confess I came 
+looking for this bug specifically, since I happened to recall amd_iommu 
+having a tricky implicit reliance on the old DMA_ERROR_CODE being 0 on x86).
+
+In terms of really minimising the error-checking overhead it's a bit of 
+a shame that DMA_MAPPING_ERROR = 0 doesn't seem viable as the thing to 
+standardise on, since that has advantages at the micro-optimisation 
+level for many ISAs - fixing up the legacy IOMMU code doesn't seem 
+insurmountable, but I suspect there may well be non-IOMMU platforms 
+where DMA to physical address 0 is a thing :(
+
+(yeah, I know saving a couple of instructions and potential register 
+allocations is down in the noise when we're already going from an 
+indirect call to an inline comparison; I'm mostly just thinking out loud 
+there)
+
+Robin.
+
+>   		goto out_err;
+>   
+>   	prot = dir2prot(direction);
+> @@ -2627,7 +2625,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+>   	*dma_addr = __map_single(dev, dma_dom, page_to_phys(page),
+>   				 size, DMA_BIDIRECTIONAL, dma_mask);
+>   
+> -	if (*dma_addr == AMD_IOMMU_MAPPING_ERROR)
+> +	if (*dma_addr == DMA_MAPPING_ERROR)
+>   		goto out_free;
+>   
+>   	return page_address(page);
+> @@ -2678,11 +2676,6 @@ static int amd_iommu_dma_supported(struct device *dev, u64 mask)
+>   	return check_device(dev);
+>   }
+>   
+> -static int amd_iommu_mapping_error(struct device *dev, dma_addr_t dma_addr)
+> -{
+> -	return dma_addr == AMD_IOMMU_MAPPING_ERROR;
+> -}
+> -
+>   static const struct dma_map_ops amd_iommu_dma_ops = {
+>   	.alloc		= alloc_coherent,
+>   	.free		= free_coherent,
+> @@ -2691,7 +2684,6 @@ static const struct dma_map_ops amd_iommu_dma_ops = {
+>   	.map_sg		= map_sg,
+>   	.unmap_sg	= unmap_sg,
+>   	.dma_supported	= amd_iommu_dma_supported,
+> -	.mapping_error	= amd_iommu_mapping_error,
+>   };
+>   
+>   static int init_reserved_iova_ranges(void)
