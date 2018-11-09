@@ -1,95 +1,102 @@
-From: James Sewart via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [RFC] iommu/vt-d: Group and domain relationship
-Date: Fri, 9 Nov 2018 11:37:59 +0000
-Message-ID: <4E7E9A65-A9F1-4E95-B506-628ABF2DF488@arista.com>
-References: <44573340-5652-42F1-A4B8-102AEF5C162A@arista.com>
-	<5695aa18-3248-b611-a286-111de7e5a8f5@linux.intel.com>
-	<CALwnD_qUhQu-fwOObth-DWzSNoARZ_ERuNwyS8r73C0yhw7jGQ@mail.gmail.com>
-	<b92b1739-dc3e-9515-a6f1-e4c00f53882b@linux.intel.com>
-	<A393DB8A-BFC6-40C2-B9E8-6667A927957E@arista.com>
-	<14cb4192-8557-72e1-ef26-4155b2cd7e63@linux.intel.com>
-	<9B06CA0B-A5F8-41FC-8F5E-6D7BE94FCC14@arista.com>
-	<A2975661238FB949B60364EF0F2C257439D6122B@SHSMSX104.ccr.corp.intel.com>
-Reply-To: James Sewart <jamessewart-nzgTgzXrdUbQT0dZR+AlfA@public.gmane.org>
-Mime-Version: 1.0 (Mac OS X Mail 11.2 \(3445.5.20\))
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439D6122B-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: Re: [PATCH RFC 1/3] mm: When CONFIG_ZONE_DMA32 is set, use DMA32 for SLAB_CACHE_DMA
+Date: Fri, 9 Nov 2018 19:57:50 +0800
+Message-ID: <CANMq1KB84Lpe_QbiuaKaBOwSsYr9Cis-gv5xpXaV5qjU=ON=7w@mail.gmail.com>
+References: <20181109082448.150302-1-drinkcat@chromium.org>
+ <20181109082448.150302-2-drinkcat@chromium.org> <00afe803-22dd-5a75-70aa-dda0c7752470@suse.cz>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <00afe803-22dd-5a75-70aa-dda0c7752470@suse.cz>
+Sender: linux-kernel-owner@vger.kernel.org
+To: vbabka@suse.cz
+Cc: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, cl@linux.com, penberg@kernel.org, rientjes@google.com, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, mhocko@suse.com, mgorman@techsingularity.net, yehs1@lenovo.com, rppt@linux.vnet.ibm.com, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, yong.wu@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>, tfiga@google.com, yingjoe.chen@mediatek.com, Alexander.Levin@microsoft.com
 List-Id: iommu@lists.linux-foundation.org
 
-SGV5IFlpLAoKPiBPbiA5IE5vdiAyMDE4LCBhdCAwNjo1NCwgTGl1LCBZaSBMIDx5aS5sLmxpdUBp
-bnRlbC5jb20+IHdyb3RlOgo+IAo+IEhpIEphbWVzLAo+IAo+IFJlZ2FyZHMgdG8gdGhlIHJlbGF0
-aW9uc2hpcCBvZiBpb21tdSBncm91cCBhbmQgZG9tYWluLCB0aGUgYmxvZyB3cml0dGVuIGJ5IEFs
-ZXgKPiBtYXkgaGVscCB5b3UuIFRoZSBibG9nIGV4cGxhaW5lZCB2ZXJ5IHdlbGwgb24gaG93IGlv
-bW11IGdyb3VwIGlzIGRldGVybWluZWQgYW5kCj4gd2h5Lgo+IAo+IGh0dHA6Ly92ZmlvLmJsb2dz
-cG90LmNvbS8yMDE0LzA4L2lvbW11LWdyb3Vwcy1pbnNpZGUtYW5kLW91dC5odG1sCgpUaGFua3Mg
-Zm9yIHRoZSBsaW5rLCB0aGlzIGV4cGxhaW5zIGhvdyBJIGV4cGVjdGVkIHRoZSBncm91cCBkb21h
-aW4gCnJlbGF0aW9uc2hpcCB0byB3b3JrLgoKPiAKPj4gRnJvbTogaW9tbXUtYm91bmNlc0BsaXN0
-cy5saW51eC1mb3VuZGF0aW9uLm9yZyBbbWFpbHRvOmlvbW11LQo+PiBib3VuY2VzQGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnXSBPbiBCZWhhbGYgT2YgSmFtZXMgU2V3YXJ0IHZpYSBpb21tdQo+
-PiBTZW50OiBUaHVyc2RheSwgTm92ZW1iZXIgOCwgMjAxOCA3OjMwIFBNCj4+IFN1YmplY3Q6IFJl
-OiBbUkZDXSBpb21tdS92dC1kOiBHcm91cCBhbmQgZG9tYWluIHJlbGF0aW9uc2hpcAo+PiAKPj4g
-SGV5LAo+PiAKPj4+IE9uIDggTm92IDIwMTgsIGF0IDAxOjQyLCBMdSBCYW9sdSA8YmFvbHUubHVA
-bGludXguaW50ZWwuY29tPiB3cm90ZToKPj4+IAo+Pj4gSGksCj4+PiAKPj4+IE9uIDExLzgvMTgg
-MTo1NSBBTSwgSmFtZXMgU2V3YXJ0IHdyb3RlOgo+Pj4+IEhleSwKPj4+Pj4gT24gNyBOb3YgMjAx
-OCwgYXQgMDI6MTAsIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+IHdyb3RlOgo+
-Pj4+PiAKPj4+Pj4gSGksCj4+Pj4+IAo+Pj4+PiBPbiAxMS82LzE4IDY6NDAgUE0sIEphbWVzIFNl
-d2FydCB3cm90ZToKPj4+Pj4+IEhleSBMdSwKPj4+Pj4+IFdvdWxkIHlvdSBiZSBhYmxlIHRvIGdv
-IGludG8gbW9yZSBkZXRhaWwgYWJvdXQgdGhlIGlzc3VlcyB3aXRoCj4gCj4gWy4uLl0KPiAKPj4+
-Pj4gCj4+Pj4+IFdoeSBkbyB3ZSB3YW50IHRvIG9wZW4gdGhpcyBkb29yPyBQcm9iYWJseSB3ZSB3
-YW50IHRoZSBnZW5lcmljIGlvbW11Cj4+Pj4+IGxheWVyIHRvIGhhbmRsZSB0aGVzZSB0aGluZ3Mg
-KGl0J3MgY2FsbGVkIGRlZmF1bHQgZG9tYWluKS4KPj4+PiBJ4oCZZCBsaWtlIHRvIGFsbG9jYXRl
-IGEgZG9tYWluIGFuZCBhdHRhY2ggaXQgdG8gbXVsdGlwbGUgZGV2aWNlcyBpbiBhCj4+Pj4gZ3Jv
-dXAvbXVsdGlwbGUgZ3JvdXBzIHNvIHRoYXQgdGhleSBzaGFyZSBhZGRyZXNzIHRyYW5zbGF0aW9u
-LCBidXQgc3RpbGwKPj4+PiBhbGxvdyBkcml2ZXJzIGZvciBkZXZpY2VzIGluIHRob3NlIGdyb3Vw
-cyB0byB1c2UgdGhlIGRtYV9tYXBfb3BzIGFwaS4KPj4+IAo+Pj4gSnVzdCBvdXQgb2YgY3VyaW9z
-aXR5LCB3aHkgZG8geW91IHdhbnQgdG8gc2hhcmUgYSBzaW5nbGUgZG9tYWluIGFjcm9zcwo+Pj4g
-bXVsdGlwbGUgZ3JvdXBzPyBCeSBkZWZhdWx0LCB0aGUgZ3JvdXBzIGFuZCBETUEgZG9tYWlucyBh
-cmUgbm9ybWFsbHkKPj4+IDEtMSBtYXBwZWQsIHJpZ2h0Pwo+PiAKPj4gQ3VycmVudGx5IHdlIHNl
-ZSBlYWNoIGRldmljZSBpbiBhIGdyb3VwIHdpdGggdGhlaXIgb3duIGRvbWFpbi4KPj4gZmluZF9v
-cl9hbGxvY19kb21haW4gbG9va3MgYXQgZG1hIGFsaWFzZXMgdG8gZGV0ZXJtaW5lIHdobyBzaGFy
-ZXMgZG9tYWlucwo+PiB3aGVyZWFzIHBjaV9kZXZpY2VfZ3JvdXAgaW4gdGhlIGdlbmVyaWMgaW9t
-bXUgY29kZSBkZXRlcm1pbmVzIGdyb3VwcyB1c2luZwo+PiBhIGZldyBvdGhlciBjaGVja3MuIFdl
-IGhhdmUgb2JzZXJ2ZWQgaW50ZXJuYWxseSB0aGF0IGRldmljZXMgdW5kZXIgYSBwY2llCj4+IHN3
-aXRjaCB3aWxsIGJlIHB1dCBpbiB0aGUgc2FtZSBncm91cCBidXQgdGhleSBkbyBub3Qgc2hhcmUg
-YSBkb21haW4gd2l0aGluCj4+IHRoYXQgZ3JvdXAuCj4gCj4gUmVhbGx5PyBpb21tdSBncm91cCBp
-cyBETUEgaXNvbGF0aW9uIHVuaXQuIFlvdSBzYWlkIHRoZXkgYXJlIG5vdCBzaGFyaW5nIGEgZG9t
-YWluLgo+IERvIHlvdSBtZWFuIHRoZXkgaGF2ZSBkaWZmZXJlbnQgSU9WQSBhZGRyZXNzIHNwYWNl
-IGJ5IG1lbnRpb25pbmcgdGhleSBhcmUgbm90Cj4gc2hhcmluZyBhIGRvbWFpbj8gSXMgdGhlcmUg
-YW55IHNwZWNpYWwgdGhpbmdzKGUuZy4gc3BlY2lhbCBJT1ZBIGFsbG9jYXRpb24gdG8gYXZvaWQK
-PiB1bmV4cGVjdGVkIFAyUCkgZG9uZSBvbiB5b3VyIHN5c3RlbT8gTm9ybWFsbHksIGRldmljZXMg
-d2l0aGluIGFuIGlvbW11IGdyb3VwCj4gc2hvdWxkIHNoYXJlIGFuIElPVkEgYWRkcmVzcyBzcGFj
-ZS4KCldlIHNlZSBhIHVuaXF1ZSBzZXQgb2YgbWFwcGluZ3MgZm9yIGVhY2ggZGV2aWNlIHdpdGhp
-biBhIGdyb3VwLiBBZGRpbmcgCmRlYnVnIG91dHB1dCB0byB0aGUga2VybmVsIHNob3dzIGZpbmRf
-b3JfYWxsb2NfZG9tYWluIGFsbG9jYXRpbmcgYSBuZXcgCmRvbWFpbiBmb3IgZWFjaCBkZXZpY2Ug
-aW4gYSBncm91cC4gV2UgZG9u4oCZdCBoYXZlIGFueSBzcGVjaWFsIGNvbmZpZ3VyYXRpb24gCndp
-dGggcmVnYXJkIHRvIElPVkEgYWxsb2NhdGlvbi4KCkkgdGhpbmsgdGhlIGlzc3VlIGlzIHRoYXQg
-ZmluZF9vcl9hbGxvY19kb21haW4gb25seSB1c2VzIApwY2lfZm9yX2VhY2hfZG1hX2FsaWFzIHRv
-IGRldGVybWluZSBkb21haW4gc2hhcmluZy4gVGhpcyBkb2VzbuKAmXQgY2hlY2sgdGhlIApjb25m
-aWd1cmF0aW9uIG9mIHVwc3RyZWFtIHBjaWUtcGNpZSBzd2l0Y2hlcyBhbmQgZG9lc27igJl0IGxv
-b2sgdG8gc2VlIGlmIEFDUyAKaXMgZW5hYmxlZCBvciBkaXNhYmxlZC4gcGNpX2RldmljZV9ncm91
-cCBpbiBkcml2ZXJzL2lvbW11L2lvbW11LmMsIHdoaWNoIAppcyB1c2VkIHRvIGRldGVybWluZSB3
-aGljaCBncm91cCBhIGRldmljZSBpcyBhc3NpZ25lZCwgcGVyZm9ybXMgYW4gZXh0cmEgCndhbGsg
-b2YgdGhlIHVwc3RyZWFtIGJ1c2VzIHRvIHNlZSBpZiB0aGVyZSBleGlzdHMgYSBidXMgd2l0aG91
-dCBBQ1Mgd2hpY2ggCndvdWxkIGFsbG93IHBlZXItdG8tcGVlciBkbWEgYW5kIGdyb3VwcyB0aGUg
-ZGV2aWNlIGFjY29yZGluZ2x5LgoKT25lIHNvbHV0aW9uIHdvdWxkIGJlIHRvIGFsbG93IHRoZSBn
-ZW5lcmljIGlvbW11IGNvZGUgdG8gYXNzaWduIGRvbWFpbnMsIAp3aGljaCBpdCBkb2VzIGJhc2Vk
-IG9uIHRoZSBkZXZpY2VfZ3JvdXAgZnVuY3Rpb24gb2YgdGhlIGlvbW11X29wcy4gVGhlIApyZWFz
-b24gaXQgZG9lc27igJl0IGN1cnJlbnRseSBpcyB0aGF0IHRoZSBkZWZhdWx0IGRvbWFpbiB0eXBl
-IGlzIApJT01NVV9ET01BSU5fRE1BIHdoaWNoIHRoZSBpbnRlbCBkcml2ZXIgY3VycmVudGx5IGRp
-c2FsbG93cyBhbGxvY2F0aW5nIHZpYSAKdGhlIGRvbWFpbl9hbGxvYyBhcGkuCgpDaGVlcnMsCkph
-bWVzLgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
-bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
-L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Fri, Nov 9, 2018 at 6:43 PM Vlastimil Babka <vbabka@suse.cz> wrote:
+>
+> On 11/9/18 9:24 AM, Nicolas Boichat wrote:
+> > Some callers, namely iommu/io-pgtable-arm-v7s, expect the physical
+> > address returned by kmem_cache_alloc with GFP_DMA parameter to be
+> > a 32-bit address.
+> >
+> > Instead of adding a separate SLAB_CACHE_DMA32 (and then audit
+> > all the calls to check if they require memory from DMA or DMA32
+> > zone), we simply allocate SLAB_CACHE_DMA cache in DMA32 region,
+> > if CONFIG_ZONE_DMA32 is set.
+> >
+> > Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
+> > Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+> > ---
+> >  include/linux/slab.h | 13 ++++++++++++-
+> >  mm/slab.c            |  2 +-
+> >  mm/slub.c            |  2 +-
+> >  3 files changed, 14 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/include/linux/slab.h b/include/linux/slab.h
+> > index 918f374e7156f4..390afe90c5dec0 100644
+> > --- a/include/linux/slab.h
+> > +++ b/include/linux/slab.h
+> > @@ -30,7 +30,7 @@
+> >  #define SLAB_POISON          ((slab_flags_t __force)0x00000800U)
+> >  /* Align objs on cache lines */
+> >  #define SLAB_HWCACHE_ALIGN   ((slab_flags_t __force)0x00002000U)
+> > -/* Use GFP_DMA memory */
+> > +/* Use GFP_DMA or GFP_DMA32 memory */
+> >  #define SLAB_CACHE_DMA               ((slab_flags_t __force)0x00004000U)
+> >  /* DEBUG: Store the last owner for bug hunting */
+> >  #define SLAB_STORE_USER              ((slab_flags_t __force)0x00010000U)
+> > @@ -126,6 +126,17 @@
+> >  #define ZERO_OR_NULL_PTR(x) ((unsigned long)(x) <= \
+> >                               (unsigned long)ZERO_SIZE_PTR)
+> >
+> > +/*
+> > + * When ZONE_DMA32 is defined, have SLAB_CACHE_DMA allocate memory with
+> > + * GFP_DMA32 instead of GFP_DMA, as this is what some of the callers
+> > + * require (instead of duplicating cache for DMA and DMA32 zones).
+> > + */
+> > +#ifdef CONFIG_ZONE_DMA32
+> > +#define SLAB_CACHE_DMA_GFP GFP_DMA32
+> > +#else
+> > +#define SLAB_CACHE_DMA_GFP GFP_DMA
+> > +#endif
+>
+> AFAICS this will break e.g. x86 which can have both ZONE_DMA and
+> ZONE_DMA32, and now you would make kmalloc(__GFP_DMA) return objects
+> from ZONE_DMA32 instead of __ZONE_DMA, which can break something.
+
+Oh, I was not aware that both ZONE_DMA and ZONE_DMA32 can be defined
+at the same time. I guess the test should be inverted, something like
+this (can be simplified...):
+#ifdef CONFIG_ZONE_DMA
+#define SLAB_CACHE_DMA_GFP GFP_DMA
+#elif defined(CONFIG_ZONE_DMA32)
+#define SLAB_CACHE_DMA_GFP GFP_DMA32
+#else
+#define SLAB_CACHE_DMA_GFP GFP_DMA // ?
+#endif
+
+> Also I'm probably missing the point of this all. In patch 3 you use
+> __get_dma32_pages() thus __get_free_pages(__GFP_DMA32), which uses
+> alloc_pages, thus the page allocator directly, and there's no slab
+> caches involved.
+
+__get_dma32_pages fixes level 1 page allocations in the patch 3.
+
+This change fixes level 2 page allocations
+(kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA)), by transparently
+remapping GFP_DMA to an underlying ZONE_DMA32.
+
+The alternative would be to create a new SLAB_CACHE_DMA32 when
+CONFIG_ZONE_DMA32 is defined, but then I'm concerned that the callers
+would need to choose between the 2 (GFP_DMA or GFP_DMA32...), and also
+need to use some ifdefs (but maybe that's not a valid concern?).
+
+> It makes little sense to involve slab for page table
+> allocations anyway, as those tend to be aligned to a page size (or
+> high-order page size). So what am I missing?
+
+Level 2 tables are ARM_V7S_TABLE_SIZE(2) => 1kb, so we'd waste 3kb if
+we allocated a full page.
+
+Thanks,
