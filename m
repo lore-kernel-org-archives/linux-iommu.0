@@ -1,59 +1,75 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 3/7] iommu/amd: Ignore page-mode 7 in free_sub_pt()
-Date: Fri,  9 Nov 2018 12:07:08 +0100
-Message-ID: <20181109110712.12469-4-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 4/7] iommu/amd: Allow downgrading page-sizes in alloc_pte()
+Date: Fri,  9 Nov 2018 12:07:09 +0100
+Message-ID: <20181109110712.12469-5-joro@8bytes.org>
 References: <20181109110712.12469-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181109110712.12469-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, jroedel@suse.de
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181109110712.12469-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The page-mode 7 is a special one as it marks a final PTE to
-a page with an intermediary size.
+Before this patch it was not possible the downgrade a
+mapping established with page-mode 7 to a mapping using
+smaller page-sizes, because the pte_level != level check
+prevented that.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Treat page-mode 7 like a non-present mapping and allow to
+overwrite it in alloc_pte().
+
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 4 ++++
- drivers/iommu/amd_iommu_types.h | 1 +
- 2 files changed, 5 insertions(+)
+ drivers/iommu/amd_iommu.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1186571f77e1..49b5d3115e56 100644
+index 49b5d3115e56..6a88ba9321d1 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1372,6 +1372,7 @@ static struct page *free_sub_pt(unsigned long root, int mode,
- {
- 	switch (mode) {
- 	case PAGE_MODE_NONE:
-+	case PAGE_MODE_7_LEVEL:
- 		break;
- 	case PAGE_MODE_1_LEVEL:
- 		freelist = free_pt_page(root, freelist);
-@@ -1403,6 +1404,9 @@ static void free_pagetable(struct protection_domain *domain)
- 	unsigned long root = (unsigned long)domain->pt_root;
- 	struct page *freelist = NULL;
+@@ -1460,10 +1460,13 @@ static u64 *alloc_pte(struct protection_domain *domain,
  
-+	BUG_ON(domain->mode < PAGE_MODE_NONE ||
-+	       domain->mode > PAGE_MODE_6_LEVEL);
+ 	while (level > end_lvl) {
+ 		u64 __pte, __npte;
++		int pte_level;
+ 
+-		__pte = *pte;
++		__pte     = *pte;
++		pte_level = PM_PTE_LEVEL(__pte);
+ 
+-		if (!IOMMU_PTE_PRESENT(__pte)) {
++		if (!IOMMU_PTE_PRESENT(__pte) ||
++		    pte_level == PAGE_MODE_7_LEVEL) {
+ 			page = (u64 *)get_zeroed_page(gfp);
+ 			if (!page)
+ 				return NULL;
+@@ -1475,10 +1478,13 @@ static u64 *alloc_pte(struct protection_domain *domain,
+ 				free_page((unsigned long)page);
+ 				continue;
+ 			}
 +
- 	free_sub_pt(root, domain->mode, freelist);
++			if (pte_level == PAGE_MODE_7_LEVEL)
++				domain->updated = true;
+ 		}
  
- 	free_page_list(freelist);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index e2b342e65a7b..eae0741f72dc 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -269,6 +269,7 @@
- #define PAGE_MODE_4_LEVEL 0x04
- #define PAGE_MODE_5_LEVEL 0x05
- #define PAGE_MODE_6_LEVEL 0x06
-+#define PAGE_MODE_7_LEVEL 0x07
+ 		/* No level skipping support yet */
+-		if (PM_PTE_LEVEL(*pte) != level)
++		if (pte_level != level)
+ 			return NULL;
  
- #define PM_LEVEL_SHIFT(x)	(12 + ((x) * 9))
- #define PM_LEVEL_SIZE(x)	(((x) < 6) ? \
+ 		level -= 1;
 -- 
 2.17.1
