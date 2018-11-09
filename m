@@ -1,63 +1,126 @@
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 4.18 33/34] x86/swiotlb: Enable swiotlb for > 4GiG RAM on 32-bit kernels
-Date: Thu,  8 Nov 2018 13:53:02 -0800
-Message-ID: <20181108215140.924758534@linuxfoundation.org>
-References: <20181108215138.892971755@linuxfoundation.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 04/12] iommu/vt-d: Add 256-bit invalidation descriptor
+ support
+Date: Fri, 9 Nov 2018 09:39:57 +0800
+Message-ID: <af077cad-d99b-1cd8-046b-4dbfae3d32f9@linux.intel.com>
+References: <20181105053151.7173-1-baolu.lu@linux.intel.com>
+ <20181105053151.7173-5-baolu.lu@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439D5FAA2@SHSMSX104.ccr.corp.intel.com>
+ <a6e43ddd-0889-4a4a-b908-993db28c6d87@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439D604DF@SHSMSX104.ccr.corp.intel.com>
+ <915876cd-6a1f-097b-b9be-9cb3df18a1df@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439D60581@SHSMSX104.ccr.corp.intel.com>
+ <ad4f7e5b-9af1-7134-a573-6e78184de0ee@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C257439D6061D@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181108215138.892971755@linuxfoundation.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D6061D@SHSMSX104.ccr.corp.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, Matthew Whitehead <tedheadster@gmail.com>, Christoph Hellwig <hch@lst.de>, Thomas Gleixner <tglx@linutronix.de>, konrad.wilk@oracle.com, iommu@lists.linux-foundation.org, Ingo Molnar <mingo@kernel.org>
+To: "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: baolu.lu@linux.intel.com, "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-4.18-stable review patch.  If anyone has any objections, please let me know.
+Hi,
 
-------------------
+On 11/8/18 3:20 PM, Liu, Yi L wrote:
+> Hi,
+> 
+>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>> Sent: Thursday, November 8, 2018 2:14 PM
+>>
+>> Hi,
+>>
+>> On 11/8/18 1:45 PM, Liu, Yi L wrote:
+>>>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>>>> Sent: Thursday, November 8, 2018 1:25 PM
+>>>> Subject: Re: [PATCH v4 04/12] iommu/vt-d: Add 256-bit invalidation
+>>>> descriptor support
+>>>>
+>>>> Hi,
+>>>>
+>>>> On 11/8/18 11:49 AM, Liu, Yi L wrote:
+>>>>> Hi,
+>>>>>
+>>>>>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>>>>>> Sent: Thursday, November 8, 2018 10:17 AM
+>>>>>> Subject: Re: [PATCH v4 04/12] iommu/vt-d: Add 256-bit invalidation
+>>>>>> descriptor support
+>>>>>>
+>>>>>> Hi Yi,
+>>>>>>
+>>>>>> On 11/7/18 2:07 PM, Liu, Yi L wrote:
+>>>>>>> Hi Baolu,
+>>>>>>>
+>>>>>>>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>>>>>>>> Sent: Monday, November 5, 2018 1:32 PM
+>>>>>>> [...]
+>>>>>>>
+>>>>>>>> ---
+>>>>>>>>      drivers/iommu/dmar.c                | 83 +++++++++++++++++++----------
+>>>>>>>>      drivers/iommu/intel-svm.c           | 76 ++++++++++++++++----------
+>>>>>>>>      drivers/iommu/intel_irq_remapping.c |  6 ++-
+>>>>>>>>      include/linux/intel-iommu.h         |  9 +++-
+>>>>>>>>      4 files changed, 115 insertions(+), 59 deletions(-)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c index
+>>>>>>>> d9c748b6f9e4..ec10427b98ac 100644
+>>>>>>>> --- a/drivers/iommu/dmar.c
+>>>>>>>> +++ b/drivers/iommu/dmar.c
+>>>>>>>> @@ -1160,6 +1160,7 @@ static int qi_check_fault(struct
+>>>>>>>> intel_iommu *iommu, int
+>>>>>>>> index)
+>>>>>>>>      	int head, tail;
+>>>>>>>>      	struct q_inval *qi = iommu->qi;
+>>>>>>>>      	int wait_index = (index + 1) % QI_LENGTH;
+>>>>>>>> +	int shift = qi_shift(iommu);
+>>>>>>>>
+>>>>>>>>      	if (qi->desc_status[wait_index] == QI_ABORT)
+>>>>>>>>      		return -EAGAIN;
+>>>>>>>> @@ -1173,13 +1174,15 @@ static int qi_check_fault(struct
+>>>>>>>> intel_iommu *iommu, int index)
+>>>>>>>>      	 */
+>>>>>>>>      	if (fault & DMA_FSTS_IQE) {
+>>>>>>>>      		head = readl(iommu->reg + DMAR_IQH_REG);
+>>>>>>>> -		if ((head >> DMAR_IQ_SHIFT) == index) {
+>>>>>>>> +		if ((head >> shift) == index) {
+>>>>>>>> +			struct qi_desc *desc = qi->desc + head;
+>>>>>>>> +
+>>>>>>>>      			pr_err("VT-d detected invalid descriptor: "
+>>>>>>>>      				"low=%llx, high=%llx\n",
+>>>>>>>> -				(unsigned long long)qi->desc[index].low,
+>>>>>>>> -				(unsigned long long)qi->desc[index].high);
+>>>>>>>> -			memcpy(&qi->desc[index], &qi->desc[wait_index],
+>>>>>>>> -					sizeof(struct qi_desc));
+>>>>>>>> +				(unsigned long long)desc->qw0,
+>>>>>>>> +				(unsigned long long)desc->qw1);
+>>>>>>> Still missing qw2 and qw3. May make the print differ based on if smts is
+>> configed.
+>>>>>> qw2 and qw3 are reserved from software point of view. We don't need
+>>>>>> to print it for information.
+>>>>> But for Scalable mode, it should be valid?
+>>>> No. It's reserved for software.
+>>> No, I don’t think so. PRQ response would also be queued to hardware by
+>>> QI. For such QI descriptors, the high bits are not reserved.
+>>>
+>>
+>> Do you mean the private data fields of a page request descriptor or a page group
+>> response descriptor? Those fields contains software defined private data (might a
+>> kernel pointer?). We should avoid leaking such information in the generic kernel
+>> message for security consideration.
+>> Or anything I missed?
+> 
+> yes, I'm not sure what kind of data it may be in the private data field. From software
+> point of view, it may be helpful to show the full content of the QI descriptor for error
+> triage. Personally, I'm fine if you keep it on this point.
+> 
 
-From: Christoph Hellwig <hch@lst.de>
+Okay, thanks.
 
-commit 485734f3fc77c1eb77ffe138c027b9a4bf0178f3 upstream.
+I think I need to put some comments there so that people could
+understand my consideration.
 
-We already build the swiotlb code for 32-bit kernels with PAE support,
-but the code to actually use swiotlb has only been enabled for 64-bit
-kernels for an unknown reason.
-
-Before Linux v4.18 we paper over this fact because the networking code,
-the SCSI layer and some random block drivers implemented their own
-bounce buffering scheme.
-
-[ mingo: Changelog fixes. ]
-
-Fixes: 21e07dba9fb1 ("scsi: reduce use of block bounce buffers")
-Fixes: ab74cfebafa3 ("net: remove the PCI_DMA_BUS_IS_PHYS check in illegal_highdma")
-Reported-by: Matthew Whitehead <tedheadster@gmail.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Tested-by: Matthew Whitehead <tedheadster@gmail.com>
-Cc: konrad.wilk@oracle.com
-Cc: iommu@lists.linux-foundation.org
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20181014075208.2715-1-hch@lst.de
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
----
- arch/x86/kernel/pci-swiotlb.c |    2 --
- 1 file changed, 2 deletions(-)
-
---- a/arch/x86/kernel/pci-swiotlb.c
-+++ b/arch/x86/kernel/pci-swiotlb.c
-@@ -42,10 +42,8 @@ IOMMU_INIT_FINISH(pci_swiotlb_detect_ove
- int __init pci_swiotlb_detect_4gb(void)
- {
- 	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
--#ifdef CONFIG_X86_64
- 	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
- 		swiotlb = 1;
--#endif
- 
- 	/*
- 	 * If SME is active then swiotlb will be set to 1 so that bounce
+Best regards,
+Lu Baolu
