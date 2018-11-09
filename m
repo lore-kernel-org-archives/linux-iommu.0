@@ -1,53 +1,45 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: [PATCH RFC 3/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory, and improve debugging
-Date: Fri,  9 Nov 2018 16:24:48 +0800
-Message-ID: <20181109082448.150302-4-drinkcat@chromium.org>
-References: <20181109082448.150302-1-drinkcat@chromium.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [RFC] remove the ->mapping_error method from dma_map_ops
+Date: Fri,  9 Nov 2018 09:46:30 +0100
+Message-ID: <20181109084632.22848-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181109082448.150302-1-drinkcat@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <alexander.levin@verizon.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com
+To: iommu@lists.linux-foundation.org
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-For level 1 pages, use __get_dma32_pages to make sure physical
-memory address is 32-bit.
+Error reporting for the dma_map_single and dma_map_page operations is
+currently a mess.  Both APIs directly return the dma_addr_t to be used for
+the DMA, with a magic error escape that is specific to the instance and
+checked by another method provided.  This has a few downsides:
 
-For level 2 pages, kmem_cache_zalloc with GFP_DMA has been modified
-in a previous patch to be allocated in DMA32 zone.
+ - the error check is easily forgotten and a __must_check marker doesn't
+   help as the value always is consumed anyway
+ - the error checking requires another indirect call, which have gotten
+   incredibly expensive
+ - a lot of code is wasted on implementing these methods
 
-Also, print an error when the physical address does not fit in
-32-bit, to make debugging easier in the future.
+The historical reason for this is that people thought DMA mappings would
+not fail when the API was created, which sounds like a really bad
+assumption in retrospective, and then we tried to cram error handling
+onto it later on.
 
-Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
----
- drivers/iommu/io-pgtable-arm-v7s.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+There basically are two variants:  the error code is 0 because the
+implementation will never return 0 as a valid DMA address, or the error
+code is all-F as the implementation won't ever return an address that
+high.  The old AMD GART is the only one not falling into these two camps
+as it picks sort of a relative zero relative to where it is mapped.
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 445c3bde04800c..862fd404de84d8 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -198,13 +198,15 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 	void *table = NULL;
- 
- 	if (lvl == 1)
--		table = (void *)__get_dma_pages(__GFP_ZERO, get_order(size));
-+		table = (void *)__get_dma32_pages(__GFP_ZERO, get_order(size));
- 	else if (lvl == 2)
- 		table = kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA);
- 	phys = virt_to_phys(table);
--	if (phys != (arm_v7s_iopte)phys)
-+	if (phys != (arm_v7s_iopte)phys) {
- 		/* Doesn't fit in PTE */
-+		dev_err(dev, "Page table does not fit: %pa", &phys);
- 		goto out_free;
-+	}
- 	if (table && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
- 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
--- 
-2.19.1.930.g4563a0d9d0-goog
+The 0 return doesn't work for a lot of IOMMUs that start allocating
+bus space from address zero, so we can't consolidate on that, but I think
+we can move everyone to all-Fs, which the patch here does.  The reason
+for that is that there is only one way to ever get this address: by
+doing a 1-byte long, 1-byte aligned mapping, but all our mappings
+are not only longer but generally aligned, and the mappings have to
+keep at least the basic alignment.  Please try to poke holes into this
+idea as it would simplify our logic a lot, and also allow to change
+at least the not so commonly used yet dma_map_single_attrs and
+dma_map_page_attrs to actually return an error code and further improve
+the error handling flow in the drivers.
