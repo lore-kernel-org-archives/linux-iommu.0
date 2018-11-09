@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/7] iommu/amd: Introduce free_sub_pt() function
-Date: Fri,  9 Nov 2018 12:07:07 +0100
-Message-ID: <20181109110712.12469-3-joro@8bytes.org>
+Subject: [PATCH 5/7] iommu/amd: Restart loop if cmpxchg64 succeeded in alloc_pte()
+Date: Fri,  9 Nov 2018 12:07:10 +0100
+Message-ID: <20181109110712.12469-6-joro@8bytes.org>
 References: <20181109110712.12469-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181109110712.12469-1-joro@8bytes.org>
@@ -12,51 +12,44 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-The function is a more generic version of free_pagetable()
-and will be used to free only specific sub-trees of a
-page-table.
+This makes sure that __pte always contains the correct value
+when the pointer to the next page-table level is derived.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ drivers/iommu/amd_iommu.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 2655bd91af93..1186571f77e1 100644
+index 6a88ba9321d1..c539b2a59019 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1367,12 +1367,10 @@ DEFINE_FREE_PT_FN(l4, free_pt_l3)
- DEFINE_FREE_PT_FN(l5, free_pt_l4)
- DEFINE_FREE_PT_FN(l6, free_pt_l5)
+@@ -1474,13 +1474,12 @@ static u64 *alloc_pte(struct protection_domain *domain,
+ 			__npte = PM_LEVEL_PDE(level, iommu_virt_to_phys(page));
  
--static void free_pagetable(struct protection_domain *domain)
-+static struct page *free_sub_pt(unsigned long root, int mode,
-+				struct page *freelist)
- {
--	unsigned long root = (unsigned long)domain->pt_root;
--	struct page *freelist = NULL;
+ 			/* pte could have been changed somewhere. */
+-			if (cmpxchg64(pte, __pte, __npte) != __pte) {
++			if (cmpxchg64(pte, __pte, __npte) != __pte)
+ 				free_page((unsigned long)page);
+-				continue;
+-			}
 -
--	switch (domain->mode) {
-+	switch (mode) {
- 	case PAGE_MODE_NONE:
- 		break;
- 	case PAGE_MODE_1_LEVEL:
-@@ -1397,6 +1395,16 @@ static void free_pagetable(struct protection_domain *domain)
- 		BUG();
- 	}
+-			if (pte_level == PAGE_MODE_7_LEVEL)
++			else if (pte_level == PAGE_MODE_7_LEVEL)
+ 				domain->updated = true;
++
++			continue;
+ 		}
  
-+	return freelist;
-+}
-+
-+static void free_pagetable(struct protection_domain *domain)
-+{
-+	unsigned long root = (unsigned long)domain->pt_root;
-+	struct page *freelist = NULL;
-+
-+	free_sub_pt(root, domain->mode, freelist);
-+
- 	free_page_list(freelist);
- }
+ 		/* No level skipping support yet */
+@@ -1489,7 +1488,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
  
+ 		level -= 1;
+ 
+-		pte = IOMMU_PTE_PAGE(*pte);
++		pte = IOMMU_PTE_PAGE(__pte);
+ 
+ 		if (pte_page && level == end_lvl)
+ 			*pte_page = pte;
 -- 
 2.17.1
