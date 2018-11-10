@@ -1,65 +1,262 @@
-From: David Miller <davem@davemloft.net>
-Subject: Re: [RFC] remove the ->mapping_error method from dma_map_ops
-Date: Fri, 09 Nov 2018 15:12:34 -0800 (PST)
-Message-ID: <20181109.151234.2231390463846593374.davem@davemloft.net>
-References: <20181109084632.22848-1-hch@lst.de>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 1/1] iommu/vtd: Cleanup dma_remapping.h header
+Date: Sat, 10 Nov 2018 15:08:44 +0800
+Message-ID: <20181110070844.28353-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181109084632.22848-1-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de
-Cc: iommu@lists.linux-foundation.org, torvalds@linux-foundation.org, linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Christoph Hellwig <hch@lst.de>
-Date: Fri,  9 Nov 2018 09:46:30 +0100
+Commit e61d98d8dad00 ("x64, x2apic/intr-remap: Intel vt-d, IOMMU
+code reorganization") moved dma_remapping.h from drivers/pci/ to
+current place. It is entirely VT-d specific, but uses a generic
+name. This merges dma_remapping.h with include/linux/intel-iommu.h
+and removes dma_remapping.h as the result.
 
-> Error reporting for the dma_map_single and dma_map_page operations is
-> currently a mess.  Both APIs directly return the dma_addr_t to be used for
-> the DMA, with a magic error escape that is specific to the instance and
-> checked by another method provided.  This has a few downsides:
-> 
->  - the error check is easily forgotten and a __must_check marker doesn't
->    help as the value always is consumed anyway
->  - the error checking requires another indirect call, which have gotten
->    incredibly expensive
->  - a lot of code is wasted on implementing these methods
-> 
-> The historical reason for this is that people thought DMA mappings would
-> not fail when the API was created, which sounds like a really bad
-> assumption in retrospective, and then we tried to cram error handling
-> onto it later on.
-> 
-> There basically are two variants:  the error code is 0 because the
-> implementation will never return 0 as a valid DMA address, or the error
-> code is all-F as the implementation won't ever return an address that
-> high.  The old AMD GART is the only one not falling into these two camps
-> as it picks sort of a relative zero relative to where it is mapped.
-> 
-> The 0 return doesn't work for a lot of IOMMUs that start allocating
-> bus space from address zero, so we can't consolidate on that, but I think
-> we can move everyone to all-Fs, which the patch here does.  The reason
-> for that is that there is only one way to ever get this address: by
-> doing a 1-byte long, 1-byte aligned mapping, but all our mappings
-> are not only longer but generally aligned, and the mappings have to
-> keep at least the basic alignment.  Please try to poke holes into this
-> idea as it would simplify our logic a lot, and also allow to change
-> at least the not so commonly used yet dma_map_single_attrs and
-> dma_map_page_attrs to actually return an error code and further improve
-> the error handling flow in the drivers.
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Suggested-by: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ arch/x86/kernel/tboot.c                    |  2 +-
+ drivers/gpu/drm/i915/i915_gem_execbuffer.c |  2 +-
+ drivers/gpu/drm/i915/intel_display.c       |  2 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.c        |  2 +-
+ drivers/misc/mic/scif/scif_rma.c           |  2 +-
+ drivers/misc/mic/scif/scif_rma.h           |  2 +-
+ include/linux/dma_remapping.h              | 58 ----------------------
+ include/linux/intel-iommu.h                | 49 +++++++++++++++++-
+ 8 files changed, 53 insertions(+), 66 deletions(-)
+ delete mode 100644 include/linux/dma_remapping.h
 
-I have no problem with patch #1, it looks great.
-
-But patch #2 on the other hand, not so much.
-
-I hate seeing values returned by reference, it adds cost especially
-on cpus where all argments and return values fit in registers (we end
-up forcing a stack slot and memory references).
-
-And we don't need it here.
-
-DMA addresses are like pointers, and therefore we can return errors and
-valid success values in the same dma_addr_t just fine.  PTR_ERR() --> DMA_ERR(),
-IS_PTR_ERR() --> IS_DMA_ERR, etc.
+diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+index a2486f444073..6e5ef8fb8a02 100644
+--- a/arch/x86/kernel/tboot.c
++++ b/arch/x86/kernel/tboot.c
+@@ -19,7 +19,7 @@
+  *
+  */
+ 
+-#include <linux/dma_remapping.h>
++#include <linux/intel-iommu.h>
+ #include <linux/init_task.h>
+ #include <linux/spinlock.h>
+ #include <linux/export.h>
+diff --git a/drivers/gpu/drm/i915/i915_gem_execbuffer.c b/drivers/gpu/drm/i915/i915_gem_execbuffer.c
+index 09187286d346..d8ccc77fdbaf 100644
+--- a/drivers/gpu/drm/i915/i915_gem_execbuffer.c
++++ b/drivers/gpu/drm/i915/i915_gem_execbuffer.c
+@@ -26,7 +26,7 @@
+  *
+  */
+ 
+-#include <linux/dma_remapping.h>
++#include <linux/intel-iommu.h>
+ #include <linux/reservation.h>
+ #include <linux/sync_file.h>
+ #include <linux/uaccess.h>
+diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
+index 9741cc419e1b..45334a84fab1 100644
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -47,7 +47,7 @@
+ #include <drm/drm_plane_helper.h>
+ #include <drm/drm_rect.h>
+ #include <drm/drm_atomic_uapi.h>
+-#include <linux/dma_remapping.h>
++#include <linux/intel-iommu.h>
+ #include <linux/reservation.h>
+ 
+ /* Primary plane formats for gen <= 3 */
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+index 61a84b958d67..c3e80a3b09fc 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+@@ -34,7 +34,7 @@
+ #include <drm/ttm/ttm_placement.h>
+ #include <drm/ttm/ttm_bo_driver.h>
+ #include <drm/ttm/ttm_module.h>
+-#include <linux/dma_remapping.h>
++#include <linux/intel-iommu.h>
+ 
+ #define VMWGFX_DRIVER_DESC "Linux drm driver for VMware graphics devices"
+ #define VMWGFX_CHIP_SVGAII 0
+diff --git a/drivers/misc/mic/scif/scif_rma.c b/drivers/misc/mic/scif/scif_rma.c
+index c824329f7012..b441f6b0c743 100644
+--- a/drivers/misc/mic/scif/scif_rma.c
++++ b/drivers/misc/mic/scif/scif_rma.c
+@@ -15,7 +15,7 @@
+  * Intel SCIF driver.
+  *
+  */
+-#include <linux/dma_remapping.h>
++#include <linux/intel-iommu.h>
+ #include <linux/pagemap.h>
+ #include <linux/sched/mm.h>
+ #include <linux/sched/signal.h>
+diff --git a/drivers/misc/mic/scif/scif_rma.h b/drivers/misc/mic/scif/scif_rma.h
+index fa6722279196..d90a06d4e93b 100644
+--- a/drivers/misc/mic/scif/scif_rma.h
++++ b/drivers/misc/mic/scif/scif_rma.h
+@@ -53,7 +53,7 @@
+ #ifndef SCIF_RMA_H
+ #define SCIF_RMA_H
+ 
+-#include <linux/dma_remapping.h>
++#include <linux/intel-iommu.h>
+ #include <linux/mmu_notifier.h>
+ 
+ #include "../bus/scif_bus.h"
+diff --git a/include/linux/dma_remapping.h b/include/linux/dma_remapping.h
+deleted file mode 100644
+index 21b3e7d33d68..000000000000
+--- a/include/linux/dma_remapping.h
++++ /dev/null
+@@ -1,58 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _DMA_REMAPPING_H
+-#define _DMA_REMAPPING_H
+-
+-/*
+- * VT-d hardware uses 4KiB page size regardless of host page size.
+- */
+-#define VTD_PAGE_SHIFT		(12)
+-#define VTD_PAGE_SIZE		(1UL << VTD_PAGE_SHIFT)
+-#define VTD_PAGE_MASK		(((u64)-1) << VTD_PAGE_SHIFT)
+-#define VTD_PAGE_ALIGN(addr)	(((addr) + VTD_PAGE_SIZE - 1) & VTD_PAGE_MASK)
+-
+-#define VTD_STRIDE_SHIFT        (9)
+-#define VTD_STRIDE_MASK         (((u64)-1) << VTD_STRIDE_SHIFT)
+-
+-#define DMA_PTE_READ (1)
+-#define DMA_PTE_WRITE (2)
+-#define DMA_PTE_LARGE_PAGE (1 << 7)
+-#define DMA_PTE_SNP (1 << 11)
+-
+-#define CONTEXT_TT_MULTI_LEVEL	0
+-#define CONTEXT_TT_DEV_IOTLB	1
+-#define CONTEXT_TT_PASS_THROUGH 2
+-/* Extended context entry types */
+-#define CONTEXT_TT_PT_PASID	4
+-#define CONTEXT_TT_PT_PASID_DEV_IOTLB 5
+-#define CONTEXT_TT_MASK (7ULL << 2)
+-
+-#define CONTEXT_DINVE		(1ULL << 8)
+-#define CONTEXT_PRS		(1ULL << 9)
+-#define CONTEXT_PASIDE		(1ULL << 11)
+-
+-struct intel_iommu;
+-struct dmar_domain;
+-struct root_entry;
+-
+-
+-#ifdef CONFIG_INTEL_IOMMU
+-extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+-extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+-extern int dmar_disabled;
+-extern int intel_iommu_enabled;
+-extern int intel_iommu_tboot_noforce;
+-#else
+-static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
+-{
+-	return 0;
+-}
+-static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
+-{
+-	return 0;
+-}
+-#define dmar_disabled	(1)
+-#define intel_iommu_enabled (0)
+-#endif
+-
+-
+-#endif
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index b0ae25837361..a58bc05d6798 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -26,7 +26,6 @@
+ #include <linux/iova.h>
+ #include <linux/io.h>
+ #include <linux/idr.h>
+-#include <linux/dma_remapping.h>
+ #include <linux/mmu_notifier.h>
+ #include <linux/list.h>
+ #include <linux/iommu.h>
+@@ -37,9 +36,36 @@
+ #include <asm/iommu.h>
+ 
+ /*
+- * Intel IOMMU register specification per version 1.0 public spec.
++ * VT-d hardware uses 4KiB page size regardless of host page size.
+  */
++#define VTD_PAGE_SHIFT		(12)
++#define VTD_PAGE_SIZE		(1UL << VTD_PAGE_SHIFT)
++#define VTD_PAGE_MASK		(((u64)-1) << VTD_PAGE_SHIFT)
++#define VTD_PAGE_ALIGN(addr)	(((addr) + VTD_PAGE_SIZE - 1) & VTD_PAGE_MASK)
++
++#define VTD_STRIDE_SHIFT        (9)
++#define VTD_STRIDE_MASK         (((u64)-1) << VTD_STRIDE_SHIFT)
++
++#define DMA_PTE_READ (1)
++#define DMA_PTE_WRITE (2)
++#define DMA_PTE_LARGE_PAGE (1 << 7)
++#define DMA_PTE_SNP (1 << 11)
++
++#define CONTEXT_TT_MULTI_LEVEL	0
++#define CONTEXT_TT_DEV_IOTLB	1
++#define CONTEXT_TT_PASS_THROUGH 2
++/* Extended context entry types */
++#define CONTEXT_TT_PT_PASID	4
++#define CONTEXT_TT_PT_PASID_DEV_IOTLB 5
++#define CONTEXT_TT_MASK (7ULL << 2)
++
++#define CONTEXT_DINVE		(1ULL << 8)
++#define CONTEXT_PRS		(1ULL << 9)
++#define CONTEXT_PASIDE		(1ULL << 11)
+ 
++/*
++ * Intel IOMMU register specification per version 1.0 public spec.
++ */
+ #define	DMAR_VER_REG	0x0	/* Arch version supported by this IOMMU */
+ #define	DMAR_CAP_REG	0x8	/* Hardware supported capabilities */
+ #define	DMAR_ECAP_REG	0x10	/* Extended capabilities supported */
+@@ -632,4 +658,23 @@ bool context_present(struct context_entry *context);
+ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+ 					 u8 devfn, int alloc);
+ 
++#ifdef CONFIG_INTEL_IOMMU
++extern int iommu_calculate_agaw(struct intel_iommu *iommu);
++extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
++extern int dmar_disabled;
++extern int intel_iommu_enabled;
++extern int intel_iommu_tboot_noforce;
++#else
++static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
++{
++	return 0;
++}
++static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
++{
++	return 0;
++}
++#define dmar_disabled	(1)
++#define intel_iommu_enabled (0)
++#endif
++
+ #endif
+-- 
+2.17.1
