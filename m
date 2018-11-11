@@ -1,96 +1,118 @@
-From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH v2 3/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
-	and improve debugging
-Date: Sun, 11 Nov 2018 17:03:41 +0800
-Message-ID: <20181111090341.120786-4-drinkcat@chromium.org>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
+From: Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 3.16 032/366] iommu/vt-d: Ratelimit each dmar fault printing
+Date: Sun, 11 Nov 2018 19:49:05 +0000
+Message-ID: <lsq.1541965745.163594241@decadent.org.uk>
+References: <lsq.1541965744.387173642@decadent.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181111090341.120786-1-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <lsq.1541965744.387173642@decadent.org.uk>
+Sender: stable-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: akpm@linux-foundation.org, Joerg Roedel <jroedel@suse.de>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Dmitry Safonov <dima@arista.com>, David Woodhouse <dwmw2@infradead.org>, Ingo Molnar <mingo@kernel.org>, iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
-is defined (e.g. on arm64 platforms).
+3.16.61-rc1 review patch.  If anyone has any objections, please let me know.
 
-For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32.
+------------------
 
-Also, print an error when the physical address does not fit in
-32-bit, to make debugging easier in the future.
+From: Dmitry Safonov <dima@arista.com>
 
-Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-Signed-off-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+commit 6c50d79f66382d78918a768374839d6d1b606d3f upstream.
+
+There is a ratelimit for printing, but it's incremented each time the
+cpu recives dmar fault interrupt. While one interrupt may signal about
+*many* faults.
+So, measuring the impact it turns out that reading/clearing one fault
+takes < 1 usec, and printing info about the fault takes ~170 msec.
+
+Having in mind that maximum number of fault recording registers per
+remapping hardware unit is 256.. IRQ handler may run for (170*256) msec.
+And as fault-serving loop runs without a time limit, during servicing
+new faults may occur..
+
+Ratelimit each fault printing rather than each irq printing.
+
+Fixes: commit c43fce4eebae ("iommu/vt-d: Ratelimit fault handler")
+
+BUG: spinlock lockup suspected on CPU#0, CliShell/9903
+ lock: 0xffffffff81a47440, .magic: dead4ead, .owner: kworker/u16:2/8915, .owner_cpu: 6
+CPU: 0 PID: 9903 Comm: CliShell
+Call Trace:$\n'
+[..] dump_stack+0x65/0x83$\n'
+[..] spin_dump+0x8f/0x94$\n'
+[..] do_raw_spin_lock+0x123/0x170$\n'
+[..] _raw_spin_lock_irqsave+0x32/0x3a$\n'
+[..] uart_chars_in_buffer+0x20/0x4d$\n'
+[..] tty_chars_in_buffer+0x18/0x1d$\n'
+[..] n_tty_poll+0x1cb/0x1f2$\n'
+[..] tty_poll+0x5e/0x76$\n'
+[..] do_select+0x363/0x629$\n'
+[..] compat_core_sys_select+0x19e/0x239$\n'
+[..] compat_SyS_select+0x98/0xc0$\n'
+[..] sysenter_dispatch+0x7/0x25$\n'
+[..]
+NMI backtrace for cpu 6
+CPU: 6 PID: 8915 Comm: kworker/u16:2
+Workqueue: dmar_fault dmar_fault_work
+Call Trace:$\n'
+[..] wait_for_xmitr+0x26/0x8f$\n'
+[..] serial8250_console_putchar+0x1c/0x2c$\n'
+[..] uart_console_write+0x40/0x4b$\n'
+[..] serial8250_console_write+0xe6/0x13f$\n'
+[..] call_console_drivers.constprop.13+0xce/0x103$\n'
+[..] console_unlock+0x1f8/0x39b$\n'
+[..] vprintk_emit+0x39e/0x3e6$\n'
+[..] printk+0x4d/0x4f$\n'
+[..] dmar_fault+0x1a8/0x1fc$\n'
+[..] dmar_fault_work+0x15/0x17$\n'
+[..] process_one_work+0x1e8/0x3a9$\n'
+[..] worker_thread+0x25d/0x345$\n'
+[..] kthread+0xea/0xf2$\n'
+[..] ret_from_fork+0x58/0x90$\n'
+
+Cc: Alex Williamson <alex.williamson@redhat.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 ---
+ drivers/iommu/dmar.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Changes since v1:
- - Changed approach to use SLAB_CACHE_DMA32 added by the previous
-   commit.
- - Use DMA or DMA32 depending on the architecture (DMA for arm,
-   DMA32 for arm64).
-
-drivers/iommu/io-pgtable-arm-v7s.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 445c3bde04800c..996f7b6d00b44a 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -161,6 +161,14 @@
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1483,17 +1483,13 @@ irqreturn_t dmar_fault(int irq, void *de
+ 	int reg, fault_index;
+ 	u32 fault_status;
+ 	unsigned long flag;
+-	bool ratelimited;
+ 	static DEFINE_RATELIMIT_STATE(rs,
+ 				      DEFAULT_RATELIMIT_INTERVAL,
+ 				      DEFAULT_RATELIMIT_BURST);
  
- #define ARM_V7S_TCR_PD1			BIT(5)
+-	/* Disable printing, simply clear the fault when ratelimited */
+-	ratelimited = !__ratelimit(&rs);
+-
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+ 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+-	if (fault_status && !ratelimited)
++	if (fault_status && __ratelimit(&rs))
+ 		pr_err("DRHD: handling fault status reg %x\n", fault_status);
  
-+#ifdef CONFIG_ZONE_DMA32
-+#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
-+#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA32
-+#else
-+#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
-+#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA
-+#endif
-+
- typedef u32 arm_v7s_iopte;
- 
- static bool selftest_running;
-@@ -198,13 +206,17 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 	void *table = NULL;
- 
- 	if (lvl == 1)
--		table = (void *)__get_dma_pages(__GFP_ZERO, get_order(size));
-+		table = (void *)__get_free_pages(
-+			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
- 	else if (lvl == 2)
--		table = kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA);
-+		table = kmem_cache_zalloc(data->l2_tables,
-+					  gfp | ARM_V7S_TABLE_GFP_DMA);
- 	phys = virt_to_phys(table);
--	if (phys != (arm_v7s_iopte)phys)
-+	if (phys != (arm_v7s_iopte)phys) {
- 		/* Doesn't fit in PTE */
-+		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
- 		goto out_free;
-+	}
- 	if (table && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
- 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
-@@ -737,7 +749,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
- 					    ARM_V7S_TABLE_SIZE(2),
- 					    ARM_V7S_TABLE_SIZE(2),
--					    SLAB_CACHE_DMA, NULL);
-+					    ARM_V7S_TABLE_SLAB_CACHE, NULL);
- 	if (!data->l2_tables)
- 		goto out_free_data;
- 
--- 
-2.19.1.930.g4563a0d9d0-goog
+ 	/* TBD: ignore advanced fault log currently */
+@@ -1503,6 +1499,8 @@ irqreturn_t dmar_fault(int irq, void *de
+ 	fault_index = dma_fsts_fault_record_index(fault_status);
+ 	reg = cap_fault_reg_offset(iommu->cap);
+ 	while (1) {
++		/* Disable printing, simply clear the fault when ratelimited */
++		bool ratelimited = !__ratelimit(&rs);
+ 		u8 fault_reason;
+ 		u16 source_id;
+ 		u64 guest_addr;
