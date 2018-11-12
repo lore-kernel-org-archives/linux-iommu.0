@@ -1,78 +1,22 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation
-Date: Mon, 12 Nov 2018 14:44:56 +0800
-Message-ID: <20181112064501.2290-1-baolu.lu@linux.intel.com>
+Subject: [RFC PATCH 1/5] iommu: Add APIs for IOMMU PASID management
+Date: Mon, 12 Nov 2018 14:44:57 +0800
+Message-ID: <20181112064501.2290-2-baolu.lu@linux.intel.com>
+References: <20181112064501.2290-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181112064501.2290-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds an uniformed API set for global PASIDs used by IOMMU
-and device drivers which depend on IOMMU. It works for drivers
-running on bare metal, full virtualized environments and para-
-virtualized environment.
+This adds APIs for IOMMU drivers and device drivers to manage
+the PASIDs used for DMA transfer and translation. It bases on
+I/O ASID allocator for PASID namespace management and relies
+on vendor specific IOMMU drivers for paravirtual PASIDs.
 
-When PASID requests come from components running on the bare
-metal hardware, the requests will be routed to the system wide
-I/O ASID allocator.
+Below APIs are added:
 
-
-            ^   ^  iommu_pasid_init() 
-            |   |  iommu_pasid_exit() 
-            |   |  iommu_pasid_alloc()
-            |   |  iommu_pasid_free() 
-      .-------------------------------.
-      |       IOMMU PASID APIs        |
-      '-------------------------------'
-           |   ^
-           v   |
-      .------------.  .---------------.
-      | I/O ASID   |  |               |
-      | allocator  |  | IOMMU drivers |
-      | (drivers/  |  |      or       |
-      | base/      |  | virtio IOMMU  |
-      | ioasid.c)  |  |               |
-      '------------'  '---------------'
-
-When PASID requests come from components running in full-virtualized
-or para-virtualized environments, they will be routed to the vendor-
-specific or virtio IOMMU driver, where the requests will be intercepted
-and routed to the Host Linux via VFIO interfaces.
-
-    ......................................
-    .            Guest Linux             .
-    ......................................
-    .                                    .
-    . .----------------------------.     .
-    . |       IOMMU PASID APIs     |     .
-    . '----------------------------'     .
-    .                           |        .
-    .                           v        .
-    .  .----------. .---------------.    ..---------.
-    .  | I/O ASID | | IOMMU drivers |    .|  QEMU   |
-    .  '----------' | /virtio IOMMU |---->'---------'
-    .               '---------------'    .| virtio  |
-    ......................................'---------'
-                                               |
-                                               |
-    ...........................................|....
-    .                  Host Linux              |   .
-    ...........................................|....
-    .                      |-------------------'   .
-    .                      v                       .
-    .         .----------------------------.       .
-    .         |       IOMMU PASID APIs     |       .
-    .         '----------------------------'       .
-    .               |                              .
-    .               v       .---------------.      .
-    .         .----------.  | IOMMU drivers |      .
-    .         | I/O ASID |  | /virtio IOMMU |      .
-    .         '----------'  '---------------'      .
-    ................................................
-
-Below APIs are introduced:
-    
 * iommu_pasid_init(pasid)
   - Initialize a PASID consumer. The vendor specific IOMMU
     drivers are able to set the PASID range imposed by IOMMU
@@ -90,7 +34,8 @@ Below APIs are introduced:
   - Free a PASID to the pool so that it could be consumed by
     others.
 
-It also adds below helpers to lookup or iterate PASID items.
+This also adds below helpers to lookup or iterate PASID items
+associated with a consumer.
 
 * iommu_pasid_for_each(pasid, func, data)
   - Iterate PASID items of the consumer identified by @pasid,
@@ -100,30 +45,250 @@ It also adds below helpers to lookup or iterate PASID items.
 * iommu_pasid_find(pasid, ioasid)
   - Retrieve the private data associated with @ioasid.
 
-This patch set depends on the I/O APSID allocator posted here
-[1] for discussion.
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/Kconfig |  1 +
+ drivers/iommu/iommu.c | 89 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h | 73 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 163 insertions(+)
 
-[1] https://www.spinics.net/lists/iommu/msg30639.html
-
-Best regards,
-Lu Baolu
-
-Lu Baolu (5):
-  iommu: Add APIs for IOMMU PASID management
-  iommu/vt-d: Initialize a PASID consumer
-  iommu/vt-d: Enlightened PASID allocation
-  iommu/vt-d: Allocate and free a pasid
-  iommu/vt-d: Use global pasid allocator
-
- drivers/iommu/Kconfig       |  1 +
- drivers/iommu/intel-iommu.c | 83 +++++++++++++++++++++++++++++++---
- drivers/iommu/intel-pasid.c | 88 +++++++++++++++++++++++++-----------
- drivers/iommu/intel-pasid.h | 16 +++++--
- drivers/iommu/intel-svm.c   | 24 +++++-----
- drivers/iommu/iommu.c       | 89 +++++++++++++++++++++++++++++++++++++
- include/linux/intel-iommu.h |  5 +++
- include/linux/iommu.h       | 73 ++++++++++++++++++++++++++++++
- 8 files changed, 332 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index d9a25715650e..39f2bb76c7b8 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -1,6 +1,7 @@
+ # IOMMU_API always gets selected by whoever wants it.
+ config IOMMU_API
+ 	bool
++	select IOASID
+ 
+ menuconfig IOMMU_SUPPORT
+ 	bool "IOMMU Hardware Support"
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 0b7c96d1425e..570b244897bb 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2082,3 +2082,92 @@ void iommu_detach_device_aux(struct iommu_domain *domain, struct device *dev)
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(iommu_detach_device_aux);
++
++/*
++ * APIs for PASID used by IOMMU and the device drivers which depend
++ * on IOMMU.
++ */
++struct iommu_pasid *iommu_pasid_init(struct bus_type *bus)
++{
++	struct iommu_pasid *pasid;
++	int ret;
++
++	if (!bus || !bus->iommu_ops)
++		return NULL;
++
++	pasid = kzalloc(sizeof(*pasid), GFP_KERNEL);
++	if (!pasid)
++		return NULL;
++
++	pasid->ops = bus->iommu_ops;
++	/*
++	 * The default range of an IOMMU PASID is from 0 to the full
++	 * 20bit integer.
++	 */
++	pasid->min = 0;
++	pasid->max = 0x100000;
++	/*
++	 * Give vendor specific iommu drivers a chance to set the pasid
++	 * limits imposed by the iommu hardware.
++	 */
++	if (bus->iommu_ops->pasid_init) {
++		ret = bus->iommu_ops->pasid_init(pasid);
++		if (ret) {
++			kfree(pasid);
++			return NULL;
++		}
++	}
++
++	return pasid;
++}
++EXPORT_SYMBOL_GPL(iommu_pasid_init);
++
++void iommu_pasid_exit(struct iommu_pasid *pasid)
++{
++	kfree(pasid);
++}
++EXPORT_SYMBOL_GPL(iommu_pasid_exit);
++
++int iommu_pasid_alloc(struct iommu_pasid *pasid, ioasid_t min,
++		      ioasid_t max, void *private, ioasid_t *ioasid)
++{
++	ioasid_t start, end, hw, val;
++	int ret = -EAGAIN;
++
++	start = max_t(int, min, pasid->min);
++	end = min_t(int, max, pasid->max);
++
++	if (pasid->ops->pasid_alloc)
++		ret = pasid->ops->pasid_alloc(pasid, start, end, &hw);
++
++	if (ret == -EAGAIN)
++                val = ioasid_alloc(&pasid->set, start, end, private);
++	else if (ret == 0)
++		val = ioasid_alloc(&pasid->set, hw, hw + 1, private);
++	else
++		goto hw_ret;
++
++	if (val == INVALID_IOASID)
++		goto ioasid_ret;
++
++	*ioasid = val;
++
++        return 0;
++
++ioasid_ret:
++	if (pasid->ops->pasid_free)
++		pasid->ops->pasid_free(pasid, hw);
++
++hw_ret:
++	return -ENODEV;
++}
++EXPORT_SYMBOL_GPL(iommu_pasid_alloc);
++
++void iommu_pasid_free(struct iommu_pasid *pasid, ioasid_t ioasid)
++{
++	if (pasid->ops->pasid_free)
++		pasid->ops->pasid_free(pasid, ioasid);
++
++	ioasid_free(ioasid);
++}
++EXPORT_SYMBOL_GPL(iommu_pasid_free);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 9bf1b3f2457a..4f5202c8170b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -20,6 +20,7 @@
+ #define __LINUX_IOMMU_H
+ 
+ #include <linux/scatterlist.h>
++#include <linux/ioasid.h>
+ #include <linux/device.h>
+ #include <linux/types.h>
+ #include <linux/errno.h>
+@@ -48,6 +49,7 @@ struct bus_type;
+ struct device;
+ struct iommu_domain;
+ struct notifier_block;
++struct iommu_pasid;
+ 
+ /* iommu fault flags */
+ #define IOMMU_FAULT_READ	0x0
+@@ -194,6 +196,9 @@ enum iommu_dev_attr {
+  * @of_xlate: add OF master IDs to iommu grouping
+  * @get_dev_attr: get per device IOMMU attributions
+  * @set_dev_attr: set per device IOMMU attributions
++ * @pasid_init: initialize a pasid consumer
++ * @pasid_alloc: allocate a pasid from low level driver
++ * @pasid_free: free a pasid to low level driver
+  * @pgsize_bitmap: bitmap of all possible supported page sizes
+  */
+ struct iommu_ops {
+@@ -246,6 +251,12 @@ struct iommu_ops {
+ 	int (*attach_dev_aux)(struct iommu_domain *domain, struct device *dev);
+ 	void (*detach_dev_aux)(struct iommu_domain *domain, struct device *dev);
+ 
++	/* IOMMU pasid callbacks */
++	int (*pasid_init)(struct iommu_pasid *pasid);
++	int (*pasid_alloc)(struct iommu_pasid *pasid, ioasid_t start,
++			   ioasid_t end, ioasid_t *ioasid);
++	void (*pasid_free)(struct iommu_pasid *pasid, ioasid_t ioasid);
++
+ 	unsigned long pgsize_bitmap;
+ };
+ 
+@@ -428,12 +439,41 @@ extern int iommu_attach_device_aux(struct iommu_domain *domain,
+ extern void iommu_detach_device_aux(struct iommu_domain *domain,
+ 				    struct device *dev);
+ 
++/*
++ * Per IOMMU PASID consumer data.
++ */
++struct iommu_pasid {
++	ioasid_t		max;
++	ioasid_t		min;
++	struct ioasid_set	set;
++	const struct iommu_ops	*ops;
++
++	/* vendor specific iommu private data */
++	void			*priv;
++};
++
++struct iommu_pasid *iommu_pasid_init(struct bus_type *bus);
++void iommu_pasid_exit(struct iommu_pasid *pasid);
++int iommu_pasid_alloc(struct iommu_pasid *pasid, ioasid_t min,
++		      ioasid_t max, void *private, ioasid_t *ioasid);
++void iommu_pasid_free(struct iommu_pasid *pasid, ioasid_t iosid);
++static inline int
++iommu_pasid_for_each(struct iommu_pasid *pasid, ioasid_iter_t func, void *data)
++{
++	return ioasid_for_each(&pasid->set, func, data);
++}
++static inline void*
++iommu_pasid_find(struct iommu_pasid *pasid, ioasid_t ioasid)
++{
++	return ioasid_find(&pasid->set, ioasid);
++}
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+ struct iommu_group {};
+ struct iommu_fwspec {};
+ struct iommu_device {};
++struct iommu_pasid {};
+ 
+ static inline bool iommu_present(struct bus_type *bus)
+ {
+@@ -734,6 +774,39 @@ static inline void
+ iommu_detach_device_aux(struct iommu_domain *domain, struct device *dev)
+ {
+ }
++
++static inline struct iommu_pasid *
++iommu_pasid_init(struct bus_type *bus)
++{
++	return NULL;
++}
++
++static inline void iommu_pasid_exit(struct iommu_pasid *pasid)
++{
++}
++
++static inline int
++iommu_pasid_alloc(struct iommu_pasid *pasid, ioasid_t min,
++		  ioasid_t max, void *private, ioasid_t *ioasid)
++{
++	return -ENODEV;
++}
++
++static inline void iommu_pasid_free(struct iommu_pasid *pasid, ioasid_t iosid)
++{
++}
++
++static inline int
++iommu_pasid_for_each(struct iommu_pasid *pasid, ioasid_iter_t func, void *data)
++{
++	return -ENODEV;
++}
++
++static inline void*
++iommu_pasid_find(struct iommu_pasid *pasid, ioasid_t ioasid)
++{
++	return NULL;
++}
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #ifdef CONFIG_IOMMU_DEBUGFS
 -- 
 2.17.1
