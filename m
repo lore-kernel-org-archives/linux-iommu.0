@@ -1,219 +1,69 @@
-From: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH 2/4] iommu/vt-d: Force IOMMU on for platform opt in hint
-Date: Mon, 12 Nov 2018 19:06:26 +0300
-Message-ID: <20181112160628.86620-3-mika.westerberg@linux.intel.com>
-References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH 0/4] PCI / iommu / thunderbolt: IOMMU based DMA protection
+Date: Mon, 12 Nov 2018 19:06:24 +0300
+Message-ID: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181112160628.86620-1-mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario.Limonciello-8PEkshWhKlo@public.gmane.org, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Christian Kellner <ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Jacob jun Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Hi all,
 
-Intel VT-d spec added a new DMA_CTRL_PLATFORM_OPT_IN_FLAG flag
-in DMAR ACPI table for BIOS to report compliance about platform
-initiated DMA restricted to RMRR ranges when transferring control
-to the OS. The OS treats this as a hint that the IOMMU should be
-enabled to prevent DMA attacks from possible malicious devices.
+Recent systems shipping with Windows 10 version 1803 or newer may be
+utilizing IOMMU to prevent DMA attacks via Thunderbolt ports. This is
+different from the previous security level based scheme because the
+connected device cannot access system memory outside of the regions
+allocated for it by the driver.
 
-A use of this flag is Kernel DMA protection for Thunderbolt[1]
-which in practice means that IOMMU should be enabled for PCIe
-devices connected to the Thunderbolt ports. With IOMMU enabled
-for these devices, all DMA operations are limited in the range
-reserved for it, thus the DMA attacks are prevented. All these
-devices are enumerated in the PCI/PCIe module and marked with
-an is_external flag.
+When enabled the BIOS makes sure no device can do DMA outside of RMRR
+(Reserved Memory Region Record) regions. This means that during OS boot,
+before it enables IOMMU, none of the connected devices can bypass DMA
+protection for instance by overwriting the data structures used by the
+IOMMU. The BIOS communicates support for this to the OS by setting a new
+bit in ACPI DMAR table [1].
 
-This forces IOMMU to be enabled if DMA_CTRL_PLATFORM_OPT_IN_FLAG
-is set in DMAR ACPI table and there are PCIe devices marked as
-is_external in the system. This can be turned off by adding
-"intel_iommu=off" in the kernel command line, if any problems are
-found.
+Because these systems utilize an IOMMU to block possible DMA attacks,
+typically (but not always) the Thunderbolt security level is set to "none"
+which means that all PCIe devices are immediately usable. This also means
+that Linux needs to follow Windows 10 and enable IOMMU automatically when
+running on such system otherwise connected devices can read/write system
+memory pretty much without any restrictions.
 
-[1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+Since there is a way to identify PCIe root ports that are "external facing"
+we can put all internal devices to pass through (identity mapping) mode and
+only external devices need to go through full IOMMU mappings.
 
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
----
- drivers/iommu/dmar.c        | 25 +++++++++++++++++
- drivers/iommu/intel-iommu.c | 55 +++++++++++++++++++++++++++++++++++--
- include/linux/dmar.h        |  8 ++++++
- 3 files changed, 86 insertions(+), 2 deletions(-)
+We also make sure PCIe ATS (Address Translation Service) is not enabled for
+external devices because it could be used to bypass IOMMU completely as
+explained in the changelog of patch 3/4.
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index d9c748b6f9e4..1edf2a251336 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -2042,3 +2042,28 @@ int dmar_device_remove(acpi_handle handle)
- {
- 	return dmar_device_hotplug(handle, false);
- }
-+
-+/*
-+ * dmar_platform_optin - Is %DMA_CTRL_PLATFORM_OPT_IN_FLAG set in DMAR table
-+ *
-+ * Returns true if the platform has %DMA_CTRL_PLATFORM_OPT_IN_FLAG set in
-+ * the ACPI DMAR table. This means that the platform boot firmware has made
-+ * sure no device can issue DMA outside of RMRR regions.
-+ */
-+bool dmar_platform_optin(void)
-+{
-+	struct acpi_table_dmar *dmar;
-+	acpi_status status;
-+	bool ret;
-+
-+	status = acpi_get_table(ACPI_SIG_DMAR, 0,
-+				(struct acpi_table_header **)&dmar);
-+	if (ACPI_FAILURE(status))
-+		return false;
-+
-+	ret = !!(dmar->flags & DMAR_PLATFORM_OPT_IN);
-+	acpi_put_table((struct acpi_table_header *)dmar);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(dmar_platform_optin);
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f3ccf025108b..ada786b05a59 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -184,6 +184,7 @@ static int rwbf_quirk;
-  */
- static int force_on = 0;
- int intel_iommu_tboot_noforce;
-+static int no_platform_optin;
- 
- #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
- 
-@@ -503,6 +504,7 @@ static int __init intel_iommu_setup(char *str)
- 			pr_info("IOMMU enabled\n");
- 		} else if (!strncmp(str, "off", 3)) {
- 			dmar_disabled = 1;
-+			no_platform_optin = 1;
- 			pr_info("IOMMU disabled\n");
- 		} else if (!strncmp(str, "igfx_off", 8)) {
- 			dmar_map_gfx = 0;
-@@ -2895,6 +2897,14 @@ static int iommu_should_identity_map(struct device *dev, int startup)
- 		if (device_is_rmrr_locked(dev))
- 			return 0;
- 
-+		/*
-+		 * Prevent any device marked as an external one from getting
-+		 * placed into the statically identity mapping domain. This
-+		 * is done because external devices are always untrusted.
-+		 */
-+		if (pdev->is_external)
-+			return 0;
-+
- 		if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
- 			return 1;
- 
-@@ -4728,14 +4738,55 @@ const struct attribute_group *intel_iommu_groups[] = {
- 	NULL,
- };
- 
-+static int __init platform_optin_force_iommu(void)
-+{
-+	struct pci_dev *pdev = NULL;
-+	bool has_ext_dev = false;
-+
-+	if (!dmar_platform_optin() || no_platform_optin)
-+		return 0;
-+
-+	for_each_pci_dev(pdev) {
-+		if (pdev->is_external) {
-+			has_ext_dev = true;
-+			break;
-+		}
-+	}
-+
-+	if (!has_ext_dev)
-+		return 0;
-+
-+	if (no_iommu || dmar_disabled)
-+		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
-+
-+	/*
-+	 *  If Intel-IOMMU is disabled by default, we will apply
-+	 *  identity map for all devices except those marked as
-+	 *  unsafe external devices.
-+	 */
-+	if (dmar_disabled)
-+		iommu_identity_mapping |= IDENTMAP_ALL;
-+
-+	dmar_disabled = 0;
-+#if defined(CONFIG_X86) && defined(CONFIG_SWIOTLB)
-+	swiotlb = 0;
-+#endif
-+	no_iommu = 0;
-+
-+	return 1;
-+}
-+
- int __init intel_iommu_init(void)
- {
- 	int ret = -ENODEV;
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
- 
--	/* VT-d is required for a TXT/tboot launch, so enforce that */
--	force_on = tboot_force_iommu();
-+	/*
-+	 * Intel IOMMU is required for a TXT/tboot launch or platform
-+	 * opt in, so enforce that.
-+	 */
-+	force_on = tboot_force_iommu() || platform_optin_force_iommu();
- 
- 	if (iommu_init_mempool()) {
- 		if (force_on)
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 843a41ba7e28..f8af1d770520 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -39,6 +39,7 @@ struct acpi_dmar_header;
- /* DMAR Flags */
- #define DMAR_INTR_REMAP		0x1
- #define DMAR_X2APIC_OPT_OUT	0x2
-+#define DMAR_PLATFORM_OPT_IN	0x4
- 
- struct intel_iommu;
- 
-@@ -170,6 +171,8 @@ static inline int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- { return 0; }
- #endif /* CONFIG_IRQ_REMAP */
- 
-+extern bool dmar_platform_optin(void);
-+
- #else /* CONFIG_DMAR_TABLE */
- 
- static inline int dmar_device_add(void *handle)
-@@ -182,6 +185,11 @@ static inline int dmar_device_remove(void *handle)
- 	return 0;
- }
- 
-+static inline bool dmar_platform_optin(void)
-+{
-+	return false;
-+}
-+
- #endif /* CONFIG_DMAR_TABLE */
- 
- struct irte {
+Finally we expose this information to userspace so tools such as bolt can
+do more accurate decision whether or not authorize the connected device.
+
+[1] https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf
+
+Lu Baolu (1):
+  iommu/vt-d: Force IOMMU on for platform opt in hint
+
+Mika Westerberg (3):
+  PCI / ACPI: Identify external PCI devices
+  iommu/vt-d: Do not enable ATS for external devices
+  thunderbolt: Export IOMMU based DMA protection support to userspace
+
+ .../ABI/testing/sysfs-bus-thunderbolt         |  9 +++
+ Documentation/admin-guide/thunderbolt.rst     | 23 ++++++++
+ drivers/acpi/property.c                       |  3 +
+ drivers/iommu/dmar.c                          | 25 ++++++++
+ drivers/iommu/intel-iommu.c                   | 58 ++++++++++++++++++-
+ drivers/pci/pci-acpi.c                        | 13 +++++
+ drivers/pci/probe.c                           | 23 ++++++++
+ drivers/thunderbolt/domain.c                  | 17 ++++++
+ include/linux/dmar.h                          |  8 +++
+ include/linux/pci.h                           |  1 +
+ 10 files changed, 177 insertions(+), 3 deletions(-)
+
 -- 
 2.19.1
