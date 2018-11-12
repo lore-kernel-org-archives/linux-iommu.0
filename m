@@ -1,273 +1,42 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [RFC PATCH 5/5] iommu/vt-d: Use global pasid allocator
-Date: Mon, 12 Nov 2018 14:45:01 +0800
-Message-ID: <20181112064501.2290-6-baolu.lu@linux.intel.com>
-References: <20181112064501.2290-1-baolu.lu@linux.intel.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [PATCH v2 1/1] iommu/vtd: Cleanup dma_remapping.h header
+Date: Mon, 12 Nov 2018 07:20:11 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439D6242F@SHSMSX104.ccr.corp.intel.com>
+References: <20181112064008.2102-1-baolu.lu@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181112064501.2290-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20181112064008.2102-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This uses global pasid allocator in the Intel iommu driver.
+> bounces@lists.linux-foundation.org] On Behalf Of Lu Baolu
+> Sent: Monday, November 12, 2018 2:40 PM
+> Subject: [PATCH v2 1/1] iommu/vtd: Cleanup dma_remapping.h header
+> 
+> Commit e61d98d8dad00 ("x64, x2apic/intr-remap: Intel vt-d, IOMMU
+> code reorganization") moved dma_remapping.h from drivers/pci/ to
+> current place. It is entirely VT-d specific, but uses a generic
+> name. This merges dma_remapping.h with include/linux/intel-iommu.h
+> and removes dma_remapping.h as the result.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Sohil Mehta <sohil.mehta@intel.com>
+> Suggested-by: Christoph Hellwig <hch@infradead.org>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel-iommu.c | 20 +++++++++++++++-----
- drivers/iommu/intel-pasid.c | 36 ------------------------------------
- drivers/iommu/intel-pasid.h |  3 ---
- drivers/iommu/intel-svm.c   | 24 +++++++++++++-----------
- include/linux/intel-iommu.h |  3 +++
- 5 files changed, 31 insertions(+), 55 deletions(-)
+Reviewed-by: Liu, Yi L <yi.l.liu@intel.com>
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8dbd0c601dab..e15b81afcbbc 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1698,7 +1698,11 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
- 	}
-+
-+	iommu_pasid_exit(iommu->svm_pasid);
- #endif
-+
-+	iommu_pasid_exit(iommu->aux_pasid);
- }
- 
- static struct dmar_domain *alloc_domain(int flags)
-@@ -5050,7 +5054,7 @@ static void auxiliary_unlink_device(struct dmar_domain *domain,
- 	domain->auxd_refcnt--;
- 
- 	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		intel_pasid_free_id(domain->default_pasid);
-+		iommu_pasid_free(info->iommu->aux_pasid, domain->default_pasid);
- }
- 
- static int domain_add_dev_auxd(struct dmar_domain *domain,
-@@ -5067,9 +5071,10 @@ static int domain_add_dev_auxd(struct dmar_domain *domain,
- 
- 	spin_lock_irqsave(&device_domain_lock, flags);
- 	if (domain->default_pasid <= 0) {
--		domain->default_pasid = intel_pasid_alloc_id(domain, PASID_MIN,
--				pci_max_pasids(to_pci_dev(dev)), GFP_ATOMIC);
--		if (domain->default_pasid < 0) {
-+		ret = iommu_pasid_alloc(iommu->aux_pasid, PASID_MIN,
-+					pci_max_pasids(to_pci_dev(dev)),
-+					domain, &domain->default_pasid);
-+		if (ret) {
- 			pr_err("Can't allocate default pasid\n");
- 			ret = -ENODEV;
- 			goto pasid_failed;
-@@ -5099,7 +5104,7 @@ static int domain_add_dev_auxd(struct dmar_domain *domain,
- attach_failed:
- 	spin_unlock(&iommu->lock);
- 	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		intel_pasid_free_id(domain->default_pasid);
-+		iommu_pasid_free(iommu->aux_pasid, domain->default_pasid);
- pasid_failed:
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
-@@ -5525,6 +5530,7 @@ static int intel_iommu_enable_auxd(struct device *dev)
- {
- 	struct device_domain_info *info;
- 	struct dmar_domain *domain;
-+	struct intel_iommu *iommu;
- 	unsigned long flags;
- 
- 	if (!scalable_mode_support())
-@@ -5539,6 +5545,10 @@ static int intel_iommu_enable_auxd(struct device *dev)
- 	info->auxd_enabled = 1;
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 
-+	iommu = info->iommu;
-+	if (!iommu->aux_pasid)
-+		iommu->aux_pasid = iommu_pasid_init(&pci_bus_type);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index fb42f0c2493e..68eaef3bd4fd 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -26,7 +26,6 @@
-  */
- static DEFINE_SPINLOCK(pasid_lock);
- u32 intel_pasid_max_id = PASID_MAX;
--static DEFINE_IDR(pasid_idr);
- 
- int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
- {
-@@ -98,41 +97,6 @@ void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
- 	}
- }
- 
--int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp)
--{
--	int ret, min, max;
--
--	min = max_t(int, start, PASID_MIN);
--	max = min_t(int, end, intel_pasid_max_id);
--
--	WARN_ON(in_interrupt());
--	idr_preload(gfp);
--	spin_lock(&pasid_lock);
--	ret = idr_alloc(&pasid_idr, ptr, min, max, GFP_ATOMIC);
--	spin_unlock(&pasid_lock);
--	idr_preload_end();
--
--	return ret;
--}
--
--void intel_pasid_free_id(int pasid)
--{
--	spin_lock(&pasid_lock);
--	idr_remove(&pasid_idr, pasid);
--	spin_unlock(&pasid_lock);
--}
--
--void *intel_pasid_lookup_id(int pasid)
--{
--	void *p;
--
--	spin_lock(&pasid_lock);
--	p = idr_find(&pasid_idr, pasid);
--	spin_unlock(&pasid_lock);
--
--	return p;
--}
--
- /*
-  * Per device pasid table management:
-  */
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index c80787d02e2d..029f82ce9f4a 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -60,9 +60,6 @@ struct pasid_table {
- };
- 
- extern u32 intel_pasid_max_id;
--int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp);
--void intel_pasid_free_id(int pasid);
--void *intel_pasid_lookup_id(int pasid);
- int intel_pasid_alloc_table(struct device *dev);
- void intel_pasid_free_table(struct device *dev);
- struct pasid_table *intel_pasid_get_table(struct device *dev);
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 27cf1963207d..bb57a024eae7 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -261,6 +261,9 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		BUG_ON(!mm);
- 	}
- 
-+	if (!iommu->svm_pasid)
-+		iommu->svm_pasid = iommu_pasid_init(&pci_bus_type);
-+
- 	mutex_lock(&pasid_mutex);
- 	if (pasid && !(flags & SVM_FLAG_PRIVATE_PASID)) {
- 		struct intel_svm *t;
-@@ -325,15 +328,14 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 			pasid_max = intel_pasid_max_id;
- 
- 		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
--		ret = intel_pasid_alloc_id(svm,
--					   !!cap_caching_mode(iommu->cap),
--					   pasid_max - 1, GFP_KERNEL);
--		if (ret < 0) {
-+		ret = iommu_pasid_alloc(iommu->svm_pasid,
-+					!!cap_caching_mode(iommu->cap),
-+					pasid_max - 1, svm, &svm->pasid);
-+		if (ret) {
- 			kfree(svm);
- 			kfree(sdev);
- 			goto out;
- 		}
--		svm->pasid = ret;
- 		svm->notifier.ops = &intel_mmuops;
- 		svm->mm = mm;
- 		svm->flags = flags;
-@@ -343,7 +345,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (mm) {
- 			ret = mmu_notifier_register(&svm->notifier, mm);
- 			if (ret) {
--				intel_pasid_free_id(svm->pasid);
-+				iommu_pasid_free(iommu->svm_pasid, svm->pasid);
- 				kfree(svm);
- 				kfree(sdev);
- 				goto out;
-@@ -356,7 +358,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (ret) {
- 			if (mm)
- 				mmu_notifier_unregister(&svm->notifier, mm);
--			intel_pasid_free_id(svm->pasid);
-+			iommu_pasid_free(iommu->svm_pasid, svm->pasid);
- 			kfree(svm);
- 			kfree(sdev);
- 			goto out;
-@@ -389,7 +391,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
- 
--	svm = intel_pasid_lookup_id(pasid);
-+	svm = iommu_pasid_find(iommu->svm_pasid, pasid);
- 	if (!svm)
- 		goto out;
- 
-@@ -411,7 +413,7 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 				kfree_rcu(sdev, rcu);
- 
- 				if (list_empty(&svm->devs)) {
--					intel_pasid_free_id(svm->pasid);
-+					iommu_pasid_free(iommu->svm_pasid, svm->pasid);
- 					if (svm->mm)
- 						mmu_notifier_unregister(&svm->notifier, svm->mm);
- 
-@@ -446,7 +448,7 @@ int intel_svm_is_pasid_valid(struct device *dev, int pasid)
- 	if (!iommu)
- 		goto out;
- 
--	svm = intel_pasid_lookup_id(pasid);
-+	svm = iommu_pasid_find(iommu->svm_pasid, pasid);
- 	if (!svm)
- 		goto out;
- 
-@@ -545,7 +547,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 
- 		if (!svm || svm->pasid != req->pasid) {
- 			rcu_read_lock();
--			svm = intel_pasid_lookup_id(req->pasid);
-+			svm = iommu_pasid_find(iommu->svm_pasid, req->pasid);
- 			/* It *can't* go away, because the driver is not permitted
- 			 * to unbind the mm while any page faults are outstanding.
- 			 * So we only need RCU to protect the internal idr code. */
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 4605eef3686c..d79f99388293 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -552,6 +552,7 @@ struct intel_iommu {
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-+	struct iommu_pasid *svm_pasid;	/* SVM PASID consumer */
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
-@@ -564,6 +565,8 @@ struct intel_iommu {
- 	struct iommu_device iommu;  /* IOMMU core code handle */
- 	int		node;
- 	u32		flags;      /* Software defined flags */
-+
-+	struct iommu_pasid *aux_pasid; /* Aux-domain pasid consumer */
- };
- 
- /* PCI domain-device relationship */
--- 
-2.17.1
+Just out of curious, did you considered to modify the original file
+name to be an intel specific file name? What makes you believe
+merging the file content to intel-iommu.h is better?
+
+Regards,
+Yi Liu
