@@ -1,83 +1,75 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [RFC PATCH 2/5] iommu/vt-d: Initialize a PASID consumer
-Date: Mon, 12 Nov 2018 14:44:58 +0800
-Message-ID: <20181112064501.2290-3-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [RFC PATCH 4/5] iommu/vt-d: Allocate and free a pasid
+Date: Mon, 12 Nov 2018 14:45:00 +0800
+Message-ID: <20181112064501.2290-5-baolu.lu@linux.intel.com>
 References: <20181112064501.2290-1-baolu.lu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181112064501.2290-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181112064501.2290-1-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds the Intel vt-d specific ops to initialize a PASID
-consumer.
+This adds the Intel vt-d specific ops to allocate and free a
+pasid value.
 
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ drivers/iommu/intel-iommu.c | 33 +++++++++++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 49a278a699b0..769b7059d52f 100644
+index 769b7059d52f..8dbd0c601dab 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -5597,6 +5597,35 @@ static int intel_iommu_domain_get_attr(struct iommu_domain *domain,
- 	return ret;
+@@ -5626,6 +5626,37 @@ static int intel_iommu_pasid_init(struct iommu_pasid *pasid)
+ 	return 0;
  }
  
-+static int intel_iommu_pasid_init(struct iommu_pasid *pasid)
++static int intel_iommu_pasid_alloc(struct iommu_pasid *pasid, ioasid_t start,
++				   ioasid_t end, ioasid_t *ioasid)
 +{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu = NULL, *temp;
++	struct intel_iommu *iommu;
++
++	iommu = pasid->priv;
++	if (!iommu)
++		return -EINVAL;
 +
 +	/*
-+	 *  Iterate the iommu units and get a scalable mode capable one
-+	 *  for virtual command usages. Return failure if scalable mode
-+	 *  doesn't support by any unit.
++	 * In caching mode, PASID ID should be allocated and freed
++	 * through the virtual command registers. Otherwise, rely
++	 * on the iommu global idr.
 +	 */
-+	rcu_read_lock();
-+	for_each_active_iommu(temp, drhd) {
-+		if (sm_supported(temp)) {
-+			iommu = temp;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
++	if (!cap_caching_mode(iommu->cap))
++		return -EAGAIN;
 +
-+	if (!iommu)
-+		return -ENODEV;
++	return vcmd_alloc_pasid(iommu, ioasid);
++}
 +
-+	pasid->max = intel_pasid_max_id;
-+	pasid->min = PASID_MIN;
-+	pasid->priv = iommu;
++static void intel_iommu_pasid_free(struct iommu_pasid *pasid, ioasid_t ioasid)
++{
++	struct intel_iommu *iommu;
 +
-+	return 0;
++	iommu = pasid->priv;
++	if (!iommu || !cap_caching_mode(iommu->cap))
++		return;
++
++	vcmd_free_pasid(iommu, ioasid);
 +}
 +
  const struct iommu_ops intel_iommu_ops = {
  	.capable		= intel_iommu_capable,
  	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -5616,6 +5645,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.domain_get_attr	= intel_iommu_domain_get_attr,
+@@ -5646,6 +5677,8 @@ const struct iommu_ops intel_iommu_ops = {
  	.get_dev_attr		= intel_iommu_get_dev_attr,
  	.set_dev_attr		= intel_iommu_set_dev_attr,
-+	.pasid_init		= intel_iommu_pasid_init,
+ 	.pasid_init		= intel_iommu_pasid_init,
++	.pasid_alloc		= intel_iommu_pasid_alloc,
++	.pasid_free		= intel_iommu_pasid_free,
  	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
  };
  
