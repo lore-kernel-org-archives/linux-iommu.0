@@ -1,48 +1,49 @@
-From: Yehezkel Bernat <yehezkelshb@gmail.com>
-Subject: Re: [PATCH 4/4] thunderbolt: Export IOMMU based DMA protection
- support to userspace
-Date: Mon, 12 Nov 2018 18:59:02 +0200
-Message-ID: <CA+CmpXvZJFk=kYvZybgTtqDWBVP_jSE37tdkQbyGA8U9WOrkoQ@mail.gmail.com>
-References: <20181112160628.86620-1-mika.westerberg@linux.intel.com> <20181112160628.86620-5-mika.westerberg@linux.intel.com>
+From: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Subject: Re: [PATCH v4 2/9] dmapool: remove checks for dev == NULL
+Date: Mon, 12 Nov 2018 12:06:08 -0500
+Message-ID: <0c364366-fe92-0ff8-4fdf-a2c597ed0fa8@cybernetics.com>
+References: <df529b6e-6744-b1af-01ce-a1b691fbcf0d@cybernetics.com>
+	<5a32095b-4626-9967-784b-9becac303994@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181112160628.86620-5-mika.westerberg@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, baolu.lu@linux.intel.com, ashok.raj@intel.com, bhelgaas@google.com, rjw@rjwysocki.net, jacob.jun.pan@intel.com, Andreas Noever <andreas.noever@gmail.com>, michael.jamet@intel.com, lukas@wunner.de, Christian Kellner <ckellner@redhat.com>, Mario Limonciello <Mario.Limonciello@dell.com>, Anthony Wong <anthony.wong@canonical.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5a32095b-4626-9967-784b-9becac303994-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org
+Cc: "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 12, 2018 at 6:06 PM Mika Westerberg
-<mika.westerberg@linux.intel.com> wrote:
->
-> Recent systems shipping with Windows 10 version 1803 or later may
-> support a feature called Kernel DMA protection [1]. In practice this
-> means that Thunderbolt connected devices are placed behind an IOMMU
-> during the whole time it is connected (including during boot) making
-> Thunderbolt security levels redundant. Some of these systems still have
-> Thunderbolt security level set to "user" in order to support OS
-> downgrade (the older version of the OS might not support IOMMU based DMA
-> protection so connecting a device still relies on user approval then).
->
-> Export this information to userspace by introducing a new sysfs
-> attribute (iommu_dma_protection). Based on it userspace tools can make
-> more accurate decision whether or not authorize the connected device.
->
-> In addition update Thunderbolt documentation regarding IOMMU based DMA
-> protection.
->
-> [1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
->
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> ---
-
-I can't comment on the IOMMU side, but the Thunderbolt side looks good to me.
-
-Just one point:
-Have you considered the option to add this property per (TBT?) device?
-If the kernel may decide to enable/disable the IOMMU or AST per device, maybe
-it should be on this level.
-Or maybe the IOMMU decision isn't going to change (it's system-wide) and the AST
-decision will be communicated per device by a new sysfs attribute anyway, if
-needed?
+T24gMTEvMTIvMTggMTE6MzIgQU0sIEpvaG4gR2Fycnkgd3JvdGU6Cj4gT24gMTIvMTEvMjAxOCAx
+NTo0MiwgVG9ueSBCYXR0ZXJzYnkgd3JvdGU6Cj4+IGRtYXBvb2wgb3JpZ2luYWxseSB0cmllZCB0
+byBzdXBwb3J0IHBvb2xzIHdpdGhvdXQgYSBkZXZpY2UgYmVjYXVzZQo+PiBkbWFfYWxsb2NfY29o
+ZXJlbnQoKSBzdXBwb3J0cyBhbGxvY2F0aW9ucyB3aXRob3V0IGEgZGV2aWNlLiAgQnV0IG5vYm9k
+eQo+PiBlbmRlZCB1cCB1c2luZyBkbWEgcG9vbHMgd2l0aG91dCBhIGRldmljZSwgc28gdGhlIGN1
+cnJlbnQgY2hlY2tzIGluCj4+IGRtYXBvb2wuYyBmb3IgcG9vbC0+ZGV2ID09IE5VTEwgYXJlIGJv
+dGggaW5zdWZmaWNpZW50IGFuZCBjYXVzaW5nIGJsb2F0Lgo+PiBSZW1vdmUgdGhlbS4KPj4KPiBB
+cyBhbiBhc2lkZSwgaXMgaXQgcmlnaHQgdGhhdCBkbWFfcG9vbF9jcmVhdGUoKSBkb2VzIG5vdCBh
+Y3R1YWxseSByZWplY3QgCj4gZGV2PT1OVUxMIGFuZCB3b3VsZCBjcmFzaCBmcm9tIGEgTlVMTC1w
+b2ludGVyIGRlcmVmZXJlbmNlPwo+Cj4gVGhhbmtzLAo+IEpvaG4KPgpXaGVuIHBhc3NlZCBhIE5V
+TEwgZGV2LCBkbWFfcG9vbF9jcmVhdGUoKSB3aWxsIGFscmVhZHkgY3Jhc2ggd2l0aCBhCk5VTEwt
+cG9pbnRlciBkZXJlZmVyZW5jZSBiZWZvcmUgdGhpcyBwYXRjaCBzZXJpZXMsIGJlY2F1c2UgaXQg
+Y2hlY2tzIGZvcgpkZXYgPT0gTlVMTCBpbiBzb21lIHBsYWNlcyBidXQgbm90IG90aGVycy7CoCBT
+cGVjaWZpY2FsbHksIGl0IHdpbGwgY3Jhc2gKaW4gb25lIG9mIHRoZXNlIHR3byBwbGFjZXMgaW4g
+ZG1hX3Bvb2xfY3JlYXRlKCk6CgoJcmV0dmFsID0ga21hbGxvY19ub2RlKHNpemVvZigqcmV0dmFs
+KSwgR0ZQX0tFUk5FTCwgZGV2X3RvX25vZGUoZGV2KSk7Ci1vci0KCWlmIChsaXN0X2VtcHR5KCZk
+ZXYtPmRtYV9wb29scykpCgpTbyByZW1vdmluZyB0aGUgY2hlY2tzIGZvciBkZXYgPT0gTlVMTCB3
+aWxsIG5vdCBtYWtlIHByZXZpb3VzbHktd29ya2luZwpjb2RlIHRvIHN0YXJ0IGNyYXNoaW5nIHN1
+ZGRlbmx5LsKgIEFuZCBzaW5jZSBwYXNzaW5nIGRldiA9PSBOVUxMIHdvdWxkIGJlCmFuIEFQSSBt
+aXN1c2UgZXJyb3IgYW5kIG5vdCBhIHJ1bnRpbWUgZXJyb3IsIEkgd291bGQgcmF0aGVyIG5vdCBh
+ZGQgYQpuZXcgY2hlY2sgdG8gcmVqZWN0IGl0LgoKVG9ueQpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMu
+bGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
+aWxtYW4vbGlzdGluZm8vaW9tbXU=
