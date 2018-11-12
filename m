@@ -1,51 +1,156 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH 3/4] iommu/vt-d: Do not enable ATS for external devices
-Date: Mon, 12 Nov 2018 19:06:27 +0300
-Message-ID: <20181112160628.86620-4-mika.westerberg@linux.intel.com>
+From: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
+Date: Mon, 12 Nov 2018 19:06:25 +0300
+Message-ID: <20181112160628.86620-2-mika.westerberg@linux.intel.com>
 References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181112160628.86620-1-mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario.Limonciello-8PEkshWhKlo@public.gmane.org, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Christian Kellner <ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Jacob jun Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently Linux automatically enables ATS (Address Translation Service)
-for any device that supports it (and IOMMU is turned on). ATS is used to
-accelerate DMA access as the device can cache translations locally so
-there is no need to do full translation on IOMMU side. However, as
-pointed out in [1] ATS can be used to bypass IOMMU based security
-completely by simply sending PCIe read/write transaction with AT
-(Address Translation) field set to "translated".
+Recent systems shipping Windows 10 version 1803 or later may support
+IOMMU based DMA protection. This means that the platform utilizes IOMMU
+to prevent DMA attacks over externally exposed PCIe root ports
+(typically Thunderbolt ports)
 
-To mitigate this modify the Intel IOMMU code so that it does not enable
-ATS for any device that is marked as being external. In case this turns
-out to cause performance issues we may selectively allow ATS based on
-user decision but currently use big hammer and disable it completely to
-be on the safe side.
+The system BIOS marks these PCIe root ports as being externally facing
+ports by implementing following ACPI _DSD under the root port in
+question:
 
-[1] https://www.repository.cam.ac.uk/handle/1810/274352
+  Name (_DSD, Package () {
+      ToUUID ("efcc06cc-73ac-4bc3-bff0-76143807c389"),
+      Package () {
+          Package () {"ExternalFacingPort", 1},
+	  Package () {"UID", 0 }
+      }
+  })
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+This is documented [1].
+
+To make it possible for IOMMU code to identify these external devices,
+we look up for this property and mark all children devices (including
+the root port itself) with a new flag (->is_external).
+
+[1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
+
+Signed-off-by: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/acpi/property.c |  3 +++
+ drivers/pci/pci-acpi.c  | 13 +++++++++++++
+ drivers/pci/probe.c     | 23 +++++++++++++++++++++++
+ include/linux/pci.h     |  1 +
+ 4 files changed, 40 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ada786b05a59..b79788da6971 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1473,7 +1473,8 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 	if (info->pri_supported && !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
- 		info->pri_enabled = 1;
- #endif
--	if (info->ats_supported && !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
-+	if (!pdev->is_external && info->ats_supported &&
-+	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
- 		domain_update_iotlb(info->domain);
- 		info->ats_qdep = pci_ats_queue_depth(pdev);
+diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+index 8c7c4583b52d..4bdad32f62c8 100644
+--- a/drivers/acpi/property.c
++++ b/drivers/acpi/property.c
+@@ -31,6 +31,9 @@ static const guid_t prp_guids[] = {
+ 	/* Hotplug in D3 GUID: 6211e2c0-58a3-4af3-90e1-927a4e0c55a4 */
+ 	GUID_INIT(0x6211e2c0, 0x58a3, 0x4af3,
+ 		  0x90, 0xe1, 0x92, 0x7a, 0x4e, 0x0c, 0x55, 0xa4),
++	/* External facing port GUID: efcc06cc-73ac-4bc3-bff0-76143807c389 */
++	GUID_INIT(0xefcc06cc, 0x73ac, 0x4bc3,
++		  0xbf, 0xf0, 0x76, 0x14, 0x38, 0x07, 0xc3, 0x89),
+ };
+ 
+ static const guid_t ads_guid =
+diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+index 2a4aa6468579..fc193279d24d 100644
+--- a/drivers/pci/pci-acpi.c
++++ b/drivers/pci/pci-acpi.c
+@@ -789,6 +789,18 @@ static void pci_acpi_optimize_delay(struct pci_dev *pdev,
+ 	ACPI_FREE(obj);
+ }
+ 
++static void pci_acpi_set_external(struct pci_dev *dev)
++{
++	u8 val;
++
++	if (pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT)
++		return;
++	if (device_property_read_u8(&dev->dev, "ExternalFacingPort", &val))
++		return;
++
++	dev->is_external = val == 1;
++}
++
+ static void pci_acpi_setup(struct device *dev)
+ {
+ 	struct pci_dev *pci_dev = to_pci_dev(dev);
+@@ -803,6 +815,7 @@ static void pci_acpi_setup(struct device *dev)
+ 		set_dev_node(dev, node);
+ 
+ 	pci_acpi_optimize_delay(pci_dev, adev->handle);
++	pci_acpi_set_external(pci_dev);
+ 
+ 	pci_acpi_add_pm_notifier(adev, pci_dev);
+ 	if (!adev->wakeup.flags.valid)
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index b1c05b5054a0..f1db195a4a90 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1378,6 +1378,27 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
+ 	}
+ }
+ 
++static void set_pcie_external(struct pci_dev *dev)
++{
++	struct pci_dev *parent;
++
++	/*
++	 * Walk up the device hierarchy and check for any upstream
++	 * bridge that has is_external_facing set to true. This means
++	 * the hierarchy is below PCIe port that is exposed externally
++	 * (such as Thunderbolt).
++	 */
++	parent = pci_upstream_bridge(dev);
++	while (parent) {
++		if (parent->is_external) {
++			dev->is_external = true;
++			break;
++		}
++
++		parent = pci_upstream_bridge(parent);
++	}
++}
++
+ /**
+  * pci_ext_cfg_is_aliased - Is ext config space just an alias of std config?
+  * @dev: PCI device
+@@ -1638,6 +1659,8 @@ int pci_setup_device(struct pci_dev *dev)
+ 	/* Need to have dev->cfg_size ready */
+ 	set_pcie_thunderbolt(dev);
+ 
++	set_pcie_external(dev);
++
+ 	/* "Unknown power state" */
+ 	dev->current_state = PCI_UNKNOWN;
+ 
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 11c71c4ecf75..e1c0e032da55 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -396,6 +396,7 @@ struct pci_dev {
+ 	unsigned int	is_hotplug_bridge:1;
+ 	unsigned int	shpc_managed:1;		/* SHPC owned by shpchp */
+ 	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
++	unsigned int	is_external:1;		/* External PCIe device */
+ 	unsigned int	__aer_firmware_first_valid:1;
+ 	unsigned int	__aer_firmware_first:1;
+ 	unsigned int	broken_intx_masking:1;	/* INTx masking can't be used */
 -- 
 2.19.1
