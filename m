@@ -1,60 +1,46 @@
-From: Yehezkel Bernat <yehezkelshb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/4] PCI / iommu / thunderbolt: IOMMU based DMA protection
-Date: Mon, 12 Nov 2018 21:04:08 +0200
-Message-ID: <CA+CmpXt4cZJRoo8U=pMt7Y65oLpXwpr2oVgbxuFj8C-SU6yZnA@mail.gmail.com>
+From: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: [PATCH 2/4] iommu/vt-d: Force IOMMU on for platform opt in hint
+Date: Mon, 12 Nov 2018 11:51:21 -0800
+Message-ID: <20181112195121.GC5367@araj-mobl1.jf.intel.com>
 References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
-	<20181112181214.xaahc5wni4vuwl6h@wunner.de>
+ <20181112160628.86620-3-mika.westerberg@linux.intel.com>
+ <20181112110900.16cfee48@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181112181214.xaahc5wni4vuwl6h-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org
-Cc: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Mario Limonciello <Mario.Limonciello-8PEkshWhKlo@public.gmane.org>, michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Christian Kellner <ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181112110900.16cfee48@t450s.home>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, iommu@lists.linux-foundation.org, Mario.Limonciello@dell.com, Michael Jamet <michael.jamet@intel.com>, Christian Kellner <ckellner@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Yehezkel Bernat <YehezkelShB@gmail.com>, Anthony Wong <anthony.wong@canonical.com>, Andreas Noever <andreas.noever@gmail.com>, Lukas Wunner <lukas@wunner.de>, Jacob jun Pan <jacob.jun.pan@intel.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 12, 2018 at 8:12 PM Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org> wrote:
->
-> On Mon, Nov 12, 2018 at 07:06:24PM +0300, Mika Westerberg wrote:
-> > Recent systems shipping with Windows 10 version 1803 or newer may be
-> > utilizing IOMMU to prevent DMA attacks via Thunderbolt ports. This is
-> > different from the previous security level based scheme because the
-> > connected device cannot access system memory outside of the regions
-> > allocated for it by the driver.
-> >
-> > When enabled the BIOS makes sure no device can do DMA outside of RMRR
-> > (Reserved Memory Region Record) regions. This means that during OS boot,
-> > before it enables IOMMU, none of the connected devices can bypass DMA
-> > protection for instance by overwriting the data structures used by the
-> > IOMMU. The BIOS communicates support for this to the OS by setting a new
-> > bit in ACPI DMAR table [1].
-> >
-> > Because these systems utilize an IOMMU to block possible DMA attacks,
-> > typically (but not always) the Thunderbolt security level is set to "none"
-> > which means that all PCIe devices are immediately usable. This also means
-> > that Linux needs to follow Windows 10 and enable IOMMU automatically when
-> > running on such system otherwise connected devices can read/write system
-> > memory pretty much without any restrictions.
->
-> What if the system is booted from a Thunderbolt-attached disk?
-> Won't this suddenly break with these patches? That would seem like a
-> pretty significant regression.
+On Mon, Nov 12, 2018 at 11:09:00AM -0700, Alex Williamson wrote:
+> On Mon, 12 Nov 2018 19:06:26 +0300
+> Mika Westerberg <mika.westerberg@linux.intel.com> wrote:
+> 
+> > From: Lu Baolu <baolu.lu@linux.intel.com>
+> > 
+> > Intel VT-d spec added a new DMA_CTRL_PLATFORM_OPT_IN_FLAG flag
+> > in DMAR ACPI table for BIOS to report compliance about platform
+> > initiated DMA restricted to RMRR ranges when transferring control
+> > to the OS. The OS treats this as a hint that the IOMMU should be
+> > enabled to prevent DMA attacks from possible malicious devices.
+> 
+> Does this in any way suggest that there are additional recommended uses
+> cases from Intel for RMRRs?  My concern here is the incompatibility we
+> have with RMRRs and device assignment as we currently cannot assign
+> devices where the IOVA address space is encumbered by RMRR
+> requirements.  Unfortunately RMRRs do not indicate any sort or
+> lifespan, so firmware enabling an RMRR simply to support some boot-time
+> DMA encumbers the device with that RMRR for the life of that boot,
+> unless we have VT-d code that decides it knows better.  Thanks,
 
-My assumption is that either it isn't supported on such platforms (at least with
-this security configuration active) so this doesn't break anything, it never
-worked there, or the BIOS configures IOMMU in a way that allows the disk to work
-until the OS will take control and configure the IOMMU according to OS
-decisions.
-In the latter case, the kernel+initrd will be loaded before IOMMU configuration
-will be changed, and then the kernel should be able to config it correctly to
-work. (Unless I really don't understand the mechanism and workflow of using
-IOMMU, which is possible.)
+IMO any new platform that requires RMRR should be a bug. It was designed 
+originally for some legacy keyboard emulation etc.
+
+The best behavior is to continue to not allow devices with RMRR be direct assigned.
+
+Technically ignoring RMRR's and continuing to assign those devices is risky.
+The problem is IF BIOS/SMM initiates some IO in the RMRR range and it happens to be
+mapped by the direct assigned GPA its going to be ugly failure.
