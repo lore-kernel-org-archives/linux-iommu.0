@@ -1,69 +1,138 @@
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH 0/4] PCI / iommu / thunderbolt: IOMMU based DMA protection
-Date: Mon, 12 Nov 2018 19:06:24 +0300
-Message-ID: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
+Subject: [PATCH 4/4] thunderbolt: Export IOMMU based DMA protection support to userspace
+Date: Mon, 12 Nov 2018 19:06:28 +0300
+Message-ID: <20181112160628.86620-5-mika.westerberg@linux.intel.com>
+References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
 Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+Recent systems shipping with Windows 10 version 1803 or later may
+support a feature called Kernel DMA protection [1]. In practice this
+means that Thunderbolt connected devices are placed behind an IOMMU
+during the whole time it is connected (including during boot) making
+Thunderbolt security levels redundant. Some of these systems still have
+Thunderbolt security level set to "user" in order to support OS
+downgrade (the older version of the OS might not support IOMMU based DMA
+protection so connecting a device still relies on user approval then).
 
-Recent systems shipping with Windows 10 version 1803 or newer may be
-utilizing IOMMU to prevent DMA attacks via Thunderbolt ports. This is
-different from the previous security level based scheme because the
-connected device cannot access system memory outside of the regions
-allocated for it by the driver.
+Export this information to userspace by introducing a new sysfs
+attribute (iommu_dma_protection). Based on it userspace tools can make
+more accurate decision whether or not authorize the connected device.
 
-When enabled the BIOS makes sure no device can do DMA outside of RMRR
-(Reserved Memory Region Record) regions. This means that during OS boot,
-before it enables IOMMU, none of the connected devices can bypass DMA
-protection for instance by overwriting the data structures used by the
-IOMMU. The BIOS communicates support for this to the OS by setting a new
-bit in ACPI DMAR table [1].
+In addition update Thunderbolt documentation regarding IOMMU based DMA
+protection.
 
-Because these systems utilize an IOMMU to block possible DMA attacks,
-typically (but not always) the Thunderbolt security level is set to "none"
-which means that all PCIe devices are immediately usable. This also means
-that Linux needs to follow Windows 10 and enable IOMMU automatically when
-running on such system otherwise connected devices can read/write system
-memory pretty much without any restrictions.
+[1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
 
-Since there is a way to identify PCIe root ports that are "external facing"
-we can put all internal devices to pass through (identity mapping) mode and
-only external devices need to go through full IOMMU mappings.
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+---
+ .../ABI/testing/sysfs-bus-thunderbolt         |  9 ++++++++
+ Documentation/admin-guide/thunderbolt.rst     | 23 +++++++++++++++++++
+ drivers/thunderbolt/domain.c                  | 17 ++++++++++++++
+ 3 files changed, 49 insertions(+)
 
-We also make sure PCIe ATS (Address Translation Service) is not enabled for
-external devices because it could be used to bypass IOMMU completely as
-explained in the changelog of patch 3/4.
-
-Finally we expose this information to userspace so tools such as bolt can
-do more accurate decision whether or not authorize the connected device.
-
-[1] https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf
-
-Lu Baolu (1):
-  iommu/vt-d: Force IOMMU on for platform opt in hint
-
-Mika Westerberg (3):
-  PCI / ACPI: Identify external PCI devices
-  iommu/vt-d: Do not enable ATS for external devices
-  thunderbolt: Export IOMMU based DMA protection support to userspace
-
- .../ABI/testing/sysfs-bus-thunderbolt         |  9 +++
- Documentation/admin-guide/thunderbolt.rst     | 23 ++++++++
- drivers/acpi/property.c                       |  3 +
- drivers/iommu/dmar.c                          | 25 ++++++++
- drivers/iommu/intel-iommu.c                   | 58 ++++++++++++++++++-
- drivers/pci/pci-acpi.c                        | 13 +++++
- drivers/pci/probe.c                           | 23 ++++++++
- drivers/thunderbolt/domain.c                  | 17 ++++++
- include/linux/dmar.h                          |  8 +++
- include/linux/pci.h                           |  1 +
- 10 files changed, 177 insertions(+), 3 deletions(-)
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
+index 151584a1f950..b21fba14689b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
++++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
+@@ -21,6 +21,15 @@ Description:	Holds a comma separated list of device unique_ids that
+ 		If a device is authorized automatically during boot its
+ 		boot attribute is set to 1.
+ 
++What: /sys/bus/thunderbolt/devices/.../domainX/iommu_dma_protection
++Date:		Mar 2019
++KernelVersion:	4.21
++Contact:	thunderbolt-software@lists.01.org
++Description:	This attribute tells whether the system uses IOMMU
++		for DMA protection. Value of 1 means IOMMU is used 0 means
++		it is not (DMA protection is solely based on Thunderbolt
++		security levels).
++
+ What: /sys/bus/thunderbolt/devices/.../domainX/security
+ Date:		Sep 2017
+ KernelVersion:	4.13
+diff --git a/Documentation/admin-guide/thunderbolt.rst b/Documentation/admin-guide/thunderbolt.rst
+index 35fccba6a9a6..ccac2596a49f 100644
+--- a/Documentation/admin-guide/thunderbolt.rst
++++ b/Documentation/admin-guide/thunderbolt.rst
+@@ -133,6 +133,29 @@ If the user still wants to connect the device they can either approve
+ the device without a key or write a new key and write 1 to the
+ ``authorized`` file to get the new key stored on the device NVM.
+ 
++DMA protection utilizing IOMMU
++------------------------------
++Recent systems shipping with Windows 10 version 1803 or later may support a
++feature called `Kernel DMA Protection for Thunderbolt 3`_.  This means that
++Thunderbolt security is handled by an IOMMU so connected devices cannot
++access memory regions outside of what is allocated for them by drivers.
++When Linux is running on such system it automatically enables IOMMU if not
++enabled by the user already. These systems can be identified by reading
++``1`` from ``/sys/bus/thunderbolt/devices/domainX/iommu_dma_protection``
++attribute.
++
++The driver does not do anything special in this case but because DMA
++protection is handled by the IOMMU, security levels (if set) are
++redundant. For this reason some systems ship with security level set to
++``none``. Other systems have security level set to ``user`` in order to
++support downgrade to older Windows, so users who want to automatically
++authorize devices when IOMMU DMA protection is enabled can use the
++following ``udev`` rule::
++
++  ACTION=="add", SUBSYSTEM=="thunderbolt", ATTRS{iommu_dma_protection}=="1", ATTR{authorized}=="0", ATTR{authorized}="1"
++
++.. _Kernel DMA Protection for Thunderbolt 3: https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
++
+ Upgrading NVM on Thunderbolt device or host
+ -------------------------------------------
+ Since most of the functionality is handled in firmware running on a
+diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
+index 93e562f18d40..7416bdbd8576 100644
+--- a/drivers/thunderbolt/domain.c
++++ b/drivers/thunderbolt/domain.c
+@@ -7,7 +7,9 @@
+  */
+ 
+ #include <linux/device.h>
++#include <linux/dmar.h>
+ #include <linux/idr.h>
++#include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+@@ -236,6 +238,20 @@ static ssize_t boot_acl_store(struct device *dev, struct device_attribute *attr,
+ }
+ static DEVICE_ATTR_RW(boot_acl);
+ 
++static ssize_t iommu_dma_protection_show(struct device *dev,
++					 struct device_attribute *attr,
++					 char *buf)
++{
++	/*
++	 * Kernel DMA protection is a feature where Thunderbolt security is
++	 * handled natively using IOMMU. It is enabled when IOMMU is
++	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
++	 */
++	return sprintf(buf, "%d\n",
++		       iommu_present(&pci_bus_type) && dmar_platform_optin());
++}
++static DEVICE_ATTR_RO(iommu_dma_protection);
++
+ static ssize_t security_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+@@ -251,6 +267,7 @@ static DEVICE_ATTR_RO(security);
+ 
+ static struct attribute *domain_attrs[] = {
+ 	&dev_attr_boot_acl.attr,
++	&dev_attr_iommu_dma_protection.attr,
+ 	&dev_attr_security.attr,
+ 	NULL,
+ };
 -- 
 2.19.1
