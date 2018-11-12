@@ -1,15 +1,18 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
-Date: Mon, 12 Nov 2018 15:40:39 +0100
-Message-ID: <20181112144039.GA25808@8bytes.org>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Mon, 12 Nov 2018 15:55:41 +0100
+Message-ID: <20181112145541.GB25808@8bytes.org>
 References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
-	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
+	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
+	<42949d93-e22c-dd4d-cd49-46efc0b73cdb@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20181019181158.2395-3-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <42949d93-e22c-dd4d-cd49-46efc0b73cdb-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,63 +23,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Jean-Philippe,
 
-On Fri, Oct 19, 2018 at 07:11:54PM +0100, Jean-Philippe Brucker wrote:
-> The allocator doesn't really belong in drivers/iommu because some
-> drivers would like to allocate PASIDs for devices that aren't managed by
-> an IOMMU, using the same ID space as IOMMU. It doesn't really belong in
-> drivers/pci either since platform device also support PASID. Add the
-> allocator in drivers/base.
+On Thu, Nov 08, 2018 at 06:29:42PM +0000, Jean-Philippe Brucker wrote:
+> (1) My initial approach would have been to use the same page tables for
+> the default_domain and this new domain, but it might be precisely what
+> you were trying to avoid with this new proposal: a device attached to
+> two domains at the same time.
 
-I don't really buy this argument, in the end it is the IOMMU that
-enforces the PASID mappings for a device. Why should a device not behind
-an IOMMU need to allocate a pasid? Do you have examples of such devices
-which also don't have their own iommu built-in?
+My request was about the initial assumptions a device driver can make
+about a device. This assumptions is that DMA-API is set up and
+initialized for it, for everything else (like SVA) the device driver
+needs to take special action, like allocating an SVA domain and attaching
+the device to it.
 
-> +int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func, void *data)
-> +{
-> +	int ret;
-> +	struct ioasid_iter_data iter_data = {
-> +		.set	= set,
-> +		.func	= func,
-> +		.data	= data,
-> +	};
-> +
-> +	idr_lock(&ioasid_idr);
-> +	ret = idr_for_each(&ioasid_idr, ioasid_iter, &iter_data);
-> +	idr_unlock(&ioasid_idr);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ioasid_for_each);
+This should of course not break any IRQ setups for the device, and also
+enforcing an ordering is not a good and maintainable solution.
 
-What is the intended use-case for this function?
+So what you could do here is to either:
 
-> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
-> +{
-> +	void *priv = NULL;
-> +	struct ioasid_data *ioasid_data;
-> +
-> +	idr_lock(&ioasid_idr);
-> +	ioasid_data = idr_find(&ioasid_idr, ioasid);
-> +	if (ioasid_data && ioasid_data->set == set)
-> +		priv = ioasid_data->private;
-> +	idr_unlock(&ioasid_idr);
-> +
-> +	return priv;
-> +}
+	1) Save the needed IRQ mappings in some extra datastructure and
+	   duplicate it in the SVA domain. This also makes it easier to
+	   use the same SVA domain with multiple devices.
 
-I think using the idr_lock here will become a performance problem, as we
-need this function in the SVA page-fault path to retrieve the mm_struct
-belonging to a PASID.
+	2) Just re-use the 'page-tables' from the default domain in the
+	   sva-domain. This needs to happen at attach-time, because at
+	   allocation time you don't know the device yet.
 
-The head comment in lib/idr.c states that it should be safe to use
-rcu_readlock() on read-only iterations. If so, this should be used here
-so that concurrent lookups are possible.
+I think 1) is the best solution, what do you think?
+
+Btw, things would be different if we could expose SVA through the
+DMA-API to drivers. In this case we could just make the default domain
+of type SVA and be done, but we are not there yet.
 
 Regards,
 
