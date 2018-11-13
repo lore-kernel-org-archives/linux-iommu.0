@@ -1,75 +1,50 @@
-From: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: Re: [PATCH 0/4] PCI / iommu / thunderbolt: IOMMU based DMA protection
-Date: Tue, 13 Nov 2018 13:13:36 +0200
-Message-ID: <20181113111336.GS2500@lahna.fi.intel.com>
+From: Yehezkel Bernat <yehezkelshb@gmail.com>
+Subject: Re: [PATCH 4/4] thunderbolt: Export IOMMU based DMA protection
+ support to userspace
+Date: Tue, 13 Nov 2018 13:13:31 +0200
+Message-ID: <CA+CmpXtre+A-sNT0XBWfdkuq9xJ+j34EGZ0nEpahJCSe3Kvg9A@mail.gmail.com>
 References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
-	<20181112181214.xaahc5wni4vuwl6h@wunner.de>
+ <20181112160628.86620-5-mika.westerberg@linux.intel.com> <CA+CmpXvZJFk=kYvZybgTtqDWBVP_jSE37tdkQbyGA8U9WOrkoQ@mail.gmail.com>
+ <20181113105558.GR2500@lahna.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181112181214.xaahc5wni4vuwl6h-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario.Limonciello-8PEkshWhKlo@public.gmane.org, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Christian Kellner <ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jacob jun Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181113105558.GR2500@lahna.fi.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, David Woodhouse <dwmw2@infradead.org>, baolu.lu@linux.intel.com, ashok.raj@intel.com, Bjorn Helgaas <bhelgaas@google.com>, rjw@rjwysocki.net, jacob.jun.pan@intel.com, Andreas Noever <andreas.noever@gmail.com>, michael.jamet@intel.com, lukas@wunner.de, Christian Kellner <ckellner@redhat.com>, Mario Limonciello <Mario.Limonciello@dell.com>, Anthony Wong <anthony.wong@canonical.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 12, 2018 at 07:12:14PM +0100, Lukas Wunner wrote:
-> On Mon, Nov 12, 2018 at 07:06:24PM +0300, Mika Westerberg wrote:
-> > Recent systems shipping with Windows 10 version 1803 or newer may be
-> > utilizing IOMMU to prevent DMA attacks via Thunderbolt ports. This is
-> > different from the previous security level based scheme because the
-> > connected device cannot access system memory outside of the regions
-> > allocated for it by the driver.
-> > 
-> > When enabled the BIOS makes sure no device can do DMA outside of RMRR
-> > (Reserved Memory Region Record) regions. This means that during OS boot,
-> > before it enables IOMMU, none of the connected devices can bypass DMA
-> > protection for instance by overwriting the data structures used by the
-> > IOMMU. The BIOS communicates support for this to the OS by setting a new
-> > bit in ACPI DMAR table [1].
-> > 
-> > Because these systems utilize an IOMMU to block possible DMA attacks,
-> > typically (but not always) the Thunderbolt security level is set to "none"
-> > which means that all PCIe devices are immediately usable. This also means
-> > that Linux needs to follow Windows 10 and enable IOMMU automatically when
-> > running on such system otherwise connected devices can read/write system
-> > memory pretty much without any restrictions.
-> 
-> What if the system is booted from a Thunderbolt-attached disk?
-> Won't this suddenly break with these patches?
+On Tue, Nov 13, 2018 at 12:56 PM Mika Westerberg
+<mika.westerberg@linux.intel.com> wrote:
+>
+> > Just one point:
+> > Have you considered the option to add this property per (TBT?) device?
+>
+> No. ;-)
+>
+> You mean that one device uses security levels and another IOMMU? I don't
+> think it is possible without having some sort of table in the IOMMU
+> driver telling which devices it needs identity map and which not. Also
+> not sure what would be the benefit?
 
-Like Yehezkel commented, it either is not supported or alternatively it
-is (the BIOS/boot loader utilizes IOMMU as well), loads the OS image and
-what is needed from the disk, disables BME (bus mastering enable) and
-resets the IOMMU back to the default state before handing over to the OS.
+For performance, of course. If some devices are considered safe (maybe a list
+communicated by platform firmware), the kernel may decide to configure them to
+passthrough the IOMMU (I think I remember there is such an option, but maybe I'm
+wrong.)
 
-> That would seem like a pretty significant regression.  What if the
-> only GPU in the system is Thunderbolt-attached?  Is it possible to
-> recognize such scenarios and automatically exempt affected devices
-> from IOMMU blocking?
 
-"IOMMU blocking" does not mean that the device cannot be used at all. It
-actually means that the device is immediately usable and can do DMA as
-the driver has programmed (using DMA-API) but it cannot access any
-memory outside of those regions the driver has programmed.
+> > If the kernel may decide to enable/disable the IOMMU or AST per device, maybe
+> > it should be on this level.
+> > Or maybe the IOMMU decision isn't going to change (it's system-wide) and the AST
+> > decision will be communicated per device by a new sysfs attribute anyway, if
+> > needed?
+>
+> Not sure what you mean by "AST"? The IOMMU decision is pretty much
+> system-wide.
 
-The point of this exercise is to prevent so called drive-by DMA attacks
-where you go to take a cup of coffee and during that time someone plugs
-in a malicous device to Thunderbolt port of your laptop and reads all
-your secrets.
-
-When IOMMU is enabled the malicous device still is usable (assuming
-there is driver for it) but it cannot go and read all the memory, just
-the memory driver has programmed.
-
-So in your GPU case it should just work assuming the GPU has a driver.
+Sorry, I meant ATS, Address Translation Service, mentioned in patch 3 in this
+series, and possibly be enabled for some devices for performance, as mentioned
+there.
+So if needed, this will be another attribute, and definitely
+per-device, isn't it?
