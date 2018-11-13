@@ -1,68 +1,51 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH 4/4] thunderbolt: Export IOMMU based DMA protection
- support to userspace
-Date: Tue, 13 Nov 2018 13:40:20 +0200
-Message-ID: <20181113114020.GV2500@lahna.fi.intel.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
+Date: Tue, 13 Nov 2018 11:45:36 +0000
+Message-ID: <20181113114527.GA12821@e107981-ln.cambridge.arm.com>
 References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
- <20181112160628.86620-5-mika.westerberg@linux.intel.com>
- <CA+CmpXvZJFk=kYvZybgTtqDWBVP_jSE37tdkQbyGA8U9WOrkoQ@mail.gmail.com>
- <20181113105558.GR2500@lahna.fi.intel.com>
- <CA+CmpXtre+A-sNT0XBWfdkuq9xJ+j34EGZ0nEpahJCSe3Kvg9A@mail.gmail.com>
+	<20181112160628.86620-2-mika.westerberg@linux.intel.com>
+	<20181112180203.lx72gjfplb6xlur7@wunner.de>
+	<20181113105636.GB11202@e107981-ln.cambridge.arm.com>
+	<20181113112700.GT2500@lahna.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CA+CmpXtre+A-sNT0XBWfdkuq9xJ+j34EGZ0nEpahJCSe3Kvg9A@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yehezkel Bernat <yehezkelshb@gmail.com>
-Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, David Woodhouse <dwmw2@infradead.org>, baolu.lu@linux.intel.com, ashok.raj@intel.com, Bjorn Helgaas <bhelgaas@google.com>, rjw@rjwysocki.net, jacob.jun.pan@intel.com, Andreas Noever <andreas.noever@gmail.com>, michael.jamet@intel.com, lukas@wunner.de, Christian Kellner <ckellner@redhat.com>, Mario Limonciello <Mario.Limonciello@dell.com>, Anthony Wong <anthony.wong@canonical.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+In-Reply-To: <20181113112700.GT2500-3PARRvDOhMZrdx17CPfAsdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario.Limonciello-8PEkshWhKlo@public.gmane.org, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Christian Kellner <ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Jacob jun Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 13, 2018 at 01:13:31PM +0200, Yehezkel Bernat wrote:
-> On Tue, Nov 13, 2018 at 12:56 PM Mika Westerberg
-> <mika.westerberg@linux.intel.com> wrote:
-> >
-> > > Just one point:
-> > > Have you considered the option to add this property per (TBT?) device?
-> >
-> > No. ;-)
-> >
-> > You mean that one device uses security levels and another IOMMU? I don't
-> > think it is possible without having some sort of table in the IOMMU
-> > driver telling which devices it needs identity map and which not. Also
-> > not sure what would be the benefit?
+On Tue, Nov 13, 2018 at 01:27:00PM +0200, Mika Westerberg wrote:
+
+[...]
+
+> > To be frank the concept (and Microsoft _DSD bindings) seems a bit vague
+> > and not thoroughly defined and I would question its detection at
+> > PCI/ACPI core level, I would hope this can be clarified at ACPI
+> > specification level, at least.
 > 
-> For performance, of course. If some devices are considered safe (maybe a list
-> communicated by platform firmware), the kernel may decide to configure them to
-> passthrough the IOMMU (I think I remember there is such an option, but maybe I'm
-> wrong.)
+> I guess that is the way they envision to use _DSD. Instead of having
+> single UUID that covers all properties (like what we have with device
+> properties) they have one UUID per property "class". I certainly hope we
+> don't need to keep extending prp_guids[] array each time they invent
+> another "class" of properties.
 
-At least I'm not aware of such an option. Windows for example enables
-IOMMU for everything and I think macOS does the same. In Linux (with
-these patches) we put all internal devices already passthrough mode so
-things like internal graphics should not be affected. eGPUs are
-different thing, though.
+It is even worse than that. This is a unilateral/obscure change that
+won't be part of ACPI specifications (I guess it was easier to add a
+UUID than add this to the ACPI specifications through the AWSG) but it
+is still supposed to be applicable to ACPI PCI bindings on any
+platforms/arches; this way of adding bindings does not work and it
+has to be rectified.
 
-> > > If the kernel may decide to enable/disable the IOMMU or AST per device, maybe
-> > > it should be on this level.
-> > > Or maybe the IOMMU decision isn't going to change (it's system-wide) and the AST
-> > > decision will be communicated per device by a new sysfs attribute anyway, if
-> > > needed?
-> >
-> > Not sure what you mean by "AST"? The IOMMU decision is pretty much
-> > system-wide.
-> 
-> Sorry, I meant ATS, Address Translation Service, mentioned in patch 3 in this
-> series, and possibly be enabled for some devices for performance, as mentioned
-> there.
-
-Thanks for clarifying :)
-
-> So if needed, this will be another attribute, and definitely
-> per-device, isn't it?
-
-Yes, we may want to add a way enable ATS for external devices (perhaps
-global option or per-device attribute) if it turns out to cause
-performance issues. However, I think it can be done later if needed. I
-have not seen a single device actually supporting ATS (with the
-exception of the "hacked" one in the linked thesis of patch 3/4 ;-))
+Lorenzo
