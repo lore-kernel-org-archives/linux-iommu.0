@@ -1,34 +1,65 @@
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
 Subject: Re: [PATCH 4/4] thunderbolt: Export IOMMU based DMA protection
  support to userspace
-Date: Tue, 13 Nov 2018 12:36:16 +0200
-Message-ID: <20181113103616.GQ2500@lahna.fi.intel.com>
+Date: Tue, 13 Nov 2018 12:55:58 +0200
+Message-ID: <20181113105558.GR2500@lahna.fi.intel.com>
 References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
  <20181112160628.86620-5-mika.westerberg@linux.intel.com>
- <d4d2488e85174cff9ab8c641336d5919@ausx13mpc120.AMER.DELL.COM>
+ <CA+CmpXvZJFk=kYvZybgTtqDWBVP_jSE37tdkQbyGA8U9WOrkoQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <d4d2488e85174cff9ab8c641336d5919@ausx13mpc120.AMER.DELL.COM>
+In-Reply-To: <CA+CmpXvZJFk=kYvZybgTtqDWBVP_jSE37tdkQbyGA8U9WOrkoQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Mario.Limonciello@dell.com
-Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, baolu.lu@linux.intel.com, ashok.raj@intel.com, bhelgaas@google.com, rjw@rjwysocki.net, jacob.jun.pan@intel.com, andreas.noever@gmail.com, michael.jamet@intel.com, YehezkelShB@gmail.com, lukas@wunner.de, ckellner@redhat.com, anthony.wong@canonical.com, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Yehezkel Bernat <yehezkelshb@gmail.com>
+Cc: iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, baolu.lu@linux.intel.com, ashok.raj@intel.com, bhelgaas@google.com, rjw@rjwysocki.net, jacob.jun.pan@intel.com, Andreas Noever <andreas.noever@gmail.com>, michael.jamet@intel.com, lukas@wunner.de, Christian Kellner <ckellner@redhat.com>, Mario Limonciello <Mario.Limonciello@dell.com>, Anthony Wong <anthony.wong@canonical.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 12, 2018 at 04:22:25PM +0000, Mario.Limonciello@dell.com wrote:
-> > +DMA protection utilizing IOMMU
-> > +------------------------------
-> > +Recent systems shipping with Windows 10 version 1803 or later may support a
-> > +feature called `Kernel DMA Protection for Thunderbolt 3`_.  This means that
+On Mon, Nov 12, 2018 at 06:59:02PM +0200, Yehezkel Bernat wrote:
+> On Mon, Nov 12, 2018 at 6:06 PM Mika Westerberg
+> <mika.westerberg@linux.intel.com> wrote:
+> >
+> > Recent systems shipping with Windows 10 version 1803 or later may
+> > support a feature called Kernel DMA protection [1]. In practice this
+> > means that Thunderbolt connected devices are placed behind an IOMMU
+> > during the whole time it is connected (including during boot) making
+> > Thunderbolt security levels redundant. Some of these systems still have
+> > Thunderbolt security level set to "user" in order to support OS
+> > downgrade (the older version of the OS might not support IOMMU based DMA
+> > protection so connecting a device still relies on user approval then).
+> >
+> > Export this information to userspace by introducing a new sysfs
+> > attribute (iommu_dma_protection). Based on it userspace tools can make
+> > more accurate decision whether or not authorize the connected device.
+> >
+> > In addition update Thunderbolt documentation regarding IOMMU based DMA
+> > protection.
+> >
+> > [1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
+> >
+> > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > ---
 > 
-> Keep in mind there will be systems that ship with Linux that enable this feature too ;)
+> I can't comment on the IOMMU side, but the Thunderbolt side looks good to me.
 
-Yes, you are absolutely right. I sometimes forgot that fact ;-)
+Thanks!
 
-> It might be better to make it time frame and platform  firmware oriented as it's
-> entirely possible for an OEM to have a field firmware upgrade that may enable this
-> functionality from the platform and allow an end user to upgrade to a sufficiently
-> protected kernel or Windows OS to take advantage of it.
+> Just one point:
+> Have you considered the option to add this property per (TBT?) device?
 
-I agree. I will update this in the next version.
+No. ;-)
+
+You mean that one device uses security levels and another IOMMU? I don't
+think it is possible without having some sort of table in the IOMMU
+driver telling which devices it needs identity map and which not. Also
+not sure what would be the benefit?
+
+> If the kernel may decide to enable/disable the IOMMU or AST per device, maybe
+> it should be on this level.
+> Or maybe the IOMMU decision isn't going to change (it's system-wide) and the AST
+> decision will be communicated per device by a new sysfs attribute anyway, if
+> needed?
+
+Not sure what you mean by "AST"? The IOMMU decision is pretty much
+system-wide.
