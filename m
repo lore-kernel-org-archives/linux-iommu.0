@@ -1,84 +1,40 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: arm-smmu: Set SCTLR.HUPCF bit
-Date: Tue, 13 Nov 2018 06:32:26 +0000
-Message-ID: <20181113063225.GA3109@brain-police>
-References: <20180927224609.19515-1-robdclark@gmail.com>
- <20181029191000.GD16739@arm.com>
- <CAF6AEGtgC0V6ii2=p2HGmqvHFKNJhaOLi8873SGPDsrg70xGRg@mail.gmail.com>
+From: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v4 9/9] dmapool: debug: prevent endless loop in case of
+	corruption
+Date: Mon, 12 Nov 2018 22:36:01 -0800
+Message-ID: <20181113063601.GT21824@bombadil.infradead.org>
+References: <9e65ec2e-5e22-4f65-7b92-ca2af0c555f3@cybernetics.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAF6AEGtgC0V6ii2=p2HGmqvHFKNJhaOLi8873SGPDsrg70xGRg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <9e65ec2e-5e22-4f65-7b92-ca2af0c555f3-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+Cc: linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBOb3YgMDksIDIwMTggYXQgMDE6MDE6NTVQTSAtMDUwMCwgUm9iIENsYXJrIHdyb3Rl
-Ogo+IE9uIE1vbiwgT2N0IDI5LCAyMDE4IGF0IDM6MDkgUE0gV2lsbCBEZWFjb24gPHdpbGwuZGVh
-Y29uQGFybS5jb20+IHdyb3RlOgo+ID4gT24gVGh1LCBTZXAgMjcsIDIwMTggYXQgMDY6NDY6MDdQ
-TSAtMDQwMCwgUm9iIENsYXJrIHdyb3RlOgo+ID4gPiBXZSBzZWVtIHRvIG5lZWQgdG8gc2V0IGVp
-dGhlciB0aGlzIG9yIENGQ0ZHIChzdGFsbCksIG90aGVyd2lzZSBncHUKPiA+ID4gZmF1bHRzIHRy
-aWdnZXIgcHJvYmxlbXMgd2l0aCBvdGhlciBpbi1mbGlnaHQgdHJhbnNhY3Rpb25zIGZyb20gdGhl
-Cj4gPiA+IEdQVSBjYXVzaW5nIENQIGVycm9ycywgZXRjLgo+ID4gPgo+ID4gPiBJbiB0aGUgQVJN
-IFNNTVUgc3BlYywgdGhlICdIaXQgdW5kZXIgcHJldmlvdXMgY29udGV4dCBmYXVsdCcgYml0IGlz
-Cj4gPiA+IGRlc2NyaWJlZCBhczoKPiA+ID4KPiA+ID4gICcwJyAtIFN0YWxsIG9yIHRlcm1pbmF0
-ZSBzdWJzZXF1ZW50IHRyYW5zYWN0aW9ucyBpbiB0aGUgcHJlc2VuY2UKPiA+ID4gICAgICAgIG9m
-IGFuIG91dHN0YW5kaW5nIGNvbnRleHQgZmF1bHQKPiA+ID4gICcxJyAtIFByb2Nlc3MgYWxsIHN1
-YnNlcXVlbnQgdHJhbnNhY3Rpb25zIGluZGVwZW5kZW50bHkgb2YgYW55Cj4gPiA+ICAgICAgICBv
-dXRzdGFuZGluZyBjb250ZXh0IGZhdWx0Lgo+ID4gPgo+ID4gPiBTaW5jZSB3ZSBkb24ndCBlbmFi
-bGUgQ0ZDRkcgKHN0YWxsKSB0aGUgYmVoYXZpb3Igb2YgdGVybWluYXRpbmcKPiA+ID4gb3RoZXIg
-dHJhbnNhY3Rpb25zIG1ha2VzIHNlbnNlLiAgQW5kIGlzIHByb2JhYmx5IG5vdCB3aGF0IHdlIHdh
-bnQKPiA+ID4gKGFuZCBkZWZpbmF0ZWx5IG5vdCB3aGF0IHdlIHdhbnQgZm9yIEdQVSkuCj4gPiA+
-Cj4gPiA+IFNpZ25lZC1vZmYtYnk6IFJvYiBDbGFyayA8cm9iZGNsYXJrQGdtYWlsLmNvbT4KPiA+
-ID4gLS0tCj4gPiA+IFNvIEkgaGl0IHRoaXMgaXNzdWUgYSBsb25nIHRpbWUgYmFjayBvbiA4MjAg
-KG1zbTg5OTYpIGFuZCBhdCB0aGUKPiA+ID4gdGltZSBJIHNvbHZlZCBpdCB3aXRoIGEgcGF0Y2gg
-dGhhdCBlbmFibGVkIENGQ0ZHLiAgQW5kIGl0IHJlc3VyZmFjZWQKPiA+ID4gbW9yZSByZWNlbnRs
-eSBvbiBzZG04NDUuICBCdXQgYXQgdGhlIHRpbWUgQ0ZDRkcgd2FzIHJlamVjdGVkLCBpaXJjCj4g
-PiA+IGJlY2F1c2Ugb2YgY29uY2VybiB0aGF0IGl0IHdvdWxkIGNhdXNlIHByb2JsZW1zIG9uIG90
-aGVyIG5vbi1xY29tCj4gPiA+IGFybSBzbW11IGltcGxlbWVudGF0aW9ucy4gIEFuZCBJIHRoaW5r
-IEkgZm9yZ290IHRvIHNlbmQgdGhpcyB2ZXJzaW9uCj4gPiA+IG9mIHRoZSBzb2x1dGlvbi4KPiA+
-ID4KPiA+ID4gSWYgZW5hYmxpbmcgSFVQQ0YgaXMgYW50aWNpcGF0ZWQgdG8gY2F1c2UgcHJvYmxl
-bXMgb24gb3RoZXIgQVJNCj4gPiA+IFNNTVUgaW1wbGVtZW50YXRpb25zLCBJIHRoaW5rIEkgY2Fu
-IGNvbWUgdXAgd2l0aCBhIHZhcmlhbnQgb2YgdGhpcwo+ID4gPiBwYXRjaCB3aGljaCBjb25kaXRp
-b25hbGx5IGVuYWJsZXMgaXQgZm9yIHNuYXBkcmFnb24uCj4gPiA+Cj4gPiA+IEVpdGhlciB3YXks
-IEknZCByZWFsbHkgbGlrZSB0byBnZXQgc29tZSB2YXJpYW50IG9mIHRoaXMgZml4IG1lcmdlZAo+
-ID4gPiAoYW5kIHByb2JhYmx5IGl0IHdvdWxkIGJlIGEgZ29vZCBpZGVhIGZvciBzdGFibGUga2Vy
-bmVsIGJyYW5jaGVzCj4gPiA+IHRvbyksIHNpbmNlIGN1cnJlbnQgYmVoYXZpb3VyIHdpdGggdGhl
-IEdQVSBtZWFucyBmYXVsdHMgdHVybiBpbnRvCj4gPiA+IGEgZmFudGFzdGljIGNhc2NhZGUgb2Yg
-ZmFpbC4KPiA+Cj4gPiBDYW4geW91IGRlc2NyaWJlIGhvdyB0aGlzIGZhbnRhc3RpYyBjYXNjYWRl
-IG9mIGZhaWwgaW1wcm92ZXMgd2l0aCB0aGlzCj4gPiBwYXRjaCwgcGxlYXNlPyBJZiB5b3UncmUg
-Z2V0dGluZyBjb250ZXh0IGZhdWx0cyB0aGVuIHNvbWV0aGluZyBoYXMgYWxyZWFkeQo+ID4gZ29u
-ZSBob3JyaWJseSB3cm9uZywgc28gSSdtIHRyeWluZyB0byB3b3JrIG91dCBob3cgdGhpcyBpbXBy
-b3ZlcyB0aGluZ3MuCj4gPgo+IAo+IFRoZXJlIGFyZSBwbGVudHkgb2YgY2FzZXMgd2hlcmUgZ2V0
-dGluZyBpb21tdSBmYXVsdHMgd2l0aCBhIEdQVSBpcwo+ICJub3JtYWwiLCBvciBhdCBsZWFzdCBu
-b3Qgc29tZXRoaW5nIHRoZSBrZXJuZWwgb3IgZXZlbiBHTCBkcml2ZXIgY2FuCj4gY29udHJvbC4K
-ClN1Y2ggYXM/IEFsbCB0aGUgbWFpbmxpbmUgZHJpdmVyIGRvZXMgaXMgcHJpbnQgYSBkaWFnbm9z
-dGljIGFuZCBjbGVhciB0aGUKZmF1bHQsIHdoaWNoIGRvZXNuJ3Qgc2VlbSBnZW5lcmFsbHkgdXNl
-ZnVsLgoKPiBXaXRoIHRoaXMgcGF0Y2gsIHlvdSBzdGlsbCBnZXQgdGhlIGlvbW11IGZhdWx0LCBi
-dXQgaXQgZG9lc24ndCBjYXVzZQo+IHRoZSBncHUgdG8gY3Jhc2guICBCdXQgd2l0aG91dCBpdCwg
-b3RoZXIgbWVtb3J5IGFjY2Vzc2VzIGluIGZsaWdodAo+IHdoaWxlIHRoZSBmYXVsdCBvY2N1cnMs
-IGxpa2UgdGhlIEdQVSBjb21tYW5kLXByb2Nlc3NvciByZWFkaW5nIGZ1cnRoZXIKPiBhaGVhZCBp
-biB0aGUgY21kc3RyZWFtIHRvIHNldHVwIG5leHQgZHJhdywgd291bGQgcmV0dXJuIHplcm8ncywK
-PiBjYXVzaW5nIHRoZSBHUFUgdG8gY3Jhc2ggb3IgZ2V0IGludG8gYSBiYWQgc3RhdGUuCgpJIGdl
-dCB0aGF0IHBhcnQsIGJ1dCBJIGRvbid0IHVuZGVyc3RhbmQgd2h5IHdlJ3JlIHNlZWluZyBmYXVs
-dHMgaW4gdGhlIGZpcnN0CnBsYWNlIGFuZCBJIHdvcnJ5IHRoYXQgdGhpcyBwYXRjaCBpcyBqdXN0
-IHRoZSB0aXAgb2YgdGhlIGljZWJlcmcuIEl0J3MgYWxzbwpub3QgY2xlYXIgdGhhdCBwcm9jZXNz
-aW5nIHN1YnNlcXVlbnQgdHJhbnNhY3Rpb25zIGlzIGFsd2F5cyB0aGUgcmlnaHQgdGhpbmcKdG8g
-ZG8gaW4gYSB3b3JsZCB3aGVyZSB3ZSBhY3R1YWxseSB3YW50IHRvIHJlcG9ydCAoYW5kIGhhbmRs
-ZSkgc3luY2hyb25vdXMKZmF1bHRzIGZyb20gZGV2aWNlcy4KCldpbGwKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApG
-cmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+On Mon, Nov 12, 2018 at 10:46:35AM -0500, Tony Battersby wrote:
+> Prevent a possible endless loop with DMAPOOL_DEBUG enabled if a buggy
+> driver corrupts DMA pool memory.
+> 
+> Signed-off-by: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
+
+I like it!  Also, here you're using blks_per_alloc in a way which isn't
+normally in the performance path, but might be with the right config
+options.  With that, I withdraw my objection to the previous patch and
+
+Acked-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+
+Andrew, can you funnel these in through your tree?  If you'd rather not,
+I don't mind stuffing them into a git tree and asking Linus to pull
+for 4.21.
