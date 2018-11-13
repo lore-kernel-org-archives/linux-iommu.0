@@ -1,46 +1,43 @@
-From: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH 2/4] iommu/vt-d: Force IOMMU on for platform opt in hint
-Date: Mon, 12 Nov 2018 11:51:21 -0800
-Message-ID: <20181112195121.GC5367@araj-mobl1.jf.intel.com>
-References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
- <20181112160628.86620-3-mika.westerberg@linux.intel.com>
- <20181112110900.16cfee48@t450s.home>
+From: John Stultz <john.stultz@linaro.org>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs
+Date: Mon, 12 Nov 2018 16:07:03 -0800
+Message-ID: <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de>
+ <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com> <20181109074955.GA27489@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181112110900.16cfee48@t450s.home>
+In-Reply-To: <20181109074955.GA27489@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Mika Westerberg <mika.westerberg@linux.intel.com>, iommu@lists.linux-foundation.org, Mario.Limonciello@dell.com, Michael Jamet <michael.jamet@intel.com>, Christian Kellner <ckellner@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Yehezkel Bernat <YehezkelShB@gmail.com>, Anthony Wong <anthony.wong@canonical.com>, Andreas Noever <andreas.noever@gmail.com>, Lukas Wunner <lukas@wunner.de>, Jacob jun Pan <jacob.jun.pan@intel.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org, Ashok Raj <ashok.raj@intel.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 12, 2018 at 11:09:00AM -0700, Alex Williamson wrote:
-> On Mon, 12 Nov 2018 19:06:26 +0300
-> Mika Westerberg <mika.westerberg@linux.intel.com> wrote:
-> 
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > 
-> > Intel VT-d spec added a new DMA_CTRL_PLATFORM_OPT_IN_FLAG flag
-> > in DMAR ACPI table for BIOS to report compliance about platform
-> > initiated DMA restricted to RMRR ranges when transferring control
-> > to the OS. The OS treats this as a hint that the IOMMU should be
-> > enabled to prevent DMA attacks from possible malicious devices.
-> 
-> Does this in any way suggest that there are additional recommended uses
-> cases from Intel for RMRRs?  My concern here is the incompatibility we
-> have with RMRRs and device assignment as we currently cannot assign
-> devices where the IOVA address space is encumbered by RMRR
-> requirements.  Unfortunately RMRRs do not indicate any sort or
-> lifespan, so firmware enabling an RMRR simply to support some boot-time
-> DMA encumbers the device with that RMRR for the life of that boot,
-> unless we have VT-d code that decides it knows better.  Thanks,
+On Thu, Nov 8, 2018 at 11:49 PM, Christoph Hellwig <hch@lst.de> wrote:
+> On Tue, Nov 06, 2018 at 05:27:14PM -0800, John Stultz wrote:
+>> But at that point if I just re-apply "swiotlb: use swiotlb_map_page in
+>> swiotlb_map_sg_attrs", I reproduce the hangs.
+>>
+>> Any suggestions for how to further debug what might be going wrong
+>> would be appreciated!
+>
+> Very odd.  In the end map_sg and map_page are defined to do the same
+> things to start with.  The only real issue we had in this area was:
+>
+> "[PATCH v2] of/device: Really only set bus DMA mask when appropriate"
+>
+> so with current mainline + that you still see a problem, and if you
+> rever the commit we are replying to it still goes away?
 
-IMO any new platform that requires RMRR should be a bug. It was designed 
-originally for some legacy keyboard emulation etc.
+Just to confirm, as of 4.20-rc2 (which includes the of/device patch
+above), I'm still seeing this issue, but it isn't as reliable to
+reproduce as before.
 
-The best behavior is to continue to not allow devices with RMRR be direct assigned.
+With "swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs" reverted
+(along with the dependent swiotlb patches) it doesn't seem to trigger
+(no matter what I try).  But re-applying that patch it tends to
+trigger by itself at boot up, but sometimes I have to run "find /" to
+trigger the io hang/stall.
 
-Technically ignoring RMRR's and continuing to assign those devices is risky.
-The problem is IF BIOS/SMM initiates some IO in the RMRR range and it happens to be
-mapped by the direct assigned GPA its going to be ugly failure.
+thanks
+-john
