@@ -1,51 +1,107 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
-Date: Tue, 13 Nov 2018 11:45:36 +0000
-Message-ID: <20181113114527.GA12821@e107981-ln.cambridge.arm.com>
-References: <20181112160628.86620-1-mika.westerberg@linux.intel.com>
-	<20181112160628.86620-2-mika.westerberg@linux.intel.com>
-	<20181112180203.lx72gjfplb6xlur7@wunner.de>
-	<20181113105636.GB11202@e107981-ln.cambridge.arm.com>
-	<20181113112700.GT2500@lahna.fi.intel.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: Set SCTLR.HUPCF bit
+Date: Tue, 13 Nov 2018 08:12:35 -0500
+Message-ID: <CAF6AEGuV2zh97iq+TgkRw0bK3VNSxJieD1N2KMW3N28h07M+0w@mail.gmail.com>
+References: <20180927224609.19515-1-robdclark@gmail.com>
+ <20181029191000.GD16739@arm.com>
+ <CAF6AEGtgC0V6ii2=p2HGmqvHFKNJhaOLi8873SGPDsrg70xGRg@mail.gmail.com>
+ <20181113063225.GA3109@brain-police>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181113112700.GT2500-3PARRvDOhMZrdx17CPfAsdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario.Limonciello-8PEkshWhKlo@public.gmane.org, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Christian Kellner <ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Jacob jun Pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20181113063225.GA3109@brain-police>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 13, 2018 at 01:27:00PM +0200, Mika Westerberg wrote:
-
-[...]
-
-> > To be frank the concept (and Microsoft _DSD bindings) seems a bit vague
-> > and not thoroughly defined and I would question its detection at
-> > PCI/ACPI core level, I would hope this can be clarified at ACPI
-> > specification level, at least.
-> 
-> I guess that is the way they envision to use _DSD. Instead of having
-> single UUID that covers all properties (like what we have with device
-> properties) they have one UUID per property "class". I certainly hope we
-> don't need to keep extending prp_guids[] array each time they invent
-> another "class" of properties.
-
-It is even worse than that. This is a unilateral/obscure change that
-won't be part of ACPI specifications (I guess it was easier to add a
-UUID than add this to the ACPI specifications through the AWSG) but it
-is still supposed to be applicable to ACPI PCI bindings on any
-platforms/arches; this way of adding bindings does not work and it
-has to be rectified.
-
-Lorenzo
+T24gVHVlLCBOb3YgMTMsIDIwMTggYXQgMTozMiBBTSBXaWxsIERlYWNvbiA8d2lsbC5kZWFjb25A
+YXJtLmNvbT4gd3JvdGU6Cj4KPiBPbiBGcmksIE5vdiAwOSwgMjAxOCBhdCAwMTowMTo1NVBNIC0w
+NTAwLCBSb2IgQ2xhcmsgd3JvdGU6Cj4gPiBPbiBNb24sIE9jdCAyOSwgMjAxOCBhdCAzOjA5IFBN
+IFdpbGwgRGVhY29uIDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToKPiA+ID4gT24gVGh1LCBT
+ZXAgMjcsIDIwMTggYXQgMDY6NDY6MDdQTSAtMDQwMCwgUm9iIENsYXJrIHdyb3RlOgo+ID4gPiA+
+IFdlIHNlZW0gdG8gbmVlZCB0byBzZXQgZWl0aGVyIHRoaXMgb3IgQ0ZDRkcgKHN0YWxsKSwgb3Ro
+ZXJ3aXNlIGdwdQo+ID4gPiA+IGZhdWx0cyB0cmlnZ2VyIHByb2JsZW1zIHdpdGggb3RoZXIgaW4t
+ZmxpZ2h0IHRyYW5zYWN0aW9ucyBmcm9tIHRoZQo+ID4gPiA+IEdQVSBjYXVzaW5nIENQIGVycm9y
+cywgZXRjLgo+ID4gPiA+Cj4gPiA+ID4gSW4gdGhlIEFSTSBTTU1VIHNwZWMsIHRoZSAnSGl0IHVu
+ZGVyIHByZXZpb3VzIGNvbnRleHQgZmF1bHQnIGJpdCBpcwo+ID4gPiA+IGRlc2NyaWJlZCBhczoK
+PiA+ID4gPgo+ID4gPiA+ICAnMCcgLSBTdGFsbCBvciB0ZXJtaW5hdGUgc3Vic2VxdWVudCB0cmFu
+c2FjdGlvbnMgaW4gdGhlIHByZXNlbmNlCj4gPiA+ID4gICAgICAgIG9mIGFuIG91dHN0YW5kaW5n
+IGNvbnRleHQgZmF1bHQKPiA+ID4gPiAgJzEnIC0gUHJvY2VzcyBhbGwgc3Vic2VxdWVudCB0cmFu
+c2FjdGlvbnMgaW5kZXBlbmRlbnRseSBvZiBhbnkKPiA+ID4gPiAgICAgICAgb3V0c3RhbmRpbmcg
+Y29udGV4dCBmYXVsdC4KPiA+ID4gPgo+ID4gPiA+IFNpbmNlIHdlIGRvbid0IGVuYWJsZSBDRkNG
+RyAoc3RhbGwpIHRoZSBiZWhhdmlvciBvZiB0ZXJtaW5hdGluZwo+ID4gPiA+IG90aGVyIHRyYW5z
+YWN0aW9ucyBtYWtlcyBzZW5zZS4gIEFuZCBpcyBwcm9iYWJseSBub3Qgd2hhdCB3ZSB3YW50Cj4g
+PiA+ID4gKGFuZCBkZWZpbmF0ZWx5IG5vdCB3aGF0IHdlIHdhbnQgZm9yIEdQVSkuCj4gPiA+ID4K
+PiA+ID4gPiBTaWduZWQtb2ZmLWJ5OiBSb2IgQ2xhcmsgPHJvYmRjbGFya0BnbWFpbC5jb20+Cj4g
+PiA+ID4gLS0tCj4gPiA+ID4gU28gSSBoaXQgdGhpcyBpc3N1ZSBhIGxvbmcgdGltZSBiYWNrIG9u
+IDgyMCAobXNtODk5NikgYW5kIGF0IHRoZQo+ID4gPiA+IHRpbWUgSSBzb2x2ZWQgaXQgd2l0aCBh
+IHBhdGNoIHRoYXQgZW5hYmxlZCBDRkNGRy4gIEFuZCBpdCByZXN1cmZhY2VkCj4gPiA+ID4gbW9y
+ZSByZWNlbnRseSBvbiBzZG04NDUuICBCdXQgYXQgdGhlIHRpbWUgQ0ZDRkcgd2FzIHJlamVjdGVk
+LCBpaXJjCj4gPiA+ID4gYmVjYXVzZSBvZiBjb25jZXJuIHRoYXQgaXQgd291bGQgY2F1c2UgcHJv
+YmxlbXMgb24gb3RoZXIgbm9uLXFjb20KPiA+ID4gPiBhcm0gc21tdSBpbXBsZW1lbnRhdGlvbnMu
+ICBBbmQgSSB0aGluayBJIGZvcmdvdCB0byBzZW5kIHRoaXMgdmVyc2lvbgo+ID4gPiA+IG9mIHRo
+ZSBzb2x1dGlvbi4KPiA+ID4gPgo+ID4gPiA+IElmIGVuYWJsaW5nIEhVUENGIGlzIGFudGljaXBh
+dGVkIHRvIGNhdXNlIHByb2JsZW1zIG9uIG90aGVyIEFSTQo+ID4gPiA+IFNNTVUgaW1wbGVtZW50
+YXRpb25zLCBJIHRoaW5rIEkgY2FuIGNvbWUgdXAgd2l0aCBhIHZhcmlhbnQgb2YgdGhpcwo+ID4g
+PiA+IHBhdGNoIHdoaWNoIGNvbmRpdGlvbmFsbHkgZW5hYmxlcyBpdCBmb3Igc25hcGRyYWdvbi4K
+PiA+ID4gPgo+ID4gPiA+IEVpdGhlciB3YXksIEknZCByZWFsbHkgbGlrZSB0byBnZXQgc29tZSB2
+YXJpYW50IG9mIHRoaXMgZml4IG1lcmdlZAo+ID4gPiA+IChhbmQgcHJvYmFibHkgaXQgd291bGQg
+YmUgYSBnb29kIGlkZWEgZm9yIHN0YWJsZSBrZXJuZWwgYnJhbmNoZXMKPiA+ID4gPiB0b28pLCBz
+aW5jZSBjdXJyZW50IGJlaGF2aW91ciB3aXRoIHRoZSBHUFUgbWVhbnMgZmF1bHRzIHR1cm4gaW50
+bwo+ID4gPiA+IGEgZmFudGFzdGljIGNhc2NhZGUgb2YgZmFpbC4KPiA+ID4KPiA+ID4gQ2FuIHlv
+dSBkZXNjcmliZSBob3cgdGhpcyBmYW50YXN0aWMgY2FzY2FkZSBvZiBmYWlsIGltcHJvdmVzIHdp
+dGggdGhpcwo+ID4gPiBwYXRjaCwgcGxlYXNlPyBJZiB5b3UncmUgZ2V0dGluZyBjb250ZXh0IGZh
+dWx0cyB0aGVuIHNvbWV0aGluZyBoYXMgYWxyZWFkeQo+ID4gPiBnb25lIGhvcnJpYmx5IHdyb25n
+LCBzbyBJJ20gdHJ5aW5nIHRvIHdvcmsgb3V0IGhvdyB0aGlzIGltcHJvdmVzIHRoaW5ncy4KPiA+
+ID4KPiA+Cj4gPiBUaGVyZSBhcmUgcGxlbnR5IG9mIGNhc2VzIHdoZXJlIGdldHRpbmcgaW9tbXUg
+ZmF1bHRzIHdpdGggYSBHUFUgaXMKPiA+ICJub3JtYWwiLCBvciBhdCBsZWFzdCBub3Qgc29tZXRo
+aW5nIHRoZSBrZXJuZWwgb3IgZXZlbiBHTCBkcml2ZXIgY2FuCj4gPiBjb250cm9sLgo+Cj4gU3Vj
+aCBhcz8gQWxsIHRoZSBtYWlubGluZSBkcml2ZXIgZG9lcyBpcyBwcmludCBhIGRpYWdub3N0aWMg
+YW5kIGNsZWFyIHRoZQo+IGZhdWx0LCB3aGljaCBkb2Vzbid0IHNlZW0gZ2VuZXJhbGx5IHVzZWZ1
+bC4KCml0IGlzIHVzZWZ1bCB0byBkZWJ1ZyB0aGUgZmF1bHQgOy0pCgpBbHRob3VnaCBldmVudHVh
+bGx5IHdlJ2xsIHdhbnQgdG8gYmUgYWJsZSB0byBkbyBtb3JlIHRoYW4gdGhhdCwgbGlrZQpoYXZl
+IHRoZSBmYXVsdCB0cmlnZ2VyIGJyaW5naW5nIGluIHBhZ2VzIG9mIGEgbW1hcCdkIGZpbGUgYW5k
+IHRoYXQKc29ydCBvZiB0aGluZy4KCj4gPiBXaXRoIHRoaXMgcGF0Y2gsIHlvdSBzdGlsbCBnZXQg
+dGhlIGlvbW11IGZhdWx0LCBidXQgaXQgZG9lc24ndCBjYXVzZQo+ID4gdGhlIGdwdSB0byBjcmFz
+aC4gIEJ1dCB3aXRob3V0IGl0LCBvdGhlciBtZW1vcnkgYWNjZXNzZXMgaW4gZmxpZ2h0Cj4gPiB3
+aGlsZSB0aGUgZmF1bHQgb2NjdXJzLCBsaWtlIHRoZSBHUFUgY29tbWFuZC1wcm9jZXNzb3IgcmVh
+ZGluZyBmdXJ0aGVyCj4gPiBhaGVhZCBpbiB0aGUgY21kc3RyZWFtIHRvIHNldHVwIG5leHQgZHJh
+dywgd291bGQgcmV0dXJuIHplcm8ncywKPiA+IGNhdXNpbmcgdGhlIEdQVSB0byBjcmFzaCBvciBn
+ZXQgaW50byBhIGJhZCBzdGF0ZS4KPgo+IEkgZ2V0IHRoYXQgcGFydCwgYnV0IEkgZG9uJ3QgdW5k
+ZXJzdGFuZCB3aHkgd2UncmUgc2VlaW5nIGZhdWx0cyBpbiB0aGUgZmlyc3QKPiBwbGFjZSBhbmQg
+SSB3b3JyeSB0aGF0IHRoaXMgcGF0Y2ggaXMganVzdCB0aGUgdGlwIG9mIHRoZSBpY2ViZXJnLiBJ
+dCdzIGFsc28KPiBub3QgY2xlYXIgdGhhdCBwcm9jZXNzaW5nIHN1YnNlcXVlbnQgdHJhbnNhY3Rp
+b25zIGlzIGFsd2F5cyB0aGUgcmlnaHQgdGhpbmcKPiB0byBkbyBpbiBhIHdvcmxkIHdoZXJlIHdl
+IGFjdHVhbGx5IHdhbnQgdG8gcmVwb3J0IChhbmQgaGFuZGxlKSBzeW5jaHJvbm91cwo+IGZhdWx0
+cyBmcm9tIGRldmljZXMuCgpTdXJlLCBpdCBpcyBhIGJ1Zy4uIGJ1dCBpdCBjYW4gYmUgYW4gYXBw
+bGljYXRpb24gYnVnIHRoYXQgaXMgbm90CnNvbWV0aGluZyB0aGUgdXNlcnNwYWNlIEdMIGRyaXZl
+ciBvciBrZXJuZWwgY291bGQgZG8gYW55dGhpbmcgYWJvdXQuCldlIHNob3VsZG4ndCBsZXQgdGhp
+cyBraWxsIHRoZSBHUFUuICBJZiB0aGUgYXBwbGljYXRpb24gZGlkbid0IGhhdmUKdGhpcyBtdWNo
+IGNvbnRyb2wsIHdlIHdvdWxkbid0IG5lZWQgYW4gSU9NTVUgaW4gdGhlIGZpcnN0IHBsYWNlWzFd
+LgpXaXRoIG9wZW5jbCBjb21wdXRlLCB0aGUgdXNlcnNwYWNlIGNvbnRyb2xsZWQgc2hhZGVyIGhh
+cyBmdWxsIGJsb3duCnBvaW50ZXJzIHRvIEdQVSBtZW1vcnkuCgpBbmQgZXZlbiBpbiBjYXNlcyB3
+aGVyZSBpdCBpcyBhIHVzZXJzcGFjZSBHTCBkcml2ZXIgYnVnLCBoYXZpbmcgc29tZQpyb2J1c3Ru
+ZXNzIHRvIG5vdCBjb21wbGV0ZWx5IGtpbGwgdGhlIEdQVSBtYWtlcyBkZWJ1Z2dpbmcgbXVjaCBl
+YXNpZXIuClNvbWV0aGluZyBJIGRvIGEgbG90IHdoZW4gYnJpbmdpbmcgdXAgc3VwcG9ydCBmb3Ig
+YSBuZXcgZ2VuZXJhdGlvbiBvZgpHUFUuCgpJJ20gaGF2aW5nIGEgaGFyZCB0aW1lIHVuZGVyc3Rh
+bmRpbmcgeW91ciBvYmplY3Rpb24gdG8gdGhpcy4KUmV0dXJuaW5nIHplcm8ncyBmb3Igbm9uLWZh
+dWx0aW5nIHRyYW5zYWN0aW9ucyBpcyBhICpyZWFsbHkgYmFkIGlkZWEqLgoKQlIsCi1SCgoKWzFd
+IHllcywgdmM0IGRpZCB3aXRob3V0IGFuIElPTU1VLi4gYnV0IGl0IGFsc28gaGFkIHRvIGRvIHNv
+bWUgZmFpcmx5CmNvbXBsZXggc2hhZGVyIGFuYWx5c2lzIGluIHRoZSBrZXJuZWwsIGFuZCBpdCB3
+YXMgcmVzdHJpY3RlZCB0byBnbGVzMgpmZWF0dXJlIHNldCwgc28gbm8gcmVhbCBmbG93IGNvbnRy
+b2wsIGFuZCBubyBtZW1vcnkgYWNjZXNzIGJleW9uZAp0ZXh0dXJlIGZldGNoLgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBs
+aXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
+a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
