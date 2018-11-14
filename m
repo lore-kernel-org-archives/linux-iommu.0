@@ -1,148 +1,34 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 20/34] powerpc/dma: stop overriding dma_get_required_mask
-Date: Wed, 14 Nov 2018 09:23:00 +0100
-Message-ID: <20181114082314.8965-21-hch@lst.de>
-References: <20181114082314.8965-1-hch@lst.de>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+ swiotlb_map_sg_attrs
+Date: Wed, 14 Nov 2018 15:13:11 +0100
+Message-ID: <20181114141311.GA26677@lst.de>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de> <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com> <20181109074955.GA27489@lst.de> <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181114082314.8965-1-hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>
-Cc: linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
+To: John Stultz <john.stultz@linaro.org>
+Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The ppc_md and pci_controller_ops methods are unused now and can be
-removed.  The dma_nommu implementation is generic to the generic one
-except for using max_pfn instead of calling into the memblock API,
-and all other dma_map_ops instances implement a method of their own.
+Does the patch below make a difference for you?  Assigning an
+address to the S/G list is the only functional difference I could
+spot.  Drivers really should never look at the S/G list on an
+error return, but..
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/powerpc/include/asm/device.h      |  2 --
- arch/powerpc/include/asm/dma-mapping.h |  2 --
- arch/powerpc/include/asm/machdep.h     |  2 --
- arch/powerpc/include/asm/pci-bridge.h  |  1 -
- arch/powerpc/kernel/dma.c              | 30 --------------------------
- drivers/base/platform.c                |  2 --
- 6 files changed, 39 deletions(-)
-
-diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
-index 1aa53318b4bc..3814e1c2d4bc 100644
---- a/arch/powerpc/include/asm/device.h
-+++ b/arch/powerpc/include/asm/device.h
-@@ -59,6 +59,4 @@ struct pdev_archdata {
- 	u64 dma_mask;
- };
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 75c82f050c9e..a896f46d0c31 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -788,7 +788,7 @@ swiotlb_map_sg_attrs(struct device *dev, struct scatterlist *sgl, int nelems,
+ 	for_each_sg(sgl, sg, nelems, i) {
+ 		dma_addr_t dma_addr;
  
--#define ARCH_HAS_DMA_GET_REQUIRED_MASK
--
- #endif /* _ASM_POWERPC_DEVICE_H */
-diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
-index 140ce5ad3120..e5ee4ac97c14 100644
---- a/arch/powerpc/include/asm/dma-mapping.h
-+++ b/arch/powerpc/include/asm/dma-mapping.h
-@@ -113,7 +113,5 @@ static inline void set_dma_offset(struct device *dev, dma_addr_t off)
- #define HAVE_ARCH_DMA_SET_MASK 1
- extern int dma_set_mask(struct device *dev, u64 dma_mask);
- 
--extern u64 __dma_get_required_mask(struct device *dev);
--
- #endif /* __KERNEL__ */
- #endif	/* _ASM_DMA_MAPPING_H */
-diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
-index 8311869005fa..7b70dcbce1b9 100644
---- a/arch/powerpc/include/asm/machdep.h
-+++ b/arch/powerpc/include/asm/machdep.h
-@@ -47,9 +47,7 @@ struct machdep_calls {
- #endif
- #endif /* CONFIG_PPC64 */
- 
--	/* Platform set_dma_mask and dma_get_required_mask overrides */
- 	int		(*dma_set_mask)(struct device *dev, u64 dma_mask);
--	u64		(*dma_get_required_mask)(struct device *dev);
- 
- 	int		(*probe)(void);
- 	void		(*setup_arch)(void); /* Optional, may be NULL */
-diff --git a/arch/powerpc/include/asm/pci-bridge.h b/arch/powerpc/include/asm/pci-bridge.h
-index 5c7a1e7ffc8a..aace7033fa02 100644
---- a/arch/powerpc/include/asm/pci-bridge.h
-+++ b/arch/powerpc/include/asm/pci-bridge.h
-@@ -46,7 +46,6 @@ struct pci_controller_ops {
- #endif
- 
- 	int             (*dma_set_mask)(struct pci_dev *pdev, u64 dma_mask);
--	u64		(*dma_get_required_mask)(struct pci_dev *pdev);
- 
- 	void		(*shutdown)(struct pci_controller *hose);
- };
-diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-index 6c368b6820bb..154e1cdae7f9 100644
---- a/arch/powerpc/kernel/dma.c
-+++ b/arch/powerpc/kernel/dma.c
-@@ -246,7 +246,6 @@ const struct dma_map_ops dma_nommu_ops = {
- 	.map_sg				= dma_nommu_map_sg,
- 	.dma_supported			= dma_nommu_dma_supported,
- 	.map_page			= dma_nommu_map_page,
--	.get_required_mask		= dma_nommu_get_required_mask,
- #ifdef CONFIG_NOT_COHERENT_CACHE
- 	.sync_single_for_cpu 		= dma_nommu_sync_single,
- 	.sync_single_for_device 	= dma_nommu_sync_single,
-@@ -294,35 +293,6 @@ int dma_set_mask(struct device *dev, u64 dma_mask)
- }
- EXPORT_SYMBOL(dma_set_mask);
- 
--u64 __dma_get_required_mask(struct device *dev)
--{
--	const struct dma_map_ops *dma_ops = get_dma_ops(dev);
--
--	if (unlikely(dma_ops == NULL))
--		return 0;
--
--	if (dma_ops->get_required_mask)
--		return dma_ops->get_required_mask(dev);
--
--	return DMA_BIT_MASK(8 * sizeof(dma_addr_t));
--}
--
--u64 dma_get_required_mask(struct device *dev)
--{
--	if (ppc_md.dma_get_required_mask)
--		return ppc_md.dma_get_required_mask(dev);
--
--	if (dev_is_pci(dev)) {
--		struct pci_dev *pdev = to_pci_dev(dev);
--		struct pci_controller *phb = pci_bus_to_host(pdev->bus);
--		if (phb->controller_ops.dma_get_required_mask)
--			return phb->controller_ops.dma_get_required_mask(pdev);
--	}
--
--	return __dma_get_required_mask(dev);
--}
--EXPORT_SYMBOL_GPL(dma_get_required_mask);
--
- static int __init dma_init(void)
- {
- #ifdef CONFIG_IBMVIO
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 41b91af95afb..648b6213e322 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -1179,7 +1179,6 @@ int __init platform_bus_init(void)
- 	return error;
- }
- 
--#ifndef ARCH_HAS_DMA_GET_REQUIRED_MASK
- static u64 dma_default_get_required_mask(struct device *dev)
- {
- 	u32 low_totalram = ((max_pfn - 1) << PAGE_SHIFT);
-@@ -1208,7 +1207,6 @@ u64 dma_get_required_mask(struct device *dev)
- 	return dma_default_get_required_mask(dev);
- }
- EXPORT_SYMBOL_GPL(dma_get_required_mask);
--#endif
- 
- static __initdata LIST_HEAD(early_platform_driver_list);
- static __initdata LIST_HEAD(early_platform_device_list);
--- 
-2.19.1
+-		dma_add = swiotlb_map_page(dev, sg_page(sg), sg->offset,
++		dma_addr = swiotlb_map_page(dev, sg_page(sg), sg->offset,
+ 				sg->length, dir, attrs);
+ 		if (dma_addr == DIRECT_MAPPING_ERROR)
+ 			goto out_error;
