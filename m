@@ -1,9 +1,8 @@
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
 Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
-Date: Thu, 15 Nov 2018 21:00:54 +0200
-Message-ID: <20181115190054.GD4179@lahna.fi.intel.com>
-References: <20181112180203.lx72gjfplb6xlur7@wunner.de>
- <20181113105636.GB11202@e107981-ln.cambridge.arm.com>
+Date: Thu, 15 Nov 2018 21:10:26 +0200
+Message-ID: <20181115191026.GE4179@lahna.fi.intel.com>
+References: <20181113105636.GB11202@e107981-ln.cambridge.arm.com>
  <20181113112700.GT2500@lahna.fi.intel.com>
  <20181113114527.GA12821@e107981-ln.cambridge.arm.com>
  <20181115102239.GU2500@lahna.fi.intel.com>
@@ -12,23 +11,39 @@ References: <20181112180203.lx72gjfplb6xlur7@wunner.de>
  <20181115120736.pscly6zwd3k2tvd2@wunner.de>
  <20181115121627.GA2500@lahna.fi.intel.com>
  <20181115174608.GA17691@e107981-ln.cambridge.arm.com>
+ <CA+CmpXv9yM6nFdb0mcMPGHS-B_uGbQHYoO6iuefZC8gWoZYD3Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181115174608.GA17691@e107981-ln.cambridge.arm.com>
+In-Reply-To: <CA+CmpXv9yM6nFdb0mcMPGHS-B_uGbQHYoO6iuefZC8gWoZYD3Q@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Lukas Wunner <lukas@wunner.de>, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Yehezkel Bernat <yehezkelshb@gmail.com>
+Cc: lorenzo.pieralisi@arm.com, lukas@wunner.de, iommu@lists.linux-foundation.org, joro@8bytes.org, David Woodhouse <dwmw2@infradead.org>, baolu.lu@linux.intel.com, ashok.raj@intel.com, Bjorn Helgaas <bhelgaas@google.com>, rjw@rjwysocki.net, jacob.jun.pan@intel.com, Andreas Noever <andreas.noever@gmail.com>, michael.jamet@intel.com, Christian Kellner <ckellner@redhat.com>, Mario Limonciello <Mario.Limonciello@dell.com>, Anthony Wong <anthony.wong@canonical.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 15, 2018 at 05:46:08PM +0000, Lorenzo Pieralisi wrote:
-> Do you really need to parse it if the dev->is_thunderbolt check is enough ?
+On Thu, Nov 15, 2018 at 07:58:13PM +0200, Yehezkel Bernat wrote:
+> From what I know, there are more devices that suffer from similar security
+> issues like Thunderbolt, e.g. FireWire [1].
+> My assumption is that the same protection may be applied to such devices too,
+> even if currently it sounds like vendors care mostly about Thunderbolt (probably
+> because it removes the need for user approval for device connection; it becames
+> a simple plug-and-play experience).
 
-Yes, we need to parse it one way or another. dev->is_thunderbolt is
-based on heuristics which do not apply anymore when the thing gets
-integrated in the SoC.
+FireWire is kind of different but there are connectors such as
+ExpressCard and NVMe (over U.2 connector) which carry PCIe and are
+relatively easy to access without need for a screwdriver. AFAIK some
+eGPUs are also using some other proprietary (non-TBT) connector that
+carries PCIe.
 
-The _DSD is there already (on existing systems) and is being used by
-Windows so I don't understand why we cannot take advantage of it? Every
-new system with Thunderbolt ports will have it.
+I was thinking we could cover all these with is_external filling them
+based on the _DSD or some other means in the kernel.
+
+We would then deal all such devices as "untrusted" by default.
+
+> Thus, I don't think binding it with dev->is_thunderbolt is the correct
+> thing to do.
+
+One option that I suggested already is that we keep both and mark all
+is_thunderbolt devices as is_external as well. But I guess this is up to
+Bjorn and Rafael to decide :-)
