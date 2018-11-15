@@ -1,48 +1,48 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: [PATCH 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
-Date: Thu, 15 Nov 2018 21:19:50 +0530
-Message-ID: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 7/7] vfio/type1: Remove map_try_harder() code path
+Date: Thu, 15 Nov 2018 16:55:22 +0100
+Message-ID: <20181115155522.ukxnskxiqcoqxw3d@8bytes.org>
+References: <20181109110712.12469-1-joro@8bytes.org>
+	<20181109110712.12469-8-joro@8bytes.org>
+	<20181109092329.79b0fe91@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org
+In-Reply-To: <20181109092329.79b0fe91-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Convert to use vm_insert_range() to map range of kernel
-memory to user vma.
+Hi Alex,
 
-Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-Reviewed-by: Matthew Wilcox <willy@infradead.org>
----
- drivers/iommu/dma-iommu.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+On Fri, Nov 09, 2018 at 09:23:29AM -0700, Alex Williamson wrote:
+> Cool, glad to see this finally fixed.  My "should be fixed soon"
+> comment turned out to be a little optimistic with the fix finally
+> coming 5 years later.  We could of course keep this code as it really
+> doesn't harm anything, but I'm in favor trying to remove it if we think
+> it's dead now.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b0475..69c66b1 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -622,17 +622,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 
- int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
- {
--	unsigned long uaddr = vma->vm_start;
--	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	int ret = -ENXIO;
-+	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 
--	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
--		ret = vm_insert_page(vma, uaddr, pages[i]);
--		if (ret)
--			break;
--		uaddr += PAGE_SIZE;
--	}
--	return ret;
-+	return vm_insert_range(vma, vma->vm_start, pages, count);
- }
- 
- static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
--- 
-1.9.1
+Yeah, it took a while to fix that :) And we can easily revert this patch
+if it turns out someone else is also relying on the workaround.
+
+> In order to expedite into one pull:
+> 
+> Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+
+Thanks a lot. I've queued these patches into my tree now.
+
+
+Regards,
+
+	Joerg
