@@ -1,52 +1,33 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 4/9] dma-mapping: move the arm64 ncoherent alloc/free
- support to common code
-Date: Thu, 15 Nov 2018 19:50:04 +0000
-Message-ID: <20181115195004.GB4535@brain-police>
-References: <20181105121931.13481-1-hch@lst.de>
- <20181105121931.13481-5-hch@lst.de>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: move the arm arch_dma_alloc implementation to common code
+Date: Thu, 15 Nov 2018 19:50:41 +0000
+Message-ID: <20181115195041.GC4535@brain-police>
+References: <20181105121931.13481-1-hch@lst.de> <20181109075238.GA27578@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20181105121931.13481-5-hch@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20181109075238.GA27578-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+On Fri, Nov 09, 2018 at 08:52:38AM +0100, Christoph Hellwig wrote:
+> Can I get a quick review from the arm64 folks?  I think it should
+> be fine there as it basically is a code move, but an additional pair
+> or two of eyes always helps to weed out bugs.
 
-Minor nit: typo in the subject "ncoherent".
-
-On Mon, Nov 05, 2018 at 01:19:26PM +0100, Christoph Hellwig wrote:
-> The arm64 codebase to implement coherent dma allocation for architectures
-> with non-coherent DMA is a good start for a generic implementation, given
-> that is uses the generic remap helpers, provides the atomic pool for
-> allocations that can't sleep and still is realtively simple and well
-> tested.  Move it to kernel/dma and allow architectures to opt into it
-> using a config symbol.  Architectures just need to provide a new
-> arch_dma_prep_coherent helper to writeback an invalidate the caches
-> for any memory that gets remapped for uncached access.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/arm64/Kconfig              |   2 +-
->  arch/arm64/mm/dma-mapping.c     | 184 ++------------------------------
->  include/linux/dma-mapping.h     |   5 +
->  include/linux/dma-noncoherent.h |   2 +
->  kernel/dma/Kconfig              |   6 ++
->  kernel/dma/remap.c              | 158 ++++++++++++++++++++++++++-
->  6 files changed, 181 insertions(+), 176 deletions(-)
-
-I'm currently at LPC, so I've not been able to test this, but I've been
-through the changes this morning and they look fine to me, so:
-
-Reviewed-by: Will Deacon <will.deacon@arm.com>
-
-Hopefully we'll get the fallout from the previous changes addressed next
-week.
-
-Cheers,
+I reviewed the arm64 parts, but it would be ideal if Robin could have a look
+as well.
 
 Will
