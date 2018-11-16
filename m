@@ -1,44 +1,62 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
-Date: Fri, 16 Nov 2018 11:32:10 +0200
-Message-ID: <20181116093210.GK4179@lahna.fi.intel.com>
-References: <20181113114527.GA12821@e107981-ln.cambridge.arm.com>
+Date: Fri, 16 Nov 2018 10:57:38 +0000
+Message-ID: <20181116105738.GA21277@red-moon>
+References: <20181113112700.GT2500@lahna.fi.intel.com>
+ <20181113114527.GA12821@e107981-ln.cambridge.arm.com>
  <20181115102239.GU2500@lahna.fi.intel.com>
  <20181115111356.GA599@e107981-ln.cambridge.arm.com>
  <20181115113737.GW2500@lahna.fi.intel.com>
  <20181115120736.pscly6zwd3k2tvd2@wunner.de>
  <20181115121627.GA2500@lahna.fi.intel.com>
  <20181115174608.GA17691@e107981-ln.cambridge.arm.com>
- <CA+CmpXv9yM6nFdb0mcMPGHS-B_uGbQHYoO6iuefZC8gWoZYD3Q@mail.gmail.com>
- <20181115191026.GE4179@lahna.fi.intel.com>
- <20181116091804.GA4548@infradead.org>
+ <20181115190054.GD4179@lahna.fi.intel.com>
+ <372db397d5384efd8e7264ba8e1b9cbd@ausx13mpc120.AMER.DELL.COM>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181116091804.GA4548@infradead.org>
+In-Reply-To: <372db397d5384efd8e7264ba8e1b9cbd@ausx13mpc120.AMER.DELL.COM>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Yehezkel Bernat <yehezkelshb@gmail.com>, ashok.raj@intel.com, Mario Limonciello <Mario.Limonciello@dell.com>, michael.jamet@intel.com, Christian Kellner <ckellner@redhat.com>, rjw@rjwysocki.net, Anthony Wong <anthony.wong@canonical.com>, LKML <linux-kernel@vger.kernel.org>, Andreas Noever <andreas.noever@gmail.com>, iommu@lists.linux-foundation.org, lukas@wunner.de, jacob.jun.pan@intel.com, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>
+To: Mario.Limonciello@dell.com
+Cc: mika.westerberg@linux.intel.com, lukas@wunner.de, iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, baolu.lu@linux.intel.com, ashok.raj@intel.com, bhelgaas@google.com, rjw@rjwysocki.net, jacob.jun.pan@intel.com, andreas.noever@gmail.com, michael.jamet@intel.com, YehezkelShB@gmail.com, ckellner@redhat.com, anthony.wong@canonical.com, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 16, 2018 at 01:18:04AM -0800, Christoph Hellwig wrote:
-> On Thu, Nov 15, 2018 at 09:10:26PM +0200, Mika Westerberg wrote:
-> > FireWire is kind of different but there are connectors such as
-> > ExpressCard and NVMe (over U.2 connector) which carry PCIe and are
-> > relatively easy to access without need for a screwdriver. AFAIK some
-> > eGPUs are also using some other proprietary (non-TBT) connector that
-> > carries PCIe.
+On Thu, Nov 15, 2018 at 07:33:54PM +0000, Mario.Limonciello@dell.com wrote:
 > 
-> U.2 is a data center internal form factor with hot plug capability. If
-> you enable an iommu for that by default you will make a lot of people
-> very unhappy.
+> 
+> > -----Original Message-----
+> > From: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > Sent: Thursday, November 15, 2018 1:01 PM
+> > To: Lorenzo Pieralisi
+> > Cc: Lukas Wunner; iommu@lists.linux-foundation.org; Joerg Roedel; David
+> > Woodhouse; Lu Baolu; Ashok Raj; Bjorn Helgaas; Rafael J. Wysocki; Jacob jun Pan;
+> > Andreas Noever; Michael Jamet; Yehezkel Bernat; Christian Kellner; Limonciello,
+> > Mario; Anthony Wong; linux-acpi@vger.kernel.org; linux-pci@vger.kernel.org; linux-
+> > kernel@vger.kernel.org
+> > Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
+> > 
+> > 
+> > [EXTERNAL EMAIL]
+> > 
+> > On Thu, Nov 15, 2018 at 05:46:08PM +0000, Lorenzo Pieralisi wrote:
+> > > Do you really need to parse it if the dev->is_thunderbolt check is enough ?
+> > 
+> > Yes, we need to parse it one way or another. dev->is_thunderbolt is
+> > based on heuristics which do not apply anymore when the thing gets
+> > integrated in the SoC.
+> > 
+> > The _DSD is there already (on existing systems) and is being used by
+> > Windows so I don't understand why we cannot take advantage of it? Every
+> > new system with Thunderbolt ports will have it.
 
-Well, it needs the other bit in ACPI DMAR table to be enabled by default
-so I don't think anyone in data center domain will notice ;-)
+We have different opinions on this, there is no point in me reiterating
+it over and over, I am against the approach taken to solve this problem
+first in defining the bindings outside the ACPI specifications and
+second by acquiescing to what has been done so that it will be done
+over and over again.
 
-> More importantly NVMe is now used for the current/next generation
-> Compact Flash and SD cards, which contain full PCIe gen 3 links.
+I will raise the point in the appropriate forum, it is up to Bjorn
+and Rafael to decide on this patch.
 
-OK, thanks for the information - I did not know that. I guess those
-belong to the "external" category as well.
+Lorenzo
