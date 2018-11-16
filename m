@@ -1,14 +1,15 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [RESEND PATCH v17 5/5] iommu/arm-smmu: Add support for qcom,
-	smmu-v2 variant
-Date: Fri, 16 Nov 2018 16:54:30 +0530
-Message-ID: <20181116112430.31248-6-vivek.gautam@codeaurora.org>
-References: <20181116112430.31248-1-vivek.gautam@codeaurora.org>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v5 00/21] IOMMU: Tegra GART driver clean up and
+	optimization
+Date: Fri, 16 Nov 2018 15:13:31 +0300
+Message-ID: <12b55bb4-1a52-1045-cc99-f8e4eaf2bdf5@gmail.com>
+References: <20180930224833.28809-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181116112430.31248-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20180930224833.28809-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,63 +19,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-qcom,smmu-v2 is an arm,smmu-v2 implementation with specific
-clock and power requirements.
-On msm8996, multiple cores, viz. mdss, video, etc. use this
-smmu. On sdm845, this smmu is used with gpu.
-Add bindings for the same.
+On 01.10.2018 1:48, Dmitry Osipenko wrote:
+> Hello,
+> 
+> This patch-series integrates the GART (IOMMU) driver with the Memory
+> Controller driver, that allows to report the name of a faulty memory
+> client on GART page fault. A major code clean up and performance
+> optimization is performed in this series as well.
+> 
+> Changelog:
+> 
+> v5: Addressed review comments from Thierry Reding to v4. Added WARN_ON() to
+>     make sure that active domain isn't getting released, kept include headers
+>     where necessary, etc.. All changes are quite minor.
+> 
+>     Added new patch "memory: tegra: Use relaxed versions of readl/writel".
+> 
+> v4: In the v3 Rob Herring requested to make device-tree binding changes
+>     backwards-compatible with the older kernels, that is achieved by
+>     changing the 'compatible' value of the DT node.
+> 
+>     The code-refactoring patches got some more (minor) polish.
+> 
+>     Added new patch "memory: tegra: Use of_device_get_match_data()".
+> 
+> v3: Memory Controller integration part has been reworked and now GART's
+>     device-tree binding is changed. Adding Rob Herring for the device-tree
+>     changes reviewing.
+> 
+>     GART now disallows more than one active domain at a time.
+> 
+>     Fixed "spinlock recursion", "NULL pointer dereference" and "detaching
+>     of all devices from inactive domains".
+> 
+>     New code-refactoring patches.
+> 
+>     The previously standalone patch "memory: tegra: Don't invoke Tegra30+
+>     specific memory timing setup on Tegra20" is now included into this
+>     series because there is a dependency on that patch and it wasn't applied
+>     yet.
+> 
+> v2: Addressed review comments from Robin Murphy to v1 by moving devices
+>     iommu_fwspec check to gart_iommu_add_device().
+> 
+>     Dropped the "Provide single domain and group for all devices" patch from
+>     the series for now because after some more considering it became not
+>     exactly apparent whether that is what we need, that was also suggested
+>     by Robin Murphy in the review comment. Maybe something like a runtime
+>     IOMMU usage for devices would be a better solution, allowing to implement
+>     transparent context switching of virtual IOMMU domains.
+> 
+>     Some very minor code cleanups, reworded commit messages.
+> 
+> Dmitry Osipenko (21):
+>   iommu/tegra: gart: Remove pr_fmt and clean up includes
+>   iommu/tegra: gart: Clean up driver probe errors handling
+>   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+>   iommu: Introduce iotlb_sync_map callback
+>   iommu/tegra: gart: Optimize mapping / unmapping performance
+>   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+>   ARM: dts: tegra20: Update Memory Controller node to the new binding
+>   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+>     Tegra20
+>   memory: tegra: Adapt to Tegra20 device-tree binding changes
+>   memory: tegra: Read client ID on GART page fault
+>   memory: tegra: Use of_device_get_match_data()
+>   memory: tegra: Use relaxed versions of readl/writel
+>   iommu/tegra: gart: Integrate with Memory Controller driver
+>   iommu/tegra: gart: Fix spinlock recursion
+>   iommu/tegra: gart: Fix NULL pointer dereference
+>   iommu/tegra: gart: Allow only one active domain at a time
+>   iommu/tegra: gart: Don't use managed resources
+>   iommu/tegra: gart: Prepend error/debug messages with "gart:"
+>   iommu/tegra: gart: Don't detach devices from inactive domains
+>   iommu/tegra: gart: Simplify clients-tracking code
+>   iommu/tegra: gart: Perform code refactoring
+> 
+>  .../bindings/iommu/nvidia,tegra20-gart.txt    |  14 -
+>  .../memory-controllers/nvidia,tegra20-mc.txt  |  27 +-
+>  arch/arm/boot/dts/tegra20.dtsi                |  15 +-
+>  drivers/iommu/Kconfig                         |   1 +
+>  drivers/iommu/iommu.c                         |   8 +-
+>  drivers/iommu/tegra-gart.c                    | 489 +++++++-----------
+>  drivers/memory/tegra/mc.c                     |  93 +++-
+>  drivers/memory/tegra/mc.h                     |  10 +-
+>  include/linux/iommu.h                         |   1 +
+>  include/soc/tegra/mc.h                        |  29 +-
+>  10 files changed, 306 insertions(+), 381 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+> 
 
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Hello Thierry,
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2098c3141f5f..d315ca637097 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -120,6 +120,7 @@ enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
- 	CAVIUM_SMMUV2,
-+	QCOM_SMMUV2,
- };
- 
- struct arm_smmu_s2cr {
-@@ -2026,6 +2027,17 @@ ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
- ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
- 
-+static const char * const qcom_smmuv2_clks[] = {
-+	"bus", "iface",
-+};
-+
-+static const struct arm_smmu_match_data qcom_smmuv2 = {
-+	.version = ARM_SMMU_V2,
-+	.model = QCOM_SMMUV2,
-+	.clks = qcom_smmuv2_clks,
-+	.num_clks = ARRAY_SIZE(qcom_smmuv2_clks),
-+};
-+
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
- 	{ .compatible = "arm,smmu-v2", .data = &smmu_generic_v2 },
-@@ -2033,6 +2045,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+This patchset should be in a good shape, could you please take a look at the (minor) changes done in v5 and give r-b/ack to the remaining patches? Will be very nice if this series could finally land, especially in the light of upcoming DRM/HOST1x (re-)work.
