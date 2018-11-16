@@ -1,69 +1,348 @@
-From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
-Date: Fri, 16 Nov 2018 13:45:48 +0530
-Message-ID: <CAFqt6zbL1tu4VWtZ5Wz-BgbOS+M2GJziMj958_h_ri4Th3n9bQ@mail.gmail.com>
-References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
-	<9655a12e-bd3d-aca2-6155-38924028eb5d@infradead.org>
-	<CAFqt6zbLjtDab3Bz67trbnQRQdutvgA=YvAFhoW4bxsg657mGQ@mail.gmail.com>
-	<20181116064049.GA5320@bombadil.infradead.org>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v4 6/7] iommu/virtio: Add probe request
+Date: Fri, 16 Nov 2018 09:56:22 +0100
+Message-ID: <aadbcc74-1923-700b-335f-4a85b8011490@redhat.com>
+References: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
+ <20181115165234.43990-7-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181116064049.GA5320-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Kyungmin
+Return-path: <virtio-dev-return-4976-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <20181115165234.43990-7-jean-philippe.brucker@arm.com>
+Content-Language: en-US
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: frowand.list@gmail.com, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, kvmarm@lists.cs.columbia.edu, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 16, 2018 at 12:11 PM Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> On Fri, Nov 16, 2018 at 11:00:30AM +0530, Souptick Joarder wrote:
-> > On Thu, Nov 15, 2018 at 11:44 PM Randy Dunlap <rdunlap-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
-> > > On 11/15/18 7:45 AM, Souptick Joarder wrote:
-> > > What is the opposite of vm_insert_range() or even of vm_insert_page()?
-> > > or is there no need for that?
-> >
-> > There is no opposite function of vm_insert_range() / vm_insert_page().
-> > My understanding is, in case of any error, mmap handlers will return the
-> > err to user process and user space will decide the next action. So next
-> > time when mmap handler is getting invoked it will map from the beginning.
-> > Correct me if I am wrong.
->
-> The opposite function, I suppose, is unmap_region().
->
-> > > s/no./number/
-> >
-> > I didn't get it ??
->
-> This is a 'sed' expression.  's' is the 'substitute' command; the /
-> is a separator, 'no.' is what you wrote, and 'number' is what Randy
-> is recommending instead.
+Hi Jean,
 
-Ok. Will change it in v2.
->
-> > > > +     for (i = 0; i < page_count; i++) {
-> > > > +             ret = vm_insert_page(vma, uaddr, pages[i]);
-> > > > +             if (ret < 0)
-> > > > +                     return ret;
-> > >
-> > > For a non-trivial value of page_count:
-> > > Is it a problem if vm_insert_page() succeeds for several pages
-> > > and then fails?
-> >
-> > No, it will be considered as total failure and mmap handler will return
-> > the err to user space.
->
-> I think what Randy means is "What happens to the inserted pages?" and
-> the answer is that mmap_region() jumps to the 'unmap_and_free_vma'
-> label, which is an accurate name.
+On 11/15/18 5:52 PM, Jean-Philippe Brucker wrote:
+> When the device offers the probe feature, send a probe request for each
+> device managed by the IOMMU. Extract RESV_MEM information. When we
+> encounter a MSI doorbell region, set it up as a IOMMU_RESV_MSI region.
+> This will tell other subsystems that there is no need to map the MSI
+> doorbell in the virtio-iommu, because MSIs bypass it.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-Sorry for incorrect understanding of the question.
+Thanks
+
+Eric
+> ---
+>  drivers/iommu/virtio-iommu.c      | 156 ++++++++++++++++++++++++++++--
+>  include/uapi/linux/virtio_iommu.h |  38 ++++++++
+>  2 files changed, 188 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 2a9cb6285a1e..c547ebd79c43 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -46,6 +46,7 @@ struct viommu_dev {
+>  	struct iommu_domain_geometry	geometry;
+>  	u64				pgsize_bitmap;
+>  	u8				domain_bits;
+> +	u32				probe_size;
+>  };
+>  
+>  struct viommu_mapping {
+> @@ -67,8 +68,10 @@ struct viommu_domain {
+>  };
+>  
+>  struct viommu_endpoint {
+> +	struct device			*dev;
+>  	struct viommu_dev		*viommu;
+>  	struct viommu_domain		*vdomain;
+> +	struct list_head		resv_regions;
+>  };
+>  
+>  struct viommu_request {
+> @@ -119,6 +122,9 @@ static off_t viommu_get_req_offset(struct viommu_dev *viommu,
+>  {
+>  	size_t tail_size = sizeof(struct virtio_iommu_req_tail);
+>  
+> +	if (req->type == VIRTIO_IOMMU_T_PROBE)
+> +		return len - viommu->probe_size - tail_size;
+> +
+>  	return len - tail_size;
+>  }
+>  
+> @@ -394,6 +400,110 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
+>  	return ret;
+>  }
+>  
+> +static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+> +			       struct virtio_iommu_probe_resv_mem *mem,
+> +			       size_t len)
+> +{
+> +	size_t size;
+> +	u64 start64, end64;
+> +	phys_addr_t start, end;
+> +	struct iommu_resv_region *region = NULL;
+> +	unsigned long prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +
+> +	start = start64 = le64_to_cpu(mem->start);
+> +	end = end64 = le64_to_cpu(mem->end);
+> +	size = end64 - start64 + 1;
+> +
+> +	/* Catch any overflow, including the unlikely end64 - start64 + 1 = 0 */
+> +	if (start != start64 || end != end64 || size < end64 - start64)
+> +		return -EOVERFLOW;
+> +
+> +	if (len < sizeof(*mem))
+> +		return -EINVAL;
+> +
+> +	switch (mem->subtype) {
+> +	default:
+> +		dev_warn(vdev->dev, "unknown resv mem subtype 0x%x\n",
+> +			 mem->subtype);
+> +		/* Fall-through */
+> +	case VIRTIO_IOMMU_RESV_MEM_T_RESERVED:
+> +		region = iommu_alloc_resv_region(start, size, 0,
+> +						 IOMMU_RESV_RESERVED);
+> +		break;
+> +	case VIRTIO_IOMMU_RESV_MEM_T_MSI:
+> +		region = iommu_alloc_resv_region(start, size, prot,
+> +						 IOMMU_RESV_MSI);
+> +		break;
+> +	}
+> +	if (!region)
+> +		return -ENOMEM;
+> +
+> +	list_add(&vdev->resv_regions, &region->list);
+> +	return 0;
+> +}
+> +
+> +static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+> +{
+> +	int ret;
+> +	u16 type, len;
+> +	size_t cur = 0;
+> +	size_t probe_len;
+> +	struct virtio_iommu_req_probe *probe;
+> +	struct virtio_iommu_probe_property *prop;
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +	struct viommu_endpoint *vdev = fwspec->iommu_priv;
+> +
+> +	if (!fwspec->num_ids)
+> +		return -EINVAL;
+> +
+> +	probe_len = sizeof(*probe) + viommu->probe_size +
+> +		    sizeof(struct virtio_iommu_req_tail);
+> +	probe = kzalloc(probe_len, GFP_KERNEL);
+> +	if (!probe)
+> +		return -ENOMEM;
+> +
+> +	probe->head.type = VIRTIO_IOMMU_T_PROBE;
+> +	/*
+> +	 * For now, assume that properties of an endpoint that outputs multiple
+> +	 * IDs are consistent. Only probe the first one.
+> +	 */
+> +	probe->endpoint = cpu_to_le32(fwspec->ids[0]);
+> +
+> +	ret = viommu_send_req_sync(viommu, probe, probe_len);
+> +	if (ret)
+> +		goto out_free;
+> +
+> +	prop = (void *)probe->properties;
+> +	type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
+> +
+> +	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
+> +	       cur < viommu->probe_size) {
+> +		len = le16_to_cpu(prop->length) + sizeof(*prop);
+> +
+> +		switch (type) {
+> +		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+> +			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
+> +			break;
+> +		default:
+> +			dev_err(dev, "unknown viommu prop 0x%x\n", type);
+> +		}
+> +
+> +		if (ret)
+> +			dev_err(dev, "failed to parse viommu prop 0x%x\n", type);
+> +
+> +		cur += len;
+> +		if (cur >= viommu->probe_size)
+> +			break;
+> +
+> +		prop = (void *)probe->properties + cur;
+> +		type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
+> +	}
+> +
+> +out_free:
+> +	kfree(probe);
+> +	return ret;
+> +}
+> +
+>  /* IOMMU API */
+>  
+>  static struct iommu_domain *viommu_domain_alloc(unsigned type)
+> @@ -616,15 +726,33 @@ static void viommu_iotlb_sync(struct iommu_domain *domain)
+>  
+>  static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+>  {
+> -	struct iommu_resv_region *region;
+> +	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
+> +	struct viommu_endpoint *vdev = dev->iommu_fwspec->iommu_priv;
+>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>  
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot,
+> -					 IOMMU_RESV_SW_MSI);
+> -	if (!region)
+> -		return;
+> +	list_for_each_entry(entry, &vdev->resv_regions, list) {
+> +		if (entry->type == IOMMU_RESV_MSI)
+> +			msi = entry;
+> +
+> +		new_entry = kmemdup(entry, sizeof(*entry), GFP_KERNEL);
+> +		if (!new_entry)
+> +			return;
+> +		list_add_tail(&new_entry->list, head);
+> +	}
+> +
+> +	/*
+> +	 * If the device didn't register any bypass MSI window, add a
+> +	 * software-mapped region.
+> +	 */
+> +	if (!msi) {
+> +		msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +					      prot, IOMMU_RESV_SW_MSI);
+> +		if (!msi)
+> +			return;
+> +
+> +		list_add_tail(&msi->list, head);
+> +	}
+>  
+> -	list_add_tail(&region->list, head);
+>  	iommu_dma_get_resv_regions(dev, head);
+>  }
+>  
+> @@ -672,9 +800,18 @@ static int viommu_add_device(struct device *dev)
+>  	if (!vdev)
+>  		return -ENOMEM;
+>  
+> +	vdev->dev = dev;
+>  	vdev->viommu = viommu;
+> +	INIT_LIST_HEAD(&vdev->resv_regions);
+>  	fwspec->iommu_priv = vdev;
+>  
+> +	if (viommu->probe_size) {
+> +		/* Get additional information for this endpoint */
+> +		ret = viommu_probe_endpoint(viommu, dev);
+> +		if (ret)
+> +			goto err_free_dev;
+> +	}
+> +
+>  	ret = iommu_device_link(&viommu->iommu, dev);
+>  	if (ret)
+>  		goto err_free_dev;
+> @@ -696,6 +833,7 @@ static int viommu_add_device(struct device *dev)
+>  err_unlink_dev:
+>  	iommu_device_unlink(&viommu->iommu, dev);
+>  err_free_dev:
+> +	viommu_put_resv_regions(dev, &vdev->resv_regions);
+>  	kfree(vdev);
+>  
+>  	return ret;
+> @@ -713,6 +851,7 @@ static void viommu_remove_device(struct device *dev)
+>  
+>  	iommu_group_remove_device(dev);
+>  	iommu_device_unlink(&vdev->viommu->iommu, dev);
+> +	viommu_put_resv_regions(dev, &vdev->resv_regions);
+>  	kfree(vdev);
+>  }
+>  
+> @@ -812,6 +951,10 @@ static int viommu_probe(struct virtio_device *vdev)
+>  			     struct virtio_iommu_config, domain_bits,
+>  			     &viommu->domain_bits);
+>  
+> +	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_PROBE,
+> +			     struct virtio_iommu_config, probe_size,
+> +			     &viommu->probe_size);
+> +
+>  	viommu->geometry = (struct iommu_domain_geometry) {
+>  		.aperture_start	= input_start,
+>  		.aperture_end	= input_end,
+> @@ -893,6 +1036,7 @@ static unsigned int features[] = {
+>  	VIRTIO_IOMMU_F_MAP_UNMAP,
+>  	VIRTIO_IOMMU_F_DOMAIN_BITS,
+>  	VIRTIO_IOMMU_F_INPUT_RANGE,
+> +	VIRTIO_IOMMU_F_PROBE,
+>  };
+>  
+>  static struct virtio_device_id id_table[] = {
+> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+> index 2e0bf5792f26..cde2a3409caa 100644
+> --- a/include/uapi/linux/virtio_iommu.h
+> +++ b/include/uapi/linux/virtio_iommu.h
+> @@ -14,6 +14,7 @@
+>  #define VIRTIO_IOMMU_F_DOMAIN_BITS		1
+>  #define VIRTIO_IOMMU_F_MAP_UNMAP		2
+>  #define VIRTIO_IOMMU_F_BYPASS			3
+> +#define VIRTIO_IOMMU_F_PROBE			4
+>  
+>  struct virtio_iommu_range {
+>  	__u64					start;
+> @@ -28,6 +29,8 @@ struct virtio_iommu_config {
+>  	/* Max domain ID size */
+>  	__u8					domain_bits;
+>  	__u8					padding[3];
+> +	/* Probe buffer size */
+> +	__u32					probe_size;
+>  };
+>  
+>  /* Request types */
+> @@ -35,6 +38,7 @@ struct virtio_iommu_config {
+>  #define VIRTIO_IOMMU_T_DETACH			0x02
+>  #define VIRTIO_IOMMU_T_MAP			0x03
+>  #define VIRTIO_IOMMU_T_UNMAP			0x04
+> +#define VIRTIO_IOMMU_T_PROBE			0x05
+>  
+>  /* Status types */
+>  #define VIRTIO_IOMMU_S_OK			0x00
+> @@ -101,4 +105,38 @@ struct virtio_iommu_req_unmap {
+>  	struct virtio_iommu_req_tail		tail;
+>  };
+>  
+> +#define VIRTIO_IOMMU_PROBE_T_NONE		0
+> +#define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
+> +
+> +#define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+> +
+> +struct virtio_iommu_probe_property {
+> +	__le16					type;
+> +	__le16					length;
+> +};
+> +
+> +#define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
+> +#define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
+> +
+> +struct virtio_iommu_probe_resv_mem {
+> +	struct virtio_iommu_probe_property	head;
+> +	__u8					subtype;
+> +	__u8					reserved[3];
+> +	__le64					start;
+> +	__le64					end;
+> +};
+> +
+> +struct virtio_iommu_req_probe {
+> +	struct virtio_iommu_req_head		head;
+> +	__le32					endpoint;
+> +	__u8					reserved[64];
+> +
+> +	__u8					properties[];
+> +
+> +	/*
+> +	 * Tail follows the variable-length properties array. No padding,
+> +	 * property lengths are all aligned on 8 bytes.
+> +	 */
+> +};
+> +
+>  #endif
+> 
