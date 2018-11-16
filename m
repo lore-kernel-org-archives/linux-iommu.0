@@ -1,118 +1,80 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 00/21] IOMMU: Tegra GART driver clean up and
-	optimization
-Date: Fri, 16 Nov 2018 15:13:31 +0300
-Message-ID: <12b55bb4-1a52-1045-cc99-f8e4eaf2bdf5@gmail.com>
-References: <20180930224833.28809-1-digetx@gmail.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v4 0/7] Add virtio-iommu driver
+Date: Fri, 16 Nov 2018 14:00:51 +0100
+Message-ID: <a9545c11-347e-aa07-0609-9a9c0141a438@redhat.com>
+References: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180930224833.28809-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Return-path: <virtio-dev-return-4977-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: frowand.list@gmail.com, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, kvmarm@lists.cs.columbia.edu, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 01.10.2018 1:48, Dmitry Osipenko wrote:
-> Hello,
+Hi Jean,
+On 11/15/18 5:52 PM, Jean-Philippe Brucker wrote:
+> Implement the virtio-iommu driver, following specification v0.8 [1].
 > 
-> This patch-series integrates the GART (IOMMU) driver with the Memory
-> Controller driver, that allows to report the name of a faulty memory
-> client on GART page fault. A major code clean up and performance
-> optimization is performed in this series as well.
+> Changes since v3 [2]:
+> * Rebase onto v4.20-rc2. Patch 3 now touches drivers/of/base.c instead
+>   of drivers/pci/of.c, since the map_rid() function has moved.
+> * Removed the request timeout, that depended on DEBUG.
+> * Other small fixes addressing comments on v3.
 > 
-> Changelog:
-> 
-> v5: Addressed review comments from Thierry Reding to v4. Added WARN_ON() to
->     make sure that active domain isn't getting released, kept include headers
->     where necessary, etc.. All changes are quite minor.
-> 
->     Added new patch "memory: tegra: Use relaxed versions of readl/writel".
-> 
-> v4: In the v3 Rob Herring requested to make device-tree binding changes
->     backwards-compatible with the older kernels, that is achieved by
->     changing the 'compatible' value of the DT node.
-> 
->     The code-refactoring patches got some more (minor) polish.
-> 
->     Added new patch "memory: tegra: Use of_device_get_match_data()".
-> 
-> v3: Memory Controller integration part has been reworked and now GART's
->     device-tree binding is changed. Adding Rob Herring for the device-tree
->     changes reviewing.
-> 
->     GART now disallows more than one active domain at a time.
-> 
->     Fixed "spinlock recursion", "NULL pointer dereference" and "detaching
->     of all devices from inactive domains".
-> 
->     New code-refactoring patches.
-> 
->     The previously standalone patch "memory: tegra: Don't invoke Tegra30+
->     specific memory timing setup on Tegra20" is now included into this
->     series because there is a dependency on that patch and it wasn't applied
->     yet.
-> 
-> v2: Addressed review comments from Robin Murphy to v1 by moving devices
->     iommu_fwspec check to gart_iommu_add_device().
-> 
->     Dropped the "Provide single domain and group for all devices" patch from
->     the series for now because after some more considering it became not
->     exactly apparent whether that is what we need, that was also suggested
->     by Robin Murphy in the review comment. Maybe something like a runtime
->     IOMMU usage for devices would be a better solution, allowing to implement
->     transparent context switching of virtual IOMMU domains.
-> 
->     Some very minor code cleanups, reworded commit messages.
-> 
-> Dmitry Osipenko (21):
->   iommu/tegra: gart: Remove pr_fmt and clean up includes
->   iommu/tegra: gart: Clean up driver probe errors handling
->   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
->   iommu: Introduce iotlb_sync_map callback
->   iommu/tegra: gart: Optimize mapping / unmapping performance
->   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
->   ARM: dts: tegra20: Update Memory Controller node to the new binding
->   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
->     Tegra20
->   memory: tegra: Adapt to Tegra20 device-tree binding changes
->   memory: tegra: Read client ID on GART page fault
->   memory: tegra: Use of_device_get_match_data()
->   memory: tegra: Use relaxed versions of readl/writel
->   iommu/tegra: gart: Integrate with Memory Controller driver
->   iommu/tegra: gart: Fix spinlock recursion
->   iommu/tegra: gart: Fix NULL pointer dereference
->   iommu/tegra: gart: Allow only one active domain at a time
->   iommu/tegra: gart: Don't use managed resources
->   iommu/tegra: gart: Prepend error/debug messages with "gart:"
->   iommu/tegra: gart: Don't detach devices from inactive domains
->   iommu/tegra: gart: Simplify clients-tracking code
->   iommu/tegra: gart: Perform code refactoring
-> 
->  .../bindings/iommu/nvidia,tegra20-gart.txt    |  14 -
->  .../memory-controllers/nvidia,tegra20-mc.txt  |  27 +-
->  arch/arm/boot/dts/tegra20.dtsi                |  15 +-
->  drivers/iommu/Kconfig                         |   1 +
->  drivers/iommu/iommu.c                         |   8 +-
->  drivers/iommu/tegra-gart.c                    | 489 +++++++-----------
->  drivers/memory/tegra/mc.c                     |  93 +++-
->  drivers/memory/tegra/mc.h                     |  10 +-
->  include/linux/iommu.h                         |   1 +
->  include/soc/tegra/mc.h                        |  29 +-
->  10 files changed, 306 insertions(+), 381 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
-> 
+> You can find Linux driver and kvmtool device on my virtio-iommu/v0.8.1
+> branches [3]. You can also test it with the latest version of Eric's
+> QEMU device [4].
 
-Hello Thierry,
+Tested-by: Eric Auger <eric.auger@redhat.com>
 
-This patchset should be in a good shape, could you please take a look at the (minor) changes done in v5 and give r-b/ack to the remaining patches? Will be very nice if this series could finally land, especially in the light of upcoming DRM/HOST1x (re-)work.
+this was tested with qemu
+(https://github.com/eauger/qemu/tree/v3.1.0-rc1-virtio-iommu-v0.8.1)
+
+Thanks
+
+Eric
+> 
+> [1] Virtio-iommu specification v0.8, sources and pdf
+>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.8
+>     http://jpbrucker.net/virtio-iommu/spec/v0.8/virtio-iommu-v0.8.pdf
+> 
+> [2] [PATCH v3 0/7] Add virtio-iommu driver
+>     https://www.spinics.net/lists/linux-pci/msg77110.html
+> 
+> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.8.1
+>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.8.1
+> 
+> [4] [RFC v8 00/18] VIRTIO-IOMMU device
+>     https://www.mail-archive.com/qemu-devel@nongnu.org/msg572637.html
+> 
+> Jean-Philippe Brucker (7):
+>   dt-bindings: virtio-mmio: Add IOMMU description
+>   dt-bindings: virtio: Add virtio-pci-iommu node
+>   of: Allow the iommu-map property to omit untranslated devices
+>   PCI: OF: Initialize dev->fwnode appropriately
+>   iommu: Add virtio-iommu driver
+>   iommu/virtio: Add probe request
+>   iommu/virtio: Add event queue
+> 
+>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
+>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
+>  MAINTAINERS                                   |    7 +
+>  drivers/iommu/Kconfig                         |   11 +
+>  drivers/iommu/Makefile                        |    1 +
+>  drivers/iommu/virtio-iommu.c                  | 1160 +++++++++++++++++
+>  drivers/of/base.c                             |   10 +-
+>  drivers/pci/of.c                              |    7 +
+>  include/uapi/linux/virtio_ids.h               |    1 +
+>  include/uapi/linux/virtio_iommu.h             |  161 +++
+>  10 files changed, 1451 insertions(+), 3 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+>  create mode 100644 drivers/iommu/virtio-iommu.c
+>  create mode 100644 include/uapi/linux/virtio_iommu.h
+> 
