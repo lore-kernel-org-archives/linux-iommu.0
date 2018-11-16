@@ -1,79 +1,123 @@
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Slavomir Kaslev <kaslevs@vmware.com>
 Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
-Date: Fri, 16 Nov 2018 08:59:28 -0800
-Message-ID: <b54491c4-c119-6e83-93ae-d0df7fc165a1@infradead.org>
+Date: Fri, 16 Nov 2018 17:48:09 +0000
+Message-ID: <CAE0o1NuTR1x2u9aJVo3-u9yPAESQqLRZNrjxDJSugTF6qo+pbA@mail.gmail.com>
 References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
- <9655a12e-bd3d-aca2-6155-38924028eb5d@infradead.org>
- <CAFqt6zbLjtDab3Bz67trbnQRQdutvgA=YvAFhoW4bxsg657mGQ@mail.gmail.com>
- <20181116064049.GA5320@bombadil.infradead.org>
- <CAFqt6zbL1tu4VWtZ5Wz-BgbOS+M2GJziMj958_h_ri4Th3n9bQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAFqt6zbL1tu4VWtZ5Wz-BgbOS+M2GJziMj958_h_ri4Th3n9bQ@mail.gmail.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Souptick Joarder <jrdr.linux@gmail.com>, Matthew Wilcox <willy@infradead.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, vbabka@suse.cz, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Juergen Gross <jgr>
+Content-ID: <73CE58359D441447BA044FFA2115AE6B@namprd05.prod.outlook.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: "jrdr.linux@gmail.com" <jrdr.linux@gmail.com>
+Cc: "mhocko@suse.com" <mhocko@suse.com>, "heiko@sntech.de" <heiko@sntech.de>, "peterz@infradead.org" <peterz@infradead.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux1394-devel@lists.sourceforge.net" <linux1394-devel@lists.sourceforge.net>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>, "oleksandr_andrushchenko@epam.com" <oleksandr_andrushchenko@epam.com>, "joro@8bytes.org" <joro@8bytes.org>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "willy@infradead.org" <willy@infradead.org>, "airlied@linux.ie" <airlied@linux.ie>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>, tredi
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/16/18 12:15 AM, Souptick Joarder wrote:
-> On Fri, Nov 16, 2018 at 12:11 PM Matthew Wilcox <willy@infradead.org> wrote:
->>
->> On Fri, Nov 16, 2018 at 11:00:30AM +0530, Souptick Joarder wrote:
->>> On Thu, Nov 15, 2018 at 11:44 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->>>> On 11/15/18 7:45 AM, Souptick Joarder wrote:
->>>> What is the opposite of vm_insert_range() or even of vm_insert_page()?
->>>> or is there no need for that?
->>>
->>> There is no opposite function of vm_insert_range() / vm_insert_page().
->>> My understanding is, in case of any error, mmap handlers will return the
->>> err to user process and user space will decide the next action. So next
->>> time when mmap handler is getting invoked it will map from the beginning.
->>> Correct me if I am wrong.
->>
->> The opposite function, I suppose, is unmap_region().
->>
->>>> s/no./number/
->>>
->>> I didn't get it ??
->>
->> This is a 'sed' expression.  's' is the 'substitute' command; the /
->> is a separator, 'no.' is what you wrote, and 'number' is what Randy
->> is recommending instead.
-> 
-> Ok. Will change it in v2.
+On Thu, Nov 15, 2018 at 5:42 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
+>
+> Previouly drivers have their own way of mapping range of
+> kernel pages/memory into user vma and this was done by
+> invoking vm_insert_page() within a loop.
+>
+> As this pattern is common across different drivers, it can
+> be generalized by creating a new function and use it across
+> the drivers.
+>
+> vm_insert_range is the new API which will be used to map a
+> range of kernel memory/pages to user vma.
+>
+> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+> Reviewed-by: Matthew Wilcox <willy@infradead.org>
+> ---
+>  include/linux/mm_types.h |  3 +++
+>  mm/memory.c              | 28 ++++++++++++++++++++++++++++
+>  mm/nommu.c               |  7 +++++++
+>  3 files changed, 38 insertions(+)
+>
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 5ed8f62..15ae24f 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -523,6 +523,9 @@ extern void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
+>  extern void tlb_finish_mmu(struct mmu_gather *tlb,
+>                                 unsigned long start, unsigned long end);
+>
+> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
+> +                       struct page **pages, unsigned long page_count);
+> +
+>  static inline void init_tlb_flush_pending(struct mm_struct *mm)
+>  {
+>         atomic_set(&mm->tlb_flush_pending, 0);
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 15c417e..da904ed 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -1478,6 +1478,34 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
+>  }
+>
+>  /**
+> + * vm_insert_range - insert range of kernel pages into user vma
+> + * @vma: user vma to map to
+> + * @addr: target user address of this page
+> + * @pages: pointer to array of source kernel pages
+> + * @page_count: no. of pages need to insert into user vma
+> + *
+> + * This allows drivers to insert range of kernel pages they've allocated
+> + * into a user vma. This is a generic function which drivers can use
+> + * rather than using their own way of mapping range of kernel pages into
+> + * user vma.
+> + */
+> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
+> +                       struct page **pages, unsigned long page_count)
+> +{
+> +       unsigned long uaddr = addr;
+> +       int ret = 0, i;
+> +
+> +       for (i = 0; i < page_count; i++) {
+> +               ret = vm_insert_page(vma, uaddr, pages[i]);
+> +               if (ret < 0)
+> +                       return ret;
+> +               uaddr += PAGE_SIZE;
+> +       }
+> +
+> +       return ret;
+> +}
 
-Thanks.
++ EXPORT_SYMBOL(vm_insert_range);
 
->>>>> +     for (i = 0; i < page_count; i++) {
->>>>> +             ret = vm_insert_page(vma, uaddr, pages[i]);
->>>>> +             if (ret < 0)
->>>>> +                     return ret;
->>>>
->>>> For a non-trivial value of page_count:
->>>> Is it a problem if vm_insert_page() succeeds for several pages
->>>> and then fails?
->>>
->>> No, it will be considered as total failure and mmap handler will return
->>> the err to user space.
->>
->> I think what Randy means is "What happens to the inserted pages?" and
->> the answer is that mmap_region() jumps to the 'unmap_and_free_vma'
->> label, which is an accurate name.
-
-which says:
-
-	/* Undo any partial mapping done by a device driver. */
-	unmap_region(mm, vma, prev, vma->vm_start, vma->vm_end);
-
-and that is what I was missing.  Thanks.
-
-> Sorry for incorrect understanding of the question.
-
-No problem.
-
-
--- 
-~Randy
+> +
+> +/**
+>   * vm_insert_page - insert single page into user vma
+>   * @vma: user vma to map to
+>   * @addr: target user address of this page
+> diff --git a/mm/nommu.c b/mm/nommu.c
+> index 749276b..d6ef5c7 100644
+> --- a/mm/nommu.c
+> +++ b/mm/nommu.c
+> @@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+>  }
+>  EXPORT_SYMBOL(vm_insert_page);
+>
+> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
+> +                       struct page **pages, unsigned long page_count)
+> +{
+> +       return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vm_insert_range);
+> +
+>  /*
+>   *  sys_brk() for the most part doesn't need the global kernel
+>   *  lock, except when an application is doing something nasty
+> --
+> 1.9.1
+>
