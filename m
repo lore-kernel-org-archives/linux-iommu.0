@@ -1,41 +1,30 @@
-From: Slavomir Kaslev <kaslevs@vmware.com>
+From: Mike Rapoport <rppt@linux.ibm.com>
 Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
-Date: Fri, 16 Nov 2018 17:48:09 +0000
-Message-ID: <CAE0o1NuTR1x2u9aJVo3-u9yPAESQqLRZNrjxDJSugTF6qo+pbA@mail.gmail.com>
+Date: Fri, 16 Nov 2018 10:28:37 -0800
+Message-ID: <20181116182836.GB17088@rapoport-lnx>
 References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
-Content-Language: en-US
-Content-ID: <73CE58359D441447BA044FFA2115AE6B@namprd05.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "jrdr.linux@gmail.com" <jrdr.linux@gmail.com>
-Cc: "mhocko@suse.com" <mhocko@suse.com>, "heiko@sntech.de" <heiko@sntech.de>, "peterz@infradead.org" <peterz@infradead.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux1394-devel@lists.sourceforge.net" <linux1394-devel@lists.sourceforge.net>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>, "oleksandr_andrushchenko@epam.com" <oleksandr_andrushchenko@epam.com>, "joro@8bytes.org" <joro@8bytes.org>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "willy@infradead.org" <willy@infradead.org>, "airlied@linux.ie" <airlied@linux.ie>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>, tredi
+Sender: linux-kernel-owner@vger.kernel.org
+To: Souptick Joarder <jrdr.linux@gmail.com>
+Cc: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com, sfr@canb.auug.org.au, rppt@linux.vnet.ibm.com, peterz@infradead.org, linux@armlinux.org.uk, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, keescook@chromium.org, m.szyprowski@samsung.com, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, heiko@sntech.de, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-de
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 15, 2018 at 5:42 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
->
+On Thu, Nov 15, 2018 at 09:15:30PM +0530, Souptick Joarder wrote:
 > Previouly drivers have their own way of mapping range of
 > kernel pages/memory into user vma and this was done by
 > invoking vm_insert_page() within a loop.
->
+> 
 > As this pattern is common across different drivers, it can
 > be generalized by creating a new function and use it across
 > the drivers.
->
+> 
 > vm_insert_range is the new API which will be used to map a
 > range of kernel memory/pages to user vma.
->
+> 
 > Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
 > Reviewed-by: Matthew Wilcox <willy@infradead.org>
 > ---
@@ -43,28 +32,28 @@ On Thu, Nov 15, 2018 at 5:42 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
 >  mm/memory.c              | 28 ++++++++++++++++++++++++++++
 >  mm/nommu.c               |  7 +++++++
 >  3 files changed, 38 insertions(+)
->
+> 
 > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
 > index 5ed8f62..15ae24f 100644
 > --- a/include/linux/mm_types.h
 > +++ b/include/linux/mm_types.h
 > @@ -523,6 +523,9 @@ extern void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
 >  extern void tlb_finish_mmu(struct mmu_gather *tlb,
->                                 unsigned long start, unsigned long end);
->
+>  				unsigned long start, unsigned long end);
+> 
 > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> +                       struct page **pages, unsigned long page_count);
+> +			struct page **pages, unsigned long page_count);
 > +
 >  static inline void init_tlb_flush_pending(struct mm_struct *mm)
 >  {
->         atomic_set(&mm->tlb_flush_pending, 0);
+>  	atomic_set(&mm->tlb_flush_pending, 0);
 > diff --git a/mm/memory.c b/mm/memory.c
 > index 15c417e..da904ed 100644
 > --- a/mm/memory.c
 > +++ b/mm/memory.c
 > @@ -1478,6 +1478,34 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
 >  }
->
+> 
 >  /**
 > + * vm_insert_range - insert range of kernel pages into user vma
 > + * @vma: user vma to map to
@@ -76,25 +65,25 @@ On Thu, Nov 15, 2018 at 5:42 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
 > + * into a user vma. This is a generic function which drivers can use
 > + * rather than using their own way of mapping range of kernel pages into
 > + * user vma.
+
+Please add the return value and context descriptions.
+
 > + */
 > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> +                       struct page **pages, unsigned long page_count)
+> +			struct page **pages, unsigned long page_count)
 > +{
-> +       unsigned long uaddr = addr;
-> +       int ret = 0, i;
+> +	unsigned long uaddr = addr;
+> +	int ret = 0, i;
 > +
-> +       for (i = 0; i < page_count; i++) {
-> +               ret = vm_insert_page(vma, uaddr, pages[i]);
-> +               if (ret < 0)
-> +                       return ret;
-> +               uaddr += PAGE_SIZE;
-> +       }
+> +	for (i = 0; i < page_count; i++) {
+> +		ret = vm_insert_page(vma, uaddr, pages[i]);
+> +		if (ret < 0)
+> +			return ret;
+> +		uaddr += PAGE_SIZE;
+> +	}
 > +
-> +       return ret;
+> +	return ret;
 > +}
-
-+ EXPORT_SYMBOL(vm_insert_range);
-
 > +
 > +/**
 >   * vm_insert_page - insert single page into user vma
@@ -107,17 +96,21 @@ On Thu, Nov 15, 2018 at 5:42 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
 > @@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
 >  }
 >  EXPORT_SYMBOL(vm_insert_page);
->
+> 
 > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> +                       struct page **pages, unsigned long page_count)
+> +			struct page **pages, unsigned long page_count)
 > +{
-> +       return -EINVAL;
+> +	return -EINVAL;
 > +}
 > +EXPORT_SYMBOL(vm_insert_range);
 > +
 >  /*
 >   *  sys_brk() for the most part doesn't need the global kernel
 >   *  lock, except when an application is doing something nasty
-> --
+> -- 
 > 1.9.1
->
+> 
+
+-- 
+Sincerely yours,
+Mike.
