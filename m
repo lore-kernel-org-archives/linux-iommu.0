@@ -1,47 +1,58 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
-Date: Sat, 17 Nov 2018 06:37:42 -0800
-Message-ID: <20181117143742.GB7861@bombadil.infradead.org>
-References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
- <20181116182836.GB17088@rapoport-lnx>
- <CAFqt6zYp0j999WXw9Jus0oZMjADQQkPfso8btv6du6L9CE3PXA@mail.gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/2] dma-mapping: remove ->mapping_error
+Date: Mon, 19 Nov 2018 14:52:17 +0100
+Message-ID: <20181119135217.GA16334@lst.de>
+References: <20181109084632.22848-1-hch@lst.de> <20181109084632.22848-2-hch@lst.de> <75c72464-1ff6-7c53-2cdb-0c5882c190aa@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAFqt6zYp0j999WXw9Jus0oZMjADQQkPfso8btv6du6L9CE3PXA@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Souptick Joarder <jrdr.linux@gmail.com>
-Cc: Michal Hocko <mhocko@suse.com>, Heiko Stuebner <heiko@sntech.de>, Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux1394-devel@lists.sourceforge.net, Marek Szyprowski <m.szyprowski@samsung.com>, Stephen Rothwell <sfr@canb.auug.org.au>, oleksandr_andrushchenko@epam.com, joro@8bytes.org, Russell King - ARM Linux <linux@armlinux.org.uk>, iommu@lists.linux-foundation.org, rppt@linux.ibm.com, airlied@linux.ie, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, treding@nvidia.com, linux-media@vger.kernel.org, Kees Cook <keescook@chromium.org>, pawel@osciak.com, Rik van Riel <riel@surriel.com>, rppt@linux.vnet.ibm.com, Boris Ostrovsky <boris.ostrovsky@oracle.com>, mchehab@kernel.org, iamjoonsoo.kim@lge.com, vbabka@suse.cz, Juergen Gross <jgross@suse.com>, hjc@rock-chi
+In-Reply-To: <75c72464-1ff6-7c53-2cdb-0c5882c190aa@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Nov 17, 2018 at 12:26:38PM +0530, Souptick Joarder wrote:
-> On Fri, Nov 16, 2018 at 11:59 PM Mike Rapoport <rppt@linux.ibm.com> wrote:
-> > > + * vm_insert_range - insert range of kernel pages into user vma
-> > > + * @vma: user vma to map to
-> > > + * @addr: target user address of this page
-> > > + * @pages: pointer to array of source kernel pages
-> > > + * @page_count: no. of pages need to insert into user vma
-> > > + *
-> > > + * This allows drivers to insert range of kernel pages they've allocated
-> > > + * into a user vma. This is a generic function which drivers can use
-> > > + * rather than using their own way of mapping range of kernel pages into
-> > > + * user vma.
-> >
-> > Please add the return value and context descriptions.
-> >
-> 
-> Sure I will wait for some time to get additional review comments and
-> add all of those requested changes in v2.
+On Fri, Nov 09, 2018 at 02:41:18PM +0000, Robin Murphy wrote:
+>> -
+>>   #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
+>>     #define LOOP_TIMEOUT	100000
+>> @@ -2339,7 +2337,7 @@ static dma_addr_t __map_single(struct device *dev,
+>>   	paddr &= PAGE_MASK;
+>>     	address = dma_ops_alloc_iova(dev, dma_dom, pages, dma_mask);
+>> -	if (address == AMD_IOMMU_MAPPING_ERROR)
+>> +	if (address == DMA_MAPPING_ERROR)
+>
+> This for one is clearly broken, because the IOVA allocator still returns 0 
+> on failure here...
 
-You could send your proposed wording now which might remove the need
-for a v3 if we end up arguing about the wording.
+Indeed.  And that shows how the original code was making a mess of these
+different constants..
+
+> I very much agree with the concept, but I think the way to go about it is 
+> to convert the implementations which need it to the standardised 
+> *_MAPPING_ERROR value one-by-one, and only then then do the big sweep to 
+> remove them all. That has more of a chance of getting worthwhile review and 
+> testing from the respective relevant parties (I'll confess I came looking 
+> for this bug specifically, since I happened to recall amd_iommu having a 
+> tricky implicit reliance on the old DMA_ERROR_CODE being 0 on x86).
+
+I'll see if I can split this out somehow, but I'm not sure it is going
+to be all that much more readable..
+
+> In terms of really minimising the error-checking overhead it's a bit of a 
+> shame that DMA_MAPPING_ERROR = 0 doesn't seem viable as the thing to 
+> standardise on, since that has advantages at the micro-optimisation level 
+> for many ISAs - fixing up the legacy IOMMU code doesn't seem 
+> insurmountable, but I suspect there may well be non-IOMMU platforms where 
+> DMA to physical address 0 is a thing :(
+
+Yes, that is what I'm more worried about.
+
+> (yeah, I know saving a couple of instructions and potential register 
+> allocations is down in the noise when we're already going from an indirect 
+> call to an inline comparison; I'm mostly just thinking out loud there)
+
+The nice bit of standardizing the value is that we get rid of an
+indirect call, which generally is much more of a problem at the
+micro-architecture level.
