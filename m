@@ -1,82 +1,54 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
-	swiotlb_map_sg_attrs
-Date: Mon, 19 Nov 2018 19:36:44 +0000
-Message-ID: <ad8ed3ba-12e8-3031-7c66-035b6d9ad6cd@arm.com>
-References: <20181008080246.20543-1-hch@lst.de>
-	<20181008080246.20543-7-hch@lst.de>
-	<CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
-	<20181109074955.GA27489@lst.de>
-	<9922f377-ee87-ba36-8d28-26af0f7822e5@arm.com>
+From: John Stultz <john.stultz@linaro.org>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs
+Date: Mon, 19 Nov 2018 15:22:13 -0800
+Message-ID: <CALAqxLVMW2sYkaQvggZ-LhvkzpuF2rssQJ4thZkkAkROk=wVVw@mail.gmail.com>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de>
+ <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
+ <20181109074955.GA27489@lst.de> <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
+ <20181114141311.GA26677@lst.de> <20181114161239.GA29462@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9922f377-ee87-ba36-8d28-26af0f7822e5-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Valentin Schneider <valentin.schneider-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181114161239.GA29462@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMDkvMTEvMjAxOCAxNjozNywgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDA5LzExLzIwMTgg
-MDc6NDksIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOgo+PiBPbiBUdWUsIE5vdiAwNiwgMjAxOCBh
-dCAwNToyNzoxNFBNIC0wODAwLCBKb2huIFN0dWx0eiB3cm90ZToKPj4+IEJ1dCBhdCB0aGF0IHBv
-aW50IGlmIEkganVzdCByZS1hcHBseSAic3dpb3RsYjogdXNlIHN3aW90bGJfbWFwX3BhZ2UgaW4K
-Pj4+IHN3aW90bGJfbWFwX3NnX2F0dHJzIiwgSSByZXByb2R1Y2UgdGhlIGhhbmdzLgo+Pj4KPj4+
-IEFueSBzdWdnZXN0aW9ucyBmb3IgaG93IHRvIGZ1cnRoZXIgZGVidWcgd2hhdCBtaWdodCBiZSBn
-b2luZyB3cm9uZwo+Pj4gd291bGQgYmUgYXBwcmVjaWF0ZWQhCj4+Cj4+IFZlcnkgb2RkLsKgIElu
-IHRoZSBlbmQgbWFwX3NnIGFuZCBtYXBfcGFnZSBhcmUgZGVmaW5lZCB0byBkbyB0aGUgc2FtZQo+
-PiB0aGluZ3MgdG8gc3RhcnQgd2l0aC7CoCBUaGUgb25seSByZWFsIGlzc3VlIHdlIGhhZCBpbiB0
-aGlzIGFyZWEgd2FzOgo+Pgo+PiAiW1BBVENIIHYyXSBvZi9kZXZpY2U6IFJlYWxseSBvbmx5IHNl
-dCBidXMgRE1BIG1hc2sgd2hlbiBhcHByb3ByaWF0ZSIKPj4KPj4gc28gd2l0aCBjdXJyZW50IG1h
-aW5saW5lICsgdGhhdCB5b3Ugc3RpbGwgc2VlIGEgcHJvYmxlbSwgYW5kIGlmIHlvdQo+PiByZXZl
-ciB0aGUgY29tbWl0IHdlIGFyZSByZXBseWluZyB0byBpdCBzdGlsbCBnb2VzIGF3YXk/Cj4gCj4g
-T0ssIGFmdGVyIHF1aXRlIGEgYml0IG9mIHRyeWluZyBJIGhhdmUgbWFuYWdlZCB0byBwcm92b2tl
-IGEgCj4gc2ltaWxhci1sb29raW5nIHByb2JsZW0gd2l0aCBzdHJhaWdodCA0LjIwLXJjMSBvbiBt
-eSBKdW5vIGJvYXJkIC0gc28gZmFyIAo+IG15ICJyZXByb2R1Y2VyIiBpcyB0byBkZWNvbXByZXNz
-IGEgfjEwR0IgLnRhci54eiBvZmYgYW4gZXh0ZXJuYWwgVVNCIAo+IGhhcmQgZGlzaywgd2hlcmVp
-biBhZnRlciBzb21ld2hlcmUgYmV0d2VlbiA1IG1pbnV0ZXMgYW5kIGhhbGYgYW4gaG91ciBvciAK
-PiBzbyBpdCB0ZW5kcyB0byBmYWxscyBvdmVyIHdpdGggeHogY2hva2luZyBvbiBjb3JydXB0IGRh
-dGEgYW5kL29yIGEgVVNCIAo+IGVycm9yLgo+IAo+ICBGcm9tIHRoZSBwcmVzZW50YXRpb24sIHRo
-aXMgcmVhbGx5IHNtZWxscyBsaWtlIHRoZXJlJ3Mgc29tZSBjb3JuZXIgaW4gCj4gd2hpY2ggd2Un
-cmUgZWl0aGVyIG1pc3NpbmcgY2FjaGUgbWFpbnRlbmFuY2Ugb3IgZG9pbmcgaXQgdG8gdGhlIHdy
-b25nIAo+IGFkZHJlc3MgLSBJJ3ZlIG5vdCBzZWVuIGFueSBpc3N1ZXMgd2l0aCBKdW5vJ3MgbWFp
-biBQQ0llLWF0dGFjaGVkIEkvTywgCj4gYnV0IHRoZSBFSENJIGhlcmUgaXMgbm9uLWNvaGVyZW50
-IChhbmQgMzItYml0LCBzbyB0aGUgYnVzX2RtYV9tYXNrIHRoaW5nIAo+IGRvZXNuJ3QgbWF0dGVy
-KSBhcyBhcmUgdGhlIEhpS2V5IFVGUyBhbmQgU0QgY29udHJvbGxlci4KPiAKPiBJJ2xsIGtlZXAg
-ZGlnZ2luZy4uLgoKT0ssIGhhdmluZyBicm91Z2h0IG15IEhpa2V5IHRvIGxpZmUgYW5kIHJlcHJv
-ZHVjZWQgSm9obidzIHN0YWxsIHdpdGggCnJjMSwgd2hhdCdzIGdvaW5nIG9uIGlzIHRoYXQgYXQg
-c29tZSBwb2ludCBkbWFfbWFwX3NnKCkgcmV0dXJucyAwLCB3aGljaCAKY2F1c2VzIHRoZSBTQ1NJ
-L1VGUyBsYXllciB0byBnbyByb3VuZCBpbiBjaXJjbGVzIHJlcGVhdGVkbHkgdHJ5aW5nIHRvIApt
-YXAgdGhlIHNhbWUgbGlzdChzKSBlcXVhbGx5IHVuc3VjY2Vzc2Z1bGx5LgoKV2h5IGRvZXMgZG1h
-X21hcF9zZygpIGZhaWw/IFR1cm5zIG91dCB3aGF0IHdlIGFsbCBtYW5hZ2VkIHRvIG92ZXJsb29r
-IGlzIAp0aGF0IHRoaXMgcGF0Y2ggKmRvZXMqIGludHJvZHVjZSBhIHN1YnRsZSBjaGFuZ2UgaW4g
-YmVoYXZpb3VyLCBpbiB0aGF0IApwcmV2aW91c2x5IHRoZSBub24tYm91bmNlZCBjYXNlIGFzc2ln
-bmVkIGRldl9hZGRyIHRvIHNnLT5kbWFfYWRkcmVzcyAKd2l0aG91dCBsb29raW5nIGF0IGl0OyBu
-b3cgd2l0aCB0aGUgc3dpb3RsYl9tYXBfcGFnZSgpIGNhbGwgd2UgY2hlY2sgdGhlIApyZXR1cm4g
-dmFsdWUgYWdhaW5zdCBESVJFQ1RfTUFQUElOR19FUlJPUiByZWdhcmRsZXNzIG9mIHdoZXRoZXIg
-aXQgd2FzIApib3VuY2VkIG9yIG5vdC4KCkZsYXNoIGJhY2sgdG8gdGhlIG90aGVyIHRocmVhZCB3
-aGVuIEkgc2FpZCAiLi4uYnV0IEkgc3VzcGVjdCB0aGVyZSBtYXkgCndlbGwgYmUgbm9uLUlPTU1V
-IHBsYXRmb3JtcyB3aGVyZSBETUEgdG8gcGh5c2ljYWwgYWRkcmVzcyAwIGlzIGEgdGhpbmcgCjoo
-Ij8gSSBoYXZlIHRoZSAzR0IgSGlrZXkgd2hlcmUgYWxsIHRoZSBSQU0gaXMgYmVsb3cgMzIgYml0
-cyBzbyBTV0lPVExCIApuZXZlciBldmVyIGJvdW5jZXMsIGJ1dCBzdXJlIGVub3VnaCwgZ3Vlc3Mg
-d2hlcmUgdGhhdCBSQU0gc3RhcnRzLi4uCgpTbyBpbiBmYWN0IGl0IGxvb2tzIGxpa2UgcGF0Y2gg
-IzQgdGVjaG5pY2FsbHkgaW50cm9kdWNlcyB0aGUgZmlyc3QgCmluc3RhbmNlIG9mIHRoaXMgcHJv
-YmxlbSwgd2UncmUganVzdCBnZXR0aW5nIGx1Y2t5IG5vdCB0byBoaXQgaXQgd2l0aCBhIAptYXBf
-cGFnZS9tYXBfc2luZ2xlIGNhc2Ugc3VjaCB0aGF0IGRpcmVjdF9tYXBwaW5nX2Vycm9yKCkgd291
-bGQgd3JvbmdseSAKcmVwb3J0IGZhaWx1cmUgZm9yIHBhZ2UgMC4gVGhlIGJhZCBuZXdzIChmb3Ig
-bWUpIGlzIHRoYXQgdGhhdCBjYW4ndCBoYXZlIAphbnl0aGluZyB0byBkbyB3aXRoIG15IGFwcGFy
-ZW50IG1lbW9yeSBjb3JydXB0aW9uIHRoaW5nIGFib3ZlLCBzbyBub3cgSSAKc3RpbGwgbmVlZCB0
-byBmaWd1cmUgb3V0IHdoYXQgdGhlIGhlbGwgaXMgZ29pbmcgb24gdGhlcmUuCgpSb2Jpbi4KX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, Nov 14, 2018 at 8:12 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Wed, Nov 14, 2018 at 03:13:11PM +0100, Christoph Hellwig wrote:
+> > Does the patch below make a difference for you?  Assigning an
+> > address to the S/G list is the only functional difference I could
+> > spot.  Drivers really should never look at the S/G list on an
+> > error return, but..
+>
+> And that was obviously just the second half of the patch, so here
+> is the full one:
+>
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 5731daa09a32..a896f46d0c31 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -786,10 +786,13 @@ swiotlb_map_sg_attrs(struct device *dev, struct scatterlist *sgl, int nelems,
+>         int i;
+>
+>         for_each_sg(sgl, sg, nelems, i) {
+> -               sg->dma_address = swiotlb_map_page(dev, sg_page(sg), sg->offset,
+> +               dma_addr_t dma_addr;
+> +
+> +               dma_addr = swiotlb_map_page(dev, sg_page(sg), sg->offset,
+>                                 sg->length, dir, attrs);
+> -               if (sg->dma_address == DIRECT_MAPPING_ERROR)
+> +               if (dma_addr == DIRECT_MAPPING_ERROR)
+>                         goto out_error;
+> +               sg->dma_address = dma_addr;
+>                 sg_dma_len(sg) = sg->length;
+>         }
+
+I know Robin has already replied with more detailed info, but just to
+close the loop as I'm finally home, applying this patch didn't seem to
+help with the IO hangs I'm seeing w/ HiKey960.
+
+thanks
+-john
