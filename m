@@ -1,77 +1,92 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 5/5] dma-direct: always allow dma mask <= physiscal memory
- size
-Date: Mon, 19 Nov 2018 15:50:35 +0000
-Message-ID: <bb76b9a1-dc3a-2357-a871-291d68703776@arm.com>
-References: <20180927223539.28449-1-hch@lst.de>
- <20180927223539.28449-6-hch@lst.de>
- <CAKgT0Ucii29i7S8eCj20D=a+=DeyKxREG0U2DBNRp3jFpgLu_A@mail.gmail.com>
- <8402ecc9c8ed9c69ad3e91eca4d07a5ab077b22d.camel@kernel.crashing.org>
- <CA+Kvs9kPtTZavq91NXs-7edVO5Fxp8gPO=FD35i9_izAdGMkKw@mail.gmail.com>
+From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
+Date: Mon, 19 Nov 2018 08:26:24 -0800
+Message-ID: <20181119162623.GA13200@rapoport-lnx>
+References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
+	<20181116182836.GB17088@rapoport-lnx>
+	<CAFqt6zYp0j999WXw9Jus0oZMjADQQkPfso8btv6du6L9CE3PXA@mail.gmail.com>
+	<20181117143742.GB7861@bombadil.infradead.org>
+	<CAFqt6zbOWX5LUTWwoGDJsGdf+pTR6N1yTPVxyr1W3-6Fte39ww@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CA+Kvs9kPtTZavq91NXs-7edVO5Fxp8gPO=FD35i9_izAdGMkKw@mail.gmail.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Ramon Fried <ramon.fried@gmail.com>, benh@kernel.crashing.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, open list <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, hch@lst.de, linux@roeck-us.net
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAFqt6zbOWX5LUTWwoGDJsGdf+pTR6N1yTPVxyr1W3-6Fte39ww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Kyungmin
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/11/2018 14:18, Ramon Fried wrote:
-> On Tue, Oct 9, 2018 at 8:02 AM Benjamin Herrenschmidt
-> <benh@kernel.crashing.org> wrote:
->>
->> On Wed, 2018-10-03 at 16:10 -0700, Alexander Duyck wrote:
->>>> -        * Because 32-bit DMA masks are so common we expect every architecture
->>>> -        * to be able to satisfy them - either by not supporting more physical
->>>> -        * memory, or by providing a ZONE_DMA32.  If neither is the case, the
->>>> -        * architecture needs to use an IOMMU instead of the direct mapping.
->>>> -        */
->>>> -       if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
->>>> +       u64 min_mask;
->>>> +
->>>> +       if (IS_ENABLED(CONFIG_ZONE_DMA))
->>>> +               min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
->>>> +       else
->>>> +               min_mask = DMA_BIT_MASK(32);
->>>> +
->>>> +       min_mask = min_t(u64, min_mask, (max_pfn - 1) << PAGE_SHIFT);
->>>> +
->>>> +       if (mask >= phys_to_dma(dev, min_mask))
->>>>                   return 0;
->>>> -#endif
->>>>           return 1;
->>>>    }
->>>
->>> So I believe I have run into the same issue that Guenter reported. On
->>> an x86_64 system w/ Intel IOMMU. I wasn't able to complete boot and
->>> all probe attempts for various devices were failing with -EIO errors.
->>>
->>> I believe the last mask check should be "if (mask < phys_to_dma(dev,
->>> min_mask))" not a ">=" check.
->>
->> Right, that test is backwards. I needed to change it here too (powermac
->> with the rest of the powerpc series).
->>
->> Cheers,
->> Ben.
->>
->>
+On Mon, Nov 19, 2018 at 08:43:09PM +0530, Souptick Joarder wrote:
+> Hi Mike,
 > 
-> Hi, I'm working on a MIPS64 soc with PCIe root complex on it, and it
-> appears that this series of patches are causing all PCI drivers that
-> request 64bit mask to fail with -5.
-> It's broken in 4.19. However, I just checked, it working on master.
-> We may need to backport a couple of patches to 4.19. I'm not sure
-> though which patches should be backported as there were at least 10
-> patches resolving this dma_direct area recently.
-> Christoph, Robin.
-> Can we ask Greg to backport all these changes ? What do you think ?
+> On Sat, Nov 17, 2018 at 8:07 PM Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
+> >
+> > On Sat, Nov 17, 2018 at 12:26:38PM +0530, Souptick Joarder wrote:
+> > > On Fri, Nov 16, 2018 at 11:59 PM Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org> wrote:
+> > > > > + * vm_insert_range - insert range of kernel pages into user vma
+> > > > > + * @vma: user vma to map to
+> > > > > + * @addr: target user address of this page
+> > > > > + * @pages: pointer to array of source kernel pages
+> > > > > + * @page_count: no. of pages need to insert into user vma
+> > > > > + *
+> > > > > + * This allows drivers to insert range of kernel pages they've allocated
+> > > > > + * into a user vma. This is a generic function which drivers can use
+> > > > > + * rather than using their own way of mapping range of kernel pages into
+> > > > > + * user vma.
+> > > >
+> > > > Please add the return value and context descriptions.
+> > > >
+> > >
+> > > Sure I will wait for some time to get additional review comments and
+> > > add all of those requested changes in v2.
+> >
+> > You could send your proposed wording now which might remove the need
+> > for a v3 if we end up arguing about the wording.
+> 
+> Does this description looks good ?
+> 
+> /**
+>  * vm_insert_range - insert range of kernel pages into user vma
+>  * @vma: user vma to map to
+>  * @addr: target user address of this page
+>  * @pages: pointer to array of source kernel pages
+>  * @page_count: number of pages need to insert into user vma
+>  *
+>  * This allows drivers to insert range of kernel pages they've allocated
+>  * into a user vma. This is a generic function which drivers can use
+>  * rather than using their own way of mapping range of kernel pages into
+>  * user vma.
+>  *
+>  * Context - Process context. Called by mmap handlers.
 
-As far as I'm aware, the only real issue in 4.19 was my subtle breakage 
-around setting bus_dma_mask - that's fixed by 6778be4e5209, which 
-according to my inbox got picked up by autosel for 4.19 stable last week.
+Context:
 
-Robin.
+>  * Return - int error value
+
+Return:
+
+>  * 0                    - OK
+>  * -EINVAL              - Invalid argument
+>  * -ENOMEM              - No memory
+>  * -EFAULT              - Bad address
+>  * -EBUSY               - Device or resource busy
+
+I don't think that elaborate description of error values is needed, just "0
+on success and error code otherwise" would be sufficient.
+
+>  */
+> 
+
+-- 
+Sincerely yours,
+Mike.
