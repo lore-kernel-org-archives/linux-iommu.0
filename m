@@ -1,7 +1,7 @@
 From: Waiman Long <longman@redhat.com>
-Subject: [PATCH v2 09/17] debugobjects: Make object hash locks nestable terminal locks
-Date: Mon, 19 Nov 2018 13:55:18 -0500
-Message-ID: <1542653726-5655-10-git-send-email-longman@redhat.com>
+Subject: [PATCH v2 12/17] cgroup: Mark the rstat percpu lock as terminal
+Date: Mon, 19 Nov 2018 13:55:21 -0500
+Message-ID: <1542653726-5655-13-git-send-email-longman@redhat.com>
 References: <1542653726-5655-1-git-send-email-longman@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1542653726-5655-1-git-send-email-longman@redhat.com>
@@ -10,33 +10,33 @@ To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will 
 Cc: linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Waiman Long <longman@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-By making the object hash locks nestable terminal locks, we can avoid
-a bunch of unnecessary lockdep validations as well as saving space
-in the lockdep tables.
+By classifying the cgroup rstat percpu locks as terminal locks, it
+reduces the lockdep overhead when these locks are being used.
 
 Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- lib/debugobjects.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ kernel/cgroup/rstat.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/lib/debugobjects.c b/lib/debugobjects.c
-index 4216d3d..c6f3967 100644
---- a/lib/debugobjects.c
-+++ b/lib/debugobjects.c
-@@ -1129,8 +1129,13 @@ void __init debug_objects_early_init(void)
+diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
+index d503d1a..47f7ffb 100644
+--- a/kernel/cgroup/rstat.c
++++ b/kernel/cgroup/rstat.c
+@@ -291,8 +291,13 @@ void __init cgroup_rstat_boot(void)
  {
- 	int i;
+ 	int cpu;
  
--	for (i = 0; i < ODEBUG_HASH_SIZE; i++)
-+	/*
-+	 * Make the obj_hash locks nestable terminal locks.
-+	 */
-+	for (i = 0; i < ODEBUG_HASH_SIZE; i++) {
- 		raw_spin_lock_init(&obj_hash[i].lock);
-+		lockdep_set_terminal_nestable_class(&obj_hash[i].lock);
+-	for_each_possible_cpu(cpu)
+-		raw_spin_lock_init(per_cpu_ptr(&cgroup_rstat_cpu_lock, cpu));
++	for_each_possible_cpu(cpu) {
++		raw_spinlock_t *cgroup_rstat_percpu_lock =
++				per_cpu_ptr(&cgroup_rstat_cpu_lock, cpu);
++
++		raw_spin_lock_init(cgroup_rstat_percpu_lock);
++		lockdep_set_terminal_class(cgroup_rstat_percpu_lock);
 +	}
  
- 	for (i = 0; i < ODEBUG_POOL_SIZE; i++)
- 		hlist_add_head(&obj_static_pool[i].node, &obj_pool);
+ 	BUG_ON(cgroup_rstat_init(&cgrp_dfl_root.cgrp));
+ }
 -- 
 1.8.3.1
