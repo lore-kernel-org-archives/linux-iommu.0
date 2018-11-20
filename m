@@ -1,45 +1,40 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH RFC] dma-direct: do not allocate a single page from CMA
- area
-Date: Tue, 20 Nov 2018 10:20:10 +0100
-Message-ID: <20181120092010.GA7270@lst.de>
-References: <20181031200355.19945-1-nicoleotsuka@gmail.com> <13d60076-33ad-b542-4d17-4d717d5aa4d3@arm.com> <20181102063542.GA17073@lst.de> <20181105224050.GA10411@Asurada-Nvidia.nvidia.com>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+ swiotlb_map_sg_attrs
+Date: Tue, 20 Nov 2018 10:22:56 +0100
+Message-ID: <20181120092256.GB7270@lst.de>
+References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de> <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com> <20181109074955.GA27489@lst.de> <9922f377-ee87-ba36-8d28-26af0f7822e5@arm.com> <ad8ed3ba-12e8-3031-7c66-035b6d9ad6cd@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181105224050.GA10411@Asurada-Nvidia.nvidia.com>
+In-Reply-To: <ad8ed3ba-12e8-3031-7c66-035b6d9ad6cd@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolin Chen <nicoleotsuka@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, vdumpa@nvidia.com
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, John Stultz <john.stultz@linaro.org>, konrad.wilk@oracle.com, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, Valentin Schneider <valentin.schneider@arm.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 05, 2018 at 02:40:51PM -0800, Nicolin Chen wrote:
-> > > In general, this seems to make sense to me. It does represent a theoretical 
-> > > change in behaviour for devices which have their own CMA area somewhere 
-> > > other than kernel memory, and only ever make non-atomic allocations, but 
-> > > I'm not sure whether that's a realistic or common enough case to really 
-> > > worry about.
-> > 
-> > Yes, I think we should make the decision in dma_alloc_from_contiguous
-> > based on having a per-dev CMA area or not.  There is a lot of cruft in
-> 
-> It seems that cma_alloc() already has a CMA area check? Would it
-> be duplicated to have a similar one in dma_alloc_from_contiguous?
+On Mon, Nov 19, 2018 at 07:36:44PM +0000, Robin Murphy wrote:
+> OK, having brought my Hikey to life and reproduced John's stall with rc1, 
+> what's going on is that at some point dma_map_sg() returns 0, which causes 
+> the SCSI/UFS layer to go round in circles repeatedly trying to map the same 
+> list(s) equally unsuccessfully.
+>
+> Why does dma_map_sg() fail? Turns out what we all managed to overlook is 
+> that this patch *does* introduce a subtle change in behaviour, in that 
+> previously the non-bounced case assigned dev_addr to sg->dma_address 
+> without looking at it; now with the swiotlb_map_page() call we check the 
+> return value against DIRECT_MAPPING_ERROR regardless of whether it was 
+> bounced or not.
+>
+> Flash back to the other thread when I said "...but I suspect there may well 
+> be non-IOMMU platforms where DMA to physical address 0 is a thing :("? I 
+> have the 3GB Hikey where all the RAM is below 32 bits so SWIOTLB never ever 
+> bounces, but sure enough, guess where that RAM starts...
 
-It isn't duplicate if it serves a different purpose.
+What is PAGE_OFFSET on that machine?   We usually don't use kernel
+virtual address 0 so that we can deal with 0 pointer derferences sanely,
+but I guess we can get to physical address 0.
 
-> > this area that should be cleaned up while we're at it, like always
-> > falling back to the normal page allocator if there is no CMA area or
-> > nothing suitable found in dma_alloc_from_contiguous instead of
-> > having to duplicate all that in the caller.
-> 
-> Am I supposed to clean up things that's mentioned above by moving
-> the fallback allocator into dma_alloc_from_contiguous, or to just
-> move my change (the count check) into dma_alloc_from_contiguous?
-> 
-> I understand that'd be great to have a cleanup, yet feel it could
-> be done separately as this patch isn't really a cleanup change.
-
-I can take care of any cleanups.  I've been trying to dust up that
-area anyway.
+I guess the quick fix would be to move DMA_DIRECT_MAPPING_ERROR to all-F
+ASAP..
