@@ -1,51 +1,28 @@
-From: Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 2/2] arch: switch the default on ARCH_HAS_SG_CHAIN
-Date: Mon, 19 Nov 2018 16:48:02 -0800 (PST)
-Message-ID: <mhng-bc691596-d40e-4dd5-b162-b767e550b92e@palmer-si-x1c4>
-References: <20181119135852.GA16428@lst.de>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181119135852.GA16428-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Yi Sun <yi.y.sun@linux.intel.com>
+Subject: Re: [RFC PATCH 0/5] iommu: APIs for paravirtual PASID allocation
+Date: Tue, 20 Nov 2018 10:29:47 +0800
+Message-ID: <20181120022946.GA27998@yi.y.sun>
+References: <20181112064501.2290-1-baolu.lu@linux.intel.com>
+ <20181119163648.GD31468@char.us.oracle.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181119163648.GD31468@char.us.oracle.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 19 Nov 2018 05:58:52 PST (-0800), Christoph Hellwig wrote:
-> On Fri, Nov 16, 2018 at 08:52:14AM -0800, Palmer Dabbelt wrote:
->> As far as I can tell, it looks like m68k, mips, and powerpc mention an
->> IOMMU in their ports, don't set ARCH_HAS_SG_CHAIN, and with this patch set
->> won't set ARCH_NO_SG_CHAIN.
->
-> m68k has no iommu, and not operations that operate on a scatterlist.
->
-> mips has a trivial iommu driver (jazzdma), but I wrote the current
-> instance of it, nad it is fine.
->
-> powerpc has various iommu, but actually enables ARCH_HAS_SG_CHAIN
-> unconditionally.
->
->> The issue is that I'm not sure how to
->> determine what constitutes a horrible legacy IOMMU, at least with respect
->> to not being able to use scatterlist chaining.
->
-> It basically means someone is iterating using manual pointer arithmetics
-> over a multi-element scatterlist instead of using the sg_next and
-> for_each_sg helpers.
+On 18-11-19 11:36:48, Konrad Rzeszutek Wilk wrote:
+> On Mon, Nov 12, 2018 at 02:44:56PM +0800, Lu Baolu wrote:
+> > This adds an uniformed API set for global PASIDs used by IOMMU
+> > and device drivers which depend on IOMMU. It works for drivers
+> > running on bare metal, full virtualized environments and para-
+> > virtualized environment.
+> > 
+> 
+> Are there also some QEMU patches for this in RFC state?
 
-Ah, OK.  In that case, feel free to drop a
-
-Reviewed-by: Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>
-
-in there, if you think it helps any.
-
-Thanks for the help!
+Yes, we already have draft codes and are working on refining
+them. Will send patches out for your review. Thanks!
