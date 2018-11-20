@@ -1,54 +1,51 @@
-From: John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in swiotlb_map_sg_attrs
-Date: Mon, 19 Nov 2018 15:22:13 -0800
-Message-ID: <CALAqxLVMW2sYkaQvggZ-LhvkzpuF2rssQJ4thZkkAkROk=wVVw@mail.gmail.com>
-References: <20181008080246.20543-1-hch@lst.de> <20181008080246.20543-7-hch@lst.de>
- <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
- <20181109074955.GA27489@lst.de> <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
- <20181114141311.GA26677@lst.de> <20181114161239.GA29462@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181114161239.GA29462@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
+From: Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 2/2] arch: switch the default on ARCH_HAS_SG_CHAIN
+Date: Mon, 19 Nov 2018 16:48:02 -0800 (PST)
+Message-ID: <mhng-bc691596-d40e-4dd5-b162-b767e550b92e@palmer-si-x1c4>
+References: <20181119135852.GA16428@lst.de>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181119135852.GA16428-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 14, 2018 at 8:12 AM Christoph Hellwig <hch@lst.de> wrote:
+On Mon, 19 Nov 2018 05:58:52 PST (-0800), Christoph Hellwig wrote:
+> On Fri, Nov 16, 2018 at 08:52:14AM -0800, Palmer Dabbelt wrote:
+>> As far as I can tell, it looks like m68k, mips, and powerpc mention an
+>> IOMMU in their ports, don't set ARCH_HAS_SG_CHAIN, and with this patch set
+>> won't set ARCH_NO_SG_CHAIN.
 >
-> On Wed, Nov 14, 2018 at 03:13:11PM +0100, Christoph Hellwig wrote:
-> > Does the patch below make a difference for you?  Assigning an
-> > address to the S/G list is the only functional difference I could
-> > spot.  Drivers really should never look at the S/G list on an
-> > error return, but..
+> m68k has no iommu, and not operations that operate on a scatterlist.
 >
-> And that was obviously just the second half of the patch, so here
-> is the full one:
+> mips has a trivial iommu driver (jazzdma), but I wrote the current
+> instance of it, nad it is fine.
 >
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 5731daa09a32..a896f46d0c31 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -786,10 +786,13 @@ swiotlb_map_sg_attrs(struct device *dev, struct scatterlist *sgl, int nelems,
->         int i;
+> powerpc has various iommu, but actually enables ARCH_HAS_SG_CHAIN
+> unconditionally.
 >
->         for_each_sg(sgl, sg, nelems, i) {
-> -               sg->dma_address = swiotlb_map_page(dev, sg_page(sg), sg->offset,
-> +               dma_addr_t dma_addr;
-> +
-> +               dma_addr = swiotlb_map_page(dev, sg_page(sg), sg->offset,
->                                 sg->length, dir, attrs);
-> -               if (sg->dma_address == DIRECT_MAPPING_ERROR)
-> +               if (dma_addr == DIRECT_MAPPING_ERROR)
->                         goto out_error;
-> +               sg->dma_address = dma_addr;
->                 sg_dma_len(sg) = sg->length;
->         }
+>> The issue is that I'm not sure how to
+>> determine what constitutes a horrible legacy IOMMU, at least with respect
+>> to not being able to use scatterlist chaining.
+>
+> It basically means someone is iterating using manual pointer arithmetics
+> over a multi-element scatterlist instead of using the sg_next and
+> for_each_sg helpers.
 
-I know Robin has already replied with more detailed info, but just to
-close the loop as I'm finally home, applying this patch didn't seem to
-help with the IO hangs I'm seeing w/ HiKey960.
+Ah, OK.  In that case, feel free to drop a
 
-thanks
--john
+Reviewed-by: Palmer Dabbelt <palmer-SpMDHPYPyPbQT0dZR+AlfA@public.gmane.org>
+
+in there, if you think it helps any.
+
+Thanks for the help!
