@@ -1,78 +1,158 @@
-From: Ramon Fried <ramon.fried@gmail.com>
-Subject: Re: [PATCH 5/5] dma-direct: always allow dma mask <= physiscal memory size
-Date: Tue, 20 Nov 2018 09:38:36 +0200
-Message-ID: <CA+Kvs9=NFyrDNm1b2bMw+VKJ+Na0XuFqA2s+-pyd_avibdBhCw@mail.gmail.com>
-References: <20180927223539.28449-1-hch@lst.de> <20180927223539.28449-6-hch@lst.de>
- <CAKgT0Ucii29i7S8eCj20D=a+=DeyKxREG0U2DBNRp3jFpgLu_A@mail.gmail.com>
- <8402ecc9c8ed9c69ad3e91eca4d07a5ab077b22d.camel@kernel.crashing.org>
- <CA+Kvs9kPtTZavq91NXs-7edVO5Fxp8gPO=FD35i9_izAdGMkKw@mail.gmail.com> <bb76b9a1-dc3a-2357-a871-291d68703776@arm.com>
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+Subject: Re: [RFCv3 PATCH 1/6] uacce: Add documents for WarpDrive/uacce
+Date: Tue, 20 Nov 2018 09:16:50 +0000
+Message-ID: <20181120091650.0000419a@huawei.com>
+References: <20181112075807.9291-1-nek.in.cn@gmail.com>
+        <20181112075807.9291-2-nek.in.cn@gmail.com>
+        <20181113002354.GO3695@mtr-leonro.mtl.com>
+        <95310df4-b32c-42f0-c750-3ad5eb89b3dd@gmail.com>
+        <20181114160017.GI3759@mtr-leonro.mtl.com>
+        <20181115085109.GD157308@Turing-Arch-b>
+        <20181115145455.GN3759@mtr-leonro.mtl.com>
+        <20181119091405.GE157308@Turing-Arch-b>
+        <20181119184954.GB4890@ziepe.ca>
+        <20181120030702.GH157308@Turing-Arch-b>
+        <20181120032939.GR4890@ziepe.ca>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <bb76b9a1-dc3a-2357-a871-291d68703776@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: robin.murphy@arm.com
-Cc: benh@kernel.crashing.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, open list <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, hch@lst.de, linux@roeck-us.net
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <20181120032939.GR4890@ziepe.ca>
+Sender: netdev-owner@vger.kernel.org
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kenneth Lee <liguozhu@hisilicon.com>, Leon Romanovsky <leon@kernel.org>, Kenneth Lee <nek.in.cn@gmail.com>, Tim Sell <timothy.sell@unisys.com>, linux-doc@vger.kernel.org, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Zaibo Xu <xuzaibo@huawei.com>, zhangfei.gao@foxmail.com, linuxarm@huawei.com, haojian.zhuang@linaro.org, Christoph Lameter <cl@linux.com>, Hao Fang <fanghao11@huawei.com>, Gavin Schenk <g.schenk@eckelmann.de>, RDMA mailing list <linux-rdma@vger.kernel.org>, Zhou Wang <wangzhou1@hisilicon.com>, Doug Ledford <dledford@redhat.com>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>, David Kershner <david.kershner@unisys.com>, Johan Hovold <johan@kernel.org>, Cyrille Pitchen <cyrille.pitchen@>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 19, 2018 at 5:50 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 19/11/2018 14:18, Ramon Fried wrote:
-> > On Tue, Oct 9, 2018 at 8:02 AM Benjamin Herrenschmidt
-> > <benh@kernel.crashing.org> wrote:
-> >>
-> >> On Wed, 2018-10-03 at 16:10 -0700, Alexander Duyck wrote:
-> >>>> -        * Because 32-bit DMA masks are so common we expect every architecture
-> >>>> -        * to be able to satisfy them - either by not supporting more physical
-> >>>> -        * memory, or by providing a ZONE_DMA32.  If neither is the case, the
-> >>>> -        * architecture needs to use an IOMMU instead of the direct mapping.
-> >>>> -        */
-> >>>> -       if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
-> >>>> +       u64 min_mask;
-> >>>> +
-> >>>> +       if (IS_ENABLED(CONFIG_ZONE_DMA))
-> >>>> +               min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
-> >>>> +       else
-> >>>> +               min_mask = DMA_BIT_MASK(32);
-> >>>> +
-> >>>> +       min_mask = min_t(u64, min_mask, (max_pfn - 1) << PAGE_SHIFT);
-> >>>> +
-> >>>> +       if (mask >= phys_to_dma(dev, min_mask))
-> >>>>                   return 0;
-> >>>> -#endif
-> >>>>           return 1;
-> >>>>    }
-> >>>
-> >>> So I believe I have run into the same issue that Guenter reported. On
-> >>> an x86_64 system w/ Intel IOMMU. I wasn't able to complete boot and
-> >>> all probe attempts for various devices were failing with -EIO errors.
-> >>>
-> >>> I believe the last mask check should be "if (mask < phys_to_dma(dev,
-> >>> min_mask))" not a ">=" check.
-> >>
-> >> Right, that test is backwards. I needed to change it here too (powermac
-> >> with the rest of the powerpc series).
-> >>
-> >> Cheers,
-> >> Ben.
-> >>
-> >>
++CC Jean-Phillipe and iommu list.
+
+
+On Mon, 19 Nov 2018 20:29:39 -0700
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
+
+> On Tue, Nov 20, 2018 at 11:07:02AM +0800, Kenneth Lee wrote:
+> > On Mon, Nov 19, 2018 at 11:49:54AM -0700, Jason Gunthorpe wrote:  
+> > > Date: Mon, 19 Nov 2018 11:49:54 -0700
+> > > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > > To: Kenneth Lee <liguozhu@hisilicon.com>
+> > > CC: Leon Romanovsky <leon@kernel.org>, Kenneth Lee <nek.in.cn@gmail.com>,
+> > >  Tim Sell <timothy.sell@unisys.com>, linux-doc@vger.kernel.org, Alexander
+> > >  Shishkin <alexander.shishkin@linux.intel.com>, Zaibo Xu
+> > >  <xuzaibo@huawei.com>, zhangfei.gao@foxmail.com, linuxarm@huawei.com,
+> > >  haojian.zhuang@linaro.org, Christoph Lameter <cl@linux.com>, Hao Fang
+> > >  <fanghao11@huawei.com>, Gavin Schenk <g.schenk@eckelmann.de>, RDMA mailing
+> > >  list <linux-rdma@vger.kernel.org>, Zhou Wang <wangzhou1@hisilicon.com>,
+> > >  Doug Ledford <dledford@redhat.com>, Uwe Kleine-König
+> > >  <u.kleine-koenig@pengutronix.de>, David Kershner
+> > >  <david.kershner@unisys.com>, Johan Hovold <johan@kernel.org>, Cyrille
+> > >  Pitchen <cyrille.pitchen@free-electrons.com>, Sagar Dharia
+> > >  <sdharia@codeaurora.org>, Jens Axboe <axboe@kernel.dk>,
+> > >  guodong.xu@linaro.org, linux-netdev <netdev@vger.kernel.org>, Randy Dunlap
+> > >  <rdunlap@infradead.org>, linux-kernel@vger.kernel.org, Vinod Koul
+> > >  <vkoul@kernel.org>, linux-crypto@vger.kernel.org, Philippe Ombredanne
+> > >  <pombredanne@nexb.com>, Sanyog Kale <sanyog.r.kale@intel.com>, "David S.
+> > >  Miller" <davem@davemloft.net>, linux-accelerators@lists.ozlabs.org
+> > > Subject: Re: [RFCv3 PATCH 1/6] uacce: Add documents for WarpDrive/uacce
+> > > User-Agent: Mutt/1.9.4 (2018-02-28)
+> > > Message-ID: <20181119184954.GB4890@ziepe.ca>
+> > > 
+> > > On Mon, Nov 19, 2018 at 05:14:05PM +0800, Kenneth Lee wrote:
+> > >    
+> > > > If the hardware cannot share page table with the CPU, we then need to have
+> > > > some way to change the device page table. This is what happen in ODP. It
+> > > > invalidates the page table in device upon mmu_notifier call back. But this cannot
+> > > > solve the COW problem: if the user process A share a page P with device, and A 
+> > > > forks a new process B, and it continue to write to the page. By COW, the
+> > > > process B will keep the page P, while A will get a new page P'. But you have
+> > > > no way to let the device know it should use P' rather than P.  
+> > > 
+> > > Is this true? I thought mmu_notifiers covered all these cases.
+> > > 
+> > > The mm_notifier for A should fire if B causes the physical address of
+> > > A's pages to change via COW. 
+> > > 
+> > > And this causes the device page tables to re-synchronize.  
+> > 
+> > I don't see such code. The current do_cow_fault() implemenation has nothing to
+> > do with mm_notifer.  
+> 
+> Well, that sure sounds like it would be a bug in mmu_notifiers..
+> 
+> But considering Jean's SVA stuff seems based on mmu notifiers, I have
+> a hard time believing that it has any different behavior from RDMA's
+> ODP, and if it does have different behavior, then it is probably just
+> a bug in the ODP implementation.
+> 
+> > > > In WarpDrive/uacce, we make this simple. If you support IOMMU and it support
+> > > > SVM/SVA. Everything will be fine just like ODP implicit mode. And you don't need
+> > > > to write any code for that. Because it has been done by IOMMU framework. If it  
+> > > 
+> > > Looks like the IOMMU code uses mmu_notifier, so it is identical to
+> > > IB's ODP. The only difference is that IB tends to have the IOMMU page
+> > > table in the device, not in the CPU.
+> > > 
+> > > The only case I know if that is different is the new-fangled CAPI
+> > > stuff where the IOMMU can directly use the CPU's page table and the
+> > > IOMMU page table (in device or CPU) is eliminated.  
 > >
-> > Hi, I'm working on a MIPS64 soc with PCIe root complex on it, and it
-> > appears that this series of patches are causing all PCI drivers that
-> > request 64bit mask to fail with -5.
-> > It's broken in 4.19. However, I just checked, it working on master.
-> > We may need to backport a couple of patches to 4.19. I'm not sure
-> > though which patches should be backported as there were at least 10
-> > patches resolving this dma_direct area recently.
-> > Christoph, Robin.
-> > Can we ask Greg to backport all these changes ? What do you think ?
->
-> As far as I'm aware, the only real issue in 4.19 was my subtle breakage
-> around setting bus_dma_mask - that's fixed by 6778be4e5209, which
-> according to my inbox got picked up by autosel for 4.19 stable last week.
->
-> Robin.
-Yep, 6778be4e5209 fixes the issue.
-Thanks a lot !
-Ramon.
+> > Yes. We are not focusing on the current implementation. As mentioned in the
+> > cover letter. We are expecting Jean Philips' SVA patch:
+> > git://linux-arm.org/linux-jpb.  
+> 
+> This SVA stuff does not look comparable to CAPI as it still requires
+> maintaining seperate IOMMU page tables.
+> 
+> Also, those patches from Jean have a lot of references to
+> mmu_notifiers (ie look at iommu_mmu_notifier).
+> 
+> Are you really sure it is actually any different at all?
+> 
+> > > Anyhow, I don't think a single instance of hardware should justify an
+> > > entire new subsystem. Subsystems are hard to make and without multiple
+> > > hardware examples there is no way to expect that it would cover any
+> > > future use cases.  
+> > 
+> > Yes. That's our first expectation. We can keep it with our driver. But because
+> > there is no user driver support for any accelerator in mainline kernel. Even the
+> > well known QuickAssit has to be maintained out of tree. So we try to see if
+> > people is interested in working together to solve the problem.  
+> 
+> Well, you should come with patches ack'ed by these other groups.
+> 
+> > > If all your driver needs is to mmap some PCI bar space, route
+> > > interrupts and do DMA mapping then mediated VFIO is probably a good
+> > > choice.   
+> > 
+> > Yes. That is what is done in our RFCv1/v2. But we accepted Jerome's opinion and
+> > try not to add complexity to the mm subsystem.  
+> 
+> Why would a mediated VFIO driver touch the mm subsystem? Sounds like
+> you don't have a VFIO driver if it needs to do stuff like that...
+> 
+> > > If it needs to do a bunch of other stuff, not related to PCI bar
+> > > space, interrupts and DMA mapping (ie special code for compression,
+> > > crypto, AI, whatever) then you should probably do what Jerome said and
+> > > make a drivers/char/hisillicon_foo_bar.c that exposes just what your
+> > > hardware does.  
+> > 
+> > Yes. If no other accelerator driver writer is interested. That is the
+> > expectation:)  
+> 
+> I don't think it matters what other drivers do. 
+> 
+> If your driver does not need any other kernel code then VFIO is
+> sensible. In this kind of world you will probably have a RDMA-like
+> userspace driver that can bring this to a common user space API, even
+> if one driver use VFIO and a different driver uses something else.
+> 
+> > You create some connections (queues) to NIC, RSA, and AI engine. Then you got
+> > data direct from the NIC and pass the pointer to RSA engine for decryption. The
+> > CPU then finish some data taking or operation and then pass through to the AI
+> > engine for CNN calculation....This will need a place to maintain the same
+> > address space by some means.  
+> 
+> How is this any different from what we have today? 
+> 
+> SVA is not something even remotely new, IB has been doing various
+> versions of it for 20 years.
+> 
+> Jason
