@@ -1,25 +1,81 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 0/2] SWIOTLB fixes for 4.20
-Date: Tue, 20 Nov 2018 17:08:18 +0100
-Message-ID: <20181120160818.GC2492@lst.de>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] swiotlb: Make DIRECT_MAPPING_ERROR viable
+Date: Tue, 20 Nov 2018 11:34:16 -0500
+Message-ID: <20181120163416.GC31199@char.us.oracle.com>
 References: <cover.1542722463.git.robin.murphy@arm.com>
+	<e90da5fbab881c502ac3412fb05c44b26c99f73a.1542722463.git.robin.murphy@arm.com>
+	<20181120144918.GH10917@char.us.oracle.com>
+	<7ea5809e-1e1d-6bac-b723-9f55fafeaaae@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <cover.1542722463.git.robin.murphy@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, konrad.wilk@oracle.com, m.szyprowski@samsung.com, john.stultz@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+In-Reply-To: <7ea5809e-1e1d-6bac-b723-9f55fafeaaae-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 20, 2018 at 02:09:51PM +0000, Robin Murphy wrote:
-> This is what I have so far, which at least resolves the most ovbious
-> problems. I still haven't got very far with the USB corruption issue
-> I see on Juno with -rc1, but I'm yet to confirm whether that's actually
-> attributable to the SWIOTLB changes or something else entirely.
+On Tue, Nov 20, 2018 at 03:01:33PM +0000, Robin Murphy wrote:
+> On 20/11/2018 14:49, Konrad Rzeszutek Wilk wrote:
+> > On Tue, Nov 20, 2018 at 02:09:52PM +0000, Robin Murphy wrote:
+> > > With the overflow buffer removed, we no longer have a unique address
+> > > which is guaranteed not to be a valid DMA target to use as an error
+> > > token. The DIRECT_MAPPING_ERROR value of 0 tries to at least represent
+> > > an unlikely DMA target, but unfortunately there are already SWIOTLB
+> > > users with DMA-able memory at physical address 0 which now gets falsely
+> > > treated as a mapping failure and leads to all manner of misbehaviour.
+> > > 
+> > > The best we can do to mitigate that is flip DIRECT_MAPPING_ERROR to the
+> > > commonly-used all-bits-set value, since the last single byte of memory
+> > > is by far the least-likely-valid DMA target.
+> > 
+> > Are all the callers checking for DIRECT_MAPPING_ERROR or is it more of
+> > a comparison (as in if (!ret)) ?
+> 
+> dma_direct_map_page() and dma_direct_mapping_error() were already doing the
+> right thing, and external callers must rely on the latter via
+> dma_mapping_error() rather than trying to inspect the actual value
+> themselves, since that varies between implementations anyway. AFAICS all the
+> new return paths from swiotlb_map_page() are also robust in referencing the
+> macro explicitly, so I think we're good.
 
-This looks good modulo the minor nitpicks.
+Cool! Thank you for checking.
 
-Konrad, are you ok with me picking up both through the dma-mapping
-tree?
+Acked-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+
+Thank you!
+> 
+> Thanks,
+> Robin.
+> 
+> > > Fixes: dff8d6c1ed58 ("swiotlb: remove the overflow buffer")]
+> > > Reported-by: John Stultz <john.stultz-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> > > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > > ---
+> > >   include/linux/dma-direct.h | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> > > index bd73e7a91410..9de9c7ab39d6 100644
+> > > --- a/include/linux/dma-direct.h
+> > > +++ b/include/linux/dma-direct.h
+> > > @@ -5,7 +5,7 @@
+> > >   #include <linux/dma-mapping.h>
+> > >   #include <linux/mem_encrypt.h>
+> > > -#define DIRECT_MAPPING_ERROR		0
+> > > +#define DIRECT_MAPPING_ERROR		~(dma_addr_t)0
+> > >   #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
+> > >   #include <asm/dma-direct.h>
+> > > -- 
+> > > 2.19.1.dirty
+> > > 
