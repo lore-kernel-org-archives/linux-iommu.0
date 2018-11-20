@@ -1,42 +1,40 @@
-From: John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH 0/2] SWIOTLB fixes for 4.20
-Date: Tue, 20 Nov 2018 11:24:18 -0800
-Message-ID: <CALAqxLX5GPwce=oWh5nf2w8pjoCJUVkxCr7_hrqVVfYVHzx-fw@mail.gmail.com>
-References: <cover.1542722463.git.robin.murphy@arm.com>
+From: Kirti Wankhede <kwankhede@nvidia.com>
+Subject: Re: [PATCH v4 6/8] vfio/mdev: Add iommu place holders in mdev_device
+Date: Wed, 21 Nov 2018 02:22:08 +0530
+Message-ID: <339ab9c8-08e1-ce2f-6f71-99a06e4b82f3@nvidia.com>
+References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+ <20181105073408.21815-7-baolu.lu@linux.intel.com>
+ <20181106165356.44b59ec3@w520.home>
+ <edadb198-e4ab-ac23-4520-28bfcac252c3@linux.intel.com>
+ <7bfc2f2b-10e6-b53c-51f3-c6494b686aa3@nvidia.com>
+ <25b9a20f-06b5-57ac-81f1-fd933845c77f@linux.intel.com>
+ <20181116085714.GA13181@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1542722463.git.robin.murphy@arm.com>
+In-Reply-To: <20181116085714.GA13181@infradead.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, lkml <linux-kernel@vger.kernel.org>
+To: Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 20, 2018 at 6:10 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> This is what I have so far, which at least resolves the most ovbious
-> problems. I still haven't got very far with the USB corruption issue
-> I see on Juno with -rc1, but I'm yet to confirm whether that's actually
-> attributable to the SWIOTLB changes or something else entirely.
->
-> Robin.
->
-> Robin Murphy (2):
->   swiotlb: Make DIRECT_MAPPING_ERROR viable
->   swiotlb: Skip cache maintenance on map error
->
->  include/linux/dma-direct.h | 2 +-
->  kernel/dma/swiotlb.c       | 3 ++-
->  2 files changed, 3 insertions(+), 2 deletions(-)
 
-Thanks so much for chasing this down!
 
-Unfortunately AOSP is giving me grief this week, so I've not been able
-to test the full environment, but I don't seem to be hitting the io
-hangs I was seeing earlier with this patch set.
+On 11/16/2018 2:27 PM, Christoph Hellwig wrote:
+> On Fri, Nov 16, 2018 at 09:20:48AM +0800, Lu Baolu wrote:
+>>> Please keep symbols mdev_set/get_iommu_device(dev, iommu_device) non-GPL
+>>> same as other exported symbols from mdev_core module.
+>>
+>> Yes. It will be fixed in the next version.
+> 
+> No.  mdev shall not be used to circumvent the exports in the generic
+> vfio code.
+> 
 
-For both:
-  Tested-by: John Stultz <john.stultz@linaro.org>
+It is about how mdev framework can be used by existing drivers. These
+symbols doesn't use any other exported symbols.
 
-thanks
--john
+Thanks,
+Kirti
