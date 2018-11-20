@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 2/2] swiotlb: Skip cache maintenance on map error
-Date: Tue, 20 Nov 2018 14:09:53 +0000
-Message-ID: <a77c838eb070fb46c51802aa22c28bd8e1f9741c.1542722463.git.robin.murphy@arm.com>
+Subject: [PATCH 1/2] swiotlb: Make DIRECT_MAPPING_ERROR viable
+Date: Tue, 20 Nov 2018 14:09:52 +0000
+Message-ID: <e90da5fbab881c502ac3412fb05c44b26c99f73a.1542722463.git.robin.murphy@arm.com>
 References: <cover.1542722463.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,32 +12,36 @@ To: hch@lst.de, konrad.wilk@oracle.com
 Cc: m.szyprowski@samsung.com, john.stultz@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-If swiotlb_bounce_page() failed, calling arch_sync_dma_for_device() may
-lead to such delights as performing cache maintenance on whatever
-address phys_to_virt(SWIOTLB_MAP_ERROR) looks like, which is typically
-outside the kernel memory map and goes about as well as expected.
+With the overflow buffer removed, we no longer have a unique address
+which is guaranteed not to be a valid DMA target to use as an error
+token. The DIRECT_MAPPING_ERROR value of 0 tries to at least represent
+an unlikely DMA target, but unfortunately there are already SWIOTLB
+users with DMA-able memory at physical address 0 which now gets falsely
+treated as a mapping failure and leads to all manner of misbehaviour.
 
-Don't do that.
+The best we can do to mitigate that is flip DIRECT_MAPPING_ERROR to the
+commonly-used all-bits-set value, since the last single byte of memory
+is by far the least-likely-valid DMA target.
 
-Fixes: a4a4330db46a ("swiotlb: add support for non-coherent DMA")
+Fixes: dff8d6c1ed58 ("swiotlb: remove the overflow buffer")]
+Reported-by: John Stultz <john.stultz@linaro.org>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- kernel/dma/swiotlb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/dma-direct.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 5731daa09a32..045930e32c0e 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -679,7 +679,8 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
- 	}
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index bd73e7a91410..9de9c7ab39d6 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -5,7 +5,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/mem_encrypt.h>
  
- 	if (!dev_is_dma_coherent(dev) &&
--	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-+	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0 &&
-+	    dev_addr != DIRECT_MAPPING_ERROR)
- 		arch_sync_dma_for_device(dev, phys, size, dir);
+-#define DIRECT_MAPPING_ERROR		0
++#define DIRECT_MAPPING_ERROR		~(dma_addr_t)0
  
- 	return dev_addr;
+ #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
+ #include <asm/dma-direct.h>
 -- 
 2.19.1.dirty
