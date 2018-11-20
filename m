@@ -1,61 +1,78 @@
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-Subject: Re: [PATCH RFC] dma-direct: do not allocate a single page from CMA
- area
-Date: Mon, 19 Nov 2018 18:39:08 -0800
-Message-ID: <20181120023907.GA27021@Asurada-Nvidia.nvidia.com>
-References: <20181031200355.19945-1-nicoleotsuka@gmail.com>
- <13d60076-33ad-b542-4d17-4d717d5aa4d3@arm.com>
- <20181102063542.GA17073@lst.de>
- <20181105224050.GA10411@Asurada-Nvidia.nvidia.com>
+From: Ramon Fried <ramon.fried@gmail.com>
+Subject: Re: [PATCH 5/5] dma-direct: always allow dma mask <= physiscal memory size
+Date: Tue, 20 Nov 2018 09:38:36 +0200
+Message-ID: <CA+Kvs9=NFyrDNm1b2bMw+VKJ+Na0XuFqA2s+-pyd_avibdBhCw@mail.gmail.com>
+References: <20180927223539.28449-1-hch@lst.de> <20180927223539.28449-6-hch@lst.de>
+ <CAKgT0Ucii29i7S8eCj20D=a+=DeyKxREG0U2DBNRp3jFpgLu_A@mail.gmail.com>
+ <8402ecc9c8ed9c69ad3e91eca4d07a5ab077b22d.camel@kernel.crashing.org>
+ <CA+Kvs9kPtTZavq91NXs-7edVO5Fxp8gPO=FD35i9_izAdGMkKw@mail.gmail.com> <bb76b9a1-dc3a-2357-a871-291d68703776@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181105224050.GA10411@Asurada-Nvidia.nvidia.com>
+In-Reply-To: <bb76b9a1-dc3a-2357-a871-291d68703776@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, vdumpa@nvidia.com
+To: robin.murphy@arm.com
+Cc: benh@kernel.crashing.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org, open list <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, hch@lst.de, linux@roeck-us.net
 List-Id: iommu@lists.linux-foundation.org
 
-Robin? Christ?
-
-On Mon, Nov 05, 2018 at 02:40:50PM -0800, Nicolin Chen wrote:
-> On Fri, Nov 02, 2018 at 07:35:42AM +0100, Christoph Hellwig wrote:
-> > On Thu, Nov 01, 2018 at 02:07:55PM +0000, Robin Murphy wrote:
-> > > On 31/10/2018 20:03, Nicolin Chen wrote:
-> > >> The addresses within a single page are always contiguous, so it's
-> > >> not so necessary to allocate one single page from CMA area. Since
-> > >> the CMA area has a limited predefined size of space, it might run
-> > >> out of space in some heavy use case, where there might be quite a
-> > >> lot CMA pages being allocated for single pages.
-> > >>
-> > >> This patch tries to skip CMA allocations of single pages and lets
-> > >> them go through normal page allocations. This would save resource
-> > >> in the CMA area for further more CMA allocations.
-> > >
-> > > In general, this seems to make sense to me. It does represent a theoretical 
-> > > change in behaviour for devices which have their own CMA area somewhere 
-> > > other than kernel memory, and only ever make non-atomic allocations, but 
-> > > I'm not sure whether that's a realistic or common enough case to really 
-> > > worry about.
-> > 
-> > Yes, I think we should make the decision in dma_alloc_from_contiguous
-> > based on having a per-dev CMA area or not.  There is a lot of cruft in
-> 
-> It seems that cma_alloc() already has a CMA area check? Would it
-> be duplicated to have a similar one in dma_alloc_from_contiguous?
-> 
-> > this area that should be cleaned up while we're at it, like always
-> > falling back to the normal page allocator if there is no CMA area or
-> > nothing suitable found in dma_alloc_from_contiguous instead of
-> > having to duplicate all that in the caller.
-> 
-> Am I supposed to clean up things that's mentioned above by moving
-> the fallback allocator into dma_alloc_from_contiguous, or to just
-> move my change (the count check) into dma_alloc_from_contiguous?
-> 
-> I understand that'd be great to have a cleanup, yet feel it could
-> be done separately as this patch isn't really a cleanup change.
-> 
-> Thanks
-> Nicolin
+On Mon, Nov 19, 2018 at 5:50 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 19/11/2018 14:18, Ramon Fried wrote:
+> > On Tue, Oct 9, 2018 at 8:02 AM Benjamin Herrenschmidt
+> > <benh@kernel.crashing.org> wrote:
+> >>
+> >> On Wed, 2018-10-03 at 16:10 -0700, Alexander Duyck wrote:
+> >>>> -        * Because 32-bit DMA masks are so common we expect every architecture
+> >>>> -        * to be able to satisfy them - either by not supporting more physical
+> >>>> -        * memory, or by providing a ZONE_DMA32.  If neither is the case, the
+> >>>> -        * architecture needs to use an IOMMU instead of the direct mapping.
+> >>>> -        */
+> >>>> -       if (mask < phys_to_dma(dev, DMA_BIT_MASK(32)))
+> >>>> +       u64 min_mask;
+> >>>> +
+> >>>> +       if (IS_ENABLED(CONFIG_ZONE_DMA))
+> >>>> +               min_mask = DMA_BIT_MASK(ARCH_ZONE_DMA_BITS);
+> >>>> +       else
+> >>>> +               min_mask = DMA_BIT_MASK(32);
+> >>>> +
+> >>>> +       min_mask = min_t(u64, min_mask, (max_pfn - 1) << PAGE_SHIFT);
+> >>>> +
+> >>>> +       if (mask >= phys_to_dma(dev, min_mask))
+> >>>>                   return 0;
+> >>>> -#endif
+> >>>>           return 1;
+> >>>>    }
+> >>>
+> >>> So I believe I have run into the same issue that Guenter reported. On
+> >>> an x86_64 system w/ Intel IOMMU. I wasn't able to complete boot and
+> >>> all probe attempts for various devices were failing with -EIO errors.
+> >>>
+> >>> I believe the last mask check should be "if (mask < phys_to_dma(dev,
+> >>> min_mask))" not a ">=" check.
+> >>
+> >> Right, that test is backwards. I needed to change it here too (powermac
+> >> with the rest of the powerpc series).
+> >>
+> >> Cheers,
+> >> Ben.
+> >>
+> >>
+> >
+> > Hi, I'm working on a MIPS64 soc with PCIe root complex on it, and it
+> > appears that this series of patches are causing all PCI drivers that
+> > request 64bit mask to fail with -5.
+> > It's broken in 4.19. However, I just checked, it working on master.
+> > We may need to backport a couple of patches to 4.19. I'm not sure
+> > though which patches should be backported as there were at least 10
+> > patches resolving this dma_direct area recently.
+> > Christoph, Robin.
+> > Can we ask Greg to backport all these changes ? What do you think ?
+>
+> As far as I'm aware, the only real issue in 4.19 was my subtle breakage
+> around setting bus_dma_mask - that's fixed by 6778be4e5209, which
+> according to my inbox got picked up by autosel for 4.19 stable last week.
+>
+> Robin.
+Yep, 6778be4e5209 fixes the issue.
+Thanks a lot !
+Ramon.
