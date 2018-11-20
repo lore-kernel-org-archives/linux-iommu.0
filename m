@@ -1,77 +1,105 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFCv3 PATCH 1/6] uacce: Add documents for WarpDrive/uacce
-Date: Tue, 20 Nov 2018 12:19:07 +0000
-Message-ID: <8872e7d1-2cfd-36a8-d0a7-131cd8516ba3@arm.com>
-References: <20181112075807.9291-1-nek.in.cn@gmail.com>
- <20181112075807.9291-2-nek.in.cn@gmail.com>
- <20181113002354.GO3695@mtr-leonro.mtl.com>
- <95310df4-b32c-42f0-c750-3ad5eb89b3dd@gmail.com>
- <20181114160017.GI3759@mtr-leonro.mtl.com>
- <20181115085109.GD157308@Turing-Arch-b>
- <20181115145455.GN3759@mtr-leonro.mtl.com>
- <20181119091405.GE157308@Turing-Arch-b> <20181119184954.GB4890@ziepe.ca>
- <20181120030702.GH157308@Turing-Arch-b> <20181120032939.GR4890@ziepe.ca>
- <20181120091650.0000419a@huawei.com>
+From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2] iommu/dma: Use NUMA aware memory allocations in
+	__iommu_dma_alloc_pages()
+Date: Tue, 20 Nov 2018 21:42:00 +0800
+Message-ID: <1542721320-233109-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <20181120091650.0000419a@huawei.com>
-Content-Language: en-US
-Sender: netdev-owner@vger.kernel.org
-To: Jonathan Cameron <jonathan.cameron@huawei.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "liguozhu@hisilicon.com" <liguozhu@hisilicon.com>, Leon Romanovsky <leon@kernel.org>, Kenneth Lee <nek.in.cn@gmail.com>, Tim Sell <timothy.sell@unisys.com>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Alexander Shishkin <alexander.shishkin@linux.intel.com>, Zaibo Xu <xuzaibo@huawei.com>, "zhangfei.gao@foxmail.com" <zhangfei.gao@foxmail.com>, "linuxarm@huawei.com" <linuxarm@huawei.com>, "haojian.zhuang@linaro.org" <haojian.zhuang@linaro.org>, Christoph Lameter <cl@linux.com>, Hao Fang <fanghao11@huawei.com>, Gavin Schenk <g.schenk@eckelmann.de>, RDMA mailing list <linux-rdma@vger.kernel.org>, Zhou Wang <wangzhou1@hisilicon.com>, Doug Ledford <dledford@redhat.com>, =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>, David
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/11/2018 09:16, Jonathan Cameron wrote:
-> +CC Jean-Phillipe and iommu list.
+From: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Thanks for the Cc, sorry I don't have enough bandwidth to follow this
-thread at the moment.
+Change function __iommu_dma_alloc_pages() to allocate memory/pages
+for DMA from respective device NUMA node.
 
->>>>> In WarpDrive/uacce, we make this simple. If you support IOMMU and it support
->>>>> SVM/SVA. Everything will be fine just like ODP implicit mode. And you don't need
->>>>> to write any code for that. Because it has been done by IOMMU framework. If it  
->>>>
->>>> Looks like the IOMMU code uses mmu_notifier, so it is identical to
->>>> IB's ODP. The only difference is that IB tends to have the IOMMU page
->>>> table in the device, not in the CPU.
->>>>
->>>> The only case I know if that is different is the new-fangled CAPI
->>>> stuff where the IOMMU can directly use the CPU's page table and the
->>>> IOMMU page table (in device or CPU) is eliminated.  
->>>
->>> Yes. We are not focusing on the current implementation. As mentioned in the
->>> cover letter. We are expecting Jean Philips' SVA patch:
->>> git://linux-arm.org/linux-jpb.  
->>
->> This SVA stuff does not look comparable to CAPI as it still requires
->> maintaining seperate IOMMU page tables.
+Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+[JPG:  Modifed to use kvzalloc() and fixed indentation]
+Signed-off-by: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+Difference v1->v2:
+- Add Ganapatrao's tag and change author
 
-With SVA, we use the same page tables in the IOMMU and CPU. It's the
-same pgd pointer, there is no mirroring of mappings. We bind the process
-page tables with the device using a PASID (Process Address Space ID).
+This patch was originally posted by Ganapatrao in [1].
 
-After fork(), the child's mm is different from the parent's one, and is
-not automatically bound to the device. The device driver will have to
-issue a new bind() request, and the child mm will be bound with a
-different PASID.
+However, after initial review, it was never reposted (due to lack of
+cycles, I think). In addition, the functionality in its sibling patches
+were merged through patches, as mentioned in [2]; this also refers to a
+discussion on device local allocations vs CPU local allocations for DMA
+pool, and which is better [3].
 
-There could be a problem if the child inherits the parent's device
-handle. Then depending on the device, the child could be able to program
-DMA and possibly access the parent's address space. The parent needs to
-be aware of that when using the bind() API, and close the device fd in
-the child after fork().
+However, as mentioned in [3], dma_alloc_coherent() uses the locality
+information from the device - as in direct DMA - so this patch is just
+applying this same policy.
 
-We use MMU notifiers for some address space changes:
+[1] https://lore.kernel.org/patchwork/patch/833004/
+[2] https://lkml.org/lkml/2018/8/22/391
+[3] https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1692998.html
 
-* The IOTLB needs to be invalidated after any unmap() to the process
-address space. On Arm systems the SMMU IOTLBs can be invalidated by the
-CPU TLBI instructions, but we still need to invalidate TLBs private to
-devices that are arch-agnostic (Address Translation Cache in PCI ATS).
 
-* When the process mm exits, we need to remove the associated PASID
-configuration in the IOMMU and invalidate the TLBs.
-
-Thanks,
-Jean
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d1b0475..ada00bc 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -449,20 +449,17 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
+ 	kvfree(pages);
+ }
+ 
+-static struct page **__iommu_dma_alloc_pages(unsigned int count,
+-		unsigned long order_mask, gfp_t gfp)
++static struct page **__iommu_dma_alloc_pages(struct device *dev,
++		unsigned int count, unsigned long order_mask, gfp_t gfp)
+ {
+ 	struct page **pages;
+-	unsigned int i = 0, array_size = count * sizeof(*pages);
++	unsigned int i = 0, nid = dev_to_node(dev);
+ 
+ 	order_mask &= (2U << MAX_ORDER) - 1;
+ 	if (!order_mask)
+ 		return NULL;
+ 
+-	if (array_size <= PAGE_SIZE)
+-		pages = kzalloc(array_size, GFP_KERNEL);
+-	else
+-		pages = vzalloc(array_size);
++	pages = kvzalloc_node(count * sizeof(*pages), GFP_KERNEL, nid);
+ 	if (!pages)
+ 		return NULL;
+ 
+@@ -483,8 +480,10 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
+ 			unsigned int order = __fls(order_mask);
+ 
+ 			order_size = 1U << order;
+-			page = alloc_pages((order_mask - order_size) ?
+-					   gfp | __GFP_NORETRY : gfp, order);
++			page = alloc_pages_node(nid,
++						(order_mask - order_size) ?
++						gfp | __GFP_NORETRY : gfp,
++						order);
+ 			if (!page)
+ 				continue;
+ 			if (!order)
+@@ -569,7 +568,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+ 		alloc_sizes = min_size;
+ 
+ 	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
++	pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
++					gfp);
+ 	if (!pages)
+ 		return NULL;
+ 
+-- 
+1.9.1
