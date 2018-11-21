@@ -1,43 +1,121 @@
-From: William Kucharski <william.kucharski-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
-Date: Wed, 21 Nov 2018 04:19:11 -0700
-Message-ID: <833B5050-DEF6-44A0-9832-276F86671212@oracle.com>
-References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
- <20181116182836.GB17088@rapoport-lnx>
- <CAFqt6zYp0j999WXw9Jus0oZMjADQQkPfso8btv6du6L9CE3PXA@mail.gmail.com>
- <20181117143742.GB7861@bombadil.infradead.org>
- <CAFqt6zbOWX5LUTWwoGDJsGdf+pTR6N1yTPVxyr1W3-6Fte39ww@mail.gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
-Content-Type: text/plain; charset="us-ascii"
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: Re: [PATCH v4 5/7] iommu: Add virtio-iommu driver
+Date: Wed, 21 Nov 2018 13:21:57 +0100
+Message-ID: <09b4aef3-16e8-e846-9f73-be9c5a4bd805@redhat.com>
+References: <20181115165234.43990-1-jean-philippe.brucker@arm.com>
+ <20181115165234.43990-6-jean-philippe.brucker@arm.com>
+ <64abfb83-c555-c518-1030-cb73846517fc@redhat.com>
+ <41460260-417b-762f-f007-ccfd5ac1e8a5@arm.com>
+ <6d003fde-9574-0ff9-0bf8-7901d1a4aa5c@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <CAFqt6zbOWX5LUTWwoGDJsGdf+pTR6N1yTPVxyr1W3-6Fte39ww-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen
+Return-path: <virtio-dev-return-5002-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <6d003fde-9574-0ff9-0bf8-7901d1a4aa5c@arm.com>
+Content-Language: en-US
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>
+Cc: Mark Rutland <Mark.Rutland@arm.com>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murphy@arm.com>, Will Deacon <Will.Deacon@arm.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
 List-Id: iommu@lists.linux-foundation.org
 
-Could you add a line to the description explicitly stating that a failure
-to insert any page in the range will fail the entire routine, something
-like:
+Hi jean,
 
-> * This allows drivers to insert range of kernel pages they've allocated
-> * into a user vma. This is a generic function which drivers can use
-> * rather than using their own way of mapping range of kernel pages into
-> * user vma.
-> *
-> * A failure to insert any page in the range will fail the call as a whole.
+On 11/20/18 6:30 PM, Jean-Philippe Brucker wrote:
+> On 16/11/2018 18:46, Jean-Philippe Brucker wrote:
+>>>> +/*
+>>>> + * __viommu_sync_req - Complete all in-flight requests
+>>>> + *
+>>>> + * Wait for all added requests to complete. When this function returns, all
+>>>> + * requests that were in-flight at the time of the call have completed.
+>>>> + */
+>>>> +static int __viommu_sync_req(struct viommu_dev *viommu)
+>>>> +{
+>>>> +	int ret = 0;
+>>>> +	unsigned int len;
+>>>> +	size_t write_len;
+>>>> +	struct viommu_request *req;
+>>>> +	struct virtqueue *vq = viommu->vqs[VIOMMU_REQUEST_VQ];
+>>>> +
+>>>> +	assert_spin_locked(&viommu->request_lock);
+>>>> +
+>>>> +	virtqueue_kick(vq);
+>>>> +
+>>>> +	while (!list_empty(&viommu->requests)) {
+>>>> +		len = 0;
+>>>> +		req = virtqueue_get_buf(vq, &len);
+>>>> +		if (!req)
+>>>> +			continue;
+>>>> +
+>>>> +		if (!len)
+>>>> +			viommu_set_req_status(req->buf, req->len,
+>>>> +					      VIRTIO_IOMMU_S_IOERR);
+>>>> +
+>>>> +		write_len = req->len - req->write_offset;
+>>>> +		if (req->writeback && len >= write_len)
+>>> I don't get "len >= write_len". Is it valid for the device to write more
+>>> than write_len? If it writes less than write_len, the status is not set,
+>>> is it?
+> 
+> Actually, len could well be three bytes smaller than write_len. The spec
+> doesn't require the device to write the three padding bytes in
+> virtio_iommu_req_tail, after the status byte.
+> 
+> Here the driver just assumes that the device wrote the reserved field.
+> The QEMU device seems to write uninitialized data in there...
 
-It's obvious when reading the code, but it would be self-documenting to
-state it outright.
+Indeed that's incorrect and I should fix it. tail struct should be
+properly initialized to 0. Only probe request implementation is correct.
+> 
+> Any objection to changing the spec to require the device to initialize
+> those bytes to zero? I think it makes things nicer overall and shouldn't
+> have any performance impact.
+No objection from me.
+> 
+> [...]
+>>>> +static struct iommu_domain *viommu_domain_alloc(unsigned type)
+>>>> +{
+>>>> +	struct viommu_domain *vdomain;
+>>>> +
+>>>> +	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+>>> smmu drivers also support the IDENTITY type. Don't we want to support it
+>>> as well?
+>>
+>> Eventually yes. The IDENTITY domain is useful when an IOMMU has been
+>> forced upon you and gets in the way of performance, in which case you
+>> get rid of it with CONFIG_IOMMU_DEFAULT_PASSTHROUGH=y or
+>> iommu.passthrough=y. For virtio-iommu though, you could simply not
+>> instantiate the device.
+>>
+>> I don't think it's difficult to add: if the device supports
+>> VIRTIO_IOMMU_F_BYPASS, then we simply don't send an ATTACH request.
+>> Otherwise after ATTACH we send a MAP for the whole input range. If the
+>> change isn't bigger than this, I'll add it to v5.
+> 
+> Not as straightforward as I hoped, when the device doesn't support
+> VIRTIO_IOMMU_F_BYPASS:
+> 
+> * We can't simply create an ID map for the whole input range, we need to
+> carve out the resv_mem regions.
+> 
+> * For a VFIO device, the host has no way of forwarding the identity
+> mapping. For example the guest will attempt to map [0; 0xffffffffffff]
+> -> [0; 0xffffffffffff], but VFIO only allows to map RAM and cannot take
+> such request. One solution is to only create ID mapping for RAM, and
+> register a notifier for memory hotplug, like intel-iommu does for IOMMUs
+> that don't support HW pass-through.
+> 
+> Since it's not completely trivial and - I think - not urgent, I'll leave
+> this for later.
+OK makes sense to me too. It was just a head up.
 
-Thanks!
-    -- Bill
+Thanks
+
+Eric
+> 
+> Thanks,
+> Jean
+> 
