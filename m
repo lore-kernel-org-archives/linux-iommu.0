@@ -1,46 +1,37 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH v4 0/2] Enable smmu support on sdm845
-Date: Wed, 21 Nov 2018 21:36:36 +0530
-Message-ID: <af01e45b-b35c-925c-e1b8-9847482adca5@codeaurora.org>
-References: <20181011094930.17010-1-vivek.gautam@codeaurora.org>
- <20181121155249.GA24883@arm.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v3] iommu/dma: Use NUMA aware memory allocations in
+ __iommu_dma_alloc_pages()
+Date: Wed, 21 Nov 2018 16:07:18 +0000
+Message-ID: <20181121160718.GB24883@arm.com>
+References: <1542812051-178935-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181121155249.GA24883@arm.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1542812051-178935-1-git-send-email-john.garry@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: joro@8bytes.org, robh+dt@kernel.org, andy.gross@linaro.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, mark.rutland@arm.com, david.brown@linaro.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, dianders@chromium.org
+To: John Garry <john.garry@huawei.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Wed, Nov 21, 2018 at 10:54:10PM +0800, John Garry wrote:
+> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> 
+> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
+> respective device NUMA node. The ternary operator which would be for
+> alloc_pages_node() is tidied along with this.
+> 
+> We also include a change to use kvzalloc() for kzalloc()/vzalloc()
+> combination.
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> [JPG: Added kvzalloc(), drop pages ** being device local, tidied ternary operator]
+> Signed-off-by: John Garry <john.garry@huawei.com>
 
+Weird, you're missing a diffstat here.
 
-On 11/21/2018 9:22 PM, Will Deacon wrote:
-> Hi Vivek,
->
-> On Thu, Oct 11, 2018 at 03:19:28PM +0530, Vivek Gautam wrote:
->> This series enables apps-smmu, the "arm,mmu-500" instance
->> on sdm845.
->> Series tested on SDM845 MTP device with related smmu patch series [1],
->> and necessary config change, besides one hack to keep LDO14 in LPM mode
->> to boot things up (see the commit in the test branch).
->> The tested branch is available at [2].
-> [...]
->
->>   .../devicetree/bindings/iommu/arm,smmu.txt         |  4 ++
->>   arch/arm64/boot/dts/qcom/sdm845.dtsi               | 72 ++++++++++++++++++++++
->>   2 files changed, 76 insertions(+)
-> Given that this doesn't touch any of the driver code, please take this via
-> the Andy and arm-soc.
+Anyway, the patch looks fine to me, but it would be nice if you could
+justify the change with some numbers. Do you actually see an improvement
+from this change?
 
-Yea, once the driver changes are pulled in your tree, I can ask Andy to 
-pick these.
-Thanks
-
-Best regards
-Vivek
->
-> Will
+Will
