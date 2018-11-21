@@ -1,68 +1,30 @@
-From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/9] Use vm_insert_range
-Date: Wed, 21 Nov 2018 11:54:52 +0530
-Message-ID: <CAFqt6zZGP5DnAQd_19xKcLezOYaLsZpPr=FGxiTb7JRjTEJ4cA@mail.gmail.com>
-References: <20181115154314.GA27850@jordon-HP-15-Notebook-PC>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH v4 6/8] vfio/mdev: Add iommu place holders in mdev_device
+Date: Wed, 21 Nov 2018 00:45:29 -0800
+Message-ID: <20181121084529.GA21766@infradead.org>
+References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+ <20181105073408.21815-7-baolu.lu@linux.intel.com>
+ <20181106165356.44b59ec3@w520.home>
+ <edadb198-e4ab-ac23-4520-28bfcac252c3@linux.intel.com>
+ <7bfc2f2b-10e6-b53c-51f3-c6494b686aa3@nvidia.com>
+ <25b9a20f-06b5-57ac-81f1-fd933845c77f@linux.intel.com>
+ <20181116085714.GA13181@infradead.org>
+ <339ab9c8-08e1-ce2f-6f71-99a06e4b82f3@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181115154314.GA27850@jordon-HP-15-Notebook-PC>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, "Kirill A. Shutemov" <kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, vbabka-AlSwsSmVLrQ@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, airlied-cv59FeDIM0c@public.gmane.org, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <339ab9c8-08e1-ce2f-6f71-99a06e4b82f3@nvidia.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Kirti Wankhede <kwankhede@nvidia.com>
+Cc: Christoph Hellwig <hch@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 15, 2018 at 9:09 PM Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->
-> Previouly drivers have their own way of mapping range of
-> kernel pages/memory into user vma and this was done by
-> invoking vm_insert_page() within a loop.
->
-> As this pattern is common across different drivers, it can
-> be generalized by creating a new function and use it across
-> the drivers.
->
-> vm_insert_range is the new API which will be used to map a
-> range of kernel memory/pages to user vma.
->
-> All the applicable places are converted to use new vm_insert_range
-> in this patch series.
->
-> Souptick Joarder (9):
->   mm: Introduce new vm_insert_range API
->   arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
->   drivers/firewire/core-iso.c: Convert to use vm_insert_range
->   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
->   drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
->   iommu/dma-iommu.c: Convert to use vm_insert_range
->   videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range
->   xen/gntdev.c: Convert to use vm_insert_range
->   xen/privcmd-buf.c: Convert to use vm_insert_range
+On Wed, Nov 21, 2018 at 02:22:08AM +0530, Kirti Wankhede wrote:
+> It is about how mdev framework can be used by existing drivers. These
+> symbols doesn't use any other exported symbols.
 
-Any further comment on driver changes ?
->
->  arch/arm/mm/dma-mapping.c                         | 21 ++++++-----------
->  drivers/firewire/core-iso.c                       | 15 ++----------
->  drivers/gpu/drm/rockchip/rockchip_drm_gem.c       | 20 ++--------------
->  drivers/gpu/drm/xen/xen_drm_front_gem.c           | 20 +++++-----------
->  drivers/iommu/dma-iommu.c                         | 12 ++--------
->  drivers/media/common/videobuf2/videobuf2-dma-sg.c | 23 ++++++-------------
->  drivers/xen/gntdev.c                              | 11 ++++-----
->  drivers/xen/privcmd-buf.c                         |  8 ++-----
->  include/linux/mm_types.h                          |  3 +++
->  mm/memory.c                                       | 28 +++++++++++++++++++++++
->  mm/nommu.c                                        |  7 ++++++
->  11 files changed, 70 insertions(+), 98 deletions(-)
->
-> --
-> 1.9.1
->
+That is an unfortunate accident of history, but doesn't extent to new
+ones.  It also is another inidicator those drivers probably are derived
+works of the Linux kernel and might be in legal trouble one way or
+another.
