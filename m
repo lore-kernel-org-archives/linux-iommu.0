@@ -1,17 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
-	tables
-Date: Wed, 21 Nov 2018 22:26:26 +0000
-Message-ID: <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
-	<0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
-	<20181121213853.GL3065@bombadil.infradead.org>
+From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: Handle domain agaw being less than iommu agaw
+Date: Wed, 21 Nov 2018 15:29:33 -0800
+Message-ID: <20181121232933.158582-1-sohil.mehta@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181121213853.GL3065-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
-Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,79 +15,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Christopher Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>
-Cc: Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-11-21 9:38 pm, Matthew Wilcox wrote:
-> On Wed, Nov 21, 2018 at 06:20:02PM +0000, Christopher Lameter wrote:
->> On Sun, 11 Nov 2018, Nicolas Boichat wrote:
->>
->>> This is a follow-up to the discussion in [1], to make sure that the page
->>> tables allocated by iommu/io-pgtable-arm-v7s are contained within 32-bit
->>> physical address space.
->>
->> Page tables? This means you need a page frame? Why go through the slab
->> allocators?
-> 
-> Because this particular architecture has sub-page-size PMD page tables.
-> We desperately need to hoist page table allocation out of the architectures;
-> there're a bunch of different implementations and they're mostly bad,
-> one way or another.
+The Intel IOMMU driver opportunistically skips a few top level page
+tables from the domain paging directory while programming the IOMMU
+context entry. However there is an implicit assumption in the code that
+domain's adjusted guest address width (agaw) would always be greater
+than IOMMU's agaw.
 
-These are IOMMU page tables, rather than CPU ones, so we're already well 
-outside arch code - indeed the original motivation of io-pgtable was to 
-be entirely independent of the p*d types and arch-specific MM code (this 
-Armv7 short-descriptor format is already "non-native" when used by 
-drivers in an arm64 kernel).
+The IOMMU capabilities in an upcoming platform cause the domain's agaw
+to be lower than IOMMU's agaw. The issue is seen when the IOMMU supports
+both 4-level and 5-level paging. The domain builds a 4-level page table
+based on agaw of 2. However the IOMMU's agaw is set as 3 (5-level). In
+this case the code incorrectly tries to skip page page table levels.
+This causes the IOMMU driver to avoid programming the context entry. The
+fix handles this case and programs the context entry accordingly.
 
-There are various efficiency reasons for using regular kernel memory 
-instead of coherent DMA allocations - for the most part it works well, 
-we just have the odd corner case like this one where the 32-bit format 
-gets used on 64-bit systems such that the tables themselves still need 
-to be allocated below 4GB (although the final output address can point 
-at higher memory by virtue of the IOMMU in question not implementing 
-permissions and repurposing some of those PTE fields as extra address bits).
+Fixes: de24e55395698 ("iommu/vt-d: Simplify domain_context_mapping_one")
+Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Reviewed-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Reported-by: Ramos Falcon, Ernesto R <ernesto.r.ramos.falcon-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Tested-by: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-TBH, if this DMA32 stuff is going to be contentious we could possibly 
-just rip out the offending kmem_cache - it seemed like good practice for 
-the use-case, but provided kzalloc(SZ_1K, gfp | GFP_DMA32) can be relied 
-upon to give the same 1KB alignment and chance of succeeding as the 
-equivalent kmem_cache_alloc(), then we could quite easily make do with 
-that instead.
-
-Thanks,
-Robin.
-
-> For each level of page table we generally have three cases:
-> 
-> 1. single page
-> 2. sub-page, naturally aligned
-> 3. multiple pages, naturally aligned
-> 
-> for 1 and 3, the page allocator will do just fine.
-> for 2, we should have a per-MM page_frag allocator.  s390 already has
-> something like this, although it's more complicated.  ppc also has
-> something a little more complex for the cases when it's configured with
-> a 64k page size but wants to use a 4k page table entry.
-> 
-> I'd like x86 to be able to simply do:
-> 
-> #define pte_alloc_one(mm, addr)	page_alloc_table(mm, addr, 0)
-> #define pmd_alloc_one(mm, addr)	page_alloc_table(mm, addr, 0)
-> #define pud_alloc_one(mm, addr)	page_alloc_table(mm, addr, 0)
-> #define p4d_alloc_one(mm, addr)	page_alloc_table(mm, addr, 0)
-> 
-> An architecture with 4k page size and needing a 16k PMD would do:
-> 
-> #define pmd_alloc_one(mm, addr) page_alloc_table(mm, addr, 2)
-> 
-> while an architecture with a 64k page size needing a 4k PTE would do:
-> 
-> #define ARCH_PAGE_TABLE_FRAG
-> #define pte_alloc_one(mm, addr) pagefrag_alloc_table(mm, addr, 4096)
-> 
-> I haven't had time to work on this, but perhaps someone with a problem
-> that needs fixing would like to, instead of burying yet another awful
-> implementation away in arch/ somewhere.
-> 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f3ccf025108b..fdf79baf1d79 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2044,7 +2044,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 	 * than default.  Unnecessary for PT mode.
+ 	 */
+ 	if (translation != CONTEXT_TT_PASS_THROUGH) {
+-		for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
++		for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
+ 			ret = -ENOMEM;
+ 			pgd = phys_to_virt(dma_pte_addr(pgd));
+ 			if (!dma_pte_present(pgd))
+@@ -2058,7 +2058,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 			translation = CONTEXT_TT_MULTI_LEVEL;
+ 
+ 		context_set_address_root(context, virt_to_phys(pgd));
+-		context_set_address_width(context, iommu->agaw);
++		context_set_address_width(context, agaw);
+ 	} else {
+ 		/*
+ 		 * In pass through mode, AW must be programmed to
+-- 
+2.19.0
