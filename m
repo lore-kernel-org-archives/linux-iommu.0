@@ -1,35 +1,33 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v4 0/2] Enable smmu support on sdm845
-Date: Wed, 21 Nov 2018 15:52:49 +0000
-Message-ID: <20181121155249.GA24883@arm.com>
-References: <20181011094930.17010-1-vivek.gautam@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2 0/2] SWIOTLB fixes for 4.20
+Date: Wed, 21 Nov 2018 16:00:49 +0000
+Message-ID: <cover.1542812807.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181011094930.17010-1-vivek.gautam@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: joro@8bytes.org, robh+dt@kernel.org, andy.gross@linaro.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, mark.rutland@arm.com, david.brown@linaro.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, dianders@chromium.org
+To: hch@lst.de, konrad.wilk@oracle.com
+Cc: m.szyprowski@samsung.com, john.stultz@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, sstabellini@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vivek,
+Here's a quick v2 addressing Christoph's nits and collecting the tags
+given so far. I've reproduced my USB problem with a commit prior to the
+dma-mapping pull, so it looks like the cache maintenance changes are off
+the hook for that one (and I'll have to venture into USB/UAS territory).
 
-On Thu, Oct 11, 2018 at 03:19:28PM +0530, Vivek Gautam wrote:
-> This series enables apps-smmu, the "arm,mmu-500" instance
-> on sdm845.
-> Series tested on SDM845 MTP device with related smmu patch series [1],
-> and necessary config change, besides one hack to keep LDO14 in LPM mode
-> to boot things up (see the commit in the test branch).
-> The tested branch is available at [2].
+No objection from me if Konrad wants to pick this up instead depending
+on timing.
 
-[...]
+Robin.
 
->  .../devicetree/bindings/iommu/arm,smmu.txt         |  4 ++
->  arch/arm64/boot/dts/qcom/sdm845.dtsi               | 72 ++++++++++++++++++++++
->  2 files changed, 76 insertions(+)
 
-Given that this doesn't touch any of the driver code, please take this via
-the Andy and arm-soc.
+Robin Murphy (2):
+  dma-direct: Make DIRECT_MAPPING_ERROR viable for SWIOTLB
+  swiotlb: Skip cache maintenance on map error
 
-Will
+ include/linux/dma-direct.h | 2 +-
+ kernel/dma/swiotlb.c       | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+-- 
+2.19.1.dirty
