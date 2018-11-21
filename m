@@ -1,55 +1,90 @@
-From: Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range API
-Date: Wed, 21 Nov 2018 04:35:13 -0800
-Message-ID: <20181121123513.GF3065@bombadil.infradead.org>
-References: <20181115154530.GA27872@jordon-HP-15-Notebook-PC>
- <20181116182836.GB17088@rapoport-lnx>
- <CAFqt6zYp0j999WXw9Jus0oZMjADQQkPfso8btv6du6L9CE3PXA@mail.gmail.com>
- <20181117143742.GB7861@bombadil.infradead.org>
- <CAFqt6zbOWX5LUTWwoGDJsGdf+pTR6N1yTPVxyr1W3-6Fte39ww@mail.gmail.com>
- <833B5050-DEF6-44A0-9832-276F86671212@oracle.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
+Date: Wed, 21 Nov 2018 12:40:45 +0000
+Message-ID: <20181121124045.GA21385@e107981-ln.cambridge.arm.com>
+References: <20181113112700.GT2500@lahna.fi.intel.com>
+ <372db397d5384efd8e7264ba8e1b9cbd@ausx13mpc120.AMER.DELL.COM>
+ <20181116105738.GA21277@red-moon>
+ <35089177.HEBOdrcs2c@aspire.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <833B5050-DEF6-44A0-9832-276F86671212@oracle.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: William Kucharski <william.kucharski@oracle.com>
-Cc: Michal Hocko <mhocko@suse.com>, Heiko Stuebner <heiko@sntech.de>, Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux1394-devel@lists.sourceforge.net, Marek Szyprowski <m.szyprowski@samsung.com>, Stephen Rothwell <sfr@canb.auug.org.au>, oleksandr_andrushchenko@epam.com, joro@8bytes.org, Russell King - ARM Linux <linux@armlinux.org.uk>, iommu@lists.linux-foundation.org, rppt@linux.ibm.com, airlied@linux.ie, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, treding@nvidia.com, linux-media@vger.kernel.org, Kees Cook <keescook@chromium.org>, pawel@osciak.com, Rik van Riel <riel@surriel.com>, rppt@linux.vnet.ibm.com, Boris Ostrovsky <boris.ostrovsky@oracle.com>, mchehab@kernel.org, iamjoonsoo.kim@lge.com, vbabka@suse.cz, Juergen Gross <jgross@suse.com>, hjc@rock-chi
+In-Reply-To: <35089177.HEBOdrcs2c@aspire.rjw.lan>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Mario.Limonciello@dell.com, mika.westerberg@linux.intel.com, lukas@wunner.de, iommu@lists.linux-foundation.org, joro@8bytes.org, dwmw2@infradead.org, baolu.lu@linux.intel.com, ashok.raj@intel.com, bhelgaas@google.com, jacob.jun.pan@intel.com, andreas.noever@gmail.com, michael.jamet@intel.com, YehezkelShB@gmail.com, ckellner@redhat.com, anthony.wong@canonical.com, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 21, 2018 at 04:19:11AM -0700, William Kucharski wrote:
-> Could you add a line to the description explicitly stating that a failure
-> to insert any page in the range will fail the entire routine, something
-> like:
+On Tue, Nov 20, 2018 at 10:43:35PM +0100, Rafael J. Wysocki wrote:
+> On Friday, November 16, 2018 11:57:38 AM CET Lorenzo Pieralisi wrote:
+> > On Thu, Nov 15, 2018 at 07:33:54PM +0000, Mario.Limonciello@dell.com wrote:
+> > > 
+> > > 
+> > > > -----Original Message-----
+> > > > From: Mika Westerberg <mika.westerberg@linux.intel.com>
+> > > > Sent: Thursday, November 15, 2018 1:01 PM
+> > > > To: Lorenzo Pieralisi
+> > > > Cc: Lukas Wunner; iommu@lists.linux-foundation.org; Joerg Roedel; David
+> > > > Woodhouse; Lu Baolu; Ashok Raj; Bjorn Helgaas; Rafael J. Wysocki; Jacob jun Pan;
+> > > > Andreas Noever; Michael Jamet; Yehezkel Bernat; Christian Kellner; Limonciello,
+> > > > Mario; Anthony Wong; linux-acpi@vger.kernel.org; linux-pci@vger.kernel.org; linux-
+> > > > kernel@vger.kernel.org
+> > > > Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
+> > > > 
+> > > > 
+> > > > [EXTERNAL EMAIL]
+> > > > 
+> > > > On Thu, Nov 15, 2018 at 05:46:08PM +0000, Lorenzo Pieralisi wrote:
+> > > > > Do you really need to parse it if the dev->is_thunderbolt check is enough ?
+> > > > 
+> > > > Yes, we need to parse it one way or another. dev->is_thunderbolt is
+> > > > based on heuristics which do not apply anymore when the thing gets
+> > > > integrated in the SoC.
+> > > > 
+> > > > The _DSD is there already (on existing systems) and is being used by
+> > > > Windows so I don't understand why we cannot take advantage of it? Every
+> > > > new system with Thunderbolt ports will have it.
+> > 
+> > We have different opinions on this, there is no point in me reiterating
+> > it over and over, I am against the approach taken to solve this problem
+> > first in defining the bindings outside the ACPI specifications and
+> > second by acquiescing to what has been done so that it will be done
+> > over and over again.
 > 
-> > * This allows drivers to insert range of kernel pages they've allocated
-> > * into a user vma. This is a generic function which drivers can use
-> > * rather than using their own way of mapping range of kernel pages into
-> > * user vma.
-> > *
-> > * A failure to insert any page in the range will fail the call as a whole.
+> Arguably, however, we are on the receiving end of things here and even if
+> we don't use this binding, that won't buy us anything (but it will introduce
+> a fair amount of disappointment among both users and OEMs).
 > 
-> It's obvious when reading the code, but it would be self-documenting to
-> state it outright.
+> If Windows uses it, then systems will ship with it regardless of what Linux
+> does with it, so your "acquiescing to what has been done" argument leads to
+> nowhere in this particular case.  It's just a matter of whether or not
+> Linux will provide the same level of functionality as Windows with respect
+> to this and IMO it would be impractical to refuse to do that for purely
+> formal reasons.
+> 
+> > I will raise the point in the appropriate forum, it is up to Bjorn
+> > and Rafael to decide on this patch.
+> 
+> For the record, my opinion is that there's a little choice on whether
+> or not to use this extra information that firmware is willing to give
+> us.  It could be defined in a better way and so on, but since it is in
+> use anyway, we really have nothing to gain by refusing to use it.
 
-It's probably better to be more explicit and answer Randy's question:
+AFAIK PCI firmware bindings should go into PCI firmware specifications,
+not Microsoft webpages.
 
- * If we fail to insert any page into the vma, the function will return
- * immediately leaving any previously-inserted pages present.  Callers
- * from the mmap handler may immediately return the error as their
- * caller will destroy the vma, removing any successfully-inserted pages.
- * Other callers should make their own arrangements for calling unmap_region().
+If we deviate from this model there is no way to tell whether that extra
+information is right or wrong, it is not necessarily about this patch,
+it is about changing the way these bindings are deployed in future
+systems.
 
-Although unmap_region() is static so there clearly isn't any code in the
-kernel today other than in mmap handlers (or fault handlers) that needs to
-insert pages into a VMA.
+> Now, where the handling of it belongs to is a separate matter that should be
+> decided on its own.
+
+I think that the way these bindings were deployed is wrong, I agree this
+is not the right forum to discuss that though. What you will do with
+this patch is not my call anyway, I just expressed my opinion.
+
+Thanks,
+Lorenzo
