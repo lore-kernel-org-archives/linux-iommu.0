@@ -1,59 +1,65 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v2 3/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
- and improve debugging
-Date: Wed, 21 Nov 2018 16:46:38 +0000
-Message-ID: <20181121164638.GD24883@arm.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
- <20181111090341.120786-4-drinkcat@chromium.org>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH v3] iommu/dma: Use NUMA aware memory allocations in
+ __iommu_dma_alloc_pages()
+Date: Wed, 21 Nov 2018 16:47:48 +0000
+Message-ID: <24be0d21-63b1-c88d-fdfd-42575f12634f@huawei.com>
+References: <1542812051-178935-1-git-send-email-john.garry@huawei.com>
+ <20181121160718.GB24883@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181111090341.120786-4-drinkcat@chromium.org>
+In-Reply-To: <20181121160718.GB24883@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com
+To: Will Deacon <will.deacon@arm.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Nov 11, 2018 at 05:03:41PM +0800, Nicolas Boichat wrote:
-> For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
-> is defined (e.g. on arm64 platforms).
-> 
-> For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32.
-> 
-> Also, print an error when the physical address does not fit in
-> 32-bit, to make debugging easier in the future.
-> 
-> Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-> Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
-> ---
-> 
-> Changes since v1:
->  - Changed approach to use SLAB_CACHE_DMA32 added by the previous
->    commit.
->  - Use DMA or DMA32 depending on the architecture (DMA for arm,
->    DMA32 for arm64).
-> 
-> drivers/iommu/io-pgtable-arm-v7s.c | 20 ++++++++++++++++----
->  1 file changed, 16 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index 445c3bde04800c..996f7b6d00b44a 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -161,6 +161,14 @@
->  
->  #define ARM_V7S_TCR_PD1			BIT(5)
->  
-> +#ifdef CONFIG_ZONE_DMA32
-> +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
-> +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA32
-> +#else
-> +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
-> +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA
-> +#endif
+On 21/11/2018 16:07, Will Deacon wrote:
+> On Wed, Nov 21, 2018 at 10:54:10PM +0800, John Garry wrote:
+>> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>>
+>> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
+>> respective device NUMA node. The ternary operator which would be for
+>> alloc_pages_node() is tidied along with this.
+>>
+>> We also include a change to use kvzalloc() for kzalloc()/vzalloc()
+>> combination.
+>>
+>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>> [JPG: Added kvzalloc(), drop pages ** being device local, tidied ternary operator]
+>> Signed-off-by: John Garry <john.garry@huawei.com>
+>
+> Weird, you're missing a diffstat here.
+>
+> Anyway, the patch looks fine to me, but it would be nice if you could
+> justify the change with some numbers. Do you actually see an improvement
+> from this change?
+>
 
-It's a bit grotty that GFP_DMA32 doesn't just map to GFP_DMA on 32-bit
-architectures, since then we wouldn't need this #ifdeffery afaict.
+Hi Will,
 
-Will
+Ah, I missed adding my comments explaining the motivation. It would be 
+better in the commit log. Anyway, here's the snippet:
+
+" ... as mentioned in [3], dma_alloc_coherent() uses the locality
+information from the device - as in direct DMA - so this patch is just
+applying this same policy.
+
+[3] 
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1692998.html"
+
+I did have some numbers to show improvement in some scenarios when I 
+tested this a while back which I'll dig out.
+
+However I would say that some scenarios will improve and the opposite 
+for others with this change, considering different conditions in which 
+DMA memory may be used.
+
+Cheers,
+John
+
+> Will
+>
+> .
+>
