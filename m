@@ -1,34 +1,149 @@
-From: Pan Bian <bianpan2016@163.com>
-Subject: [PATCH] iommu: use memunmap to free memremap
-Date: Wed, 21 Nov 2018 17:53:47 +0800
-Message-ID: <1542794027-93141-1-git-send-email-bianpan2016@163.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
+Date: Wed, 21 Nov 2018 11:16:07 +0000
+Message-ID: <8f17757a-c657-aab9-a6a0-fb0cc9c610a8@arm.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
+	<20181112144039.GA25808@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181112144039.GA25808-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-memunmap() should be used to free the return of memremap(), not
-iounmap().
+On 12/11/2018 14:40, Joerg Roedel wrote:
+> Hi Jean-Philippe,
+> 
+> On Fri, Oct 19, 2018 at 07:11:54PM +0100, Jean-Philippe Brucker wrote:
+>> The allocator doesn't really belong in drivers/iommu because some
+>> drivers would like to allocate PASIDs for devices that aren't managed by
+>> an IOMMU, using the same ID space as IOMMU. It doesn't really belong in
+>> drivers/pci either since platform device also support PASID. Add the
+>> allocator in drivers/base.
+> 
+> I don't really buy this argument, in the end it is the IOMMU that
+> enforces the PASID mappings for a device. Why should a device not behind
+> an IOMMU need to allocate a pasid? Do you have examples of such devices
+> which also don't have their own iommu built-in?
 
-Fixes: dfddb969edf0("iommu/vt-d: Switch from ioremap_cache to memremap")
-Signed-off-by: Pan Bian <bianpan2016@163.com>
----
- drivers/iommu/intel-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I misunderstood that requirement. Reading through the thread again
+(https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg25640.html)
+it's more about a device using PASIDs as context IDs. Some contexts are
+not bound to processes but they still need their ID in the same PASID
+space as the contexts that are bound to process address spaces. So we
+can keep that code in drivers/iommu
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f3ccf02..41a4b88 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3075,7 +3075,7 @@ static int copy_context_table(struct intel_iommu *iommu,
- 			}
- 
- 			if (old_ce)
--				iounmap(old_ce);
-+				memunmap(old_ce);
- 
- 			ret = 0;
- 			if (devfn < 0x80)
--- 
-2.7.4
+>> +int ioasid_for_each(struct ioasid_set *set, ioasid_iter_t func, void *data)
+>> +{
+>> +	int ret;
+>> +	struct ioasid_iter_data iter_data = {
+>> +		.set	= set,
+>> +		.func	= func,
+>> +		.data	= data,
+>> +	};
+>> +
+>> +	idr_lock(&ioasid_idr);
+>> +	ret = idr_for_each(&ioasid_idr, ioasid_iter, &iter_data);
+>> +	idr_unlock(&ioasid_idr);
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(ioasid_for_each);
+> 
+> What is the intended use-case for this function?
+
+I'm using it in sva_bind(), to see if there already exists an io_mm
+associated to the mm_struct given as argument
+
+>> +void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid)
+>> +{
+>> +	void *priv = NULL;
+>> +	struct ioasid_data *ioasid_data;
+>> +
+>> +	idr_lock(&ioasid_idr);
+>> +	ioasid_data = idr_find(&ioasid_idr, ioasid);
+>> +	if (ioasid_data && ioasid_data->set == set)
+>> +		priv = ioasid_data->private;
+>> +	idr_unlock(&ioasid_idr);
+>> +
+>> +	return priv;
+>> +}
+> 
+> I think using the idr_lock here will become a performance problem, as we
+> need this function in the SVA page-fault path to retrieve the mm_struct
+> belonging to a PASID.
+> 
+> The head comment in lib/idr.c states that it should be safe to use
+> rcu_readlock() on read-only iterations. If so, this should be used here
+> so that concurrent lookups are possible.
+
+Agreed. I have a patch to use the RCU which looks simple enough, but
+since I haven't used RCU before I wasn't comfortable squashing it right
+away.
+
+Thanks,
+Jean
+
+diff --git a/drivers/base/ioasid.c b/drivers/base/ioasid.c
+index 5eb3abbf69ac..fa3b48c9c044 100644
+--- a/drivers/base/ioasid.c
++++ b/drivers/base/ioasid.c
+@@ -13,6 +13,7 @@ struct ioasid_data {
+ 	int id;
+ 	struct ioasid_set *set;
+ 	void *private;
++	struct rcu_head rcu;
+ };
+
+ static DEFINE_IDR(ioasid_idr);
+@@ -56,7 +57,8 @@ void ioasid_free(ioasid_t ioasid)
+ 	ioasid_data = idr_remove(&ioasid_idr, ioasid);
+ 	idr_unlock(&ioasid_idr);
+
+-	kfree(ioasid_data);
++	if (ioasid_data)
++		kfree_rcu(ioasid_data, rcu);
+ }
+ EXPORT_SYMBOL_GPL(ioasid_free);
+
+@@ -95,9 +97,9 @@ int ioasid_for_each(struct ioasid_set *set,
+ioasid_iter_t func, void *data)
+ 		.data	= data,
+ 	};
+
+-	idr_lock(&ioasid_idr);
++	rcu_read_lock();
+ 	ret = idr_for_each(&ioasid_idr, ioasid_iter, &iter_data);
+-	idr_unlock(&ioasid_idr);
++	rcu_read_unlock();
+
+ 	return ret;
+ }
+@@ -111,11 +113,11 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t
+ioasid)
+ 	void *priv = NULL;
+ 	struct ioasid_data *ioasid_data;
+
+-	idr_lock(&ioasid_idr);
++	rcu_read_lock();
+ 	ioasid_data = idr_find(&ioasid_idr, ioasid);
+ 	if (ioasid_data && ioasid_data->set == set)
+ 		priv = ioasid_data->private;
+-	idr_unlock(&ioasid_idr);
++	rcu_read_unlock();
+
+ 	return priv;
+ }
