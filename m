@@ -1,33 +1,23 @@
 From: Christopher Lameter <cl@linux.com>
-Subject: Re: [PATCH v2 3/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
- and improve debugging
-Date: Wed, 21 Nov 2018 18:18:23 +0000
-Message-ID: <01000167377e99b6-10666044-2e7d-4af3-9cae-9db9c1a9b279-000000@email.amazonses.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org> <20181111090341.120786-4-drinkcat@chromium.org> <20181121164638.GD24883@arm.com> <01000167375a15f8-362aa1e2-cf01-49b5-92b5-f0a4efcca477-000000@email.amazonses.com>
- <a034e2c3-8933-caba-a113-ca08372da2b9@arm.com>
+Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
+ tables
+Date: Wed, 21 Nov 2018 18:20:02 +0000
+Message-ID: <0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
+References: <20181111090341.120786-1-drinkcat@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a034e2c3-8933-caba-a113-ca08372da2b9@arm.com>
+In-Reply-To: <20181111090341.120786-1-drinkcat@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, Nicolas Boichat <drinkcat@chromium.org>, Joerg Roedel <joro@8bytes.org>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 21 Nov 2018, Robin Murphy wrote:
+On Sun, 11 Nov 2018, Nicolas Boichat wrote:
 
-> On 21/11/2018 17:38, Christopher Lameter wrote:
-> > On Wed, 21 Nov 2018, Will Deacon wrote:
-> >
-> > > > +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA32
-> >
-> > SLAB_CACHE_DMA32??? WTH is going on here? We are trying to get rid of
-> > the dma slab array.
->
-> See the previous two patches in this series. If there's already a (better) way
-> to have a kmem_cache which allocates its backing pages with GFP_DMA32, please
-> do let us know.
+> This is a follow-up to the discussion in [1], to make sure that the page
+> tables allocated by iommu/io-pgtable-arm-v7s are contained within 32-bit
+> physical address space.
 
-Was not cced on the whole patchset. Trying to find it. Its best to
-allocate DMA memory through the page based allocation functions.
-dma_alloc_coherent() and friends.
+Page tables? This means you need a page frame? Why go through the slab
+allocators?
