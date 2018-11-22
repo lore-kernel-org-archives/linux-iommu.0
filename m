@@ -1,53 +1,55 @@
-From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
-	critical sections
-Date: Thu, 22 Nov 2018 11:16:06 +0100
-Message-ID: <20181122101606.GP2131@hirez.programming.kicks-ass.net>
-References: <1542653726-5655-1-git-send-email-longman@redhat.com>
-	<1542653726-5655-8-git-send-email-longman@redhat.com>
-	<2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
-	<20181122020422.GA3441@jagdpanzerIV>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
+Date: Thu, 22 Nov 2018 12:48:40 +0200
+Message-ID: <20181122104840.GO4179@lahna.fi.intel.com>
+References: <20181115102239.GU2500@lahna.fi.intel.com>
+ <20181115111356.GA599@e107981-ln.cambridge.arm.com>
+ <20181115113737.GW2500@lahna.fi.intel.com>
+ <20181115120736.pscly6zwd3k2tvd2@wunner.de>
+ <20181115121627.GA2500@lahna.fi.intel.com>
+ <20181115174608.GA17691@e107981-ln.cambridge.arm.com>
+ <CA+CmpXv9yM6nFdb0mcMPGHS-B_uGbQHYoO6iuefZC8gWoZYD3Q@mail.gmail.com>
+ <20181115191026.GE4179@lahna.fi.intel.com>
+ <20181116091804.GA4548@infradead.org>
+ <20181116093210.GK4179@lahna.fi.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181122020422.GA3441@jagdpanzerIV>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Petr Mladek <pmladek-IBi9RG/b67k@public.gmane.org>, Sergey Senozhatsky <sergey.senozhatsky-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Tejun Heo <tj-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Waiman Long <longman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+In-Reply-To: <20181116093210.GK4179@lahna.fi.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Yehezkel Bernat <yehezkelshb@gmail.com>, ashok.raj@intel.com, Mario Limonciello <Mario.Limonciello@dell.com>, michael.jamet@intel.com, Christian Kellner <ckellner@redhat.com>, rjw@rjwysocki.net, Anthony Wong <anthony.wong@canonical.com>, LKML <linux-kernel@vger.kernel.org>, Andreas Noever <andreas.noever@gmail.com>, iommu@lists.linux-foundation.org, lukas@wunner.de, jacob.jun.pan@intel.com, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 11:04:22AM +0900, Sergey Senozhatsky wrote:
-> Some serial consoles call mod_timer(). So what we could have with the
-> debug objects enabled was
+On Fri, Nov 16, 2018 at 11:32:10AM +0200, Mika Westerberg wrote:
+> On Fri, Nov 16, 2018 at 01:18:04AM -0800, Christoph Hellwig wrote:
+> > On Thu, Nov 15, 2018 at 09:10:26PM +0200, Mika Westerberg wrote:
+> > > FireWire is kind of different but there are connectors such as
+> > > ExpressCard and NVMe (over U.2 connector) which carry PCIe and are
+> > > relatively easy to access without need for a screwdriver. AFAIK some
+> > > eGPUs are also using some other proprietary (non-TBT) connector that
+> > > carries PCIe.
+> > 
+> > U.2 is a data center internal form factor with hot plug capability. If
+> > you enable an iommu for that by default you will make a lot of people
+> > very unhappy.
 > 
-> 	mod_timer()
-> 	 lock_timer_base()
-> 	  debug_activate()
-> 	   printk()
-> 	    call_console_drivers()
-> 	     foo_console()
-> 	      mod_timer()
-> 	       lock_timer_base()       << deadlock
+> Well, it needs the other bit in ACPI DMAR table to be enabled by default
+> so I don't think anyone in data center domain will notice ;-)
 > 
-> That's one possible scenario. The other one can involve console's
-> IRQ handler, uart port spinlock, mod_timer, debug objects, printk,
-> and an eventual deadlock on the uart port spinlock. This one can
-> be mitigated with printk_safe. But mod_timer() deadlock will require
-> a different fix.
+> > More importantly NVMe is now used for the current/next generation
+> > Compact Flash and SD cards, which contain full PCIe gen 3 links.
 > 
-> So maybe we need to switch debug objects print-outs to _always_
-> printk_deferred(). Debug objects can be used in code which cannot
-> do direct printk() - timekeeping is just one example.
+> OK, thanks for the information - I did not know that. I guess those
+> belong to the "external" category as well.
 
-No, printk_deferred() is a disease, it needs to be eradicated, not
-spread around.
+We had an internal discussion regarding this and it was suggested that
+the new flag is called "is_untrusted" instead of "is_external". This
+covers Thunderbolt devices currently but can be extend to any other PCIe
+device such as "SD express" ones. When IOMMU is turned on it will then
+make sure devices with "is_untrusted" set are always using full IOMMU
+protection.
+
+Any comments, objections? I was going to send v2 with this change
+included.
