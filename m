@@ -1,49 +1,75 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
-Date: Thu, 22 Nov 2018 11:17:59 +0000
-Message-ID: <99aa1594-1bc4-bd3b-031f-2863831163af@arm.com>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
-	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
-	<20181112144039.GA25808@8bytes.org>
-	<8f17757a-c657-aab9-a6a0-fb0cc9c610a8@arm.com>
-	<20181122084429.GB1586@8bytes.org>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [RESEND PATCH v17 2/5] iommu/arm-smmu: Invoke
+ pm_runtime during probe, add/remove device
+Date: Thu, 22 Nov 2018 17:32:24 +0530
+Message-ID: <CAFp+6iEH7_XEcZNsbZfn6iBF5_o-ZKBj=DpturH7N85LU289qg@mail.gmail.com>
+References: <20181116112430.31248-1-vivek.gautam@codeaurora.org>
+ <20181116112430.31248-3-vivek.gautam@codeaurora.org>
+ <20181121173757.GA9801@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181122084429.GB1586-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20181121173757.GA9801-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/11/2018 08:44, Joerg Roedel wrote:
-> Hi Jean-Philippe,
-> 
-> On Wed, Nov 21, 2018 at 11:16:07AM +0000, Jean-Philippe Brucker wrote:
->> On 12/11/2018 14:40, Joerg Roedel wrote:
->>> What is the intended use-case for this function?
->>
->> I'm using it in sva_bind(), to see if there already exists an io_mm
->> associated to the mm_struct given as argument
-> 
-> Can we store the pasid in the mm_struct directly? We still need a
-> reverse mapping for the page-fault path, but storing information in
-> mm_struct makes at least this path faster.
-
-The bind() path doesn't really need to be fast. So on its own, I don't
-think it justifies changing the mm_struct until we have real-world
-numbers indicating that it's really too slow (as the worst case of
-iterating over 2**20 values will be)
-
-Thanks,
-Jean
+SGkgV2lsbCwKCk9uIFdlZCwgTm92IDIxLCAyMDE4IGF0IDExOjA5IFBNIFdpbGwgRGVhY29uIDx3
+aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToKPgo+IE9uIEZyaSwgTm92IDE2LCAyMDE4IGF0IDA0
+OjU0OjI3UE0gKzA1MzAsIFZpdmVrIEdhdXRhbSB3cm90ZToKPiA+IEZyb206IFNyaWNoYXJhbiBS
+IDxzcmljaGFyYW5AY29kZWF1cm9yYS5vcmc+Cj4gPgo+ID4gVGhlIHNtbXUgZGV2aWNlIHByb2Jl
+L3JlbW92ZSBhbmQgYWRkL3JlbW92ZSBtYXN0ZXIgZGV2aWNlIGNhbGxiYWNrcwo+ID4gZ2V0cyBj
+YWxsZWQgd2hlbiB0aGUgc21tdSBpcyBub3QgbGlua2VkIHRvIGl0cyBtYXN0ZXIsIHRoYXQgaXMg
+d2l0aG91dAo+ID4gdGhlIGNvbnRleHQgb2YgdGhlIG1hc3RlciBkZXZpY2UuIFNvIGNhbGxpbmcg
+cnVudGltZSBhcGlzIGluIHRob3NlIHBsYWNlcwo+ID4gc2VwYXJhdGVseS4KPiA+IEdsb2JhbCBs
+b2NrcyBhcmUgYWxzbyBpbml0aWFsaXplZCBiZWZvcmUgZW5hYmxpbmcgcnVudGltZSBwbSBhcyB0
+aGUKPiA+IHJ1bnRpbWVfcmVzdW1lKCkgY2FsbHMgZGV2aWNlX3Jlc2V0KCkgd2hpY2ggZG9lcyB0
+bGJfc3luY19nbG9iYWwoKQo+ID4gdGhhdCB1bHRpbWF0ZWx5IHJlcXVpcmVzIGxvY2tzIHRvIGJl
+IGluaXRpYWxpemVkLgo+ID4KPiA+IFNpZ25lZC1vZmYtYnk6IFNyaWNoYXJhbiBSIDxzcmljaGFy
+YW5AY29kZWF1cm9yYS5vcmc+Cj4gPiBbdml2ZWs6IENsZWFudXAgcG0gcnVudGltZSBjYWxsc10K
+PiA+IFNpZ25lZC1vZmYtYnk6IFZpdmVrIEdhdXRhbSA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEu
+b3JnPgo+ID4gUmV2aWV3ZWQtYnk6IFRvbWFzeiBGaWdhIDx0ZmlnYUBjaHJvbWl1bS5vcmc+Cj4g
+PiBUZXN0ZWQtYnk6IFNyaW5pdmFzIEthbmRhZ2F0bGEgPHNyaW5pdmFzLmthbmRhZ2F0bGFAbGlu
+YXJvLm9yZz4KPiA+IFJldmlld2VkLWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0u
+Y29tPgo+ID4gLS0tCj4gPiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgMTAxICsrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tCj4gPiAgMSBmaWxlIGNoYW5n
+ZWQsIDkxIGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQo+Cj4gR2l2ZW4gdGhhdCB5b3Un
+cmUgZG9pbmcgdGhlIGdldC9wdXQgaW4gdGhlIFRMQkkgb3BzIHVuY29uZGl0aW9uYWxseToKPgo+
+ID4gIHN0YXRpYyB2b2lkIGFybV9zbW11X2ZsdXNoX2lvdGxiX2FsbChzdHJ1Y3QgaW9tbXVfZG9t
+YWluICpkb21haW4pCj4gPiAgewo+ID4gICAgICAgc3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21t
+dV9kb21haW4gPSB0b19zbW11X2RvbWFpbihkb21haW4pOwo+ID4gKyAgICAgc3RydWN0IGFybV9z
+bW11X2RldmljZSAqc21tdSA9IHNtbXVfZG9tYWluLT5zbW11Owo+ID4KPiA+IC0gICAgIGlmIChz
+bW11X2RvbWFpbi0+dGxiX29wcykKPiA+ICsgICAgIGlmIChzbW11X2RvbWFpbi0+dGxiX29wcykg
+ewo+ID4gKyAgICAgICAgICAgICBhcm1fc21tdV9ycG1fZ2V0KHNtbXUpOwo+ID4gICAgICAgICAg
+ICAgICBzbW11X2RvbWFpbi0+dGxiX29wcy0+dGxiX2ZsdXNoX2FsbChzbW11X2RvbWFpbik7Cj4g
+PiArICAgICAgICAgICAgIGFybV9zbW11X3JwbV9wdXQoc21tdSk7Cj4gPiArICAgICB9Cj4gPiAg
+fQo+ID4KPiA+ICBzdGF0aWMgdm9pZCBhcm1fc21tdV9pb3RsYl9zeW5jKHN0cnVjdCBpb21tdV9k
+b21haW4gKmRvbWFpbikKPiA+ICB7Cj4gPiAgICAgICBzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpz
+bW11X2RvbWFpbiA9IHRvX3NtbXVfZG9tYWluKGRvbWFpbik7Cj4gPiArICAgICBzdHJ1Y3QgYXJt
+X3NtbXVfZGV2aWNlICpzbW11ID0gc21tdV9kb21haW4tPnNtbXU7Cj4gPgo+ID4gLSAgICAgaWYg
+KHNtbXVfZG9tYWluLT50bGJfb3BzKQo+ID4gKyAgICAgaWYgKHNtbXVfZG9tYWluLT50bGJfb3Bz
+KSB7Cj4gPiArICAgICAgICAgICAgIGFybV9zbW11X3JwbV9nZXQoc21tdSk7Cj4gPiAgICAgICAg
+ICAgICAgIHNtbXVfZG9tYWluLT50bGJfb3BzLT50bGJfc3luYyhzbW11X2RvbWFpbik7Cj4gPiAr
+ICAgICAgICAgICAgIGFybV9zbW11X3JwbV9wdXQoc21tdSk7Cj4gPiArICAgICB9Cj4KPiBXaHkg
+ZG8geW91IG5lZWQgdGhlbSBhcm91bmQgdGhlIG1hcC91bm1hcCBjYWxscyBhcyB3ZWxsPwoKV2Ug
+c3RpbGwgaGF2ZSAudGxiX2FkZF9mbHVzaCBwYXRoPwoKVGhhbmtzClZpdmVrCj4KPiBXaWxsCj4g
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPiBpb21tdSBt
+YWlsaW5nIGxpc3QKPiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwo+IGh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11CgoKCi0tIApR
+VUFMQ09NTSBJTkRJQSwgb24gYmVoYWxmIG9mIFF1YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJ
+bmMuIGlzIGEgbWVtYmVyCm9mIENvZGUgQXVyb3JhIEZvcnVtLCBob3N0ZWQgYnkgVGhlIExpbnV4
+IEZvdW5kYXRpb24KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5v
+Cg==
