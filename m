@@ -1,82 +1,72 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: remove the ->mapping_error method from dma_map_ops V2
-Date: Thu, 22 Nov 2018 18:05:26 +0000
-Message-ID: <20181122180526.GL30658@n2100.armlinux.org.uk>
-References: <20181122140320.24080-1-hch@lst.de>
- <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
- <20181122170715.GI30658@n2100.armlinux.org.uk>
- <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
- <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
- <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [PATCH v5 0/7] Add virtio-iommu driver
+Date: Thu, 22 Nov 2018 19:37:54 +0000
+Message-ID: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: robin.murphy@arm.com, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, joro@8bytes.org, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, xen-devel@lists.xenproject.org, jdmason@kudzu.us, David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
+Content-Transfer-Encoding: 8bit
+Return-path: <virtio-dev-return-5014-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
+Cc: jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 09:55:25AM -0800, Linus Torvalds wrote:
-> On Thu, Nov 22, 2018 at 9:52 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> >
-> > Unfortunately, with things like the top-down IOVA allocator, and 32-bit
-> > systems in general, "the top 4095" values may well still be valid
-> > addresses -
-> 
-> Ugh.
-> 
-> > The only immediate benefit I can see is that we could distinguish cases
-> > like the first which can never possibly succeed, and thus callers could
-> > actually give up instead of doing what various subsystems currently do
-> > and retry the exact same mapping indefinitely on the apparent assumption
-> > that errors must be transient.
-> 
-> No, the big immediate benefit of allowing "return -EINVAL" etc is
-> simply legibility and error avoidance.
-> 
-> It's basically how pretty much all the rest of the kernel returns
-> errors, so not only is it very obvious, it's also what people do
-> without even thinking.. So it would be good to work.
+Implement the virtio-iommu driver, following specification v0.9 [1].
 
-An alternative idea would be to migrate away from the
-dma_map_single() and dma_map_page() interfaces that return a
-dma_addr_t, and instead have them return an error code or zero
-on success.
+Since v4 [2] I fixed the issues reported by Eric, and added Reviewed-by
+from Eric and Rob. Thanks!
 
-I've thought for some time that our DMA interfaces aren't particularly
-friendly, especially after we had the stuff with PCI DMA which migrated
-its way into the DMA API:
+I changed the specification to fix one inconsistency discussed in v4.
+That the device fills the probe buffer with zeroes is now a "SHOULD"
+instead of a "MAY", since it's the only way for the driver to know if
+the device wrote the status. Existing devices already do this. In
+addition the device now needs to fill the three padding bytes at the
+tail with zeroes.
 
-DEFINE_DMA_UNMAP_ADDR
-DEFINE_DMA_UNMAP_LEN
-dma_unmap_*
+You can find Linux driver and kvmtool device on branches
+virtio-iommu/v0.9 [3]. I also lightly tested with Eric's latest QEMU
+device [4].
 
-When coupled that with the requirement that dma_unmap_*() should be
-called with the same parameters as dma_map_*(), I wonder why we never
-did:
+[1] Virtio-iommu specification v0.9, sources, pdf and diff from v0.8
+    git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+    http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+    http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.8-v0.9.pdf
 
-struct dma_map_state {
-	dma_addr_t dma_addr;
-	whatever's needed;
-}
+[2] [PATCH v4 0/7] Add virtio-iommu driver
+    https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031074.html
 
-int dma_map_single(struct device *dev, struct dma_map_state *state,
-		   void *cpu, size_t len, enum dma_data_direction dir);
-void dma_unmap_single(struct device *dev, struct dma_map_state *state);
+[3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9
+    git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
 
-note the simpler unmap API, which inherently guarantees that the
-parameters to the map could be carried over to the unmap - without
-our many driver authors having to think about it.
+[4] [RFC v9 00/17] VIRTIO-IOMMU device
+    https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
 
-That also paves the way for dma_map_single() to return an error code
-or zero.
+Jean-Philippe Brucker (7):
+  dt-bindings: virtio-mmio: Add IOMMU description
+  dt-bindings: virtio: Add virtio-pci-iommu node
+  of: Allow the iommu-map property to omit untranslated devices
+  PCI: OF: Initialize dev->fwnode appropriately
+  iommu: Add virtio-iommu driver
+  iommu/virtio: Add probe request
+  iommu/virtio: Add event queue
 
-However, I fear that boat sailed long ago - but maybe its worth
-thinking along these lines if we want to sanitise the API now?
+ .../devicetree/bindings/virtio/iommu.txt      |   66 +
+ .../devicetree/bindings/virtio/mmio.txt       |   30 +
+ MAINTAINERS                                   |    7 +
+ drivers/iommu/Kconfig                         |   11 +
+ drivers/iommu/Makefile                        |    1 +
+ drivers/iommu/virtio-iommu.c                  | 1157 +++++++++++++++++
+ drivers/of/base.c                             |   10 +-
+ drivers/pci/of.c                              |    7 +
+ include/uapi/linux/virtio_ids.h               |    1 +
+ include/uapi/linux/virtio_iommu.h             |  161 +++
+ 10 files changed, 1448 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
 
 -- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.19.1
