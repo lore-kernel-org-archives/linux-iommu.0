@@ -1,74 +1,51 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/tegra: Change to use DEFINE_SHOW_ATTRIBUTE macro
-Date: Thu, 22 Nov 2018 16:15:22 +0100
-Message-ID: <20181122151522.GC24661@ulmo>
-References: <20181122133047.24902-1-tiny.windzz@gmail.com>
+From: Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
+ tables
+Date: Thu, 22 Nov 2018 07:16:32 -0800
+Message-ID: <20181122151632.GP3065@bombadil.infradead.org>
+References: <20181111090341.120786-1-drinkcat@chromium.org>
+ <0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
+ <20181121213853.GL3065@bombadil.infradead.org>
+ <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
+ <20181122023558.GO3065@bombadil.infradead.org>
+ <20181122082602.GB2049@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============4065445199992401793=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181122133047.24902-1-tiny.windzz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yangtao Li <tiny.windzz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20181122082602.GB2049@infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Pekka Enberg <penberg@kernel.org>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Michal Hocko <mhocko@suse.com>, Andrew Morton <akpm@linux-foundation.org>, Huaisheng Ye <yehs1@lenovo.com>, Tomasz Figa <tfiga@google.com>, Mel Gorman <mgorman@techsingularity.net>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Levin Alexander <Alexander.Levin@microsoft.com>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Nicolas Boichat <drinkcat@chromium.org>, linux-arm-kernel@lists.infradead.org, David Rientjes <rientjes@google.com>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Christopher Lameter <cl@linux.com>, Robin Murphy <robin.murphy@arm.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Nov 22, 2018 at 12:26:02AM -0800, Christoph Hellwig wrote:
+> On Wed, Nov 21, 2018 at 06:35:58PM -0800, Matthew Wilcox wrote:
+> > I think you should look at using the page_frag allocator here.  You can
+> > use whatever GFP_DMA flags you like.
+> 
+> So I actually tries to use page_frag to solve the XFS unaligned kmalloc
+> allocations problem, and I don't think it is the right hammer for this
+> nail (or any other nail outside of networking).
+> 
+> The problem with the page_frag allocator is that it never reuses
+> fragments returned to the page, but only only frees the page once all
+> fragments are freed.  This means that if you have some long(er) term
+> allocations you are effectively creating memory leaks.
 
---===============4065445199992401793==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="DSayHWYpDlRfCAAQ"
-Content-Disposition: inline
-
-
---DSayHWYpDlRfCAAQ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, Nov 22, 2018 at 08:30:47AM -0500, Yangtao Li wrote:
-> Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
->=20
-> Signed-off-by: Yangtao Li <tiny.windzz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/tegra-smmu.c | 24 ++----------------------
->  1 file changed, 2 insertions(+), 22 deletions(-)
-
-Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-
---DSayHWYpDlRfCAAQ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlv2yAkACgkQ3SOs138+
-s6GsyhAAwjLJp+PspBwW5BEnIVlJulbmkaefJnCMpAhYnBKkjTjL3CYzBJt//yT5
-tNXqCIwuRpbV6O8e+jig3aWZQRsIY3Md0iSk2OGXf0iF7h03l91rUyKjUDEeNi0G
-+MOQk3LyULOZeBb/nL/bJppQyQKPbG7ejC3k/RUmGuF5yt9O+qsythYFLQgYtrON
-tRuy2ff6r6gdLa2LWzfkEdHri2Meu3SrTRDeYHf6XblUsN9nRhitm2Em+dlftLYM
-WUGOUUsC9qigG+9lZ2Fqwqwac1t52cV5QggTkmR/fnZ0vWNiRDQQctKZZ8gOWQeo
-zAaHMa9IJ7s0QBhyHi+DHH1U+8Fn3IuEJRw8ukBRiLjOsJluWljWOgbv9yBZ8xzE
-vXYnvRvMBp1vfAwMHUpKj0N/XBJJUpJ9EZipebHcu1nuI9gDpvk2iuTiY/qXOa+U
-MiMPwDwa7Su0D+VgrIrTdusVwsK4bJOkgSWSX6pwdFAiyhFA7FXemOcaY4GOSej5
-RH7VqfbF60+IjVVvevJaVinGiRiiI4kPMu/HJjwMfYpnk9MF3tdvkQ01Avg7AHpY
-Kxs+tVaaCXxszssvv7Xz+Mj6D/TN1qlyxCi6p1ikBFqlJpsPCVWke5xACq0zBZ0V
-oT9HE9XBno51EMWo5MxVbsx+Yqmu2qd4v8x3LAdUlZ98PtnHuJU=
-=QVqj
------END PGP SIGNATURE-----
-
---DSayHWYpDlRfCAAQ--
-
---===============4065445199992401793==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============4065445199992401793==--
+Yes, your allocations from the page_frag allocator have to have similar
+lifetimes.  I thought that would be ideal for XFS though; as I understood
+the problem, these were per-IO allocations, and IOs to the same filesystem
+tend to take roughly the same amount of time.  Sure, in an error case,
+some IOs will take a long time before timing out, but it should be OK
+to have pages unavailable during that time in these rare situations.
+What am I missing?
