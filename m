@@ -1,43 +1,61 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 00/15] MT8183 IOMMU SUPPORT
-Date: Thu, 22 Nov 2018 13:59:31 +0100
-Message-ID: <20181122125931.GC1586@8bytes.org>
-References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH] iommu/tegra: Change to use DEFINE_SHOW_ATTRIBUTE macro
+Date: Thu, 22 Nov 2018 08:30:47 -0500
+Message-ID: <20181122133047.24902-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
+To: thierry.reding@gmail.com, joro@8bytes.org, jonathanh@nvidia.com
+Cc: linux-tegra@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
 
-On Sat, Nov 17, 2018 at 10:35:27AM +0800, Yong Wu wrote:
-> Yong Wu (14):
->   dt-bindings: mediatek: Add binding for mt8183 IOMMU and SMI
->   iommu/mediatek: Use a struct as the platform data
->   memory: mtk-smi: Use a general config_port interface
->   iommu/io-pgtable-arm-v7s: Add paddr_to_iopte and iopte_to_paddr
->     helpers
->   iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB Mode
->   iommu/mediatek: Add mt8183 IOMMU support
->   iommu/mediatek: Add mmu1 support
->   memory: mtk-smi: Invoke pm runtime_callback to enable clocks
->   memory: mtk-smi: Use a struct for the platform data for smi-common
->   memory: mtk-smi: Add bus_sel for mt8183
->   iommu/mediatek: Add VLD_PA_RANGE register backup when suspend
->   iommu/mediatek: Add shutdown callback
->   memory: mtk-smi: Get rid of need_larbid
->   iommu/mediatek: Switch to SPDX license identifier
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+---
+ drivers/iommu/tegra-smmu.c | 24 ++----------------------
+ 1 file changed, 2 insertions(+), 22 deletions(-)
 
-This should probably go through the IOMMU tree. For that I'd like to
-have Acks (reviews are even better) for the io-pgtable parts from Robin
-and for the memory parts from Matthias first.
-
-
-Regards,
-
-	Joerg
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 0d03341317c4..97b3c0461831 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -926,17 +926,7 @@ static int tegra_smmu_swgroups_show(struct seq_file *s, void *data)
+ 	return 0;
+ }
+ 
+-static int tegra_smmu_swgroups_open(struct inode *inode, struct file *file)
+-{
+-	return single_open(file, tegra_smmu_swgroups_show, inode->i_private);
+-}
+-
+-static const struct file_operations tegra_smmu_swgroups_fops = {
+-	.open = tegra_smmu_swgroups_open,
+-	.read = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
++DEFINE_SHOW_ATTRIBUTE(tegra_smmu_swgroups);
+ 
+ static int tegra_smmu_clients_show(struct seq_file *s, void *data)
+ {
+@@ -964,17 +954,7 @@ static int tegra_smmu_clients_show(struct seq_file *s, void *data)
+ 	return 0;
+ }
+ 
+-static int tegra_smmu_clients_open(struct inode *inode, struct file *file)
+-{
+-	return single_open(file, tegra_smmu_clients_show, inode->i_private);
+-}
+-
+-static const struct file_operations tegra_smmu_clients_fops = {
+-	.open = tegra_smmu_clients_open,
+-	.read = seq_read,
+-	.llseek = seq_lseek,
+-	.release = single_release,
+-};
++DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+ 
+ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+ {
+-- 
+2.17.0
