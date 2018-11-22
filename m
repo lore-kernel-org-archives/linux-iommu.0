@@ -1,24 +1,82 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 00/15] MT8183 IOMMU SUPPORT
-Date: Thu, 22 Nov 2018 14:42:16 +0100
-Message-ID: <20181122134216.GD1586@8bytes.org>
-References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
- <20181122125931.GC1586@8bytes.org>
- <20181122133526.GA13896@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH] iommu/omap: remove DEBUG_SEQ_FOPS_RO()
+Date: Thu, 22 Nov 2018 08:54:43 -0500
+Message-ID: <20181122135443.25035-1-tiny.windzz@gmail.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181122133526.GA13896@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 01:35:26PM +0000, Will Deacon wrote:
-> Robin already reviewed the pgtable bits, I think.
+Because we already have the DEFINE_SHOW_ATTRIBUTE,there is no need
+to define such a macro.So remove DEBUG_SEQ_FOPS_RO.
 
-Right, I missed the tags, sorry.
+Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
+---
+ drivers/iommu/omap-iommu-debug.c | 25 ++++++-------------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
 
-
-Joerg
+diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iommu-debug.c
+index 50217548c3b8..4abc0ef522a8 100644
+--- a/drivers/iommu/omap-iommu-debug.c
++++ b/drivers/iommu/omap-iommu-debug.c
+@@ -159,7 +159,7 @@ static size_t omap_dump_tlb_entries(struct omap_iommu *obj, struct seq_file *s)
+ 	return 0;
+ }
+ 
+-static int debug_read_tlb(struct seq_file *s, void *data)
++static int tlb_show(struct seq_file *s, void *data)
+ {
+ 	struct omap_iommu *obj = s->private;
+ 
+@@ -210,7 +210,7 @@ static void dump_ioptable(struct seq_file *s)
+ 	spin_unlock(&obj->page_table_lock);
+ }
+ 
+-static int debug_read_pagetable(struct seq_file *s, void *data)
++static int pagetable_show(struct seq_file *s, void *data)
+ {
+ 	struct omap_iommu *obj = s->private;
+ 
+@@ -228,35 +228,22 @@ static int debug_read_pagetable(struct seq_file *s, void *data)
+ 	return 0;
+ }
+ 
+-#define DEBUG_SEQ_FOPS_RO(name)						       \
+-	static int debug_open_##name(struct inode *inode, struct file *file)   \
+-	{								       \
+-		return single_open(file, debug_read_##name, inode->i_private); \
+-	}								       \
+-									       \
+-	static const struct file_operations debug_##name##_fops = {	       \
+-		.open		= debug_open_##name,			       \
+-		.read		= seq_read,				       \
+-		.llseek		= seq_lseek,				       \
+-		.release	= single_release,			       \
+-	}
+-
+ #define DEBUG_FOPS_RO(name)						\
+-	static const struct file_operations debug_##name##_fops = {	\
++	static const struct file_operations name##_fops = {	        \
+ 		.open = simple_open,					\
+ 		.read = debug_read_##name,				\
+ 		.llseek = generic_file_llseek,				\
+ 	}
+ 
+ DEBUG_FOPS_RO(regs);
+-DEBUG_SEQ_FOPS_RO(tlb);
+-DEBUG_SEQ_FOPS_RO(pagetable);
++DEFINE_SHOW_ATTRIBUTE(tlb);
++DEFINE_SHOW_ATTRIBUTE(pagetable);
+ 
+ #define __DEBUG_ADD_FILE(attr, mode)					\
+ 	{								\
+ 		struct dentry *dent;					\
+ 		dent = debugfs_create_file(#attr, mode, obj->debug_dir,	\
+-					   obj, &debug_##attr##_fops);	\
++					   obj, &attr##_fops);	        \
+ 		if (!dent)						\
+ 			goto err;					\
+ 	}
+-- 
+2.17.0
