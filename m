@@ -1,97 +1,72 @@
 From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Thu, 22 Nov 2018 09:05:30 +0800
-Message-ID: <CANMq1KASTr_zCZnymfT173BLgGH0p0Pr7ortO1sdm_yb9rjKUg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
+ and improve debugging
+Date: Thu, 22 Nov 2018 09:20:46 +0800
+Message-ID: <CANMq1KCHGZ2vEWg+OQQ-SwvHcU-oMp4qKzEYfLwRYD5ZmRdRsA@mail.gmail.com>
 References: <20181111090341.120786-1-drinkcat@chromium.org>
- <0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
- <20181121213853.GL3065@bombadil.infradead.org> <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
+ <20181111090341.120786-4-drinkcat@chromium.org> <20181121164638.GD24883@arm.com>
+ <20181121180000.GU12932@dhcp22.suse.cz>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
+In-Reply-To: <20181121180000.GU12932@dhcp22.suse.cz>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: willy@infradead.org, Christoph Lameter <cl@linux.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfi>
+To: mhocko@kernel.org
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 6:27 AM Robin Murphy <robin.murphy@arm.com> wrote:
+On Thu, Nov 22, 2018 at 2:02 AM Michal Hocko <mhocko@kernel.org> wrote:
 >
-> On 2018-11-21 9:38 pm, Matthew Wilcox wrote:
-> > On Wed, Nov 21, 2018 at 06:20:02PM +0000, Christopher Lameter wrote:
-> >> On Sun, 11 Nov 2018, Nicolas Boichat wrote:
-> >>
-> >>> This is a follow-up to the discussion in [1], to make sure that the page
-> >>> tables allocated by iommu/io-pgtable-arm-v7s are contained within 32-bit
-> >>> physical address space.
-> >>
-> >> Page tables? This means you need a page frame? Why go through the slab
-> >> allocators?
+> On Wed 21-11-18 16:46:38, Will Deacon wrote:
+> > On Sun, Nov 11, 2018 at 05:03:41PM +0800, Nicolas Boichat wrote:
+> > > For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
+> > > is defined (e.g. on arm64 platforms).
+> > >
+> > > For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32.
+> > >
+> > > Also, print an error when the physical address does not fit in
+> > > 32-bit, to make debugging easier in the future.
+> > >
+> > > Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
+> > > Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+> > > ---
+> > >
+> > > Changes since v1:
+> > >  - Changed approach to use SLAB_CACHE_DMA32 added by the previous
+> > >    commit.
+> > >  - Use DMA or DMA32 depending on the architecture (DMA for arm,
+> > >    DMA32 for arm64).
+> > >
+> > > drivers/iommu/io-pgtable-arm-v7s.c | 20 ++++++++++++++++----
+> > >  1 file changed, 16 insertions(+), 4 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> > > index 445c3bde04800c..996f7b6d00b44a 100644
+> > > --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> > > +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> > > @@ -161,6 +161,14 @@
+> > >
+> > >  #define ARM_V7S_TCR_PD1                    BIT(5)
+> > >
+> > > +#ifdef CONFIG_ZONE_DMA32
+> > > +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
+> > > +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA32
+> > > +#else
+> > > +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
+> > > +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA
+> > > +#endif
 > >
-> > Because this particular architecture has sub-page-size PMD page tables.
-> > We desperately need to hoist page table allocation out of the architectures;
-> > there're a bunch of different implementations and they're mostly bad,
-> > one way or another.
+> > It's a bit grotty that GFP_DMA32 doesn't just map to GFP_DMA on 32-bit
+> > architectures, since then we wouldn't need this #ifdeffery afaict.
 >
-> These are IOMMU page tables, rather than CPU ones, so we're already well
-> outside arch code - indeed the original motivation of io-pgtable was to
-> be entirely independent of the p*d types and arch-specific MM code (this
-> Armv7 short-descriptor format is already "non-native" when used by
-> drivers in an arm64 kernel).
->
-> There are various efficiency reasons for using regular kernel memory
-> instead of coherent DMA allocations - for the most part it works well,
-> we just have the odd corner case like this one where the 32-bit format
-> gets used on 64-bit systems such that the tables themselves still need
-> to be allocated below 4GB (although the final output address can point
-> at higher memory by virtue of the IOMMU in question not implementing
-> permissions and repurposing some of those PTE fields as extra address bits).
->
-> TBH, if this DMA32 stuff is going to be contentious we could possibly
-> just rip out the offending kmem_cache - it seemed like good practice for
-> the use-case, but provided kzalloc(SZ_1K, gfp | GFP_DMA32) can be relied
-> upon to give the same 1KB alignment and chance of succeeding as the
-> equivalent kmem_cache_alloc(), then we could quite easily make do with
-> that instead.
+> But GFP_DMA32 should map to GFP_KERNEL on 32b, no? Or what exactly is
+> going on in here?
 
-Yes, but if we want to use kzalloc, we'll need to create
-kmalloc_caches for DMA32, which seems wasteful as there are no other
-users (see my comment here:
-https://patchwork.kernel.org/patch/10677525/#22332697).
+GFP_DMA32 will fail due to check_slab_flags (aka GFP_SLAB_BUG_MASK
+before patch 1/3 of this series)... But yes, it may be neater if there
+was transparent remapping of GFP_DMA32/SLAB_CACHE_DMA32 to
+GFP_DMA/SLAB_CACHE_DMA on 32-bit arch...
 
-Thanks,
-
-> Thanks,
-> Robin.
->
-> > For each level of page table we generally have three cases:
-> >
-> > 1. single page
-> > 2. sub-page, naturally aligned
-> > 3. multiple pages, naturally aligned
-> >
-> > for 1 and 3, the page allocator will do just fine.
-> > for 2, we should have a per-MM page_frag allocator.  s390 already has
-> > something like this, although it's more complicated.  ppc also has
-> > something a little more complex for the cases when it's configured with
-> > a 64k page size but wants to use a 4k page table entry.
-> >
-> > I'd like x86 to be able to simply do:
-> >
-> > #define pte_alloc_one(mm, addr)       page_alloc_table(mm, addr, 0)
-> > #define pmd_alloc_one(mm, addr)       page_alloc_table(mm, addr, 0)
-> > #define pud_alloc_one(mm, addr)       page_alloc_table(mm, addr, 0)
-> > #define p4d_alloc_one(mm, addr)       page_alloc_table(mm, addr, 0)
-> >
-> > An architecture with 4k page size and needing a 16k PMD would do:
-> >
-> > #define pmd_alloc_one(mm, addr) page_alloc_table(mm, addr, 2)
-> >
-> > while an architecture with a 64k page size needing a 4k PTE would do:
-> >
-> > #define ARCH_PAGE_TABLE_FRAG
-> > #define pte_alloc_one(mm, addr) pagefrag_alloc_table(mm, addr, 4096)
-> >
-> > I haven't had time to work on this, but perhaps someone with a problem
-> > that needs fixing would like to, instead of burying yet another awful
-> > implementation away in arch/ somewhere.
-> >
+> --
+> Michal Hocko
+> SUSE Labs
