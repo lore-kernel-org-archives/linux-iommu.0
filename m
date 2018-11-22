@@ -1,68 +1,74 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 13/24] alpha: remove the mapping_error
- dma_map_ops method
-Date: Thu, 22 Nov 2018 15:03:09 +0100
-Message-ID: <20181122140320.24080-14-hch@lst.de>
-References: <20181122140320.24080-1-hch@lst.de>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/tegra: Change to use DEFINE_SHOW_ATTRIBUTE macro
+Date: Thu, 22 Nov 2018 16:15:22 +0100
+Message-ID: <20181122151522.GC24661@ulmo>
+References: <20181122133047.24902-1-tiny.windzz@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <xen-devel-bounces@lists.xenproject.org>
-In-Reply-To: <20181122140320.24080-1-hch@lst.de>
-List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
-List-Post: <mailto:xen-devel@lists.xenproject.org>
-List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
-List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
- <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
-Errors-To: xen-devel-bounces@lists.xenproject.org
-Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
-To: iommu@lists.linux-foundation.org
-Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: multipart/mixed; boundary="===============4065445199992401793=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181122133047.24902-1-tiny.windzz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yangtao Li <tiny.windzz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-UmV0dXJuIERNQV9NQVBQSU5HX0VSUk9SIGluc3RlYWQgb2YgMCBvbiBhIGRtYSBtYXBwaW5nIGZh
-aWx1cmUgYW5kIGxldAp0aGUgY29yZSBkbWEtbWFwcGluZyBjb2RlIGhhbmRsZSB0aGUgcmVzdC4K
-ClNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPgotLS0KIGFyY2gv
-YWxwaGEva2VybmVsL3BjaV9pb21tdS5jIHwgMTQgKysrKy0tLS0tLS0tLS0KIDEgZmlsZSBjaGFu
-Z2VkLCA0IGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2FyY2gv
-YWxwaGEva2VybmVsL3BjaV9pb21tdS5jIGIvYXJjaC9hbHBoYS9rZXJuZWwvcGNpX2lvbW11LmMK
-aW5kZXggNDZlMDhlMGQ5MTgxLi5lMTcxNmUwZDkyZmQgMTAwNjQ0Ci0tLSBhL2FyY2gvYWxwaGEv
-a2VybmVsL3BjaV9pb21tdS5jCisrKyBiL2FyY2gvYWxwaGEva2VybmVsL3BjaV9pb21tdS5jCkBA
-IC0yOTEsNyArMjkxLDcgQEAgcGNpX21hcF9zaW5nbGVfMShzdHJ1Y3QgcGNpX2RldiAqcGRldiwg
-dm9pZCAqY3B1X2FkZHIsIHNpemVfdCBzaXplLAogCSAgIHVzZSBkaXJlY3RfbWFwIGFib3ZlLCBp
-dCBub3cgbXVzdCBiZSBjb25zaWRlcmVkIGFuIGVycm9yLiAqLwogCWlmICghIGFscGhhX212Lm12
-X3BjaV90YmkpIHsKIAkJcHJpbnRrX29uY2UoS0VSTl9XQVJOSU5HICJwY2lfbWFwX3NpbmdsZTog
-bm8gSFcgc2dcbiIpOwotCQlyZXR1cm4gMDsKKwkJcmV0dXJuIERNQV9NQVBQSU5HX0VSUk9SOwog
-CX0KIAogCWFyZW5hID0gaG9zZS0+c2dfcGNpOwpAQCAtMzA3LDcgKzMwNyw3IEBAIHBjaV9tYXBf
-c2luZ2xlXzEoc3RydWN0IHBjaV9kZXYgKnBkZXYsIHZvaWQgKmNwdV9hZGRyLCBzaXplX3Qgc2l6
-ZSwKIAlpZiAoZG1hX29mcyA8IDApIHsKIAkJcHJpbnRrKEtFUk5fV0FSTklORyAicGNpX21hcF9z
-aW5nbGUgZmFpbGVkOiAiCiAJCSAgICAgICAiY291bGQgbm90IGFsbG9jYXRlIGRtYSBwYWdlIHRh
-Ymxlc1xuIik7Ci0JCXJldHVybiAwOworCQlyZXR1cm4gRE1BX01BUFBJTkdfRVJST1I7CiAJfQog
-CiAJcGFkZHIgJj0gUEFHRV9NQVNLOwpAQCAtNDU1LDcgKzQ1NSw3IEBAIHN0YXRpYyB2b2lkICph
-bHBoYV9wY2lfYWxsb2NfY29oZXJlbnQoc3RydWN0IGRldmljZSAqZGV2LCBzaXplX3Qgc2l6ZSwK
-IAltZW1zZXQoY3B1X2FkZHIsIDAsIHNpemUpOwogCiAJKmRtYV9hZGRycCA9IHBjaV9tYXBfc2lu
-Z2xlXzEocGRldiwgY3B1X2FkZHIsIHNpemUsIDApOwotCWlmICgqZG1hX2FkZHJwID09IDApIHsK
-KwlpZiAoKmRtYV9hZGRycCA9PSBETUFfTUFQUElOR19FUlJPUikgewogCQlmcmVlX3BhZ2VzKCh1
-bnNpZ25lZCBsb25nKWNwdV9hZGRyLCBvcmRlcik7CiAJCWlmIChhbHBoYV9tdi5tdl9wY2lfdGJp
-IHx8IChnZnAgJiBHRlBfRE1BKSkKIAkJCXJldHVybiBOVUxMOwpAQCAtNjcxLDcgKzY3MSw3IEBA
-IHN0YXRpYyBpbnQgYWxwaGFfcGNpX21hcF9zZyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBz
-Y2F0dGVybGlzdCAqc2csCiAJCXNnLT5kbWFfYWRkcmVzcwogCQkgID0gcGNpX21hcF9zaW5nbGVf
-MShwZGV2LCBTR19FTlRfVklSVF9BRERSRVNTKHNnKSwKIAkJCQkgICAgIHNnLT5sZW5ndGgsIGRh
-Y19hbGxvd2VkKTsKLQkJcmV0dXJuIHNnLT5kbWFfYWRkcmVzcyAhPSAwOworCQlyZXR1cm4gc2ct
-PmRtYV9hZGRyZXNzICE9IERNQV9NQVBQSU5HX0VSUk9SOwogCX0KIAogCXN0YXJ0ID0gc2c7CkBA
-IC05MzUsMTEgKzkzNSw2IEBAIGlvbW11X3VuYmluZChzdHJ1Y3QgcGNpX2lvbW11X2FyZW5hICph
-cmVuYSwgbG9uZyBwZ19zdGFydCwgbG9uZyBwZ19jb3VudCkKIAlyZXR1cm4gMDsKIH0KIAotc3Rh
-dGljIGludCBhbHBoYV9wY2lfbWFwcGluZ19lcnJvcihzdHJ1Y3QgZGV2aWNlICpkZXYsIGRtYV9h
-ZGRyX3QgZG1hX2FkZHIpCi17Ci0JcmV0dXJuIGRtYV9hZGRyID09IDA7Ci19Ci0KIGNvbnN0IHN0
-cnVjdCBkbWFfbWFwX29wcyBhbHBoYV9wY2lfb3BzID0gewogCS5hbGxvYwkJCT0gYWxwaGFfcGNp
-X2FsbG9jX2NvaGVyZW50LAogCS5mcmVlCQkJPSBhbHBoYV9wY2lfZnJlZV9jb2hlcmVudCwKQEAg
-LTk0Nyw3ICs5NDIsNiBAQCBjb25zdCBzdHJ1Y3QgZG1hX21hcF9vcHMgYWxwaGFfcGNpX29wcyA9
-IHsKIAkudW5tYXBfcGFnZQkJPSBhbHBoYV9wY2lfdW5tYXBfcGFnZSwKIAkubWFwX3NnCQkJPSBh
-bHBoYV9wY2lfbWFwX3NnLAogCS51bm1hcF9zZwkJPSBhbHBoYV9wY2lfdW5tYXBfc2csCi0JLm1h
-cHBpbmdfZXJyb3IJCT0gYWxwaGFfcGNpX21hcHBpbmdfZXJyb3IsCiAJLmRtYV9zdXBwb3J0ZWQJ
-CT0gYWxwaGFfcGNpX3N1cHBvcnRlZCwKIH07CiBFWFBPUlRfU1lNQk9MKGFscGhhX3BjaV9vcHMp
-OwotLSAKMi4xOS4xCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KWGVuLWRldmVsIG1haWxpbmcgbGlzdApYZW4tZGV2ZWxAbGlzdHMueGVucHJvamVjdC5v
-cmcKaHR0cHM6Ly9saXN0cy54ZW5wcm9qZWN0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbi1kZXZl
-bA==
+
+--===============4065445199992401793==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="DSayHWYpDlRfCAAQ"
+Content-Disposition: inline
+
+
+--DSayHWYpDlRfCAAQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Nov 22, 2018 at 08:30:47AM -0500, Yangtao Li wrote:
+> Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
+>=20
+> Signed-off-by: Yangtao Li <tiny.windzz-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/iommu/tegra-smmu.c | 24 ++----------------------
+>  1 file changed, 2 insertions(+), 22 deletions(-)
+
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+--DSayHWYpDlRfCAAQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlv2yAkACgkQ3SOs138+
+s6GsyhAAwjLJp+PspBwW5BEnIVlJulbmkaefJnCMpAhYnBKkjTjL3CYzBJt//yT5
+tNXqCIwuRpbV6O8e+jig3aWZQRsIY3Md0iSk2OGXf0iF7h03l91rUyKjUDEeNi0G
++MOQk3LyULOZeBb/nL/bJppQyQKPbG7ejC3k/RUmGuF5yt9O+qsythYFLQgYtrON
+tRuy2ff6r6gdLa2LWzfkEdHri2Meu3SrTRDeYHf6XblUsN9nRhitm2Em+dlftLYM
+WUGOUUsC9qigG+9lZ2Fqwqwac1t52cV5QggTkmR/fnZ0vWNiRDQQctKZZ8gOWQeo
+zAaHMa9IJ7s0QBhyHi+DHH1U+8Fn3IuEJRw8ukBRiLjOsJluWljWOgbv9yBZ8xzE
+vXYnvRvMBp1vfAwMHUpKj0N/XBJJUpJ9EZipebHcu1nuI9gDpvk2iuTiY/qXOa+U
+MiMPwDwa7Su0D+VgrIrTdusVwsK4bJOkgSWSX6pwdFAiyhFA7FXemOcaY4GOSej5
+RH7VqfbF60+IjVVvevJaVinGiRiiI4kPMu/HJjwMfYpnk9MF3tdvkQ01Avg7AHpY
+Kxs+tVaaCXxszssvv7Xz+Mj6D/TN1qlyxCi6p1ikBFqlJpsPCVWke5xACq0zBZ0V
+oT9HE9XBno51EMWo5MxVbsx+Yqmu2qd4v8x3LAdUlZ98PtnHuJU=
+=QVqj
+-----END PGP SIGNATURE-----
+
+--DSayHWYpDlRfCAAQ--
+
+--===============4065445199992401793==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4065445199992401793==--
