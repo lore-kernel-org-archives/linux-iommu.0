@@ -1,18 +1,18 @@
-From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
-	tables
-Date: Thu, 22 Nov 2018 13:56:47 +0800
-Message-ID: <CANMq1KA0rQ9uvEOFV3K9Cvb3kX8riY8qJXfoH6ENyjgNiyNjpw@mail.gmail.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
-	<0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
-	<20181121213853.GL3065@bombadil.infradead.org>
-	<c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
-	<20181122023558.GO3065@bombadil.infradead.org>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
+Date: Thu, 22 Nov 2018 06:59:03 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE5A636@SHSMSX101.ccr.corp.intel.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
+	<20181112144039.GA25808@8bytes.org>
+	<8f17757a-c657-aab9-a6a0-fb0cc9c610a8@arm.com>
+	<62f05552-df46-6e12-10ed-820429dfda59@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181122023558.GO3065-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
+In-Reply-To: <62f05552-df46-6e12-10ed-820429dfda59-5C7GfCeVMHo@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,43 +22,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>
+To: "Koenig, Christian" <Christian.Koenig-5C7GfCeVMHo@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 10:36 AM Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> On Wed, Nov 21, 2018 at 10:26:26PM +0000, Robin Murphy wrote:
-> > These are IOMMU page tables, rather than CPU ones, so we're already well
-> > outside arch code - indeed the original motivation of io-pgtable was to be
-> > entirely independent of the p*d types and arch-specific MM code (this Armv7
-> > short-descriptor format is already "non-native" when used by drivers in an
-> > arm64 kernel).
->
-> There was quite a lot of explanation missing from this patch description!
+> From: Koenig, Christian
+> Sent: Thursday, November 22, 2018 3:10 AM
+> 
+> Am 21.11.18 um 12:16 schrieb Jean-Philippe Brucker:
+> > On 12/11/2018 14:40, Joerg Roedel wrote:
+> >> Hi Jean-Philippe,
+> >>
+> >> On Fri, Oct 19, 2018 at 07:11:54PM +0100, Jean-Philippe Brucker wrote:
+> >>> The allocator doesn't really belong in drivers/iommu because some
+> >>> drivers would like to allocate PASIDs for devices that aren't managed by
+> >>> an IOMMU, using the same ID space as IOMMU. It doesn't really
+> belong in
+> >>> drivers/pci either since platform device also support PASID. Add the
+> >>> allocator in drivers/base.
+> >> I don't really buy this argument, in the end it is the IOMMU that
+> >> enforces the PASID mappings for a device. Why should a device not
+> behind
+> >> an IOMMU need to allocate a pasid? Do you have examples of such
+> devices
+> >> which also don't have their own iommu built-in?
+> > I misunderstood that requirement. Reading through the thread again
+> > (https://www.mail-archive.com/iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org/msg25640.html)
+> > it's more about a device using PASIDs as context IDs. Some contexts are
+> > not bound to processes but they still need their ID in the same PASID
+> > space as the contexts that are bound to process address spaces. So we
+> > can keep that code in drivers/iommu
+> 
+> The problem with that approach is that we also need this allocator when
+> IOMMU is completely disabled.
+> 
+> In other words PASIDs are used as contexts IDs by the hardware for
+> things like signaling which application has caused an interrupt/event
+> even when they are not used by IOMMU later on.
+> 
+> Additional to that we have some MMUs which are internal to the devices
+> (GPUVM on AMD GPUs for example, similar exists for NVidia) which uses
+> PASIDs for address translation internally in the device.
+> 
+> All of that is completely unrelated to IOMMU, but when IOMMU is enabled
+> you need to use the same allocator because all use cases use the same ID
+> space.
+> 
 
-I totally agree ,-) I'm not familiar at all with either iommu or
-mm/... Looks like the patchset triggered a helpful discussion, and I
-understand the problem better now. I'll improve the description in the
-next revision.
+imo context ID is a resource used by device internal while PASID is sth.
+informational to external world (as defined in PCI bus package). ideally two 
+things are separate in hardware but can be associated (e.g. PASID as an 
+optional parameter per context). That is what I know for Intel GPUs.
 
-> > There are various efficiency reasons for using regular kernel memory instead
-> > of coherent DMA allocations - for the most part it works well, we just have
-> > the odd corner case like this one where the 32-bit format gets used on
-> > 64-bit systems such that the tables themselves still need to be allocated
-> > below 4GB (although the final output address can point at higher memory by
-> > virtue of the IOMMU in question not implementing permissions and repurposing
-> > some of those PTE fields as extra address bits).
-> >
-> > TBH, if this DMA32 stuff is going to be contentious we could possibly just
-> > rip out the offending kmem_cache - it seemed like good practice for the
-> > use-case, but provided kzalloc(SZ_1K, gfp | GFP_DMA32) can be relied upon to
-> > give the same 1KB alignment and chance of succeeding as the equivalent
-> > kmem_cache_alloc(), then we could quite easily make do with that instead.
->
-> I think you should look at using the page_frag allocator here.  You can
-> use whatever GFP_DMA flags you like.
+For your device, is "PASIDs are used as contexts IDs" a software 
+implementation policy or actual hardware requirement (i.e. no dedicated
+PASID recording)?
 
-I'll try that.
-
-Thanks!
+Thanks
+Kevin
