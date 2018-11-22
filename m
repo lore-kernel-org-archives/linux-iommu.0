@@ -1,82 +1,68 @@
-From: Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH] iommu/omap: remove DEBUG_SEQ_FOPS_RO()
-Date: Thu, 22 Nov 2018 08:54:43 -0500
-Message-ID: <20181122135443.25035-1-tiny.windzz@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Yangtao Li <tiny.windzz@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: remove the ->mapping_error method from dma_map_ops V2
+Date: Thu, 22 Nov 2018 15:02:56 +0100
+Message-ID: <20181122140320.24080-1-hch@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, x86@kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Jon Mason <jdmason@kudzu.us>, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Because we already have the DEFINE_SHOW_ATTRIBUTE,there is no need
-to define such a macro.So remove DEBUG_SEQ_FOPS_RO.
+Error reporting for the dma_map_single and dma_map_page operations is
+currently a mess.  Both APIs directly return the dma_addr_t to be used for
+the DMA, with a magic error escape that is specific to the instance and
+checked by another method provided.  This has a few downsides:
 
-Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
----
- drivers/iommu/omap-iommu-debug.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
+ - the error check is easily forgotten and a __must_check marker doesn't
+   help as the value always is consumed anyway
+ - the error checking requires another indirect call, which have gotten
+   incredibly expensive
+ - a lot of code is wasted on implementing these methods
 
-diff --git a/drivers/iommu/omap-iommu-debug.c b/drivers/iommu/omap-iommu-debug.c
-index 50217548c3b8..4abc0ef522a8 100644
---- a/drivers/iommu/omap-iommu-debug.c
-+++ b/drivers/iommu/omap-iommu-debug.c
-@@ -159,7 +159,7 @@ static size_t omap_dump_tlb_entries(struct omap_iommu *obj, struct seq_file *s)
- 	return 0;
- }
- 
--static int debug_read_tlb(struct seq_file *s, void *data)
-+static int tlb_show(struct seq_file *s, void *data)
- {
- 	struct omap_iommu *obj = s->private;
- 
-@@ -210,7 +210,7 @@ static void dump_ioptable(struct seq_file *s)
- 	spin_unlock(&obj->page_table_lock);
- }
- 
--static int debug_read_pagetable(struct seq_file *s, void *data)
-+static int pagetable_show(struct seq_file *s, void *data)
- {
- 	struct omap_iommu *obj = s->private;
- 
-@@ -228,35 +228,22 @@ static int debug_read_pagetable(struct seq_file *s, void *data)
- 	return 0;
- }
- 
--#define DEBUG_SEQ_FOPS_RO(name)						       \
--	static int debug_open_##name(struct inode *inode, struct file *file)   \
--	{								       \
--		return single_open(file, debug_read_##name, inode->i_private); \
--	}								       \
--									       \
--	static const struct file_operations debug_##name##_fops = {	       \
--		.open		= debug_open_##name,			       \
--		.read		= seq_read,				       \
--		.llseek		= seq_lseek,				       \
--		.release	= single_release,			       \
--	}
--
- #define DEBUG_FOPS_RO(name)						\
--	static const struct file_operations debug_##name##_fops = {	\
-+	static const struct file_operations name##_fops = {	        \
- 		.open = simple_open,					\
- 		.read = debug_read_##name,				\
- 		.llseek = generic_file_llseek,				\
- 	}
- 
- DEBUG_FOPS_RO(regs);
--DEBUG_SEQ_FOPS_RO(tlb);
--DEBUG_SEQ_FOPS_RO(pagetable);
-+DEFINE_SHOW_ATTRIBUTE(tlb);
-+DEFINE_SHOW_ATTRIBUTE(pagetable);
- 
- #define __DEBUG_ADD_FILE(attr, mode)					\
- 	{								\
- 		struct dentry *dent;					\
- 		dent = debugfs_create_file(#attr, mode, obj->debug_dir,	\
--					   obj, &debug_##attr##_fops);	\
-+					   obj, &attr##_fops);	        \
- 		if (!dent)						\
- 			goto err;					\
- 	}
--- 
-2.17.0
+The historical reason for this is that people thought DMA mappings would
+not fail when the API was created, which sounds like a really bad
+assumption in retrospective, and then we tried to cram error handling
+onto it later on.
+
+There basically are two variants:  the error code is 0 because the
+implementation will never return 0 as a valid DMA address, or the error
+code is all-F as the implementation won't ever return an address that
+high.  The old AMD GART is the only one not falling into these two camps
+as it picks sort of a relative zero relative to where it is mapped.
+
+The 0 return doesn't work for direct mappings that have ram at address
+zero and a lot of IOMMUs that start allocating bus space from address
+zero, so we can't consolidate on that, but I think we can move everyone
+to all-Fs, which the patch here does.  The reason for that is that
+there is only one way to ever get this address: by doing a 1-byte long,
+1-byte aligned mapping, but all our mappings are not only longer but
+generally aligned, and the mappings have to keep at least the basic
+alignment.
+
+Note that the first two patches are queued up for 4.20 and included
+for reference.
+
+A git tree is also available here:
+
+    git://git.infradead.org/users/hch/misc.git dma-mapping-error.2
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-mapping-error.2
+
+Changes since v1:
+ - dropped the signature change
+ - split into multiple patches
+ - fixed the iova allocator return check in amd-iommu
+ - remove EMERGENCY_PAGES in amd_gart and calgary
