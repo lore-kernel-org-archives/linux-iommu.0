@@ -1,11 +1,15 @@
-From: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Handle domain agaw being less than iommu agaw
-Date: Wed, 21 Nov 2018 15:29:33 -0800
-Message-ID: <20181121232933.158582-1-sohil.mehta@intel.com>
+From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v2 2/3] mm: Add support for SLAB_CACHE_DMA32
+Date: Thu, 22 Nov 2018 08:52:46 +0800
+Message-ID: <CANMq1KD4j=Zh1izN8Ujn3+ZsdMMzCLPurfkXTkM9TyQaTptjFw@mail.gmail.com>
+References: <20181111090341.120786-1-drinkcat@chromium.org>
+	<20181111090341.120786-3-drinkcat@chromium.org>
+	<01000167378bf31a-a639b46c-4d1d-43de-9bed-9cdd9c07fa94-000000@email.amazonses.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <01000167378bf31a-a639b46c-4d1d-43de-9bed-9cdd9c07fa94-000000-p/GC64/jrecnJqMo6gzdpkEOCMrvLtNR@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,58 +19,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Ravi V Shankar <ravi.v.shankar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>
+Cc: Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The Intel IOMMU driver opportunistically skips a few top level page
-tables from the domain paging directory while programming the IOMMU
-context entry. However there is an implicit assumption in the code that
-domain's adjusted guest address width (agaw) would always be greater
-than IOMMU's agaw.
+On Thu, Nov 22, 2018 at 2:32 AM Christopher Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org> wrote:
+>
+> On Sun, 11 Nov 2018, Nicolas Boichat wrote:
+>
+> > SLAB_CACHE_DMA32 is only available after explicit kmem_cache_create calls,
+> > no default cache is created for kmalloc. Add a test in check_slab_flags
+> > for this.
+>
+> This does not define the dma32 kmalloc array. Is that intentional?
 
-The IOMMU capabilities in an upcoming platform cause the domain's agaw
-to be lower than IOMMU's agaw. The issue is seen when the IOMMU supports
-both 4-level and 5-level paging. The domain builds a 4-level page table
-based on agaw of 2. However the IOMMU's agaw is set as 3 (5-level). In
-this case the code incorrectly tries to skip page page table levels.
-This causes the IOMMU driver to avoid programming the context entry. The
-fix handles this case and programs the context entry accordingly.
+Yes that's intentional, AFAICT there is no user, so there is no point
+creating the cache.
 
-Fixes: de24e55395698 ("iommu/vt-d: Simplify domain_context_mapping_one")
-Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Reviewed-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Reported-by: Ramos Falcon, Ernesto R <ernesto.r.ramos.falcon-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Tested-by: Ricardo Neri <ricardo.neri-calderon-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Signed-off-by: Sohil Mehta <sohil.mehta-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ (okay, I could find one, but it's probably broken:
+git grep GFP_DMA32 | grep k[a-z]*alloc
+drivers/media/platform/vivid/vivid-osd.c: dev->video_vbase =
+kzalloc(dev->video_buffer_size, GFP_KERNEL | GFP_DMA32);
+).
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f3ccf025108b..fdf79baf1d79 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -2044,7 +2044,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 	 * than default.  Unnecessary for PT mode.
- 	 */
- 	if (translation != CONTEXT_TT_PASS_THROUGH) {
--		for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-+		for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
- 			ret = -ENOMEM;
- 			pgd = phys_to_virt(dma_pte_addr(pgd));
- 			if (!dma_pte_present(pgd))
-@@ -2058,7 +2058,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 			translation = CONTEXT_TT_MULTI_LEVEL;
- 
- 		context_set_address_root(context, virt_to_phys(pgd));
--		context_set_address_width(context, iommu->agaw);
-+		context_set_address_width(context, agaw);
- 	} else {
- 		/*
- 		 * In pass through mode, AW must be programmed to
--- 
-2.19.0
+> In that
+> case you need to fail any request for GFP_DMA32 coming in via kmalloc.
+
+Well, we do check for these in check_slab_flags (aka GFP_SLAB_BUG_MASK
+before patch 1/3 of this series), so, with or without this patch,
+calls with GFP_DMA32 will end up failing in check_slab_flags.
