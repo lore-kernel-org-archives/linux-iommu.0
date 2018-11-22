@@ -1,37 +1,49 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH 1/4] PCI / ACPI: Identify external PCI devices
-Date: Thu, 22 Nov 2018 02:59:34 -0800
-Message-ID: <20181122105934.GA13325@infradead.org>
-References: <20181115111356.GA599@e107981-ln.cambridge.arm.com>
- <20181115113737.GW2500@lahna.fi.intel.com>
- <20181115120736.pscly6zwd3k2tvd2@wunner.de>
- <20181115121627.GA2500@lahna.fi.intel.com>
- <20181115174608.GA17691@e107981-ln.cambridge.arm.com>
- <CA+CmpXv9yM6nFdb0mcMPGHS-B_uGbQHYoO6iuefZC8gWoZYD3Q@mail.gmail.com>
- <20181115191026.GE4179@lahna.fi.intel.com>
- <20181116091804.GA4548@infradead.org>
- <20181116093210.GK4179@lahna.fi.intel.com>
- <20181122104840.GO4179@lahna.fi.intel.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 2/6] drivers core: Add I/O ASID allocator
+Date: Thu, 22 Nov 2018 11:17:59 +0000
+Message-ID: <99aa1594-1bc4-bd3b-031f-2863831163af@arm.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<20181019181158.2395-3-jean-philippe.brucker@arm.com>
+	<20181112144039.GA25808@8bytes.org>
+	<8f17757a-c657-aab9-a6a0-fb0cc9c610a8@arm.com>
+	<20181122084429.GB1586@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181122104840.GO4179@lahna.fi.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc: Christoph Hellwig <hch@infradead.org>, Yehezkel Bernat <yehezkelshb@gmail.com>, ashok.raj@intel.com, Mario Limonciello <Mario.Limonciello@dell.com>, michael.jamet@intel.com, Christian Kellner <ckellner@redhat.com>, rjw@rjwysocki.net, Anthony Wong <anthony.wong@canonical.com>, LKML <linux-kernel@vger.kernel.org>, Andreas Noever <andreas.noever@gmail.com>, iommu@lists.linux-foundation.org, lukas@wunner.de, jacob.jun.pan@intel.com, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181122084429.GB1586-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 12:48:40PM +0200, Mika Westerberg wrote:
-> We had an internal discussion regarding this and it was suggested that
-> the new flag is called "is_untrusted" instead of "is_external". This
-> covers Thunderbolt devices currently but can be extend to any other PCIe
-> device such as "SD express" ones. When IOMMU is turned on it will then
-> make sure devices with "is_untrusted" set are always using full IOMMU
-> protection.
+On 22/11/2018 08:44, Joerg Roedel wrote:
+> Hi Jean-Philippe,
 > 
-> Any comments, objections? I was going to send v2 with this change
-> included.
+> On Wed, Nov 21, 2018 at 11:16:07AM +0000, Jean-Philippe Brucker wrote:
+>> On 12/11/2018 14:40, Joerg Roedel wrote:
+>>> What is the intended use-case for this function?
+>>
+>> I'm using it in sva_bind(), to see if there already exists an io_mm
+>> associated to the mm_struct given as argument
+> 
+> Can we store the pasid in the mm_struct directly? We still need a
+> reverse mapping for the page-fault path, but storing information in
+> mm_struct makes at least this path faster.
 
-Sounds good to me as long as it goes along with a nice fat comment
-explaining it.
+The bind() path doesn't really need to be fast. So on its own, I don't
+think it justifies changing the mm_struct until we have real-world
+numbers indicating that it's really too slow (as the worst case of
+iterating over 2**20 values will be)
+
+Thanks,
+Jean
