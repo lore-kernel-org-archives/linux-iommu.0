@@ -1,72 +1,76 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v2 3/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
- and improve debugging
-Date: Thu, 22 Nov 2018 09:20:46 +0800
-Message-ID: <CANMq1KCHGZ2vEWg+OQQ-SwvHcU-oMp4qKzEYfLwRYD5ZmRdRsA@mail.gmail.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
- <20181111090341.120786-4-drinkcat@chromium.org> <20181121164638.GD24883@arm.com>
- <20181121180000.GU12932@dhcp22.suse.cz>
+From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
+ critical sections
+Date: Thu, 22 Nov 2018 11:04:22 +0900
+Message-ID: <20181122020422.GA3441@jagdpanzerIV>
+References: <1542653726-5655-1-git-send-email-longman@redhat.com>
+ <1542653726-5655-8-git-send-email-longman@redhat.com>
+ <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181121180000.GU12932@dhcp22.suse.cz>
+Content-Disposition: inline
+In-Reply-To: <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: mhocko@kernel.org
-Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>
+To: Waiman Long <longman@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 2:02 AM Michal Hocko <mhocko@kernel.org> wrote:
->
-> On Wed 21-11-18 16:46:38, Will Deacon wrote:
-> > On Sun, Nov 11, 2018 at 05:03:41PM +0800, Nicolas Boichat wrote:
-> > > For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
-> > > is defined (e.g. on arm64 platforms).
-> > >
-> > > For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32.
-> > >
-> > > Also, print an error when the physical address does not fit in
-> > > 32-bit, to make debugging easier in the future.
-> > >
-> > > Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-> > > Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
-> > > ---
-> > >
-> > > Changes since v1:
-> > >  - Changed approach to use SLAB_CACHE_DMA32 added by the previous
-> > >    commit.
-> > >  - Use DMA or DMA32 depending on the architecture (DMA for arm,
-> > >    DMA32 for arm64).
-> > >
-> > > drivers/iommu/io-pgtable-arm-v7s.c | 20 ++++++++++++++++----
-> > >  1 file changed, 16 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> > > index 445c3bde04800c..996f7b6d00b44a 100644
-> > > --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> > > +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> > > @@ -161,6 +161,14 @@
-> > >
-> > >  #define ARM_V7S_TCR_PD1                    BIT(5)
-> > >
-> > > +#ifdef CONFIG_ZONE_DMA32
-> > > +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
-> > > +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA32
-> > > +#else
-> > > +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
-> > > +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA
-> > > +#endif
+On (11/21/18 11:49), Waiman Long wrote:
+[..]
+> >  	case ODEBUG_STATE_ACTIVE:
+> > -		debug_print_object(obj, "init");
+> >  		state = obj->state;
+> >  		raw_spin_unlock_irqrestore(&db->lock, flags);
+> > +		debug_print_object(obj, "init");
+> >  		debug_object_fixup(descr->fixup_init, addr, state);
+> >  		return;
+> >  
+> >  	case ODEBUG_STATE_DESTROYED:
+> > -		debug_print_object(obj, "init");
+> > +		debug_printobj = true;
+> >  		break;
+> >  	default:
+> >  		break;
+> >  	}
+> >  
+> >  	raw_spin_unlock_irqrestore(&db->lock, flags);
+> > +	if (debug_chkstack)
+> > +		debug_object_is_on_stack(addr, onstack);
+> > +	if (debug_printobj)
+> > +		debug_print_object(obj, "init");
 > >
-> > It's a bit grotty that GFP_DMA32 doesn't just map to GFP_DMA on 32-bit
-> > architectures, since then we wouldn't need this #ifdeffery afaict.
+[..]
 >
-> But GFP_DMA32 should map to GFP_KERNEL on 32b, no? Or what exactly is
-> going on in here?
+> As a side note, one of the test systems that I used generated a
+> debugobjects splat in the bootup process and the system hanged
+> afterward. Applying this patch alone fix the hanging problem and the
+> system booted up successfully. So it is not really a good idea to call
+> printk() while holding a raw spinlock.
 
-GFP_DMA32 will fail due to check_slab_flags (aka GFP_SLAB_BUG_MASK
-before patch 1/3 of this series)... But yes, it may be neater if there
-was transparent remapping of GFP_DMA32/SLAB_CACHE_DMA32 to
-GFP_DMA/SLAB_CACHE_DMA on 32-bit arch...
+Right, I like this patch.
+And I think that we, maybe, can go even further.
 
-> --
-> Michal Hocko
-> SUSE Labs
+Some serial consoles call mod_timer(). So what we could have with the
+debug objects enabled was
+
+	mod_timer()
+	 lock_timer_base()
+	  debug_activate()
+	   printk()
+	    call_console_drivers()
+	     foo_console()
+	      mod_timer()
+	       lock_timer_base()       << deadlock
+
+That's one possible scenario. The other one can involve console's
+IRQ handler, uart port spinlock, mod_timer, debug objects, printk,
+and an eventual deadlock on the uart port spinlock. This one can
+be mitigated with printk_safe. But mod_timer() deadlock will require
+a different fix.
+
+So maybe we need to switch debug objects print-outs to _always_
+printk_deferred(). Debug objects can be used in code which cannot
+do direct printk() - timekeeping is just one example.
+
+	-ss
