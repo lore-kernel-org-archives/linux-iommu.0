@@ -1,271 +1,57 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 1/8] iommu: Add APIs for multiple domains per device
-Date: Fri, 23 Nov 2018 11:50:06 +0100
-Message-ID: <51871885-05d2-febc-1dba-4d74108d0f46@redhat.com>
-References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
- <20181105073408.21815-2-baolu.lu@linux.intel.com>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V2
+Date: Fri, 23 Nov 2018 11:01:55 +0000
+Message-ID: <20181123110155.GR30658@n2100.armlinux.org.uk>
+References: <20181122140320.24080-1-hch@lst.de>
+ <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
+ <20181122170715.GI30658@n2100.armlinux.org.uk>
+ <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
+ <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
+ <20181123104918.GE1586@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181105073408.21815-2-baolu.lu@linux.intel.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20181123104918.GE1586@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, jdmason@kudzu.us, xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lu,
+On Fri, Nov 23, 2018 at 11:49:18AM +0100, Joerg Roedel wrote:
+> On Thu, Nov 22, 2018 at 05:52:15PM +0000, Robin Murphy wrote:
+> > Unfortunately, with things like the top-down IOVA allocator, and 32-bit
+> > systems in general, "the top 4095" values may well still be valid addresses
+> > - we're relying on a 1-byte mapping of the very top byte of memory/IOVA
+> > space being sufficiently ridiculous that no real code would ever do that,
+> > but even a 4-byte mapping of the top 4 bytes is within the realms of the
+> > plausible (I've definitely seen the USB layer make 8-byte mappings from any
+> > old offset within a page, for example).
+> 
+> But we can easily work around that by reserving the top 4k of the first
+> 4GB of IOVA address space in the allocator, no? Then these values are
+> never returned as valid DMA handles.
 
-On 11/5/18 8:34 AM, Lu Baolu wrote:
-> Sharing a physical PCI device in a finer-granularity way
-> is becoming a consensus in the industry. IOMMU vendors
-> are also engaging efforts to support such sharing as well
-> as possible. Among the efforts, the capability of support
-> finer-granularity DMA isolation is a common requirement
-> due to the security consideration. With finer-granularity
-> DMA isolation, all DMA requests out of or to a subset of
-> a physical PCI device can be protected by the IOMMU. As a
-> result, there is a request in software to attach multiple
-> domains to a physical PCI device. One example of such use
-> model is the Intel Scalable IOV [1] [2]. The Intel vt-d
-> 3.0 spec [3] introduces the scalable mode which enables
-> PASID granularity DMA isolation.
-> 
-> This adds the APIs to support multiple domains per device.
-> In order to ease the discussions, we call it 'a domain in
-> auxiliary mode' or simply 'auxiliary domain' when multiple
-> domains are attached to a physical device.
-> 
-> The APIs includes:
-> 
-> * iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_CAPABILITY)
->   - Represents the ability of supporting multiple domains
->     per device.
-> 
-> * iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLED)
->   - Checks whether the device identified by @dev is working
->     in auxiliary mode.
-> 
-> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLE)
->   - Enables the multiple domains capability for the device
->     referenced by @dev.
-> 
-> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_DISABLE)
->   - Disables the multiple domains capability for the device
->     referenced by @dev.
-> 
-> * iommu_attach_device_aux(domain, dev)
->   - Attaches @domain to @dev in the auxiliary mode. Multiple
->     domains could be attached to a single device in the
->     auxiliary mode with each domain representing an isolated
->     address space for an assignable subset of the device.
-> 
-> * iommu_detach_device_aux(domain, dev)
->   - Detach @domain which has been attached to @dev in the
->     auxiliary mode.
-> 
-> * iommu_domain_get_attr(domain, DOMAIN_ATTR_AUXD_ID)
->   - Return ID used for finer-granularity DMA translation.
->     For the Intel Scalable IOV usage model, this will be
->     a PASID. The device which supports Scalalbe IOV needs
-s/Scalalbe/Scalable
->     to writes this ID to the device register so that DMA
-s/writes/write
->     requests could be tagged with a right PASID prefix.
-This is not crystal clear to me as the intel implementation returns the
-default PASID and not the PASID of the aux domain.
-> 
-> Many people involved in discussions of this design.
-> 
-> Kevin Tian <kevin.tian@intel.com>
-> Liu Yi L <yi.l.liu@intel.com>
-> Ashok Raj <ashok.raj@intel.com>
-> Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Alex Williamson <alex.williamson@redhat.com>
-> Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> 
-> and some discussions can be found here [4].
-> 
-> [1] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-> [2] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-> [3] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-> [4] https://lkml.org/lkml/2018/7/26/4
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: Liu Yi L <yi.l.liu@intel.com>
-> Suggested-by: Kevin Tian <kevin.tian@intel.com>
-> Suggested-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/iommu.c | 52 +++++++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h | 52 +++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 104 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index edbdf5d6962c..0b7c96d1425e 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2030,3 +2030,55 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-> +
-> +/*
-> + * Generic interfaces to get or set per device IOMMU attributions.
-> + */
-> +int iommu_get_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
-> +{
-> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> +
-> +	if (ops && ops->get_dev_attr)
-> +		return ops->get_dev_attr(dev, attr, data);
-> +
-> +	return -EINVAL;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_get_dev_attr);
-> +
-> +int iommu_set_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
-> +{
-> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> +
-> +	if (ops && ops->set_dev_attr)
-> +		return ops->set_dev_attr(dev, attr, data);
-> +
-> +	return -EINVAL;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_set_dev_attr);
-> +
-> +/*
-> + * APIs to attach/detach a domain to/from a device in the
-> + * auxiliary mode.
-> + */
-> +int iommu_attach_device_aux(struct iommu_domain *domain, struct device *dev)
-> +{
-> +	int ret = -ENODEV;
-> +
-> +	if (domain->ops->attach_dev_aux)
-> +		ret = domain->ops->attach_dev_aux(domain, dev);
-> +
-> +	if (!ret)
-> +		trace_attach_device_to_domain(dev);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_attach_device_aux);
-> +
-> +void iommu_detach_device_aux(struct iommu_domain *domain, struct device *dev)
-> +{
-> +	if (domain->ops->detach_dev_aux) {
-> +		domain->ops->detach_dev_aux(domain, dev);
-> +		trace_detach_device_from_domain(dev);
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_detach_device_aux);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a1d28f42cb77..9bf1b3f2457a 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -126,6 +126,7 @@ enum iommu_attr {
->  	DOMAIN_ATTR_NESTING,	/* two stages of translation */
->  	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
->  	DOMAIN_ATTR_MAX,
-> +	DOMAIN_ATTR_AUXD_ID,
->  };
->  
->  /* These are the possible reserved region types */
-> @@ -156,6 +157,14 @@ struct iommu_resv_region {
->  	enum iommu_resv_type	type;
->  };
->  
-> +/* Per device IOMMU attributions */
-> +enum iommu_dev_attr {
-> +	IOMMU_DEV_ATTR_AUXD_CAPABILITY,
-> +	IOMMU_DEV_ATTR_AUXD_ENABLED,
-> +	IOMMU_DEV_ATTR_AUXD_ENABLE,
-> +	IOMMU_DEV_ATTR_AUXD_DISABLE,
-> +};
-> +
->  #ifdef CONFIG_IOMMU_API
->  
->  /**
-> @@ -183,6 +192,8 @@ struct iommu_resv_region {
->   * @domain_window_enable: Configure and enable a particular window for a domain
->   * @domain_window_disable: Disable a particular window for a domain
->   * @of_xlate: add OF master IDs to iommu grouping
-> + * @get_dev_attr: get per device IOMMU attributions
-s/attributions/attributes here and other locations?
-> + * @set_dev_attr: set per device IOMMU attributions
->   * @pgsize_bitmap: bitmap of all possible supported page sizes
->   */
->  struct iommu_ops {
-> @@ -226,6 +237,15 @@ struct iommu_ops {
->  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
->  	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
->  
-> +	/* Get/set per device IOMMU attributions */
-> +	int (*get_dev_attr)(struct device *dev,
-> +			    enum iommu_dev_attr attr, void *data);
-> +	int (*set_dev_attr)(struct device *dev,
-> +			    enum iommu_dev_attr attr, void *data);
-> +	/* Attach/detach aux domain */
-> +	int (*attach_dev_aux)(struct iommu_domain *domain, struct device *dev);
-> +	void (*detach_dev_aux)(struct iommu_domain *domain, struct device *dev);
-> +
->  	unsigned long pgsize_bitmap;
->  };
->  
-> @@ -398,6 +418,16 @@ void iommu_fwspec_free(struct device *dev);
->  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
->  const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
->  
-> +int iommu_get_dev_attr(struct device *dev,
-> +		       enum iommu_dev_attr attr, void *data);
-> +int iommu_set_dev_attr(struct device *dev,
-> +		       enum iommu_dev_attr attr, void *data);
-> +
-> +extern int iommu_attach_device_aux(struct iommu_domain *domain,
-> +				   struct device *dev);
-> +extern void iommu_detach_device_aux(struct iommu_domain *domain,
-> +				    struct device *dev);
-> +
->  #else /* CONFIG_IOMMU_API */
->  
->  struct iommu_ops {};
-> @@ -682,6 +712,28 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->  	return NULL;
->  }
->  
-> +static inline int
-> +iommu_get_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline int
-> +iommu_set_dev_attr(struct device *dev, enum iommu_dev_attr attr, void *data)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline int
-> +iommu_attach_device_aux(struct iommu_domain *domain, struct device *dev)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline void
-> +iommu_detach_device_aux(struct iommu_domain *domain, struct device *dev)
-> +{
-> +}
->  #endif /* CONFIG_IOMMU_API */
->  
->  #ifdef CONFIG_IOMMU_DEBUGFS
-> 
+Yuck.  So, if we have a 4GB non-PAE 32-bit system, or a PAE system
+where we have valid memory across the 4GB boundary and no IOMMU,
+we have to reserve the top 4K page in the first 4GB of RAM?
 
-Thanks
+Linus' IS_DMA_ERR() solution is way more preferable, but unfortunately
+it still falls short, because it knocks out the top 4K of every DMA
+capable bus.
 
-Eric
+A DMA capable bus may involve some translation of the address (eg, by
+simple offsetting) which means that we'd need to potentially knock out
+multiple pages from the page allocator for each of those pages that
+correspond to the top 4K of any DMA capable bus.  Knowing that at the
+right time at boot will be fun!  It also sounds wasteful to me.
+
+Rather than inventing magic cookies like this, I'd much rather we
+sanitised the API so that we have functions that return success or
+an error code, rather than trying to shoe-horn some kind of magic
+error codes into dma_addr_t and subtly break systems in the process.
+
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
