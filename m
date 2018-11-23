@@ -1,69 +1,77 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v3] drm/rockchip: update cursors asynchronously through
- atomic.
-Date: Fri, 23 Nov 2018 14:35:48 +0900
-Message-ID: <CAAFQd5DAti8Vf+jyLp6nVH5FiesE=jLNoLq3AFaqdm2FfY=v9Q@mail.gmail.com>
-References: <20181119190805.19139-1-helen.koike@collabora.com>
- <CAAFQd5DDZwhdMDbrHthQwm2bQ3+NoZNcemAktVTxkR3=LfnnTg@mail.gmail.com>
- <d3fb3b21-6c3d-6b01-727b-dbd66540ce92@collabora.com>
- <CAAFQd5Afa9ndmU0=q5Kjv-BY+0qpvOdq2+eOTO6OebX4-2NENA@mail.gmail.com>
- <1d10a4323a49ca09bbb7dc865aaaf5b8c5e3b3d5.camel@crowfest.net>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
+ tables
+Date: Fri, 23 Nov 2018 13:37:11 +0800
+Message-ID: <CANMq1KC56nz7u8r54LUbN43DXxZPQWBY67FR1P18tps5V3E-Zw@mail.gmail.com>
+References: <20181111090341.120786-1-drinkcat@chromium.org>
+ <0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
+ <20181121213853.GL3065@bombadil.infradead.org>
+ <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
+ <20181122082336.GA2049@infradead.org>
+ <CANMq1KALUmxkhE8aaYzEbd7YodF1296KdVympOP+2mWVQ9zmDA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1d10a4323a49ca09bbb7dc865aaaf5b8c5e3b3d5.camel@crowfest.net>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: mzoran@crowfest.net
-Cc: =?UTF-8?Q?St=C3=A9phane_Marchesin?= <marcheu@google.com>, Sean Paul <seanpaul@google.com>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, David Airlie <airlied@linux.ie>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, helen.koike@collabora.com, dri-devel <dri-devel@lists.freedesktop.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, kernel@collabora.com, Gustavo Padovan <gustavo.padovan@collabora.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CANMq1KALUmxkhE8aaYzEbd7YodF1296KdVympOP+2mWVQ9zmDA@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: hch@infradead.org
+Cc: Pekka Enberg <penberg@kernel.org>, Michal Hocko <mhocko@suse.com>, Andrew Morton <akpm@linux-foundation.org>, Huaisheng Ye <yehs1@lenovo.com>, linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>, Will Deacon <will.deacon@arm.com>, lkml <linux-kernel@vger.kernel.org>, willy@infradead.org, Levin Alexander <Alexander.Levin@microsoft.com>, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Mike Rapoport <rppt@linux.vnet.ibm.com>, Vlastimil Babka <vbabka@suse.cz>, David Rientjes <rientjes@google.com>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Christoph Lameter <cl@linux.com>, Robin Murphy <robin.murphy@arm.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgTWljaGFlbCwKCk9uIEZyaSwgTm92IDIzLCAyMDE4IGF0IDE6NTggUE0gTWljaGFlbCBab3Jh
-biA8bXpvcmFuQGNyb3dmZXN0Lm5ldD4gd3JvdGU6Cj4KPiBPbiBGcmksIDIwMTgtMTEtMjMgYXQg
-MTE6MjcgKzA5MDAsIFRvbWFzeiBGaWdhIHdyb3RlOgo+ID4KPiA+IFRoZSBwb2ludCBoZXJlIGlz
-IG5vdCBhYm91dCBzZXR0aW5nIGFuZCByZXNldHRpbmcgdGhlIHBsYW5lLT5mYgo+ID4gcG9pbnRl
-ci4gSXQncyBhYm91dCB3aGF0IGhhcHBlbnMgaW5zaWRlCj4gPiBkcm1fYXRvbWljX3NldF9mYl9m
-b3JfcGxhbmUoKS4KPiA+Cj4gPiBJdCBjYWxscyBkcm1fZnJhbWVidWZmZXJfZ2V0KCkgZm9yIHRo
-ZSBuZXcgZmIgYW5kCj4gPiBkcm1fZnJhbWVidWZmZXJfcHV0KCkgZm9yIHRoZSBvbGQgZmIuIElu
-IHJlc3VsdCwgaWYgdGhlIGZiIGNoYW5nZXMsCj4gPiB0aGUgb2xkIGZiLCB3aGljaCBoYWQgaXRz
-IHJlZmVyZW5jZSBjb3VudCBpbmNyZW1lbnRlZCBpbiB0aGUgYXRvbWljCj4gPiBjb21taXQgdGhh
-dCBzZXQgaXQgdG8gdGhlIHBsYW5lIGJlZm9yZSwgaGFzIGl0cyByZWZlcmVuY2UgY291bnQKPiA+
-IGRlY3JlbWVudGVkLiBNb3Jlb3ZlciwgaWYgdGhlIG5ldyByZWZlcmVuY2UgY291bnQgYmVjb21l
-cyAwLAo+ID4gZHJtX2ZyYW1lYnVmZmVyX3B1dCgpIHdpbGwgaW1tZWRpYXRlbHkgZnJlZSB0aGUg
-YnVmZmVyLgo+ID4KPiA+IEZyZWVpbmcgYSBidWZmZXIgd2hlbiB0aGUgaGFyZHdhcmUgaXMgc3Rp
-bGwgc2Nhbm5pbmcgb3V0IG9mIGl0IGlzbid0Cj4gPiBhCj4gPiBnb29kIGlkZWEsIGlzIGl0Pwo+
-Cj4gTm8sIGl0J3Mgbm90LiAgQnV0IHRoZSBib2FyZCBJIHN1Ym1pdHRlZCB0aGUgcGF0Y2ggZm9y
-IGRvZXNuJ3QgaGF2ZQo+IGFueXRoaW5nIGxpa2UgaG90IHN3YXBhYmxlIHJhbS4gIFRoZSByYW0g
-YWNjZXNzIGlzIHN0aWxsIGdvaW5nIHRvIHdvcmssCj4ganVzdCBpdCBtaWdodCBkaXNwbGF5IHNv
-bWV0aGluZyBpdCBzaG91bGRuJ3QuIFNheSBmb3IgZXhhbXBsZSBpZiB0aGF0Cj4gZnJhbWUgYnVm
-ZmVyIGdvdCByZXVzZWQgYnkgc29tZXRoaWcgZWxzZSBhbmQgZmlsbGVkIHdpdGggbmV3IGRhdGEg
-aW4KPiB0aGUgdmVyeSBzbWFsbCB3aW5kb3cuCgpUaGFua3MgZm9yIGEgcXVpY2sgcmVwbHkhCgpU
-byBjbGFyaWZ5LCBvbiB0aGUgUm9ja2NoaXAgcGxhdGZvcm0gdGhpcyBwYXRjaCBpcyBmb3IgKGFu
-ZCBtYW55IG90aGVyCmFybS9hcm02NCBTb0NzKSB0aGUgZGlzcGxheSBjb250cm9sbGVyIGlzIGJl
-aGluZCBhbiBJT01NVS4gRnJlZWluZyB0aGUKYnVmZmVyIHdvdWxkIG1lYW4gdW5tYXBwaW5nIHRo
-ZSByZWxhdGVkIElPVkFzIGZyb20gdGhlIElPTU1VLiBJZiB0aGUKaGFyZHdhcmUgaXMgc3RpbGwg
-c2Nhbm5pbmcgb3V0IGZyb20gdGhlIHVubWFwcGVkIGFkZHJlc3NlcywgaXQgd291bGQKY2F1c2Ug
-SU9NTVUgcGFnZSBmYXVsdHMuIFdlIGRvbid0IGhhdmUgYW55IGdvb2QgSU9NTVUgcGFnZSBmYXVs
-dApoYW5kbGluZyBpbiB0aGUga2VybmVsLCBzbyBvbiBtb3N0IHBsYXRmb3JtcyB0aGF0IHdvdWxk
-IGxpa2VseSBlbmQgdXAKc3RhbGxpbmcgdGhlIGRpc3BsYXkgY29udHJvbGxlciBjb21wbGV0ZWx5
-IChvbiBSb2NrY2hpcCBpdCBkb2VzKS4KCj4KPiBCdXQgeWVzLCBJIGFncmVlIHRoZSBiZXN0IHNv
-bHV0aW9uIHdvdWxkIGJlIHRvIG5vdCByZWxlYXNlIHRoZSBidWZmZXIKPiB1bnRpbCB0aGUgbmV4
-dCB2YmxhbmsuCj4KPiBQZXJoYXBzIGEgZ29vZCBzb2x1dGlvbiB3b3VsZCBiZSBmb3IgdGhlIERS
-TSBhcGkgdG8gaGF2ZSB0aGUgY29uY2VwdCBvZgo+IGEgZGVmZXJyZWQgcmVsZWFzZT8gIE1lYW5p
-bmcgaWYgdGhlIHB1dCgpIGNhbGwganVzdCBhZGRlZCB0aGUgZnJhbWUKPiBidWZmZXIgdG8gYSBs
-aXN0IHRoYXQgRFJNIGNvcmUgY291bGQgd2FsayBkdXJpbmcgdGhlIHZibGFuay4gIFRoYXQKPiBt
-aWdodCBiZSBiZXR0ZXIgdGhlbiBldmVyeSBzaW5nbGUgZHJpdmVyIHRyeWluZyB0byB3b3JrIHVw
-IGEgY3VzdG9tCj4gc29sdXRpb24uCgpBZ3JlZWQuCgpCZXN0IHJlZ2FyZHMsClRvbWFzegpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFp
-bGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5m
-cmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+On Fri, Nov 23, 2018 at 11:04 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
+>
+> On Thu, Nov 22, 2018 at 4:23 PM Christoph Hellwig <hch@infradead.org> wrote:
+> >
+> > On Wed, Nov 21, 2018 at 10:26:26PM +0000, Robin Murphy wrote:
+> > > TBH, if this DMA32 stuff is going to be contentious we could possibly just
+> > > rip out the offending kmem_cache - it seemed like good practice for the
+> > > use-case, but provided kzalloc(SZ_1K, gfp | GFP_DMA32) can be relied upon to
+> > > give the same 1KB alignment and chance of succeeding as the equivalent
+> > > kmem_cache_alloc(), then we could quite easily make do with that instead.
+> >
+> > Neither is the slab support for kmalloc, not do kmalloc allocations
+> > have useful alignment apparently (at least if you use slub debug).
+> >
+> > But I do agree with the sentiment of not wanting to spread GFP_DMA32
+> > futher into the slab allocator.
+> >
+> > I think you want a simple genalloc allocator for this rather special
+> > use case.
+>
+> So I had a look at genalloc, we'd need to add pre-allocated memory
+> using gen_pool_add [1]. There can be up to 4096 L2 page tables, so we
+> may need to pre-allocate 4MB of memory (1KB per L2 page table). We
+> could add chunks on demand, but then it'd be difficult to free them up
+> (genalloc does not have a "gen_pool_remove" call). So basically if the
+> full 4MB end up being requested, we'd be stuck with that until the
+> iommu domain is freed (on the arm64 Mediatek platforms I looked at,
+> there is only one iommu domain, and it never gets freed).
+
+I tried out genalloc with pre-allocated 4MB, and that seems to work
+fine. Allocating in chunks would require genalloc changes as
+gen_pool_add calls kmalloc with just GFP_KERNEL [2], and we are in
+atomic context in __arm_v7s_alloc_table...
+
+[2] https://elixir.bootlin.com/linux/latest/source/lib/genalloc.c#L190
+
+> page_frag would at least have a chance to reclaim those pages (if I
+> understand Christoph's statement correctly)
+>
+> Robin: Do you have some ideas of the lifetime/usage of L2 tables? If
+> they are usually few of them, or if they don't get reclaimed easily,
+> some on demand genalloc allocation would be ok (or even 4MB allocation
+> on init, if we're willing to take that hit). If they get allocated and
+> freed together, maybe page_frag is a better option?
+>
+> Thanks,
+>
+> [1] https://www.kernel.org/doc/html/v4.19/core-api/genalloc.html
