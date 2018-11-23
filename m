@@ -1,54 +1,72 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
- swiotlb_map_sg_attrs
-Date: Fri, 23 Nov 2018 19:34:15 +0000
-Message-ID: <1c782a3d-cac4-954f-21e7-ef89147f0d56@arm.com>
-References: <20181008080246.20543-1-hch@lst.de>
- <20181008080246.20543-7-hch@lst.de>
- <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
- <20181109074955.GA27489@lst.de>
- <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
- <20181114141311.GA26677@lst.de> <20181114161239.GA29462@lst.de>
- <CALAqxLVMW2sYkaQvggZ-LhvkzpuF2rssQJ4thZkkAkROk=wVVw@mail.gmail.com>
- <20181120092516.GC7270@lst.de> <20181123182715.GA21183@arm.com>
+From: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
+Date: Fri, 23 Nov 2018 13:34:48 -0800
+Message-ID: <20181123213448.GW3065@bombadil.infradead.org>
+References: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
+	<bbad42cb-4a76-a7e7-c385-db77f1cc588b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181123182715.GA21183@arm.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Christoph Hellwig <hch@lst.de>, john.stultz@linaro.org
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <bbad42cb-4a76-a7e7-c385-db77f1cc588b-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: mhocko-IBi9RG/b67k@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-On 2018-11-23 6:27 pm, Will Deacon wrote:
-> Hi John,
+On Fri, Nov 23, 2018 at 05:23:06PM +0000, Robin Murphy wrote:
+> On 15/11/2018 15:49, Souptick Joarder wrote:
+> > Convert to use vm_insert_range() to map range of kernel
+> > memory to user vma.
+> > 
+> > Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> > ---
+> >   drivers/iommu/dma-iommu.c | 12 ++----------
+> >   1 file changed, 2 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index d1b0475..69c66b1 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -622,17 +622,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+> >   int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+> >   {
+> > -	unsigned long uaddr = vma->vm_start;
+> > -	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > -	int ret = -ENXIO;
+> > +	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > -	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+> > -		ret = vm_insert_page(vma, uaddr, pages[i]);
+> > -		if (ret)
+> > -			break;
+> > -		uaddr += PAGE_SIZE;
+> > -	}
+> > -	return ret;
+> > +	return vm_insert_range(vma, vma->vm_start, pages, count);
 > 
-> On Tue, Nov 20, 2018 at 10:25:16AM +0100, Christoph Hellwig wrote:
->> On Mon, Nov 19, 2018 at 03:22:13PM -0800, John Stultz wrote:
->>>> +               sg->dma_address = dma_addr;
->>>>                  sg_dma_len(sg) = sg->length;
->>>>          }
->>>
->>> I know Robin has already replied with more detailed info, but just to
->>> close the loop as I'm finally home, applying this patch didn't seem to
->>> help with the IO hangs I'm seeing w/ HiKey960.
->>
->> If Robins observation is right this should fix the problem for you:
-> 
-> Please could you give this diff a try and let us know whether the problem
-> persists with your board?
+> AFIACS, vm_insert_range() doesn't respect vma->vm_pgoff, so doesn't this
+> break partial mmap()s of a large buffer? (which I believe can be a thing)
 
-This is actually the exact same change that I ended up with in my 
-fixes[1], which John has indeed confirmed.
+Whoops.  That should have been:
 
-(sorry, it's the thing I was telling you about the other day, but I 
-neglected to include you on cc you when I sent the patches out the 
-following morning)
+return vm_insert_range(vma, vma->vm_start, pages + vma->vm_pgoff, count);
 
-Robin.
+I suppose.
 
-[1] https://lore.kernel.org/lkml/cover.1542812807.git.robin.murphy@arm.com/
+Although arguably we should respect vm_pgoff inside vm_insert_region()
+and then callers automatically get support for vm_pgoff without having
+to think about it ... although we should then also pass in the length
+of the pages array to avoid pages being mapped in which aren't part of
+the allocated array.
+
+Hm.  More thought required.
