@@ -1,60 +1,36 @@
-From: David Hildenbrand <david@redhat.com>
-Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Fri, 23 Nov 2018 11:36:28 +0100
-Message-ID: <d7cb905f-76f7-3053-2a46-e1a514bd309b@redhat.com>
-References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V2
+Date: Fri, 23 Nov 2018 11:49:18 +0100
+Message-ID: <20181123104918.GE1586@8bytes.org>
+References: <20181122140320.24080-1-hch@lst.de>
+ <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
+ <20181122170715.GI30658@n2100.armlinux.org.uk>
+ <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
+ <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux@armlinux.org.uk, Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, jdmason@kudzu.us, xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 23.11.18 10:54, Anshuman Khandual wrote:
-> At present there are multiple places where invalid node number is encoded
-> as -1. Even though implicitly understood it is always better to have macros
-> in there. Replace these open encodings for an invalid node number with the
-> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
-> 'invalid node' from various places redirecting them to a common definition.
-> 
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
-> 
-> Changes in V1:
-> 
-> - Dropped OCFS2 changes per Joseph
-> - Dropped media/video drivers changes per Hans
-> 
-> RFC - https://patchwork.kernel.org/patch/10678035/
-> 
-> Build tested this with multiple cross compiler options like alpha, sparc,
-> arm64, x86, powerpc, powerpc64le etc with their default config which might
-> not have compiled tested all driver related changes. I will appreciate
-> folks giving this a test in their respective build environment.
-> 
-> All these places for replacement were found by running the following grep
-> patterns on the entire kernel code. Please let me know if this might have
-> missed some instances. This might also have replaced some false positives.
-> I will appreciate suggestions, inputs and review.
-> 
-> 1. git grep "nid == -1"
-> 2. git grep "node == -1"
-> 3. git grep "nid = -1"
-> 4. git grep "node = -1"
+On Thu, Nov 22, 2018 at 05:52:15PM +0000, Robin Murphy wrote:
+> Unfortunately, with things like the top-down IOVA allocator, and 32-bit
+> systems in general, "the top 4095" values may well still be valid addresses
+> - we're relying on a 1-byte mapping of the very top byte of memory/IOVA
+> space being sufficiently ridiculous that no real code would ever do that,
+> but even a 4-byte mapping of the top 4 bytes is within the realms of the
+> plausible (I've definitely seen the USB layer make 8-byte mappings from any
+> old offset within a page, for example).
 
-Hopefully you found most users :)
-
-Did you check if some are encoded into function calls? f(-1, ...)
-
-Reviewed-by: David Hildenbrand <david@redhat.com>
+But we can easily work around that by reserving the top 4k of the first
+4GB of IOVA address space in the allocator, no? Then these values are
+never returned as valid DMA handles.
 
 
--- 
+Regards,
 
-Thanks,
-
-David / dhildenb
+	Joerg
