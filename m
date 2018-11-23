@@ -1,62 +1,51 @@
-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
- critical sections
-Date: Fri, 23 Nov 2018 11:40:48 +0900
-Message-ID: <20181123024048.GD1582@jagdpanzerIV>
-References: <1542653726-5655-1-git-send-email-longman@redhat.com>
- <1542653726-5655-8-git-send-email-longman@redhat.com>
- <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
- <20181122020422.GA3441@jagdpanzerIV>
- <20181122101606.GP2131@hirez.programming.kicks-ass.net>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v3 00/15] MT8183 IOMMU SUPPORT
+Date: Fri, 23 Nov 2018 10:55:10 +0800
+Message-ID: <1542941710.15759.8.camel@mhfsdcap03>
+References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
+         <20181122125931.GC1586@8bytes.org> <20181122133526.GA13896@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181122101606.GP2131@hirez.programming.kicks-ass.net>
+In-Reply-To: <20181122133526.GA13896@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Waiman Long <longman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On (11/22/18 11:16), Peter Zijlstra wrote:
-> > So maybe we need to switch debug objects print-outs to _always_
-> > printk_deferred(). Debug objects can be used in code which cannot
-> > do direct printk() - timekeeping is just one example.
+On Thu, 2018-11-22 at 13:35 +0000, Will Deacon wrote:
+> On Thu, Nov 22, 2018 at 01:59:31PM +0100, Joerg Roedel wrote:
+> > On Sat, Nov 17, 2018 at 10:35:27AM +0800, Yong Wu wrote:
+> > > Yong Wu (14):
+> > >   dt-bindings: mediatek: Add binding for mt8183 IOMMU and SMI
+> > >   iommu/mediatek: Use a struct as the platform data
+> > >   memory: mtk-smi: Use a general config_port interface
+> > >   iommu/io-pgtable-arm-v7s: Add paddr_to_iopte and iopte_to_paddr
+> > >     helpers
+> > >   iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB Mode
+> > >   iommu/mediatek: Add mt8183 IOMMU support
+> > >   iommu/mediatek: Add mmu1 support
+> > >   memory: mtk-smi: Invoke pm runtime_callback to enable clocks
+> > >   memory: mtk-smi: Use a struct for the platform data for smi-common
+> > >   memory: mtk-smi: Add bus_sel for mt8183
+> > >   iommu/mediatek: Add VLD_PA_RANGE register backup when suspend
+> > >   iommu/mediatek: Add shutdown callback
+> > >   memory: mtk-smi: Get rid of need_larbid
+> > >   iommu/mediatek: Switch to SPDX license identifier
+> > 
+> > This should probably go through the IOMMU tree. For that I'd like to
+> > have Acks (reviews are even better) for the io-pgtable parts from Robin
+> > and for the memory parts from Matthias first.
 > 
-> No, printk_deferred() is a disease, it needs to be eradicated, not
-> spread around.
+> Robin already reviewed the pgtable bits, I think.
 
-deadlock-free printk() is deferred, but OK.
+Thanks Joerg/Will for your comment.
 
+Hi Matthias,
 
-Another idea then:
+  Could you help also have a look at this patchset? Especially for the
+memory part. Thanks in advance.
 
----
-
-diff --git a/lib/debugobjects.c b/lib/debugobjects.c
-index 70935ed91125..3928c2b2f77c 100644
---- a/lib/debugobjects.c
-+++ b/lib/debugobjects.c
-@@ -323,10 +323,13 @@ static void debug_print_object(struct debug_obj *obj, char *msg)
- 		void *hint = descr->debug_hint ?
- 			descr->debug_hint(obj->object) : NULL;
- 		limit++;
-+
-+		bust_spinlocks(1);
- 		WARN(1, KERN_ERR "ODEBUG: %s %s (active state %u) "
- 				 "object type: %s hint: %pS\n",
- 			msg, obj_states[obj->state], obj->astate,
- 			descr->name, hint);
-+		bust_spinlocks(0);
- 	}
- 	debug_objects_warnings++;
- }
-
----
-
-This should make serial consoles re-entrant.
-So printk->console_driver_write() hopefully will not deadlock.
-
-IOW, this turns serial consoles into early_consoles, for a while ;)
-
-	-ss
+> 
+> Will
