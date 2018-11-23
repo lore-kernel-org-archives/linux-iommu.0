@@ -1,103 +1,231 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: remove the ->mapping_error method from dma_map_ops V2
-Date: Fri, 23 Nov 2018 13:20:38 +0000
-Message-ID: <20181123132038.GT30658@n2100.armlinux.org.uk>
-References: <20181122140320.24080-1-hch@lst.de>
- <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
- <20181122170715.GI30658@n2100.armlinux.org.uk>
- <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
- <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
- <20181123104918.GE1586@8bytes.org>
- <20181123110155.GR30658@n2100.armlinux.org.uk>
- <20181123130313.GI1586@8bytes.org>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v4 7/8] vfio/type1: Add domain at(de)taching group helpers
+Date: Fri, 23 Nov 2018 15:13:51 +0100
+Message-ID: <b5f5eda1-2dbf-dd7e-3b68-bfd9e5099c06@redhat.com>
+References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+	<20181105073408.21815-8-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181123130313.GI1586@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, jdmason@kudzu.us, xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181105073408.21815-8-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 23, 2018 at 02:03:13PM +0100, Joerg Roedel wrote:
-> On Fri, Nov 23, 2018 at 11:01:55AM +0000, Russell King - ARM Linux wrote:
-> > Yuck.  So, if we have a 4GB non-PAE 32-bit system, or a PAE system
-> > where we have valid memory across the 4GB boundary and no IOMMU,
-> > we have to reserve the top 4K page in the first 4GB of RAM?
+Hi Lu,
+
+On 11/5/18 8:34 AM, Lu Baolu wrote:
+> This adds helpers to attach or detach a domain to a
+> group. This will replace iommu_attach_group() which
+> only works for pci devices.
+s/pci/non mdev?
 > 
-> But that is only needed when dma_addr_t is 32bit anyway, no?
-
-You said:
-
-  But we can easily work around that by reserving the top 4k of the first
-  4GB of IOVA address space in the allocator, no? Then these values are
-  never returned as valid DMA handles.
-
-To me, your proposal equates to this in code:
-
-int dma_error(dma_addr_t addr)
-{
-	return (addr & ~(dma_addr_t)0xfff) == 0xfffff000 ? (s32)addr : 0; 
-}
-
-Hence, the size of dma_addr_t would be entirely irrelevant.  This
-makes dma_addr_t values in the range of 0xfffff000 to 0xffffffff special,
-irrespective of whether dma_addr_t is 32-bit or 64-bit.
-
-If that's not what you meant, then I'm afraid your statement wasn't
-worded very well - so please can you re-word to state more precisely
-what your proposal is?
-
-> > Rather than inventing magic cookies like this, I'd much rather we
-> > sanitised the API so that we have functions that return success or
-> > an error code, rather than trying to shoe-horn some kind of magic
-> > error codes into dma_addr_t and subtly break systems in the process.
+> If a domain is attaching to a group which includes the
+> mediated devices, it should attach to the iommu device
+> (a pci device which represents the mdev in iommu scope)
+> instead. The added helper supports attaching domain to
+> groups for both pci and mdev devices.
 > 
-> Sure, but is has the obvious downside that we need to touch every driver
-> that uses these functions, and that are probably a lot of drivers.
+> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> Signed-off-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 114 ++++++++++++++++++++++++++++++--
+>  1 file changed, 107 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index d9fd3188615d..178264b330e7 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -91,6 +91,7 @@ struct vfio_dma {
+>  struct vfio_group {
+>  	struct iommu_group	*iommu_group;
+>  	struct list_head	next;
+> +	bool			mdev_group;	/* An mdev group */
+>  };
+>  
+>  /*
+> @@ -1327,6 +1328,105 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
+>  	return ret;
+>  }
+>  
+> +static struct device *vfio_mdev_get_iommu_device(struct device *dev)
+> +{
+> +	struct device *(*fn)(struct device *dev);
+> +	struct device *iommu_parent;
+> +
+> +	fn = symbol_get(mdev_get_iommu_device);
+> +	if (fn) {
+> +		iommu_parent = fn(dev);
+> +		symbol_put(mdev_get_iommu_device);
+> +
+> +		return iommu_parent;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +static int vfio_mdev_set_domain(struct device *dev, struct iommu_domain *domain)
+> +{
+> +	int (*fn)(struct device *dev, void *domain);
+> +	int ret;
+> +
+> +	fn = symbol_get(mdev_set_iommu_domain);
+> +	if (fn) {
+> +		ret = fn(dev, domain);
+> +		symbol_put(mdev_set_iommu_domain);
+> +
+> +		return ret;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int vfio_mdev_attach_domain(struct device *dev, void *data)
+> +{
+> +	struct iommu_domain *domain = data;
+> +	struct device *iommu_device;
+> +	int ret;
+> +
+> +	ret = vfio_mdev_set_domain(dev, domain);
+> +	if (ret)
+> +		return ret;
+> +
+> +	iommu_device = vfio_mdev_get_iommu_device(dev);
+> +	if (iommu_device) {
+> +		bool aux_mode = false;
+> +
+> +		iommu_get_dev_attr(iommu_device,
+> +				   IOMMU_DEV_ATTR_AUXD_ENABLED, &aux_mode);
+Don' you need to test the returned value before using aux_mode?
+> +		if (aux_mode)
+> +			return iommu_attach_device_aux(domain, iommu_device);
+> +		else
+> +			return iommu_attach_device(domain, iommu_device);
+if for some reason the above ops fail, don't you want to call
+vfio_mdev_set_domain(dev, NULL)
 
-So we have two options:
-- change the interface
-- subtly break drivers
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int vfio_mdev_detach_domain(struct device *dev, void *data)
+> +{
+> +	struct iommu_domain *domain = data;
+> +	struct device *iommu_device;
+> +
+> +	vfio_mdev_set_domain(dev, NULL);
+> +	iommu_device = vfio_mdev_get_iommu_device(dev);
+> +	if (iommu_device) {
+> +		bool aux_mode = false;
+> +
+> +		iommu_get_dev_attr(iommu_device,
+> +				   IOMMU_DEV_ATTR_AUXD_ENABLED, &aux_mode);
+same here
+> +		if (aux_mode)
+> +			iommu_detach_device_aux(domain, iommu_device);
+> +		else
+> +			iommu_detach_device(domain, iommu_device);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int vfio_iommu_attach_group(struct vfio_domain *domain,
+> +				   struct vfio_group *group)
+> +{
+> +	if (group->mdev_group)
+> +		return iommu_group_for_each_dev(group->iommu_group,
+> +						domain->domain,
+> +						vfio_mdev_attach_domain);
+> +	else
+> +		return iommu_attach_group(domain->domain, group->iommu_group);
+> +}
+> +
+> +static void vfio_iommu_detach_group(struct vfio_domain *domain,
+> +				    struct vfio_group *group)
+> +{
+> +	if (group->mdev_group)
+> +		iommu_group_for_each_dev(group->iommu_group, domain->domain,
+> +					 vfio_mdev_detach_domain);
+> +	else
+> +		iommu_detach_group(domain->domain, group->iommu_group);
+> +}
+> +
+>  static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  					 struct iommu_group *iommu_group)
+>  {
+> @@ -1402,7 +1502,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  			goto out_domain;
+>  	}
+>  
+> -	ret = iommu_attach_group(domain->domain, iommu_group);
+> +	ret = vfio_iommu_attach_group(domain, group);
+>  	if (ret)
+>  		goto out_domain;
+>  
+> @@ -1434,8 +1534,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	list_for_each_entry(d, &iommu->domain_list, next) {
+>  		if (d->domain->ops == domain->domain->ops &&
+>  		    d->prot == domain->prot) {
+> -			iommu_detach_group(domain->domain, iommu_group);
+> -			if (!iommu_attach_group(d->domain, iommu_group)) {
+> +			vfio_iommu_detach_group(domain, group);
+> +			if (!vfio_iommu_attach_group(d, group)) {
+>  				list_add(&group->next, &d->group_list);
+>  				iommu_domain_free(domain->domain);
+>  				kfree(domain);
+> @@ -1443,7 +1543,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  				return 0;
+>  			}
+>  
+> -			ret = iommu_attach_group(domain->domain, iommu_group);
+> +			ret = vfio_iommu_attach_group(domain, group);
+>  			if (ret)
+>  				goto out_domain;
+>  		}
+> @@ -1469,7 +1569,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	return 0;
+>  
+>  out_detach:
+> -	iommu_detach_group(domain->domain, iommu_group);
+> +	vfio_iommu_detach_group(domain, group);
+>  out_domain:
+>  	iommu_domain_free(domain->domain);
+>  out_free:
+> @@ -1560,7 +1660,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>  		if (!group)
+>  			continue;
+>  
+> -		iommu_detach_group(domain->domain, iommu_group);
+> +		vfio_iommu_detach_group(domain, group);
+>  		list_del(&group->next);
+>  		kfree(group);
+>  		/*
+> @@ -1625,7 +1725,7 @@ static void vfio_release_domain(struct vfio_domain *domain, bool external)
+>  	list_for_each_entry_safe(group, group_tmp,
+>  				 &domain->group_list, next) {
+>  		if (!external)
+> -			iommu_detach_group(domain->domain, group->iommu_group);
+> +			vfio_iommu_detach_group(domain, group);
+>  		list_del(&group->next);
+>  		kfree(group);
+>  	}
+> 
+Thanks
 
-In any case, I disagree that we need to touch every driver.  Today,
-drivers just do:
-
-	if (dma_mapping_error(dev, addr))
-
-and, because dma_mapping_error() returns a boolean, they only care about
-the true/falseness.  If we're going to start returning error codes, then
-there's no point just returning error codes unless we have some way for
-drivers to use them.  Yes, the simple way would be to make
-dma_mapping_error() translate addr to an error code, and that maintains
-compatibility with existing drivers.
-
-If, instead, we revamped the DMA API, and had the *new* mapping functions
-which returned an error code, then the existing mapping functions can be
-implemented as part of compatibility rather trivially:
-
-dma_addr_t dma_map_single(...)
-{
-	dma_addr_t addr;
-	int error;
-
-	error = dma_map_single_error(..., &addr);
-	if (error)
-		addr = DMA_MAPPING_ERROR;
-	return addr;
-}
-
-which means that if drivers want access to the error code, they use
-dma_map_single_error(), meanwhile existing drivers just get on with life
-as it _currently_ is, with the cookie-based all-ones error code - without
-introducing any of this potential breakage.
-
-Remember, existing drivers would need modification in _any_ case to make
-use of a returned error code, so the argument that we'd need to touch
-every driver doesn't really stand up.
-
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Eric
