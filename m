@@ -1,57 +1,58 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
-Date: Fri, 23 Nov 2018 17:23:06 +0000
-Message-ID: <bbad42cb-4a76-a7e7-c385-db77f1cc588b@arm.com>
-References: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+ swiotlb_map_sg_attrs
+Date: Fri, 23 Nov 2018 18:27:16 +0000
+Message-ID: <20181123182715.GA21183@arm.com>
+References: <20181008080246.20543-1-hch@lst.de>
+ <20181008080246.20543-7-hch@lst.de>
+ <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
+ <20181109074955.GA27489@lst.de>
+ <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
+ <20181114141311.GA26677@lst.de>
+ <20181114161239.GA29462@lst.de>
+ <CALAqxLVMW2sYkaQvggZ-LhvkzpuF2rssQJ4thZkkAkROk=wVVw@mail.gmail.com>
+ <20181120092516.GC7270@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <20181120092516.GC7270@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Souptick Joarder <jrdr.linux@gmail.com>, akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, joro@8bytes.org
-Cc: linux-mm@kvack.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, john.stultz@linaro.org
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 15/11/2018 15:49, Souptick Joarder wrote:
-> Convert to use vm_insert_range() to map range of kernel
-> memory to user vma.
-> 
-> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-> Reviewed-by: Matthew Wilcox <willy@infradead.org>
-> ---
->   drivers/iommu/dma-iommu.c | 12 ++----------
->   1 file changed, 2 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index d1b0475..69c66b1 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -622,17 +622,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->   
->   int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
->   {
-> -	unsigned long uaddr = vma->vm_start;
-> -	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	int ret = -ENXIO;
-> +	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->   
-> -	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
-> -		ret = vm_insert_page(vma, uaddr, pages[i]);
-> -		if (ret)
-> -			break;
-> -		uaddr += PAGE_SIZE;
-> -	}
-> -	return ret;
-> +	return vm_insert_range(vma, vma->vm_start, pages, count);
+Hi John,
 
-AFIACS, vm_insert_range() doesn't respect vma->vm_pgoff, so doesn't this 
-break partial mmap()s of a large buffer? (which I believe can be a thing)
-
-Robin.
-
->   }
->   
->   static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+On Tue, Nov 20, 2018 at 10:25:16AM +0100, Christoph Hellwig wrote:
+> On Mon, Nov 19, 2018 at 03:22:13PM -0800, John Stultz wrote:
+> > > +               sg->dma_address = dma_addr;
+> > >                 sg_dma_len(sg) = sg->length;
+> > >         }
+> > 
+> > I know Robin has already replied with more detailed info, but just to
+> > close the loop as I'm finally home, applying this patch didn't seem to
+> > help with the IO hangs I'm seeing w/ HiKey960.
 > 
+> If Robins observation is right this should fix the problem for you:
+
+Please could you give this diff a try and let us know whether the problem
+persists with your board?
+
+Thanks,
+
+Will
+
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index bd73e7a91410..1833f0c1fba0 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -5,7 +5,7 @@
+>  #include <linux/dma-mapping.h>
+>  #include <linux/mem_encrypt.h>
+>  
+> -#define DIRECT_MAPPING_ERROR		0
+> +#define DIRECT_MAPPING_ERROR		(~(dma_addr_t)0x0)
+>  
+>  #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
+>  #include <asm/dma-direct.h>
