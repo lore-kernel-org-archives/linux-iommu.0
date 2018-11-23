@@ -1,133 +1,95 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v4 8/8] vfio/type1: Handle different mdev isolation type
-Date: Fri, 23 Nov 2018 15:23:21 +0100
-Message-ID: <e9822321-fca3-29bc-f5a1-c6297d2161ae@redhat.com>
-References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
-	<20181105073408.21815-9-baolu.lu@linux.intel.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.20-rc3
+Date: Fri, 23 Nov 2018 17:37:32 +0100
+Message-ID: <20181123163727.aa3hdbnne3aadypo@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181105073408.21815-9-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="tk5lct6z7maxlqz2"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lu,
 
-On 11/5/18 8:34 AM, Lu Baolu wrote:
-> This adds the support to determine the isolation type
-> of a mediated device group by checking whether it has
-> an iommu device. If an iommu device exists, an iommu
-> domain will be allocated and then attached to the iommu
-> device. Otherwise, keep the same behavior as it is.
-> 
-> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Signed-off-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 48 ++++++++++++++++++++++++++++-----
->  1 file changed, 42 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 178264b330e7..eed26129f58c 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1427,13 +1427,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
->  		iommu_detach_group(domain->domain, group->iommu_group);
->  }
->  
-> +static bool vfio_bus_is_mdev(struct bus_type *bus)
-> +{
-> +	struct bus_type *mdev_bus;
-> +	bool ret = false;
-> +
-> +	mdev_bus = symbol_get(mdev_bus_type);
-> +	if (mdev_bus) {
-> +		ret = (bus == mdev_bus);
-> +		symbol_put(mdev_bus_type);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int vfio_mdev_iommu_device(struct device *dev, void *data)
-> +{
-> +	struct device **old = data, *new;
-> +
-> +	new = vfio_mdev_get_iommu_device(dev);
-> +	if (*old && *old != new)
-if !new can't you return -EINVAL as well?
-> +		return -EINVAL;
-> +
-> +	*old = new;
-> +
-> +	return 0;
-> +}
-> +
->  static int vfio_iommu_type1_attach_group(void *iommu_data,
->  					 struct iommu_group *iommu_group)
->  {
->  	struct vfio_iommu *iommu = iommu_data;
->  	struct vfio_group *group;
->  	struct vfio_domain *domain, *d;
-> -	struct bus_type *bus = NULL, *mdev_bus;
-> +	struct bus_type *bus = NULL;
->  	int ret;
->  	bool resv_msi, msi_remap;
->  	phys_addr_t resv_msi_base;
-> @@ -1468,11 +1495,18 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	if (ret)
->  		goto out_free;
->  
-> -	mdev_bus = symbol_get(mdev_bus_type);
-> +	if (vfio_bus_is_mdev(bus)) {
-> +		struct device *iommu_device = NULL;
->  
-> -	if (mdev_bus) {
-> -		if ((bus == mdev_bus) && !iommu_present(bus)) {
-> -			symbol_put(mdev_bus_type);
-> +		group->mdev_group = true;
-> +
-> +		/* Determine the isolation type */
-> +		ret = iommu_group_for_each_dev(iommu_group, &iommu_device,
-> +					       vfio_mdev_iommu_device);
-> +		if (ret)
-> +			goto out_free;
-> +
-> +		if (!iommu_device) {
->  			if (!iommu->external_domain) {
->  				INIT_LIST_HEAD(&domain->group_list);
->  				iommu->external_domain = domain;
-> @@ -1482,9 +1516,11 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  			list_add(&group->next,
->  				 &iommu->external_domain->group_list);
->  			mutex_unlock(&iommu->lock);
-> +
-extra new line
->  			return 0;
->  		}
-> -		symbol_put(mdev_bus_type);
-> +
-> +		bus = iommu_device->bus;
->  	}
->  
->  	domain->domain = iommu_domain_alloc(bus);
-> 
-Thanks
+--tk5lct6z7maxlqz2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Eric
+Hi Linus,
+
+The following changes since commit 651022382c7f8da46cb4872a545ee1da6d097d2a:
+
+  Linux 4.20-rc1 (2018-11-04 15:37:52 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-fixes-v4.20-rc3
+
+for you to fetch changes up to 829383e183728dec7ed9150b949cd6de64127809:
+
+  iommu/vt-d: Use memunmap to free memremap (2018-11-22 17:02:21 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.20-rc3
+
+Including:
+
+	- Two fixes for the Intel VT-d driver to fix a NULL-ptr
+	  dereference and an unbalance in an allocate/free path
+	  (allocated with memremap, freed with iounmap)
+
+	- Fix for a crash in the Renesas IOMMU driver
+
+	- Fix for the Advanced Virtual Interrupt Controler (AVIC) code
+	  in the AMD IOMMU driver
+
+----------------------------------------------------------------
+Filippo Sironi (1):
+      amd/iommu: Fix Guest Virtual APIC Log Tail Address Register
+
+Geert Uytterhoeven (1):
+      iommu/ipmmu-vmsa: Fix crash on early domain free
+
+Lu Baolu (1):
+      iommu/vt-d: Fix NULL pointer dereference in prq_event_thread()
+
+Pan Bian (1):
+      iommu/vt-d: Use memunmap to free memremap
+
+ drivers/iommu/amd_iommu_init.c | 3 ++-
+ drivers/iommu/intel-iommu.c    | 2 +-
+ drivers/iommu/intel-svm.c      | 2 +-
+ drivers/iommu/ipmmu-vmsa.c     | 3 +++
+ 4 files changed, 7 insertions(+), 3 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--tk5lct6z7maxlqz2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJb+CzHAAoJECvwRC2XARrjCzQP/idwEUlR75GqdMbUIeMQX6at
+Ew2I2mOJ/7w9syOxqTJUsTrEyPQly1T3iBNqlium5L+EjaVzBziqeT3pSROX7wjV
+64zLdjQLVebqH0/gklnhxRmG0TRn/D3lWDvWISRX1dEqLlOWMOvPPjd+231rxA12
+dv+eT3o2srYkq3f61LEKWwGKwBq5WdHh9E9u/PRfM2pqZMs1aRPzsr5Xcz4QsLwK
+pDUEfL6uoSnMsSKmbp92vSvnUow5+OMkFq5FZ5OeSzw1dQf7eAZz93ZqCyZYLkwq
+8b4zeY6u7/1/kjfcRAyUkOEeM39qMd/hL44fADtcV4PoyQjOo7+PeOfrxZMhjoL3
+yU07WJUwSiQxfiMoOEUa+qMzzqhgZC5nJmlThF4fmJ2i37lZmbMLVWdAsx0xsSdb
+ZiszfbQ97vWu1SGhifmomSke2IiF5XyTflJhFNoG3+JSqUkci56gRgwT8fQftbdK
+I6ZVTOorYrLzUOkYuDJE34lGpxANVYEukyWRlmvI/0VqfLJD8dGvNjy+FMM866Cu
+0xTYXCErT4SregZgEUIfVXudqZY1ngo8BInDEuYDkdElSgz1jW0KSsGlorDbTUgB
+Z2GyB77dK2a4NHlmSee2FLsvGRCLIFCqmCfOywlsnogXxmCbKxxkKgSWgHu5T0dn
+gU0JYrYE6NuWXHpHMNs2
+=tZ2d
+-----END PGP SIGNATURE-----
+
+--tk5lct6z7maxlqz2--
