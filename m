@@ -1,74 +1,56 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Fri, 23 Nov 2018 12:21:25 +0100
-Message-ID: <20181123112125.GF1586@8bytes.org>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
-	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
-	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
-	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
-	<20181107164323.GA19831@8bytes.org>
-	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
+ critical sections
+Date: Fri, 23 Nov 2018 12:36:48 +0100
+Message-ID: <20181123113648.6fieltetklnoex6v@pathway.suse.cz>
+References: <1542653726-5655-1-git-send-email-longman@redhat.com>
+ <1542653726-5655-8-git-send-email-longman@redhat.com>
+ <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
+ <20181122020422.GA3441@jagdpanzerIV>
+ <20181122160250.lxyfzsybfwskrh54@pathway.suse.cz>
+ <fd006ace-f339-34c2-d87f-51f145ac8364@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <fd006ace-f339-34c2-d87f-51f145ac8364@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Waiman Long <longman@redhat.com>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 21, 2018 at 12:40:44PM +0800, Lu Baolu wrote:
-> Can you please elaborate a bit more about the concept of subdomains?
-> From my point of view, an aux-domain is a normal un-managed domain which
-> has a PASID and could be attached to any ADIs through the aux-domain
-> specific attach/detach APIs. It could also be attached to a device with
-> the existing domain_attach/detach_device() APIs at the same time, hence
-> mdev and pci devices in a vfio container could share a domain.
+On Thu 2018-11-22 15:29:35, Waiman Long wrote:
+> On 11/22/2018 11:02 AM, Petr Mladek wrote:
+> > Anyway, I wonder what was the primary motivation for this patch.
+> > Was it the system hang? Or was it lockdep report about nesting
+> > two terminal locks: db->lock, pool_lock with logbuf_lock?
+> 
+> The primary motivation was to make sure that printk() won't be called
+> while holding either db->lock or pool_lock in the debugobjects code. In
+> the determination of which locks can be made terminal, I focused on
+> local spinlocks that won't cause boundary to an unrelated subsystem as
+> it will greatly complicate the analysis.
 
-Okay, let's think a bit about having aux-specific attach/detach
-functions, in the end I don't insist on my proposal as long as the
-IOMMU-API extensions are clean, consistent, and have well defined
-semantics.
+Then please mention this as the real reason in the commit message.
 
-If we have aux-domain specific attach/detach functions like
-iommu_aux_domain_attach/detach(), what happens when the primary domain
-of the device is changed with iommu_attach/detach()?
-
-	1) Will the aux-domains stay in place? If yes, how does this
-	   work in setups where the pasid-bound page-tables are
-	   guest-owned and translated through the primary domain
-	   page-tables?
-
-	2) Will the aux-domains be unbound too? In that case, if the
-	   primary domain is re-used, will the aux-domains be implicitly
-	   bound too when iommu_device_attach() is called?
-
-	3) Do we just disallow changing the primary domain through that
-	   interface as long as there are aux-domains or mm_structs
-	   bound to the device?
-
-Using option 2) or 3) would mean that the aux-domains are still bound to
-the primary domain, but that is not reflected in the API. Further, if an
-aux-domain is just a normal domain (struct iommu_domain), what happens
-when a domain that was used as a primary domain and has bound
-aux-domains to it, is bound with iommu_aux_domain_attach() to another
-domain?
-
-As you can see, this design decission raises a lot of questions, but
-maybe we can work it out and find a solution we all agree on.
+The reason that printk might take too long in IRQ context does
+not explain why we need the patch. printk() is called in IRQ
+context in many other locations. I do not see why this place
+should be special. The delay is the price for the chance to
+see the problem.
 
 
-Regards,
+> I didn't realize that it fixed a hang problem that I was seeing until I
+> did bisection to find out that it was caused by the patch that cause the
+> debugobjects splat in the first place a few days ago. I was comparing
+> the performance status of the pre and post patched kernel. The pre-patch
+> kernel failed to boot in the one of my test systems, but the
+> post-patched kernel could. I narrowed it down to this patch as the fix
+> for the hang problem.
 
-	Joerg
+The hang is a mystery. My guess is that there is a race somewhere.
+The patch might have reduced the race window but it probably did
+not fix the race itself.
+
+Best Regards,
+Petr
