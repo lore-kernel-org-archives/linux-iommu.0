@@ -1,57 +1,67 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: remove the ->mapping_error method from dma_map_ops V2
-Date: Fri, 23 Nov 2018 11:01:55 +0000
-Message-ID: <20181123110155.GR30658@n2100.armlinux.org.uk>
-References: <20181122140320.24080-1-hch@lst.de>
- <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
- <20181122170715.GI30658@n2100.armlinux.org.uk>
- <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
- <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
- <20181123104918.GE1586@8bytes.org>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
+Date: Fri, 23 Nov 2018 16:46:00 +0530
+Message-ID: <2c0e9cef-663b-553c-e25e-63f7da59ab63@arm.com>
+References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+ <d7cb905f-76f7-3053-2a46-e1a514bd309b@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181123104918.GE1586@8bytes.org>
+In-Reply-To: <d7cb905f-76f7-3053-2a46-e1a514bd309b@redhat.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, jdmason@kudzu.us, xen-devel@lists.xenproject.org, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
+To: David Hildenbrand <david@redhat.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 23, 2018 at 11:49:18AM +0100, Joerg Roedel wrote:
-> On Thu, Nov 22, 2018 at 05:52:15PM +0000, Robin Murphy wrote:
-> > Unfortunately, with things like the top-down IOVA allocator, and 32-bit
-> > systems in general, "the top 4095" values may well still be valid addresses
-> > - we're relying on a 1-byte mapping of the very top byte of memory/IOVA
-> > space being sufficiently ridiculous that no real code would ever do that,
-> > but even a 4-byte mapping of the top 4 bytes is within the realms of the
-> > plausible (I've definitely seen the USB layer make 8-byte mappings from any
-> > old offset within a page, for example).
+min
+
+On 11/23/2018 04:06 PM, David Hildenbrand wrote:
+> On 23.11.18 10:54, Anshuman Khandual wrote:
+>> At present there are multiple places where invalid node number is encoded
+>> as -1. Even though implicitly understood it is always better to have macros
+>> in there. Replace these open encodings for an invalid node number with the
+>> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
+>> 'invalid node' from various places redirecting them to a common definition.
+>>
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>> ---
+>>
+>> Changes in V1:
+>>
+>> - Dropped OCFS2 changes per Joseph
+>> - Dropped media/video drivers changes per Hans
+>>
+>> RFC - https://patchwork.kernel.org/patch/10678035/
+>>
+>> Build tested this with multiple cross compiler options like alpha, sparc,
+>> arm64, x86, powerpc, powerpc64le etc with their default config which might
+>> not have compiled tested all driver related changes. I will appreciate
+>> folks giving this a test in their respective build environment.
+>>
+>> All these places for replacement were found by running the following grep
+>> patterns on the entire kernel code. Please let me know if this might have
+>> missed some instances. This might also have replaced some false positives.
+>> I will appreciate suggestions, inputs and review.
+>>
+>> 1. git grep "nid == -1"
+>> 2. git grep "node == -1"
+>> 3. git grep "nid = -1"
+>> 4. git grep "node = -1"
 > 
-> But we can easily work around that by reserving the top 4k of the first
-> 4GB of IOVA address space in the allocator, no? Then these values are
-> never returned as valid DMA handles.
+> Hopefully you found most users :)
 
-Yuck.  So, if we have a 4GB non-PAE 32-bit system, or a PAE system
-where we have valid memory across the 4GB boundary and no IOMMU,
-we have to reserve the top 4K page in the first 4GB of RAM?
+I hope so :)
 
-Linus' IS_DMA_ERR() solution is way more preferable, but unfortunately
-it still falls short, because it knocks out the top 4K of every DMA
-capable bus.
+> 
+> Did you check if some are encoded into function calls? f(-1, ...)
 
-A DMA capable bus may involve some translation of the address (eg, by
-simple offsetting) which means that we'd need to potentially knock out
-multiple pages from the page allocator for each of those pages that
-correspond to the top 4K of any DMA capable bus.  Knowing that at the
-right time at boot will be fun!  It also sounds wasteful to me.
+Not really. Just wondering how do we even search for it. There might be
+higher level functions passing down -1 to core MM. If you have some
+instances in mind which need replacement I will accommodate them.
 
-Rather than inventing magic cookies like this, I'd much rather we
-sanitised the API so that we have functions that return success or
-an error code, rather than trying to shoe-horn some kind of magic
-error codes into dma_addr_t and subtly break systems in the process.
+> 
+> Reviewed-by: David Hildenbrand <david@redhat.com>
 
--- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Thanks for the review.
