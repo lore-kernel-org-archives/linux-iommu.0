@@ -1,34 +1,95 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 09/17] debugobjects: Make object hash locks nestable
- terminal locks
-Date: Fri, 23 Nov 2018 10:29:11 +0100
-Message-ID: <20181123092911.vgl2se2jdt3lqi7r@pathway.suse.cz>
-References: <1542653726-5655-1-git-send-email-longman@redhat.com>
- <1542653726-5655-10-git-send-email-longman@redhat.com>
- <20181122153302.y5vqovrsaigi6pte@pathway.suse.cz>
- <6879cb32-1d6e-79bd-04c2-8f7c09c48bfe@redhat.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [RESEND PATCH v17 5/5] iommu/arm-smmu: Add support
+ for qcom, smmu-v2 variant
+Date: Fri, 23 Nov 2018 15:06:29 +0530
+Message-ID: <CAFp+6iFhBRJWGY4Hj30tWedGpEUcnkBJrOvffmbpD2m9QMZB3A@mail.gmail.com>
+References: <20181116112430.31248-1-vivek.gautam@codeaurora.org>
+ <20181116112430.31248-6-vivek.gautam@codeaurora.org>
+ <20181121173803.GB9801@arm.com>
+ <CAFp+6iELH7Mw3Ue2ksEyV+Ac8hG8--Ki69xrPCA4F-AcireRow@mail.gmail.com>
+ <CAAFQd5B-bZR8dmjARb8L4oqgET2YAjXhexAO0GKAvU4JoVU=7g@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <6879cb32-1d6e-79bd-04c2-8f7c09c48bfe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Waiman Long <longman@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAAFQd5B-bZR8dmjARb8L4oqgET2YAjXhexAO0GKAvU4JoVU=7g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu 2018-11-22 15:17:52, Waiman Long wrote:
-> On 11/22/2018 10:33 AM, Petr Mladek wrote:
-> > On Mon 2018-11-19 13:55:18, Waiman Long wrote:
-> >> By making the object hash locks nestable terminal locks, we can avoid
-> >> a bunch of unnecessary lockdep validations as well as saving space
-> >> in the lockdep tables.
-> > Please, explain which terminal lock might be nested.
->
-> So the db_lock is made to be nestable that it can allow acquisition of
-> pool_lock (a regular terminal lock) underneath it.
-
-Please, mention this in the commit message.
-
-Best Regards,
-Petr
+SGkgVG9tYXN6LAoKT24gRnJpLCBOb3YgMjMsIDIwMTggYXQgMjo1MiBQTSBUb21hc3ogRmlnYSA8
+dGZpZ2FAY2hyb21pdW0ub3JnPiB3cm90ZToKPgo+IEhpIFZpdmVrLCBXaWxsLAo+Cj4gT24gRnJp
+LCBOb3YgMjMsIDIwMTggYXQgNjoxMyBQTSBWaXZlayBHYXV0YW0KPiA8dml2ZWsuZ2F1dGFtQGNv
+ZGVhdXJvcmEub3JnPiB3cm90ZToKPiA+Cj4gPiBIaSBXaWxsLAo+ID4KPiA+IE9uIFdlZCwgTm92
+IDIxLCAyMDE4IGF0IDExOjA5IFBNIFdpbGwgRGVhY29uIDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3
+cm90ZToKPiA+ID4KPiA+ID4gWytUaG9yXQo+ID4gPgo+ID4gPiBPbiBGcmksIE5vdiAxNiwgMjAx
+OCBhdCAwNDo1NDozMFBNICswNTMwLCBWaXZlayBHYXV0YW0gd3JvdGU6Cj4gPiA+ID4gcWNvbSxz
+bW11LXYyIGlzIGFuIGFybSxzbW11LXYyIGltcGxlbWVudGF0aW9uIHdpdGggc3BlY2lmaWMKPiA+
+ID4gPiBjbG9jayBhbmQgcG93ZXIgcmVxdWlyZW1lbnRzLgo+ID4gPiA+IE9uIG1zbTg5OTYsIG11
+bHRpcGxlIGNvcmVzLCB2aXouIG1kc3MsIHZpZGVvLCBldGMuIHVzZSB0aGlzCj4gPiA+ID4gc21t
+dS4gT24gc2RtODQ1LCB0aGlzIHNtbXUgaXMgdXNlZCB3aXRoIGdwdS4KPiA+ID4gPiBBZGQgYmlu
+ZGluZ3MgZm9yIHRoZSBzYW1lLgo+ID4gPiA+Cj4gPiA+ID4gU2lnbmVkLW9mZi1ieTogVml2ZWsg
+R2F1dGFtIDx2aXZlay5nYXV0YW1AY29kZWF1cm9yYS5vcmc+Cj4gPiA+ID4gUmV2aWV3ZWQtYnk6
+IFJvYiBIZXJyaW5nIDxyb2JoQGtlcm5lbC5vcmc+Cj4gPiA+ID4gUmV2aWV3ZWQtYnk6IFRvbWFz
+eiBGaWdhIDx0ZmlnYUBjaHJvbWl1bS5vcmc+Cj4gPiA+ID4gVGVzdGVkLWJ5OiBTcmluaXZhcyBL
+YW5kYWdhdGxhIDxzcmluaXZhcy5rYW5kYWdhdGxhQGxpbmFyby5vcmc+Cj4gPiA+ID4gUmV2aWV3
+ZWQtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4gPiA+ID4gLS0tCj4g
+PiA+ID4gIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8IDEzICsrKysrKysrKysrKysKPiA+ID4g
+PiAgMSBmaWxlIGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKykKPiA+ID4gPgo+ID4gPiA+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11
+LmMKPiA+ID4gPiBpbmRleCAyMDk4YzMxNDFmNWYuLmQzMTVjYTYzNzA5NyAxMDA2NDQKPiA+ID4g
+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPiA+ID4gPiArKysgYi9kcml2ZXJzL2lv
+bW11L2FybS1zbW11LmMKPiA+ID4gPiBAQCAtMTIwLDYgKzEyMCw3IEBAIGVudW0gYXJtX3NtbXVf
+aW1wbGVtZW50YXRpb24gewo+ID4gPiA+ICAgICAgIEdFTkVSSUNfU01NVSwKPiA+ID4gPiAgICAg
+ICBBUk1fTU1VNTAwLAo+ID4gPiA+ICAgICAgIENBVklVTV9TTU1VVjIsCj4gPiA+ID4gKyAgICAg
+UUNPTV9TTU1VVjIsCj4gPiA+ID4gIH07Cj4gPiA+ID4KPiA+ID4gPiAgc3RydWN0IGFybV9zbW11
+X3MyY3Igewo+ID4gPiA+IEBAIC0yMDI2LDYgKzIwMjcsMTcgQEAgQVJNX1NNTVVfTUFUQ0hfREFU
+QShhcm1fbW11NDAxLCBBUk1fU01NVV9WMV82NEssIEdFTkVSSUNfU01NVSk7Cj4gPiA+ID4gIEFS
+TV9TTU1VX01BVENIX0RBVEEoYXJtX21tdTUwMCwgQVJNX1NNTVVfVjIsIEFSTV9NTVU1MDApOwo+
+ID4gPiA+ICBBUk1fU01NVV9NQVRDSF9EQVRBKGNhdml1bV9zbW11djIsIEFSTV9TTU1VX1YyLCBD
+QVZJVU1fU01NVVYyKTsKPiA+ID4gPgo+ID4gPiA+ICtzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0
+IHFjb21fc21tdXYyX2Nsa3NbXSA9IHsKPiA+ID4gPiArICAgICAiYnVzIiwgImlmYWNlIiwKPiA+
+ID4gPiArfTsKPiA+ID4gPiArCj4gPiA+ID4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXJtX3NtbXVf
+bWF0Y2hfZGF0YSBxY29tX3NtbXV2MiA9IHsKPiA+ID4gPiArICAgICAudmVyc2lvbiA9IEFSTV9T
+TU1VX1YyLAo+ID4gPiA+ICsgICAgIC5tb2RlbCA9IFFDT01fU01NVVYyLAo+ID4gPiA+ICsgICAg
+IC5jbGtzID0gcWNvbV9zbW11djJfY2xrcywKPiA+ID4gPiArICAgICAubnVtX2Nsa3MgPSBBUlJB
+WV9TSVpFKHFjb21fc21tdXYyX2Nsa3MpLAo+ID4gPiA+ICt9Owo+ID4gPgo+ID4gPiBUaGVzZSBz
+ZWVtcyByZWR1bmRhbnQgaWYgd2UgZ28gZG93biB0aGUgcm91dGUgcHJvcG9zZWQgYnkgVGhvciwg
+d2hlcmUgd2UKPiA+ID4ganVzdCBwdWxsIGFsbCBvZiB0aGUgY2xvY2tzIG91dCBvZiB0aGUgZGV2
+aWNlLXRyZWUuIEluIHdoaWNoIGNhc2UsIHdoeQo+ID4gPiBkbyB3ZSBuZWVkIHRoaXMgbWF0Y2hf
+ZGF0YSBhdCBhbGw/Cj4gPgo+ID4gV2hpY2ggaXMgYmV0dGVyPyBEcml2ZXIgcmVseWluZyBzb2xl
+bHkgb24gdGhlIGRldmljZSB0cmVlIHRvIHRlbGwKPiA+IHdoaWNoIGFsbCBjbG9ja3MKPiA+IGFy
+ZSByZXF1aXJlZCB0byBiZSBlbmFibGVkLAo+ID4gb3IsIHRoZSBkcml2ZXIgZGVjaWRpbmcgaXRz
+ZWxmIGJhc2VkIG9uIHRoZSBwbGF0Zm9ybSdzIG1hdGNoIGRhdGEsCj4gPiB0aGF0IGl0IHNob3Vs
+ZAo+ID4gaGF2ZSBYLCBZLCAmIFogY2xvY2tzIHRoYXQgc2hvdWxkIGJlIHN1cHBsaWVkIGZyb20g
+dGhlIGRldmljZSB0cmVlLgo+Cj4gVGhlIGZvcm1lciB3b3VsZCBzaW1wbGlmeSB0aGUgZHJpdmVy
+LCBidXQgd291bGQgYWxzbyBtYWtlIGl0Cj4gaW1wb3NzaWJsZSB0byBzcG90IG1pc3Rha2VzIGlu
+IERULCB3aGljaCB3b3VsZCB1bHRpbWF0ZWx5IHN1cmZhY2Ugb3V0Cj4gYXMgdmVyeSBoYXJkIHRv
+IGRlYnVnIGJ1Z3MgKGxpa2VseSBjb21wbGV0ZSBzeXN0ZW0gbG9ja3VwcykuCgpUaGFua3MuClll
+YSwgdGhpcyBpcyBob3cgSSB1bmRlcnN0YW5kIHRoaW5ncyBwcmVzZW50bHkuIFJlbHlpbmcgb24g
+ZGV2aWNlIHRyZWUKcHV0cyB0aGUgdGhpbmdzIG91dCBvZiBkcml2ZXIncyBjb250cm9sLgoKSGkg
+V2lsbCwKQW0gSSB1bmFibGUgdG8gdW5kZXJzdGFuZCB0aGUgaW50ZW50aW9ucyBoZXJlIGZvciBU
+aG9yJ3MgY2xvY2stZmV0Y2gKZGVzaWduIGNoYW5nZT8KCj4KPiBGb3IgcWNvbV9zbW11djIsIEkg
+YmVsaWV2ZSB3ZSdyZSBldmVudHVhbGx5IGdvaW5nIHRvIGVuZCB1cCB3aXRoCj4gcGxhdGZvcm0t
+c3BlY2lmaWMgcXVpcmtzIGFueXdheSwgc28gc3BlY2lmeWluZyB0aGUgY2xvY2tzIHRvbyB3b3Vs
+ZG4ndAo+IGh1cnQuIEdpdmVuIHRoYXQsIEknZCByZWNvbW1lbmQgc3RpY2tpbmcgdG8gdGhlIGxh
+dHRlciwgaS5lLiB3aGF0IHRoaXMKPiBwYXRjaCBkb2VzLgo+Cj4gQmVzdCByZWdhcmRzLAo+IFRv
+bWFzegoKCkJlc3QgcmVnYXJkcwpWaXZlawoKPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwo+IGlvbW11IG1haWxpbmcgbGlzdAo+IGlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCj4gaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
+aWxtYW4vbGlzdGluZm8vaW9tbXUKCgoKLS0gClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2Yg
+UXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJv
+cmEgRm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZy
+ZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
