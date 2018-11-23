@@ -1,189 +1,74 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
- critical sections
-Date: Fri, 23 Nov 2018 12:20:39 +0100
-Message-ID: <20181123112039.omeup3be4kw6qxxc@pathway.suse.cz>
-References: <1542653726-5655-1-git-send-email-longman@redhat.com>
- <1542653726-5655-8-git-send-email-longman@redhat.com>
- <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
- <20181122020422.GA3441@jagdpanzerIV>
- <c8c29a58-f356-d379-2bf4-cea09b03dc3e@redhat.com>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Fri, 23 Nov 2018 12:21:25 +0100
+Message-ID: <20181123112125.GF1586@8bytes.org>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
+	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
+	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
+	<20181107164323.GA19831@8bytes.org>
+	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <c8c29a58-f356-d379-2bf4-cea09b03dc3e@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Waiman Long <longman@redhat.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>, Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
+In-Reply-To: <758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu 2018-11-22 14:57:02, Waiman Long wrote:
-> On 11/21/2018 09:04 PM, Sergey Senozhatsky wrote:
-> > On (11/21/18 11:49), Waiman Long wrote:
-> > [..]
-> >>>  	case ODEBUG_STATE_ACTIVE:
-> >>> -		debug_print_object(obj, "init");
-> >>>  		state = obj->state;
-> >>>  		raw_spin_unlock_irqrestore(&db->lock, flags);
-> >>> +		debug_print_object(obj, "init");
-> >>>  		debug_object_fixup(descr->fixup_init, addr, state);
-> >>>  		return;
-> >>>  
-> >>>  	case ODEBUG_STATE_DESTROYED:
-> >>> -		debug_print_object(obj, "init");
-> >>> +		debug_printobj = true;
-> >>>  		break;
-> >>>  	default:
-> >>>  		break;
-> >>>  	}
-> >>>  
-> >>>  	raw_spin_unlock_irqrestore(&db->lock, flags);
-> >>> +	if (debug_chkstack)
-> >>> +		debug_object_is_on_stack(addr, onstack);
-> >>> +	if (debug_printobj)
-> >>> +		debug_print_object(obj, "init");
-> >>>
-> > [..]
-> >> As a side note, one of the test systems that I used generated a
-> >> debugobjects splat in the bootup process and the system hanged
-> >> afterward. Applying this patch alone fix the hanging problem and the
-> >> system booted up successfully. So it is not really a good idea to call
-> >> printk() while holding a raw spinlock.
-> > Right, I like this patch.
-> > And I think that we, maybe, can go even further.
-> >
-> > Some serial consoles call mod_timer(). So what we could have with the
-> > debug objects enabled was
-> >
-> > 	mod_timer()
-> > 	 lock_timer_base()
-> > 	  debug_activate()
-> > 	   printk()
-> > 	    call_console_drivers()
-> > 	     foo_console()
-> > 	      mod_timer()
-> > 	       lock_timer_base()       << deadlock
-> >
-> > That's one possible scenario. The other one can involve console's
-> > IRQ handler, uart port spinlock, mod_timer, debug objects, printk,
-> > and an eventual deadlock on the uart port spinlock. This one can
-> > be mitigated with printk_safe. But mod_timer() deadlock will require
-> > a different fix.
-> >
-> > So maybe we need to switch debug objects print-outs to _always_
-> > printk_deferred(). Debug objects can be used in code which cannot
-> > do direct printk() - timekeeping is just one example.
-> >
-> > 	-ss
-> 
-> Actually, I don't think that was the cause of the hang. The debugobjects
-> splat was caused by debug_object_is_on_stack(), below was the output:
-> 
-> [    6.890048] ODEBUG: object (____ptrval____) is NOT on stack
-> (____ptrval____), but annotated.
-> [    6.891000] WARNING: CPU: 28 PID: 1 at lib/debugobjects.c:369
-> __debug_object_init.cold.11+0x51/0x2d6
-> [    6.891000] Modules linked in:
-> [    6.891000] CPU: 28 PID: 1 Comm: swapper/0 Not tainted
-> 4.18.0-41.el8.bz1651764_cgroup_debug.x86_64+debug #1
-> [    6.891000] Hardware name: HPE ProLiant DL120 Gen10/ProLiant DL120
-> Gen10, BIOS U36 11/14/2017
-> [    6.891000] RIP: 0010:__debug_object_init.cold.11+0x51/0x2d6
-> [    6.891000] Code: ea 03 80 3c 02 00 0f 85 85 02 00 00 49 8b 54 24 18
-> 48 89 de 4c 89 44 24 10 48 c7 c7 00 ce 22 94 e8 73 18 62 ff 4c 8b 44 24
-> 10 <0f> 0b e9 60 db ff ff 41 83 c4 01 b8 ff ff 37 00 44 89 25 ce 46 f9
-> [    6.891000] RSP: 0000:ffff880104187960 EFLAGS: 00010086
-> [    6.891000] RAX: 0000000000000050 RBX: ffffffff9764c570 RCX:
-> 0000000000000000
-> [    6.891000] RDX: 0000000000000000 RSI: 0000000000000000 RDI:
-> ffff880104178ca8
-> [    6.891000] RBP: 1ffff10020830f34 R08: ffff8807ce68a1d0 R09:
-> fffffbfff2923554
-> [    6.891000] R10: fffffbfff2923554 R11: ffffffff9491aaa3 R12:
-> ffff880104178000
-> [    6.891000] R13: ffffffff96c809b8 R14: 000000000000a370 R15:
-> ffff8807ce68a1c0
-> [    6.891000] FS:  0000000000000000(0000) GS:ffff8807d4200000(0000)
-> knlGS:0000000000000000
-> [    6.891000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    6.891000] CR2: 0000000000000000 CR3: 000000028de16001 CR4:
-> 00000000007606e0
-> [    6.891000] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
-> 0000000000000000
-> [    6.891000] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
-> 0000000000000400
-> [    6.891000] PKRU: 00000000
-> [    6.891000] Call Trace:
-> [    6.891000]  ? debug_object_fixup+0x30/0x30
-> [    6.891000]  ? _raw_spin_unlock_irqrestore+0x4b/0x60
-> [    6.891000]  ? __lockdep_init_map+0x12f/0x510
-> [    6.891000]  ? __lockdep_init_map+0x12f/0x510
-> [    6.891000]  virt_efi_get_next_variable+0xa2/0x160
-> [    6.891000]  efivar_init+0x1c4/0x6d7
-> [    6.891000]  ? efivar_ssdt_setup+0x3b/0x3b
-> [    6.891000]  ? efivar_entry_iter+0x120/0x120
-> [    6.891000]  ? find_held_lock+0x3a/0x1c0
-> [    6.891000]  ? lock_downgrade+0x5e0/0x5e0
-> [    6.891000]  ? kmsg_dump_rewind_nolock+0xd9/0xd9
-> [    6.891000]  ? _raw_spin_unlock_irqrestore+0x4b/0x60
-> [    6.891000]  ? trace_hardirqs_on_caller+0x381/0x570
-> [    6.891000]  ? efivar_ssdt_iter+0x1f4/0x1f4
-> [    6.891000]  efisubsys_init+0x1be/0x4ae
-> [    6.891000]  ? kernfs_get.part.8+0x4c/0x60
-> [    6.891000]  ? efivar_ssdt_iter+0x1f4/0x1f4
-> [    6.891000]  ? __kernfs_create_file+0x235/0x2e0
-> [    6.891000]  ? efivar_ssdt_iter+0x1f4/0x1f4
-> [    6.891000]  do_one_initcall+0xe9/0x5fd
-> [    6.891000]  ? perf_trace_initcall_level+0x450/0x450
-> [    6.891000]  ? __wake_up_common+0x5a0/0x5a0
-> [    6.891000]  ? lock_downgrade+0x5e0/0x5e0
-> [    6.891000]  kernel_init_freeable+0x51a/0x5f2
-> [    6.891000]  ? start_kernel+0x7b8/0x7b8
-> [    6.891000]  ? finish_task_switch+0x19a/0x690
-> [    6.891000]  ? __switch_to_asm+0x40/0x70
-> [    6.891000]  ? __switch_to_asm+0x34/0x70
-> [    6.891000]  ? rest_init+0xe9/0xe9
-> [    6.891000]  kernel_init+0xc/0x110
-> [    6.891000]  ? rest_init+0xe9/0xe9
-> [    6.891000]  ret_from_fork+0x24/0x50
-> [    6.891000] irq event stamp: 1081352
-> [    6.891000] hardirqs last  enabled at (1081351): [<ffffffff93af7dab>]
-> _raw_spin_unlock_irqrestore+0x4b/0x60
-> [    6.891000] hardirqs last disabled at (1081352): [<ffffffff93af85c2>]
-> _raw_spin_lock_irqsave+0x22/0x81
-> [    6.891000] softirqs last  enabled at (1081334): [<ffffffff93e006f9>]
-> __do_softirq+0x6f9/0xaa0
-> [    6.891000] softirqs last disabled at (1081325): [<ffffffff921b993f>]
-> irq_exit+0x27f/0x2d0
-> [    6.891000] ---[ end trace 15e1083fc009a526 ]---
-> 
-> All the messages above were printed while holding a raw spinlock with
-> IRQ disabled. Further down the bootup sequence, the system appeared to hang:
-> 
->    11.270654] systemd[1]: systemd 239 running in system mode. (+PAM
-> +AUDIT +SELINUX +IMA -APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP
-> +GCRYPT +GNUTLS +ACL +XZ +LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD +IDN2 -IDN
-> +PCRE2 default-hierarchy=legacy)
-> [   11.311307] systemd[1]: Detected architecture x86-64.
-> [   11.316420] systemd[1]: Running in initial RAM disk.
-> 
-> Welcome to
-> 
-> The system is not responsive at this point.
-> 
-> I am not totally sure what caused this. Maybe it was caused by disabling
-> IRQ for too long leading to some kind of corruption. Anyway, moving
-> debug_object_is_on_stack() outside of the IRQ disabled lock critical
-> section seemed to fix the hang problem.
+On Wed, Nov 21, 2018 at 12:40:44PM +0800, Lu Baolu wrote:
+> Can you please elaborate a bit more about the concept of subdomains?
+> From my point of view, an aux-domain is a normal un-managed domain which
+> has a PASID and could be attached to any ADIs through the aux-domain
+> specific attach/detach APIs. It could also be attached to a device with
+> the existing domain_attach/detach_device() APIs at the same time, hence
+> mdev and pci devices in a vfio container could share a domain.
 
-It is hard to say why printing the above with disabled interrupts
-would break anything. efivar_init() itself should get delayed
-the same way with and without the patch.
+Okay, let's think a bit about having aux-specific attach/detach
+functions, in the end I don't insist on my proposal as long as the
+IOMMU-API extensions are clean, consistent, and have well defined
+semantics.
 
-Some clue might be in the rest of the log. It would be interesting
-to compare full logs of non-patched and patched system.
+If we have aux-domain specific attach/detach functions like
+iommu_aux_domain_attach/detach(), what happens when the primary domain
+of the device is changed with iommu_attach/detach()?
 
-Best Regards,
-Petr
+	1) Will the aux-domains stay in place? If yes, how does this
+	   work in setups where the pasid-bound page-tables are
+	   guest-owned and translated through the primary domain
+	   page-tables?
+
+	2) Will the aux-domains be unbound too? In that case, if the
+	   primary domain is re-used, will the aux-domains be implicitly
+	   bound too when iommu_device_attach() is called?
+
+	3) Do we just disallow changing the primary domain through that
+	   interface as long as there are aux-domains or mm_structs
+	   bound to the device?
+
+Using option 2) or 3) would mean that the aux-domains are still bound to
+the primary domain, but that is not reflected in the API. Further, if an
+aux-domain is just a normal domain (struct iommu_domain), what happens
+when a domain that was used as a primary domain and has bound
+aux-domains to it, is bound with iommu_aux_domain_attach() to another
+domain?
+
+As you can see, this design decission raises a lot of questions, but
+maybe we can work it out and find a solution we all agree on.
+
+
+Regards,
+
+	Joerg
