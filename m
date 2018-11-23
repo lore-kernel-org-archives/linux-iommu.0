@@ -1,95 +1,215 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.20-rc3
-Date: Fri, 23 Nov 2018 17:37:32 +0100
-Message-ID: <20181123163727.aa3hdbnne3aadypo@8bytes.org>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH v3] iommu/dma: Use NUMA aware memory allocations in
+ __iommu_dma_alloc_pages()
+Date: Fri, 23 Nov 2018 16:40:58 +0000
+Message-ID: <86eaa286-d884-d599-4109-bbf31b5d5d97@huawei.com>
+References: <1542812051-178935-1-git-send-email-john.garry@huawei.com>
+ <20181121160718.GB24883@arm.com>
+ <24be0d21-63b1-c88d-fdfd-42575f12634f@huawei.com>
+ <20181121165755.GE24883@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="tk5lct6z7maxlqz2"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
+In-Reply-To: <20181121165755.GE24883@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
+On 21/11/2018 16:57, Will Deacon wrote:
+> On Wed, Nov 21, 2018 at 04:47:48PM +0000, John Garry wrote:
+>> On 21/11/2018 16:07, Will Deacon wrote:
+>>> On Wed, Nov 21, 2018 at 10:54:10PM +0800, John Garry wrote:
+>>>> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>>>>
+>>>> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
+>>>> respective device NUMA node. The ternary operator which would be for
+>>>> alloc_pages_node() is tidied along with this.
+>>>>
+>>>> We also include a change to use kvzalloc() for kzalloc()/vzalloc()
+>>>> combination.
+>>>>
+>>>> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+>>>> [JPG: Added kvzalloc(), drop pages ** being device local, tidied ternary operator]
+>>>> Signed-off-by: John Garry <john.garry@huawei.com>
+>>>
+>>> Weird, you're missing a diffstat here.
+>>>
+>>> Anyway, the patch looks fine to me, but it would be nice if you could
+>>> justify the change with some numbers. Do you actually see an improvement
+>> >from this change?
+>>>
+>>
+>> Hi Will,
+>>
+>> Ah, I missed adding my comments explaining the motivation. It would be
+>> better in the commit log. Anyway, here's the snippet:
+>>
+>> " ... as mentioned in [3], dma_alloc_coherent() uses the locality
+>> information from the device - as in direct DMA - so this patch is just
+>> applying this same policy.
+>>
+>> [3]
+>> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1692998.html"
+>
+> Yes, please add to this to the commit log.
+>
 
---tk5lct6z7maxlqz2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Sure,
 
-Hi Linus,
+>> I did have some numbers to show improvement in some scenarios when I tested
+>> this a while back which I'll dig out.
+>>
+>> However I would say that some scenarios will improve and the opposite for
+>> others with this change, considering different conditions in which DMA
+>> memory may be used.
+>
+> Well, if you can show that it's useful in some cases and not catastrophic in
+> others, then I think shooting for parity with direct DMA is a reasonable
+> justification for the change.
+>
 
-The following changes since commit 651022382c7f8da46cb4872a545ee1da6d097d2a:
+So I have done some more testing with our SoC crypto engine, using 
+tcrypt module. The reason I used this device was because we can utilise 
+a local device per socket in the system, unlike other DMAing devices, 
+which generally only exist on a single socket (for us, anyway).
 
-  Linux 4.20-rc1 (2018-11-04 15:37:52 -0800)
+Overall the results aren't brilliant - as expected - but show a general 
+marginal improvement. Here's some figures:
 
-are available in the git repository at:
+Summary:
+Average diff		+0.9%
+Max diff		+1.5%
+Min diff		+0.2%
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-fixes-v4.20-rc3
+Test			     Ops/second	before  after   diff %	
 
-for you to fetch changes up to 829383e183728dec7ed9150b949cd6de64127809:
+async ecb(aes) encrypt
+test 0 (128 bit key, 16 byte blocks)	68717	69057	0.5
+test 1 (128 bit key, 64 byte blocks):	72633	73163	0.7
+test 2 (128 bit key, 256 byte blocks):	71475	72076	0.8
+test 3 (128 bit key, 1024 byte blocks):	66819	67467	1.0
+test 4 (128 bit key, 8192 byte blocks):	38237	38495	0.7
+test 5 (192 bit key, 16 byte blocks): 	70273	71079	1.2
+test 6 (192 bit key, 64 byte blocks):	72455	73292	1.2
+test 7 (192 bit key, 256 byte blocks):	71085	71876	1.1
+test 8 (192 bit key, 1024 byte blocks):	65891	66576	1.0
+test 9 (192 bit key, 8192 byte blocks): 34846	35061	0.6
+test 10 (256 bit key, 16 byte blocks):	72927	73762	1.2
+test 11 (256 bit key, 64 byte blocks):	72361	73207	1.2
+test 12 (256 bit key, 256 byte blocks):	70907	71602	1.0
+test 13 (256 bit key, 1024 byte blocks):65035	65653	1.0
+test 14 (256 bit key, 8192 byte blocks):32835	32998	0.5
+async ecb(aes) decrypt
+test 0 (128 bit key, 16 byte blocks)	68384	69130	1.1
+test 1 (128 bit key, 64 byte blocks):	72645	73133	0.7
+test 2 (128 bit key, 256 byte blocks):	71523	71912	0.5
+test 3 (128 bit key, 1024 byte blocks):	66902	67258	0.5
+test 4 (128 bit key, 8192 byte blocks):	38260	38434	0.5
+test 5 (192 bit key, 16 byte blocks): 	70301	70816	0.7
+test 6 (192 bit key, 64 byte blocks):	72473	73064	0.8
+test 7 (192 bit key, 256 byte blocks):	71106	71663	0.8
+test 8 (192 bit key, 1024 byte blocks):	65915	66363	0.7
+test 9 (192 bit key, 8192 byte blocks): 34876	35006	0.4
+test 10 (256 bit key, 16 byte blocks):	72969	73519	0.8
+test 11 (256 bit key, 64 byte blocks):	72404	72925	0.7
+test 12 (256 bit key, 256 byte blocks):	70861	71350	0.7
+test 13 (256 bit key, 1024 byte blocks):65074	65485	0.6
+test 14 (256 bit key, 8192 byte blocks):32861	32974	0.3
+async cbc(aes) encrypt
+test 0 (128 bit key, 16 byte blocks)	58306	59131	1.4
+test 1 (128 bit key, 64 byte blocks):	61647	62565	1.5
+test 2 (128 bit key, 256 byte blocks):	60841	61666	1.4
+test 3 (128 bit key, 1024 byte blocks):	57503	58204	1.2
+test 4 (128 bit key, 8192 byte blocks):	34760	35055	0.9
+test 5 (192 bit key, 16 byte blocks): 	59684	60452	1.3
+test 6 (192 bit key, 64 byte blocks):	61705	62516	1.3
+test 7 (192 bit key, 256 byte blocks):	60678	61426	1.2
+test 8 (192 bit key, 1024 byte blocks):	56805	57487	1.2
+test 9 (192 bit key, 8192 byte blocks): 31836	32093	0.8
+test 10 (256 bit key, 16 byte blocks):	61961	62785	1.3
+test 11 (256 bit key, 64 byte blocks):	61584	62427	1.4
+test 12 (256 bit key, 256 byte blocks):	60407	61246	1.4
+test 13 (256 bit key, 1024 byte blocks):56135	56868	1.3
+test 14 (256 bit key, 8192 byte blocks):30128	30380	0.8
+async cbc(aes) decrypt
+test 0 (128 bit key, 16 byte blocks)	58555	59044	0.8
+test 1 (128 bit key, 64 byte blocks):	61853	62589	1.2
+test 2 (128 bit key, 256 byte blocks):	60992	61728	1.2
+test 3 (128 bit key, 1024 byte blocks):	57591	58250	1.1
+test 4 (128 bit key, 8192 byte blocks):	34796	35064	0.8
+test 5 (192 bit key, 16 byte blocks): 	59843	60506	1.1
+test 6 (192 bit key, 64 byte blocks):	61808	62521	1.2
+test 7 (192 bit key, 256 byte blocks):	60800	61445	1.1
+test 8 (192 bit key, 1024 byte blocks):	56949	57513	1.0
+test 9 (192 bit key, 8192 byte blocks): 31890	32107	0.7
+test 10 (256 bit key, 16 byte blocks):	62109	62778	1.1
+test 11 (256 bit key, 64 byte blocks):	61748	62418	1.1
+test 12 (256 bit key, 256 byte blocks):	60604	61226	1.0
+test 13 (256 bit key, 1024 byte blocks):56277	56845	1.0
+test 14 (256 bit key, 8192 byte blocks):30165	30340	0.6
+sync xts(aes) encrypt
+test 0 (256 bit key, 16 byte blocks):	59501	59742	0.4
+test 1 (256 bit key, 64 byte blocks):	62894	63249	0.6
+test 2 (256 bit key, 256 byte blocks):	62074	62476	0.7
+test 3 (256 bit key, 1024 byte blocks):	58569	58894	0.6
+test 4 (256 bit key, 8192 byte blocks):	35271	35462	0.5
+test 5 (512 bit key, 16 byte blocks):	60749	61174	0.7
+test 6 (512 bit key, 64 byte blocks):	62760	63148	0.6
+test 7 (512 bit key, 256 byte blocks):	61625	61928	0.5
+test 8 (512 bit key, 1024 byte blocks):	57162	57452	0.5
+test 9 (512 bit key, 8192 byte blocks):	30582	30718	0.4
+async xts(aes) decrypt
+test 0 (256 bit key, 16 byte blocks):	59423	59587	0.3
+test 1 (256 bit key, 64 byte blocks):	62849	62974	0.2
+test 2 (256 bit key, 256 byte blocks):	61884	62231	0.6
+test 3 (256 bit key, 1024 byte blocks):	58402	58699	0.5
+test 4 (256 bit key, 8192 byte blocks):	35244	35353	0.3
+test 5 (512 bit key, 16 byte blocks):	60693	60882	0.3
+test 6 (512 bit key, 64 byte blocks):	62671	62896	0.4
+test 7 (512 bit key, 256 byte blocks):	61488	61722	0.4
+test 8 (512 bit key, 1024 byte blocks):	57092	57261	0.3
+test 9 (512 bit key, 8192 byte blocks):	30572	30655	0.3
+sync ctr(aes) encrypt	
+test 0 (128 bit key, 16 byte blocks):	59673	9926	0.4
+test 1 (128 bit key, 64 byte blocks):	62738	63024	0.5
+test 2 (128 bit key, 256 byte blocks):	61841	62171	0.5
+test 3 (128 bit key, 1024 byte blocks):	58374	58633	0.4
+test 4 (128 bit key, 8192 byte blocks):	35137	35273	0.4
+test 5 (192 bit key, 16 byte blocks):	60736	61049	0.5
+test 6 (192 bit key, 64 byte blocks):	62718	63081	0.6
+test 7 (192 bit key, 256 byte blocks):	61652	61973	0.5
+test 8 (192 bit key, 1024 byte blocks):	57709	58002	0.5
+test 9 (192 bit key, 8192 byte blocks):	32171	32306	0.4
+test 10 (256 bit key, 16 byte blocks):	63000	63428	0.7
+test 11 (256 bit key, 64 byte blocks):	62594	63027	0.7
+test 12 (256 bit key, 256 byte blocks):	61452	61845	0.6
+test 13 (256 bit key, 1024 byte blocks):57019	57346	0.6
+test 14 (256 bit key, 8192 byte blocks):30422	30544	0.4
+async ctr(aes) decrypt
+test 0 (128 bit key, 16 byte blocks):	59488	59994	0.9
+test 1 (128 bit key, 64 byte blocks):	62651	63173	0.8
+test 2 (128 bit key, 256 byte blocks):	61778	62464	1.1
+test 3 (128 bit key, 1024 byte blocks):	58290	58909	1.1
+test 4 (128 bit key, 8192 byte blocks):	35115	35358	0.7
+test 5 (192 bit key, 16 byte blocks):	60590	61244	1.1
+test 6 (192 bit key, 64 byte blocks):	62604	63296	1.1
+test 7 (192 bit key, 256 byte blocks):	61540	62199	1.1
+test 8 (192 bit key, 1024 byte blocks):	57577	58149	1.0
+test 9 (192 bit key, 8192 byte blocks):	32146	32368	0.7
+test 10 (256 bit key, 16 byte blocks):	62852	63610	1.2
+test 11 (256 bit key, 64 byte blocks):	62523	63276	1.2
+test 12 (256 bit key, 256 byte blocks):	61356	62049	1.1
+test 13 (256 bit key, 1024 byte blocks):56943	57546	1.1
+test 14 (256 bit key, 8192 byte blocks):30399	30593	0.6
 
-  iommu/vt-d: Use memunmap to free memremap (2018-11-22 17:02:21 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.20-rc3
-
-Including:
-
-	- Two fixes for the Intel VT-d driver to fix a NULL-ptr
-	  dereference and an unbalance in an allocate/free path
-	  (allocated with memremap, freed with iounmap)
-
-	- Fix for a crash in the Renesas IOMMU driver
-
-	- Fix for the Advanced Virtual Interrupt Controler (AVIC) code
-	  in the AMD IOMMU driver
-
-----------------------------------------------------------------
-Filippo Sironi (1):
-      amd/iommu: Fix Guest Virtual APIC Log Tail Address Register
-
-Geert Uytterhoeven (1):
-      iommu/ipmmu-vmsa: Fix crash on early domain free
-
-Lu Baolu (1):
-      iommu/vt-d: Fix NULL pointer dereference in prq_event_thread()
-
-Pan Bian (1):
-      iommu/vt-d: Use memunmap to free memremap
-
- drivers/iommu/amd_iommu_init.c | 3 ++-
- drivers/iommu/intel-iommu.c    | 2 +-
- drivers/iommu/intel-svm.c      | 2 +-
- drivers/iommu/ipmmu-vmsa.c     | 3 +++
- 4 files changed, 7 insertions(+), 3 deletions(-)
-
-Please pull.
+Let me know if any more questions or comments.
 
 Thanks,
+John
 
-	Joerg
-
---tk5lct6z7maxlqz2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJb+CzHAAoJECvwRC2XARrjCzQP/idwEUlR75GqdMbUIeMQX6at
-Ew2I2mOJ/7w9syOxqTJUsTrEyPQly1T3iBNqlium5L+EjaVzBziqeT3pSROX7wjV
-64zLdjQLVebqH0/gklnhxRmG0TRn/D3lWDvWISRX1dEqLlOWMOvPPjd+231rxA12
-dv+eT3o2srYkq3f61LEKWwGKwBq5WdHh9E9u/PRfM2pqZMs1aRPzsr5Xcz4QsLwK
-pDUEfL6uoSnMsSKmbp92vSvnUow5+OMkFq5FZ5OeSzw1dQf7eAZz93ZqCyZYLkwq
-8b4zeY6u7/1/kjfcRAyUkOEeM39qMd/hL44fADtcV4PoyQjOo7+PeOfrxZMhjoL3
-yU07WJUwSiQxfiMoOEUa+qMzzqhgZC5nJmlThF4fmJ2i37lZmbMLVWdAsx0xsSdb
-ZiszfbQ97vWu1SGhifmomSke2IiF5XyTflJhFNoG3+JSqUkci56gRgwT8fQftbdK
-I6ZVTOorYrLzUOkYuDJE34lGpxANVYEukyWRlmvI/0VqfLJD8dGvNjy+FMM866Cu
-0xTYXCErT4SregZgEUIfVXudqZY1ngo8BInDEuYDkdElSgz1jW0KSsGlorDbTUgB
-Z2GyB77dK2a4NHlmSee2FLsvGRCLIFCqmCfOywlsnogXxmCbKxxkKgSWgHu5T0dn
-gU0JYrYE6NuWXHpHMNs2
-=tZ2d
------END PGP SIGNATURE-----
-
---tk5lct6z7maxlqz2--
+> Will
+>
+> .
+>
