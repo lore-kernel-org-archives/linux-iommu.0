@@ -1,77 +1,37 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
- tables
-Date: Fri, 23 Nov 2018 13:37:11 +0800
-Message-ID: <CANMq1KC56nz7u8r54LUbN43DXxZPQWBY67FR1P18tps5V3E-Zw@mail.gmail.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
- <0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
- <20181121213853.GL3065@bombadil.infradead.org>
- <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
- <20181122082336.GA2049@infradead.org>
- <CANMq1KALUmxkhE8aaYzEbd7YodF1296KdVympOP+2mWVQ9zmDA@mail.gmail.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V2
+Date: Fri, 23 Nov 2018 07:55:11 +0100
+Message-ID: <20181123065511.GA17856@lst.de>
+References: <20181122140320.24080-1-hch@lst.de>
+	<CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
+	<20181122170715.GI30658@n2100.armlinux.org.uk>
+	<CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
+	<11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
+	<CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CANMq1KALUmxkhE8aaYzEbd7YodF1296KdVympOP+2mWVQ9zmDA@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: hch@infradead.org
-Cc: Pekka Enberg <penberg@kernel.org>, Michal Hocko <mhocko@suse.com>, Andrew Morton <akpm@linux-foundation.org>, Huaisheng Ye <yehs1@lenovo.com>, linux-mm@kvack.org, Mel Gorman <mgorman@techsingularity.net>, Will Deacon <will.deacon@arm.com>, lkml <linux-kernel@vger.kernel.org>, willy@infradead.org, Levin Alexander <Alexander.Levin@microsoft.com>, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Mike Rapoport <rppt@linux.vnet.ibm.com>, Vlastimil Babka <vbabka@suse.cz>, David Rientjes <rientjes@google.com>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Christoph Lameter <cl@linux.com>, Robin Murphy <robin.murphy@arm.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, the arch/x86 maintainers <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, Linux List Kernel Mailing <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 23, 2018 at 11:04 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
->
-> On Thu, Nov 22, 2018 at 4:23 PM Christoph Hellwig <hch@infradead.org> wrote:
-> >
-> > On Wed, Nov 21, 2018 at 10:26:26PM +0000, Robin Murphy wrote:
-> > > TBH, if this DMA32 stuff is going to be contentious we could possibly just
-> > > rip out the offending kmem_cache - it seemed like good practice for the
-> > > use-case, but provided kzalloc(SZ_1K, gfp | GFP_DMA32) can be relied upon to
-> > > give the same 1KB alignment and chance of succeeding as the equivalent
-> > > kmem_cache_alloc(), then we could quite easily make do with that instead.
-> >
-> > Neither is the slab support for kmalloc, not do kmalloc allocations
-> > have useful alignment apparently (at least if you use slub debug).
-> >
-> > But I do agree with the sentiment of not wanting to spread GFP_DMA32
-> > futher into the slab allocator.
-> >
-> > I think you want a simple genalloc allocator for this rather special
-> > use case.
->
-> So I had a look at genalloc, we'd need to add pre-allocated memory
-> using gen_pool_add [1]. There can be up to 4096 L2 page tables, so we
-> may need to pre-allocate 4MB of memory (1KB per L2 page table). We
-> could add chunks on demand, but then it'd be difficult to free them up
-> (genalloc does not have a "gen_pool_remove" call). So basically if the
-> full 4MB end up being requested, we'd be stuck with that until the
-> iommu domain is freed (on the arm64 Mediatek platforms I looked at,
-> there is only one iommu domain, and it never gets freed).
+On Thu, Nov 22, 2018 at 09:55:25AM -0800, Linus Torvalds wrote:
+> No, the big immediate benefit of allowing "return -EINVAL" etc is
+> simply legibility and error avoidance.
 
-I tried out genalloc with pre-allocated 4MB, and that seems to work
-fine. Allocating in chunks would require genalloc changes as
-gen_pool_add calls kmalloc with just GFP_KERNEL [2], and we are in
-atomic context in __arm_v7s_alloc_table...
-
-[2] https://elixir.bootlin.com/linux/latest/source/lib/genalloc.c#L190
-
-> page_frag would at least have a chance to reclaim those pages (if I
-> understand Christoph's statement correctly)
->
-> Robin: Do you have some ideas of the lifetime/usage of L2 tables? If
-> they are usually few of them, or if they don't get reclaimed easily,
-> some on demand genalloc allocation would be ok (or even 4MB allocation
-> on init, if we're willing to take that hit). If they get allocated and
-> freed together, maybe page_frag is a better option?
->
-> Thanks,
->
-> [1] https://www.kernel.org/doc/html/v4.19/core-api/genalloc.html
+Well, I can tweak the last patch to return -EINVAL from dma_mapping_error
+instead of the old 1 is as bool true.  The callers should all be fine,
+although I'd have to audit them.  Still wouldn't help with being able to
+return different errors.
