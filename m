@@ -1,67 +1,87 @@
-From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
-	tables
-Date: Fri, 23 Nov 2018 11:04:36 +0800
-Message-ID: <CANMq1KALUmxkhE8aaYzEbd7YodF1296KdVympOP+2mWVQ9zmDA@mail.gmail.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
-	<0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
-	<20181121213853.GL3065@bombadil.infradead.org>
-	<c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
-	<20181122082336.GA2049@infradead.org>
+From: Michael Zoran <mzoran@crowfest.net>
+Subject: Re: [PATCH v3] drm/rockchip: update cursors asynchronously through
+ atomic.
+Date: Thu, 22 Nov 2018 22:58:10 -0600
+Message-ID: <1d10a4323a49ca09bbb7dc865aaaf5b8c5e3b3d5.camel@crowfest.net>
+References: <20181119190805.19139-1-helen.koike@collabora.com>
+ <CAAFQd5DDZwhdMDbrHthQwm2bQ3+NoZNcemAktVTxkR3=LfnnTg@mail.gmail.com>
+ <d3fb3b21-6c3d-6b01-727b-dbd66540ce92@collabora.com>
+ <CAAFQd5Afa9ndmU0=q5Kjv-BY+0qpvOdq2+eOTO6OebX4-2NENA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181122082336.GA2049-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAAFQd5Afa9ndmU0=q5Kjv-BY+0qpvOdq2+eOTO6OebX4-2NENA@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Tomasz Figa <tfiga@chromium.org>, helen.koike@collabora.com, Eric Anholt <eric@anholt.net>
+Cc: =?ISO-8859-1?Q?St=E9phane?= Marchesin <marcheu@google.com>, Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Sean Paul <seanpaul@google.com>, Gustavo Padovan <gustavo.padovan@collabora.com>, David Airlie <airlied@linux.ie>, "list@263.net:IOMMU
+ DRIVERS <iommu@lists.linux-foundation.org>,	Joerg   Roedel
+ <joro@8bytes.org>, " <joro@8bytes.org>, Sandy Huang <hjc@rock-chips.com>, dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>"list@263.net:IOMMU
+ DRIVERS <iommu@lists.linux-foundation.org>,	Joerg   Roedel
+ <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, kernel@collabora.com, "list@263.net:IOMMU DRIVERS
+ <iommu@lists.linux-foundation.org>, Joerg   Roedel <joro@8bytes.org>,
+ " <linux-arm-ker>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 22, 2018 at 4:23 PM Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
->
-> On Wed, Nov 21, 2018 at 10:26:26PM +0000, Robin Murphy wrote:
-> > TBH, if this DMA32 stuff is going to be contentious we could possibly just
-> > rip out the offending kmem_cache - it seemed like good practice for the
-> > use-case, but provided kzalloc(SZ_1K, gfp | GFP_DMA32) can be relied upon to
-> > give the same 1KB alignment and chance of succeeding as the equivalent
-> > kmem_cache_alloc(), then we could quite easily make do with that instead.
->
-> Neither is the slab support for kmalloc, not do kmalloc allocations
-> have useful alignment apparently (at least if you use slub debug).
->
-> But I do agree with the sentiment of not wanting to spread GFP_DMA32
-> futher into the slab allocator.
->
-> I think you want a simple genalloc allocator for this rather special
-> use case.
+On Fri, 2018-11-23 at 11:27 +0900, Tomasz Figa wrote:
+> 
+> The point here is not about setting and resetting the plane->fb
+> pointer. It's about what happens inside
+> drm_atomic_set_fb_for_plane().
+> 
+> It calls drm_framebuffer_get() for the new fb and
+> drm_framebuffer_put() for the old fb. In result, if the fb changes,
+> the old fb, which had its reference count incremented in the atomic
+> commit that set it to the plane before, has its reference count
+> decremented. Moreover, if the new reference count becomes 0,
+> drm_framebuffer_put() will immediately free the buffer.
+> 
+> Freeing a buffer when the hardware is still scanning out of it isn't
+> a
+> good idea, is it?
 
-So I had a look at genalloc, we'd need to add pre-allocated memory
-using gen_pool_add [1]. There can be up to 4096 L2 page tables, so we
-may need to pre-allocate 4MB of memory (1KB per L2 page table). We
-could add chunks on demand, but then it'd be difficult to free them up
-(genalloc does not have a "gen_pool_remove" call). So basically if the
-full 4MB end up being requested, we'd be stuck with that until the
-iommu domain is freed (on the arm64 Mediatek platforms I looked at,
-there is only one iommu domain, and it never gets freed).
+No, it's not.  But the board I submitted the patch for doesn't have
+anything like hot swapable ram.  The ram access is still going to work,
+just it might display something it shouldn't. Say for example if that
+frame buffer got reused by somethig else and filled with new data in
+the very small window.
 
-page_frag would at least have a chance to reclaim those pages (if I
-understand Christoph's statement correctly)
+But yes, I agree the best solution would be to not release the buffer
+until the next vblank.
 
-Robin: Do you have some ideas of the lifetime/usage of L2 tables? If
-they are usually few of them, or if they don't get reclaimed easily,
-some on demand genalloc allocation would be ok (or even 4MB allocation
-on init, if we're willing to take that hit). If they get allocated and
-freed together, maybe page_frag is a better option?
+Perhaps a good solution would be for the DRM api to have the concept of
+a deferred release?  Meaning if the put() call just added the frame
+buffer to a list that DRM core could walk during the vblank.  That
+might be better then every single driver trying to work up a custom
+solution.
 
-Thanks,
+> The vc4 driver seems to be able to program the hardware to switch the
+> scanout to the new buffer immediately:
+> 
+> https://elixir.bootlin.com/linux/v4.20-rc3/source/drivers/gpu/drm/vc4/vc4_plane.c#L794
+> 
+> Although I wonder if there isn't still a tiny race there - the
+> hardware may have just started refilling the FIFO from the old
+> address. Still, if the FIFO is small, the FIFO refill operation may
+> be
+> much shorter than it takes for the kernel code to actually free the
+> buffer. Eric and Michael, could you confirm?
+> 
 
-[1] https://www.kernel.org/doc/html/v4.19/core-api/genalloc.html
+I don't have those boards anymore, and I don't have access to any
+technical documentation on the GPU so I can't really add much here.  
+Eric can probably provide the best information.
+
+I submitted the patch because I was working on arm64 support for fun
+and was becomming very annoyed by desktop lockups for long periods of
+time on the desktop enviroment of my choice due to the driver being
+flooded with curser animation updates.  I sent the patch to Eric who
+was kind enough to review it and suggest some improvements.  
