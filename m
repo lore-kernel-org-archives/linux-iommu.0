@@ -1,59 +1,38 @@
-From: Anshuman Khandual <anshuman.khandual@arm.com>
+From: Vinod Koul <vkoul@kernel.org>
 Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Sat, 24 Nov 2018 16:43:15 +0530
-Message-ID: <8e16e9d1-8f64-d2ca-7d06-985ce601f75b@arm.com>
+Date: Sat, 24 Nov 2018 19:35:54 +0530
+Message-ID: <20181124140554.GG3175@vkoul-mobl.Dlink>
 References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
- <20181123154415.42898a42e28a31488749738a@linux-foundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181123154415.42898a42e28a31488749738a@linux-foundation.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, jiangqi903@gmail.com, hverkuil@xs4all.nl
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: hverkuil@xs4all.nl, linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-block@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, intel-wired-lan@lists.osuosl.org, linux-alpha@vger.kernel.org, dmaengine@vger.kernel.org, sparclinux@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, linuxppc-dev@lists.ozlabs.org, ocfs2-devel@oss.oracle.com, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 11/24/2018 05:14 AM, Andrew Morton wrote:
-> On Fri, 23 Nov 2018 15:24:16 +0530 Anshuman Khandual <anshuman.khandual@arm.com> wrote:
-> 
->> At present there are multiple places where invalid node number is encoded
->> as -1. Even though implicitly understood it is always better to have macros
->> in there. Replace these open encodings for an invalid node number with the
->> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
->> 'invalid node' from various places redirecting them to a common definition.
->>
->> ...
->>
->> Build tested this with multiple cross compiler options like alpha, sparc,
->> arm64, x86, powerpc, powerpc64le etc with their default config which might
->> not have compiled tested all driver related changes. I will appreciate
->> folks giving this a test in their respective build environment.
->>
->> All these places for replacement were found by running the following grep
->> patterns on the entire kernel code. Please let me know if this might have
->> missed some instances. This might also have replaced some false positives.
->> I will appreciate suggestions, inputs and review.
->>
->> 1. git grep "nid == -1"
->> 2. git grep "node == -1"
->> 3. git grep "nid = -1"
->> 4. git grep "node = -1"
-> 
-> The build testing is good, but I worry that some of the affected files
-> don't clearly have numa.h in their include paths, for the NUMA_NO_NODE
-> definition.
-> 
-> The first thing I looked it is arch/powerpc/include/asm/pci-bridge.h. 
-> Maybe it somehow manages to include numa.h via some nested include, but
-> if so, is that reliable across all config combinations and as code
-> evolves?
-> 
-> So I think that the patch should have added an explicit include of
-> numa.h, especially in cases where the affected file previously had no
-> references to any of the things which numa.h defines.
-
-Fair enough. Will include numa.h in those particular files.
+T24gMjMtMTEtMTgsIDE1OjI0LCBBbnNodW1hbiBLaGFuZHVhbCB3cm90ZToKCj4gLS0tIGEvZHJp
+dmVycy9kbWEvZG1hZW5naW5lLmMKPiArKysgYi9kcml2ZXJzL2RtYS9kbWFlbmdpbmUuYwo+IEBA
+IC0zODYsNyArMzg2LDggQEAgRVhQT1JUX1NZTUJPTChkbWFfaXNzdWVfcGVuZGluZ19hbGwpOwo+
+ICBzdGF0aWMgYm9vbCBkbWFfY2hhbl9pc19sb2NhbChzdHJ1Y3QgZG1hX2NoYW4gKmNoYW4sIGlu
+dCBjcHUpCj4gIHsKPiAgCWludCBub2RlID0gZGV2X3RvX25vZGUoY2hhbi0+ZGV2aWNlLT5kZXYp
+Owo+IC0JcmV0dXJuIG5vZGUgPT0gLTEgfHwgY3B1bWFza190ZXN0X2NwdShjcHUsIGNwdW1hc2tf
+b2Zfbm9kZShub2RlKSk7Cj4gKwlyZXR1cm4gbm9kZSA9PSBOVU1BX05PX05PREUgfHwKPiArCQlj
+cHVtYXNrX3Rlc3RfY3B1KGNwdSwgY3B1bWFza19vZl9ub2RlKG5vZGUpKTsKPiAgfQoKSSBkbyBu
+b3Qgc2VlIGRldl90b19ub2RlIGJlaW5nIHVwZGF0ZWQgZmlyc3QsIHRoYXQgcmV0dXJucyAtMSBz
+byBJIHdvdWxkCnByZWZlciB0byBjaGVjayBmb3IgLTEgdW5sZXNzIGl0IHJldHVybiBOVU1BX05P
+X05PREUKCi0tIAp+Vmlub2QKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJp
+LWRldmVsCg==
