@@ -1,57 +1,78 @@
-From: Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Fri, 23 Nov 2018 15:44:15 -0800
-Message-ID: <20181123154415.42898a42e28a31488749738a@linux-foundation.org>
-References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
+Date: Sat, 24 Nov 2018 10:31:20 +0530
+Message-ID: <CAFqt6zawenCGGhLoVzCrjzdHH4rV1RqpWGswDGjGE-VqJETFBA@mail.gmail.com>
+References: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
+	<bbad42cb-4a76-a7e7-c385-db77f1cc588b@arm.com>
+	<20181123213448.GW3065@bombadil.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Anshuman Khandual <anshuman.khandual@arm.com>
-Cc: hverkuil@xs4all.nl, linux-fbdev@vger.kernel.org, linux-ia64@vger.kernel.org, linux-rdma@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-block@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, intel-wired-lan@lists.osuosl.org, linux-alpha@vger.kernel.org, dmaengine@vger.kernel.org, sparclinux@vger.kernel.org, jiangqi903@gmail.com, linuxppc-dev@lists.ozlabs.org, ocfs2-devel@oss.oracle.com, linux-media@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181123213448.GW3065-PfSpb0PWhxZc2C7mugBRk2EX/6BAtgUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCAyMyBOb3YgMjAxOCAxNToyNDoxNiArMDUzMCBBbnNodW1hbiBLaGFuZHVhbCA8YW5z
-aHVtYW4ua2hhbmR1YWxAYXJtLmNvbT4gd3JvdGU6Cgo+IEF0IHByZXNlbnQgdGhlcmUgYXJlIG11
-bHRpcGxlIHBsYWNlcyB3aGVyZSBpbnZhbGlkIG5vZGUgbnVtYmVyIGlzIGVuY29kZWQKPiBhcyAt
-MS4gRXZlbiB0aG91Z2ggaW1wbGljaXRseSB1bmRlcnN0b29kIGl0IGlzIGFsd2F5cyBiZXR0ZXIg
-dG8gaGF2ZSBtYWNyb3MKPiBpbiB0aGVyZS4gUmVwbGFjZSB0aGVzZSBvcGVuIGVuY29kaW5ncyBm
-b3IgYW4gaW52YWxpZCBub2RlIG51bWJlciB3aXRoIHRoZQo+IGdsb2JhbCBtYWNybyBOVU1BX05P
-X05PREUuIFRoaXMgaGVscHMgcmVtb3ZlIE5VTUEgcmVsYXRlZCBhc3N1bXB0aW9ucyBsaWtlCj4g
-J2ludmFsaWQgbm9kZScgZnJvbSB2YXJpb3VzIHBsYWNlcyByZWRpcmVjdGluZyB0aGVtIHRvIGEg
-Y29tbW9uIGRlZmluaXRpb24uCj4gCj4gLi4uCj4gCj4gQnVpbGQgdGVzdGVkIHRoaXMgd2l0aCBt
-dWx0aXBsZSBjcm9zcyBjb21waWxlciBvcHRpb25zIGxpa2UgYWxwaGEsIHNwYXJjLAo+IGFybTY0
-LCB4ODYsIHBvd2VycGMsIHBvd2VycGM2NGxlIGV0YyB3aXRoIHRoZWlyIGRlZmF1bHQgY29uZmln
-IHdoaWNoIG1pZ2h0Cj4gbm90IGhhdmUgY29tcGlsZWQgdGVzdGVkIGFsbCBkcml2ZXIgcmVsYXRl
-ZCBjaGFuZ2VzLiBJIHdpbGwgYXBwcmVjaWF0ZQo+IGZvbGtzIGdpdmluZyB0aGlzIGEgdGVzdCBp
-biB0aGVpciByZXNwZWN0aXZlIGJ1aWxkIGVudmlyb25tZW50Lgo+IAo+IEFsbCB0aGVzZSBwbGFj
-ZXMgZm9yIHJlcGxhY2VtZW50IHdlcmUgZm91bmQgYnkgcnVubmluZyB0aGUgZm9sbG93aW5nIGdy
-ZXAKPiBwYXR0ZXJucyBvbiB0aGUgZW50aXJlIGtlcm5lbCBjb2RlLiBQbGVhc2UgbGV0IG1lIGtu
-b3cgaWYgdGhpcyBtaWdodCBoYXZlCj4gbWlzc2VkIHNvbWUgaW5zdGFuY2VzLiBUaGlzIG1pZ2h0
-IGFsc28gaGF2ZSByZXBsYWNlZCBzb21lIGZhbHNlIHBvc2l0aXZlcy4KPiBJIHdpbGwgYXBwcmVj
-aWF0ZSBzdWdnZXN0aW9ucywgaW5wdXRzIGFuZCByZXZpZXcuCj4gCj4gMS4gZ2l0IGdyZXAgIm5p
-ZCA9PSAtMSIKPiAyLiBnaXQgZ3JlcCAibm9kZSA9PSAtMSIKPiAzLiBnaXQgZ3JlcCAibmlkID0g
-LTEiCj4gNC4gZ2l0IGdyZXAgIm5vZGUgPSAtMSIKClRoZSBidWlsZCB0ZXN0aW5nIGlzIGdvb2Qs
-IGJ1dCBJIHdvcnJ5IHRoYXQgc29tZSBvZiB0aGUgYWZmZWN0ZWQgZmlsZXMKZG9uJ3QgY2xlYXJs
-eSBoYXZlIG51bWEuaCBpbiB0aGVpciBpbmNsdWRlIHBhdGhzLCBmb3IgdGhlIE5VTUFfTk9fTk9E
-RQpkZWZpbml0aW9uLgoKVGhlIGZpcnN0IHRoaW5nIEkgbG9va2VkIGl0IGlzIGFyY2gvcG93ZXJw
-Yy9pbmNsdWRlL2FzbS9wY2ktYnJpZGdlLmguIApNYXliZSBpdCBzb21laG93IG1hbmFnZXMgdG8g
-aW5jbHVkZSBudW1hLmggdmlhIHNvbWUgbmVzdGVkIGluY2x1ZGUsIGJ1dAppZiBzbywgaXMgdGhh
-dCByZWxpYWJsZSBhY3Jvc3MgYWxsIGNvbmZpZyBjb21iaW5hdGlvbnMgYW5kIGFzIGNvZGUKZXZv
-bHZlcz8KClNvIEkgdGhpbmsgdGhhdCB0aGUgcGF0Y2ggc2hvdWxkIGhhdmUgYWRkZWQgYW4gZXhw
-bGljaXQgaW5jbHVkZSBvZgpudW1hLmgsIGVzcGVjaWFsbHkgaW4gY2FzZXMgd2hlcmUgdGhlIGFm
-ZmVjdGVkIGZpbGUgcHJldmlvdXNseSBoYWQgbm8KcmVmZXJlbmNlcyB0byBhbnkgb2YgdGhlIHRo
-aW5ncyB3aGljaCBudW1hLmggZGVmaW5lcy4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3Rz
-LmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2RyaS1kZXZlbAo=
+On Sat, Nov 24, 2018 at 3:04 AM Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
+>
+> On Fri, Nov 23, 2018 at 05:23:06PM +0000, Robin Murphy wrote:
+> > On 15/11/2018 15:49, Souptick Joarder wrote:
+> > > Convert to use vm_insert_range() to map range of kernel
+> > > memory to user vma.
+> > >
+> > > Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> > > Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> > > ---
+> > >   drivers/iommu/dma-iommu.c | 12 ++----------
+> > >   1 file changed, 2 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > > index d1b0475..69c66b1 100644
+> > > --- a/drivers/iommu/dma-iommu.c
+> > > +++ b/drivers/iommu/dma-iommu.c
+> > > @@ -622,17 +622,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+> > >   int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+> > >   {
+> > > -   unsigned long uaddr = vma->vm_start;
+> > > -   unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > > -   int ret = -ENXIO;
+> > > +   unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > > -   for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+> > > -           ret = vm_insert_page(vma, uaddr, pages[i]);
+> > > -           if (ret)
+> > > -                   break;
+> > > -           uaddr += PAGE_SIZE;
+> > > -   }
+> > > -   return ret;
+> > > +   return vm_insert_range(vma, vma->vm_start, pages, count);
+> >
+> > AFIACS, vm_insert_range() doesn't respect vma->vm_pgoff, so doesn't this
+> > break partial mmap()s of a large buffer? (which I believe can be a thing)
+>
+> Whoops.  That should have been:
+>
+> return vm_insert_range(vma, vma->vm_start, pages + vma->vm_pgoff, count);
+>
+> I suppose.
+
+Matthew, patch "drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range"
+also need to address the same issue ?
+
+>
+> Although arguably we should respect vm_pgoff inside vm_insert_region()
+> and then callers automatically get support for vm_pgoff without having
+> to think about it ... although we should then also pass in the length
+> of the pages array to avoid pages being mapped in which aren't part of
+> the allocated array.
+>
+> Hm.  More thought required.
