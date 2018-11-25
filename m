@@ -1,49 +1,24 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: [GIT PULL] dma-mapping fixes for 4.20
-Date: Sun, 25 Nov 2018 09:35:52 +0100
-Message-ID: <20181125083552.GA15060@infradead.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: pr-tracker-bot@kernel.org
+Subject: Re: [GIT PULL] dma-mapping fixes for 4.20
+Date: Sun, 25 Nov 2018 17:45:02 +0000
+Message-ID: <20181125174502.9594.90760.pr-tracker-bot@pdx-korg-gitolite-1.ci.codeaurora.org>
+References: <20181125083552.GA15060@infradead.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181125083552.GA15060@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Stefano Stabellini <sstabellini@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The following changes since commit c8ce94b8fe5324aca4c10baeb53dea2d5775a170:
+The pull request you sent on Sun, 25 Nov 2018 09:35:52 +0100:
 
-  Merge tag 'mips_fixes_4.20_3' of git://git.kernel.org/pub/scm/linux/kernel/git/mips/linux (2018-11-20 14:31:00 -0800)
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.20-3
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d6d460b89378b1bc6715574cdafd748ba59d5a27
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.20-3
+Thank you!
 
-for you to fetch changes up to cb216b84d6ea24fa10f1e7aac35de77246841041:
-
-  swiotlb: Skip cache maintenance on map error (2018-11-21 18:47:58 +0100)
-
-----------------------------------------------------------------
-Two dma-direct / swiotlb regressions fixes
-
- - 0 is a valid physical address on some arm boards, we can't use
-   0 as the error value
- - don't try to cache flush the error return value (no matter what it is)
-
-----------------------------------------------------------------
-Robin Murphy (2):
-      dma-direct: Make DIRECT_MAPPING_ERROR viable for SWIOTLB
-      swiotlb: Skip cache maintenance on map error
-
- include/linux/dma-direct.h | 2 +-
- kernel/dma/swiotlb.c       | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
