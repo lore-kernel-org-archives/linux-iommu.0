@@ -1,139 +1,84 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 8/8] vfio/type1: Handle different mdev isolation type
-Date: Mon, 26 Nov 2018 11:09:00 +0800
-Message-ID: <0b951425-ea7f-3596-b4b5-f8e56072c765@linux.intel.com>
-References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
- <20181105073408.21815-9-baolu.lu@linux.intel.com>
- <e9822321-fca3-29bc-f5a1-c6297d2161ae@redhat.com>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [RESEND PATCH v17 5/5] iommu/arm-smmu: Add support for
+	qcom,smmu-v2 variant
+Date: Mon, 26 Nov 2018 13:02:22 +0900
+Message-ID: <CAAFQd5DG7+Dp60T4EujtPqdMUYbYwdLTd8rS7wshz1WJ_1=LbQ@mail.gmail.com>
+References: <20181116112430.31248-1-vivek.gautam@codeaurora.org>
+	<20181116112430.31248-6-vivek.gautam@codeaurora.org>
+	<20181121173803.GB9801@arm.com>
+	<CAFp+6iELH7Mw3Ue2ksEyV+Ac8hG8--Ki69xrPCA4F-AcireRow@mail.gmail.com>
+	<CAAFQd5B-bZR8dmjARb8L4oqgET2YAjXhexAO0GKAvU4JoVU=7g@mail.gmail.com>
+	<CAFp+6iFhBRJWGY4Hj30tWedGpEUcnkBJrOvffmbpD2m9QMZB3A@mail.gmail.com>
+	<20181123183428.GD21183@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e9822321-fca3-29bc-f5a1-c6297d2161ae@redhat.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
-Cc: baolu.lu@linux.intel.com, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181123183428.GD21183-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Sat, Nov 24, 2018 at 3:34 AM Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+> On Fri, Nov 23, 2018 at 03:06:29PM +0530, Vivek Gautam wrote:
+> > On Fri, Nov 23, 2018 at 2:52 PM Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
+> > > On Fri, Nov 23, 2018 at 6:13 PM Vivek Gautam
+> > > <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> > > > On Wed, Nov 21, 2018 at 11:09 PM Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > > > > On Fri, Nov 16, 2018 at 04:54:30PM +0530, Vivek Gautam wrote:
+> > > > > > @@ -2026,6 +2027,17 @@ ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
+> > > > > >  ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
+> > > > > >  ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
+> > > > > >
+> > > > > > +static const char * const qcom_smmuv2_clks[] = {
+> > > > > > +     "bus", "iface",
+> > > > > > +};
+> > > > > > +
+> > > > > > +static const struct arm_smmu_match_data qcom_smmuv2 = {
+> > > > > > +     .version = ARM_SMMU_V2,
+> > > > > > +     .model = QCOM_SMMUV2,
+> > > > > > +     .clks = qcom_smmuv2_clks,
+> > > > > > +     .num_clks = ARRAY_SIZE(qcom_smmuv2_clks),
+> > > > > > +};
+> > > > >
+> > > > > These seems redundant if we go down the route proposed by Thor, where we
+> > > > > just pull all of the clocks out of the device-tree. In which case, why
+> > > > > do we need this match_data at all?
+> > > >
+> > > > Which is better? Driver relying solely on the device tree to tell
+> > > > which all clocks
+> > > > are required to be enabled,
+> > > > or, the driver deciding itself based on the platform's match data,
+> > > > that it should
+> > > > have X, Y, & Z clocks that should be supplied from the device tree.
+> > >
+> > > The former would simplify the driver, but would also make it
+> > > impossible to spot mistakes in DT, which would ultimately surface out
+> > > as very hard to debug bugs (likely complete system lockups).
+> >
+> > Thanks.
+> > Yea, this is how I understand things presently. Relying on device tree
+> > puts the things out of driver's control.
+>
+> But it also has the undesirable effect of having to update the driver
+> code whenever we want to add support for a new SMMU implementation. If
+> we do this all in the DT, as Thor is trying to do, then older kernels
+> will work well with new hardware.
 
-On 11/23/18 10:23 PM, Auger Eric wrote:
-> Hi Lu,
-> 
-> On 11/5/18 8:34 AM, Lu Baolu wrote:
->> This adds the support to determine the isolation type
->> of a mediated device group by checking whether it has
->> an iommu device. If an iommu device exists, an iommu
->> domain will be allocated and then attached to the iommu
->> device. Otherwise, keep the same behavior as it is.
->>
->> Cc: Ashok Raj <ashok.raj@intel.com>
->> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Cc: Kevin Tian <kevin.tian@intel.com>
->> Cc: Liu Yi L <yi.l.liu@intel.com>
->> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->> ---
->>   drivers/vfio/vfio_iommu_type1.c | 48 ++++++++++++++++++++++++++++-----
->>   1 file changed, 42 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 178264b330e7..eed26129f58c 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -1427,13 +1427,40 @@ static void vfio_iommu_detach_group(struct vfio_domain *domain,
->>   		iommu_detach_group(domain->domain, group->iommu_group);
->>   }
->>   
->> +static bool vfio_bus_is_mdev(struct bus_type *bus)
->> +{
->> +	struct bus_type *mdev_bus;
->> +	bool ret = false;
->> +
->> +	mdev_bus = symbol_get(mdev_bus_type);
->> +	if (mdev_bus) {
->> +		ret = (bus == mdev_bus);
->> +		symbol_put(mdev_bus_type);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int vfio_mdev_iommu_device(struct device *dev, void *data)
->> +{
->> +	struct device **old = data, *new;
->> +
->> +	new = vfio_mdev_get_iommu_device(dev);
->> +	if (*old && *old != new)
-> if !new can't you return -EINVAL as well?
-
-Yes, good catch.
-
->> +		return -EINVAL;
->> +
->> +	*old = new;
->> +
->> +	return 0;
->> +}
->> +
->>   static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   					 struct iommu_group *iommu_group)
->>   {
->>   	struct vfio_iommu *iommu = iommu_data;
->>   	struct vfio_group *group;
->>   	struct vfio_domain *domain, *d;
->> -	struct bus_type *bus = NULL, *mdev_bus;
->> +	struct bus_type *bus = NULL;
->>   	int ret;
->>   	bool resv_msi, msi_remap;
->>   	phys_addr_t resv_msi_base;
->> @@ -1468,11 +1495,18 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   	if (ret)
->>   		goto out_free;
->>   
->> -	mdev_bus = symbol_get(mdev_bus_type);
->> +	if (vfio_bus_is_mdev(bus)) {
->> +		struct device *iommu_device = NULL;
->>   
->> -	if (mdev_bus) {
->> -		if ((bus == mdev_bus) && !iommu_present(bus)) {
->> -			symbol_put(mdev_bus_type);
->> +		group->mdev_group = true;
->> +
->> +		/* Determine the isolation type */
->> +		ret = iommu_group_for_each_dev(iommu_group, &iommu_device,
->> +					       vfio_mdev_iommu_device);
->> +		if (ret)
->> +			goto out_free;
->> +
->> +		if (!iommu_device) {
->>   			if (!iommu->external_domain) {
->>   				INIT_LIST_HEAD(&domain->group_list);
->>   				iommu->external_domain = domain;
->> @@ -1482,9 +1516,11 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>   			list_add(&group->next,
->>   				 &iommu->external_domain->group_list);
->>   			mutex_unlock(&iommu->lock);
->> +
-> extra new line
-
-Yes.
-
->>   			return 0;
->>   		}
->> -		symbol_put(mdev_bus_type);
->> +
->> +		bus = iommu_device->bus;
->>   	}
->>   
->>   	domain->domain = iommu_domain_alloc(bus);
->>
-> Thanks
-> 
-> Eric
-> 
+Fair enough, if you're okay with that. Obviously one would still have
+to change the DT bindings to list the exact set of clocks for the new
+hardware variant, unless the convention changed recently.
 
 Best regards,
-Lu Baolu
+Tomasz
