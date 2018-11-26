@@ -1,7 +1,7 @@
 From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: [PATCH 5/9] iommu: ipmmu-vmsa: make it explicitly non-modular
-Date: Mon, 26 Nov 2018 17:31:34 -0500
-Message-ID: <1543271498-28966-6-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 4/9] iommu: mtk_iommu: make it explicitly non-modular
+Date: Mon, 26 Nov 2018 17:31:33 -0500
+Message-ID: <1543271498-28966-5-git-send-email-paul.gortmaker@windriver.com>
 References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,13 +18,13 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 The Kconfig currently controlling compilation of this code is:
 
-drivers/iommu/Kconfig:config IPMMU_VMSA
-drivers/iommu/Kconfig:        bool "Renesas VMSA-compatible IPMMU"
+drivers/iommu/Kconfig:config MTK_IOMMU_V1
+drivers/iommu/Kconfig:  bool "MTK IOMMU Version 1 (M4U gen1) Support"
 
 ...meaning that it currently is not being built as a module by anyone.
 
@@ -37,61 +37,51 @@ remains unchanged with this commit.
 We also delete the MODULE_LICENSE tag etc. since all that information
 was (or is now) contained at the top of the file in the comments.
 
-Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
-
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Signed-off-by: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ drivers/iommu/mtk_iommu_v1.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9e2655f1c1bf..de39ef992d8a 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 27867b862d7a..5fbf3cecb87f 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -1,4 +1,6 @@
  /*
-  * IPMMU VMSA
-+ * IOMMU API for Renesas VMSA-compatible IPMMU
-+ * Author: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
++ * IOMMU API for MTK architected m4u v1 implementations
++ *
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
   *
-  * Copyright (C) 2014 Renesas Electronics Corporation
-  */
-@@ -14,7 +16,7 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iommu.h>
+@@ -35,7 +37,7 @@
+ #include <linux/spinlock.h>
+ #include <asm/barrier.h>
+ #include <asm/dma-iommu.h>
 -#include <linux/module.h>
 +#include <linux/init.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/of_iommu.h>
-@@ -968,7 +970,6 @@ static const struct of_device_id ipmmu_of_ids[] = {
- 	},
- };
- 
--MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
- 
- static int ipmmu_probe(struct platform_device *pdev)
+ #include <dt-bindings/memory/mt2701-larb-port.h>
+ #include <soc/mediatek/smi.h>
+ #include "mtk_iommu.h"
+@@ -704,15 +706,4 @@ static int __init m4u_init(void)
  {
-@@ -1140,15 +1141,4 @@ static int __init ipmmu_init(void)
- 	setup_done = true;
- 	return 0;
+ 	return platform_driver_register(&mtk_iommu_driver);
  }
 -
--static void __exit ipmmu_exit(void)
+-static void __exit m4u_exit(void)
 -{
--	return platform_driver_unregister(&ipmmu_driver);
+-	return platform_driver_unregister(&mtk_iommu_driver);
 -}
 -
- subsys_initcall(ipmmu_init);
--module_exit(ipmmu_exit);
+ subsys_initcall(m4u_init);
+-module_exit(m4u_exit);
 -
--MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
--MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+-MODULE_DESCRIPTION("IOMMU API for MTK architected m4u v1 implementations");
+-MODULE_AUTHOR("Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>");
 -MODULE_LICENSE("GPL v2");
 -- 
 2.7.4
