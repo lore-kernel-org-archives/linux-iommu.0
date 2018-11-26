@@ -1,82 +1,45 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: Re: [PATCH 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
-Date: Mon, 26 Nov 2018 12:14:22 +0530
-Message-ID: <CAFqt6zYmy5SdZY6_1BXFbY2pBQaNd+Z8R71wHEs6nKmxjht07A@mail.gmail.com>
-References: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
- <bbad42cb-4a76-a7e7-c385-db77f1cc588b@arm.com> <20181123213448.GW3065@bombadil.infradead.org>
+From: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] mm: Replace all open encodings for NUMA_NO_NODE
+Date: Mon, 26 Nov 2018 12:15:04 +0530
+Message-ID: <5228bcdb-b140-a86a-6c9c-488f1a723353@arm.com>
+References: <1542966856-12619-1-git-send-email-anshuman.khandual@arm.com>
+	<20181124140554.GG3175@vkoul-mobl.Dlink>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181123213448.GW3065@bombadil.infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthew Wilcox <willy@infradead.org>
-Cc: robin.murphy@arm.com, Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, joro@8bytes.org, Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181124140554.GG3175-bQVUxfxUtC3xKnQ2JfU4AA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vinod Koul <vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-wired-lan-qjLDD68F18P21nG7glBr7A@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, jiangqi903-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Nov 24, 2018 at 3:04 AM Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Fri, Nov 23, 2018 at 05:23:06PM +0000, Robin Murphy wrote:
-> > On 15/11/2018 15:49, Souptick Joarder wrote:
-> > > Convert to use vm_insert_range() to map range of kernel
-> > > memory to user vma.
-> > >
-> > > Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-> > > Reviewed-by: Matthew Wilcox <willy@infradead.org>
-> > > ---
-> > >   drivers/iommu/dma-iommu.c | 12 ++----------
-> > >   1 file changed, 2 insertions(+), 10 deletions(-)
-> > >
-> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > > index d1b0475..69c66b1 100644
-> > > --- a/drivers/iommu/dma-iommu.c
-> > > +++ b/drivers/iommu/dma-iommu.c
-> > > @@ -622,17 +622,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-> > >   int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
-> > >   {
-> > > -   unsigned long uaddr = vma->vm_start;
-> > > -   unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> > > -   int ret = -ENXIO;
-> > > +   unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> > > -   for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
-> > > -           ret = vm_insert_page(vma, uaddr, pages[i]);
-> > > -           if (ret)
-> > > -                   break;
-> > > -           uaddr += PAGE_SIZE;
-> > > -   }
-> > > -   return ret;
-> > > +   return vm_insert_range(vma, vma->vm_start, pages, count);
-> >
-> > AFIACS, vm_insert_range() doesn't respect vma->vm_pgoff, so doesn't this
-> > break partial mmap()s of a large buffer? (which I believe can be a thing)
->
-> Whoops.  That should have been:
->
-> return vm_insert_range(vma, vma->vm_start, pages + vma->vm_pgoff, count);
 
-I am unable to trace back where vma->vm_pgoff is set for this driver ? if any ?
-If default value set to 0 then I think existing code is correct.
 
->
-> I suppose.
->
+On 11/24/2018 07:35 PM, Vinod Koul wrote:
+> On 23-11-18, 15:24, Anshuman Khandual wrote:
+> 
+>> --- a/drivers/dma/dmaengine.c
+>> +++ b/drivers/dma/dmaengine.c
+>> @@ -386,7 +386,8 @@ EXPORT_SYMBOL(dma_issue_pending_all);
+>>  static bool dma_chan_is_local(struct dma_chan *chan, int cpu)
+>>  {
+>>  	int node = dev_to_node(chan->device->dev);
+>> -	return node == -1 || cpumask_test_cpu(cpu, cpumask_of_node(node));
+>> +	return node == NUMA_NO_NODE ||
+>> +		cpumask_test_cpu(cpu, cpumask_of_node(node));
+>>  }
+> 
+> I do not see dev_to_node being updated first, that returns -1 so I would
+> prefer to check for -1 unless it return NUMA_NO_NODE
 
-> Although arguably we should respect vm_pgoff inside vm_insert_region()
-> and then callers automatically get support for vm_pgoff without having
-> to think about it ...
-
-I assume, vm_insert_region() means vm_insert_range(). If we respect vm_pgoff
-inside vm_insert_range, for any uninitialized/ error value set for vm_pgoff from
-drivers will introduce a bug inside core mm which might be difficult
-to trace back.
-But when vm_pgoff set and passed from caller (drivers) it might be
-easy to figure out.
-
-> although we should then also pass in the length
-> of the pages array to avoid pages being mapped in which aren't part of
-> the allocated array.
-
-Mostly Partial mapping is done by starting from an index and mapped it till
-end of pages array. Calculating length of the pages array will have a small
-overhead for each drivers.
-
-Please correct me if I am wrong.
+Sure will update dev_to_node() to return NUMA_NO_NODE as well.
