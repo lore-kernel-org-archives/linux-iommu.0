@@ -1,127 +1,133 @@
-From: Eric Anholt <eric@anholt.net>
-Subject: Re: [PATCH v3] drm/rockchip: update cursors asynchronously through
- atomic.
-Date: Mon, 26 Nov 2018 12:36:03 -0800
-Message-ID: <87o9abbmq4.fsf@anholt.net>
-References: <20181119190805.19139-1-helen.koike@collabora.com>
- <CAAFQd5DDZwhdMDbrHthQwm2bQ3+NoZNcemAktVTxkR3=LfnnTg@mail.gmail.com>
- <d3fb3b21-6c3d-6b01-727b-dbd66540ce92@collabora.com>
- <CAAFQd5Afa9ndmU0=q5Kjv-BY+0qpvOdq2+eOTO6OebX4-2NENA@mail.gmail.com>
- <1d10a4323a49ca09bbb7dc865aaaf5b8c5e3b3d5.camel@crowfest.net>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: Set SCTLR.HUPCF bit
+Date: Mon, 26 Nov 2018 13:38:19 -0700
+Message-ID: <20181126203819.GL31792@jcrouse-lnx.qualcomm.com>
+References: <20180927224609.19515-1-robdclark@gmail.com>
+ <20181029191000.GD16739@arm.com>
+ <CAF6AEGtgC0V6ii2=p2HGmqvHFKNJhaOLi8873SGPDsrg70xGRg@mail.gmail.com>
+ <20181113063225.GA3109@brain-police>
+ <CAF6AEGuV2zh97iq+TgkRw0bK3VNSxJieD1N2KMW3N28h07M+0w@mail.gmail.com>
+ <20181126193147.GB534@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1314195938=="
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1d10a4323a49ca09bbb7dc865aaaf5b8c5e3b3d5.camel@crowfest.net>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Michael Zoran <mzoran@crowfest.net>, Tomasz Figa <tfiga@chromium.org>, helen.koike@collabora.com
-Cc: =?utf-8?Q?St=C3=A9phane?= Marchesin <marcheu@google.com>, Sean Paul <seanpaul@google.com>, Gustavo Padovan <gustavo.padovan@collabora.com>, David Airlie <airlied@linux.ie>, dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "list@263.net:IOMMU
- DRIVERS <iommu@lists.linux-foundation.org>,	Joerg  Roedel
- <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, Boris Brezillon <boris.brezillon@bootlin.com>, kernel@collabora.com, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg  Roedel <joro@8bytes.org>," <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20181126193147.GB534-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============1314195938==
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
-
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-Michael Zoran <mzoran@crowfest.net> writes:
-
-> On Fri, 2018-11-23 at 11:27 +0900, Tomasz Figa wrote:
->>=20
->> The point here is not about setting and resetting the plane->fb
->> pointer. It's about what happens inside
->> drm_atomic_set_fb_for_plane().
->>=20
->> It calls drm_framebuffer_get() for the new fb and
->> drm_framebuffer_put() for the old fb. In result, if the fb changes,
->> the old fb, which had its reference count incremented in the atomic
->> commit that set it to the plane before, has its reference count
->> decremented. Moreover, if the new reference count becomes 0,
->> drm_framebuffer_put() will immediately free the buffer.
->>=20
->> Freeing a buffer when the hardware is still scanning out of it isn't
->> a
->> good idea, is it?
->
-> No, it's not.  But the board I submitted the patch for doesn't have
-> anything like hot swapable ram.  The ram access is still going to work,
-> just it might display something it shouldn't. Say for example if that
-> frame buffer got reused by somethig else and filled with new data in
-> the very small window.
->
-> But yes, I agree the best solution would be to not release the buffer
-> until the next vblank.
->
-> Perhaps a good solution would be for the DRM api to have the concept of
-> a deferred release?  Meaning if the put() call just added the frame
-> buffer to a list that DRM core could walk during the vblank.  That
-> might be better then every single driver trying to work up a custom
-> solution.
->
->> The vc4 driver seems to be able to program the hardware to switch the
->> scanout to the new buffer immediately:
->>=20
->> https://elixir.bootlin.com/linux/v4.20-rc3/source/drivers/gpu/drm/vc4/vc=
-4_plane.c#L794
->>=20
->> Although I wonder if there isn't still a tiny race there - the
->> hardware may have just started refilling the FIFO from the old
->> address. Still, if the FIFO is small, the FIFO refill operation may
->> be
->> much shorter than it takes for the kernel code to actually free the
->> buffer. Eric and Michael, could you confirm?
->>=20
->
-> I don't have those boards anymore, and I don't have access to any
-> technical documentation on the GPU so I can't really add much here.=20=20
-> Eric can probably provide the best information.
-
-I don't think I understood my scanout hardware well enough when I
-started on the async update stuff for rpi.  vc4 probably needs to wait
-until the HW starts scanning out a new line before letting the old BO
-get freed.
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEE/JuuFDWp9/ZkuCBXtdYpNtH8nugFAlv8WTMACgkQtdYpNtH8
-nug/8g//Qdb/mO4elB5pT5C2hntdmbojIIRYCggRx9GRhN11f9SDGJFbcUE4Hlmy
-VRLqWtFYCLkKspMRPGHyKjS1LSEIAK+3YsITMz+iXzVzR13xuKAIztGvPVWkqOdt
-cO3JbnNqA1HcBviI5x+s8085TrqtE45y6C9YsX4mHmP/hY2HX0RiEyK8jqwp+EGo
-/8nMoqfzW8i9xabAcLuTQHl/5jgDBw1qpHof7VaQN4BK/Vamvw2wR8OadgsTjY1b
-wrYfS1UtABX9bXefSG411/wRM1q9/aBO5198IavbEVKX0qY4eg1UbBSOPyBe1EQo
-XKUxyQDL6IHr7lewyMx8l1K+BeZIC41yUa7c8ley48KQC8XBxJ7D4f9vQMQBflch
-zGdVguOP+TUGbvWXgT3DGOxAZdN+bxdIw1F5J2iYhGzL2gxhAh+4XqlBDDMV8wSM
-T4M/Zc7p7Po3i051zljZpRrwF6NZXgtlnxGzp7enZ2CGbIm38dA1J6f1dVbvpsiK
-xDyNDPARznvJRKhzI24tif9M/jFunzOEI9qmaNC/3lWvoCI11f07uaXPUfSS98eY
-7W0RtwezhiaoehiKoTvxfv6KhRprl4seVHSJhRX5cmQ3PAE+UtYtbm+zPYgiODPr
-WICwLebgm3q/aqH0DAZb7WjDvu0dACQc7BoSB8OtEC03CDgMlh0=
-=HcqO
------END PGP SIGNATURE-----
---=-=-=--
-
---===============1314195938==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
-
---===============1314195938==--
+T24gTW9uLCBOb3YgMjYsIDIwMTggYXQgMDc6MzE6NDhQTSArMDAwMCwgV2lsbCBEZWFjb24gd3Jv
+dGU6Cj4gSGkgUm9iLAo+IAo+IE9uIFR1ZSwgTm92IDEzLCAyMDE4IGF0IDA4OjEyOjM1QU0gLTA1
+MDAsIFJvYiBDbGFyayB3cm90ZToKPiA+IE9uIFR1ZSwgTm92IDEzLCAyMDE4IGF0IDE6MzIgQU0g
+V2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+IHdyb3RlOgo+ID4gPiBPbiBGcmksIE5v
+diAwOSwgMjAxOCBhdCAwMTowMTo1NVBNIC0wNTAwLCBSb2IgQ2xhcmsgd3JvdGU6Cj4gPiA+ID4g
+T24gTW9uLCBPY3QgMjksIDIwMTggYXQgMzowOSBQTSBXaWxsIERlYWNvbiA8d2lsbC5kZWFjb25A
+YXJtLmNvbT4gd3JvdGU6Cj4gPiA+ID4gPiBPbiBUaHUsIFNlcCAyNywgMjAxOCBhdCAwNjo0Njow
+N1BNIC0wNDAwLCBSb2IgQ2xhcmsgd3JvdGU6Cj4gPiA+ID4gPiA+IFdlIHNlZW0gdG8gbmVlZCB0
+byBzZXQgZWl0aGVyIHRoaXMgb3IgQ0ZDRkcgKHN0YWxsKSwgb3RoZXJ3aXNlIGdwdQo+ID4gPiA+
+ID4gPiBmYXVsdHMgdHJpZ2dlciBwcm9ibGVtcyB3aXRoIG90aGVyIGluLWZsaWdodCB0cmFuc2Fj
+dGlvbnMgZnJvbSB0aGUKPiA+ID4gPiA+ID4gR1BVIGNhdXNpbmcgQ1AgZXJyb3JzLCBldGMuCj4g
+PiA+ID4gPiA+Cj4gPiA+ID4gPiA+IEluIHRoZSBBUk0gU01NVSBzcGVjLCB0aGUgJ0hpdCB1bmRl
+ciBwcmV2aW91cyBjb250ZXh0IGZhdWx0JyBiaXQgaXMKPiA+ID4gPiA+ID4gZGVzY3JpYmVkIGFz
+Ogo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiAgJzAnIC0gU3RhbGwgb3IgdGVybWluYXRlIHN1YnNl
+cXVlbnQgdHJhbnNhY3Rpb25zIGluIHRoZSBwcmVzZW5jZQo+ID4gPiA+ID4gPiAgICAgICAgb2Yg
+YW4gb3V0c3RhbmRpbmcgY29udGV4dCBmYXVsdAo+ID4gPiA+ID4gPiAgJzEnIC0gUHJvY2VzcyBh
+bGwgc3Vic2VxdWVudCB0cmFuc2FjdGlvbnMgaW5kZXBlbmRlbnRseSBvZiBhbnkKPiA+ID4gPiA+
+ID4gICAgICAgIG91dHN0YW5kaW5nIGNvbnRleHQgZmF1bHQuCj4gPiA+ID4gPiA+Cj4gPiA+ID4g
+PiA+IFNpbmNlIHdlIGRvbid0IGVuYWJsZSBDRkNGRyAoc3RhbGwpIHRoZSBiZWhhdmlvciBvZiB0
+ZXJtaW5hdGluZwo+ID4gPiA+ID4gPiBvdGhlciB0cmFuc2FjdGlvbnMgbWFrZXMgc2Vuc2UuICBB
+bmQgaXMgcHJvYmFibHkgbm90IHdoYXQgd2Ugd2FudAo+ID4gPiA+ID4gPiAoYW5kIGRlZmluYXRl
+bHkgbm90IHdoYXQgd2Ugd2FudCBmb3IgR1BVKS4KPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4gU2ln
+bmVkLW9mZi1ieTogUm9iIENsYXJrIDxyb2JkY2xhcmtAZ21haWwuY29tPgo+ID4gPiA+ID4gPiAt
+LS0KPiA+ID4gPiA+ID4gU28gSSBoaXQgdGhpcyBpc3N1ZSBhIGxvbmcgdGltZSBiYWNrIG9uIDgy
+MCAobXNtODk5NikgYW5kIGF0IHRoZQo+ID4gPiA+ID4gPiB0aW1lIEkgc29sdmVkIGl0IHdpdGgg
+YSBwYXRjaCB0aGF0IGVuYWJsZWQgQ0ZDRkcuICBBbmQgaXQgcmVzdXJmYWNlZAo+ID4gPiA+ID4g
+PiBtb3JlIHJlY2VudGx5IG9uIHNkbTg0NS4gIEJ1dCBhdCB0aGUgdGltZSBDRkNGRyB3YXMgcmVq
+ZWN0ZWQsIGlpcmMKPiA+ID4gPiA+ID4gYmVjYXVzZSBvZiBjb25jZXJuIHRoYXQgaXQgd291bGQg
+Y2F1c2UgcHJvYmxlbXMgb24gb3RoZXIgbm9uLXFjb20KPiA+ID4gPiA+ID4gYXJtIHNtbXUgaW1w
+bGVtZW50YXRpb25zLiAgQW5kIEkgdGhpbmsgSSBmb3Jnb3QgdG8gc2VuZCB0aGlzIHZlcnNpb24K
+PiA+ID4gPiA+ID4gb2YgdGhlIHNvbHV0aW9uLgo+ID4gPiA+ID4gPgo+ID4gPiA+ID4gPiBJZiBl
+bmFibGluZyBIVVBDRiBpcyBhbnRpY2lwYXRlZCB0byBjYXVzZSBwcm9ibGVtcyBvbiBvdGhlciBB
+Uk0KPiA+ID4gPiA+ID4gU01NVSBpbXBsZW1lbnRhdGlvbnMsIEkgdGhpbmsgSSBjYW4gY29tZSB1
+cCB3aXRoIGEgdmFyaWFudCBvZiB0aGlzCj4gPiA+ID4gPiA+IHBhdGNoIHdoaWNoIGNvbmRpdGlv
+bmFsbHkgZW5hYmxlcyBpdCBmb3Igc25hcGRyYWdvbi4KPiA+ID4gPiA+ID4KPiA+ID4gPiA+ID4g
+RWl0aGVyIHdheSwgSSdkIHJlYWxseSBsaWtlIHRvIGdldCBzb21lIHZhcmlhbnQgb2YgdGhpcyBm
+aXggbWVyZ2VkCj4gPiA+ID4gPiA+IChhbmQgcHJvYmFibHkgaXQgd291bGQgYmUgYSBnb29kIGlk
+ZWEgZm9yIHN0YWJsZSBrZXJuZWwgYnJhbmNoZXMKPiA+ID4gPiA+ID4gdG9vKSwgc2luY2UgY3Vy
+cmVudCBiZWhhdmlvdXIgd2l0aCB0aGUgR1BVIG1lYW5zIGZhdWx0cyB0dXJuIGludG8KPiA+ID4g
+PiA+ID4gYSBmYW50YXN0aWMgY2FzY2FkZSBvZiBmYWlsLgo+ID4gPiA+ID4KPiA+ID4gPiA+IENh
+biB5b3UgZGVzY3JpYmUgaG93IHRoaXMgZmFudGFzdGljIGNhc2NhZGUgb2YgZmFpbCBpbXByb3Zl
+cyB3aXRoIHRoaXMKPiA+ID4gPiA+IHBhdGNoLCBwbGVhc2U/IElmIHlvdSdyZSBnZXR0aW5nIGNv
+bnRleHQgZmF1bHRzIHRoZW4gc29tZXRoaW5nIGhhcyBhbHJlYWR5Cj4gPiA+ID4gPiBnb25lIGhv
+cnJpYmx5IHdyb25nLCBzbyBJJ20gdHJ5aW5nIHRvIHdvcmsgb3V0IGhvdyB0aGlzIGltcHJvdmVz
+IHRoaW5ncy4KPiA+ID4gPiA+Cj4gPiA+ID4KPiA+ID4gPiBUaGVyZSBhcmUgcGxlbnR5IG9mIGNh
+c2VzIHdoZXJlIGdldHRpbmcgaW9tbXUgZmF1bHRzIHdpdGggYSBHUFUgaXMKPiA+ID4gPiAibm9y
+bWFsIiwgb3IgYXQgbGVhc3Qgbm90IHNvbWV0aGluZyB0aGUga2VybmVsIG9yIGV2ZW4gR0wgZHJp
+dmVyIGNhbgo+ID4gPiA+IGNvbnRyb2wuCj4gPiA+Cj4gPiA+IFN1Y2ggYXM/IEFsbCB0aGUgbWFp
+bmxpbmUgZHJpdmVyIGRvZXMgaXMgcHJpbnQgYSBkaWFnbm9zdGljIGFuZCBjbGVhciB0aGUKPiA+
+ID4gZmF1bHQsIHdoaWNoIGRvZXNuJ3Qgc2VlbSBnZW5lcmFsbHkgdXNlZnVsLgo+ID4gCj4gPiBp
+dCBpcyB1c2VmdWwgdG8gZGVidWcgdGhlIGZhdWx0IDstKQo+ID4gCj4gPiBBbHRob3VnaCBldmVu
+dHVhbGx5IHdlJ2xsIHdhbnQgdG8gYmUgYWJsZSB0byBkbyBtb3JlIHRoYW4gdGhhdCwgbGlrZQo+
+ID4gaGF2ZSB0aGUgZmF1bHQgdHJpZ2dlciBicmluZ2luZyBpbiBwYWdlcyBvZiBhIG1tYXAnZCBm
+aWxlIGFuZCB0aGF0Cj4gPiBzb3J0IG9mIHRoaW5nLgo+IAo+IFJpZ2h0LCBhbmQgZmVlbHMgdmVy
+eSBzdHJhbmdlIHRvIG1lIGlmIHdlIGhhdmUgdGhpcyBiaXQgc2V0IGJlY2F1c2UgaXQKPiBtZWFu
+cyB0aGF0IHlvdXIgZmF1bHQgaXMgbm8gbG9uZ2VyIHN5bmNocm9ub3VzIGFuZCB0aGVyZWZvcmUg
+ZGl2ZXJnZXMKPiBmcm9tIHRoZSBmYXVsdCBtb2RlbCB0aGF0IHlvdSBnZXQgZnJvbSB0aGUgQ1BV
+LCB3aGVyZSB5b3UgY2VydGFpbmx5Cj4gd291bGRuJ3QgZXhwZWN0IHN0b3JlcyBhcHBlYXJpbmcg
+aW4gdGhlIHByb2dyYW0gYWZ0ZXIgYSBmYXVsdGluZyBsb2FkIHRvCj4gYmUgdmlzaWJsZSBpbiBt
+ZW1vcnkuIEhvd2V2ZXIsIHRoaW5raW5nIGhhcmRlciBhYm91dCBpdCwgSSBzdXBwb3NlIHdlJ3Jl
+Cj4gYWxyZWFkeSBpbiBhIHNpdHVhdGlvbiB3aGVyZSB0aGUgdHJhbnNsYXRpb25zIGFyZSBoYW5k
+bGVkIG91dCBvZiBvcmRlcgo+IGluIHRoZSBhYnNlbmNlIG9mIGJhcnJpZXJzLCBzbyBtYXliZSBp
+dCdzIG5vdCB0aGUgZW5kIG9mIHRoZSB3b3JsZC4KPiAKPiBDb3VsZCB5b3UgZHVtcCB0aGUgRlNS
+IHZhbHVlIHRoYXQgeW91IHNlZSBpbiB0aGUgZmF1bHQgaGFuZGxlciwgcGxlYXNlPwo+IEZyb20g
+bXkgcmVhZGluZyBvZiB0aGUgYXJjaGl0ZWN0dXJlIHNwZWMsIGFzIGxvbmcgYXMgY2xlYXIgYWxs
+IG9mIHRoZQo+IGZhdWx0IGJpdHMgaW4gdGhlIGlycSBoYW5kbGVyLCB0aGVuIHlvdXIgbWFjaGlu
+ZSBzaG91bGRuJ3QgZGllIGxpa2UgaXQKPiBkb2VzIHdpdGggSFVQQ0ZHPUNGQ0ZHPTAuLgo+IAo+
+ID4gPiA+IFdpdGggdGhpcyBwYXRjaCwgeW91IHN0aWxsIGdldCB0aGUgaW9tbXUgZmF1bHQsIGJ1
+dCBpdCBkb2Vzbid0IGNhdXNlCj4gPiA+ID4gdGhlIGdwdSB0byBjcmFzaC4gIEJ1dCB3aXRob3V0
+IGl0LCBvdGhlciBtZW1vcnkgYWNjZXNzZXMgaW4gZmxpZ2h0Cj4gPiA+ID4gd2hpbGUgdGhlIGZh
+dWx0IG9jY3VycywgbGlrZSB0aGUgR1BVIGNvbW1hbmQtcHJvY2Vzc29yIHJlYWRpbmcgZnVydGhl
+cgo+ID4gPiA+IGFoZWFkIGluIHRoZSBjbWRzdHJlYW0gdG8gc2V0dXAgbmV4dCBkcmF3LCB3b3Vs
+ZCByZXR1cm4gemVybydzLAo+ID4gPiA+IGNhdXNpbmcgdGhlIEdQVSB0byBjcmFzaCBvciBnZXQg
+aW50byBhIGJhZCBzdGF0ZS4KPiA+ID4KPiA+ID4gSSBnZXQgdGhhdCBwYXJ0LCBidXQgSSBkb24n
+dCB1bmRlcnN0YW5kIHdoeSB3ZSdyZSBzZWVpbmcgZmF1bHRzIGluIHRoZSBmaXJzdAo+ID4gPiBw
+bGFjZSBhbmQgSSB3b3JyeSB0aGF0IHRoaXMgcGF0Y2ggaXMganVzdCB0aGUgdGlwIG9mIHRoZSBp
+Y2ViZXJnLiBJdCdzIGFsc28KPiA+ID4gbm90IGNsZWFyIHRoYXQgcHJvY2Vzc2luZyBzdWJzZXF1
+ZW50IHRyYW5zYWN0aW9ucyBpcyBhbHdheXMgdGhlIHJpZ2h0IHRoaW5nCj4gPiA+IHRvIGRvIGlu
+IGEgd29ybGQgd2hlcmUgd2UgYWN0dWFsbHkgd2FudCB0byByZXBvcnQgKGFuZCBoYW5kbGUpIHN5
+bmNocm9ub3VzCj4gPiA+IGZhdWx0cyBmcm9tIGRldmljZXMuCj4gPiAKPiA+IFN1cmUsIGl0IGlz
+IGEgYnVnLi4gYnV0IGl0IGNhbiBiZSBhbiBhcHBsaWNhdGlvbiBidWcgdGhhdCBpcyBub3QKPiA+
+IHNvbWV0aGluZyB0aGUgdXNlcnNwYWNlIEdMIGRyaXZlciBvciBrZXJuZWwgY291bGQgZG8gYW55
+dGhpbmcgYWJvdXQuCj4gPiBXZSBzaG91bGRuJ3QgbGV0IHRoaXMga2lsbCB0aGUgR1BVLiAgSWYg
+dGhlIGFwcGxpY2F0aW9uIGRpZG4ndCBoYXZlCj4gPiB0aGlzIG11Y2ggY29udHJvbCwgd2Ugd291
+bGRuJ3QgbmVlZCBhbiBJT01NVSBpbiB0aGUgZmlyc3QgcGxhY2VbMV0uCj4gPiBXaXRoIG9wZW5j
+bCBjb21wdXRlLCB0aGUgdXNlcnNwYWNlIGNvbnRyb2xsZWQgc2hhZGVyIGhhcyBmdWxsIGJsb3du
+Cj4gPiBwb2ludGVycyB0byBHUFUgbWVtb3J5Lgo+ID4gCj4gPiBBbmQgZXZlbiBpbiBjYXNlcyB3
+aGVyZSBpdCBpcyBhIHVzZXJzcGFjZSBHTCBkcml2ZXIgYnVnLCBoYXZpbmcgc29tZQo+ID4gcm9i
+dXN0bmVzcyB0byBub3QgY29tcGxldGVseSBraWxsIHRoZSBHUFUgbWFrZXMgZGVidWdnaW5nIG11
+Y2ggZWFzaWVyLgo+ID4gU29tZXRoaW5nIEkgZG8gYSBsb3Qgd2hlbiBicmluZ2luZyB1cCBzdXBw
+b3J0IGZvciBhIG5ldyBnZW5lcmF0aW9uIG9mCj4gPiBHUFUuCj4gPiAKPiA+IEknbSBoYXZpbmcg
+YSBoYXJkIHRpbWUgdW5kZXJzdGFuZGluZyB5b3VyIG9iamVjdGlvbiB0byB0aGlzLgo+ID4gUmV0
+dXJuaW5nIHplcm8ncyBmb3Igbm9uLWZhdWx0aW5nIHRyYW5zYWN0aW9ucyBpcyBhICpyZWFsbHkg
+YmFkIGlkZWEqLgo+IAo+IFdhaXQgLS0gd2hvIHNhaWQgYW55dGhpbmcgYWJvdXQgcmV0dXJuaW5n
+IHplcm9lcz8gV2hlcmUgZG9lcyB0aGF0IGJlaGF2aW91cgo+IGFwcGVhciBpbiB0aGUgYXJjaGl0
+ZWN0dXJlPwoKSSBfdGhpbmtfIGl0IGlzIHRoZSBidXMgaW1wbGVtZW50YXRpb24gdGhhdCByZXR1
+cm5zIHplcm8gb24gYSB0ZXJtaW5hdGVkCnRyYW5zYWN0aW9uIGJ1dCB0aGUgZWZmZWN0IG9uIHRo
+ZSBHUFUgaXMgdGhlIHNhbWUuCgpKb3JkYW4KCi0tIApUaGUgUXVhbGNvbW0gSW5ub3ZhdGlvbiBD
+ZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIgb2YgQ29kZSBBdXJvcmEgRm9ydW0sCmEgTGludXggRm91
+bmRhdGlvbiBDb2xsYWJvcmF0aXZlIFByb2plY3QKX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4v
+bGlzdGluZm8vZnJlZWRyZW5vCg==
