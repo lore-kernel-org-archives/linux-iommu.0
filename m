@@ -1,7 +1,7 @@
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v2 4/4] thunderbolt: Export IOMMU based DMA protection support to userspace
-Date: Mon, 26 Nov 2018 14:15:26 +0300
-Message-ID: <20181126111526.56340-5-mika.westerberg@linux.intel.com>
+Subject: [PATCH v2 2/4] iommu/vt-d: Force IOMMU on for platform opt in hint
+Date: Mon, 26 Nov 2018 14:15:24 +0300
+Message-ID: <20181126111526.56340-3-mika.westerberg@linux.intel.com>
 References: <20181126111526.56340-1-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,127 +12,199 @@ To: iommu@lists.linux-foundation.org
 Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Christoph Hellwig <hch@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vg
 List-Id: iommu@lists.linux-foundation.org
 
-Recent systems with Thunderbolt ports may support IOMMU natively. In
-practice this means that Thunderbolt connected devices are placed behind
-an IOMMU during the whole time it is connected (including during boot)
-making Thunderbolt security levels redundant. This is called Kernel DMA
-protection [1] by Microsoft.
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Some of these systems still have Thunderbolt security level set to
-"user" in order to support OS downgrade (the older version of the OS
-might not support IOMMU based DMA protection so connecting a device
-still relies on user approval).
+Intel VT-d spec added a new DMA_CTRL_PLATFORM_OPT_IN_FLAG flag
+in DMAR ACPI table for BIOS to report compliance about platform
+initiated DMA restricted to RMRR ranges when transferring control
+to the OS. The OS treats this as a hint that the IOMMU should be
+enabled to prevent DMA attacks from possible malicious devices.
 
-Export this information to userspace by introducing a new sysfs
-attribute (iommu_dma_protection). Based on it userspace tools can make
-more accurate decision whether or not authorize the connected device.
+A use of this flag is Kernel DMA protection for Thunderbolt[1]
+which in practice means that IOMMU should be enabled for PCIe
+devices connected to the Thunderbolt ports. With IOMMU enabled
+for these devices, all DMA operations are limited in the range
+reserved for it, thus the DMA attacks are prevented. All these
+devices are enumerated in the PCI/PCIe module and marked with
+an is_untrusted flag.
 
-In addition update Thunderbolt documentation regarding IOMMU based DMA
-protection.
+This forces IOMMU to be enabled if DMA_CTRL_PLATFORM_OPT_IN_FLAG
+is set in DMAR ACPI table and there are PCIe devices marked as
+is_untrusted in the system. This can be turned off by adding
+"intel_iommu=off" in the kernel command line, if any problems are
+found.
 
 [1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
 
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Sohil Mehta <sohil.mehta@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Yehezkel Bernat <YehezkelShB@gmail.com>
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Acked-by: Joerg Roedel <jroedel@suse.de>
 ---
- .../ABI/testing/sysfs-bus-thunderbolt         |  9 +++++++++
- Documentation/admin-guide/thunderbolt.rst     | 20 +++++++++++++++++++
- drivers/thunderbolt/domain.c                  | 17 ++++++++++++++++
- 3 files changed, 46 insertions(+)
+ drivers/iommu/dmar.c        | 25 +++++++++++++++++
+ drivers/iommu/intel-iommu.c | 53 +++++++++++++++++++++++++++++++++++--
+ include/linux/dmar.h        |  8 ++++++
+ 3 files changed, 84 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-index 151584a1f950..b21fba14689b 100644
---- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
-+++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-@@ -21,6 +21,15 @@ Description:	Holds a comma separated list of device unique_ids that
- 		If a device is authorized automatically during boot its
- 		boot attribute is set to 1.
- 
-+What: /sys/bus/thunderbolt/devices/.../domainX/iommu_dma_protection
-+Date:		Mar 2019
-+KernelVersion:	4.21
-+Contact:	thunderbolt-software@lists.01.org
-+Description:	This attribute tells whether the system uses IOMMU
-+		for DMA protection. Value of 1 means IOMMU is used 0 means
-+		it is not (DMA protection is solely based on Thunderbolt
-+		security levels).
-+
- What: /sys/bus/thunderbolt/devices/.../domainX/security
- Date:		Sep 2017
- KernelVersion:	4.13
-diff --git a/Documentation/admin-guide/thunderbolt.rst b/Documentation/admin-guide/thunderbolt.rst
-index 35fccba6a9a6..9158d66f04a4 100644
---- a/Documentation/admin-guide/thunderbolt.rst
-+++ b/Documentation/admin-guide/thunderbolt.rst
-@@ -133,6 +133,26 @@ If the user still wants to connect the device they can either approve
- the device without a key or write a new key and write 1 to the
- ``authorized`` file to get the new key stored on the device NVM.
- 
-+DMA protection utilizing IOMMU
-+------------------------------
-+Recent systems from 2018 and forward with Thunderbolt ports may natively
-+support IOMMU. This means that Thunderbolt security is handled by an IOMMU
-+so connected devices cannot access memory regions outside of what is
-+allocated for them by drivers.  When Linux is running on such system it
-+automatically enables IOMMU if not enabled by the user already. These
-+systems can be identified by reading ``1`` from
-+``/sys/bus/thunderbolt/devices/domainX/iommu_dma_protection`` attribute.
-+
-+The driver does not do anything special in this case but because DMA
-+protection is handled by the IOMMU, security levels (if set) are
-+redundant. For this reason some systems ship with security level set to
-+``none``. Other systems have security level set to ``user`` in order to
-+support downgrade to older OS, so users who want to automatically
-+authorize devices when IOMMU DMA protection is enabled can use the
-+following ``udev`` rule::
-+
-+  ACTION=="add", SUBSYSTEM=="thunderbolt", ATTRS{iommu_dma_protection}=="1", ATTR{authorized}=="0", ATTR{authorized}="1"
-+
- Upgrading NVM on Thunderbolt device or host
- -------------------------------------------
- Since most of the functionality is handled in firmware running on a
-diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
-index 93e562f18d40..7416bdbd8576 100644
---- a/drivers/thunderbolt/domain.c
-+++ b/drivers/thunderbolt/domain.c
-@@ -7,7 +7,9 @@
-  */
- 
- #include <linux/device.h>
-+#include <linux/dmar.h>
- #include <linux/idr.h>
-+#include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
-@@ -236,6 +238,20 @@ static ssize_t boot_acl_store(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RW(boot_acl);
- 
-+static ssize_t iommu_dma_protection_show(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
-+{
-+	/*
-+	 * Kernel DMA protection is a feature where Thunderbolt security is
-+	 * handled natively using IOMMU. It is enabled when IOMMU is
-+	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
-+	 */
-+	return sprintf(buf, "%d\n",
-+		       iommu_present(&pci_bus_type) && dmar_platform_optin());
-+}
-+static DEVICE_ATTR_RO(iommu_dma_protection);
-+
- static ssize_t security_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index d9c748b6f9e4..1edf2a251336 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -2042,3 +2042,28 @@ int dmar_device_remove(acpi_handle handle)
  {
-@@ -251,6 +267,7 @@ static DEVICE_ATTR_RO(security);
+ 	return dmar_device_hotplug(handle, false);
+ }
++
++/*
++ * dmar_platform_optin - Is %DMA_CTRL_PLATFORM_OPT_IN_FLAG set in DMAR table
++ *
++ * Returns true if the platform has %DMA_CTRL_PLATFORM_OPT_IN_FLAG set in
++ * the ACPI DMAR table. This means that the platform boot firmware has made
++ * sure no device can issue DMA outside of RMRR regions.
++ */
++bool dmar_platform_optin(void)
++{
++	struct acpi_table_dmar *dmar;
++	acpi_status status;
++	bool ret;
++
++	status = acpi_get_table(ACPI_SIG_DMAR, 0,
++				(struct acpi_table_header **)&dmar);
++	if (ACPI_FAILURE(status))
++		return false;
++
++	ret = !!(dmar->flags & DMAR_PLATFORM_OPT_IN);
++	acpi_put_table((struct acpi_table_header *)dmar);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(dmar_platform_optin);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 41a4b8808802..76e135ee9b19 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -184,6 +184,7 @@ static int rwbf_quirk;
+  */
+ static int force_on = 0;
+ int intel_iommu_tboot_noforce;
++static int no_platform_optin;
  
- static struct attribute *domain_attrs[] = {
- 	&dev_attr_boot_acl.attr,
-+	&dev_attr_iommu_dma_protection.attr,
- 	&dev_attr_security.attr,
+ #define ROOT_ENTRY_NR (VTD_PAGE_SIZE/sizeof(struct root_entry))
+ 
+@@ -503,6 +504,7 @@ static int __init intel_iommu_setup(char *str)
+ 			pr_info("IOMMU enabled\n");
+ 		} else if (!strncmp(str, "off", 3)) {
+ 			dmar_disabled = 1;
++			no_platform_optin = 1;
+ 			pr_info("IOMMU disabled\n");
+ 		} else if (!strncmp(str, "igfx_off", 8)) {
+ 			dmar_map_gfx = 0;
+@@ -2895,6 +2897,13 @@ static int iommu_should_identity_map(struct device *dev, int startup)
+ 		if (device_is_rmrr_locked(dev))
+ 			return 0;
+ 
++		/*
++		 * Prevent any device marked as untrusted from getting
++		 * placed into the statically identity mapping domain.
++		 */
++		if (pdev->is_untrusted)
++			return 0;
++
+ 		if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+ 			return 1;
+ 
+@@ -4728,14 +4737,54 @@ const struct attribute_group *intel_iommu_groups[] = {
  	NULL,
  };
+ 
++static int __init platform_optin_force_iommu(void)
++{
++	struct pci_dev *pdev = NULL;
++	bool has_untrusted_dev = false;
++
++	if (!dmar_platform_optin() || no_platform_optin)
++		return 0;
++
++	for_each_pci_dev(pdev) {
++		if (pdev->is_untrusted) {
++			has_untrusted_dev = true;
++			break;
++		}
++	}
++
++	if (!has_untrusted_dev)
++		return 0;
++
++	if (no_iommu || dmar_disabled)
++		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
++
++	/*
++	 * If Intel-IOMMU is disabled by default, we will apply identity
++	 * map for all devices except those marked as being untrusted.
++	 */
++	if (dmar_disabled)
++		iommu_identity_mapping |= IDENTMAP_ALL;
++
++	dmar_disabled = 0;
++#if defined(CONFIG_X86) && defined(CONFIG_SWIOTLB)
++	swiotlb = 0;
++#endif
++	no_iommu = 0;
++
++	return 1;
++}
++
+ int __init intel_iommu_init(void)
+ {
+ 	int ret = -ENODEV;
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+ 
+-	/* VT-d is required for a TXT/tboot launch, so enforce that */
+-	force_on = tboot_force_iommu();
++	/*
++	 * Intel IOMMU is required for a TXT/tboot launch or platform
++	 * opt in, so enforce that.
++	 */
++	force_on = tboot_force_iommu() || platform_optin_force_iommu();
+ 
+ 	if (iommu_init_mempool()) {
+ 		if (force_on)
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index 843a41ba7e28..f8af1d770520 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -39,6 +39,7 @@ struct acpi_dmar_header;
+ /* DMAR Flags */
+ #define DMAR_INTR_REMAP		0x1
+ #define DMAR_X2APIC_OPT_OUT	0x2
++#define DMAR_PLATFORM_OPT_IN	0x4
+ 
+ struct intel_iommu;
+ 
+@@ -170,6 +171,8 @@ static inline int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
+ { return 0; }
+ #endif /* CONFIG_IRQ_REMAP */
+ 
++extern bool dmar_platform_optin(void);
++
+ #else /* CONFIG_DMAR_TABLE */
+ 
+ static inline int dmar_device_add(void *handle)
+@@ -182,6 +185,11 @@ static inline int dmar_device_remove(void *handle)
+ 	return 0;
+ }
+ 
++static inline bool dmar_platform_optin(void)
++{
++	return false;
++}
++
+ #endif /* CONFIG_DMAR_TABLE */
+ 
+ struct irte {
 -- 
 2.19.1
