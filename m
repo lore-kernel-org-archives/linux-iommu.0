@@ -1,78 +1,82 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RESEND PATCH v17 2/5] iommu/arm-smmu: Invoke
- pm_runtime during probe, add/remove device
-Date: Mon, 26 Nov 2018 11:33:15 +0530
-Message-ID: <9064c01e-cef0-9306-078a-8d303cd6614b@codeaurora.org>
-References: <20181116112430.31248-1-vivek.gautam@codeaurora.org>
- <20181116112430.31248-3-vivek.gautam@codeaurora.org>
- <20181121173757.GA9801@arm.com>
- <CAFp+6iEH7_XEcZNsbZfn6iBF5_o-ZKBj=DpturH7N85LU289qg@mail.gmail.com>
- <20181123183555.GE21183@arm.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [PATCH 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
+Date: Mon, 26 Nov 2018 12:14:22 +0530
+Message-ID: <CAFqt6zYmy5SdZY6_1BXFbY2pBQaNd+Z8R71wHEs6nKmxjht07A@mail.gmail.com>
+References: <20181115154950.GA27985@jordon-HP-15-Notebook-PC>
+ <bbad42cb-4a76-a7e7-c385-db77f1cc588b@arm.com> <20181123213448.GW3065@bombadil.infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20181123183555.GE21183-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181123213448.GW3065@bombadil.infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthew Wilcox <willy@infradead.org>
+Cc: robin.murphy@arm.com, Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, joro@8bytes.org, Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAxMS8yNC8yMDE4IDEyOjA2IEFNLCBXaWxsIERlYWNvbiB3cm90ZToKPiBPbiBUaHUsIE5v
-diAyMiwgMjAxOCBhdCAwNTozMjoyNFBNICswNTMwLCBWaXZlayBHYXV0YW0gd3JvdGU6Cj4+IEhp
-IFdpbGwsCj4+Cj4+IE9uIFdlZCwgTm92IDIxLCAyMDE4IGF0IDExOjA5IFBNIFdpbGwgRGVhY29u
-IDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToKPj4+IE9uIEZyaSwgTm92IDE2LCAyMDE4IGF0
-IDA0OjU0OjI3UE0gKzA1MzAsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4+PiBGcm9tOiBTcmljaGFy
-YW4gUiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+Pj4+Cj4+Pj4gVGhlIHNtbXUgZGV2aWNl
-IHByb2JlL3JlbW92ZSBhbmQgYWRkL3JlbW92ZSBtYXN0ZXIgZGV2aWNlIGNhbGxiYWNrcwo+Pj4+
-IGdldHMgY2FsbGVkIHdoZW4gdGhlIHNtbXUgaXMgbm90IGxpbmtlZCB0byBpdHMgbWFzdGVyLCB0
-aGF0IGlzIHdpdGhvdXQKPj4+PiB0aGUgY29udGV4dCBvZiB0aGUgbWFzdGVyIGRldmljZS4gU28g
-Y2FsbGluZyBydW50aW1lIGFwaXMgaW4gdGhvc2UgcGxhY2VzCj4+Pj4gc2VwYXJhdGVseS4KPj4+
-PiBHbG9iYWwgbG9ja3MgYXJlIGFsc28gaW5pdGlhbGl6ZWQgYmVmb3JlIGVuYWJsaW5nIHJ1bnRp
-bWUgcG0gYXMgdGhlCj4+Pj4gcnVudGltZV9yZXN1bWUoKSBjYWxscyBkZXZpY2VfcmVzZXQoKSB3
-aGljaCBkb2VzIHRsYl9zeW5jX2dsb2JhbCgpCj4+Pj4gdGhhdCB1bHRpbWF0ZWx5IHJlcXVpcmVz
-IGxvY2tzIHRvIGJlIGluaXRpYWxpemVkLgo+Pj4+Cj4+Pj4gU2lnbmVkLW9mZi1ieTogU3JpY2hh
-cmFuIFIgPHNyaWNoYXJhbkBjb2RlYXVyb3JhLm9yZz4KPj4+PiBbdml2ZWs6IENsZWFudXAgcG0g
-cnVudGltZSBjYWxsc10KPj4+PiBTaWduZWQtb2ZmLWJ5OiBWaXZlayBHYXV0YW0gPHZpdmVrLmdh
-dXRhbUBjb2RlYXVyb3JhLm9yZz4KPj4+PiBSZXZpZXdlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdh
-QGNocm9taXVtLm9yZz4KPj4+PiBUZXN0ZWQtYnk6IFNyaW5pdmFzIEthbmRhZ2F0bGEgPHNyaW5p
-dmFzLmthbmRhZ2F0bGFAbGluYXJvLm9yZz4KPj4+PiBSZXZpZXdlZC1ieTogUm9iaW4gTXVycGh5
-IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4KPj4+PiAtLS0KPj4+PiAgIGRyaXZlcnMvaW9tbXUvYXJt
-LXNtbXUuYyB8IDEwMSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKyst
-LS0tLQo+Pj4+ICAgMSBmaWxlIGNoYW5nZWQsIDkxIGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9u
-cygtKQo+Pj4gR2l2ZW4gdGhhdCB5b3UncmUgZG9pbmcgdGhlIGdldC9wdXQgaW4gdGhlIFRMQkkg
-b3BzIHVuY29uZGl0aW9uYWxseToKPj4+Cj4+Pj4gICBzdGF0aWMgdm9pZCBhcm1fc21tdV9mbHVz
-aF9pb3RsYl9hbGwoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluKQo+Pj4+ICAgewo+Pj4+ICAg
-ICAgICBzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbiA9IHRvX3NtbXVfZG9tYWlu
-KGRvbWFpbik7Cj4+Pj4gKyAgICAgc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSA9IHNtbXVf
-ZG9tYWluLT5zbW11Owo+Pj4+Cj4+Pj4gLSAgICAgaWYgKHNtbXVfZG9tYWluLT50bGJfb3BzKQo+
-Pj4+ICsgICAgIGlmIChzbW11X2RvbWFpbi0+dGxiX29wcykgewo+Pj4+ICsgICAgICAgICAgICAg
-YXJtX3NtbXVfcnBtX2dldChzbW11KTsKPj4+PiAgICAgICAgICAgICAgICBzbW11X2RvbWFpbi0+
-dGxiX29wcy0+dGxiX2ZsdXNoX2FsbChzbW11X2RvbWFpbik7Cj4+Pj4gKyAgICAgICAgICAgICBh
-cm1fc21tdV9ycG1fcHV0KHNtbXUpOwo+Pj4+ICsgICAgIH0KPj4+PiAgIH0KPj4+Pgo+Pj4+ICAg
-c3RhdGljIHZvaWQgYXJtX3NtbXVfaW90bGJfc3luYyhzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21h
-aW4pCj4+Pj4gICB7Cj4+Pj4gICAgICAgIHN0cnVjdCBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9t
-YWluID0gdG9fc21tdV9kb21haW4oZG9tYWluKTsKPj4+PiArICAgICBzdHJ1Y3QgYXJtX3NtbXVf
-ZGV2aWNlICpzbW11ID0gc21tdV9kb21haW4tPnNtbXU7Cj4+Pj4KPj4+PiAtICAgICBpZiAoc21t
-dV9kb21haW4tPnRsYl9vcHMpCj4+Pj4gKyAgICAgaWYgKHNtbXVfZG9tYWluLT50bGJfb3BzKSB7
-Cj4+Pj4gKyAgICAgICAgICAgICBhcm1fc21tdV9ycG1fZ2V0KHNtbXUpOwo+Pj4+ICAgICAgICAg
-ICAgICAgIHNtbXVfZG9tYWluLT50bGJfb3BzLT50bGJfc3luYyhzbW11X2RvbWFpbik7Cj4+Pj4g
-KyAgICAgICAgICAgICBhcm1fc21tdV9ycG1fcHV0KHNtbXUpOwo+Pj4+ICsgICAgIH0KPj4+IFdo
-eSBkbyB5b3UgbmVlZCB0aGVtIGFyb3VuZCB0aGUgbWFwL3VubWFwIGNhbGxzIGFzIHdlbGw/Cj4+
-IFdlIHN0aWxsIGhhdmUgLnRsYl9hZGRfZmx1c2ggcGF0aD8KPiBPaywgc28gd2UgY291bGQgYWRk
-IHRoZSBvcHMgYXJvdW5kIHRoYXQgYXMgd2VsbC4gUmlnaHQgbm93LCB3ZSd2ZSBnb3QKPiB0aGUg
-cnVudGltZSBwbSBob29rcyBjcm9zc2luZyB0d28gcGFydHMgb2YgdGhlIEFQSS4KClN1cmUsIHdp
-bGwgZG8gdGhhdCB0aGVuLCBhbmQgcmVtb3ZlIHRoZSBydW50aW1lIHBtIGhvb2tzIGZyb20gbWFw
-L3VubWFwLgoKVGhhbmtzClZpdmVrCj4KPiBXaWxsCgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0Bs
-aXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
-bi9saXN0aW5mby9mcmVlZHJlbm8K
+On Sat, Nov 24, 2018 at 3:04 AM Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Fri, Nov 23, 2018 at 05:23:06PM +0000, Robin Murphy wrote:
+> > On 15/11/2018 15:49, Souptick Joarder wrote:
+> > > Convert to use vm_insert_range() to map range of kernel
+> > > memory to user vma.
+> > >
+> > > Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+> > > Reviewed-by: Matthew Wilcox <willy@infradead.org>
+> > > ---
+> > >   drivers/iommu/dma-iommu.c | 12 ++----------
+> > >   1 file changed, 2 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > > index d1b0475..69c66b1 100644
+> > > --- a/drivers/iommu/dma-iommu.c
+> > > +++ b/drivers/iommu/dma-iommu.c
+> > > @@ -622,17 +622,9 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+> > >   int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+> > >   {
+> > > -   unsigned long uaddr = vma->vm_start;
+> > > -   unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > > -   int ret = -ENXIO;
+> > > +   unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > > -   for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+> > > -           ret = vm_insert_page(vma, uaddr, pages[i]);
+> > > -           if (ret)
+> > > -                   break;
+> > > -           uaddr += PAGE_SIZE;
+> > > -   }
+> > > -   return ret;
+> > > +   return vm_insert_range(vma, vma->vm_start, pages, count);
+> >
+> > AFIACS, vm_insert_range() doesn't respect vma->vm_pgoff, so doesn't this
+> > break partial mmap()s of a large buffer? (which I believe can be a thing)
+>
+> Whoops.  That should have been:
+>
+> return vm_insert_range(vma, vma->vm_start, pages + vma->vm_pgoff, count);
+
+I am unable to trace back where vma->vm_pgoff is set for this driver ? if any ?
+If default value set to 0 then I think existing code is correct.
+
+>
+> I suppose.
+>
+
+> Although arguably we should respect vm_pgoff inside vm_insert_region()
+> and then callers automatically get support for vm_pgoff without having
+> to think about it ...
+
+I assume, vm_insert_region() means vm_insert_range(). If we respect vm_pgoff
+inside vm_insert_range, for any uninitialized/ error value set for vm_pgoff from
+drivers will introduce a bug inside core mm which might be difficult
+to trace back.
+But when vm_pgoff set and passed from caller (drivers) it might be
+easy to figure out.
+
+> although we should then also pass in the length
+> of the pages array to avoid pages being mapped in which aren't part of
+> the allocated array.
+
+Mostly Partial mapping is done by starting from an index and mapped it till
+end of pages array. Calculating length of the pages array will have a small
+overhead for each drivers.
+
+Please correct me if I am wrong.
