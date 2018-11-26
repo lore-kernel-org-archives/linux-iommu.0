@@ -1,20 +1,15 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Mon, 26 Nov 2018 03:01:20 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE6877B@SHSMSX101.ccr.corp.intel.com>
-References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
-	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
-	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
-	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
-	<20181107164323.GA19831@8bytes.org>
-	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
-	<20181123112125.GF1586@8bytes.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v4 7/8] vfio/type1: Add domain at(de)taching group helpers
+Date: Mon, 26 Nov 2018 11:05:04 +0800
+Message-ID: <13a8bda6-1e66-66b9-6670-70d1b71ab50a@linux.intel.com>
+References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+	<20181105073408.21815-8-baolu.lu@linux.intel.com>
+	<b5f5eda1-2dbf-dd7e-3b68-bfd9e5099c06@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181123112125.GF1586-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <b5f5eda1-2dbf-dd7e-3b68-bfd9e5099c06-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,92 +20,232 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> From: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Friday, November 23, 2018 7:21 PM
+Hi,
+
+On 11/23/18 10:13 PM, Auger Eric wrote:
+> Hi Lu,
 > 
-> On Wed, Nov 21, 2018 at 12:40:44PM +0800, Lu Baolu wrote:
-> > Can you please elaborate a bit more about the concept of subdomains?
-> > From my point of view, an aux-domain is a normal un-managed domain
-> which
-> > has a PASID and could be attached to any ADIs through the aux-domain
-> > specific attach/detach APIs. It could also be attached to a device with
-> > the existing domain_attach/detach_device() APIs at the same time, hence
-> > mdev and pci devices in a vfio container could share a domain.
+> On 11/5/18 8:34 AM, Lu Baolu wrote:
+>> This adds helpers to attach or detach a domain to a
+>> group. This will replace iommu_attach_group() which
+>> only works for pci devices.
+> s/pci/non mdev?
+
+... which doesn't work for mdev devices.
+
+>>
+>> If a domain is attaching to a group which includes the
+>> mediated devices, it should attach to the iommu device
+>> (a pci device which represents the mdev in iommu scope)
+>> instead. The added helper supports attaching domain to
+>> groups for both pci and mdev devices.
+>>
+>> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Signed-off-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+>> ---
+>>   drivers/vfio/vfio_iommu_type1.c | 114 ++++++++++++++++++++++++++++++--
+>>   1 file changed, 107 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index d9fd3188615d..178264b330e7 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>> @@ -91,6 +91,7 @@ struct vfio_dma {
+>>   struct vfio_group {
+>>   	struct iommu_group	*iommu_group;
+>>   	struct list_head	next;
+>> +	bool			mdev_group;	/* An mdev group */
+>>   };
+>>   
+>>   /*
+>> @@ -1327,6 +1328,105 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
+>>   	return ret;
+>>   }
+>>   
+>> +static struct device *vfio_mdev_get_iommu_device(struct device *dev)
+>> +{
+>> +	struct device *(*fn)(struct device *dev);
+>> +	struct device *iommu_parent;
+>> +
+>> +	fn = symbol_get(mdev_get_iommu_device);
+>> +	if (fn) {
+>> +		iommu_parent = fn(dev);
+>> +		symbol_put(mdev_get_iommu_device);
+>> +
+>> +		return iommu_parent;
+>> +	}
+>> +
+>> +	return NULL;
+>> +}
+>> +
+>> +static int vfio_mdev_set_domain(struct device *dev, struct iommu_domain *domain)
+>> +{
+>> +	int (*fn)(struct device *dev, void *domain);
+>> +	int ret;
+>> +
+>> +	fn = symbol_get(mdev_set_iommu_domain);
+>> +	if (fn) {
+>> +		ret = fn(dev, domain);
+>> +		symbol_put(mdev_set_iommu_domain);
+>> +
+>> +		return ret;
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int vfio_mdev_attach_domain(struct device *dev, void *data)
+>> +{
+>> +	struct iommu_domain *domain = data;
+>> +	struct device *iommu_device;
+>> +	int ret;
+>> +
+>> +	ret = vfio_mdev_set_domain(dev, domain);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	iommu_device = vfio_mdev_get_iommu_device(dev);
+>> +	if (iommu_device) {
+>> +		bool aux_mode = false;
+>> +
+>> +		iommu_get_dev_attr(iommu_device,
+>> +				   IOMMU_DEV_ATTR_AUXD_ENABLED, &aux_mode);
+> Don' you need to test the returned value before using aux_mode?
+
+Yes. Good catch.
+
+>> +		if (aux_mode)
+>> +			return iommu_attach_device_aux(domain, iommu_device);
+>> +		else
+>> +			return iommu_attach_device(domain, iommu_device);
+> if for some reason the above ops fail, don't you want to call
+> vfio_mdev_set_domain(dev, NULL)
+
+Yes. Good catch.
+
 > 
-> Okay, let's think a bit about having aux-specific attach/detach
-> functions, in the end I don't insist on my proposal as long as the
-> IOMMU-API extensions are clean, consistent, and have well defined
-> semantics.
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int vfio_mdev_detach_domain(struct device *dev, void *data)
+>> +{
+>> +	struct iommu_domain *domain = data;
+>> +	struct device *iommu_device;
+>> +
+>> +	vfio_mdev_set_domain(dev, NULL);
+>> +	iommu_device = vfio_mdev_get_iommu_device(dev);
+>> +	if (iommu_device) {
+>> +		bool aux_mode = false;
+>> +
+>> +		iommu_get_dev_attr(iommu_device,
+>> +				   IOMMU_DEV_ATTR_AUXD_ENABLED, &aux_mode);
+> same here
+
+Will fix it.
+
+>> +		if (aux_mode)
+>> +			iommu_detach_device_aux(domain, iommu_device);
+>> +		else
+>> +			iommu_detach_device(domain, iommu_device);
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int vfio_iommu_attach_group(struct vfio_domain *domain,
+>> +				   struct vfio_group *group)
+>> +{
+>> +	if (group->mdev_group)
+>> +		return iommu_group_for_each_dev(group->iommu_group,
+>> +						domain->domain,
+>> +						vfio_mdev_attach_domain);
+>> +	else
+>> +		return iommu_attach_group(domain->domain, group->iommu_group);
+>> +}
+>> +
+>> +static void vfio_iommu_detach_group(struct vfio_domain *domain,
+>> +				    struct vfio_group *group)
+>> +{
+>> +	if (group->mdev_group)
+>> +		iommu_group_for_each_dev(group->iommu_group, domain->domain,
+>> +					 vfio_mdev_detach_domain);
+>> +	else
+>> +		iommu_detach_group(domain->domain, group->iommu_group);
+>> +}
+>> +
+>>   static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   					 struct iommu_group *iommu_group)
+>>   {
+>> @@ -1402,7 +1502,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   			goto out_domain;
+>>   	}
+>>   
+>> -	ret = iommu_attach_group(domain->domain, iommu_group);
+>> +	ret = vfio_iommu_attach_group(domain, group);
+>>   	if (ret)
+>>   		goto out_domain;
+>>   
+>> @@ -1434,8 +1534,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   	list_for_each_entry(d, &iommu->domain_list, next) {
+>>   		if (d->domain->ops == domain->domain->ops &&
+>>   		    d->prot == domain->prot) {
+>> -			iommu_detach_group(domain->domain, iommu_group);
+>> -			if (!iommu_attach_group(d->domain, iommu_group)) {
+>> +			vfio_iommu_detach_group(domain, group);
+>> +			if (!vfio_iommu_attach_group(d, group)) {
+>>   				list_add(&group->next, &d->group_list);
+>>   				iommu_domain_free(domain->domain);
+>>   				kfree(domain);
+>> @@ -1443,7 +1543,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   				return 0;
+>>   			}
+>>   
+>> -			ret = iommu_attach_group(domain->domain, iommu_group);
+>> +			ret = vfio_iommu_attach_group(domain, group);
+>>   			if (ret)
+>>   				goto out_domain;
+>>   		}
+>> @@ -1469,7 +1569,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>   	return 0;
+>>   
+>>   out_detach:
+>> -	iommu_detach_group(domain->domain, iommu_group);
+>> +	vfio_iommu_detach_group(domain, group);
+>>   out_domain:
+>>   	iommu_domain_free(domain->domain);
+>>   out_free:
+>> @@ -1560,7 +1660,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+>>   		if (!group)
+>>   			continue;
+>>   
+>> -		iommu_detach_group(domain->domain, iommu_group);
+>> +		vfio_iommu_detach_group(domain, group);
+>>   		list_del(&group->next);
+>>   		kfree(group);
+>>   		/*
+>> @@ -1625,7 +1725,7 @@ static void vfio_release_domain(struct vfio_domain *domain, bool external)
+>>   	list_for_each_entry_safe(group, group_tmp,
+>>   				 &domain->group_list, next) {
+>>   		if (!external)
+>> -			iommu_detach_group(domain->domain, group->iommu_group);
+>> +			vfio_iommu_detach_group(domain, group);
+>>   		list_del(&group->next);
+>>   		kfree(group);
+>>   	}
+>>
+> Thanks
 > 
-> If we have aux-domain specific attach/detach functions like
-> iommu_aux_domain_attach/detach(), what happens when the primary
-> domain
-> of the device is changed with iommu_attach/detach()?
-> 
-> 	1) Will the aux-domains stay in place? If yes, how does this
-> 	   work in setups where the pasid-bound page-tables are
-> 	   guest-owned and translated through the primary domain
-> 	   page-tables?
-> 
-> 	2) Will the aux-domains be unbound too? In that case, if the
-> 	   primary domain is re-used, will the aux-domains be implicitly
-> 	   bound too when iommu_device_attach() is called?
-> 
-> 	3) Do we just disallow changing the primary domain through that
-> 	   interface as long as there are aux-domains or mm_structs
-> 	   bound to the device?
-
-3) sounds like a right option. 
-
-IMO Primary domain represents the primary ownership of DMA capability 
-of the whole device. The owner (say host driver) may lend partial capability 
-(e.g. allocating some queues) to a sub-owner (through aux-domain to a VM 
-or mm_struct to a process), when ownership is still claimed by this owner.
-
-Primary domain switch means ownership change (e.g. from host driver to 
-guest driver if type is changed from DMA-API to UNMANAGED), which usually
-implies driver load/unload thus all resource usages from previous owner must 
-be cleaned up before actual switch happens, which include things allocated 
-from DMA-API, aux domain API, and SVA APIs. 
-
-> 
-> Using option 2) or 3) would mean that the aux-domains are still bound to
-> the primary domain, but that is not reflected in the API. Further, if an
-
-Do you suggest some reflection in API interface definition, or specific API 
-implementation? If the former I didn't get how to do it. If the latter, yes 
-it's missed in current RFC. We should add check in necessary code path.
-
-> aux-domain is just a normal domain (struct iommu_domain), what
-> happens
-> when a domain that was used as a primary domain and has bound
-> aux-domains to it, is bound with iommu_aux_domain_attach() to another
-> domain?
-
-aux domain is essentially a way to lend partial DMA capability to less-
-privileged entity (process or VM), which implies that part of DMA 
-unmanaged by kernel driver. If we can make such assumption that aux 
-only applies to UNMANAGED domain (thus disallow BLOCKED/IDENTITY/
-DMA from using aux), then above open doesn't exist, because if primary 
-domain is UNMANAGED type it essentially means the whole device fully 
-owned by user space or guest thus no host driver entity to ever create 
-aux domain. If primary domain is not UNMANAGED type, it will fail in 
-aux API. with this design, each device will have at most one primary
-and multiple aux, i.e. just two layers. no aux-bind-to-aux thing.
-
-this assumption should be true in discussed usages around aux domain. 
-but I may overlook something... Jean?
-
-> 
-> As you can see, this design decission raises a lot of questions, but
-> maybe we can work it out and find a solution we all agree on.
+> Eric
 > 
 
-Thanks for raising those good opens!
-
-Thanks
-Kevin
+Best regards,
+Lu Baolu
