@@ -1,7 +1,7 @@
 From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: [PATCH 4/9] iommu: mtk_iommu: make it explicitly non-modular
-Date: Mon, 26 Nov 2018 17:31:33 -0500
-Message-ID: <1543271498-28966-5-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 1/9] iommu: audit and remove any unnecessary uses of module.h
+Date: Mon, 26 Nov 2018 17:31:30 -0500
+Message-ID: <1543271498-28966-2-git-send-email-paul.gortmaker@windriver.com>
 References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,70 +18,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The Kconfig currently controlling compilation of this code is:
+Historically a lot of these existed because we did not have
+a distinction between what was modular code and what was providing
+support to modules via EXPORT_SYMBOL and friends.  That changed
+when we forked out support for the latter into the export.h file.
+This means we should be able to reduce the usage of module.h
+in code that is obj-y Makefile or bool Kconfig.
 
-drivers/iommu/Kconfig:config MTK_IOMMU_V1
-drivers/iommu/Kconfig:  bool "MTK IOMMU Version 1 (M4U gen1) Support"
+The advantage in removing such instances is that module.h itself
+sources about 15 other headers; adding significantly to what we feed
+cpp, and it can obscure what headers we are effectively using.
 
-...meaning that it currently is not being built as a module by anyone.
-
-Lets remove the modular code that is essentially orphaned, so that
-when reading the driver there is no doubt it is builtin-only.
-
-Since module_init was not even used by this driver, the init ordering
-remains unchanged with this commit.
-
-We also delete the MODULE_LICENSE tag etc. since all that information
-was (or is now) contained at the top of the file in the comments.
+Since module.h might have been the implicit source for init.h
+(for __init) and for export.h (for EXPORT_SYMBOL) we consider each
+instance for the presence of either and replace as needed.
 
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Signed-off-by: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu_v1.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+ drivers/iommu/iommu-sysfs.c | 2 +-
+ drivers/iommu/iommu.c       | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 27867b862d7a..5fbf3cecb87f 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -1,4 +1,6 @@
- /*
-+ * IOMMU API for MTK architected m4u v1 implementations
-+ *
-  * Copyright (c) 2015-2016 MediaTek Inc.
-  * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-  *
-@@ -35,7 +37,7 @@
- #include <linux/spinlock.h>
- #include <asm/barrier.h>
- #include <asm/dma-iommu.h>
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index 36d1a7ce7fc4..c298330ba2b7 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -11,7 +11,7 @@
+ 
+ #include <linux/device.h>
+ #include <linux/iommu.h>
 -#include <linux/module.h>
 +#include <linux/init.h>
- #include <dt-bindings/memory/mt2701-larb-port.h>
- #include <soc/mediatek/smi.h>
- #include "mtk_iommu.h"
-@@ -704,15 +706,4 @@ static int __init m4u_init(void)
- {
- 	return platform_driver_register(&mtk_iommu_driver);
- }
--
--static void __exit m4u_exit(void)
--{
--	return platform_driver_unregister(&mtk_iommu_driver);
--}
--
- subsys_initcall(m4u_init);
--module_exit(m4u_exit);
--
--MODULE_DESCRIPTION("IOMMU API for MTK architected m4u v1 implementations");
--MODULE_AUTHOR("Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>");
--MODULE_LICENSE("GPL v2");
+ #include <linux/slab.h>
+ 
+ /*
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f8ec49e0f6c6..cc25ec6d4c06 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -22,7 +22,8 @@
+ #include <linux/kernel.h>
+ #include <linux/bug.h>
+ #include <linux/types.h>
+-#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/export.h>
+ #include <linux/slab.h>
+ #include <linux/errno.h>
+ #include <linux/iommu.h>
 -- 
 2.7.4
