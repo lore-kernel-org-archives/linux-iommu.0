@@ -1,11 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu-v3: Use explicit mb() when moving cons pointer
-Date: Mon, 26 Nov 2018 16:56:45 +0000
-Message-ID: <1543251405-30204-1-git-send-email-will.deacon@arm.com>
+From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Subject: Re: [PATCH] dma-mapping: fix return type of dma_set_max_seg_size()
+Date: Mon, 26 Nov 2018 18:06:30 +0100
+Message-ID: <20181126170630.GA24837@bigcity.dyn.berto.se>
+References: <20180829212921.10665-1-niklas.soderlund+renesas@ragnatech.se>
+	<20181102102254.GF22306@bigcity.dyn.berto.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20181102102254.GF22306-ofJ5d6taAgIKcZgyrm77+z0dHWC0CY5B@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,46 +19,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-After removing an entry from a queue (e.g. reading an event in
-arm_smmu_evtq_thread()) it is necessary to advance the MMIO consumer
-pointer to free the queue slot back to the SMMU. A memory barrier is
-required here so that all reads targetting the queue entry have
-completed before the consumer pointer is updated.
+On 2018-11-02 11:22:54 +0100, Niklas S=F6derlund wrote:
+> Hi,
+> =
 
-The implementation of queue_inc_cons() relies on a writel() to complete
-the previous reads, but this is incorrect because writel() is only
-guaranteed to complete prior writes. This patch replaces the call to
-writel() with an mb(); writel_relaxed() sequence, which gives us the
-read->write ordering which we require.
+> A gentle ping on this patch.
 
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+A slightly harder ping :-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 62ef4afc9ee5..11f528e727a1 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -679,7 +679,13 @@ static void queue_inc_cons(struct arm_smmu_queue *q)
- 	u32 cons = (Q_WRP(q, q->cons) | Q_IDX(q, q->cons)) + 1;
- 
- 	q->cons = Q_OVF(q, q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
--	writel(q->cons, q->cons_reg);
-+
-+	/*
-+	 * Ensure that all CPU accesses (reads and writes) to the queue
-+	 * are complete before we update the cons pointer.
-+	 */
-+	mb();
-+	writel_relaxed(q->cons, q->cons_reg);
- }
- 
- static int queue_sync_prod(struct arm_smmu_queue *q)
--- 
-2.1.4
+> =
+
+> On 2018-08-29 23:29:21 +0200, Niklas S=F6derlund wrote:
+> > The function dma_set_max_seg_size() can return either 0 on success or
+> > -EIO on error. Change its return type from unsigned int to int to
+> > capture this.
+> > =
+
+> > Signed-off-by: Niklas S=F6derlund <niklas.soderlund+renesas@ragnatech.s=
+e>
+> > ---
+> >  include/linux/dma-mapping.h | 3 +--
+> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> > =
+
+> > diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> > index 1db6a6b46d0d3dbd..669cde2fa8723ac5 100644
+> > --- a/include/linux/dma-mapping.h
+> > +++ b/include/linux/dma-mapping.h
+> > @@ -674,8 +674,7 @@ static inline unsigned int dma_get_max_seg_size(str=
+uct device *dev)
+> >  	return SZ_64K;
+> >  }
+> >  =
+
+> > -static inline unsigned int dma_set_max_seg_size(struct device *dev,
+> > -						unsigned int size)
+> > +static inline int dma_set_max_seg_size(struct device *dev, unsigned in=
+t size)
+> >  {
+> >  	if (dev->dma_parms) {
+> >  		dev->dma_parms->max_segment_size =3D size;
+> > -- =
+
+> > 2.18.0
+> > =
+
+> =
+
+> -- =
+
+> Regards,
+> Niklas S=F6derlund
+
+-- =
+
+Regards,
+Niklas S=F6derlund
