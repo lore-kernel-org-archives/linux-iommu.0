@@ -1,54 +1,124 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
- swiotlb_map_sg_attrs
-Date: Mon, 26 Nov 2018 19:31:43 +0000
-Message-ID: <20181126193142.GA534@arm.com>
-References: <20181008080246.20543-7-hch@lst.de>
- <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
- <20181109074955.GA27489@lst.de>
- <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
- <20181114141311.GA26677@lst.de>
- <20181114161239.GA29462@lst.de>
- <CALAqxLVMW2sYkaQvggZ-LhvkzpuF2rssQJ4thZkkAkROk=wVVw@mail.gmail.com>
- <20181120092516.GC7270@lst.de>
- <20181123182715.GA21183@arm.com>
- <1c782a3d-cac4-954f-21e7-ef89147f0d56@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: Set SCTLR.HUPCF bit
+Date: Mon, 26 Nov 2018 19:31:48 +0000
+Message-ID: <20181126193147.GB534@arm.com>
+References: <20180927224609.19515-1-robdclark@gmail.com>
+ <20181029191000.GD16739@arm.com>
+ <CAF6AEGtgC0V6ii2=p2HGmqvHFKNJhaOLi8873SGPDsrg70xGRg@mail.gmail.com>
+ <20181113063225.GA3109@brain-police>
+ <CAF6AEGuV2zh97iq+TgkRw0bK3VNSxJieD1N2KMW3N28h07M+0w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1c782a3d-cac4-954f-21e7-ef89147f0d56@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, john.stultz@linaro.org, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
+In-Reply-To: <CAF6AEGuV2zh97iq+TgkRw0bK3VNSxJieD1N2KMW3N28h07M+0w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>"list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Fri, Nov 23, 2018 at 07:34:15PM +0000, Robin Murphy wrote:
-> On 2018-11-23 6:27 pm, Will Deacon wrote:
-> >On Tue, Nov 20, 2018 at 10:25:16AM +0100, Christoph Hellwig wrote:
-> >>On Mon, Nov 19, 2018 at 03:22:13PM -0800, John Stultz wrote:
-> >>>>+               sg->dma_address = dma_addr;
-> >>>>                 sg_dma_len(sg) = sg->length;
-> >>>>         }
-> >>>
-> >>>I know Robin has already replied with more detailed info, but just to
-> >>>close the loop as I'm finally home, applying this patch didn't seem to
-> >>>help with the IO hangs I'm seeing w/ HiKey960.
-> >>
-> >>If Robins observation is right this should fix the problem for you:
-> >
-> >Please could you give this diff a try and let us know whether the problem
-> >persists with your board?
-> 
-> This is actually the exact same change that I ended up with in my fixes[1],
-> which John has indeed confirmed.
-> 
-> (sorry, it's the thing I was telling you about the other day, but I
-> neglected to include you on cc you when I sent the patches out the following
-> morning)
-
-Thanks, I missed that series. I'll forget all about this problem then!
-
-Will
+SGkgUm9iLAoKT24gVHVlLCBOb3YgMTMsIDIwMTggYXQgMDg6MTI6MzVBTSAtMDUwMCwgUm9iIENs
+YXJrIHdyb3RlOgo+IE9uIFR1ZSwgTm92IDEzLCAyMDE4IGF0IDE6MzIgQU0gV2lsbCBEZWFjb24g
+PHdpbGwuZGVhY29uQGFybS5jb20+IHdyb3RlOgo+ID4gT24gRnJpLCBOb3YgMDksIDIwMTggYXQg
+MDE6MDE6NTVQTSAtMDUwMCwgUm9iIENsYXJrIHdyb3RlOgo+ID4gPiBPbiBNb24sIE9jdCAyOSwg
+MjAxOCBhdCAzOjA5IFBNIFdpbGwgRGVhY29uIDx3aWxsLmRlYWNvbkBhcm0uY29tPiB3cm90ZToK
+PiA+ID4gPiBPbiBUaHUsIFNlcCAyNywgMjAxOCBhdCAwNjo0NjowN1BNIC0wNDAwLCBSb2IgQ2xh
+cmsgd3JvdGU6Cj4gPiA+ID4gPiBXZSBzZWVtIHRvIG5lZWQgdG8gc2V0IGVpdGhlciB0aGlzIG9y
+IENGQ0ZHIChzdGFsbCksIG90aGVyd2lzZSBncHUKPiA+ID4gPiA+IGZhdWx0cyB0cmlnZ2VyIHBy
+b2JsZW1zIHdpdGggb3RoZXIgaW4tZmxpZ2h0IHRyYW5zYWN0aW9ucyBmcm9tIHRoZQo+ID4gPiA+
+ID4gR1BVIGNhdXNpbmcgQ1AgZXJyb3JzLCBldGMuCj4gPiA+ID4gPgo+ID4gPiA+ID4gSW4gdGhl
+IEFSTSBTTU1VIHNwZWMsIHRoZSAnSGl0IHVuZGVyIHByZXZpb3VzIGNvbnRleHQgZmF1bHQnIGJp
+dCBpcwo+ID4gPiA+ID4gZGVzY3JpYmVkIGFzOgo+ID4gPiA+ID4KPiA+ID4gPiA+ICAnMCcgLSBT
+dGFsbCBvciB0ZXJtaW5hdGUgc3Vic2VxdWVudCB0cmFuc2FjdGlvbnMgaW4gdGhlIHByZXNlbmNl
+Cj4gPiA+ID4gPiAgICAgICAgb2YgYW4gb3V0c3RhbmRpbmcgY29udGV4dCBmYXVsdAo+ID4gPiA+
+ID4gICcxJyAtIFByb2Nlc3MgYWxsIHN1YnNlcXVlbnQgdHJhbnNhY3Rpb25zIGluZGVwZW5kZW50
+bHkgb2YgYW55Cj4gPiA+ID4gPiAgICAgICAgb3V0c3RhbmRpbmcgY29udGV4dCBmYXVsdC4KPiA+
+ID4gPiA+Cj4gPiA+ID4gPiBTaW5jZSB3ZSBkb24ndCBlbmFibGUgQ0ZDRkcgKHN0YWxsKSB0aGUg
+YmVoYXZpb3Igb2YgdGVybWluYXRpbmcKPiA+ID4gPiA+IG90aGVyIHRyYW5zYWN0aW9ucyBtYWtl
+cyBzZW5zZS4gIEFuZCBpcyBwcm9iYWJseSBub3Qgd2hhdCB3ZSB3YW50Cj4gPiA+ID4gPiAoYW5k
+IGRlZmluYXRlbHkgbm90IHdoYXQgd2Ugd2FudCBmb3IgR1BVKS4KPiA+ID4gPiA+Cj4gPiA+ID4g
+PiBTaWduZWQtb2ZmLWJ5OiBSb2IgQ2xhcmsgPHJvYmRjbGFya0BnbWFpbC5jb20+Cj4gPiA+ID4g
+PiAtLS0KPiA+ID4gPiA+IFNvIEkgaGl0IHRoaXMgaXNzdWUgYSBsb25nIHRpbWUgYmFjayBvbiA4
+MjAgKG1zbTg5OTYpIGFuZCBhdCB0aGUKPiA+ID4gPiA+IHRpbWUgSSBzb2x2ZWQgaXQgd2l0aCBh
+IHBhdGNoIHRoYXQgZW5hYmxlZCBDRkNGRy4gIEFuZCBpdCByZXN1cmZhY2VkCj4gPiA+ID4gPiBt
+b3JlIHJlY2VudGx5IG9uIHNkbTg0NS4gIEJ1dCBhdCB0aGUgdGltZSBDRkNGRyB3YXMgcmVqZWN0
+ZWQsIGlpcmMKPiA+ID4gPiA+IGJlY2F1c2Ugb2YgY29uY2VybiB0aGF0IGl0IHdvdWxkIGNhdXNl
+IHByb2JsZW1zIG9uIG90aGVyIG5vbi1xY29tCj4gPiA+ID4gPiBhcm0gc21tdSBpbXBsZW1lbnRh
+dGlvbnMuICBBbmQgSSB0aGluayBJIGZvcmdvdCB0byBzZW5kIHRoaXMgdmVyc2lvbgo+ID4gPiA+
+ID4gb2YgdGhlIHNvbHV0aW9uLgo+ID4gPiA+ID4KPiA+ID4gPiA+IElmIGVuYWJsaW5nIEhVUENG
+IGlzIGFudGljaXBhdGVkIHRvIGNhdXNlIHByb2JsZW1zIG9uIG90aGVyIEFSTQo+ID4gPiA+ID4g
+U01NVSBpbXBsZW1lbnRhdGlvbnMsIEkgdGhpbmsgSSBjYW4gY29tZSB1cCB3aXRoIGEgdmFyaWFu
+dCBvZiB0aGlzCj4gPiA+ID4gPiBwYXRjaCB3aGljaCBjb25kaXRpb25hbGx5IGVuYWJsZXMgaXQg
+Zm9yIHNuYXBkcmFnb24uCj4gPiA+ID4gPgo+ID4gPiA+ID4gRWl0aGVyIHdheSwgSSdkIHJlYWxs
+eSBsaWtlIHRvIGdldCBzb21lIHZhcmlhbnQgb2YgdGhpcyBmaXggbWVyZ2VkCj4gPiA+ID4gPiAo
+YW5kIHByb2JhYmx5IGl0IHdvdWxkIGJlIGEgZ29vZCBpZGVhIGZvciBzdGFibGUga2VybmVsIGJy
+YW5jaGVzCj4gPiA+ID4gPiB0b28pLCBzaW5jZSBjdXJyZW50IGJlaGF2aW91ciB3aXRoIHRoZSBH
+UFUgbWVhbnMgZmF1bHRzIHR1cm4gaW50bwo+ID4gPiA+ID4gYSBmYW50YXN0aWMgY2FzY2FkZSBv
+ZiBmYWlsLgo+ID4gPiA+Cj4gPiA+ID4gQ2FuIHlvdSBkZXNjcmliZSBob3cgdGhpcyBmYW50YXN0
+aWMgY2FzY2FkZSBvZiBmYWlsIGltcHJvdmVzIHdpdGggdGhpcwo+ID4gPiA+IHBhdGNoLCBwbGVh
+c2U/IElmIHlvdSdyZSBnZXR0aW5nIGNvbnRleHQgZmF1bHRzIHRoZW4gc29tZXRoaW5nIGhhcyBh
+bHJlYWR5Cj4gPiA+ID4gZ29uZSBob3JyaWJseSB3cm9uZywgc28gSSdtIHRyeWluZyB0byB3b3Jr
+IG91dCBob3cgdGhpcyBpbXByb3ZlcyB0aGluZ3MuCj4gPiA+ID4KPiA+ID4KPiA+ID4gVGhlcmUg
+YXJlIHBsZW50eSBvZiBjYXNlcyB3aGVyZSBnZXR0aW5nIGlvbW11IGZhdWx0cyB3aXRoIGEgR1BV
+IGlzCj4gPiA+ICJub3JtYWwiLCBvciBhdCBsZWFzdCBub3Qgc29tZXRoaW5nIHRoZSBrZXJuZWwg
+b3IgZXZlbiBHTCBkcml2ZXIgY2FuCj4gPiA+IGNvbnRyb2wuCj4gPgo+ID4gU3VjaCBhcz8gQWxs
+IHRoZSBtYWlubGluZSBkcml2ZXIgZG9lcyBpcyBwcmludCBhIGRpYWdub3N0aWMgYW5kIGNsZWFy
+IHRoZQo+ID4gZmF1bHQsIHdoaWNoIGRvZXNuJ3Qgc2VlbSBnZW5lcmFsbHkgdXNlZnVsLgo+IAo+
+IGl0IGlzIHVzZWZ1bCB0byBkZWJ1ZyB0aGUgZmF1bHQgOy0pCj4gCj4gQWx0aG91Z2ggZXZlbnR1
+YWxseSB3ZSdsbCB3YW50IHRvIGJlIGFibGUgdG8gZG8gbW9yZSB0aGFuIHRoYXQsIGxpa2UKPiBo
+YXZlIHRoZSBmYXVsdCB0cmlnZ2VyIGJyaW5naW5nIGluIHBhZ2VzIG9mIGEgbW1hcCdkIGZpbGUg
+YW5kIHRoYXQKPiBzb3J0IG9mIHRoaW5nLgoKUmlnaHQsIGFuZCBmZWVscyB2ZXJ5IHN0cmFuZ2Ug
+dG8gbWUgaWYgd2UgaGF2ZSB0aGlzIGJpdCBzZXQgYmVjYXVzZSBpdAptZWFucyB0aGF0IHlvdXIg
+ZmF1bHQgaXMgbm8gbG9uZ2VyIHN5bmNocm9ub3VzIGFuZCB0aGVyZWZvcmUgZGl2ZXJnZXMKZnJv
+bSB0aGUgZmF1bHQgbW9kZWwgdGhhdCB5b3UgZ2V0IGZyb20gdGhlIENQVSwgd2hlcmUgeW91IGNl
+cnRhaW5seQp3b3VsZG4ndCBleHBlY3Qgc3RvcmVzIGFwcGVhcmluZyBpbiB0aGUgcHJvZ3JhbSBh
+ZnRlciBhIGZhdWx0aW5nIGxvYWQgdG8KYmUgdmlzaWJsZSBpbiBtZW1vcnkuIEhvd2V2ZXIsIHRo
+aW5raW5nIGhhcmRlciBhYm91dCBpdCwgSSBzdXBwb3NlIHdlJ3JlCmFscmVhZHkgaW4gYSBzaXR1
+YXRpb24gd2hlcmUgdGhlIHRyYW5zbGF0aW9ucyBhcmUgaGFuZGxlZCBvdXQgb2Ygb3JkZXIKaW4g
+dGhlIGFic2VuY2Ugb2YgYmFycmllcnMsIHNvIG1heWJlIGl0J3Mgbm90IHRoZSBlbmQgb2YgdGhl
+IHdvcmxkLgoKQ291bGQgeW91IGR1bXAgdGhlIEZTUiB2YWx1ZSB0aGF0IHlvdSBzZWUgaW4gdGhl
+IGZhdWx0IGhhbmRsZXIsIHBsZWFzZT8KRnJvbSBteSByZWFkaW5nIG9mIHRoZSBhcmNoaXRlY3R1
+cmUgc3BlYywgYXMgbG9uZyBhcyBjbGVhciBhbGwgb2YgdGhlCmZhdWx0IGJpdHMgaW4gdGhlIGly
+cSBoYW5kbGVyLCB0aGVuIHlvdXIgbWFjaGluZSBzaG91bGRuJ3QgZGllIGxpa2UgaXQKZG9lcyB3
+aXRoIEhVUENGRz1DRkNGRz0wLi4KCj4gPiA+IFdpdGggdGhpcyBwYXRjaCwgeW91IHN0aWxsIGdl
+dCB0aGUgaW9tbXUgZmF1bHQsIGJ1dCBpdCBkb2Vzbid0IGNhdXNlCj4gPiA+IHRoZSBncHUgdG8g
+Y3Jhc2guICBCdXQgd2l0aG91dCBpdCwgb3RoZXIgbWVtb3J5IGFjY2Vzc2VzIGluIGZsaWdodAo+
+ID4gPiB3aGlsZSB0aGUgZmF1bHQgb2NjdXJzLCBsaWtlIHRoZSBHUFUgY29tbWFuZC1wcm9jZXNz
+b3IgcmVhZGluZyBmdXJ0aGVyCj4gPiA+IGFoZWFkIGluIHRoZSBjbWRzdHJlYW0gdG8gc2V0dXAg
+bmV4dCBkcmF3LCB3b3VsZCByZXR1cm4gemVybydzLAo+ID4gPiBjYXVzaW5nIHRoZSBHUFUgdG8g
+Y3Jhc2ggb3IgZ2V0IGludG8gYSBiYWQgc3RhdGUuCj4gPgo+ID4gSSBnZXQgdGhhdCBwYXJ0LCBi
+dXQgSSBkb24ndCB1bmRlcnN0YW5kIHdoeSB3ZSdyZSBzZWVpbmcgZmF1bHRzIGluIHRoZSBmaXJz
+dAo+ID4gcGxhY2UgYW5kIEkgd29ycnkgdGhhdCB0aGlzIHBhdGNoIGlzIGp1c3QgdGhlIHRpcCBv
+ZiB0aGUgaWNlYmVyZy4gSXQncyBhbHNvCj4gPiBub3QgY2xlYXIgdGhhdCBwcm9jZXNzaW5nIHN1
+YnNlcXVlbnQgdHJhbnNhY3Rpb25zIGlzIGFsd2F5cyB0aGUgcmlnaHQgdGhpbmcKPiA+IHRvIGRv
+IGluIGEgd29ybGQgd2hlcmUgd2UgYWN0dWFsbHkgd2FudCB0byByZXBvcnQgKGFuZCBoYW5kbGUp
+IHN5bmNocm9ub3VzCj4gPiBmYXVsdHMgZnJvbSBkZXZpY2VzLgo+IAo+IFN1cmUsIGl0IGlzIGEg
+YnVnLi4gYnV0IGl0IGNhbiBiZSBhbiBhcHBsaWNhdGlvbiBidWcgdGhhdCBpcyBub3QKPiBzb21l
+dGhpbmcgdGhlIHVzZXJzcGFjZSBHTCBkcml2ZXIgb3Iga2VybmVsIGNvdWxkIGRvIGFueXRoaW5n
+IGFib3V0Lgo+IFdlIHNob3VsZG4ndCBsZXQgdGhpcyBraWxsIHRoZSBHUFUuICBJZiB0aGUgYXBw
+bGljYXRpb24gZGlkbid0IGhhdmUKPiB0aGlzIG11Y2ggY29udHJvbCwgd2Ugd291bGRuJ3QgbmVl
+ZCBhbiBJT01NVSBpbiB0aGUgZmlyc3QgcGxhY2VbMV0uCj4gV2l0aCBvcGVuY2wgY29tcHV0ZSwg
+dGhlIHVzZXJzcGFjZSBjb250cm9sbGVkIHNoYWRlciBoYXMgZnVsbCBibG93bgo+IHBvaW50ZXJz
+IHRvIEdQVSBtZW1vcnkuCj4gCj4gQW5kIGV2ZW4gaW4gY2FzZXMgd2hlcmUgaXQgaXMgYSB1c2Vy
+c3BhY2UgR0wgZHJpdmVyIGJ1ZywgaGF2aW5nIHNvbWUKPiByb2J1c3RuZXNzIHRvIG5vdCBjb21w
+bGV0ZWx5IGtpbGwgdGhlIEdQVSBtYWtlcyBkZWJ1Z2dpbmcgbXVjaCBlYXNpZXIuCj4gU29tZXRo
+aW5nIEkgZG8gYSBsb3Qgd2hlbiBicmluZ2luZyB1cCBzdXBwb3J0IGZvciBhIG5ldyBnZW5lcmF0
+aW9uIG9mCj4gR1BVLgo+IAo+IEknbSBoYXZpbmcgYSBoYXJkIHRpbWUgdW5kZXJzdGFuZGluZyB5
+b3VyIG9iamVjdGlvbiB0byB0aGlzLgo+IFJldHVybmluZyB6ZXJvJ3MgZm9yIG5vbi1mYXVsdGlu
+ZyB0cmFuc2FjdGlvbnMgaXMgYSAqcmVhbGx5IGJhZCBpZGVhKi4KCldhaXQgLS0gd2hvIHNhaWQg
+YW55dGhpbmcgYWJvdXQgcmV0dXJuaW5nIHplcm9lcz8gV2hlcmUgZG9lcyB0aGF0IGJlaGF2aW91
+cgphcHBlYXIgaW4gdGhlIGFyY2hpdGVjdHVyZT8KCldpbGwKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJl
+bm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21h
+aWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
