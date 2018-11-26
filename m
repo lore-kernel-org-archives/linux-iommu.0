@@ -1,84 +1,93 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RESEND PATCH v17 5/5] iommu/arm-smmu: Add support
- for qcom, smmu-v2 variant
-Date: Mon, 26 Nov 2018 16:25:35 +0530
-Message-ID: <30fd45b5-50f0-7f2f-aab3-adc4528d21a8@codeaurora.org>
-References: <20181116112430.31248-1-vivek.gautam@codeaurora.org>
- <20181116112430.31248-6-vivek.gautam@codeaurora.org>
- <20181121173803.GB9801@arm.com>
- <CAFp+6iELH7Mw3Ue2ksEyV+Ac8hG8--Ki69xrPCA4F-AcireRow@mail.gmail.com>
- <CAAFQd5B-bZR8dmjARb8L4oqgET2YAjXhexAO0GKAvU4JoVU=7g@mail.gmail.com>
- <CAFp+6iFhBRJWGY4Hj30tWedGpEUcnkBJrOvffmbpD2m9QMZB3A@mail.gmail.com>
- <20181123183428.GD21183@arm.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: [PATCH v2 0/4] PCI / iommu / thunderbolt: IOMMU based DMA protection
+Date: Mon, 26 Nov 2018 14:15:22 +0300
+Message-ID: <20181126111526.56340-1-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20181123183428.GD21183-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Christoph Hellwig <hch@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vg
 List-Id: iommu@lists.linux-foundation.org
 
-Ck9uIDExLzI0LzIwMTggMTI6MDQgQU0sIFdpbGwgRGVhY29uIHdyb3RlOgo+IE9uIEZyaSwgTm92
-IDIzLCAyMDE4IGF0IDAzOjA2OjI5UE0gKzA1MzAsIFZpdmVrIEdhdXRhbSB3cm90ZToKPj4gT24g
-RnJpLCBOb3YgMjMsIDIwMTggYXQgMjo1MiBQTSBUb21hc3ogRmlnYSA8dGZpZ2FAY2hyb21pdW0u
-b3JnPiB3cm90ZToKPj4+IE9uIEZyaSwgTm92IDIzLCAyMDE4IGF0IDY6MTMgUE0gVml2ZWsgR2F1
-dGFtCj4+PiA8dml2ZWsuZ2F1dGFtQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPj4+PiBPbiBXZWQs
-IE5vdiAyMSwgMjAxOCBhdCAxMTowOSBQTSBXaWxsIERlYWNvbiA8d2lsbC5kZWFjb25AYXJtLmNv
-bT4gd3JvdGU6Cj4+Pj4+IE9uIEZyaSwgTm92IDE2LCAyMDE4IGF0IDA0OjU0OjMwUE0gKzA1MzAs
-IFZpdmVrIEdhdXRhbSB3cm90ZToKPj4+Pj4+IEBAIC0yMDI2LDYgKzIwMjcsMTcgQEAgQVJNX1NN
-TVVfTUFUQ0hfREFUQShhcm1fbW11NDAxLCBBUk1fU01NVV9WMV82NEssIEdFTkVSSUNfU01NVSk7
-Cj4+Pj4+PiAgIEFSTV9TTU1VX01BVENIX0RBVEEoYXJtX21tdTUwMCwgQVJNX1NNTVVfVjIsIEFS
-TV9NTVU1MDApOwo+Pj4+Pj4gICBBUk1fU01NVV9NQVRDSF9EQVRBKGNhdml1bV9zbW11djIsIEFS
-TV9TTU1VX1YyLCBDQVZJVU1fU01NVVYyKTsKPj4+Pj4+Cj4+Pj4+PiArc3RhdGljIGNvbnN0IGNo
-YXIgKiBjb25zdCBxY29tX3NtbXV2Ml9jbGtzW10gPSB7Cj4+Pj4+PiArICAgICAiYnVzIiwgImlm
-YWNlIiwKPj4+Pj4+ICt9Owo+Pj4+Pj4gKwo+Pj4+Pj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXJt
-X3NtbXVfbWF0Y2hfZGF0YSBxY29tX3NtbXV2MiA9IHsKPj4+Pj4+ICsgICAgIC52ZXJzaW9uID0g
-QVJNX1NNTVVfVjIsCj4+Pj4+PiArICAgICAubW9kZWwgPSBRQ09NX1NNTVVWMiwKPj4+Pj4+ICsg
-ICAgIC5jbGtzID0gcWNvbV9zbW11djJfY2xrcywKPj4+Pj4+ICsgICAgIC5udW1fY2xrcyA9IEFS
-UkFZX1NJWkUocWNvbV9zbW11djJfY2xrcyksCj4+Pj4+PiArfTsKPj4+Pj4gVGhlc2Ugc2VlbXMg
-cmVkdW5kYW50IGlmIHdlIGdvIGRvd24gdGhlIHJvdXRlIHByb3Bvc2VkIGJ5IFRob3IsIHdoZXJl
-IHdlCj4+Pj4+IGp1c3QgcHVsbCBhbGwgb2YgdGhlIGNsb2NrcyBvdXQgb2YgdGhlIGRldmljZS10
-cmVlLiBJbiB3aGljaCBjYXNlLCB3aHkKPj4+Pj4gZG8gd2UgbmVlZCB0aGlzIG1hdGNoX2RhdGEg
-YXQgYWxsPwo+Pj4+IFdoaWNoIGlzIGJldHRlcj8gRHJpdmVyIHJlbHlpbmcgc29sZWx5IG9uIHRo
-ZSBkZXZpY2UgdHJlZSB0byB0ZWxsCj4+Pj4gd2hpY2ggYWxsIGNsb2Nrcwo+Pj4+IGFyZSByZXF1
-aXJlZCB0byBiZSBlbmFibGVkLAo+Pj4+IG9yLCB0aGUgZHJpdmVyIGRlY2lkaW5nIGl0c2VsZiBi
-YXNlZCBvbiB0aGUgcGxhdGZvcm0ncyBtYXRjaCBkYXRhLAo+Pj4+IHRoYXQgaXQgc2hvdWxkCj4+
-Pj4gaGF2ZSBYLCBZLCAmIFogY2xvY2tzIHRoYXQgc2hvdWxkIGJlIHN1cHBsaWVkIGZyb20gdGhl
-IGRldmljZSB0cmVlLgo+Pj4gVGhlIGZvcm1lciB3b3VsZCBzaW1wbGlmeSB0aGUgZHJpdmVyLCBi
-dXQgd291bGQgYWxzbyBtYWtlIGl0Cj4+PiBpbXBvc3NpYmxlIHRvIHNwb3QgbWlzdGFrZXMgaW4g
-RFQsIHdoaWNoIHdvdWxkIHVsdGltYXRlbHkgc3VyZmFjZSBvdXQKPj4+IGFzIHZlcnkgaGFyZCB0
-byBkZWJ1ZyBidWdzIChsaWtlbHkgY29tcGxldGUgc3lzdGVtIGxvY2t1cHMpLgo+PiBUaGFua3Mu
-Cj4+IFllYSwgdGhpcyBpcyBob3cgSSB1bmRlcnN0YW5kIHRoaW5ncyBwcmVzZW50bHkuIFJlbHlp
-bmcgb24gZGV2aWNlIHRyZWUKPj4gcHV0cyB0aGUgdGhpbmdzIG91dCBvZiBkcml2ZXIncyBjb250
-cm9sLgo+IEJ1dCBpdCBhbHNvIGhhcyB0aGUgdW5kZXNpcmFibGUgZWZmZWN0IG9mIGhhdmluZyB0
-byB1cGRhdGUgdGhlIGRyaXZlcgo+IGNvZGUgd2hlbmV2ZXIgd2Ugd2FudCB0byBhZGQgc3VwcG9y
-dCBmb3IgYSBuZXcgU01NVSBpbXBsZW1lbnRhdGlvbi4gSWYKPiB3ZSBkbyB0aGlzIGFsbCBpbiB0
-aGUgRFQsIGFzIFRob3IgaXMgdHJ5aW5nIHRvIGRvLCB0aGVuIG9sZGVyIGtlcm5lbHMKPiB3aWxs
-IHdvcmsgd2VsbCB3aXRoIG5ldyBoYXJkd2FyZS4KPgo+PiBIaSBXaWxsLAo+PiBBbSBJIHVuYWJs
-ZSB0byB1bmRlcnN0YW5kIHRoZSBpbnRlbnRpb25zIGhlcmUgZm9yIFRob3IncyBjbG9jay1mZXRj
-aAo+PiBkZXNpZ24gY2hhbmdlPwo+IEknbSBoYXZpbmcgdHJvdWJsZSBwYXJzaW5nIHlvdXIgcXVl
-c3Rpb24sIHNvcnJ5LiBQbGVhc2Ugd29yayB3aXRoIFRob3IKPiBzbyB0aGF0IHdlIGhhdmUgYSBz
-aW5nbGUgd2F5IHRvIGdldCB0aGUgY2xvY2sgaW5mb3JtYXRpb24uIE15IHByZWZlcmVuY2UKPiBp
-cyB0byB0YWtlIGl0IGZyb20gdGhlIGZpcm13YXJlLCBmb3IgdGhlIHJlYXNvbiBJIHN0YXRlZCBh
-Ym92ZS4KSGkgV2lsbCwKClN1cmUsIHRoYW5rcy4gSSB3aWxsIHdvcmsgd2l0aCBUaG9yIHRvIGdl
-dCB0aGlzIGdvaW5nLgoKSGkgVGhvciwKRG9lcyBpdCBzb3VuZCBva2F5IHRvIHlvdSB0byBzcXVh
-c2ggeW91ciBwYXRjaCBbMV0gaW50byBteSBwYXRjaCBbMl0gd2l0aAp5b3VyICdTaWduZWQtb2Zm
-LWJ5JyB0YWc/Ckkgd2lsbCB1cGRhdGUgdGhlIGNvbW1pdCBsb2cgdG8gaW5jbHVkZSB0aGUgaW5m
-b3JtYXRpb24gYWJvdXQgZ2V0dGluZwpjbG9jayBkZXRhaWxzIGZyb20gZGV2aWNlIHRyZWUuCgpb
-MV0gaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9wYXRjaC8xMDYyODcyNS8KWzJdIGh0dHBz
-Oi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvcGF0Y2gvMTA2ODYwNjEvCgpCZXN0IHJlZ2FyZHMKVml2
-ZWsKPgo+IFdpbGwKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRyZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9y
-ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVu
-bwo=
+Recent systems shipping with Windows 10 version 1803 or newer may be
+utilizing IOMMU to prevent DMA attacks via Thunderbolt ports. This is
+different from the previous security level based scheme because the
+connected device cannot access system memory outside of the regions
+allocated for it by the driver.
+
+When enabled the BIOS makes sure no device can do DMA outside of RMRR
+(Reserved Memory Region Record) regions. This means that during OS boot,
+before it enables IOMMU, none of the connected devices can bypass DMA
+protection for instance by overwriting the data structures used by the
+IOMMU. The BIOS communicates support for this to the OS by setting a new
+bit in ACPI DMAR table [1].
+
+Because these systems utilize an IOMMU to block possible DMA attacks,
+typically (but not always) the Thunderbolt security level is set to "none"
+which means that all PCIe devices are immediately usable. This also means
+that Linux needs to follow Windows 10 and enable IOMMU automatically when
+running on such system otherwise connected devices can read/write system
+memory pretty much without any restrictions.
+
+Since there is a way to identify PCIe root ports that are "external facing"
+we can put all internal devices to pass through (identity mapping) mode and
+only external devices need to go through full IOMMU mappings. We add a new
+flag "is_untrusted" that is supposed to cover various PCIe devices that may
+be used to conduct DMA attacks.
+
+We also make sure PCIe ATS (Address Translation Service) is not enabled for
+devices flagged as untrusted because it could be used to bypass IOMMU
+completely as explained in the changelog of patch 3/4.
+
+Finally we expose this information to userspace so tools such as bolt can
+do more accurate decision whether or not authorize the connected device.
+
+I can take these through Thunderbolt tree assuming Bjorn and Rafael are
+fine with these.
+
+[1] https://software.intel.com/sites/default/files/managed/c5/15/vt-directed-io-spec.pdf
+
+Previous version of the patch series can be found here:
+
+  https://www.spinics.net/lists/linux-pci/msg77751.html
+
+Changes from v1:
+
+  * Reword Documentation/admin-guide/thunderbolt.rst to make the feature
+    time frame/platform oriented as there will be systems shipping
+    with Linux installed by default.
+
+  * Rename the flag is_external to is_untrusted so that we could use the
+    same flag to cover all kinds of "untrusted" PCI devices, not just
+    Thunderbolt connected devices. I still parse the _DSD in PCI/ACPI core
+    because that's where we currently handle "HotPlugSupportInD3" as well.
+    Also updated comments in patch [1/4].
+
+  * Added tags from Ashok, Joerg and Yehezkel. I'm assuming they still
+    apply because I did not change the code with the exception of few
+    comments and rename of the flag. Let me know if that's not the case
+    anymore.
+
+Lu Baolu (1):
+  iommu/vt-d: Force IOMMU on for platform opt in hint
+
+Mika Westerberg (3):
+  PCI / ACPI: Identify untrusted PCI devices
+  iommu/vt-d: Do not enable ATS for untrusted devices
+  thunderbolt: Export IOMMU based DMA protection support to userspace
+
+ .../ABI/testing/sysfs-bus-thunderbolt         |  9 +++
+ Documentation/admin-guide/thunderbolt.rst     | 20 +++++++
+ drivers/acpi/property.c                       |  3 +
+ drivers/iommu/dmar.c                          | 25 +++++++++
+ drivers/iommu/intel-iommu.c                   | 56 ++++++++++++++++++-
+ drivers/pci/pci-acpi.c                        | 18 ++++++
+ drivers/pci/probe.c                           | 22 ++++++++
+ drivers/thunderbolt/domain.c                  | 17 ++++++
+ include/linux/dmar.h                          |  8 +++
+ include/linux/pci.h                           |  8 +++
+ 10 files changed, 183 insertions(+), 3 deletions(-)
+
+-- 
+2.19.1
