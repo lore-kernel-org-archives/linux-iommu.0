@@ -1,7 +1,7 @@
 From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: [PATCH 9/9] iommu: arm-smmu-v3: make it explicitly non-modular
-Date: Mon, 26 Nov 2018 17:31:38 -0500
-Message-ID: <1543271498-28966-10-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 7/9] iommu: tegra-gart: make it explicitly non-modular
+Date: Mon, 26 Nov 2018 17:31:36 -0500
+Message-ID: <1543271498-28966-8-git-send-email-paul.gortmaker@windriver.com>
 References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,116 +18,128 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 The Kconfig currently controlling compilation of this code is:
 
-drivers/iommu/Kconfig:config ARM_SMMU_V3
-drivers/iommu/Kconfig:  bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+drivers/iommu/Kconfig:config TEGRA_IOMMU_GART
+drivers/iommu/Kconfig:  bool "Tegra GART IOMMU Support"
 
 ...meaning that it currently is not being built as a module by anyone.
 
 Lets remove the modular code that is essentially orphaned, so that
 when reading the driver there is no doubt it is builtin-only.
 
-Since module_platform_driver() uses the same init level priority as
-builtin_platform_driver() the init ordering remains unchanged with
-this commit.
-
 We explicitly disallow a driver unbind, since that doesn't have a
-sensible use case anyway, but unlike most drivers, we can't delete the
-function tied to the ".remove" field.  This is because as of commit
-7aa8619a66ae ("iommu/arm-smmu-v3: Implement shutdown method") the
-.remove function was given a one line wrapper and re-used to provide a
-.shutdown service.  So we delete the wrapper and re-name the function
-from remove to shutdown.
+sensible use case anyway, and it allows us to drop the ".remove"
+code for non-modular drivers.
 
-We add a moduleparam.h include since the file does actually declare
-some module parameters, and leaving them as such is the easiest way
-currently to remain backwards compatible with existing use cases.
+Since module_init was not in use by this code, the init ordering
+remains unchanged with this commit.
 
-Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
+We replace module.h with moduleparam.h since the file does actually
+declare some module_param() and the easiest way to keep back
+compatibility with existing use cases is to leave it as-is for now.
+
+The init function was missing an __init annotation, so it was added.
 
 We also delete the MODULE_LICENSE tag etc. since all that information
-is already contained at the top of the file in the comments.
+was (or is now) contained at the top of the file in the comments.
 
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>
+Cc: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Signed-off-by: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+ drivers/iommu/tegra-gart.c | 37 +++++++------------------------------
+ 1 file changed, 7 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 6947ccf26512..1189c06079d4 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -20,7 +20,8 @@
- #include <linux/interrupt.h>
- #include <linux/iommu.h>
- #include <linux/iopoll.h>
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 7b1361d57a17..da6a4e357b2b 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -3,6 +3,8 @@
+  *
+  * Copyright (c) 2010-2012, NVIDIA CORPORATION.  All rights reserved.
+  *
++ * Author: Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
++ *
+  * This program is free software; you can redistribute it and/or modify it
+  * under the terms and conditions of the GNU General Public License,
+  * version 2, as published by the Free Software Foundation.
+@@ -19,7 +21,8 @@
+ 
+ #define pr_fmt(fmt)	"%s(): " fmt, __func__
+ 
 -#include <linux/module.h>
 +#include <linux/init.h>
 +#include <linux/moduleparam.h>
- #include <linux/msi.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
-@@ -356,6 +357,10 @@
- #define MSI_IOVA_BASE			0x8000000
- #define MSI_IOVA_LENGTH			0x100000
- 
-+/*
-+ * not really modular, but the easiest way to keep compat with existing
-+ * bootargs behaviour is to continue using module_param_named here.
-+ */
- static bool disable_bypass = 1;
- module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_bypass,
-@@ -2928,37 +2933,25 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ #include <linux/platform_device.h>
+ #include <linux/spinlock.h>
+ #include <linux/slab.h>
+@@ -478,20 +481,6 @@ static int tegra_gart_probe(struct platform_device *pdev)
  	return 0;
  }
  
--static int arm_smmu_device_remove(struct platform_device *pdev)
-+static void arm_smmu_device_shutdown(struct platform_device *pdev)
- {
- 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
- 
- 	arm_smmu_device_disable(smmu);
+-static int tegra_gart_remove(struct platform_device *pdev)
+-{
+-	struct gart_device *gart = platform_get_drvdata(pdev);
 -
+-	iommu_device_unregister(&gart->iommu);
+-	iommu_device_sysfs_remove(&gart->iommu);
+-
+-	writel(0, gart->regs + GART_CONFIG);
+-	if (gart->savedata)
+-		vfree(gart->savedata);
+-	gart_handle = NULL;
 -	return 0;
 -}
 -
--static void arm_smmu_device_shutdown(struct platform_device *pdev)
--{
--	arm_smmu_device_remove(pdev);
- }
- 
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v3", },
+ static const struct dev_pm_ops tegra_gart_pm_ops = {
+ 	.suspend	= tegra_gart_suspend,
+ 	.resume		= tegra_gart_resume,
+@@ -501,34 +490,22 @@ static const struct of_device_id tegra_gart_of_match[] = {
+ 	{ .compatible = "nvidia,tegra20-gart", },
  	{ },
  };
--MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+-MODULE_DEVICE_TABLE(of, tegra_gart_of_match);
  
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
- 		.name		= "arm-smmu-v3",
- 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
+ static struct platform_driver tegra_gart_driver = {
+ 	.probe		= tegra_gart_probe,
+-	.remove		= tegra_gart_remove,
+ 	.driver = {
+ 		.name	= "tegra-gart",
+ 		.pm	= &tegra_gart_pm_ops,
+ 		.of_match_table = tegra_gart_of_match,
 +		.suppress_bind_attrs = true,
  	},
- 	.probe	= arm_smmu_device_probe,
--	.remove	= arm_smmu_device_remove,
- 	.shutdown = arm_smmu_device_shutdown,
  };
--module_platform_driver(arm_smmu_driver);
+ 
+-static int tegra_gart_init(void)
++static int __init tegra_gart_init(void)
+ {
+ 	return platform_driver_register(&tegra_gart_driver);
+ }
 -
--MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
--MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+-static void __exit tegra_gart_exit(void)
+-{
+-	platform_driver_unregister(&tegra_gart_driver);
+-}
+-
+ subsys_initcall(tegra_gart_init);
+-module_exit(tegra_gart_exit);
+-module_param(gart_debug, bool, 0644);
+ 
++module_param(gart_debug, bool, 0644);
+ MODULE_PARM_DESC(gart_debug, "Enable GART debugging");
+-MODULE_DESCRIPTION("IOMMU API for GART in Tegra20");
+-MODULE_AUTHOR("Hiroshi DOYU <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>");
+-MODULE_ALIAS("platform:tegra-gart");
 -MODULE_LICENSE("GPL v2");
-+builtin_platform_driver(arm_smmu_driver);
 -- 
 2.7.4
