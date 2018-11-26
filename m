@@ -1,51 +1,54 @@
-From: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
-Subject: Re: [Intel-wired-lan] [PATCH V2] mm: Replace all open encodings for
-	NUMA_NO_NODE
-Date: Mon, 26 Nov 2018 11:04:24 -0700
-Message-ID: <4d0840f2-bd96-e671-8120-56ef33a37816@kernel.dk>
-References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
-	<c1b8de1a8e9d4d215b56498e2d5b83a02083483a.camel@intel.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH 06/10] swiotlb: use swiotlb_map_page in
+ swiotlb_map_sg_attrs
+Date: Mon, 26 Nov 2018 19:31:43 +0000
+Message-ID: <20181126193142.GA534@arm.com>
+References: <20181008080246.20543-7-hch@lst.de>
+ <CANcMJZAzrxA9LGNvP-epv2DwsUacEM_hcgA1n5gmaPuWRJG4iw@mail.gmail.com>
+ <20181109074955.GA27489@lst.de>
+ <CALAqxLVSDkv4faF3ta_ue9AA9s8B=-8cAMxC_sow+wZYtrfxeQ@mail.gmail.com>
+ <20181114141311.GA26677@lst.de>
+ <20181114161239.GA29462@lst.de>
+ <CALAqxLVMW2sYkaQvggZ-LhvkzpuF2rssQJ4thZkkAkROk=wVVw@mail.gmail.com>
+ <20181120092516.GC7270@lst.de>
+ <20181123182715.GA21183@arm.com>
+ <1c782a3d-cac4-954f-21e7-ef89147f0d56@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c1b8de1a8e9d4d215b56498e2d5b83a02083483a.camel-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jeffrey.t.kirsher-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, intel-wired-lan-qjLDD68F18P21nG7glBr7A@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiangqi903-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1c782a3d-cac4-954f-21e7-ef89147f0d56@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, john.stultz@linaro.org, Catalin Marinas <catalin.marinas@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, Valentin Schneider <valentin.schneider@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/26/18 10:56 AM, Jeff Kirsher wrote:
-> On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
->> At present there are multiple places where invalid node number is
->> encoded
->> as -1. Even though implicitly understood it is always better to have
->> macros
->> in there. Replace these open encodings for an invalid node number
->> with the
->> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions
->> like
->> 'invalid node' from various places redirecting them to a common
->> definition.
->>
->> Signed-off-by: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
+Hi Robin,
+
+On Fri, Nov 23, 2018 at 07:34:15PM +0000, Robin Murphy wrote:
+> On 2018-11-23 6:27 pm, Will Deacon wrote:
+> >On Tue, Nov 20, 2018 at 10:25:16AM +0100, Christoph Hellwig wrote:
+> >>On Mon, Nov 19, 2018 at 03:22:13PM -0800, John Stultz wrote:
+> >>>>+               sg->dma_address = dma_addr;
+> >>>>                 sg_dma_len(sg) = sg->length;
+> >>>>         }
+> >>>
+> >>>I know Robin has already replied with more detailed info, but just to
+> >>>close the loop as I'm finally home, applying this patch didn't seem to
+> >>>help with the IO hangs I'm seeing w/ HiKey960.
+> >>
+> >>If Robins observation is right this should fix the problem for you:
+> >
+> >Please could you give this diff a try and let us know whether the problem
+> >persists with your board?
 > 
-> For the 'ixgbe' driver changes.
+> This is actually the exact same change that I ended up with in my fixes[1],
+> which John has indeed confirmed.
 > 
-> Acked-by: Jeff Kirsher <jeffrey.t.kirsher-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> (sorry, it's the thing I was telling you about the other day, but I
+> neglected to include you on cc you when I sent the patches out the following
+> morning)
 
-Lost the original, but for mtip32xx:
+Thanks, I missed that series. I'll forget all about this problem then!
 
-Acked-by: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>
-
--- 
-Jens Axboe
+Will
