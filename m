@@ -1,112 +1,33 @@
-From: Bharat Bhushan <bharat.bhushan@nxp.com>
-Subject: RE: [PATCH v5 0/7] Add virtio-iommu driver
-Date: Tue, 27 Nov 2018 07:09:55 +0000
-Message-ID: <VI1PR04MB4845EF310EAB55ACABB71E389AD00@VI1PR04MB4845.eurprd04.prod.outlook.com>
-References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
- <250a38a9-e6b1-35ae-9261-eb8aab123f43@redhat.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: move the arm arch_dma_alloc implementation to common code
+Date: Tue, 27 Nov 2018 08:37:15 +0100
+Message-ID: <20181127073715.GA30033@lst.de>
+References: <20181105121931.13481-1-hch@lst.de> <20181109075238.GA27578@lst.de> <20181115195041.GC4535@brain-police> <b3267453-0c2d-4bda-2122-d6212967dafc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <virtio-dev-return-5042-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <250a38a9-e6b1-35ae-9261-eb8aab123f43@redhat.com>
-Content-Language: en-US
-To: Auger Eric <eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>
-Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <b3267453-0c2d-4bda-2122-d6212967dafc@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Catalin Marinas <catalin.marinas@arm.com>, linux-kernel@vger.kernel.org, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSmVhbiwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBdWdlciBF
-cmljIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+DQo+IFNlbnQ6IEZyaWRheSwgTm92ZW1iZXIgMjMs
-IDIwMTggMTo1OSBQTQ0KPiBUbzogSmVhbi1QaGlsaXBwZSBCcnVja2VyIDxqZWFuLXBoaWxpcHBl
-LmJydWNrZXJAYXJtLmNvbT47DQo+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBs
-aW51eC1wY2lAdmdlci5rZXJuZWwub3JnOw0KPiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9yZzsg
-dmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IHZpcnRpby0NCj4gZGV2
-QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBqb3JvQDhieXRlcy5vcmc7IG1zdEByZWRoYXQuY29tDQo+
-IENjOiBqYXNvd2FuZ0ByZWRoYXQuY29tOyByb2JoK2R0QGtlcm5lbC5vcmc7IG1hcmsucnV0bGFu
-ZEBhcm0uY29tOw0KPiBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBmcm93YW5kLmxpc3RAZ21haWwuY29t
-Ow0KPiBrdm1hcm1AbGlzdHMuY3MuY29sdW1iaWEuZWR1OyB0bm93aWNraUBjYXZpdW1uZXR3b3Jr
-cy5jb207DQo+IGtldmluLnRpYW5AaW50ZWwuY29tOyBtYXJjLnp5bmdpZXJAYXJtLmNvbTsgcm9i
-aW4ubXVycGh5QGFybS5jb207DQo+IHdpbGwuZGVhY29uQGFybS5jb207IGxvcmVuem8ucGllcmFs
-aXNpQGFybS5jb207IEJoYXJhdCBCaHVzaGFuDQo+IDxiaGFyYXQuYmh1c2hhbkBueHAuY29tPg0K
-PiBTdWJqZWN0OiBSZTogW1BBVENIIHY1IDAvN10gQWRkIHZpcnRpby1pb21tdSBkcml2ZXINCj4g
-DQo+IEhpIEplYW4sDQo+IA0KPiBPbiAxMS8yMi8xOCA4OjM3IFBNLCBKZWFuLVBoaWxpcHBlIEJy
-dWNrZXIgd3JvdGU6DQo+ID4gSW1wbGVtZW50IHRoZSB2aXJ0aW8taW9tbXUgZHJpdmVyLCBmb2xs
-b3dpbmcgc3BlY2lmaWNhdGlvbiB2MC45IFsxXS4NCj4gPg0KPiA+IFNpbmNlIHY0IFsyXSBJIGZp
-eGVkIHRoZSBpc3N1ZXMgcmVwb3J0ZWQgYnkgRXJpYywgYW5kIGFkZGVkDQo+ID4gUmV2aWV3ZWQt
-YnkgZnJvbSBFcmljIGFuZCBSb2IuIFRoYW5rcyENCj4gPg0KPiA+IEkgY2hhbmdlZCB0aGUgc3Bl
-Y2lmaWNhdGlvbiB0byBmaXggb25lIGluY29uc2lzdGVuY3kgZGlzY3Vzc2VkIGluIHY0Lg0KPiA+
-IFRoYXQgdGhlIGRldmljZSBmaWxscyB0aGUgcHJvYmUgYnVmZmVyIHdpdGggemVyb2VzIGlzIG5v
-dyBhICJTSE9VTEQiDQo+ID4gaW5zdGVhZCBvZiBhICJNQVkiLCBzaW5jZSBpdCdzIHRoZSBvbmx5
-IHdheSBmb3IgdGhlIGRyaXZlciB0byBrbm93IGlmDQo+ID4gdGhlIGRldmljZSB3cm90ZSB0aGUg
-c3RhdHVzLiBFeGlzdGluZyBkZXZpY2VzIGFscmVhZHkgZG8gdGhpcy4gSW4NCj4gPiBhZGRpdGlv
-biB0aGUgZGV2aWNlIG5vdyBuZWVkcyB0byBmaWxsIHRoZSB0aHJlZSBwYWRkaW5nIGJ5dGVzIGF0
-IHRoZQ0KPiA+IHRhaWwgd2l0aCB6ZXJvZXMuDQo+ID4NCj4gPiBZb3UgY2FuIGZpbmQgTGludXgg
-ZHJpdmVyIGFuZCBrdm10b29sIGRldmljZSBvbiBicmFuY2hlcw0KPiA+IHZpcnRpby1pb21tdS92
-MC45IFszXS4gSSBhbHNvIGxpZ2h0bHkgdGVzdGVkIHdpdGggRXJpYydzIGxhdGVzdCBRRU1VDQo+
-ID4gZGV2aWNlIFs0XS4NCj4gPg0KPiA+IFsxXSBWaXJ0aW8taW9tbXUgc3BlY2lmaWNhdGlvbiB2
-MC45LCBzb3VyY2VzLCBwZGYgYW5kIGRpZmYgZnJvbSB2MC44DQo+ID4gICAgIGdpdDovL2xpbnV4
-LWFybS5vcmcvdmlydGlvLWlvbW11LmdpdCB2aXJ0aW8taW9tbXUvdjAuOQ0KPiA+DQo+IGh0dHBz
-Oi8vZW1lYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cCUzQSUy
-RiUyRmpwYnINCj4gdWNrZXIubmV0JTJGdmlydGlvLWlvbW11JTJGc3BlYyUyRnYwLjklMkZ2aXJ0
-aW8taW9tbXUtDQo+IHYwLjkucGRmJmFtcDtkYXRhPTAyJTdDMDElN0NiaGFyYXQuYmh1c2hhbiU0
-MG54cC5jb20lN0M2ZTcxODBlNw0KPiBkZjhlNDE5NDNkNDEwOGQ2NTExZGI4ZWQlN0M2ODZlYTFk
-M2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYzNSU3QzAlDQo+IDdDMSU3QzYzNjc4NTU4NTQyNDk5MDgw
-MyZhbXA7c2RhdGE9bGEwdFNUTGNPSTVIa1E2NWElMkJDSEtlSTNINWl1DQo+IHFaJTJGOHI2UTVZ
-Rjh0ZnNVJTNEJmFtcDtyZXNlcnZlZD0wDQo+ID4NCj4gPg0KPiBodHRwczovL2VtZWEwMS5zYWZl
-bGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHAlM0ElMkYlMkZqcGJyDQo+ID4g
-dWNrZXIubmV0JTJGdmlydGlvLWlvbW11JTJGc3BlYyUyRmRpZmZzJTJGdmlydGlvLWlvbW11LXBk
-Zi1kaWZmLXYwLjgtDQo+IHYNCj4gPg0KPiAwLjkucGRmJmFtcDtkYXRhPTAyJTdDMDElN0NiaGFy
-YXQuYmh1c2hhbiU0MG54cC5jb20lN0M2ZTcxODBlN2QNCj4gZjhlNDE5NA0KPiA+DQo+IDNkNDEw
-OGQ2NTExZGI4ZWQlN0M2ODZlYTFkM2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYzNSU3QzAlN0MxJTdD
-Ng0KPiAzNjc4NTU4DQo+ID4NCj4gNTQyNDk5MDgwMyZhbXA7c2RhdGE9QUVYRWliNGxpaGNwZkU2
-TzZ3TGYlMkJNRWxQdEE3WkxHWUUybWowMjg4UFoNCj4gayUzRCYNCj4gPiBhbXA7cmVzZXJ2ZWQ9
-MA0KPiA+DQo+ID4gWzJdIFtQQVRDSCB2NCAwLzddIEFkZCB2aXJ0aW8taW9tbXUgZHJpdmVyDQo+
-ID4NCj4gPg0KPiBodHRwczovL2VtZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNv
-bS8/dXJsPWh0dHBzJTNBJTJGJTJGbGlzDQo+ID4gdHMubGludXhmb3VuZGF0aW9uLm9yZyUyRnBp
-cGVybWFpbCUyRmlvbW11JTJGMjAxOC0NCj4gTm92ZW1iZXIlMkYwMzEwNzQuaHQNCj4gPg0KPiBt
-bCZhbXA7ZGF0YT0wMiU3QzAxJTdDYmhhcmF0LmJodXNoYW4lNDBueHAuY29tJTdDNmU3MTgwZTdk
-ZjhlNA0KPiAxOTQzZDQxMA0KPiA+DQo+IDhkNjUxMWRiOGVkJTdDNjg2ZWExZDNiYzJiNGM2ZmE5
-MmNkOTljNWMzMDE2MzUlN0MwJTdDMSU3QzYzNjc4NQ0KPiA1ODU0MjQ5DQo+ID4NCj4gOTA4MDMm
-YW1wO3NkYXRhPW1VVVNCUSUyRmpFZVJHYWlzR0JLMjBHOVdtZlhQd2xFUktEYWVlUnFIVzQNCj4g
-MDglM0QmYW1wO3INCj4gPiBlc2VydmVkPTANCj4gPg0KPiA+IFszXSBnaXQ6Ly9saW51eC1hcm0u
-b3JnL2xpbnV4LWpwYi5naXQgdmlydGlvLWlvbW11L3YwLjkNCj4gPiAgICAgZ2l0Oi8vbGludXgt
-YXJtLm9yZy9rdm10b29sLWpwYi5naXQgdmlydGlvLWlvbW11L3YwLjkNCj4gPg0KPiA+IFs0XSBb
-UkZDIHY5IDAwLzE3XSBWSVJUSU8tSU9NTVUgZGV2aWNlDQo+ID4NCj4gPg0KPiBodHRwczovL2Vt
-ZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJG
-dw0KPiB3dw0KPiA+IC5tYWlsLWFyY2hpdmUuY29tJTJGcWVtdS0NCj4gZGV2ZWwlNDBub25nbnUu
-b3JnJTJGbXNnNTc1NTc4Lmh0bWwmYW1wO2RhdGE9DQo+ID4NCj4gMDIlN0MwMSU3Q2JoYXJhdC5i
-aHVzaGFuJTQwbnhwLmNvbSU3QzZlNzE4MGU3ZGY4ZTQxOTQzZDQxMDhkNjUxDQo+IDFkYjhlZCUN
-Cj4gPg0KPiA3QzY4NmVhMWQzYmMyYjRjNmZhOTJjZDk5YzVjMzAxNjM1JTdDMCU3QzElN0M2MzY3
-ODU1ODU0MjQ5OTA4MDMmDQo+IGFtcDtzZA0KPiA+DQo+IGF0YT1mbzlXS0UzM05tJTJGZFcyQzJY
-Y1NWbXY5aXRXakV5Uk4xaXJnRVpnT1d0WkklM0QmYW1wO3Jlc2UNCj4gcnZlZD0wDQo+ID4NCj4g
-PiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgKDcpOg0KPiA+ICAgZHQtYmluZGluZ3M6IHZpcnRpby1t
-bWlvOiBBZGQgSU9NTVUgZGVzY3JpcHRpb24NCj4gPiAgIGR0LWJpbmRpbmdzOiB2aXJ0aW86IEFk
-ZCB2aXJ0aW8tcGNpLWlvbW11IG5vZGUNCj4gPiAgIG9mOiBBbGxvdyB0aGUgaW9tbXUtbWFwIHBy
-b3BlcnR5IHRvIG9taXQgdW50cmFuc2xhdGVkIGRldmljZXMNCj4gPiAgIFBDSTogT0Y6IEluaXRp
-YWxpemUgZGV2LT5md25vZGUgYXBwcm9wcmlhdGVseQ0KPiA+ICAgaW9tbXU6IEFkZCB2aXJ0aW8t
-aW9tbXUgZHJpdmVyDQo+ID4gICBpb21tdS92aXJ0aW86IEFkZCBwcm9iZSByZXF1ZXN0DQo+ID4g
-ICBpb21tdS92aXJ0aW86IEFkZCBldmVudCBxdWV1ZQ0KPiA+DQo+ID4gIC4uLi9kZXZpY2V0cmVl
-L2JpbmRpbmdzL3ZpcnRpby9pb21tdS50eHQgICAgICB8ICAgNjYgKw0KPiA+ICAuLi4vZGV2aWNl
-dHJlZS9iaW5kaW5ncy92aXJ0aW8vbW1pby50eHQgICAgICAgfCAgIDMwICsNCj4gPiAgTUFJTlRB
-SU5FUlMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgNyArDQo+ID4gIGRy
-aXZlcnMvaW9tbXUvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTEgKw0KPiA+
-ICBkcml2ZXJzL2lvbW11L01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAxICsN
-Cj4gPiAgZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYyAgICAgICAgICAgICAgICAgIHwgMTE1
-NyArKysrKysrKysrKysrKysrKw0KPiA+ICBkcml2ZXJzL29mL2Jhc2UuYyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgfCAgIDEwICstDQo+ID4gIGRyaXZlcnMvcGNpL29mLmMgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICB8ICAgIDcgKw0KPiA+ICBpbmNsdWRlL3VhcGkvbGludXgvdmly
-dGlvX2lkcy5oICAgICAgICAgICAgICAgfCAgICAxICsNCj4gPiAgaW5jbHVkZS91YXBpL2xpbnV4
-L3ZpcnRpb19pb21tdS5oICAgICAgICAgICAgIHwgIDE2MSArKysNCj4gPiAgMTAgZmlsZXMgY2hh
-bmdlZCwgMTQ0OCBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKSAgY3JlYXRlIG1vZGUNCj4g
-PiAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3ZpcnRpby9pb21tdS50
-eHQNCj4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaW9tbXUvdmlydGlvLWlvbW11LmMg
-IGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IGluY2x1ZGUvdWFwaS9saW51eC92aXJ0aW9faW9tbXUu
-aA0KPiA+DQo+IGZvciB0aGUgd2hvbGUgc2VyaWVzDQo+IFRlc3RlZC1ieTogRXJpYyBBdWdlciA8
-ZXJpYy5hdWdlckByZWRoYXQuY29tPg0KDQpJIGhhdmUgdGVzdGVkIHRoaXMgc2VyaWVzIHdpdGgg
-dmlydGlvL3ZmaW8gYm90aA0KVGVzdGVkLWJ5OiBCaGFyYXQgQmh1c2hhbiA8YmhhcmF0LmJodXNo
-YW5AbnhwLmNvbT4NCg0KDQpUaGFua3MNCi1CaGFyYXQNCg0KPiANCj4gVGhhbmtzDQo+IA0KPiBF
-cmljDQoNCg==
+On Thu, Nov 15, 2018 at 12:58:04PM -0800, Robin Murphy wrote:
+> On 2018-11-15 11:50 am, Will Deacon wrote:
+>> On Fri, Nov 09, 2018 at 08:52:38AM +0100, Christoph Hellwig wrote:
+>>> Can I get a quick review from the arm64 folks?  I think it should
+>>> be fine there as it basically is a code move, but an additional pair
+>>> or two of eyes always helps to weed out bugs.
+>>
+>> I reviewed the arm64 parts, but it would be ideal if Robin could have a look
+>> as well.
+>
+> Yup, from a quick skim the general shape of the whole series looks 
+> pleasing, but I've been holding off going through it in detail until I've 
+> figured out what's up with the last thing I thought I'd reviewed 
+> exhaustively...
+>
+> Either way I'll make some time for a proper look next week once I'm back.
+
+Did you get a chance to look over this?
