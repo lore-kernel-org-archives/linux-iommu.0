@@ -1,53 +1,35 @@
 From: Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [PATCH v2 2/2] swiotlb: Skip cache maintenance on map error
-Date: Tue, 27 Nov 2018 12:38:49 -0800 (PST)
-Message-ID: <alpine.DEB.2.10.1811271238290.4577@sstabellini-ThinkPad-X260>
-References: <cover.1542812807.git.robin.murphy@arm.com> <cc6d91acc357235cbd6e0e134382c58caa188801.1542812807.git.robin.murphy@arm.com>
+Subject: Re: [PATCH 0/2] SWIOTLB fixes for 4.20
+Date: Tue, 27 Nov 2018 12:39:33 -0800 (PST)
+Message-ID: <alpine.DEB.2.10.1811271239080.4577@sstabellini-ThinkPad-X260>
+References: <cover.1542722463.git.robin.murphy@arm.com> <20181120160818.GC2492@lst.de> <20181120163441.GD31199@char.us.oracle.com> <20181121130331.GA1373@lst.de> <20181121151133.GC26925@char.us.oracle.com>
+ <alpine.DEB.2.10.1811271106460.4577@sstabellini-ThinkPad-X260>
 Mime-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cc6d91acc357235cbd6e0e134382c58caa188801.1542812807.git.robin.murphy@arm.com>
+In-Reply-To: <alpine.DEB.2.10.1811271106460.4577@sstabellini-ThinkPad-X260>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, konrad.wilk@oracle.com, m.szyprowski@samsung.com, john.stultz@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, sstabellini@kernel.org
+To: Stefano Stabellini <sstabellini@kernel.org>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, m.szyprowski@samsung.com, john.stultz@linaro.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 21 Nov 2018, Robin Murphy wrote:
-> If swiotlb_bounce_page() failed, calling arch_sync_dma_for_device() may
-> lead to such delights as performing cache maintenance on whatever
-> address phys_to_virt(SWIOTLB_MAP_ERROR) looks like, which is typically
-> outside the kernel memory map and goes about as well as expected.
+On Tue, 27 Nov 2018, Stefano Stabellini wrote:
+> On Wed, 21 Nov 2018, Konrad Rzeszutek Wilk wrote:
+> > On Wed, Nov 21, 2018 at 02:03:31PM +0100, Christoph Hellwig wrote:
+> > > On Tue, Nov 20, 2018 at 11:34:41AM -0500, Konrad Rzeszutek Wilk wrote:
+> > > > > Konrad, are you ok with me picking up both through the dma-mapping
+> > > > > tree?
+> > > > 
+> > > > Yes, albeit I would want Stefano to take a peek at patch #2 just in case.
+> > > 
+> > > Stefano, can you take a look asap?  This is a pretty trivial fix for
+> > > a nasty bug that breaks boot on real life systems.  I'd like to merge
+> > > it by tomorrow so that I can send it off to Linus for the next rc
+> > > (I will be offline for about two days after Friday morning)
+> > 
+> > It is Turkey Day in US so he may be busy catching those pesky turkeys.
+> > How about Tuesday? And in can also send the GIT PULL.
 > 
-> Don't do that.
-> 
-> Fixes: a4a4330db46a ("swiotlb: add support for non-coherent DMA")
-> Tested-by: John Stultz <john.stultz@linaro.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> I have just come back to the office. I'll give it a look today.
 
-Acked-by: Stefano Stabellini <sstabellini@kernel.org>
-
-> ---
-> 
-> v2: Collect tags
-> 
->  kernel/dma/swiotlb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 5731daa09a32..045930e32c0e 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -679,7 +679,8 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
->  	}
->  
->  	if (!dev_is_dma_coherent(dev) &&
-> -	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
-> +	    (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0 &&
-> +	    dev_addr != DIRECT_MAPPING_ERROR)
->  		arch_sync_dma_for_device(dev, phys, size, dir);
->  
->  	return dev_addr;
-> -- 
-> 2.19.1.dirty
-> 
+Everything looks good to me, thanks for keeping me in the loop.
