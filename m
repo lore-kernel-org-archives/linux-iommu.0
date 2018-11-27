@@ -1,58 +1,39 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: [PATCH v18 5/5] iommu/arm-smmu: Add support for qcom,smmu-v2 variant
-Date: Tue, 27 Nov 2018 15:41:45 +0530
-Message-ID: <20181127101145.7682-6-vivek.gautam@codeaurora.org>
-References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, robh+dt@kernel.org, robin.murphy@arm.com, will.deacon@arm.com, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org
-Cc: alex.williamson@redhat.com, mark.rutland@arm.com, rjw@rjwysocki.net, robdclark@gmail.com, linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, freedreno@lists.freedesktop.org, sboyd@kernel.org, tfiga@chromium.org, jcrouse@codeaurora.org, sricharan@codeaurora.org, m.szyprowski@samsung.com, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, thor.thayer@linux.intel.com, Vivek Gautam <vivek.gautam@codeaurora.org>
+From: Vinod Koul <vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
+Date: Tue, 27 Nov 2018 19:28:09 +0530
+Message-ID: <20181127135809.GB3175@vkoul-mobl.Dlink>
+References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1543235202-9075-1-git-send-email-anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
+Cc: hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-wired-lan-qjLDD68F18P21nG7glBr7A@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, jiangqi903-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-qcom,smmu-v2 is an arm,smmu-v2 implementation with specific
-clock and power requirements.
-On msm8996, multiple cores, viz. mdss, video, etc. use this
-smmu. On sdm845, this smmu is used with gpu.
-Add bindings for the same.
+On 26-11-18, 17:56, Anshuman Khandual wrote:
+> At present there are multiple places where invalid node number is encoded
+> as -1. Even though implicitly understood it is always better to have macros
+> in there. Replace these open encodings for an invalid node number with the
+> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
+> 'invalid node' from various places redirecting them to a common definition.
+> 
 
-Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Tomasz Figa <tfiga@chromium.org>
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm-smmu.c | 3 +++
- 1 file changed, 3 insertions(+)
+>  drivers/dma/dmaengine.c                       |  4 +++-
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index f02e0f58e696..29ce9e10abd4 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -121,6 +121,7 @@ enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
- 	CAVIUM_SMMUV2,
-+	QCOM_SMMUV2,
- };
- 
- struct arm_smmu_s2cr {
-@@ -2031,6 +2032,7 @@ ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
- ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
-+ARM_SMMU_MATCH_DATA(qcom_smmuv2, ARM_SMMU_V2, QCOM_SMMUV2);
- 
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
-@@ -2039,6 +2041,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+
+Acked-by: Vinod Koul <vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+~Vinod
