@@ -1,14 +1,16 @@
-From: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 1/4] PCI / ACPI: Identify untrusted PCI devices
-Date: Tue, 27 Nov 2018 18:14:43 +0100
-Message-ID: <CAJZ5v0he4BmyJ97=uwVpJtojhe0f5pTq81LBdAQG6RFy6edKrQ@mail.gmail.com>
-References: <20181126111526.56340-1-mika.westerberg@linux.intel.com>
-	<20181126111526.56340-2-mika.westerberg@linux.intel.com>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 0/7] Add virtio-iommu driver
+Date: Tue, 27 Nov 2018 12:16:21 -0500
+Message-ID: <20181127121036-mutt-send-email-mst@kernel.org>
+References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
+	<20181127114402-mutt-send-email-mst@kernel.org>
+	<6c061729-c404-ac25-f86f-7fe222bf5bc7@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181126111526.56340-2-mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <6c061729-c404-ac25-f86f-7fe222bf5bc7-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,84 +20,96 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Raj,
-	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario Limonciello <Mario.Limonciello-8PEkshWhKlo@public.gmane.org>, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 26, 2018 at 12:15 PM Mika Westerberg
-<mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> wrote:
->
-> Recent systems with Thunderbolt ports may support IOMMU natively. This
-> means that the platform utilizes IOMMU to prevent DMA attacks over
-> externally exposed PCIe root ports (typically Thunderbolt ports)
->
-> The system BIOS marks these PCIe root ports as being externally facing
-> ports by implementing following ACPI _DSD [1] under the root port in
-> question:
->
->   Name (_DSD, Package () {
->       ToUUID ("efcc06cc-73ac-4bc3-bff0-76143807c389"),
->       Package () {
->           Package () {"ExternalFacingPort", 1},
->           Package () {"UID", 0 }
->       }
->   })
->
-> To make it possible for IOMMU code to identify these devices, we look up
-> for this property and mark all children devices (including the root port
-> itself) with a new flag (->is_untrusted). This flag is meant to be used
-> with all PCIe devices (not just Thunderbolt) that cannot be trusted in
-> the same level than integrated devices and may need to put behind full
-> IOMMU protection.
->
-> [1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
->
-> Signed-off-by: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  drivers/acpi/property.c |  3 +++
->  drivers/pci/pci-acpi.c  | 18 ++++++++++++++++++
->  drivers/pci/probe.c     | 22 ++++++++++++++++++++++
->  include/linux/pci.h     |  8 ++++++++
->  4 files changed, 51 insertions(+)
->
-> diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-> index 8c7c4583b52d..4bdad32f62c8 100644
-> --- a/drivers/acpi/property.c
-> +++ b/drivers/acpi/property.c
-> @@ -31,6 +31,9 @@ static const guid_t prp_guids[] = {
->         /* Hotplug in D3 GUID: 6211e2c0-58a3-4af3-90e1-927a4e0c55a4 */
->         GUID_INIT(0x6211e2c0, 0x58a3, 0x4af3,
->                   0x90, 0xe1, 0x92, 0x7a, 0x4e, 0x0c, 0x55, 0xa4),
-> +       /* External facing port GUID: efcc06cc-73ac-4bc3-bff0-76143807c389 */
-> +       GUID_INIT(0xefcc06cc, 0x73ac, 0x4bc3,
-> +                 0xbf, 0xf0, 0x76, 0x14, 0x38, 0x07, 0xc3, 0x89),
->  };
+On Tue, Nov 27, 2018 at 06:09:25PM +0100, Auger Eric wrote:
+> Hi Michael,
+> 
+> On 11/27/18 5:53 PM, Michael S. Tsirkin wrote:
+> > On Thu, Nov 22, 2018 at 07:37:54PM +0000, Jean-Philippe Brucker wrote:
+> >> Implement the virtio-iommu driver, following specification v0.9 [1].
+> >>
+> >> Since v4 [2] I fixed the issues reported by Eric, and added Reviewed-by
+> >> from Eric and Rob. Thanks!
+> >>
+> >> I changed the specification to fix one inconsistency discussed in v4.
+> >> That the device fills the probe buffer with zeroes is now a "SHOULD"
+> >> instead of a "MAY", since it's the only way for the driver to know if
+> >> the device wrote the status. Existing devices already do this. In
+> >> addition the device now needs to fill the three padding bytes at the
+> >> tail with zeroes.
+> >>
+> >> You can find Linux driver and kvmtool device on branches
+> >> virtio-iommu/v0.9 [3]. I also lightly tested with Eric's latest QEMU
+> >> device [4].
+> > 
+> > I tried to get this to work on my x86 box but without
+> > success. Any hints? Does this have to do with the IORT table?
+> > I think we really should just reserve our own table ID
+> > and avoid the pain of trying to add things to the IORT spec.
+> > I'm reluctant to merge lots of code that I can't easily test.
+> > Again, if we found a way to push more configuration into
+> > virtio config space the problem space would be smaller.
+> 
+> You can at least test it with QEMU ARM virt in TCG mode.
 
-One observation here.  Note that I really have no strong opinion on
-that, so this is not an objection, but IMO it is fair to make things
-clear for everybody.
+It's slow enough that I generally just focus on KVM.
 
-So this causes the External facing port GUID (which already is the
-case with the Hotplug in D3 GUID for that matter) to be practically
-equivalent to the ACPI _DSD device properties GUID.  This means that
-Linux will consider a combination of any of these GUIDs with any
-properties defined for any of them as valid, which need not be the
-case in Windows.
+> Then I have
+> worked on the IORT integration in PC/Q35 but this is not yet functional.
+> I need to debug what's wrong on guest ACPI probing. I plan to work on
+> this this week.
+> 
+> Thanks
+> 
+> Eric
 
-For example, since the ExternalFacingPort property is defined along
-with the External facing port GUID, Windows will likely ignore it if
-it is used in a combination with the Hotplug in D3 GUID or the ACPI
-_DSD device properties GUID.  If the firmware combines the Hotplug in
-D3 GUID or the ACPI _DSD device properties GUID with that property,
-Windows will not regard it as valid, most likely, but Linux will use
-it just fine.  In the face of ASL bugs, which are inevitable (at least
-just because ASL is code written by humans), that may become a real
-problem, as systems successfully tested with Windows may not work with
-Linux as expected and vice versa because of it.
+Sounds good. Did you need to make changes to IORT?  I don't remember. If
+yes it would be very easy to just have a virtio specific ACPI table -
+I am assuming ARM guys will be just as hostile to virt changes
+to IORT as they were to minor changes to ARM vIOMMU.
 
->From the ecosystem purity perspective this should be avoided, but then
-I do realize that this allows code to be re-used and avoids quite a
-bit of complexity.  The likelihood of an ASL bug that will expose this
-issue is arguably small, so maybe it is not a practical concern after
-all.
+
+> > 
+> >> [1] Virtio-iommu specification v0.9, sources, pdf and diff from v0.8
+> >>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+> >>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+> >>     http://jpbrucker.net/virtio-iommu/spec/diffs/virtio-iommu-pdf-diff-v0.8-v0.9.pdf
+> >>
+> >> [2] [PATCH v4 0/7] Add virtio-iommu driver
+> >>     https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031074.html
+> >>
+> >> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9
+> >>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+> >>
+> >> [4] [RFC v9 00/17] VIRTIO-IOMMU device
+> >>     https://www.mail-archive.com/qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org/msg575578.html
+> >>
+> >> Jean-Philippe Brucker (7):
+> >>   dt-bindings: virtio-mmio: Add IOMMU description
+> >>   dt-bindings: virtio: Add virtio-pci-iommu node
+> >>   of: Allow the iommu-map property to omit untranslated devices
+> >>   PCI: OF: Initialize dev->fwnode appropriately
+> >>   iommu: Add virtio-iommu driver
+> >>   iommu/virtio: Add probe request
+> >>   iommu/virtio: Add event queue
+> >>
+> >>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
+> >>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
+> >>  MAINTAINERS                                   |    7 +
+> >>  drivers/iommu/Kconfig                         |   11 +
+> >>  drivers/iommu/Makefile                        |    1 +
+> >>  drivers/iommu/virtio-iommu.c                  | 1157 +++++++++++++++++
+> >>  drivers/of/base.c                             |   10 +-
+> >>  drivers/pci/of.c                              |    7 +
+> >>  include/uapi/linux/virtio_ids.h               |    1 +
+> >>  include/uapi/linux/virtio_iommu.h             |  161 +++
+> >>  10 files changed, 1448 insertions(+), 3 deletions(-)
+> >>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+> >>  create mode 100644 drivers/iommu/virtio-iommu.c
+> >>  create mode 100644 include/uapi/linux/virtio_iommu.h
+> >>
+> >> -- 
+> >> 2.19.1
