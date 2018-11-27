@@ -1,135 +1,112 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: DMA-API: exceeded 7 overlapping mappings of cacheline
-Date: Mon, 26 Nov 2018 22:01:02 -0500
-Message-ID: <20181126213232-mutt-send-email-mst@kernel.org>
+From: Bharat Bhushan <bharat.bhushan@nxp.com>
+Subject: RE: [PATCH v5 0/7] Add virtio-iommu driver
+Date: Tue, 27 Nov 2018 07:09:55 +0000
+Message-ID: <VI1PR04MB4845EF310EAB55ACABB71E389AD00@VI1PR04MB4845.eurprd04.prod.outlook.com>
+References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
+ <250a38a9-e6b1-35ae-9261-eb8aab123f43@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-Cc: Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, intel-gfx@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <virtio-dev-return-5042-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <250a38a9-e6b1-35ae-9261-eb8aab123f43@redhat.com>
+Content-Language: en-US
+To: Auger Eric <eric.auger@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "joro@8bytes.org" <joro@8bytes.org>, "mst@redhat.com" <mst@redhat.com>
+Cc: "jasowang@redhat.com" <jasowang@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "mark.rutland@arm.com" <mark.rutland@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-OK, so I enabled CONFIG_DMA_API_DEBUG: and now I get:
-
-[  178.789451] ------------[ cut here ]------------
-[  178.789558] DMA-API: exceeded 7 overlapping mappings of cacheline 0x000000001a161a80
-[  178.789578] WARNING: CPU: 7 PID: 1223 at kernel/dma/debug.c:523 add_dma_entry+0x1f6/0x200
-[  178.789580] Modules linked in: kvm_intel nouveau kvm iwlmvm iwlwifi
-[  178.789592] CPU: 7 PID: 1223 Comm: Xorg Tainted: G        W         4.20.0-rc3-guest-debug+ #183
-[  178.789595] Hardware name: LENOVO 20MDCTO1WW/20MDCTO1WW, BIOS N2EET31W (1.13 ) 10/19/2018
-[  178.789599] RIP: 0010:add_dma_entry+0x1f6/0x200
-[  178.789603] Code: eb 9e 7e ed 80 3d 17 17 18 03 00 75 e4 48 8d 54 24 28 be 07 00 00 00 48 c7 c7 40 38 e9 82 c6 05 fd 16 18 03 01 e8 74 87 f2 ff <0f> 0b eb c3 e8 81 83 f2 ff 90 0f 1f 44 00 00 80 3d 31 20 1e 03 00
-[  178.789606] RSP: 0018:ffff888733227348 EFLAGS: 00010086
-[  178.789609] RAX: 0000000000000000 RBX: 00000000ffffffef RCX: ffffffff8129f98e
-[  178.789612] RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff8888413de840
-[  178.789615] RBP: 000000001a161a80 R08: ffffed110827bd09 R09: ffffed110827bd08
-[  178.789618] R10: ffffed110827bd08 R11: ffff8888413de847 R12: 0000000000000202
-[  178.789621] R13: 1ffff110e6644e6a R14: ffffffff85a9b6c8 R15: ffff88877ca53528
-[  178.789624] FS:  00007efd13337ac0(0000) GS:ffff8888413c0000(0000) knlGS:0000000000000000
-[  178.789627] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  178.789630] CR2: 00007f6fb654b024 CR3: 000000073bef6003 CR4: 00000000003606e0
-[  178.789632] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  178.789635] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  178.789638] Call Trace:
-[  178.789646]  ? active_cacheline_set_overlap.part.21+0x50/0x50
-[  178.789655]  ? i915_gem_do_execbuffer+0x768/0x1c00
-[  178.789665]  debug_dma_map_sg+0xb2/0x450
-[  178.789677]  i915_gem_gtt_prepare_pages+0xdf/0x160
-[  178.789688]  __i915_gem_userptr_alloc_pages+0x83/0x190
-[  178.789696]  i915_gem_userptr_get_pages+0x1e7/0x2d0
-[  178.789704]  __i915_gem_object_get_pages+0x71/0x80
-[  178.789710]  __i915_vma_do_pin+0x65d/0xa30
-[  178.789724]  ? i915_gem_valid_gtt_space+0xd0/0xd0
-[  178.789737]  eb_lookup_vmas+0xd2c/0x1570
-[  178.789753]  ? eb_relocate_vma+0x2c0/0x2c0
-[  178.789759]  ? __i915_gem_object_unset_pages+0x3a0/0x3a0
-[  178.789764]  ? _raw_spin_unlock_irqrestore+0x43/0x50
-[  178.789771]  ? lockdep_hardirqs_on+0x17a/0x250
-[  178.789778]  ? __pm_runtime_resume+0x59/0xb0
-[  178.789787]  i915_gem_do_execbuffer+0x768/0x1c00
-[  178.789793]  ? __kmalloc_node+0x1b1/0x440
-[  178.789797]  ? i915_gem_execbuffer2_ioctl+0x12b/0x550
-[  178.789801]  ? drm_ioctl_kernel+0x14a/0x1a0
-[  178.789804]  ? drm_ioctl+0x311/0x550
-[  178.789815]  ? eb_relocate_slow+0x610/0x610
-[  178.789824]  ? i915_gem_execbuffer2_ioctl+0x12b/0x550
-[  178.789840]  ? match_held_lock+0x1b/0x230
-[  178.789847]  ? find_held_lock+0xac/0xd0
-[  178.789856]  ? __might_fault+0x7d/0xe0
-[  178.789876]  i915_gem_execbuffer2_ioctl+0x316/0x550
-[  178.789887]  ? i915_gem_execbuffer_ioctl+0x4e0/0x4e0
-[  178.789900]  ? i915_gem_execbuffer_ioctl+0x4e0/0x4e0
-[  178.789904]  drm_ioctl_kernel+0x14a/0x1a0
-[  178.789911]  ? drm_setversion+0x330/0x330
-[  178.789924]  drm_ioctl+0x311/0x550
-[  178.789931]  ? i915_gem_execbuffer_ioctl+0x4e0/0x4e0
-[  178.789936]  ? drm_ioctl_kernel+0x1a0/0x1a0
-[  178.789942]  ? mark_held_locks+0xb0/0xb0
-[  178.789960]  ? __fget+0x208/0x310
-[  178.789963]  ? match_held_lock+0x1b/0x230
-[  178.789967]  ? __lock_is_held+0x38/0xc0
-[  178.789978]  do_vfs_ioctl+0x137/0x9d0
-[  178.789985]  ? ioctl_preallocate+0x140/0x140
-[  178.789990]  ? selinux_file_ioctl+0x2a2/0x350
-[  178.789998]  ? selinux_file_mprotect+0x240/0x240
-[  178.790004]  ? __fget+0x208/0x310
-[  178.790012]  ? __ia32_sys_dup2+0x200/0x200
-[  178.790029]  ksys_ioctl+0x60/0x90
-[  178.790032]  ? lockdep_hardirqs_off+0xb5/0x100
-[  178.790039]  __x64_sys_ioctl+0x3d/0x50
-[  178.790045]  do_syscall_64+0x68/0x210
-[  178.790051]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  178.790055] RIP: 0033:0x7efd1385cfeb
-[  178.790059] Code: 0f 1e fa 48 8b 05 9d be 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 6d be 0c 00 f7 d8 64 89 01 48
-[  178.790062] RSP: 002b:00007ffd768ff718 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-[  178.790066] RAX: ffffffffffffffda RBX: 000000000000000d RCX: 00007efd1385cfeb
-[  178.790068] RDX: 00007ffd768ff750 RSI: 0000000040406469 RDI: 000000000000000d
-[  178.790071] RBP: 00005651b6f38500 R08: 0000000000000002 R09: 0000000000000001
-[  178.790074] R10: 00007efd051ef000 R11: 0000000000000246 R12: 0000000000001000
-[  178.790077] R13: 00007efd10527000 R14: 00007ffd768ff750 R15: 00007efd105274a0
-[  178.790108] irq event stamp: 4678142
-[  178.790113] hardirqs last  enabled at (4678141): [<ffffffff82899123>] _raw_spin_unlock_irqrestore+0x43/0x50
-[  178.790116] hardirqs last disabled at (4678142): [<ffffffff82898ee2>] _raw_spin_lock_irqsave+0x12/0x50
-[  178.790120] softirqs last  enabled at (4678074): [<ffffffff81bd84cf>] i915_request_add+0x53f/0x8a0
-[  178.790124] softirqs last disabled at (4678068): [<ffffffff81bd840a>] i915_request_add+0x47a/0x8a0
-[  178.790126] ---[ end trace 1d0f05369f2675fe ]---
-
-
-Using a warning here makes all kind of userspace tools jumpy
-and IIUC all this is trying to tell us is that there are not
-enough bits to track mappings reliably.
-
-This was also reported here:
-https://bugs.freedesktop.org/show_bug.cgi?id=100455
-
-So can we convert it to a printk?
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
----
-
-build tested only
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 231ca4628062..8e34137b2456 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -518,9 +518,11 @@ static void active_cacheline_inc_overlap(phys_addr_t cln)
- 	 * debug_dma_assert_idle() as the cacheline may be marked idle
- 	 * prematurely.
- 	 */
--	WARN_ONCE(overlap > ACTIVE_CACHELINE_MAX_OVERLAP,
--		  "DMA-API: exceeded %d overlapping mappings of cacheline %pa\n",
--		  ACTIVE_CACHELINE_MAX_OVERLAP, &cln);
-+	if (overlap > ACTIVE_CACHELINE_MAX_OVERLAP)
-+		printk_once(KERN_WARNING
-+			    "DMA-API: exceeded %d "
-+			    "overlapping mappings of cacheline %pa\n",
-+			    ACTIVE_CACHELINE_MAX_OVERLAP, &cln);
- }
- 
- static int active_cacheline_dec_overlap(phys_addr_t cln)
-
--- 
-MST
+SGkgSmVhbiwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBdWdlciBF
+cmljIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+DQo+IFNlbnQ6IEZyaWRheSwgTm92ZW1iZXIgMjMs
+IDIwMTggMTo1OSBQTQ0KPiBUbzogSmVhbi1QaGlsaXBwZSBCcnVja2VyIDxqZWFuLXBoaWxpcHBl
+LmJydWNrZXJAYXJtLmNvbT47DQo+IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBs
+aW51eC1wY2lAdmdlci5rZXJuZWwub3JnOw0KPiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9yZzsg
+dmlydHVhbGl6YXRpb25AbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IHZpcnRpby0NCj4gZGV2
+QGxpc3RzLm9hc2lzLW9wZW4ub3JnOyBqb3JvQDhieXRlcy5vcmc7IG1zdEByZWRoYXQuY29tDQo+
+IENjOiBqYXNvd2FuZ0ByZWRoYXQuY29tOyByb2JoK2R0QGtlcm5lbC5vcmc7IG1hcmsucnV0bGFu
+ZEBhcm0uY29tOw0KPiBiaGVsZ2Fhc0Bnb29nbGUuY29tOyBmcm93YW5kLmxpc3RAZ21haWwuY29t
+Ow0KPiBrdm1hcm1AbGlzdHMuY3MuY29sdW1iaWEuZWR1OyB0bm93aWNraUBjYXZpdW1uZXR3b3Jr
+cy5jb207DQo+IGtldmluLnRpYW5AaW50ZWwuY29tOyBtYXJjLnp5bmdpZXJAYXJtLmNvbTsgcm9i
+aW4ubXVycGh5QGFybS5jb207DQo+IHdpbGwuZGVhY29uQGFybS5jb207IGxvcmVuem8ucGllcmFs
+aXNpQGFybS5jb207IEJoYXJhdCBCaHVzaGFuDQo+IDxiaGFyYXQuYmh1c2hhbkBueHAuY29tPg0K
+PiBTdWJqZWN0OiBSZTogW1BBVENIIHY1IDAvN10gQWRkIHZpcnRpby1pb21tdSBkcml2ZXINCj4g
+DQo+IEhpIEplYW4sDQo+IA0KPiBPbiAxMS8yMi8xOCA4OjM3IFBNLCBKZWFuLVBoaWxpcHBlIEJy
+dWNrZXIgd3JvdGU6DQo+ID4gSW1wbGVtZW50IHRoZSB2aXJ0aW8taW9tbXUgZHJpdmVyLCBmb2xs
+b3dpbmcgc3BlY2lmaWNhdGlvbiB2MC45IFsxXS4NCj4gPg0KPiA+IFNpbmNlIHY0IFsyXSBJIGZp
+eGVkIHRoZSBpc3N1ZXMgcmVwb3J0ZWQgYnkgRXJpYywgYW5kIGFkZGVkDQo+ID4gUmV2aWV3ZWQt
+YnkgZnJvbSBFcmljIGFuZCBSb2IuIFRoYW5rcyENCj4gPg0KPiA+IEkgY2hhbmdlZCB0aGUgc3Bl
+Y2lmaWNhdGlvbiB0byBmaXggb25lIGluY29uc2lzdGVuY3kgZGlzY3Vzc2VkIGluIHY0Lg0KPiA+
+IFRoYXQgdGhlIGRldmljZSBmaWxscyB0aGUgcHJvYmUgYnVmZmVyIHdpdGggemVyb2VzIGlzIG5v
+dyBhICJTSE9VTEQiDQo+ID4gaW5zdGVhZCBvZiBhICJNQVkiLCBzaW5jZSBpdCdzIHRoZSBvbmx5
+IHdheSBmb3IgdGhlIGRyaXZlciB0byBrbm93IGlmDQo+ID4gdGhlIGRldmljZSB3cm90ZSB0aGUg
+c3RhdHVzLiBFeGlzdGluZyBkZXZpY2VzIGFscmVhZHkgZG8gdGhpcy4gSW4NCj4gPiBhZGRpdGlv
+biB0aGUgZGV2aWNlIG5vdyBuZWVkcyB0byBmaWxsIHRoZSB0aHJlZSBwYWRkaW5nIGJ5dGVzIGF0
+IHRoZQ0KPiA+IHRhaWwgd2l0aCB6ZXJvZXMuDQo+ID4NCj4gPiBZb3UgY2FuIGZpbmQgTGludXgg
+ZHJpdmVyIGFuZCBrdm10b29sIGRldmljZSBvbiBicmFuY2hlcw0KPiA+IHZpcnRpby1pb21tdS92
+MC45IFszXS4gSSBhbHNvIGxpZ2h0bHkgdGVzdGVkIHdpdGggRXJpYydzIGxhdGVzdCBRRU1VDQo+
+ID4gZGV2aWNlIFs0XS4NCj4gPg0KPiA+IFsxXSBWaXJ0aW8taW9tbXUgc3BlY2lmaWNhdGlvbiB2
+MC45LCBzb3VyY2VzLCBwZGYgYW5kIGRpZmYgZnJvbSB2MC44DQo+ID4gICAgIGdpdDovL2xpbnV4
+LWFybS5vcmcvdmlydGlvLWlvbW11LmdpdCB2aXJ0aW8taW9tbXUvdjAuOQ0KPiA+DQo+IGh0dHBz
+Oi8vZW1lYTAxLnNhZmVsaW5rcy5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9aHR0cCUzQSUy
+RiUyRmpwYnINCj4gdWNrZXIubmV0JTJGdmlydGlvLWlvbW11JTJGc3BlYyUyRnYwLjklMkZ2aXJ0
+aW8taW9tbXUtDQo+IHYwLjkucGRmJmFtcDtkYXRhPTAyJTdDMDElN0NiaGFyYXQuYmh1c2hhbiU0
+MG54cC5jb20lN0M2ZTcxODBlNw0KPiBkZjhlNDE5NDNkNDEwOGQ2NTExZGI4ZWQlN0M2ODZlYTFk
+M2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYzNSU3QzAlDQo+IDdDMSU3QzYzNjc4NTU4NTQyNDk5MDgw
+MyZhbXA7c2RhdGE9bGEwdFNUTGNPSTVIa1E2NWElMkJDSEtlSTNINWl1DQo+IHFaJTJGOHI2UTVZ
+Rjh0ZnNVJTNEJmFtcDtyZXNlcnZlZD0wDQo+ID4NCj4gPg0KPiBodHRwczovL2VtZWEwMS5zYWZl
+bGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHAlM0ElMkYlMkZqcGJyDQo+ID4g
+dWNrZXIubmV0JTJGdmlydGlvLWlvbW11JTJGc3BlYyUyRmRpZmZzJTJGdmlydGlvLWlvbW11LXBk
+Zi1kaWZmLXYwLjgtDQo+IHYNCj4gPg0KPiAwLjkucGRmJmFtcDtkYXRhPTAyJTdDMDElN0NiaGFy
+YXQuYmh1c2hhbiU0MG54cC5jb20lN0M2ZTcxODBlN2QNCj4gZjhlNDE5NA0KPiA+DQo+IDNkNDEw
+OGQ2NTExZGI4ZWQlN0M2ODZlYTFkM2JjMmI0YzZmYTkyY2Q5OWM1YzMwMTYzNSU3QzAlN0MxJTdD
+Ng0KPiAzNjc4NTU4DQo+ID4NCj4gNTQyNDk5MDgwMyZhbXA7c2RhdGE9QUVYRWliNGxpaGNwZkU2
+TzZ3TGYlMkJNRWxQdEE3WkxHWUUybWowMjg4UFoNCj4gayUzRCYNCj4gPiBhbXA7cmVzZXJ2ZWQ9
+MA0KPiA+DQo+ID4gWzJdIFtQQVRDSCB2NCAwLzddIEFkZCB2aXJ0aW8taW9tbXUgZHJpdmVyDQo+
+ID4NCj4gPg0KPiBodHRwczovL2VtZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNv
+bS8/dXJsPWh0dHBzJTNBJTJGJTJGbGlzDQo+ID4gdHMubGludXhmb3VuZGF0aW9uLm9yZyUyRnBp
+cGVybWFpbCUyRmlvbW11JTJGMjAxOC0NCj4gTm92ZW1iZXIlMkYwMzEwNzQuaHQNCj4gPg0KPiBt
+bCZhbXA7ZGF0YT0wMiU3QzAxJTdDYmhhcmF0LmJodXNoYW4lNDBueHAuY29tJTdDNmU3MTgwZTdk
+ZjhlNA0KPiAxOTQzZDQxMA0KPiA+DQo+IDhkNjUxMWRiOGVkJTdDNjg2ZWExZDNiYzJiNGM2ZmE5
+MmNkOTljNWMzMDE2MzUlN0MwJTdDMSU3QzYzNjc4NQ0KPiA1ODU0MjQ5DQo+ID4NCj4gOTA4MDMm
+YW1wO3NkYXRhPW1VVVNCUSUyRmpFZVJHYWlzR0JLMjBHOVdtZlhQd2xFUktEYWVlUnFIVzQNCj4g
+MDglM0QmYW1wO3INCj4gPiBlc2VydmVkPTANCj4gPg0KPiA+IFszXSBnaXQ6Ly9saW51eC1hcm0u
+b3JnL2xpbnV4LWpwYi5naXQgdmlydGlvLWlvbW11L3YwLjkNCj4gPiAgICAgZ2l0Oi8vbGludXgt
+YXJtLm9yZy9rdm10b29sLWpwYi5naXQgdmlydGlvLWlvbW11L3YwLjkNCj4gPg0KPiA+IFs0XSBb
+UkZDIHY5IDAwLzE3XSBWSVJUSU8tSU9NTVUgZGV2aWNlDQo+ID4NCj4gPg0KPiBodHRwczovL2Vt
+ZWEwMS5zYWZlbGlua3MucHJvdGVjdGlvbi5vdXRsb29rLmNvbS8/dXJsPWh0dHBzJTNBJTJGJTJG
+dw0KPiB3dw0KPiA+IC5tYWlsLWFyY2hpdmUuY29tJTJGcWVtdS0NCj4gZGV2ZWwlNDBub25nbnUu
+b3JnJTJGbXNnNTc1NTc4Lmh0bWwmYW1wO2RhdGE9DQo+ID4NCj4gMDIlN0MwMSU3Q2JoYXJhdC5i
+aHVzaGFuJTQwbnhwLmNvbSU3QzZlNzE4MGU3ZGY4ZTQxOTQzZDQxMDhkNjUxDQo+IDFkYjhlZCUN
+Cj4gPg0KPiA3QzY4NmVhMWQzYmMyYjRjNmZhOTJjZDk5YzVjMzAxNjM1JTdDMCU3QzElN0M2MzY3
+ODU1ODU0MjQ5OTA4MDMmDQo+IGFtcDtzZA0KPiA+DQo+IGF0YT1mbzlXS0UzM05tJTJGZFcyQzJY
+Y1NWbXY5aXRXakV5Uk4xaXJnRVpnT1d0WkklM0QmYW1wO3Jlc2UNCj4gcnZlZD0wDQo+ID4NCj4g
+PiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgKDcpOg0KPiA+ICAgZHQtYmluZGluZ3M6IHZpcnRpby1t
+bWlvOiBBZGQgSU9NTVUgZGVzY3JpcHRpb24NCj4gPiAgIGR0LWJpbmRpbmdzOiB2aXJ0aW86IEFk
+ZCB2aXJ0aW8tcGNpLWlvbW11IG5vZGUNCj4gPiAgIG9mOiBBbGxvdyB0aGUgaW9tbXUtbWFwIHBy
+b3BlcnR5IHRvIG9taXQgdW50cmFuc2xhdGVkIGRldmljZXMNCj4gPiAgIFBDSTogT0Y6IEluaXRp
+YWxpemUgZGV2LT5md25vZGUgYXBwcm9wcmlhdGVseQ0KPiA+ICAgaW9tbXU6IEFkZCB2aXJ0aW8t
+aW9tbXUgZHJpdmVyDQo+ID4gICBpb21tdS92aXJ0aW86IEFkZCBwcm9iZSByZXF1ZXN0DQo+ID4g
+ICBpb21tdS92aXJ0aW86IEFkZCBldmVudCBxdWV1ZQ0KPiA+DQo+ID4gIC4uLi9kZXZpY2V0cmVl
+L2JpbmRpbmdzL3ZpcnRpby9pb21tdS50eHQgICAgICB8ICAgNjYgKw0KPiA+ICAuLi4vZGV2aWNl
+dHJlZS9iaW5kaW5ncy92aXJ0aW8vbW1pby50eHQgICAgICAgfCAgIDMwICsNCj4gPiAgTUFJTlRB
+SU5FUlMgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAgNyArDQo+ID4gIGRy
+aXZlcnMvaW9tbXUvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTEgKw0KPiA+
+ICBkcml2ZXJzL2lvbW11L01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAxICsN
+Cj4gPiAgZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYyAgICAgICAgICAgICAgICAgIHwgMTE1
+NyArKysrKysrKysrKysrKysrKw0KPiA+ICBkcml2ZXJzL29mL2Jhc2UuYyAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgIDEwICstDQo+ID4gIGRyaXZlcnMvcGNpL29mLmMgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICB8ICAgIDcgKw0KPiA+ICBpbmNsdWRlL3VhcGkvbGludXgvdmly
+dGlvX2lkcy5oICAgICAgICAgICAgICAgfCAgICAxICsNCj4gPiAgaW5jbHVkZS91YXBpL2xpbnV4
+L3ZpcnRpb19pb21tdS5oICAgICAgICAgICAgIHwgIDE2MSArKysNCj4gPiAgMTAgZmlsZXMgY2hh
+bmdlZCwgMTQ0OCBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKSAgY3JlYXRlIG1vZGUNCj4g
+PiAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3ZpcnRpby9pb21tdS50
+eHQNCj4gPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvaW9tbXUvdmlydGlvLWlvbW11LmMg
+IGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+IGluY2x1ZGUvdWFwaS9saW51eC92aXJ0aW9faW9tbXUu
+aA0KPiA+DQo+IGZvciB0aGUgd2hvbGUgc2VyaWVzDQo+IFRlc3RlZC1ieTogRXJpYyBBdWdlciA8
+ZXJpYy5hdWdlckByZWRoYXQuY29tPg0KDQpJIGhhdmUgdGVzdGVkIHRoaXMgc2VyaWVzIHdpdGgg
+dmlydGlvL3ZmaW8gYm90aA0KVGVzdGVkLWJ5OiBCaGFyYXQgQmh1c2hhbiA8YmhhcmF0LmJodXNo
+YW5AbnhwLmNvbT4NCg0KDQpUaGFua3MNCi1CaGFyYXQNCg0KPiANCj4gVGhhbmtzDQo+IA0KPiBF
+cmljDQoNCg==
