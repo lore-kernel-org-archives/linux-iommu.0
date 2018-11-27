@@ -1,103 +1,75 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH v3] drm/rockchip: update cursors asynchronously through
- atomic.
-Date: Tue, 27 Nov 2018 08:56:02 +0100
-Message-ID: <20181127075602.GV4266@phenom.ffwll.local>
-References: <20181119190805.19139-1-helen.koike@collabora.com>
- <CAAFQd5DDZwhdMDbrHthQwm2bQ3+NoZNcemAktVTxkR3=LfnnTg@mail.gmail.com>
- <d3fb3b21-6c3d-6b01-727b-dbd66540ce92@collabora.com>
- <CAAFQd5Afa9ndmU0=q5Kjv-BY+0qpvOdq2+eOTO6OebX4-2NENA@mail.gmail.com>
- <1d10a4323a49ca09bbb7dc865aaaf5b8c5e3b3d5.camel@crowfest.net>
- <87o9abbmq4.fsf@anholt.net> <20181126224102.1efbf2d1@bbrezillon>
+From: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
+Date: Tue, 27 Nov 2018 18:57:11 +1100
+Message-ID: <87mupvgdgo.fsf@concordia.ellerman.id.au>
+References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20181126224102.1efbf2d1@bbrezillon>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Boris Brezillon <boris.brezillon@bootlin.com>
-Cc: =?iso-8859-1?Q?St=E9phane?= Marchesin <marcheu@google.com>, Sean Paul <seanpaul@google.com>, Gustavo Padovan <gustavo.padovan@collabora.com>, David Airlie <airlied@linux.ie>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg  Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, Tomasz Figa <tfiga@chromium.org>, helen.koike@collabora.com, dri-devel <dri-devel@lists.freedesktop.org>, Enric Balletbo i Serra <enric.balletbo@collabora.com>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, kernel@collabora.com, Michael Zoran <mzoran@crowfest.net>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg  Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1543235202-9075-1-git-send-email-anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: hverkuil-qWit8jRvyhVmR6Xm/wNWPw@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vkoul-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, intel-wired-lan-qjLDD68F18P21nG7glBr7A@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jiangqi903-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, ocfs2-devel-N0ozoZBvEnrZJqsBc5GL+g@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBOb3YgMjYsIDIwMTggYXQgMTA6NDE6MDJQTSArMDEwMCwgQm9yaXMgQnJlemlsbG9u
-IHdyb3RlOgo+IE9uIE1vbiwgMjYgTm92IDIwMTggMTI6MzY6MDMgLTA4MDAKPiBFcmljIEFuaG9s
-dCA8ZXJpY0BhbmhvbHQubmV0PiB3cm90ZToKPiAKPiA+IE1pY2hhZWwgWm9yYW4gPG16b3JhbkBj
-cm93ZmVzdC5uZXQ+IHdyaXRlczoKPiA+IAo+ID4gPiBPbiBGcmksIDIwMTgtMTEtMjMgYXQgMTE6
-MjcgKzA5MDAsIFRvbWFzeiBGaWdhIHdyb3RlOiAgCj4gPiA+PiAKPiA+ID4+IFRoZSBwb2ludCBo
-ZXJlIGlzIG5vdCBhYm91dCBzZXR0aW5nIGFuZCByZXNldHRpbmcgdGhlIHBsYW5lLT5mYgo+ID4g
-Pj4gcG9pbnRlci4gSXQncyBhYm91dCB3aGF0IGhhcHBlbnMgaW5zaWRlCj4gPiA+PiBkcm1fYXRv
-bWljX3NldF9mYl9mb3JfcGxhbmUoKS4KPiA+ID4+IAo+ID4gPj4gSXQgY2FsbHMgZHJtX2ZyYW1l
-YnVmZmVyX2dldCgpIGZvciB0aGUgbmV3IGZiIGFuZAo+ID4gPj4gZHJtX2ZyYW1lYnVmZmVyX3B1
-dCgpIGZvciB0aGUgb2xkIGZiLiBJbiByZXN1bHQsIGlmIHRoZSBmYiBjaGFuZ2VzLAo+ID4gPj4g
-dGhlIG9sZCBmYiwgd2hpY2ggaGFkIGl0cyByZWZlcmVuY2UgY291bnQgaW5jcmVtZW50ZWQgaW4g
-dGhlIGF0b21pYwo+ID4gPj4gY29tbWl0IHRoYXQgc2V0IGl0IHRvIHRoZSBwbGFuZSBiZWZvcmUs
-IGhhcyBpdHMgcmVmZXJlbmNlIGNvdW50Cj4gPiA+PiBkZWNyZW1lbnRlZC4gTW9yZW92ZXIsIGlm
-IHRoZSBuZXcgcmVmZXJlbmNlIGNvdW50IGJlY29tZXMgMCwKPiA+ID4+IGRybV9mcmFtZWJ1ZmZl
-cl9wdXQoKSB3aWxsIGltbWVkaWF0ZWx5IGZyZWUgdGhlIGJ1ZmZlci4KPiA+ID4+IAo+ID4gPj4g
-RnJlZWluZyBhIGJ1ZmZlciB3aGVuIHRoZSBoYXJkd2FyZSBpcyBzdGlsbCBzY2FubmluZyBvdXQg
-b2YgaXQgaXNuJ3QKPiA+ID4+IGEKPiA+ID4+IGdvb2QgaWRlYSwgaXMgaXQ/ICAKPiA+ID4KPiA+
-ID4gTm8sIGl0J3Mgbm90LiAgQnV0IHRoZSBib2FyZCBJIHN1Ym1pdHRlZCB0aGUgcGF0Y2ggZm9y
-IGRvZXNuJ3QgaGF2ZQo+ID4gPiBhbnl0aGluZyBsaWtlIGhvdCBzd2FwYWJsZSByYW0uICBUaGUg
-cmFtIGFjY2VzcyBpcyBzdGlsbCBnb2luZyB0byB3b3JrLAo+ID4gPiBqdXN0IGl0IG1pZ2h0IGRp
-c3BsYXkgc29tZXRoaW5nIGl0IHNob3VsZG4ndC4gU2F5IGZvciBleGFtcGxlIGlmIHRoYXQKPiA+
-ID4gZnJhbWUgYnVmZmVyIGdvdCByZXVzZWQgYnkgc29tZXRoaWcgZWxzZSBhbmQgZmlsbGVkIHdp
-dGggbmV3IGRhdGEgaW4KPiA+ID4gdGhlIHZlcnkgc21hbGwgd2luZG93Lgo+ID4gPgo+ID4gPiBC
-dXQgeWVzLCBJIGFncmVlIHRoZSBiZXN0IHNvbHV0aW9uIHdvdWxkIGJlIHRvIG5vdCByZWxlYXNl
-IHRoZSBidWZmZXIKPiA+ID4gdW50aWwgdGhlIG5leHQgdmJsYW5rLgo+ID4gPgo+ID4gPiBQZXJo
-YXBzIGEgZ29vZCBzb2x1dGlvbiB3b3VsZCBiZSBmb3IgdGhlIERSTSBhcGkgdG8gaGF2ZSB0aGUg
-Y29uY2VwdCBvZgo+ID4gPiBhIGRlZmVycmVkIHJlbGVhc2U/ICBNZWFuaW5nIGlmIHRoZSBwdXQo
-KSBjYWxsIGp1c3QgYWRkZWQgdGhlIGZyYW1lCj4gPiA+IGJ1ZmZlciB0byBhIGxpc3QgdGhhdCBE
-Uk0gY29yZSBjb3VsZCB3YWxrIGR1cmluZyB0aGUgdmJsYW5rLiAgVGhhdAo+ID4gPiBtaWdodCBi
-ZSBiZXR0ZXIgdGhlbiBldmVyeSBzaW5nbGUgZHJpdmVyIHRyeWluZyB0byB3b3JrIHVwIGEgY3Vz
-dG9tCj4gPiA+IHNvbHV0aW9uLgo+ID4gPiAgCj4gPiA+PiBUaGUgdmM0IGRyaXZlciBzZWVtcyB0
-byBiZSBhYmxlIHRvIHByb2dyYW0gdGhlIGhhcmR3YXJlIHRvIHN3aXRjaCB0aGUKPiA+ID4+IHNj
-YW5vdXQgdG8gdGhlIG5ldyBidWZmZXIgaW1tZWRpYXRlbHk6Cj4gPiA+PiAKPiA+ID4+IGh0dHBz
-Oi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y0LjIwLXJjMy9zb3VyY2UvZHJpdmVycy9ncHUv
-ZHJtL3ZjNC92YzRfcGxhbmUuYyNMNzk0Cj4gPiA+PiAKPiA+ID4+IEFsdGhvdWdoIEkgd29uZGVy
-IGlmIHRoZXJlIGlzbid0IHN0aWxsIGEgdGlueSByYWNlIHRoZXJlIC0gdGhlCj4gPiA+PiBoYXJk
-d2FyZSBtYXkgaGF2ZSBqdXN0IHN0YXJ0ZWQgcmVmaWxsaW5nIHRoZSBGSUZPIGZyb20gdGhlIG9s
-ZAo+ID4gPj4gYWRkcmVzcy4gU3RpbGwsIGlmIHRoZSBGSUZPIGlzIHNtYWxsLCB0aGUgRklGTyBy
-ZWZpbGwgb3BlcmF0aW9uIG1heQo+ID4gPj4gYmUKPiA+ID4+IG11Y2ggc2hvcnRlciB0aGFuIGl0
-IHRha2VzIGZvciB0aGUga2VybmVsIGNvZGUgdG8gYWN0dWFsbHkgZnJlZSB0aGUKPiA+ID4+IGJ1
-ZmZlci4gRXJpYyBhbmQgTWljaGFlbCwgY291bGQgeW91IGNvbmZpcm0/Cj4gPiA+PiAgIAo+ID4g
-Pgo+ID4gPiBJIGRvbid0IGhhdmUgdGhvc2UgYm9hcmRzIGFueW1vcmUsIGFuZCBJIGRvbid0IGhh
-dmUgYWNjZXNzIHRvIGFueQo+ID4gPiB0ZWNobmljYWwgZG9jdW1lbnRhdGlvbiBvbiB0aGUgR1BV
-IHNvIEkgY2FuJ3QgcmVhbGx5IGFkZCBtdWNoIGhlcmUuICAKPiA+ID4gRXJpYyBjYW4gcHJvYmFi
-bHkgcHJvdmlkZSB0aGUgYmVzdCBpbmZvcm1hdGlvbi4gIAo+ID4gCj4gPiBJIGRvbid0IHRoaW5r
-IEkgdW5kZXJzdG9vZCBteSBzY2Fub3V0IGhhcmR3YXJlIHdlbGwgZW5vdWdoIHdoZW4gSQo+ID4g
-c3RhcnRlZCBvbiB0aGUgYXN5bmMgdXBkYXRlIHN0dWZmIGZvciBycGkuICB2YzQgcHJvYmFibHkg
-bmVlZHMgdG8gd2FpdAo+ID4gdW50aWwgdGhlIEhXIHN0YXJ0cyBzY2FubmluZyBvdXQgYSBuZXcg
-bGluZSBiZWZvcmUgbGV0dGluZyB0aGUgb2xkIEJPCj4gPiBnZXQgZnJlZWQuCj4gCj4gVGhhdCdz
-IGFsc28gbXkgdW5kZXJzdGFuZGluZy4gTm90ZSB0aGF0IGV2ZW4gaWYgdGhlIEJPIGlzIGZyZWVk
-IGJlZm9yZQo+IHRoZSBIVlMgaGFzIGZpbmlzaGVkIGdlbmVyYXRpbmcgYSBsaW5lIGl0IHNob3Vs
-ZG4ndCBjcmFzaCwgYmVjYXVzZQo+IGFjY2Vzc2VzIGFyZSBkb25lIHRocm91Z2ggRE1BLiBNaWdo
-dCBiZSBhIHNlY3VyaXR5IGlzc3VlIHRob3VnaCBpZiB3ZQo+IHN0YXJ0IHJlLXVzaW5nIHRoZSBt
-ZW1vcnkgZm9yIHNvbWV0aGluZyBlbHNlIHdoaWxlIGl0J3Mgc3RpbGwgYmVpbmcKPiBhY2Nlc3Nl
-ZC4KPiAKPiBUaGUgc29sdXRpb24gd291bGQgYmUgdG8gd2FpdCBmb3IgdGhlIEVPTCAoRW5kIE9m
-IExpbmUpIGludGVycnVwdCBpbgo+IHRoZSBhc3luYyB1cGRhdGUgcGF0aCwgYnV0IEknbSBub3Qg
-c3VyZSB0aGlzIGlzIGFsbG93ZWQuCgpGb3Igc3Vic3VtaW5nIGFzeW5jIHBhZ2VfZmxpcCBpbnRv
-IHRoZSBhc3luYyBhdG9taWMgY29tbWl0IHN0dWZmIHdlIG5lZWQKY29tcGxldGlvbiBldmVudHMg
-YW55d2F5LiBGaXJpbmcgdGhvc2UgZnJvbSB0aGUgRU9MIChvciBzb21lIG90aGVyCmh3LWRlcGVu
-ZGVudCBpbnRlcnJ1cHQsIGNvdWxkIGFsc28gYmUgdGhlIG5leHQgdmJsYW5rKSBzaG91bGQgYmUg
-aGFyZCB0bwphcnJhbmdlIGZvciBkcml2ZXJzLiBBbmQgdGhlIGhlbGVwcnMgY291bGQgdGhlbiBl
-YXNpbHkgb2ZmbG9hZCB0aGUKY2xlYW51cF9wbGFuZXMgd29yayB0byBhIHdvcmtlciBhbmQgZGVs
-YXkgaXQgdW50aWwgYWZ0ZXIgdGhlIGV2ZW50IGhhcwpmaXJlZC4gTGlrZSBpdCBhbHJlYWR5IGRv
-ZXMgZm9yIG5vcm1hbCBhdG9taWMgY29tbWl0cy4KCkJ1dCB5ZWFoIHJpZ2h0IG5vdyB0aGF0J3Mg
-YWxsIG1pc3NpbmcuIFRoZSBiaWdnZXN0IGlzc3VlIGhlcmUgaXMgZmlndXJpbmcKb3V0IHdoYXQg
-dGhlc2UgZXZlbnRzIHNob3VsZCBsb29rIGxpa2UsIGFuZCBob3cgZ2VuZXJpYyB1c2Vyc3BhY2Ug
-bmVlZHMgdG8KdXNlIHRoZW0uCi1EYW5pZWwKLS0gCkRhbmllbCBWZXR0ZXIKU29mdHdhcmUgRW5n
-aW5lZXIsIEludGVsIENvcnBvcmF0aW9uCmh0dHA6Ly9ibG9nLmZmd2xsLmNoCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxp
-c3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
-dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org> writes:
+> At present there are multiple places where invalid node number is encoded
+> as -1. Even though implicitly understood it is always better to have macros
+> in there. Replace these open encodings for an invalid node number with the
+> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
+> 'invalid node' from various places redirecting them to a common definition.
+>
+> Signed-off-by: Anshuman Khandual <anshuman.khandual-5wv7dgnIgG8@public.gmane.org>
+> ---
+> Changes in V2:
+>
+> - Added inclusion of 'numa.h' header at various places per Andrew
+> - Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
+>
+> Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
+>
+> - Dropped OCFS2 changes per Joseph
+> - Dropped media/video drivers changes per Hans
+>
+> RFC - https://patchwork.kernel.org/patch/10678035/
+>
+> Build tested this with multiple cross compiler options like alpha, sparc,
+> arm64, x86, powerpc, powerpc64le etc with their default config which might
+> not have compiled tested all driver related changes. I will appreciate
+> folks giving this a test in their respective build environment.
+>
+> All these places for replacement were found by running the following grep
+> patterns on the entire kernel code. Please let me know if this might have
+> missed some instances. This might also have replaced some false positives.
+> I will appreciate suggestions, inputs and review.
+>
+> 1. git grep "nid == -1"
+> 2. git grep "node == -1"
+> 3. git grep "nid = -1"
+> 4. git grep "node = -1"
+>
+>  arch/alpha/include/asm/topology.h             |  3 ++-
+>  arch/ia64/kernel/numa.c                       |  2 +-
+>  arch/ia64/mm/discontig.c                      |  6 +++---
+>  arch/ia64/sn/kernel/io_common.c               |  3 ++-
+>  arch/powerpc/include/asm/pci-bridge.h         |  3 ++-
+>  arch/powerpc/kernel/paca.c                    |  3 ++-
+>  arch/powerpc/kernel/pci-common.c              |  3 ++-
+>  arch/powerpc/mm/numa.c                        | 14 +++++++-------
+>  arch/powerpc/platforms/powernv/memtrace.c     |  5 +++--
+
+These powerpc changes all look fine.
+
+Acked-by: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+
+
+cheers
