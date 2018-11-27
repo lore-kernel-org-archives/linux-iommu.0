@@ -1,85 +1,74 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH 7/9] iommu: tegra-gart: make it explicitly non-modular
-Date: Tue, 27 Nov 2018 15:18:03 +0100
-Message-ID: <20181127141803.GA10560@ulmo>
+From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: Re: [PATCH 0/9] iommu: clean up/remove modular stuff from non-modules.
+Date: Tue, 27 Nov 2018 09:39:12 -0500
+Message-ID: <20181127143912.GF14659@windriver.com>
 References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
- <1543271498-28966-8-git-send-email-paul.gortmaker@windriver.com>
+	<20181127101156.GA12298@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ibTvN161/egqYuK8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1543271498-28966-8-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Hiroshi Doyu <hdoyu@nvidia.com>, Stephen Warren <swarren@wwwdotorg.org>, Alexandre Courbot <gnurou@gmail.com>, linux-tegra@vger.kernel.org
+In-Reply-To: <20181127101156.GA12298-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Alexandre Courbot <gnurou-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Stephen Warren <swarren-3lzwWm7+Weoh9ZMKESR00Q@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jeffy Chen <jeffy.chen-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Hiroshi Doyu <hdoyu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+[Re: [PATCH 0/9] iommu: clean up/remove modular stuff from non-modules.] On 27/11/2018 (Tue 11:11) Joerg Roedel wrote:
 
---ibTvN161/egqYuK8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Hi Paul,
+> 
+> thanks for your cleanup!
+> 
+> The iommu-tree uses another rule for the subject line of patches. Can
+> you please resend with correct subject lines? See below for what is
+> used.
 
-On Mon, Nov 26, 2018 at 05:31:36PM -0500, Paul Gortmaker wrote:
-> The Kconfig currently controlling compilation of this code is:
->=20
-> drivers/iommu/Kconfig:config TEGRA_IOMMU_GART
-> drivers/iommu/Kconfig:  bool "Tegra GART IOMMU Support"
->=20
-> ...meaning that it currently is not being built as a module by anyone.
->=20
-> Lets remove the modular code that is essentially orphaned, so that
-> when reading the driver there is no doubt it is builtin-only.
->=20
-> We explicitly disallow a driver unbind, since that doesn't have a
-> sensible use case anyway, and it allows us to drop the ".remove"
-> code for non-modular drivers.
->=20
-> Since module_init was not in use by this code, the init ordering
-> remains unchanged with this commit.
->=20
-> We replace module.h with moduleparam.h since the file does actually
-> declare some module_param() and the easiest way to keep back
-> compatibility with existing use cases is to leave it as-is for now.
->=20
-> The init function was missing an __init annotation, so it was added.
->=20
-> We also delete the MODULE_LICENSE tag etc. since all that information
-> was (or is now) contained at the top of the file in the comments.
->=20
-> Cc: Hiroshi Doyu <hdoyu@nvidia.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Stephen Warren <swarren@wwwdotorg.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Alexandre Courbot <gnurou@gmail.com>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-tegra@vger.kernel.org
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> ---
->  drivers/iommu/tegra-gart.c | 37 +++++++------------------------------
->  1 file changed, 7 insertions(+), 30 deletions(-)
+Sure - I'll wait another day or two in case anyone on the Cc sends in
+some additional Acks.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+Thanks,
+Paul.
+--
 
---ibTvN161/egqYuK8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlv9UhcACgkQ3SOs138+
-s6GgbBAAi/Mxc51OVKQqQum9GKCX2Bb6gfyB7EOoy5OfWgk1dXPUKhy6EhLZIaxk
-2lpqJVfEikiOd5RdozVEspvrOqCKAGUuXNev7VEIy0daSNIM/VUJ6fSFCJRZEV+w
-cFbj7Z/q44r+Gx9/F7vBl2miQhn9dvFhhJZjsT62uePD79C1r9o4OJch2kQAGB6O
-aomSkBgzYz+iig3bD42H1JJERz1JrnKkbCXw3bKvRU4YG74hkM0NlWgUWxxCCsM/
-59awkEkdId0jWuF7Cn7Iwfvs34p42vVhK5unMAIhO9YEZ3IWgNIhrkKnkWAIdhlU
-VqbgJaKmdGqMjIZsGxWPwFnoNuHSV3LDxt0mCkhr6ZMIFuimJMy317vf0ETrhMSW
-C4HUVScW6t/H/FXegQ8XfuRm6qZGnwmgT8MH0Oi2RW51iOA3eADP7HqCdUQ11uN6
-K2LFAAbncjTJHdzUhECU9x1vWgzrXhUsufhj9Bc8DwwKN2+6zB+dsvJ7qA5SKUEU
-PaOGRAz2M0+C6D65xiBsy0GpG3iH3SgMAXJ/bKC37UUV8AHH7z7DmoJUNYVOszCD
-1Ai4TBSOmHgFUzszni4NOrcV/buCNOqLz2qspAHT64YK0ewgJDKuforGo7TV1q2G
-epfhNiFXDV5CYbNa+lZH/gwz2KO646KyrPKidGtOj0PPhk/FA7U=
-=9Dwj
------END PGP SIGNATURE-----
-
---ibTvN161/egqYuK8--
+> 
+> The general format is:
+> 
+> 	iommu/<driver>: _C_apital letter starting subject
+> 
+> Please also collect the Acks you get and add them to the patches before
+> the resend.
+> 
+> On Mon, Nov 26, 2018 at 05:31:29PM -0500, Paul Gortmaker wrote:
+> > Paul Gortmaker (9):
+> >   iommu: audit and remove any unnecessary uses of module.h
+> Fine.
+> >   iommu: rockchip: make it explicitly non-modular
+> 	iommu/rockchip: Make it explicitly non-modular
+> >   iommu: msm_iommu: make it explicitly non-modular
+> 	iommu/msm: Make it explicitly non-modular
+> >   iommu: mtk_iommu: make it explicitly non-modular
+> 	iommu/mediatek: Make it explicitly non-modular
+> >   iommu: ipmmu-vmsa: make it explicitly non-modular
+> 	iommu/ipmmu-vmsa: Make it explicitly non-modular
+> >   iommu: qcom_iommu: make it explicitly non-modular
+> 	iommu/qcom: Make it explicitly non-modular
+> >   iommu: tegra-gart: make it explicitly non-modular
+> 	iommu/tegra: Make it explicitly non-modular
+> >   iommu: arm-smmu: make it explicitly non-modular
+> 	iommu/arm-smmu: Make arm-smmu explicitly non-modular
+> >   iommu: arm-smmu-v3: make it explicitly non-modular
+> 	iommu/arm-smmu: Make arm-smmu-v3 explicitly non-modular
+> 
+> Thanks a lot,
+> 
+>        Joerg
