@@ -1,33 +1,33 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: move the arm arch_dma_alloc implementation to common code
-Date: Tue, 27 Nov 2018 08:37:15 +0100
-Message-ID: <20181127073715.GA30033@lst.de>
-References: <20181105121931.13481-1-hch@lst.de> <20181109075238.GA27578@lst.de> <20181115195041.GC4535@brain-police> <b3267453-0c2d-4bda-2122-d6212967dafc@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH] dma-mapping: fix return type of dma_set_max_seg_size()
+Date: Tue, 27 Nov 2018 08:40:35 +0100
+Message-ID: <20181127074035.GA30146@lst.de>
+References: <20180829212921.10665-1-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <b3267453-0c2d-4bda-2122-d6212967dafc@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Catalin Marinas <catalin.marinas@arm.com>, linux-kernel@vger.kernel.org, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20180829212921.10665-1-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 15, 2018 at 12:58:04PM -0800, Robin Murphy wrote:
-> On 2018-11-15 11:50 am, Will Deacon wrote:
->> On Fri, Nov 09, 2018 at 08:52:38AM +0100, Christoph Hellwig wrote:
->>> Can I get a quick review from the arm64 folks?  I think it should
->>> be fine there as it basically is a code move, but an additional pair
->>> or two of eyes always helps to weed out bugs.
->>
->> I reviewed the arm64 parts, but it would be ideal if Robin could have a look
->> as well.
->
-> Yup, from a quick skim the general shape of the whole series looks 
-> pleasing, but I've been holding off going through it in detail until I've 
-> figured out what's up with the last thing I thought I'd reviewed 
-> exhaustively...
->
-> Either way I'll make some time for a proper look next week once I'm back.
+On Wed, Aug 29, 2018 at 11:29:21PM +0200, Niklas S=F6derlund wrote:
+> The function dma_set_max_seg_size() can return either 0 on success or
+> -EIO on error. Change its return type from unsigned int to int to
+> capture this.
+> =
 
-Did you get a chance to look over this?
+> Signed-off-by: Niklas S=F6derlund <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+
+Thanks, applied to the dma-mapping tree for 4.21.
