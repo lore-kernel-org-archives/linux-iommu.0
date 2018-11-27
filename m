@@ -1,89 +1,91 @@
-From: Honghui Zhang <honghui.zhang@mediatek.com>
-Subject: Re: [PATCH 4/9] iommu: mtk_iommu: make it explicitly non-modular
-Date: Tue, 27 Nov 2018 09:25:46 +0800
-Message-ID: <1543281946.3753.2.camel@mhfsdcap03>
-References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
-         <1543271498-28966-5-git-send-email-paul.gortmaker@windriver.com>
+From: Krishna Reddy <vdumpa@nvidia.com>
+Subject: RE: [PATCH v2 0/5] Add Tegra194 Dual ARM SMMU driver
+Date: Tue, 27 Nov 2018 02:30:05 +0000
+Message-ID: <BYAPR12MB27598D08E89D93CD8C171993B3D00@BYAPR12MB2759.namprd12.prod.outlook.com>
+References: <1541029430-14150-1-git-send-email-vdumpa@nvidia.com>
+ <20181126235856.vnseoe5lucfryc5p@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543271498-28966-5-git-send-email-paul.gortmaker@windriver.com>
+In-Reply-To: <20181126235856.vnseoe5lucfryc5p@localhost>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>, linux-mediatek@lists.infradead.org
+To: Olof Johansson <olof@lixom.net>
+Cc: "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, Sachin Nikam <Snikam@nvidia.com>, Pritesh Raithatha <praithatha@nvidia.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Timo Alho <talho@nvidia.com>, Yu-Huan Hsu <YHsu@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>, "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Thierry Reding <treding@nvidia.com>, Alexander Van Brunt <avanbrunt@nvidia.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Juha Tukkinen <jtukkinen@nvidia.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2018-11-26 at 17:31 -0500, Paul Gortmaker wrote:
-> The Kconfig currently controlling compilation of this code is:
-> 
-> drivers/iommu/Kconfig:config MTK_IOMMU_V1
-> drivers/iommu/Kconfig:  bool "MTK IOMMU Version 1 (M4U gen1) Support"
-> 
-> ...meaning that it currently is not being built as a module by anyone.
-> 
-> Lets remove the modular code that is essentially orphaned, so that
-> when reading the driver there is no doubt it is builtin-only.
-> 
-> Since module_init was not even used by this driver, the init ordering
-> remains unchanged with this commit.
-> 
-> We also delete the MODULE_LICENSE tag etc. since all that information
-> was (or is now) contained at the top of the file in the comments.
-> 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> Cc: Honghui Zhang <honghui.zhang@mediatek.com>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-mediatek@lists.infradead.org
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
-> ---
->  drivers/iommu/mtk_iommu_v1.c | 15 +++------------
->  1 file changed, 3 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index 27867b862d7a..5fbf3cecb87f 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -1,4 +1,6 @@
->  /*
-> + * IOMMU API for MTK architected m4u v1 implementations
-> + *
->   * Copyright (c) 2015-2016 MediaTek Inc.
->   * Author: Honghui Zhang <honghui.zhang@mediatek.com>
->   *
-> @@ -35,7 +37,7 @@
->  #include <linux/spinlock.h>
->  #include <asm/barrier.h>
->  #include <asm/dma-iommu.h>
-> -#include <linux/module.h>
-> +#include <linux/init.h>
->  #include <dt-bindings/memory/mt2701-larb-port.h>
->  #include <soc/mediatek/smi.h>
->  #include "mtk_iommu.h"
-> @@ -704,15 +706,4 @@ static int __init m4u_init(void)
->  {
->  	return platform_driver_register(&mtk_iommu_driver);
->  }
-> -
-> -static void __exit m4u_exit(void)
-> -{
-> -	return platform_driver_unregister(&mtk_iommu_driver);
-> -}
-> -
->  subsys_initcall(m4u_init);
-> -module_exit(m4u_exit);
-> -
-> -MODULE_DESCRIPTION("IOMMU API for MTK architected m4u v1 implementations");
-> -MODULE_AUTHOR("Honghui Zhang <honghui.zhang@mediatek.com>");
-> -MODULE_LICENSE("GPL v2");
+Hi Olof,
+Thanks for the comments!
 
-Hi, Paul,
-Thanks for your patch.
+>>Based on what I can see, it seems that you're trying to describe two
+pieces of hardware with only one device in the DT. That seems like an
+odd choice.=20
 
-I would like the patch tile be:
-iommu/mediatek: make it explicitly non-modular
+T194 SOC HW is designed to use Two ARM SMMU's together like one SMMU.
+The IOVA accesses from the HW controllers clients is interleaved across the=
+se Two
+SMMU's by Memory controller HW.
+Even though,  there are two ARM SMMU's,  HW design requires SW programming
+these two ARM SMMU instances identically.
 
-except that,
+>>Also, it seems like all three SMMUs share the same interrupt
+line? That's somewhat suboptimal IMHO, but harder to change.
 
-Acked-by: Honghui Zhang <honghui.zhang@mediatek.com>
+This is by HW design.  SMMU interrupts are only expected if there is an ill=
+egal IOVA
+access, which shouldn't happen in practical. The SMMU interrupts are only u=
+sed
+to log the faults and for debug purpose on T194.
+
+
+>>Why not instantiate both of them and create a reference between then
+such that the TLB and sync ops are done on both of them in the native
+driver? I.e. two arm_smmu structs and a pointer between then (i.e. add a
+"next shared smmu" pointer in the struct arm_smmu).
+
+DMA framework supports only one SMMU driver instance per device.
+SMMU driver setup iommu_ops pointer in the device struct during the boot wh=
+en
+the platform device is added to the bus.
+There is no support to allow a platform device register with two different =
+SMMU
+devices.
+Two different  SMMU instances is 2x page table memory and 2x map/unmap over=
+head.
+With SMMU driver knowing about two smmu instances, page table memory usage,=
+ map/unmap
+Overhead would be efficient.
+
+>>As long as devices only references one of them, locking only that one sho=
+uld
+provide suitable protection as well.
+
+Earlier proposal on creating one Master SMMU node and slave SMMU nodes with=
+in isn't liked.=20
+Will has proposed creating a library and reusing the code. I have made the =
+patches
+to share the code.
+https://www.spinics.net/lists/linux-tegra/msg35539.html
+https://www.spinics.net/lists/linux-tegra/msg35494.html
+
+
+>>Seems like a simpler approach than adding a new layer to the driver, but =
+maybe
+>>I am missing some complexity here?
+
+Programming both SMMU instances identically with existing ARM SMMU driver i=
+s not
+possible with multiple DT nodes.=20
+In the following patch, by writel* macro override, both ARM SMMU instances =
+are
+programmed identically in  Tegra194 SMMU driver transparently. Only tlb syn=
+c and
+interrupt handling need to know about specific instance.
+
+https://lkml.org/lkml/2018/11/1/573
++#define writel_relaxed writel_relaxed_all
++#define writeq_relaxed writeq_relaxed_all
++#define writel writel_all
+
+-KR
