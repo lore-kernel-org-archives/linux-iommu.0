@@ -1,33 +1,43 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: Re: [PATCH v2 1/4] PCI / ACPI: Identify untrusted PCI devices
-Date: Wed, 28 Nov 2018 13:39:52 +0200
-Message-ID: <20181128113952.GX2296@lahna.fi.intel.com>
-References: <20181126111526.56340-1-mika.westerberg@linux.intel.com>
- <20181126111526.56340-2-mika.westerberg@linux.intel.com>
- <CAJZ5v0he4BmyJ97=uwVpJtojhe0f5pTq81LBdAQG6RFy6edKrQ@mail.gmail.com>
- <20181128105415.GV2296@lahna.fi.intel.com>
- <CAJZ5v0g5h42G-Svc_DZafucb0SyNQGE2ZhnnKnJ5UTjCWCMgxw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: move the arm arch_dma_alloc implementation to common code
+Date: Wed, 28 Nov 2018 12:18:18 +0000
+Message-ID: <9d31a389-4f8c-a709-b404-e3b3e2623ae9@arm.com>
+References: <20181105121931.13481-1-hch@lst.de>
+ <20181109075238.GA27578@lst.de> <20181115195041.GC4535@brain-police>
+ <b3267453-0c2d-4bda-2122-d6212967dafc@arm.com>
+ <20181127073715.GA30033@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0g5h42G-Svc_DZafucb0SyNQGE2ZhnnKnJ5UTjCWCMgxw@mail.gmail.com>
+In-Reply-To: <20181127073715.GA30033@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, ckellner@redhat.com, Mario Limonciello <Mario.Limonciello@dell.com>, Anthony Wong <anthony.wong@canonical.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Christoph Hellwig <hch@infradead.org>, Alex Williamson <alex.williamson@redhat.com>ACPI Devel Maling List <li>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Catalin Marinas <catalin.marinas@arm.com>, linux-kernel@vger.kernel.org, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 28, 2018 at 12:24:27PM +0100, Rafael J. Wysocki wrote:
-> I'm not sure if this is worth the extra complexity either, which is
-> why I have no strong opinion here. :-)
+On 27/11/2018 07:37, Christoph Hellwig wrote:
+> On Thu, Nov 15, 2018 at 12:58:04PM -0800, Robin Murphy wrote:
+>> On 2018-11-15 11:50 am, Will Deacon wrote:
+>>> On Fri, Nov 09, 2018 at 08:52:38AM +0100, Christoph Hellwig wrote:
+>>>> Can I get a quick review from the arm64 folks?  I think it should
+>>>> be fine there as it basically is a code move, but an additional pair
+>>>> or two of eyes always helps to weed out bugs.
+>>>
+>>> I reviewed the arm64 parts, but it would be ideal if Robin could have a look
+>>> as well.
+>>
+>> Yup, from a quick skim the general shape of the whole series looks
+>> pleasing, but I've been holding off going through it in detail until I've
+>> figured out what's up with the last thing I thought I'd reviewed
+>> exhaustively...
+>>
+>> Either way I'll make some time for a proper look next week once I'm back.
 > 
-> Maybe you can add a comment, next to the prp_guids[] definition, to
-> explain that the GUIDs are made equivalent to each other in order to
-> avoid extra complexity in the properties handling code, with the
-> caveat that the kernel will accept certain combinations of GUIDs and
-> properties that are not defined strictly speaking without warning, but
-> those combinations of GUIDs and properties are not expected to be used
-> by firmware and they should be caught by firmware validation tools and
-> reported as errors anyway.
+> Did you get a chance to look over this?
 
-Sure, I'll add the comment in the next version of the series.
+Sorry, it took a little longer than expected to catch up, but I'm 
+looking at it now.
+
+Robin.
