@@ -1,15 +1,16 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 2/2] iommu/ipmmu-vmsa: add an array of slave devices
-	whitelist
-Date: Wed, 28 Nov 2018 09:23:36 +0000
-Message-ID: <1543396868-14723-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-References: <1543396868-14723-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] PCI / ACPI: Identify untrusted PCI devices
+Date: Wed, 28 Nov 2018 12:54:15 +0200
+Message-ID: <20181128105415.GV2296@lahna.fi.intel.com>
+References: <20181126111526.56340-1-mika.westerberg@linux.intel.com>
+	<20181126111526.56340-2-mika.westerberg@linux.intel.com>
+	<CAJZ5v0he4BmyJ97=uwVpJtojhe0f5pTq81LBdAQG6RFy6edKrQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1543396868-14723-1-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0he4BmyJ97=uwVpJtojhe0f5pTq81LBdAQG6RFy6edKrQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,52 +20,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org" <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org" <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Raj,
+	Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Mario Limonciello <Mario.Limonciello-8PEkshWhKlo@public.gmane.org>, Michael Jamet <michael.jamet-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, ckellner-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Yehezkel Bernat <YehezkelShB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Anthony Wong <anthony.wong-Z7WLFzj8eWMS+FvcfC7Uqw@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-To avoid adding copy and pasted strcmp codes in the future,
-this patch adds an array "rcar_gen3_slave_whitelist" to check
-whether the device can work with the IPMMU or not.
+On Tue, Nov 27, 2018 at 06:14:43PM +0100, Rafael J. Wysocki wrote:
+> > diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
+> > index 8c7c4583b52d..4bdad32f62c8 100644
+> > --- a/drivers/acpi/property.c
+> > +++ b/drivers/acpi/property.c
+> > @@ -31,6 +31,9 @@ static const guid_t prp_guids[] = {
+> >         /* Hotplug in D3 GUID: 6211e2c0-58a3-4af3-90e1-927a4e0c55a4 */
+> >         GUID_INIT(0x6211e2c0, 0x58a3, 0x4af3,
+> >                   0x90, 0xe1, 0x92, 0x7a, 0x4e, 0x0c, 0x55, 0xa4),
+> > +       /* External facing port GUID: efcc06cc-73ac-4bc3-bff0-76143807c389 */
+> > +       GUID_INIT(0xefcc06cc, 0x73ac, 0x4bc3,
+> > +                 0xbf, 0xf0, 0x76, 0x14, 0x38, 0x07, 0xc3, 0x89),
+> >  };
+> 
+> One observation here.  Note that I really have no strong opinion on
+> that, so this is not an objection, but IMO it is fair to make things
+> clear for everybody.
+> 
+> So this causes the External facing port GUID (which already is the
+> case with the Hotplug in D3 GUID for that matter) to be practically
+> equivalent to the ACPI _DSD device properties GUID.  This means that
+> Linux will consider a combination of any of these GUIDs with any
+> properties defined for any of them as valid, which need not be the
+> case in Windows.
+> 
+> For example, since the ExternalFacingPort property is defined along
+> with the External facing port GUID, Windows will likely ignore it if
+> it is used in a combination with the Hotplug in D3 GUID or the ACPI
+> _DSD device properties GUID.  If the firmware combines the Hotplug in
+> D3 GUID or the ACPI _DSD device properties GUID with that property,
+> Windows will not regard it as valid, most likely, but Linux will use
+> it just fine.  In the face of ASL bugs, which are inevitable (at least
+> just because ASL is code written by humans), that may become a real
+> problem, as systems successfully tested with Windows may not work with
+> Linux as expected and vice versa because of it.
 
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
----
- drivers/iommu/ipmmu-vmsa.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+That's a fair point.
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 5f88031..60e3314 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -773,8 +773,13 @@ static int ipmmu_init_platform_device(struct device *dev,
- 	{ /* sentinel */ }
- };
- 
-+static const char * const rcar_gen3_slave_whitelist[] = {
-+};
-+
- static bool ipmmu_slave_whitelist(struct device *dev)
- {
-+	unsigned int i;
-+
- 	/*
- 	 * For R-Car Gen3 use a white list to opt-in slave devices.
- 	 * For Other SoCs, this returns true anyway.
-@@ -786,7 +791,13 @@ static bool ipmmu_slave_whitelist(struct device *dev)
- 	if (!soc_device_match(soc_rcar_gen3_whitelist))
- 		return false;
- 
--	/* By default, do not allow use of IPMMU */
-+	/* Check whether this slave device can work with the IPMMU */
-+	for (i = 0; i < ARRAY_SIZE(rcar_gen3_slave_whitelist); i++) {
-+		if (!strcmp(dev_name(dev), rcar_gen3_slave_whitelist[i]))
-+			return true;
-+	}
-+
-+	/* Otherwise, do not allow use of IPMMU */
- 	return false;
- }
- 
--- 
-1.9.1
+> >From the ecosystem purity perspective this should be avoided, but then
+> I do realize that this allows code to be re-used and avoids quite a
+> bit of complexity.  The likelihood of an ASL bug that will expose this
+> issue is arguably small, so maybe it is not a practical concern after
+> all.
+
+One option assuming we want to prevent the potential discrepancy you
+described above is to add ACPI specific property accessors that take
+GUID as parameter. Then it would only look properties inside that
+particular _DSD entry. I'm not sure if it is worth the added complexity,
+though.
