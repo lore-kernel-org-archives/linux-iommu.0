@@ -1,61 +1,56 @@
-From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Subject: Re: remove the ->mapping_error method from dma_map_ops V2
-Date: Wed, 28 Nov 2018 08:47:05 -0800
-Message-ID: <CAHk-=wg5+rXK8dpjkSmK7tuz29VfxVWNEwmTVYB409mmyLkeew@mail.gmail.com>
-References: <20181122140320.24080-1-hch@lst.de>
-	<CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
-	<20181122170715.GI30658@n2100.armlinux.org.uk>
-	<CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
-	<11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
-	<CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com>
-	<20181123065511.GA17856@lst.de> <20181128074117.GA21126@lst.de>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH 5/9] iommu: ipmmu-vmsa: make it explicitly non-modular
+Date: Wed, 28 Nov 2018 19:22:37 +0200
+Message-ID: <7671106.x9S16LaZuq@avalon>
+References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com> <cdded4c3-4bc5-39b3-ebc9-64fa145c9242@arm.com> <20181128153204.GI14659@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181128074117.GA21126-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, the arch/x86 maintainers <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, Linux List Kernel Mailing <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181128153204.GI14659@windriver.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 27, 2018 at 11:41 PM Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
->
-> On Fri, Nov 23, 2018 at 07:55:11AM +0100, Christoph Hellwig wrote:
-> > Well, I can tweak the last patch to return -EINVAL from dma_mapping_error
-> > instead of the old 1 is as bool true.  The callers should all be fine,
-> > although I'd have to audit them.  Still wouldn't help with being able to
-> > return different errors.
->
-> Any opinions?  I'd really like to make some forward progress on this
-> series.
+Hi Paul,
 
-So I do think that yes, dma_mapping_error() should return an error
-code, not 0/1.
+On Wednesday, 28 November 2018 17:32:05 EET Paul Gortmaker wrote:
+> [Re: [PATCH 5/9] iommu: ipmmu-vmsa: make it explicitly non-modular] On 
+28/11/2018 (Wed 12:50) Robin Murphy wrote:
+> > On 26/11/2018 22:31, Paul Gortmaker wrote:
+> [...]
+> 
+> >> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> >> index 9e2655f1c1bf..de39ef992d8a 100644
+> >> --- a/drivers/iommu/ipmmu-vmsa.c
+> >> +++ b/drivers/iommu/ipmmu-vmsa.c
+> >> @@ -1,6 +1,8 @@
+> >>
+> >>  // SPDX-License-Identifier: GPL-2.0
+> >>  /*
+> >>   * IPMMU VMSA
+> > 
+> > Nit: this line doesn't convey any information that the module description
+> > below doesn't also say far more clearly, so you may as well just replace
+> > it entirely.
+> 
+> No problem. Will do in v2.
 
-But I was really hoping that the individual drivers themselves could
-return error codes. Right now the patch-series has code like this:
+With that change, the blank line after MODULE_DEVICE_TABLE() removed, and 
+<linux/init.h> moved to keep alphabetical order sorting of the includes, 
+please add
 
-      ret = needs_bounce(dev, dma_addr, size);
-      if (ret < 0)
--         return ARM_MAPPING_ERROR;
-+         return DMA_MAPPING_ERROR;
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-which while it all makes sense in the context of this patch-series, I
-*really* think it would have been so much nicer to return the error
-code 'ret' instead (which in this case is -E2BIG).
+to v2. Thank you for the patch.
 
-I don't think this is a huge deal, but ERR_PTR() has been hugely
-successful elsewhere. And I'm not hugely convinced about all these
-"any address can be valid" arguments. How the hell do you generate a
-random dma address in the last page that isn't even page-aligned?
+> > >+ * IOMMU API for Renesas VMSA-compatible IPMMU
+> > >+ * Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> 
+> [...]
 
-                     Linus
+-- 
+Regards,
+
+Laurent Pinchart
