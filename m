@@ -1,47 +1,80 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Wed, 28 Nov 2018 16:55:54 +0800
-Message-ID: <CANMq1KBYAgoPh37e+BPz7xK4z3jJ4Gm30Gs662+_gTdM8v0QDA@mail.gmail.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
- <0100016737801f14-84f1265d-4577-4dcf-ad57-90dbc8e0a78f-000000@email.amazonses.com>
- <20181121213853.GL3065@bombadil.infradead.org> <c5ccde1e-a711-ad33-537c-2d5a0bd9edd4@arm.com>
- <20181122082336.GA2049@infradead.org> <555dd63a-0634-6a39-7abc-121e02273cb2@suse.cz>
- <20181126080213.GA17809@infradead.org>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Subject: RE: [PATCH 1/2] iommu/ipmmu-vmsa: Modify ipmmu_slave_whitelist() to
+	check SoC revisions
+Date: Wed, 28 Nov 2018 09:04:59 +0000
+Message-ID: <OSBPR01MB22935659EE48F4706C379FF9D8D10@OSBPR01MB2293.jpnprd01.prod.outlook.com>
+References: <1543385279-1584-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1543385279-1584-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<CAMuHMdVfQgsAgUVBpApjuL=Nv16L=SfCd8vDtFwvR3F4qYpfUg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181126080213.GA17809@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: hch@infradead.org
-Cc: Vlastimil Babka <vbabka@suse.cz>, Robin Murphy <robin.murphy@arm.com>, willy@infradead.org, Christoph Lameter <cl@linux.com>, Levin Alexander <Alexander.Levin@microsoft.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Huaisheng Ye <yehs1@lenovo.com>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, lkml <linux-kernel@vger.kernel.org>, Pekka Enberg <penberg@kernel.org>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Michal Hocko <mhocko@suse.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, David Rientjes <rientjes@google.com>, Matthias Brugger <matthias.bgg@gmail.com>, yingjoe.chen@mediatek.com, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Mel Gorman <mgorman@techsingularity.net>, Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAMuHMdVfQgsAgUVBpApjuL=Nv16L=SfCd8vDtFwvR3F4qYpfUg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: ja-JP
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 26, 2018 at 4:02 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Fri, Nov 23, 2018 at 01:23:41PM +0100, Vlastimil Babka wrote:
-> > Is this also true for caches created by kmem_cache_create(), that
-> > debugging options can result in not respecting the alignment passed to
-> > kmem_cache_create()? That would be rather bad, IMHO.
->
-> That's what I understood in the discussion.  If not it would make
-> our live simpler, but would need to be well document.
+Hi Geert-san,
 
->From my experiment, adding `slub_debug` to command line does _not_
-break the alignment of kmem_cache_alloc'ed objects.
-
-We do see an increase in slab_size
-(/sys/kernel/slab/io-pgtable_armv7s_l2/slab_size), from 1024 to 3072
-(probably because slub needs to allocate space on each side for the
-red zone/padding, while keeping the alignment?)
-
-> Christoph can probably explain the alignment choices in slub.
->
+> From: Geert Uytterhoeven, Sent: Wednesday, November 28, 2018 5:47 PM
+> 
+> Hi Shimoda-san,
+> 
+> On Wed, Nov 28, 2018 at 7:10 AM Yoshihiro Shimoda
+> <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org> wrote:
+> > Some R-Car Gen3 SoCs has hardware restrictions on the IPMMU. So,
+> > to check whether this R-Car Gen3 SoC can use the IPMMU correctly,
+> > this patch modifies the ipmmu_slave_whitelist().
 > >
-> > > But I do agree with the sentiment of not wanting to spread GFP_DMA32
-> > > futher into the slab allocator.
+> > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> 
+> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+
+Thank you for the review!
+
+> One question below.
+> 
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> 
+> > @@ -771,11 +765,35 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+> >         { /* sentinel */ }
+> >  };
 > >
-> > I don't see a problem with GFP_DMA32 for custom caches. Generic
-> > kmalloc() would be worse, since it would have to create a new array of
-> > kmalloc caches. But that's already ruled out due to the alignment.
->
-> True, purely slab probably isn't too bad.
+> > +static const struct soc_device_attribute soc_rcar_gen3_whitelist[] = {
+> > +       { .soc_id = "r8a7795", .revision = "ES3.0" },
+> 
+> Don't you want "ES3.*"?
+
+Indeed (I want "ES3.*"). So, I'll submit v2 patch to fix it.
+
+Best regards,
+Yoshihiro Shimoda
+
+> > +       { .soc_id = "r8a77965", },
+> > +       { .soc_id = "r8a77990", },
+> > +       { .soc_id = "r8a77995", },
+> > +       { /* sentinel */ }
+> > +};
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+> 
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
