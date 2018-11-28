@@ -1,8 +1,8 @@
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 1/2] iommu/ipmmu-vmsa: Modify ipmmu_slave_whitelist() to
-	check SoC revisions
+Subject: [PATCH v2 2/2] iommu/ipmmu-vmsa: add an array of slave devices
+	whitelist
 Date: Wed, 28 Nov 2018 09:23:36 +0000
-Message-ID: <1543396868-14723-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Message-ID: <1543396868-14723-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1543396868-14723-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,70 +23,48 @@ To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@
 Cc: "geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org" <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org" <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Some R-Car Gen3 SoCs has hardware restrictions on the IPMMU. So,
-to check whether this R-Car Gen3 SoC can use the IPMMU correctly,
-this patch modifies the ipmmu_slave_whitelist().
+To avoid adding copy and pasted strcmp codes in the future,
+this patch adds an array "rcar_gen3_slave_whitelist" to check
+whether the device can work with the IPMMU or not.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 34 ++++++++++++++++++++++++++--------
- 1 file changed, 26 insertions(+), 8 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9e2655f..5f88031 100644
+index 5f88031..60e3314 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -754,12 +754,6 @@ static int ipmmu_init_platform_device(struct device *dev,
- 	return 0;
- }
- 
--static bool ipmmu_slave_whitelist(struct device *dev)
--{
--	/* By default, do not allow use of IPMMU */
--	return false;
--}
--
- static const struct soc_device_attribute soc_rcar_gen3[] = {
- 	{ .soc_id = "r8a774a1", },
- 	{ .soc_id = "r8a7795", },
-@@ -771,11 +765,35 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+@@ -773,8 +773,13 @@ static int ipmmu_init_platform_device(struct device *dev,
  	{ /* sentinel */ }
  };
  
-+static const struct soc_device_attribute soc_rcar_gen3_whitelist[] = {
-+	{ .soc_id = "r8a7795", .revision = "ES3.*" },
-+	{ .soc_id = "r8a77965", },
-+	{ .soc_id = "r8a77990", },
-+	{ .soc_id = "r8a77995", },
-+	{ /* sentinel */ }
++static const char * const rcar_gen3_slave_whitelist[] = {
 +};
 +
-+static bool ipmmu_slave_whitelist(struct device *dev)
-+{
-+	/*
-+	 * For R-Car Gen3 use a white list to opt-in slave devices.
-+	 * For Other SoCs, this returns true anyway.
-+	 */
-+	if (!soc_device_match(soc_rcar_gen3))
-+		return true;
-+
-+	/* Check whether this R-Car Gen3 can use the IPMMU correctly or not */
-+	if (!soc_device_match(soc_rcar_gen3_whitelist))
-+		return false;
-+
-+	/* By default, do not allow use of IPMMU */
-+	return false;
-+}
-+
- static int ipmmu_of_xlate(struct device *dev,
- 			  struct of_phandle_args *spec)
+ static bool ipmmu_slave_whitelist(struct device *dev)
  {
--	/* For R-Car Gen3 use a white list to opt-in slave devices */
--	if (soc_device_match(soc_rcar_gen3) && !ipmmu_slave_whitelist(dev))
-+	if (!ipmmu_slave_whitelist(dev))
- 		return -ENODEV;
++	unsigned int i;
++
+ 	/*
+ 	 * For R-Car Gen3 use a white list to opt-in slave devices.
+ 	 * For Other SoCs, this returns true anyway.
+@@ -786,7 +791,13 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+ 	if (!soc_device_match(soc_rcar_gen3_whitelist))
+ 		return false;
  
- 	iommu_fwspec_add_ids(dev, spec->args, 1);
+-	/* By default, do not allow use of IPMMU */
++	/* Check whether this slave device can work with the IPMMU */
++	for (i = 0; i < ARRAY_SIZE(rcar_gen3_slave_whitelist); i++) {
++		if (!strcmp(dev_name(dev), rcar_gen3_slave_whitelist[i]))
++			return true;
++	}
++
++	/* Otherwise, do not allow use of IPMMU */
+ 	return false;
+ }
+ 
 -- 
 1.9.1
