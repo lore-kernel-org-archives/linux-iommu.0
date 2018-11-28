@@ -1,107 +1,66 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 8/9] iommu: arm-smmu: make it explicitly non-modular
-Date: Wed, 28 Nov 2018 17:28:16 +0000
-Message-ID: <d952cb5e-b524-5eea-1729-4d579f637152@arm.com>
-References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
- <1543271498-28966-9-git-send-email-paul.gortmaker@windriver.com>
- <755c95d7-882c-0dec-207e-20bf8f22b159@arm.com>
- <20181128152445.GH14659@windriver.com>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V2
+Date: Wed, 28 Nov 2018 17:45:45 +0000
+Message-ID: <20181128174545.GJ30658@n2100.armlinux.org.uk>
+References: <20181122140320.24080-1-hch@lst.de>
+ <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com>
+ <20181122170715.GI30658@n2100.armlinux.org.uk>
+ <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com>
+ <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com>
+ <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com>
+ <20181123065511.GA17856@lst.de>
+ <20181128074117.GA21126@lst.de>
+ <CAHk-=wg5+rXK8dpjkSmK7tuz29VfxVWNEwmTVYB409mmyLkeew@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181128152445.GH14659@windriver.com>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wg5+rXK8dpjkSmK7tuz29VfxVWNEwmTVYB409mmyLkeew@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Nate Watterson <nwatters@codeaurora.org>, linux-arm-kernel@lists.infradead.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, robin.murphy@arm.com, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/11/2018 15:24, Paul Gortmaker wrote:
-> [Re: [PATCH 8/9] iommu: arm-smmu: make it explicitly non-modular] On 28/11/2018 (Wed 12:42) Robin Murphy wrote:
+On Wed, Nov 28, 2018 at 08:47:05AM -0800, Linus Torvalds wrote:
+> On Tue, Nov 27, 2018 at 11:41 PM Christoph Hellwig <hch@lst.de> wrote:
+> >
+> > On Fri, Nov 23, 2018 at 07:55:11AM +0100, Christoph Hellwig wrote:
+> > > Well, I can tweak the last patch to return -EINVAL from dma_mapping_error
+> > > instead of the old 1 is as bool true.  The callers should all be fine,
+> > > although I'd have to audit them.  Still wouldn't help with being able to
+> > > return different errors.
+> >
+> > Any opinions?  I'd really like to make some forward progress on this
+> > series.
 > 
->> Hi Paul,
->>
->> On 26/11/2018 22:31, Paul Gortmaker wrote:
+> So I do think that yes, dma_mapping_error() should return an error
+> code, not 0/1.
 > 
-> [...]
+> But I was really hoping that the individual drivers themselves could
+> return error codes. Right now the patch-series has code like this:
 > 
->>> We add a moduleparam.h include since the file does actually declare
->>> some module parameters, and leaving them as such is the easiest way
->>> currently to remain backwards compatible with existing use cases.
+>       ret = needs_bounce(dev, dma_addr, size);
+>       if (ret < 0)
+> -         return ARM_MAPPING_ERROR;
+> +         return DMA_MAPPING_ERROR;
 > 
-> [...]
+> which while it all makes sense in the context of this patch-series, I
+> *really* think it would have been so much nicer to return the error
+> code 'ret' instead (which in this case is -E2BIG).
 > 
-> 
->> Is it worth introducing builtin_param() and friends for this sort of thing,
->> to echo the *_platform_driver() helpers? It seems like that could be
->> justifiable under the motivation described in the cover letter.
-> 
-> I've definitely gone back and looked at this a few times when coming
-> across the few corner cases like these, to remind myself why I didn't do
-> it already.
-> 
-> We'd not want to replicate all the module_param stuff as an instance of
-> builtin_param() because we already have setup() and setup_param() in
-> init.h -- however they don't do the file name in the param - hence the
-> reason it isn't a direct swap in replacement.
-> 
-> So, it would become some more complex refactoring of moduleparam.h into
-> say bootparam.h - to reduce code/macro duplication, while at the same
-> time being aware of existing setup_param stuff and making something like
-> a new setup_param_named() that is consistent with existing setup fcns.
-> 
-> And based on past experience, there will be reviewers who don't see the
-> value in the distinction and simply reply with two words "why bother?".
-> 
-> Not impossible, but not as simple as the builtin_platform_driver and
-> similar wrappers that I've already added to mainline.  You've made we
-> want to go have another look at it again, but in the meantime we can do
-> what I've done here, and circle around later to update the few instances
-> of moduleparam in non-modules once/if the refactoring I describe above
-> works out and is accepted in mainline.
+> I don't think this is a huge deal, but ERR_PTR() has been hugely
+> successful elsewhere. And I'm not hugely convinced about all these
+> "any address can be valid" arguments. How the hell do you generate a
+> random dma address in the last page that isn't even page-aligned?
 
-Sure, I definitely agree with doing a first pass like this to sweep up 
-all the cruft and audit the module_param users at the same time, then 
-considering a robust refactoring once we've got a clear idea of how many 
-users actually need it.
+kmalloc() a 64-byte buffer, dma_map_single() that buffer.  If you
+have RAM that maps to a _bus_ address in the top page of 4GB of a
+32-bit bus address, then you lose.  Simples.
 
-TBH, at this point I was thinking along the lines of a simple:
+Subsystems like I2C, SPI, USB etc all deal with small kmalloc'd
+buffers and their drivers make use of DMA.
 
-#ifndef MODULE
-#define builtin_param(name, type, perm)			\
-	module_param(name, type, perm)
-#define builtin_param_named(name, name, type, perrm)	\
-	module_param_named(name, name, type, perm)
-#endif
-
-still in moduleparam.h, purely so that the intent can be made really 
-clear in driver code and it's more searchable than just comments. But 
-yeah, even that would probably be objectionable to many.
-
->> Otherwise, the changes look reasonable. I still hold out hope that one day
->> we'll be able to make IOMMU drivers modular (it can work with minimal hacks
->> today, but it's far from robust in general), but for now I agree this makes
->> sense (and it'll be easy enough to revert for playing with further hacks).
-> 
-> I totally agree - I've had similar discussions with the DMA maintainers,
-> and if being modular can be made to work and has a use case - great!
-> 
-> But it should be a conscious decision, since nobody writes a new driver
-> from scratch; they copy one that is "close" as a template and then go
-> from there.  Which leads to a good percentage of drivers having hints
-> of modular stuff when there is no intent of them ever being modular.
-> 
->> With the title fixed up as Joerg asked,
->>
->> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> Thanks for the feedback/review.  Will re-send with updated titles before
-> the week is finished and a good chance for additional feedback has elapsed.
-
-Great! There's probably some more subtleties that could be tidied up 
-when the driver is truly non-removable, but I can take a look at that 
-myself once this patch has gone in.
-
-Cheers,
-Robin.
+-- 
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
