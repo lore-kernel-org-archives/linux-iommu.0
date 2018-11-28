@@ -1,139 +1,98 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 9/9] iommu: arm-smmu-v3: make it explicitly non-modular
-Date: Wed, 28 Nov 2018 12:44:19 +0000
-Message-ID: <148f1301-76fc-a64f-aeb3-d6d2483e74b1@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 5/9] iommu: ipmmu-vmsa: make it explicitly non-modular
+Date: Wed, 28 Nov 2018 12:50:12 +0000
+Message-ID: <cdded4c3-4bc5-39b3-ebc9-64fa145c9242@arm.com>
 References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
-	<1543271498-28966-10-git-send-email-paul.gortmaker@windriver.com>
+ <1543271498-28966-6-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1543271498-28966-10-git-send-email-paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1543271498-28966-6-git-send-email-paul.gortmaker@windriver.com>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Paul Gortmaker <paul.gortmaker@windriver.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 List-Id: iommu@lists.linux-foundation.org
 
 On 26/11/2018 22:31, Paul Gortmaker wrote:
 > The Kconfig currently controlling compilation of this code is:
 > 
-> drivers/iommu/Kconfig:config ARM_SMMU_V3
-> drivers/iommu/Kconfig:  bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+> drivers/iommu/Kconfig:config IPMMU_VMSA
+> drivers/iommu/Kconfig:        bool "Renesas VMSA-compatible IPMMU"
 > 
 > ...meaning that it currently is not being built as a module by anyone.
 > 
 > Lets remove the modular code that is essentially orphaned, so that
 > when reading the driver there is no doubt it is builtin-only.
 > 
-> Since module_platform_driver() uses the same init level priority as
-> builtin_platform_driver() the init ordering remains unchanged with
-> this commit.
+> Since module_init was not even used by this driver, the init ordering
+> remains unchanged with this commit.
 > 
-> We explicitly disallow a driver unbind, since that doesn't have a
-> sensible use case anyway, but unlike most drivers, we can't delete the
-> function tied to the ".remove" field.  This is because as of commit
-> 7aa8619a66ae ("iommu/arm-smmu-v3: Implement shutdown method") the
-> .remove function was given a one line wrapper and re-used to provide a
-> .shutdown service.  So we delete the wrapper and re-name the function
-> from remove to shutdown.
-> 
-> We add a moduleparam.h include since the file does actually declare
-> some module parameters, and leaving them as such is the easiest way
-> currently to remain backwards compatible with existing use cases.
+> We also delete the MODULE_LICENSE tag etc. since all that information
+> was (or is now) contained at the top of the file in the comments.
 > 
 > Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
 > 
-> We also delete the MODULE_LICENSE tag etc. since all that information
-> is already contained at the top of the file in the comments.
-
-With the title fixed up,
-
-Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Cc: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Signed-off-by: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 > ---
->   drivers/iommu/arm-smmu-v3.c | 25 +++++++++----------------
->   1 file changed, 9 insertions(+), 16 deletions(-)
+>   drivers/iommu/ipmmu-vmsa.c | 16 +++-------------
+>   1 file changed, 3 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 6947ccf26512..1189c06079d4 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -20,7 +20,8 @@
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index 9e2655f1c1bf..de39ef992d8a 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -1,6 +1,8 @@
+>   // SPDX-License-Identifier: GPL-2.0
+>   /*
+>    * IPMMU VMSA
+
+Nit: this line doesn't convey any information that the module 
+description below doesn't also say far more clearly, so you may as well 
+just replace it entirely.
+
+Robin.
+
+> + * IOMMU API for Renesas VMSA-compatible IPMMU
+> + * Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+>    *
+>    * Copyright (C) 2014 Renesas Electronics Corporation
+>    */
+> @@ -14,7 +16,7 @@
 >   #include <linux/interrupt.h>
+>   #include <linux/io.h>
 >   #include <linux/iommu.h>
->   #include <linux/iopoll.h>
 > -#include <linux/module.h>
 > +#include <linux/init.h>
-> +#include <linux/moduleparam.h>
->   #include <linux/msi.h>
 >   #include <linux/of.h>
->   #include <linux/of_address.h>
-> @@ -356,6 +357,10 @@
->   #define MSI_IOVA_BASE			0x8000000
->   #define MSI_IOVA_LENGTH			0x100000
+>   #include <linux/of_device.h>
+>   #include <linux/of_iommu.h>
+> @@ -968,7 +970,6 @@ static const struct of_device_id ipmmu_of_ids[] = {
+>   	},
+>   };
 >   
-> +/*
-> + * not really modular, but the easiest way to keep compat with existing
-> + * bootargs behaviour is to continue using module_param_named here.
-> + */
->   static bool disable_bypass = 1;
->   module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
->   MODULE_PARM_DESC(disable_bypass,
-> @@ -2928,37 +2933,25 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> -MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
+>   
+>   static int ipmmu_probe(struct platform_device *pdev)
+>   {
+> @@ -1140,15 +1141,4 @@ static int __init ipmmu_init(void)
+>   	setup_done = true;
 >   	return 0;
 >   }
->   
-> -static int arm_smmu_device_remove(struct platform_device *pdev)
-> +static void arm_smmu_device_shutdown(struct platform_device *pdev)
->   {
->   	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
->   
->   	arm_smmu_device_disable(smmu);
 > -
-> -	return 0;
+> -static void __exit ipmmu_exit(void)
+> -{
+> -	return platform_driver_unregister(&ipmmu_driver);
 > -}
 > -
-> -static void arm_smmu_device_shutdown(struct platform_device *pdev)
-> -{
-> -	arm_smmu_device_remove(pdev);
->   }
->   
->   static const struct of_device_id arm_smmu_of_match[] = {
->   	{ .compatible = "arm,smmu-v3", },
->   	{ },
->   };
-> -MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
->   
->   static struct platform_driver arm_smmu_driver = {
->   	.driver	= {
->   		.name		= "arm-smmu-v3",
->   		.of_match_table	= of_match_ptr(arm_smmu_of_match),
-> +		.suppress_bind_attrs = true,
->   	},
->   	.probe	= arm_smmu_device_probe,
-> -	.remove	= arm_smmu_device_remove,
->   	.shutdown = arm_smmu_device_shutdown,
->   };
-> -module_platform_driver(arm_smmu_driver);
+>   subsys_initcall(ipmmu_init);
+> -module_exit(ipmmu_exit);
 > -
-> -MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
-> -MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+> -MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+> -MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart@ideasonboard.com>");
 > -MODULE_LICENSE("GPL v2");
-> +builtin_platform_driver(arm_smmu_driver);
 > 
