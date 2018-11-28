@@ -1,27 +1,108 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: remove the ->mapping_error method from dma_map_ops V2
-Date: Wed, 28 Nov 2018 08:41:17 +0100
-Message-ID: <20181128074117.GA21126@lst.de>
-References: <20181122140320.24080-1-hch@lst.de> <CAHk-=wh=_T=A53+o4zLNbKio43LGqVDb0KCbWPDvAg54bRDmWw@mail.gmail.com> <20181122170715.GI30658@n2100.armlinux.org.uk> <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com> <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com> <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com> <20181123065511.GA17856@lst.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 2/3] iommu/amd: Fix line-break in error log reporting
+Date: Wed, 28 Nov 2018 09:43:41 +0100
+Message-ID: <20181128084342.16363-3-joro@8bytes.org>
+References: <20181128084342.16363-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181123065511.GA17856@lst.de>
+In-Reply-To: <20181128084342.16363-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>, the arch/x86 maintainers <x86@kernel.org>, linux@armlinux.org.uk, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, xen-devel@lists.xenproject.org, robin.murphy@arm.com, Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <joro@kv.home.8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 23, 2018 at 07:55:11AM +0100, Christoph Hellwig wrote:
-> On Thu, Nov 22, 2018 at 09:55:25AM -0800, Linus Torvalds wrote:
-> > No, the big immediate benefit of allowing "return -EINVAL" etc is
-> > simply legibility and error avoidance.
-> 
-> Well, I can tweak the last patch to return -EINVAL from dma_mapping_error
-> instead of the old 1 is as bool true.  The callers should all be fine,
-> although I'd have to audit them.  Still wouldn't help with being able to
-> return different errors.
+From: Joerg Roedel <joro@kv.home.8bytes.org>
 
-Any opinions?  I'd really like to make some forward progress on this
-series.
+With the switch to dev_err for reporting errors from the
+iommu log there was an unwanted newline introduced. The
+reason was that the reporting was done in multiple dev_err()
+calls, and dev_err adds a newline after every call.
+
+Fix it by printing the log messages with only one dev_err()
+call.
+
+Signed-off-by: Joerg Roedel <joro@kv.home.8bytes.org>
+---
+ drivers/iommu/amd_iommu.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 9b96b424add4..7f38eab5aef4 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -540,7 +540,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+ 		dev_data = get_dev_data(&pdev->dev);
+ 
+ 	if (dev_data && __ratelimit(&dev_data->rs)) {
+-		dev_err(&pdev->dev, "AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%016llx flags=0x%04x]\n",
++		dev_err(&pdev->dev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 			domain_id, address, flags);
+ 	} else if (printk_ratelimit()) {
+ 		pr_err("Event logged [IO_PAGE_FAULT device=%02x:%02x.%x domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+@@ -580,43 +580,41 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 	if (type == EVENT_TYPE_IO_FAULT) {
+ 		amd_iommu_report_page_fault(devid, pasid, address, flags);
+ 		return;
+-	} else {
+-		dev_err(dev, "AMD-Vi: Event logged [");
+ 	}
+ 
+ 	switch (type) {
+ 	case EVENT_TYPE_ILL_DEV:
+-		dev_err(dev, "ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "Event logged [ILLEGAL_DEV_TABLE_ENTRY device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		dump_dte_entry(devid);
+ 		break;
+ 	case EVENT_TYPE_DEV_TAB_ERR:
+-		dev_err(dev, "DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
++		dev_err(dev, "Event logged [DEV_TAB_HARDWARE_ERROR device=%02x:%02x.%x "
+ 			"address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_PAGE_TAB_ERR:
+-		dev_err(dev, "PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "Event logged [PAGE_TAB_HARDWARE_ERROR device=%02x:%02x.%x domain=0x%04x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+ 	case EVENT_TYPE_ILL_CMD:
+-		dev_err(dev, "ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
++		dev_err(dev, "Event logged [ILLEGAL_COMMAND_ERROR address=0x%016llx]\n", address);
+ 		dump_command(address);
+ 		break;
+ 	case EVENT_TYPE_CMD_HARD_ERR:
+-		dev_err(dev, "COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "Event logged [COMMAND_HARDWARE_ERROR address=0x%016llx flags=0x%04x]\n",
+ 			address, flags);
+ 		break;
+ 	case EVENT_TYPE_IOTLB_INV_TO:
+-		dev_err(dev, "IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
++		dev_err(dev, "Event logged [IOTLB_INV_TIMEOUT device=%02x:%02x.%x address=0x%016llx]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			address);
+ 		break;
+ 	case EVENT_TYPE_INV_DEV_REQ:
+-		dev_err(dev, "INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "Event logged [INVALID_DEVICE_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+@@ -624,12 +622,12 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+ 		pasid = ((event[0] >> 16) & 0xFFFF)
+ 			| ((event[1] << 6) & 0xF0000);
+ 		tag = event[1] & 0x03FF;
+-		dev_err(dev, "INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
++		dev_err(dev, "Event logged [INVALID_PPR_REQUEST device=%02x:%02x.%x pasid=0x%05x address=0x%016llx flags=0x%04x]\n",
+ 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
+ 			pasid, address, flags);
+ 		break;
+ 	default:
+-		dev_err(dev, "UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
++		dev_err(dev, "Event logged [UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+ 			event[0], event[1], event[2], event[3]);
+ 	}
+ 
+-- 
+2.17.1
