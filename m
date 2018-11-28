@@ -1,98 +1,81 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 5/9] iommu: ipmmu-vmsa: make it explicitly non-modular
-Date: Wed, 28 Nov 2018 12:50:12 +0000
-Message-ID: <cdded4c3-4bc5-39b3-ebc9-64fa145c9242@arm.com>
-References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
- <1543271498-28966-6-git-send-email-paul.gortmaker@windriver.com>
+From: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v18 1/5] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Wed, 28 Nov 2018 08:32:58 -0600
+Message-ID: <eb6ed521-8e04-924d-f9a8-5729b88e2bec@linux.intel.com>
+References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
+	<20181127101145.7682-2-vivek.gautam@codeaurora.org>
+Reply-To: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543271498-28966-6-git-send-email-paul.gortmaker@windriver.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181127101145.7682-2-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 26/11/2018 22:31, Paul Gortmaker wrote:
-> The Kconfig currently controlling compilation of this code is:
+On 11/27/18 4:11 AM, Vivek Gautam wrote:
+> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > 
-> drivers/iommu/Kconfig:config IPMMU_VMSA
-> drivers/iommu/Kconfig:        bool "Renesas VMSA-compatible IPMMU"
+> The smmu needs to be functional only when the respective
+> master's using it are active. The device_link feature
+> helps to track such functional dependencies, so that the
+> iommu gets powered when the master device enables itself
+> using pm_runtime. So by adapting the smmu driver for
+> runtime pm, above said dependency can be addressed.
 > 
-> ...meaning that it currently is not being built as a module by anyone.
+> This patch adds the pm runtime/sleep callbacks to the
+> driver and also the functions to parse the smmu clocks
+> from DT and enable them in resume/suspend.
+> We pull all the information about clocks from device tree.
 > 
-> Lets remove the modular code that is essentially orphaned, so that
-> when reading the driver there is no doubt it is builtin-only.
+> Also, while we enable the runtime pm add a pm sleep suspend
+> callback that pushes devices to low power state by turning
+> the clocks off in a system sleep.
+> Also add corresponding clock enable path in resume callback.
 > 
-> Since module_init was not even used by this driver, the init ordering
-> remains unchanged with this commit.
-> 
-> We also delete the MODULE_LICENSE tag etc. since all that information
-> was (or is now) contained at the top of the file in the comments.
-> 
-> Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
-> 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Cc: iommu@lists.linux-foundation.org
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> [Thor: Rework to get clocks from device tree]
+> Signed-off-by: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> [vivek: rework for clock and pm ops]
+> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
->   drivers/iommu/ipmmu-vmsa.c | 16 +++-------------
->   1 file changed, 3 insertions(+), 13 deletions(-)
+>   drivers/iommu/arm-smmu.c | 100 +++++++++++++++++++++++++++++++++++++++++++++--
+>   1 file changed, 97 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 9e2655f1c1bf..de39ef992d8a 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -1,6 +1,8 @@
->   // SPDX-License-Identifier: GPL-2.0
->   /*
->    * IPMMU VMSA
-
-Nit: this line doesn't convey any information that the module 
-description below doesn't also say far more clearly, so you may as well 
-just replace it entirely.
-
-Robin.
-
-> + * IOMMU API for Renesas VMSA-compatible IPMMU
-> + * Author: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
->    *
->    * Copyright (C) 2014 Renesas Electronics Corporation
->    */
-> @@ -14,7 +16,7 @@
->   #include <linux/interrupt.h>
->   #include <linux/io.h>
->   #include <linux/iommu.h>
-> -#include <linux/module.h>
-> +#include <linux/init.h>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 5a28ae892504..e47c840fc6a8 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -44,10 +44,12 @@
+>   #include <linux/module.h>
 >   #include <linux/of.h>
+>   #include <linux/of_address.h>
+> +#include <linux/of_clk.h>
 >   #include <linux/of_device.h>
 >   #include <linux/of_iommu.h>
-> @@ -968,7 +970,6 @@ static const struct of_device_id ipmmu_of_ids[] = {
->   	},
->   };
->   
-> -MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
->   
->   static int ipmmu_probe(struct platform_device *pdev)
->   {
-> @@ -1140,15 +1141,4 @@ static int __init ipmmu_init(void)
->   	setup_done = true;
->   	return 0;
->   }
-> -
-> -static void __exit ipmmu_exit(void)
-> -{
-> -	return platform_driver_unregister(&ipmmu_driver);
-> -}
-> -
->   subsys_initcall(ipmmu_init);
-> -module_exit(ipmmu_exit);
-> -
-> -MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
-> -MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart@ideasonboard.com>");
-> -MODULE_LICENSE("GPL v2");
-> 
+>   #include <linux/pci.h>
+>   #include <linux/platform_device.h>
+> +#include <linux/pm_runtime.h>
+>   #include <linux/slab.h>
+>   #include <linux/spinlock.h>
+>  <snip>
+
+Thanks! Tested the device tree clock portions on Intel SOCFPGA Stratix10 
+DevKit.
+
+Tested-by: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
