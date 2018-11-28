@@ -1,163 +1,97 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: PCI passthrough with multiple devices in same iommu group
-Date: Wed, 28 Nov 2018 08:26:19 -0700
-Message-ID: <20181128082619.26cd9242@x1.home>
-References: <CAFP4jM9xWFcNjJCcedVngvRMV3SHPipzpukbP0+mvZwayKs=RA@mail.gmail.com>
+From: Paul Gortmaker <paul.gortmaker@windriver.com>
+Subject: Re: [PATCH 8/9] iommu: arm-smmu: make it explicitly non-modular
+Date: Wed, 28 Nov 2018 10:24:45 -0500
+Message-ID: <20181128152445.GH14659@windriver.com>
+References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
+ <1543271498-28966-9-git-send-email-paul.gortmaker@windriver.com>
+ <755c95d7-882c-0dec-207e-20bf8f22b159@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAFP4jM9xWFcNjJCcedVngvRMV3SHPipzpukbP0+mvZwayKs=RA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: gokul cg <gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org" <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <755c95d7-882c-0dec-207e-20bf8f22b159@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Nate Watterson <nwatters@codeaurora.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 28 Nov 2018 20:21:02 +0530
-gokul cg <gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+[Re: [PATCH 8/9] iommu: arm-smmu: make it explicitly non-modular] On 28/11/2018 (Wed 12:42) Robin Murphy wrote:
 
-> Hi Folks,
+> Hi Paul,
 > 
-> Please excuse me , I just writing to you as i could see you had made
-> changes regarding iommu and I thought you could give help me here.
-> 
-> We are testing visualization with QEMU-2.7.0 + Linux-4.8+, we are facing
-> issue while configuring pass through PCI devices in QEMU to pass it to
-> guest OS.
-> We are using following QEMU argument to configure PCI device as passthrough
-> device to guest, which was working with Linux 3.10 distro (hypervisor: QEMU
-> 1.7.2, Linux:  3.10+).
-> 
-> /usr/bin/qemu-system-x86_64 -name guest_1 -S -machine
-> pc-i440fx-1.7,accel=kvm,usb=off -m 49152    \
->  -device kvm-pci-assign,host=0000:00:1f.3 -device
-> kvm-pci-assign,host=0000:09:0e.0  ..<etc..>
+> On 26/11/2018 22:31, Paul Gortmaker wrote:
 
-Legacy KVM device assignment (aka kvm-pci-assign) has been deprecated
-for some time now, you'll find it doesn't even exist in newer kernels
-and QEMU.
+[...]
 
-> Here is the error message that we will get when we try to configure PCI
-> devices as passthrough using kvm pci assignment method in Linux 4.8+
-> (hypervisor: QEMU 2.7.0, Linux:  4.8+).
-> 
-> which is shown below.
-> 
-> ---log---
-> 
-> From QEMU:
-> qemu-system-x86_64: -device kvm-pci-assign,host=0000:00:1f.3: Failed to
-> assign device "(null)": Invalid argument
-> 
-> From dmesg:
-> pci-stub 0000:00:1f.3: kvm assign device failed ret -22
-> 
-> ---end----
-> 
-> Info about devices (CPU:  Intel(R) Xeon(R) CPU E5-2608L):
-> 
-> root@shining-node:~# lspci -k -s 00:1f.3
-> 00:1f.3 SMBus: Intel Corporation C610/X99 series chipset SMBus Controller
-> (rev 05)
->         Subsystem: Intel Corporation C610/X99 series chipset SMBus
-> Controller
->         Kernel driver in use: pci-stub
->         Kernel modules: i2c_i801
+> >We add a moduleparam.h include since the file does actually declare
+> >some module parameters, and leaving them as such is the easiest way
+> >currently to remain backwards compatible with existing use cases.
 
-Why are you trying to assign an SMBus controller to a VM?
+[...]
 
-> root@shining-node:~#
-> root@shining-node:~# lspci -k -s  09:0e.0
-> 09:0e.0 Network controller: Broadcom Limited Device b680 (rev 12)
-> root@shining-node:~#
-> 
-> From the web search i could see that it is because there are multiple
-> devices in same iommu_group that the passthrough device belongs to.
-> When i check iommu_group , i have multiple devices in same group but all
-> those are intel devices under Wellsburg PCH.
 
-Nope, kvm-pci-assign doesn't make use of IOMMU groups, more likely just
-some state of disrepair as it's deprecated and replaced by vfio-pci,
-which does use iommu groups.  So iommu groups will be a problem, but
-not in the configuration you're attempting to use above.
+> Is it worth introducing builtin_param() and friends for this sort of thing,
+> to echo the *_platform_driver() helpers? It seems like that could be
+> justifiable under the motivation described in the cover letter.
 
-> root@shining-node:~# ls
-> /sys/bus/pci/devices/0000\:00\:1f.3/iommu_group/devices/
-> 0000:00:1f.0  0000:00:1f.2  0000:00:1f.3  0000:00:1f.6
-> root@shining-node:~#
-> root@shining-node:~# lspci -v -s 0000:00:1f
-> 00:1f.0 ISA bridge: Intel Corporation C610/X99 series chipset LPC
-> Controller (rev 05)
-> Subsystem: Intel Corporation C610/X99 series chipset LPC Controller
-> Flags: bus master, medium devsel, latency 0, NUMA node 0
-> Capabilities: [e0] Vendor Specific Information: Len=0c <?>
-> Kernel driver in use: lpc_ich
-> Kernel modules: lpc_ich
-> 
-> 00:1f.2 SATA controller: Intel Corporation C610/X99 series chipset 6-Port
-> SATA Controller [AHCI mode] (rev 05) (prog-if 01 [AHCI 1.0])
-> Subsystem: Intel Corporation C610/X99 series chipset 6-Port SATA Controller
-> [AHCI mode]
-> Flags: bus master, 66MHz, medium devsel, latency 0, IRQ 35, NUMA node 0
-> I/O ports at 3068 [size=8]
-> I/O ports at 3074 [size=4]
-> I/O ports at 3060 [size=8]
-> I/O ports at 3070 [size=4]
-> I/O ports at 3020 [size=32]
-> Memory at 91d20000 (32-bit, non-prefetchable) [size=2K]
-> Capabilities: [80] MSI: Enable+ Count=1/1 Maskable- 64bit-
-> Capabilities: [70] Power Management version 3
-> Capabilities: [a8] SATA HBA v1.0
-> Kernel driver in use: ahci
-> 
-> 00:1f.3 SMBus: Intel Corporation C610/X99 series chipset SMBus Controller
-> (rev 05)
-> Subsystem: Intel Corporation C610/X99 series chipset SMBus Controller
-> Flags: medium devsel, IRQ 18, NUMA node 0
-> Memory at 180000600000 (64-bit, non-prefetchable) [size=4K]
-> I/O ports at 3000 [size=32]
-> Kernel driver in use: pci-stub
-> Kernel modules: i2c_i801
-> 
-> 00:1f.6 Signal processing controller: Intel Corporation C610/X99 series
-> chipset Thermal Subsystem (rev 05)
-> Subsystem: Intel Corporation C610/X99 series chipset Thermal Subsystem
-> Flags: bus master, fast devsel, latency 0, IRQ 255, NUMA node 0
-> Memory at 183fc0010000 (64-bit, non-prefetchable) [size=4K]
-> Capabilities: [50] Power Management version 3
-> Capabilities: [80] MSI: Enable- Count=1/1 Maskable- 64bit-
+I've definitely gone back and looked at this a few times when coming
+across the few corner cases like these, to remind myself why I didn't do
+it already.
 
-Again I have to ask, why are these things you'd want to pass to a VM?
-The SATA controller is the only reasonable thing to assign here, but
-can easily be replaced by a plugin card with proper isolation or the
-performance can be nearly matched with virtio devices.  These devices
-do not provide isolation between them therefore the assignment group is
-the full set of devices within the iommu group.
+We'd not want to replicate all the module_param stuff as an instance of
+builtin_param() because we already have setup() and setup_param() in
+init.h -- however they don't do the file name in the param - hence the
+reason it isn't a direct swap in replacement.
 
-> root@shining-node:~#
-> 
-> 
-> I have tried ACS override patch to rearrange these devices to different
-> iommu_group and its not working for these devices.I have tried to
-> passthrough vfio method, vfio complains that it needs all driver to be vfio
-> compatible.
-> 
-> How can we achieve pci passthrough for Intel SMBus Controller [00:1f.3
-> here] with latest kernel(We use 4.8+ now)
+So, it would become some more complex refactoring of moduleparam.h into
+say bootparam.h - to reduce code/macro duplication, while at the same
+time being aware of existing setup_param stuff and making something like
+a new setup_param_named() that is consistent with existing setup fcns.
 
-The only theoretically supported mechanism would be to assign all of
-the devices in the group to the VM, but you're putting the host system
-at risk by assigning system management controllers to a VM.  Again, why
-would you want to assign the SMBus controller to a VM?  The unsupported
-path is with the ACS override patch, using the multifunction option or
-specific vendor and device IDs.  Thanks,
+And based on past experience, there will be reviewers who don't see the
+value in the distinction and simply reply with two words "why bother?".
 
-Alex
+Not impossible, but not as simple as the builtin_platform_driver and
+similar wrappers that I've already added to mainline.  You've made we
+want to go have another look at it again, but in the meantime we can do
+what I've done here, and circle around later to update the few instances
+of moduleparam in non-modules once/if the refactoring I describe above
+works out and is accepted in mainline.
+
+> 
+> Otherwise, the changes look reasonable. I still hold out hope that one day
+> we'll be able to make IOMMU drivers modular (it can work with minimal hacks
+> today, but it's far from robust in general), but for now I agree this makes
+> sense (and it'll be easy enough to revert for playing with further hacks).
+
+I totally agree - I've had similar discussions with the DMA maintainers,
+and if being modular can be made to work and has a use case - great!
+
+But it should be a conscious decision, since nobody writes a new driver
+from scratch; they copy one that is "close" as a template and then go
+from there.  Which leads to a good percentage of drivers having hints
+of modular stuff when there is no intent of them ever being modular.
+
+> With the title fixed up as Joerg asked,
+> 
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+
+Thanks for the feedback/review.  Will re-send with updated titles before
+the week is finished and a good chance for additional feedback has elapsed.
+
+Paul.
+--
+
+> 
+> >  module_param(force_stage, int, S_IRUGO);
+> >  MODULE_PARM_DESC(force_stage,
+> >  	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
