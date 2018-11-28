@@ -1,27 +1,33 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 8/9] iommu: arm-smmu: make it explicitly non-modular
-Date: Wed, 28 Nov 2018 12:42:31 +0000
-Message-ID: <755c95d7-882c-0dec-207e-20bf8f22b159@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 9/9] iommu: arm-smmu-v3: make it explicitly non-modular
+Date: Wed, 28 Nov 2018 12:44:19 +0000
+Message-ID: <148f1301-76fc-a64f-aeb3-d6d2483e74b1@arm.com>
 References: <1543271498-28966-1-git-send-email-paul.gortmaker@windriver.com>
- <1543271498-28966-9-git-send-email-paul.gortmaker@windriver.com>
+	<1543271498-28966-10-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543271498-28966-9-git-send-email-paul.gortmaker@windriver.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1543271498-28966-10-git-send-email-paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Paul Gortmaker <paul.gortmaker@windriver.com>, Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Nate Watterson <nwatters@codeaurora.org>, linux-arm-kernel@lists.infradead.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
-
-Hi Paul,
 
 On 26/11/2018 22:31, Paul Gortmaker wrote:
 > The Kconfig currently controlling compilation of this code is:
 > 
-> drivers/iommu/Kconfig:config ARM_SMMU
-> drivers/iommu/Kconfig:  bool "ARM Ltd. System MMU (SMMU) Support"
+> drivers/iommu/Kconfig:config ARM_SMMU_V3
+> drivers/iommu/Kconfig:  bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
 > 
 > ...meaning that it currently is not being built as a module by anyone.
 > 
@@ -44,84 +50,62 @@ On 26/11/2018 22:31, Paul Gortmaker wrote:
 > some module parameters, and leaving them as such is the easiest way
 > currently to remain backwards compatible with existing use cases.
 > 
+> Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
+> 
 > We also delete the MODULE_LICENSE tag etc. since all that information
 > is already contained at the top of the file in the comments.
-> 
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Nate Watterson <nwatters@codeaurora.org>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: iommu@lists.linux-foundation.org
-> Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
+
+With the title fixed up,
+
+Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Cc: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Signed-off-by: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 > ---
->   drivers/iommu/arm-smmu.c | 32 +++++++++++++-------------------
->   1 file changed, 13 insertions(+), 19 deletions(-)
+>   drivers/iommu/arm-smmu-v3.c | 25 +++++++++----------------
+>   1 file changed, 9 insertions(+), 16 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 5a28ae892504..4a2e143fdf52 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -41,7 +41,8 @@
->   #include <linux/io-64-nonatomic-hi-lo.h>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 6947ccf26512..1189c06079d4 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -20,7 +20,8 @@
+>   #include <linux/interrupt.h>
 >   #include <linux/iommu.h>
 >   #include <linux/iopoll.h>
 > -#include <linux/module.h>
 > +#include <linux/init.h>
 > +#include <linux/moduleparam.h>
+>   #include <linux/msi.h>
 >   #include <linux/of.h>
 >   #include <linux/of_address.h>
->   #include <linux/of_device.h>
-> @@ -101,6 +102,10 @@
+> @@ -356,6 +357,10 @@
+>   #define MSI_IOVA_BASE			0x8000000
 >   #define MSI_IOVA_LENGTH			0x100000
 >   
->   static int force_stage;
 > +/*
 > + * not really modular, but the easiest way to keep compat with existing
-> + * bootargs behaviour is to continue using module_param() here.
+> + * bootargs behaviour is to continue using module_param_named here.
 > + */
-
-Is it worth introducing builtin_param() and friends for this sort of 
-thing, to echo the *_platform_driver() helpers? It seems like that could 
-be justifiable under the motivation described in the cover letter.
-
-Otherwise, the changes look reasonable. I still hold out hope that one 
-day we'll be able to make IOMMU drivers modular (it can work with 
-minimal hacks today, but it's far from robust in general), but for now I 
-agree this makes sense (and it'll be easy enough to revert for playing 
-with further hacks). With the title fixed up as Joerg asked,
-
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-
->   module_param(force_stage, int, S_IRUGO);
->   MODULE_PARM_DESC(force_stage,
->   	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
-> @@ -1964,7 +1969,6 @@ static const struct of_device_id arm_smmu_of_match[] = {
->   	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
->   	{ },
->   };
-> -MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
->   
->   #ifdef CONFIG_ACPI
->   static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
-> @@ -2224,24 +2228,18 @@ static int arm_smmu_legacy_bus_init(void)
+>   static bool disable_bypass = 1;
+>   module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+>   MODULE_PARM_DESC(disable_bypass,
+> @@ -2928,37 +2933,25 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>   	return 0;
 >   }
->   device_initcall_sync(arm_smmu_legacy_bus_init);
 >   
 > -static int arm_smmu_device_remove(struct platform_device *pdev)
 > +static void arm_smmu_device_shutdown(struct platform_device *pdev)
 >   {
 >   	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
 >   
->   	if (!smmu)
-> -		return -ENODEV;
-> +		return;
->   
->   	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
->   		dev_err(&pdev->dev, "removing device with active domains!\n");
->   
->   	/* Turn the thing off */
->   	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+>   	arm_smmu_device_disable(smmu);
+> -
 > -	return 0;
 > -}
 > -
@@ -130,18 +114,17 @@ Acked-by: Robin Murphy <robin.murphy@arm.com>
 > -	arm_smmu_device_remove(pdev);
 >   }
 >   
->   static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
-> @@ -2256,16 +2254,12 @@ static SIMPLE_DEV_PM_OPS(arm_smmu_pm_ops, NULL, arm_smmu_pm_resume);
+>   static const struct of_device_id arm_smmu_of_match[] = {
+>   	{ .compatible = "arm,smmu-v3", },
+>   	{ },
+>   };
+> -MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
 >   
 >   static struct platform_driver arm_smmu_driver = {
 >   	.driver	= {
-> -		.name		= "arm-smmu",
-> -		.of_match_table	= of_match_ptr(arm_smmu_of_match),
-> -		.pm		= &arm_smmu_pm_ops,
-> +		.name			= "arm-smmu",
-> +		.of_match_table		= of_match_ptr(arm_smmu_of_match),
-> +		.pm			= &arm_smmu_pm_ops,
-> +		.suppress_bind_attrs	= true,
+>   		.name		= "arm-smmu-v3",
+>   		.of_match_table	= of_match_ptr(arm_smmu_of_match),
+> +		.suppress_bind_attrs = true,
 >   	},
 >   	.probe	= arm_smmu_device_probe,
 > -	.remove	= arm_smmu_device_remove,
@@ -149,8 +132,8 @@ Acked-by: Robin Murphy <robin.murphy@arm.com>
 >   };
 > -module_platform_driver(arm_smmu_driver);
 > -
-> -MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
-> -MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
+> -MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+> -MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
 > -MODULE_LICENSE("GPL v2");
 > +builtin_platform_driver(arm_smmu_driver);
 > 
