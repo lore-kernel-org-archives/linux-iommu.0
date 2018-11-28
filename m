@@ -1,143 +1,91 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 12/12] iommu/vt-d: Remove deferred invalidation
-Date: Wed, 28 Nov 2018 11:54:49 +0800
-Message-ID: <20181128035449.10226-13-baolu.lu@linux.intel.com>
-References: <20181128035449.10226-1-baolu.lu@linux.intel.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181128035449.10226-1-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 1/2] iommu/ipmmu-vmsa: Modify ipmmu_slave_whitelist() to check
+	SoC revisions
+Date: Wed, 28 Nov 2018 06:10:30 +0000
+Message-ID: <1543385279-1584-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+References: <1543385279-1584-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1543385279-1584-1-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org" <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org" <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Deferred invalidation is an ECS specific feature. It will not be
-supported when IOMMU works in scalable mode. As we deprecated the
-ECS support, remove deferred invalidation and cleanup the code.
+Some R-Car Gen3 SoCs has hardware restrictions on the IPMMU. So,
+to check whether this R-Car Gen3 SoC can use the IPMMU correctly,
+this patch modifies the ipmmu_slave_whitelist().
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Cc: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c |  1 -
- drivers/iommu/intel-svm.c   | 45 -------------------------------------
- include/linux/intel-iommu.h |  8 -------
- 3 files changed, 54 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 34 ++++++++++++++++++++++++++--------
+ 1 file changed, 26 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 1c718bd9d6e9..f85f3fd1fb47 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1697,7 +1697,6 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- 	if (pasid_supported(iommu)) {
- 		if (ecap_prs(iommu->ecap))
- 			intel_svm_finish_prq(iommu);
--		intel_svm_exit(iommu);
- 	}
- #endif
- }
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index d639da5e020b..c20e319c14e0 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -31,15 +31,8 @@
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--struct pasid_state_entry {
--	u64 val;
--};
--
- int intel_svm_init(struct intel_iommu *iommu)
- {
--	struct page *pages;
--	int order;
--
- 	if (cpu_feature_enabled(X86_FEATURE_GBPAGES) &&
- 			!cap_fl1gp_support(iommu->cap))
- 		return -EINVAL;
-@@ -48,39 +41,6 @@ int intel_svm_init(struct intel_iommu *iommu)
- 			!cap_5lp_support(iommu->cap))
- 		return -EINVAL;
- 
--	/* Start at 2 because it's defined as 2^(1+PSS) */
--	iommu->pasid_max = 2 << ecap_pss(iommu->ecap);
--
--	/* Eventually I'm promised we will get a multi-level PASID table
--	 * and it won't have to be physically contiguous. Until then,
--	 * limit the size because 8MiB contiguous allocations can be hard
--	 * to come by. The limit of 0x20000, which is 1MiB for each of
--	 * the PASID and PASID-state tables, is somewhat arbitrary. */
--	if (iommu->pasid_max > 0x20000)
--		iommu->pasid_max = 0x20000;
--
--	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--	if (ecap_dis(iommu->ecap)) {
--		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
--		if (pages)
--			iommu->pasid_state_table = page_address(pages);
--		else
--			pr_warn("IOMMU: %s: Failed to allocate PASID state table\n",
--				iommu->name);
--	}
--
--	return 0;
--}
--
--int intel_svm_exit(struct intel_iommu *iommu)
--{
--	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
--
--	if (iommu->pasid_state_table) {
--		free_pages((unsigned long)iommu->pasid_state_table, order);
--		iommu->pasid_state_table = NULL;
--	}
--
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 9e2655f..1c38538 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -754,12 +754,6 @@ static int ipmmu_init_platform_device(struct device *dev,
  	return 0;
  }
  
-@@ -214,11 +174,6 @@ static void intel_flush_svm_range(struct intel_svm *svm, unsigned long address,
- {
- 	struct intel_svm_dev *sdev;
- 
--	/* Try deferred invalidate if available */
--	if (svm->iommu->pasid_state_table &&
--	    !cmpxchg64(&svm->iommu->pasid_state_table[svm->pasid].val, 0, 1ULL << 63))
--		return;
+-static bool ipmmu_slave_whitelist(struct device *dev)
+-{
+-	/* By default, do not allow use of IPMMU */
+-	return false;
+-}
 -
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(sdev, &svm->devs, list)
- 		intel_flush_svm_range_dev(svm, sdev, address, pages, ih, gl);
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index cfcf9c1e1872..0605f3bf6e79 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -541,15 +541,8 @@ struct intel_iommu {
- 	struct iommu_flush flush;
- #endif
- #ifdef CONFIG_INTEL_IOMMU_SVM
--	/* These are large and need to be contiguous, so we allocate just
--	 * one for now. We'll maybe want to rethink that if we truly give
--	 * devices away to userspace processes (e.g. for DPDK) and don't
--	 * want to trust that userspace will use *only* the PASID it was
--	 * told to. But while it's all driver-arbitrated, we're fine. */
--	struct pasid_state_entry *pasid_state_table;
- 	struct page_req_dsc *prq;
- 	unsigned char prq_name[16];    /* Name for PRQ interrupt */
--	u32 pasid_max;
- #endif
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
-@@ -663,7 +656,6 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+ static const struct soc_device_attribute soc_rcar_gen3[] = {
+ 	{ .soc_id = "r8a774a1", },
+ 	{ .soc_id = "r8a7795", },
+@@ -771,11 +765,35 @@ static bool ipmmu_slave_whitelist(struct device *dev)
+ 	{ /* sentinel */ }
+ };
  
- #ifdef CONFIG_INTEL_IOMMU_SVM
- int intel_svm_init(struct intel_iommu *iommu);
--int intel_svm_exit(struct intel_iommu *iommu);
- extern int intel_svm_enable_prq(struct intel_iommu *iommu);
- extern int intel_svm_finish_prq(struct intel_iommu *iommu);
++static const struct soc_device_attribute soc_rcar_gen3_whitelist[] = {
++	{ .soc_id = "r8a7795", .revision = "ES3.0" },
++	{ .soc_id = "r8a77965", },
++	{ .soc_id = "r8a77990", },
++	{ .soc_id = "r8a77995", },
++	{ /* sentinel */ }
++};
++
++static bool ipmmu_slave_whitelist(struct device *dev)
++{
++	/*
++	 * For R-Car Gen3 use a white list to opt-in slave devices.
++	 * For Other SoCs, this returns true anyway.
++	 */
++	if (!soc_device_match(soc_rcar_gen3))
++		return true;
++
++	/* Check whether this R-Car Gen3 can use the IPMMU correctly or not */
++	if (!soc_device_match(soc_rcar_gen3_whitelist))
++		return false;
++
++	/* By default, do not allow use of IPMMU */
++	return false;
++}
++
+ static int ipmmu_of_xlate(struct device *dev,
+ 			  struct of_phandle_args *spec)
+ {
+-	/* For R-Car Gen3 use a white list to opt-in slave devices */
+-	if (soc_device_match(soc_rcar_gen3) && !ipmmu_slave_whitelist(dev))
++	if (!ipmmu_slave_whitelist(dev))
+ 		return -ENODEV;
  
+ 	iommu_fwspec_add_ids(dev, spec->args, 1);
 -- 
-2.17.1
+1.9.1
