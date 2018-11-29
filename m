@@ -1,46 +1,42 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 16/68] amd/iommu: Fix Guest Virtual APIC Log Tail Address Register
-Date: Thu, 29 Nov 2018 00:55:07 -0500
-Message-ID: <20181129055559.159228-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 56/68] iommu/vt-d: Use memunmap to free memremap
+Date: Thu, 29 Nov 2018 00:55:47 -0500
+Message-ID: <20181129055559.159228-56-sashal@kernel.org>
 References: <20181129055559.159228-1-sashal@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181129055559.159228-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Filippo Sironi <sironi@amazon.de>, Wei Wang <wawei@amazon.de>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
+Cc: Pan Bian <bianpan2016@163.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Filippo Sironi <sironi@amazon.de>
+From: Pan Bian <bianpan2016@163.com>
 
-[ Upstream commit ab99be4683d9db33b100497d463274ebd23bd67e ]
+[ Upstream commit 829383e183728dec7ed9150b949cd6de64127809 ]
 
-This register should have been programmed with the physical address
-of the memory location containing the shadow tail pointer for
-the guest virtual APIC log instead of the base address.
+memunmap() should be used to free the return of memremap(), not
+iounmap().
 
-Fixes: 8bda0cfbdc1a  ('iommu/amd: Detect and initialize guest vAPIC log')
-Signed-off-by: Filippo Sironi <sironi@amazon.de>
-Signed-off-by: Wei Wang <wawei@amazon.de>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Fixes: dfddb969edf0 ('iommu/vt-d: Switch from ioremap_cache to memremap')
+Signed-off-by: Pan Bian <bianpan2016@163.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd_iommu_init.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 84b3e4445d46..e062ab9687c7 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -797,7 +797,8 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
- 	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
- 	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
- 		    &entry, sizeof(entry));
--	entry = (iommu_virt_to_phys(iommu->ga_log) & 0xFFFFFFFFFFFFFULL) & ~7ULL;
-+	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
-+		 (BIT_ULL(52)-1)) & ~7ULL;
- 	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
- 		    &entry, sizeof(entry));
- 	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index bedc801b06a0..a76c47f20587 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3100,7 +3100,7 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 			}
+ 
+ 			if (old_ce)
+-				iounmap(old_ce);
++				memunmap(old_ce);
+ 
+ 			ret = 0;
+ 			if (devfn < 0x80)
 -- 
 2.17.1
