@@ -1,7 +1,7 @@
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v3 3/4] iommu/vt-d: Do not enable ATS for untrusted devices
-Date: Thu, 29 Nov 2018 18:51:52 +0300
-Message-ID: <20181129155153.35840-4-mika.westerberg@linux.intel.com>
+Subject: [PATCH v3 4/4] thunderbolt: Export IOMMU based DMA protection support to userspace
+Date: Thu, 29 Nov 2018 18:51:53 +0300
+Message-ID: <20181129155153.35840-5-mika.westerberg@linux.intel.com>
 References: <20181129155153.35840-1-mika.westerberg@linux.intel.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,43 +12,127 @@ To: iommu@lists.linux-foundation.org
 Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Christoph Hellwig <hch@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vg
 List-Id: iommu@lists.linux-foundation.org
 
-Currently Linux automatically enables ATS (Address Translation Service)
-for any device that supports it (and IOMMU is turned on). ATS is used to
-accelerate DMA access as the device can cache translations locally so
-there is no need to do full translation on IOMMU side. However, as
-pointed out in [1] ATS can be used to bypass IOMMU based security
-completely by simply sending PCIe read/write transaction with AT
-(Address Translation) field set to "translated".
+Recent systems with Thunderbolt ports may support IOMMU natively. In
+practice this means that Thunderbolt connected devices are placed behind
+an IOMMU during the whole time it is connected (including during boot)
+making Thunderbolt security levels redundant. This is called Kernel DMA
+protection [1] by Microsoft.
 
-To mitigate this modify the Intel IOMMU code so that it does not enable
-ATS for any device that is marked as being untrusted. In case this turns
-out to cause performance issues we may selectively allow ATS based on
-user decision but currently use big hammer and disable it completely to
-be on the safe side.
+Some of these systems still have Thunderbolt security level set to
+"user" in order to support OS downgrade (the older version of the OS
+might not support IOMMU based DMA protection so connecting a device
+still relies on user approval).
 
-[1] https://www.repository.cam.ac.uk/handle/1810/274352
+Export this information to userspace by introducing a new sysfs
+attribute (iommu_dma_protection). Based on it userspace tools can make
+more accurate decision whether or not authorize the connected device.
+
+In addition update Thunderbolt documentation regarding IOMMU based DMA
+protection.
+
+[1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
 
 Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Ashok Raj <ashok.raj@intel.com>
-Reviewed-by: Joerg Roedel <jroedel@suse.de>
-Acked-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Yehezkel Bernat <YehezkelShB@gmail.com>
 ---
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../ABI/testing/sysfs-bus-thunderbolt         |  9 +++++++++
+ Documentation/admin-guide/thunderbolt.rst     | 20 +++++++++++++++++++
+ drivers/thunderbolt/domain.c                  | 17 ++++++++++++++++
+ 3 files changed, 46 insertions(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 30e8584137f5..adc2c9619e56 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1473,7 +1473,8 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 	if (info->pri_supported && !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
- 		info->pri_enabled = 1;
- #endif
--	if (info->ats_supported && !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
-+	if (!pdev->untrusted && info->ats_supported &&
-+	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
- 		domain_update_iotlb(info->domain);
- 		info->ats_qdep = pci_ats_queue_depth(pdev);
+diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
+index 151584a1f950..b21fba14689b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
++++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
+@@ -21,6 +21,15 @@ Description:	Holds a comma separated list of device unique_ids that
+ 		If a device is authorized automatically during boot its
+ 		boot attribute is set to 1.
+ 
++What: /sys/bus/thunderbolt/devices/.../domainX/iommu_dma_protection
++Date:		Mar 2019
++KernelVersion:	4.21
++Contact:	thunderbolt-software@lists.01.org
++Description:	This attribute tells whether the system uses IOMMU
++		for DMA protection. Value of 1 means IOMMU is used 0 means
++		it is not (DMA protection is solely based on Thunderbolt
++		security levels).
++
+ What: /sys/bus/thunderbolt/devices/.../domainX/security
+ Date:		Sep 2017
+ KernelVersion:	4.13
+diff --git a/Documentation/admin-guide/thunderbolt.rst b/Documentation/admin-guide/thunderbolt.rst
+index 35fccba6a9a6..898ad78f3cc7 100644
+--- a/Documentation/admin-guide/thunderbolt.rst
++++ b/Documentation/admin-guide/thunderbolt.rst
+@@ -133,6 +133,26 @@ If the user still wants to connect the device they can either approve
+ the device without a key or write a new key and write 1 to the
+ ``authorized`` file to get the new key stored on the device NVM.
+ 
++DMA protection utilizing IOMMU
++------------------------------
++Recent systems from 2018 and forward with Thunderbolt ports may natively
++support IOMMU. This means that Thunderbolt security is handled by an IOMMU
++so connected devices cannot access memory regions outside of what is
++allocated for them by drivers. When Linux is running on such system it
++automatically enables IOMMU if not enabled by the user already. These
++systems can be identified by reading ``1`` from
++``/sys/bus/thunderbolt/devices/domainX/iommu_dma_protection`` attribute.
++
++The driver does not do anything special in this case but because DMA
++protection is handled by the IOMMU, security levels (if set) are
++redundant. For this reason some systems ship with security level set to
++``none``. Other systems have security level set to ``user`` in order to
++support downgrade to older OS, so users who want to automatically
++authorize devices when IOMMU DMA protection is enabled can use the
++following ``udev`` rule::
++
++  ACTION=="add", SUBSYSTEM=="thunderbolt", ATTRS{iommu_dma_protection}=="1", ATTR{authorized}=="0", ATTR{authorized}="1"
++
+ Upgrading NVM on Thunderbolt device or host
+ -------------------------------------------
+ Since most of the functionality is handled in firmware running on a
+diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
+index 93e562f18d40..7416bdbd8576 100644
+--- a/drivers/thunderbolt/domain.c
++++ b/drivers/thunderbolt/domain.c
+@@ -7,7 +7,9 @@
+  */
+ 
+ #include <linux/device.h>
++#include <linux/dmar.h>
+ #include <linux/idr.h>
++#include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+@@ -236,6 +238,20 @@ static ssize_t boot_acl_store(struct device *dev, struct device_attribute *attr,
+ }
+ static DEVICE_ATTR_RW(boot_acl);
+ 
++static ssize_t iommu_dma_protection_show(struct device *dev,
++					 struct device_attribute *attr,
++					 char *buf)
++{
++	/*
++	 * Kernel DMA protection is a feature where Thunderbolt security is
++	 * handled natively using IOMMU. It is enabled when IOMMU is
++	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
++	 */
++	return sprintf(buf, "%d\n",
++		       iommu_present(&pci_bus_type) && dmar_platform_optin());
++}
++static DEVICE_ATTR_RO(iommu_dma_protection);
++
+ static ssize_t security_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+@@ -251,6 +267,7 @@ static DEVICE_ATTR_RO(security);
+ 
+ static struct attribute *domain_attrs[] = {
+ 	&dev_attr_boot_acl.attr,
++	&dev_attr_iommu_dma_protection.attr,
+ 	&dev_attr_security.attr,
+ 	NULL,
+ };
 -- 
 2.19.2
