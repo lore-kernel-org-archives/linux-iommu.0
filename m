@@ -1,138 +1,47 @@
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH v3 4/4] thunderbolt: Export IOMMU based DMA protection support to userspace
-Date: Thu, 29 Nov 2018 18:51:53 +0300
-Message-ID: <20181129155153.35840-5-mika.westerberg@linux.intel.com>
-References: <20181129155153.35840-1-mika.westerberg@linux.intel.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V2
+Date: Thu, 29 Nov 2018 17:23:23 +0100
+Message-ID: <20181129162323.GA27068@lst.de>
+References: <CAHk-=wgfGzXuDAKFQPdzMib3QCRHfSTsy5=gLU-WCoya+Ym+1A@mail.gmail.com> <11829e3c-7302-f821-cf5c-863e5267a17b@arm.com> <CAHk-=whxf0zqutExPr_j1A625Z3gcL6k_ABzKo1BtzN4F93hkA@mail.gmail.com> <20181123065511.GA17856@lst.de> <20181128074117.GA21126@lst.de> <CAHk-=wg5+rXK8dpjkSmK7tuz29VfxVWNEwmTVYB409mmyLkeew@mail.gmail.com> <20181128174545.GJ30658@n2100.armlinux.org.uk> <CAHk-=whnz4Kty6cas11bc2Gh=9zTzeeRS2k=dV9Hfc4B=xnHkQ@mail.gmail.com> <20181128180841.GM30658@n2100.armlinux.org.uk> <CAHk-=whcbiSxSUprsKjVPEdN5-+o8WnTGiKxEV-+HbKNDs=iNA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181129155153.35840-1-mika.westerberg@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whcbiSxSUprsKjVPEdN5-+o8WnTGiKxEV-+HbKNDs=iNA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Bjorn Helgaas <bhelgaas@google.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Christoph Hellwig <hch@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, linux-acpi@vger.kernel.org, linux-pci@vg
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Russell King - ARM Linux <linux@armlinux.org.uk>, Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, robin.murphy@arm.com, the arch/x86 maintainers <x86@kernel.org>, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-alpha@vger.kernel.org, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Recent systems with Thunderbolt ports may support IOMMU natively. In
-practice this means that Thunderbolt connected devices are placed behind
-an IOMMU during the whole time it is connected (including during boot)
-making Thunderbolt security levels redundant. This is called Kernel DMA
-protection [1] by Microsoft.
+On Wed, Nov 28, 2018 at 11:19:15AM -0800, Linus Torvalds wrote:
+> Let me just paste it back in here:
+> 
+>   "Which is what we ALREADY do for these exact reasons. If the DMA
+> mappings means that you'd need to add one more page to that list of
+> reserved pages, then so be it."
+> 
+> So no, I'm not at all confused.
+> 
+> Let me re-iterate: the argument that all addresses have to be dma'able is
+> garbage.
+> 
+> *Exactly* as with kmalloc and limited virtual addresses, we can limit
+> physical addresses.
 
-Some of these systems still have Thunderbolt security level set to
-"user" in order to support OS downgrade (the older version of the OS
-might not support IOMMU based DMA protection so connecting a device
-still relies on user approval).
+We can.  At least in theory.  The problem is that depending on the
+crazy mapping from physical and kernel virtual address to dma addresses
+these might be pages at pretty random places.  Look at fun like
+arch/x86/pci/sta2x11-fixup.c for how ugly these mappings could look.
 
-Export this information to userspace by introducing a new sysfs
-attribute (iommu_dma_protection). Based on it userspace tools can make
-more accurate decision whether or not authorize the connected device.
+It also means that we might have setup swiotlb on just about every
+32-bit architecture, even if it has no real addressing limit except for
+the one we imposed.  I don't really see how this is a win for us just
+to be able to report more detailed error codes, which would be nice
+to have, but the lack of which hasn't really harmed us.
 
-In addition update Thunderbolt documentation regarding IOMMU based DMA
-protection.
-
-[1] https://docs.microsoft.com/en-us/windows/security/information-protection/kernel-dma-protection-for-thunderbolt
-
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Yehezkel Bernat <YehezkelShB@gmail.com>
----
- .../ABI/testing/sysfs-bus-thunderbolt         |  9 +++++++++
- Documentation/admin-guide/thunderbolt.rst     | 20 +++++++++++++++++++
- drivers/thunderbolt/domain.c                  | 17 ++++++++++++++++
- 3 files changed, 46 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-thunderbolt b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-index 151584a1f950..b21fba14689b 100644
---- a/Documentation/ABI/testing/sysfs-bus-thunderbolt
-+++ b/Documentation/ABI/testing/sysfs-bus-thunderbolt
-@@ -21,6 +21,15 @@ Description:	Holds a comma separated list of device unique_ids that
- 		If a device is authorized automatically during boot its
- 		boot attribute is set to 1.
- 
-+What: /sys/bus/thunderbolt/devices/.../domainX/iommu_dma_protection
-+Date:		Mar 2019
-+KernelVersion:	4.21
-+Contact:	thunderbolt-software@lists.01.org
-+Description:	This attribute tells whether the system uses IOMMU
-+		for DMA protection. Value of 1 means IOMMU is used 0 means
-+		it is not (DMA protection is solely based on Thunderbolt
-+		security levels).
-+
- What: /sys/bus/thunderbolt/devices/.../domainX/security
- Date:		Sep 2017
- KernelVersion:	4.13
-diff --git a/Documentation/admin-guide/thunderbolt.rst b/Documentation/admin-guide/thunderbolt.rst
-index 35fccba6a9a6..898ad78f3cc7 100644
---- a/Documentation/admin-guide/thunderbolt.rst
-+++ b/Documentation/admin-guide/thunderbolt.rst
-@@ -133,6 +133,26 @@ If the user still wants to connect the device they can either approve
- the device without a key or write a new key and write 1 to the
- ``authorized`` file to get the new key stored on the device NVM.
- 
-+DMA protection utilizing IOMMU
-+------------------------------
-+Recent systems from 2018 and forward with Thunderbolt ports may natively
-+support IOMMU. This means that Thunderbolt security is handled by an IOMMU
-+so connected devices cannot access memory regions outside of what is
-+allocated for them by drivers. When Linux is running on such system it
-+automatically enables IOMMU if not enabled by the user already. These
-+systems can be identified by reading ``1`` from
-+``/sys/bus/thunderbolt/devices/domainX/iommu_dma_protection`` attribute.
-+
-+The driver does not do anything special in this case but because DMA
-+protection is handled by the IOMMU, security levels (if set) are
-+redundant. For this reason some systems ship with security level set to
-+``none``. Other systems have security level set to ``user`` in order to
-+support downgrade to older OS, so users who want to automatically
-+authorize devices when IOMMU DMA protection is enabled can use the
-+following ``udev`` rule::
-+
-+  ACTION=="add", SUBSYSTEM=="thunderbolt", ATTRS{iommu_dma_protection}=="1", ATTR{authorized}=="0", ATTR{authorized}="1"
-+
- Upgrading NVM on Thunderbolt device or host
- -------------------------------------------
- Since most of the functionality is handled in firmware running on a
-diff --git a/drivers/thunderbolt/domain.c b/drivers/thunderbolt/domain.c
-index 93e562f18d40..7416bdbd8576 100644
---- a/drivers/thunderbolt/domain.c
-+++ b/drivers/thunderbolt/domain.c
-@@ -7,7 +7,9 @@
-  */
- 
- #include <linux/device.h>
-+#include <linux/dmar.h>
- #include <linux/idr.h>
-+#include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
-@@ -236,6 +238,20 @@ static ssize_t boot_acl_store(struct device *dev, struct device_attribute *attr,
- }
- static DEVICE_ATTR_RW(boot_acl);
- 
-+static ssize_t iommu_dma_protection_show(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
-+{
-+	/*
-+	 * Kernel DMA protection is a feature where Thunderbolt security is
-+	 * handled natively using IOMMU. It is enabled when IOMMU is
-+	 * enabled and ACPI DMAR table has DMAR_PLATFORM_OPT_IN set.
-+	 */
-+	return sprintf(buf, "%d\n",
-+		       iommu_present(&pci_bus_type) && dmar_platform_optin());
-+}
-+static DEVICE_ATTR_RO(iommu_dma_protection);
-+
- static ssize_t security_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
- {
-@@ -251,6 +267,7 @@ static DEVICE_ATTR_RO(security);
- 
- static struct attribute *domain_attrs[] = {
- 	&dev_attr_boot_acl.attr,
-+	&dev_attr_iommu_dma_protection.attr,
- 	&dev_attr_security.attr,
- 	NULL,
- };
--- 
-2.19.2
+So as far as I'm concerned I'd go either with the series that we are
+discussing here, or change the map_page method to return an errno
+and the dma_addr_t in the argument.  As Davem pointed out that can lead
+to less optimal code, but it would still be better than the indirect
+call we have.  But then again I think the series as posted here might
+and up much simpler and good enough without opening up this rathole.
