@@ -1,63 +1,42 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 02/13] iommu/ipmmu-vmsa: Fix crash on early domain free
-Date: Thu, 29 Nov 2018 01:04:33 -0500
-Message-ID: <20181129060444.160434-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 12/13] iommu/vt-d: Use memunmap to free memremap
+Date: Thu, 29 Nov 2018 01:04:43 -0500
+Message-ID: <20181129060444.160434-12-sashal@kernel.org>
 References: <20181129060444.160434-1-sashal@kernel.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181129060444.160434-1-sashal@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
+Cc: Pan Bian <bianpan2016@163.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+From: Pan Bian <bianpan2016@163.com>
 
-[ Upstream commit e5b78f2e349eef5d4fca5dc1cf5a3b4b2cc27abd ]
+[ Upstream commit 829383e183728dec7ed9150b949cd6de64127809 ]
 
-If iommu_ops.add_device() fails, iommu_ops.domain_free() is still
-called, leading to a crash, as the domain was only partially
-initialized:
+memunmap() should be used to free the return of memremap(), not
+iounmap().
 
-    ipmmu-vmsa e67b0000.mmu: Cannot accommodate DMA translation for IOMMU page tables
-    sata_rcar ee300000.sata: Unable to initialize IPMMU context
-    iommu: Failed to add device ee300000.sata to group 0: -22
-    Unable to handle kernel NULL pointer dereference at virtual address 0000000000000038
-    ...
-    Call trace:
-     ipmmu_domain_free+0x1c/0xa0
-     iommu_group_release+0x48/0x68
-     kobject_put+0x74/0xe8
-     kobject_del.part.0+0x3c/0x50
-     kobject_put+0x60/0xe8
-     iommu_group_get_for_dev+0xa8/0x1f0
-     ipmmu_add_device+0x1c/0x40
-     of_iommu_configure+0x118/0x190
-
-Fix this by checking if the domain's context already exists, before
-trying to destroy it.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Fixes: d25a2a16f0889 ('iommu: Add driver for Renesas VMSA-compatible IPMMU')
+Fixes: dfddb969edf0 ('iommu/vt-d: Switch from ioremap_cache to memremap')
+Signed-off-by: Pan Bian <bianpan2016@163.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/ipmmu-vmsa.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 624e7ff76166..9101be1a6b59 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -372,6 +372,9 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 49b266433f4c..7feaa82f8c7c 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2977,7 +2977,7 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 			}
  
- static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
- {
-+	if (!domain->mmu)
-+		return;
-+
- 	/*
- 	 * Disable the context. Flush the TLB as required when modifying the
- 	 * context registers.
+ 			if (old_ce)
+-				iounmap(old_ce);
++				memunmap(old_ce);
+ 
+ 			ret = 0;
+ 			if (devfn < 0x80)
 -- 
 2.17.1
