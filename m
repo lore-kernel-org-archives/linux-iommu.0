@@ -1,88 +1,88 @@
-From: Petr Mladek <pmladek@suse.com>
-Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
- critical sections
-Date: Thu, 29 Nov 2018 14:09:28 +0100
-Message-ID: <20181129130928.wvejyvfhjyuje7sq@pathway.suse.cz>
-References: <1542653726-5655-1-git-send-email-longman@redhat.com>
- <1542653726-5655-8-git-send-email-longman@redhat.com>
- <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
- <20181122020422.GA3441@jagdpanzerIV>
- <20181122101606.GP2131@hirez.programming.kicks-ass.net>
- <20181123024048.GD1582@jagdpanzerIV>
- <20181123114826.h27t7qiwfp7grrqx@pathway.suse.cz>
- <20181126045709.GD540@jagdpanzerIV>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v18 1/5] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Thu, 29 Nov 2018 20:25:20 +0530
+Message-ID: <CAFp+6iEC8hobAdVF5nLdhQdCUqbi1xa4Vi-NLugGshV=dg+h1A@mail.gmail.com>
+References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
+	<20181127101145.7682-2-vivek.gautam@codeaurora.org>
+	<154342225921.88331.14467967828250776155@swboyd.mtv.corp.google.com>
+	<0d76b669-6c4f-7c3b-50a1-084201f2c07a@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181126045709.GD540@jagdpanzerIV>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0d76b669-6c4f-7c3b-50a1-084201f2c07a-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon 2018-11-26 13:57:09, Sergey Senozhatsky wrote:
-> On (11/23/18 12:48), Petr Mladek wrote:
-> [..]
-> > > This should make serial consoles re-entrant.
-> > > So printk->console_driver_write() hopefully will not deadlock.
-> > 
-> > Is the re-entrance safe? Some risk might be acceptable in Oops/panic
-> > situations. It is much less acceptable for random warnings.
-> 
-> Good question.
-> 
-> But what's the alternative? A deadlock in a serial console driver; such
-> that even panic() is not guaranteed to make through it (at least of now).
-> debug objects are used from the code which cannot re-entrant console
-> drivers.
-> 
-> bust_spinlock is called from various paths, not only panic.
-> git grep bust_spinlocks | wc -l
-> 62
+On Wed, Nov 28, 2018 at 10:07 PM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>
+> On 28/11/2018 16:24, Stephen Boyd wrote:
+> > Quoting Vivek Gautam (2018-11-27 02:11:41)
+> >> @@ -1966,6 +1970,23 @@ static const struct of_device_id arm_smmu_of_match[] = {
+> >>   };
+> >>   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+> >>
+> >> +static void arm_smmu_fill_clk_data(struct arm_smmu_device *smmu,
+> >> +                                  const char * const *clks)
+> >> +{
+> >> +       int i;
+> >> +
+> >> +       if (smmu->num_clks < 1)
+> >> +               return;
+> >> +
+> >> +       smmu->clks = devm_kcalloc(smmu->dev, smmu->num_clks,
+> >> +                                 sizeof(*smmu->clks), GFP_KERNEL);
+> >> +       if (!smmu->clks)
+> >> +               return;
+> >> +
+> >> +       for (i = 0; i < smmu->num_clks; i++)
+> >> +               smmu->clks[i].id = clks[i];
+> >
+> > Is this clk_bulk_get_all()?
 
-bust_spinlocks() is followed by die() in several situations. The rests
-seems to be Oops situations where we an invalid address is being accessed.
-There is a nontrivial chance that the system would die anyway.
+>From what I remember, and now I could go back to v7 and check [1], we parked
+clk_bulk_get out of OF's sole purview as we also have
+arm_smmu_device_acpi_probe() besides arm_smmu_device_dt_probe().
 
-Now, if I look into Documentation/core-api/debug-objects.rst,
-the API is used to detect:
+arm_smmu_device_dt_probe() could get the clocks from dt and fill in
+the clock bulk data, and
+similarly, arm_smmu_device_acpi_probe() could fill the clock bulk data
+by getting it from ACPI.
 
-  -  Activation of uninitialized objects
-  -  Initialization of active objects
-  -  Usage of freed/destroyed objects
+clk_bulk_get_all() seems like going only the OF way.
+Is there another way here to have something common between ACPI
+and OF, and then do the clk_bulk_get?
 
-Of course, all the above situations might lead to the system crash. But
-even in the worst case, use-after-free, there is a non-trivial chance
-that the data still would be valid and the system would survive.
+[1] https://lore.kernel.org/patchwork/patch/881365/
 
-There might be many other warnings of the same severity.
+Thanks & regards
+Vivek
 
-
-> So we already switch to re-entrant consoles (and accept the risks) in
-> mm/fault.c, kernel/traps.c and so on. Which, I guess, makes us a little
-> more confident, faults/traps happen often enough.
-
-Where is the border line, please?
-Do we want to have the kernel sources full of bust_spinlocks() callers?
-
-
-> It seems, that, more or less, serial consoles are ready to handle it.
-> UART consoles in ->write() callbacks just do a bunch of writel() [for
-> every char + \r\n].
-
-But oops_in_progress does not affect only serial (UART) consoles.
-
-We want safe lockless consoles. We do not want to run
-a most-of-the-time-safe code too often.
+>
+> Ooh, did that finally get merged while we weren't looking? Great!
+>
+> Much as I don't want to drag this series out to a v19, it *would* be
+> neat if we no longer need to open-code that bit...
+>
+> Robin.
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
 
-BTW: I have heard that someone from the RT people is working
-on a big printk() rewrite. One part is a lockless buffer. Another
-part should be a different handling of safe (lockless) and
-more complicated consoles. It was presented on some recent
-conference (I forgot which one). I do not know any details.
-But the first version should be sent in a near future.
 
-Best Regards,
-Petr
+--
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
