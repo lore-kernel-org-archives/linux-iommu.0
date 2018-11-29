@@ -1,44 +1,63 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.4 01/13] iommu/vt-d: Fix NULL pointer dereference in prq_event_thread()
-Date: Thu, 29 Nov 2018 01:04:32 -0500
-Message-ID: <20181129060444.160434-1-sashal@kernel.org>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 02/13] iommu/ipmmu-vmsa: Fix crash on early domain free
+Date: Thu, 29 Nov 2018 01:04:33 -0500
+Message-ID: <20181129060444.160434-2-sashal@kernel.org>
+References: <20181129060444.160434-1-sashal@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181129060444.160434-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
 To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 19ed3e2dd8549c1a34914e8dad01b64e7837645a ]
+[ Upstream commit e5b78f2e349eef5d4fca5dc1cf5a3b4b2cc27abd ]
 
-When handling page request without pasid event, go to "no_pasid"
-branch instead of "bad_req". Otherwise, a NULL pointer deference
-will happen there.
+If iommu_ops.add_device() fails, iommu_ops.domain_free() is still
+called, leading to a crash, as the domain was only partially
+initialized:
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Sohil Mehta <sohil.mehta@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Fixes: a222a7f0bb6c9 'iommu/vt-d: Implement page request handling'
+    ipmmu-vmsa e67b0000.mmu: Cannot accommodate DMA translation for IOMMU page tables
+    sata_rcar ee300000.sata: Unable to initialize IPMMU context
+    iommu: Failed to add device ee300000.sata to group 0: -22
+    Unable to handle kernel NULL pointer dereference at virtual address 0000000000000038
+    ...
+    Call trace:
+     ipmmu_domain_free+0x1c/0xa0
+     iommu_group_release+0x48/0x68
+     kobject_put+0x74/0xe8
+     kobject_del.part.0+0x3c/0x50
+     kobject_put+0x60/0xe8
+     iommu_group_get_for_dev+0xa8/0x1f0
+     ipmmu_add_device+0x1c/0x40
+     of_iommu_configure+0x118/0x190
+
+Fix this by checking if the domain's context already exists, before
+trying to destroy it.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Fixes: d25a2a16f0889 ('iommu: Add driver for Renesas VMSA-compatible IPMMU')
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-svm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 10068a481e22..cbde03e509c1 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -558,7 +558,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 			pr_err("%s: Page request without PASID: %08llx %08llx\n",
- 			       iommu->name, ((unsigned long long *)req)[0],
- 			       ((unsigned long long *)req)[1]);
--			goto bad_req;
-+			goto no_pasid;
- 		}
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 624e7ff76166..9101be1a6b59 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -372,6 +372,9 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
  
- 		if (!svm || svm->pasid != req->pasid) {
+ static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
+ {
++	if (!domain->mmu)
++		return;
++
+ 	/*
+ 	 * Disable the context. Flush the TLB as required when modifying the
+ 	 * context registers.
 -- 
 2.17.1
