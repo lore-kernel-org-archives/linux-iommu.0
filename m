@@ -1,42 +1,46 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 56/68] iommu/vt-d: Use memunmap to free memremap
-Date: Thu, 29 Nov 2018 00:55:47 -0500
-Message-ID: <20181129055559.159228-56-sashal@kernel.org>
-References: <20181129055559.159228-1-sashal@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181129055559.159228-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 02/35] iommu/vt-d: Fix NULL pointer dereference in prq_event_thread()
+Date: Thu, 29 Nov 2018 01:00:36 -0500
+Message-ID: <20181129060110.159878-2-sashal@kernel.org>
+References: <20181129060110.159878-1-sashal@kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20181129060110.159878-1-sashal@kernel.org>
+Sender: stable-owner@vger.kernel.org
 To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Pan Bian <bianpan2016@163.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, Sohil Mehta <sohil.mehta@intel.com>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Pan Bian <bianpan2016@163.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-[ Upstream commit 829383e183728dec7ed9150b949cd6de64127809 ]
+[ Upstream commit 19ed3e2dd8549c1a34914e8dad01b64e7837645a ]
 
-memunmap() should be used to free the return of memremap(), not
-iounmap().
+When handling page request without pasid event, go to "no_pasid"
+branch instead of "bad_req". Otherwise, a NULL pointer deference
+will happen there.
 
-Fixes: dfddb969edf0 ('iommu/vt-d: Switch from ioremap_cache to memremap')
-Signed-off-by: Pan Bian <bianpan2016@163.com>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Sohil Mehta <sohil.mehta@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Fixes: a222a7f0bb6c9 'iommu/vt-d: Implement page request handling'
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-iommu.c | 2 +-
+ drivers/iommu/intel-svm.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index bedc801b06a0..a76c47f20587 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3100,7 +3100,7 @@ static int copy_context_table(struct intel_iommu *iommu,
- 			}
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index d7def26ccf79..f5573bb9f450 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -589,7 +589,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 			pr_err("%s: Page request without PASID: %08llx %08llx\n",
+ 			       iommu->name, ((unsigned long long *)req)[0],
+ 			       ((unsigned long long *)req)[1]);
+-			goto bad_req;
++			goto no_pasid;
+ 		}
  
- 			if (old_ce)
--				iounmap(old_ce);
-+				memunmap(old_ce);
- 
- 			ret = 0;
- 			if (devfn < 0x80)
+ 		if (!svm || svm->pasid != req->pasid) {
 -- 
 2.17.1
