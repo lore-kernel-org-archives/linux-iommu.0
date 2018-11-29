@@ -1,75 +1,88 @@
-From: Christian Zigotzky <chzigotzky-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Thu, 29 Nov 2018 13:05:23 +0100
-Message-ID: <4d4e3cdd-d1a9-affe-0f63-45b8c342bbd6@xenosoft.de>
-References: <20181114082314.8965-1-hch@lst.de> <20181127074253.GB30186@lst.de>
-	<87zhttfonk.fsf@concordia.ellerman.id.au>
+From: Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH v2 07/17] debugobjects: Move printk out of db lock
+ critical sections
+Date: Thu, 29 Nov 2018 14:09:28 +0100
+Message-ID: <20181129130928.wvejyvfhjyuje7sq@pathway.suse.cz>
+References: <1542653726-5655-1-git-send-email-longman@redhat.com>
+ <1542653726-5655-8-git-send-email-longman@redhat.com>
+ <2ddd9e3d-951e-1892-c941-54be80f7e6aa@redhat.com>
+ <20181122020422.GA3441@jagdpanzerIV>
+ <20181122101606.GP2131@hirez.programming.kicks-ass.net>
+ <20181123024048.GD1582@jagdpanzerIV>
+ <20181123114826.h27t7qiwfp7grrqx@pathway.suse.cz>
+ <20181126045709.GD540@jagdpanzerIV>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <87zhttfonk.fsf-W0DJWXSxmBNbyGPkN3NxC2scP1bn1w/D@public.gmane.org>
-Content-Language: de-DE
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181126045709.GD540@jagdpanzerIV>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Waiman Long <longman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Steven Rostedt <rostedt@goodmis.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjggTm92ZW1iZXIgMjAxOCBhdCAxMjowNVBNLCBNaWNoYWVsIEVsbGVybWFuIHdyb3RlOgo+
-IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPiB3cml0ZXM6Cj4KPj4gQW55IGNvbW1lbnRz
-PyAgSSdkIGxpa2UgdG8gYXQgbGVhc3QgZ2V0IHRoZSBiYWxsIG1vdmluZyBvbiB0aGUgZWFzeQo+
-PiBiaXRzLgo+IE5vdGhpbmcgc3BlY2lmaWMgeWV0Lgo+Cj4gSSdtIGEgYml0IHdvcnJpZWQgaXQg
-bWlnaHQgYnJlYWsgb25lIG9mIHRoZSBtYW55IG9sZCBvYnNjdXJlIHBsYXRmb3Jtcwo+IHdlIGhh
-dmUgdGhhdCBhcmVuJ3Qgd2VsbCB0ZXN0ZWQuCj4KPiBUaGVyZSdzIG5vdCBtdWNoIHdlIGNhbiBk
-byBhYm91dCB0aGF0LCBidXQgSSdsbCBqdXN0IHRyeSBhbmQgdGVzdCBpdCBvbgo+IGV2ZXJ5dGhp
-bmcgSSBjYW4gZmluZC4KPgo+IElzIHRoZSBwbGFuIHRoYXQgeW91IHRha2UgdGhlc2UgdmlhIHRo
-ZSBkbWEtbWFwcGluZyB0cmVlIG9yIHRoYXQgdGhleSBnbwo+IHZpYSBwb3dlcnBjPwo+Cj4gY2hl
-ZXJzCj4KSGkgQWxsLAoKSSBjb21waWxlZCBhIHRlc3Qga2VybmVsIGZyb20gdGhlIGZvbGxvd2lu
-ZyBHaXQgdG9kYXkuCgpodHRwOi8vZ2l0LmluZnJhZGVhZC5vcmcvdXNlcnMvaGNoL21pc2MuZ2l0
-L3Nob3J0bG9nL3JlZnMvaGVhZHMvcG93ZXJwYy1kbWEuNAoKQ29tbWFuZDogZ2l0IGNsb25lIGdp
-dDovL2dpdC5pbmZyYWRlYWQub3JnL3VzZXJzL2hjaC9taXNjLmdpdCAtYiAKcG93ZXJwYy1kbWEu
-NCBhCgpVbmZvcnR1bmF0ZWx5IEkgZ2V0IHNvbWUgRE1BIGVycm9yIG1lc3NhZ2VzIGFuZCB0aGUg
-UEFTRU1JIGV0aGVybmV0IApkb2Vzbid0IHdvcmsgYW55bW9yZS4KClvCoCAzNjcuNjI3NjIzXSBw
-Y2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAw
-MjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcu
-NjI3NjMxXSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAK
-MHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAw
-ClvCoCAzNjcuNjI3NjM5XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBv
-dmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBi
-dXMgbWFzayAwClvCoCAzNjcuNjI3NjQ3XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21h
-cF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBm
-ZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI3NjU1XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFf
-ZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZp
-Y2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI3Njg2XSBwY2kgMDAwMDowMDox
-YS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzEx
-MCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI4NDE4XSBwY2kg
-MDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZi
-Y2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI4
-NTA1XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgw
-MDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvC
-oCAzNjcuNjI4NTkyXSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVy
-ZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMg
-bWFzayAwClvCoCAzNjcuNjI5MzI0XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9w
-YWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZm
-ZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI5NDE3XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGly
-ZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2Ug
-bWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI5NDk1XSBwY2kgMDAwMDowMDoxYS4w
-OiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBv
-ZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI5NTg5XSBwY2kgMDAw
-MDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1
-MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwCgpbwqAgNDMwLjQyNDcz
-Ml1wYXNlbWlfbWFjOiByY21kc3RhIGVycm9yOiAweDA0ZWYzMDAxCgpJIHRlc3RlZCB0aGlzIGtl
-cm5lbCB3aXRoIHRoZSBOZW1vIGJvYXJkIChDUFU6IFBXUmZpY2llbnQgUEE2VC0xNjgyTSkuIApU
-aGUgUEFTRU1JIGV0aGVybmV0IHdvcmtzIHdpdGggdGhlIFJDNCBvZiBrZXJuZWwgNC4yMC4KCkNo
-ZWVycywKQ2hyaXN0aWFuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
-ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
-dQ==
+On Mon 2018-11-26 13:57:09, Sergey Senozhatsky wrote:
+> On (11/23/18 12:48), Petr Mladek wrote:
+> [..]
+> > > This should make serial consoles re-entrant.
+> > > So printk->console_driver_write() hopefully will not deadlock.
+> > 
+> > Is the re-entrance safe? Some risk might be acceptable in Oops/panic
+> > situations. It is much less acceptable for random warnings.
+> 
+> Good question.
+> 
+> But what's the alternative? A deadlock in a serial console driver; such
+> that even panic() is not guaranteed to make through it (at least of now).
+> debug objects are used from the code which cannot re-entrant console
+> drivers.
+> 
+> bust_spinlock is called from various paths, not only panic.
+> git grep bust_spinlocks | wc -l
+> 62
+
+bust_spinlocks() is followed by die() in several situations. The rests
+seems to be Oops situations where we an invalid address is being accessed.
+There is a nontrivial chance that the system would die anyway.
+
+Now, if I look into Documentation/core-api/debug-objects.rst,
+the API is used to detect:
+
+  -  Activation of uninitialized objects
+  -  Initialization of active objects
+  -  Usage of freed/destroyed objects
+
+Of course, all the above situations might lead to the system crash. But
+even in the worst case, use-after-free, there is a non-trivial chance
+that the data still would be valid and the system would survive.
+
+There might be many other warnings of the same severity.
+
+
+> So we already switch to re-entrant consoles (and accept the risks) in
+> mm/fault.c, kernel/traps.c and so on. Which, I guess, makes us a little
+> more confident, faults/traps happen often enough.
+
+Where is the border line, please?
+Do we want to have the kernel sources full of bust_spinlocks() callers?
+
+
+> It seems, that, more or less, serial consoles are ready to handle it.
+> UART consoles in ->write() callbacks just do a bunch of writel() [for
+> every char + \r\n].
+
+But oops_in_progress does not affect only serial (UART) consoles.
+
+We want safe lockless consoles. We do not want to run
+a most-of-the-time-safe code too often.
+
+
+BTW: I have heard that someone from the RT people is working
+on a big printk() rewrite. One part is a lockless buffer. Another
+part should be a different handling of safe (lockless) and
+more complicated consoles. It was presented on some recent
+conference (I forgot which one). I do not know any details.
+But the first version should be sent in a near future.
+
+Best Regards,
+Petr
