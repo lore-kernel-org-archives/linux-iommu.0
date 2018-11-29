@@ -1,16 +1,15 @@
-From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
-Subject: Re: [PATCH v2 2/2] iommu/ipmmu-vmsa: add an array of slave devices
-	whitelist
-Date: Thu, 29 Nov 2018 10:39:02 +0100
-Message-ID: <20181129093901.i5rr3cpdnmyq6t5s@verge.net.au>
-References: <1543396868-14723-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1543396868-14723-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Christian Zigotzky <chzigotzky-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Thu, 29 Nov 2018 13:05:23 +0100
+Message-ID: <4d4e3cdd-d1a9-affe-0f63-45b8c342bbd6@xenosoft.de>
+References: <20181114082314.8965-1-hch@lst.de> <20181127074253.GB30186@lst.de>
+	<87zhttfonk.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1543396868-14723-3-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <87zhttfonk.fsf-W0DJWXSxmBNbyGPkN3NxC2scP1bn1w/D@public.gmane.org>
+Content-Language: de-DE
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,16 +19,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Cc: "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org" <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+To: Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 28, 2018 at 09:23:36AM +0000, Yoshihiro Shimoda wrote:
-> To avoid adding copy and pasted strcmp codes in the future,
-> this patch adds an array "rcar_gen3_slave_whitelist" to check
-> whether the device can work with the IPMMU or not.
-> 
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-
-Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+T24gMjggTm92ZW1iZXIgMjAxOCBhdCAxMjowNVBNLCBNaWNoYWVsIEVsbGVybWFuIHdyb3RlOgo+
+IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPiB3cml0ZXM6Cj4KPj4gQW55IGNvbW1lbnRz
+PyAgSSdkIGxpa2UgdG8gYXQgbGVhc3QgZ2V0IHRoZSBiYWxsIG1vdmluZyBvbiB0aGUgZWFzeQo+
+PiBiaXRzLgo+IE5vdGhpbmcgc3BlY2lmaWMgeWV0Lgo+Cj4gSSdtIGEgYml0IHdvcnJpZWQgaXQg
+bWlnaHQgYnJlYWsgb25lIG9mIHRoZSBtYW55IG9sZCBvYnNjdXJlIHBsYXRmb3Jtcwo+IHdlIGhh
+dmUgdGhhdCBhcmVuJ3Qgd2VsbCB0ZXN0ZWQuCj4KPiBUaGVyZSdzIG5vdCBtdWNoIHdlIGNhbiBk
+byBhYm91dCB0aGF0LCBidXQgSSdsbCBqdXN0IHRyeSBhbmQgdGVzdCBpdCBvbgo+IGV2ZXJ5dGhp
+bmcgSSBjYW4gZmluZC4KPgo+IElzIHRoZSBwbGFuIHRoYXQgeW91IHRha2UgdGhlc2UgdmlhIHRo
+ZSBkbWEtbWFwcGluZyB0cmVlIG9yIHRoYXQgdGhleSBnbwo+IHZpYSBwb3dlcnBjPwo+Cj4gY2hl
+ZXJzCj4KSGkgQWxsLAoKSSBjb21waWxlZCBhIHRlc3Qga2VybmVsIGZyb20gdGhlIGZvbGxvd2lu
+ZyBHaXQgdG9kYXkuCgpodHRwOi8vZ2l0LmluZnJhZGVhZC5vcmcvdXNlcnMvaGNoL21pc2MuZ2l0
+L3Nob3J0bG9nL3JlZnMvaGVhZHMvcG93ZXJwYy1kbWEuNAoKQ29tbWFuZDogZ2l0IGNsb25lIGdp
+dDovL2dpdC5pbmZyYWRlYWQub3JnL3VzZXJzL2hjaC9taXNjLmdpdCAtYiAKcG93ZXJwYy1kbWEu
+NCBhCgpVbmZvcnR1bmF0ZWx5IEkgZ2V0IHNvbWUgRE1BIGVycm9yIG1lc3NhZ2VzIGFuZCB0aGUg
+UEFTRU1JIGV0aGVybmV0IApkb2Vzbid0IHdvcmsgYW55bW9yZS4KClvCoCAzNjcuNjI3NjIzXSBw
+Y2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAw
+MjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcu
+NjI3NjMxXSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAK
+MHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAw
+ClvCoCAzNjcuNjI3NjM5XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBv
+dmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBi
+dXMgbWFzayAwClvCoCAzNjcuNjI3NjQ3XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21h
+cF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBm
+ZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI3NjU1XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFf
+ZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZp
+Y2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI3Njg2XSBwY2kgMDAwMDowMDox
+YS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzEx
+MCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI4NDE4XSBwY2kg
+MDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZi
+Y2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI4
+NTA1XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgw
+MDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvC
+oCAzNjcuNjI4NTkyXSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVy
+ZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMg
+bWFzayAwClvCoCAzNjcuNjI5MzI0XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9w
+YWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZm
+ZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI5NDE3XSBwY2kgMDAwMDowMDoxYS4wOiBkbWFfZGly
+ZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBvZiBkZXZpY2Ug
+bWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI5NDk1XSBwY2kgMDAwMDowMDoxYS4w
+OiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1MDAyKzExMCBv
+ZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwClvCoCAzNjcuNjI5NTg5XSBwY2kgMDAw
+MDowMDoxYS4wOiBkbWFfZGlyZWN0X21hcF9wYWdlOiBvdmVyZmxvdyAKMHgwMDAwMDAwMjZiY2I1
+MDAyKzExMCBvZiBkZXZpY2UgbWFzayBmZmZmZmZmZiBidXMgbWFzayAwCgpbwqAgNDMwLjQyNDcz
+Ml1wYXNlbWlfbWFjOiByY21kc3RhIGVycm9yOiAweDA0ZWYzMDAxCgpJIHRlc3RlZCB0aGlzIGtl
+cm5lbCB3aXRoIHRoZSBOZW1vIGJvYXJkIChDUFU6IFBXUmZpY2llbnQgUEE2VC0xNjgyTSkuIApU
+aGUgUEFTRU1JIGV0aGVybmV0IHdvcmtzIHdpdGggdGhlIFJDNCBvZiBrZXJuZWwgNC4yMC4KCkNo
+ZWVycywKQ2hyaXN0aWFuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
