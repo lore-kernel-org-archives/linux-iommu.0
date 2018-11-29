@@ -1,61 +1,35 @@
-From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 3.18 1/6] iommu/ipmmu-vmsa: Fix crash on early domain free
-Date: Thu, 29 Nov 2018 01:05:30 -0500
-Message-ID: <20181129060535.160592-1-sashal@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: stable@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
+From: Simon Horman <horms-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu/ipmmu-vmsa: Modify ipmmu_slave_whitelist()
+	to check SoC revisions
+Date: Thu, 29 Nov 2018 10:38:49 +0100
+Message-ID: <20181129093848.6ffwvnepfd7kziub@verge.net.au>
+References: <1543396868-14723-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1543396868-14723-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1543396868-14723-2-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+Cc: "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org" <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Geert Uytterhoeven <geert+renesas@glider.be>
+On Wed, Nov 28, 2018 at 09:23:36AM +0000, Yoshihiro Shimoda wrote:
+> Some R-Car Gen3 SoCs has hardware restrictions on the IPMMU. So,
+> to check whether this R-Car Gen3 SoC can use the IPMMU correctly,
+> this patch modifies the ipmmu_slave_whitelist().
+> 
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 
-[ Upstream commit e5b78f2e349eef5d4fca5dc1cf5a3b4b2cc27abd ]
-
-If iommu_ops.add_device() fails, iommu_ops.domain_free() is still
-called, leading to a crash, as the domain was only partially
-initialized:
-
-    ipmmu-vmsa e67b0000.mmu: Cannot accommodate DMA translation for IOMMU page tables
-    sata_rcar ee300000.sata: Unable to initialize IPMMU context
-    iommu: Failed to add device ee300000.sata to group 0: -22
-    Unable to handle kernel NULL pointer dereference at virtual address 0000000000000038
-    ...
-    Call trace:
-     ipmmu_domain_free+0x1c/0xa0
-     iommu_group_release+0x48/0x68
-     kobject_put+0x74/0xe8
-     kobject_del.part.0+0x3c/0x50
-     kobject_put+0x60/0xe8
-     iommu_group_get_for_dev+0xa8/0x1f0
-     ipmmu_add_device+0x1c/0x40
-     of_iommu_configure+0x118/0x190
-
-Fix this by checking if the domain's context already exists, before
-trying to destroy it.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Fixes: d25a2a16f0889 ('iommu: Add driver for Renesas VMSA-compatible IPMMU')
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/ipmmu-vmsa.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 7dab5cbcc775..47e8db51288b 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -383,6 +383,9 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- 
- static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
- {
-+	if (!domain->mmu)
-+		return;
-+
- 	/*
- 	 * Disable the context. Flush the TLB as required when modifying the
- 	 * context registers.
--- 
-2.17.1
+Reviewed-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
