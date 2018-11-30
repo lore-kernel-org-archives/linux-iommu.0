@@ -1,77 +1,118 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 6/9] dma-remap: support DMA_ATTR_NO_KERNEL_MAPPING
-Date: Fri, 30 Nov 2018 19:05:40 +0000
-Message-ID: <e993440c-53bf-8071-b1b6-06d022d39e4e@arm.com>
-References: <20181105121931.13481-1-hch@lst.de>
-	<20181105121931.13481-7-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
+Date: Fri, 30 Nov 2018 19:39:50 +0000
+Message-ID: <b22d2ad6-2638-96d7-1df2-24701589202f@arm.com>
+References: <20181130175449.2625-1-cai@gmx.us>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181105121931.13481-7-hch-jcswGhMUV9g@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181130175449.2625-1-cai@gmx.us>
 Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Qian Cai <cai@gmx.us>, hch@lst.de, m.szyprowski@samsung.com
+Cc: netdev@vger.kernel.org, linuxarm@huawei.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, yisen.zhuang@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/11/2018 12:19, Christoph Hellwig wrote:
-> Do not waste vmalloc space on allocations that do not require a mapping
-> into the kernel address space.
+On 30/11/2018 17:54, Qian Cai wrote:
+> The amount of DMA mappings from Hisilicon HNS ethernet devices is huge,
+> so it could trigger "DMA-API: debugging out of memory - disabling".
 > 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> hnae_get_handle [1]
+>    hnae_init_queue
+>      hnae_init_ring
+>        hnae_alloc_buffers [2]
+>          debug_dma_map_page
+>            dma_entry_alloc
+> 
+> [1] for (i = 0; i < handle->q_num; i++)
+> [2] for (i = 0; i < ring->desc_num; i++)
+> 
+> On this Huawei TaiShan 2280 aarch64 server, it has reached the limit
+> already,
+> 
+> 4 (ports) x 16 (handles) x 1024 (rings) = 65536
+> 
+> Added a Kconfig entry for PREALLOC_DMA_DEBUG_ENTRIES, so make it easier
+> for users to deal with special cases like this.
+> 
+> Signed-off-by: Qian Cai <cai@gmx.us>
 > ---
->   kernel/dma/remap.c | 11 +++++++++--
->   1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-> index 8f1fca34b894..10a545126b0b 100644
-> --- a/kernel/dma/remap.c
-> +++ b/kernel/dma/remap.c
-> @@ -200,7 +200,8 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   
->   	size = PAGE_ALIGN(size);
->   
-> -	if (!gfpflags_allow_blocking(flags)) {
-> +	if (!gfpflags_allow_blocking(flags) &&
-> +	    !(attrs & DMA_ATTR_NO_KERNEL_MAPPING)) {
->   		ret = dma_alloc_from_pool(size, &page, flags);
->   		if (!ret)
->   			return NULL;
-> @@ -215,6 +216,9 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   	/* remove any dirty cache lines on the kernel alias */
->   	arch_dma_prep_coherent(page, size);
->   
-> +	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
-> +		return page; /* opaqueue cookie */
+>   kernel/dma/debug.c | 9 ++-------
+>   lib/Kconfig.debug  | 9 +++++++++
+>   2 files changed, 11 insertions(+), 7 deletions(-)
 
-Best to preempt the inevitable patch fixing that typo in 3 months' time. 
-Otherwise,
+Oh, right, the arch overrides actually got cleaned up already. I'd 
+forgotten that...
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 231ca4628062..3752fb23f72f 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -41,11 +41,6 @@
+>   #define HASH_FN_SHIFT   13
+>   #define HASH_FN_MASK    (HASH_SIZE - 1)
+>   
+> -/* allow architectures to override this if absolutely required */
+> -#ifndef PREALLOC_DMA_DEBUG_ENTRIES
+> -#define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
+> -#endif
+> -
+>   enum {
+>   	dma_debug_single,
+>   	dma_debug_page,
+> @@ -132,7 +127,7 @@ static u32 min_free_entries;
+>   static u32 nr_total_entries;
+>   
+>   /* number of preallocated entries requested by kernel cmdline */
+> -static u32 nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
+> +static u32 nr_prealloc_entries = CONFIG_PREALLOC_DMA_DEBUG_ENTRIES;
+>   
+>   /* debugfs dentry's for the stuff above */
+>   static struct dentry *dma_debug_dent        __read_mostly;
+> @@ -1063,7 +1058,7 @@ static __init int dma_debug_entries_cmdline(char *str)
+>   	if (!str)
+>   		return -EINVAL;
+>   	if (!get_option(&str, &nr_prealloc_entries))
+> -		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
+> +		nr_prealloc_entries = CONFIG_PREALLOC_DMA_DEBUG_ENTRIES;
+>   	return 0;
+>   }
+>   
+> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> index 1af29b8224fd..2c281edcb5ad 100644
+> --- a/lib/Kconfig.debug
+> +++ b/lib/Kconfig.debug
+> @@ -1659,6 +1659,15 @@ config DMA_API_DEBUG
+>   
+>   	  If unsure, say N.
+>   
+> +config PREALLOC_DMA_DEBUG_ENTRIES
+> +	int "Preallocated DMA-API debugging entries"
+> +	depends on DMA_API_DEBUG
+> +	default 65536
 
+I was assuming the point was to also add something like
+
+	default 131072 if HNS_ENET
+
+so that DMA debug doesn't require too much thought from the user. If 
+they still have to notice the overflow message and empirically figure 
+out a value that does work, rebuilding the kernel each time is far less 
+convenient than simply adding "dma_debug_entries=..." to their kernel 
+command line and rebooting, which they can do today. If they do already 
+know up-front that the default will need overriding and what the 
+appropriate value is, then the command line still seems seems just as 
+convenient.
+
+Robin.
+
+> +	help
+> +	  The number of preallocated entries for DMA-API debugging code. One
+> +	  entry is required per DMA-API allocation. Increase this if the DMA-API
+> +	  debugging code disables itself because the default is too low.
 > +
->   	/* create a coherent mapping */
->   	ret = dma_common_contiguous_remap(page, size, VM_USERMAP,
->   			arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
-> @@ -227,7 +231,10 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   void arch_dma_free(struct device *dev, size_t size, void *vaddr,
->   		dma_addr_t dma_handle, unsigned long attrs)
->   {
-> -	if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
-> +	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING) {
-> +		/* vaddr is a struct page cookie, not a kernel address */
-> +		__dma_direct_free_pages(dev, size, vaddr);
-> +	} else if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
->   		phys_addr_t phys = dma_to_phys(dev, dma_handle);
->   		struct page *page = pfn_to_page(__phys_to_pfn(phys));
->   
+>   config DMA_API_DEBUG_SG
+>   	bool "Debug DMA scatter-gather usage"
+>   	default y
 > 
