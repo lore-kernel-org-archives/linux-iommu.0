@@ -1,93 +1,68 @@
-From: Qian Cai <cai@gmx.us>
-Subject: [PATCH] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
-Date: Fri, 30 Nov 2018 12:54:49 -0500
-Message-ID: <20181130175449.2625-1-cai@gmx.us>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: yisen.zhuang@huawei.com, salil.mehta@huawei.com, john.garry@huawei.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Qian Cai <cai@gmx.us>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v18 1/5] iommu/arm-smmu: Add
+ pm_runtime/sleep ops
+Date: Fri, 30 Nov 2018 18:15:37 +0000
+Message-ID: <20181130181536.GA15274@arm.com>
+References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
+ <20181127101145.7682-2-vivek.gautam@codeaurora.org>
+ <154342225921.88331.14467967828250776155@swboyd.mtv.corp.google.com>
+ <0d76b669-6c4f-7c3b-50a1-084201f2c07a@arm.com>
+ <CAFp+6iEC8hobAdVF5nLdhQdCUqbi1xa4Vi-NLugGshV=dg+h1A@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAFp+6iEC8hobAdVF5nLdhQdCUqbi1xa4Vi-NLugGshV=dg+h1A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The amount of DMA mappings from Hisilicon HNS ethernet devices is huge,
-so it could trigger "DMA-API: debugging out of memory - disabling".
-
-hnae_get_handle [1]
-  hnae_init_queue
-    hnae_init_ring
-      hnae_alloc_buffers [2]
-        debug_dma_map_page
-          dma_entry_alloc
-
-[1] for (i = 0; i < handle->q_num; i++)
-[2] for (i = 0; i < ring->desc_num; i++)
-
-On this Huawei TaiShan 2280 aarch64 server, it has reached the limit
-already,
-
-4 (ports) x 16 (handles) x 1024 (rings) = 65536
-
-Added a Kconfig entry for PREALLOC_DMA_DEBUG_ENTRIES, so make it easier
-for users to deal with special cases like this.
-
-Signed-off-by: Qian Cai <cai@gmx.us>
----
- kernel/dma/debug.c | 9 ++-------
- lib/Kconfig.debug  | 9 +++++++++
- 2 files changed, 11 insertions(+), 7 deletions(-)
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 231ca4628062..3752fb23f72f 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -41,11 +41,6 @@
- #define HASH_FN_SHIFT   13
- #define HASH_FN_MASK    (HASH_SIZE - 1)
- 
--/* allow architectures to override this if absolutely required */
--#ifndef PREALLOC_DMA_DEBUG_ENTRIES
--#define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
--#endif
--
- enum {
- 	dma_debug_single,
- 	dma_debug_page,
-@@ -132,7 +127,7 @@ static u32 min_free_entries;
- static u32 nr_total_entries;
- 
- /* number of preallocated entries requested by kernel cmdline */
--static u32 nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
-+static u32 nr_prealloc_entries = CONFIG_PREALLOC_DMA_DEBUG_ENTRIES;
- 
- /* debugfs dentry's for the stuff above */
- static struct dentry *dma_debug_dent        __read_mostly;
-@@ -1063,7 +1058,7 @@ static __init int dma_debug_entries_cmdline(char *str)
- 	if (!str)
- 		return -EINVAL;
- 	if (!get_option(&str, &nr_prealloc_entries))
--		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
-+		nr_prealloc_entries = CONFIG_PREALLOC_DMA_DEBUG_ENTRIES;
- 	return 0;
- }
- 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 1af29b8224fd..2c281edcb5ad 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1659,6 +1659,15 @@ config DMA_API_DEBUG
- 
- 	  If unsure, say N.
- 
-+config PREALLOC_DMA_DEBUG_ENTRIES
-+	int "Preallocated DMA-API debugging entries"
-+	depends on DMA_API_DEBUG
-+	default 65536
-+	help
-+	  The number of preallocated entries for DMA-API debugging code. One
-+	  entry is required per DMA-API allocation. Increase this if the DMA-API
-+	  debugging code disables itself because the default is too low.
-+
- config DMA_API_DEBUG_SG
- 	bool "Debug DMA scatter-gather usage"
- 	default y
--- 
-2.17.2 (Apple Git-113)
+T24gVGh1LCBOb3YgMjksIDIwMTggYXQgMDg6MjU6MjBQTSArMDUzMCwgVml2ZWsgR2F1dGFtIHdy
+b3RlOgo+IE9uIFdlZCwgTm92IDI4LCAyMDE4IGF0IDEwOjA3IFBNIFJvYmluIE11cnBoeSA8cm9i
+aW4ubXVycGh5QGFybS5jb20+IHdyb3RlOgo+ID4KPiA+IE9uIDI4LzExLzIwMTggMTY6MjQsIFN0
+ZXBoZW4gQm95ZCB3cm90ZToKPiA+ID4gUXVvdGluZyBWaXZlayBHYXV0YW0gKDIwMTgtMTEtMjcg
+MDI6MTE6NDEpCj4gPiA+PiBAQCAtMTk2Niw2ICsxOTcwLDIzIEBAIHN0YXRpYyBjb25zdCBzdHJ1
+Y3Qgb2ZfZGV2aWNlX2lkIGFybV9zbW11X29mX21hdGNoW10gPSB7Cj4gPiA+PiAgIH07Cj4gPiA+
+PiAgIE1PRFVMRV9ERVZJQ0VfVEFCTEUob2YsIGFybV9zbW11X29mX21hdGNoKTsKPiA+ID4+Cj4g
+PiA+PiArc3RhdGljIHZvaWQgYXJtX3NtbXVfZmlsbF9jbGtfZGF0YShzdHJ1Y3QgYXJtX3NtbXVf
+ZGV2aWNlICpzbW11LAo+ID4gPj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBj
+b25zdCBjaGFyICogY29uc3QgKmNsa3MpCj4gPiA+PiArewo+ID4gPj4gKyAgICAgICBpbnQgaTsK
+PiA+ID4+ICsKPiA+ID4+ICsgICAgICAgaWYgKHNtbXUtPm51bV9jbGtzIDwgMSkKPiA+ID4+ICsg
+ICAgICAgICAgICAgICByZXR1cm47Cj4gPiA+PiArCj4gPiA+PiArICAgICAgIHNtbXUtPmNsa3Mg
+PSBkZXZtX2tjYWxsb2Moc21tdS0+ZGV2LCBzbW11LT5udW1fY2xrcywKPiA+ID4+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplb2YoKnNtbXUtPmNsa3MpLCBHRlBfS0VSTkVM
+KTsKPiA+ID4+ICsgICAgICAgaWYgKCFzbW11LT5jbGtzKQo+ID4gPj4gKyAgICAgICAgICAgICAg
+IHJldHVybjsKPiA+ID4+ICsKPiA+ID4+ICsgICAgICAgZm9yIChpID0gMDsgaSA8IHNtbXUtPm51
+bV9jbGtzOyBpKyspCj4gPiA+PiArICAgICAgICAgICAgICAgc21tdS0+Y2xrc1tpXS5pZCA9IGNs
+a3NbaV07Cj4gPiA+Cj4gPiA+IElzIHRoaXMgY2xrX2J1bGtfZ2V0X2FsbCgpPwo+IAo+IEZyb20g
+d2hhdCBJIHJlbWVtYmVyLCBhbmQgbm93IEkgY291bGQgZ28gYmFjayB0byB2NyBhbmQgY2hlY2sg
+WzFdLCB3ZSBwYXJrZWQKPiBjbGtfYnVsa19nZXQgb3V0IG9mIE9GJ3Mgc29sZSBwdXJ2aWV3IGFz
+IHdlIGFsc28gaGF2ZQo+IGFybV9zbW11X2RldmljZV9hY3BpX3Byb2JlKCkgYmVzaWRlcyBhcm1f
+c21tdV9kZXZpY2VfZHRfcHJvYmUoKS4KPiAKPiBhcm1fc21tdV9kZXZpY2VfZHRfcHJvYmUoKSBj
+b3VsZCBnZXQgdGhlIGNsb2NrcyBmcm9tIGR0IGFuZCBmaWxsIGluCj4gdGhlIGNsb2NrIGJ1bGsg
+ZGF0YSwgYW5kCj4gc2ltaWxhcmx5LCBhcm1fc21tdV9kZXZpY2VfYWNwaV9wcm9iZSgpIGNvdWxk
+IGZpbGwgdGhlIGNsb2NrIGJ1bGsgZGF0YQo+IGJ5IGdldHRpbmcgaXQgZnJvbSBBQ1BJLgo+IAo+
+IGNsa19idWxrX2dldF9hbGwoKSBzZWVtcyBsaWtlIGdvaW5nIG9ubHkgdGhlIE9GIHdheS4KPiBJ
+cyB0aGVyZSBhbm90aGVyIHdheSBoZXJlIHRvIGhhdmUgc29tZXRoaW5nIGNvbW1vbiBiZXR3ZWVu
+IEFDUEkKPiBhbmQgT0YsIGFuZCB0aGVuIGRvIHRoZSBjbGtfYnVsa19nZXQ/CgpJJ2Qgc2F5IGp1
+c3QgZ28gd2l0aCBjbGtfYnVsa19nZXRfYWxsKCkgYW5kIGlmIHNvbWVib2R5IHJlYWxseSB3YW50
+cyB0bwptZXNzIHdpdGggdGhlIFNNTVUgY2xvY2tzIG9uIGEgc3lzdGVtIGJvb3RlZCB2aWEgQUNQ
+SSwgdGhlbiBpdCdzIHRoZWlyCnByb2JsZW0gdG8gc29sdmUuIE15IHVuZGVyc3RhbmRpbmcgaXMg
+dGhhdCB0aGUgZGVzaWduIG9mIElPUlQgbWFrZXMgdGhpcwpuZXh0IHRvIGltcG9zc2libGUgdG8g
+c29sdmUgYW55d2F5LCBiZWNhdXNlIGEgc3RhdGljIHRhYmxlIGlzIHVzZWQgYW5kCnRoZXJlZm9y
+ZSB3ZSdyZSB1bmFibGUgdG8gcnVuIHdoYXRldmVyIEFTTCBtZXRob2RzIG5lZWQgdG8gYmUgaW52
+b2tlZCB0bwptZXNzIHdpdGggdGhlIGNsb2Nrcy4KCldpbGwKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KRnJlZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJl
+bm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21h
+aWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
