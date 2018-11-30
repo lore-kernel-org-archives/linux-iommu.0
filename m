@@ -1,99 +1,105 @@
-From: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] dma-debug: hns_enet_drv could use more DMA entries
-Date: Fri, 30 Nov 2018 09:16:12 +0000
-Message-ID: <23da2426-a397-a33c-cfd8-dba7b3c1aaee@huawei.com>
-References: <20181130035456.1586-1-cai@gmx.us> <20181130084203.GA19812@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Fri, 30 Nov 2018 11:53:46 +0100
+Message-ID: <20181130105346.GB26765@lst.de>
+References: <20181114082314.8965-1-hch@lst.de> <20181127074253.GB30186@lst.de> <87zhttfonk.fsf@concordia.ellerman.id.au> <4d4e3cdd-d1a9-affe-0f63-45b8c342bbd6@xenosoft.de> <20181129170351.GC27951@lst.de> <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181130084203.GA19812-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Qian Cai <cai-0UDz38MK/Mo@public.gmane.org>
-Cc: netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linuxarm <linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, yisen.zhuang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christian Zigotzky <chzigotzky@xenosoft.de>
+Cc: Christoph Hellwig <hch@lst.de>, Michael Ellerman <mpe@ellerman.id.au>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linux-arch@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org, Olof Johansson <olof@lixom.net>
 List-Id: iommu@lists.linux-foundation.org
 
-+
+Hi Christian,
 
-Pasting original message at bottom.
+for such a diverse architecture like powerpc we'll have to rely on
+users / non core developers like you to help with testing.
 
+Can you try the patch below for he cyrus config?
 
-On 30/11/2018 08:42, Christoph Hellwig wrote:
-> On Thu, Nov 29, 2018 at 10:54:56PM -0500, Qian Cai wrote:
->>  /* allow architectures to override this if absolutely required */
->>  #ifndef PREALLOC_DMA_DEBUG_ENTRIES
->> +/* amount of DMA mappings on this driver is huge. */
->> +#ifdef	HNS_ENET
->> +#define PREALLOC_DMA_DEBUG_ENTRIES (1 << 17)
->> +#else
->>  #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
->>  #endif
->> +#endif
->
-> How would this be defined in a header that leaks into this file?
->
-> I think we need to turn PREALLOC_DMA_DEBUG_ENTRIES into a user
-> selectable config options, as I really don't want to collect hacks like
-> this.
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
->
+For the nemo one I have no idea yet, there is no chance I could trick
+you into a git bisect to see which patch caused the problem, is there?
 
 
-
-
-
-
-
-The amount of DMA mappings from Hisilicon HNS ethernet devices is huge,
-so it could trigger "DMA-API: debugging out of memory - disabling".
-
-hnae_get_handle [1]
-   hnae_init_queue
-     hnae_init_ring
-       hnae_alloc_buffers [2]
-         debug_dma_map_page
-           dma_entry_alloc
-
-[1] for (i = 0; i < handle->q_num; i++)
-[2] for (i = 0; i < ring->desc_num; i++)
-
-On this Huawei TaiShan 2280 aarch64 server, it has reached the limit
-already,
-
-4 (ports) x 16 (handles) x 1024 (rings) = 65536
-
-Signed-off-by: Qian Cai <cai-0UDz38MK/Mo@public.gmane.org>
----
-  kernel/dma/debug.c | 5 +++++
-  1 file changed, 5 insertions(+)
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 231ca4628062..ae91689cc9ad 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -43,8 +43,13 @@
-
-  /* allow architectures to override this if absolutely required */
-  #ifndef PREALLOC_DMA_DEBUG_ENTRIES
-+/* amount of DMA mappings on this driver is huge. */
-+#ifdef	HNS_ENET
-+#define PREALLOC_DMA_DEBUG_ENTRIES (1 << 17)
-+#else
-  #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
-  #endif
-+#endif
-
-  enum {
-  	dma_debug_single,
+diff --git a/arch/powerpc/include/asm/machdep.h b/arch/powerpc/include/asm/machdep.h
+index 7b70dcbce1b9..2f0ca6560e47 100644
+--- a/arch/powerpc/include/asm/machdep.h
++++ b/arch/powerpc/include/asm/machdep.h
+@@ -47,7 +47,7 @@ struct machdep_calls {
+ #endif
+ #endif /* CONFIG_PPC64 */
+ 
+-	int		(*dma_set_mask)(struct device *dev, u64 dma_mask);
++	void		(*dma_set_mask)(struct device *dev, u64 dma_mask);
+ 
+ 	int		(*probe)(void);
+ 	void		(*setup_arch)(void); /* Optional, may be NULL */
+diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
+index bded4127791a..2587eb0f3fde 100644
+--- a/arch/powerpc/kernel/dma-swiotlb.c
++++ b/arch/powerpc/kernel/dma-swiotlb.c
+@@ -22,11 +22,10 @@
+ #include <asm/swiotlb.h>
+ #include <asm/dma.h>
+ 
+-bool arch_dma_set_mask(struct device *dev, u64 dma_mask)
++void arch_dma_set_mask(struct device *dev, u64 dma_mask)
+ {
+-	if (!ppc_md.dma_set_mask)
+-		return 0;
+-	return ppc_md.dma_set_mask(dev, dma_mask);
++	if (ppc_md.dma_set_mask)
++		ppc_md.dma_set_mask(dev, dma_mask);
+ }
+ EXPORT_SYMBOL(arch_dma_set_mask);
+ 
+diff --git a/arch/powerpc/sysdev/fsl_pci.c b/arch/powerpc/sysdev/fsl_pci.c
+index 9584765dbe3b..8582a418516b 100644
+--- a/arch/powerpc/sysdev/fsl_pci.c
++++ b/arch/powerpc/sysdev/fsl_pci.c
+@@ -134,7 +134,7 @@ static void setup_swiotlb_ops(struct pci_controller *hose)
+ static inline void setup_swiotlb_ops(struct pci_controller *hose) {}
+ #endif
+ 
+-static int fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
++static void fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
+ {
+ 	/*
+ 	 * Fix up PCI devices that are able to DMA to the large inbound
+@@ -144,8 +144,6 @@ static int fsl_pci_dma_set_mask(struct device *dev, u64 dma_mask)
+ 		dev->bus_dma_mask = 0;
+ 		dev->archdata.dma_offset = pci64_dma_offset;
+ 	}
+-
+-	return 0;
+ }
+ 
+ static int setup_one_atmu(struct ccsr_pci __iomem *pci,
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 8dd19e66c0e5..94a4db5f7ec3 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -599,17 +599,16 @@ static inline int dma_supported(struct device *dev, u64 mask)
+ }
+ 
+ #ifdef CONFIG_ARCH_HAS_DMA_SET_MASK
+-bool arch_dma_set_mask(struct device *dev, u64 mask);
++void arch_dma_set_mask(struct device *dev, u64 mask);
+ #else
+-#define arch_dma_set_mask(dev, mask)		true
++#define arch_dma_set_mask(dev, mask)	do { } while (0)
+ #endif
+ 
+ static inline int dma_set_mask(struct device *dev, u64 mask)
+ {
+ 	if (!dev->dma_mask || !dma_supported(dev, mask))
+ 		return -EIO;
+-	if (!arch_dma_set_mask(dev, mask))
+-		return -EIO;
++	arch_dma_set_mask(dev, mask);
+ 	dma_check_mask(dev, mask);
+ 
+ 	*dev->dma_mask = mask;
