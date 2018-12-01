@@ -1,81 +1,100 @@
 From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: [PATCH 6/9] iommu/qcom: Make it explicitly non-modular
-Date: Sat, 1 Dec 2018 14:19:14 -0500
-Message-ID: <1543691957-17608-7-git-send-email-paul.gortmaker@windriver.com>
+Subject: [PATCH 2/9] iommu/rockchip: Make it explicitly non-modular
+Date: Sat, 1 Dec 2018 14:19:10 -0500
+Message-ID: <1543691957-17608-3-git-send-email-paul.gortmaker@windriver.com>
 References: <1543691957-17608-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 In-Reply-To: <1543691957-17608-1-git-send-email-paul.gortmaker@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Paul Gortmaker <paul.gortmaker@windriver.com>, Rob Clark <robdclark@gmail.com>, linux-arm-msm@vger.kernel.org
+Cc: Simon Xue <xxm@rock-chips.com>, linux-rockchip@lists.infradead.org, Jeffy Chen <jeffy.chen@rock-chips.com>, linux-kernel@vger.kernel.org, Daniel Kurtz <djkurtz@chromium.org>, Paul Gortmaker <paul.gortmaker@windriver.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Heiko Stuebner <heiko@sntech.de>
 List-Id: iommu@lists.linux-foundation.org
 
 The Kconfig currently controlling compilation of this code is:
 
-drivers/iommu/Kconfig:config MTK_IOMMU_V1
-drivers/iommu/Kconfig:  bool "MTK IOMMU Version 1 (M4U gen1) Support"
+drivers/iommu/Kconfig:config ROCKCHIP_IOMMU
+drivers/iommu/Kconfig:  bool "Rockchip IOMMU Support"
 
 ...meaning that it currently is not being built as a module by anyone.
 
-Lets remove the modular code that is essentially orphaned, so that
+The bind/unbind/remove was already explicitly disabled in commit
+98b72b94def9 ("iommu/rockchip: Prohibit unbind and remove").
+
+Lets remove the remaining traces of  modular infrastructure, so that
 when reading the driver there is no doubt it is builtin-only.
 
-Since module_init just becomes device_initcall for non-modules, the
-init ordering remains unchanged with this commit.
+Since module_init was not in use by this code, the init ordering
+remains unchanged with this commit.
 
 Also note that MODULE_DEVICE_TABLE is a no-op for non-modular code.
 
 We also delete the MODULE_LICENSE tag etc. since all that information
 was (or is now) contained at the top of the file in the comments.
 
-Cc: Rob Clark <robdclark@gmail.com>
 Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: Simon Xue <xxm@rock-chips.com>
+Cc: Daniel Kurtz <djkurtz@chromium.org>
+Cc: Jeffy Chen <jeffy.chen@rock-chips.com>
 Cc: iommu@lists.linux-foundation.org
-Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-rockchip@lists.infradead.org
+Acked-by: Heiko Stuebner <heiko@sntech.de>
 Signed-off-by: Paul Gortmaker <paul.gortmaker@windriver.com>
 ---
- drivers/iommu/qcom_iommu.c | 16 ++--------------
- 1 file changed, 2 insertions(+), 14 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index ee70e9921cf1..4c8f4fc54106 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -29,7 +29,7 @@
- #include <linux/iommu.h>
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index ad3e2b97469e..c9ba9f377f63 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1,4 +1,9 @@
+ /*
++ * IOMMU API for Rockchip
++ *
++ * Module Authors:	Simon Xue <xxm@rock-chips.com>
++ *			Daniel Kurtz <djkurtz@chromium.org>
++ *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+  * published by the Free Software Foundation.
+@@ -17,7 +22,7 @@
  #include <linux/iopoll.h>
- #include <linux/kconfig.h>
+ #include <linux/list.h>
+ #include <linux/mm.h>
 -#include <linux/module.h>
 +#include <linux/init.h>
- #include <linux/mutex.h>
  #include <linux/of.h>
- #include <linux/of_address.h>
-@@ -908,7 +908,6 @@ static const struct of_device_id qcom_iommu_of_match[] = {
- 	{ .compatible = "qcom,msm-iommu-v1" },
+ #include <linux/of_iommu.h>
+ #include <linux/of_platform.h>
+@@ -1281,7 +1286,6 @@ static const struct of_device_id rk_iommu_dt_ids[] = {
+ 	{ .compatible = "rockchip,iommu" },
  	{ /* sentinel */ }
  };
--MODULE_DEVICE_TABLE(of, qcom_iommu_of_match);
+-MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
  
- static struct platform_driver qcom_iommu_driver = {
- 	.driver	= {
-@@ -934,15 +933,4 @@ static int __init qcom_iommu_init(void)
- 
- 	return ret;
+ static struct platform_driver rk_iommu_driver = {
+ 	.probe = rk_iommu_probe,
+@@ -1299,8 +1303,3 @@ static int __init rk_iommu_init(void)
+ 	return platform_driver_register(&rk_iommu_driver);
  }
+ subsys_initcall(rk_iommu_init);
 -
--static void __exit qcom_iommu_exit(void)
--{
--	platform_driver_unregister(&qcom_iommu_driver);
--	platform_driver_unregister(&qcom_iommu_ctx_driver);
--}
--
--module_init(qcom_iommu_init);
--module_exit(qcom_iommu_exit);
--
--MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
+-MODULE_DESCRIPTION("IOMMU API for Rockchip");
+-MODULE_AUTHOR("Simon Xue <xxm@rock-chips.com> and Daniel Kurtz <djkurtz@chromium.org>");
+-MODULE_ALIAS("platform:rockchip-iommu");
 -MODULE_LICENSE("GPL v2");
-+device_initcall(qcom_iommu_init);
 -- 
 2.7.4
