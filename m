@@ -1,43 +1,60 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 4/9] dma-mapping: move the arm64 ncoherent alloc/free
- support to common code
-Date: Sat, 1 Dec 2018 18:03:25 +0100
-Message-ID: <20181201170325.GD20912@lst.de>
-References: <20181105121931.13481-1-hch@lst.de> <20181105121931.13481-5-hch@lst.de> <5526bc61-57a3-54ff-60c6-e9963230af22@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH 6/9] dma-remap: support DMA_ATTR_NO_KERNEL_MAPPING
+Date: Sat, 1 Dec 2018 18:05:06 +0100
+Message-ID: <20181201170506.GE20912@lst.de>
+References: <20181105121931.13481-1-hch@lst.de>
+	<20181105121931.13481-7-hch@lst.de>
+	<e993440c-53bf-8071-b1b6-06d022d39e4e@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5526bc61-57a3-54ff-60c6-e9963230af22@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+In-Reply-To: <e993440c-53bf-8071-b1b6-06d022d39e4e-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 30, 2018 at 07:05:23PM +0000, Robin Murphy wrote:
-> It's a bit yuck that we now end up with arch_* hooks being a mix of arch 
-> code and not-actually-arch-code, but I guess there's some hope of coming 
-> back and streamlining things in future once all the big moves are done.
-
-Yes, I hope we can use some form of common code here for most
-architectures eventually.  But that will some time.
-
-> I can't really be bothered to nitpick the typos above and the slight 
-> inconsistencies in some of the cosmetic code changes, but one worthwhile 
-> thing stands out...
-
-I'm usually fine picking up nitpicks.  For now I'll apply the series
-with the pointed out fixups, but if you want to send the fixups
-I'd be glad.
-
->> +	val = gen_pool_alloc(atomic_pool, size);
->> +	if (val) {
->> +		phys_addr_t phys = gen_pool_virt_to_phys(atomic_pool, val);
->> +
->> +		*ret_page = phys_to_page(phys);
+On Fri, Nov 30, 2018 at 07:05:40PM +0000, Robin Murphy wrote:
+> On 05/11/2018 12:19, Christoph Hellwig wrote:
+>> Do not waste vmalloc space on allocations that do not require a mapping
+>> into the kernel address space.
+>>
+>> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+>> ---
+>>   kernel/dma/remap.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+>> index 8f1fca34b894..10a545126b0b 100644
+>> --- a/kernel/dma/remap.c
+>> +++ b/kernel/dma/remap.c
+>> @@ -200,7 +200,8 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>>     	size = PAGE_ALIGN(size);
+>>   -	if (!gfpflags_allow_blocking(flags)) {
+>> +	if (!gfpflags_allow_blocking(flags) &&
+>> +	    !(attrs & DMA_ATTR_NO_KERNEL_MAPPING)) {
+>>   		ret = dma_alloc_from_pool(size, &page, flags);
+>>   		if (!ret)
+>>   			return NULL;
+>> @@ -215,6 +216,9 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>>   	/* remove any dirty cache lines on the kernel alias */
+>>   	arch_dma_prep_coherent(page, size);
+>>   +	if (attrs & DMA_ATTR_NO_KERNEL_MAPPING)
+>> +		return page; /* opaqueue cookie */
 >
-> Looks like phys_to_page() isn't particularly portable, so we probably want 
-> an explicit pfn_to_page(__phys_to_pfn(phys)) here. Otherwise, the 
-> fundamental refactoring looks OK.
+> Best to preempt the inevitable patch fixing that typo in 3 months' time. 
+> Otherwise,
 
-Ok, I'll updated it.
+Thanks,
+
+fixed.
