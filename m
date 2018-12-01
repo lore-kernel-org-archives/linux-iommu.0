@@ -1,100 +1,46 @@
-From: Qian Cai <cai@gmx.us>
-Subject: [PATCH v2] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
-Date: Fri, 30 Nov 2018 16:48:03 -0500
-Message-ID: <20181130214803.3119-1-cai@gmx.us>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: yisen.zhuang@huawei.com, salil.mehta@huawei.com, john.garry@huawei.com, linuxarm@huawei.com, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, Qian Cai <cai@gmx.us>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [PATCH] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
+Date: Sat, 1 Dec 2018 17:36:57 +0100
+Message-ID: <20181201163657.GA19557@lst.de>
+References: <20181130175449.2625-1-cai@gmx.us>
+	<b22d2ad6-2638-96d7-1df2-24701589202f@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <b22d2ad6-2638-96d7-1df2-24701589202f-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Qian Cai <cai-0UDz38MK/Mo@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, yisen.zhuang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The amount of DMA mappings from Hisilicon HNS ethernet devices is huge,
-so it could trigger "DMA-API: debugging out of memory - disabling".
+On Fri, Nov 30, 2018 at 07:39:50PM +0000, Robin Murphy wrote:
+> I was assuming the point was to also add something like
+>
+> 	default 131072 if HNS_ENET
+>
+> so that DMA debug doesn't require too much thought from the user. If they 
+> still have to notice the overflow message and empirically figure out a 
+> value that does work, rebuilding the kernel each time is far less 
+> convenient than simply adding "dma_debug_entries=..." to their kernel 
+> command line and rebooting, which they can do today. If they do already 
+> know up-front that the default will need overriding and what the 
+> appropriate value is, then the command line still seems seems just as 
+> convenient.
 
-hnae_get_handle [1]
-  hnae_init_queue
-    hnae_init_ring
-      hnae_alloc_buffers [2]
-        debug_dma_map_page
-          dma_entry_alloc
+I'm not so fond of random drivers changing the defaults.  My idea
+was rather to have the config option so that the defconfig files for
+the Hisilicon SOCs with this hardware could select a larger number
+without making a total mess of the kernel configuration.
 
-[1] for (i = 0; i < handle->q_num; i++)
-[2] for (i = 0; i < ring->desc_num; i++)
-
-Also, "#define HNS_DSAF_MAX_DESC_CNT 1024"
-
-On this Huawei TaiShan 2280 aarch64 server, it has reached the limit
-already,
-
-4 (NICs) x 16 (queues) x 1024 (port descption numbers) = 65536
-
-Added a Kconfig entry for PREALLOC_DMA_DEBUG_ENTRIES, so make it easier
-for users to deal with special cases like this.
-
-Signed-off-by: Qian Cai <cai@gmx.us>
----
-
-Changes since v1:
-* Increased the default value if has HNS_ENET suggested by Robin.
-
- kernel/dma/debug.c |  9 ++-------
- lib/Kconfig.debug  | 10 ++++++++++
- 2 files changed, 12 insertions(+), 7 deletions(-)
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 231ca4628062..3752fb23f72f 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -41,11 +41,6 @@
- #define HASH_FN_SHIFT   13
- #define HASH_FN_MASK    (HASH_SIZE - 1)
- 
--/* allow architectures to override this if absolutely required */
--#ifndef PREALLOC_DMA_DEBUG_ENTRIES
--#define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
--#endif
--
- enum {
- 	dma_debug_single,
- 	dma_debug_page,
-@@ -132,7 +127,7 @@ static u32 min_free_entries;
- static u32 nr_total_entries;
- 
- /* number of preallocated entries requested by kernel cmdline */
--static u32 nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
-+static u32 nr_prealloc_entries = CONFIG_PREALLOC_DMA_DEBUG_ENTRIES;
- 
- /* debugfs dentry's for the stuff above */
- static struct dentry *dma_debug_dent        __read_mostly;
-@@ -1063,7 +1058,7 @@ static __init int dma_debug_entries_cmdline(char *str)
- 	if (!str)
- 		return -EINVAL;
- 	if (!get_option(&str, &nr_prealloc_entries))
--		nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
-+		nr_prealloc_entries = CONFIG_PREALLOC_DMA_DEBUG_ENTRIES;
- 	return 0;
- }
- 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 1af29b8224fd..9f85a7a13647 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -1659,6 +1659,16 @@ config DMA_API_DEBUG
- 
- 	  If unsure, say N.
- 
-+config PREALLOC_DMA_DEBUG_ENTRIES
-+	int "Preallocated DMA-API debugging entries"
-+	depends on DMA_API_DEBUG
-+	default 131072 if HNS_ENET
-+	default 65536
-+	help
-+	  The number of preallocated entries for DMA-API debugging code. One
-+	  entry is required per DMA-API allocation. Increase this if the DMA-API
-+	  debugging code disables itself because the default is too low.
-+
- config DMA_API_DEBUG_SG
- 	bool "Debug DMA scatter-gather usage"
- 	default y
--- 
-2.17.2 (Apple Git-113)
+If we really have to we could do different defaults, but I'd still
+much rather do this on a arch/platform basis than specific drivers.
