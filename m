@@ -1,7 +1,7 @@
 From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 0/9] Use vm_insert_range
-Date: Sun, 2 Dec 2018 11:47:07 +0530
-Message-ID: <20181202061707.GA3070@jordon-HP-15-Notebook-PC>
+Subject: [PATCH v2 1/9] mm: Introduce new vm_insert_range API
+Date: Sun, 2 Dec 2018 11:49:44 +0530
+Message-ID: <20181202061944.GA3094@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -31,44 +31,98 @@ the drivers.
 vm_insert_range is the new API which will be used to map a
 range of kernel memory/pages to user vma.
 
-All the applicable places are converted to use new vm_insert_range
-in this patch series.
+This API is tested by Heiko for Rockchip drm driver, on rk3188,
+rk3288, rk3328 and rk3399 with graphics.
 
-v1 -> v2:
-	Address review comment on mm/memory.c. Add EXPORT_SYMBOL
-	for vm_insert_range and corrected the documentation part
-	for this API.
+Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+---
+ include/linux/mm_types.h |  3 +++
+ mm/memory.c              | 38 ++++++++++++++++++++++++++++++++++++++
+ mm/nommu.c               |  7 +++++++
+ 3 files changed, 48 insertions(+)
 
-	In drivers/gpu/drm/xen/xen_drm_front_gem.c, replace err
-	with ret as suggested.
-
-	In drivers/iommu/dma-iommu.c, handle the scenario of partial
-	mmap() of large buffer by passing *pages + vma->vm_pgoff* to
-	vm_insert_range().
-
-Souptick Joarder (9):
-  mm: Introduce new vm_insert_range API
-  arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
-  drivers/firewire/core-iso.c: Convert to use vm_insert_range
-  drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
-  drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
-  iommu/dma-iommu.c: Convert to use vm_insert_range
-  videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range
-  xen/gntdev.c: Convert to use vm_insert_range
-  xen/privcmd-buf.c: Convert to use vm_insert_range
-
- arch/arm/mm/dma-mapping.c                         | 21 +++++--------
- drivers/firewire/core-iso.c                       | 15 ++-------
- drivers/gpu/drm/rockchip/rockchip_drm_gem.c       | 20 ++----------
- drivers/gpu/drm/xen/xen_drm_front_gem.c           | 20 ++++--------
- drivers/iommu/dma-iommu.c                         | 13 ++------
- drivers/media/common/videobuf2/videobuf2-dma-sg.c | 23 +++++---------
- drivers/xen/gntdev.c                              | 11 +++----
- drivers/xen/privcmd-buf.c                         |  8 ++---
- include/linux/mm_types.h                          |  3 ++
- mm/memory.c                                       | 38 +++++++++++++++++++++++
- mm/nommu.c                                        |  7 +++++
- 11 files changed, 81 insertions(+), 98 deletions(-)
-
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 5ed8f62..15ae24f 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -523,6 +523,9 @@ extern void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
+ extern void tlb_finish_mmu(struct mmu_gather *tlb,
+ 				unsigned long start, unsigned long end);
+ 
++int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
++			struct page **pages, unsigned long page_count);
++
+ static inline void init_tlb_flush_pending(struct mm_struct *mm)
+ {
+ 	atomic_set(&mm->tlb_flush_pending, 0);
+diff --git a/mm/memory.c b/mm/memory.c
+index 15c417e..84ea46c 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -1478,6 +1478,44 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
+ }
+ 
+ /**
++ * vm_insert_range - insert range of kernel pages into user vma
++ * @vma: user vma to map to
++ * @addr: target user address of this page
++ * @pages: pointer to array of source kernel pages
++ * @page_count: number of pages need to insert into user vma
++ *
++ * This allows drivers to insert range of kernel pages they've allocated
++ * into a user vma. This is a generic function which drivers can use
++ * rather than using their own way of mapping range of kernel pages into
++ * user vma.
++ *
++ * If we fail to insert any page into the vma, the function will return
++ * immediately leaving any previously-inserted pages present.  Callers
++ * from the mmap handler may immediately return the error as their caller
++ * will destroy the vma, removing any successfully-inserted pages. Other
++ * callers should make their own arrangements for calling unmap_region().
++ *
++ * Context: Process context. Called by mmap handlers.
++ * Return: 0 on success and error code otherwise
++ */
++int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
++			struct page **pages, unsigned long page_count)
++{
++	unsigned long uaddr = addr;
++	int ret = 0, i;
++
++	for (i = 0; i < page_count; i++) {
++		ret = vm_insert_page(vma, uaddr, pages[i]);
++		if (ret < 0)
++			return ret;
++		uaddr += PAGE_SIZE;
++	}
++
++	return ret;
++}
++EXPORT_SYMBOL(vm_insert_range);
++
++/**
+  * vm_insert_page - insert single page into user vma
+  * @vma: user vma to map to
+  * @addr: target user address of this page
+diff --git a/mm/nommu.c b/mm/nommu.c
+index 749276b..d6ef5c7 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+ }
+ EXPORT_SYMBOL(vm_insert_page);
+ 
++int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
++			struct page **pages, unsigned long page_count)
++{
++	return -EINVAL;
++}
++EXPORT_SYMBOL(vm_insert_range);
++
+ /*
+  *  sys_brk() for the most part doesn't need the global kernel
+  *  lock, except when an application is doing something nasty
 -- 
 1.9.1
