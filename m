@@ -1,89 +1,125 @@
-From: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 21/23] xen-swiotlb: remove the mapping_error dma_map_ops
-	method
-Date: Sun, 2 Dec 2018 07:42:42 -0500
-Message-ID: <20181202124241.GB3166@localhost.localdomain>
-References: <20181130132231.16512-1-hch@lst.de>
-	<20181130132231.16512-22-hch@lst.de>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v3 13/15] memory: mtk-smi: Get rid of need_larbid
+Date: Mon, 3 Dec 2018 00:04:43 +0100
+Message-ID: <21767ceb-1db5-045f-06ac-29c57f1a74a5@gmail.com>
+References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
+ <1542422142-30688-14-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181130132231.16512-22-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1542422142-30688-14-git-send-email-yong.wu@mediatek.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 30, 2018 at 02:22:29PM +0100, Christoph Hellwig wrote:
-> Return DMA_MAPPING_ERROR instead of 0 on a dma mapping failure and let
-> the core dma-mapping code handle the rest.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
-Reviewed-by: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
-> ---
->  drivers/xen/swiotlb-xen.c | 12 ++----------
->  1 file changed, 2 insertions(+), 10 deletions(-)
+
+On 17/11/2018 03:35, Yong Wu wrote:
+> The "mediatek,larb-id" has already been parsed in MTK IOMMU driver.
+> It's no need to parse it again in SMI driver. Only clean some codes.
+> This patch is fit for all the current mt2701, mt2712, mt7623, mt8173
+> and mt8183.
+
+I'm trying to understand why we need the mediatek,larb-id at all. From what I
+understand as long as the mediatek larbs described in the iommu are ordered
+(larb0, larb1, larb2, etc) we actually get the same value as defined by
+mediatek,larb-id. At least this holds for all present implementations.
+
+On the other hand I don't see where the mtk_iommu_v1 driver actually parses the
+larb-id, can you please help to understand:
+
+1) why we need the larb-id at all
+2) how this will work if we do not parse the larb-id for v1 iommu at all
+
+Thanks a lot,
+Matthias
+
 > 
-> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index 2a7f545bd0b5..6dc969d5ea2f 100644
-> --- a/drivers/xen/swiotlb-xen.c
-> +++ b/drivers/xen/swiotlb-xen.c
-> @@ -53,8 +53,6 @@
->   * API.
->   */
->  
-> -#define XEN_SWIOTLB_ERROR_CODE	(~(dma_addr_t)0x0)
-> -
->  static char *xen_io_tlb_start, *xen_io_tlb_end;
->  static unsigned long xen_io_tlb_nslabs;
->  /*
-> @@ -406,7 +404,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
->  	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
->  				     attrs);
->  	if (map == SWIOTLB_MAP_ERROR)
-> -		return XEN_SWIOTLB_ERROR_CODE;
-> +		return DMA_MAPPING_ERROR;
->  
->  	dev_addr = xen_phys_to_bus(map);
->  	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
-> @@ -421,7 +419,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
->  	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
->  	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
->  
-> -	return XEN_SWIOTLB_ERROR_CODE;
-> +	return DMA_MAPPING_ERROR;
->  }
->  
->  /*
-> @@ -700,11 +698,6 @@ xen_swiotlb_get_sgtable(struct device *dev, struct sg_table *sgt,
->  	return dma_common_get_sgtable(dev, sgt, cpu_addr, handle, size, attrs);
->  }
->  
-> -static int xen_swiotlb_mapping_error(struct device *dev, dma_addr_t dma_addr)
-> -{
-> -	return dma_addr == XEN_SWIOTLB_ERROR_CODE;
-> -}
-> -
->  const struct dma_map_ops xen_swiotlb_dma_ops = {
->  	.alloc = xen_swiotlb_alloc_coherent,
->  	.free = xen_swiotlb_free_coherent,
-> @@ -719,5 +712,4 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
->  	.dma_supported = xen_swiotlb_dma_supported,
->  	.mmap = xen_swiotlb_dma_mmap,
->  	.get_sgtable = xen_swiotlb_get_sgtable,
-> -	.mapping_error	= xen_swiotlb_mapping_error,
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/memory/mtk-smi.c | 27 ++-------------------------
+>  1 file changed, 2 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index e4daabb..e0265fe 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -67,7 +67,6 @@ struct mtk_smi_common_plat {
 >  };
-> -- 
-> 2.19.1
+>  
+>  struct mtk_smi_larb_gen {
+> -	bool need_larbid;
+>  	int port_in_larb[MTK_LARB_NR_MAX + 1];
+>  	void (*config_port)(struct device *);
+>  	unsigned int larb_special_mask; /* The special larbs mask. */
+> @@ -152,18 +151,9 @@ void mtk_smi_larb_put(struct device *larbdev)
+>  	struct mtk_smi_iommu *smi_iommu = data;
+>  	unsigned int         i;
+>  
+> -	if (larb->larb_gen->need_larbid) {
+> -		larb->mmu = &smi_iommu->larb_imu[larb->larbid].mmu;
+> -		return 0;
+> -	}
+> -
+> -	/*
+> -	 * If there is no larbid property, Loop to find the corresponding
+> -	 * iommu information.
+> -	 */
+> -	for (i = 0; i < smi_iommu->larb_nr; i++) {
+> +	for (i = 0; i < MTK_LARB_NR_MAX; i++) {
+>  		if (dev == smi_iommu->larb_imu[i].dev) {
+> -			/* The 'mmu' may be updated in iommu-attach/detach. */
+> +			larb->larbid = i;
+>  			larb->mmu = &smi_iommu->larb_imu[i].mmu;
+>  			return 0;
+>  		}
+> @@ -242,7 +232,6 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+>  };
+>  
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
+> -	.need_larbid = true,
+>  	.port_in_larb = {
+>  		LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
+>  		LARB2_PORT_OFFSET, LARB3_PORT_OFFSET
+> @@ -251,13 +240,11 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+>  };
+>  
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
+> -	.need_larbid = true,
+>  	.config_port = mtk_smi_larb_config_port_gen2_general,
+>  	.larb_special_mask = BIT(8) | BIT(9), /* bdpsys */
+>  };
+>  
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
+> -	.need_larbid = true,
+>  	.config_port = mtk_smi_larb_config_port_gen2_general,
+>  	.larb_special_mask = BIT(2) | BIT(3) | BIT(7), /* IPU0 | IPU1 | CCU */
+>  };
+> @@ -289,7 +276,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  	struct device *dev = &pdev->dev;
+>  	struct device_node *smi_node;
+>  	struct platform_device *smi_pdev;
+> -	int err;
+>  
+>  	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+>  	if (!larb)
+> @@ -316,15 +302,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  		return PTR_ERR(larb->smi.clk_gals0);
+>  	larb->smi.dev = dev;
+>  
+> -	if (larb->larb_gen->need_larbid) {
+> -		err = of_property_read_u32(dev->of_node, "mediatek,larb-id",
+> -					   &larb->larbid);
+> -		if (err) {
+> -			dev_err(dev, "missing larbid property\n");
+> -			return err;
+> -		}
+> -	}
+> -
+>  	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
+>  	if (!smi_node)
+>  		return -EINVAL;
 > 
