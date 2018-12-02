@@ -1,107 +1,89 @@
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Subject: Re: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to
- command line
-Date: Sun, 2 Dec 2018 07:30:34 -0500
-Message-ID: <20181202123032.GA3166@localhost.localdomain>
-References: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
- <c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
- <20181022192921.GA20677@dhcp-10-175-29-12.vpn.oracle.com>
- <87ee40fa-7a01-4d4c-7fa3-81aafc93e14f@windriver.com>
- <5fa82cb9-bd32-8a3f-ddca-053f544e2883@windriver.com>
+From: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 21/23] xen-swiotlb: remove the mapping_error dma_map_ops
+	method
+Date: Sun, 2 Dec 2018 07:42:42 -0500
+Message-ID: <20181202124241.GB3166@localhost.localdomain>
+References: <20181130132231.16512-1-hch@lst.de>
+	<20181130132231.16512-22-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5fa82cb9-bd32-8a3f-ddca-053f544e2883@windriver.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: He Zhe <zhe.he@windriver.com>
-Cc: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20181130132231.16512-22-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-alpha-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 30, 2018 at 07:06:10PM +0800, He Zhe wrote:
+On Fri, Nov 30, 2018 at 02:22:29PM +0100, Christoph Hellwig wrote:
+> Return DMA_MAPPING_ERROR instead of 0 on a dma mapping failure and let
+> the core dma-mapping code handle the rest.
 > 
-> 
-> On 2018/10/23 19:14, He Zhe wrote:
-> >
-> > On 2018/10/23 03:29, Konrad Rzeszutek Wilk wrote:
-> >> On Sat, Sep 22, 2018 at 08:56:58PM +0800, He Zhe wrote:
-> >>> May I have your input?
-> >> Alternatively would it make more sense for it to assume some default
-> >> value?
-> > Maybe, but the original code has no default value and I have no idea
-> > what default value is proper here.
-> 
-> Can anyone give some suggestions? Though I'd prefer to do nothing when
-> no option is provided.
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 
-One provided the paramter for a reason. I would just do a small one, say
-4MB.
+Reviewed-by: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/xen/swiotlb-xen.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
 > 
-> Thanks,
-> Zhe
-> 
-> >
-> > Zhe
-> >
-> >>> Thanks,
-> >>> Zhe
-> >>>
-> >>> On 2018年09月17日 11:27, zhe.he@windriver.com wrote:
-> >>>> From: He Zhe <zhe.he@windriver.com>
-> >>>>
-> >>>> setup_io_tlb_npages does not check input argument before passing it
-> >>>> to isdigit. The argument would be a NULL pointer if "swiotlb", without
-> >>>> its value, is set in command line and thus causes the following panic.
-> >>>>
-> >>>> PANIC: early exception 0xe3 IP 10:ffffffffbb9b8e9f error 0 cr2 0x0
-> >>>> [    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.19.0-rc3-yocto-standard+ #9
-> >>>> [    0.000000] RIP: 0010:setup_io_tlb_npages+0xf/0x95
-> >>>> ...
-> >>>> [    0.000000] Call Trace:
-> >>>> [    0.000000]  do_early_param+0x57/0x8e
-> >>>> [    0.000000]  parse_args+0x208/0x320
-> >>>> [    0.000000]  ? rdinit_setup+0x30/0x30
-> >>>> [    0.000000]  parse_early_options+0x29/0x2d
-> >>>> [    0.000000]  ? rdinit_setup+0x30/0x30
-> >>>> [    0.000000]  parse_early_param+0x36/0x4d
-> >>>> [    0.000000]  setup_arch+0x336/0x99e
-> >>>> [    0.000000]  start_kernel+0x6f/0x4e6
-> >>>> [    0.000000]  x86_64_start_reservations+0x24/0x26
-> >>>> [    0.000000]  x86_64_start_kernel+0x6f/0x72
-> >>>> [    0.000000]  secondary_startup_64+0xa4/0xb0
-> >>>>
-> >>>> This patch adds a check to prevent the panic.
-> >>>>
-> >>>> Signed-off-by: He Zhe <zhe.he@windriver.com>
-> >>>> Cc: stable@vger.kernel.org
-> >>>> Cc: konrad.wilk@oracle.com
-> >>>> Cc: hch@lst.de
-> >>>> Cc: m.szyprowski@samsung.com
-> >>>> Cc: robin.murphy@arm.com
-> >>>> ---
-> >>>>  kernel/dma/swiotlb.c | 5 +++++
-> >>>>  1 file changed, 5 insertions(+)
-> >>>>
-> >>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> >>>> index 4f8a6db..46fc34e 100644
-> >>>> --- a/kernel/dma/swiotlb.c
-> >>>> +++ b/kernel/dma/swiotlb.c
-> >>>> @@ -109,6 +109,11 @@ static int late_alloc;
-> >>>>  static int __init
-> >>>>  setup_io_tlb_npages(char *str)
-> >>>>  {
-> >>>> +	if (!str) {
-> >>>> +		pr_err("Config string not provided\n");
-> >>>> +		return -EINVAL;
-> >>>> +	}
-> >>>> +
-> >>>>  	if (isdigit(*str)) {
-> >>>>  		io_tlb_nslabs = simple_strtoul(str, &str, 0);
-> >>>>  		/* avoid tail segment of size < IO_TLB_SEGSIZE */
-> >>> _______________________________________________
-> >>> iommu mailing list
-> >>> iommu@lists.linux-foundation.org
-> >>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> >
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 2a7f545bd0b5..6dc969d5ea2f 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -53,8 +53,6 @@
+>   * API.
+>   */
+>  
+> -#define XEN_SWIOTLB_ERROR_CODE	(~(dma_addr_t)0x0)
+> -
+>  static char *xen_io_tlb_start, *xen_io_tlb_end;
+>  static unsigned long xen_io_tlb_nslabs;
+>  /*
+> @@ -406,7 +404,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>  	map = swiotlb_tbl_map_single(dev, start_dma_addr, phys, size, dir,
+>  				     attrs);
+>  	if (map == SWIOTLB_MAP_ERROR)
+> -		return XEN_SWIOTLB_ERROR_CODE;
+> +		return DMA_MAPPING_ERROR;
+>  
+>  	dev_addr = xen_phys_to_bus(map);
+>  	xen_dma_map_page(dev, pfn_to_page(map >> PAGE_SHIFT),
+> @@ -421,7 +419,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>  	attrs |= DMA_ATTR_SKIP_CPU_SYNC;
+>  	swiotlb_tbl_unmap_single(dev, map, size, dir, attrs);
+>  
+> -	return XEN_SWIOTLB_ERROR_CODE;
+> +	return DMA_MAPPING_ERROR;
+>  }
+>  
+>  /*
+> @@ -700,11 +698,6 @@ xen_swiotlb_get_sgtable(struct device *dev, struct sg_table *sgt,
+>  	return dma_common_get_sgtable(dev, sgt, cpu_addr, handle, size, attrs);
+>  }
+>  
+> -static int xen_swiotlb_mapping_error(struct device *dev, dma_addr_t dma_addr)
+> -{
+> -	return dma_addr == XEN_SWIOTLB_ERROR_CODE;
+> -}
+> -
+>  const struct dma_map_ops xen_swiotlb_dma_ops = {
+>  	.alloc = xen_swiotlb_alloc_coherent,
+>  	.free = xen_swiotlb_free_coherent,
+> @@ -719,5 +712,4 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
+>  	.dma_supported = xen_swiotlb_dma_supported,
+>  	.mmap = xen_swiotlb_dma_mmap,
+>  	.get_sgtable = xen_swiotlb_get_sgtable,
+> -	.mapping_error	= xen_swiotlb_mapping_error,
+>  };
+> -- 
+> 2.19.1
 > 
