@@ -1,49 +1,139 @@
-From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: [PATCH v2 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
-Date: Sun, 2 Dec 2018 11:55:53 +0530
-Message-ID: <20181202062552.GA3203@jordon-HP-15-Notebook-PC>
+From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Subject: Re: [PATCH v2 1/9] mm: Introduce new vm_insert_range API
+Date: Sun, 2 Dec 2018 13:13:13 +0200
+Message-ID: <20181202111313.GC6959@rapoport-lnx>
+References: <20181202061944.GA3094@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-Sender: linux-kernel-owner@vger.kernel.org
-To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, joro@8bytes.org, robin.murphy@arm.com
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org
+In-Reply-To: <20181202061944.GA3094@jordon-HP-15-Notebook-PC>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: mhocko-IBi9RG/b67k@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, jgross-IBi9RG/b67k@public.gmane.org, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org, akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Convert to use vm_insert_range() to map range of kernel
-memory to user vma.
+On Sun, Dec 02, 2018 at 11:49:44AM +0530, Souptick Joarder wrote:
+> Previouly drivers have their own way of mapping range of
+> kernel pages/memory into user vma and this was done by
+> invoking vm_insert_page() within a loop.
+> 
+> As this pattern is common across different drivers, it can
+> be generalized by creating a new function and use it across
+> the drivers.
+> 
+> vm_insert_range is the new API which will be used to map a
+> range of kernel memory/pages to user vma.
+> 
+> This API is tested by Heiko for Rockchip drm driver, on rk3188,
+> rk3288, rk3328 and rk3399 with graphics.
+> 
+> Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+> ---
+>  include/linux/mm_types.h |  3 +++
+>  mm/memory.c              | 38 ++++++++++++++++++++++++++++++++++++++
+>  mm/nommu.c               |  7 +++++++
+>  3 files changed, 48 insertions(+)
+> 
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 5ed8f62..15ae24f 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -523,6 +523,9 @@ extern void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
+>  extern void tlb_finish_mmu(struct mmu_gather *tlb,
+>  				unsigned long start, unsigned long end);
+> 
+> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
+> +			struct page **pages, unsigned long page_count);
+> +
 
-Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-Reviewed-by: Matthew Wilcox <willy@infradead.org>
----
- drivers/iommu/dma-iommu.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+This seem to belong to include/linux/mm.h, near vm_insert_page()
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b0475..a2c65e2 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -622,17 +622,10 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 
- int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
- {
--	unsigned long uaddr = vma->vm_start;
--	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	int ret = -ENXIO;
-+	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 
--	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
--		ret = vm_insert_page(vma, uaddr, pages[i]);
--		if (ret)
--			break;
--		uaddr += PAGE_SIZE;
--	}
--	return ret;
-+	return vm_insert_range(vma, vma->vm_start,
-+				pages + vma->vm_pgoff, count);
- }
- 
- static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>  static inline void init_tlb_flush_pending(struct mm_struct *mm)
+>  {
+>  	atomic_set(&mm->tlb_flush_pending, 0);
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 15c417e..84ea46c 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -1478,6 +1478,44 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
+>  }
+> 
+>  /**
+> + * vm_insert_range - insert range of kernel pages into user vma
+> + * @vma: user vma to map to
+> + * @addr: target user address of this page
+> + * @pages: pointer to array of source kernel pages
+> + * @page_count: number of pages need to insert into user vma
+> + *
+> + * This allows drivers to insert range of kernel pages they've allocated
+> + * into a user vma. This is a generic function which drivers can use
+> + * rather than using their own way of mapping range of kernel pages into
+> + * user vma.
+> + *
+> + * If we fail to insert any page into the vma, the function will return
+> + * immediately leaving any previously-inserted pages present.  Callers
+> + * from the mmap handler may immediately return the error as their caller
+> + * will destroy the vma, removing any successfully-inserted pages. Other
+> + * callers should make their own arrangements for calling unmap_region().
+> + *
+> + * Context: Process context. Called by mmap handlers.
+> + * Return: 0 on success and error code otherwise
+> + */
+> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
+> +			struct page **pages, unsigned long page_count)
+> +{
+> +	unsigned long uaddr = addr;
+> +	int ret = 0, i;
+> +
+> +	for (i = 0; i < page_count; i++) {
+> +		ret = vm_insert_page(vma, uaddr, pages[i]);
+> +		if (ret < 0)
+> +			return ret;
+> +		uaddr += PAGE_SIZE;
+> +	}
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(vm_insert_range);
+> +
+> +/**
+>   * vm_insert_page - insert single page into user vma
+>   * @vma: user vma to map to
+>   * @addr: target user address of this page
+> diff --git a/mm/nommu.c b/mm/nommu.c
+> index 749276b..d6ef5c7 100644
+> --- a/mm/nommu.c
+> +++ b/mm/nommu.c
+> @@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+>  }
+>  EXPORT_SYMBOL(vm_insert_page);
+> 
+> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
+> +			struct page **pages, unsigned long page_count)
+> +{
+> +	return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vm_insert_range);
+> +
+>  /*
+>   *  sys_brk() for the most part doesn't need the global kernel
+>   *  lock, except when an application is doing something nasty
+> -- 
+> 1.9.1
+> 
+
 -- 
-1.9.1
+Sincerely yours,
+Mike.
