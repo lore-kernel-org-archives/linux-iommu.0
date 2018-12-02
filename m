@@ -1,125 +1,217 @@
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v3 13/15] memory: mtk-smi: Get rid of need_larbid
-Date: Mon, 3 Dec 2018 00:04:43 +0100
-Message-ID: <21767ceb-1db5-045f-06ac-29c57f1a74a5@gmail.com>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3 06/15] iommu/mediatek: Add mt8183 IOMMU support
+Date: Mon, 3 Dec 2018 00:56:13 +0100
+Message-ID: <f8528e80-e816-7901-a56a-581f88b29c83@gmail.com>
 References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
- <1542422142-30688-14-git-send-email-yong.wu@mediatek.com>
+	<1542422142-30688-7-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1542422142-30688-14-git-send-email-yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1542422142-30688-7-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 On 17/11/2018 03:35, Yong Wu wrote:
-> The "mediatek,larb-id" has already been parsed in MTK IOMMU driver.
-> It's no need to parse it again in SMI driver. Only clean some codes.
-> This patch is fit for all the current mt2701, mt2712, mt7623, mt8173
-> and mt8183.
-
-I'm trying to understand why we need the mediatek,larb-id at all. From what I
-understand as long as the mediatek larbs described in the iommu are ordered
-(larb0, larb1, larb2, etc) we actually get the same value as defined by
-mediatek,larb-id. At least this holds for all present implementations.
-
-On the other hand I don't see where the mtk_iommu_v1 driver actually parses the
-larb-id, can you please help to understand:
-
-1) why we need the larb-id at all
-2) how this will work if we do not parse the larb-id for v1 iommu at all
-
-Thanks a lot,
-Matthias
-
+> The M4U IP blocks in mt8183 is MediaTek's generation2 M4U which use
+> the ARM Short-descriptor like mt8173, and most of the HW registers
+> are the same.
 > 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Here list main changes in mt8183:
+> 1) mt8183 has only one M4U HW like mt8173.
+
+That's a change?
+
+> 2) mt8183 don't have its "bclk" clock, the M4U use the EMI clock
+> which has already been enabled before kernel.
+> 3) mt8183 can support the dram over 4GB, but it don't call this "4GB
+> mode".
+> 4) mt8183 pgtable base register(0x0) extend bit[1:0] which represent
+> the bit[33:32] in the physical address of the pgtable base, But the
+> standard ttbr0[1] means the S bit which is enabled defaultly, Hence,
+> we add a mask.
+> 5) mt8183 HW has a GALS modules, the SMI should add "gals" clock
+> support.
+> 6) the larb-id in smi-common has been remapped. This means the
+> larb-id reported in the mtk_iommu_isr is not the real larb-id, here
+> is the remapping relationship of mt8183:
+
+This whole list is an indicator that you will need several enhancements to the
+existing code before you can add mt8183 support.
+Please do so in independent patches (e.g. gals modules, remap logic)
+Regarding making bclk optional, I think it would be better to set it to NULL for
+mt8183 otherwise the driver will work with a broken device tree on systems that
+actually need the bclk. Same holds for gals0 and gals1.
+
+>                        M4U
+>                         |
+> ---------------------------------------------
+> |               SMI common                  |
+> -0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
+>  |     |     |     |     |     |      |     |
+> larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
+> disp  vdec  img   cam   venc  img    cam
+> As above, larb0 connects with the id 0 in smi-common.
+>           larb1 connects with the id 7 in smi-common.
+>           ...
+> Take a example, if the larb-id reported in the mtk_iommu_isr is 7,
+> actually it is larb1(vdec).
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > ---
->  drivers/memory/mtk-smi.c | 27 ++-------------------------
->  1 file changed, 2 insertions(+), 25 deletions(-)
+>  drivers/iommu/mtk_iommu.c | 38 ++++++++++++++++++++++++++++----------
+>  drivers/iommu/mtk_iommu.h |  5 +++++
+>  drivers/memory/mtk-smi.c  | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 80 insertions(+), 10 deletions(-)
 > 
+
+[...]
+
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index a243047..e5fd8ee 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -39,11 +39,16 @@ enum mtk_iommu_plat {
+>  	M4U_MT2701,
+>  	M4U_MT2712,
+>  	M4U_MT8173,
+> +	M4U_MT8183,
+>  };
+>  
+>  struct mtk_iommu_plat_data {
+>  	enum mtk_iommu_plat m4u_plat;
+>  	bool has_4gb_mode;
+> +
+> +	/* The larb-id may be remapped in the smi-common. */
+> +	bool larbid_remap_enable;
+> +	unsigned int larbid_remapped[MTK_LARB_NR_MAX];
+
+Please add new features to the driver as single patches. Don't add this kind of
+things in the patch where you enable a new SoC.
+
+>  };
+>  
+>  struct mtk_iommu_domain;
 > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index e4daabb..e0265fe 100644
+> index e37e54b..979153b 100644
 > --- a/drivers/memory/mtk-smi.c
 > +++ b/drivers/memory/mtk-smi.c
-> @@ -67,7 +67,6 @@ struct mtk_smi_common_plat {
+> @@ -59,6 +59,7 @@ struct mtk_smi_larb_gen {
+>  struct mtk_smi {
+>  	struct device			*dev;
+>  	struct clk			*clk_apb, *clk_smi;
+> +	struct clk			*clk_gals0, *clk_gals1;
+>  	struct clk			*clk_async; /*only needed by mt2701*/
+>  	void __iomem			*smi_ao_base;
 >  };
+> @@ -93,8 +94,20 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+>  	if (ret)
+>  		goto err_disable_apb;
 >  
->  struct mtk_smi_larb_gen {
-> -	bool need_larbid;
->  	int port_in_larb[MTK_LARB_NR_MAX + 1];
->  	void (*config_port)(struct device *);
->  	unsigned int larb_special_mask; /* The special larbs mask. */
-> @@ -152,18 +151,9 @@ void mtk_smi_larb_put(struct device *larbdev)
->  	struct mtk_smi_iommu *smi_iommu = data;
->  	unsigned int         i;
+> +	ret = clk_prepare_enable(smi->clk_gals0);
+> +	if (ret)
+> +		goto err_disable_smi;
+> +
+> +	ret = clk_prepare_enable(smi->clk_gals1);
+> +	if (ret)
+> +		goto err_disable_gals0;
+> +>  	return 0;
 >  
-> -	if (larb->larb_gen->need_larbid) {
-> -		larb->mmu = &smi_iommu->larb_imu[larb->larbid].mmu;
-> -		return 0;
-> -	}
-> -
-> -	/*
-> -	 * If there is no larbid property, Loop to find the corresponding
-> -	 * iommu information.
-> -	 */
-> -	for (i = 0; i < smi_iommu->larb_nr; i++) {
-> +	for (i = 0; i < MTK_LARB_NR_MAX; i++) {
->  		if (dev == smi_iommu->larb_imu[i].dev) {
-> -			/* The 'mmu' may be updated in iommu-attach/detach. */
-> +			larb->larbid = i;
->  			larb->mmu = &smi_iommu->larb_imu[i].mmu;
->  			return 0;
->  		}
-> @@ -242,7 +232,6 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
->  };
+> +err_disable_gals0:
+> +	clk_disable_unprepare(smi->clk_gals0);
+> +err_disable_smi:
+> +	clk_disable_unprepare(smi->clk_smi);
+>  err_disable_apb:
+>  	clk_disable_unprepare(smi->clk_apb);
+>  err_put_pm:
+> @@ -104,6 +117,8 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
 >  
->  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
-> -	.need_larbid = true,
->  	.port_in_larb = {
->  		LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
->  		LARB2_PORT_OFFSET, LARB3_PORT_OFFSET
-> @@ -251,13 +240,11 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
->  };
->  
->  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
-> -	.need_larbid = true,
->  	.config_port = mtk_smi_larb_config_port_gen2_general,
+>  static void mtk_smi_disable(const struct mtk_smi *smi)
+>  {
+> +	clk_disable_unprepare(smi->clk_gals1);
+> +	clk_disable_unprepare(smi->clk_gals0);
+>  	clk_disable_unprepare(smi->clk_smi);
+>  	clk_disable_unprepare(smi->clk_apb);
+>  	pm_runtime_put_sync(smi->dev);
+> @@ -262,6 +277,12 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
 >  	.larb_special_mask = BIT(8) | BIT(9), /* bdpsys */
 >  };
 >  
->  static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
-> -	.need_larbid = true,
->  	.config_port = mtk_smi_larb_config_port_gen2_general,
->  	.larb_special_mask = BIT(2) | BIT(3) | BIT(7), /* IPU0 | IPU1 | CCU */
+> +static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
+> +	.need_larbid = true,
+> +	.config_port = mtk_smi_larb_config_port_gen2_general,
+> +	.larb_special_mask = BIT(2) | BIT(3) | BIT(7), /* IPU0 | IPU1 | CCU */
+> +};
+> +
+>  static const struct of_device_id mtk_smi_larb_of_ids[] = {
+>  	{
+>  		.compatible = "mediatek,mt8173-smi-larb",
+> @@ -275,6 +296,10 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+>  		.compatible = "mediatek,mt2712-smi-larb",
+>  		.data = &mtk_smi_larb_mt2712
+>  	},
+> +	{
+> +		.compatible = "mediatek,mt8183-smi-larb",
+> +		.data = &mtk_smi_larb_mt8183
+> +	},
+>  	{}
 >  };
-> @@ -289,7 +276,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
->  	struct device *dev = &pdev->dev;
->  	struct device_node *smi_node;
->  	struct platform_device *smi_pdev;
-> -	int err;
 >  
->  	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
->  	if (!larb)
-> @@ -316,15 +302,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
->  		return PTR_ERR(larb->smi.clk_gals0);
+> @@ -304,6 +329,12 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  	larb->smi.clk_smi = devm_clk_get(dev, "smi");
+>  	if (IS_ERR(larb->smi.clk_smi))
+>  		return PTR_ERR(larb->smi.clk_smi);
+> +
+> +	larb->smi.clk_gals0 = devm_clk_get(dev, "gals");> +	if (PTR_ERR(larb->smi.clk_gals0) == -ENOENT)
+> +		larb->smi.clk_gals0 = NULL;
+> +	else if (IS_ERR(larb->smi.clk_gals0))
+> +		return PTR_ERR(larb->smi.clk_gals0);
 >  	larb->smi.dev = dev;
 >  
-> -	if (larb->larb_gen->need_larbid) {
-> -		err = of_property_read_u32(dev->of_node, "mediatek,larb-id",
-> -					   &larb->larbid);
-> -		if (err) {
-> -			dev_err(dev, "missing larbid property\n");
-> -			return err;
-> -		}
-> -	}
-> -
->  	smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
->  	if (!smi_node)
->  		return -EINVAL;
-> 
+>  	if (larb->larb_gen->need_larbid) {
+> @@ -364,6 +395,10 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
+>  		.compatible = "mediatek,mt2712-smi-common",
+>  		.data = (void *)MTK_SMI_GEN2
+>  	},
+> +	{
+> +		.compatible = "mediatek,mt8183-smi-common",
+> +		.data = (void *)MTK_SMI_GEN2
+> +	},
+>  	{}
+>  };
+>  
+> @@ -388,6 +423,18 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>  	if (IS_ERR(common->clk_smi))
+>  		return PTR_ERR(common->clk_smi);
+>  
+> +	common->clk_gals0 = devm_clk_get(dev, "gals0");
+> +	if (PTR_ERR(common->clk_gals0) == -ENOENT)
+> +		common->clk_gals0 = NULL;
+> +	else if (IS_ERR(common->clk_gals0))
+> +		return PTR_ERR(common->clk_gals0);
+> +
+> +	common->clk_gals1 = devm_clk_get(dev, "gals1");
+> +	if (PTR_ERR(common->clk_gals1) == -ENOENT)
+> +		common->clk_gals1 = NULL;
+> +	else if (IS_ERR(common->clk_gals1))
+> +		return PTR_ERR(common->clk_gals1);
+> +
+
+I'd prefer to check for clk_gals[01] for SoCs that need this clocks instead of
+making them optional.
+
+Regards,
+Matthias
