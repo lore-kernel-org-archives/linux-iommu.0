@@ -1,20 +1,12 @@
-From: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: Re: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to
-	command line
-Date: Mon, 3 Dec 2018 18:20:16 +0800
-Message-ID: <b81eaa10-0799-40e6-9271-150d21b24e33@windriver.com>
-References: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
-	<c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
-	<20181022192921.GA20677@dhcp-10-175-29-12.vpn.oracle.com>
-	<87ee40fa-7a01-4d4c-7fa3-81aafc93e14f@windriver.com>
-	<5fa82cb9-bd32-8a3f-ddca-053f544e2883@windriver.com>
-	<20181202123032.GA3166@localhost.localdomain>
+From: <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: [PATCH v2] kernel/dma: Fix panic caused by passing swiotlb to command
+	line
+Date: Mon, 3 Dec 2018 18:22:51 +0800
+Message-ID: <1543832571-121638-1-git-send-email-zhe.he@windriver.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181202123032.GA3166-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,64 +16,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
-Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+To: konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgpPbiAyMDE4LzEyLzIgMjA6MzAsIEtvbnJhZCBSemVzenV0ZWsgV2lsayB3cm90ZToKPiBPbiBU
-dWUsIE9jdCAzMCwgMjAxOCBhdCAwNzowNjoxMFBNICswODAwLCBIZSBaaGUgd3JvdGU6Cj4+Cj4+
-IE9uIDIwMTgvMTAvMjMgMTk6MTQsIEhlIFpoZSB3cm90ZToKPj4+IE9uIDIwMTgvMTAvMjMgMDM6
-MjksIEtvbnJhZCBSemVzenV0ZWsgV2lsayB3cm90ZToKPj4+PiBPbiBTYXQsIFNlcCAyMiwgMjAx
-OCBhdCAwODo1Njo1OFBNICswODAwLCBIZSBaaGUgd3JvdGU6Cj4+Pj4+IE1heSBJIGhhdmUgeW91
-ciBpbnB1dD8KPj4+PiBBbHRlcm5hdGl2ZWx5IHdvdWxkIGl0IG1ha2UgbW9yZSBzZW5zZSBmb3Ig
-aXQgdG8gYXNzdW1lIHNvbWUgZGVmYXVsdAo+Pj4+IHZhbHVlPwo+Pj4gTWF5YmUsIGJ1dCB0aGUg
-b3JpZ2luYWwgY29kZSBoYXMgbm8gZGVmYXVsdCB2YWx1ZSBhbmQgSSBoYXZlIG5vIGlkZWEKPj4+
-IHdoYXQgZGVmYXVsdCB2YWx1ZSBpcyBwcm9wZXIgaGVyZS4KPj4gQ2FuIGFueW9uZSBnaXZlIHNv
-bWUgc3VnZ2VzdGlvbnM/IFRob3VnaCBJJ2QgcHJlZmVyIHRvIGRvIG5vdGhpbmcgd2hlbgo+PiBu
-byBvcHRpb24gaXMgcHJvdmlkZWQuCj4gT25lIHByb3ZpZGVkIHRoZSBwYXJhbXRlciBmb3IgYSBy
-ZWFzb24uIEkgd291bGQganVzdCBkbyBhIHNtYWxsIG9uZSwgc2F5Cj4gNE1CLgoKT0suIFRoYW5r
-cywgSSdsbCBzZW5kIHYyLgoKWmhlCgo+PiBUaGFua3MsCj4+IFpoZQo+Pgo+Pj4gWmhlCj4+Pgo+
-Pj4+PiBUaGFua3MsCj4+Pj4+IFpoZQo+Pj4+Pgo+Pj4+PiBPbiAyMDE45bm0MDnmnIgxN+aXpSAx
-MToyNywgemhlLmhlQHdpbmRyaXZlci5jb20gd3JvdGU6Cj4+Pj4+PiBGcm9tOiBIZSBaaGUgPHpo
-ZS5oZUB3aW5kcml2ZXIuY29tPgo+Pj4+Pj4KPj4+Pj4+IHNldHVwX2lvX3RsYl9ucGFnZXMgZG9l
-cyBub3QgY2hlY2sgaW5wdXQgYXJndW1lbnQgYmVmb3JlIHBhc3NpbmcgaXQKPj4+Pj4+IHRvIGlz
-ZGlnaXQuIFRoZSBhcmd1bWVudCB3b3VsZCBiZSBhIE5VTEwgcG9pbnRlciBpZiAic3dpb3RsYiIs
-IHdpdGhvdXQKPj4+Pj4+IGl0cyB2YWx1ZSwgaXMgc2V0IGluIGNvbW1hbmQgbGluZSBhbmQgdGh1
-cyBjYXVzZXMgdGhlIGZvbGxvd2luZyBwYW5pYy4KPj4+Pj4+Cj4+Pj4+PiBQQU5JQzogZWFybHkg
-ZXhjZXB0aW9uIDB4ZTMgSVAgMTA6ZmZmZmZmZmZiYjliOGU5ZiBlcnJvciAwIGNyMiAweDAKPj4+
-Pj4+IFsgICAgMC4wMDAwMDBdIENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlciBOb3QgdGFpbnRl
-ZCA0LjE5LjAtcmMzLXlvY3RvLXN0YW5kYXJkKyAjOQo+Pj4+Pj4gWyAgICAwLjAwMDAwMF0gUklQ
-OiAwMDEwOnNldHVwX2lvX3RsYl9ucGFnZXMrMHhmLzB4OTUKPj4+Pj4+IC4uLgo+Pj4+Pj4gWyAg
-ICAwLjAwMDAwMF0gQ2FsbCBUcmFjZToKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICBkb19lYXJseV9w
-YXJhbSsweDU3LzB4OGUKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICBwYXJzZV9hcmdzKzB4MjA4LzB4
-MzIwCj4+Pj4+PiBbICAgIDAuMDAwMDAwXSAgPyByZGluaXRfc2V0dXArMHgzMC8weDMwCj4+Pj4+
-PiBbICAgIDAuMDAwMDAwXSAgcGFyc2VfZWFybHlfb3B0aW9ucysweDI5LzB4MmQKPj4+Pj4+IFsg
-ICAgMC4wMDAwMDBdICA/IHJkaW5pdF9zZXR1cCsweDMwLzB4MzAKPj4+Pj4+IFsgICAgMC4wMDAw
-MDBdICBwYXJzZV9lYXJseV9wYXJhbSsweDM2LzB4NGQKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICBz
-ZXR1cF9hcmNoKzB4MzM2LzB4OTllCj4+Pj4+PiBbICAgIDAuMDAwMDAwXSAgc3RhcnRfa2VybmVs
-KzB4NmYvMHg0ZTYKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICB4ODZfNjRfc3RhcnRfcmVzZXJ2YXRp
-b25zKzB4MjQvMHgyNgo+Pj4+Pj4gWyAgICAwLjAwMDAwMF0gIHg4Nl82NF9zdGFydF9rZXJuZWwr
-MHg2Zi8weDcyCj4+Pj4+PiBbICAgIDAuMDAwMDAwXSAgc2Vjb25kYXJ5X3N0YXJ0dXBfNjQrMHhh
-NC8weGIwCj4+Pj4+Pgo+Pj4+Pj4gVGhpcyBwYXRjaCBhZGRzIGEgY2hlY2sgdG8gcHJldmVudCB0
-aGUgcGFuaWMuCj4+Pj4+Pgo+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogSGUgWmhlIDx6aGUuaGVAd2lu
-ZHJpdmVyLmNvbT4KPj4+Pj4+IENjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnCj4+Pj4+PiBDYzog
-a29ucmFkLndpbGtAb3JhY2xlLmNvbQo+Pj4+Pj4gQ2M6IGhjaEBsc3QuZGUKPj4+Pj4+IENjOiBt
-LnN6eXByb3dza2lAc2Ftc3VuZy5jb20KPj4+Pj4+IENjOiByb2Jpbi5tdXJwaHlAYXJtLmNvbQo+
-Pj4+Pj4gLS0tCj4+Pj4+PiAga2VybmVsL2RtYS9zd2lvdGxiLmMgfCA1ICsrKysrCj4+Pj4+PiAg
-MSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+Pj4+Pj4KPj4+Pj4+IGRpZmYgLS1naXQg
-YS9rZXJuZWwvZG1hL3N3aW90bGIuYyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5jCj4+Pj4+PiBpbmRl
-eCA0ZjhhNmRiLi40NmZjMzRlIDEwMDY0NAo+Pj4+Pj4gLS0tIGEva2VybmVsL2RtYS9zd2lvdGxi
-LmMKPj4+Pj4+ICsrKyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5jCj4+Pj4+PiBAQCAtMTA5LDYgKzEw
-OSwxMSBAQCBzdGF0aWMgaW50IGxhdGVfYWxsb2M7Cj4+Pj4+PiAgc3RhdGljIGludCBfX2luaXQK
-Pj4+Pj4+ICBzZXR1cF9pb190bGJfbnBhZ2VzKGNoYXIgKnN0cikKPj4+Pj4+ICB7Cj4+Pj4+PiAr
-CWlmICghc3RyKSB7Cj4+Pj4+PiArCQlwcl9lcnIoIkNvbmZpZyBzdHJpbmcgbm90IHByb3ZpZGVk
-XG4iKTsKPj4+Pj4+ICsJCXJldHVybiAtRUlOVkFMOwo+Pj4+Pj4gKwl9Cj4+Pj4+PiArCj4+Pj4+
-PiAgCWlmIChpc2RpZ2l0KCpzdHIpKSB7Cj4+Pj4+PiAgCQlpb190bGJfbnNsYWJzID0gc2ltcGxl
-X3N0cnRvdWwoc3RyLCAmc3RyLCAwKTsKPj4+Pj4+ICAJCS8qIGF2b2lkIHRhaWwgc2VnbWVudCBv
-ZiBzaXplIDwgSU9fVExCX1NFR1NJWkUgKi8KPj4+Pj4gX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KPj4+Pj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4+Pj4+IGlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+Pj4+IGh0dHBzOi8vbGlzdHMubGludXhm
-b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11CgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+From: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+
+setup_io_tlb_npages does not check input argument before passing it
+to isdigit. The argument would be a NULL pointer if "swiotlb", without
+its value, is set in command line and thus causes the following panic.
+
+PANIC: early exception 0xe3 IP 10:ffffffffbb9b8e9f error 0 cr2 0x0
+[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted 4.19.0-rc3-yocto-standard+ #9
+[    0.000000] RIP: 0010:setup_io_tlb_npages+0xf/0x95
+...
+[    0.000000] Call Trace:
+[    0.000000]  do_early_param+0x57/0x8e
+[    0.000000]  parse_args+0x208/0x320
+[    0.000000]  ? rdinit_setup+0x30/0x30
+[    0.000000]  parse_early_options+0x29/0x2d
+[    0.000000]  ? rdinit_setup+0x30/0x30
+[    0.000000]  parse_early_param+0x36/0x4d
+[    0.000000]  setup_arch+0x336/0x99e
+[    0.000000]  start_kernel+0x6f/0x4e6
+[    0.000000]  x86_64_start_reservations+0x24/0x26
+[    0.000000]  x86_64_start_kernel+0x6f/0x72
+[    0.000000]  secondary_startup_64+0xa4/0xb0
+
+This patch adds a check to prevent the panic and sets it for 4MB by default.
+
+Signed-off-by: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: hch-jcswGhMUV9g@public.gmane.org
+Cc: m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Cc: robin.murphy-5wv7dgnIgG8@public.gmane.org
+
+Signed-off-by: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+---
+v2: Set swiotlb for 4MB by default
+
+ kernel/dma/swiotlb.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 045930e..0e18cd4 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -58,6 +58,9 @@
+  */
+ #define IO_TLB_MIN_SLABS ((1<<20) >> IO_TLB_SHIFT)
+ 
++#define IO_TLB_DEFAULT_MB 4
++#define IO_TLB_DEFAULT_SLABS ((IO_TLB_DEFAULT_MB<<20) >> IO_TLB_SHIFT)
++
+ enum swiotlb_force swiotlb_force;
+ 
+ /*
+@@ -103,6 +106,14 @@ static int late_alloc;
+ static int __init
+ setup_io_tlb_npages(char *str)
+ {
++	if (!str) {
++		pr_err("No value provided for swiotlb, "
++		       "set it to %d slabs for %dMB by default.\n",
++		       IO_TLB_DEFAULT_SLABS, IO_TLB_DEFAULT_MB);
++		io_tlb_nslabs = IO_TLB_DEFAULT_SLABS;
++		return 0;
++	}
++
+ 	if (isdigit(*str)) {
+ 		io_tlb_nslabs = simple_strtoul(str, &str, 0);
+ 		/* avoid tail segment of size < IO_TLB_SEGSIZE */
+-- 
+2.7.4
