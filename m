@@ -1,90 +1,97 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Mon, 3 Dec 2018 18:23:42 +0000
-Message-ID: <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
-References: <cover.1543856576.git.robin.murphy@arm.com>
- <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+From: Doug Ledford <dledford@redhat.com>
+Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
+Date: Mon, 03 Dec 2018 13:59:08 -0500
+Message-ID: <e295bca26fce6408c7265292e81107b04a1a144d.camel@redhat.com>
+References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-Jgd362xHNNmppwzCQCK+"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+In-Reply-To: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, hch@lst.de
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
+To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/12/2018 17:28, Robin Murphy wrote:
-> Certain drivers such as large multi-queue network adapters can use pools
-> of mapped DMA buffers larger than the default dma_debug_entry pool of
-> 65536 entries, with the result that merely probing such a device can
-> cause DMA debug to disable itself during boot unless explicitly given an
-> appropriate "dma_debug_entries=..." option.
->
-> Developers trying to debug some other driver on such a system may not be
-> immediately aware of this, and at worst it can hide bugs if they fail to
-> realise that dma-debug has already disabled itself unexpectedly by the
-> time the code of interest gets to run. Even once they do realise, it can
-> be a bit of a pain to emprirically determine a suitable number of
-> preallocated entries to configure without massively over-allocating.
->
-> There's really no need for such a static limit, though, since we can
-> quite easily expand the pool at runtime in those rare cases that the
-> preallocated entries are insufficient, which is arguably the least
-> surprising and most useful behaviour.
 
-Hi Robin,
+--=-Jgd362xHNNmppwzCQCK+
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Do you have an idea on shrinking the pool again when the culprit driver 
-is removed, i.e. we have so many unused debug entries now available?
-
-Thanks,
-John
-
->
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
+> At present there are multiple places where invalid node number is encoded
+> as -1. Even though implicitly understood it is always better to have macr=
+os
+> in there. Replace these open encodings for an invalid node number with th=
+e
+> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions lik=
+e
+> 'invalid node' from various places redirecting them to a common definitio=
+n.
+>=20
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 > ---
->  kernel/dma/debug.c | 18 +++++++++++++++---
->  1 file changed, 15 insertions(+), 3 deletions(-)
->
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index de5db800dbfc..46cc075aec99 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -47,6 +47,9 @@
->  #ifndef PREALLOC_DMA_DEBUG_ENTRIES
->  #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
->  #endif
-> +/* If the pool runs out, try this many times to allocate this many new entries */
-> +#define DMA_DEBUG_DYNAMIC_ENTRIES 256
-> +#define DMA_DEBUG_DYNAMIC_RETRIES 2
->
->  enum {
->  	dma_debug_single,
-> @@ -702,12 +705,21 @@ static struct dma_debug_entry *dma_entry_alloc(void)
->  {
->  	struct dma_debug_entry *entry;
->  	unsigned long flags;
-> +	int retry_count;
->
-> -	spin_lock_irqsave(&free_entries_lock, flags);
-> +	for (retry_count = 0; ; retry_count++) {
-> +		spin_lock_irqsave(&free_entries_lock, flags);
-> +
-> +		if (num_free_entries > 0)
-> +			break;
->
-> -	if (list_empty(&free_entries)) {
-> -		global_disable = true;
->  		spin_unlock_irqrestore(&free_entries_lock, flags);
-> +
-> +		if (retry_count < DMA_DEBUG_DYNAMIC_RETRIES &&
-> +		    !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES))
-> +			continue;
-> +
-> +		global_disable = true;
->  		pr_err("debugging out of memory - disabling\n");
->  		return NULL;
->  	}
->
+> Changes in V2:
+>=20
+> - Added inclusion of 'numa.h' header at various places per Andrew
+> - Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
+>=20
+> Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
+>=20
+> - Dropped OCFS2 changes per Joseph
+> - Dropped media/video drivers changes per Hans
+>=20
+> RFC - https://patchwork.kernel.org/patch/10678035/
+>=20
+> Build tested this with multiple cross compiler options like alpha, sparc,
+> arm64, x86, powerpc, powerpc64le etc with their default config which migh=
+t
+> not have compiled tested all driver related changes. I will appreciate
+> folks giving this a test in their respective build environment.
+>=20
+> All these places for replacement were found by running the following grep
+> patterns on the entire kernel code. Please let me know if this might have
+> missed some instances. This might also have replaced some false positives=
+.
+> I will appreciate suggestions, inputs and review.
+>=20
+> 1. git grep "nid =3D=3D -1"
+> 2. git grep "node =3D=3D -1"
+> 3. git grep "nid =3D -1"
+> 4. git grep "node =3D -1"
+>=20
+>  drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
+>  drivers/infiniband/hw/hfi1/init.c             |  3 ++-
+
+For the drivers/infiniband changes,
+
+Acked-by: Doug Ledford <dledford@redhat.com>
+
+--=20
+Doug Ledford <dledford@redhat.com>
+    GPG KeyID: B826A3330E572FDD
+    Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
+
+--=-Jgd362xHNNmppwzCQCK+
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAlwFfPwACgkQuCajMw5X
+L911nA/+Pq4noh4r/S3RhvajccFUfwzT5+IhZ7V69GHF9EaiPK8E1lka1m7BdNtX
+MlRVfjw6oW1Gs5uQFJfJC2qucbFLzZOm1I25GgzLq/iEq0ItnvUBVC13P2W5bmIa
+OB1zY9MRcBQs3T9W3/rcwFwxzYBIh9YsFNbq+op5uu5iUnKsLYenyPPTnWSVj5qO
+PWFKzPVxp68NmPpc/vPph6SrazSdSChuZFH06PElH0ifHC+Gde6gCuBSiX4dNCm5
+NzODtQz2AqmWPLS7XrgwtN2VGdjN8sPpQBcaYMV9aYOXzXdn5BexsgtoSd5VHdUN
+UZOUZQi/1UwA/i+Ngg86mv7nKWh/sxflS7a+F3u3xR9BoP09Gtt41Yu+zLZ28omr
+NTKrHWhoiv+WFY+iXoCCtPbI8TYjTuqyVhqHOZiMzX9rTxYBZ3wtHMOqmdQl5K69
+nnpJpIJr0uFEehieZvo7Tcvj28D7kDUwYN66HkEJcie71Uu45+lW2HoaIQwURsnY
+ot6h/yf8X2Pu1PY4A9FjXeFbECh4qXjZXevOz6vDaubqVwWtQdpoGl78KPd8WaJ+
+8tCtiT+L99uUE6sZoLaTdYd/EYsABxfbduwcTOdpNWVgxx2bxDXSgWkAd1bk0A0k
+zFoViov/qfs5E2JiGmVcxPeya+X/5gFMM8vJRwIvhMyokGfWRLg=
+=LheN
+-----END PGP SIGNATURE-----
+
+--=-Jgd362xHNNmppwzCQCK+--
