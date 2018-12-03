@@ -1,217 +1,159 @@
-From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 06/15] iommu/mediatek: Add mt8183 IOMMU support
-Date: Mon, 3 Dec 2018 00:56:13 +0100
-Message-ID: <f8528e80-e816-7901-a56a-581f88b29c83@gmail.com>
-References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
-	<1542422142-30688-7-git-send-email-yong.wu@mediatek.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH] of/device: add blacklist for iommu dma_ops
+Date: Sun, 2 Dec 2018 16:10:33 -0800
+Message-ID: <CAAFQd5CWRKGA2=TEpYvnLuBzu6=2h1i_YtmN_FusyFuLy5BpdQ@mail.gmail.com>
+References: <20181201165348.24140-1-robdclark@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1542422142-30688-7-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181201165348.24140-1-robdclark@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Rob Clark <robdclark@gmail.com>
+Cc: "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, dri-devel <dri-devel@lists.freedesktop.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Vivek Gautam <vivek.gautam@codeaurora.org>, Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, David Airlie <airlied@linux.ie>, freedreno <freedreno@lists.freedesktop.org>, Archit Taneja <architt@codeaurora.org>, Sean Paul <seanpaul@chromium.org>, Douglas Anderson <dianders@chromium.org>, Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>, frowand.list@gmail.com, devicetree@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 17/11/2018 03:35, Yong Wu wrote:
-> The M4U IP blocks in mt8183 is MediaTek's generation2 M4U which use
-> the ARM Short-descriptor like mt8173, and most of the HW registers
-> are the same.
-> 
-> Here list main changes in mt8183:
-> 1) mt8183 has only one M4U HW like mt8173.
-
-That's a change?
-
-> 2) mt8183 don't have its "bclk" clock, the M4U use the EMI clock
-> which has already been enabled before kernel.
-> 3) mt8183 can support the dram over 4GB, but it don't call this "4GB
-> mode".
-> 4) mt8183 pgtable base register(0x0) extend bit[1:0] which represent
-> the bit[33:32] in the physical address of the pgtable base, But the
-> standard ttbr0[1] means the S bit which is enabled defaultly, Hence,
-> we add a mask.
-> 5) mt8183 HW has a GALS modules, the SMI should add "gals" clock
-> support.
-> 6) the larb-id in smi-common has been remapped. This means the
-> larb-id reported in the mtk_iommu_isr is not the real larb-id, here
-> is the remapping relationship of mt8183:
-
-This whole list is an indicator that you will need several enhancements to the
-existing code before you can add mt8183 support.
-Please do so in independent patches (e.g. gals modules, remap logic)
-Regarding making bclk optional, I think it would be better to set it to NULL for
-mt8183 otherwise the driver will work with a broken device tree on systems that
-actually need the bclk. Same holds for gals0 and gals1.
-
->                        M4U
->                         |
-> ---------------------------------------------
-> |               SMI common                  |
-> -0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
->  |     |     |     |     |     |      |     |
-> larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
-> disp  vdec  img   cam   venc  img    cam
-> As above, larb0 connects with the id 0 in smi-common.
->           larb1 connects with the id 7 in smi-common.
->           ...
-> Take a example, if the larb-id reported in the mtk_iommu_isr is 7,
-> actually it is larb1(vdec).
-> 
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+On Sat, Dec 1, 2018 at 8:54 AM Rob Clark <robdclark@gmail.com> wrote:
+>
+> This solves a problem we see with drm/msm, caused by getting
+> iommu_dma_ops while we attach our own domain and manage it directly at
+> the iommu API level:
+>
+>   [0000000000000038] user address but active_mm is swapper
+>   Internal error: Oops: 96000005 [#1] PREEMPT SMP
+>   Modules linked in:
+>   CPU: 7 PID: 70 Comm: kworker/7:1 Tainted: G        W         4.19.3 #90
+>   Hardware name: xxx (DT)
+>   Workqueue: events deferred_probe_work_func
+>   pstate: 80c00009 (Nzcv daif +PAN +UAO)
+>   pc : iommu_dma_map_sg+0x7c/0x2c8
+>   lr : iommu_dma_map_sg+0x40/0x2c8
+>   sp : ffffff80095eb4f0
+>   x29: ffffff80095eb4f0 x28: 0000000000000000
+>   x27: ffffffc0f9431578 x26: 0000000000000000
+>   x25: 00000000ffffffff x24: 0000000000000003
+>   x23: 0000000000000001 x22: ffffffc0fa9ac010
+>   x21: 0000000000000000 x20: ffffffc0fab40980
+>   x19: ffffffc0fab40980 x18: 0000000000000003
+>   x17: 00000000000001c4 x16: 0000000000000007
+>   x15: 000000000000000e x14: ffffffffffffffff
+>   x13: ffff000000000000 x12: 0000000000000028
+>   x11: 0101010101010101 x10: 7f7f7f7f7f7f7f7f
+>   x9 : 0000000000000000 x8 : ffffffc0fab409a0
+>   x7 : 0000000000000000 x6 : 0000000000000002
+>   x5 : 0000000100000000 x4 : 0000000000000000
+>   x3 : 0000000000000001 x2 : 0000000000000002
+>   x1 : ffffffc0f9431578 x0 : 0000000000000000
+>   Process kworker/7:1 (pid: 70, stack limit = 0x0000000017d08ffb)
+>   Call trace:
+>    iommu_dma_map_sg+0x7c/0x2c8
+>    __iommu_map_sg_attrs+0x70/0x84
+>    get_pages+0x170/0x1e8
+>    msm_gem_get_iova+0x8c/0x128
+>    _msm_gem_kernel_new+0x6c/0xc8
+>    msm_gem_kernel_new+0x4c/0x58
+>    dsi_tx_buf_alloc_6g+0x4c/0x8c
+>    msm_dsi_host_modeset_init+0xc8/0x108
+>    msm_dsi_modeset_init+0x54/0x18c
+>    _dpu_kms_drm_obj_init+0x430/0x474
+>    dpu_kms_hw_init+0x5f8/0x6b4
+>    msm_drm_bind+0x360/0x6c8
+>    try_to_bring_up_master.part.7+0x28/0x70
+>    component_master_add_with_match+0xe8/0x124
+>    msm_pdev_probe+0x294/0x2b4
+>    platform_drv_probe+0x58/0xa4
+>    really_probe+0x150/0x294
+>    driver_probe_device+0xac/0xe8
+>    __device_attach_driver+0xa4/0xb4
+>    bus_for_each_drv+0x98/0xc8
+>    __device_attach+0xac/0x12c
+>    device_initial_probe+0x24/0x30
+>    bus_probe_device+0x38/0x98
+>    deferred_probe_work_func+0x78/0xa4
+>    process_one_work+0x24c/0x3dc
+>    worker_thread+0x280/0x360
+>    kthread+0x134/0x13c
+>    ret_from_fork+0x10/0x18
+>   Code: d2800004 91000725 6b17039f 5400048a (f9401f40)
+>   ---[ end trace f22dda57f3648e2c ]---
+>   Kernel panic - not syncing: Fatal exception
+>   SMP: stopping secondary CPUs
+>   Kernel Offset: disabled
+>   CPU features: 0x0,22802a18
+>   Memory Limit: none
+>
+> The problem is that when drm/msm does it's own iommu_attach_device(),
+> now the domain returned by iommu_get_domain_for_dev() is drm/msm's
+> domain, and it doesn't have domain->iova_cookie.
+>
+> We kind of avoided this problem prior to sdm845/dpu because the iommu
+> was attached to the mdp node in dt, which is a child of the toplevel
+> mdss node (which corresponds to the dev passed in dma_map_sg()).  But
+> with sdm845, now the iommu is attached at the mdss level so we hit the
+> iommu_dma_ops in dma_map_sg().
+>
+> But auto allocating/attaching a domain before the driver is probed was
+> already a blocking problem for enabling per-context pagetables for the
+> GPU.  This problem is also now solved with this patch.
+>
+> Fixes: 97890ba9289c dma-mapping: detect and configure IOMMU in of_dma_configure
+> Tested-by: Douglas Anderson <dianders@chromium.org>
+> Signed-off-by: Rob Clark <robdclark@gmail.com>
 > ---
->  drivers/iommu/mtk_iommu.c | 38 ++++++++++++++++++++++++++++----------
->  drivers/iommu/mtk_iommu.h |  5 +++++
->  drivers/memory/mtk-smi.c  | 47 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 80 insertions(+), 10 deletions(-)
-> 
-
-[...]
-
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index a243047..e5fd8ee 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -39,11 +39,16 @@ enum mtk_iommu_plat {
->  	M4U_MT2701,
->  	M4U_MT2712,
->  	M4U_MT8173,
-> +	M4U_MT8183,
->  };
->  
->  struct mtk_iommu_plat_data {
->  	enum mtk_iommu_plat m4u_plat;
->  	bool has_4gb_mode;
-> +
-> +	/* The larb-id may be remapped in the smi-common. */
-> +	bool larbid_remap_enable;
-> +	unsigned int larbid_remapped[MTK_LARB_NR_MAX];
-
-Please add new features to the driver as single patches. Don't add this kind of
-things in the patch where you enable a new SoC.
-
->  };
->  
->  struct mtk_iommu_domain;
-> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index e37e54b..979153b 100644
-> --- a/drivers/memory/mtk-smi.c
-> +++ b/drivers/memory/mtk-smi.c
-> @@ -59,6 +59,7 @@ struct mtk_smi_larb_gen {
->  struct mtk_smi {
->  	struct device			*dev;
->  	struct clk			*clk_apb, *clk_smi;
-> +	struct clk			*clk_gals0, *clk_gals1;
->  	struct clk			*clk_async; /*only needed by mt2701*/
->  	void __iomem			*smi_ao_base;
->  };
-> @@ -93,8 +94,20 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
->  	if (ret)
->  		goto err_disable_apb;
->  
-> +	ret = clk_prepare_enable(smi->clk_gals0);
-> +	if (ret)
-> +		goto err_disable_smi;
-> +
-> +	ret = clk_prepare_enable(smi->clk_gals1);
-> +	if (ret)
-> +		goto err_disable_gals0;
-> +>  	return 0;
->  
-> +err_disable_gals0:
-> +	clk_disable_unprepare(smi->clk_gals0);
-> +err_disable_smi:
-> +	clk_disable_unprepare(smi->clk_smi);
->  err_disable_apb:
->  	clk_disable_unprepare(smi->clk_apb);
->  err_put_pm:
-> @@ -104,6 +117,8 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
->  
->  static void mtk_smi_disable(const struct mtk_smi *smi)
->  {
-> +	clk_disable_unprepare(smi->clk_gals1);
-> +	clk_disable_unprepare(smi->clk_gals0);
->  	clk_disable_unprepare(smi->clk_smi);
->  	clk_disable_unprepare(smi->clk_apb);
->  	pm_runtime_put_sync(smi->dev);
-> @@ -262,6 +277,12 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
->  	.larb_special_mask = BIT(8) | BIT(9), /* bdpsys */
->  };
->  
-> +static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
-> +	.need_larbid = true,
-> +	.config_port = mtk_smi_larb_config_port_gen2_general,
-> +	.larb_special_mask = BIT(2) | BIT(3) | BIT(7), /* IPU0 | IPU1 | CCU */
+> This is an alternative/replacement for [1].  What it lacks in elegance
+> it makes up for in practicality ;-)
+>
+> [1] https://patchwork.freedesktop.org/patch/264930/
+>
+>  drivers/of/device.c | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 5957cd4fa262..15ffee00fb22 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -72,6 +72,14 @@ int of_device_add(struct platform_device *ofdev)
+>         return device_add(&ofdev->dev);
+>  }
+>
+> +static const struct of_device_id iommu_blacklist[] = {
+> +       { .compatible = "qcom,mdp4" },
+> +       { .compatible = "qcom,mdss" },
+> +       { .compatible = "qcom,sdm845-mdss" },
+> +       { .compatible = "qcom,adreno" },
+> +       {}
 > +};
 > +
->  static const struct of_device_id mtk_smi_larb_of_ids[] = {
->  	{
->  		.compatible = "mediatek,mt8173-smi-larb",
-> @@ -275,6 +296,10 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
->  		.compatible = "mediatek,mt2712-smi-larb",
->  		.data = &mtk_smi_larb_mt2712
->  	},
-> +	{
-> +		.compatible = "mediatek,mt8183-smi-larb",
-> +		.data = &mtk_smi_larb_mt8183
-> +	},
->  	{}
->  };
->  
-> @@ -304,6 +329,12 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
->  	larb->smi.clk_smi = devm_clk_get(dev, "smi");
->  	if (IS_ERR(larb->smi.clk_smi))
->  		return PTR_ERR(larb->smi.clk_smi);
+>  /**
+>   * of_dma_configure - Setup DMA configuration
+>   * @dev:       Device to apply DMA configuration
+> @@ -164,6 +172,20 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
+>         dev_dbg(dev, "device is%sbehind an iommu\n",
+>                 iommu ? " " : " not ");
+>
+> +       /*
+> +        * There is at least one case where the driver wants to directly
+> +        * manage the IOMMU, but if we end up with iommu dma_ops, that
+> +        * interferes with the drivers ability to use dma_map_sg() for
+> +        * cache operations.  Since we don't currently have a better
+> +        * solution, and this code runs before the driver is probed and
+> +        * has a chance to intervene, use a simple blacklist to avoid
+> +        * ending up with iommu dma_ops:
+> +        */
+> +       if (of_match_device(iommu_blacklist, dev)) {
+> +               dev_dbg(dev, "skipping iommu hookup\n");
+> +               iommu = NULL;
+> +       }
 > +
-> +	larb->smi.clk_gals0 = devm_clk_get(dev, "gals");> +	if (PTR_ERR(larb->smi.clk_gals0) == -ENOENT)
-> +		larb->smi.clk_gals0 = NULL;
-> +	else if (IS_ERR(larb->smi.clk_gals0))
-> +		return PTR_ERR(larb->smi.clk_gals0);
->  	larb->smi.dev = dev;
->  
->  	if (larb->larb_gen->need_larbid) {
-> @@ -364,6 +395,10 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
->  		.compatible = "mediatek,mt2712-smi-common",
->  		.data = (void *)MTK_SMI_GEN2
->  	},
-> +	{
-> +		.compatible = "mediatek,mt8183-smi-common",
-> +		.data = (void *)MTK_SMI_GEN2
-> +	},
->  	{}
->  };
->  
-> @@ -388,6 +423,18 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
->  	if (IS_ERR(common->clk_smi))
->  		return PTR_ERR(common->clk_smi);
->  
-> +	common->clk_gals0 = devm_clk_get(dev, "gals0");
-> +	if (PTR_ERR(common->clk_gals0) == -ENOENT)
-> +		common->clk_gals0 = NULL;
-> +	else if (IS_ERR(common->clk_gals0))
-> +		return PTR_ERR(common->clk_gals0);
-> +
-> +	common->clk_gals1 = devm_clk_get(dev, "gals1");
-> +	if (PTR_ERR(common->clk_gals1) == -ENOENT)
-> +		common->clk_gals1 = NULL;
-> +	else if (IS_ERR(common->clk_gals1))
-> +		return PTR_ERR(common->clk_gals1);
-> +
+>         arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+>
+>         return 0;
+> --
+> 2.19.2
+>
 
-I'd prefer to check for clk_gals[01] for SoCs that need this clocks instead of
-making them optional.
++Marek Szyprowski who I believe had a similar problem with Exynos DRM before.
 
-Regards,
-Matthias
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+
+Best regards,
+Tomasz
