@@ -1,68 +1,49 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: [RFC 4/4] dma-debug: Make leak-like behaviour apparent
-Date: Mon,  3 Dec 2018 17:28:09 +0000
-Message-ID: <7ec928f0bd92122f271c421e99aaeb593ccabdf5.1543856576.git.robin.murphy@arm.com>
-References: <cover.1543856576.git.robin.murphy@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
+Date: Mon, 3 Dec 2018 18:33:22 +0100
+Message-ID: <20181203173322.GB8282@lst.de>
+References: <20181130175449.2625-1-cai@gmx.us> <b22d2ad6-2638-96d7-1df2-24701589202f@arm.com> <20181201163657.GA19557@lst.de> <53ab96d7-5dc9-e1a9-4cf2-bb8bf80a3acf@huawei.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cover.1543856576.git.robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <53ab96d7-5dc9-e1a9-4cf2-bb8bf80a3acf@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
+To: John Garry <john.garry@huawei.com>
+Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Qian Cai <cai@gmx.us>, netdev@vger.kernel.org, linuxarm@huawei.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, yisen.zhuang@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we can dynamically allocate DMA debug entries to cope with
-drivers maintaining excessively large numbers of live mappings, a driver
-which *does* actually have a bug leaking mappings (and is not unloaded)
-will no longer trigger the "DMA-API: debugging out of memory - disabling"
-message until it gets to actual kernel OOM conditions, which means it
-could go unnoticed for a while. To that end, let's inform the user each
-time the pool has grown to a multiple of its initial size, which should
-make it apparent that they either have a leak or might want to increase
-the preallocation size.
+On Mon, Dec 03, 2018 at 11:56:11AM +0000, John Garry wrote:
+> On 01/12/2018 16:36, Christoph Hellwig wrote:
+>> On Fri, Nov 30, 2018 at 07:39:50PM +0000, Robin Murphy wrote:
+>>> I was assuming the point was to also add something like
+>>>
+>>> 	default 131072 if HNS_ENET
+>>>
+>>> so that DMA debug doesn't require too much thought from the user. If they
+>>> still have to notice the overflow message and empirically figure out a
+>>> value that does work, rebuilding the kernel each time is far less
+>>> convenient than simply adding "dma_debug_entries=..." to their kernel
+>>> command line and rebooting, which they can do today. If they do already
+>>> know up-front that the default will need overriding and what the
+>>> appropriate value is, then the command line still seems seems just as
+>>> convenient.
+>>
+>> I'm not so fond of random drivers changing the defaults.  My idea
+>> was rather to have the config option so that the defconfig files for
+>> the Hisilicon SOCs with this hardware could select a larger number
+>> without making a total mess of the kernel configuration.
+>>
+>> If we really have to we could do different defaults, but I'd still
+>> much rather do this on a arch/platform basis than specific drivers.
+>
+> As I understand, some drivers could even use much more than this (131072), 
+> to such a point where I can't imagine that we would want to set an arch 
+> default to support them. For this HNS_ENET case, it is arm64 specific so it 
+> would be an arch defconfig.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+But I'm not sure we could always do the right thing for everyone.
 
-Tagging this one as RFC since people might think it's silly.
-
- kernel/dma/debug.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 46cc075aec99..c4759dab0f8c 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -696,6 +696,17 @@ static struct dma_debug_entry *__dma_entry_alloc(void)
- 	return entry;
- }
- 
-+void __dma_entry_alloc_check_leak(void)
-+{
-+	u32 tmp = nr_total_entries % nr_prealloc_entries;
-+
-+	/* Shout each time we tick over some multiple of the initial pool */
-+	if (tmp < DMA_DEBUG_DYNAMIC_ENTRIES) {
-+		pr_info("dma_debug_entry pool grown to %u00%% - possible mapping leak?\n",
-+			(nr_total_entries / nr_prealloc_entries));
-+	}
-+}
-+
- /* struct dma_entry allocator
-  *
-  * The next two functions implement the allocator for
-@@ -716,8 +727,10 @@ static struct dma_debug_entry *dma_entry_alloc(void)
- 		spin_unlock_irqrestore(&free_entries_lock, flags);
- 
- 		if (retry_count < DMA_DEBUG_DYNAMIC_RETRIES &&
--		    !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES))
-+		    !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES)) {
-+			__dma_entry_alloc_check_leak();
- 			continue;
-+		}
- 
- 		global_disable = true;
- 		pr_err("debugging out of memory - disabling\n");
--- 
-2.19.1.dirty
+I think we might be better of trying to just dynamically allocate
+entries when we run out of them instead of coming up with a perfect
+number.
