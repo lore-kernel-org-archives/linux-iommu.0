@@ -1,159 +1,74 @@
-From: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-Subject: Re: [PATCH v2 1/9] mm: Introduce new vm_insert_range API
-Date: Mon, 3 Dec 2018 08:22:22 +0200
-Message-ID: <20181203062222.GF6959@rapoport-lnx>
-References: <20181202061944.GA3094@jordon-HP-15-Notebook-PC>
-	<20181202111313.GC6959@rapoport-lnx>
-	<CAFqt6zbvyaPF3tUA1-=RsfSM14p7Rx5NgQqAeW5-JUfd+NrJ2g@mail.gmail.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v18 1/5] iommu/arm-smmu: Add
+ pm_runtime/sleep ops
+Date: Mon, 3 Dec 2018 12:13:38 +0530
+Message-ID: <CAFp+6iH-T3KsUH8SDoLDfmJ6x_iHxtHGDySuKib0L_u46G6h6w@mail.gmail.com>
+References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
+ <20181127101145.7682-2-vivek.gautam@codeaurora.org>
+ <154342225921.88331.14467967828250776155@swboyd.mtv.corp.google.com>
+ <0d76b669-6c4f-7c3b-50a1-084201f2c07a@arm.com>
+ <CAFp+6iEC8hobAdVF5nLdhQdCUqbi1xa4Vi-NLugGshV=dg+h1A@mail.gmail.com>
+ <20181130181536.GA15274@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAFqt6zbvyaPF3tUA1-=RsfSM14p7Rx5NgQqAeW5-JUfd+NrJ2g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Kyungmin
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20181130181536.GA15274-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 03, 2018 at 09:51:45AM +0530, Souptick Joarder wrote:
-> Hi Mike,
-> 
-> On Sun, Dec 2, 2018 at 4:43 PM Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org> wrote:
-> >
-> > On Sun, Dec 02, 2018 at 11:49:44AM +0530, Souptick Joarder wrote:
-> > > Previouly drivers have their own way of mapping range of
-> > > kernel pages/memory into user vma and this was done by
-> > > invoking vm_insert_page() within a loop.
-> > >
-> > > As this pattern is common across different drivers, it can
-> > > be generalized by creating a new function and use it across
-> > > the drivers.
-> > >
-> > > vm_insert_range is the new API which will be used to map a
-> > > range of kernel memory/pages to user vma.
-> > >
-> > > This API is tested by Heiko for Rockchip drm driver, on rk3188,
-> > > rk3288, rk3328 and rk3399 with graphics.
-> > >
-> > > Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> > > Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> > > Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> > > ---
-> > >  include/linux/mm_types.h |  3 +++
-> > >  mm/memory.c              | 38 ++++++++++++++++++++++++++++++++++++++
-> > >  mm/nommu.c               |  7 +++++++
-> > >  3 files changed, 48 insertions(+)
-> > >
-> > > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> > > index 5ed8f62..15ae24f 100644
-> > > --- a/include/linux/mm_types.h
-> > > +++ b/include/linux/mm_types.h
-> > > @@ -523,6 +523,9 @@ extern void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
-> > >  extern void tlb_finish_mmu(struct mmu_gather *tlb,
-> > >                               unsigned long start, unsigned long end);
-> > >
-> > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > +                     struct page **pages, unsigned long page_count);
-> > > +
-> >
-> > This seem to belong to include/linux/mm.h, near vm_insert_page()
-> 
-> Ok, I will change it. Apart from this change does it looks good ?
-
-With this change you can add
-
-Reviewed-by: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
- 
-> >
-> > >  static inline void init_tlb_flush_pending(struct mm_struct *mm)
-> > >  {
-> > >       atomic_set(&mm->tlb_flush_pending, 0);
-> > > diff --git a/mm/memory.c b/mm/memory.c
-> > > index 15c417e..84ea46c 100644
-> > > --- a/mm/memory.c
-> > > +++ b/mm/memory.c
-> > > @@ -1478,6 +1478,44 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
-> > >  }
-> > >
-> > >  /**
-> > > + * vm_insert_range - insert range of kernel pages into user vma
-> > > + * @vma: user vma to map to
-> > > + * @addr: target user address of this page
-> > > + * @pages: pointer to array of source kernel pages
-> > > + * @page_count: number of pages need to insert into user vma
-> > > + *
-> > > + * This allows drivers to insert range of kernel pages they've allocated
-> > > + * into a user vma. This is a generic function which drivers can use
-> > > + * rather than using their own way of mapping range of kernel pages into
-> > > + * user vma.
-> > > + *
-> > > + * If we fail to insert any page into the vma, the function will return
-> > > + * immediately leaving any previously-inserted pages present.  Callers
-> > > + * from the mmap handler may immediately return the error as their caller
-> > > + * will destroy the vma, removing any successfully-inserted pages. Other
-> > > + * callers should make their own arrangements for calling unmap_region().
-> > > + *
-> > > + * Context: Process context. Called by mmap handlers.
-> > > + * Return: 0 on success and error code otherwise
-> > > + */
-> > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > +                     struct page **pages, unsigned long page_count)
-> > > +{
-> > > +     unsigned long uaddr = addr;
-> > > +     int ret = 0, i;
-> > > +
-> > > +     for (i = 0; i < page_count; i++) {
-> > > +             ret = vm_insert_page(vma, uaddr, pages[i]);
-> > > +             if (ret < 0)
-> > > +                     return ret;
-> > > +             uaddr += PAGE_SIZE;
-> > > +     }
-> > > +
-> > > +     return ret;
-> > > +}
-> > > +EXPORT_SYMBOL(vm_insert_range);
-> > > +
-> > > +/**
-> > >   * vm_insert_page - insert single page into user vma
-> > >   * @vma: user vma to map to
-> > >   * @addr: target user address of this page
-> > > diff --git a/mm/nommu.c b/mm/nommu.c
-> > > index 749276b..d6ef5c7 100644
-> > > --- a/mm/nommu.c
-> > > +++ b/mm/nommu.c
-> > > @@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
-> > >  }
-> > >  EXPORT_SYMBOL(vm_insert_page);
-> > >
-> > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > +                     struct page **pages, unsigned long page_count)
-> > > +{
-> > > +     return -EINVAL;
-> > > +}
-> > > +EXPORT_SYMBOL(vm_insert_range);
-> > > +
-> > >  /*
-> > >   *  sys_brk() for the most part doesn't need the global kernel
-> > >   *  lock, except when an application is doing something nasty
-> > > --
-> > > 1.9.1
-> > >
-> >
-> > --
-> > Sincerely yours,
-> > Mike.
-> >
-> 
-
--- 
-Sincerely yours,
-Mike.
+T24gRnJpLCBOb3YgMzAsIDIwMTggYXQgMTE6NDUgUE0gV2lsbCBEZWFjb24gPHdpbGwuZGVhY29u
+QGFybS5jb20+IHdyb3RlOgo+Cj4gT24gVGh1LCBOb3YgMjksIDIwMTggYXQgMDg6MjU6MjBQTSAr
+MDUzMCwgVml2ZWsgR2F1dGFtIHdyb3RlOgo+ID4gT24gV2VkLCBOb3YgMjgsIDIwMTggYXQgMTA6
+MDcgUE0gUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4gd3JvdGU6Cj4gPiA+Cj4g
+PiA+IE9uIDI4LzExLzIwMTggMTY6MjQsIFN0ZXBoZW4gQm95ZCB3cm90ZToKPiA+ID4gPiBRdW90
+aW5nIFZpdmVrIEdhdXRhbSAoMjAxOC0xMS0yNyAwMjoxMTo0MSkKPiA+ID4gPj4gQEAgLTE5NjYs
+NiArMTk3MCwyMyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBhcm1fc21tdV9v
+Zl9tYXRjaFtdID0gewo+ID4gPiA+PiAgIH07Cj4gPiA+ID4+ICAgTU9EVUxFX0RFVklDRV9UQUJM
+RShvZiwgYXJtX3NtbXVfb2ZfbWF0Y2gpOwo+ID4gPiA+Pgo+ID4gPiA+PiArc3RhdGljIHZvaWQg
+YXJtX3NtbXVfZmlsbF9jbGtfZGF0YShzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LAo+ID4g
+PiA+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IGNoYXIgKiBjb25z
+dCAqY2xrcykKPiA+ID4gPj4gK3sKPiA+ID4gPj4gKyAgICAgICBpbnQgaTsKPiA+ID4gPj4gKwo+
+ID4gPiA+PiArICAgICAgIGlmIChzbW11LT5udW1fY2xrcyA8IDEpCj4gPiA+ID4+ICsgICAgICAg
+ICAgICAgICByZXR1cm47Cj4gPiA+ID4+ICsKPiA+ID4gPj4gKyAgICAgICBzbW11LT5jbGtzID0g
+ZGV2bV9rY2FsbG9jKHNtbXUtPmRldiwgc21tdS0+bnVtX2Nsa3MsCj4gPiA+ID4+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplb2YoKnNtbXUtPmNsa3MpLCBHRlBfS0VSTkVM
+KTsKPiA+ID4gPj4gKyAgICAgICBpZiAoIXNtbXUtPmNsa3MpCj4gPiA+ID4+ICsgICAgICAgICAg
+ICAgICByZXR1cm47Cj4gPiA+ID4+ICsKPiA+ID4gPj4gKyAgICAgICBmb3IgKGkgPSAwOyBpIDwg
+c21tdS0+bnVtX2Nsa3M7IGkrKykKPiA+ID4gPj4gKyAgICAgICAgICAgICAgIHNtbXUtPmNsa3Nb
+aV0uaWQgPSBjbGtzW2ldOwo+ID4gPiA+Cj4gPiA+ID4gSXMgdGhpcyBjbGtfYnVsa19nZXRfYWxs
+KCk/Cj4gPgo+ID4gRnJvbSB3aGF0IEkgcmVtZW1iZXIsIGFuZCBub3cgSSBjb3VsZCBnbyBiYWNr
+IHRvIHY3IGFuZCBjaGVjayBbMV0sIHdlIHBhcmtlZAo+ID4gY2xrX2J1bGtfZ2V0IG91dCBvZiBP
+RidzIHNvbGUgcHVydmlldyBhcyB3ZSBhbHNvIGhhdmUKPiA+IGFybV9zbW11X2RldmljZV9hY3Bp
+X3Byb2JlKCkgYmVzaWRlcyBhcm1fc21tdV9kZXZpY2VfZHRfcHJvYmUoKS4KPiA+Cj4gPiBhcm1f
+c21tdV9kZXZpY2VfZHRfcHJvYmUoKSBjb3VsZCBnZXQgdGhlIGNsb2NrcyBmcm9tIGR0IGFuZCBm
+aWxsIGluCj4gPiB0aGUgY2xvY2sgYnVsayBkYXRhLCBhbmQKPiA+IHNpbWlsYXJseSwgYXJtX3Nt
+bXVfZGV2aWNlX2FjcGlfcHJvYmUoKSBjb3VsZCBmaWxsIHRoZSBjbG9jayBidWxrIGRhdGEKPiA+
+IGJ5IGdldHRpbmcgaXQgZnJvbSBBQ1BJLgo+ID4KPiA+IGNsa19idWxrX2dldF9hbGwoKSBzZWVt
+cyBsaWtlIGdvaW5nIG9ubHkgdGhlIE9GIHdheS4KPiA+IElzIHRoZXJlIGFub3RoZXIgd2F5IGhl
+cmUgdG8gaGF2ZSBzb21ldGhpbmcgY29tbW9uIGJldHdlZW4gQUNQSQo+ID4gYW5kIE9GLCBhbmQg
+dGhlbiBkbyB0aGUgY2xrX2J1bGtfZ2V0Pwo+Cj4gSSdkIHNheSBqdXN0IGdvIHdpdGggY2xrX2J1
+bGtfZ2V0X2FsbCgpIGFuZCBpZiBzb21lYm9keSByZWFsbHkgd2FudHMgdG8KPiBtZXNzIHdpdGgg
+dGhlIFNNTVUgY2xvY2tzIG9uIGEgc3lzdGVtIGJvb3RlZCB2aWEgQUNQSSwgdGhlbiBpdCdzIHRo
+ZWlyCj4gcHJvYmxlbSB0byBzb2x2ZS4gTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0IHRoZSBkZXNp
+Z24gb2YgSU9SVCBtYWtlcyB0aGlzCj4gbmV4dCB0byBpbXBvc3NpYmxlIHRvIHNvbHZlIGFueXdh
+eSwgYmVjYXVzZSBhIHN0YXRpYyB0YWJsZSBpcyB1c2VkIGFuZAo+IHRoZXJlZm9yZSB3ZSdyZSB1
+bmFibGUgdG8gcnVuIHdoYXRldmVyIEFTTCBtZXRob2RzIG5lZWQgdG8gYmUgaW52b2tlZCB0bwo+
+IG1lc3Mgd2l0aCB0aGUgY2xvY2tzLgoKU3VyZSB0aGVuLiBJIHdpbGwgcmVzcGluIHRoaXMgcGF0
+Y2gtc2VyaWVzLgoKPgo+IFdpbGwKCgoKLS0gClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2Yg
+UXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJv
+cmEgRm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZy
+ZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
+cmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
