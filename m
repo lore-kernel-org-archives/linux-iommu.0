@@ -1,137 +1,595 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] of/device: add blacklist for iommu dma_ops
-Date: Mon, 3 Dec 2018 12:06:03 +0100
-Message-ID: <afa0a41e-8ffe-ffb9-9d0c-fd05d83fd143@samsung.com>
-References: <20181201165348.24140-1-robdclark@gmail.com>
- <CGME20181203001139epcas3p1f4daa2df3e1ac378b284df32b4932b11@epcas3p1.samsung.com>
- <CAAFQd5CWRKGA2=TEpYvnLuBzu6=2h1i_YtmN_FusyFuLy5BpdQ@mail.gmail.com>
+From: gokul cg <gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: PCI passthrough with multiple devices in same iommu group
+Date: Mon, 3 Dec 2018 16:48:39 +0530
+Message-ID: <CAFP4jM9P5_om+f02oN8R_B2en3rPcJminf1at4dd-dV4S+3kgg@mail.gmail.com>
+References: <CAFP4jM9xWFcNjJCcedVngvRMV3SHPipzpukbP0+mvZwayKs=RA@mail.gmail.com>
+	<20181128082619.26cd9242@x1.home>
+	<CAFP4jM9218pEQnkxR-k-Ti0t4U0X4nToKbEqREiwK_cZAm=MGA@mail.gmail.com>
+	<20181130090505.364232b3@x1.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAAFQd5CWRKGA2=TEpYvnLuBzu6=2h1i_YtmN_FusyFuLy5BpdQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Sean Paul <seanpaul-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: multipart/mixed; boundary="===============7688264762912580342=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181130090505.364232b3-hfcDOgR9qeA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVG9tYXN6LAoKT24gMjAxOC0xMi0wMyAwMToxMCwgVG9tYXN6IEZpZ2Egd3JvdGU6Cj4gT24g
-U2F0LCBEZWMgMSwgMjAxOCBhdCA4OjU0IEFNIFJvYiBDbGFyayA8cm9iZGNsYXJrQGdtYWlsLmNv
-bT4gd3JvdGU6Cj4+IFRoaXMgc29sdmVzIGEgcHJvYmxlbSB3ZSBzZWUgd2l0aCBkcm0vbXNtLCBj
-YXVzZWQgYnkgZ2V0dGluZwo+PiBpb21tdV9kbWFfb3BzIHdoaWxlIHdlIGF0dGFjaCBvdXIgb3du
-IGRvbWFpbiBhbmQgbWFuYWdlIGl0IGRpcmVjdGx5IGF0Cj4+IHRoZSBpb21tdSBBUEkgbGV2ZWw6
-Cj4+Cj4+ICAgWzAwMDAwMDAwMDAwMDAwMzhdIHVzZXIgYWRkcmVzcyBidXQgYWN0aXZlX21tIGlz
-IHN3YXBwZXIKPj4gICBJbnRlcm5hbCBlcnJvcjogT29wczogOTYwMDAwMDUgWyMxXSBQUkVFTVBU
-IFNNUAo+PiAgIE1vZHVsZXMgbGlua2VkIGluOgo+PiAgIENQVTogNyBQSUQ6IDcwIENvbW06IGt3
-b3JrZXIvNzoxIFRhaW50ZWQ6IEcgICAgICAgIFcgICAgICAgICA0LjE5LjMgIzkwCj4+ICAgSGFy
-ZHdhcmUgbmFtZTogeHh4IChEVCkKPj4gICBXb3JrcXVldWU6IGV2ZW50cyBkZWZlcnJlZF9wcm9i
-ZV93b3JrX2Z1bmMKPj4gICBwc3RhdGU6IDgwYzAwMDA5IChOemN2IGRhaWYgK1BBTiArVUFPKQo+
-PiAgIHBjIDogaW9tbXVfZG1hX21hcF9zZysweDdjLzB4MmM4Cj4+ICAgbHIgOiBpb21tdV9kbWFf
-bWFwX3NnKzB4NDAvMHgyYzgKPj4gICBzcCA6IGZmZmZmZjgwMDk1ZWI0ZjAKPj4gICB4Mjk6IGZm
-ZmZmZjgwMDk1ZWI0ZjAgeDI4OiAwMDAwMDAwMDAwMDAwMDAwCj4+ICAgeDI3OiBmZmZmZmZjMGY5
-NDMxNTc4IHgyNjogMDAwMDAwMDAwMDAwMDAwMAo+PiAgIHgyNTogMDAwMDAwMDBmZmZmZmZmZiB4
-MjQ6IDAwMDAwMDAwMDAwMDAwMDMKPj4gICB4MjM6IDAwMDAwMDAwMDAwMDAwMDEgeDIyOiBmZmZm
-ZmZjMGZhOWFjMDEwCj4+ICAgeDIxOiAwMDAwMDAwMDAwMDAwMDAwIHgyMDogZmZmZmZmYzBmYWI0
-MDk4MAo+PiAgIHgxOTogZmZmZmZmYzBmYWI0MDk4MCB4MTg6IDAwMDAwMDAwMDAwMDAwMDMKPj4g
-ICB4MTc6IDAwMDAwMDAwMDAwMDAxYzQgeDE2OiAwMDAwMDAwMDAwMDAwMDA3Cj4+ICAgeDE1OiAw
-MDAwMDAwMDAwMDAwMDBlIHgxNDogZmZmZmZmZmZmZmZmZmZmZgo+PiAgIHgxMzogZmZmZjAwMDAw
-MDAwMDAwMCB4MTI6IDAwMDAwMDAwMDAwMDAwMjgKPj4gICB4MTE6IDAxMDEwMTAxMDEwMTAxMDEg
-eDEwOiA3ZjdmN2Y3ZjdmN2Y3ZjdmCj4+ICAgeDkgOiAwMDAwMDAwMDAwMDAwMDAwIHg4IDogZmZm
-ZmZmYzBmYWI0MDlhMAo+PiAgIHg3IDogMDAwMDAwMDAwMDAwMDAwMCB4NiA6IDAwMDAwMDAwMDAw
-MDAwMDIKPj4gICB4NSA6IDAwMDAwMDAxMDAwMDAwMDAgeDQgOiAwMDAwMDAwMDAwMDAwMDAwCj4+
-ICAgeDMgOiAwMDAwMDAwMDAwMDAwMDAxIHgyIDogMDAwMDAwMDAwMDAwMDAwMgo+PiAgIHgxIDog
-ZmZmZmZmYzBmOTQzMTU3OCB4MCA6IDAwMDAwMDAwMDAwMDAwMDAKPj4gICBQcm9jZXNzIGt3b3Jr
-ZXIvNzoxIChwaWQ6IDcwLCBzdGFjayBsaW1pdCA9IDB4MDAwMDAwMDAxN2QwOGZmYikKPj4gICBD
-YWxsIHRyYWNlOgo+PiAgICBpb21tdV9kbWFfbWFwX3NnKzB4N2MvMHgyYzgKPj4gICAgX19pb21t
-dV9tYXBfc2dfYXR0cnMrMHg3MC8weDg0Cj4+ICAgIGdldF9wYWdlcysweDE3MC8weDFlOAo+PiAg
-ICBtc21fZ2VtX2dldF9pb3ZhKzB4OGMvMHgxMjgKPj4gICAgX21zbV9nZW1fa2VybmVsX25ldysw
-eDZjLzB4YzgKPj4gICAgbXNtX2dlbV9rZXJuZWxfbmV3KzB4NGMvMHg1OAo+PiAgICBkc2lfdHhf
-YnVmX2FsbG9jXzZnKzB4NGMvMHg4Ywo+PiAgICBtc21fZHNpX2hvc3RfbW9kZXNldF9pbml0KzB4
-YzgvMHgxMDgKPj4gICAgbXNtX2RzaV9tb2Rlc2V0X2luaXQrMHg1NC8weDE4Ywo+PiAgICBfZHB1
-X2ttc19kcm1fb2JqX2luaXQrMHg0MzAvMHg0NzQKPj4gICAgZHB1X2ttc19od19pbml0KzB4NWY4
-LzB4NmI0Cj4+ICAgIG1zbV9kcm1fYmluZCsweDM2MC8weDZjOAo+PiAgICB0cnlfdG9fYnJpbmdf
-dXBfbWFzdGVyLnBhcnQuNysweDI4LzB4NzAKPj4gICAgY29tcG9uZW50X21hc3Rlcl9hZGRfd2l0
-aF9tYXRjaCsweGU4LzB4MTI0Cj4+ICAgIG1zbV9wZGV2X3Byb2JlKzB4Mjk0LzB4MmI0Cj4+ICAg
-IHBsYXRmb3JtX2Rydl9wcm9iZSsweDU4LzB4YTQKPj4gICAgcmVhbGx5X3Byb2JlKzB4MTUwLzB4
-Mjk0Cj4+ICAgIGRyaXZlcl9wcm9iZV9kZXZpY2UrMHhhYy8weGU4Cj4+ICAgIF9fZGV2aWNlX2F0
-dGFjaF9kcml2ZXIrMHhhNC8weGI0Cj4+ICAgIGJ1c19mb3JfZWFjaF9kcnYrMHg5OC8weGM4Cj4+
-ICAgIF9fZGV2aWNlX2F0dGFjaCsweGFjLzB4MTJjCj4+ICAgIGRldmljZV9pbml0aWFsX3Byb2Jl
-KzB4MjQvMHgzMAo+PiAgICBidXNfcHJvYmVfZGV2aWNlKzB4MzgvMHg5OAo+PiAgICBkZWZlcnJl
-ZF9wcm9iZV93b3JrX2Z1bmMrMHg3OC8weGE0Cj4+ICAgIHByb2Nlc3Nfb25lX3dvcmsrMHgyNGMv
-MHgzZGMKPj4gICAgd29ya2VyX3RocmVhZCsweDI4MC8weDM2MAo+PiAgICBrdGhyZWFkKzB4MTM0
-LzB4MTNjCj4+ICAgIHJldF9mcm9tX2ZvcmsrMHgxMC8weDE4Cj4+ICAgQ29kZTogZDI4MDAwMDQg
-OTEwMDA3MjUgNmIxNzAzOWYgNTQwMDA0OGEgKGY5NDAxZjQwKQo+PiAgIC0tLVsgZW5kIHRyYWNl
-IGYyMmRkYTU3ZjM2NDhlMmMgXS0tLQo+PiAgIEtlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBG
-YXRhbCBleGNlcHRpb24KPj4gICBTTVA6IHN0b3BwaW5nIHNlY29uZGFyeSBDUFVzCj4+ICAgS2Vy
-bmVsIE9mZnNldDogZGlzYWJsZWQKPj4gICBDUFUgZmVhdHVyZXM6IDB4MCwyMjgwMmExOAo+PiAg
-IE1lbW9yeSBMaW1pdDogbm9uZQo+Pgo+PiBUaGUgcHJvYmxlbSBpcyB0aGF0IHdoZW4gZHJtL21z
-bSBkb2VzIGl0J3Mgb3duIGlvbW11X2F0dGFjaF9kZXZpY2UoKSwKPj4gbm93IHRoZSBkb21haW4g
-cmV0dXJuZWQgYnkgaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2KCkgaXMgZHJtL21zbSdzCj4+IGRv
-bWFpbiwgYW5kIGl0IGRvZXNuJ3QgaGF2ZSBkb21haW4tPmlvdmFfY29va2llLgo+Pgo+PiBXZSBr
-aW5kIG9mIGF2b2lkZWQgdGhpcyBwcm9ibGVtIHByaW9yIHRvIHNkbTg0NS9kcHUgYmVjYXVzZSB0
-aGUgaW9tbXUKPj4gd2FzIGF0dGFjaGVkIHRvIHRoZSBtZHAgbm9kZSBpbiBkdCwgd2hpY2ggaXMg
-YSBjaGlsZCBvZiB0aGUgdG9wbGV2ZWwKPj4gbWRzcyBub2RlICh3aGljaCBjb3JyZXNwb25kcyB0
-byB0aGUgZGV2IHBhc3NlZCBpbiBkbWFfbWFwX3NnKCkpLiAgQnV0Cj4+IHdpdGggc2RtODQ1LCBu
-b3cgdGhlIGlvbW11IGlzIGF0dGFjaGVkIGF0IHRoZSBtZHNzIGxldmVsIHNvIHdlIGhpdCB0aGUK
-Pj4gaW9tbXVfZG1hX29wcyBpbiBkbWFfbWFwX3NnKCkuCj4+Cj4+IEJ1dCBhdXRvIGFsbG9jYXRp
-bmcvYXR0YWNoaW5nIGEgZG9tYWluIGJlZm9yZSB0aGUgZHJpdmVyIGlzIHByb2JlZCB3YXMKPj4g
-YWxyZWFkeSBhIGJsb2NraW5nIHByb2JsZW0gZm9yIGVuYWJsaW5nIHBlci1jb250ZXh0IHBhZ2V0
-YWJsZXMgZm9yIHRoZQo+PiBHUFUuICBUaGlzIHByb2JsZW0gaXMgYWxzbyBub3cgc29sdmVkIHdp
-dGggdGhpcyBwYXRjaC4KPj4KPj4gRml4ZXM6IDk3ODkwYmE5Mjg5YyBkbWEtbWFwcGluZzogZGV0
-ZWN0IGFuZCBjb25maWd1cmUgSU9NTVUgaW4gb2ZfZG1hX2NvbmZpZ3VyZQo+PiBUZXN0ZWQtYnk6
-IERvdWdsYXMgQW5kZXJzb24gPGRpYW5kZXJzQGNocm9taXVtLm9yZz4KPj4gU2lnbmVkLW9mZi1i
-eTogUm9iIENsYXJrIDxyb2JkY2xhcmtAZ21haWwuY29tPgo+PiAtLS0KPj4gVGhpcyBpcyBhbiBh
-bHRlcm5hdGl2ZS9yZXBsYWNlbWVudCBmb3IgWzFdLiAgV2hhdCBpdCBsYWNrcyBpbiBlbGVnYW5j
-ZQo+PiBpdCBtYWtlcyB1cCBmb3IgaW4gcHJhY3RpY2FsaXR5IDstKQo+Pgo+PiBbMV0gaHR0cHM6
-Ly9wYXRjaHdvcmsuZnJlZWRlc2t0b3Aub3JnL3BhdGNoLzI2NDkzMC8KPj4KPj4gIGRyaXZlcnMv
-b2YvZGV2aWNlLmMgfCAyMiArKysrKysrKysrKysrKysrKysrKysrCj4+ICAxIGZpbGUgY2hhbmdl
-ZCwgMjIgaW5zZXJ0aW9ucygrKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9vZi9kZXZpY2Uu
-YyBiL2RyaXZlcnMvb2YvZGV2aWNlLmMKPj4gaW5kZXggNTk1N2NkNGZhMjYyLi4xNWZmZWUwMGZi
-MjIgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvb2YvZGV2aWNlLmMKPj4gKysrIGIvZHJpdmVycy9v
-Zi9kZXZpY2UuYwo+PiBAQCAtNzIsNiArNzIsMTQgQEAgaW50IG9mX2RldmljZV9hZGQoc3RydWN0
-IHBsYXRmb3JtX2RldmljZSAqb2ZkZXYpCj4+ICAgICAgICAgcmV0dXJuIGRldmljZV9hZGQoJm9m
-ZGV2LT5kZXYpOwo+PiAgfQo+Pgo+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBvZl9kZXZpY2VfaWQg
-aW9tbXVfYmxhY2tsaXN0W10gPSB7Cj4+ICsgICAgICAgeyAuY29tcGF0aWJsZSA9ICJxY29tLG1k
-cDQiIH0sCj4+ICsgICAgICAgeyAuY29tcGF0aWJsZSA9ICJxY29tLG1kc3MiIH0sCj4+ICsgICAg
-ICAgeyAuY29tcGF0aWJsZSA9ICJxY29tLHNkbTg0NS1tZHNzIiB9LAo+PiArICAgICAgIHsgLmNv
-bXBhdGlibGUgPSAicWNvbSxhZHJlbm8iIH0sCj4+ICsgICAgICAge30KPj4gK307Cj4+ICsKPj4g
-IC8qKgo+PiAgICogb2ZfZG1hX2NvbmZpZ3VyZSAtIFNldHVwIERNQSBjb25maWd1cmF0aW9uCj4+
-ICAgKiBAZGV2OiAgICAgICBEZXZpY2UgdG8gYXBwbHkgRE1BIGNvbmZpZ3VyYXRpb24KPj4gQEAg
-LTE2NCw2ICsxNzIsMjAgQEAgaW50IG9mX2RtYV9jb25maWd1cmUoc3RydWN0IGRldmljZSAqZGV2
-LCBzdHJ1Y3QgZGV2aWNlX25vZGUgKm5wLCBib29sIGZvcmNlX2RtYSkKPj4gICAgICAgICBkZXZf
-ZGJnKGRldiwgImRldmljZSBpcyVzYmVoaW5kIGFuIGlvbW11XG4iLAo+PiAgICAgICAgICAgICAg
-ICAgaW9tbXUgPyAiICIgOiAiIG5vdCAiKTsKPj4KPj4gKyAgICAgICAvKgo+PiArICAgICAgICAq
-IFRoZXJlIGlzIGF0IGxlYXN0IG9uZSBjYXNlIHdoZXJlIHRoZSBkcml2ZXIgd2FudHMgdG8gZGly
-ZWN0bHkKPj4gKyAgICAgICAgKiBtYW5hZ2UgdGhlIElPTU1VLCBidXQgaWYgd2UgZW5kIHVwIHdp
-dGggaW9tbXUgZG1hX29wcywgdGhhdAo+PiArICAgICAgICAqIGludGVyZmVyZXMgd2l0aCB0aGUg
-ZHJpdmVycyBhYmlsaXR5IHRvIHVzZSBkbWFfbWFwX3NnKCkgZm9yCj4+ICsgICAgICAgICogY2Fj
-aGUgb3BlcmF0aW9ucy4gIFNpbmNlIHdlIGRvbid0IGN1cnJlbnRseSBoYXZlIGEgYmV0dGVyCj4+
-ICsgICAgICAgICogc29sdXRpb24sIGFuZCB0aGlzIGNvZGUgcnVucyBiZWZvcmUgdGhlIGRyaXZl
-ciBpcyBwcm9iZWQgYW5kCj4+ICsgICAgICAgICogaGFzIGEgY2hhbmNlIHRvIGludGVydmVuZSwg
-dXNlIGEgc2ltcGxlIGJsYWNrbGlzdCB0byBhdm9pZAo+PiArICAgICAgICAqIGVuZGluZyB1cCB3
-aXRoIGlvbW11IGRtYV9vcHM6Cj4+ICsgICAgICAgICovCj4+ICsgICAgICAgaWYgKG9mX21hdGNo
-X2RldmljZShpb21tdV9ibGFja2xpc3QsIGRldikpIHsKPj4gKyAgICAgICAgICAgICAgIGRldl9k
-YmcoZGV2LCAic2tpcHBpbmcgaW9tbXUgaG9va3VwXG4iKTsKPj4gKyAgICAgICAgICAgICAgIGlv
-bW11ID0gTlVMTDsKPj4gKyAgICAgICB9Cj4+ICsKPj4gICAgICAgICBhcmNoX3NldHVwX2RtYV9v
-cHMoZGV2LCBkbWFfYWRkciwgc2l6ZSwgaW9tbXUsIGNvaGVyZW50KTsKPj4KPj4gICAgICAgICBy
-ZXR1cm4gMDsKPj4gLS0KPj4gMi4xOS4yCj4+Cj4gK01hcmVrIFN6eXByb3dza2kgd2hvIEkgYmVs
-aWV2ZSBoYWQgYSBzaW1pbGFyIHByb2JsZW0gd2l0aCBFeHlub3MgRFJNIGJlZm9yZS4KPgo+IFJl
-dmlld2VkLWJ5OiBUb21hc3ogRmlnYSA8dGZpZ2FAY2hyb21pdW0ub3JnPgoKClRoYW5rcyBmb3Ig
-YWRkaW5nIG1lLiBTbyBmYXIgRXh5bm9zIERSTSB1c2Ugb3RoZXIgd29ya2Fyb3VuZCwgc2VlIGNv
-bW1pdAoxZmVkYTVlYjc3ZmMgKCJkcm0vZXh5bm9zOiBVc2Ugc2VsZWN0ZWQgZG1hX2RldiBkZWZh
-dWx0IGlvbW11IGRvbWFpbgppbnN0ZWFkIG9mIGEgZmFrZSBvbmUiKS4gSGVyZSBpcyB0aGUgbGlu
-ayB0byB0aGUgdGhyZWFkIHdpdGggbW9yZQpjb21tZW50cyBhbmQgYmFja2dyb3VuZDoKaHR0cHM6
-Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvYXJtLWtlcm5lbC9tc2c2NzYxMDAuaHRtbAoKQmVzdCBy
-ZWdhcmRzCi0tIApNYXJlayBTenlwcm93c2tpLCBQaEQKU2Ftc3VuZyBSJkQgSW5zdGl0dXRlIFBv
-bGFuZAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KRnJl
-ZWRyZW5vIG1haWxpbmcgbGlzdApGcmVlZHJlbm9AbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
-Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZnJlZWRyZW5vCg==
+--===============7688264762912580342==
+Content-Type: multipart/alternative; boundary="000000000000e52313057c1c4764"
+
+--000000000000e52313057c1c4764
+Content-Type: text/plain; charset="UTF-8"
+
+Thanks for the info.
+
+Yes. we need to do this as our architecture manages everything from one of
+super privileged guest .
+Rest of the guest don't have access to these devices .
+
+Let me check with hardware vendor to see if we can segregate SMBus device
+into separate  iommu group.
+
+-Gokul
+On Fri, Nov 30, 2018 at 9:35 PM Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+wrote:
+
+> On Fri, 30 Nov 2018 12:04:26 +0530
+> gokul cg <gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>
+> > Thanks for info
+> >
+> > See inline
+> > On Wed, Nov 28, 2018 at 8:56 PM Alex Williamson <
+> alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > wrote:
+> >
+> > > On Wed, 28 Nov 2018 20:21:02 +0530
+> > > gokul cg <gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> > >
+> > > > Hi Folks,
+> > > >
+> > > > Please excuse me , I just writing to you as i could see you had made
+> > > > changes regarding iommu and I thought you could give help me here.
+> > > >
+> > > > We are testing visualization with QEMU-2.7.0 + Linux-4.8+, we are
+> facing
+> > > > issue while configuring pass through PCI devices in QEMU to pass it
+> to
+> > > > guest OS.
+> > > > We are using following QEMU argument to configure PCI device as
+> > > passthrough
+> > > > device to guest, which was working with Linux 3.10 distro
+> (hypervisor:
+> > > QEMU
+> > > > 1.7.2, Linux:  3.10+).
+> > > >
+> > > > /usr/bin/qemu-system-x86_64 -name guest_1 -S -machine
+> > > > pc-i440fx-1.7,accel=kvm,usb=off -m 49152    \
+> > > >  -device kvm-pci-assign,host=0000:00:1f.3 -device
+> > > > kvm-pci-assign,host=0000:09:0e.0  ..<etc..>
+> > >
+> > > Legacy KVM device assignment (aka kvm-pci-assign) has been deprecated
+> > > for some time now, you'll find it doesn't even exist in newer kernels
+> > > and QEMU.
+> > >
+> > > Understood .
+> >
+> > > > Here is the error message that we will get when we try to configure
+> PCI
+> > > > devices as passthrough using kvm pci assignment method in Linux 4.8+
+> > > > (hypervisor: QEMU 2.7.0, Linux:  4.8+).
+> > > >
+> > > > which is shown below.
+> > > >
+> > > > ---log---
+> > > >
+> > > > From QEMU:
+> > > > qemu-system-x86_64: -device kvm-pci-assign,host=0000:00:1f.3: Failed
+> to
+> > > > assign device "(null)": Invalid argument
+> > > >
+> > > > From dmesg:
+> > > > pci-stub 0000:00:1f.3: kvm assign device failed ret -22
+> > > >
+> > > > ---end----
+> > > >
+> > > > Info about devices (CPU:  Intel(R) Xeon(R) CPU E5-2608L):
+> > > >
+> > > > root@shining-node:~# lspci -k -s 00:1f.3
+> > > > 00:1f.3 SMBus: Intel Corporation C610/X99 series chipset SMBus
+> Controller
+> > > > (rev 05)
+> > > >         Subsystem: Intel Corporation C610/X99 series chipset SMBus
+> > > > Controller
+> > > >         Kernel driver in use: pci-stub
+> > > >         Kernel modules: i2c_i801
+> > >
+> > > Why are you trying to assign an SMBus controller to a VM?
+> > >
+> > > We want guest of to read out eprom and sensor devices  and manage our
+> > chassis .
+> > Our i2c devices are connected to  Intel SMbus controller
+>
+> It seems fundamentally unsafe to allow a user driver (where QEMU is
+> just a userspace driver exposing the device into a VM) to manage the
+> host chassis.  Additionally since this set of multifunction devices do
+> not expose access control services, we must assume that untranslated
+> DMA between the function is possible and thus group them together.  It
+> would be up to the hardware vendor whether the devices are in fact DMA
+> isolated to provide an ACS quirk to split this grouping.  Otherwise
+> you'll need to provide that isolation as a downstream assumption.
+>
+> > > root@shining-node:~#
+> > > > root@shining-node:~# lspci -k -s  09:0e.0
+> > > > 09:0e.0 Network controller: Broadcom Limited Device b680 (rev 12)
+> > > > root@shining-node:~#
+> > > >
+> > > > From the web search i could see that it is because there are multiple
+> > > > devices in same iommu_group that the passthrough device belongs to.
+> > > > When i check iommu_group , i have multiple devices in same group but
+> all
+> > > > those are intel devices under Wellsburg PCH.
+> > >
+> > > Nope, kvm-pci-assign doesn't make use of IOMMU groups, more likely just
+> > > some state of disrepair as it's deprecated and replaced by vfio-pci,
+> > > which does use iommu groups.  So iommu groups will be a problem, but
+> > > not in the configuration you're attempting to use above.
+> > >
+> > >  The error i had pasted above "< pci-stub 0000:00:1f.3: kvm assign
+> device
+> > failed ret -22 >" is comming as iommu attach device
+> > fails because of following check .
+> > 1094 int iommu_attach_device(struct iommu_domain *domain, struct device
+> > *dev)
+> > 1095 {
+> > 1096         struct iommu_group *group;
+> > 1097         int ret;
+> > 1098
+> > 1099         group = iommu_group_get(dev);
+> > 1100         /* FIXME: Remove this when groups a mandatory for iommu
+> > drivers */
+> > 1101         if (group == NULL)
+> > 1102                 return __iommu_attach_device(domain, dev);
+> > 1103
+>
+> Ah yes, I forget about this since legacy KVM device assignment has been
+> deprecated for so long.
+>
+> > > > root@shining-node:~# ls
+> > > > /sys/bus/pci/devices/0000\:00\:1f.3/iommu_group/devices/
+> > > > 0000:00:1f.0  0000:00:1f.2  0000:00:1f.3  0000:00:1f.6
+> > > > root@shining-node:~#
+> > > > root@shining-node:~# lspci -v -s 0000:00:1f
+> > > > 00:1f.0 ISA bridge: Intel Corporation C610/X99 series chipset LPC
+> > > > Controller (rev 05)
+> > > > Subsystem: Intel Corporation C610/X99 series chipset LPC Controller
+> > > > Flags: bus master, medium devsel, latency 0, NUMA node 0
+> > > > Capabilities: [e0] Vendor Specific Information: Len=0c <?>
+> > > > Kernel driver in use: lpc_ich
+> > > > Kernel modules: lpc_ich
+> > > >
+> > > > 00:1f.2 SATA controller: Intel Corporation C610/X99 series chipset
+> 6-Port
+> > > > SATA Controller [AHCI mode] (rev 05) (prog-if 01 [AHCI 1.0])
+> > > > Subsystem: Intel Corporation C610/X99 series chipset 6-Port SATA
+> > > Controller
+> > > > [AHCI mode]
+> > > > Flags: bus master, 66MHz, medium devsel, latency 0, IRQ 35, NUMA
+> node 0
+> > > > I/O ports at 3068 [size=8]
+> > > > I/O ports at 3074 [size=4]
+> > > > I/O ports at 3060 [size=8]
+> > > > I/O ports at 3070 [size=4]
+> > > > I/O ports at 3020 [size=32]
+> > > > Memory at 91d20000 (32-bit, non-prefetchable) [size=2K]
+> > > > Capabilities: [80] MSI: Enable+ Count=1/1 Maskable- 64bit-
+> > > > Capabilities: [70] Power Management version 3
+> > > > Capabilities: [a8] SATA HBA v1.0
+> > > > Kernel driver in use: ahci
+> > > >
+> > > > 00:1f.3 SMBus: Intel Corporation C610/X99 series chipset SMBus
+> Controller
+> > > > (rev 05)
+> > > > Subsystem: Intel Corporation C610/X99 series chipset SMBus Controller
+> > > > Flags: medium devsel, IRQ 18, NUMA node 0
+> > > > Memory at 180000600000 (64-bit, non-prefetchable) [size=4K]
+> > > > I/O ports at 3000 [size=32]
+> > > > Kernel driver in use: pci-stub
+> > > > Kernel modules: i2c_i801
+> > > >
+> > > > 00:1f.6 Signal processing controller: Intel Corporation C610/X99
+> series
+> > > > chipset Thermal Subsystem (rev 05)
+> > > > Subsystem: Intel Corporation C610/X99 series chipset Thermal
+> Subsystem
+> > > > Flags: bus master, fast devsel, latency 0, IRQ 255, NUMA node 0
+> > > > Memory at 183fc0010000 (64-bit, non-prefetchable) [size=4K]
+> > > > Capabilities: [50] Power Management version 3
+> > > > Capabilities: [80] MSI: Enable- Count=1/1 Maskable- 64bit-
+> > >
+> > > Again I have to ask, why are these things you'd want to pass to a VM?
+> > > The SATA controller is the only reasonable thing to assign here, but
+> > > can easily be replaced by a plugin card with proper isolation or the
+> > > performance can be nearly matched with virtio devices.  These devices
+> > > do not provide isolation between them therefore the assignment group is
+> > > the full set of devices within the iommu group.
+> > >
+> > > This is our POC with one of our guest will have access to our sensor
+> > devices . So need to do this .
+>
+> Your use case seems unique and unsafe from a generic userspace drive
+> perspective.  You could possibly use the vfio mediated device interface
+> to provide a host driver that polices userspace access to the device.
+> This might not be too difficult if the device primarily uses a PIO
+> rather than DMA interface.  Potentially some sort of generic i2c
+> paravirtualization could also provide this.  For direct assignment, the
+> grouping needs to be resolved, either upstream with hardware vendor
+> isolation guarantees or downstream with custom patches.
+>
+> > > root@shining-node:~#
+> > > >
+> > > >
+> > > > I have tried ACS override patch to rearrange these devices to
+> different
+> > > > iommu_group and its not working for these devices.I have tried to
+> > > > passthrough vfio method, vfio complains that it needs all driver to
+> be
+> > > vfio
+> > > > compatible.
+> > > >
+> > > > How can we achieve pci passthrough for Intel SMBus Controller
+> [00:1f.3
+> > > > here] with latest kernel(We use 4.8+ now)
+> > >
+> > > The only theoretically supported mechanism would be to assign all of
+> > > the devices in the group to the VM, but you're putting the host system
+> > > at risk by assigning system management controllers to a VM.
+> >
+> > We don't wan't to   do this . We just need only SMBUS controller to be
+> > passed to guest .
+> >
+> > Again, why
+> > > would you want to assign the SMBus controller to a VM?  The unsupported
+> > > path is with the ACS override patch, using the multifunction option or
+> > > specific vendor and device IDs.  Thanks,
+> > >
+> > > I tried "ACS override patch" with multifunction option and specific
+> vendor
+> > and device IDs.
+> > But it didn't works for us. I don't know whether this grouping is based
+> on
+> > DMAR/RMRR configuration in BIOS.
+>
+> RMRRs would be yet another compounding problem, but AFAIK it would be
+> unusual to have RMRRs on the SMBus device.  The override patch can
+> certainly be made to work, but it's not upstream, not likely to ever
+> get upstream, and not supported.  Thanks,
+>
+> Alex
+>
+
+--000000000000e52313057c1c4764
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Thanks for the info.=C2=A0<br><br>Yes. we need to do this =
+as our architecture manages everything from one of super privileged guest .=
+<div>Rest of the guest don&#39;t have access to these devices .<br><br>Let =
+me check with hardware vendor to see if we can segregate SMBus device into =
+separate=C2=A0 iommu group.</div><div><br></div><div>-Gokul=C2=A0<br><div c=
+lass=3D"gmail_quote"><div dir=3D"ltr">On Fri, Nov 30, 2018 at 9:35 PM Alex =
+Williamson &lt;<a href=3D"mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org">alex.williamso=
+n@redhat.com</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" styl=
+e=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">On Fri,=
+ 30 Nov 2018 12:04:26 +0530<br>
+gokul cg &lt;<a href=3D"mailto:gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" target=3D"_blank">gokul=
+jnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org</a>&gt; wrote:<br>
+<br>
+&gt; Thanks for info<br>
+&gt; <br>
+&gt; See inline<br>
+&gt; On Wed, Nov 28, 2018 at 8:56 PM Alex Williamson &lt;<a href=3D"mailto:=
+alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" target=3D"_blank">alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a=
+>&gt;<br>
+&gt; wrote:<br>
+&gt; <br>
+&gt; &gt; On Wed, 28 Nov 2018 20:21:02 +0530<br>
+&gt; &gt; gokul cg &lt;<a href=3D"mailto:gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" target=3D"_bl=
+ank">gokuljnpr-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org</a>&gt; wrote:<br>
+&gt; &gt;=C2=A0 <br>
+&gt; &gt; &gt; Hi Folks,<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; Please excuse me , I just writing to you as i could see you =
+had made<br>
+&gt; &gt; &gt; changes regarding iommu and I thought you could give help me=
+ here.<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; We are testing visualization with QEMU-2.7.0 + Linux-4.8+, w=
+e are facing<br>
+&gt; &gt; &gt; issue while configuring pass through PCI devices in QEMU to =
+pass it to<br>
+&gt; &gt; &gt; guest OS.<br>
+&gt; &gt; &gt; We are using following QEMU argument to configure PCI device=
+ as=C2=A0 <br>
+&gt; &gt; passthrough=C2=A0 <br>
+&gt; &gt; &gt; device to guest, which was working with Linux 3.10 distro (h=
+ypervisor:=C2=A0 <br>
+&gt; &gt; QEMU=C2=A0 <br>
+&gt; &gt; &gt; 1.7.2, Linux:=C2=A0 3.10+).<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; /usr/bin/qemu-system-x86_64 -name guest_1 -S -machine<br>
+&gt; &gt; &gt; pc-i440fx-1.7,accel=3Dkvm,usb=3Doff -m 49152=C2=A0 =C2=A0 \<=
+br>
+&gt; &gt; &gt;=C2=A0 -device kvm-pci-assign,host=3D0000:00:1f.3 -device<br>
+&gt; &gt; &gt; kvm-pci-assign,host=3D0000:09:0e.0=C2=A0 ..&lt;etc..&gt;=C2=
+=A0 <br>
+&gt; &gt;<br>
+&gt; &gt; Legacy KVM device assignment (aka kvm-pci-assign) has been deprec=
+ated<br>
+&gt; &gt; for some time now, you&#39;ll find it doesn&#39;t even exist in n=
+ewer kernels<br>
+&gt; &gt; and QEMU.<br>
+&gt; &gt;<br>
+&gt; &gt; Understood .=C2=A0 <br>
+&gt; <br>
+&gt; &gt; &gt; Here is the error message that we will get when we try to co=
+nfigure PCI<br>
+&gt; &gt; &gt; devices as passthrough using kvm pci assignment method in Li=
+nux 4.8+<br>
+&gt; &gt; &gt; (hypervisor: QEMU 2.7.0, Linux:=C2=A0 4.8+).<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; which is shown below.<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; ---log---<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; From QEMU:<br>
+&gt; &gt; &gt; qemu-system-x86_64: -device kvm-pci-assign,host=3D0000:00:1f=
+.3: Failed to<br>
+&gt; &gt; &gt; assign device &quot;(null)&quot;: Invalid argument<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; From dmesg:<br>
+&gt; &gt; &gt; pci-stub 0000:00:1f.3: kvm assign device failed ret -22<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; ---end----<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; Info about devices (CPU:=C2=A0 Intel(R) Xeon(R) CPU E5-2608L=
+):<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; root@shining-node:~# lspci -k -s 00:1f.3<br>
+&gt; &gt; &gt; 00:1f.3 SMBus: Intel Corporation C610/X99 series chipset SMB=
+us Controller<br>
+&gt; &gt; &gt; (rev 05)<br>
+&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Subsystem: Intel Corporatio=
+n C610/X99 series chipset SMBus<br>
+&gt; &gt; &gt; Controller<br>
+&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Kernel driver in use: pci-s=
+tub<br>
+&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Kernel modules: i2c_i801=C2=
+=A0 <br>
+&gt; &gt;<br>
+&gt; &gt; Why are you trying to assign an SMBus controller to a VM?<br>
+&gt; &gt;<br>
+&gt; &gt; We want guest of to read out eprom and sensor devices=C2=A0 and m=
+anage our=C2=A0 <br>
+&gt; chassis .<br>
+&gt; Our i2c devices are connected to=C2=A0 Intel SMbus controller<br>
+<br>
+It seems fundamentally unsafe to allow a user driver (where QEMU is<br>
+just a userspace driver exposing the device into a VM) to manage the<br>
+host chassis.=C2=A0 Additionally since this set of multifunction devices do=
+<br>
+not expose access control services, we must assume that untranslated<br>
+DMA between the function is possible and thus group them together.=C2=A0 It=
+<br>
+would be up to the hardware vendor whether the devices are in fact DMA<br>
+isolated to provide an ACS quirk to split this grouping.=C2=A0 Otherwise<br=
+>
+you&#39;ll need to provide that isolation as a downstream assumption.<br>
+<br>
+&gt; &gt; root@shining-node:~#=C2=A0 <br>
+&gt; &gt; &gt; root@shining-node:~# lspci -k -s=C2=A0 09:0e.0<br>
+&gt; &gt; &gt; 09:0e.0 Network controller: Broadcom Limited Device b680 (re=
+v 12)<br>
+&gt; &gt; &gt; root@shining-node:~#<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; From the web search i could see that it is because there are=
+ multiple<br>
+&gt; &gt; &gt; devices in same iommu_group that the passthrough device belo=
+ngs to.<br>
+&gt; &gt; &gt; When i check iommu_group , i have multiple devices in same g=
+roup but all<br>
+&gt; &gt; &gt; those are intel devices under Wellsburg PCH.=C2=A0 <br>
+&gt; &gt;<br>
+&gt; &gt; Nope, kvm-pci-assign doesn&#39;t make use of IOMMU groups, more l=
+ikely just<br>
+&gt; &gt; some state of disrepair as it&#39;s deprecated and replaced by vf=
+io-pci,<br>
+&gt; &gt; which does use iommu groups.=C2=A0 So iommu groups will be a prob=
+lem, but<br>
+&gt; &gt; not in the configuration you&#39;re attempting to use above.<br>
+&gt; &gt;<br>
+&gt; &gt;=C2=A0 The error i had pasted above &quot;&lt; pci-stub 0000:00:1f=
+.3: kvm assign device=C2=A0 <br>
+&gt; failed ret -22 &gt;&quot; is comming as iommu attach device<br>
+&gt; fails because of following check .<br>
+&gt; 1094 int iommu_attach_device(struct iommu_domain *domain, struct devic=
+e<br>
+&gt; *dev)<br>
+&gt; 1095 {<br>
+&gt; 1096=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct iommu_group *group;<br>
+&gt; 1097=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0int ret;<br>
+&gt; 1098<br>
+&gt; 1099=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0group =3D iommu_group_get(dev);<=
+br>
+&gt; 1100=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* FIXME: Remove this when group=
+s a mandatory for iommu<br>
+&gt; drivers */<br>
+&gt; 1101=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (group =3D=3D NULL)<br>
+&gt; 1102=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0retu=
+rn __iommu_attach_device(domain, dev);<br>
+&gt; 1103<br>
+<br>
+Ah yes, I forget about this since legacy KVM device assignment has been<br>
+deprecated for so long.<br>
+<br>
+&gt; &gt; &gt; root@shining-node:~# ls<br>
+&gt; &gt; &gt; /sys/bus/pci/devices/0000\:00\:1f.3/iommu_group/devices/<br>
+&gt; &gt; &gt; 0000:00:1f.0=C2=A0 0000:00:1f.2=C2=A0 0000:00:1f.3=C2=A0 000=
+0:00:1f.6<br>
+&gt; &gt; &gt; root@shining-node:~#<br>
+&gt; &gt; &gt; root@shining-node:~# lspci -v -s 0000:00:1f<br>
+&gt; &gt; &gt; 00:1f.0 ISA bridge: Intel Corporation C610/X99 series chipse=
+t LPC<br>
+&gt; &gt; &gt; Controller (rev 05)<br>
+&gt; &gt; &gt; Subsystem: Intel Corporation C610/X99 series chipset LPC Con=
+troller<br>
+&gt; &gt; &gt; Flags: bus master, medium devsel, latency 0, NUMA node 0<br>
+&gt; &gt; &gt; Capabilities: [e0] Vendor Specific Information: Len=3D0c &lt=
+;?&gt;<br>
+&gt; &gt; &gt; Kernel driver in use: lpc_ich<br>
+&gt; &gt; &gt; Kernel modules: lpc_ich<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; 00:1f.2 SATA controller: Intel Corporation C610/X99 series c=
+hipset 6-Port<br>
+&gt; &gt; &gt; SATA Controller [AHCI mode] (rev 05) (prog-if 01 [AHCI 1.0])=
+<br>
+&gt; &gt; &gt; Subsystem: Intel Corporation C610/X99 series chipset 6-Port =
+SATA=C2=A0 <br>
+&gt; &gt; Controller=C2=A0 <br>
+&gt; &gt; &gt; [AHCI mode]<br>
+&gt; &gt; &gt; Flags: bus master, 66MHz, medium devsel, latency 0, IRQ 35, =
+NUMA node 0<br>
+&gt; &gt; &gt; I/O ports at 3068 [size=3D8]<br>
+&gt; &gt; &gt; I/O ports at 3074 [size=3D4]<br>
+&gt; &gt; &gt; I/O ports at 3060 [size=3D8]<br>
+&gt; &gt; &gt; I/O ports at 3070 [size=3D4]<br>
+&gt; &gt; &gt; I/O ports at 3020 [size=3D32]<br>
+&gt; &gt; &gt; Memory at 91d20000 (32-bit, non-prefetchable) [size=3D2K]<br=
+>
+&gt; &gt; &gt; Capabilities: [80] MSI: Enable+ Count=3D1/1 Maskable- 64bit-=
+<br>
+&gt; &gt; &gt; Capabilities: [70] Power Management version 3<br>
+&gt; &gt; &gt; Capabilities: [a8] SATA HBA v1.0<br>
+&gt; &gt; &gt; Kernel driver in use: ahci<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; 00:1f.3 SMBus: Intel Corporation C610/X99 series chipset SMB=
+us Controller<br>
+&gt; &gt; &gt; (rev 05)<br>
+&gt; &gt; &gt; Subsystem: Intel Corporation C610/X99 series chipset SMBus C=
+ontroller<br>
+&gt; &gt; &gt; Flags: medium devsel, IRQ 18, NUMA node 0<br>
+&gt; &gt; &gt; Memory at 180000600000 (64-bit, non-prefetchable) [size=3D4K=
+]<br>
+&gt; &gt; &gt; I/O ports at 3000 [size=3D32]<br>
+&gt; &gt; &gt; Kernel driver in use: pci-stub<br>
+&gt; &gt; &gt; Kernel modules: i2c_i801<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; 00:1f.6 Signal processing controller: Intel Corporation C610=
+/X99 series<br>
+&gt; &gt; &gt; chipset Thermal Subsystem (rev 05)<br>
+&gt; &gt; &gt; Subsystem: Intel Corporation C610/X99 series chipset Thermal=
+ Subsystem<br>
+&gt; &gt; &gt; Flags: bus master, fast devsel, latency 0, IRQ 255, NUMA nod=
+e 0<br>
+&gt; &gt; &gt; Memory at 183fc0010000 (64-bit, non-prefetchable) [size=3D4K=
+]<br>
+&gt; &gt; &gt; Capabilities: [50] Power Management version 3<br>
+&gt; &gt; &gt; Capabilities: [80] MSI: Enable- Count=3D1/1 Maskable- 64bit-=
+=C2=A0 <br>
+&gt; &gt;<br>
+&gt; &gt; Again I have to ask, why are these things you&#39;d want to pass =
+to a VM?<br>
+&gt; &gt; The SATA controller is the only reasonable thing to assign here, =
+but<br>
+&gt; &gt; can easily be replaced by a plugin card with proper isolation or =
+the<br>
+&gt; &gt; performance can be nearly matched with virtio devices.=C2=A0 Thes=
+e devices<br>
+&gt; &gt; do not provide isolation between them therefore the assignment gr=
+oup is<br>
+&gt; &gt; the full set of devices within the iommu group.<br>
+&gt; &gt;<br>
+&gt; &gt; This is our POC with one of our guest will have access to our sen=
+sor=C2=A0 <br>
+&gt; devices . So need to do this .<br>
+<br>
+Your use case seems unique and unsafe from a generic userspace drive<br>
+perspective.=C2=A0 You could possibly use the vfio mediated device interfac=
+e<br>
+to provide a host driver that polices userspace access to the device.<br>
+This might not be too difficult if the device primarily uses a PIO<br>
+rather than DMA interface.=C2=A0 Potentially some sort of generic i2c<br>
+paravirtualization could also provide this.=C2=A0 For direct assignment, th=
+e<br>
+grouping needs to be resolved, either upstream with hardware vendor<br>
+isolation guarantees or downstream with custom patches.<br>
+<br>
+&gt; &gt; root@shining-node:~#=C2=A0 <br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; I have tried ACS override patch to rearrange these devices t=
+o different<br>
+&gt; &gt; &gt; iommu_group and its not working for these devices.I have tri=
+ed to<br>
+&gt; &gt; &gt; passthrough vfio method, vfio complains that it needs all dr=
+iver to be=C2=A0 <br>
+&gt; &gt; vfio=C2=A0 <br>
+&gt; &gt; &gt; compatible.<br>
+&gt; &gt; &gt;<br>
+&gt; &gt; &gt; How can we achieve pci passthrough for Intel SMBus Controlle=
+r [00:1f.3<br>
+&gt; &gt; &gt; here] with latest kernel(We use 4.8+ now)=C2=A0 <br>
+&gt; &gt;<br>
+&gt; &gt; The only theoretically supported mechanism would be to assign all=
+ of<br>
+&gt; &gt; the devices in the group to the VM, but you&#39;re putting the ho=
+st system<br>
+&gt; &gt; at risk by assigning system management controllers to a VM.=C2=A0=
+ <br>
+&gt; <br>
+&gt; We don&#39;t wan&#39;t to=C2=A0 =C2=A0do this . We just need only SMBU=
+S controller to be<br>
+&gt; passed to guest .<br>
+&gt; <br>
+&gt; Again, why<br>
+&gt; &gt; would you want to assign the SMBus controller to a VM?=C2=A0 The =
+unsupported<br>
+&gt; &gt; path is with the ACS override patch, using the multifunction opti=
+on or<br>
+&gt; &gt; specific vendor and device IDs.=C2=A0 Thanks,<br>
+&gt; &gt;<br>
+&gt; &gt; I tried &quot;ACS override patch&quot; with multifunction option =
+and specific vendor=C2=A0 <br>
+&gt; and device IDs.<br>
+&gt; But it didn&#39;t works for us. I don&#39;t know whether this grouping=
+ is based on<br>
+&gt; DMAR/RMRR configuration in BIOS.<br>
+<br>
+RMRRs would be yet another compounding problem, but AFAIK it would be<br>
+unusual to have RMRRs on the SMBus device.=C2=A0 The override patch can<br>
+certainly be made to work, but it&#39;s not upstream, not likely to ever<br=
+>
+get upstream, and not supported.=C2=A0 Thanks,<br>
+<br>
+Alex<br>
+</blockquote></div></div></div>
+
+--000000000000e52313057c1c4764--
+
+--===============7688264762912580342==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7688264762912580342==--
