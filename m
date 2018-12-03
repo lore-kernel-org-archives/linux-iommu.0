@@ -1,69 +1,87 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v3 13/15] memory: mtk-smi: Get rid of need_larbid
-Date: Mon, 3 Dec 2018 16:40:51 +0800
-Message-ID: <1543826451.23023.35.camel@mhfsdcap03>
-References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
-         <1542422142-30688-14-git-send-email-yong.wu@mediatek.com>
-         <21767ceb-1db5-045f-06ac-29c57f1a74a5@gmail.com>
+From: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: Re: [PATCH] kernel/dma: Fix panic caused by passing swiotlb to
+	command line
+Date: Mon, 3 Dec 2018 18:20:16 +0800
+Message-ID: <b81eaa10-0799-40e6-9271-150d21b24e33@windriver.com>
+References: <1537154831-447363-1-git-send-email-zhe.he@windriver.com>
+	<c3536f4f-9bde-4f7f-a180-aa569d4e786d@windriver.com>
+	<20181022192921.GA20677@dhcp-10-175-29-12.vpn.oracle.com>
+	<87ee40fa-7a01-4d4c-7fa3-81aafc93e14f@windriver.com>
+	<5fa82cb9-bd32-8a3f-ddca-053f544e2883@windriver.com>
+	<20181202123032.GA3166@localhost.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <21767ceb-1db5-045f-06ac-29c57f1a74a5@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, youlin.pei@mediatek.com, devicetree@vger.kernel.org, Nicolas Boichat <drinkcat@chromium.org>, arnd@arndb.de, srv_heupstream@mediatek.com, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, Arvind Yadav <arvind.yadav.cs@gmail.com>, yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org, YT.shen@mediatek.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181202123032.GA3166-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org>
+Cc: konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2018-12-03 at 00:04 +0100, Matthias Brugger wrote:
-> 
-> On 17/11/2018 03:35, Yong Wu wrote:
-> > The "mediatek,larb-id" has already been parsed in MTK IOMMU driver.
-> > It's no need to parse it again in SMI driver. Only clean some codes.
-> > This patch is fit for all the current mt2701, mt2712, mt7623, mt8173
-> > and mt8183.
-> 
-> I'm trying to understand why we need the mediatek,larb-id at all. From what I
-> understand as long as the mediatek larbs described in the iommu are ordered
-> (larb0, larb1, larb2, etc) we actually get the same value as defined by
-> mediatek,larb-id. At least this holds for all present implementations.
-> 
-> On the other hand I don't see where the mtk_iommu_v1 driver actually parses the
-> larb-id, can you please help to understand:
-> 
-> 1) why we need the larb-id at all
-
-Actually only mt2712 which have 2 M4U HW need "mediatek,larb-id".
-
-This is larbs in the m4u0/1 dtsi node of mt2712:
-m4u0 { mediatek,larbs = <&larb0 &larb1 &larb2 &larb3 &larb6>;}
-m4u1 { mediatek,larbs = <&larb4 &larb5 &larb7>;}
-
-the id don't increase one by one, M4U have to get the larbid with the
-help of "mediatek,larb-id".
-
-(The m4u/smi dtsi patch of mt2712 will be send with some other modules,
-maybe in this week.)
-
-
-> 2) how this will work if we do not parse the larb-id for v1 iommu at all
-
-As you said above and I also have wrote that the larbid "must sort
-according to the local arbiter index" in the "mediatek,larbs"
-description of dt-binding. All the M4U except mt2712 could ignore
-"mediatek,larb-id". the v1 iommu also should be ok.
-
-I'm not sure whether we should change [1], if only reserving mt2712
-there, we also should change the dtsi file of mt2701 and mt7623.or keep
-it as is.
-
-[1]
-https://elixir.bootlin.com/linux/v4.20-rc1/source/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt#L20
-
-> 
-> Thanks a lot,
-> Matthias
-> 
-> > 
-
-[snip]
+CgpPbiAyMDE4LzEyLzIgMjA6MzAsIEtvbnJhZCBSemVzenV0ZWsgV2lsayB3cm90ZToKPiBPbiBU
+dWUsIE9jdCAzMCwgMjAxOCBhdCAwNzowNjoxMFBNICswODAwLCBIZSBaaGUgd3JvdGU6Cj4+Cj4+
+IE9uIDIwMTgvMTAvMjMgMTk6MTQsIEhlIFpoZSB3cm90ZToKPj4+IE9uIDIwMTgvMTAvMjMgMDM6
+MjksIEtvbnJhZCBSemVzenV0ZWsgV2lsayB3cm90ZToKPj4+PiBPbiBTYXQsIFNlcCAyMiwgMjAx
+OCBhdCAwODo1Njo1OFBNICswODAwLCBIZSBaaGUgd3JvdGU6Cj4+Pj4+IE1heSBJIGhhdmUgeW91
+ciBpbnB1dD8KPj4+PiBBbHRlcm5hdGl2ZWx5IHdvdWxkIGl0IG1ha2UgbW9yZSBzZW5zZSBmb3Ig
+aXQgdG8gYXNzdW1lIHNvbWUgZGVmYXVsdAo+Pj4+IHZhbHVlPwo+Pj4gTWF5YmUsIGJ1dCB0aGUg
+b3JpZ2luYWwgY29kZSBoYXMgbm8gZGVmYXVsdCB2YWx1ZSBhbmQgSSBoYXZlIG5vIGlkZWEKPj4+
+IHdoYXQgZGVmYXVsdCB2YWx1ZSBpcyBwcm9wZXIgaGVyZS4KPj4gQ2FuIGFueW9uZSBnaXZlIHNv
+bWUgc3VnZ2VzdGlvbnM/IFRob3VnaCBJJ2QgcHJlZmVyIHRvIGRvIG5vdGhpbmcgd2hlbgo+PiBu
+byBvcHRpb24gaXMgcHJvdmlkZWQuCj4gT25lIHByb3ZpZGVkIHRoZSBwYXJhbXRlciBmb3IgYSBy
+ZWFzb24uIEkgd291bGQganVzdCBkbyBhIHNtYWxsIG9uZSwgc2F5Cj4gNE1CLgoKT0suIFRoYW5r
+cywgSSdsbCBzZW5kIHYyLgoKWmhlCgo+PiBUaGFua3MsCj4+IFpoZQo+Pgo+Pj4gWmhlCj4+Pgo+
+Pj4+PiBUaGFua3MsCj4+Pj4+IFpoZQo+Pj4+Pgo+Pj4+PiBPbiAyMDE45bm0MDnmnIgxN+aXpSAx
+MToyNywgemhlLmhlQHdpbmRyaXZlci5jb20gd3JvdGU6Cj4+Pj4+PiBGcm9tOiBIZSBaaGUgPHpo
+ZS5oZUB3aW5kcml2ZXIuY29tPgo+Pj4+Pj4KPj4+Pj4+IHNldHVwX2lvX3RsYl9ucGFnZXMgZG9l
+cyBub3QgY2hlY2sgaW5wdXQgYXJndW1lbnQgYmVmb3JlIHBhc3NpbmcgaXQKPj4+Pj4+IHRvIGlz
+ZGlnaXQuIFRoZSBhcmd1bWVudCB3b3VsZCBiZSBhIE5VTEwgcG9pbnRlciBpZiAic3dpb3RsYiIs
+IHdpdGhvdXQKPj4+Pj4+IGl0cyB2YWx1ZSwgaXMgc2V0IGluIGNvbW1hbmQgbGluZSBhbmQgdGh1
+cyBjYXVzZXMgdGhlIGZvbGxvd2luZyBwYW5pYy4KPj4+Pj4+Cj4+Pj4+PiBQQU5JQzogZWFybHkg
+ZXhjZXB0aW9uIDB4ZTMgSVAgMTA6ZmZmZmZmZmZiYjliOGU5ZiBlcnJvciAwIGNyMiAweDAKPj4+
+Pj4+IFsgICAgMC4wMDAwMDBdIENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlciBOb3QgdGFpbnRl
+ZCA0LjE5LjAtcmMzLXlvY3RvLXN0YW5kYXJkKyAjOQo+Pj4+Pj4gWyAgICAwLjAwMDAwMF0gUklQ
+OiAwMDEwOnNldHVwX2lvX3RsYl9ucGFnZXMrMHhmLzB4OTUKPj4+Pj4+IC4uLgo+Pj4+Pj4gWyAg
+ICAwLjAwMDAwMF0gQ2FsbCBUcmFjZToKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICBkb19lYXJseV9w
+YXJhbSsweDU3LzB4OGUKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICBwYXJzZV9hcmdzKzB4MjA4LzB4
+MzIwCj4+Pj4+PiBbICAgIDAuMDAwMDAwXSAgPyByZGluaXRfc2V0dXArMHgzMC8weDMwCj4+Pj4+
+PiBbICAgIDAuMDAwMDAwXSAgcGFyc2VfZWFybHlfb3B0aW9ucysweDI5LzB4MmQKPj4+Pj4+IFsg
+ICAgMC4wMDAwMDBdICA/IHJkaW5pdF9zZXR1cCsweDMwLzB4MzAKPj4+Pj4+IFsgICAgMC4wMDAw
+MDBdICBwYXJzZV9lYXJseV9wYXJhbSsweDM2LzB4NGQKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICBz
+ZXR1cF9hcmNoKzB4MzM2LzB4OTllCj4+Pj4+PiBbICAgIDAuMDAwMDAwXSAgc3RhcnRfa2VybmVs
+KzB4NmYvMHg0ZTYKPj4+Pj4+IFsgICAgMC4wMDAwMDBdICB4ODZfNjRfc3RhcnRfcmVzZXJ2YXRp
+b25zKzB4MjQvMHgyNgo+Pj4+Pj4gWyAgICAwLjAwMDAwMF0gIHg4Nl82NF9zdGFydF9rZXJuZWwr
+MHg2Zi8weDcyCj4+Pj4+PiBbICAgIDAuMDAwMDAwXSAgc2Vjb25kYXJ5X3N0YXJ0dXBfNjQrMHhh
+NC8weGIwCj4+Pj4+Pgo+Pj4+Pj4gVGhpcyBwYXRjaCBhZGRzIGEgY2hlY2sgdG8gcHJldmVudCB0
+aGUgcGFuaWMuCj4+Pj4+Pgo+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogSGUgWmhlIDx6aGUuaGVAd2lu
+ZHJpdmVyLmNvbT4KPj4+Pj4+IENjOiBzdGFibGVAdmdlci5rZXJuZWwub3JnCj4+Pj4+PiBDYzog
+a29ucmFkLndpbGtAb3JhY2xlLmNvbQo+Pj4+Pj4gQ2M6IGhjaEBsc3QuZGUKPj4+Pj4+IENjOiBt
+LnN6eXByb3dza2lAc2Ftc3VuZy5jb20KPj4+Pj4+IENjOiByb2Jpbi5tdXJwaHlAYXJtLmNvbQo+
+Pj4+Pj4gLS0tCj4+Pj4+PiAga2VybmVsL2RtYS9zd2lvdGxiLmMgfCA1ICsrKysrCj4+Pj4+PiAg
+MSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+Pj4+Pj4KPj4+Pj4+IGRpZmYgLS1naXQg
+YS9rZXJuZWwvZG1hL3N3aW90bGIuYyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5jCj4+Pj4+PiBpbmRl
+eCA0ZjhhNmRiLi40NmZjMzRlIDEwMDY0NAo+Pj4+Pj4gLS0tIGEva2VybmVsL2RtYS9zd2lvdGxi
+LmMKPj4+Pj4+ICsrKyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5jCj4+Pj4+PiBAQCAtMTA5LDYgKzEw
+OSwxMSBAQCBzdGF0aWMgaW50IGxhdGVfYWxsb2M7Cj4+Pj4+PiAgc3RhdGljIGludCBfX2luaXQK
+Pj4+Pj4+ICBzZXR1cF9pb190bGJfbnBhZ2VzKGNoYXIgKnN0cikKPj4+Pj4+ICB7Cj4+Pj4+PiAr
+CWlmICghc3RyKSB7Cj4+Pj4+PiArCQlwcl9lcnIoIkNvbmZpZyBzdHJpbmcgbm90IHByb3ZpZGVk
+XG4iKTsKPj4+Pj4+ICsJCXJldHVybiAtRUlOVkFMOwo+Pj4+Pj4gKwl9Cj4+Pj4+PiArCj4+Pj4+
+PiAgCWlmIChpc2RpZ2l0KCpzdHIpKSB7Cj4+Pj4+PiAgCQlpb190bGJfbnNsYWJzID0gc2ltcGxl
+X3N0cnRvdWwoc3RyLCAmc3RyLCAwKTsKPj4+Pj4+ICAJCS8qIGF2b2lkIHRhaWwgc2VnbWVudCBv
+ZiBzaXplIDwgSU9fVExCX1NFR1NJWkUgKi8KPj4+Pj4gX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KPj4+Pj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4+Pj4+IGlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCj4+Pj4+IGh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11CgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
+L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
