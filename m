@@ -1,97 +1,52 @@
-From: Doug Ledford <dledford@redhat.com>
-Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Mon, 03 Dec 2018 13:59:08 -0500
-Message-ID: <e295bca26fce6408c7265292e81107b04a1a144d.camel@redhat.com>
-References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
+From: Stephen Boyd <sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v18 1/5] iommu/arm-smmu: Add
+ pm_runtime/sleep ops
+Date: Mon, 03 Dec 2018 15:44:34 -0800
+Message-ID: <154388067496.88331.314679235652159449@swboyd.mtv.corp.google.com>
+References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
+ <20181127101145.7682-2-vivek.gautam@codeaurora.org>
+ <154342225921.88331.14467967828250776155@swboyd.mtv.corp.google.com>
+ <0d76b669-6c4f-7c3b-50a1-084201f2c07a@arm.com>
+ <CAFp+6iEC8hobAdVF5nLdhQdCUqbi1xa4Vi-NLugGshV=dg+h1A@mail.gmail.com>
+ <20181130181536.GA15274@arm.com>
+ <CAFp+6iH-T3KsUH8SDoLDfmJ6x_iHxtHGDySuKib0L_u46G6h6w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-Jgd362xHNNmppwzCQCK+"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <CAFp+6iH-T3KsUH8SDoLDfmJ6x_iHxtHGDySuKib0L_u46G6h6w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+ Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-
---=-Jgd362xHNNmppwzCQCK+
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
-> At present there are multiple places where invalid node number is encoded
-> as -1. Even though implicitly understood it is always better to have macr=
-os
-> in there. Replace these open encodings for an invalid node number with th=
-e
-> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions lik=
-e
-> 'invalid node' from various places redirecting them to a common definitio=
-n.
->=20
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
-> Changes in V2:
->=20
-> - Added inclusion of 'numa.h' header at various places per Andrew
-> - Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
->=20
-> Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
->=20
-> - Dropped OCFS2 changes per Joseph
-> - Dropped media/video drivers changes per Hans
->=20
-> RFC - https://patchwork.kernel.org/patch/10678035/
->=20
-> Build tested this with multiple cross compiler options like alpha, sparc,
-> arm64, x86, powerpc, powerpc64le etc with their default config which migh=
-t
-> not have compiled tested all driver related changes. I will appreciate
-> folks giving this a test in their respective build environment.
->=20
-> All these places for replacement were found by running the following grep
-> patterns on the entire kernel code. Please let me know if this might have
-> missed some instances. This might also have replaced some false positives=
-.
-> I will appreciate suggestions, inputs and review.
->=20
-> 1. git grep "nid =3D=3D -1"
-> 2. git grep "node =3D=3D -1"
-> 3. git grep "nid =3D -1"
-> 4. git grep "node =3D -1"
->=20
->  drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
->  drivers/infiniband/hw/hfi1/init.c             |  3 ++-
-
-For the drivers/infiniband changes,
-
-Acked-by: Doug Ledford <dledford@redhat.com>
-
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Key fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
-
---=-Jgd362xHNNmppwzCQCK+
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAlwFfPwACgkQuCajMw5X
-L911nA/+Pq4noh4r/S3RhvajccFUfwzT5+IhZ7V69GHF9EaiPK8E1lka1m7BdNtX
-MlRVfjw6oW1Gs5uQFJfJC2qucbFLzZOm1I25GgzLq/iEq0ItnvUBVC13P2W5bmIa
-OB1zY9MRcBQs3T9W3/rcwFwxzYBIh9YsFNbq+op5uu5iUnKsLYenyPPTnWSVj5qO
-PWFKzPVxp68NmPpc/vPph6SrazSdSChuZFH06PElH0ifHC+Gde6gCuBSiX4dNCm5
-NzODtQz2AqmWPLS7XrgwtN2VGdjN8sPpQBcaYMV9aYOXzXdn5BexsgtoSd5VHdUN
-UZOUZQi/1UwA/i+Ngg86mv7nKWh/sxflS7a+F3u3xR9BoP09Gtt41Yu+zLZ28omr
-NTKrHWhoiv+WFY+iXoCCtPbI8TYjTuqyVhqHOZiMzX9rTxYBZ3wtHMOqmdQl5K69
-nnpJpIJr0uFEehieZvo7Tcvj28D7kDUwYN66HkEJcie71Uu45+lW2HoaIQwURsnY
-ot6h/yf8X2Pu1PY4A9FjXeFbECh4qXjZXevOz6vDaubqVwWtQdpoGl78KPd8WaJ+
-8tCtiT+L99uUE6sZoLaTdYd/EYsABxfbduwcTOdpNWVgxx2bxDXSgWkAd1bk0A0k
-zFoViov/qfs5E2JiGmVcxPeya+X/5gFMM8vJRwIvhMyokGfWRLg=
-=LheN
------END PGP SIGNATURE-----
-
---=-Jgd362xHNNmppwzCQCK+--
+UXVvdGluZyBWaXZlayBHYXV0YW0gKDIwMTgtMTItMDIgMjI6NDM6MzgpCj4gT24gRnJpLCBOb3Yg
+MzAsIDIwMTggYXQgMTE6NDUgUE0gV2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+IHdy
+b3RlOgo+ID4KPiA+IE9uIFRodSwgTm92IDI5LCAyMDE4IGF0IDA4OjI1OjIwUE0gKzA1MzAsIFZp
+dmVrIEdhdXRhbSB3cm90ZToKPiA+ID4gY2xrX2J1bGtfZ2V0X2FsbCgpIHNlZW1zIGxpa2UgZ29p
+bmcgb25seSB0aGUgT0Ygd2F5Lgo+ID4gPiBJcyB0aGVyZSBhbm90aGVyIHdheSBoZXJlIHRvIGhh
+dmUgc29tZXRoaW5nIGNvbW1vbiBiZXR3ZWVuIEFDUEkKPiA+ID4gYW5kIE9GLCBhbmQgdGhlbiBk
+byB0aGUgY2xrX2J1bGtfZ2V0Pwo+ID4KPiA+IEknZCBzYXkganVzdCBnbyB3aXRoIGNsa19idWxr
+X2dldF9hbGwoKSBhbmQgaWYgc29tZWJvZHkgcmVhbGx5IHdhbnRzIHRvCj4gPiBtZXNzIHdpdGgg
+dGhlIFNNTVUgY2xvY2tzIG9uIGEgc3lzdGVtIGJvb3RlZCB2aWEgQUNQSSwgdGhlbiBpdCdzIHRo
+ZWlyCj4gPiBwcm9ibGVtIHRvIHNvbHZlLiBNeSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgdGhlIGRl
+c2lnbiBvZiBJT1JUIG1ha2VzIHRoaXMKPiA+IG5leHQgdG8gaW1wb3NzaWJsZSB0byBzb2x2ZSBh
+bnl3YXksIGJlY2F1c2UgYSBzdGF0aWMgdGFibGUgaXMgdXNlZCBhbmQKPiA+IHRoZXJlZm9yZSB3
+ZSdyZSB1bmFibGUgdG8gcnVuIHdoYXRldmVyIEFTTCBtZXRob2RzIG5lZWQgdG8gYmUgaW52b2tl
+ZCB0bwo+ID4gbWVzcyB3aXRoIHRoZSBjbG9ja3MuCj4gCj4gU3VyZSB0aGVuLiBJIHdpbGwgcmVz
+cGluIHRoaXMgcGF0Y2gtc2VyaWVzLgo+IAoKUmlnaHQuIFRoZSBpZGVhIGlzIHRvIGFkZCBub24t
+T0Ygc3VwcG9ydCB0byBjbGtfYnVsa19nZXRfYWxsKCkgaWYvd2hlbgp3ZSBnZXQgdGhlIHJlcXVp
+cmVtZW50LiBTb3VuZHMgbGlrZSB3ZSBjYW4ga2VlcCB3YWl0aW5nIGEgbGl0dGxlIGxvbmdlcgpm
+b3IgdGhhdCB0byBoYXBwZW4uCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVz
+a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9m
+cmVlZHJlbm8K
