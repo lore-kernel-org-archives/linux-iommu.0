@@ -1,74 +1,238 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v18 1/5] iommu/arm-smmu: Add
- pm_runtime/sleep ops
-Date: Mon, 3 Dec 2018 12:13:38 +0530
-Message-ID: <CAFp+6iH-T3KsUH8SDoLDfmJ6x_iHxtHGDySuKib0L_u46G6h6w@mail.gmail.com>
-References: <20181127101145.7682-1-vivek.gautam@codeaurora.org>
- <20181127101145.7682-2-vivek.gautam@codeaurora.org>
- <154342225921.88331.14467967828250776155@swboyd.mtv.corp.google.com>
- <0d76b669-6c4f-7c3b-50a1-084201f2c07a@arm.com>
- <CAFp+6iEC8hobAdVF5nLdhQdCUqbi1xa4Vi-NLugGshV=dg+h1A@mail.gmail.com>
- <20181130181536.GA15274@arm.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v3 06/15] iommu/mediatek: Add mt8183 IOMMU support
+Date: Mon, 3 Dec 2018 16:40:33 +0800
+Message-ID: <1543826433.23023.34.camel@mhfsdcap03>
+References: <1542422142-30688-1-git-send-email-yong.wu@mediatek.com>
+         <1542422142-30688-7-git-send-email-yong.wu@mediatek.com>
+         <f8528e80-e816-7901-a56a-581f88b29c83@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20181130181536.GA15274-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, sboyd-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
- Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <f8528e80-e816-7901-a56a-581f88b29c83@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBOb3YgMzAsIDIwMTggYXQgMTE6NDUgUE0gV2lsbCBEZWFjb24gPHdpbGwuZGVhY29u
-QGFybS5jb20+IHdyb3RlOgo+Cj4gT24gVGh1LCBOb3YgMjksIDIwMTggYXQgMDg6MjU6MjBQTSAr
-MDUzMCwgVml2ZWsgR2F1dGFtIHdyb3RlOgo+ID4gT24gV2VkLCBOb3YgMjgsIDIwMTggYXQgMTA6
-MDcgUE0gUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4gd3JvdGU6Cj4gPiA+Cj4g
-PiA+IE9uIDI4LzExLzIwMTggMTY6MjQsIFN0ZXBoZW4gQm95ZCB3cm90ZToKPiA+ID4gPiBRdW90
-aW5nIFZpdmVrIEdhdXRhbSAoMjAxOC0xMS0yNyAwMjoxMTo0MSkKPiA+ID4gPj4gQEAgLTE5NjYs
-NiArMTk3MCwyMyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBhcm1fc21tdV9v
-Zl9tYXRjaFtdID0gewo+ID4gPiA+PiAgIH07Cj4gPiA+ID4+ICAgTU9EVUxFX0RFVklDRV9UQUJM
-RShvZiwgYXJtX3NtbXVfb2ZfbWF0Y2gpOwo+ID4gPiA+Pgo+ID4gPiA+PiArc3RhdGljIHZvaWQg
-YXJtX3NtbXVfZmlsbF9jbGtfZGF0YShzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LAo+ID4g
-PiA+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvbnN0IGNoYXIgKiBjb25z
-dCAqY2xrcykKPiA+ID4gPj4gK3sKPiA+ID4gPj4gKyAgICAgICBpbnQgaTsKPiA+ID4gPj4gKwo+
-ID4gPiA+PiArICAgICAgIGlmIChzbW11LT5udW1fY2xrcyA8IDEpCj4gPiA+ID4+ICsgICAgICAg
-ICAgICAgICByZXR1cm47Cj4gPiA+ID4+ICsKPiA+ID4gPj4gKyAgICAgICBzbW11LT5jbGtzID0g
-ZGV2bV9rY2FsbG9jKHNtbXUtPmRldiwgc21tdS0+bnVtX2Nsa3MsCj4gPiA+ID4+ICsgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBzaXplb2YoKnNtbXUtPmNsa3MpLCBHRlBfS0VSTkVM
-KTsKPiA+ID4gPj4gKyAgICAgICBpZiAoIXNtbXUtPmNsa3MpCj4gPiA+ID4+ICsgICAgICAgICAg
-ICAgICByZXR1cm47Cj4gPiA+ID4+ICsKPiA+ID4gPj4gKyAgICAgICBmb3IgKGkgPSAwOyBpIDwg
-c21tdS0+bnVtX2Nsa3M7IGkrKykKPiA+ID4gPj4gKyAgICAgICAgICAgICAgIHNtbXUtPmNsa3Nb
-aV0uaWQgPSBjbGtzW2ldOwo+ID4gPiA+Cj4gPiA+ID4gSXMgdGhpcyBjbGtfYnVsa19nZXRfYWxs
-KCk/Cj4gPgo+ID4gRnJvbSB3aGF0IEkgcmVtZW1iZXIsIGFuZCBub3cgSSBjb3VsZCBnbyBiYWNr
-IHRvIHY3IGFuZCBjaGVjayBbMV0sIHdlIHBhcmtlZAo+ID4gY2xrX2J1bGtfZ2V0IG91dCBvZiBP
-RidzIHNvbGUgcHVydmlldyBhcyB3ZSBhbHNvIGhhdmUKPiA+IGFybV9zbW11X2RldmljZV9hY3Bp
-X3Byb2JlKCkgYmVzaWRlcyBhcm1fc21tdV9kZXZpY2VfZHRfcHJvYmUoKS4KPiA+Cj4gPiBhcm1f
-c21tdV9kZXZpY2VfZHRfcHJvYmUoKSBjb3VsZCBnZXQgdGhlIGNsb2NrcyBmcm9tIGR0IGFuZCBm
-aWxsIGluCj4gPiB0aGUgY2xvY2sgYnVsayBkYXRhLCBhbmQKPiA+IHNpbWlsYXJseSwgYXJtX3Nt
-bXVfZGV2aWNlX2FjcGlfcHJvYmUoKSBjb3VsZCBmaWxsIHRoZSBjbG9jayBidWxrIGRhdGEKPiA+
-IGJ5IGdldHRpbmcgaXQgZnJvbSBBQ1BJLgo+ID4KPiA+IGNsa19idWxrX2dldF9hbGwoKSBzZWVt
-cyBsaWtlIGdvaW5nIG9ubHkgdGhlIE9GIHdheS4KPiA+IElzIHRoZXJlIGFub3RoZXIgd2F5IGhl
-cmUgdG8gaGF2ZSBzb21ldGhpbmcgY29tbW9uIGJldHdlZW4gQUNQSQo+ID4gYW5kIE9GLCBhbmQg
-dGhlbiBkbyB0aGUgY2xrX2J1bGtfZ2V0Pwo+Cj4gSSdkIHNheSBqdXN0IGdvIHdpdGggY2xrX2J1
-bGtfZ2V0X2FsbCgpIGFuZCBpZiBzb21lYm9keSByZWFsbHkgd2FudHMgdG8KPiBtZXNzIHdpdGgg
-dGhlIFNNTVUgY2xvY2tzIG9uIGEgc3lzdGVtIGJvb3RlZCB2aWEgQUNQSSwgdGhlbiBpdCdzIHRo
-ZWlyCj4gcHJvYmxlbSB0byBzb2x2ZS4gTXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0IHRoZSBkZXNp
-Z24gb2YgSU9SVCBtYWtlcyB0aGlzCj4gbmV4dCB0byBpbXBvc3NpYmxlIHRvIHNvbHZlIGFueXdh
-eSwgYmVjYXVzZSBhIHN0YXRpYyB0YWJsZSBpcyB1c2VkIGFuZAo+IHRoZXJlZm9yZSB3ZSdyZSB1
-bmFibGUgdG8gcnVuIHdoYXRldmVyIEFTTCBtZXRob2RzIG5lZWQgdG8gYmUgaW52b2tlZCB0bwo+
-IG1lc3Mgd2l0aCB0aGUgY2xvY2tzLgoKU3VyZSB0aGVuLiBJIHdpbGwgcmVzcGluIHRoaXMgcGF0
-Y2gtc2VyaWVzLgoKPgo+IFdpbGwKCgoKLS0gClFVQUxDT01NIElORElBLCBvbiBiZWhhbGYgb2Yg
-UXVhbGNvbW0gSW5ub3ZhdGlvbiBDZW50ZXIsIEluYy4gaXMgYSBtZW1iZXIKb2YgQ29kZSBBdXJv
-cmEgRm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlvbgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZy
-ZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5v
-cmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+Hi Matthias,
+
+     Thanks very much for your review.
+
+On Mon, 2018-12-03 at 00:56 +0100, Matthias Brugger wrote:
+> 
+> On 17/11/2018 03:35, Yong Wu wrote:
+> > The M4U IP blocks in mt8183 is MediaTek's generation2 M4U which use
+> > the ARM Short-descriptor like mt8173, and most of the HW registers
+> > are the same.
+> > 
+> > Here list main changes in mt8183:
+> > 1) mt8183 has only one M4U HW like mt8173.
+> 
+> That's a change?
+
+I guess I should use "difference" rather than "changes".
+(mt8173 and mt8183 have only one M4u HW while mt2712 have two.)
+
+> 
+> > 2) mt8183 don't have its "bclk" clock, the M4U use the EMI clock
+> > which has already been enabled before kernel.
+> > 3) mt8183 can support the dram over 4GB, but it don't call this "4GB
+> > mode".
+> > 4) mt8183 pgtable base register(0x0) extend bit[1:0] which represent
+> > the bit[33:32] in the physical address of the pgtable base, But the
+> > standard ttbr0[1] means the S bit which is enabled defaultly, Hence,
+> > we add a mask.
+> > 5) mt8183 HW has a GALS modules, the SMI should add "gals" clock
+> > support.
+> > 6) the larb-id in smi-common has been remapped. This means the
+> > larb-id reported in the mtk_iommu_isr is not the real larb-id, here
+> > is the remapping relationship of mt8183:
+> 
+> This whole list is an indicator that you will need several enhancements to the
+> existing code before you can add mt8183 support.
+> Please do so in independent patches (e.g. gals modules, remap logic)
+
+OK. I will separate them into 2 new preparing patches.
+
+> Regarding making bclk optional, I think it would be better to set it to NULL for
+> mt8183 otherwise the driver will work with a broken device tree on systems that
+> actually need the bclk. Same holds for gals0 and gals1.
+
+OK. From your comment below, I will add a "has_bclk" in the platform
+data and change code like this:
+
+ if (data->plat_data->has_bclk) {
+        data->bclk = devm_clk_get();
+        if (IS_ERR(data->bclk))
+		return PTR_ERR(data->bclk).
+ } else {
+ 	data->bclk = NULL;
+ }
+
+> 
+> >                        M4U
+> >                         |
+> > ---------------------------------------------
+> > |               SMI common                  |
+> > -0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
+> >  |     |     |     |     |     |      |     |
+> > larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
+> > disp  vdec  img   cam   venc  img    cam
+> > As above, larb0 connects with the id 0 in smi-common.
+> >           larb1 connects with the id 7 in smi-common.
+> >           ...
+> > Take a example, if the larb-id reported in the mtk_iommu_isr is 7,
+> > actually it is larb1(vdec).
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >  drivers/iommu/mtk_iommu.c | 38 ++++++++++++++++++++++++++++----------
+> >  drivers/iommu/mtk_iommu.h |  5 +++++
+> >  drivers/memory/mtk-smi.c  | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 80 insertions(+), 10 deletions(-)
+> > 
+> 
+> [...]
+> 
+> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > index a243047..e5fd8ee 100644
+> > --- a/drivers/iommu/mtk_iommu.h
+> > +++ b/drivers/iommu/mtk_iommu.h
+> > @@ -39,11 +39,16 @@ enum mtk_iommu_plat {
+> >  	M4U_MT2701,
+> >  	M4U_MT2712,
+> >  	M4U_MT8173,
+> > +	M4U_MT8183,
+> >  };
+> >  
+> >  struct mtk_iommu_plat_data {
+> >  	enum mtk_iommu_plat m4u_plat;
+> >  	bool has_4gb_mode;
+> > +
+> > +	/* The larb-id may be remapped in the smi-common. */
+> > +	bool larbid_remap_enable;
+> > +	unsigned int larbid_remapped[MTK_LARB_NR_MAX];
+> 
+> Please add new features to the driver as single patches. Don't add this kind of
+> things in the patch where you enable a new SoC.
+
+OK.
+
+> 
+> >  };
+> >  
+> >  struct mtk_iommu_domain;
+> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> > index e37e54b..979153b 100644
+> > --- a/drivers/memory/mtk-smi.c
+> > +++ b/drivers/memory/mtk-smi.c
+> > @@ -59,6 +59,7 @@ struct mtk_smi_larb_gen {
+> >  struct mtk_smi {
+> >  	struct device			*dev;
+> >  	struct clk			*clk_apb, *clk_smi;
+> > +	struct clk			*clk_gals0, *clk_gals1;
+> >  	struct clk			*clk_async; /*only needed by mt2701*/
+> >  	void __iomem			*smi_ao_base;
+> >  };
+> > @@ -93,8 +94,20 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+> >  	if (ret)
+> >  		goto err_disable_apb;
+> >  
+> > +	ret = clk_prepare_enable(smi->clk_gals0);
+> > +	if (ret)
+> > +		goto err_disable_smi;
+> > +
+> > +	ret = clk_prepare_enable(smi->clk_gals1);
+> > +	if (ret)
+> > +		goto err_disable_gals0;
+> > +>  	return 0;
+> >  
+> > +err_disable_gals0:
+> > +	clk_disable_unprepare(smi->clk_gals0);
+> > +err_disable_smi:
+> > +	clk_disable_unprepare(smi->clk_smi);
+> >  err_disable_apb:
+> >  	clk_disable_unprepare(smi->clk_apb);
+> >  err_put_pm:
+> > @@ -104,6 +117,8 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+> >  
+> >  static void mtk_smi_disable(const struct mtk_smi *smi)
+> >  {
+> > +	clk_disable_unprepare(smi->clk_gals1);
+> > +	clk_disable_unprepare(smi->clk_gals0);
+> >  	clk_disable_unprepare(smi->clk_smi);
+> >  	clk_disable_unprepare(smi->clk_apb);
+> >  	pm_runtime_put_sync(smi->dev);
+> > @@ -262,6 +277,12 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+> >  	.larb_special_mask = BIT(8) | BIT(9), /* bdpsys */
+> >  };
+> >  
+> > +static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
+> > +	.need_larbid = true,
+> > +	.config_port = mtk_smi_larb_config_port_gen2_general,
+> > +	.larb_special_mask = BIT(2) | BIT(3) | BIT(7), /* IPU0 | IPU1 | CCU */
+> > +};
+> > +
+> >  static const struct of_device_id mtk_smi_larb_of_ids[] = {
+> >  	{
+> >  		.compatible = "mediatek,mt8173-smi-larb",
+> > @@ -275,6 +296,10 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+> >  		.compatible = "mediatek,mt2712-smi-larb",
+> >  		.data = &mtk_smi_larb_mt2712
+> >  	},
+> > +	{
+> > +		.compatible = "mediatek,mt8183-smi-larb",
+> > +		.data = &mtk_smi_larb_mt8183
+> > +	},
+> >  	{}
+> >  };
+> >  
+> > @@ -304,6 +329,12 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+> >  	larb->smi.clk_smi = devm_clk_get(dev, "smi");
+> >  	if (IS_ERR(larb->smi.clk_smi))
+> >  		return PTR_ERR(larb->smi.clk_smi);
+> > +
+> > +	larb->smi.clk_gals0 = devm_clk_get(dev, "gals");> +	if (PTR_ERR(larb->smi.clk_gals0) == -ENOENT)
+> > +		larb->smi.clk_gals0 = NULL;
+> > +	else if (IS_ERR(larb->smi.clk_gals0))
+> > +		return PTR_ERR(larb->smi.clk_gals0);
+> >  	larb->smi.dev = dev;
+> >  
+> >  	if (larb->larb_gen->need_larbid) {
+> > @@ -364,6 +395,10 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
+> >  		.compatible = "mediatek,mt2712-smi-common",
+> >  		.data = (void *)MTK_SMI_GEN2
+> >  	},
+> > +	{
+> > +		.compatible = "mediatek,mt8183-smi-common",
+> > +		.data = (void *)MTK_SMI_GEN2
+> > +	},
+> >  	{}
+> >  };
+> >  
+> > @@ -388,6 +423,18 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+> >  	if (IS_ERR(common->clk_smi))
+> >  		return PTR_ERR(common->clk_smi);
+> >  
+> > +	common->clk_gals0 = devm_clk_get(dev, "gals0");
+> > +	if (PTR_ERR(common->clk_gals0) == -ENOENT)
+> > +		common->clk_gals0 = NULL;
+> > +	else if (IS_ERR(common->clk_gals0))
+> > +		return PTR_ERR(common->clk_gals0);
+> > +
+> > +	common->clk_gals1 = devm_clk_get(dev, "gals1");
+> > +	if (PTR_ERR(common->clk_gals1) == -ENOENT)
+> > +		common->clk_gals1 = NULL;
+> > +	else if (IS_ERR(common->clk_gals1))
+> > +		return PTR_ERR(common->clk_gals1);
+> > +
+> 
+> I'd prefer to check for clk_gals[01] for SoCs that need this clocks instead of
+> making them optional.
+
+OK. like "bclk", I will add a "has_gals" in the SOCs data.
+
+> 
+> Regards,
+> Matthias
