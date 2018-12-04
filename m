@@ -1,55 +1,25 @@
-From: David Laight <David.Laight@ACULAB.COM>
-Subject: RE: [PATCH v2] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
-Date: Tue, 4 Dec 2018 13:36:14 +0000
-Message-ID: <2f2a3bb6b0b9473687628f936db71c4f@AcuMS.aculab.com>
-References: <20181130214803.3119-1-cai@gmx.us>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
+ pool
+Date: Tue, 4 Dec 2018 15:17:43 +0100
+Message-ID: <20181204141743.GA2618@lst.de>
+References: <cover.1543856576.git.robin.murphy@arm.com> <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com> <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com> <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181130214803.3119-1-cai@gmx.us>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: 'Qian Cai' <cai@gmx.us>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
-Cc: "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>, "salil.mehta@huawei.com" <salil.mehta@huawei.com>, "john.garry@huawei.com" <john.garry@huawei.com>, "linuxarm@huawei.com" <linuxarm@huawei.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: John Garry <john.garry@huawei.com>, hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Qian Cai
-> Sent: 30 November 2018 21:48
-> To: hch@lst.de; m.szyprowski@samsung.com; robin.murphy@arm.com
-> Cc: yisen.zhuang@huawei.com; salil.mehta@huawei.com; john.garry@huawei.com; linuxarm@huawei.com;
-> iommu@lists.linux-foundation.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Qian Cai
-> Subject: [PATCH v2] dma-debug: Kconfig for PREALLOC_DMA_DEBUG_ENTRIES
-> 
-> The amount of DMA mappings from Hisilicon HNS ethernet devices is huge,
-> so it could trigger "DMA-API: debugging out of memory - disabling".
-> 
-> hnae_get_handle [1]
->   hnae_init_queue
->     hnae_init_ring
->       hnae_alloc_buffers [2]
->         debug_dma_map_page
->           dma_entry_alloc
-> 
-> [1] for (i = 0; i < handle->q_num; i++)
-> [2] for (i = 0; i < ring->desc_num; i++)
-> 
-> Also, "#define HNS_DSAF_MAX_DESC_CNT 1024"
-> 
-> On this Huawei TaiShan 2280 aarch64 server, it has reached the limit
-> already,
-> 
-> 4 (NICs) x 16 (queues) x 1024 (port descption numbers) = 65536
-> 
-> Added a Kconfig entry for PREALLOC_DMA_DEBUG_ENTRIES, so make it easier
-> for users to deal with special cases like this.
+On Tue, Dec 04, 2018 at 01:11:37PM +0000, Robin Murphy wrote:
+> In fact, having got this far in, what I'd quite like to do is to get rid of 
+> dma_debug_resize_entries() such that we never need to free things at all, 
+> since then we could allocate whole pages as blocks of entries to save on 
+> masses of individual slab allocations.
 
-Ugg. That is worse than a module parameter.
-
-The driver needs to automatically reduce the number of mapping requests.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Yes, we should defintively kill dma_debug_resize_entries.  Allocating
+page batches might sound nice, but is that going to introduce additional
+complexity?
