@@ -1,42 +1,29 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 2/4] dma-debug: Refactor dma_debug_entry allocation
-Date: Tue, 4 Dec 2018 16:09:30 +0000
-Message-ID: <4efce7aa-2146-e759-1214-04bab917db2f@arm.com>
-References: <cover.1543856576.git.robin.murphy@arm.com>
-	<a827949d4fde7f8eca805e3b09c2eb7fb16d8bec.1543856576.git.robin.murphy@arm.com>
-	<20181204142731.GB2767@lst.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: merge swiotlb support into dma_direct_ops
+Date: Tue,  4 Dec 2018 08:16:40 -0800
+Message-ID: <20181204161645.8038-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181204142731.GB2767-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, linux-ia64@vger.kernel.org, iommu@lists.linux-foundation.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/12/2018 14:27, Christoph Hellwig wrote:
-> On Mon, Dec 03, 2018 at 05:28:07PM +0000, Robin Murphy wrote:
->> Make prealloc_memory() a little more general and robust so that it
->> serves for runtime reallocations too. The first thing we can do with
->> that is clean up dma_debug_resize_entries() quite a bit.
-> 
-> Maybe also renamed it to dma_debug_alloc_entries or something like
-> that?
+Hi Konrad and others,
 
-Yes, that's definitely nicer.
+can you review this series?  It merges the swiotlb support into the
+DMA direct ops so that we don't have to duplicate the dma mapping logic
+in multiple places.
 
-> Otherwise this looks fine to me.
+Note that this is based on the dma_mapping_error series for which I'd
+still like to collect a few more reviews, so pulling the git tree might
+be easiest for testing.
 
-Thanks (and for the review on #1)
+The git tree is available here:
 
-Robin.
+    git://git.infradead.org/users/hch/misc.git swiotlb-merge
+
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/swiotlb-merge
