@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/5] iommu/of: Use device_iommu_mapped()
-Date: Tue,  4 Dec 2018 18:25:01 +0100
-Message-ID: <20181204172504.19708-3-joro@8bytes.org>
+Subject: [PATCH 1/5] driver core: Introduce device_iommu_mapped() function
+Date: Tue,  4 Dec 2018 18:25:00 +0100
+Message-ID: <20181204172504.19708-2-joro@8bytes.org>
 References: <20181204172504.19708-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181204172504.19708-1-joro@8bytes.org>
@@ -12,26 +12,42 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Use Use device_iommu_mapped() to check if the device is
-already mapped by an IOMMU.
+Some places in the kernel check the iommu_group pointer in
+'struct device' in order to find ot whether a device is
+mapped by an IOMMU.
 
+This is not good way to make this check, as the pointer will
+be moved to 'struct dev_iommu_data'. This way to make the
+check is also not very readable.
+
+Introduce an explicit function to perform this check.
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/of_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/device.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index c5dd63072529..bfcf139503f0 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -220,7 +220,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 	 * If we have reason to believe the IOMMU driver missed the initial
- 	 * add_device callback for dev, replay it to get things in order.
- 	 */
--	if (ops && ops->add_device && dev->bus && !dev->iommu_group)
-+	if (ops && ops->add_device && dev->bus && !device_iommu_mapped(dev))
- 		err = ops->add_device(dev);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 1b25c7a43f4c..6cb4640b6160 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -1058,6 +1058,16 @@ static inline struct device *kobj_to_dev(struct kobject *kobj)
+ 	return container_of(kobj, struct device, kobj);
+ }
  
- 	/* Ignore all other errors apart from EPROBE_DEFER */
++/**
++ * device_iommu_mapped - Returns true when the device DMA is translated
++ *			 by an IOMMU
++ * @dev: Device to perform the check on
++ */
++static inline bool device_iommu_mapped(struct device *dev)
++{
++	return (dev->iommu_group != NULL);
++}
++
+ /* Get the wakeup routines, which depend on struct device */
+ #include <linux/pm_wakeup.h>
+ 
 -- 
 2.17.1
