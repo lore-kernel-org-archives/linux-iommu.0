@@ -1,50 +1,39 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 4/9] iommu/dma: Use helper functions to access
-	dev->iommu_fwspec
-Date: Tue,  4 Dec 2018 17:29:57 +0100
-Message-ID: <20181204163002.15800-5-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 9/9] iommu/tegra: Use helper functions to access dev->iommu_fwspec
+Date: Tue,  4 Dec 2018 17:30:02 +0100
+Message-ID: <20181204163002.15800-10-joro@8bytes.org>
 References: <20181204163002.15800-1-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181204163002.15800-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181204163002.15800-1-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Thierry Reding <thierry.reding@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
 Use the new helpers dev_iommu_fwspec_get()/set() to access
 the dev->iommu_fwspec pointer. This makes it easier to move
 that pointer later into another struct.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/dma-iommu.c | 2 +-
+ drivers/iommu/tegra-smmu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b04753b204..2b1c6912fbcc 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -177,7 +177,7 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 0d03341317c4..0d026cb2dfff 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -846,7 +846,7 @@ static struct iommu_group *tegra_smmu_group_get(struct tegra_smmu *smmu,
+ 
+ static struct iommu_group *tegra_smmu_device_group(struct device *dev)
  {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct tegra_smmu *smmu = dev->archdata.iommu;
+ 	struct iommu_group *group;
  
--	if (!is_of_node(dev->iommu_fwspec->iommu_fwnode))
-+	if (!is_of_node(dev_iommu_fwspec_get(dev)->iommu_fwnode))
- 		iort_iommu_msi_get_resv_regions(dev, list);
- 
- }
 -- 
 2.17.1
