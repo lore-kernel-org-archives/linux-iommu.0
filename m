@@ -1,263 +1,117 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
-Date: Tue,  4 Dec 2018 16:31:22 +0530
-Message-ID: <20181204110122.12434-1-vivek.gautam@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
+ pool
+Date: Tue, 4 Dec 2018 13:11:37 +0000
+Message-ID: <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
+References: <cover.1543856576.git.robin.murphy@arm.com>
+ <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+ <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: John Garry <john.garry@huawei.com>, hch@lst.de
+Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Qualcomm SoCs have an additional level of cache called as
-System cache, aka. Last level cache (LLC). This cache sits right
-before the DDR, and is tightly coupled with the memory controller.
-The cache is available to all the clients present in the SoC system.
-The clients request their slices from this system cache, make it
-active, and can then start using it.
-For these clients with smmu, to start using the system cache for
-buffers and, related page tables [1], memory attributes need to be
-set accordingly.
-This change updates the MAIR and TCR configurations with correct
-attributes to use this system cache.
+Hi John,
 
-To explain a little about memory attribute requirements here:
+On 03/12/2018 18:23, John Garry wrote:
+> On 03/12/2018 17:28, Robin Murphy wrote:
+>> Certain drivers such as large multi-queue network adapters can use pools
+>> of mapped DMA buffers larger than the default dma_debug_entry pool of
+>> 65536 entries, with the result that merely probing such a device can
+>> cause DMA debug to disable itself during boot unless explicitly given an
+>> appropriate "dma_debug_entries=..." option.
+>>
+>> Developers trying to debug some other driver on such a system may not be
+>> immediately aware of this, and at worst it can hide bugs if they fail to
+>> realise that dma-debug has already disabled itself unexpectedly by the
+>> time the code of interest gets to run. Even once they do realise, it can
+>> be a bit of a pain to emprirically determine a suitable number of
+>> preallocated entries to configure without massively over-allocating.
+>>
+>> There's really no need for such a static limit, though, since we can
+>> quite easily expand the pool at runtime in those rare cases that the
+>> preallocated entries are insufficient, which is arguably the least
+>> surprising and most useful behaviour.
+> 
+> Hi Robin,
+> 
+> Do you have an idea on shrinking the pool again when the culprit driver 
+> is removed, i.e. we have so many unused debug entries now available?
 
-Non-coherent I/O devices can't look-up into inner caches. However,
-coherent I/O devices can. But both can allocate in the system cache
-based on system policy and configured memory attributes in page
-tables.
-CPUs can access both inner and outer caches (including system cache,
-aka. Last level cache), and can allocate into system cache too
-based on memory attributes, and system policy.
+I honestly don't believe it's worth the complication. This is a 
+development feature with significant overheads already, so there's not 
+an awful lot to gain by trying to optimise memory usage. If a system can 
+ever load a driver that makes hundreds of thousands of simultaneous 
+mappings, it can almost certainly spare 20-odd megabytes of RAM for the 
+corresponding debug entries in perpetuity. Sure, it does mean you'd need 
+to reboot to recover memory from a major leak, but that's mostly true of 
+the current behaviour too, and rebooting during driver development is 
+hardly an unacceptable inconvenience.
 
-Further looking at memory types, we have following -
-a) Normal uncached :- MAIR 0x44, inner non-cacheable,
-                      outer non-cacheable;
-b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
-                      outer read write-back non-transient;
-                      attribute setting for coherenet I/O devices.
+In fact, having got this far in, what I'd quite like to do is to get rid 
+of dma_debug_resize_entries() such that we never need to free things at 
+all, since then we could allocate whole pages as blocks of entries to 
+save on masses of individual slab allocations.
 
-and, for non-coherent i/o devices that can allocate in system cache
-another type gets added -
-c) Normal sys-cached/non-inner-cached :-
-                      MAIR 0xf4, inner non-cacheable,
-                      outer read write-back non-transient
+Robin.
 
-So, CPU will automatically use the system cache for memory marked as
-normal cached. The normal sys-cached is downgraded to normal non-cached
-memory for CPUs.
-Coherent I/O devices can use system cache by marking the memory as
-normal cached.
-Non-coherent I/O devices, to use system cache, should mark the memory as
-normal sys-cached in page tables.
-
-This change is a realisation of following changes
-from downstream msm-4.9:
-iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT[2]
-iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[3]
-
-[1] https://patchwork.kernel.org/patch/10302791/
-[2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
-[3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
-
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
-
-Changes since v1:
- - Addressed Tomasz's comments for basing the change on
-   "NO_INNER_CACHE" concept for non-coherent I/O devices
-   rather than capturing "SYS_CACHE". This is to indicate
-   clearly the intent of non-coherent I/O devices that
-   can't access inner caches.
-
- drivers/iommu/arm-smmu.c       | 15 +++++++++++++++
- drivers/iommu/dma-iommu.c      |  3 +++
- drivers/iommu/io-pgtable-arm.c | 22 +++++++++++++++++-----
- drivers/iommu/io-pgtable.h     |  5 +++++
- include/linux/iommu.h          |  3 +++
- 5 files changed, 43 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index ba18d89d4732..047f7ff95b0d 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -255,6 +255,7 @@ struct arm_smmu_domain {
- 	struct mutex			init_mutex; /* Protects smmu pointer */
- 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
- 	struct iommu_domain		domain;
-+	bool				no_inner_cache;
- };
- 
- struct arm_smmu_option_prop {
-@@ -897,6 +898,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu_domain->non_strict)
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 
-+	if (smmu_domain->no_inner_cache)
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NO_IC;
-+
- 	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops) {
-@@ -1579,6 +1583,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 		case DOMAIN_ATTR_NESTING:
- 			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 			return 0;
-+		case DOMAIN_ATTR_NO_IC:
-+			*((int *)data) = smmu_domain->no_inner_cache;
-+			return 0;
- 		default:
- 			return -ENODEV;
- 		}
-@@ -1619,6 +1626,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
- 			else
- 				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
- 			break;
-+		case DOMAIN_ATTR_NO_IC:
-+			if (smmu_domain->smmu) {
-+				ret = -EPERM;
-+				goto out_unlock;
-+			}
-+			if (*((int *)data))
-+				smmu_domain->no_inner_cache = true;
-+			break;
- 		default:
- 			ret = -ENODEV;
- 		}
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b04753b204..87c3d59c4a6c 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -354,6 +354,9 @@ int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
- {
- 	int prot = coherent ? IOMMU_CACHE : 0;
- 
-+	if (!coherent && (attrs & DOMAIN_ATTR_NO_IC))
-+		prot |= IOMMU_NO_IC;
-+
- 	if (attrs & DMA_ATTR_PRIVILEGED)
- 		prot |= IOMMU_PRIV;
- 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 237cacd4a62b..815b86067bcc 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -168,10 +168,12 @@
- #define ARM_LPAE_MAIR_ATTR_MASK		0xff
- #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
- #define ARM_LPAE_MAIR_ATTR_NC		0x44
-+#define ARM_LPAE_MAIR_ATTR_NO_IC	0xf4
- #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
- #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
- #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
- #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
-+#define ARM_LPAE_MAIR_ATTR_IDX_NO_IC	3
- 
- /* IOPTE accessors */
- #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
-@@ -443,6 +445,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 		else if (prot & IOMMU_CACHE)
- 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
- 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-+		else if (prot & IOMMU_NO_IC)
-+			pte |= (ARM_LPAE_MAIR_ATTR_IDX_NO_IC
-+				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
- 	} else {
- 		pte = ARM_LPAE_PTE_HAP_FAULT;
- 		if (prot & IOMMU_READ)
-@@ -780,7 +785,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
- 
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
--			    IO_PGTABLE_QUIRK_NON_STRICT))
-+			    IO_PGTABLE_QUIRK_NON_STRICT |
-+			    IO_PGTABLE_QUIRK_NO_IC))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -788,9 +794,13 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 		return NULL;
- 
- 	/* TCR */
--	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
--	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
--	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_NO_IC)
-+		reg = ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT;
-+	else
-+		reg = ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT;
-+
-+	reg |= (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-+	       (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
- 
- 	switch (ARM_LPAE_GRANULE(data)) {
- 	case SZ_4K:
-@@ -842,7 +852,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	      (ARM_LPAE_MAIR_ATTR_WBRWA
- 	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
- 	      (ARM_LPAE_MAIR_ATTR_DEVICE
--	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
-+	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
-+	      (ARM_LPAE_MAIR_ATTR_NO_IC
-+	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_NO_IC));
- 
- 	cfg->arm_lpae_s1_cfg.mair[0] = reg;
- 	cfg->arm_lpae_s1_cfg.mair[1] = 0;
-diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-index 47d5ae559329..450a4adf9052 100644
---- a/drivers/iommu/io-pgtable.h
-+++ b/drivers/iommu/io-pgtable.h
-@@ -75,6 +75,10 @@ struct io_pgtable_cfg {
- 	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
- 	 *	on unmap, for DMA domains using the flush queue mechanism for
- 	 *	delayed invalidation.
-+	 *
-+	 * IO_PGTABLE_QUIRK_NO_IC: Override the attributes to use only the outer
-+	 *      cache, and not inner cache for non-coherent devices doing normal
-+	 *      sys-cached memory.
- 	 */
- 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
- 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
-@@ -82,6 +86,7 @@ struct io_pgtable_cfg {
- 	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
- 	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
- 	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
-+	#define IO_PGTABLE_QUIRK_NO_IC		BIT(6)
- 	unsigned long			quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a1d28f42cb77..c30ee7f8d82d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -41,6 +41,8 @@
-  * if the IOMMU page table format is equivalent.
-  */
- #define IOMMU_PRIV	(1 << 5)
-+/* Don't use inner caches */
-+#define IOMMU_NO_IC	(1 << 6)
- 
- struct iommu_ops;
- struct iommu_group;
-@@ -125,6 +127,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMUV1,
- 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
- 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
-+	DOMAIN_ATTR_NO_IC,
- 	DOMAIN_ATTR_MAX,
- };
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> 
+> Thanks,
+> John
+> 
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>  kernel/dma/debug.c | 18 +++++++++++++++---
+>>  1 file changed, 15 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+>> index de5db800dbfc..46cc075aec99 100644
+>> --- a/kernel/dma/debug.c
+>> +++ b/kernel/dma/debug.c
+>> @@ -47,6 +47,9 @@
+>>  #ifndef PREALLOC_DMA_DEBUG_ENTRIES
+>>  #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
+>>  #endif
+>> +/* If the pool runs out, try this many times to allocate this many 
+>> new entries */
+>> +#define DMA_DEBUG_DYNAMIC_ENTRIES 256
+>> +#define DMA_DEBUG_DYNAMIC_RETRIES 2
+>>
+>>  enum {
+>>      dma_debug_single,
+>> @@ -702,12 +705,21 @@ static struct dma_debug_entry 
+>> *dma_entry_alloc(void)
+>>  {
+>>      struct dma_debug_entry *entry;
+>>      unsigned long flags;
+>> +    int retry_count;
+>>
+>> -    spin_lock_irqsave(&free_entries_lock, flags);
+>> +    for (retry_count = 0; ; retry_count++) {
+>> +        spin_lock_irqsave(&free_entries_lock, flags);
+>> +
+>> +        if (num_free_entries > 0)
+>> +            break;
+>>
+>> -    if (list_empty(&free_entries)) {
+>> -        global_disable = true;
+>>          spin_unlock_irqrestore(&free_entries_lock, flags);
+>> +
+>> +        if (retry_count < DMA_DEBUG_DYNAMIC_RETRIES &&
+>> +            !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES))
+>> +            continue;
+>> +
+>> +        global_disable = true;
+>>          pr_err("debugging out of memory - disabling\n");
+>>          return NULL;
+>>      }
+>>
+> 
+> 
