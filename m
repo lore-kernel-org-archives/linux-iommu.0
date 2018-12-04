@@ -1,80 +1,332 @@
-From: Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
-	tables
-Date: Tue, 4 Dec 2018 15:35:41 +0100
-Message-ID: <b99dd00f-fe1c-1cac-8ee3-5b0c1af9a92e@suse.cz>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
-	<CANMq1KDxmRcWhtaJbrLHqx6yPGkNaK7WNYYf+iFjH1e8XdrwRg@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
+Date: Tue, 4 Dec 2018 15:21:24 +0000
+Message-ID: <99682bd2-1ca6-406a-890c-b34c25a1b2b3@arm.com>
+References: <20181204110122.12434-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CANMq1KDxmRcWhtaJbrLHqx6yPGkNaK7WNYYf+iFjH1e8XdrwRg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Hsin-Yi Wang <hsinyi-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181204110122.12434-1-vivek.gautam@codeaurora.org>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>, joro@8bytes.org, will.deacon@arm.com, iommu@lists.linux-foundation.org
+Cc: robdclark@gmail.com, linux-kernel@vger.kernel.org, tfiga@chromium.org, jcrouse@codeaurora.org, linux-arm-msm@vger.kernel.org, pdaly@codeaurora.org, pratikp@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/4/18 10:37 AM, Nicolas Boichat wrote:
-> On Sun, Nov 11, 2018 at 5:04 PM Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
->>
->> This is a follow-up to the discussion in [1], to make sure that the page
->> tables allocated by iommu/io-pgtable-arm-v7s are contained within 32-bit
->> physical address space.
->>
->> [1] https://lists.linuxfoundation.org/pipermail/iommu/2018-November/030876.html
+On 04/12/2018 11:01, Vivek Gautam wrote:
+> Qualcomm SoCs have an additional level of cache called as
+> System cache, aka. Last level cache (LLC). This cache sits right
+> before the DDR, and is tightly coupled with the memory controller.
+> The cache is available to all the clients present in the SoC system.
+> The clients request their slices from this system cache, make it
+> active, and can then start using it.
+> For these clients with smmu, to start using the system cache for
+> buffers and, related page tables [1], memory attributes need to be
+> set accordingly.
+> This change updates the MAIR and TCR configurations with correct
+> attributes to use this system cache.
 > 
-> Hi everyone,
+> To explain a little about memory attribute requirements here:
 > 
-> Let's try to summarize here.
+> Non-coherent I/O devices can't look-up into inner caches. However,
+> coherent I/O devices can. But both can allocate in the system cache
+> based on system policy and configured memory attributes in page
+> tables.
+> CPUs can access both inner and outer caches (including system cache,
+> aka. Last level cache), and can allocate into system cache too
+> based on memory attributes, and system policy.
 > 
-> First, we confirmed that this is a regression, and IOMMU errors happen
-> on 4.19 and linux-next/master on MT8173 (elm, Acer Chromebook R13).
-> The issue most likely starts from ad67f5a6545f ("arm64: replace
-> ZONE_DMA with ZONE_DMA32"), i.e. 4.15, and presumably breaks a number
-> of Mediatek platforms (and maybe others?).
+> Further looking at memory types, we have following -
+> a) Normal uncached :- MAIR 0x44, inner non-cacheable,
+>                        outer non-cacheable;
+> b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
+>                        outer read write-back non-transient;
+>                        attribute setting for coherenet I/O devices.
 > 
-> We have a few options here:
-> 1. This series [2], that adds support for GFP_DMA32 slab caches,
-> _without_ adding kmalloc caches (since there are no users of
-> kmalloc(..., GFP_DMA32)). I think I've addressed all the comments on
-> the 3 patches, and AFAICT this solution works fine.
-> 2. genalloc. That works, but unless we preallocate 4MB for L2 tables
-> (which is wasteful as we usually only need a handful of L2 tables),
-> we'll need changes in the core (use GFP_ATOMIC) to allow allocating on
-> demand, and as it stands we'd have no way to shrink the allocation.
-> 3. page_frag [3]. That works fine, and the code is quite simple. One
-> drawback is that fragments in partially freed pages cannot be reused
-> (from limited experiments, I see that IOMMU L2 tables are rarely
-> freed, so it's unlikely a whole page would get freed). But given the
-> low number of L2 tables, maybe we can live with that.
+> and, for non-coherent i/o devices that can allocate in system cache
+> another type gets added -
+> c) Normal sys-cached/non-inner-cached :-
+>                        MAIR 0xf4, inner non-cacheable,
+>                        outer read write-back non-transient
 > 
-> I think 2 is out. Any preference between 1 and 3? I think 1 makes
-> better use of the memory, so that'd be my preference. But I'm probably
-> missing something.
+> So, CPU will automatically use the system cache for memory marked as
+> normal cached. The normal sys-cached is downgraded to normal non-cached
+> memory for CPUs.
+> Coherent I/O devices can use system cache by marking the memory as
+> normal cached.
+> Non-coherent I/O devices, to use system cache, should mark the memory as
+> normal sys-cached in page tables.
+> 
+> This change is a realisation of following changes
+> from downstream msm-4.9:
+> iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT[2]
+> iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[3]
+> 
+> [1] https://patchwork.kernel.org/patch/10302791/
+> [2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
+> [3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
+> 
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> ---
+> 
+> Changes since v1:
+>   - Addressed Tomasz's comments for basing the change on
+>     "NO_INNER_CACHE" concept for non-coherent I/O devices
+>     rather than capturing "SYS_CACHE". This is to indicate
+>     clearly the intent of non-coherent I/O devices that
+>     can't access inner caches.
 
-I would prefer 1 as well. IIRC you already confirmed that alignment
-requirements are not broken for custom kmem caches even in presence of
-SLUB debug options (and I would say it's a bug to be fixed if they
-weren't). I just asked (and didn't get a reply I think) about your
-ability to handle the GFP_ATOMIC allocation failures. They should be
-rare when only single page allocations are needed for the kmem cache.
-But in case they are not an option, then preallocating would be needed,
-thus probably option 2.
+That seems backwards to me - there is already a fundamental assumption 
+that non-coherent devices can't access caches. What we're adding here is 
+a weird exception where they *can* use some level of cache despite still 
+being non-coherent overall.
 
-> [2] https://patchwork.kernel.org/cover/10677529/, 3 patches
-> [3] https://patchwork.codeaurora.org/patch/671639/
-> 
-> Thanks,
-> 
-> Nicolas
+In other words, it's not a case of downgrading coherent devices' 
+accesses to bypass inner caches, it's upgrading non-coherent devices' 
+accesses to hit the outer cache. That's certainly the understanding I 
+got from talking with Pratik at Plumbers, and it does appear to fit with 
+your explanation above despite the final conclusion you draw being 
+different.
+
+I do see what Tomasz meant in terms of the TCR attributes, but what we 
+currently do there is a little unintuitive and not at all representative 
+of actual mapping attributes - I'll come back to that inline.
+
+>   drivers/iommu/arm-smmu.c       | 15 +++++++++++++++
+>   drivers/iommu/dma-iommu.c      |  3 +++
+>   drivers/iommu/io-pgtable-arm.c | 22 +++++++++++++++++-----
+>   drivers/iommu/io-pgtable.h     |  5 +++++
+>   include/linux/iommu.h          |  3 +++
+>   5 files changed, 43 insertions(+), 5 deletions(-)
+
+As a minor nit, I'd prefer this as at least two patches to separate the 
+io-pgtable changes and arm-smmu changes - basically I'd expect it to 
+look much the same as the non-strict mode support did.
+
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index ba18d89d4732..047f7ff95b0d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -255,6 +255,7 @@ struct arm_smmu_domain {
+>   	struct mutex			init_mutex; /* Protects smmu pointer */
+>   	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+>   	struct iommu_domain		domain;
+> +	bool				no_inner_cache;
+
+Can we keep all the domain flags together please? In fact, I'd be 
+inclined to implement an options bitmap as we do elsewhere rather than 
+proliferate multiple bools.
+
+>   };
+>   
+>   struct arm_smmu_option_prop {
+> @@ -897,6 +898,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>   	if (smmu_domain->non_strict)
+>   		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+>   
+> +	if (smmu_domain->no_inner_cache)
+> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NO_IC;
+
+Maybe we need to be a bit cleverer about setting the quirk (and/or 
+allowing the domain attribute to be set), since depending on 
+configuration and hardware support the domain may end up picking a stage 
+2 or short-descriptor format and thus being rendered unusable.
+
+> +
+>   	smmu_domain->smmu = smmu;
+>   	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+>   	if (!pgtbl_ops) {
+> @@ -1579,6 +1583,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>   		case DOMAIN_ATTR_NESTING:
+>   			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+>   			return 0;
+> +		case DOMAIN_ATTR_NO_IC:
+> +			*((int *)data) = smmu_domain->no_inner_cache;
+> +			return 0;
+>   		default:
+>   			return -ENODEV;
+>   		}
+> @@ -1619,6 +1626,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>   			else
+>   				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+>   			break;
+> +		case DOMAIN_ATTR_NO_IC:
+> +			if (smmu_domain->smmu) {
+> +				ret = -EPERM;
+> +				goto out_unlock;
+> +			}
+> +			if (*((int *)data))
+> +				smmu_domain->no_inner_cache = true;
+
+This makes the attribute impossible to disable again, even before the 
+domain is initialised - is that intentional? (and if so, why?)
+
+> +			break;
+>   		default:
+>   			ret = -ENODEV;
+>   		}
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index d1b04753b204..87c3d59c4a6c 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -354,6 +354,9 @@ int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
+>   {
+>   	int prot = coherent ? IOMMU_CACHE : 0;
+>   
+> +	if (!coherent && (attrs & DOMAIN_ATTR_NO_IC))
+> +		prot |= IOMMU_NO_IC;
+> +
+
+Erm, that's going to be a hilariously unexpected interpretation of 
+DMA_ATTR_FORCE_CONTIGUOUS...
+
+I'm not sure it would really makes sense to expose fine-grained controls 
+at the DMA API level anyway, given the main point is to largely abstract 
+away the notion of caches altogether.
+
+>   	if (attrs & DMA_ATTR_PRIVILEGED)
+>   		prot |= IOMMU_PRIV;
+>   
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 237cacd4a62b..815b86067bcc 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -168,10 +168,12 @@
+>   #define ARM_LPAE_MAIR_ATTR_MASK		0xff
+>   #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
+>   #define ARM_LPAE_MAIR_ATTR_NC		0x44
+> +#define ARM_LPAE_MAIR_ATTR_NO_IC	0xf4
+>   #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
+>   #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
+>   #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
+>   #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
+> +#define ARM_LPAE_MAIR_ATTR_IDX_NO_IC	3
+>   
+>   /* IOPTE accessors */
+>   #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+> @@ -443,6 +445,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>   		else if (prot & IOMMU_CACHE)
+>   			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+>   				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +		else if (prot & IOMMU_NO_IC)
+> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_NO_IC
+> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+>   	} else {
+>   		pte = ARM_LPAE_PTE_HAP_FAULT;
+>   		if (prot & IOMMU_READ)
+> @@ -780,7 +785,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>   	struct arm_lpae_io_pgtable *data;
+>   
+>   	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+> -			    IO_PGTABLE_QUIRK_NON_STRICT))
+> +			    IO_PGTABLE_QUIRK_NON_STRICT |
+> +			    IO_PGTABLE_QUIRK_NO_IC))
+>   		return NULL;
+>   
+>   	data = arm_lpae_alloc_pgtable(cfg);
+> @@ -788,9 +794,13 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>   		return NULL;
+>   
+>   	/* TCR */
+> -	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+> -	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+> -	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+
+The subtle assumption here is that if the SMMU is coherent then these 
+are the attributes we actually want to use, but if it's non-coherent 
+then the interconnect should ignore them anyway so it doesn't really 
+matter. Does either of those aspects hold for qcom SoCs?
+
+TBH if we're going to touch the TCR attributes at all then we should 
+probably correct that sloppiness first - there's an occasional argument 
+for using non-cacheable pagetables even on a coherent SMMU if reducing 
+snoop traffic/latency on walks outweighs the cost of cache maintenance 
+on PTE updates, but anyone thinking they can get that by overriding 
+dma-coherent silently gets the worst of both worlds thanks to this 
+current TCR value.
+
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_NO_IC)
+> +		reg = ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT;
+> +	else
+> +		reg = ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT;
+> +
+> +	reg |= (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+> +	       (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+>   
+>   	switch (ARM_LPAE_GRANULE(data)) {
+>   	case SZ_4K:
+> @@ -842,7 +852,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>   	      (ARM_LPAE_MAIR_ATTR_WBRWA
+>   	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
+>   	      (ARM_LPAE_MAIR_ATTR_DEVICE
+> -	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
+> +	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
+> +	      (ARM_LPAE_MAIR_ATTR_NO_IC
+> +	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_NO_IC));
+>   
+>   	cfg->arm_lpae_s1_cfg.mair[0] = reg;
+>   	cfg->arm_lpae_s1_cfg.mair[1] = 0;
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index 47d5ae559329..450a4adf9052 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -75,6 +75,10 @@ struct io_pgtable_cfg {
+>   	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
+>   	 *	on unmap, for DMA domains using the flush queue mechanism for
+>   	 *	delayed invalidation.
+> +	 *
+> +	 * IO_PGTABLE_QUIRK_NO_IC: Override the attributes to use only the outer
+> +	 *      cache, and not inner cache for non-coherent devices doing normal
+> +	 *      sys-cached memory.
+
+As above, mappings for non-coherent devices would never be expected to 
+have the inner cacheable attribute anyway, so the comment doesn't really 
+make sense.
+
+>   	 */
+>   	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+>   	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+> @@ -82,6 +86,7 @@ struct io_pgtable_cfg {
+>   	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
+>   	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
+>   	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
+> +	#define IO_PGTABLE_QUIRK_NO_IC		BIT(6)
+>   	unsigned long			quirks;
+>   	unsigned long			pgsize_bitmap;
+>   	unsigned int			ias;
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a1d28f42cb77..c30ee7f8d82d 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -41,6 +41,8 @@
+>    * if the IOMMU page table format is equivalent.
+>    */
+>   #define IOMMU_PRIV	(1 << 5)
+> +/* Don't use inner caches */
+> +#define IOMMU_NO_IC	(1 << 6)
+
+As it stands, this sounds like it should only make sense when combined 
+with IOMMU_CACHE, yet the implementation only affects mappings which 
+would otherwise be INC-ONC anyway. It could really do with having some 
+clearer expectations set.
+
+>   
+>   struct iommu_ops;
+>   struct iommu_group;
+> @@ -125,6 +127,7 @@ enum iommu_attr {
+>   	DOMAIN_ATTR_FSL_PAMUV1,
+>   	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+>   	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+> +	DOMAIN_ATTR_NO_IC,
+
+At the IOMMU API level, nobody's going to have a clue what "NO_IC" 
+means. For how non-generic a concept it really is, I'd personally name 
+it something like DOMAIN_ATTR_QCOM_SYSTEM_CACHE.
+
+Robin.
+
+>   	DOMAIN_ATTR_MAX,
+>   };
+>   
 > 
