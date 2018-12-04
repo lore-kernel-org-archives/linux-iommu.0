@@ -1,96 +1,72 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Tue, 4 Dec 2018 17:19:37 +0000
-Message-ID: <eccb5b60-b831-c4bd-6c61-4867296e1232@arm.com>
-References: <cover.1543856576.git.robin.murphy@arm.com>
- <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
- <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
- <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
- <58fb3579-d101-db2b-c63a-609ddd651932@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 4/5] powerpc/iommu: Use device_iommu_mapped()
+Date: Tue,  4 Dec 2018 18:25:03 +0100
+Message-ID: <20181204172504.19708-5-joro@8bytes.org>
+References: <20181204172504.19708-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <58fb3579-d101-db2b-c63a-609ddd651932@huawei.com>
-Content-Language: en-GB
+In-Reply-To: <20181204172504.19708-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>, hch@lst.de
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
+To: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Russell Currey <ruscur@russell.cc>, Sam Bobroff <sbobroff@linux.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/12/2018 16:30, John Garry wrote:
-> On 04/12/2018 13:11, Robin Murphy wrote:
->> Hi John,
->>
->> On 03/12/2018 18:23, John Garry wrote:
->>> On 03/12/2018 17:28, Robin Murphy wrote:
->>>> Certain drivers such as large multi-queue network adapters can use 
->>>> pools
->>>> of mapped DMA buffers larger than the default dma_debug_entry pool of
->>>> 65536 entries, with the result that merely probing such a device can
->>>> cause DMA debug to disable itself during boot unless explicitly 
->>>> given an
->>>> appropriate "dma_debug_entries=..." option.
->>>>
->>>> Developers trying to debug some other driver on such a system may 
->>>> not be
->>>> immediately aware of this, and at worst it can hide bugs if they 
->>>> fail to
->>>> realise that dma-debug has already disabled itself unexpectedly by the
->>>> time the code of interest gets to run. Even once they do realise, it 
->>>> can
->>>> be a bit of a pain to emprirically determine a suitable number of
->>>> preallocated entries to configure without massively over-allocating.
->>>>
->>>> There's really no need for such a static limit, though, since we can
->>>> quite easily expand the pool at runtime in those rare cases that the
->>>> preallocated entries are insufficient, which is arguably the least
->>>> surprising and most useful behaviour.
->>>
->>> Hi Robin,
->>>
->>> Do you have an idea on shrinking the pool again when the culprit
->>> driver is removed, i.e. we have so many unused debug entries now
->>> available?
->>
->> I honestly don't believe it's worth the complication. This is a
->> development feature with significant overheads already, so there's not
->> an awful lot to gain by trying to optimise memory usage. If a system can
->> ever load a driver that makes hundreds of thousands of simultaneous
->> mappings, it can almost certainly spare 20-odd megabytes of RAM for the
->> corresponding debug entries in perpetuity. Sure, it does mean you'd need
->> to reboot to recover memory from a major leak, but that's mostly true of
->> the current behaviour too, and rebooting during driver development is
->> hardly an unacceptable inconvenience.
->>
-> 
-> ok, I just thought that it would not be too difficult to implement this 
-> on the dma entry free path.
+From: Joerg Roedel <jroedel@suse.de>
 
-True, in the current code it wouldn't be all that hard, but it feels 
-more worthwhile to optimise for allocation rather than freeing, and as 
-soon as we start allocating memory for multiple entries at once, trying 
-to free anything becomes extremely challenging.
+Use the new function to replace the open-coded iommu check.
 
->> In fact, having got this far in, what I'd quite like to do is to get rid
->> of dma_debug_resize_entries() such that we never need to free things at
->> all, since then we could allocate whole pages as blocks of entries to
->> save on masses of individual slab allocations.
->>
-> 
-> On a related topic, is it possible for the user to learn the total 
-> entries created at a given point in time? If not, could we add a file in 
-> the debugfs folder for this?
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Russell Currey <ruscur@russell.cc>
+Cc: Sam Bobroff <sbobroff@linux.ibm.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ arch/powerpc/kernel/eeh.c   | 2 +-
+ arch/powerpc/kernel/iommu.c | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-I did get as far as pondering that you effectively lose track of 
-utilisation once the low-water-mark of min_free_entries hits 0 and stays 
-there - AFAICS it should be sufficient to just expose nr_total_entries 
-as-is, since users can then calculate current and maximum occupancy 
-based on *_free_entries. Does that sound reasonable to you?
-
-That also indirectly reminds me that this lot is documented in 
-DMA_API.txt, so I should be good and update that too...
-
-Cheers,
-Robin.
+diff --git a/arch/powerpc/kernel/eeh.c b/arch/powerpc/kernel/eeh.c
+index 6cae6b56ffd6..23fe62f11486 100644
+--- a/arch/powerpc/kernel/eeh.c
++++ b/arch/powerpc/kernel/eeh.c
+@@ -1472,7 +1472,7 @@ static int dev_has_iommu_table(struct device *dev, void *data)
+ 	if (!dev)
+ 		return 0;
+ 
+-	if (dev->iommu_group) {
++	if (device_iommu_mapped(dev)) {
+ 		*ppdev = pdev;
+ 		return 1;
+ 	}
+diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+index f0dc680e659a..48d58d1dcac2 100644
+--- a/arch/powerpc/kernel/iommu.c
++++ b/arch/powerpc/kernel/iommu.c
+@@ -1086,7 +1086,7 @@ int iommu_add_device(struct device *dev)
+ 	if (!device_is_registered(dev))
+ 		return -ENOENT;
+ 
+-	if (dev->iommu_group) {
++	if (device_iommu_mapped(dev)) {
+ 		pr_debug("%s: Skipping device %s with iommu group %d\n",
+ 			 __func__, dev_name(dev),
+ 			 iommu_group_id(dev->iommu_group));
+@@ -1129,7 +1129,7 @@ void iommu_del_device(struct device *dev)
+ 	 * and we needn't detach them from the associated
+ 	 * IOMMU groups
+ 	 */
+-	if (!dev->iommu_group) {
++	if (!device_iommu_mapped(dev)) {
+ 		pr_debug("iommu_tce: skipping device %s with no tbl\n",
+ 			 dev_name(dev));
+ 		return;
+@@ -1148,7 +1148,7 @@ static int tce_iommu_bus_notifier(struct notifier_block *nb,
+         case BUS_NOTIFY_ADD_DEVICE:
+                 return iommu_add_device(dev);
+         case BUS_NOTIFY_DEL_DEVICE:
+-                if (dev->iommu_group)
++                if (device_iommu_mapped(dev))
+                         iommu_del_device(dev);
+                 return 0;
+         default:
+-- 
+2.17.1
