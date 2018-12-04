@@ -1,45 +1,41 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH] dma-mapping: remove a pointless memset in dma_atomic_pool_init
-Date: Tue,  4 Dec 2018 08:06:19 -0800
-Message-ID: <20181204160619.3253-1-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
+ pool
+Date: Tue, 4 Dec 2018 16:06:43 +0000
+Message-ID: <6e8ca917-32a7-5c0a-60c0-a266c3fbb163@arm.com>
+References: <cover.1543856576.git.robin.murphy@arm.com>
+ <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+ <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
+ <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com> <20181204141743.GA2618@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181204141743.GA2618@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: John Garry <john.garry@huawei.com>, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-We already zero the memory after allocating it from the pool that
-this function fills, and having the memset here in this form means
-we can't support CMA highmem allocations.
+On 04/12/2018 14:17, Christoph Hellwig wrote:
+> On Tue, Dec 04, 2018 at 01:11:37PM +0000, Robin Murphy wrote:
+>> In fact, having got this far in, what I'd quite like to do is to get rid of
+>> dma_debug_resize_entries() such that we never need to free things at all,
+>> since then we could allocate whole pages as blocks of entries to save on
+>> masses of individual slab allocations.
+> 
+> Yes, we should defintively kill dma_debug_resize_entries.  Allocating
+> page batches might sound nice, but is that going to introduce additional
+> complexity?
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Reported-by: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
----
- kernel/dma/remap.c | 1 -
- 1 file changed, 1 deletion(-)
+OK, looking at what the weird AMD GART code does I reckon it should be 
+happy enough with on-demand expansion, and that no tears will be shed if 
+it can no longer actually trim the pool to the size it thinks is 
+necessary. I'll add a patch to clean that up.
 
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index 68a64e3ff6a1..6e784824326f 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -121,7 +121,6 @@ int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
- 	if (!page)
- 		goto out;
- 
--	memset(page_address(page), 0, atomic_pool_size);
- 	arch_dma_prep_coherent(page, atomic_pool_size);
- 
- 	atomic_pool = gen_pool_create(PAGE_SHIFT, -1);
--- 
-2.19.1
+Page-based allocation, at least the way I'm thinking of it, shouldn't do 
+much more than add an extra loop in one place, which should be more than 
+made up for by removing all the freeing code :)
+
+Robin.
