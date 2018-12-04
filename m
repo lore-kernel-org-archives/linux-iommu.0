@@ -1,149 +1,122 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: [PATCH v3, RFC] iommu/io-pgtable-arm-v7s: Use page_frag to request DMA32 memory
-Date: Tue,  4 Dec 2018 16:23:00 +0800
-Message-ID: <20181204082300.95106-1-drinkcat@chromium.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 5/9] dma-mapping: support highmem in the generic remap
+ allocator
+Date: Tue, 4 Dec 2018 09:38:02 +0100
+Message-ID: <e1567e0d-4724-fb6b-cc22-3a723eec5e0f@samsung.com>
+References: <20181105121931.13481-1-hch@lst.de>
+        <20181105121931.13481-6-hch@lst.de>
+        <CGME20181130190639epcas3p2c9a23f5788b7f8eea26ce8d305b5e6f7@epcas3p2.samsung.com>
+        <449e0631-aa32-d4a8-9fa9-07234ae1e533@arm.com>
 Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <449e0631-aa32-d4a8-9fa9-07234ae1e533@arm.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Christoph Lameter <cl@linux.com>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infradead.org, Matthew Wilcox <willy@infradead.org>
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMUs using ARMv7 short-descriptor format require page tables
-(level 1 and 2) to be allocated within the first 4GB of RAM, even
-on 64-bit systems.
+Hi All,
 
-For level 1/2 tables, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
-is defined (e.g. on arm64 platforms).
+On 2018-11-30 20:05, Robin Murphy wrote:
+> On 05/11/2018 12:19, Christoph Hellwig wrote:
+>> By using __dma_direct_alloc_pages we can deal entirely with struct page
+>> instead of having to derive a kernel virtual address.
+>
+> Simple enough :)
+>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-For level 2 tables (1 KB), we use page_frag to allocate these pages,
-as we cannot directly use kmalloc (no slab cache for GFP_DMA32) or
-kmem_cache (mm/ code treats GFP_DMA32 as an invalid flag).
+This patch has landed linux-next yesterday and I've noticed that it
+breaks operation of many drivers. The change looked simple, but a stupid
+bug managed to slip into the code. After a short investigation I've
+noticed that __dma_direct_alloc_pages() doesn't set dma_handle and zero
+allocated memory, while dma_direct_alloc_pages() did. The other
+difference is the lack of set_memory_decrypted() handling.
 
-One downside is that we only free the allocated page if all the
-4 fragments (4 IOMMU L2 tables) are freed, but given that we
-usually only allocate limited number of IOMMU L2 tables, this
-should not have too much impact on memory usage: In the absolute
-worst case (4096 L2 page tables, each on their own 4K page),
-we would use 16 MB of memory for 4 MB of L2 tables.
+Following patch fixes the issue, but maybe it would be better to fix it
+in kernel/dma/direct.c:
 
-Also, print an error when the physical address does not fit in
-32-bit, to make debugging easier in the future.
-
-Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
----
-
-As an alternative to the series [1], which adds support for GFP_DMA32
-to kmem_cache in mm/. IMHO the solution in [1] is cleaner and more
-efficient, as it allows freed fragments (L2 tables) to be reused, but
-this approach does not require any core change.
-
-[1] https://patchwork.kernel.org/cover/10677529/, 3 patches
-
- drivers/iommu/io-pgtable-arm-v7s.c | 32 ++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 445c3bde04800c..0de6a51eb6755f 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -161,6 +161,12 @@
- 
- #define ARM_V7S_TCR_PD1			BIT(5)
- 
-+#ifdef CONFIG_ZONE_DMA32
-+#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
-+#else
-+#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
-+#endif
+diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+index dcc82dd668f8..7765ddc56e4e 100644
+--- a/kernel/dma/remap.c
++++ b/kernel/dma/remap.c
+@@ -219,8 +219,14 @@ void *arch_dma_alloc(struct device *dev, size_t
+size, dma_addr_t *dma_handle,
+        ret = dma_common_contiguous_remap(page, size, VM_USERMAP,
+                        arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
+                        __builtin_return_address(0));
+-       if (!ret)
++       if (!ret) {
+                __dma_direct_free_pages(dev, size, page);
++               return ret;
++       }
 +
- typedef u32 arm_v7s_iopte;
- 
- static bool selftest_running;
-@@ -169,7 +175,7 @@ struct arm_v7s_io_pgtable {
- 	struct io_pgtable	iop;
- 
- 	arm_v7s_iopte		*pgd;
--	struct kmem_cache	*l2_tables;
-+	struct page_frag_cache	l2_tables;
- 	spinlock_t		split_lock;
- };
- 
-@@ -198,13 +204,17 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 	void *table = NULL;
- 
- 	if (lvl == 1)
--		table = (void *)__get_dma_pages(__GFP_ZERO, get_order(size));
-+		table = (void *)__get_free_pages(
-+			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
- 	else if (lvl == 2)
--		table = kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA);
-+		table = page_frag_alloc(&data->l2_tables, size,
-+				gfp | __GFP_ZERO | ARM_V7S_TABLE_GFP_DMA);
- 	phys = virt_to_phys(table);
--	if (phys != (arm_v7s_iopte)phys)
-+	if (phys != (arm_v7s_iopte)phys) {
- 		/* Doesn't fit in PTE */
-+		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
- 		goto out_free;
-+	}
- 	if (table && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA)) {
- 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
-@@ -227,7 +237,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
- 	if (lvl == 1)
- 		free_pages((unsigned long)table, get_order(size));
- 	else
--		kmem_cache_free(data->l2_tables, table);
-+		page_frag_free(table);
- 	return NULL;
- }
- 
-@@ -244,7 +254,7 @@ static void __arm_v7s_free_table(void *table, int lvl,
- 	if (lvl == 1)
- 		free_pages((unsigned long)table, get_order(size));
- 	else
--		kmem_cache_free(data->l2_tables, table);
-+		page_frag_free(table);
- }
- 
- static void __arm_v7s_pte_sync(arm_v7s_iopte *ptep, int num_entries,
-@@ -515,7 +525,6 @@ static void arm_v7s_free_pgtable(struct io_pgtable *iop)
- 			__arm_v7s_free_table(iopte_deref(pte, 1), 2, data);
- 	}
- 	__arm_v7s_free_table(data->pgd, 1, data);
--	kmem_cache_destroy(data->l2_tables);
- 	kfree(data);
- }
- 
-@@ -729,17 +738,11 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 	    !(cfg->quirks & IO_PGTABLE_QUIRK_NO_PERMS))
- 			return NULL;
- 
--	data = kmalloc(sizeof(*data), GFP_KERNEL);
-+	data = kzalloc(sizeof(*data), GFP_KERNEL);
- 	if (!data)
- 		return NULL;
- 
- 	spin_lock_init(&data->split_lock);
--	data->l2_tables = kmem_cache_create("io-pgtable_armv7s_l2",
--					    ARM_V7S_TABLE_SIZE(2),
--					    ARM_V7S_TABLE_SIZE(2),
--					    SLAB_CACHE_DMA, NULL);
--	if (!data->l2_tables)
--		goto out_free_data;
- 
- 	data->iop.ops = (struct io_pgtable_ops) {
- 		.map		= arm_v7s_map,
-@@ -789,7 +792,6 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- 	return &data->iop;
- 
- out_free_data:
--	kmem_cache_destroy(data->l2_tables);
- 	kfree(data);
- 	return NULL;
- }
++       *dma_handle = phys_to_dma(dev, page_to_phys(page));
++       memset(ret, 0, size);
++
+        return ret;
+ }
+
+>
+>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>> ---
+>>   kernel/dma/remap.c | 14 +++++++-------
+>>   1 file changed, 7 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+>> index bc42766f52df..8f1fca34b894 100644
+>> --- a/kernel/dma/remap.c
+>> +++ b/kernel/dma/remap.c
+>> @@ -196,7 +196,7 @@ void *arch_dma_alloc(struct device *dev, size_t
+>> size, dma_addr_t *dma_handle,
+>>           gfp_t flags, unsigned long attrs)
+>>   {
+>>       struct page *page = NULL;
+>> -    void *ret, *kaddr;
+>> +    void *ret;
+>>         size = PAGE_ALIGN(size);
+>>   @@ -208,10 +208,9 @@ void *arch_dma_alloc(struct device *dev,
+>> size_t size, dma_addr_t *dma_handle,
+>>           return ret;
+>>       }
+>>   -    kaddr = dma_direct_alloc_pages(dev, size, dma_handle, flags,
+>> attrs);
+>> -    if (!kaddr)
+>> +    page = __dma_direct_alloc_pages(dev, size, dma_handle, flags,
+>> attrs);
+>> +    if (!page)
+>>           return NULL;
+>> -    page = virt_to_page(kaddr);
+>>         /* remove any dirty cache lines on the kernel alias */
+>>       arch_dma_prep_coherent(page, size);
+>> @@ -221,7 +220,7 @@ void *arch_dma_alloc(struct device *dev, size_t
+>> size, dma_addr_t *dma_handle,
+>>               arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
+>>               __builtin_return_address(0));
+>>       if (!ret)
+>> -        dma_direct_free_pages(dev, size, kaddr, *dma_handle, attrs);
+>> +        __dma_direct_free_pages(dev, size, page);
+>>       return ret;
+>>   }
+>>   @@ -229,10 +228,11 @@ void arch_dma_free(struct device *dev, size_t
+>> size, void *vaddr,
+>>           dma_addr_t dma_handle, unsigned long attrs)
+>>   {
+>>       if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
+>> -        void *kaddr = phys_to_virt(dma_to_phys(dev, dma_handle));
+>> +        phys_addr_t phys = dma_to_phys(dev, dma_handle);
+>> +        struct page *page = pfn_to_page(__phys_to_pfn(phys));
+>>             vunmap(vaddr);
+>> -        dma_direct_free_pages(dev, size, kaddr, dma_handle, attrs);
+>> +        __dma_direct_free_pages(dev, size, page);
+>>       }
+>>   }
+>>  
+>
+Best regards
 -- 
-2.20.0.rc1.387.gf8505762e3-goog
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
