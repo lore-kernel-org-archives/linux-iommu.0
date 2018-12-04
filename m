@@ -1,50 +1,107 @@
-From: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 9/9] dmapool: debug: prevent endless loop in case of
-	corruption
-Date: Wed, 5 Dec 2018 00:05:39 +0200
-Message-ID: <CAHp75VdYZ43NGyu+H9xusUSRX=MFZaDqPEDF_iZDfhmTGDZc1Q@mail.gmail.com>
-References: <9e65ec2e-5e22-4f65-7b92-ca2af0c555f3@cybernetics.com>
-	<20181113063601.GT21824@bombadil.infradead.org>
-	<4dcb22b0-a348-841d-8175-e368f67f33c3@cybernetics.com>
-	<20181204121443.1430883634a6ecf5f4a6a4a2@linux-foundation.org>
-	<20181204201801.GS10377@bombadil.infradead.org>
-	<CAHp75VeCHnUcE8mfUkx_uXz9_ZoA+hAvVtFiFP+nLj4rJevBdw@mail.gmail.com>
-	<495c7e22-9332-1654-9ee0-63c33fae980e@cybernetics.com>
+From: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] of/device: add blacklist for iommu dma_ops
+Date: Tue, 4 Dec 2018 16:29:43 -0600
+Message-ID: <CAL_JsqJmPqis46Un91QyhXgdrVtfATMP_hTp6wSeSAfc8MLFfw@mail.gmail.com>
+References: <20181201165348.24140-1-robdclark@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <495c7e22-9332-1654-9ee0-63c33fae980e-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org>
-Cc: linux-scsi <linux-scsi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-mm <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20181201165348.24140-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: freedreno <freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Daniel Vetter <daniel-/w4YWyX8dFk@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sean Paul <seanpaul-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 4, 2018 at 11:26 PM Tony Battersby <tonyb-vFAe+i1/wJI5UWNf+nJyDw@public.gmane.org> wrote:
->
-> On 12/4/18 3:30 PM, Andy Shevchenko wrote:
-> > On Tue, Dec 4, 2018 at 10:18 PM Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
-> >> On Tue, Dec 04, 2018 at 12:14:43PM -0800, Andrew Morton wrote:
-> >>> Also, Andy had issues with the v2 series so it would be good to hear an
-> >>> update from him?
-> >> Certainly.
-> > Hmm... I certainly forgot what was long time ago.
-> > If I _was_ in Cc list and didn't comment, I'm fine with it.
-> >
-> v4 of the patchset is the same as v3 but with the last patch dropped.
-> Andy had only one minor comment on v3 about the use of division in patch
-> #8, to which I replied.  That was back on August 8.
-
-Seems I'm fine with the last version then.
-
--- 
-With Best Regards,
-Andy Shevchenko
+T24gU2F0LCBEZWMgMSwgMjAxOCBhdCAxMDo1NCBBTSBSb2IgQ2xhcmsgPHJvYmRjbGFya0BnbWFp
+bC5jb20+IHdyb3RlOgo+Cj4gVGhpcyBzb2x2ZXMgYSBwcm9ibGVtIHdlIHNlZSB3aXRoIGRybS9t
+c20sIGNhdXNlZCBieSBnZXR0aW5nCj4gaW9tbXVfZG1hX29wcyB3aGlsZSB3ZSBhdHRhY2ggb3Vy
+IG93biBkb21haW4gYW5kIG1hbmFnZSBpdCBkaXJlY3RseSBhdAo+IHRoZSBpb21tdSBBUEkgbGV2
+ZWw6Cj4KPiAgIFswMDAwMDAwMDAwMDAwMDM4XSB1c2VyIGFkZHJlc3MgYnV0IGFjdGl2ZV9tbSBp
+cyBzd2FwcGVyCj4gICBJbnRlcm5hbCBlcnJvcjogT29wczogOTYwMDAwMDUgWyMxXSBQUkVFTVBU
+IFNNUAo+ICAgTW9kdWxlcyBsaW5rZWQgaW46Cj4gICBDUFU6IDcgUElEOiA3MCBDb21tOiBrd29y
+a2VyLzc6MSBUYWludGVkOiBHICAgICAgICBXICAgICAgICAgNC4xOS4zICM5MAo+ICAgSGFyZHdh
+cmUgbmFtZTogeHh4IChEVCkKPiAgIFdvcmtxdWV1ZTogZXZlbnRzIGRlZmVycmVkX3Byb2JlX3dv
+cmtfZnVuYwo+ICAgcHN0YXRlOiA4MGMwMDAwOSAoTnpjdiBkYWlmICtQQU4gK1VBTykKPiAgIHBj
+IDogaW9tbXVfZG1hX21hcF9zZysweDdjLzB4MmM4Cj4gICBsciA6IGlvbW11X2RtYV9tYXBfc2cr
+MHg0MC8weDJjOAo+ICAgc3AgOiBmZmZmZmY4MDA5NWViNGYwCj4gICB4Mjk6IGZmZmZmZjgwMDk1
+ZWI0ZjAgeDI4OiAwMDAwMDAwMDAwMDAwMDAwCj4gICB4Mjc6IGZmZmZmZmMwZjk0MzE1NzggeDI2
+OiAwMDAwMDAwMDAwMDAwMDAwCj4gICB4MjU6IDAwMDAwMDAwZmZmZmZmZmYgeDI0OiAwMDAwMDAw
+MDAwMDAwMDAzCj4gICB4MjM6IDAwMDAwMDAwMDAwMDAwMDEgeDIyOiBmZmZmZmZjMGZhOWFjMDEw
+Cj4gICB4MjE6IDAwMDAwMDAwMDAwMDAwMDAgeDIwOiBmZmZmZmZjMGZhYjQwOTgwCj4gICB4MTk6
+IGZmZmZmZmMwZmFiNDA5ODAgeDE4OiAwMDAwMDAwMDAwMDAwMDAzCj4gICB4MTc6IDAwMDAwMDAw
+MDAwMDAxYzQgeDE2OiAwMDAwMDAwMDAwMDAwMDA3Cj4gICB4MTU6IDAwMDAwMDAwMDAwMDAwMGUg
+eDE0OiBmZmZmZmZmZmZmZmZmZmZmCj4gICB4MTM6IGZmZmYwMDAwMDAwMDAwMDAgeDEyOiAwMDAw
+MDAwMDAwMDAwMDI4Cj4gICB4MTE6IDAxMDEwMTAxMDEwMTAxMDEgeDEwOiA3ZjdmN2Y3ZjdmN2Y3
+ZjdmCj4gICB4OSA6IDAwMDAwMDAwMDAwMDAwMDAgeDggOiBmZmZmZmZjMGZhYjQwOWEwCj4gICB4
+NyA6IDAwMDAwMDAwMDAwMDAwMDAgeDYgOiAwMDAwMDAwMDAwMDAwMDAyCj4gICB4NSA6IDAwMDAw
+MDAxMDAwMDAwMDAgeDQgOiAwMDAwMDAwMDAwMDAwMDAwCj4gICB4MyA6IDAwMDAwMDAwMDAwMDAw
+MDEgeDIgOiAwMDAwMDAwMDAwMDAwMDAyCj4gICB4MSA6IGZmZmZmZmMwZjk0MzE1NzggeDAgOiAw
+MDAwMDAwMDAwMDAwMDAwCj4gICBQcm9jZXNzIGt3b3JrZXIvNzoxIChwaWQ6IDcwLCBzdGFjayBs
+aW1pdCA9IDB4MDAwMDAwMDAxN2QwOGZmYikKPiAgIENhbGwgdHJhY2U6Cj4gICAgaW9tbXVfZG1h
+X21hcF9zZysweDdjLzB4MmM4Cj4gICAgX19pb21tdV9tYXBfc2dfYXR0cnMrMHg3MC8weDg0Cj4g
+ICAgZ2V0X3BhZ2VzKzB4MTcwLzB4MWU4Cj4gICAgbXNtX2dlbV9nZXRfaW92YSsweDhjLzB4MTI4
+Cj4gICAgX21zbV9nZW1fa2VybmVsX25ldysweDZjLzB4YzgKPiAgICBtc21fZ2VtX2tlcm5lbF9u
+ZXcrMHg0Yy8weDU4Cj4gICAgZHNpX3R4X2J1Zl9hbGxvY182ZysweDRjLzB4OGMKPiAgICBtc21f
+ZHNpX2hvc3RfbW9kZXNldF9pbml0KzB4YzgvMHgxMDgKPiAgICBtc21fZHNpX21vZGVzZXRfaW5p
+dCsweDU0LzB4MThjCj4gICAgX2RwdV9rbXNfZHJtX29ial9pbml0KzB4NDMwLzB4NDc0Cj4gICAg
+ZHB1X2ttc19od19pbml0KzB4NWY4LzB4NmI0Cj4gICAgbXNtX2RybV9iaW5kKzB4MzYwLzB4NmM4
+Cj4gICAgdHJ5X3RvX2JyaW5nX3VwX21hc3Rlci5wYXJ0LjcrMHgyOC8weDcwCj4gICAgY29tcG9u
+ZW50X21hc3Rlcl9hZGRfd2l0aF9tYXRjaCsweGU4LzB4MTI0Cj4gICAgbXNtX3BkZXZfcHJvYmUr
+MHgyOTQvMHgyYjQKPiAgICBwbGF0Zm9ybV9kcnZfcHJvYmUrMHg1OC8weGE0Cj4gICAgcmVhbGx5
+X3Byb2JlKzB4MTUwLzB4Mjk0Cj4gICAgZHJpdmVyX3Byb2JlX2RldmljZSsweGFjLzB4ZTgKPiAg
+ICBfX2RldmljZV9hdHRhY2hfZHJpdmVyKzB4YTQvMHhiNAo+ICAgIGJ1c19mb3JfZWFjaF9kcnYr
+MHg5OC8weGM4Cj4gICAgX19kZXZpY2VfYXR0YWNoKzB4YWMvMHgxMmMKPiAgICBkZXZpY2VfaW5p
+dGlhbF9wcm9iZSsweDI0LzB4MzAKPiAgICBidXNfcHJvYmVfZGV2aWNlKzB4MzgvMHg5OAo+ICAg
+IGRlZmVycmVkX3Byb2JlX3dvcmtfZnVuYysweDc4LzB4YTQKPiAgICBwcm9jZXNzX29uZV93b3Jr
+KzB4MjRjLzB4M2RjCj4gICAgd29ya2VyX3RocmVhZCsweDI4MC8weDM2MAo+ICAgIGt0aHJlYWQr
+MHgxMzQvMHgxM2MKPiAgICByZXRfZnJvbV9mb3JrKzB4MTAvMHgxOAo+ICAgQ29kZTogZDI4MDAw
+MDQgOTEwMDA3MjUgNmIxNzAzOWYgNTQwMDA0OGEgKGY5NDAxZjQwKQo+ICAgLS0tWyBlbmQgdHJh
+Y2UgZjIyZGRhNTdmMzY0OGUyYyBdLS0tCj4gICBLZXJuZWwgcGFuaWMgLSBub3Qgc3luY2luZzog
+RmF0YWwgZXhjZXB0aW9uCj4gICBTTVA6IHN0b3BwaW5nIHNlY29uZGFyeSBDUFVzCj4gICBLZXJu
+ZWwgT2Zmc2V0OiBkaXNhYmxlZAo+ICAgQ1BVIGZlYXR1cmVzOiAweDAsMjI4MDJhMTgKPiAgIE1l
+bW9yeSBMaW1pdDogbm9uZQo+Cj4gVGhlIHByb2JsZW0gaXMgdGhhdCB3aGVuIGRybS9tc20gZG9l
+cyBpdCdzIG93biBpb21tdV9hdHRhY2hfZGV2aWNlKCksCj4gbm93IHRoZSBkb21haW4gcmV0dXJu
+ZWQgYnkgaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2KCkgaXMgZHJtL21zbSdzCj4gZG9tYWluLCBh
+bmQgaXQgZG9lc24ndCBoYXZlIGRvbWFpbi0+aW92YV9jb29raWUuCj4KPiBXZSBraW5kIG9mIGF2
+b2lkZWQgdGhpcyBwcm9ibGVtIHByaW9yIHRvIHNkbTg0NS9kcHUgYmVjYXVzZSB0aGUgaW9tbXUK
+PiB3YXMgYXR0YWNoZWQgdG8gdGhlIG1kcCBub2RlIGluIGR0LCB3aGljaCBpcyBhIGNoaWxkIG9m
+IHRoZSB0b3BsZXZlbAo+IG1kc3Mgbm9kZSAod2hpY2ggY29ycmVzcG9uZHMgdG8gdGhlIGRldiBw
+YXNzZWQgaW4gZG1hX21hcF9zZygpKS4gIEJ1dAo+IHdpdGggc2RtODQ1LCBub3cgdGhlIGlvbW11
+IGlzIGF0dGFjaGVkIGF0IHRoZSBtZHNzIGxldmVsIHNvIHdlIGhpdCB0aGUKPiBpb21tdV9kbWFf
+b3BzIGluIGRtYV9tYXBfc2coKS4KPgo+IEJ1dCBhdXRvIGFsbG9jYXRpbmcvYXR0YWNoaW5nIGEg
+ZG9tYWluIGJlZm9yZSB0aGUgZHJpdmVyIGlzIHByb2JlZCB3YXMKPiBhbHJlYWR5IGEgYmxvY2tp
+bmcgcHJvYmxlbSBmb3IgZW5hYmxpbmcgcGVyLWNvbnRleHQgcGFnZXRhYmxlcyBmb3IgdGhlCj4g
+R1BVLiAgVGhpcyBwcm9ibGVtIGlzIGFsc28gbm93IHNvbHZlZCB3aXRoIHRoaXMgcGF0Y2guCj4K
+PiBGaXhlczogOTc4OTBiYTkyODljIGRtYS1tYXBwaW5nOiBkZXRlY3QgYW5kIGNvbmZpZ3VyZSBJ
+T01NVSBpbiBvZl9kbWFfY29uZmlndXJlCj4gVGVzdGVkLWJ5OiBEb3VnbGFzIEFuZGVyc29uIDxk
+aWFuZGVyc0BjaHJvbWl1bS5vcmc+Cj4gU2lnbmVkLW9mZi1ieTogUm9iIENsYXJrIDxyb2JkY2xh
+cmtAZ21haWwuY29tPgo+IC0tLQo+IFRoaXMgaXMgYW4gYWx0ZXJuYXRpdmUvcmVwbGFjZW1lbnQg
+Zm9yIFsxXS4gIFdoYXQgaXQgbGFja3MgaW4gZWxlZ2FuY2UKPiBpdCBtYWtlcyB1cCBmb3IgaW4g
+cHJhY3RpY2FsaXR5IDstKQo+Cj4gWzFdIGh0dHBzOi8vcGF0Y2h3b3JrLmZyZWVkZXNrdG9wLm9y
+Zy9wYXRjaC8yNjQ5MzAvCj4KPiAgZHJpdmVycy9vZi9kZXZpY2UuYyB8IDIyICsrKysrKysrKysr
+KysrKysrKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDIyIGluc2VydGlvbnMoKykKPgo+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL29mL2RldmljZS5jIGIvZHJpdmVycy9vZi9kZXZpY2UuYwo+IGluZGV4
+IDU5NTdjZDRmYTI2Mi4uMTVmZmVlMDBmYjIyIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvb2YvZGV2
+aWNlLmMKPiArKysgYi9kcml2ZXJzL29mL2RldmljZS5jCj4gQEAgLTcyLDYgKzcyLDE0IEBAIGlu
+dCBvZl9kZXZpY2VfYWRkKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKm9mZGV2KQo+ICAgICAgICAg
+cmV0dXJuIGRldmljZV9hZGQoJm9mZGV2LT5kZXYpOwo+ICB9Cj4KPiArc3RhdGljIGNvbnN0IHN0
+cnVjdCBvZl9kZXZpY2VfaWQgaW9tbXVfYmxhY2tsaXN0W10gPSB7Cj4gKyAgICAgICB7IC5jb21w
+YXRpYmxlID0gInFjb20sbWRwNCIgfSwKPiArICAgICAgIHsgLmNvbXBhdGlibGUgPSAicWNvbSxt
+ZHNzIiB9LAo+ICsgICAgICAgeyAuY29tcGF0aWJsZSA9ICJxY29tLHNkbTg0NS1tZHNzIiB9LAo+
+ICsgICAgICAgeyAuY29tcGF0aWJsZSA9ICJxY29tLGFkcmVubyIgfSwKPiArICAgICAgIHt9Cj4g
+K307CgpOb3QgY29tcGxldGVseSBjbGVhciB0byB3aGV0aGVyIHRoaXMgaXMgc3RpbGwgbmVlZGVk
+IG9yIG5vdCwgYnV0IHRoaXMKcmVhbGx5IHdvbid0IHNjYWxlLiBXaHkgY2FuJ3QgdGhlIGRyaXZl
+ciBmb3IgdGhlc2UgZGV2aWNlcyBvdmVycmlkZQp3aGF0ZXZlciBoYXMgYmVlbiBzZXR1cCBieSBk
+ZWZhdWx0PwoKUm9iCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRyZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9y
+ZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVu
+bwo=
