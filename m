@@ -1,84 +1,73 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3, RFC] iommu/io-pgtable-arm-v7s: Use page_frag to
-	request DMA32 memory
-Date: Tue, 4 Dec 2018 16:41:42 +0000
-Message-ID: <20181204164142.GA8520@arm.com>
-References: <20181204082300.95106-1-drinkcat@chromium.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 01/23] dma-mapping: provide a generic DMA_MAPPING_ERROR
+Date: Tue, 4 Dec 2018 16:41:34 +0000
+Message-ID: <653ca801-63a1-3c19-ee09-ade19fa2bbb8@arm.com>
+References: <20181130132231.16512-1-hch@lst.de>
+ <20181130132231.16512-2-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181204082300.95106-1-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181130132231.16512-2-hch@lst.de>
+Content-Language: en-GB
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, x86@kernel.org, linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 04, 2018 at 04:23:00PM +0800, Nicolas Boichat wrote:
-> IOMMUs using ARMv7 short-descriptor format require page tables
-> (level 1 and 2) to be allocated within the first 4GB of RAM, even
-> on 64-bit systems.
+On 30/11/2018 13:22, Christoph Hellwig wrote:
+> Error handling of the dma_map_single and dma_map_page APIs is a little
+> problematic at the moment, in that we use different encodings in the
+> returned dma_addr_t to indicate an error.  That means we require an
+> additional indirect call to figure out if a dma mapping call returned
+> an error, and a lot of boilerplate code to implement these semantics.
 > 
-> For level 1/2 tables, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
-> is defined (e.g. on arm64 platforms).
+> Instead return the maximum addressable value as the error.  As long
+> as we don't allow mapping single-byte ranges with single-byte alignment
+> this value can never be a valid return.  Additionaly if drivers do
+> not check the return value from the dma_map* routines this values means
+> they will generally not be pointed to actual memory.
 > 
-> For level 2 tables (1 KB), we use page_frag to allocate these pages,
-> as we cannot directly use kmalloc (no slab cache for GFP_DMA32) or
-> kmem_cache (mm/ code treats GFP_DMA32 as an invalid flag).
+> Once the default value is added here we can start removing the
+> various mapping_error methods and just rely on this generic check.
 > 
-> One downside is that we only free the allocated page if all the
-> 4 fragments (4 IOMMU L2 tables) are freed, but given that we
-> usually only allocate limited number of IOMMU L2 tables, this
-> should not have too much impact on memory usage: In the absolute
-> worst case (4096 L2 page tables, each on their own 4K page),
-> we would use 16 MB of memory for 4 MB of L2 tables.
-> 
-> Also, print an error when the physical address does not fit in
-> 32-bit, to make debugging easier in the future.
-> 
-> Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-> Signed-off-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
+>   include/linux/dma-mapping.h | 6 ++++++
+>   1 file changed, 6 insertions(+)
 > 
-> As an alternative to the series [1], which adds support for GFP_DMA32
-> to kmem_cache in mm/. IMHO the solution in [1] is cleaner and more
-> efficient, as it allows freed fragments (L2 tables) to be reused, but
-> this approach does not require any core change.
-> 
-> [1] https://patchwork.kernel.org/cover/10677529/, 3 patches
-> 
->  drivers/iommu/io-pgtable-arm-v7s.c | 32 ++++++++++++++++--------------
->  1 file changed, 17 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index 445c3bde04800c..0de6a51eb6755f 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -161,6 +161,12 @@
->  
->  #define ARM_V7S_TCR_PD1			BIT(5)
->  
-> +#ifdef CONFIG_ZONE_DMA32
-> +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
-> +#else
-> +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
-> +#endif
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 0f81c713f6e9..46bd612d929e 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -133,6 +133,8 @@ struct dma_map_ops {
+>   	u64 (*get_required_mask)(struct device *dev);
+>   };
+>   
+> +#define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
+> +
+>   extern const struct dma_map_ops dma_direct_ops;
+>   extern const struct dma_map_ops dma_virt_ops;
+>   
+> @@ -576,6 +578,10 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	debug_dma_mapping_error(dev, dma_addr);
+> +
+> +	if (dma_addr == DMA_MAPPING_ERROR)
+> +		return 1;
+> +
+>   	if (ops->mapping_error)
+>   		return ops->mapping_error(dev, dma_addr);
+>   	return 0;
 
-We may as well include __GFP_ZERO in here too.
-Anyway, this looks alright to me:
+I'd have been inclined to put the default check here, i.e.
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+-	return 0
++	return dma_addr == DMA_MAPPING_ERROR
 
-But it sounds like you're still on the fence about this patch, so I won't
-pick it up unless you ask explicitly.
+such that the callback retains full precedence and we don't have to deal 
+with the non-trivial removals immediately if it comes to it. Not that it 
+makes a vast difference though, so either way,
 
-Will
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
