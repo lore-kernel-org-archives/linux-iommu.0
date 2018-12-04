@@ -1,134 +1,67 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Tue, 4 Dec 2018 16:30:47 +0000
-Message-ID: <58fb3579-d101-db2b-c63a-609ddd651932@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry pool
+Date: Tue, 4 Dec 2018 16:32:03 +0000
+Message-ID: <dae44ed0-6b84-0ed3-87c2-97940576709d@arm.com>
 References: <cover.1543856576.git.robin.murphy@arm.com>
- <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
- <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
- <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
+	<f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+	<20181204142938.GC2767@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, hch@lst.de
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181204142938.GC2767-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/12/2018 13:11, Robin Murphy wrote:
-> Hi John,
->
-> On 03/12/2018 18:23, John Garry wrote:
->> On 03/12/2018 17:28, Robin Murphy wrote:
->>> Certain drivers such as large multi-queue network adapters can use pools
->>> of mapped DMA buffers larger than the default dma_debug_entry pool of
->>> 65536 entries, with the result that merely probing such a device can
->>> cause DMA debug to disable itself during boot unless explicitly given an
->>> appropriate "dma_debug_entries=..." option.
->>>
->>> Developers trying to debug some other driver on such a system may not be
->>> immediately aware of this, and at worst it can hide bugs if they fail to
->>> realise that dma-debug has already disabled itself unexpectedly by the
->>> time the code of interest gets to run. Even once they do realise, it can
->>> be a bit of a pain to emprirically determine a suitable number of
->>> preallocated entries to configure without massively over-allocating.
->>>
->>> There's really no need for such a static limit, though, since we can
->>> quite easily expand the pool at runtime in those rare cases that the
->>> preallocated entries are insufficient, which is arguably the least
->>> surprising and most useful behaviour.
->>
->> Hi Robin,
->>
->> Do you have an idea on shrinking the pool again when the culprit
->> driver is removed, i.e. we have so many unused debug entries now
->> available?
->
-> I honestly don't believe it's worth the complication. This is a
-> development feature with significant overheads already, so there's not
-> an awful lot to gain by trying to optimise memory usage. If a system can
-> ever load a driver that makes hundreds of thousands of simultaneous
-> mappings, it can almost certainly spare 20-odd megabytes of RAM for the
-> corresponding debug entries in perpetuity. Sure, it does mean you'd need
-> to reboot to recover memory from a major leak, but that's mostly true of
-> the current behaviour too, and rebooting during driver development is
-> hardly an unacceptable inconvenience.
->
+On 04/12/2018 14:29, Christoph Hellwig wrote:
+>> +	for (retry_count = 0; ; retry_count++) {
+>> +		spin_lock_irqsave(&free_entries_lock, flags);
+>> +
+>> +		if (num_free_entries > 0)
+>> +			break;
+>>   
+>>   		spin_unlock_irqrestore(&free_entries_lock, flags);
+> 
+> Taking a spinlock just to read a single integer value doesn't really
+> help anything.
 
-ok, I just thought that it would not be too difficult to implement this 
-on the dma entry free path.
+If the freelist is non-empty we break out with the lock still held in 
+order to actually allocate our entry - only if there are no free entries 
+left do we drop the lock in order to handle the failure. This much is 
+just the original logic shuffled around a bit (with the tweak that 
+testing num_free_entries seemed justifiably simpler than the original 
+list_empty() check).
 
-> In fact, having got this far in, what I'd quite like to do is to get rid
-> of dma_debug_resize_entries() such that we never need to free things at
-> all, since then we could allocate whole pages as blocks of entries to
-> save on masses of individual slab allocations.
->
+>> +
+>> +		if (retry_count < DMA_DEBUG_DYNAMIC_RETRIES &&
+>> +		    !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES))
+> 
+> Don't we need GFP_ATOMIC here?  Also why do we need the retries?
 
-On a related topic, is it possible for the user to learn the total 
-entries created at a given point in time? If not, could we add a file in 
-the debugfs folder for this?
+Ah, right, we may be outside our own spinlock, but of course the whole 
+DMA API call which got us here might be under someone else's and/or in a 
+non-sleeping context - I'll fix that.
 
-Thanks,
-John
+The number of retries is just to bound the loop due to its inherent 
+raciness - since we drop the lock to create more entries, under 
+pathological conditions by the time we get back in to grab one they 
+could have all gone. 2 retries (well, strictly it's 1 try and 1 retry) 
+was an entirely arbitrary choice just to accommodate that happening very 
+occasionally by chance.
 
-> Robin.
->
->>
->> Thanks,
->> John
->>
->>>
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>>  kernel/dma/debug.c | 18 +++++++++++++++---
->>>  1 file changed, 15 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
->>> index de5db800dbfc..46cc075aec99 100644
->>> --- a/kernel/dma/debug.c
->>> +++ b/kernel/dma/debug.c
->>> @@ -47,6 +47,9 @@
->>>  #ifndef PREALLOC_DMA_DEBUG_ENTRIES
->>>  #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
->>>  #endif
->>> +/* If the pool runs out, try this many times to allocate this many
->>> new entries */
->>> +#define DMA_DEBUG_DYNAMIC_ENTRIES 256
->>> +#define DMA_DEBUG_DYNAMIC_RETRIES 2
->>>
->>>  enum {
->>>      dma_debug_single,
->>> @@ -702,12 +705,21 @@ static struct dma_debug_entry
->>> *dma_entry_alloc(void)
->>>  {
->>>      struct dma_debug_entry *entry;
->>>      unsigned long flags;
->>> +    int retry_count;
->>>
->>> -    spin_lock_irqsave(&free_entries_lock, flags);
->>> +    for (retry_count = 0; ; retry_count++) {
->>> +        spin_lock_irqsave(&free_entries_lock, flags);
->>> +
->>> +        if (num_free_entries > 0)
->>> +            break;
->>>
->>> -    if (list_empty(&free_entries)) {
->>> -        global_disable = true;
->>>          spin_unlock_irqrestore(&free_entries_lock, flags);
->>> +
->>> +        if (retry_count < DMA_DEBUG_DYNAMIC_RETRIES &&
->>> +            !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES))
->>> +            continue;
->>> +
->>> +        global_disable = true;
->>>          pr_err("debugging out of memory - disabling\n");
->>>          return NULL;
->>>      }
->>>
->>
->>
->
-> .
->
+However, if the dynamic allocations need GFP_ATOMIC for external reasons 
+anyway, then I don't need the lock-juggling that invites that race in 
+the first place, and the whole loop disappears again. Neat!
+
+Robin.
