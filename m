@@ -1,25 +1,43 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Tue, 4 Dec 2018 15:17:43 +0100
-Message-ID: <20181204141743.GA2618@lst.de>
-References: <cover.1543856576.git.robin.murphy@arm.com> <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com> <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com> <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
+Subject: Re: [PATCH 4/9] dma-mapping: move the arm64 ncoherent alloc/free
+ support to common code
+Date: Tue, 4 Dec 2018 15:22:16 +0100
+Message-ID: <20181204142216.GB2618@lst.de>
+References: <20181105121931.13481-1-hch@lst.de> <20181105121931.13481-5-hch@lst.de> <20181204100954.GN30658@n2100.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
+In-Reply-To: <20181204100954.GN30658@n2100.armlinux.org.uk>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: John Garry <john.garry@huawei.com>, hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
+To: Russell King - ARM Linux <linux@armlinux.org.uk>
+Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 04, 2018 at 01:11:37PM +0000, Robin Murphy wrote:
-> In fact, having got this far in, what I'd quite like to do is to get rid of 
-> dma_debug_resize_entries() such that we never need to free things at all, 
-> since then we could allocate whole pages as blocks of entries to save on 
-> masses of individual slab allocations.
+> > +int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
+> > +{
+> > +	unsigned int pool_size_order = get_order(atomic_pool_size);
+> > +	unsigned long nr_pages = atomic_pool_size >> PAGE_SHIFT;
+> > +	struct page *page;
+> > +	void *addr;
+> > +	int ret;
+> > +
+> > +	if (dev_get_cma_area(NULL))
+> > +		page = dma_alloc_from_contiguous(NULL, nr_pages,
+> > +						 pool_size_order, false);
+> > +	else
+> > +		page = alloc_pages(gfp, pool_size_order);
+> > +	if (!page)
+> > +		goto out;
+> > +
+> > +	memset(page_address(page), 0, atomic_pool_size);
+> 
+> Note that this won't work if 'page' is a highmem page - should there
+> be a check for that, or a check for the gfp flags?
+>
+> Also, is this memset() actually useful, or a waste of cycles - when we
+> allocate from this pool (see dma_alloc_from_pool()), we always memset()
+> the buffer.
 
-Yes, we should defintively kill dma_debug_resize_entries.  Allocating
-page batches might sound nice, but is that going to introduce additional
-complexity?
+Currently there is no user that supports highmem, but yes, the memset
+should probably simply be removed.
