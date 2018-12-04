@@ -1,32 +1,44 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Tue, 4 Dec 2018 15:29:38 +0100
-Message-ID: <20181204142938.GC2767@lst.de>
-References: <cover.1543856576.git.robin.murphy@arm.com> <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: [RFC 4/4] dma-debug: Make leak-like behaviour apparent
+Date: Tue, 4 Dec 2018 15:31:06 +0100
+Message-ID: <20181204143106.GD2767@lst.de>
+References: <cover.1543856576.git.robin.murphy@arm.com>
+	<7ec928f0bd92122f271c421e99aaeb593ccabdf5.1543856576.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
+In-Reply-To: <7ec928f0bd92122f271c421e99aaeb593ccabdf5.1543856576.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> +	for (retry_count = 0; ; retry_count++) {
-> +		spin_lock_irqsave(&free_entries_lock, flags);
-> +
-> +		if (num_free_entries > 0)
-> +			break;
->  
->  		spin_unlock_irqrestore(&free_entries_lock, flags);
+On Mon, Dec 03, 2018 at 05:28:09PM +0000, Robin Murphy wrote:
+> Now that we can dynamically allocate DMA debug entries to cope with
+> drivers maintaining excessively large numbers of live mappings, a driver
+> which *does* actually have a bug leaking mappings (and is not unloaded)
+> will no longer trigger the "DMA-API: debugging out of memory - disabling"
+> message until it gets to actual kernel OOM conditions, which means it
+> could go unnoticed for a while. To that end, let's inform the user each
+> time the pool has grown to a multiple of its initial size, which should
+> make it apparent that they either have a leak or might want to increase
+> the preallocation size.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> Tagging this one as RFC since people might think it's silly.
 
-Taking a spinlock just to read a single integer value doesn't really
-help anything.
-
-> +
-> +		if (retry_count < DMA_DEBUG_DYNAMIC_RETRIES &&
-> +		    !prealloc_memory(DMA_DEBUG_DYNAMIC_ENTRIES))
-
-Don't we need GFP_ATOMIC here?  Also why do we need the retries?
+I think finding out the numbers is useful, but I'm a little worried
+about claiming a possible leak.  Maybe we just need to print a log message
+for each new power of 2 of entries reached?
