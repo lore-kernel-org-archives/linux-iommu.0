@@ -1,105 +1,148 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/9] iommu: Introduce wrappers around dev->iommu_fwspec
-Date: Tue,  4 Dec 2018 17:29:54 +0100
-Message-ID: <20181204163002.15800-2-joro@8bytes.org>
+Subject: [PATCH 3/9] iommu/arm-smmu: Use helper functions to access dev->iommu_fwspec
+Date: Tue,  4 Dec 2018 17:29:56 +0100
+Message-ID: <20181204163002.15800-4-joro@8bytes.org>
 References: <20181204163002.15800-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181204163002.15800-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-These wrappers will be used to easily change the location of
-the field later when all users are converted.
+Use the new helpers dev_iommu_fwspec_get()/set() to access
+the dev->iommu_fwspec pointer. This makes it easier to move
+that pointer later into another struct.
 
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 14 +++++++-------
- include/linux/iommu.h | 11 +++++++++++
- 2 files changed, 18 insertions(+), 7 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 16 +++++++++-------
+ drivers/iommu/arm-smmu.c    | 12 ++++++------
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index edbdf5d6962c..4cfd407b972c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1976,7 +1976,7 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops)
- {
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6947ccf26512..8f2d3a30d090 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1691,24 +1691,26 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
  
- 	if (fwspec)
- 		return ops == fwspec->ops ? 0 : -EINVAL;
-@@ -1988,26 +1988,26 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 	of_node_get(to_of_node(iommu_fwnode));
- 	fwspec->iommu_fwnode = iommu_fwnode;
- 	fwspec->ops = ops;
--	dev->iommu_fwspec = fwspec;
-+	dev_iommu_fwspec_set(dev, fwspec);
- 	return 0;
+ static void arm_smmu_detach_dev(struct device *dev)
+ {
+-	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct arm_smmu_master_data *master = fwspec->iommu_priv;
+ 
+ 	master->ste.assigned = false;
+-	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
++	arm_smmu_install_ste_for_dev(fwspec);
  }
- EXPORT_SYMBOL_GPL(iommu_fwspec_init);
  
- void iommu_fwspec_free(struct device *dev)
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  {
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 	int ret = 0;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_master_data *master;
+ 	struct arm_smmu_strtab_ent *ste;
  
- 	if (fwspec) {
- 		fwnode_handle_put(fwspec->iommu_fwnode);
- 		kfree(fwspec);
--		dev->iommu_fwspec = NULL;
-+		dev_iommu_fwspec_set(dev, NULL);
- 	}
- }
- EXPORT_SYMBOL_GPL(iommu_fwspec_free);
+-	if (!dev->iommu_fwspec)
++	if (!fwspec)
+ 		return -ENOENT;
  
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- {
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	size_t size;
- 	int i;
+-	master = dev->iommu_fwspec->iommu_priv;
++	master = fwspec->iommu_priv;
+ 	smmu = master->smmu;
+ 	ste = &master->ste;
  
-@@ -2016,11 +2016,11 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- 
- 	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
- 	if (size > sizeof(*fwspec)) {
--		fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
-+		fwspec = krealloc(fwspec, size, GFP_KERNEL);
- 		if (!fwspec)
- 			return -ENOMEM;
- 
--		dev->iommu_fwspec = fwspec;
-+		dev_iommu_fwspec_set(dev, fwspec);
+@@ -1748,7 +1750,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		ste->s2_cfg = &smmu_domain->s2_cfg;
  	}
  
- 	for (i = 0; i < num_ids; i++)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a1d28f42cb77..f93fdcf7d130 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -398,6 +398,17 @@ void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
- const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+-	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
++	arm_smmu_install_ste_for_dev(fwspec);
+ out_unlock:
+ 	mutex_unlock(&smmu_domain->init_mutex);
+ 	return ret;
+@@ -1839,7 +1841,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	int i, ret;
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_master_data *master;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct iommu_group *group;
  
-+static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
-+{
-+	return dev->iommu_fwspec;
-+}
-+
-+static inline void dev_iommu_fwspec_set(struct device *dev,
-+					struct iommu_fwspec *fwspec)
-+{
-+	dev->iommu_fwspec = fwspec;
-+}
-+
- #else /* CONFIG_IOMMU_API */
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+@@ -1890,7 +1892,7 @@ static int arm_smmu_add_device(struct device *dev)
  
- struct iommu_ops {};
+ static void arm_smmu_remove_device(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_master_data *master;
+ 	struct arm_smmu_device *smmu;
+ 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 5a28ae892504..988d0362cd03 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1103,7 +1103,7 @@ static bool arm_smmu_free_sme(struct arm_smmu_device *smmu, int idx)
+ 
+ static int arm_smmu_master_alloc_smes(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
+ 	struct arm_smmu_device *smmu = cfg->smmu;
+ 	struct arm_smmu_smr *smrs = smmu->smrs;
+@@ -1206,7 +1206,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int ret;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
+@@ -1380,7 +1380,7 @@ static int arm_smmu_add_device(struct device *dev)
+ {
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_master_cfg *cfg;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	int i, ret;
+ 
+ 	if (using_legacy_binding) {
+@@ -1391,7 +1391,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 		 * will allocate/initialise a new one. Thus we need to update fwspec for
+ 		 * later use.
+ 		 */
+-		fwspec = dev->iommu_fwspec;
++		fwspec = dev_iommu_fwspec_get(dev);
+ 		if (ret)
+ 			goto out_free;
+ 	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
+@@ -1445,7 +1445,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 
+ static void arm_smmu_remove_device(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_master_cfg *cfg;
+ 	struct arm_smmu_device *smmu;
+ 
+@@ -1465,7 +1465,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 
+ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
+ 	struct iommu_group *group = NULL;
+ 	int i, idx;
 -- 
 2.17.1
