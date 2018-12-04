@@ -1,23 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Tue, 4 Dec 2018 15:24:26 +0100
-Message-ID: <20181204142426.GA2743@lst.de>
-References: <87zhttfonk.fsf@concordia.ellerman.id.au>
-	<4d4e3cdd-d1a9-affe-0f63-45b8c342bbd6@xenosoft.de>
-	<20181129170351.GC27951@lst.de>
-	<d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
-	<20181130105346.GB26765@lst.de>
-	<8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de>
-	<20181130131056.GA5211@lst.de>
-	<25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de>
-	<c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de>
-	<58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v3, RFC] iommu/io-pgtable-arm-v7s: Use page_frag to
+	request DMA32 memory
+Date: Tue, 4 Dec 2018 06:25:30 -0800
+Message-ID: <20181204142530.GA2917@infradead.org>
+References: <20181204082300.95106-1-drinkcat@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <58c61afb-290f-6196-c72c-ac7b61b84718-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
+In-Reply-To: <20181204082300.95106-1-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,14 +19,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christian Zigotzky <chzigotzky-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Darren Stevens <darren-YHtdit1eIT3easaKlIn9Lw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Julian Margetson <runaway-zqC88Q5qmK4@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 04, 2018 at 10:53:39AM +0100, Christian Zigotzky wrote:
-> I don't know why this kernel doesn't recognize the hard disks connected to 
-> my physical P5020 board and why the onboard ethernet on my PASEMI board 
-> doesn't work. (dma_direct_map_page: overflow)
+On Tue, Dec 04, 2018 at 04:23:00PM +0800, Nicolas Boichat wrote:
+> IOMMUs using ARMv7 short-descriptor format require page tables
+> (level 1 and 2) to be allocated within the first 4GB of RAM, even
+> on 64-bit systems.
+> 
+> For level 1/2 tables, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
+> is defined (e.g. on arm64 platforms).
+> 
+> For level 2 tables (1 KB), we use page_frag to allocate these pages,
+> as we cannot directly use kmalloc (no slab cache for GFP_DMA32) or
+> kmem_cache (mm/ code treats GFP_DMA32 as an invalid flag).
+> 
+> One downside is that we only free the allocated page if all the
+> 4 fragments (4 IOMMU L2 tables) are freed, but given that we
+> usually only allocate limited number of IOMMU L2 tables, this
+> should not have too much impact on memory usage: In the absolute
+> worst case (4096 L2 page tables, each on their own 4K page),
+> we would use 16 MB of memory for 4 MB of L2 tables.
 
-Do you know if this actually works for the baseline before my patches?
-E.g. with commit 721c01ba8b46ddb5355bd6e6b3bbfdabfdf01e97 ?
+I think this needs to be documemented in the code.  That is move
+the explanation about into a comment in the code.
