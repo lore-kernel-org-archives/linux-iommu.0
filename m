@@ -1,122 +1,67 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 5/9] dma-mapping: support highmem in the generic remap
- allocator
-Date: Tue, 4 Dec 2018 09:38:02 +0100
-Message-ID: <e1567e0d-4724-fb6b-cc22-3a723eec5e0f@samsung.com>
-References: <20181105121931.13481-1-hch@lst.de>
-        <20181105121931.13481-6-hch@lst.de>
-        <CGME20181130190639epcas3p2c9a23f5788b7f8eea26ce8d305b5e6f7@epcas3p2.samsung.com>
-        <449e0631-aa32-d4a8-9fa9-07234ae1e533@arm.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
+Subject: Re: [PATCH v3 1/4] PCI / ACPI: Identify untrusted PCI devices
+Date: Tue, 4 Dec 2018 10:57:35 +0200
+Message-ID: <20181204085735.GR3078@lahna.fi.intel.com>
+References: <20181129155153.35840-1-mika.westerberg@linux.intel.com>
+ <20181129155153.35840-2-mika.westerberg@linux.intel.com>
+ <20181204002800.GB85090@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <449e0631-aa32-d4a8-9fa9-07234ae1e533@arm.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <20181204002800.GB85090@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, Guo Ren <ren_guo@c-sky.com>, Laura Abbott <labbott@redhat.com>, linux-arm-kernel@lists.infradead.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Jacob jun Pan <jacob.jun.pan@intel.com>, Andreas Noever <andreas.noever@gmail.com>, Michael Jamet <michael.jamet@intel.com>, Yehezkel Bernat <YehezkelShB@gmail.com>, Lukas Wunner <lukas@wunner.de>, Christian Kellner <ckellner@redhat.com>, Mario.Limonciello@dell.com, Anthony Wong <anthony.wong@canonical.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Christoph Hellwig <hch@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi All,
+On Mon, Dec 03, 2018 at 06:28:00PM -0600, Bjorn Helgaas wrote:
+> On Thu, Nov 29, 2018 at 06:51:50PM +0300, Mika Westerberg wrote:
+> > A malicious PCI device may use DMA to attack the system. An external
+> > Thunderbolt port is a convenient point to attach such a device. The OS
+> > may use IOMMU to defend against DMA attacks.
+> > 
+> > Recent BIOSes with Thunderbolt ports mark these externally facing root
+> > ports with this ACPI _DSD [1]:
+> 
+> I'm not 100% comfortable with the "Recent BIOSes" wording because that
+> suggests that we can rely on the fact that *all* BIOSes newer than
+> some date X mark these ports.
+> 
+> Since this _DSD usage is Microsoft-specific and not required by either
+> PCIe or ACPI specs, we can't rely on it.  A BIOS that doesn't
+> implement it may not be Windows-certified, but it's perfectly
+> spec-compliant otherwise and we have to keep in mind the possibility
+> that ports without this _DSD may still be externally visible and may
+> still be attack vectors.
 
-On 2018-11-30 20:05, Robin Murphy wrote:
-> On 05/11/2018 12:19, Christoph Hellwig wrote:
->> By using __dma_direct_alloc_pages we can deal entirely with struct page
->> instead of having to derive a kernel virtual address.
->
-> Simple enough :)
->
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+OK.
 
-This patch has landed linux-next yesterday and I've noticed that it
-breaks operation of many drivers. The change looked simple, but a stupid
-bug managed to slip into the code. After a short investigation I've
-noticed that __dma_direct_alloc_pages() doesn't set dma_handle and zero
-allocated memory, while dma_direct_alloc_pages() did. The other
-difference is the lack of set_memory_decrypted() handling.
+I will change it to "Some BIOSes .." following what you suggested
+earlier. That should make it clear not all BIOSes are required to
+implement this.
 
-Following patch fixes the issue, but maybe it would be better to fix it
-in kernel/dma/direct.c:
+> >   Name (_DSD, Package () {
+> >       ToUUID ("efcc06cc-73ac-4bc3-bff0-76143807c389"),
+> >       Package () {
+> >           Package () {"ExternalFacingPort", 1},
+> > 	  Package () {"UID", 0 }
+> >       }
+> >   })
+> > 
+> > If we find such a root port, mark it and all its children as untrusted.
+> > The rest of the OS may use this information to enable DMA protection
+> > against malicious devices. For instance the device may be put behind an
+> > IOMMU to keep it from accessing memory outside of what the driver has
+> > allocated for it.
+> > 
+> > While at it, add a comment on top of prp_guids array explaining the
+> > possible caveat resulting when these GUIDs are treated equivalent.
+> > 
+> > [1] https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports#identifying-externally-exposed-pcie-root-ports
+> > 
+> > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> 
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index dcc82dd668f8..7765ddc56e4e 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -219,8 +219,14 @@ void *arch_dma_alloc(struct device *dev, size_t
-size, dma_addr_t *dma_handle,
-        ret = dma_common_contiguous_remap(page, size, VM_USERMAP,
-                        arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
-                        __builtin_return_address(0));
--       if (!ret)
-+       if (!ret) {
-                __dma_direct_free_pages(dev, size, page);
-+               return ret;
-+       }
-+
-+       *dma_handle = phys_to_dma(dev, page_to_phys(page));
-+       memset(ret, 0, size);
-+
-        return ret;
- }
-
->
->> Signed-off-by: Christoph Hellwig <hch@lst.de>
->> ---
->>   kernel/dma/remap.c | 14 +++++++-------
->>   1 file changed, 7 insertions(+), 7 deletions(-)
->>
->> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
->> index bc42766f52df..8f1fca34b894 100644
->> --- a/kernel/dma/remap.c
->> +++ b/kernel/dma/remap.c
->> @@ -196,7 +196,7 @@ void *arch_dma_alloc(struct device *dev, size_t
->> size, dma_addr_t *dma_handle,
->>           gfp_t flags, unsigned long attrs)
->>   {
->>       struct page *page = NULL;
->> -    void *ret, *kaddr;
->> +    void *ret;
->>         size = PAGE_ALIGN(size);
->>   @@ -208,10 +208,9 @@ void *arch_dma_alloc(struct device *dev,
->> size_t size, dma_addr_t *dma_handle,
->>           return ret;
->>       }
->>   -    kaddr = dma_direct_alloc_pages(dev, size, dma_handle, flags,
->> attrs);
->> -    if (!kaddr)
->> +    page = __dma_direct_alloc_pages(dev, size, dma_handle, flags,
->> attrs);
->> +    if (!page)
->>           return NULL;
->> -    page = virt_to_page(kaddr);
->>         /* remove any dirty cache lines on the kernel alias */
->>       arch_dma_prep_coherent(page, size);
->> @@ -221,7 +220,7 @@ void *arch_dma_alloc(struct device *dev, size_t
->> size, dma_addr_t *dma_handle,
->>               arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
->>               __builtin_return_address(0));
->>       if (!ret)
->> -        dma_direct_free_pages(dev, size, kaddr, *dma_handle, attrs);
->> +        __dma_direct_free_pages(dev, size, page);
->>       return ret;
->>   }
->>   @@ -229,10 +228,11 @@ void arch_dma_free(struct device *dev, size_t
->> size, void *vaddr,
->>           dma_addr_t dma_handle, unsigned long attrs)
->>   {
->>       if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
->> -        void *kaddr = phys_to_virt(dma_to_phys(dev, dma_handle));
->> +        phys_addr_t phys = dma_to_phys(dev, dma_handle);
->> +        struct page *page = pfn_to_page(__phys_to_pfn(phys));
->>             vunmap(vaddr);
->> -        dma_direct_free_pages(dev, size, kaddr, dma_handle, attrs);
->> +        __dma_direct_free_pages(dev, size, page);
->>       }
->>   }
->>  
->
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Thanks!
