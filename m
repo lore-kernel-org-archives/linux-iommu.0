@@ -1,20 +1,31 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 02/12] iommu/vt-d: Manage scalalble mode PASID tables
-Date: Tue, 4 Dec 2018 13:58:06 +0800
-Message-ID: <5c81008b-30e8-177d-0182-db366608562f@linux.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v5 04/12] iommu/vt-d: Add 256-bit invalidation descriptor
+	support
+Date: Tue, 4 Dec 2018 14:13:31 +0800
+Message-ID: <3b0eadd2-b99f-98d6-594f-0419f0542789@linux.intel.com>
 References: <20181128035449.10226-1-baolu.lu@linux.intel.com>
- <20181128035449.10226-3-baolu.lu@linux.intel.com>
- <20181203134411.lejlkbnagxml54ro@8bytes.org>
- <A2975661238FB949B60364EF0F2C257439D838B9@SHSMSX104.ccr.corp.intel.com>
+	<20181128035449.10226-5-baolu.lu@linux.intel.com>
+	<20181203134856.lui4us4ejm4d5avz@8bytes.org>
+	<A2975661238FB949B60364EF0F2C257439D838AB@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <A2975661238FB949B60364EF0F2C257439D838B9@SHSMSX104.ccr.corp.intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D838AB-0J0gbvR4kTg/UvCtAeCM4rfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Sun, Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan,
+	Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi,
@@ -22,88 +33,61 @@ Hi,
 On 12/4/18 1:23 AM, Liu, Yi L wrote:
 > Hi Joerg,
 > 
->> From: Joerg Roedel [mailto:joro@8bytes.org]
->> Sent: Monday, December 3, 2018 5:44 AM
->> To: Lu Baolu <baolu.lu@linux.intel.com>
->> Subject: Re: [PATCH v5 02/12] iommu/vt-d: Manage scalalble mode PASID tables
+>> From: Joerg Roedel [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
+>> Sent: Monday, December 3, 2018 5:49 AM
+>> To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+>> Subject: Re: [PATCH v5 04/12] iommu/vt-d: Add 256-bit invalidation descriptor
+>> support
 >>
->> Hi Baolu,
+>> On Wed, Nov 28, 2018 at 11:54:41AM +0800, Lu Baolu wrote:
+>>> -
+>>> -	desc_page = alloc_pages_node(iommu->node, GFP_ATOMIC | __GFP_ZERO,
+>> 0);
+>>> +	/*
+>>> +	 * Need two pages to accommodate 256 descriptors of 256 bits each
+>>> +	 * if the remapping hardware supports scalable mode translation.
+>>> +	 */
+>>> +	desc_page = alloc_pages_node(iommu->node, GFP_ATOMIC | __GFP_ZERO,
+>>> +				     !!ecap_smts(iommu->ecap));
 >>
->> On Wed, Nov 28, 2018 at 11:54:39AM +0800, Lu Baolu wrote:
->>> @@ -2482,12 +2482,13 @@ static struct dmar_domain
->> *dmar_insert_one_dev_info(struct intel_iommu *iommu,
->>>   	if (dev)
->>>   		dev->archdata.iommu = info;
->>>
->>> -	if (dev && dev_is_pci(dev) && info->pasid_supported) {
->>> +	/* PASID table is mandatory for a PCI device in scalable mode. */
->>> +	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
 >>
->> This will also allocate a PASID table if the device does not support
->> PASIDs, right? Will the table not be used in that case or will the
->> device just use the fallback PASID? Isn't it better in that case to have
->> no PASID table?
+>> Same here, does the allocation really need GFP_ATOMIC?
 > 
-> We need to allocate the PASID table in scalable mode, the reason is as below:
-> In VT-d scalable mode, all address translation is done in PASID-granularity.
-> For requests-with-PASID, the address translation would be subjected to the
-> PASID entry specified by the PASID value in the DMA request. However, for
-> requests-without-PASID, there is no PASID in the DMA request. To fulfil
-> the translation logic, we've introduced RID2PASID field in sm-context-entry
-> in VT-d 3.o spec. So that such DMA requests would be subjected to the pasid
-> entry specified by the PASID value in the RID2PASID field of sm-context-entry.
-> 
-> So for a device without PASID support, we need to at least to have a PASID
-> entry so that its DMA request (without pasid) can be translated. Thus a PASID
-> table is needed for such devices.
+> still leave to Baolu.
+
+The existing code uses GFP_ATOMIC, this patch only changes the size of
+the allocated desc_page.
+
+I don't think we really need GFP_ATOMIC here (and also for some other
+places). I will clean up them in a separated patch.
+
 > 
 >>
->>> @@ -143,18 +143,20 @@ int intel_pasid_alloc_table(struct device *dev)
->>>   		return -ENOMEM;
->>>   	INIT_LIST_HEAD(&pasid_table->dev);
->>>
->>> -	size = sizeof(struct pasid_entry);
->>> -	count = min_t(int, pci_max_pasids(to_pci_dev(dev)), intel_pasid_max_id);
->>> -	order = get_order(size * count);
->>> +	if (info->pasid_supported)
->>> +		max_pasid = min_t(int, pci_max_pasids(to_pci_dev(dev)),
->>> +				  intel_pasid_max_id);
->>> +
->>> +	size = max_pasid >> (PASID_PDE_SHIFT - 3);
->>> +	order = size ? get_order(size) : 0;
->>>   	pages = alloc_pages_node(info->iommu->node,
->>> -				 GFP_ATOMIC | __GFP_ZERO,
->>> -				 order);
->>> +				 GFP_ATOMIC | __GFP_ZERO, order);
+>>>   struct q_inval {
+>>>   	raw_spinlock_t  q_lock;
+>>> -	struct qi_desc  *desc;          /* invalidation queue */
+>>> +	void		*desc;          /* invalidation queue */
+>>>   	int             *desc_status;   /* desc status */
+>>>   	int             free_head;      /* first free entry */
+>>>   	int             free_tail;      /* last free entry */
 >>
->> This is a simple data structure allocation path, does it need
->> GFP_ATOMIC?
+>> Why do you switch the pointer to void* ?
 > 
+> In this patch, there is some code like the code below. It calculates
+> destination address of memcpy with qi->desc. If it's still struct qi_desc
+> pointer, the calculation result would be wrong.
+> 
+> +			memcpy(desc, qi->desc + (wait_index << shift),
+> +			       1 << shift);
+> 
+> The change of the calculation method is to support 128 bits invalidation
+> descriptors and 256 invalidation descriptors in this unified code logic.
+> 
+> Also, the conversation between Baolu and me may help.
+> 
+> https://lore.kernel.org/patchwork/patch/1006756/
 
-This function is called in an unsleepable context.
-
-spin_lock(&lock)
-[...]
-if (pasid_table_is_necessary)
-	allocate_pasid_table(dev)
-[...]
-spin_unlock(&lock)
-
-We can move it out of the lock range.
-
-How about
-
-if (pasid_table_is_necessary)
-	pasid_table = allocate_pasid_table(dev)
-
-spin_lock(&lock)
-[...]
-if (pasid_table_is_necessary)
-	set_up_pasid_table(pasid_table)
-[...]
-spin_unlock(&lock)
-
-?
+Yes. We need to support different descriptor size.
 
 Best regards,
 Lu Baolu
