@@ -1,206 +1,109 @@
-From: Xu Zaibo <xuzaibo-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v4 0/8] vfio/mdev: IOMMU aware mediated device
-Date: Tue, 4 Dec 2018 11:46:05 +0800
-Message-ID: <5C05F87D.4050206@huawei.com>
-References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 02/12] iommu/vt-d: Manage scalalble mode PASID tables
+Date: Tue, 4 Dec 2018 13:58:06 +0800
+Message-ID: <5c81008b-30e8-177d-0182-db366608562f@linux.intel.com>
+References: <20181128035449.10226-1-baolu.lu@linux.intel.com>
+ <20181128035449.10226-3-baolu.lu@linux.intel.com>
+ <20181203134411.lejlkbnagxml54ro@8bytes.org>
+ <A2975661238FB949B60364EF0F2C257439D838B9@SHSMSX104.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181105073408.21815-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439D838B9@SHSMSX104.ccr.corp.intel.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, "Raj, Ashok" <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "peterx@redhat.com" <peterx@redhat.com>, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi,
 
-Is this solution trying to support general user space processes who are 
-directly working on devices?
+On 12/4/18 1:23 AM, Liu, Yi L wrote:
+> Hi Joerg,
+> 
+>> From: Joerg Roedel [mailto:joro@8bytes.org]
+>> Sent: Monday, December 3, 2018 5:44 AM
+>> To: Lu Baolu <baolu.lu@linux.intel.com>
+>> Subject: Re: [PATCH v5 02/12] iommu/vt-d: Manage scalalble mode PASID tables
+>>
+>> Hi Baolu,
+>>
+>> On Wed, Nov 28, 2018 at 11:54:39AM +0800, Lu Baolu wrote:
+>>> @@ -2482,12 +2482,13 @@ static struct dmar_domain
+>> *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>>>   	if (dev)
+>>>   		dev->archdata.iommu = info;
+>>>
+>>> -	if (dev && dev_is_pci(dev) && info->pasid_supported) {
+>>> +	/* PASID table is mandatory for a PCI device in scalable mode. */
+>>> +	if (dev && dev_is_pci(dev) && sm_supported(iommu)) {
+>>
+>> This will also allocate a PASID table if the device does not support
+>> PASIDs, right? Will the table not be used in that case or will the
+>> device just use the fallback PASID? Isn't it better in that case to have
+>> no PASID table?
+> 
+> We need to allocate the PASID table in scalable mode, the reason is as below:
+> In VT-d scalable mode, all address translation is done in PASID-granularity.
+> For requests-with-PASID, the address translation would be subjected to the
+> PASID entry specified by the PASID value in the DMA request. However, for
+> requests-without-PASID, there is no PASID in the DMA request. To fulfil
+> the translation logic, we've introduced RID2PASID field in sm-context-entry
+> in VT-d 3.o spec. So that such DMA requests would be subjected to the pasid
+> entry specified by the PASID value in the RID2PASID field of sm-context-entry.
+> 
+> So for a device without PASID support, we need to at least to have a PASID
+> entry so that its DMA request (without pasid) can be translated. Thus a PASID
+> table is needed for such devices.
+> 
+>>
+>>> @@ -143,18 +143,20 @@ int intel_pasid_alloc_table(struct device *dev)
+>>>   		return -ENOMEM;
+>>>   	INIT_LIST_HEAD(&pasid_table->dev);
+>>>
+>>> -	size = sizeof(struct pasid_entry);
+>>> -	count = min_t(int, pci_max_pasids(to_pci_dev(dev)), intel_pasid_max_id);
+>>> -	order = get_order(size * count);
+>>> +	if (info->pasid_supported)
+>>> +		max_pasid = min_t(int, pci_max_pasids(to_pci_dev(dev)),
+>>> +				  intel_pasid_max_id);
+>>> +
+>>> +	size = max_pasid >> (PASID_PDE_SHIFT - 3);
+>>> +	order = size ? get_order(size) : 0;
+>>>   	pages = alloc_pages_node(info->iommu->node,
+>>> -				 GFP_ATOMIC | __GFP_ZERO,
+>>> -				 order);
+>>> +				 GFP_ATOMIC | __GFP_ZERO, order);
+>>
+>> This is a simple data structure allocation path, does it need
+>> GFP_ATOMIC?
+> 
 
-Thanks,
-Zaibo
+This function is called in an unsleepable context.
 
-.
+spin_lock(&lock)
+[...]
+if (pasid_table_is_necessary)
+	allocate_pasid_table(dev)
+[...]
+spin_unlock(&lock)
 
-On 2018/11/5 15:34, Lu Baolu wrote:
-> Hi,
->
-> The Mediate Device is a framework for fine-grained physical device
-> sharing across the isolated domains. Currently the mdev framework
-> is designed to be independent of the platform IOMMU support. As the
-> result, the DMA isolation relies on the mdev parent device in a
-> vendor specific way.
->
-> There are several cases where a mediated device could be protected
-> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
-> [1] introduces a new translation mode called 'scalable mode', which
-> enables PASID-granular translations. The vt-d scalable mode is the
-> key ingredient for Scalable I/O Virtualization [2] [3] which allows
-> sharing a device in minimal possible granularity (ADI - Assignable
-> Device Interface).
->
-> A mediated device backed by an ADI could be protected and isolated
-> by the IOMMU since 1) the parent device supports tagging an unique
-> PASID to all DMA traffic out of the mediated device; and 2) the DMA
-> translation unit (IOMMU) supports the PASID granular translation.
-> We can apply IOMMU protection and isolation to this kind of devices
-> just as what we are doing with an assignable PCI device.
->
-> In order to distinguish the IOMMU-capable mediated devices from those
-> which still need to rely on parent devices, this patch set adds two
-> new members in struct mdev_device.
->
-> * iommu_device
->    - This, if set, indicates that the mediated device could
->      be fully isolated and protected by IOMMU via attaching
->      an iommu domain to this device. If empty, it indicates
->      using vendor defined isolation.
->
-> * iommu_domain
->    - This is a place holder for an iommu domain. A domain
->      could be store here for later use once it has been
->      attached to the iommu_device of this mdev.
->
-> Below helpers are added to set and get above iommu device
-> and iommu domain pointers in mdev core implementation.
->
-> * mdev_set/get_iommu_device(dev, iommu_device)
->    - Set or get the iommu device which represents this mdev
->      in IOMMU's device scope. Drivers don't need to set the
->      iommu device if it uses vendor defined isolation.
->
-> * mdev_set/get_iommu_domain(domain)
->    - A iommu domain which has been attached to the iommu
->      device in order to protect and isolate the mediated
->      device will be kept in the mdev data structure and
->      could be retrieved later.
->
-> The mdev parent device driver could opt-in that the mdev could be
-> fully isolated and protected by the IOMMU when the mdev is being
-> created by invoking mdev_set_iommu_device() in its @create().
->
-> In the vfio_iommu_type1_attach_group(), a domain allocated through
-> iommu_domain_alloc() will be attached to the mdev iommu device if
-> an iommu device has been set. Otherwise, the dummy external domain
-> will be used and all the DMA isolation and protection are routed to
-> parent driver as the result.
->
-> On IOMMU side, a basic requirement is allowing to attach multiple
-> domains to a PCI device if the device advertises the capability
-> and the IOMMU hardware supports finer granularity translations than
-> the normal PCI Source ID based translation.
->
-> As the result, a PCI device could work in two modes: normal mode
-> and auxiliary mode. In the normal mode, a pci device could be
-> isolated in the Source ID granularity; the pci device itself could
-> be assigned to a user application by attaching a single domain
-> to it. In the auxiliary mode, a pci device could be isolated in
-> finer granularity, hence subsets of the device could be assigned
-> to different user level application by attaching a different domain
-> to each subset.
->
-> The device driver is able to switch between above two modes with
-> below interfaces:
->
-> * iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_CAPABILITY)
->    - Represents the ability of supporting multiple domains
->      per device.
->
-> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLE)
->    - Enable the multiple domains capability for the device
->      referenced by @dev.
->
-> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_DISABLE)
->    - Disable the multiple domains capability for the device
->      referenced by @dev.
->
-> * iommu_domain_get_attr(domain, DOMAIN_ATTR_AUXD_ID)
->    - Return ID used for finer-granularity DMA translation.
->
-> * iommu_attach_device_aux(domain, dev)
->    - Attach a domain to the device in the auxiliary mode.
->
-> * iommu_detach_device_aux(domain, dev)
->    - Detach the aux domain from device.
->
-> In order for the ease of discussion, sometimes we call "a domain in
-> auxiliary mode' or simply 'an auxiliary domain' when a domain is
-> attached to a device for finer granularity translations. But we need
-> to keep in mind that this doesn't mean there is a differnt domain
-> type. A same domain could be bound to a device for Source ID based
-> translation, and bound to another device for finer granularity
-> translation at the same time.
->
-> This patch series extends both IOMMU and vfio components to support
-> mdev device passing through when it could be isolated and protected
-> by the IOMMU units. The first part of this series (PATCH 1/08~5/08)
-> adds the interfaces and implementation of the multiple domains per
-> device. The second part (PATCH 6/08~8/08) adds the iommu device
-> attribute to each mdev, determines isolation type according to the
-> existence of an iommu device when attaching group in vfio type1 iommu
-> module, and attaches the domain to iommu aware mediated devices.
->
-> This patch series depends on a patch set posted here [4] for discussion
-> which added scalable mode support in Intel IOMMU driver.
->
-> References:
-> [1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-> [2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-> [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-> [4] https://lkml.org/lkml/2018/11/5/136
->
-> Best regards,
-> Lu Baolu
->
-> Change log:
->    v3->v4:
->    - Use aux domain specific interfaces for domain attach and detach.
->    - Rebase all patches to 4.20-rc1.
->
->    v2->v3:
->    - Remove domain type enum and use a pointer on mdev_device instead.
->    - Add a generic interface for getting/setting per device iommu
->      attributions. And use it for query aux domain capability, enable
->      aux domain and disable aux domain purpose.
->    - Reuse iommu_domain_get_attr() to retrieve the id in a aux domain.
->    - We discussed the impact of the default domain implementation
->      on reusing iommu_at(de)tach_device() interfaces. We agreed
->      that reusing iommu_at(de)tach_device() interfaces is the right
->      direction and we could tweak the code to remove the impact.
->      https://www.spinics.net/lists/kvm/msg175285.html
->    - Removed the RFC tag since no objections received.
->    - This patch has been submitted separately.
->      https://www.spinics.net/lists/kvm/msg173936.html
->
->    v1->v2:
->    - Rewrite the patches with the concept of auxiliary domains.
->
-> Lu Baolu (8):
->    iommu: Add APIs for multiple domains per device
->    iommu/vt-d: Add multiple domains per device query
->    iommu/vt-d: Enable/disable multiple domains per device
->    iommu/vt-d: Attach/detach domains in auxiliary mode
->    iommu/vt-d: Return ID associated with an auxiliary domain
->    vfio/mdev: Add iommu place holders in mdev_device
->    vfio/type1: Add domain at(de)taching group helpers
->    vfio/type1: Handle different mdev isolation type
->
->   drivers/iommu/intel-iommu.c      | 315 ++++++++++++++++++++++++++++---
->   drivers/iommu/iommu.c            |  52 +++++
->   drivers/vfio/mdev/mdev_core.c    |  36 ++++
->   drivers/vfio/mdev/mdev_private.h |   2 +
->   drivers/vfio/vfio_iommu_type1.c  | 162 ++++++++++++++--
->   include/linux/intel-iommu.h      |  11 ++
->   include/linux/iommu.h            |  52 +++++
->   include/linux/mdev.h             |  23 +++
->   8 files changed, 618 insertions(+), 35 deletions(-)
->
+We can move it out of the lock range.
+
+How about
+
+if (pasid_table_is_necessary)
+	pasid_table = allocate_pasid_table(dev)
+
+spin_lock(&lock)
+[...]
+if (pasid_table_is_necessary)
+	set_up_pasid_table(pasid_table)
+[...]
+spin_unlock(&lock)
+
+?
+
+Best regards,
+Lu Baolu
