@@ -1,41 +1,42 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Tue, 4 Dec 2018 16:06:43 +0000
-Message-ID: <6e8ca917-32a7-5c0a-60c0-a266c3fbb163@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/4] dma-debug: Refactor dma_debug_entry allocation
+Date: Tue, 4 Dec 2018 16:09:30 +0000
+Message-ID: <4efce7aa-2146-e759-1214-04bab917db2f@arm.com>
 References: <cover.1543856576.git.robin.murphy@arm.com>
- <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
- <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
- <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com> <20181204141743.GA2618@lst.de>
+	<a827949d4fde7f8eca805e3b09c2eb7fb16d8bec.1543856576.git.robin.murphy@arm.com>
+	<20181204142731.GB2767@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181204141743.GA2618@lst.de>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181204142731.GB2767-jcswGhMUV9g@public.gmane.org>
 Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: John Garry <john.garry@huawei.com>, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/12/2018 14:17, Christoph Hellwig wrote:
-> On Tue, Dec 04, 2018 at 01:11:37PM +0000, Robin Murphy wrote:
->> In fact, having got this far in, what I'd quite like to do is to get rid of
->> dma_debug_resize_entries() such that we never need to free things at all,
->> since then we could allocate whole pages as blocks of entries to save on
->> masses of individual slab allocations.
+On 04/12/2018 14:27, Christoph Hellwig wrote:
+> On Mon, Dec 03, 2018 at 05:28:07PM +0000, Robin Murphy wrote:
+>> Make prealloc_memory() a little more general and robust so that it
+>> serves for runtime reallocations too. The first thing we can do with
+>> that is clean up dma_debug_resize_entries() quite a bit.
 > 
-> Yes, we should defintively kill dma_debug_resize_entries.  Allocating
-> page batches might sound nice, but is that going to introduce additional
-> complexity?
+> Maybe also renamed it to dma_debug_alloc_entries or something like
+> that?
 
-OK, looking at what the weird AMD GART code does I reckon it should be 
-happy enough with on-demand expansion, and that no tears will be shed if 
-it can no longer actually trim the pool to the size it thinks is 
-necessary. I'll add a patch to clean that up.
+Yes, that's definitely nicer.
 
-Page-based allocation, at least the way I'm thinking of it, shouldn't do 
-much more than add an extra loop in one place, which should be more than 
-made up for by removing all the freeing code :)
+> Otherwise this looks fine to me.
+
+Thanks (and for the review on #1)
 
 Robin.
