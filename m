@@ -1,26 +1,38 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 01/23] dma-mapping: provide a generic DMA_MAPPING_ERROR
-Date: Tue, 4 Dec 2018 23:33:55 +0100
-Message-ID: <20181204223355.GA12534@lst.de>
-References: <20181130132231.16512-1-hch@lst.de> <20181130132231.16512-2-hch@lst.de> <653ca801-63a1-3c19-ee09-ade19fa2bbb8@arm.com>
+From: Yu Zhao <yuzhao@google.com>
+Subject: [PATCH] iommu: fix amd_iommu=force_isolation
+Date: Tue,  4 Dec 2018 15:37:16 -0700
+Message-ID: <20181204223716.214159-1-yuzhao@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <653ca801-63a1-3c19-ee09-ade19fa2bbb8@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, x86@kernel.org, linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Yu Zhao <yuzhao@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 04, 2018 at 04:41:34PM +0000, Robin Murphy wrote:
-> I'd have been inclined to put the default check here, i.e.
->
-> -	return 0
-> +	return dma_addr == DMA_MAPPING_ERROR
->
-> such that the callback retains full precedence and we don't have to deal 
-> with the non-trivial removals immediately if it comes to it. Not that it 
-> makes a vast difference though, so either way,
+The parameter is still there but it's ignored. We need to check its
+value before deciding to go into passthrough mode for AMD IOMMU.
 
-Ok, I've switched it around.
+Fixes: aafd8ba0ca74 ("iommu/amd: Implement add_device and remove_device")
+
+Signed-off-by: Yu Zhao <yuzhao@google.com>
+---
+ drivers/iommu/amd_iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 1167ff0416cf..3e4219e6cff0 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2195,7 +2195,8 @@ static int amd_iommu_add_device(struct device *dev)
+ 
+ 	BUG_ON(!dev_data);
+ 
+-	if (iommu_pass_through || dev_data->iommu_v2)
++	if (iommu_pass_through ||
++	    (!amd_iommu_force_isolation && dev_data->iommu_v2))
+ 		iommu_request_dm_for_dev(dev);
+ 
+ 	/* Domains are initialized for this device - have a look what we ended up with */
+-- 
+2.20.0.rc1.387.gf8505762e3-goog
