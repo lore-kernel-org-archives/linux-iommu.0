@@ -1,16 +1,11 @@
-From: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Subject: Re: [PATCH 4/9] dma-mapping: move the arm64 ncoherent alloc/free
-	support to common code
-Date: Tue, 4 Dec 2018 10:09:54 +0000
-Message-ID: <20181204100954.GN30658@n2100.armlinux.org.uk>
-References: <20181105121931.13481-1-hch@lst.de>
-	<20181105121931.13481-5-hch@lst.de>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
+Date: Tue,  4 Dec 2018 16:31:22 +0530
+Message-ID: <20181204110122.12434-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181105121931.13481-5-hch-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,514 +15,249 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Guo Ren <ren_guo-Y+KPrCd2zL4AvxtiuMwx3w@public.gmane.org>, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 05, 2018 at 01:19:26PM +0100, Christoph Hellwig wrote:
-> The arm64 codebase to implement coherent dma allocation for architectures
-> with non-coherent DMA is a good start for a generic implementation, given
-> that is uses the generic remap helpers, provides the atomic pool for
-> allocations that can't sleep and still is realtively simple and well
-> tested.  Move it to kernel/dma and allow architectures to opt into it
-> using a config symbol.  Architectures just need to provide a new
-> arch_dma_prep_coherent helper to writeback an invalidate the caches
-> for any memory that gets remapped for uncached access.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  arch/arm64/Kconfig              |   2 +-
->  arch/arm64/mm/dma-mapping.c     | 184 ++------------------------------
->  include/linux/dma-mapping.h     |   5 +
->  include/linux/dma-noncoherent.h |   2 +
->  kernel/dma/Kconfig              |   6 ++
->  kernel/dma/remap.c              | 158 ++++++++++++++++++++++++++-
->  6 files changed, 181 insertions(+), 176 deletions(-)
-> 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 5d065acb6d10..2e645ea693ea 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -82,7 +82,7 @@ config ARM64
->  	select CRC32
->  	select DCACHE_WORD_ACCESS
->  	select DMA_DIRECT_OPS
-> -	select DMA_REMAP
-> +	select DMA_DIRECT_REMAP
->  	select EDAC_SUPPORT
->  	select FRAME_POINTER
->  	select GENERIC_ALLOCATOR
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index a3ac26284845..e2e7e5d0f94e 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -33,113 +33,6 @@
->  
->  #include <asm/cacheflush.h>
->  
-> -static struct gen_pool *atomic_pool __ro_after_init;
-> -
-> -#define DEFAULT_DMA_COHERENT_POOL_SIZE  SZ_256K
-> -static size_t atomic_pool_size __initdata = DEFAULT_DMA_COHERENT_POOL_SIZE;
-> -
-> -static int __init early_coherent_pool(char *p)
-> -{
-> -	atomic_pool_size = memparse(p, &p);
-> -	return 0;
-> -}
-> -early_param("coherent_pool", early_coherent_pool);
-> -
-> -static void *__alloc_from_pool(size_t size, struct page **ret_page, gfp_t flags)
-> -{
-> -	unsigned long val;
-> -	void *ptr = NULL;
-> -
-> -	if (!atomic_pool) {
-> -		WARN(1, "coherent pool not initialised!\n");
-> -		return NULL;
-> -	}
-> -
-> -	val = gen_pool_alloc(atomic_pool, size);
-> -	if (val) {
-> -		phys_addr_t phys = gen_pool_virt_to_phys(atomic_pool, val);
-> -
-> -		*ret_page = phys_to_page(phys);
-> -		ptr = (void *)val;
-> -		memset(ptr, 0, size);
-> -	}
-> -
-> -	return ptr;
-> -}
-> -
-> -static bool __in_atomic_pool(void *start, size_t size)
-> -{
-> -	return addr_in_gen_pool(atomic_pool, (unsigned long)start, size);
-> -}
-> -
-> -static int __free_from_pool(void *start, size_t size)
-> -{
-> -	if (!__in_atomic_pool(start, size))
-> -		return 0;
-> -
-> -	gen_pool_free(atomic_pool, (unsigned long)start, size);
-> -
-> -	return 1;
-> -}
-> -
-> -void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> -		gfp_t flags, unsigned long attrs)
-> -{
-> -	struct page *page;
-> -	void *ptr, *coherent_ptr;
-> -	pgprot_t prot = pgprot_writecombine(PAGE_KERNEL);
-> -
-> -	size = PAGE_ALIGN(size);
-> -
-> -	if (!gfpflags_allow_blocking(flags)) {
-> -		struct page *page = NULL;
-> -		void *addr = __alloc_from_pool(size, &page, flags);
-> -
-> -		if (addr)
-> -			*dma_handle = phys_to_dma(dev, page_to_phys(page));
-> -
-> -		return addr;
-> -	}
-> -
-> -	ptr = dma_direct_alloc_pages(dev, size, dma_handle, flags, attrs);
-> -	if (!ptr)
-> -		goto no_mem;
-> -
-> -	/* remove any dirty cache lines on the kernel alias */
-> -	__dma_flush_area(ptr, size);
-> -
-> -	/* create a coherent mapping */
-> -	page = virt_to_page(ptr);
-> -	coherent_ptr = dma_common_contiguous_remap(page, size, VM_USERMAP,
-> -						   prot, __builtin_return_address(0));
-> -	if (!coherent_ptr)
-> -		goto no_map;
-> -
-> -	return coherent_ptr;
-> -
-> -no_map:
-> -	dma_direct_free_pages(dev, size, ptr, *dma_handle, attrs);
-> -no_mem:
-> -	return NULL;
-> -}
-> -
-> -void arch_dma_free(struct device *dev, size_t size, void *vaddr,
-> -		dma_addr_t dma_handle, unsigned long attrs)
-> -{
-> -	if (!__free_from_pool(vaddr, PAGE_ALIGN(size))) {
-> -		void *kaddr = phys_to_virt(dma_to_phys(dev, dma_handle));
-> -
-> -		vunmap(vaddr);
-> -		dma_direct_free_pages(dev, size, kaddr, dma_handle, attrs);
-> -	}
-> -}
-> -
-> -long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
-> -		dma_addr_t dma_addr)
-> -{
-> -	return __phys_to_pfn(dma_to_phys(dev, dma_addr));
-> -}
-> -
->  pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
->  		unsigned long attrs)
->  {
-> @@ -160,6 +53,11 @@ void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
->  	__dma_unmap_area(phys_to_virt(paddr), size, dir);
->  }
->  
-> +void arch_dma_prep_coherent(struct page *page, size_t size)
-> +{
-> +	__dma_flush_area(page_address(page), size);
-> +}
-> +
->  #ifdef CONFIG_IOMMU_DMA
->  static int __swiotlb_get_sgtable_page(struct sg_table *sgt,
->  				      struct page *page, size_t size)
-> @@ -191,67 +89,6 @@ static int __swiotlb_mmap_pfn(struct vm_area_struct *vma,
->  }
->  #endif /* CONFIG_IOMMU_DMA */
->  
-> -static int __init atomic_pool_init(void)
-> -{
-> -	pgprot_t prot = __pgprot(PROT_NORMAL_NC);
-> -	unsigned long nr_pages = atomic_pool_size >> PAGE_SHIFT;
-> -	struct page *page;
-> -	void *addr;
-> -	unsigned int pool_size_order = get_order(atomic_pool_size);
-> -
-> -	if (dev_get_cma_area(NULL))
-> -		page = dma_alloc_from_contiguous(NULL, nr_pages,
-> -						 pool_size_order, false);
-> -	else
-> -		page = alloc_pages(GFP_DMA32, pool_size_order);
-> -
-> -	if (page) {
-> -		int ret;
-> -		void *page_addr = page_address(page);
-> -
-> -		memset(page_addr, 0, atomic_pool_size);
-> -		__dma_flush_area(page_addr, atomic_pool_size);
-> -
-> -		atomic_pool = gen_pool_create(PAGE_SHIFT, -1);
-> -		if (!atomic_pool)
-> -			goto free_page;
-> -
-> -		addr = dma_common_contiguous_remap(page, atomic_pool_size,
-> -					VM_USERMAP, prot, atomic_pool_init);
-> -
-> -		if (!addr)
-> -			goto destroy_genpool;
-> -
-> -		ret = gen_pool_add_virt(atomic_pool, (unsigned long)addr,
-> -					page_to_phys(page),
-> -					atomic_pool_size, -1);
-> -		if (ret)
-> -			goto remove_mapping;
-> -
-> -		gen_pool_set_algo(atomic_pool,
-> -				  gen_pool_first_fit_order_align,
-> -				  NULL);
-> -
-> -		pr_info("DMA: preallocated %zu KiB pool for atomic allocations\n",
-> -			atomic_pool_size / 1024);
-> -		return 0;
-> -	}
-> -	goto out;
-> -
-> -remove_mapping:
-> -	dma_common_free_remap(addr, atomic_pool_size, VM_USERMAP);
-> -destroy_genpool:
-> -	gen_pool_destroy(atomic_pool);
-> -	atomic_pool = NULL;
-> -free_page:
-> -	if (!dma_release_from_contiguous(NULL, page, nr_pages))
-> -		__free_pages(page, pool_size_order);
-> -out:
-> -	pr_err("DMA: failed to allocate %zu KiB pool for atomic coherent allocation\n",
-> -		atomic_pool_size / 1024);
-> -	return -ENOMEM;
-> -}
-> -
->  /********************************************
->   * The following APIs are for dummy DMA ops *
->   ********************************************/
-> @@ -350,8 +187,7 @@ static int __init arm64_dma_init(void)
->  		   TAINT_CPU_OUT_OF_SPEC,
->  		   "ARCH_DMA_MINALIGN smaller than CTR_EL0.CWG (%d < %d)",
->  		   ARCH_DMA_MINALIGN, cache_line_size());
-> -
-> -	return atomic_pool_init();
-> +	return dma_atomic_pool_init(GFP_DMA32, __pgprot(PROT_NORMAL_NC));
->  }
->  arch_initcall(arm64_dma_init);
->  
-> @@ -397,7 +233,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->  			page = alloc_pages(gfp, get_order(size));
->  			addr = page ? page_address(page) : NULL;
->  		} else {
-> -			addr = __alloc_from_pool(size, &page, gfp);
-> +			addr = dma_alloc_from_pool(size, &page, gfp);
->  		}
->  		if (!addr)
->  			return NULL;
-> @@ -407,7 +243,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->  			if (coherent)
->  				__free_pages(page, get_order(size));
->  			else
-> -				__free_from_pool(addr, size);
-> +				dma_free_from_pool(addr, size);
->  			addr = NULL;
->  		}
->  	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
-> @@ -471,9 +307,9 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
->  	 *   coherent devices.
->  	 * Hence how dodgy the below logic looks...
->  	 */
-> -	if (__in_atomic_pool(cpu_addr, size)) {
-> +	if (dma_in_atomic_pool(cpu_addr, size)) {
->  		iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
-> -		__free_from_pool(cpu_addr, size);
-> +		dma_free_from_pool(cpu_addr, size);
->  	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
->  		struct page *page = vmalloc_to_page(cpu_addr);
->  
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 15bd41447025..56ed94b99963 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -455,6 +455,11 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
->  			const void *caller);
->  void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags);
->  
-> +int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot);
-> +bool dma_in_atomic_pool(void *start, size_t size);
-> +void *dma_alloc_from_pool(size_t size, struct page **ret_page, gfp_t flags);
-> +bool dma_free_from_pool(void *start, size_t size);
-> +
->  /**
->   * dma_mmap_attrs - map a coherent DMA allocation into user space
->   * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
-> diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-> index 9051b055beec..306557331d7d 100644
-> --- a/include/linux/dma-noncoherent.h
-> +++ b/include/linux/dma-noncoherent.h
-> @@ -69,4 +69,6 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
->  }
->  #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
->  
-> +void arch_dma_prep_coherent(struct page *page, size_t size);
-> +
->  #endif /* _LINUX_DMA_NONCOHERENT_H */
-> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> index c92e08173ed8..fb045ebb0713 100644
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -55,3 +55,9 @@ config SWIOTLB
->  config DMA_REMAP
->  	depends on MMU
->  	bool
-> +
-> +config DMA_DIRECT_REMAP
-> +	bool
-> +	depends on DMA_DIRECT_OPS
-> +	select DMA_REMAP
-> +
-> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-> index 456f7cc3414d..bc42766f52df 100644
-> --- a/kernel/dma/remap.c
-> +++ b/kernel/dma/remap.c
-> @@ -1,8 +1,13 @@
->  // SPDX-License-Identifier: GPL-2.0
->  /*
-> + * Copyright (C) 2012 ARM Ltd.
->   * Copyright (c) 2014 The Linux Foundation
->   */
-> -#include <linux/dma-mapping.h>
-> +#include <linux/dma-direct.h>
-> +#include <linux/dma-noncoherent.h>
-> +#include <linux/dma-contiguous.h>
-> +#include <linux/init.h>
-> +#include <linux/genalloc.h>
->  #include <linux/slab.h>
->  #include <linux/vmalloc.h>
->  
-> @@ -86,3 +91,154 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
->  	unmap_kernel_range((unsigned long)cpu_addr, PAGE_ALIGN(size));
->  	vunmap(cpu_addr);
->  }
-> +
-> +#ifdef CONFIG_DMA_DIRECT_REMAP
-> +static struct gen_pool *atomic_pool __ro_after_init;
-> +
-> +#define DEFAULT_DMA_COHERENT_POOL_SIZE  SZ_256K
-> +static size_t atomic_pool_size __initdata = DEFAULT_DMA_COHERENT_POOL_SIZE;
-> +
-> +static int __init early_coherent_pool(char *p)
-> +{
-> +	atomic_pool_size = memparse(p, &p);
-> +	return 0;
-> +}
-> +early_param("coherent_pool", early_coherent_pool);
-> +
-> +int __init dma_atomic_pool_init(gfp_t gfp, pgprot_t prot)
-> +{
-> +	unsigned int pool_size_order = get_order(atomic_pool_size);
-> +	unsigned long nr_pages = atomic_pool_size >> PAGE_SHIFT;
-> +	struct page *page;
-> +	void *addr;
-> +	int ret;
-> +
-> +	if (dev_get_cma_area(NULL))
-> +		page = dma_alloc_from_contiguous(NULL, nr_pages,
-> +						 pool_size_order, false);
-> +	else
-> +		page = alloc_pages(gfp, pool_size_order);
-> +	if (!page)
-> +		goto out;
-> +
-> +	memset(page_address(page), 0, atomic_pool_size);
+Qualcomm SoCs have an additional level of cache called as
+System cache, aka. Last level cache (LLC). This cache sits right
+before the DDR, and is tightly coupled with the memory controller.
+The cache is available to all the clients present in the SoC system.
+The clients request their slices from this system cache, make it
+active, and can then start using it.
+For these clients with smmu, to start using the system cache for
+buffers and, related page tables [1], memory attributes need to be
+set accordingly.
+This change updates the MAIR and TCR configurations with correct
+attributes to use this system cache.
 
-Note that this won't work if 'page' is a highmem page - should there
-be a check for that, or a check for the gfp flags?
+To explain a little about memory attribute requirements here:
 
-Also, is this memset() actually useful, or a waste of cycles - when we
-allocate from this pool (see dma_alloc_from_pool()), we always memset()
-the buffer.
+Non-coherent I/O devices can't look-up into inner caches. However,
+coherent I/O devices can. But both can allocate in the system cache
+based on system policy and configured memory attributes in page
+tables.
+CPUs can access both inner and outer caches (including system cache,
+aka. Last level cache), and can allocate into system cache too
+based on memory attributes, and system policy.
 
-> +	arch_dma_prep_coherent(page, atomic_pool_size);
-> +
-> +	atomic_pool = gen_pool_create(PAGE_SHIFT, -1);
-> +	if (!atomic_pool)
-> +		goto free_page;
-> +
-> +	addr = dma_common_contiguous_remap(page, atomic_pool_size, VM_USERMAP,
-> +					   prot, __builtin_return_address(0));
-> +	if (!addr)
-> +		goto destroy_genpool;
-> +
-> +	ret = gen_pool_add_virt(atomic_pool, (unsigned long)addr,
-> +				page_to_phys(page), atomic_pool_size, -1);
-> +	if (ret)
-> +		goto remove_mapping;
-> +	gen_pool_set_algo(atomic_pool, gen_pool_first_fit_order_align, NULL);
-> +
-> +	pr_info("DMA: preallocated %zu KiB pool for atomic allocations\n",
-> +		atomic_pool_size / 1024);
-> +	return 0;
-> +
-> +remove_mapping:
-> +	dma_common_free_remap(addr, atomic_pool_size, VM_USERMAP);
-> +destroy_genpool:
-> +	gen_pool_destroy(atomic_pool);
-> +	atomic_pool = NULL;
-> +free_page:
-> +	if (!dma_release_from_contiguous(NULL, page, nr_pages))
-> +		__free_pages(page, pool_size_order);
-> +out:
-> +	pr_err("DMA: failed to allocate %zu KiB pool for atomic coherent allocation\n",
-> +		atomic_pool_size / 1024);
-> +	return -ENOMEM;
-> +}
-> +
-> +bool dma_in_atomic_pool(void *start, size_t size)
-> +{
-> +	return addr_in_gen_pool(atomic_pool, (unsigned long)start, size);
-> +}
-> +
-> +void *dma_alloc_from_pool(size_t size, struct page **ret_page, gfp_t flags)
-> +{
-> +	unsigned long val;
-> +	void *ptr = NULL;
-> +
-> +	if (!atomic_pool) {
-> +		WARN(1, "coherent pool not initialised!\n");
-> +		return NULL;
-> +	}
-> +
-> +	val = gen_pool_alloc(atomic_pool, size);
-> +	if (val) {
-> +		phys_addr_t phys = gen_pool_virt_to_phys(atomic_pool, val);
-> +
-> +		*ret_page = phys_to_page(phys);
-> +		ptr = (void *)val;
-> +		memset(ptr, 0, size);
-> +	}
-> +
-> +	return ptr;
-> +}
-> +
-> +bool dma_free_from_pool(void *start, size_t size)
-> +{
-> +	if (!dma_in_atomic_pool(start, size))
-> +		return false;
-> +	gen_pool_free(atomic_pool, (unsigned long)start, size);
-> +	return true;
-> +}
-> +
-> +void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> +		gfp_t flags, unsigned long attrs)
-> +{
-> +	struct page *page = NULL;
-> +	void *ret, *kaddr;
-> +
-> +	size = PAGE_ALIGN(size);
-> +
-> +	if (!gfpflags_allow_blocking(flags)) {
-> +		ret = dma_alloc_from_pool(size, &page, flags);
-> +		if (!ret)
-> +			return NULL;
-> +		*dma_handle = phys_to_dma(dev, page_to_phys(page));
-> +		return ret;
-> +	}
-> +
-> +	kaddr = dma_direct_alloc_pages(dev, size, dma_handle, flags, attrs);
-> +	if (!kaddr)
-> +		return NULL;
-> +	page = virt_to_page(kaddr);
-> +
-> +	/* remove any dirty cache lines on the kernel alias */
-> +	arch_dma_prep_coherent(page, size);
-> +
-> +	/* create a coherent mapping */
-> +	ret = dma_common_contiguous_remap(page, size, VM_USERMAP,
-> +			arch_dma_mmap_pgprot(dev, PAGE_KERNEL, attrs),
-> +			__builtin_return_address(0));
-> +	if (!ret)
-> +		dma_direct_free_pages(dev, size, kaddr, *dma_handle, attrs);
-> +	return ret;
-> +}
-> +
-> +void arch_dma_free(struct device *dev, size_t size, void *vaddr,
-> +		dma_addr_t dma_handle, unsigned long attrs)
-> +{
-> +	if (!dma_free_from_pool(vaddr, PAGE_ALIGN(size))) {
-> +		void *kaddr = phys_to_virt(dma_to_phys(dev, dma_handle));
-> +
-> +		vunmap(vaddr);
-> +		dma_direct_free_pages(dev, size, kaddr, dma_handle, attrs);
-> +	}
-> +}
-> +
-> +long arch_dma_coherent_to_pfn(struct device *dev, void *cpu_addr,
-> +		dma_addr_t dma_addr)
-> +{
-> +	return __phys_to_pfn(dma_to_phys(dev, dma_addr));
-> +}
-> +#endif /* CONFIG_DMA_DIRECT_REMAP */
-> -- 
-> 2.19.1
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Further looking at memory types, we have following -
+a) Normal uncached :- MAIR 0x44, inner non-cacheable,
+                      outer non-cacheable;
+b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
+                      outer read write-back non-transient;
+                      attribute setting for coherenet I/O devices.
 
+and, for non-coherent i/o devices that can allocate in system cache
+another type gets added -
+c) Normal sys-cached/non-inner-cached :-
+                      MAIR 0xf4, inner non-cacheable,
+                      outer read write-back non-transient
+
+So, CPU will automatically use the system cache for memory marked as
+normal cached. The normal sys-cached is downgraded to normal non-cached
+memory for CPUs.
+Coherent I/O devices can use system cache by marking the memory as
+normal cached.
+Non-coherent I/O devices, to use system cache, should mark the memory as
+normal sys-cached in page tables.
+
+This change is a realisation of following changes
+from downstream msm-4.9:
+iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT[2]
+iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[3]
+
+[1] https://patchwork.kernel.org/patch/10302791/
+[2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
+[3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
+
+Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+
+Changes since v1:
+ - Addressed Tomasz's comments for basing the change on
+   "NO_INNER_CACHE" concept for non-coherent I/O devices
+   rather than capturing "SYS_CACHE". This is to indicate
+   clearly the intent of non-coherent I/O devices that
+   can't access inner caches.
+
+ drivers/iommu/arm-smmu.c       | 15 +++++++++++++++
+ drivers/iommu/dma-iommu.c      |  3 +++
+ drivers/iommu/io-pgtable-arm.c | 22 +++++++++++++++++-----
+ drivers/iommu/io-pgtable.h     |  5 +++++
+ include/linux/iommu.h          |  3 +++
+ 5 files changed, 43 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index ba18d89d4732..047f7ff95b0d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -255,6 +255,7 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+ 	struct iommu_domain		domain;
++	bool				no_inner_cache;
+ };
+ 
+ struct arm_smmu_option_prop {
+@@ -897,6 +898,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu_domain->non_strict)
+ 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+ 
++	if (smmu_domain->no_inner_cache)
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NO_IC;
++
+ 	smmu_domain->smmu = smmu;
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops) {
+@@ -1579,6 +1583,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ 		case DOMAIN_ATTR_NESTING:
+ 			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+ 			return 0;
++		case DOMAIN_ATTR_NO_IC:
++			*((int *)data) = smmu_domain->no_inner_cache;
++			return 0;
+ 		default:
+ 			return -ENODEV;
+ 		}
+@@ -1619,6 +1626,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 			else
+ 				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 			break;
++		case DOMAIN_ATTR_NO_IC:
++			if (smmu_domain->smmu) {
++				ret = -EPERM;
++				goto out_unlock;
++			}
++			if (*((int *)data))
++				smmu_domain->no_inner_cache = true;
++			break;
+ 		default:
+ 			ret = -ENODEV;
+ 		}
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d1b04753b204..87c3d59c4a6c 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -354,6 +354,9 @@ int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
+ {
+ 	int prot = coherent ? IOMMU_CACHE : 0;
+ 
++	if (!coherent && (attrs & DOMAIN_ATTR_NO_IC))
++		prot |= IOMMU_NO_IC;
++
+ 	if (attrs & DMA_ATTR_PRIVILEGED)
+ 		prot |= IOMMU_PRIV;
+ 
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 237cacd4a62b..815b86067bcc 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -168,10 +168,12 @@
+ #define ARM_LPAE_MAIR_ATTR_MASK		0xff
+ #define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
+ #define ARM_LPAE_MAIR_ATTR_NC		0x44
++#define ARM_LPAE_MAIR_ATTR_NO_IC	0xf4
+ #define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
+ #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
+ #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
+ #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
++#define ARM_LPAE_MAIR_ATTR_IDX_NO_IC	3
+ 
+ /* IOPTE accessors */
+ #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+@@ -443,6 +445,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 		else if (prot & IOMMU_CACHE)
+ 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+ 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
++		else if (prot & IOMMU_NO_IC)
++			pte |= (ARM_LPAE_MAIR_ATTR_IDX_NO_IC
++				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+ 	} else {
+ 		pte = ARM_LPAE_PTE_HAP_FAULT;
+ 		if (prot & IOMMU_READ)
+@@ -780,7 +785,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	struct arm_lpae_io_pgtable *data;
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+-			    IO_PGTABLE_QUIRK_NON_STRICT))
++			    IO_PGTABLE_QUIRK_NON_STRICT |
++			    IO_PGTABLE_QUIRK_NO_IC))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -788,9 +794,13 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 		return NULL;
+ 
+ 	/* TCR */
+-	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+-	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+-	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
++	if (cfg->quirks & IO_PGTABLE_QUIRK_NO_IC)
++		reg = ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT;
++	else
++		reg = ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT;
++
++	reg |= (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
++	       (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+ 
+ 	switch (ARM_LPAE_GRANULE(data)) {
+ 	case SZ_4K:
+@@ -842,7 +852,9 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	      (ARM_LPAE_MAIR_ATTR_WBRWA
+ 	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
+ 	      (ARM_LPAE_MAIR_ATTR_DEVICE
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV));
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
++	      (ARM_LPAE_MAIR_ATTR_NO_IC
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_NO_IC));
+ 
+ 	cfg->arm_lpae_s1_cfg.mair[0] = reg;
+ 	cfg->arm_lpae_s1_cfg.mair[1] = 0;
+diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+index 47d5ae559329..450a4adf9052 100644
+--- a/drivers/iommu/io-pgtable.h
++++ b/drivers/iommu/io-pgtable.h
+@@ -75,6 +75,10 @@ struct io_pgtable_cfg {
+ 	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
+ 	 *	on unmap, for DMA domains using the flush queue mechanism for
+ 	 *	delayed invalidation.
++	 *
++	 * IO_PGTABLE_QUIRK_NO_IC: Override the attributes to use only the outer
++	 *      cache, and not inner cache for non-coherent devices doing normal
++	 *      sys-cached memory.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+@@ -82,6 +86,7 @@ struct io_pgtable_cfg {
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
+ 	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
+ 	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
++	#define IO_PGTABLE_QUIRK_NO_IC		BIT(6)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a1d28f42cb77..c30ee7f8d82d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -41,6 +41,8 @@
+  * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
++/* Don't use inner caches */
++#define IOMMU_NO_IC	(1 << 6)
+ 
+ struct iommu_ops;
+ struct iommu_group;
+@@ -125,6 +127,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
++	DOMAIN_ATTR_NO_IC,
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
 -- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
