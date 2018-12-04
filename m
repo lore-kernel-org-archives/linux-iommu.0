@@ -1,73 +1,96 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 01/23] dma-mapping: provide a generic DMA_MAPPING_ERROR
-Date: Tue, 4 Dec 2018 16:41:34 +0000
-Message-ID: <653ca801-63a1-3c19-ee09-ade19fa2bbb8@arm.com>
-References: <20181130132231.16512-1-hch@lst.de>
- <20181130132231.16512-2-hch@lst.de>
+Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
+ pool
+Date: Tue, 4 Dec 2018 17:19:37 +0000
+Message-ID: <eccb5b60-b831-c4bd-6c61-4867296e1232@arm.com>
+References: <cover.1543856576.git.robin.murphy@arm.com>
+ <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+ <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
+ <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
+ <58fb3579-d101-db2b-c63a-609ddd651932@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181130132231.16512-2-hch@lst.de>
+In-Reply-To: <58fb3579-d101-db2b-c63a-609ddd651932@huawei.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, x86@kernel.org, linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
+To: John Garry <john.garry@huawei.com>, hch@lst.de
+Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/11/2018 13:22, Christoph Hellwig wrote:
-> Error handling of the dma_map_single and dma_map_page APIs is a little
-> problematic at the moment, in that we use different encodings in the
-> returned dma_addr_t to indicate an error.  That means we require an
-> additional indirect call to figure out if a dma mapping call returned
-> an error, and a lot of boilerplate code to implement these semantics.
+On 04/12/2018 16:30, John Garry wrote:
+> On 04/12/2018 13:11, Robin Murphy wrote:
+>> Hi John,
+>>
+>> On 03/12/2018 18:23, John Garry wrote:
+>>> On 03/12/2018 17:28, Robin Murphy wrote:
+>>>> Certain drivers such as large multi-queue network adapters can use 
+>>>> pools
+>>>> of mapped DMA buffers larger than the default dma_debug_entry pool of
+>>>> 65536 entries, with the result that merely probing such a device can
+>>>> cause DMA debug to disable itself during boot unless explicitly 
+>>>> given an
+>>>> appropriate "dma_debug_entries=..." option.
+>>>>
+>>>> Developers trying to debug some other driver on such a system may 
+>>>> not be
+>>>> immediately aware of this, and at worst it can hide bugs if they 
+>>>> fail to
+>>>> realise that dma-debug has already disabled itself unexpectedly by the
+>>>> time the code of interest gets to run. Even once they do realise, it 
+>>>> can
+>>>> be a bit of a pain to emprirically determine a suitable number of
+>>>> preallocated entries to configure without massively over-allocating.
+>>>>
+>>>> There's really no need for such a static limit, though, since we can
+>>>> quite easily expand the pool at runtime in those rare cases that the
+>>>> preallocated entries are insufficient, which is arguably the least
+>>>> surprising and most useful behaviour.
+>>>
+>>> Hi Robin,
+>>>
+>>> Do you have an idea on shrinking the pool again when the culprit
+>>> driver is removed, i.e. we have so many unused debug entries now
+>>> available?
+>>
+>> I honestly don't believe it's worth the complication. This is a
+>> development feature with significant overheads already, so there's not
+>> an awful lot to gain by trying to optimise memory usage. If a system can
+>> ever load a driver that makes hundreds of thousands of simultaneous
+>> mappings, it can almost certainly spare 20-odd megabytes of RAM for the
+>> corresponding debug entries in perpetuity. Sure, it does mean you'd need
+>> to reboot to recover memory from a major leak, but that's mostly true of
+>> the current behaviour too, and rebooting during driver development is
+>> hardly an unacceptable inconvenience.
+>>
 > 
-> Instead return the maximum addressable value as the error.  As long
-> as we don't allow mapping single-byte ranges with single-byte alignment
-> this value can never be a valid return.  Additionaly if drivers do
-> not check the return value from the dma_map* routines this values means
-> they will generally not be pointed to actual memory.
+> ok, I just thought that it would not be too difficult to implement this 
+> on the dma entry free path.
+
+True, in the current code it wouldn't be all that hard, but it feels 
+more worthwhile to optimise for allocation rather than freeing, and as 
+soon as we start allocating memory for multiple entries at once, trying 
+to free anything becomes extremely challenging.
+
+>> In fact, having got this far in, what I'd quite like to do is to get rid
+>> of dma_debug_resize_entries() such that we never need to free things at
+>> all, since then we could allocate whole pages as blocks of entries to
+>> save on masses of individual slab allocations.
+>>
 > 
-> Once the default value is added here we can start removing the
-> various mapping_error methods and just rely on this generic check.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   include/linux/dma-mapping.h | 6 ++++++
->   1 file changed, 6 insertions(+)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 0f81c713f6e9..46bd612d929e 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -133,6 +133,8 @@ struct dma_map_ops {
->   	u64 (*get_required_mask)(struct device *dev);
->   };
->   
-> +#define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
-> +
->   extern const struct dma_map_ops dma_direct_ops;
->   extern const struct dma_map_ops dma_virt_ops;
->   
-> @@ -576,6 +578,10 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
->   	const struct dma_map_ops *ops = get_dma_ops(dev);
->   
->   	debug_dma_mapping_error(dev, dma_addr);
-> +
-> +	if (dma_addr == DMA_MAPPING_ERROR)
-> +		return 1;
-> +
->   	if (ops->mapping_error)
->   		return ops->mapping_error(dev, dma_addr);
->   	return 0;
+> On a related topic, is it possible for the user to learn the total 
+> entries created at a given point in time? If not, could we add a file in 
+> the debugfs folder for this?
 
-I'd have been inclined to put the default check here, i.e.
+I did get as far as pondering that you effectively lose track of 
+utilisation once the low-water-mark of min_free_entries hits 0 and stays 
+there - AFAICS it should be sufficient to just expose nr_total_entries 
+as-is, since users can then calculate current and maximum occupancy 
+based on *_free_entries. Does that sound reasonable to you?
 
--	return 0
-+	return dma_addr == DMA_MAPPING_ERROR
+That also indirectly reminds me that this lot is documented in 
+DMA_API.txt, so I should be good and update that too...
 
-such that the callback retains full precedence and we don't have to deal 
-with the non-trivial removals immediately if it comes to it. Not that it 
-makes a vast difference though, so either way,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Cheers,
+Robin.
