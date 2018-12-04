@@ -1,165 +1,221 @@
-From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 1/9] mm: Introduce new vm_insert_range API
-Date: Tue, 4 Dec 2018 12:16:07 +0530
-Message-ID: <CAFqt6za-XWsskz4VDhUonSPBSbSWsSV_icMpL55-LUrA5MSEiA@mail.gmail.com>
-References: <20181202061944.GA3094@jordon-HP-15-Notebook-PC>
-	<20181202111313.GC6959@rapoport-lnx>
-	<CAFqt6zbvyaPF3tUA1-=RsfSM14p7Rx5NgQqAeW5-JUfd+NrJ2g@mail.gmail.com>
-	<20181203062222.GF6959@rapoport-lnx>
+From: Xu Zaibo <xuzaibo@huawei.com>
+Subject: Re: [PATCH v4 0/8] vfio/mdev: IOMMU aware mediated device
+Date: Tue, 4 Dec 2018 14:50:47 +0800
+Message-ID: <5C0623C7.3000808@huawei.com>
+References: <20181105073408.21815-1-baolu.lu@linux.intel.com>
+ <5C05F87D.4050206@huawei.com>
+ <9a1d0b6f-7363-495d-2f4b-5a1693fb3fd9@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181203062222.GF6959@rapoport-lnx>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Kyungmin
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <9a1d0b6f-7363-495d-2f4b-5a1693fb3fd9@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 3, 2018 at 11:52 AM Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org> wrote:
+Hi,
+>>
+>> Is this solution trying to support general user space processes who 
+>> are directly working on devices?
 >
-> On Mon, Dec 03, 2018 at 09:51:45AM +0530, Souptick Joarder wrote:
-> > Hi Mike,
-> >
-> > On Sun, Dec 2, 2018 at 4:43 PM Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org> wrote:
-> > >
-> > > On Sun, Dec 02, 2018 at 11:49:44AM +0530, Souptick Joarder wrote:
-> > > > Previouly drivers have their own way of mapping range of
-> > > > kernel pages/memory into user vma and this was done by
-> > > > invoking vm_insert_page() within a loop.
-> > > >
-> > > > As this pattern is common across different drivers, it can
-> > > > be generalized by creating a new function and use it across
-> > > > the drivers.
-> > > >
-> > > > vm_insert_range is the new API which will be used to map a
-> > > > range of kernel memory/pages to user vma.
-> > > >
-> > > > This API is tested by Heiko for Rockchip drm driver, on rk3188,
-> > > > rk3288, rk3328 and rk3399 with graphics.
-> > > >
-> > > > Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> > > > Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> > > > Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-> > > > ---
-> > > >  include/linux/mm_types.h |  3 +++
-> > > >  mm/memory.c              | 38 ++++++++++++++++++++++++++++++++++++++
-> > > >  mm/nommu.c               |  7 +++++++
-> > > >  3 files changed, 48 insertions(+)
-> > > >
-> > > > diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> > > > index 5ed8f62..15ae24f 100644
-> > > > --- a/include/linux/mm_types.h
-> > > > +++ b/include/linux/mm_types.h
-> > > > @@ -523,6 +523,9 @@ extern void tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
-> > > >  extern void tlb_finish_mmu(struct mmu_gather *tlb,
-> > > >                               unsigned long start, unsigned long end);
-> > > >
-> > > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > > +                     struct page **pages, unsigned long page_count);
-> > > > +
-> > >
-> > > This seem to belong to include/linux/mm.h, near vm_insert_page()
-> >
-> > Ok, I will change it. Apart from this change does it looks good ?
+> Yes, it is.
 >
-> With this change you can add
->
-> Reviewed-by: Mike Rapoport <rppt-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
 
-Thanks Mike.
+Okay. But I got another question. As I write a Crypto driver, could I 
+call 'mdev_register_device'?
+Or in other words, is 'mdev_register_device' acceptable for drivers of 
+Crypto?
 
++cc: Herbert Xu
+
+Thanks,
+Zaibo
+
+>>
+>>
+>> On 2018/11/5 15:34, Lu Baolu wrote:
+>>> Hi,
+>>>
+>>> The Mediate Device is a framework for fine-grained physical device
+>>> sharing across the isolated domains. Currently the mdev framework
+>>> is designed to be independent of the platform IOMMU support. As the
+>>> result, the DMA isolation relies on the mdev parent device in a
+>>> vendor specific way.
+>>>
+>>> There are several cases where a mediated device could be protected
+>>> and isolated by the platform IOMMU. For example, Intel vt-d rev3.0
+>>> [1] introduces a new translation mode called 'scalable mode', which
+>>> enables PASID-granular translations. The vt-d scalable mode is the
+>>> key ingredient for Scalable I/O Virtualization [2] [3] which allows
+>>> sharing a device in minimal possible granularity (ADI - Assignable
+>>> Device Interface).
+>>>
+>>> A mediated device backed by an ADI could be protected and isolated
+>>> by the IOMMU since 1) the parent device supports tagging an unique
+>>> PASID to all DMA traffic out of the mediated device; and 2) the DMA
+>>> translation unit (IOMMU) supports the PASID granular translation.
+>>> We can apply IOMMU protection and isolation to this kind of devices
+>>> just as what we are doing with an assignable PCI device.
+>>>
+>>> In order to distinguish the IOMMU-capable mediated devices from those
+>>> which still need to rely on parent devices, this patch set adds two
+>>> new members in struct mdev_device.
+>>>
+>>> * iommu_device
+>>>    - This, if set, indicates that the mediated device could
+>>>      be fully isolated and protected by IOMMU via attaching
+>>>      an iommu domain to this device. If empty, it indicates
+>>>      using vendor defined isolation.
+>>>
+>>> * iommu_domain
+>>>    - This is a place holder for an iommu domain. A domain
+>>>      could be store here for later use once it has been
+>>>      attached to the iommu_device of this mdev.
+>>>
+>>> Below helpers are added to set and get above iommu device
+>>> and iommu domain pointers in mdev core implementation.
+>>>
+>>> * mdev_set/get_iommu_device(dev, iommu_device)
+>>>    - Set or get the iommu device which represents this mdev
+>>>      in IOMMU's device scope. Drivers don't need to set the
+>>>      iommu device if it uses vendor defined isolation.
+>>>
+>>> * mdev_set/get_iommu_domain(domain)
+>>>    - A iommu domain which has been attached to the iommu
+>>>      device in order to protect and isolate the mediated
+>>>      device will be kept in the mdev data structure and
+>>>      could be retrieved later.
+>>>
+>>> The mdev parent device driver could opt-in that the mdev could be
+>>> fully isolated and protected by the IOMMU when the mdev is being
+>>> created by invoking mdev_set_iommu_device() in its @create().
+>>>
+>>> In the vfio_iommu_type1_attach_group(), a domain allocated through
+>>> iommu_domain_alloc() will be attached to the mdev iommu device if
+>>> an iommu device has been set. Otherwise, the dummy external domain
+>>> will be used and all the DMA isolation and protection are routed to
+>>> parent driver as the result.
+>>>
+>>> On IOMMU side, a basic requirement is allowing to attach multiple
+>>> domains to a PCI device if the device advertises the capability
+>>> and the IOMMU hardware supports finer granularity translations than
+>>> the normal PCI Source ID based translation.
+>>>
+>>> As the result, a PCI device could work in two modes: normal mode
+>>> and auxiliary mode. In the normal mode, a pci device could be
+>>> isolated in the Source ID granularity; the pci device itself could
+>>> be assigned to a user application by attaching a single domain
+>>> to it. In the auxiliary mode, a pci device could be isolated in
+>>> finer granularity, hence subsets of the device could be assigned
+>>> to different user level application by attaching a different domain
+>>> to each subset.
+>>>
+>>> The device driver is able to switch between above two modes with
+>>> below interfaces:
+>>>
+>>> * iommu_get_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_CAPABILITY)
+>>>    - Represents the ability of supporting multiple domains
+>>>      per device.
+>>>
+>>> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_ENABLE)
+>>>    - Enable the multiple domains capability for the device
+>>>      referenced by @dev.
+>>>
+>>> * iommu_set_dev_attr(dev, IOMMU_DEV_ATTR_AUXD_DISABLE)
+>>>    - Disable the multiple domains capability for the device
+>>>      referenced by @dev.
+>>>
+>>> * iommu_domain_get_attr(domain, DOMAIN_ATTR_AUXD_ID)
+>>>    - Return ID used for finer-granularity DMA translation.
+>>>
+>>> * iommu_attach_device_aux(domain, dev)
+>>>    - Attach a domain to the device in the auxiliary mode.
+>>>
+>>> * iommu_detach_device_aux(domain, dev)
+>>>    - Detach the aux domain from device.
+>>>
+>>> In order for the ease of discussion, sometimes we call "a domain in
+>>> auxiliary mode' or simply 'an auxiliary domain' when a domain is
+>>> attached to a device for finer granularity translations. But we need
+>>> to keep in mind that this doesn't mean there is a differnt domain
+>>> type. A same domain could be bound to a device for Source ID based
+>>> translation, and bound to another device for finer granularity
+>>> translation at the same time.
+>>>
+>>> This patch series extends both IOMMU and vfio components to support
+>>> mdev device passing through when it could be isolated and protected
+>>> by the IOMMU units. The first part of this series (PATCH 1/08~5/08)
+>>> adds the interfaces and implementation of the multiple domains per
+>>> device. The second part (PATCH 6/08~8/08) adds the iommu device
+>>> attribute to each mdev, determines isolation type according to the
+>>> existence of an iommu device when attaching group in vfio type1 iommu
+>>> module, and attaches the domain to iommu aware mediated devices.
+>>>
+>>> This patch series depends on a patch set posted here [4] for discussion
+>>> which added scalable mode support in Intel IOMMU driver.
+>>>
+>>> References:
+>>> [1] 
+>>> https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification 
+>>>
+>>> [2] 
+>>> https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification 
+>>>
+>>> [3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+>>> [4] https://lkml.org/lkml/2018/11/5/136
+>>>
+>>> Best regards,
+>>> Lu Baolu
+>>>
+>>> Change log:
+>>>    v3->v4:
+>>>    - Use aux domain specific interfaces for domain attach and detach.
+>>>    - Rebase all patches to 4.20-rc1.
+>>>
+>>>    v2->v3:
+>>>    - Remove domain type enum and use a pointer on mdev_device instead.
+>>>    - Add a generic interface for getting/setting per device iommu
+>>>      attributions. And use it for query aux domain capability, enable
+>>>      aux domain and disable aux domain purpose.
+>>>    - Reuse iommu_domain_get_attr() to retrieve the id in a aux domain.
+>>>    - We discussed the impact of the default domain implementation
+>>>      on reusing iommu_at(de)tach_device() interfaces. We agreed
+>>>      that reusing iommu_at(de)tach_device() interfaces is the right
+>>>      direction and we could tweak the code to remove the impact.
+>>>      https://www.spinics.net/lists/kvm/msg175285.html
+>>>    - Removed the RFC tag since no objections received.
+>>>    - This patch has been submitted separately.
+>>>      https://www.spinics.net/lists/kvm/msg173936.html
+>>>
+>>>    v1->v2:
+>>>    - Rewrite the patches with the concept of auxiliary domains.
+>>>
+>>> Lu Baolu (8):
+>>>    iommu: Add APIs for multiple domains per device
+>>>    iommu/vt-d: Add multiple domains per device query
+>>>    iommu/vt-d: Enable/disable multiple domains per device
+>>>    iommu/vt-d: Attach/detach domains in auxiliary mode
+>>>    iommu/vt-d: Return ID associated with an auxiliary domain
+>>>    vfio/mdev: Add iommu place holders in mdev_device
+>>>    vfio/type1: Add domain at(de)taching group helpers
+>>>    vfio/type1: Handle different mdev isolation type
+>>>
+>>>   drivers/iommu/intel-iommu.c      | 315 
+>>> ++++++++++++++++++++++++++++---
+>>>   drivers/iommu/iommu.c            |  52 +++++
+>>>   drivers/vfio/mdev/mdev_core.c    |  36 ++++
+>>>   drivers/vfio/mdev/mdev_private.h |   2 +
+>>>   drivers/vfio/vfio_iommu_type1.c  | 162 ++++++++++++++--
+>>>   include/linux/intel-iommu.h      |  11 ++
+>>>   include/linux/iommu.h            |  52 +++++
+>>>   include/linux/mdev.h             |  23 +++
+>>>   8 files changed, 618 insertions(+), 35 deletions(-)
+>>>
+>>
+>>
+>>
 >
-> > >
-> > > >  static inline void init_tlb_flush_pending(struct mm_struct *mm)
-> > > >  {
-> > > >       atomic_set(&mm->tlb_flush_pending, 0);
-> > > > diff --git a/mm/memory.c b/mm/memory.c
-> > > > index 15c417e..84ea46c 100644
-> > > > --- a/mm/memory.c
-> > > > +++ b/mm/memory.c
-> > > > @@ -1478,6 +1478,44 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
-> > > >  }
-> > > >
-> > > >  /**
-> > > > + * vm_insert_range - insert range of kernel pages into user vma
-> > > > + * @vma: user vma to map to
-> > > > + * @addr: target user address of this page
-> > > > + * @pages: pointer to array of source kernel pages
-> > > > + * @page_count: number of pages need to insert into user vma
-> > > > + *
-> > > > + * This allows drivers to insert range of kernel pages they've allocated
-> > > > + * into a user vma. This is a generic function which drivers can use
-> > > > + * rather than using their own way of mapping range of kernel pages into
-> > > > + * user vma.
-> > > > + *
-> > > > + * If we fail to insert any page into the vma, the function will return
-> > > > + * immediately leaving any previously-inserted pages present.  Callers
-> > > > + * from the mmap handler may immediately return the error as their caller
-> > > > + * will destroy the vma, removing any successfully-inserted pages. Other
-> > > > + * callers should make their own arrangements for calling unmap_region().
-> > > > + *
-> > > > + * Context: Process context. Called by mmap handlers.
-> > > > + * Return: 0 on success and error code otherwise
-> > > > + */
-> > > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > > +                     struct page **pages, unsigned long page_count)
-> > > > +{
-> > > > +     unsigned long uaddr = addr;
-> > > > +     int ret = 0, i;
-> > > > +
-> > > > +     for (i = 0; i < page_count; i++) {
-> > > > +             ret = vm_insert_page(vma, uaddr, pages[i]);
-> > > > +             if (ret < 0)
-> > > > +                     return ret;
-> > > > +             uaddr += PAGE_SIZE;
-> > > > +     }
-> > > > +
-> > > > +     return ret;
-> > > > +}
-> > > > +EXPORT_SYMBOL(vm_insert_range);
-> > > > +
-> > > > +/**
-> > > >   * vm_insert_page - insert single page into user vma
-> > > >   * @vma: user vma to map to
-> > > >   * @addr: target user address of this page
-> > > > diff --git a/mm/nommu.c b/mm/nommu.c
-> > > > index 749276b..d6ef5c7 100644
-> > > > --- a/mm/nommu.c
-> > > > +++ b/mm/nommu.c
-> > > > @@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
-> > > >  }
-> > > >  EXPORT_SYMBOL(vm_insert_page);
-> > > >
-> > > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > > +                     struct page **pages, unsigned long page_count)
-> > > > +{
-> > > > +     return -EINVAL;
-> > > > +}
-> > > > +EXPORT_SYMBOL(vm_insert_range);
-> > > > +
-> > > >  /*
-> > > >   *  sys_brk() for the most part doesn't need the global kernel
-> > > >   *  lock, except when an application is doing something nasty
-> > > > --
-> > > > 1.9.1
-> > > >
-> > >
-> > > --
-> > > Sincerely yours,
-> > > Mike.
-> > >
-> >
->
-> --
-> Sincerely yours,
-> Mike.
+> .
 >
