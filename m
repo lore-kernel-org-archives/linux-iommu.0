@@ -1,72 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 4/5] powerpc/iommu: Use device_iommu_mapped()
-Date: Tue,  4 Dec 2018 18:25:03 +0100
-Message-ID: <20181204172504.19708-5-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 3/5] ACPI/IORT: Use device_iommu_mapped()
+Date: Tue,  4 Dec 2018 18:25:02 +0100
+Message-ID: <20181204172504.19708-4-joro@8bytes.org>
 References: <20181204172504.19708-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181204172504.19708-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Russell Currey <ruscur@russell.cc>, Sam Bobroff <sbobroff@linux.ibm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181204172504.19708-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Use the new function to replace the open-coded iommu check.
+Replace the iommu-check with a proper and readable function
+call.
 
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Russell Currey <ruscur@russell.cc>
-Cc: Sam Bobroff <sbobroff@linux.ibm.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- arch/powerpc/kernel/eeh.c   | 2 +-
- arch/powerpc/kernel/iommu.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/acpi/arm64/iort.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/eeh.c b/arch/powerpc/kernel/eeh.c
-index 6cae6b56ffd6..23fe62f11486 100644
---- a/arch/powerpc/kernel/eeh.c
-+++ b/arch/powerpc/kernel/eeh.c
-@@ -1472,7 +1472,7 @@ static int dev_has_iommu_table(struct device *dev, void *data)
- 	if (!dev)
- 		return 0;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 70f4e80b9246..0125c8eb9e81 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -805,7 +805,7 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
+ {
+ 	int err = 0;
  
--	if (dev->iommu_group) {
-+	if (device_iommu_mapped(dev)) {
- 		*ppdev = pdev;
- 		return 1;
- 	}
-diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-index f0dc680e659a..48d58d1dcac2 100644
---- a/arch/powerpc/kernel/iommu.c
-+++ b/arch/powerpc/kernel/iommu.c
-@@ -1086,7 +1086,7 @@ int iommu_add_device(struct device *dev)
- 	if (!device_is_registered(dev))
- 		return -ENOENT;
+-	if (ops->add_device && dev->bus && !dev->iommu_group)
++	if (ops->add_device && dev->bus && !device_iommu_mapped(dev))
+ 		err = ops->add_device(dev);
  
--	if (dev->iommu_group) {
-+	if (device_iommu_mapped(dev)) {
- 		pr_debug("%s: Skipping device %s with iommu group %d\n",
- 			 __func__, dev_name(dev),
- 			 iommu_group_id(dev->iommu_group));
-@@ -1129,7 +1129,7 @@ void iommu_del_device(struct device *dev)
- 	 * and we needn't detach them from the associated
- 	 * IOMMU groups
- 	 */
--	if (!dev->iommu_group) {
-+	if (!device_iommu_mapped(dev)) {
- 		pr_debug("iommu_tce: skipping device %s with no tbl\n",
- 			 dev_name(dev));
- 		return;
-@@ -1148,7 +1148,7 @@ static int tce_iommu_bus_notifier(struct notifier_block *nb,
-         case BUS_NOTIFY_ADD_DEVICE:
-                 return iommu_add_device(dev);
-         case BUS_NOTIFY_DEL_DEVICE:
--                if (dev->iommu_group)
-+                if (device_iommu_mapped(dev))
-                         iommu_del_device(dev);
-                 return 0;
-         default:
+ 	return err;
 -- 
 2.17.1
