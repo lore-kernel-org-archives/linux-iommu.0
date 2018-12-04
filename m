@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 3/5] dma-direct: improve addressability error reporting
-Date: Tue,  4 Dec 2018 08:16:43 -0800
-Message-ID: <20181204161645.8038-4-hch@lst.de>
+Subject: [PATCH 4/5] dma-direct: use dma_direct_map_page to implement dma_direct_map_sg
+Date: Tue,  4 Dec 2018 08:16:44 -0800
+Message-ID: <20181204161645.8038-5-hch@lst.de>
 References: <20181204161645.8038-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,82 +12,55 @@ To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.c
 Cc: Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, linux-ia64@vger.kernel.org, iommu@lists.linux-foundation.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Only report report a DMA addressability report once to avoid spewing the
-kernel log with repeated message.  Also provide a stack trace to make it
-easy to find the actual caller that caused the problem.
-
-Last but not least move the actual check into the fast path and only
-leave the error reporting in a helper.
+No need to duplicate the mapping logic.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/direct.c | 36 +++++++++++++++---------------------
- 1 file changed, 15 insertions(+), 21 deletions(-)
+ kernel/dma/direct.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 308f88a750c8..edb24f94ea1e 100644
+index edb24f94ea1e..d45306473c90 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -30,27 +30,16 @@ static inline bool force_dma_unencrypted(void)
- 	return sev_active();
+@@ -217,6 +217,7 @@ static void dma_direct_sync_single_for_device(struct device *dev,
+ 	arch_sync_dma_for_device(dev, dma_to_phys(dev, addr), size, dir);
  }
  
--static bool
--check_addr(struct device *dev, dma_addr_t dma_addr, size_t size,
--		const char *caller)
-+static void report_addr(struct device *dev, dma_addr_t dma_addr, size_t size)
++#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE)
+ static void dma_direct_sync_sg_for_device(struct device *dev,
+ 		struct scatterlist *sgl, int nents, enum dma_data_direction dir)
  {
--	if (unlikely(dev && !dma_capable(dev, dma_addr, size))) {
--		if (!dev->dma_mask) {
--			dev_err(dev,
--				"%s: call on device without dma_mask\n",
--				caller);
--			return false;
--		}
--
--		if (*dev->dma_mask >= DMA_BIT_MASK(32) || dev->bus_dma_mask) {
--			dev_err(dev,
--				"%s: overflow %pad+%zu of device mask %llx bus mask %llx\n",
--				caller, &dma_addr, size,
--				*dev->dma_mask, dev->bus_dma_mask);
--		}
--		return false;
-+	if (!dev->dma_mask) {
-+		dev_err_once(dev, "DMA map on device without dma_mask\n");
-+	} else if (*dev->dma_mask >= DMA_BIT_MASK(32) || dev->bus_dma_mask) {
-+		dev_err_once(dev,
-+			"overflow %pad+%zu of DMA mask %llx bus mask %llx\n",
-+			&dma_addr, size, *dev->dma_mask, dev->bus_dma_mask);
- 	}
--	return true;
-+	WARN_ON_ONCE(1);
+@@ -229,6 +230,7 @@ static void dma_direct_sync_sg_for_device(struct device *dev,
+ 	for_each_sg(sgl, sg, nents, i)
+ 		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
  }
++#endif
  
- static inline dma_addr_t phys_to_dma_direct(struct device *dev,
-@@ -288,8 +277,10 @@ dma_addr_t dma_direct_map_page(struct device *dev, struct page *page,
- 	phys_addr_t phys = page_to_phys(page) + offset;
- 	dma_addr_t dma_addr = phys_to_dma(dev, phys);
+ #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
+     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+@@ -294,19 +296,13 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 	struct scatterlist *sg;
  
--	if (!check_addr(dev, dma_addr, size, __func__))
-+	if (unlikely(dev && !dma_capable(dev, dma_addr, size))) {
-+		report_addr(dev, dma_addr, size);
- 		return DMA_MAPPING_ERROR;
-+	}
- 
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
- 		dma_direct_sync_single_for_device(dev, dma_addr, size, dir);
-@@ -306,8 +297,11 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
- 		BUG_ON(!sg_page(sg));
- 
- 		sg_dma_address(sg) = phys_to_dma(dev, sg_phys(sg));
--		if (!check_addr(dev, sg_dma_address(sg), sg->length, __func__))
-+		if (unlikely(dev && !dma_capable(dev, sg_dma_address(sg),
-+				sg->length))) {
-+			report_addr(dev, sg_dma_address(sg), sg->length);
+ 	for_each_sg(sgl, sg, nents, i) {
+-		BUG_ON(!sg_page(sg));
+-
+-		sg_dma_address(sg) = phys_to_dma(dev, sg_phys(sg));
+-		if (unlikely(dev && !dma_capable(dev, sg_dma_address(sg),
+-				sg->length))) {
+-			report_addr(dev, sg_dma_address(sg), sg->length);
++		sg->dma_address = dma_direct_map_page(dev, sg_page(sg),
++				sg->offset, sg->length, dir, attrs);
++		if (sg->dma_address == DMA_MAPPING_ERROR)
  			return 0;
-+		}
+-		}
  		sg_dma_len(sg) = sg->length;
  	}
+ 
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+-		dma_direct_sync_sg_for_device(dev, sgl, nents, dir);
+ 	return nents;
+ }
  
 -- 
 2.19.1
