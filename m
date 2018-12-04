@@ -1,61 +1,62 @@
-From: Joe Perches <joe@perches.com>
-Subject: Re: [PATCH 1/4] dma-debug: Use pr_fmt()
-Date: Tue, 04 Dec 2018 09:35:08 -0800
-Message-ID: <062cb874560a1850d7263a8023ce827f32105fc9.camel@perches.com>
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH 3/4] dma-debug: Dynamically expand the dma_debug_entry
+ pool
+Date: Tue, 4 Dec 2018 17:38:12 +0000
+Message-ID: <bba358b1-8117-dfbf-df8b-675e8bdbb90e@huawei.com>
 References: <cover.1543856576.git.robin.murphy@arm.com>
-         <7d37a451d27828d487d69c7a0662dbe46ece06ec.1543856576.git.robin.murphy@arm.com>
+ <f99ea022be92a99339404867bc925f4fbd2ee6c4.1543856576.git.robin.murphy@arm.com>
+ <a45fce07-3663-2a55-5b97-336002f21cdb@huawei.com>
+ <70336fdc-abe8-2cea-8d8c-170b4863d884@arm.com>
+ <58fb3579-d101-db2b-c63a-609ddd651932@huawei.com>
+ <eccb5b60-b831-c4bd-6c61-4867296e1232@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7d37a451d27828d487d69c7a0662dbe46ece06ec.1543856576.git.robin.murphy@arm.com>
+In-Reply-To: <eccb5b60-b831-c4bd-6c61-4867296e1232@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>, hch@lst.de
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
+Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2018-12-03 at 17:28 +0000, Robin Murphy wrote:
-> Use pr_fmt() to generate the "DMA-API: " prefix consistently. This
-> results in it being added to a couple of pr_*() messages which were
-> missing it before, and for the err_printk() calls moves it to the actual
-> start of the message instead of somewhere in the middle.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> I chose not to refactor the existing split strings for minimal churn here.
-> 
->  kernel/dma/debug.c | 74 ++++++++++++++++++++++++----------------------
->  1 file changed, 38 insertions(+), 36 deletions(-)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 231ca4628062..91b84140e4a5 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -17,6 +17,8 @@
->   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
->   */
->  
-> +#define pr_fmt(fmt)	"DMA-API: " fmt
-> +
->  #include <linux/sched/task_stack.h>
->  #include <linux/scatterlist.h>
->  #include <linux/dma-mapping.h>
-> @@ -234,7 +236,7 @@ static bool driver_filter(struct device *dev)
->  		error_count += 1;					\
->  		if (driver_filter(dev) &&				\
->  		    (show_all_errors || show_num_errors > 0)) {		\
-> -			WARN(1, "%s %s: " format,			\
-> +			WARN(1, pr_fmt("%s %s: ") format,		\
->  			     dev ? dev_driver_string(dev) : "NULL",	\
->  			     dev ? dev_name(dev) : "NULL", ## arg);	\
->  			dump_entry_trace(entry);			\
 
-I think converting this WARN to
+>
+>>> In fact, having got this far in, what I'd quite like to do is to get rid
+>>> of dma_debug_resize_entries() such that we never need to free things at
+>>> all, since then we could allocate whole pages as blocks of entries to
+>>> save on masses of individual slab allocations.
+>>>
+>>
+>> On a related topic, is it possible for the user to learn the total
+>> entries created at a given point in time? If not, could we add a file
+>> in the debugfs folder for this?
+>
 
-			dev_err(dev, format, ##__VA_ARGS__);
-			dump_stack();
+Hi Robin,
 
-would look better and be more intelligible.
+> I did get as far as pondering that you effectively lose track of
+> utilisation once the low-water-mark of min_free_entries hits 0 and stays
 
-Perhaps add a #define for dev_fmt if really necessary.
+I did try your patches and I noticed this, i.e I was hitting the point 
+at which we start to alloc more entries.
+
+> there - AFAICS it should be sufficient to just expose nr_total_entries
+> as-is, since users can then calculate current and maximum occupancy
+> based on *_free_entries. Does that sound reasonable to you?
+>
+
+Sounds ok. I am just interested to know roughly how many DMA buffers 
+we're using in our system.
+
+> That also indirectly reminds me that this lot is documented in
+> DMA_API.txt, so I should be good and update that too...
+
+Thanks,
+John
+
+>
+> Cheers,
+> Robin.
+>
+> .
+>
