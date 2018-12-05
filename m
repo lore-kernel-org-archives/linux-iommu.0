@@ -1,15 +1,24 @@
-From: Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] media: s5p-mfc: Fix memdev DMA configuration
-Date: Wed, 5 Dec 2018 07:31:02 -0200
-Message-ID: <20181205073102.310edc76@coco.lan>
-References: <CGME20180912164604epcas3p1ac72c0861ec182f50485959ac998ed52@epcas3p1.samsung.com>
-	<d485dc3698304403620d5ed92d066942a6b68cfd.1536770587.git.robin.murphy@arm.com>
-	<20180914121931eucas1p14292ee983fd9b4bb21968dffa303dde8~UQ3utL6mj2689726897eucas1p15@eucas1p1.samsung.com>
+From: Christian Zigotzky <chzigotzky-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Wed, 5 Dec 2018 10:44:05 +0100
+Message-ID: <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de>
+References: <87zhttfonk.fsf@concordia.ellerman.id.au>
+	<4d4e3cdd-d1a9-affe-0f63-45b8c342bbd6@xenosoft.de>
+	<20181129170351.GC27951@lst.de>
+	<d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
+	<20181130105346.GB26765@lst.de>
+	<8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de>
+	<20181130131056.GA5211@lst.de>
+	<25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de>
+	<c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de>
+	<58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de>
+	<20181204142426.GA2743@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20180914121931eucas1p14292ee983fd9b4bb21968dffa303dde8~UQ3utL6mj2689726897eucas1p15-MHMrYXj8g+pqW5MlFJXMulaTQe2KTcn/@public.gmane.org>
+In-Reply-To: <20181204142426.GA2743-jcswGhMUV9g@public.gmane.org>
+Content-Language: de-DE
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,85 +28,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Sylwester Nawrocki <snawrocki-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Smitha T Murthy <smitha.t-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, kamil-MZ2JYD8fkKLYtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jtp.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Darren Stevens <darren-YHtdit1eIT3easaKlIn9Lw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Julian Margetson <runaway-zqC88Q5qmK4@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Em Fri, 14 Sep 2018 14:19:29 +0200
-Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> escreveu:
+On 04 December 2018 at 3:24PM, Christoph Hellwig wrote:
+> On Tue, Dec 04, 2018 at 10:53:39AM +0100, Christian Zigotzky wrote:
+>> I don't know why this kernel doesn't recognize the hard disks connected to
+>> my physical P5020 board and why the onboard ethernet on my PASEMI board
+>> doesn't work. (dma_direct_map_page: overflow)
+> Do you know if this actually works for the baseline before my patches?
+> E.g. with commit 721c01ba8b46ddb5355bd6e6b3bbfdabfdf01e97 ?
+>
+Hi Christoph,
 
-> Hi Robin,
-> 
-> On 2018-09-12 18:45, Robin Murphy wrote:
-> > Having of_reserved_mem_device_init() forcibly reconfigure DMA for all
-> > callers, potentially overriding the work done by a bus-specific
-> > .dma_configure method earlier, is at best a bad idea and at worst
-> > actively harmful. If drivers really need virtual devices to own
-> > dma-coherent memory, they should explicitly configure those devices
-> > based on the appropriate firmware node as they create them.
-> >
-> > It looks like the only driver not passing in a proper OF platform device
-> > is s5p-mfc, so move the rogue of_dma_configure() call into that driver
-> > where it logically belongs.
-> >
-> > CC: Smitha T Murthy <smitha.t-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> > CC: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>  
-> 
-> Right, after recent cleanup dma ops initialization, MFC driver is
-> a better place for calling of_dma_configure() on virtual devices.
-> 
-> Reviewed-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Thanks for your reply. I undid all dma mapping commits with the 
+following command:
 
-This patch seems to fit better via OF/DT tree. Not sure if it was
-merged there yet. In any case:
+git checkout 721c01ba8b46ddb5355bd6e6b3bbfdabfdf01e97
 
-Acked-by: Mauro Carvalho Chehab <mchehab+samsung-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+After that I compiled the kernels with this code for my P5020 board 
+(Cyrus) and for my PASEMI board (Nemo) today.
 
-> 
-> > ---
-> >   drivers/media/platform/s5p-mfc/s5p_mfc.c | 7 +++++++
-> >   drivers/of/of_reserved_mem.c             | 4 ----
-> >   2 files changed, 7 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc.c b/drivers/media/platform/s5p-mfc/s5p_mfc.c
-> > index 927a1235408d..77eb4a4511c1 100644
-> > --- a/drivers/media/platform/s5p-mfc/s5p_mfc.c
-> > +++ b/drivers/media/platform/s5p-mfc/s5p_mfc.c
-> > @@ -1094,6 +1094,13 @@ static struct device *s5p_mfc_alloc_memdev(struct device *dev,
-> >   	child->dma_mask = dev->dma_mask;
-> >   	child->release = s5p_mfc_memdev_release;
-> >   
-> > +	/*
-> > +	 * The memdevs are not proper OF platform devices, so in order for them
-> > +	 * to be treated as valid DMA masters we need a bit of a hack to force
-> > +	 * them to inherit the MFC node's DMA configuration.
-> > +	 */
-> > +	of_dma_configure(child, dev->of_node, true);
-> > +
-> >   	if (device_add(child) == 0) {
-> >   		ret = of_reserved_mem_device_init_by_idx(child, dev->of_node,
-> >   							 idx);
-> > diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> > index 895c83e0c7b6..4ef6f4485335 100644
-> > --- a/drivers/of/of_reserved_mem.c
-> > +++ b/drivers/of/of_reserved_mem.c
-> > @@ -350,10 +350,6 @@ int of_reserved_mem_device_init_by_idx(struct device *dev,
-> >   		mutex_lock(&of_rmem_assigned_device_mutex);
-> >   		list_add(&rd->list, &of_rmem_assigned_device_list);
-> >   		mutex_unlock(&of_rmem_assigned_device_mutex);
-> > -		/* ensure that dma_ops is set for virtual devices
-> > -		 * using reserved memory
-> > -		 */
-> > -		of_dma_configure(dev, np, true);
-> >   
-> >   		dev_info(dev, "assigned reserved memory node %s\n", rmem->name);
-> >   	} else {  
-> 
-> Best regards
+Result: PASEMI onboard ethernet works again and the P5020 board boots.
 
+It seems the dma mapping commits are the problem.
 
+@All
+Could you please test Christoph's kernel on your PASEMI and NXP boards? 
+Download:
+
+'git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.5 a'
 
 Thanks,
-Mauro
+Christian
