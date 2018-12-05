@@ -1,124 +1,48 @@
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: Re: [PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE
-Date: Wed, 5 Dec 2018 17:01:17 +0530
-Message-ID: <d58f8b38-660c-7673-4466-6651ad32eada@arm.com>
-References: <1543235202-9075-1-git-send-email-anshuman.khandual@arm.com>
- <a9082610ae6d99d988f7cc22a29d8474726a12e7.camel@v3.sk>
+From: Michal Hocko <mhocko@kernel.org>
+Subject: Re: [PATCH v4 2/3] mm: Add support for kmem caches in DMA32 zone
+Date: Wed, 5 Dec 2018 12:37:22 +0100
+Message-ID: <20181205113722.GG1286@dhcp22.suse.cz>
+References: <20181205054828.183476-1-drinkcat@chromium.org>
+ <20181205054828.183476-3-drinkcat@chromium.org>
+ <20181205095557.GE1286@dhcp22.suse.cz>
+ <CANMq1KCnpSUKoz83LcEgAkhCi8QVPH715xtgdQD23r-tYusrPw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a9082610ae6d99d988f7cc22a29d8474726a12e7.camel@v3.sk>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <CANMq1KCnpSUKoz83LcEgAkhCi8QVPH715xtgdQD23r-tYusrPw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lubomir Rintel <lkundrak@v3.sk>, linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 12/05/2018 02:56 AM, Lubomir Rintel wrote:
-> On Mon, 2018-11-26 at 17:56 +0530, Anshuman Khandual wrote:
->> At present there are multiple places where invalid node number is encoded
->> as -1. Even though implicitly understood it is always better to have macros
->> in there. Replace these open encodings for an invalid node number with the
->> global macro NUMA_NO_NODE. This helps remove NUMA related assumptions like
->> 'invalid node' from various places redirecting them to a common definition.
->>
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->> Changes in V2:
->>
->> - Added inclusion of 'numa.h' header at various places per Andrew
->> - Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
->>
->> Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
->>
->> - Dropped OCFS2 changes per Joseph
->> - Dropped media/video drivers changes per Hans
->>
->> RFC - https://patchwork.kernel.org/patch/10678035/
->>
->> Build tested this with multiple cross compiler options like alpha, sparc,
->> arm64, x86, powerpc, powerpc64le etc with their default config which might
->> not have compiled tested all driver related changes. I will appreciate
->> folks giving this a test in their respective build environment.
->>
->> All these places for replacement were found by running the following grep
->> patterns on the entire kernel code. Please let me know if this might have
->> missed some instances. This might also have replaced some false positives.
->> I will appreciate suggestions, inputs and review.
->>
->> 1. git grep "nid == -1"
->> 2. git grep "node == -1"
->> 3. git grep "nid = -1"
->> 4. git grep "node = -1"
->>
->>  arch/alpha/include/asm/topology.h             |  3 ++-
->>  arch/ia64/kernel/numa.c                       |  2 +-
->>  arch/ia64/mm/discontig.c                      |  6 +++---
->>  arch/ia64/sn/kernel/io_common.c               |  3 ++-
->>  arch/powerpc/include/asm/pci-bridge.h         |  3 ++-
->>  arch/powerpc/kernel/paca.c                    |  3 ++-
->>  arch/powerpc/kernel/pci-common.c              |  3 ++-
->>  arch/powerpc/mm/numa.c                        | 14 +++++++-------
->>  arch/powerpc/platforms/powernv/memtrace.c     |  5 +++--
->>  arch/sparc/kernel/auxio_32.c                  |  3 ++-
->>  arch/sparc/kernel/pci_fire.c                  |  3 ++-
->>  arch/sparc/kernel/pci_schizo.c                |  3 ++-
->>  arch/sparc/kernel/pcic.c                      |  7 ++++---
->>  arch/sparc/kernel/psycho_common.c             |  3 ++-
->>  arch/sparc/kernel/sbus.c                      |  3 ++-
->>  arch/sparc/mm/init_64.c                       |  6 +++---
->>  arch/sparc/prom/init_32.c                     |  3 ++-
->>  arch/sparc/prom/init_64.c                     |  5 +++--
->>  arch/sparc/prom/tree_32.c                     | 13 +++++++------
->>  arch/sparc/prom/tree_64.c                     | 19 ++++++++++---------
->>  arch/x86/include/asm/pci.h                    |  3 ++-
->>  arch/x86/kernel/apic/x2apic_uv_x.c            |  7 ++++---
->>  arch/x86/kernel/smpboot.c                     |  3 ++-
->>  arch/x86/platform/olpc/olpc_dt.c              | 17 +++++++++--------
->>  drivers/block/mtip32xx/mtip32xx.c             |  5 +++--
->>  drivers/dma/dmaengine.c                       |  4 +++-
->>  drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
->>  drivers/infiniband/hw/hfi1/init.c             |  3 ++-
->>  drivers/iommu/dmar.c                          |  5 +++--
->>  drivers/iommu/intel-iommu.c                   |  3 ++-
->>  drivers/misc/sgi-xp/xpc_uv.c                  |  3 ++-
->>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  5 +++--
->>  include/linux/device.h                        |  2 +-
->>  init/init_task.c                              |  3 ++-
->>  kernel/kthread.c                              |  3 ++-
->>  kernel/sched/fair.c                           | 15 ++++++++-------
->>  lib/cpumask.c                                 |  3 ++-
->>  mm/huge_memory.c                              | 13 +++++++------
->>  mm/hugetlb.c                                  |  3 ++-
->>  mm/ksm.c                                      |  2 +-
->>  mm/memory.c                                   |  7 ++++---
->>  mm/memory_hotplug.c                           | 12 ++++++------
->>  mm/mempolicy.c                                |  2 +-
->>  mm/page_alloc.c                               |  4 ++--
->>  mm/page_ext.c                                 |  2 +-
->>  net/core/pktgen.c                             |  3 ++-
->>  net/qrtr/qrtr.c                               |  3 ++-
->>  tools/perf/bench/numa.c                       |  6 +++---
->>  48 files changed, 146 insertions(+), 108 deletions(-)
-> Thanks for the patch. It seems to me that you've got a fairly large
-> amount of it wrong though -- perhaps relying just on "git grep" alone
-> is not the best idea.
-
-Hmm, okay.
-
+On Wed 05-12-18 19:01:03, Nicolas Boichat wrote:
+[...]
+> > Secondly, why do we need a new sysfs file? Who is going to consume it?
 > 
-> The diffstat is not all that big, it is entirely plausible to just
-> review each hunk manually: just do a "git show -U20" to get some
-> context.
-> 
-> You get a NAK from me for the OLPC DT part, but I think at least the
-> sparc/prom part also deals with device tree nodes and not NUMA nodes.
+> We have cache_dma, so it seems consistent to add cache_dma32.
 
-Will take a closer look at all the instances you have pointed out and
-then re-spin the patch. Just wondering how should I take care of
-Stephen's patch which is a fix for this one and available in Andrew's
-staging tree. Should I just go ahead and fold both them with Stephen's
-signed-off-by while re-spinning this patch ? Please suggest.
+I wouldn't copy a pattern unless there is an explicit usecase for it.
+We do expose way too much to userspace and that keeps kicking us later.
+Not that I am aware of any specific example for cache_dma but seeing
+other examples I would rather be more careful.
+
+> I wasn't aware of tools/vm/slabinfo.c, so I can add support for
+> cache_dma32 in a follow-up patch. Any other user I should take care
+> of?
+
+In general zones are inernal MM implementation details and the less we
+export to userspace the better.
+
+> > Then why do we need SLAB_MERGE_SAME to cover GFP_DMA32 as well?
+> 
+> SLAB_MERGE_SAME tells us which flags _need_ to be the same for the
+> slabs to be merged. We don't want slab caches with GFP_DMA32 and
+> ~GFP_DMA32 to be merged, so it should be in there.
+> (https://elixir.bootlin.com/linux/v4.19.6/source/mm/slab_common.c#L342).
+
+Ohh, my bad, I have misread the change. Sure we definitely not want to
+allow merging here. My bad.
+-- 
+Michal Hocko
+SUSE Labs
