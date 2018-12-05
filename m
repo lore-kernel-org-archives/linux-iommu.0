@@ -1,99 +1,239 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v2 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Wed, 5 Dec 2018 13:51:16 +0800
-Message-ID: <CANMq1KAd4SzyWY+=fS4aeqyj_b3y7AUXmdoUWe3X1gq=ATOD5Q@mail.gmail.com>
-References: <20181111090341.120786-1-drinkcat@chromium.org>
- <CANMq1KDxmRcWhtaJbrLHqx6yPGkNaK7WNYYf+iFjH1e8XdrwRg@mail.gmail.com>
- <b99dd00f-fe1c-1cac-8ee3-5b0c1af9a92e@suse.cz> <CANMq1KDzKJqJwGsW3A90JY_0kgDtAMjOikT-3C9zQG01=3dibQ@mail.gmail.com>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v4 2/3] mm: Add support for kmem caches in DMA32 zone
+Date: Wed, 5 Dec 2018 07:25:28 +0000
+Message-ID: <20181205072528.l7blg6y24ggblh4m@master>
+References: <20181205054828.183476-1-drinkcat@chromium.org>
+	<20181205054828.183476-3-drinkcat@chromium.org>
+Reply-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CANMq1KDzKJqJwGsW3A90JY_0kgDtAMjOikT-3C9zQG01=3dibQ@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Michal Hocko <mhocko@suse.com>, Matthias Brugger <matthias.bgg@gmail.com>, hch@infradead.org, Matthew Wilcox <willy@infradead.org>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20181205054828.183476-3-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 5, 2018 at 10:04 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
+On Wed, Dec 05, 2018 at 01:48:27PM +0800, Nicolas Boichat wrote:
+>In some cases (e.g. IOMMU ARMv7s page allocator), we need to allocate
+>data structures smaller than a page with GFP_DMA32 flag.
 >
-> On Tue, Dec 4, 2018 at 10:35 PM Vlastimil Babka <vbabka@suse.cz> wrote:
-> >
-> > On 12/4/18 10:37 AM, Nicolas Boichat wrote:
-> > > On Sun, Nov 11, 2018 at 5:04 PM Nicolas Boichat <drinkcat@chromium.org> wrote:
-> > >>
-> > >> This is a follow-up to the discussion in [1], to make sure that the page
-> > >> tables allocated by iommu/io-pgtable-arm-v7s are contained within 32-bit
-> > >> physical address space.
-> > >>
-> > >> [1] https://lists.linuxfoundation.org/pipermail/iommu/2018-November/030876.html
-> > >
-> > > Hi everyone,
-> > >
-> > > Let's try to summarize here.
-> > >
-> > > First, we confirmed that this is a regression, and IOMMU errors happen
-> > > on 4.19 and linux-next/master on MT8173 (elm, Acer Chromebook R13).
-> > > The issue most likely starts from ad67f5a6545f ("arm64: replace
-> > > ZONE_DMA with ZONE_DMA32"), i.e. 4.15, and presumably breaks a number
-> > > of Mediatek platforms (and maybe others?).
-> > >
-> > > We have a few options here:
-> > > 1. This series [2], that adds support for GFP_DMA32 slab caches,
-> > > _without_ adding kmalloc caches (since there are no users of
-> > > kmalloc(..., GFP_DMA32)). I think I've addressed all the comments on
-> > > the 3 patches, and AFAICT this solution works fine.
-> > > 2. genalloc. That works, but unless we preallocate 4MB for L2 tables
-> > > (which is wasteful as we usually only need a handful of L2 tables),
-> > > we'll need changes in the core (use GFP_ATOMIC) to allow allocating on
-> > > demand, and as it stands we'd have no way to shrink the allocation.
-> > > 3. page_frag [3]. That works fine, and the code is quite simple. One
-> > > drawback is that fragments in partially freed pages cannot be reused
-> > > (from limited experiments, I see that IOMMU L2 tables are rarely
-> > > freed, so it's unlikely a whole page would get freed). But given the
-> > > low number of L2 tables, maybe we can live with that.
-> > >
-> > > I think 2 is out. Any preference between 1 and 3? I think 1 makes
-> > > better use of the memory, so that'd be my preference. But I'm probably
-> > > missing something.
-> >
-> > I would prefer 1 as well. IIRC you already confirmed that alignment
-> > requirements are not broken for custom kmem caches even in presence of
-> > SLUB debug options (and I would say it's a bug to be fixed if they
-> > weren't).
+>This change makes it possible to create a custom cache in DMA32 zone
+>using kmem_cache_create, then allocate memory using kmem_cache_alloc.
 >
-> > I just asked (and didn't get a reply I think) about your
-> > ability to handle the GFP_ATOMIC allocation failures. They should be
-> > rare when only single page allocations are needed for the kmem cache.
-> > But in case they are not an option, then preallocating would be needed,
-> > thus probably option 2.
+>We do not create a DMA32 kmalloc cache array, as there are currently
+>no users of kmalloc(..., GFP_DMA32). The new test in check_slab_flags
+>ensures that such calls still fail (as they do before this change).
 >
-> Oh, sorry, I missed your question.
+>Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
+>Signed-off-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>---
 >
-> I don't have a full answer, but:
-> - The allocations themselves are rare (I count a few 10s of L2 tables
-> at most on my system, I assume we rarely have >100), and yes, we only
-> need a single page, so the failures should be exceptional.
-> - My change is probably not making anything worse: I assume that even
-> with the current approach using GFP_DMA slab caches on older kernels,
-> failures could potentially happen. I don't think we've seen those. If
-> we are really concerned about this, maybe we'd need to modify
-> mtk_iommu_map to not hold a spinlock (if that's possible), so we don't
-> need to use GFP_ATOMIC. I suggest we just keep an eye on such issues,
-> and address them if they show up (we can even revisit genalloc at that
-> stage).
+>Changes since v2:
+> - Clarified commit message
+> - Add entry in sysfs-kernel-slab to document the new sysfs file
 >
-> Anyway, I'll clean up patches for 1 (mostly commit message changes
-> based on the comments in the threads) and resend.
+>(v3 used the page_frag approach)
+>
+>Documentation/ABI/testing/sysfs-kernel-slab |  9 +++++++++
+> include/linux/slab.h                        |  2 ++
+> mm/internal.h                               |  8 ++++++--
+> mm/slab.c                                   |  4 +++-
+> mm/slab.h                                   |  3 ++-
+> mm/slab_common.c                            |  2 +-
+> mm/slub.c                                   | 18 +++++++++++++++++-
+> 7 files changed, 40 insertions(+), 6 deletions(-)
+>
+>diff --git a/Documentation/ABI/testing/sysfs-kernel-slab b/Documentation/ABI/testing/sysfs-kernel-slab
+>index 29601d93a1c2ea..d742c6cfdffbe9 100644
+>--- a/Documentation/ABI/testing/sysfs-kernel-slab
+>+++ b/Documentation/ABI/testing/sysfs-kernel-slab
+>@@ -106,6 +106,15 @@ Description:
+> 		are from ZONE_DMA.
+> 		Available when CONFIG_ZONE_DMA is enabled.
+> 
+>+What:		/sys/kernel/slab/cache/cache_dma32
+>+Date:		December 2018
+>+KernelVersion:	4.21
+>+Contact:	Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>+Description:
+>+		The cache_dma32 file is read-only and specifies whether objects
+>+		are from ZONE_DMA32.
+>+		Available when CONFIG_ZONE_DMA32 is enabled.
+>+
+> What:		/sys/kernel/slab/cache/cpu_slabs
+> Date:		May 2007
+> KernelVersion:	2.6.22
+>diff --git a/include/linux/slab.h b/include/linux/slab.h
+>index 11b45f7ae4057c..9449b19c5f107a 100644
+>--- a/include/linux/slab.h
+>+++ b/include/linux/slab.h
+>@@ -32,6 +32,8 @@
+> #define SLAB_HWCACHE_ALIGN	((slab_flags_t __force)0x00002000U)
+> /* Use GFP_DMA memory */
+> #define SLAB_CACHE_DMA		((slab_flags_t __force)0x00004000U)
+>+/* Use GFP_DMA32 memory */
+>+#define SLAB_CACHE_DMA32	((slab_flags_t __force)0x00008000U)
+> /* DEBUG: Store the last owner for bug hunting */
+> #define SLAB_STORE_USER		((slab_flags_t __force)0x00010000U)
+> /* Panic if kmem_cache_create() fails */
+>diff --git a/mm/internal.h b/mm/internal.h
+>index a2ee82a0cd44ae..fd244ad716eaf8 100644
+>--- a/mm/internal.h
+>+++ b/mm/internal.h
+>@@ -14,6 +14,7 @@
+> #include <linux/fs.h>
+> #include <linux/mm.h>
+> #include <linux/pagemap.h>
+>+#include <linux/slab.h>
+> #include <linux/tracepoint-defs.h>
+> 
+> /*
+>@@ -34,9 +35,12 @@
+> #define GFP_CONSTRAINT_MASK (__GFP_HARDWALL|__GFP_THISNODE)
+> 
+> /* Check for flags that must not be used with a slab allocator */
+>-static inline gfp_t check_slab_flags(gfp_t flags)
+>+static inline gfp_t check_slab_flags(gfp_t flags, slab_flags_t slab_flags)
+> {
+>-	gfp_t bug_mask = __GFP_DMA32 | __GFP_HIGHMEM | ~__GFP_BITS_MASK;
+>+	gfp_t bug_mask = __GFP_HIGHMEM | ~__GFP_BITS_MASK;
+>+
+>+	if (!IS_ENABLED(CONFIG_ZONE_DMA32) || !(slab_flags & SLAB_CACHE_DMA32))
+>+		bug_mask |= __GFP_DMA32;
 
-Done here: https://patchwork.kernel.org/cover/10713019/ .
+The original version doesn't check CONFIG_ZONE_DMA32.
 
-> Thanks,
+Do we need to add this condition here?
+Could we just decide the bug_mask based on slab_flags?
+
+> 
+> 	if (unlikely(flags & bug_mask)) {
+> 		gfp_t invalid_mask = flags & bug_mask;
+>diff --git a/mm/slab.c b/mm/slab.c
+>index 65a774f05e7836..2fd3b9a996cbe6 100644
+>--- a/mm/slab.c
+>+++ b/mm/slab.c
+>@@ -2109,6 +2109,8 @@ int __kmem_cache_create(struct kmem_cache *cachep, slab_flags_t flags)
+> 	cachep->allocflags = __GFP_COMP;
+> 	if (flags & SLAB_CACHE_DMA)
+> 		cachep->allocflags |= GFP_DMA;
+>+	if (flags & SLAB_CACHE_DMA32)
+>+		cachep->allocflags |= GFP_DMA32;
+> 	if (flags & SLAB_RECLAIM_ACCOUNT)
+> 		cachep->allocflags |= __GFP_RECLAIMABLE;
+> 	cachep->size = size;
+>@@ -2643,7 +2645,7 @@ static struct page *cache_grow_begin(struct kmem_cache *cachep,
+> 	 * Be lazy and only check for valid flags here,  keeping it out of the
+> 	 * critical path in kmem_cache_alloc().
+> 	 */
+>-	flags = check_slab_flags(flags);
+>+	flags = check_slab_flags(flags, cachep->flags);
+> 	WARN_ON_ONCE(cachep->ctor && (flags & __GFP_ZERO));
+> 	local_flags = flags & (GFP_CONSTRAINT_MASK|GFP_RECLAIM_MASK);
+> 
+>diff --git a/mm/slab.h b/mm/slab.h
+>index 4190c24ef0e9df..fcf717e12f0a86 100644
+>--- a/mm/slab.h
+>+++ b/mm/slab.h
+>@@ -127,7 +127,8 @@ static inline slab_flags_t kmem_cache_flags(unsigned int object_size,
+> 
+> 
+> /* Legal flag mask for kmem_cache_create(), for various configurations */
+>-#define SLAB_CORE_FLAGS (SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA | SLAB_PANIC | \
+>+#define SLAB_CORE_FLAGS (SLAB_HWCACHE_ALIGN | SLAB_CACHE_DMA | \
+>+			 SLAB_CACHE_DMA32 | SLAB_PANIC | \
+> 			 SLAB_TYPESAFE_BY_RCU | SLAB_DEBUG_OBJECTS )
+> 
+> #if defined(CONFIG_DEBUG_SLAB)
+>diff --git a/mm/slab_common.c b/mm/slab_common.c
+>index 70b0cc85db67f8..18b7b809c8d064 100644
+>--- a/mm/slab_common.c
+>+++ b/mm/slab_common.c
+>@@ -53,7 +53,7 @@ static DECLARE_WORK(slab_caches_to_rcu_destroy_work,
+> 		SLAB_FAILSLAB | SLAB_KASAN)
+> 
+> #define SLAB_MERGE_SAME (SLAB_RECLAIM_ACCOUNT | SLAB_CACHE_DMA | \
+>-			 SLAB_ACCOUNT)
+>+			 SLAB_CACHE_DMA32 | SLAB_ACCOUNT)
+> 
+> /*
+>  * Merge control. If this is set then no merging of slab caches will occur.
+>diff --git a/mm/slub.c b/mm/slub.c
+>index 21a3f6866da472..6d47765a82d150 100644
+>--- a/mm/slub.c
+>+++ b/mm/slub.c
+>@@ -1685,7 +1685,7 @@ static struct page *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
+> 
+> static struct page *new_slab(struct kmem_cache *s, gfp_t flags, int node)
+> {
+>-	flags = check_slab_flags(flags);
+>+	flags = check_slab_flags(flags, s->flags);
+> 
+> 	return allocate_slab(s,
+> 		flags & (GFP_RECLAIM_MASK | GFP_CONSTRAINT_MASK), node);
+>@@ -3577,6 +3577,9 @@ static int calculate_sizes(struct kmem_cache *s, int forced_order)
+> 	if (s->flags & SLAB_CACHE_DMA)
+> 		s->allocflags |= GFP_DMA;
+> 
+>+	if (s->flags & SLAB_CACHE_DMA32)
+>+		s->allocflags |= GFP_DMA32;
+>+
+> 	if (s->flags & SLAB_RECLAIM_ACCOUNT)
+> 		s->allocflags |= __GFP_RECLAIMABLE;
+> 
+>@@ -5095,6 +5098,14 @@ static ssize_t cache_dma_show(struct kmem_cache *s, char *buf)
+> SLAB_ATTR_RO(cache_dma);
+> #endif
+> 
+>+#ifdef CONFIG_ZONE_DMA32
+>+static ssize_t cache_dma32_show(struct kmem_cache *s, char *buf)
+>+{
+>+	return sprintf(buf, "%d\n", !!(s->flags & SLAB_CACHE_DMA32));
+>+}
+>+SLAB_ATTR_RO(cache_dma32);
+>+#endif
+>+
+> static ssize_t usersize_show(struct kmem_cache *s, char *buf)
+> {
+> 	return sprintf(buf, "%u\n", s->usersize);
+>@@ -5435,6 +5446,9 @@ static struct attribute *slab_attrs[] = {
+> #ifdef CONFIG_ZONE_DMA
+> 	&cache_dma_attr.attr,
+> #endif
+>+#ifdef CONFIG_ZONE_DMA32
+>+	&cache_dma32_attr.attr,
+>+#endif
+> #ifdef CONFIG_NUMA
+> 	&remote_node_defrag_ratio_attr.attr,
+> #endif
+>@@ -5665,6 +5679,8 @@ static char *create_unique_id(struct kmem_cache *s)
+> 	 */
+> 	if (s->flags & SLAB_CACHE_DMA)
+> 		*p++ = 'd';
+>+	if (s->flags & SLAB_CACHE_DMA32)
+>+		*p++ = 'D';
+> 	if (s->flags & SLAB_RECLAIM_ACCOUNT)
+> 		*p++ = 'a';
+> 	if (s->flags & SLAB_CONSISTENCY_CHECKS)
+>-- 
+>2.20.0.rc1.387.gf8505762e3-goog
 >
-> > > [2] https://patchwork.kernel.org/cover/10677529/, 3 patches
-> > > [3] https://patchwork.codeaurora.org/patch/671639/
-> > >
-> > > Thanks,
-> > >
-> > > Nicolas
-> > >
-> >
+>_______________________________________________
+>iommu mailing list
+>iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+-- 
+Wei Yang
+Help you, Help me
