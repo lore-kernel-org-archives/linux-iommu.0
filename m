@@ -1,61 +1,50 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/4] iommu/sysfs: Rename iommu_release_device()
-Date: Wed,  5 Dec 2018 15:36:43 +0100
-Message-ID: <20181205143646.4876-2-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 4/4] ACPI/IORT: Don't call iommu_ops->add_device directly
+Date: Wed,  5 Dec 2018 15:36:46 +0100
+Message-ID: <20181205143646.4876-5-joro@8bytes.org>
 References: <20181205143646.4876-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181205143646.4876-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181205143646.4876-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Remove the iommu_ prefix from the function and a few other
-static data structures so that the iommu_release_device name
-can be re-used in iommu core code.
+Make sure to invoke this call-back through the proper
+function of the IOMMU-API.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu-sysfs.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/acpi/arm64/iort.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
-index 36d1a7ce7fc4..71c2249d3260 100644
---- a/drivers/iommu/iommu-sysfs.c
-+++ b/drivers/iommu/iommu-sysfs.c
-@@ -22,25 +22,25 @@ static struct attribute *devices_attr[] = {
- 	NULL,
- };
- 
--static const struct attribute_group iommu_devices_attr_group = {
-+static const struct attribute_group devices_attr_group = {
- 	.name = "devices",
- 	.attrs = devices_attr,
- };
- 
--static const struct attribute_group *iommu_dev_groups[] = {
--	&iommu_devices_attr_group,
-+static const struct attribute_group *dev_groups[] = {
-+	&devices_attr_group,
- 	NULL,
- };
- 
--static void iommu_release_device(struct device *dev)
-+static void release_device(struct device *dev)
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 70f4e80b9246..d4f7c1adc048 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -805,8 +805,8 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
  {
- 	kfree(dev);
+ 	int err = 0;
+ 
+-	if (ops->add_device && dev->bus && !dev->iommu_group)
+-		err = ops->add_device(dev);
++	if (dev->bus && !dev->iommu_group)
++		err = iommu_probe_device(dev);
+ 
+ 	return err;
  }
- 
- static struct class iommu_class = {
- 	.name = "iommu",
--	.dev_release = iommu_release_device,
--	.dev_groups = iommu_dev_groups,
-+	.dev_release = release_device,
-+	.dev_groups = dev_groups,
- };
- 
- static int __init iommu_dev_init(void)
 -- 
 2.17.1
