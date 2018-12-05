@@ -1,175 +1,147 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 3/8] dma-debug: Refactor dma_debug_entry allocation
-Date: Wed,  5 Dec 2018 19:56:52 +0000
-Message-ID: <d868e775492e417f446d6d162f5f792bd41ee7bc.1544037783.git.robin.murphy@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2 8/8] dma-debug: Batch dma_debug_entry allocation
+Date: Wed,  5 Dec 2018 19:56:57 +0000
+Message-ID: <e438dfe197a0e33ac8ab71a86167b69c56db77c5.1544037783.git.robin.murphy@arm.com>
 References: <cover.1544037783.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1544037783.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: hch-jcswGhMUV9g@public.gmane.org
-Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1544037783.git.robin.murphy@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: hch@lst.de
+Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-Make the prealloc_memory() logic a little more general and robust so
-that it serves for runtime reallocations too. The first thing we can
-do with that is clean up dma_debug_resize_entries() a bit.
+DMA debug entries are one of those things which aren't that useful
+individually - we will always want some larger quantity of them - and
+that we don't really need to manage the exact number of - we only care
+about having 'enough'. In that regard, the current behaviour of creating
+them one-by-one from the slab allocator means an awful lot of function
+call overhead and memory wasted on alignment padding.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Now that we don't have to worry about freeing anything via
+dma_debug_resize_entries(), we can optimise the allocation behaviour by
+grabbing whole pages at once, which will save considerably on the
+aforementioned overheads, and probably offer a little more cache/TLB
+locality benefit for traversing the lists under normal operation.
+
+Since freeing a whole page of entries at once becomes enough of a
+challenge that it's not really worth complicating dma_debug_init(),
+we may as well tweak the preallocation behaviour so that as long as we
+manage to allocate *some* pages, we can leave debugging enabled on a
+best-effort basis rather than otherwise wasting them.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
 
-v2: Give it a better name, simplify the locking mess
+v2: New
 
- kernel/dma/debug.c | 87 +++++++++++++++++++---------------------------
- 1 file changed, 36 insertions(+), 51 deletions(-)
+ Documentation/DMA-API.txt |  4 +++-
+ kernel/dma/debug.c        | 45 +++++++++++++++++----------------------
+ 2 files changed, 22 insertions(+), 27 deletions(-)
 
+diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
+index 7a7d8a415ce8..097c51b79330 100644
+--- a/Documentation/DMA-API.txt
++++ b/Documentation/DMA-API.txt
+@@ -747,7 +747,9 @@ driver afterwards. This filter can be disabled or changed later using debugfs.
+ When the code disables itself at runtime this is most likely because it ran
+ out of dma_debug_entries and was unable to allocate more on-demand. 65536
+ entries are preallocated at boot - if this is too low for you boot with
+-'dma_debug_entries=<your_desired_number>' to overwrite the default. The
++'dma_debug_entries=<your_desired_number>' to overwrite the default. Note
++that the code allocates entires in batches, so the exact number of
++preallocated entries may be greater than the actual number requested. The
+ code will print to the kernel log each time it has dynamically allocated
+ as many entries as were initially preallocated. This is to indicate that a
+ larger preallocation size may be appropriate, or if it happens continually
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 29486eb9d1dc..1b0858d7edfd 100644
+index 2202402afe9a..a6a603526c8f 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -646,6 +646,36 @@ static void add_dma_entry(struct dma_debug_entry *entry)
+@@ -48,7 +48,7 @@
+ #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
+ #endif
+ /* If the pool runs out, add this many new entries at once */
+-#define DMA_DEBUG_DYNAMIC_ENTRIES 256
++#define DMA_DEBUG_DYNAMIC_ENTRIES (PAGE_SIZE / sizeof(struct dma_debug_entry))
+ 
+ enum {
+ 	dma_debug_single,
+@@ -648,34 +648,22 @@ static void add_dma_entry(struct dma_debug_entry *entry)
  	 */
  }
  
-+static int dma_debug_add_entries(u32 num_entries, gfp_t gfp)
-+{
-+	struct dma_debug_entry *entry, *next_entry;
-+	LIST_HEAD(tmp);
-+	int i;
-+
-+	for (i = 0; i < num_entries; ++i) {
-+		entry = kzalloc(sizeof(*entry), gfp);
-+		if (!entry)
-+			goto out_err;
-+
-+		list_add_tail(&entry->list, &tmp);
-+	}
-+
-+	list_splice(&tmp, &free_entries);
-+	num_free_entries += num_entries;
-+	nr_total_entries += num_entries;
-+
-+	return 0;
-+
-+out_err:
-+
-+	list_for_each_entry_safe(entry, next_entry, &tmp, list) {
-+		list_del(&entry->list);
-+		kfree(entry);
-+	}
-+
-+	return -ENOMEM;
-+}
-+
- static struct dma_debug_entry *__dma_entry_alloc(void)
+-static int dma_debug_add_entries(u32 num_entries, gfp_t gfp)
++static int dma_debug_add_entries(gfp_t gfp)
  {
- 	struct dma_debug_entry *entry;
-@@ -715,28 +745,13 @@ int dma_debug_resize_entries(u32 num_entries)
- 	int i, delta, ret = 0;
- 	unsigned long flags;
- 	struct dma_debug_entry *entry;
--	LIST_HEAD(tmp);
- 
- 	spin_lock_irqsave(&free_entries_lock, flags);
- 
- 	if (nr_total_entries < num_entries) {
- 		delta = num_entries - nr_total_entries;
- 
--		spin_unlock_irqrestore(&free_entries_lock, flags);
--
--		for (i = 0; i < delta; i++) {
--			entry = kzalloc(sizeof(*entry), GFP_KERNEL);
--			if (!entry)
--				break;
--
--			list_add_tail(&entry->list, &tmp);
--		}
--
--		spin_lock_irqsave(&free_entries_lock, flags);
--
--		list_splice(&tmp, &free_entries);
--		nr_total_entries += i;
--		num_free_entries += i;
-+		ret = dma_debug_add_entries(delta, GFP_ATOMIC);
- 	} else {
- 		delta = nr_total_entries - num_entries;
- 
-@@ -746,11 +761,10 @@ int dma_debug_resize_entries(u32 num_entries)
- 		}
- 
- 		nr_total_entries -= i;
-+		if (nr_total_entries != num_entries)
-+			ret = -EBUSY;
- 	}
- 
--	if (nr_total_entries != num_entries)
--		ret = 1;
--
- 	spin_unlock_irqrestore(&free_entries_lock, flags);
- 
- 	return ret;
-@@ -764,36 +778,6 @@ int dma_debug_resize_entries(u32 num_entries)
-  *   2. Preallocate a given number of dma_debug_entry structs
-  */
- 
--static int prealloc_memory(u32 num_entries)
--{
 -	struct dma_debug_entry *entry, *next_entry;
--	int i;
--
+-	LIST_HEAD(tmp);
++	struct dma_debug_entry *entry;
+ 	int i;
+ 
 -	for (i = 0; i < num_entries; ++i) {
--		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+-		entry = kzalloc(sizeof(*entry), gfp);
 -		if (!entry)
 -			goto out_err;
--
--		list_add_tail(&entry->list, &free_entries);
++	entry = (void *)get_zeroed_page(gfp);
++	if (!entry)
++		return -ENOMEM;
+ 
+-		list_add_tail(&entry->list, &tmp);
 -	}
--
--	num_free_entries = num_entries;
--	min_free_entries = num_entries;
--
--	pr_info("preallocated %d debug entries\n", num_entries);
--
--	return 0;
++	for (i = 0; i < DMA_DEBUG_DYNAMIC_ENTRIES; i++)
++		list_add_tail(&entry[i].list, &free_entries);
+ 
+-	list_splice(&tmp, &free_entries);
+-	num_free_entries += num_entries;
+-	nr_total_entries += num_entries;
++	num_free_entries += DMA_DEBUG_DYNAMIC_ENTRIES;
++	nr_total_entries += DMA_DEBUG_DYNAMIC_ENTRIES;
+ 
+ 	return 0;
 -
 -out_err:
 -
--	list_for_each_entry_safe(entry, next_entry, &free_entries, list) {
+-	list_for_each_entry_safe(entry, next_entry, &tmp, list) {
 -		list_del(&entry->list);
 -		kfree(entry);
 -	}
 -
 -	return -ENOMEM;
--}
--
- static ssize_t filter_read(struct file *file, char __user *user_buf,
- 			   size_t count, loff_t *ppos)
- {
-@@ -1038,14 +1022,15 @@ static int dma_debug_init(void)
+ }
+ 
+ static struct dma_debug_entry *__dma_entry_alloc(void)
+@@ -717,7 +705,7 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+ 
+ 	spin_lock_irqsave(&free_entries_lock, flags);
+ 	if (num_free_entries == 0) {
+-		if (dma_debug_create_entries(DMA_DEBUG_DYNAMIC_ENTRIES, GFP_ATOMIC)) {
++		if (dma_debug_add_entries(GFP_ATOMIC)) {
+ 			global_disable = true;
+ 			spin_unlock_irqrestore(&free_entries_lock, flags);
+ 			pr_err("debugging out of memory - disabling\n");
+@@ -1008,15 +996,20 @@ static int dma_debug_init(void)
  		return 0;
  	}
  
--	if (prealloc_memory(nr_prealloc_entries) != 0) {
-+	if (dma_debug_add_entries(nr_prealloc_entries, GFP_KERNEL) != 0) {
+-	if (dma_debug_add_entries(nr_prealloc_entries, GFP_KERNEL) != 0) {
++	for (i = 0; i < DIV_ROUND_UP(nr_prealloc_entries, DMA_DEBUG_DYNAMIC_ENTRIES); ++i)
++		dma_debug_add_entries(GFP_KERNEL);
++	if (num_free_entries >= nr_prealloc_entries) {
++		pr_info("preallocated %d debug entries\n", nr_total_entries);
++	} else if (num_free_entries > 0) {
++		pr_warn("%d debug entries requested but only %d allocated\n",
++			nr_prealloc_entries, nr_total_entries);
++	} else {
  		pr_err("debugging out of memory error - disabled\n");
  		global_disable = true;
  
  		return 0;
  	}
- 
--	nr_total_entries = num_free_entries;
-+	min_free_entries = num_free_entries;
-+	pr_info("preallocated %d debug entries\n", nr_total_entries);
+-
+ 	min_free_entries = num_free_entries;
+-	pr_info("preallocated %d debug entries\n", nr_total_entries);
  
  	dma_debug_initialized = true;
  
