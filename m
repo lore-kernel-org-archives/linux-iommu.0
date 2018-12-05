@@ -1,48 +1,66 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu: fix amd_iommu=force_isolation
-Date: Wed, 5 Dec 2018 17:09:55 +0100
-Message-ID: <20181205160955.p3juusqdxarmo2yc@8bytes.org>
-References: <20181204223716.214159-1-yuzhao@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 0/5] Introduce device_iommu_maped() function
+Date: Wed, 5 Dec 2018 17:17:29 +0000
+Message-ID: <e34dcbe8-2f1b-31bb-2093-542361635cf5@arm.com>
+References: <20181204172504.19708-1-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181204223716.214159-1-yuzhao@google.com>
+In-Reply-To: <20181204172504.19708-1-joro@8bytes.org>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yu Zhao <yuzhao@google.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 04, 2018 at 03:37:16PM -0700, Yu Zhao wrote:
-> The parameter is still there but it's ignored. We need to check its
-> value before deciding to go into passthrough mode for AMD IOMMU.
+Hi Joerg,
+
+On 04/12/2018 17:24, Joerg Roedel wrote:
+> Hi,
 > 
-> Fixes: aafd8ba0ca74 ("iommu/amd: Implement add_device and remove_device")
+> here is a patch-set to replace the dev->iommu_group checks
+> in the source tree by a proper function call. The pointer
+> checks mostly happen to check whether a device is managed my
+> an IOMMU. For that purpose a pointer check is not very
+> descriptable, so replace it by a function call that make its
+> purpose readable.
+
+Nice, we can also clean up a whole load of vague iommu_present() usage 
+and even one or two odd iommu_get_domain_for_dev() calls once we have this.
+
+> This also starts to remove direct access to the
+> dev->iommu_group pointer outside of iommu-code. This is
+> another move towards consolidating the various
+> iommu-related pointers in 'struct device' into one pointer
+> only.
 > 
-> Signed-off-by: Yu Zhao <yuzhao@google.com>
-> ---
->  drivers/iommu/amd_iommu.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> Please review.
 > 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 1167ff0416cf..3e4219e6cff0 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -2195,7 +2195,8 @@ static int amd_iommu_add_device(struct device *dev)
->  
->  	BUG_ON(!dev_data);
->  
-> -	if (iommu_pass_through || dev_data->iommu_v2)
-> +	if (iommu_pass_through ||
-> +	    (!amd_iommu_force_isolation && dev_data->iommu_v2))
+> Thanks,
+> 
+> 	Joerg
+> 
+> Joerg Roedel (5):
+>    driver core: Introduce device_iommu_mapped() function
+>    iommu/of: Use device_iommu_mapped()
+>    ACPI/IORT: Use device_iommu_mapped()
+>    powerpc/iommu: Use device_iommu_mapped()
+>    xhci: Use device_iommu_mapped()
+> 
+>   arch/powerpc/kernel/eeh.c   |  2 +-
+>   arch/powerpc/kernel/iommu.c |  6 +++---
+>   drivers/acpi/arm64/iort.c   |  2 +-
+>   drivers/iommu/of_iommu.c    |  2 +-
+>   drivers/usb/host/xhci.c     |  2 +-
+>   include/linux/device.h      | 10 ++++++++++
+>   6 files changed, 17 insertions(+), 7 deletions(-)
 
-This breaks the iommu_v2 use-case, as it needs a direct mapping for the
-devices that support it.
+There looks to be one more here:
 
-I think the force_isolation parameter does not make sense anymore today
-and should be removed.
+drivers/dma/sh/rcar-dmac.c: rcar_dmac_probe()
 
+Other than that and a minor comment on the OF/IORT part, though, for the 
+whole series:
 
-Regards,
-
-	Joerg
+Acked-by: Robin Murphy <robin.murphy@arm.com>
