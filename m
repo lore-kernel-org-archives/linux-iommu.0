@@ -1,24 +1,15 @@
-From: Christian Zigotzky <chzigotzky-KCoaydhb8eAb1SvskN2V4Q@public.gmane.org>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Wed, 5 Dec 2018 10:44:05 +0100
-Message-ID: <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de>
-References: <87zhttfonk.fsf@concordia.ellerman.id.au>
-	<4d4e3cdd-d1a9-affe-0f63-45b8c342bbd6@xenosoft.de>
-	<20181129170351.GC27951@lst.de>
-	<d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
-	<20181130105346.GB26765@lst.de>
-	<8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de>
-	<20181130131056.GA5211@lst.de>
-	<25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de>
-	<c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de>
-	<58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de>
-	<20181204142426.GA2743@lst.de>
+From: Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 2/3] mm: Add support for kmem caches in DMA32 zone
+Date: Wed, 5 Dec 2018 10:55:57 +0100
+Message-ID: <20181205095557.GE1286@dhcp22.suse.cz>
+References: <20181205054828.183476-1-drinkcat@chromium.org>
+	<20181205054828.183476-3-drinkcat@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181204142426.GA2743-jcswGhMUV9g@public.gmane.org>
-Content-Language: de-DE
+Content-Disposition: inline
+In-Reply-To: <20181205054828.183476-3-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,37 +19,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Darren Stevens <darren-YHtdit1eIT3easaKlIn9Lw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Julian Margetson <runaway-zqC88Q5qmK4@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04 December 2018 at 3:24PM, Christoph Hellwig wrote:
-> On Tue, Dec 04, 2018 at 10:53:39AM +0100, Christian Zigotzky wrote:
->> I don't know why this kernel doesn't recognize the hard disks connected to
->> my physical P5020 board and why the onboard ethernet on my PASEMI board
->> doesn't work. (dma_direct_map_page: overflow)
-> Do you know if this actually works for the baseline before my patches?
-> E.g. with commit 721c01ba8b46ddb5355bd6e6b3bbfdabfdf01e97 ?
->
-Hi Christoph,
+On Wed 05-12-18 13:48:27, Nicolas Boichat wrote:
+> In some cases (e.g. IOMMU ARMv7s page allocator), we need to allocate
+> data structures smaller than a page with GFP_DMA32 flag.
+> 
+> This change makes it possible to create a custom cache in DMA32 zone
+> using kmem_cache_create, then allocate memory using kmem_cache_alloc.
+> 
+> We do not create a DMA32 kmalloc cache array, as there are currently
+> no users of kmalloc(..., GFP_DMA32). The new test in check_slab_flags
+> ensures that such calls still fail (as they do before this change).
 
-Thanks for your reply. I undid all dma mapping commits with the 
-following command:
+The changelog should be much more specific about decisions made here.
+First of all it would be nice to mention the usecase.
 
-git checkout 721c01ba8b46ddb5355bd6e6b3bbfdabfdf01e97
+Secondly, why do we need a new sysfs file? Who is going to consume it?
 
-After that I compiled the kernels with this code for my P5020 board 
-(Cyrus) and for my PASEMI board (Nemo) today.
-
-Result: PASEMI onboard ethernet works again and the P5020 board boots.
-
-It seems the dma mapping commits are the problem.
-
-@All
-Could you please test Christoph's kernel on your PASEMI and NXP boards? 
-Download:
-
-'git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.5 a'
-
-Thanks,
-Christian
+Then why do we need SLAB_MERGE_SAME to cover GFP_DMA32 as well? I
+thought the whole point is to use dedicated slab cache. Who is this
+going to merge with?
+-- 
+Michal Hocko
+SUSE Labs
