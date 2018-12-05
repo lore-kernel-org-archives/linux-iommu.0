@@ -1,71 +1,99 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 7/9] iommu/of: Use helper functions to access
+Subject: Re: [PATCH 2/9] ACPI/IORT: Use helper functions to access
  dev->iommu_fwspec
-Date: Wed, 5 Dec 2018 17:41:51 +0000
-Message-ID: <b78ab1d9-1f24-f792-04dd-26958a0739d3@arm.com>
+Date: Wed, 5 Dec 2018 17:50:23 +0000
+Message-ID: <ecfaa990-9257-0592-ee4d-ca3f8537783d@arm.com>
 References: <20181204163002.15800-1-joro@8bytes.org>
- <20181204163002.15800-8-joro@8bytes.org>
+ <20181204163002.15800-3-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181204163002.15800-8-joro@8bytes.org>
+In-Reply-To: <20181204163002.15800-3-joro@8bytes.org>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
 Cc: Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/12/2018 16:30, Joerg Roedel wrote:
+On 04/12/2018 16:29, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel@suse.de>
 > 
 > Use the new helpers dev_iommu_fwspec_get()/set() to access
 > the dev->iommu_fwspec pointer. This makes it easier to move
 > that pointer later into another struct.
 > 
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 > Signed-off-by: Joerg Roedel <jroedel@suse.de>
 > ---
->   drivers/iommu/of_iommu.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
+>   drivers/acpi/arm64/iort.c | 12 +++++++-----
+>   1 file changed, 7 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index c5dd63072529..38232250b5f4 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -164,7 +164,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->   					   struct device_node *master_np)
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 70f4e80b9246..754a67ba49e5 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -779,7 +779,7 @@ static inline bool iort_iommu_driver_enabled(u8 type)
+>   static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
 >   {
->   	const struct iommu_ops *ops = NULL;
+>   	struct acpi_iort_node *iommu;
 > -	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 > +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->   	int err = NO_IOMMU;
 >   
->   	if (!master_np)
-> @@ -208,6 +208,9 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->   		}
->   	}
+>   	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
 >   
-> +	/* The fwspec pointer changed, read it again */
-> +	fwspec = dev_iommu_fwspec_get(dev);
+> @@ -824,6 +824,7 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
+>    */
+>   int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+>   {
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct acpi_iort_its_group *its;
+>   	struct acpi_iort_node *iommu_node, *its_node = NULL;
+>   	int i, resv = 0;
+> @@ -841,9 +842,9 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+>   	 * a given PCI or named component may map IDs to.
+>   	 */
+>   
+> -	for (i = 0; i < dev->iommu_fwspec->num_ids; i++) {
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+>   		its_node = iort_node_map_id(iommu_node,
+> -					dev->iommu_fwspec->ids[i],
+> +					fwspec->ids[i],
+>   					NULL, IORT_MSI_TYPE);
+>   		if (its_node)
+>   			break;
+> @@ -1036,6 +1037,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+>    */
+>   const struct iommu_ops *iort_iommu_configure(struct device *dev)
+>   {
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct acpi_iort_node *node, *parent;
+>   	const struct iommu_ops *ops;
+>   	u32 streamid = 0;
+> @@ -1045,7 +1047,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+>   	 * If we already translated the fwspec there
+>   	 * is nothing left to do, return the iommu_ops.
+>   	 */
+> -	ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
+> +	ops = iort_fwspec_iommu_ops(fwspec);
+>   	if (ops)
+>   		return ops;
+>   
+> @@ -1084,7 +1086,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+>   	 * add_device callback for dev, replay it to get things in order.
+>   	 */
+>   	if (!err) {
+> -		ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
+> +		ops = iort_fwspec_iommu_ops(fwspec);
 
-Nit: I think it makes sense to put this inside the "if (!err)" condition 
-below rather than out here where it may or may not be relevant. The 
-comment for that case is already supposed to imply that it's dealing 
-with a fresh fwspec.
+This needs to reload the new fwspec initialised by iort_iommu_xlate(), 
+in the same manner as the OF code. I think the best thing to do is 
+encapsulate the dev_iommu_fwspec_get() call in iort_fwspec_iommu_ops(), 
+and have that take dev as its argument directly.
 
 Robin.
 
-> +
->   	/*
->   	 * Two success conditions can be represented by non-negative err here:
->   	 * >0 : there is no IOMMU, or one was unavailable for non-fatal reasons
-> @@ -215,7 +218,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->   	 * <0 : any actual error
->   	 */
->   	if (!err)
-> -		ops = dev->iommu_fwspec->ops;
-> +		ops = fwspec->ops;
->   	/*
->   	 * If we have reason to believe the IOMMU driver missed the initial
->   	 * add_device callback for dev, replay it to get things in order.
+>   		err = iort_add_device_replay(ops, dev);
+>   	}
+>   
 > 
