@@ -1,80 +1,37 @@
-From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v4 2/3] mm: Add support for kmem caches in DMA32 zone
-Date: Wed, 5 Dec 2018 19:01:03 +0800
-Message-ID: <CANMq1KCnpSUKoz83LcEgAkhCi8QVPH715xtgdQD23r-tYusrPw@mail.gmail.com>
-References: <20181205054828.183476-1-drinkcat@chromium.org>
-	<20181205054828.183476-3-drinkcat@chromium.org>
-	<20181205095557.GE1286@dhcp22.suse.cz>
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: Re: [LKP] [mm] 19717e78a0: stderr.if(target_node==NUMA_NO_NODE){
+Date: Wed, 5 Dec 2018 16:50:57 +0530
+Message-ID: <d75d097f-78a5-865e-a80a-b1e6faeff337@arm.com>
+References: <20181205050057.GB23332@shao2-debian>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181205095557.GE1286-2MMpYkNvuYDjFM9bn6wA6Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181205050057.GB23332@shao2-debian>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: kernel test robot <rong.a.chen@intel.com>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org, lkp@01.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 5, 2018 at 5:56 PM Michal Hocko <mhocko-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
->
-> On Wed 05-12-18 13:48:27, Nicolas Boichat wrote:
-> > In some cases (e.g. IOMMU ARMv7s page allocator), we need to allocate
-> > data structures smaller than a page with GFP_DMA32 flag.
-> >
-> > This change makes it possible to create a custom cache in DMA32 zone
-> > using kmem_cache_create, then allocate memory using kmem_cache_alloc.
-> >
-> > We do not create a DMA32 kmalloc cache array, as there are currently
-> > no users of kmalloc(..., GFP_DMA32). The new test in check_slab_flags
-> > ensures that such calls still fail (as they do before this change).
->
-> The changelog should be much more specific about decisions made here.
-> First of all it would be nice to mention the usecase.
+On 12/05/2018 10:30 AM, kernel test robot wrote:
+> FYI, we noticed the following commit (built with gcc-7):
+> 
+> commit: 19717e78a04d51512cf0e7b9b09c61f06b2af071 ("[PATCH V2] mm: Replace all open encodings for NUMA_NO_NODE")
+> url: https://github.com/0day-ci/linux/commits/Anshuman-Khandual/mm-Replace-all-open-encodings-for-NUMA_NO_NODE/20181126-203831
+> 
+> 
+> in testcase: perf-sanity-tests
+> with following parameters:
+> 
+> 	perf_compiler: gcc
+> 	ucode: 0x7000013
+> 
+> 
+> 
+> on test machine: 16 threads Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz with 8G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
 
-Ok, I'll copy most of the cover letter text here (i.e. the fact that
-IOMMU wants physical memory <4GB for L2 page tables, why it's better
-than genalloc/page_frag).
-
-> Secondly, why do we need a new sysfs file? Who is going to consume it?
-
-We have cache_dma, so it seems consistent to add cache_dma32.
-
-I wasn't aware of tools/vm/slabinfo.c, so I can add support for
-cache_dma32 in a follow-up patch. Any other user I should take care
-of?
-
-> Then why do we need SLAB_MERGE_SAME to cover GFP_DMA32 as well?
-
-SLAB_MERGE_SAME tells us which flags _need_ to be the same for the
-slabs to be merged. We don't want slab caches with GFP_DMA32 and
-~GFP_DMA32 to be merged, so it should be in there.
-(https://elixir.bootlin.com/linux/v4.19.6/source/mm/slab_common.c#L342).
-
-> I
-> thought the whole point is to use dedicated slab cache. Who is this
-> going to merge with?
-
-Well, if there was another SLAB cache requiring 1KB GFP_DMA32
-elements, then I don't see why we would not merge the caches. This is
-what happens with this IOMMU L2 tables cache pre-CONFIG_ZONE_DMA32 on
-arm64 (output on some 3.18 kernel below), and what would happen on
-arm32 since we still use GFP_DMA.
-
-/sys/kernel/slab # ls -l | grep dt-0001024
-drwxr-xr-x. 2 root root 0 Dec  5 02:25 :dt-0001024
-lrwxrwxrwx. 1 root root 0 Dec  5 02:25 dma-kmalloc-1024 -> :dt-0001024
-lrwxrwxrwx. 1 root root 0 Dec  5 02:25 io-pgtable_armv7s_l2 -> :dt-0001024
-
-Thanks!
-
-> --
-> Michal Hocko
-> SUSE Labs
+The fix (in Andrew's staging tree) from Stephen Rothwell which adds <linux/numa.h>
+definitions to <tools/include/linux/numa.h> should fix this.
