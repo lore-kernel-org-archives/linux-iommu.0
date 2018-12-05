@@ -1,66 +1,94 @@
 From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: [PATCH v4 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Wed,  5 Dec 2018 13:48:25 +0800
-Message-ID: <20181205054828.183476-1-drinkcat@chromium.org>
+Subject: [PATCH v4 1/3] mm: slab/slub: Add check_slab_flags function to check for valid flags
+Date: Wed,  5 Dec 2018 13:48:26 +0800
+Message-ID: <20181205054828.183476-2-drinkcat@chromium.org>
+References: <20181205054828.183476-1-drinkcat@chromium.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181205054828.183476-1-drinkcat@chromium.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Will Deacon <will.deacon@arm.com>
 Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infr
 List-Id: iommu@lists.linux-foundation.org
 
-This is a follow-up to the discussion in [1], [2].
+Remove duplicated code between slab and slub, and will make it
+easier to make the test more complicated in the next commits.
 
-IOMMUs using ARMv7 short-descriptor format require page tables
-(level 1 and 2) to be allocated within the first 4GB of RAM, even
-on 64-bit systems.
+Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+---
+ mm/internal.h | 18 ++++++++++++++++--
+ mm/slab.c     |  8 +-------
+ mm/slub.c     |  8 +-------
+ 3 files changed, 18 insertions(+), 16 deletions(-)
 
-For L1 tables that are bigger than a page, we can just use __get_free_pages
-with GFP_DMA32 (on arm64 systems only, arm would still use GFP_DMA).
-
-For L2 tables that only take 1KB, it would be a waste to allocate a full
-page, so we considered 3 approaches:
- 1. This series, adding support for GFP_DMA32 slab caches.
- 2. genalloc, which requires pre-allocating the maximum number of L2 page
-    tables (4096, so 4MB of memory).
- 3. page_frag, which is not very memory-efficient as it is unable to reuse
-    freed fragments until the whole page is freed. [3]
-
-This series is the most memory-efficient approach.
-
-[1] https://lists.linuxfoundation.org/pipermail/iommu/2018-November/030876.html
-[2] https://lists.linuxfoundation.org/pipermail/iommu/2018-December/031696.html
-[3] https://patchwork.codeaurora.org/patch/671639/
-
-Changes since v1:
- - Add support for SLAB_CACHE_DMA32 in slab and slub (patches 1/2)
- - iommu/io-pgtable-arm-v7s (patch 3):
-   - Changed approach to use SLAB_CACHE_DMA32 added by the previous
-     commit.
-   - Use DMA or DMA32 depending on the architecture (DMA for arm,
-     DMA32 for arm64).
-
-Changes since v2:
- - Reworded and expanded commit messages
- - Added cache_dma32 documentation in PATCH 2/3.
-
-v3 used the page_frag approach, see [3].
-
-Nicolas Boichat (3):
-  mm: slab/slub: Add check_slab_flags function to check for valid flags
-  mm: Add support for kmem caches in DMA32 zone
-  iommu/io-pgtable-arm-v7s: Request DMA32 memory, and improve debugging
-
- Documentation/ABI/testing/sysfs-kernel-slab |  9 ++++++++
- drivers/iommu/io-pgtable-arm-v7s.c          | 20 +++++++++++++----
- include/linux/slab.h                        |  2 ++
- mm/internal.h                               | 22 +++++++++++++++++--
- mm/slab.c                                   | 10 +++------
- mm/slab.h                                   |  3 ++-
- mm/slab_common.c                            |  2 +-
- mm/slub.c                                   | 24 +++++++++++++++------
- 8 files changed, 70 insertions(+), 22 deletions(-)
-
+diff --git a/mm/internal.h b/mm/internal.h
+index f0c9ccde3bdb9e..a2ee82a0cd44ae 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -33,8 +33,22 @@
+ /* Control allocation cpuset and node placement constraints */
+ #define GFP_CONSTRAINT_MASK (__GFP_HARDWALL|__GFP_THISNODE)
+ 
+-/* Do not use these with a slab allocator */
+-#define GFP_SLAB_BUG_MASK (__GFP_DMA32|__GFP_HIGHMEM|~__GFP_BITS_MASK)
++/* Check for flags that must not be used with a slab allocator */
++static inline gfp_t check_slab_flags(gfp_t flags)
++{
++	gfp_t bug_mask = __GFP_DMA32 | __GFP_HIGHMEM | ~__GFP_BITS_MASK;
++
++	if (unlikely(flags & bug_mask)) {
++		gfp_t invalid_mask = flags & bug_mask;
++
++		flags &= ~bug_mask;
++		pr_warn("Unexpected gfp: %#x (%pGg). Fixing up to gfp: %#x (%pGg). Fix your code!\n",
++				invalid_mask, &invalid_mask, flags, &flags);
++		dump_stack();
++	}
++
++	return flags;
++}
+ 
+ void page_writeback_init(void);
+ 
+diff --git a/mm/slab.c b/mm/slab.c
+index 73fe23e649c91a..65a774f05e7836 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -2643,13 +2643,7 @@ static struct page *cache_grow_begin(struct kmem_cache *cachep,
+ 	 * Be lazy and only check for valid flags here,  keeping it out of the
+ 	 * critical path in kmem_cache_alloc().
+ 	 */
+-	if (unlikely(flags & GFP_SLAB_BUG_MASK)) {
+-		gfp_t invalid_mask = flags & GFP_SLAB_BUG_MASK;
+-		flags &= ~GFP_SLAB_BUG_MASK;
+-		pr_warn("Unexpected gfp: %#x (%pGg). Fixing up to gfp: %#x (%pGg). Fix your code!\n",
+-				invalid_mask, &invalid_mask, flags, &flags);
+-		dump_stack();
+-	}
++	flags = check_slab_flags(flags);
+ 	WARN_ON_ONCE(cachep->ctor && (flags & __GFP_ZERO));
+ 	local_flags = flags & (GFP_CONSTRAINT_MASK|GFP_RECLAIM_MASK);
+ 
+diff --git a/mm/slub.c b/mm/slub.c
+index c229a9b7dd5448..21a3f6866da472 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -1685,13 +1685,7 @@ static struct page *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
+ 
+ static struct page *new_slab(struct kmem_cache *s, gfp_t flags, int node)
+ {
+-	if (unlikely(flags & GFP_SLAB_BUG_MASK)) {
+-		gfp_t invalid_mask = flags & GFP_SLAB_BUG_MASK;
+-		flags &= ~GFP_SLAB_BUG_MASK;
+-		pr_warn("Unexpected gfp: %#x (%pGg). Fixing up to gfp: %#x (%pGg). Fix your code!\n",
+-				invalid_mask, &invalid_mask, flags, &flags);
+-		dump_stack();
+-	}
++	flags = check_slab_flags(flags);
+ 
+ 	return allocate_slab(s,
+ 		flags & (GFP_RECLAIM_MASK | GFP_CONSTRAINT_MASK), node);
 -- 
 2.20.0.rc1.387.gf8505762e3-goog
