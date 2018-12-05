@@ -1,99 +1,148 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 2/9] ACPI/IORT: Use helper functions to access
- dev->iommu_fwspec
-Date: Wed, 5 Dec 2018 17:50:23 +0000
-Message-ID: <ecfaa990-9257-0592-ee4d-ca3f8537783d@arm.com>
-References: <20181204163002.15800-1-joro@8bytes.org>
- <20181204163002.15800-3-joro@8bytes.org>
+Subject: Re: [PATCH 2/4] iommu: Consolitate ->add/remove_device() calls
+Date: Wed, 5 Dec 2018 18:20:50 +0000
+Message-ID: <3ca13757-edf8-95cb-6316-73d202f97dbf@arm.com>
+References: <20181205143646.4876-1-joro@8bytes.org>
+ <20181205143646.4876-3-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181204163002.15800-3-joro@8bytes.org>
+In-Reply-To: <20181205143646.4876-3-joro@8bytes.org>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
+Cc: linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/12/2018 16:29, Joerg Roedel wrote:
+On 05/12/2018 14:36, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel@suse.de>
 > 
-> Use the new helpers dev_iommu_fwspec_get()/set() to access
-> the dev->iommu_fwspec pointer. This makes it easier to move
-> that pointer later into another struct.
+> Put them into separate functions and call those where the
+> plain ops have been called before.
 > 
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 > Signed-off-by: Joerg Roedel <jroedel@suse.de>
 > ---
->   drivers/acpi/arm64/iort.c | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
+>   drivers/iommu/iommu.c | 54 ++++++++++++++++++++++---------------------
+>   include/linux/iommu.h |  3 +++
+>   2 files changed, 31 insertions(+), 26 deletions(-)
 > 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 70f4e80b9246..754a67ba49e5 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -779,7 +779,7 @@ static inline bool iort_iommu_driver_enabled(u8 type)
->   static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
->   {
->   	struct acpi_iort_node *iommu;
-> -	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index edbdf5d6962c..ad4dc51eb69c 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -110,6 +110,26 @@ void iommu_device_unregister(struct iommu_device *iommu)
+>   	spin_unlock(&iommu_device_lock);
+>   }
 >   
->   	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
->   
-> @@ -824,6 +824,7 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
->    */
->   int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
->   {
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->   	struct acpi_iort_its_group *its;
->   	struct acpi_iort_node *iommu_node, *its_node = NULL;
->   	int i, resv = 0;
-> @@ -841,9 +842,9 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
->   	 * a given PCI or named component may map IDs to.
->   	 */
->   
-> -	for (i = 0; i < dev->iommu_fwspec->num_ids; i++) {
-> +	for (i = 0; i < fwspec->num_ids; i++) {
->   		its_node = iort_node_map_id(iommu_node,
-> -					dev->iommu_fwspec->ids[i],
-> +					fwspec->ids[i],
->   					NULL, IORT_MSI_TYPE);
->   		if (its_node)
->   			break;
-> @@ -1036,6 +1037,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
->    */
->   const struct iommu_ops *iort_iommu_configure(struct device *dev)
->   {
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
->   	struct acpi_iort_node *node, *parent;
->   	const struct iommu_ops *ops;
->   	u32 streamid = 0;
-> @@ -1045,7 +1047,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->   	 * If we already translated the fwspec there
->   	 * is nothing left to do, return the iommu_ops.
->   	 */
-> -	ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
-> +	ops = iort_fwspec_iommu_ops(fwspec);
->   	if (ops)
->   		return ops;
->   
-> @@ -1084,7 +1086,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->   	 * add_device callback for dev, replay it to get things in order.
->   	 */
->   	if (!err) {
-> -		ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
-> +		ops = iort_fwspec_iommu_ops(fwspec);
+> +int iommu_probe_device(struct device *dev)
+> +{
+> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +	if (!ops->add_device)
+> +		return 0;
 
-This needs to reload the new fwspec initialised by iort_iommu_xlate(), 
-in the same manner as the OF code. I think the best thing to do is 
-encapsulate the dev_iommu_fwspec_get() call in iort_fwspec_iommu_ops(), 
-and have that take dev as its argument directly.
+Is there any good reason to let .add_device/.remove_device be optional 
+still? Everyone's implemented them for a while now, and on a practical 
+level I don't really see how else we could expect devices to be taken in 
+and out of their appropriate groups correctly.
 
 Robin.
 
->   		err = iort_add_device_replay(ops, dev);
+> +
+> +	WARN_ON(dev->iommu_group);
+> +
+> +	return ops->add_device(dev);
+> +}
+> +
+> +void  iommu_release_device(struct device *dev)
+> +{
+> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +
+> +	if (ops->remove_device && dev->iommu_group)
+> +		ops->remove_device(dev);
+> +}
+> +
+>   static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>   						 unsigned type);
+>   static int __iommu_attach_device(struct iommu_domain *domain,
+> @@ -1117,16 +1137,7 @@ struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
+>   
+>   static int add_iommu_group(struct device *dev, void *data)
+>   {
+> -	struct iommu_callback_data *cb = data;
+> -	const struct iommu_ops *ops = cb->ops;
+> -	int ret;
+> -
+> -	if (!ops->add_device)
+> -		return 0;
+> -
+> -	WARN_ON(dev->iommu_group);
+> -
+> -	ret = ops->add_device(dev);
+> +	int ret = iommu_probe_device(dev);
+>   
+>   	/*
+>   	 * We ignore -ENODEV errors for now, as they just mean that the
+> @@ -1141,11 +1152,7 @@ static int add_iommu_group(struct device *dev, void *data)
+>   
+>   static int remove_iommu_group(struct device *dev, void *data)
+>   {
+> -	struct iommu_callback_data *cb = data;
+> -	const struct iommu_ops *ops = cb->ops;
+> -
+> -	if (ops->remove_device && dev->iommu_group)
+> -		ops->remove_device(dev);
+> +	iommu_release_device(dev);
+>   
+>   	return 0;
+>   }
+> @@ -1153,27 +1160,22 @@ static int remove_iommu_group(struct device *dev, void *data)
+>   static int iommu_bus_notifier(struct notifier_block *nb,
+>   			      unsigned long action, void *data)
+>   {
+> +	unsigned long group_action = 0;
+>   	struct device *dev = data;
+> -	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>   	struct iommu_group *group;
+> -	unsigned long group_action = 0;
+>   
+>   	/*
+>   	 * ADD/DEL call into iommu driver ops if provided, which may
+>   	 * result in ADD/DEL notifiers to group->notifier
+>   	 */
+>   	if (action == BUS_NOTIFY_ADD_DEVICE) {
+> -		if (ops->add_device) {
+> -			int ret;
+> +		int ret;
+>   
+> -			ret = ops->add_device(dev);
+> -			return (ret) ? NOTIFY_DONE : NOTIFY_OK;
+> -		}
+> +		ret = iommu_probe_device(dev);
+> +		return (ret) ? NOTIFY_DONE : NOTIFY_OK;
+>   	} else if (action == BUS_NOTIFY_REMOVED_DEVICE) {
+> -		if (ops->remove_device && dev->iommu_group) {
+> -			ops->remove_device(dev);
+> -			return 0;
+> -		}
+> +		iommu_release_device(dev);
+> +		return NOTIFY_OK;
 >   	}
 >   
+>   	/*
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a1d28f42cb77..2357841845bb 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -398,6 +398,9 @@ void iommu_fwspec_free(struct device *dev);
+>   int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+>   const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+>   
+> +int iommu_probe_device(struct device *dev);
+> +void  iommu_release_device(struct device *dev);
+> +
+>   #else /* CONFIG_IOMMU_API */
+>   
+>   struct iommu_ops {};
 > 
