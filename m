@@ -1,41 +1,57 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v4 2/3] mm: Add support for kmem caches in DMA32 zone
-Date: Thu, 6 Dec 2018 18:09:39 +0800
-Message-ID: <CANMq1KAJ7YvbpUvRqP0zEWY1_pC-TvHMZYn4FUj4A9Bpmv_jxg@mail.gmail.com>
-References: <20181205054828.183476-1-drinkcat@chromium.org>
- <20181205054828.183476-3-drinkcat@chromium.org> <5eddd264-5527-a98e-fc8b-31ea89f474db@suse.cz>
- <CANMq1KAL7TcVa4xF8=NdK2cs0VakEq5i6MyCvfmYTGCmJ78-ag@mail.gmail.com> <09f56edb-2dab-c023-2164-dd7b5cef6afb@suse.cz>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Thu, 6 Dec 2018 11:55:54 +0100
+Message-ID: <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de>
+References: <20181129170351.GC27951@lst.de>
+ <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
+ <20181130105346.GB26765@lst.de>
+ <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de>
+ <20181130131056.GA5211@lst.de>
+ <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de>
+ <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de>
+ <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de>
+ <20181204142426.GA2743@lst.de>
+ <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de>
+ <20181205140550.GA27549@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <09f56edb-2dab-c023-2164-dd7b5cef6afb@suse.cz>
+In-Reply-To: <20181205140550.GA27549@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yi
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 6, 2018 at 5:37 PM Vlastimil Babka <vbabka@suse.cz> wrote:
+On 05 December 2018 at 3:05PM, Christoph Hellwig wrote:
 >
-> On 12/6/18 4:49 AM, Nicolas Boichat wrote:
-> >> So it would be fine even unchanged. The check would anyway need some
-> >> more love to catch the same with __GFP_DMA to be consistent and cover
-> >> all corner cases.
-> > Yes, the test is not complete. If we really wanted this to be
-> > accurate, we'd need to check that GFP_* exactly matches SLAB_CACHE_*.
-> >
-> > The only problem with dropping this is test that we should restore
-> > GFP_DMA32 warning/errors somewhere else (as Christopher pointed out
-> > here: https://lkml.org/lkml/2018/11/22/430), especially for kmalloc
-> > case.
+> Thanks.  Can you try a few stepping points in the tree?
 >
-> I meant just dropping that patch hunk, not the whole test. Then the test
-> stays as it is and will keep warning anyone calling kmalloc(GFP_DMA32).
-> It would also warn anyone calling kmem_cache_alloc(GFP_DMA32) on
-> SLAB_CACHE_DMA32 cache, but since the gfp can be just dropped, and you
-> as the only user of this so far will do that, it's fine?
+> First just with commit 7fd3bb05b73beea1f9840b505aa09beb9c75a8c6
+> (the first one) applied?
+>
+> Second with all commits up to 5da11e49df21f21dac25a2491aa788307bdacb6b
+>
+> And if that still works with commits up to
+> c1bfcad4b0cf38ce5b00f7ad880d3a13484c123a
+>
+Hi Christoph,
 
-I missed your point, this would work fine indeed.
+I undid the commit 7fd3bb05b73beea1f9840b505aa09beb9c75a8c6 with the 
+following command:
 
-Thanks.
+git checkout 7fd3bb05b73beea1f9840b505aa09beb9c75a8c6
 
-> > Maybe this can be done in kmalloc_slab.
+Result: PASEMI onboard ethernet works again and the P5020 board boots.
+
+I will test the other commits in the next days.
+
+@All
+It is really important, that you also test Christoph's work on your 
+PASEMI and NXP boards. Could you please help us with solving the issues?
+
+'git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.5 a'
+
+Thanks,
+Christian
