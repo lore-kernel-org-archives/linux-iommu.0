@@ -1,40 +1,49 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH 2/9] ACPI/IORT: Use helper functions to access
-	dev->iommu_fwspec
-Date: Thu, 6 Dec 2018 14:53:10 +0100
-Message-ID: <20181206135310.lj5aiosr5ldno72g@suse.de>
-References: <20181204163002.15800-1-joro@8bytes.org>
-	<20181204163002.15800-3-joro@8bytes.org>
-	<ecfaa990-9257-0592-ee4d-ca3f8537783d@arm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH 02/34] powerpc: allow NOT_COHERENT_CACHE for amigaone
+Date: Thu, 6 Dec 2018 06:09:22 -0800
+Message-ID: <20181206140922.GA29741@infradead.org>
+References: <20181114082314.8965-1-hch@lst.de>
+ <20181114082314.8965-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <ecfaa990-9257-0592-ee4d-ca3f8537783d-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20181114082314.8965-3-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, linux-arch@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+powerpc maintainers, can you pick this up as this is a bug fix for the
+currently existing powerpc Kconfig code?
 
-On Wed, Dec 05, 2018 at 05:50:23PM +0000, Robin Murphy wrote:
-> This needs to reload the new fwspec initialised by iort_iommu_xlate(), in
-> the same manner as the OF code. I think the best thing to do is encapsulate
-> the dev_iommu_fwspec_get() call in iort_fwspec_iommu_ops(), and have that
-> take dev as its argument directly.
-
-Yeah, that makes sense. I changed the patch this way.
-
-Thanks,
-
-	Joerg
+On Wed, Nov 14, 2018 at 09:22:42AM +0100, Christoph Hellwig wrote:
+> AMIGAONE select NOT_COHERENT_CACHE, so we better allow it.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/powerpc/platforms/Kconfig.cputype | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
+> index f4e2c5729374..6fedbf349fce 100644
+> --- a/arch/powerpc/platforms/Kconfig.cputype
+> +++ b/arch/powerpc/platforms/Kconfig.cputype
+> @@ -412,7 +412,8 @@ config NR_CPUS
+>  
+>  config NOT_COHERENT_CACHE
+>  	bool
+> -	depends on 4xx || PPC_8xx || E200 || PPC_MPC512x || GAMECUBE_COMMON
+> +	depends on 4xx || PPC_8xx || E200 || PPC_MPC512x || \
+> +		GAMECUBE_COMMON || AMIGAONE
+>  	default n if PPC_47x
+>  	default y
+>  
+> -- 
+> 2.19.1
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+---end quoted text---
