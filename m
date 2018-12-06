@@ -1,29 +1,44 @@
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [RFC] avoid indirect calls for DMA direct mappings
-Date: Thu, 6 Dec 2018 10:30:32 -0800
-Message-ID: <CAHk-=whQ46wvdsXUS9BJkzQo-AuiCq-tAf1iP0i+G1Ym_M4pmw@mail.gmail.com>
-References: <20181206153720.10702-1-hch@lst.de> <CAHk-=wgz6PFCm+XMWN31dRHzA3JcNP0x0Y-z5NMMw3dHhrDXAw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 4/8] dma-debug: Dynamically expand the dma_debug_entry
+ pool
+Date: Thu, 6 Dec 2018 18:31:25 +0000
+Message-ID: <99a5f83b-8362-937e-9e50-116eedb7e593@arm.com>
+References: <cover.1544037783.git.robin.murphy@arm.com>
+ <8ba34734842beb3ef72260c4ab822dba7c588e4c.1544037783.git.robin.murphy@arm.com>
+ <20181206142423.GB24642@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAHk-=wgz6PFCm+XMWN31dRHzA3JcNP0x0Y-z5NMMw3dHhrDXAw@mail.gmail.com>
+In-Reply-To: <20181206142423.GB24642@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, brouer@redhat.com, tariqt@mellanox.com, ilias.apalodimas@linaro.org, toke@toke.dk, robin.murphy@arm.com, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
+Cc: cai@gmx.us, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 6, 2018 at 10:28 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Put another way, you made the fast case unnecessarily slow.
+On 06/12/2018 14:24, Christoph Hellwig wrote:
+>> @@ -47,6 +47,8 @@
+>>   #ifndef PREALLOC_DMA_DEBUG_ENTRIES
+>>   #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
+>>   #endif
+> 
+> FYI, I think we should drop the potential arch hook with the ifndef
+> here once we support the dynamic adjustment.
 
-Side note: the code seems to be a bit confused about it, because
-*some* cases test the fast case first, and some do it after they've
-already accessed the pointer for the slow case.
+Sure - I have a vague feeling that thought did cross my mind at the 
+time, but it didn't stick.
 
-So even aside from the performance and code generation issue (and
-possible future "use a special bit pattern for the fast case"), it
-would be good for _consistency_ to just always do the fast-case test
-first.
+> 
+>> +		if (dma_debug_create_entries(DMA_DEBUG_DYNAMIC_ENTRIES, GFP_ATOMIC)) {
+> 
+> Overly long line.
 
-                Linus
+Bah, I deliberately didn't bother wrapping this since it gets shorter 
+again later, but now I realise it also slipped through the s/create/add/ 
+rebase so it's just busted, and due to another last-minute fix I 
+actually ended up with an even longer line elsewhere.
+
+I'll tidy all of that up for a v3.
+
+Robin.
