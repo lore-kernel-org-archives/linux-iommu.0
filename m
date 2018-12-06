@@ -1,44 +1,68 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 4/8] dma-debug: Dynamically expand the dma_debug_entry
- pool
-Date: Thu, 6 Dec 2018 18:31:25 +0000
-Message-ID: <99a5f83b-8362-937e-9e50-116eedb7e593@arm.com>
-References: <cover.1544037783.git.robin.murphy@arm.com>
- <8ba34734842beb3ef72260c4ab822dba7c588e4c.1544037783.git.robin.murphy@arm.com>
- <20181206142423.GB24642@lst.de>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: [PATCH v3 0/9] Use vm_insert_range
+Date: Fri, 7 Dec 2018 00:07:33 +0530
+Message-ID: <20181206183733.GA17240@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181206142423.GB24642@lst.de>
-Content-Language: en-GB
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: cai@gmx.us, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com, sfr@canb.auug.org.au, rppt@linux.vnet.ibm.com, peterz@infradead.org, linux@armlinux.org.uk, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, keescook@chromium.org, m.szyprowski@samsung.com, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, heiko@sntech.de, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/12/2018 14:24, Christoph Hellwig wrote:
->> @@ -47,6 +47,8 @@
->>   #ifndef PREALLOC_DMA_DEBUG_ENTRIES
->>   #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
->>   #endif
-> 
-> FYI, I think we should drop the potential arch hook with the ifndef
-> here once we support the dynamic adjustment.
+Previouly drivers have their own way of mapping range of
+kernel pages/memory into user vma and this was done by
+invoking vm_insert_page() within a loop.
 
-Sure - I have a vague feeling that thought did cross my mind at the 
-time, but it didn't stick.
+As this pattern is common across different drivers, it can
+be generalized by creating a new function and use it across
+the drivers.
 
-> 
->> +		if (dma_debug_create_entries(DMA_DEBUG_DYNAMIC_ENTRIES, GFP_ATOMIC)) {
-> 
-> Overly long line.
+vm_insert_range is the new API which will be used to map a
+range of kernel memory/pages to user vma.
 
-Bah, I deliberately didn't bother wrapping this since it gets shorter 
-again later, but now I realise it also slipped through the s/create/add/ 
-rebase so it's just busted, and due to another last-minute fix I 
-actually ended up with an even longer line elsewhere.
+All the applicable places are converted to use new vm_insert_range
+in this patch series.
 
-I'll tidy all of that up for a v3.
+v1 -> v2:
+        Address review comment on mm/memory.c. Add EXPORT_SYMBOL
+        for vm_insert_range and corrected the documentation part
+        for this API.
 
-Robin.
+        In drivers/gpu/drm/xen/xen_drm_front_gem.c, replace err
+        with ret as suggested.
+
+        In drivers/iommu/dma-iommu.c, handle the scenario of partial
+        mmap() of large buffer by passing *pages + vma->vm_pgoff* to
+        vm_insert_range().
+
+v2 -> v3:
+	Declaration of vm_insert_range() moved to include/linux/mm.h
+
+Souptick Joarder (9):
+  mm: Introduce new vm_insert_range API
+  arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
+  drivers/firewire/core-iso.c: Convert to use vm_insert_range
+  drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
+  drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
+  iommu/dma-iommu.c: Convert to use vm_insert_range
+  videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range
+  xen/gntdev.c: Convert to use vm_insert_range
+  xen/privcmd-buf.c: Convert to use vm_insert_range
+
+ arch/arm/mm/dma-mapping.c                         | 21 +++++--------
+ drivers/firewire/core-iso.c                       | 15 ++-------
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c       | 20 ++----------
+ drivers/gpu/drm/xen/xen_drm_front_gem.c           | 20 ++++--------
+ drivers/iommu/dma-iommu.c                         | 13 ++------
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c | 23 +++++---------
+ drivers/xen/gntdev.c                              | 11 +++----
+ drivers/xen/privcmd-buf.c                         |  8 ++---
+ include/linux/mm.h                                |  2 ++
+ mm/memory.c                                       | 38 +++++++++++++++++++++++
+ mm/nommu.c                                        |  7 +++++
+ 11 files changed, 80 insertions(+), 98 deletions(-)
+
+-- 
+1.9.1
