@@ -1,41 +1,47 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 0/5] Introduce device_iommu_maped() function
-Date: Thu, 6 Dec 2018 16:36:45 +0100
-Message-ID: <20181206153644.GH16835@8bytes.org>
-References: <20181204172504.19708-1-joro@8bytes.org>
- <e34dcbe8-2f1b-31bb-2093-542361635cf5@arm.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [RFC] avoid indirect calls for DMA direct mappings
+Date: Thu,  6 Dec 2018 07:37:19 -0800
+Message-ID: <20181206153720.10702-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e34dcbe8-2f1b-31bb-2093-542361635cf5@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Jesper Dangaard Brouer <brouer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke-LJ9M9ZcSy1A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tariq Toukan <tariqt-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 05, 2018 at 05:17:29PM +0000, Robin Murphy wrote:
-> On 04/12/2018 17:24, Joerg Roedel wrote:
+Hi all,
 
-> Nice, we can also clean up a whole load of vague iommu_present() usage and
-> even one or two odd iommu_get_domain_for_dev() calls once we have this.
+a while ago Jesper reported major performance regressions due to the
+spectre v2 mitigations in his XDP forwarding workloads.  A large part
+of that is due to the DMA mapping API indirect calls.
 
-Right, I didn't think of that yet, but it's certainly true.
+It turns out that the most common implementation of the DMA API is the
+direct mapping case, and now that we have merged almost all duplicate
+implementations of that into a single generic one is easily feasily to
+direct calls for this fast path.
 
-> There looks to be one more here:
-> 
-> drivers/dma/sh/rcar-dmac.c: rcar_dmac_probe()
+This patch adds a check if we are using dma_direct_ops in each fast path
+DMA operation, and just uses a direct call instead.  For the XDP workload
+this increases the number of packets per second from 7,438,283 to
+9,610,088, so it provides a very significant speedup.
 
-True, I added a patch for that too.
-
-> Other than that and a minor comment on the OF/IORT part, though, for the
-> whole series:
-> 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-
-Thanks, I added you Acked-by to the 5 patches I posted here.
+Note that the patch depends on a lot of work either queued up in the
+DMA mapping tree, or still out on the list from review, so to actually
+try the patch you probably want this git tree:
 
 
-Regards,
+    git://git.infradead.org/users/hch/misc.git dma-direct-calls
 
-	Joerg
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-direct-calls
