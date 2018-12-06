@@ -1,57 +1,70 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 3/8] dma-debug: Refactor dma_debug_entry allocation
-Date: Thu, 6 Dec 2018 18:10:47 +0000
-Message-ID: <9accc5fe-4aae-ff7d-a234-f27167c49614@arm.com>
-References: <cover.1544037783.git.robin.murphy@arm.com>
- <d868e775492e417f446d6d162f5f792bd41ee7bc.1544037783.git.robin.murphy@arm.com>
- <20181206142326.GA24642@lst.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [RFC] avoid indirect calls for DMA direct mappings
+Date: Thu, 6 Dec 2018 10:28:22 -0800
+Message-ID: <CAHk-=wgz6PFCm+XMWN31dRHzA3JcNP0x0Y-z5NMMw3dHhrDXAw@mail.gmail.com>
+References: <20181206153720.10702-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181206142326.GA24642@lst.de>
-Content-Language: en-GB
+In-Reply-To: <20181206153720.10702-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
+Cc: iommu@lists.linux-foundation.org, brouer@redhat.com, tariqt@mellanox.com, ilias.apalodimas@linaro.org, toke@toke.dk, robin.murphy@arm.com, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/12/2018 14:23, Christoph Hellwig wrote:
->> +static int dma_debug_add_entries(u32 num_entries, gfp_t gfp)
->> +{
->> +	struct dma_debug_entry *entry, *next_entry;
->> +	LIST_HEAD(tmp);
->> +	int i;
->> +
->> +	for (i = 0; i < num_entries; ++i) {
->> +		entry = kzalloc(sizeof(*entry), gfp);
->> +		if (!entry)
->> +			goto out_err;
->> +
->> +		list_add_tail(&entry->list, &tmp);
->> +	}
->> +
->> +	list_splice(&tmp, &free_entries);
->> +	num_free_entries += num_entries;
->> +	nr_total_entries += num_entries;
-> 
-> The adding to a local list and splicing seems a bit pointless if we
-> do it all under lock anyway.  Either we change the locking in
-> dma_debug_resize_entries and your upcoming automatic allocation that
-> we only do it over the splice and counter adjustment, which would
-> have the advantage of allowing freeing of entries in parallel to these
-> allocations, or we could just drop the local tmp list.
+On Thu, Dec 6, 2018 at 7:37 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> This patch adds a check if we are using dma_direct_ops in each fast path
+> DMA operation, and just uses a direct call instead.  For the XDP workload
+> this increases the number of packets per second from 7,438,283 to
+> 9,610,088, so it provides a very significant speedup.
 
-AFAICS the tmp list wasn't about locking as much as meaning that if 
-kzalloc() failed at any point, we can free the partial allocation and 
-back out without disturbing free_entries at all - that still makes sense 
-to me up until patch #8 where we embrace the "never free anything" 
-paradigm and rip out the final traces.
+May I suggest re-doing the logic a bit?
 
-That said, maybe I should just drop the refactoring of 
-dma_debug_resize_entries() now that I'm deleting it as part of the same 
-series anyway - then I guess I squash what's left of this patch into #4 
-and bring forward some of the simplification from #8 to start with. 
-Would that be more agreeable?
+You do things like this:
 
-Robin.
++       if (ops->unmap_page) {
++               if (dma_is_direct(ops))
++                       dma_direct_unmap_page(dev, addr, size, dir, attrs);
++               else
++                       ops->unmap_page(dev, addr, size, dir, attrs);
++       }
+
+which is counterproductive because it checks for the fast case *after*
+you've done a load (and a check) that is entirely pointless for the
+fast case.
+
+Put another way, you made the fast case unnecessarily slow.
+
+If this fast case matters (and the whole point of the series is that
+it *does* matter), then you should make sure that
+
+ (a) the dma_is_direct() function/macro uses "likely()" for the test
+
+and
+
+ (b) the code is organized like this instead:
+
++       if (dma_is_direct(ops))
++               dma_direct_unmap_page(dev, addr, size, dir, attrs);
++       else if (ops->unmap_page)
++               ops->unmap_page(dev, addr, size, dir, attrs);
+
+because now you avoid that unnecessary conditional for the common
+case, and you hopefully never even access the pointer (because you
+know what's behind it: the direct ops cases that you're
+short-circuiting).
+
+In fact, as a further micro-optimization it might be a good idea to
+just specify that the dma_is_direct() ops is a special pointer
+(perhaps even just say that "NULL means it's direct"), because that
+then makes the fast-case test much simpler (avoids a whole nasty
+constant load, and testing for NULL in particular is often much
+better).
+
+But that further micro-optimization absolutely *requires* that the ops
+pointer test comes first. So making that ordering change is not only
+"better code generation for the fast case to avoid extra cache
+accesses", it also allows future optimizations.
+
+                     Linus
