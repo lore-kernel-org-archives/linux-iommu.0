@@ -1,40 +1,53 @@
-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH] dma-mapping: bypass indirect calls for dma-direct
-Date: Thu, 6 Dec 2018 18:40:27 +0100
-Message-ID: <20181206184027.291947c3@redhat.com>
-References: <20181206153720.10702-1-hch@lst.de>
-        <20181206153720.10702-2-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/5] iommu/of: Use device_iommu_mapped()
+Date: Thu, 6 Dec 2018 17:42:16 +0000
+Message-ID: <42cb32df-5358-f00d-12f5-eb3135ec680a@arm.com>
+References: <20181204172504.19708-1-joro@8bytes.org>
+ <20181204172504.19708-3-joro@8bytes.org>
+ <44c82503-bc36-e8de-6932-7c4fd2b597f8@arm.com>
+ <20181206153512.GG16835@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181206153720.10702-2-hch@lst.de>
+In-Reply-To: <20181206153512.GG16835@8bytes.org>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, brouer@redhat.com
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu,  6 Dec 2018 07:37:20 -0800
-Christoph Hellwig <hch@lst.de> wrote:
-
-> Avoid expensive indirect calls in the fast path DMA mapping
-> operations by directly calling the dma_direct_* ops if we are using
-> the directly mapped DMA operations.
+On 06/12/2018 15:35, Joerg Roedel wrote:
+> Hi Robin,
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  include/linux/dma-direct.h  |  17 -----
->  include/linux/dma-mapping.h | 138 +++++++++++++++++++++++++++++++-----
->  kernel/dma/direct.c         |  13 ++--
->  3 files changed, 127 insertions(+), 41 deletions(-)
+> On Wed, Dec 05, 2018 at 05:17:54PM +0000, Robin Murphy wrote:
+>> FWIW, this check (and its ACPI equivalent in patch #3) is specifically
+>> asking "has .add_device() already been called?", rather than the more
+>> general "is this device managed by an IOMMU?" (to which the exact answer at
+>> this point is "yes, provided we return successfully from here").
+>>
+>> I have no objection to the change as-is - especially if that usage is within
+>> the intended scope of this API - I just wanted to call it out in case you're
+>> also planning to introduce something else which would be even more
+>> appropriate for that.
+> 
+> Yes, the purpose of the device_iommu_mapped() functions is to check
+> whether the device has been initialized by the IOMMU driver that handles
+> it, if any.
+> 
+> So it answers the question: Can I use the device in an IOMMU-API call?
 
-Hi Christoph,
+OK, another way to consider the usage here would be "is the device ready 
+to use in IOMMU API calls (or do I need to call add_device to finish 
+setting it up)?", so it does in fact seem like a perfect fit, great!
 
-Is this patch to be applied on top of the other (41) patches I just
-tested with my XDP forward workload?
+> And it is more readable than the dev->iommu_group checks everywhere :)
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+For sure - although I am now wondering whether "mapped" is perhaps a 
+little ambiguous in the naming, since the answer to "can I use the API" 
+is yes even when the device may currently be attached to an 
+identity/passthrough domain or blocked completely, neither of which 
+involve any "mapping". Maybe simply "device_has_iommu()" would convey 
+the intent better?
+
+Robin.
