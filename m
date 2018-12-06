@@ -1,49 +1,27 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH v2 3/8] dma-debug: Refactor dma_debug_entry allocation
-Date: Thu, 6 Dec 2018 15:23:26 +0100
-Message-ID: <20181206142326.GA24642@lst.de>
-References: <cover.1544037783.git.robin.murphy@arm.com>
-	<d868e775492e417f446d6d162f5f792bd41ee7bc.1544037783.git.robin.murphy@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 4/8] dma-debug: Dynamically expand the
+ dma_debug_entry pool
+Date: Thu, 6 Dec 2018 15:24:23 +0100
+Message-ID: <20181206142423.GB24642@lst.de>
+References: <cover.1544037783.git.robin.murphy@arm.com> <8ba34734842beb3ef72260c4ab822dba7c588e4c.1544037783.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <d868e775492e417f446d6d162f5f792bd41ee7bc.1544037783.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
+In-Reply-To: <8ba34734842beb3ef72260c4ab822dba7c588e4c.1544037783.git.robin.murphy@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: hch@lst.de, cai@gmx.us, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-> +static int dma_debug_add_entries(u32 num_entries, gfp_t gfp)
-> +{
-> +	struct dma_debug_entry *entry, *next_entry;
-> +	LIST_HEAD(tmp);
-> +	int i;
-> +
-> +	for (i = 0; i < num_entries; ++i) {
-> +		entry = kzalloc(sizeof(*entry), gfp);
-> +		if (!entry)
-> +			goto out_err;
-> +
-> +		list_add_tail(&entry->list, &tmp);
-> +	}
-> +
-> +	list_splice(&tmp, &free_entries);
-> +	num_free_entries += num_entries;
-> +	nr_total_entries += num_entries;
+> @@ -47,6 +47,8 @@
+>  #ifndef PREALLOC_DMA_DEBUG_ENTRIES
+>  #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
+>  #endif
 
-The adding to a local list and splicing seems a bit pointless if we
-do it all under lock anyway.  Either we change the locking in
-dma_debug_resize_entries and your upcoming automatic allocation that
-we only do it over the splice and counter adjustment, which would
-have the advantage of allowing freeing of entries in parallel to these
-allocations, or we could just drop the local tmp list.
+FYI, I think we should drop the potential arch hook with the ifndef
+here once we support the dynamic adjustment.
+
+> +		if (dma_debug_create_entries(DMA_DEBUG_DYNAMIC_ENTRIES, GFP_ATOMIC)) {
+
+Overly long line.
