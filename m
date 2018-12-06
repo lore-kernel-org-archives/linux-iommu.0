@@ -1,18 +1,18 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 8/8] dma-debug: Batch dma_debug_entry allocation
-Date: Thu, 6 Dec 2018 15:27:04 +0100
-Message-ID: <20181206142704.GF24642@lst.de>
-References: <cover.1544037783.git.robin.murphy@arm.com> <e438dfe197a0e33ac8ab71a86167b69c56db77c5.1544037783.git.robin.murphy@arm.com>
+Subject: Re: remove the ->mapping_error method from dma_map_ops V3
+Date: Thu, 6 Dec 2018 15:57:58 +0100
+Message-ID: <20181206145758.GA25666@lst.de>
+References: <20181130132231.16512-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <e438dfe197a0e33ac8ab71a86167b69c56db77c5.1544037783.git.robin.murphy@arm.com>
+In-Reply-To: <20181130132231.16512-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
+To: iommu@lists.linux-foundation.org
+Cc: linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, linux-ia64@vger.kernel.org, linux-parisc@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>, x86@kernel.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, xen-devel@lists.xenproject.org, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-This looks very nice, thanks!
-
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+I've pulled this into the dma-mapping for-next tree, with the suggestion
+from Robin that improves bisectability, and two unused variables found
+by the build bot.
