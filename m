@@ -1,16 +1,17 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [RFC] avoid indirect calls for DMA direct mappings
-Date: Thu, 6 Dec 2018 19:45:33 +0100
-Message-ID: <20181206184533.GC30039@lst.de>
-References: <20181206153720.10702-1-hch@lst.de>
-	<20181206184351.4d9ece54@redhat.com>
-	<A9F9D621-445E-4F3C-95FE-3963A3DAEF98@gmail.com>
+Subject: Re: [PATCH v2 3/8] dma-debug: Refactor dma_debug_entry allocation
+Date: Thu, 6 Dec 2018 19:46:28 +0100
+Message-ID: <20181206184628.GA30345@lst.de>
+References: <cover.1544037783.git.robin.murphy@arm.com>
+	<d868e775492e417f446d6d162f5f792bd41ee7bc.1544037783.git.robin.murphy@arm.com>
+	<20181206142326.GA24642@lst.de>
+	<9accc5fe-4aae-ff7d-a234-f27167c49614@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <A9F9D621-445E-4F3C-95FE-3963A3DAEF98-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <9accc5fe-4aae-ff7d-a234-f27167c49614-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,16 +21,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nadav Amit <nadav.amit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke-LJ9M9ZcSy1A@public.gmane.org>, Josh Poimboeuf <jpoimboe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Ilias Apalodimas <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jesper Dangaard Brouer <brouer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Tariq Toukan <tariqt-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 06, 2018 at 10:29:35AM -0800, Nadav Amit wrote:
-> Did you happen to see my RFC for "automatic" indirect call promotion? 
-> 
-> 	https://lkml.org/lkml/2018/10/18/175
-> 
-> I hope to get v1 based on Josh responses next week.
+On Thu, Dec 06, 2018 at 06:10:47PM +0000, Robin Murphy wrote:
+> AFAICS the tmp list wasn't about locking as much as meaning that if 
+> kzalloc() failed at any point, we can free the partial allocation and back 
+> out without disturbing free_entries at all - that still makes sense to me 
+> up until patch #8 where we embrace the "never free anything" paradigm and 
+> rip out the final traces.
+>
+> That said, maybe I should just drop the refactoring of 
+> dma_debug_resize_entries() now that I'm deleting it as part of the same 
+> series anyway - then I guess I squash what's left of this patch into #4 and 
+> bring forward some of the simplification from #8 to start with. Would that 
+> be more agreeable?
 
-I'll take a look when you repost it.  Although I'm always a little vary
-of under the hood magic like this..
+Yes, I just noticed all this goes away toward the end anyway.  We can
+either keep it as is, or just drop the intermediate step if that is
+easy enough for you.
