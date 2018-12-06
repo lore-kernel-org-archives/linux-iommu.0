@@ -1,27 +1,29 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 2/8] dma-debug: Expose nr_total_entries in debugfs
-Date: Thu, 6 Dec 2018 15:14:34 +0100
-Message-ID: <20181206141434.GA24408@lst.de>
-References: <cover.1544037783.git.robin.murphy@arm.com> <6740cfb143a084e8f5851b760bf99121a7ad6c67.1544037783.git.robin.murphy@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 7/9] iommu/of: Use helper functions to access
+ dev->iommu_fwspec
+Date: Thu, 6 Dec 2018 15:16:07 +0100
+Message-ID: <20181206141606.GF16835@8bytes.org>
+References: <20181204163002.15800-1-joro@8bytes.org>
+ <20181204163002.15800-8-joro@8bytes.org>
+ <b78ab1d9-1f24-f792-04dd-26958a0739d3@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6740cfb143a084e8f5851b760bf99121a7ad6c67.1544037783.git.robin.murphy@arm.com>
+In-Reply-To: <b78ab1d9-1f24-f792-04dd-26958a0739d3@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, cai@gmx.us, salil.mehta@huawei.com, john.garry@huawei.com
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 05, 2018 at 07:56:51PM +0000, Robin Murphy wrote:
-> Expose nr_total_entries in debugfs, so that {num,min}_free_entries
-> become even more meaningful to users interested in current/maximum
-> utilisation. This becomes even more relevant once nr_total_entries
-> may change at runtime beyond just the existing AMD GART debug code.
-> 
-> Suggested-by: John Garry <john.garry@huawei.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On Wed, Dec 05, 2018 at 05:41:51PM +0000, Robin Murphy wrote:
+> Nit: I think it makes sense to put this inside the "if (!err)" condition
+> below rather than out here where it may or may not be relevant. The comment
+> for that case is already supposed to imply that it's dealing with a fresh
+> fwspec.
 
-Looks fine,
+Right, updated that too.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Thanks,
+
+	Joerg
