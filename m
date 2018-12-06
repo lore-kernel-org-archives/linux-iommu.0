@@ -1,18 +1,19 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 02/12] iommu/vt-d: Manage scalalble mode PASID tables
-Date: Thu, 6 Dec 2018 09:13:50 +0800
-Message-ID: <bbaabe2a-8525-e73c-1b62-8cc8eaafe005@linux.intel.com>
+Subject: Re: [PATCH v5 04/12] iommu/vt-d: Add 256-bit invalidation descriptor
+ support
+Date: Thu, 6 Dec 2018 09:19:56 +0800
+Message-ID: <a5b1e040-fbd8-1727-3707-0ac7337d6472@linux.intel.com>
 References: <20181128035449.10226-1-baolu.lu@linux.intel.com>
- <20181128035449.10226-3-baolu.lu@linux.intel.com>
- <20181203134411.lejlkbnagxml54ro@8bytes.org>
- <A2975661238FB949B60364EF0F2C257439D838B9@SHSMSX104.ccr.corp.intel.com>
- <5c81008b-30e8-177d-0182-db366608562f@linux.intel.com>
- <20181205155012.GC16835@8bytes.org>
+ <20181128035449.10226-5-baolu.lu@linux.intel.com>
+ <20181203134856.lui4us4ejm4d5avz@8bytes.org>
+ <A2975661238FB949B60364EF0F2C257439D838AB@SHSMSX104.ccr.corp.intel.com>
+ <3b0eadd2-b99f-98d6-594f-0419f0542789@linux.intel.com>
+ <20181205155646.GD16835@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181205155012.GC16835@8bytes.org>
+In-Reply-To: <20181205155646.GD16835@8bytes.org>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>
@@ -21,42 +22,42 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Joerg,
 
-On 12/5/18 11:50 PM, Joerg Roedel wrote:
-> On Tue, Dec 04, 2018 at 01:58:06PM +0800, Lu Baolu wrote:
->> This function is called in an unsleepable context.
+On 12/5/18 11:56 PM, Joerg Roedel wrote:
+> On Tue, Dec 04, 2018 at 02:13:31PM +0800, Lu Baolu wrote:
+>> The existing code uses GFP_ATOMIC, this patch only changes the size of
+>> the allocated desc_page.
 >>
->> spin_lock(&lock)
->> [...]
->> if (pasid_table_is_necessary)
->> 	allocate_pasid_table(dev)
->> [...]
->> spin_unlock(&lock)
->>
->> We can move it out of the lock range.
->>
->> How about
->>
->> if (pasid_table_is_necessary)
->> 	pasid_table = allocate_pasid_table(dev)
->>
->> spin_lock(&lock)
->> [...]
->> if (pasid_table_is_necessary)
->> 	set_up_pasid_table(pasid_table)
->> [...]
->> spin_unlock(&lock)
+>> I don't think we really need GFP_ATOMIC here (and also for some other
+>> places). I will clean up them in a separated patch.
 > 
-> Hmm, so when the IOMMU is configured in scalable mode we can just
-> allocate a pasid-table for the device when we set it up, right?
+> Okay, thanks.
 > 
-> Scalable mode is a boot-time decision, so we know for sure whether we
-> need a pasid-table on device-setup time. And the device-setup code it
-> preemptable, so I think it this allocation should be outside of any
-> spin-locked section.
+>>> In this patch, there is some code like the code below. It calculates
+>>> destination address of memcpy with qi->desc. If it's still struct qi_desc
+>>> pointer, the calculation result would be wrong.
+>>>
+>>> +			memcpy(desc, qi->desc + (wait_index << shift),
+>>> +			       1 << shift);
+>>>
+>>> The change of the calculation method is to support 128 bits invalidation
+>>> descriptors and 256 invalidation descriptors in this unified code logic.
+>>>
+>>> Also, the conversation between Baolu and me may help.
+>>>
+>>> https://lore.kernel.org/patchwork/patch/1006756/
+>>
+>> Yes. We need to support different descriptor size.
+> 
+> Okay, pointer arithmetic on void* isn't well defined in the C standard,
+> afaik. But it should work with GCC, so it's probably fine.
+> 
+> Unrelated to this patch-set, the whole qi management code needs some
+> cleanups, it queues a sync after every command and has very tricky
+> locking. This patch-set further complicates matters there, so it is
+> probably time for a clean re-write of that part?
 
-Fair enough. I will fix this up in the next version.
-
-Thank you for pointing this out.
+Sure. I will start the cleanups(including the unnecessary ATOMIC page
+allocation) and submit them in a separated patch set after well tested.
 
 Best regards,
 Lu Baolu
