@@ -1,69 +1,43 @@
-From: Yu Zhao via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH v2] iommu: fix amd_iommu=force_isolation
-Date: Thu,  6 Dec 2018 14:39:15 -0700
-Message-ID: <20181206213915.196205-1-yuzhao@google.com>
-References: <20181204223716.214159-1-yuzhao@google.com>
-Reply-To: Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [RFC] avoid indirect calls for DMA direct mappings
+Date: Fri, 7 Dec 2018 02:21:42 +0100
+Message-ID: <20181207012141.GA4256@lst.de>
+References: <20181206153720.10702-1-hch@lst.de> <CAHk-=wgz6PFCm+XMWN31dRHzA3JcNP0x0Y-z5NMMw3dHhrDXAw@mail.gmail.com> <20181206184330.GB30039@lst.de> <173bfba7-033d-93c4-6ef1-48c9e39c9efc@arm.com> <20181206200006.GA31548@lst.de> <e3e4c17e-ba6d-d743-04e5-7f240211b9bc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181204223716.214159-1-yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <e3e4c17e-ba6d-d743-04e5-7f240211b9bc@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux-foundation.org, brouer@redhat.com, tariqt@mellanox.com, ilias.apalodimas@linaro.org, toke@toke.dk, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The parameter is still there but it's ignored. We need to check its
-value before deciding to go into passthrough mode for AMD IOMMU v2
-capable device.
+On Thu, Dec 06, 2018 at 08:24:38PM +0000, Robin Murphy wrote:
+> On 06/12/2018 20:00, Christoph Hellwig wrote:
+>> On Thu, Dec 06, 2018 at 06:54:17PM +0000, Robin Murphy wrote:
+>>> I'm pretty sure we used to assign dummy_dma_ops explicitly to devices at
+>>> the point we detected the ACPI properties are wrong - that shouldn't be too
+>>> much of a headache to go back to.
+>>
+>> Ok.  I've cooked up a patch to use NULL as the go direct marker.
+>> This cleans up a few things nicely, but also means we now need to
+>> do the bypass scheme for all ops, not just the fast path.  But we
+>> probably should just move the slow path ops out of line anyway,
+>> so I'm not worried about it.  This has survived some very basic
+>> testing on x86, and really needs to be cleaned up and split into
+>> multiple patches..
+>
+> I've also just finished hacking something up to keep the arm64 status quo - 
+> I'll need to actually test it tomorrow, but the overall diff looks like the 
+> below.
 
-We occasionally use this parameter to force v2 capable device into
-translation mode to debug memory corruption that we suspect is
-caused by DMA writes.
+Nice.  I created a branch that picked up your bits and also the ideas
+from Linus, and the result looks reall nice.  I'll still need a signoff
+for your bits, though.
 
-To address the following comment from Joerg Roedel on the first
-version, v2 capability of device is completely ignored.
-> This breaks the iommu_v2 use-case, as it needs a direct mapping for the
-> devices that support it.
+Jesper, can you give this a spin if it changes the number even further?
 
-And from Documentation/admin-guide/kernel-parameters.txt:
-  This option does not override iommu=pt
+  git://git.infradead.org/users/hch/misc.git dma-direct-calls.2
 
-Fixes: aafd8ba0ca74 ("iommu/amd: Implement add_device and remove_device")
-
-Signed-off-by: Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1167ff0416cf..325f3bad118b 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -438,7 +438,14 @@ static int iommu_init_device(struct device *dev)
- 
- 	dev_data->alias = get_alias(dev);
- 
--	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
-+	/*
-+	 * By default we use passthrough mode for IOMMUv2 capable device.
-+	 * But if amd_iommu=force_isolation is set (e.g. to debug DMA to
-+	 * invalid address), we ignore the capability for the device so
-+	 * it'll be forced to go into translation mode.
-+	 */
-+	if ((iommu_pass_through || !amd_iommu_force_isolation) &&
-+	    dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
- 		struct amd_iommu *iommu;
- 
- 		iommu = amd_iommu_rlookup_table[dev_data->devid];
--- 
-2.20.0.rc2.403.gdbc3b29805-goog
+  http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-direct-calls.2
