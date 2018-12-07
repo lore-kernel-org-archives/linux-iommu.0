@@ -1,140 +1,47 @@
-From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Subject: Re: [PATCH v3 1/9] mm: Introduce new vm_insert_range API
-Date: Fri, 7 Dec 2018 12:47:37 -0200
-Message-ID: <20181207124737.123cb2e1@coco.lan>
-References: <20181206183945.GA20932@jordon-HP-15-Notebook-PC>
+From: Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
+Subject: Re: [PATCH v5 2/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
+	and improve debugging
+Date: Fri, 7 Dec 2018 16:01:06 +0100
+Message-ID: <78dfb949-ba3d-fd87-255e-65f142850b61@suse.cz>
+References: <20181207061620.107881-1-drinkcat@chromium.org>
+	<20181207061620.107881-3-drinkcat@chromium.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181206183945.GA20932@jordon-HP-15-Notebook-PC>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Souptick Joarder <jrdr.linux@gmail.com>
-Cc: mhocko@suse.com, heiko@sntech.de, peterz@infradead.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux1394-devel@lists.sourceforge.net, m.szyprowski@samsung.com, sfr@canb.auug.org.au, oleksandr_andrushchenko@epam.com, joro@8bytes.org, linux@armlinux.org.uk, willy@infradead.org, airlied@linux.ie, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, treding@nvidia.com, linux-media@vger.kernel.org, keescook@chromium.org, pawel@osciak.com, riel@surriel.com, iommu@lists.linux-foundation.org, rppt@linux.vnet.ibm.com, boris.ostrovsky@oracle.com, iamjoonsoo.kim@lge.com, vbabka@suse.cz, jgross@suse.com, hjc@rock-chips.com, xen-devel@lists.xen.org, kyungmin.park@samsung.com, stefanr@s5r6.in-berlin.de, akpm@linux-foundation.org, robin.murphy@arm.com, kirill.shutemov@linux.intel.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181207061620.107881-3-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Em Fri, 7 Dec 2018 00:09:45 +0530
-Souptick Joarder <jrdr.linux@gmail.com> escreveu:
-
-> Previouly drivers have their own way of mapping range of
-> kernel pages/memory into user vma and this was done by
-> invoking vm_insert_page() within a loop.
+On 12/7/18 7:16 AM, Nicolas Boichat wrote:
+> IOMMUs using ARMv7 short-descriptor format require page tables
+> (level 1 and 2) to be allocated within the first 4GB of RAM, even
+> on 64-bit systems.
 > 
-> As this pattern is common across different drivers, it can
-> be generalized by creating a new function and use it across
-> the drivers.
+> For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
+> is defined (e.g. on arm64 platforms).
 > 
-> vm_insert_range is the new API which will be used to map a
-> range of kernel memory/pages to user vma.
+> For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32. Note
+> that we do not explicitly pass GFP_DMA[32] to kmem_cache_zalloc,
+> as this is not strictly necessary, and would cause a warning
+> in mm/sl*b.c, as we did not update GFP_SLAB_BUG_MASK.
 > 
-> This API is tested by Heiko for Rockchip drm driver, on rk3188,
-> rk3288, rk3328 and rk3399 with graphics.
+> Also, print an error when the physical address does not fit in
+> 32-bit, to make debugging easier in the future.
 > 
-> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
-> Reviewed-by: Matthew Wilcox <willy@infradead.org>
-> Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>
-> Tested-by: Heiko Stuebner <heiko@sntech.de>
+> Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
 
-Looks good to me.
+Also, CC stable?
 
-Reviewed-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-
-> ---
->  include/linux/mm.h |  2 ++
->  mm/memory.c        | 38 ++++++++++++++++++++++++++++++++++++++
->  mm/nommu.c         |  7 +++++++
->  3 files changed, 47 insertions(+)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index fcf9cc9..2bc399f 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -2506,6 +2506,8 @@ unsigned long change_prot_numa(struct vm_area_struct *vma,
->  int remap_pfn_range(struct vm_area_struct *, unsigned long addr,
->  			unsigned long pfn, unsigned long size, pgprot_t);
->  int vm_insert_page(struct vm_area_struct *, unsigned long addr, struct page *);
-> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> +			struct page **pages, unsigned long page_count);
->  vm_fault_t vmf_insert_pfn(struct vm_area_struct *vma, unsigned long addr,
->  			unsigned long pfn);
->  vm_fault_t vmf_insert_pfn_prot(struct vm_area_struct *vma, unsigned long addr,
-> diff --git a/mm/memory.c b/mm/memory.c
-> index 15c417e..84ea46c 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -1478,6 +1478,44 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
->  }
->  
->  /**
-> + * vm_insert_range - insert range of kernel pages into user vma
-> + * @vma: user vma to map to
-> + * @addr: target user address of this page
-> + * @pages: pointer to array of source kernel pages
-> + * @page_count: number of pages need to insert into user vma
-> + *
-> + * This allows drivers to insert range of kernel pages they've allocated
-> + * into a user vma. This is a generic function which drivers can use
-> + * rather than using their own way of mapping range of kernel pages into
-> + * user vma.
-> + *
-> + * If we fail to insert any page into the vma, the function will return
-> + * immediately leaving any previously-inserted pages present.  Callers
-> + * from the mmap handler may immediately return the error as their caller
-> + * will destroy the vma, removing any successfully-inserted pages. Other
-> + * callers should make their own arrangements for calling unmap_region().
-> + *
-> + * Context: Process context. Called by mmap handlers.
-> + * Return: 0 on success and error code otherwise
-> + */
-> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> +			struct page **pages, unsigned long page_count)
-> +{
-> +	unsigned long uaddr = addr;
-> +	int ret = 0, i;
-> +
-> +	for (i = 0; i < page_count; i++) {
-> +		ret = vm_insert_page(vma, uaddr, pages[i]);
-> +		if (ret < 0)
-> +			return ret;
-> +		uaddr += PAGE_SIZE;
-> +	}
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(vm_insert_range);
-> +
-> +/**
->   * vm_insert_page - insert single page into user vma
->   * @vma: user vma to map to
->   * @addr: target user address of this page
-> diff --git a/mm/nommu.c b/mm/nommu.c
-> index 749276b..d6ef5c7 100644
-> --- a/mm/nommu.c
-> +++ b/mm/nommu.c
-> @@ -473,6 +473,13 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
->  }
->  EXPORT_SYMBOL(vm_insert_page);
->  
-> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> +			struct page **pages, unsigned long page_count)
-> +{
-> +	return -EINVAL;
-> +}
-> +EXPORT_SYMBOL(vm_insert_range);
-> +
->  /*
->   *  sys_brk() for the most part doesn't need the global kernel
->   *  lock, except when an application is doing something nasty
-
-
-
-Thanks,
-Mauro
+> Signed-off-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
