@@ -1,121 +1,216 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: [PATCH v5 3/3] mm: Add /sys/kernel/slab/cache/cache_dma32
-Date: Fri,  7 Dec 2018 14:16:20 +0800
-Message-ID: <20181207061620.107881-4-drinkcat@chromium.org>
-References: <20181207061620.107881-1-drinkcat@chromium.org>
+From: Joe Jin <joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH RFC 1/1] swiotlb: add debugfs to track swiotlb buffer usage
+Date: Thu, 6 Dec 2018 22:33:32 -0800
+Message-ID: <30439f1e-cf75-0560-8bd4-5ec5cd692aef@oracle.com>
+References: <1544068785-20399-1-git-send-email-dongli.zhang@oracle.com>
+	<da16ecce-4e25-d246-3e0d-389e8e9e413e@oracle.com>
+	<28a9f44a-d1bf-fb34-5a57-cfdb7bb23163@oracle.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181207061620.107881-1-drinkcat@chromium.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infr
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <28a9f44a-d1bf-fb34-5a57-cfdb7bb23163-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-A previous patch in this series adds support for SLAB_CACHE_DMA32
-kmem caches. This adds the corresponding
-/sys/kernel/slab/cache/cache_dma32 entries, and fixes slabinfo
-tool.
+On 12/6/18 9:49 PM, Dongli Zhang wrote:
+> 
+> 
+> On 12/07/2018 12:12 AM, Joe Jin wrote:
+>> Hi Dongli,
+>>
+>> Maybe move d_swiotlb_usage declare into swiotlb_create_debugfs():
+> 
+> I assume the call of swiotlb_tbl_map_single() might be frequent in some
+> situations, e.g., when 'swiotlb=force'.
+> 
+> That's why I declare the d_swiotlb_usage out of any functions and use "if
+> (unlikely(!d_swiotlb_usage))".
 
-Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
----
+This is reasonable.
 
-There were different opinions on whether this sysfs entry should
-be added, so I'll leave it up to the mm/slub maintainers to decide
-whether they want to pick this up, or drop it.
+Thanks,
+Joe
 
- Documentation/ABI/testing/sysfs-kernel-slab |  9 +++++++++
- mm/slub.c                                   | 11 +++++++++++
- tools/vm/slabinfo.c                         |  7 ++++++-
- 3 files changed, 26 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-kernel-slab b/Documentation/ABI/testing/sysfs-kernel-slab
-index 29601d93a1c2ea..d742c6cfdffbe9 100644
---- a/Documentation/ABI/testing/sysfs-kernel-slab
-+++ b/Documentation/ABI/testing/sysfs-kernel-slab
-@@ -106,6 +106,15 @@ Description:
- 		are from ZONE_DMA.
- 		Available when CONFIG_ZONE_DMA is enabled.
- 
-+What:		/sys/kernel/slab/cache/cache_dma32
-+Date:		December 2018
-+KernelVersion:	4.21
-+Contact:	Nicolas Boichat <drinkcat@chromium.org>
-+Description:
-+		The cache_dma32 file is read-only and specifies whether objects
-+		are from ZONE_DMA32.
-+		Available when CONFIG_ZONE_DMA32 is enabled.
-+
- What:		/sys/kernel/slab/cache/cpu_slabs
- Date:		May 2007
- KernelVersion:	2.6.22
-diff --git a/mm/slub.c b/mm/slub.c
-index 4caadb926838ef..840f3719d9d543 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -5104,6 +5104,14 @@ static ssize_t cache_dma_show(struct kmem_cache *s, char *buf)
- SLAB_ATTR_RO(cache_dma);
- #endif
- 
-+#ifdef CONFIG_ZONE_DMA32
-+static ssize_t cache_dma32_show(struct kmem_cache *s, char *buf)
-+{
-+	return sprintf(buf, "%d\n", !!(s->flags & SLAB_CACHE_DMA32));
-+}
-+SLAB_ATTR_RO(cache_dma32);
-+#endif
-+
- static ssize_t usersize_show(struct kmem_cache *s, char *buf)
- {
- 	return sprintf(buf, "%u\n", s->usersize);
-@@ -5444,6 +5452,9 @@ static struct attribute *slab_attrs[] = {
- #ifdef CONFIG_ZONE_DMA
- 	&cache_dma_attr.attr,
- #endif
-+#ifdef CONFIG_ZONE_DMA32
-+	&cache_dma32_attr.attr,
-+#endif
- #ifdef CONFIG_NUMA
- 	&remote_node_defrag_ratio_attr.attr,
- #endif
-diff --git a/tools/vm/slabinfo.c b/tools/vm/slabinfo.c
-index 334b16db0ebbe9..4ee1bf6e498dfa 100644
---- a/tools/vm/slabinfo.c
-+++ b/tools/vm/slabinfo.c
-@@ -29,7 +29,7 @@ struct slabinfo {
- 	char *name;
- 	int alias;
- 	int refs;
--	int aliases, align, cache_dma, cpu_slabs, destroy_by_rcu;
-+	int aliases, align, cache_dma, cache_dma32, cpu_slabs, destroy_by_rcu;
- 	unsigned int hwcache_align, object_size, objs_per_slab;
- 	unsigned int sanity_checks, slab_size, store_user, trace;
- 	int order, poison, reclaim_account, red_zone;
-@@ -531,6 +531,8 @@ static void report(struct slabinfo *s)
- 		printf("** Hardware cacheline aligned\n");
- 	if (s->cache_dma)
- 		printf("** Memory is allocated in a special DMA zone\n");
-+	if (s->cache_dma32)
-+		printf("** Memory is allocated in a special DMA32 zone\n");
- 	if (s->destroy_by_rcu)
- 		printf("** Slabs are destroyed via RCU\n");
- 	if (s->reclaim_account)
-@@ -599,6 +601,8 @@ static void slabcache(struct slabinfo *s)
- 		*p++ = '*';
- 	if (s->cache_dma)
- 		*p++ = 'd';
-+	if (s->cache_dma32)
-+		*p++ = 'D';
- 	if (s->hwcache_align)
- 		*p++ = 'A';
- 	if (s->poison)
-@@ -1205,6 +1209,7 @@ static void read_slab_dir(void)
- 			slab->aliases = get_obj("aliases");
- 			slab->align = get_obj("align");
- 			slab->cache_dma = get_obj("cache_dma");
-+			slab->cache_dma32 = get_obj("cache_dma32");
- 			slab->cpu_slabs = get_obj("cpu_slabs");
- 			slab->destroy_by_rcu = get_obj("destroy_by_rcu");
- 			slab->hwcache_align = get_obj("hwcache_align");
--- 
-2.20.0.rc2.403.gdbc3b29805-goog
+> 
+> I think "if (unlikely(!d_swiotlb_usage))" incur less performance overhead than
+> calling swiotlb_create_debugfs() every time to confirm if debugfs is created. I
+> would declare d_swiotlb_usage statically inside swiotlb_create_debugfs() if the
+> performance overhead is acceptable (it is trivial indeed).
+> 
+> 
+> That is the reason I tag the patch with RFC because I am not sure if the
+> on-demand creation of debugfs is fine with maintainers/reviewers. If swiotlb
+> pages are never allocated, we would not be able to see the debugfs entry.
+> 
+> I would prefer to limit the modification within swiotlb and to not taint any
+> other files.
+> 
+> The drawback is there is no place to create or delete the debugfs entry because
+> swiotlb buffer could be initialized and uninitialized at very early stage.
+> 
+>>
+>> void swiotlb_create_debugfs(void)
+>> {
+>> #ifdef CONFIG_DEBUG_FS
+>> 	static struct dentry *d_swiotlb_usage = NULL;
+>>
+>> 	if (d_swiotlb_usage)
+>> 		return;
+>>
+>> 	d_swiotlb_usage = debugfs_create_dir("swiotlb", NULL);
+>>
+>> 	if (!d_swiotlb_usage)
+>> 		return;
+>>
+>> 	debugfs_create_file("usage", 0600, d_swiotlb_usage,
+>> 			    NULL, &swiotlb_usage_fops);
+>> #endif
+>> }
+>>
+>> And for io_tlb_used, possible add a check at the begin of swiotlb_tbl_map_single(),
+>> if there were not any free slots or not enough slots, return fail directly?
+> 
+> This would optimize the slots allocation path. I will follow this in next
+> version after I got more suggestions and confirmations from maintainers.
+> 
+> 
+> Thank you very much!
+> 
+> Dongli Zhang
+> 
+>>
+>> Thanks,
+>> Joe
+>> On 12/5/18 7:59 PM, Dongli Zhang wrote:
+>>> The device driver will not be able to do dma operations once swiotlb buffer
+>>> is full, either because the driver is using so many IO TLB blocks inflight,
+>>> or because there is memory leak issue in device driver. To export the
+>>> swiotlb buffer usage via debugfs would help the user estimate the size of
+>>> swiotlb buffer to pre-allocate or analyze device driver memory leak issue.
+>>>
+>>> As the swiotlb can be initialized at very early stage when debugfs cannot
+>>> register successfully, this patch creates the debugfs entry on demand.
+>>>
+>>> Signed-off-by: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+>>> ---
+>>>  kernel/dma/swiotlb.c | 57 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+>>>  1 file changed, 57 insertions(+)
+>>>
+>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>>> index 045930e..d3c8aa4 100644
+>>> --- a/kernel/dma/swiotlb.c
+>>> +++ b/kernel/dma/swiotlb.c
+>>> @@ -35,6 +35,9 @@
+>>>  #include <linux/scatterlist.h>
+>>>  #include <linux/mem_encrypt.h>
+>>>  #include <linux/set_memory.h>
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +#include <linux/debugfs.h>
+>>> +#endif
+>>>  
+>>>  #include <asm/io.h>
+>>>  #include <asm/dma.h>
+>>> @@ -73,6 +76,13 @@ static phys_addr_t io_tlb_start, io_tlb_end;
+>>>   */
+>>>  static unsigned long io_tlb_nslabs;
+>>>  
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +/*
+>>> + * The number of used IO TLB block
+>>> + */
+>>> +static unsigned long io_tlb_used;
+>>> +#endif
+>>> +
+>>>  /*
+>>>   * This is a free list describing the number of free entries available from
+>>>   * each index
+>>> @@ -100,6 +110,41 @@ static DEFINE_SPINLOCK(io_tlb_lock);
+>>>  
+>>>  static int late_alloc;
+>>>  
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +
+>>> +static struct dentry *d_swiotlb_usage;
+>>> +
+>>> +static int swiotlb_usage_show(struct seq_file *m, void *v)
+>>> +{
+>>> +	seq_printf(m, "%lu\n%lu\n", io_tlb_used, io_tlb_nslabs);
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int swiotlb_usage_open(struct inode *inode, struct file *filp)
+>>> +{
+>>> +	return single_open(filp, swiotlb_usage_show, NULL);
+>>> +}
+>>> +
+>>> +static const struct file_operations swiotlb_usage_fops = {
+>>> +	.open           = swiotlb_usage_open,
+>>> +	.read           = seq_read,
+>>> +	.llseek         = seq_lseek,
+>>> +	.release        = single_release,
+>>> +};
+>>> +
+>>> +void swiotlb_create_debugfs(void)
+>>> +{
+>>> +	d_swiotlb_usage = debugfs_create_dir("swiotlb", NULL);
+>>> +
+>>> +	if (!d_swiotlb_usage)
+>>> +		return;
+>>> +
+>>> +	debugfs_create_file("usage", 0600, d_swiotlb_usage,
+>>> +			    NULL, &swiotlb_usage_fops);
+>>> +}
+>>> +
+>>> +#endif
+>>> +
+>>>  static int __init
+>>>  setup_io_tlb_npages(char *str)
+>>>  {
+>>> @@ -449,6 +494,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>>>  		pr_warn_once("%s is active and system is using DMA bounce buffers\n",
+>>>  			     sme_active() ? "SME" : "SEV");
+>>>  
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +	if (unlikely(!d_swiotlb_usage))
+>>> +		swiotlb_create_debugfs();
+>>> +#endif
+>>> +
+>>>  	mask = dma_get_seg_boundary(hwdev);
+>>>  
+>>>  	tbl_dma_addr &= mask;
+>>> @@ -528,6 +578,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>>>  		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
+>>>  	return SWIOTLB_MAP_ERROR;
+>>>  found:
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +	io_tlb_used += nslots;
+>>> +#endif
+>>>  	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>>>  
+>>>  	/*
+>>> @@ -588,6 +641,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+>>>  		 */
+>>>  		for (i = index - 1; (OFFSET(i, IO_TLB_SEGSIZE) != IO_TLB_SEGSIZE -1) && io_tlb_list[i]; i--)
+>>>  			io_tlb_list[i] = ++count;
+>>> +
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +		io_tlb_used -= nslots;
+>>> +#endif
+>>>  	}
+>>>  	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>>>  }
+>>>
+>>
+>>
