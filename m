@@ -1,41 +1,59 @@
 From: Souptick Joarder <jrdr.linux@gmail.com>
-Subject: Re: [PATCH v3 1/9] mm: Introduce new vm_insert_range API
-Date: Sat, 8 Dec 2018 00:58:26 +0530
-Message-ID: <CAFqt6zYCWOK-uS85GqCzcgT=+YKn1nBrRPq+M9y6eJjmXEKH+g@mail.gmail.com>
-References: <20181206183945.GA20932@jordon-HP-15-Notebook-PC>
- <53bbc095-c9f5-5d6a-6e50-6e060d17eb68@arm.com> <20181207171116.GA29923@bombadil.infradead.org>
+Subject: Re: [PATCH v3 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
+Date: Sat, 8 Dec 2018 02:11:49 +0530
+Message-ID: <CAFqt6zYF5fFQuGFGss3D1q=jKJGPOD33XLmZiAkBFT9zx_55LA@mail.gmail.com>
+References: <20181206184343.GA30569@jordon-HP-15-Notebook-PC> <d02ad9d7-d0f6-c891-bb7e-fdf6661f651c@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181207171116.GA29923@bombadil.infradead.org>
+In-Reply-To: <d02ad9d7-d0f6-c891-bb7e-fdf6661f651c@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Matthew Wilcox <willy@infradead.org>
-Cc: robin.murphy@arm.com, Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, vbabka@suse.cz, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>, Juergen Gross <jgr>
+To: robin.murphy@arm.com
+Cc: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, joro@8bytes.org, Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 7, 2018 at 10:41 PM Matthew Wilcox <willy@infradead.org> wrote:
+On Fri, Dec 7, 2018 at 7:17 PM Robin Murphy <robin.murphy@arm.com> wrote:
 >
-> On Fri, Dec 07, 2018 at 03:34:56PM +0000, Robin Murphy wrote:
-> > > +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> > > +                   struct page **pages, unsigned long page_count)
-> > > +{
-> > > +   unsigned long uaddr = addr;
-> > > +   int ret = 0, i;
+> On 06/12/2018 18:43, Souptick Joarder wrote:
+> > Convert to use vm_insert_range() to map range of kernel
+> > memory to user vma.
 > >
-> > Some of the sites being replaced were effectively ensuring that vma and
-> > pages were mutually compatible as an initial condition - would it be worth
-> > adding something here for robustness, e.g.:
+> > Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+> > Reviewed-by: Matthew Wilcox <willy@infradead.org>
+> > ---
+> >   drivers/iommu/dma-iommu.c | 13 +++----------
+> >   1 file changed, 3 insertions(+), 10 deletions(-)
 > >
-> > +     if (page_count != vma_pages(vma))
-> > +             return -ENXIO;
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index d1b0475..a2c65e2 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -622,17 +622,10 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+> >
+> >   int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+> >   {
+> > -     unsigned long uaddr = vma->vm_start;
+> > -     unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> > -     int ret = -ENXIO;
+> > +     unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> >
+> > -     for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+> > -             ret = vm_insert_page(vma, uaddr, pages[i]);
+> > -             if (ret)
+> > -                     break;
+> > -             uaddr += PAGE_SIZE;
+> > -     }
+> > -     return ret;
+> > +     return vm_insert_range(vma, vma->vm_start,
+> > +                             pages + vma->vm_pgoff, count);
 >
-> I think we want to allow this to be used to populate part of a VMA.
-> So perhaps:
->
->         if (page_count > vma_pages(vma))
->                 return -ENXIO;
+> You also need to adjust count to compensate for the pages skipped by
+> vm_pgoff, otherwise you've got an out-of-bounds dereference triggered
+> from userspace, which is pretty high up the "not good" scale (not to
+> mention the entire call would then propagate -EFAULT back from
+> vm_insert_page() and thus always appear to fail for nonzero offsets).
 
-Ok, This can be added.
+So this should something similar to ->
 
-I think Patch [2/9] is the only leftover place where this
-check could be removed.
+        return vm_insert_range(vma, vma->vm_start,
+                                pages + vma->vm_pgoff, count - vma->vm_pgoff);
