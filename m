@@ -1,28 +1,52 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Fri, 7 Dec 2018 08:48:54 +0100
-Message-ID: <EC9C556C-B445-4E55-80DA-D5A04C701044@xenosoft.de>
-References: <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de> <20181130131056.GA5211@lst.de> <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de> <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de> <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de> <20181204142426.GA2743@lst.de> <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de> <20181205140550.GA27549@lst.de> <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de> <9ECD27D6-B039-4253-9FB9-749B41DE4CC6@xenosoft.de> <20181206193605.GA31255@lst.de>
-Mime-Version: 1.0 (1.0)
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181206193605.GA31255@lst.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+From: Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v5 2/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
+ and improve debugging
+Date: Fri, 7 Dec 2018 00:05:51 -0800
+Message-ID: <20181207080551.GA15120@bombadil.infradead.org>
+References: <20181207061620.107881-1-drinkcat@chromium.org>
+ <20181207061620.107881-3-drinkcat@chromium.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20181207061620.107881-3-drinkcat@chromium.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Michal Hocko <mhocko@suse.com>, Will Deacon <will.deacon@arm.com>, Levin Alexander <Alexander.Levin@microsoft.com>, linux-mm@kvack.org, Christoph Lameter <cl@linux.com>, Huaisheng Ye <yehs1@lenovo.com>, Joerg Roedel <joro@8bytes.org>, hch@infradead.org, Yong Wu <yong.wu@mediatek.com>, David Rientjes <rientjes@google.com>, yingjoe.chen@mediatek.com, Vlastimil Babka <vbabka@suse.cz>, Tomasz Figa <tfiga@google.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, Pekka Enberg <penberg@kernel.org>, iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>
 List-Id: iommu@lists.linux-foundation.org
 
-Good to know. Sorry because of the email.
+On Fri, Dec 07, 2018 at 02:16:19PM +0800, Nicolas Boichat wrote:
+> +#ifdef CONFIG_ZONE_DMA32
+> +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
+> +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA32
 
-Sent from my iPhone
+This name doesn't make any sense.  Why not ARM_V7S_TABLE_SLAB_FLAGS ?
 
-> On 6. Dec 2018, at 20:36, Christoph Hellwig <hch@lst.de> wrote:
->=20
->> On Thu, Dec 06, 2018 at 06:10:54PM +0100, Christian Zigotzky wrote:
->> Please don=E2=80=99t merge this code. We are still testing and trying to f=
-igure out where the problems are in the code.
->=20
-> The ones I sent pings for were either tested successfully by you
-> (the zone change) or are trivial cleanups that don't affect your setup.
+> +#else
+> +#define ARM_V7S_TABLE_GFP_DMA GFP_DMA
+> +#define ARM_V7S_TABLE_SLAB_CACHE SLAB_CACHE_DMA
+
+Can you remind me again why it is, on machines which don't support
+ZONE_DMA32, why we have to allocate from ZONE_DMA?  My understanding
+is that 64-bit machines have ZONE_DMA32 and 32-bit machines don't.
+So shouldn't this rather be GFP_KERNEL?
+
+Actually, maybe we could centralise this in gfp.h:
+
+#ifdef CONFIG_64BIT
+# ifdef CONFIG_ZONE_DMA32
+#define GFP_32BIT	GFP_DMA32
+# else
+#define GFP_32BIT	GFP_DMA
+#else /* 32-bit */
+#define GFP_32BIT	GFP_KERNEL
+#endif
