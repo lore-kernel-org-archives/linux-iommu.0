@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 07/15] dma-mapping: merge dma_unmap_page_attrs and dma_unmap_single_attrs
-Date: Fri,  7 Dec 2018 11:07:12 -0800
-Message-ID: <20181207190720.18517-8-hch@lst.de>
+Subject: [PATCH 08/15] dma-mapping: move dma_get_required_mask to kernel/dma
+Date: Fri,  7 Dec 2018 11:07:13 -0800
+Message-ID: <20181207190720.18517-9-hch@lst.de>
 References: <20181207190720.18517-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,50 +12,105 @@ To: iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.
 Cc: Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The two functions are exactly the same, so don't bother implementing
-them twice.
+dma_get_required_mask should really be with the rest of the DMA mapping
+implementation instead of in drivers/base as a lone outlier.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- include/linux/dma-mapping.h | 19 ++++++-------------
- 1 file changed, 6 insertions(+), 13 deletions(-)
+ drivers/base/platform.c | 31 -------------------------------
+ kernel/dma/mapping.c    | 34 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 32 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 8916499d2805..3b431cc58794 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -253,6 +253,12 @@ static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
- 	debug_dma_unmap_page(dev, addr, size, dir, true);
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 41b91af95afb..eae841935a45 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1179,37 +1179,6 @@ int __init platform_bus_init(void)
+ 	return error;
  }
  
-+static inline void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	return dma_unmap_single_attrs(dev, addr, size, dir, attrs);
-+}
-+
- /*
-  * dma_maps_sg_attrs returns 0 on error and > 0 on success.
-  * It should never return a value < 0.
-@@ -300,19 +306,6 @@ static inline dma_addr_t dma_map_page_attrs(struct device *dev,
- 	return addr;
- }
- 
--static inline void dma_unmap_page_attrs(struct device *dev,
--					dma_addr_t addr, size_t size,
--					enum dma_data_direction dir,
--					unsigned long attrs)
+-#ifndef ARCH_HAS_DMA_GET_REQUIRED_MASK
+-static u64 dma_default_get_required_mask(struct device *dev)
+-{
+-	u32 low_totalram = ((max_pfn - 1) << PAGE_SHIFT);
+-	u32 high_totalram = ((max_pfn - 1) >> (32 - PAGE_SHIFT));
+-	u64 mask;
+-
+-	if (!high_totalram) {
+-		/* convert to mask just covering totalram */
+-		low_totalram = (1 << (fls(low_totalram) - 1));
+-		low_totalram += low_totalram - 1;
+-		mask = low_totalram;
+-	} else {
+-		high_totalram = (1 << (fls(high_totalram) - 1));
+-		high_totalram += high_totalram - 1;
+-		mask = (((u64)high_totalram) << 32) + 0xffffffff;
+-	}
+-	return mask;
+-}
+-
+-u64 dma_get_required_mask(struct device *dev)
 -{
 -	const struct dma_map_ops *ops = get_dma_ops(dev);
 -
--	BUG_ON(!valid_dma_direction(dir));
--	if (ops->unmap_page)
--		ops->unmap_page(dev, addr, size, dir, attrs);
--	debug_dma_unmap_page(dev, addr, size, dir, false);
+-	if (ops->get_required_mask)
+-		return ops->get_required_mask(dev);
+-	return dma_default_get_required_mask(dev);
 -}
+-EXPORT_SYMBOL_GPL(dma_get_required_mask);
+-#endif
 -
- static inline dma_addr_t dma_map_resource(struct device *dev,
- 					  phys_addr_t phys_addr,
- 					  size_t size,
+ static __initdata LIST_HEAD(early_platform_driver_list);
+ static __initdata LIST_HEAD(early_platform_device_list);
+ 
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index dfbc3deb95cd..dfe29d18dba1 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -5,7 +5,7 @@
+  * Copyright (c) 2006  SUSE Linux Products GmbH
+  * Copyright (c) 2006  Tejun Heo <teheo@suse.de>
+  */
+-
++#include <linux/memblock.h> /* for max_pfn */
+ #include <linux/acpi.h>
+ #include <linux/dma-noncoherent.h>
+ #include <linux/export.h>
+@@ -262,3 +262,35 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
+ #endif /* !CONFIG_ARCH_NO_COHERENT_DMA_MMAP */
+ }
+ EXPORT_SYMBOL(dma_common_mmap);
++
++#ifndef ARCH_HAS_DMA_GET_REQUIRED_MASK
++static u64 dma_default_get_required_mask(struct device *dev)
++{
++	u32 low_totalram = ((max_pfn - 1) << PAGE_SHIFT);
++	u32 high_totalram = ((max_pfn - 1) >> (32 - PAGE_SHIFT));
++	u64 mask;
++
++	if (!high_totalram) {
++		/* convert to mask just covering totalram */
++		low_totalram = (1 << (fls(low_totalram) - 1));
++		low_totalram += low_totalram - 1;
++		mask = low_totalram;
++	} else {
++		high_totalram = (1 << (fls(high_totalram) - 1));
++		high_totalram += high_totalram - 1;
++		mask = (((u64)high_totalram) << 32) + 0xffffffff;
++	}
++	return mask;
++}
++
++u64 dma_get_required_mask(struct device *dev)
++{
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++
++	if (ops->get_required_mask)
++		return ops->get_required_mask(dev);
++	return dma_default_get_required_mask(dev);
++}
++EXPORT_SYMBOL_GPL(dma_get_required_mask);
++#endif
++
 -- 
 2.19.1
