@@ -1,134 +1,73 @@
-From: John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH v4] iommu/dma: Use NUMA aware memory allocations in
- __iommu_dma_alloc_pages()
-Date: Fri, 7 Dec 2018 17:57:42 +0000
-Message-ID: <df449701-5ecb-26c7-cb17-b3fe03cc29e7@huawei.com>
-References: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Fri, 7 Dec 2018 19:33:01 +0100
+Message-ID: <7B6DDB28-8BF6-4589-84ED-F1D4D13BFED6@xenosoft.de>
+References: <20181129170351.GC27951@lst.de> <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de> <20181130105346.GB26765@lst.de> <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de> <20181130131056.GA5211@lst.de> <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de> <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de> <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de> <20181204142426.GA2743@lst.de> <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de> <20181205140550.GA27549@lst.de> <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de> <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de>
+Mime-Version: 1.0 (1.0)
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: robin.murphy@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/11/2018 11:14, John Garry wrote:
-> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
->
+Next step: 13c1fdec5682b6e13257277fa16aa31f342d167d (powerpc/dma: move pci_d=
+ma_dev_setup_swiotlb to fsl_pci.c)
 
-Hi Joerg,
+git checkout 13c1fdec5682b6e13257277fa16aa31f342d167d
 
-A friendly reminder. Can you please let me know your position on this patch?
+Result: The PASEMI onboard ethernet works and the X5000 boots.
 
-Cheers,
-John
+=E2=80=94 Christian
 
-> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
-> respective device NUMA node. The ternary operator which would be for
-> alloc_pages_node() is tidied along with this.
->
-> The motivation for this change is to have a policy for page allocation
-> consistent with direct DMA mapping, which attempts to allocate pages local
-> to the device, as mentioned in [1].
->
-> In addition, for certain workloads it has been observed a marginal
-> performance improvement. The patch caused an observation of 0.9% average
-> throughput improvement for running tcrypt with HiSilicon crypto engine.
->
-> We also include a modification to use kvzalloc() for kzalloc()/vzalloc()
-> combination.
->
-> [1] https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1692998.html
->
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> [JPG: Added kvzalloc(), drop pages ** being device local, remove ternary operator, update message]
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
-> Difference:
-> v1->v2:
-> - Add Ganapatrao's tag and change author
->
-> v2->v3:
-> - removed ternary operator
-> - stopped making pages ** allocation local to device
->
-> v3->v4:
-> - Update commit message to include motivation for patch, including
->   headline performance improvement for test.
->
-> Some notes:
-> This patch was originally posted by Ganapatrao in [2].
->
-> However, after initial review, it was never reposted (due to lack of
-> cycles, I think). In addition, the functionality in its sibling patches
-> were merged through patches, as mentioned in [2]; this also refers to a
-> discussion on device local allocations vs CPU local allocations for DMA
-> pool, and which is better [1].
->
-> However, as mentioned in [1], dma_alloc_coherent() uses the locality
-> information from the device - as in direct DMA - so this patch is just
-> applying this same policy.
->
-> And from some testing, mentioned in commit message, shows marginal
-> improvement.
->
-> [2] https://lore.kernel.org/patchwork/patch/833004/
-> [3] https://lkml.org/lkml/2018/8/22/391
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index d1b0475..4afb1a8 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -449,20 +449,17 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
->  	kvfree(pages);
->  }
->
-> -static struct page **__iommu_dma_alloc_pages(unsigned int count,
-> -		unsigned long order_mask, gfp_t gfp)
-> +static struct page **__iommu_dma_alloc_pages(struct device *dev,
-> +		unsigned int count, unsigned long order_mask, gfp_t gfp)
->  {
->  	struct page **pages;
-> -	unsigned int i = 0, array_size = count * sizeof(*pages);
-> +	unsigned int i = 0, nid = dev_to_node(dev);
->
->  	order_mask &= (2U << MAX_ORDER) - 1;
->  	if (!order_mask)
->  		return NULL;
->
-> -	if (array_size <= PAGE_SIZE)
-> -		pages = kzalloc(array_size, GFP_KERNEL);
-> -	else
-> -		pages = vzalloc(array_size);
-> +	pages = kvzalloc(count * sizeof(*pages), GFP_KERNEL);
->  	if (!pages)
->  		return NULL;
->
-> @@ -481,10 +478,12 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
->  		for (order_mask &= (2U << __fls(count)) - 1;
->  		     order_mask; order_mask &= ~order_size) {
->  			unsigned int order = __fls(order_mask);
-> +			gfp_t alloc_flags = gfp;
->
->  			order_size = 1U << order;
-> -			page = alloc_pages((order_mask - order_size) ?
-> -					   gfp | __GFP_NORETRY : gfp, order);
-> +			if (order_mask > order_size)
-> +				alloc_flags |= __GFP_NORETRY;
-> +			page = alloc_pages_node(nid, alloc_flags, order);
->  			if (!page)
->  				continue;
->  			if (!order)
-> @@ -569,7 +568,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->  		alloc_sizes = min_size;
->
->  	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
-> +	pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
-> +					gfp);
->  	if (!pages)
->  		return NULL;
->
->
+Sent from my iPhone
+
+> On 7. Dec 2018, at 14:45, Christian Zigotzky <chzigotzky@xenosoft.de> wrot=
+e:
+>=20
+>> On 06 December 2018 at 11:55AM, Christian Zigotzky wrote:
+>>> On 05 December 2018 at 3:05PM, Christoph Hellwig wrote:
+>>>=20
+>>> Thanks.  Can you try a few stepping points in the tree?
+>>>=20
+>>> First just with commit 7fd3bb05b73beea1f9840b505aa09beb9c75a8c6
+>>> (the first one) applied?
+>>>=20
+>>> Second with all commits up to 5da11e49df21f21dac25a2491aa788307bdacb6b
+>>>=20
+>>> And if that still works with commits up to
+>>> c1bfcad4b0cf38ce5b00f7ad880d3a13484c123a
+>>>=20
+>> Hi Christoph,
+>>=20
+>> I undid the commit 7fd3bb05b73beea1f9840b505aa09beb9c75a8c6 with the foll=
+owing command:
+>>=20
+>> git checkout 7fd3bb05b73beea1f9840b505aa09beb9c75a8c6
+>>=20
+>> Result: PASEMI onboard ethernet works again and the P5020 board boots.
+>>=20
+>> I will test the other commits in the next days.
+>>=20
+>> @All
+>> It is really important, that you also test Christoph's work on your PASEM=
+I and NXP boards. Could you please help us with solving the issues?
+>>=20
+>> 'git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.5 a'=
+
+>>=20
+>> Thanks,
+>> Christian
+>>=20
+>>=20
+> Today I tested the commit 5da11e49df21f21dac25a2491aa788307bdacb6b.
+>=20
+> git checkout 5da11e49df21f21dac25a2491aa788307bdacb6b
+>=20
+> The PASEMI onboard ethernet works and the P5020 board boots.
+>=20
+> -- Christian
+>=20
