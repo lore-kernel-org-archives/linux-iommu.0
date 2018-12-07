@@ -1,43 +1,36 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 2/5] iommu/of: Use device_iommu_mapped()
-Date: Fri, 7 Dec 2018 10:31:58 +0100
-Message-ID: <20181207093158.GL16835@8bytes.org>
-References: <20181204172504.19708-1-joro@8bytes.org>
- <20181204172504.19708-3-joro@8bytes.org>
- <44c82503-bc36-e8de-6932-7c4fd2b597f8@arm.com>
- <20181206153512.GG16835@8bytes.org>
- <42cb32df-5358-f00d-12f5-eb3135ec680a@arm.com>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v2 09/17] debugobjects: Make object hash locks nestable
+ terminal locks
+Date: Fri, 7 Dec 2018 10:47:39 +0100
+Message-ID: <20181207094739.GG2237@hirez.programming.kicks-ass.net>
+References: <1542653726-5655-1-git-send-email-longman@redhat.com>
+ <1542653726-5655-10-git-send-email-longman@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <42cb32df-5358-f00d-12f5-eb3135ec680a@arm.com>
+In-Reply-To: <1542653726-5655-10-git-send-email-longman@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
+To: Waiman Long <longman@redhat.com>
+Cc: Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>, Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Tejun Heo <tj@kernel.org>, Andrew Morton <akpm@linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 06, 2018 at 05:42:16PM +0000, Robin Murphy wrote:
-> For sure - although I am now wondering whether "mapped" is perhaps a little
-> ambiguous in the naming, since the answer to "can I use the API" is yes even
-> when the device may currently be attached to an identity/passthrough domain
-> or blocked completely, neither of which involve any "mapping". Maybe simply
-> "device_has_iommu()" would convey the intent better?
+On Mon, Nov 19, 2018 at 01:55:18PM -0500, Waiman Long wrote:
+> By making the object hash locks nestable terminal locks, we can avoid
+> a bunch of unnecessary lockdep validations as well as saving space
+> in the lockdep tables.
 
-The name is shorter version of:
+So the 'problem'; which you've again not explained; is that debugobjects
+has the following lock order:
 
-	device_is_behind_an_iommu_remapping_its_dma_transactions()
-	:)
+	&db->lock
+	  &pool_lock
 
-The name is not perfect, but device_has_iommu() is not better because it
-might be considered as a check whether the device itself has an IOMMU
-built-in.
+And you seem to want to tag '&db->lock' as terminal, which is obviuosly
+a big fat lie.
 
-In the end an identity-mapping is also still a mapping (if the iommu
-needs a page-table for that is an implementation detail), as is a
-mapping with no page-table entries at all (blocking). So I think
-device_iommu_mapped() is a reasonable choice.
+You've also not explained why it is safe to do this (I think it actually
+is, but you really should've spelled it out).
 
-Regards,
-
-	Joerg
+Furthermore; you've not justified any of this 'insanity' with numbers.
+What do we gain with this nestable madness that justifies the crazy?
