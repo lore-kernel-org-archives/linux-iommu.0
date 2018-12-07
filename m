@@ -1,45 +1,28 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v5 1/3] mm: Add support for kmem caches in DMA32 zone
-Date: Fri, 7 Dec 2018 08:25:27 +0100
-Message-ID: <0d0d0571-be74-d9a4-4f2d-27881da2e2ed@suse.cz>
-References: <20181207061620.107881-1-drinkcat@chromium.org>
- <20181207061620.107881-2-drinkcat@chromium.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Fri, 7 Dec 2018 08:48:54 +0100
+Message-ID: <EC9C556C-B445-4E55-80DA-D5A04C701044@xenosoft.de>
+References: <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de> <20181130131056.GA5211@lst.de> <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de> <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de> <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de> <20181204142426.GA2743@lst.de> <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de> <20181205140550.GA27549@lst.de> <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de> <9ECD27D6-B039-4253-9FB9-749B41DE4CC6@xenosoft.de> <20181206193605.GA31255@lst.de>
+Mime-Version: 1.0 (1.0)
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181207061620.107881-2-drinkcat@chromium.org>
-Content-Language: en-US
+In-Reply-To: <20181206193605.GA31255@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>, Will Deacon <will.deacon@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infradead.org, Matthew Wilcox <willy@infradead>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/7/18 7:16 AM, Nicolas Boichat wrote:
-> IOMMUs using ARMv7 short-descriptor format require page tables
-> to be allocated within the first 4GB of RAM, even on 64-bit systems.
-> On arm64, this is done by passing GFP_DMA32 flag to memory allocation
-> functions.
-> 
-> For IOMMU L2 tables that only take 1KB, it would be a waste to allocate
-> a full page using get_free_pages, so we considered 3 approaches:
->  1. This patch, adding support for GFP_DMA32 slab caches.
->  2. genalloc, which requires pre-allocating the maximum number of L2
->     page tables (4096, so 4MB of memory).
->  3. page_frag, which is not very memory-efficient as it is unable
->     to reuse freed fragments until the whole page is freed.
-> 
-> This change makes it possible to create a custom cache in DMA32 zone
-> using kmem_cache_create, then allocate memory using kmem_cache_alloc.
-> 
-> We do not create a DMA32 kmalloc cache array, as there are currently
-> no users of kmalloc(..., GFP_DMA32). These calls will continue to
-> trigger a warning, as we keep GFP_DMA32 in GFP_SLAB_BUG_MASK.
-> 
-> This implies that calls to kmem_cache_*alloc on a SLAB_CACHE_DMA32
-> kmem_cache must _not_ use GFP_DMA32 (it is anyway redundant and
-> unnecessary).
-> 
-> Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+Good to know. Sorry because of the email.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Sent from my iPhone
+
+> On 6. Dec 2018, at 20:36, Christoph Hellwig <hch@lst.de> wrote:
+>=20
+>> On Thu, Dec 06, 2018 at 06:10:54PM +0100, Christian Zigotzky wrote:
+>> Please don=E2=80=99t merge this code. We are still testing and trying to f=
+igure out where the problems are in the code.
+>=20
+> The ones I sent pings for were either tested successfully by you
+> (the zone change) or are trivial cleanups that don't affect your setup.
