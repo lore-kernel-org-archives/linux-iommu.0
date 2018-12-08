@@ -1,7 +1,7 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v4 08/18] iommu/mediatek: Add larb-id remapped support
-Date: Sat, 8 Dec 2018 16:39:21 +0800
-Message-ID: <1544258371-4600-9-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v4 09/18] memory: mtk-smi: Add gals support
+Date: Sat, 8 Dec 2018 16:39:22 +0800
+Message-ID: <1544258371-4600-10-git-send-email-yong.wu@mediatek.com>
 References: <1544258371-4600-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,61 +21,135 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugge
 Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The larb-id may be remapped in the smi-common, this means the
-larb-id reported in the mtk_iommu_isr isn't the real larb-id,
+In some SoCs like mt8183, SMI add GALS(Global Async Local Sync) module
+which can help synchronize for the modules in different clock frequency.
+It can be seen as a "asynchronous fifo". This is a example diagram:
 
-Take mt8183 as a example:
-                       M4U
-                        |
----------------------------------------------
-|               SMI common                  |
--0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
- |     |     |     |     |     |      |     |
-larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
-disp  vdec  img   cam   venc  img    cam
-As above, larb0 connects with the id 0 in smi-common.
-          larb1 connects with the id 7 in smi-common.
-          ...
-If the larb-id reported in the isr is 7, actually it's larb1(vdec).
-In order to output the right larb-id in the isr, we add a larb-id
-remapping relationship in this patch.
+            M4U
+             |
+         ----------
+         |        |
+     gals0-rx   gals1-rx
+         |        |
+         |        |
+     gals0-tx   gals1-tx
+         |        |
+        ------------
+         SMI Common
+        ------------
+             |
+  +-----+--------+-----+- ...
+  |     |        |     |
+  |  gals-rx  gals-rx  |
+  |     |        |     |
+  |     |        |     |
+  |  gals-tx  gals-tx  |
+  |     |        |     |
+larb1 larb2   larb3  larb4
 
-This also is a preparing patch for mt8183.
+GALS only help transfer the command/data while it doesn't have the
+configuring register, thus it has the special "smi" clock and doesn't
+have the "apb" clock. From the diagram above, we add "gals0" and
+"gals1" clocks for smi-common and add a "gals" clock for smi-larb.
+
+This patch adds gals clock supporting in the SMI. Note that some larbs
+may still don't have the "gals" clock like larb1 and larb4 above.
+
+This is also a preparing patch for mt8183 which has GALS.
 
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 3 +++
- drivers/iommu/mtk_iommu.h | 4 ++++
- 2 files changed, 7 insertions(+)
+ drivers/memory/mtk-smi.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index eda062a..8ab3b69 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -220,6 +220,9 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
- 	fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
- 	fault_port = F_MMU0_INT_ID_PORT_ID(regval);
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index a5ddd42..3720c77 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -56,6 +56,7 @@ enum mtk_smi_gen {
  
-+	if (data->plat_data->larbid_remap_enable)
-+		fault_larb = data->plat_data->larbid_remapped[fault_larb];
-+
- 	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
- 			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
- 		dev_err_ratelimited(
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index b8749ac..3877050 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -47,6 +47,10 @@ struct mtk_iommu_plat_data {
- 
- 	/* HW will use the EMI clock if there isn't the "bclk". */
- 	bool                has_bclk;
-+
-+	/* The larb-id may be remapped in the smi-common. */
-+	bool                larbid_remap_enable;
-+	unsigned int        larbid_remapped[MTK_LARB_NR_MAX];
+ struct mtk_smi_common_plat {
+ 	enum mtk_smi_gen gen;
++	bool             has_gals;
  };
  
- struct mtk_iommu_domain;
+ struct mtk_smi_larb_gen {
+@@ -63,11 +64,13 @@ struct mtk_smi_larb_gen {
+ 	int port_in_larb[MTK_LARB_NR_MAX + 1];
+ 	void (*config_port)(struct device *);
+ 	unsigned int larb_special_mask; /* The special larbs mask. */
++	bool             has_gals;
+ };
+ 
+ struct mtk_smi {
+ 	struct device			*dev;
+ 	struct clk			*clk_apb, *clk_smi;
++	struct clk			*clk_gals0, *clk_gals1;
+ 	struct clk			*clk_async; /*only needed by mt2701*/
+ 	void __iomem			*smi_ao_base;
+ 
+@@ -99,8 +102,20 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+ 	if (ret)
+ 		goto err_disable_apb;
+ 
++	ret = clk_prepare_enable(smi->clk_gals0);
++	if (ret)
++		goto err_disable_smi;
++
++	ret = clk_prepare_enable(smi->clk_gals1);
++	if (ret)
++		goto err_disable_gals0;
++
+ 	return 0;
+ 
++err_disable_gals0:
++	clk_disable_unprepare(smi->clk_gals0);
++err_disable_smi:
++	clk_disable_unprepare(smi->clk_smi);
+ err_disable_apb:
+ 	clk_disable_unprepare(smi->clk_apb);
+ err_put_pm:
+@@ -110,6 +125,8 @@ static int mtk_smi_enable(const struct mtk_smi *smi)
+ 
+ static void mtk_smi_disable(const struct mtk_smi *smi)
+ {
++	clk_disable_unprepare(smi->clk_gals1);
++	clk_disable_unprepare(smi->clk_gals0);
+ 	clk_disable_unprepare(smi->clk_smi);
+ 	clk_disable_unprepare(smi->clk_apb);
+ 	pm_runtime_put_sync(smi->dev);
+@@ -310,6 +327,15 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	larb->smi.clk_smi = devm_clk_get(dev, "smi");
+ 	if (IS_ERR(larb->smi.clk_smi))
+ 		return PTR_ERR(larb->smi.clk_smi);
++
++	if (larb->larb_gen->has_gals) {
++		/* The larbs may still haven't gals even if the SoC support.*/
++		larb->smi.clk_gals0 = devm_clk_get(dev, "gals");
++		if (PTR_ERR(larb->smi.clk_gals0) == -ENOENT)
++			larb->smi.clk_gals0 = NULL;
++		else if (IS_ERR(larb->smi.clk_gals0))
++			return PTR_ERR(larb->smi.clk_gals0);
++	}
+ 	larb->smi.dev = dev;
+ 
+ 	if (larb->larb_gen->need_larbid) {
+@@ -402,6 +428,16 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+ 	if (IS_ERR(common->clk_smi))
+ 		return PTR_ERR(common->clk_smi);
+ 
++	if (common->plat->has_gals) {
++		common->clk_gals0 = devm_clk_get(dev, "gals0");
++		if (IS_ERR(common->clk_gals0))
++			return PTR_ERR(common->clk_gals0);
++
++		common->clk_gals1 = devm_clk_get(dev, "gals1");
++		if (IS_ERR(common->clk_gals1))
++			return PTR_ERR(common->clk_gals1);
++	}
++
+ 	/*
+ 	 * for mtk smi gen 1, we need to get the ao(always on) base to config
+ 	 * m4u port, and we need to enable the aync clock for transform the smi
 -- 
 1.9.1
