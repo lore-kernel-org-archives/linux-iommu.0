@@ -1,7 +1,8 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 05/10] sparc64/iommu: move code around a bit
-Date: Sat,  8 Dec 2018 09:36:57 -0800
-Message-ID: <20181208173702.15158-6-hch@lst.de>
+Subject: [PATCH 10/10] Documentation: update the description for
+ DMA_ATTR_NON_CONSISTENT
+Date: Sat,  8 Dec 2018 09:37:02 -0800
+Message-ID: <20181208173702.15158-11-hch@lst.de>
 References: <20181208173702.15158-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,175 +22,107 @@ To: iommu@lists.linux-foundation.org
 Cc: linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, Robin Murphy <robin.murphy@arm.com>, dri-devel@lists.freedesktop.org, "Matwey V. Kornilov" <matwey@sai.msu.ru>, openrisc@lists.librecores.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org, Ezequiel Garcia <ezequiel@collabora.com>, linux-arm-kernel@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move the alloc / free routines down the file so that we can easily use
-the map / unmap helpers to implement non-consistent allocations.
-
-Also drop the _coherent postfix to match the method name.
+We got rid of the odd selective consistent or not behavior, and now
+want the normal dma_sync_single_* functions to be used for strict
+ownership transfers.  While dma_cache_sync hasn't been removed from
+the tree yet it should not be used in any new caller, so documentation
+for it is dropped here.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/sparc/kernel/iommu.c | 135 +++++++++++++++++++-------------------
- 1 file changed, 67 insertions(+), 68 deletions(-)
+ Documentation/DMA-API.txt        | 30 ++++--------------------------
+ Documentation/DMA-attributes.txt |  9 +++++----
+ include/linux/dma-mapping.h      |  3 +++
+ 3 files changed, 12 insertions(+), 30 deletions(-)
 
-diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
-index 0626bae5e3da..4bf0497e0704 100644
---- a/arch/sparc/kernel/iommu.c
-+++ b/arch/sparc/kernel/iommu.c
-@@ -195,72 +195,6 @@ static inline void iommu_free_ctx(struct iommu *iommu, int ctx)
- 	}
- }
+diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
+index ac66ae2509a9..c81fe8a4aeec 100644
+--- a/Documentation/DMA-API.txt
++++ b/Documentation/DMA-API.txt
+@@ -518,20 +518,9 @@ API at all.
+ 	dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 			gfp_t flag, unsigned long attrs)
  
--static void *dma_4u_alloc_coherent(struct device *dev, size_t size,
--				   dma_addr_t *dma_addrp, gfp_t gfp,
--				   unsigned long attrs)
--{
--	unsigned long order, first_page;
--	struct iommu *iommu;
--	struct page *page;
--	int npages, nid;
--	iopte_t *iopte;
--	void *ret;
+-Identical to dma_alloc_coherent() except that when the
+-DMA_ATTR_NON_CONSISTENT flags is passed in the attrs argument, the
+-platform will choose to return either consistent or non-consistent memory
+-as it sees fit.  By using this API, you are guaranteeing to the platform
+-that you have all the correct and necessary sync points for this memory
+-in the driver should it choose to return non-consistent memory.
 -
--	size = IO_PAGE_ALIGN(size);
--	order = get_order(size);
--	if (order >= 10)
--		return NULL;
+-Note: where the platform can return consistent memory, it will
+-guarantee that the sync points become nops.
 -
--	nid = dev->archdata.numa_node;
--	page = alloc_pages_node(nid, gfp, order);
--	if (unlikely(!page))
--		return NULL;
--
--	first_page = (unsigned long) page_address(page);
--	memset((char *)first_page, 0, PAGE_SIZE << order);
--
--	iommu = dev->archdata.iommu;
--
--	iopte = alloc_npages(dev, iommu, size >> IO_PAGE_SHIFT);
--
--	if (unlikely(iopte == NULL)) {
--		free_pages(first_page, order);
--		return NULL;
--	}
--
--	*dma_addrp = (iommu->tbl.table_map_base +
--		      ((iopte - iommu->page_table) << IO_PAGE_SHIFT));
--	ret = (void *) first_page;
--	npages = size >> IO_PAGE_SHIFT;
--	first_page = __pa(first_page);
--	while (npages--) {
--		iopte_val(*iopte) = (IOPTE_CONSISTENT(0UL) |
--				     IOPTE_WRITE |
--				     (first_page & IOPTE_PAGE));
--		iopte++;
--		first_page += IO_PAGE_SIZE;
--	}
--
--	return ret;
--}
--
--static void dma_4u_free_coherent(struct device *dev, size_t size,
--				 void *cpu, dma_addr_t dvma,
--				 unsigned long attrs)
--{
--	struct iommu *iommu;
--	unsigned long order, npages;
--
--	npages = IO_PAGE_ALIGN(size) >> IO_PAGE_SHIFT;
--	iommu = dev->archdata.iommu;
--
--	iommu_tbl_range_free(&iommu->tbl, dvma, npages, IOMMU_ERROR_CODE);
--
--	order = get_order(size);
--	if (order < 10)
--		free_pages((unsigned long)cpu, order);
--}
--
- static dma_addr_t dma_4u_map_page(struct device *dev, struct page *page,
- 				  unsigned long offset, size_t sz,
- 				  enum dma_data_direction direction,
-@@ -742,6 +676,71 @@ static void dma_4u_sync_sg_for_cpu(struct device *dev,
- 	spin_unlock_irqrestore(&iommu->lock, flags);
- }
+-Warning:  Handling non-consistent memory is a real pain.  You should
+-only use this API if you positively know your driver will be
+-required to work on one of the rare (usually non-PCI) architectures
+-that simply cannot make consistent memory.
++Similar to dma_alloc_coherent(), except that the behavior can be controlled
++in more detail using the attrs argument.  See Documentation/DMA-attributes.txt
++for more details.
  
-+static void *dma_4u_alloc(struct device *dev, size_t size,
-+			  dma_addr_t *dma_addrp, gfp_t gfp, unsigned long attrs)
-+{
-+	unsigned long order, first_page;
-+	struct iommu *iommu;
-+	struct page *page;
-+	int npages, nid;
-+	iopte_t *iopte;
-+	void *ret;
-+
-+	size = IO_PAGE_ALIGN(size);
-+	order = get_order(size);
-+	if (order >= 10)
-+		return NULL;
-+
-+	nid = dev->archdata.numa_node;
-+	page = alloc_pages_node(nid, gfp, order);
-+	if (unlikely(!page))
-+		return NULL;
-+
-+	first_page = (unsigned long) page_address(page);
-+	memset((char *)first_page, 0, PAGE_SIZE << order);
-+
-+	iommu = dev->archdata.iommu;
-+
-+	iopte = alloc_npages(dev, iommu, size >> IO_PAGE_SHIFT);
-+
-+	if (unlikely(iopte == NULL)) {
-+		free_pages(first_page, order);
-+		return NULL;
-+	}
-+
-+	*dma_addrp = (iommu->tbl.table_map_base +
-+		      ((iopte - iommu->page_table) << IO_PAGE_SHIFT));
-+	ret = (void *) first_page;
-+	npages = size >> IO_PAGE_SHIFT;
-+	first_page = __pa(first_page);
-+	while (npages--) {
-+		iopte_val(*iopte) = (IOPTE_CONSISTENT(0UL) |
-+				     IOPTE_WRITE |
-+				     (first_page & IOPTE_PAGE));
-+		iopte++;
-+		first_page += IO_PAGE_SIZE;
-+	}
-+
-+	return ret;
-+}
-+
-+static void dma_4u_free(struct device *dev, size_t size, void *cpu,
-+			dma_addr_t dvma, unsigned long attrs)
-+{
-+	struct iommu *iommu;
-+	unsigned long order, npages;
-+
-+	npages = IO_PAGE_ALIGN(size) >> IO_PAGE_SHIFT;
-+	iommu = dev->archdata.iommu;
-+
-+	iommu_tbl_range_free(&iommu->tbl, dvma, npages, IOMMU_ERROR_CODE);
-+
-+	order = get_order(size);
-+	if (order < 10)
-+		free_pages((unsigned long)cpu, order);
-+}
-+
-+
- static int dma_4u_supported(struct device *dev, u64 device_mask)
- {
- 	struct iommu *iommu = dev->archdata.iommu;
-@@ -758,8 +757,8 @@ static int dma_4u_supported(struct device *dev, u64 device_mask)
- }
+ ::
  
- static const struct dma_map_ops sun4u_dma_ops = {
--	.alloc			= dma_4u_alloc_coherent,
--	.free			= dma_4u_free_coherent,
-+	.alloc			= dma_4u_alloc,
-+	.free			= dma_4u_free,
- 	.map_page		= dma_4u_map_page,
- 	.unmap_page		= dma_4u_unmap_page,
- 	.map_sg			= dma_4u_map_sg,
+@@ -540,7 +529,7 @@ that simply cannot make consistent memory.
+ 		       dma_addr_t dma_handle, unsigned long attrs)
+ 
+ Free memory allocated by the dma_alloc_attrs().  All parameters common
+-parameters must identical to those otherwise passed to dma_fre_coherent,
++parameters must identical to those otherwise passed to dma_free_coherent,
+ and the attrs argument must be identical to the attrs passed to
+ dma_alloc_attrs().
+ 
+@@ -560,17 +549,6 @@ memory or doing partial flushes.
+ 	into the width returned by this call.  It will also always be a power
+ 	of two for easy alignment.
+ 
+-::
+-
+-	void
+-	dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+-		       enum dma_data_direction direction)
+-
+-Do a partial sync of memory that was allocated by dma_alloc_attrs() with
+-the DMA_ATTR_NON_CONSISTENT flag starting at virtual address vaddr and
+-continuing on for size.  Again, you *must* observe the cache line
+-boundaries when doing this.
+-
+ ::
+ 
+ 	int
+diff --git a/Documentation/DMA-attributes.txt b/Documentation/DMA-attributes.txt
+index 8f8d97f65d73..2bb3fc0a621b 100644
+--- a/Documentation/DMA-attributes.txt
++++ b/Documentation/DMA-attributes.txt
+@@ -46,10 +46,11 @@ behavior.
+ DMA_ATTR_NON_CONSISTENT
+ -----------------------
+ 
+-DMA_ATTR_NON_CONSISTENT lets the platform to choose to return either
+-consistent or non-consistent memory as it sees fit.  By using this API,
+-you are guaranteeing to the platform that you have all the correct and
+-necessary sync points for this memory in the driver.
++DMA_ATTR_NON_CONSISTENT specifies that the memory returned is not
++required to be consistent.  The memory is owned by the device when
++returned from this function, and ownership must be explicitly
++transferred to the CPU using dma_sync_single_for_cpu, and back to the
++device using dma_sync_single_for_device.
+ 
+ DMA_ATTR_NO_KERNEL_MAPPING
+ --------------------------
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 8c81fa5d1f44..8757ad5087c4 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -432,6 +432,9 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ #define dma_map_page(d, p, o, s, r) dma_map_page_attrs(d, p, o, s, r, 0)
+ #define dma_unmap_page(d, a, s, r) dma_unmap_page_attrs(d, a, s, r, 0)
+ 
++/*
++ * Don't use in new code, use dma_sync_single_for_{device,cpu} instead.
++ */
+ static inline void
+ dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+ 		enum dma_data_direction dir)
 -- 
 2.19.2
