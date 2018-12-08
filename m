@@ -1,77 +1,39 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 1/6] sparc: remove no needed sbus_dma_ops methods
-Date: Sat,  8 Dec 2018 09:41:10 -0800
-Message-ID: <20181208174115.16237-2-hch@lst.de>
+Subject: [PATCH 4/6] sparc: remove not required includes from dma-mapping.h
+Date: Sat,  8 Dec 2018 09:41:13 -0800
+Message-ID: <20181208174115.16237-5-hch@lst.de>
 References: <20181208174115.16237-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 In-Reply-To: <20181208174115.16237-1-hch@lst.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: iommu@lists.linux-foundation.org
 Cc: linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, Robin Murphy <robin.murphy@arm.com>, dri-devel@lists.freedesktop.org, "Matwey V. Kornilov" <matwey@sai.msu.ru>, openrisc@lists.librecores.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org, Ezequiel Garcia <ezequiel@collabora.com>, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-No need to BUG_ON() on the cache maintainance ops - they are no-ops
-by default, and there is nothing in the DMA API contract that prohibits
-calling them on sbus devices (even if such drivers are unlikely to
-ever appear).
-
-Similarly a dma_supported method that always returns 0 is rather
-pointless.  The only thing that indicates is that no one ever calls
-the method on sbus devices.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/sparc/kernel/ioport.c | 20 --------------------
- 1 file changed, 20 deletions(-)
-
-diff --git a/arch/sparc/kernel/ioport.c b/arch/sparc/kernel/ioport.c
-index 6799c93c9f27..4b2167a0ec0b 100644
---- a/arch/sparc/kernel/ioport.c
-+++ b/arch/sparc/kernel/ioport.c
-@@ -391,23 +391,6 @@ static void sbus_unmap_sg(struct device *dev, struct scatterlist *sg, int n,
- 	mmu_release_scsi_sgl(dev, sg, n);
- }
- 
--static void sbus_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
--				 int n,	enum dma_data_direction dir)
--{
--	BUG();
--}
--
--static void sbus_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
--				    int n, enum dma_data_direction dir)
--{
--	BUG();
--}
--
--static int sbus_dma_supported(struct device *dev, u64 mask)
--{
--	return 0;
--}
--
- static const struct dma_map_ops sbus_dma_ops = {
- 	.alloc			= sbus_alloc_coherent,
- 	.free			= sbus_free_coherent,
-@@ -415,9 +398,6 @@ static const struct dma_map_ops sbus_dma_ops = {
- 	.unmap_page		= sbus_unmap_page,
- 	.map_sg			= sbus_map_sg,
- 	.unmap_sg		= sbus_unmap_sg,
--	.sync_sg_for_cpu	= sbus_sync_sg_for_cpu,
--	.sync_sg_for_device	= sbus_sync_sg_for_device,
--	.dma_supported		= sbus_dma_supported,
- };
- 
- static int __init sparc_register_ioport(void)
--- 
-2.19.2
+VGhlIG9ubHkgdGhpbmcgd2UgbmVlZCB0byBleHBsaWNpdGx5IHB1bGwgaW4gaXMgdGhlIGRlZmlu
+ZXMgZm9yIHRoZQpDUFUgdHlwZS4KClNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBIZWxsd2lnIDxo
+Y2hAbHN0LmRlPgotLS0KIGFyY2gvc3BhcmMvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaCB8IDQg
+Ky0tLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAzIGRlbGV0aW9ucygtKQoKZGlm
+ZiAtLWdpdCBhL2FyY2gvc3BhcmMvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaCBiL2FyY2gvc3Bh
+cmMvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaAppbmRleCBiMGJiMmZjYWYxYzkuLjU1YTQ0ZjA4
+YTlhNCAxMDA2NDQKLS0tIGEvYXJjaC9zcGFyYy9pbmNsdWRlL2FzbS9kbWEtbWFwcGluZy5oCisr
+KyBiL2FyY2gvc3BhcmMvaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaApAQCAtMiw5ICsyLDcgQEAK
+ICNpZm5kZWYgX19fQVNNX1NQQVJDX0RNQV9NQVBQSU5HX0gKICNkZWZpbmUgX19fQVNNX1NQQVJD
+X0RNQV9NQVBQSU5HX0gKIAotI2luY2x1ZGUgPGxpbnV4L3NjYXR0ZXJsaXN0Lmg+Ci0jaW5jbHVk
+ZSA8bGludXgvbW0uaD4KLSNpbmNsdWRlIDxsaW51eC9kbWEtZGVidWcuaD4KKyNpbmNsdWRlIDxh
+c20vY3B1X3R5cGUuaD4KIAogZXh0ZXJuIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqZG1hX29w
+czsKIAotLSAKMi4xOS4yCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3Rv
+cC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmkt
+ZGV2ZWwK
