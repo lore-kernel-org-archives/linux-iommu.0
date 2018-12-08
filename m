@@ -1,51 +1,71 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 09/10] dma-mapping: skip declared coherent memory for
- DMA_ATTR_NON_CONSISTENT
-Date: Sat,  8 Dec 2018 09:37:01 -0800
-Message-ID: <20181208173702.15158-10-hch@lst.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH 08/10] sparc64/pci_sun4v: implement DMA_ATTR_NON_CONSISTENT
+Date: Sat,  8 Dec 2018 09:37:00 -0800
+Message-ID: <20181208173702.15158-9-hch@lst.de>
 References: <20181208173702.15158-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20181208173702.15158-1-hch@lst.de>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
-List-Post: <mailto:linux-snps-arc@lists.infradead.org>
-List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
- <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
-Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, Robin Murphy <robin.murphy@arm.com>, dri-devel@lists.freedesktop.org, "Matwey V. Kornilov" <matwey@sai.msu.ru>, openrisc@lists.librecores.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org, Ezequiel Garcia <ezequiel@collabora.com>, linux-arm-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181208173702.15158-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, "Matwey V. Kornilov" <matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org>, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, linux-arm-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Memory declared using dma_declare_coherent is ioremapped and thus not
-always suitable for our tightened DMA_ATTR_NON_CONSISTENT definition.
+Just allocate the memory and use map_page to map the memory.
 
-Skip it given all the existing callers don't DMA_ATTR_NON_CONSISTENT
-anyway.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 ---
- include/linux/dma-mapping.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/sparc/kernel/pci_sun4v.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 7799c2b27849..8c81fa5d1f44 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -521,7 +521,8 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
- 	BUG_ON(!ops);
- 	WARN_ON_ONCE(dev && !dev->coherent_dma_mask);
+diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
+index b95c70136559..24a76ecf2986 100644
+--- a/arch/sparc/kernel/pci_sun4v.c
++++ b/arch/sparc/kernel/pci_sun4v.c
+@@ -590,6 +590,14 @@ static void *dma_4v_alloc(struct device *dev, size_t size,
+ 	first_page = (unsigned long) page_address(page);
+ 	memset((char *)first_page, 0, PAGE_SIZE << order);
  
--	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
-+	if (!(attrs & DMA_ATTR_NON_CONSISTENT) &&
-+	    dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
- 		return cpu_addr;
++	if (attrs & DMA_ATTR_NON_CONSISTENT) {
++		*dma_addrp = dma_4v_map_page(dev, page, 0, size,
++					     DMA_BIDIRECTIONAL, 0);
++		if (*dma_addrp == DMA_MAPPING_ERROR)
++			goto range_alloc_fail;
++		return page_address(page);
++	}
++
+ 	iommu = dev->archdata.iommu;
+ 	atu = iommu->atu;
  
- 	/* let the implementation decide on the zone to allocate from: */
+@@ -649,6 +657,11 @@ static void dma_4v_free(struct device *dev, size_t size, void *cpu,
+ 	unsigned long iotsb_num;
+ 	u32 devhandle;
+ 
++	if (attrs & DMA_ATTR_NON_CONSISTENT) {
++		dma_4v_unmap_page(dev, dvma, size, DMA_BIDIRECTIONAL, 0);
++		goto free_pages;
++	}
++
+ 	npages = IO_PAGE_ALIGN(size) >> IO_PAGE_SHIFT;
+ 	iommu = dev->archdata.iommu;
+ 	pbm = dev->archdata.host_controller;
+@@ -665,6 +678,7 @@ static void dma_4v_free(struct device *dev, size_t size, void *cpu,
+ 	entry = ((dvma - tbl->table_map_base) >> IO_PAGE_SHIFT);
+ 	dma_4v_iommu_demap(dev, devhandle, dvma, iotsb_num, entry, npages);
+ 	iommu_tbl_range_free(tbl, dvma, npages, IOMMU_ERROR_CODE);
++free_pages:
+ 	order = get_order(size);
+ 	if (order < 10)
+ 		free_pages((unsigned long)cpu, order);
 -- 
 2.19.2
