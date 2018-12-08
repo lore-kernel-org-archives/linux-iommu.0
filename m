@@ -1,36 +1,29 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC] avoid indirect calls for DMA direct mappings v2
-Date: Sat, 8 Dec 2018 17:50:58 +0100
-Message-ID: <20181208165058.GA14874@lst.de>
-References: <20181207190720.18517-1-hch@lst.de> <20181208170648.296fb8a1@redhat.com>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Sat, 8 Dec 2018 18:03:34 +0100
+Message-ID: <20181208170334.GB15020@lst.de>
+References: <20181114082314.8965-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20181208170648.296fb8a1@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jesper Dangaard Brouer <brouer@redhat.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20181114082314.8965-1-hch-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Dec 08, 2018 at 05:06:48PM +0100, Jesper Dangaard Brouer wrote:
-> You can add my:
->  Tested-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> or
->  Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> 
-> I'm very happy that you work on this.  And I've done micro-benchmark
-> testing of the patchset (and branch dma-direct-calls), which I've made
-> avail here:
->  https://github.com/xdp-project/xdp-project/blob/master/areas/dma/dma01_test_hellwig_direct_dma.org
-> 
-> My XDP performance is back, minus the BPF-indirect call, and
-> net_rx_action napi->poll, and net_device->ndo_xdp_xmit calls.  I
-> verified that manually disabling retpoline for these remaining netstack
-> retpoline-calls restore the performance full (well minus 1.5 nanosec).
-
-Thanks a lot for all the testing (and the initial report).  I'd love to
-still gets this in for 4.21 if we can, but for that I'd need a lot
-more folks to carefull review it, especially the swiotlb and ia64 bits.
-So if we don't get that early next week I feel we might have to punt
-it to the next merge window.
+Just as a warning:  this series now has some conflicts with the dma
+mapping tree due to the ->mapping_error removal, and there might be
+some bigger ones if the direct calls for the direct mapping code series
+goes ahead.  None of them affect the early part of the series that do
+not touch the actual dma_map_ops instances, though.
