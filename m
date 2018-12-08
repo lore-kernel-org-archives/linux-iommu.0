@@ -1,17 +1,11 @@
-From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 1/9] mm: Introduce new vm_insert_range API
-Date: Sat, 8 Dec 2018 03:18:49 +0530
-Message-ID: <CAFqt6zbuT3mhLCSas=EO38NW+M4KAARKeBpMqDz6xwkVbw=FGA@mail.gmail.com>
-References: <20181206183945.GA20932@jordon-HP-15-Notebook-PC>
-	<53bbc095-c9f5-5d6a-6e50-6e060d17eb68@arm.com>
-	<20181207171116.GA29923@bombadil.infradead.org>
-	<CAFqt6zYCWOK-uS85GqCzcgT=+YKn1nBrRPq+M9y6eJjmXEKH+g@mail.gmail.com>
-	<67495f8f-2092-e42d-321e-5216c346513f@arm.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v4 00/18] MT8183 IOMMU SUPPORT
+Date: Sat, 8 Dec 2018 16:39:13 +0800
+Message-ID: <1544258371-4600-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <67495f8f-2092-e42d-321e-5216c346513f-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,49 +15,149 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Kyungmin
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Arvind Yadav <arvind.yadav.cs-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Dec 8, 2018 at 2:40 AM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->
-> On 2018-12-07 7:28 pm, Souptick Joarder wrote:
-> > On Fri, Dec 7, 2018 at 10:41 PM Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org> wrote:
-> >>
-> >> On Fri, Dec 07, 2018 at 03:34:56PM +0000, Robin Murphy wrote:
-> >>>> +int vm_insert_range(struct vm_area_struct *vma, unsigned long addr,
-> >>>> +                   struct page **pages, unsigned long page_count)
-> >>>> +{
-> >>>> +   unsigned long uaddr = addr;
-> >>>> +   int ret = 0, i;
-> >>>
-> >>> Some of the sites being replaced were effectively ensuring that vma and
-> >>> pages were mutually compatible as an initial condition - would it be worth
-> >>> adding something here for robustness, e.g.:
-> >>>
-> >>> +     if (page_count != vma_pages(vma))
-> >>> +             return -ENXIO;
-> >>
-> >> I think we want to allow this to be used to populate part of a VMA.
-> >> So perhaps:
-> >>
-> >>          if (page_count > vma_pages(vma))
-> >>                  return -ENXIO;
-> >
-> > Ok, This can be added.
-> >
-> > I think Patch [2/9] is the only leftover place where this
-> > check could be removed.
->
-> Right, 9/9 could also have relied on my stricter check here, but since
-> it's really testing whether it actually managed to allocate vma_pages()
-> worth of pages earlier, Matthew's more lenient version won't help for
-> that one.
+This patchset mainly adds support for mt8183 IOMMU and SMI.
 
+mt8183 has only one M4U like mt8173 and is also MTK IOMMU gen2 which
+uses ARM Short-Descriptor translation table format.
 
-(Why privcmd_buf_mmap() doesn't clean up and return an error
-> as soon as that allocation loop fails, without taking the mutex under
-> which it still does a bunch more pointless work to only undo it again,
-> is a mind-boggling mystery, but that's not our problem here...)
+The mt8183 M4U-SMI HW diagram is as below:
 
-I think some clean up can be done here in a separate patch.
+                          EMI
+                           |
+                          M4U
+                           |
+                       ----------
+                       |        |
+                   gals0-rx   gals1-rx
+                       |        |
+                       |        |
+                   gals0-tx   gals1-tx
+                       |        |
+                      ------------
+                       SMI Common
+                      ------------
+                           |
+  +-----+-----+--------+-----+-----+-------+-------+
+  |     |     |        |     |     |       |       |
+  |     |  gals-rx  gals-rx  |   gals-rx gals-rx gals-rx
+  |     |     |        |     |     |       |       |
+  |     |     |        |     |     |       |       |
+  |     |  gals-tx  gals-tx  |   gals-tx gals-tx gals-tx
+  |     |     |        |     |     |       |       |
+larb0 larb1  IPU0    IPU1  larb4  larb5  larb6    CCU
+disp  vdec   img     cam    venc   img    cam
+
+All the connections are HW fixed, SW can NOT adjust it.
+
+Compared with mt8173, we add a GALS(Global Async Local Sync) module
+between SMI-common and M4U, and additional GALS between larb2/3/5/6
+and SMI-common. GALS can help synchronize for the modules in different
+clock frequency, it can be seen as a "asynchronous fifo".
+
+GALS can only help transfer the command/data while it doesn't have
+the configuring register, thus it has the special "smi" clock and it
+doesn't have the "apb" clock. From the diagram above, we add "gals0"
+and "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
+
+>From the diagram above, IPU0/IPU1(Image Processor Unit) and CCU(Camera
+Control Unit) is connected with smi-common directly, we can take them
+as "larb2", "larb3" and "larb7", and their register spaces are
+different with the normal larb.
+
+This is the general purpose of each patch in this patchset:
+the patch 1..10 add the iommu/smi support for mt8183;
+the patch 11/12/13 add mmu1 support;
+the last patches contain some minor changes:
+   -patch 14 fix a issue.
+   -patch 15 improve the code flow(add shutdown).
+   -patch 16 cleanup some smi codes(delete need_larbid).
+   -patch 17 switch to SPDX license.
+   -patch 18 Constify iommu_ops from Arvind.
+this patchset don't contain the dtsi part since it need depend on the
+ccf and power-domain nodes which has not been accepted.
+
+Change notes:
+
+v4: 1) Add 3 preparing patches. Seperate some minor meaningful code into
+       a new patch according to Matthias's suggestion.
+       memory: mtk-smi: Add gals support         
+       iommu/mediatek: Add larb-id remapped support 
+       iommu/mediatek: Add bclk can be supported optionally       
+    2) rebase on "iommu/mediatek: Make it explicitly non-modular"
+       which was applied.
+       https://lore.kernel.org/patchwork/patch/1020125/
+    3) add some comment about "mediatek,larb-id" in the commit message of
+       the patch "mtk-smi: Get rid of need_larbid".
+    4) Fix bus_sel value.
+
+v3: https://lists.linuxfoundation.org/pipermail/iommu/2018-November/031121.html
+    1) rebase on v4.20-rc1.
+    2) In the dt-binding, add a minor string "mt7623" which also use gen1
+       since Matthias added it in v4.20.
+    3) About v7s:
+       a) for paddr_to_pte, change the param from "arm_v7s_io_pgtable" to
+          "arm_pgtable_cfg", according to Robin suggestion.
+       b) Don't use CONFIG_PHYS_ADDR_T_64BIT.
+       c) add a little comment(pgtable address still don't over 4GB) in the
+          commit message of the patch "Extend MediaTek 4GB Mode".
+    4) add "iommu/mediatek: Constify iommu_ops" into this patchset. this may
+       be helpful for review and merge.
+       https://lists.linuxfoundation.org/pipermail/iommu/2018-October/030637.html
+
+v2: https://lists.linuxfoundation.org/pipermail/iommu/2018-September/030164.html
+    1) Fix typo in the commit message of dt-binding.
+    2) Change larb2/larb3 to the special larbs.
+    3) Refactor the larb-id remapped array(larbid_remapped), then we
+    don't need add the new function(mtk_iommu_get_larbid).
+    4) Add a new patch for v7s two helpers(paddr_to_iopte and
+    iopte_to_paddr).
+    5) Change some comment for MTK 4GB mode.
+
+v1: base on v4.19-rc1.
+http://lists.infradead.org/pipermail/linux-mediatek/2018-September/014881.html
+
+Arvind Yadav (1):
+  iommu/mediatek: Constify iommu_ops
+
+Yong Wu (17):
+  dt-bindings: mediatek: Add binding for mt8183 IOMMU and SMI
+  iommu/mediatek: Use a struct as the platform data
+  memory: mtk-smi: Use a general config_port interface
+  memory: mtk-smi: Use a struct for the platform data for smi-common
+  iommu/io-pgtable-arm-v7s: Add paddr_to_iopte and iopte_to_paddr
+    helpers
+  iommu/io-pgtable-arm-v7s: Extend MediaTek 4GB Mode
+  iommu/mediatek: Add bclk can be supported optionally
+  iommu/mediatek: Add larb-id remapped support
+  memory: mtk-smi: Add gals support
+  iommu/mediatek: Add mt8183 IOMMU support
+  iommu/mediatek: Add mmu1 support
+  memory: mtk-smi: Invoke pm runtime_callback to enable clocks
+  memory: mtk-smi: Add bus_sel for mt8183
+  iommu/mediatek: Fix VLD_PA_RANGE register backup when suspend
+  iommu/mediatek: Add shutdown callback
+  memory: mtk-smi: Get rid of need_larbid
+  iommu/mediatek: Switch to SPDX license identifier
+
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  15 +-
+ .../memory-controllers/mediatek,smi-common.txt     |  11 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |   3 +
+ drivers/iommu/io-pgtable-arm-v7s.c                 |  72 ++++--
+ drivers/iommu/io-pgtable.h                         |   7 +-
+ drivers/iommu/mtk_iommu.c                          | 141 +++++++----
+ drivers/iommu/mtk_iommu.h                          |  26 +-
+ drivers/iommu/mtk_iommu_v1.c                       |  14 +-
+ drivers/memory/mtk-smi.c                           | 269 ++++++++++++++-------
+ include/dt-bindings/memory/mt2701-larb-port.h      |  10 +-
+ include/dt-bindings/memory/mt8173-larb-port.h      |  10 +-
+ include/dt-bindings/memory/mt8183-larb-port.h      | 130 ++++++++++
+ include/soc/mediatek/smi.h                         |  10 +-
+ 13 files changed, 501 insertions(+), 217 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt8183-larb-port.h
+
+-- 
+1.9.1
