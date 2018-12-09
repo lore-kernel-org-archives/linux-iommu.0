@@ -1,119 +1,79 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 09/21] memory: tegra: Adapt to Tegra20 device-tree binding
-	changes
-Date: Sun,  9 Dec 2018 23:29:38 +0300
-Message-ID: <20181209202950.31486-10-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v6 14/21] iommu/tegra: gart: Fix spinlock recursion
+Date: Sun,  9 Dec 2018 23:29:43 +0300
+Message-ID: <20181209202950.31486-15-digetx@gmail.com>
 References: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181209202950.31486-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181209202950.31486-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The tegra20-mc device-tree binding has been changed, GART has been
-squashed into Memory Controller and now the clock property is mandatory
-for Tegra20, the DT compatible has been changed as well. Adapt driver to
-the DT changes.
+Fix spinlock recursion bug that happens on IOMMU domain destruction if
+any of the allocated domains have devices attached to them.
 
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/memory/tegra/mc.c | 21 ++++++++-------------
- drivers/memory/tegra/mc.h |  6 ------
- include/soc/tegra/mc.h    |  2 +-
- 3 files changed, 9 insertions(+), 20 deletions(-)
+ drivers/iommu/tegra-gart.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-index b99f3c620f6c..59db13287b47 100644
---- a/drivers/memory/tegra/mc.c
-+++ b/drivers/memory/tegra/mc.c
-@@ -51,7 +51,7 @@
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 0a72b6afa842..d4a642c636f1 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -197,25 +197,33 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 	return err;
+ }
  
- static const struct of_device_id tegra_mc_of_match[] = {
- #ifdef CONFIG_ARCH_TEGRA_2x_SOC
--	{ .compatible = "nvidia,tegra20-mc", .data = &tegra20_mc_soc },
-+	{ .compatible = "nvidia,tegra20-mc-gart", .data = &tegra20_mc_soc },
- #endif
- #ifdef CONFIG_ARCH_TEGRA_3x_SOC
- 	{ .compatible = "nvidia,tegra30-mc", .data = &tegra30_mc_soc },
-@@ -638,24 +638,19 @@ static int tegra_mc_probe(struct platform_device *pdev)
- 	if (IS_ERR(mc->regs))
- 		return PTR_ERR(mc->regs);
+-static void gart_iommu_detach_dev(struct iommu_domain *domain,
+-				  struct device *dev)
++static void __gart_iommu_detach_dev(struct iommu_domain *domain,
++				    struct device *dev)
+ {
+ 	struct gart_domain *gart_domain = to_gart_domain(domain);
+ 	struct gart_device *gart = gart_domain->gart;
+ 	struct gart_client *c;
  
-+	mc->clk = devm_clk_get(&pdev->dev, "mc");
-+	if (IS_ERR(mc->clk)) {
-+		dev_err(&pdev->dev, "failed to get MC clock: %ld\n",
-+			PTR_ERR(mc->clk));
-+		return PTR_ERR(mc->clk);
-+	}
+-	spin_lock(&gart->client_lock);
+-
+ 	list_for_each_entry(c, &gart->client, list) {
+ 		if (c->dev == dev) {
+ 			list_del(&c->list);
+ 			devm_kfree(gart->dev, c);
+ 			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
+-			goto out;
++			return;
+ 		}
+ 	}
+-	dev_err(gart->dev, "Couldn't find\n");
+-out:
 +
- #ifdef CONFIG_ARCH_TEGRA_2x_SOC
- 	if (mc->soc == &tegra20_mc_soc) {
--		res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
--		mc->regs2 = devm_ioremap_resource(&pdev->dev, res);
--		if (IS_ERR(mc->regs2))
--			return PTR_ERR(mc->regs2);
--
- 		isr = tegra20_mc_irq;
- 	} else
- #endif
- 	{
--		mc->clk = devm_clk_get(&pdev->dev, "mc");
--		if (IS_ERR(mc->clk)) {
--			dev_err(&pdev->dev, "failed to get MC clock: %ld\n",
--				PTR_ERR(mc->clk));
--			return PTR_ERR(mc->clk);
--		}
--
- 		err = tegra_mc_setup_latency_allowance(mc);
- 		if (err < 0) {
- 			dev_err(&pdev->dev, "failed to setup latency allowance: %d\n",
-diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
-index 01065f12ebeb..9856f085e487 100644
---- a/drivers/memory/tegra/mc.h
-+++ b/drivers/memory/tegra/mc.h
-@@ -26,18 +26,12 @@
- 
- static inline u32 mc_readl(struct tegra_mc *mc, unsigned long offset)
- {
--	if (mc->regs2 && offset >= 0x24)
--		return readl(mc->regs2 + offset - 0x3c);
--
- 	return readl(mc->regs + offset);
++	dev_err(gart->dev, "Couldn't find %s to detach\n", dev_name(dev));
++}
++
++static void gart_iommu_detach_dev(struct iommu_domain *domain,
++				  struct device *dev)
++{
++	struct gart_domain *gart_domain = to_gart_domain(domain);
++	struct gart_device *gart = gart_domain->gart;
++
++	spin_lock(&gart->client_lock);
++	__gart_iommu_detach_dev(domain, dev);
+ 	spin_unlock(&gart->client_lock);
  }
  
- static inline void mc_writel(struct tegra_mc *mc, u32 value,
- 			     unsigned long offset)
- {
--	if (mc->regs2 && offset >= 0x24)
--		return writel(value, mc->regs2 + offset - 0x3c);
--
- 	writel(value, mc->regs + offset);
- }
+@@ -255,7 +263,7 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
+ 			struct gart_client *c;
  
-diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
-index b43f37fea096..db5bfdf589b4 100644
---- a/include/soc/tegra/mc.h
-+++ b/include/soc/tegra/mc.h
-@@ -144,7 +144,7 @@ struct tegra_mc_soc {
- struct tegra_mc {
- 	struct device *dev;
- 	struct tegra_smmu *smmu;
--	void __iomem *regs, *regs2;
-+	void __iomem *regs;
- 	struct clk *clk;
- 	int irq;
- 
+ 			list_for_each_entry(c, &gart->client, list)
+-				gart_iommu_detach_dev(domain, c->dev);
++				__gart_iommu_detach_dev(domain, c->dev);
+ 		}
+ 		spin_unlock(&gart->client_lock);
+ 	}
 -- 
 2.19.1
