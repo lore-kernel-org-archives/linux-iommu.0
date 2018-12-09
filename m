@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v6 12/21] memory: tegra: Use relaxed versions of readl/writel
-Date: Sun,  9 Dec 2018 23:29:41 +0300
-Message-ID: <20181209202950.31486-13-digetx@gmail.com>
+Subject: [PATCH v6 17/21] iommu/tegra: gart: Don't use managed resources
+Date: Sun,  9 Dec 2018 23:29:46 +0300
+Message-ID: <20181209202950.31486-18-digetx@gmail.com>
 References: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,33 +12,72 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-There is no need for inserting of memory barriers to access registers of
-Memory Controller. Hence use the relaxed versions of the accessors.
+GART is a part of the Memory Controller driver that is always built-in,
+hence there is no benefit from the use of managed resources.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/memory/tegra/mc.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/tegra-gart.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
-index 9856f085e487..887a3b07334f 100644
---- a/drivers/memory/tegra/mc.h
-+++ b/drivers/memory/tegra/mc.h
-@@ -26,13 +26,13 @@
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index 1be595d15e7e..99afdbf8860c 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -173,7 +173,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 	struct gart_client *client, *c;
+ 	int err = 0;
  
- static inline u32 mc_readl(struct tegra_mc *mc, unsigned long offset)
- {
--	return readl(mc->regs + offset);
-+	return readl_relaxed(mc->regs + offset);
+-	client = devm_kzalloc(gart->dev, sizeof(*c), GFP_KERNEL);
++	client = kzalloc(sizeof(*c), GFP_KERNEL);
+ 	if (!client)
+ 		return -ENOMEM;
+ 	client->dev = dev;
+@@ -199,7 +199,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 	return 0;
+ 
+ fail:
+-	devm_kfree(gart->dev, client);
++	kfree(client);
+ 	spin_unlock(&gart->client_lock);
+ 	return err;
  }
+@@ -214,7 +214,7 @@ static void __gart_iommu_detach_dev(struct iommu_domain *domain,
+ 	list_for_each_entry(c, &gart->client, list) {
+ 		if (c->dev == dev) {
+ 			list_del(&c->list);
+-			devm_kfree(gart->dev, c);
++			kfree(c);
+ 			if (list_empty(&gart->client))
+ 				gart->active_domain = NULL;
+ 			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
+@@ -461,7 +461,7 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 		return ERR_PTR(-ENXIO);
+ 	}
  
- static inline void mc_writel(struct tegra_mc *mc, u32 value,
- 			     unsigned long offset)
- {
--	writel(value, mc->regs + offset);
-+	writel_relaxed(value, mc->regs + offset);
+-	gart = devm_kzalloc(dev, sizeof(*gart), GFP_KERNEL);
++	gart = kzalloc(sizeof(*gart), GFP_KERNEL);
+ 	if (!gart) {
+ 		dev_err(dev, "failed to allocate gart_device\n");
+ 		return ERR_PTR(-ENOMEM);
+@@ -470,7 +470,7 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 	ret = iommu_device_sysfs_add(&gart->iommu, dev, NULL, "gart");
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register IOMMU in sysfs\n");
+-		return ERR_PTR(ret);
++		goto free_gart;
+ 	}
+ 
+ 	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
+@@ -508,6 +508,8 @@ struct gart_device *tegra_gart_probe(struct device *dev,
+ 	iommu_device_unregister(&gart->iommu);
+ remove_sysfs:
+ 	iommu_device_sysfs_remove(&gart->iommu);
++free_gart:
++	kfree(gart);
+ 
+ 	return ERR_PTR(ret);
  }
- 
- extern const struct tegra_mc_reset_ops terga_mc_reset_ops_common;
 -- 
 2.19.1
