@@ -1,15 +1,14 @@
 From: David Miller <davem@davemloft.net>
-Subject: Re: [PATCH 5/6] sparc: move the leon PCI memory space comment to
- <asm/leon.h>
-Date: Sat, 08 Dec 2018 20:58:00 -0800 (PST)
-Message-ID: <20181208.205800.224315570468859864.davem@davemloft.net>
+Subject: Re: [PATCH 6/6] sparc: merge 32-bit and 64-bit version of pci.h
+Date: Sat, 08 Dec 2018 20:58:06 -0800 (PST)
+Message-ID: <20181208.205806.42785512174962944.davem@davemloft.net>
 References: <20181208174115.16237-1-hch@lst.de>
- <20181208174115.16237-6-hch@lst.de>
+ <20181208174115.16237-7-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20181208174115.16237-6-hch@lst.de>
+In-Reply-To: <20181208174115.16237-7-hch@lst.de>
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -24,10 +23,11 @@ Cc: linux-parisc@vger.kernel.org, ezequiel@collabora.com, vgupta@synopsys.com, l
 List-Id: iommu@lists.linux-foundation.org
 
 RnJvbTogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+CkRhdGU6IFNhdCwgIDggRGVjIDIw
-MTggMDk6NDE6MTQgLTA4MDAKCj4gSXQgaGFzIG5vdGhpbmcgdG8gZG8gd2l0aCB0aGUgY29udGVu
-dCBvZiB0aGUgcGNpLmggaGVhZGVyLgo+IAo+IFN1Z2dlc3RlZCBieTogU2FtIFJhdm5ib3JnIDxz
-YW1AcmF2bmJvcmcub3JnPgo+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waCBIZWxsd2lnIDxoY2hA
-bHN0LmRlPgoKQWNrZWQtYnk6IERhdmlkIFMuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD4K
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVs
-IG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+MTggMDk6NDE6MTUgLTA4MDAKCj4gVGhlcmUgYXJlIGVub3VnaCBjb21tb24gZGVmaW50aW9ucyB0
+aGF0IGEgc2luZ2xlIGhlYWRlciBzZWVtcyBuaWNlci4KPiAKPiBBbHNvIGRyb3AgdGhlIHBvaW50
+bGVzcyA8bGludXgvZG1hLW1hcHBpbmcuaD4gaW5jbHVkZS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBD
+aHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4KPiBBY2tlZC1ieTogU2FtIFJhdm5ib3JnIDxz
+YW1AcmF2bmJvcmcub3JnPgoKQWNrZWQtYnk6IERhdmlkIFMuIE1pbGxlciA8ZGF2ZW1AZGF2ZW1s
+b2Z0Lm5ldD4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+ZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0
+dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
