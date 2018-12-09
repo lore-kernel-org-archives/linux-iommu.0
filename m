@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v6 04/21] iommu: Introduce iotlb_sync_map callback
-Date: Sun,  9 Dec 2018 23:29:33 +0300
-Message-ID: <20181209202950.31486-5-digetx@gmail.com>
+Subject: [PATCH v6 07/21] ARM: dts: tegra20: Update Memory Controller node to the new binding
+Date: Sun,  9 Dec 2018 23:29:36 +0300
+Message-ID: <20181209202950.31486-8-digetx@gmail.com>
 References: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,69 +12,42 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce iotlb_sync_map() callback that is invoked in the end of
-iommu_map(). This new callback allows IOMMU drivers to avoid syncing
-after mapping of each contiguous chunk and sync only when the whole
-mapping is completed, optimizing performance of the mapping operation.
+Device tree binding of Memory Controller has been changed: GART has been
+squashed into the MC, there are a new mandatory clock and #iommu-cells
+properties, the compatible has been changed to 'tegra20-mc-gart'.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/iommu.c | 8 ++++++--
- include/linux/iommu.h | 1 +
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/tegra20.dtsi | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cc25ec6d4c06..79e7c49ed16a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1582,13 +1582,14 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
- int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	      phys_addr_t paddr, size_t size, int prot)
- {
-+	const struct iommu_ops *ops = domain->ops;
- 	unsigned long orig_iova = iova;
- 	unsigned int min_pagesz;
- 	size_t orig_size = size;
- 	phys_addr_t orig_paddr = paddr;
- 	int ret = 0;
+diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
+index dcad6d6128cf..8c942e60703e 100644
+--- a/arch/arm/boot/dts/tegra20.dtsi
++++ b/arch/arm/boot/dts/tegra20.dtsi
+@@ -616,17 +616,14 @@
+ 	};
  
--	if (unlikely(domain->ops->map == NULL ||
-+	if (unlikely(ops->map == NULL ||
- 		     domain->pgsize_bitmap == 0UL))
- 		return -ENODEV;
+ 	mc: memory-controller@7000f000 {
+-		compatible = "nvidia,tegra20-mc";
+-		reg = <0x7000f000 0x024
+-		       0x7000f03c 0x3c4>;
++		compatible = "nvidia,tegra20-mc-gart";
++		reg = <0x7000f000 0x400		/* controller registers */
++		       0x58000000 0x02000000>;	/* GART aperture */
++		clocks = <&tegra_car TEGRA20_CLK_MC>;
++		clock-names = "mc";
+ 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
+ 		#reset-cells = <1>;
+-	};
+-
+-	iommu@7000f024 {
+-		compatible = "nvidia,tegra20-gart";
+-		reg = <0x7000f024 0x00000018	/* controller registers */
+-		       0x58000000 0x02000000>;	/* GART aperture */
++		#iommu-cells = <0>;
+ 	};
  
-@@ -1617,7 +1618,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
- 			 iova, &paddr, pgsize);
- 
--		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
-+		ret = ops->map(domain, iova, paddr, pgsize, prot);
- 		if (ret)
- 			break;
- 
-@@ -1626,6 +1627,9 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 		size -= pgsize;
- 	}
- 
-+	if (ops->iotlb_sync_map)
-+		ops->iotlb_sync_map(domain);
-+
- 	/* unroll mapping in case something went wrong */
- 	if (ret)
- 		iommu_unmap(domain, orig_iova, orig_size - size);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 11db18b9ffe8..0e90c5cc72db 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -201,6 +201,7 @@ struct iommu_ops {
- 	void (*flush_iotlb_all)(struct iommu_domain *domain);
- 	void (*iotlb_range_add)(struct iommu_domain *domain,
- 				unsigned long iova, size_t size);
-+	void (*iotlb_sync_map)(struct iommu_domain *domain);
- 	void (*iotlb_sync)(struct iommu_domain *domain);
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
- 	int (*add_device)(struct device *dev);
+ 	memory-controller@7000f400 {
 -- 
 2.19.1
