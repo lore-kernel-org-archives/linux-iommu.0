@@ -1,14 +1,16 @@
-From: Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: Re: [PATCH 04/10] arm: implement DMA_ATTR_NON_CONSISTENT
-Date: Sat, 08 Dec 2018 19:52:04 -0300
-Message-ID: <3aeb99c505fd1c33199fcc26fe5e0bf239dee57e.camel@collabora.com>
-References: <20181208173702.15158-1-hch@lst.de>
-	<20181208173702.15158-5-hch@lst.de>
+From: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH RFC 1/1] swiotlb: add debugfs to track swiotlb buffer usage
+Date: Sun, 9 Dec 2018 09:37:29 +0800
+Message-ID: <9d03184a-e82a-c888-4007-bbfbbd877748@oracle.com>
+References: <1544068785-20399-1-git-send-email-dongli.zhang@oracle.com>
+	<da16ecce-4e25-d246-3e0d-389e8e9e413e@oracle.com>
+	<28a9f44a-d1bf-fb34-5a57-cfdb7bb23163@oracle.com>
+	<377f610a-035b-a591-de9f-b926e2b4f9e1@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181208173702.15158-5-hch-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <377f610a-035b-a591-de9f-b926e2b4f9e1-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,158 +20,217 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, "Matwey V. Kornilov" <matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org>, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joe Jin <joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: hch-jcswGhMUV9g@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, 2018-12-08 at 09:36 -0800, Christoph Hellwig wrote:
-> For the iommu ops we can just use the implementaton for DMA coherent
-> devices.  For the regular ops we need mix and match a bit so that
-> we either use the CMA allocator without remapping, but with a special
-> error handling case for highmem pages, or the simple allocator.
-> 
-> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> ---
->  arch/arm/mm/dma-mapping.c | 49 ++++++++++++++++++++++++++++-----------
->  1 file changed, 35 insertions(+), 14 deletions(-)
-> 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 2cfb17bad1e6..b3b66b41c450 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -49,6 +49,7 @@ struct arm_dma_alloc_args {
->  	const void *caller;
->  	bool want_vaddr;
->  	int coherent_flag;
-> +	bool nonconsistent_flag;
->  };
->  
->  struct arm_dma_free_args {
-> @@ -57,6 +58,7 @@ struct arm_dma_free_args {
->  	void *cpu_addr;
->  	struct page *page;
->  	bool want_vaddr;
-> +	bool nonconsistent_flag;
->  };
->  
->  #define NORMAL	    0
-> @@ -348,7 +350,8 @@ static void __dma_free_buffer(struct page *page, size_t size)
->  static void *__alloc_from_contiguous(struct device *dev, size_t size,
->  				     pgprot_t prot, struct page **ret_page,
->  				     const void *caller, bool want_vaddr,
-> -				     int coherent_flag, gfp_t gfp);
-> +				     int coherent_flag, bool nonconsistent_flag,
-> +				     gfp_t gfp);
->  
->  static void *__alloc_remap_buffer(struct device *dev, size_t size, gfp_t gfp,
->  				 pgprot_t prot, struct page **ret_page,
-> @@ -405,7 +408,7 @@ static int __init atomic_pool_init(void)
->  	if (dev_get_cma_area(NULL))
->  		ptr = __alloc_from_contiguous(NULL, atomic_pool_size, prot,
->  				      &page, atomic_pool_init, true, NORMAL,
-> -				      GFP_KERNEL);
-> +				      false, GFP_KERNEL);
->  	else
->  		ptr = __alloc_remap_buffer(NULL, atomic_pool_size, gfp, prot,
->  					   &page, atomic_pool_init, true);
-> @@ -579,7 +582,8 @@ static int __free_from_pool(void *start, size_t size)
->  static void *__alloc_from_contiguous(struct device *dev, size_t size,
->  				     pgprot_t prot, struct page **ret_page,
->  				     const void *caller, bool want_vaddr,
-> -				     int coherent_flag, gfp_t gfp)
-> +				     int coherent_flag, bool nonconsistent_flag,
-> +				     gfp_t gfp)
->  {
->  	unsigned long order = get_order(size);
->  	size_t count = size >> PAGE_SHIFT;
-> @@ -595,12 +599,16 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
->  	if (!want_vaddr)
->  		goto out;
->  
-> +	if (nonconsistent_flag) {
-> +		if (PageHighMem(page))
-> +			goto fail;
-> +		goto out;
-> +	}
-> +
->  	if (PageHighMem(page)) {
->  		ptr = __dma_alloc_remap(page, size, GFP_KERNEL, prot, caller);
-> -		if (!ptr) {
-> -			dma_release_from_contiguous(dev, page, count);
-> -			return NULL;
-> -		}
-> +		if (!ptr)
-> +			goto fail;
->  	} else {
->  		__dma_remap(page, size, prot);
->  		ptr = page_address(page);
-> @@ -609,12 +617,15 @@ static void *__alloc_from_contiguous(struct device *dev, size_t size,
->   out:
->  	*ret_page = page;
->  	return ptr;
-> + fail:
-> +	dma_release_from_contiguous(dev, page, count);
-> +	return NULL;
->  }
->  
->  static void __free_from_contiguous(struct device *dev, struct page *page,
-> -				   void *cpu_addr, size_t size, bool want_vaddr)
-> +				   void *cpu_addr, size_t size, bool remapped)
->  {
-> -	if (want_vaddr) {
-> +	if (remapped) {
->  		if (PageHighMem(page))
->  			__dma_free_remap(cpu_addr, size);
->  		else
-> @@ -635,7 +646,11 @@ static void *__alloc_simple_buffer(struct device *dev, size_t size, gfp_t gfp,
->  				   struct page **ret_page)
->  {
->  	struct page *page;
-> -	/* __alloc_simple_buffer is only called when the device is coherent */
-> +	/*
-> +	 * __alloc_simple_buffer is only called when the device is coherent,
-> +	 * or if the caller explicitly asked for an allocation that is not
-> +	 * consistent.
-> +	 */
->  	page = __dma_alloc_buffer(dev, size, gfp, COHERENT);
->  	if (!page)
->  		return NULL;
-> @@ -667,13 +682,15 @@ static void *cma_allocator_alloc(struct arm_dma_alloc_args *args,
->  	return __alloc_from_contiguous(args->dev, args->size, args->prot,
->  				       ret_page, args->caller,
->  				       args->want_vaddr, args->coherent_flag,
-> +				       args->nonconsistent_flag,
->  				       args->gfp);
->  }
->  
->  static void cma_allocator_free(struct arm_dma_free_args *args)
->  {
->  	__free_from_contiguous(args->dev, args->page, args->cpu_addr,
-> -			       args->size, args->want_vaddr);
-> +			       args->size,
-> +			       args->want_vaddr || args->nonconsistent_flag);
->  }
->  
->  static struct arm_dma_allocator cma_allocator = {
-> @@ -735,6 +752,7 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
->  		.caller = caller,
->  		.want_vaddr = ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) == 0),
->  		.coherent_flag = is_coherent ? COHERENT : NORMAL,
-> +		.nonconsistent_flag = (attrs & DMA_ATTR_NON_CONSISTENT),
->  	};
->  
->  #ifdef CONFIG_DMA_API_DEBUG
-> @@ -773,7 +791,7 @@ static void *__dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
->  
->  	if (cma)
->  		buf->allocator = &cma_allocator;
-> -	else if (is_coherent)
-> +	else if (is_coherent || (attrs & DMA_ATTR_NON_CONSISTENT))
->  		buf->allocator = &simple_allocator;
+Hi Robin,
 
-Reading through your code I can't really see where the pgprot is changed
-for non-consistent requests. Namely, __get_dma_pgprot only
-returns writecombine or coherent memory.
+On 12/07/2018 09:17 PM, Robin Murphy wrote:
+> On 07/12/2018 05:49, Dongli Zhang wrote:
+>>
+>>
+>> On 12/07/2018 12:12 AM, Joe Jin wrote:
+>>> Hi Dongli,
+>>>
+>>> Maybe move d_swiotlb_usage declare into swiotlb_create_debugfs():
+>>
+>> I assume the call of swiotlb_tbl_map_single() might be frequent in some
+>> situations, e.g., when 'swiotlb=force'.
+>>
+>> That's why I declare the d_swiotlb_usage out of any functions and use "if
+>> (unlikely(!d_swiotlb_usage))".
+>>
+>> I think "if (unlikely(!d_swiotlb_usage))" incur less performance overhead than
+>> calling swiotlb_create_debugfs() every time to confirm if debugfs is created. I
+>> would declare d_swiotlb_usage statically inside swiotlb_create_debugfs() if the
+>> performance overhead is acceptable (it is trivial indeed).
+>>
+>>
+>> That is the reason I tag the patch with RFC because I am not sure if the
+>> on-demand creation of debugfs is fine with maintainers/reviewers. If swiotlb
+>> pages are never allocated, we would not be able to see the debugfs entry.
+>>
+>> I would prefer to limit the modification within swiotlb and to not taint any
+>> other files.
+>>
+>> The drawback is there is no place to create or delete the debugfs entry because
+>> swiotlb buffer could be initialized and uninitialized at very early stage.
+> 
+> Couldn't you just do it from an initcall? All you really need to care about is
+> ordering after debugfs_init(), which is easy. If SWIOTLB initialisation does end
+> up being skipped at any point, nobody's going to mind if debugfs still has an
+> entry saying io_tlb_nslabs == 0 (in fact, that's arguably useful in itself as
+> positive confirmation that the system is not using SWIOTLB).
 
-Regards,
-Ezequiel
+I will put the creation of debugfs entry in late_initcall() which is the last
+initcall.
+
+> 
+>>> void swiotlb_create_debugfs(void)
+>>> {
+>>> #ifdef CONFIG_DEBUG_FS
+>>>     static struct dentry *d_swiotlb_usage = NULL;
+>>>
+>>>     if (d_swiotlb_usage)
+>>>         return;
+>>>
+>>>     d_swiotlb_usage = debugfs_create_dir("swiotlb", NULL);
+>>>
+>>>     if (!d_swiotlb_usage)
+>>>         return;
+>>>
+>>>     debugfs_create_file("usage", 0600, d_swiotlb_usage,
+>>>                 NULL, &swiotlb_usage_fops);
+> 
+> Maybe expose io_tlb_nslabs and io_tlb_used as separate entries? Then you could
+> just use debugfs_create_ulong() to keep things really simple. That would also
+> make the interface more consistent with dma-debug, which would be nice given how
+> closely-related they are.
+
+I will switch to debugfs_create_ulong() and that will also reduce the LOC.
+
+Thank you very much!
+
+Dongli Zhang
+
+
+
+> 
+> Robin.
+> 
+>>> #endif
+>>> }
+>>>
+>>> And for io_tlb_used, possible add a check at the begin of
+>>> swiotlb_tbl_map_single(),
+>>> if there were not any free slots or not enough slots, return fail directly?
+>>
+>> This would optimize the slots allocation path. I will follow this in next
+>> version after I got more suggestions and confirmations from maintainers.
+>>
+>>
+>> Thank you very much!
+>>
+>> Dongli Zhang
+>>
+>>>
+>>> Thanks,
+>>> Joe
+>>> On 12/5/18 7:59 PM, Dongli Zhang wrote:
+>>>> The device driver will not be able to do dma operations once swiotlb buffer
+>>>> is full, either because the driver is using so many IO TLB blocks inflight,
+>>>> or because there is memory leak issue in device driver. To export the
+>>>> swiotlb buffer usage via debugfs would help the user estimate the size of
+>>>> swiotlb buffer to pre-allocate or analyze device driver memory leak issue.
+>>>>
+>>>> As the swiotlb can be initialized at very early stage when debugfs cannot
+>>>> register successfully, this patch creates the debugfs entry on demand.
+>>>>
+>>>> Signed-off-by: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+>>>> ---
+>>>>   kernel/dma/swiotlb.c | 57
+>>>> ++++++++++++++++++++++++++++++++++++++++++++++++++++
+>>>>   1 file changed, 57 insertions(+)
+>>>>
+>>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>>>> index 045930e..d3c8aa4 100644
+>>>> --- a/kernel/dma/swiotlb.c
+>>>> +++ b/kernel/dma/swiotlb.c
+>>>> @@ -35,6 +35,9 @@
+>>>>   #include <linux/scatterlist.h>
+>>>>   #include <linux/mem_encrypt.h>
+>>>>   #include <linux/set_memory.h>
+>>>> +#ifdef CONFIG_DEBUG_FS
+>>>> +#include <linux/debugfs.h>
+>>>> +#endif
+>>>>     #include <asm/io.h>
+>>>>   #include <asm/dma.h>
+>>>> @@ -73,6 +76,13 @@ static phys_addr_t io_tlb_start, io_tlb_end;
+>>>>    */
+>>>>   static unsigned long io_tlb_nslabs;
+>>>>   +#ifdef CONFIG_DEBUG_FS
+>>>> +/*
+>>>> + * The number of used IO TLB block
+>>>> + */
+>>>> +static unsigned long io_tlb_used;
+>>>> +#endif
+>>>> +
+>>>>   /*
+>>>>    * This is a free list describing the number of free entries available from
+>>>>    * each index
+>>>> @@ -100,6 +110,41 @@ static DEFINE_SPINLOCK(io_tlb_lock);
+>>>>     static int late_alloc;
+>>>>   +#ifdef CONFIG_DEBUG_FS
+>>>> +
+>>>> +static struct dentry *d_swiotlb_usage;
+>>>> +
+>>>> +static int swiotlb_usage_show(struct seq_file *m, void *v)
+>>>> +{
+>>>> +    seq_printf(m, "%lu\n%lu\n", io_tlb_used, );
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int swiotlb_usage_open(struct inode *inode, struct file *filp)
+>>>> +{
+>>>> +    return single_open(filp, swiotlb_usage_show, NULL);
+>>>> +}
+>>>> +
+>>>> +static const struct file_operations swiotlb_usage_fops = {
+>>>> +    .open           = swiotlb_usage_open,
+>>>> +    .read           = seq_read,
+>>>> +    .llseek         = seq_lseek,
+>>>> +    .release        = single_release,
+>>>> +};
+>>>> +
+>>>> +void swiotlb_create_debugfs(void)
+>>>> +{
+>>>> +    d_swiotlb_usage = debugfs_create_dir("swiotlb", NULL);
+>>>> +
+>>>> +    if (!d_swiotlb_usage)
+>>>> +        return;
+>>>> +
+>>>> +    debugfs_create_file("usage", 0600, d_swiotlb_usage,
+>>>> +                NULL, &swiotlb_usage_fops);
+>>>> +}
+>>>> +
+>>>> +#endif
+>>>> +
+>>>>   static int __init
+>>>>   setup_io_tlb_npages(char *str)
+>>>>   {
+>>>> @@ -449,6 +494,11 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>>>>           pr_warn_once("%s is active and system is using DMA bounce buffers\n",
+>>>>                    sme_active() ? "SME" : "SEV");
+>>>>   +#ifdef CONFIG_DEBUG_FS
+>>>> +    if (unlikely(!d_swiotlb_usage))
+>>>> +        swiotlb_create_debugfs();
+>>>> +#endif
+>>>> +
+>>>>       mask = dma_get_seg_boundary(hwdev);
+>>>>         tbl_dma_addr &= mask;
+>>>> @@ -528,6 +578,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>>>>           dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
+>>>>       return SWIOTLB_MAP_ERROR;
+>>>>   found:
+>>>> +#ifdef CONFIG_DEBUG_FS
+>>>> +    io_tlb_used += nslots;
+>>>> +#endif
+>>>>       spin_unlock_irqrestore(&io_tlb_lock, flags);
+>>>>         /*
+>>>> @@ -588,6 +641,10 @@ void swiotlb_tbl_unmap_single(struct device *hwdev,
+>>>> phys_addr_t tlb_addr,
+>>>>            */
+>>>>           for (i = index - 1; (OFFSET(i, IO_TLB_SEGSIZE) != IO_TLB_SEGSIZE
+>>>> -1) && io_tlb_list[i]; i--)
+>>>>               io_tlb_list[i] = ++count;
+>>>> +
+>>>> +#ifdef CONFIG_DEBUG_FS
+>>>> +        io_tlb_used -= nslots;
+>>>> +#endif
+>>>>       }
+>>>>       spin_unlock_irqrestore(&io_tlb_lock, flags);
+>>>>   }
+>>>>
+>>>
+>>>
