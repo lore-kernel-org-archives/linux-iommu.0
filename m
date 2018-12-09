@@ -1,68 +1,80 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 01/21] iommu/tegra: gart: Remove pr_fmt and clean up
-	includes
-Date: Sun,  9 Dec 2018 23:29:30 +0300
-Message-ID: <20181209202950.31486-2-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v6 04/21] iommu: Introduce iotlb_sync_map callback
+Date: Sun,  9 Dec 2018 23:29:33 +0300
+Message-ID: <20181209202950.31486-5-digetx@gmail.com>
 References: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181209202950.31486-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181209202950.31486-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Remove unneeded headers inclusion and sort the headers in alphabet order.
-Remove pr_fmt macro since there is no pr_*() in the code and it doesn't
-affect dev_*() functions.
+Introduce iotlb_sync_map() callback that is invoked in the end of
+iommu_map(). This new callback allows IOMMU drivers to avoid syncing
+after mapping of each contiguous chunk and sync only when the whole
+mapping is completed, optimizing performance of the mapping operation.
 
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/tegra-gart.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+ drivers/iommu/iommu.c | 8 ++++++--
+ include/linux/iommu.h | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index da6a4e357b2b..ff75cf60117b 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -19,22 +19,15 @@
-  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-  */
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index cc25ec6d4c06..79e7c49ed16a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1582,13 +1582,14 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
+ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 	      phys_addr_t paddr, size_t size, int prot)
+ {
++	const struct iommu_ops *ops = domain->ops;
+ 	unsigned long orig_iova = iova;
+ 	unsigned int min_pagesz;
+ 	size_t orig_size = size;
+ 	phys_addr_t orig_paddr = paddr;
+ 	int ret = 0;
  
--#define pr_fmt(fmt)	"%s(): " fmt, __func__
--
- #include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/list.h>
- #include <linux/moduleparam.h>
--#include <linux/platform_device.h>
--#include <linux/spinlock.h>
-+#include <linux/of_device.h>
- #include <linux/slab.h>
-+#include <linux/spinlock.h>
- #include <linux/vmalloc.h>
--#include <linux/mm.h>
--#include <linux/list.h>
--#include <linux/device.h>
--#include <linux/io.h>
--#include <linux/iommu.h>
--#include <linux/of.h>
--
--#include <asm/cacheflush.h>
+-	if (unlikely(domain->ops->map == NULL ||
++	if (unlikely(ops->map == NULL ||
+ 		     domain->pgsize_bitmap == 0UL))
+ 		return -ENODEV;
  
- /* bitmap of the page sizes currently supported */
- #define GART_IOMMU_PGSIZES	(SZ_4K)
+@@ -1617,7 +1618,7 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
+ 			 iova, &paddr, pgsize);
+ 
+-		ret = domain->ops->map(domain, iova, paddr, pgsize, prot);
++		ret = ops->map(domain, iova, paddr, pgsize, prot);
+ 		if (ret)
+ 			break;
+ 
+@@ -1626,6 +1627,9 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
+ 		size -= pgsize;
+ 	}
+ 
++	if (ops->iotlb_sync_map)
++		ops->iotlb_sync_map(domain);
++
+ 	/* unroll mapping in case something went wrong */
+ 	if (ret)
+ 		iommu_unmap(domain, orig_iova, orig_size - size);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 11db18b9ffe8..0e90c5cc72db 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -201,6 +201,7 @@ struct iommu_ops {
+ 	void (*flush_iotlb_all)(struct iommu_domain *domain);
+ 	void (*iotlb_range_add)(struct iommu_domain *domain,
+ 				unsigned long iova, size_t size);
++	void (*iotlb_sync_map)(struct iommu_domain *domain);
+ 	void (*iotlb_sync)(struct iommu_domain *domain);
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
 -- 
 2.19.1
