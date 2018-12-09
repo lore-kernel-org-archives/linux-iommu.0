@@ -1,60 +1,42 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v6 08/21] memory: tegra: Don't invoke Tegra30+ specific memory
-	timing setup on Tegra20
-Date: Sun,  9 Dec 2018 23:29:37 +0300
-Message-ID: <20181209202950.31486-9-digetx@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v6 15/21] iommu/tegra: gart: Fix NULL pointer dereference
+Date: Sun,  9 Dec 2018 23:29:44 +0300
+Message-ID: <20181209202950.31486-16-digetx@gmail.com>
 References: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181209202950.31486-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181209202950.31486-1-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-This fixes irrelevant "tegra-mc 7000f000.memory-controller: no memory
-timings for RAM code 0 registered" warning message during of kernels
-boot-up on Tegra20.
+Fix NULL pointer dereference on IOMMU domain destruction that happens
+because clients list is being iterated unsafely and its elements are
+getting deleted during the iteration.
 
-Fixes: a8d502fd3348 ("memory: tegra: Squash tegra20-mc into common tegra-mc driver")
-Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Acked-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/memory/tegra/mc.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/iommu/tegra-gart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-index 24afc36833bf..b99f3c620f6c 100644
---- a/drivers/memory/tegra/mc.c
-+++ b/drivers/memory/tegra/mc.c
-@@ -664,12 +664,13 @@ static int tegra_mc_probe(struct platform_device *pdev)
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index d4a642c636f1..bb5303b06845 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -260,9 +260,9 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
+ 	if (gart) {
+ 		spin_lock(&gart->client_lock);
+ 		if (!list_empty(&gart->client)) {
+-			struct gart_client *c;
++			struct gart_client *c, *tmp;
+ 
+-			list_for_each_entry(c, &gart->client, list)
++			list_for_each_entry_safe(c, tmp, &gart->client, list)
+ 				__gart_iommu_detach_dev(domain, c->dev);
  		}
- 
- 		isr = tegra_mc_irq;
--	}
- 
--	err = tegra_mc_setup_timings(mc);
--	if (err < 0) {
--		dev_err(&pdev->dev, "failed to setup timings: %d\n", err);
--		return err;
-+		err = tegra_mc_setup_timings(mc);
-+		if (err < 0) {
-+			dev_err(&pdev->dev, "failed to setup timings: %d\n",
-+				err);
-+			return err;
-+		}
- 	}
- 
- 	mc->irq = platform_get_irq(pdev, 0);
+ 		spin_unlock(&gart->client_lock);
 -- 
 2.19.1
