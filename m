@@ -1,40 +1,60 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v6 18/21] iommu/tegra: gart: Prepend error/debug messages with "gart:"
-Date: Sun,  9 Dec 2018 23:29:47 +0300
-Message-ID: <20181209202950.31486-19-digetx@gmail.com>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v6 08/21] memory: tegra: Don't invoke Tegra30+ specific memory
+	timing setup on Tegra20
+Date: Sun,  9 Dec 2018 23:29:37 +0300
+Message-ID: <20181209202950.31486-9-digetx@gmail.com>
 References: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181209202950.31486-1-digetx@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181209202950.31486-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART became a part of Memory Controller, hence now the drivers device
-is Memory Controller and not GART. As a result all printed messages are
-prepended with the "tegra-mc 7000f000.memory-controller:", so let's
-prepend GART's messages with "gart:" in order to differentiate them
-from the MC.
+This fixes irrelevant "tegra-mc 7000f000.memory-controller: no memory
+timings for RAM code 0 registered" warning message during of kernels
+boot-up on Tegra20.
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Fixes: a8d502fd3348 ("memory: tegra: Squash tegra20-mc into common tegra-mc driver")
+Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Acked-by: Jon Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-gart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/memory/tegra/mc.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 99afdbf8860c..9d2df43ce50b 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -19,6 +19,8 @@
-  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-  */
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index 24afc36833bf..b99f3c620f6c 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -664,12 +664,13 @@ static int tegra_mc_probe(struct platform_device *pdev)
+ 		}
  
-+#define dev_fmt(fmt)	"gart: " fmt
-+
- #include <linux/io.h>
- #include <linux/iommu.h>
- #include <linux/list.h>
+ 		isr = tegra_mc_irq;
+-	}
+ 
+-	err = tegra_mc_setup_timings(mc);
+-	if (err < 0) {
+-		dev_err(&pdev->dev, "failed to setup timings: %d\n", err);
+-		return err;
++		err = tegra_mc_setup_timings(mc);
++		if (err < 0) {
++			dev_err(&pdev->dev, "failed to setup timings: %d\n",
++				err);
++			return err;
++		}
+ 	}
+ 
+ 	mc->irq = platform_get_irq(pdev, 0);
 -- 
 2.19.1
