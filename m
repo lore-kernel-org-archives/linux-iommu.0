@@ -1,91 +1,113 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Sun, 9 Dec 2018 19:26:57 +0100
-Message-ID: <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
-References: <20181129170351.GC27951@lst.de>
- <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
- <20181130105346.GB26765@lst.de>
- <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de>
- <20181130131056.GA5211@lst.de>
- <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de>
- <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de>
- <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de>
- <20181204142426.GA2743@lst.de>
- <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de>
- <20181205140550.GA27549@lst.de>
- <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de>
- <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de>
- <7B6DDB28-8BF6-4589-84ED-F1D4D13BFED6@xenosoft.de>
- <8a2c4581-0c85-8065-f37e-984755eb31ab@xenosoft.de>
- <424bb228-c9e5-6593-1ab7-5950d9b2bd4e@xenosoft.de>
- <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v6 00/21] IOMMU: Tegra GART driver clean up and optimization
+Date: Sun,  9 Dec 2018 23:29:29 +0300
+Message-ID: <20181209202950.31486-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Next step: c1bfcad4b0cf38ce5b00f7ad880d3a13484c123a (dma-mapping, 
-powerpc: simplify the arch dma_set_mask override)
+Hello,
 
-Result: No problems with the PASEMI onboard ethernet and with booting 
-the X5000 (P5020 board).
+This patch-series integrates the GART (IOMMU) driver with the Memory
+Controller driver, that allows to report the name of a faulty memory
+client on GART page fault. A major code clean up and performance
+optimization is performed in this series as well.
 
--- Christian
+Changelog:
 
+v6: v5 that is re-based on the recent linux-next.
 
-On 09 December 2018 at 3:20PM, Christian Zigotzky wrote:
-> Next step: 602307b034734ce77a05da4b99333a2eaf6b6482 (powerpc/fsl_pci: 
-> simplify fsl_pci_dma_set_mask)
->
-> git checkout 602307b034734ce77a05da4b99333a2eaf6b6482
->
-> The PASEMI onboard ethernet works and the X5000 boots.
->
-> -- Christian
->
->
-> On 08 December 2018 at 2:47PM, Christian Zigotzky wrote:
->> Next step: e15cd8173ef85e9cc3e2a9c7cc2982f5c1355615 (powerpc/dma: fix 
->> an off-by-one in dma_capable)
->>
->> git checkout e15cd8173ef85e9cc3e2a9c7cc2982f5c1355615
->>
->> The PASEMI onboard ethernet also works with this commit and the X5000 
->> boots without any problems.
->>
->> -- Christian
->>
->>
->> On 08 December 2018 at 11:29AM, Christian Zigotzky wrote:
->>> Next step: 7ebc44c535f6bd726d553756d38b137acc718443 (powerpc/dma: 
->>> remove max_direct_dma_addr)
->>>
->>> git checkout 7ebc44c535f6bd726d553756d38b137acc718443
->>>
->>> OK, the PASEMI onboard ethernet works and the P5020 board boots.
->>>
->>> -- Christian
->>>
->>>
->>> On 07 December 2018 at 7:33PM, Christian Zigotzky wrote:
->>>> Next step: 13c1fdec5682b6e13257277fa16aa31f342d167d (powerpc/dma: 
->>>> move pci_dma_dev_setup_swiotlb to fsl_pci.c)
->>>>
->>>> git checkout 13c1fdec5682b6e13257277fa16aa31f342d167d
->>>>
->>>> Result: The PASEMI onboard ethernet works and the P5020 board boots.
->>>>
->>>> — Christian
->>>
->>>
->>>
->>
->>
->
->
+v5: Addressed review comments from Thierry Reding to v4. Added WARN_ON() to
+    make sure that active domain isn't getting released, kept include headers
+    where necessary, etc.. All changes are quite minor.
+
+    Added new patch "memory: tegra: Use relaxed versions of readl/writel".
+
+v4: In the v3 Rob Herring requested to make device-tree binding changes
+    backwards-compatible with the older kernels, that is achieved by
+    changing the 'compatible' value of the DT node.
+
+    The code-refactoring patches got some more (minor) polish.
+
+    Added new patch "memory: tegra: Use of_device_get_match_data()".
+
+v3: Memory Controller integration part has been reworked and now GART's
+    device-tree binding is changed. Adding Rob Herring for the device-tree
+    changes reviewing.
+
+    GART now disallows more than one active domain at a time.
+
+    Fixed "spinlock recursion", "NULL pointer dereference" and "detaching
+    of all devices from inactive domains".
+
+    New code-refactoring patches.
+
+    The previously standalone patch "memory: tegra: Don't invoke Tegra30+
+    specific memory timing setup on Tegra20" is now included into this
+    series because there is a dependency on that patch and it wasn't applied
+    yet.
+
+v2: Addressed review comments from Robin Murphy to v1 by moving devices
+    iommu_fwspec check to gart_iommu_add_device().
+
+    Dropped the "Provide single domain and group for all devices" patch from
+    the series for now because after some more considering it became not
+    exactly apparent whether that is what we need, that was also suggested
+    by Robin Murphy in the review comment. Maybe something like a runtime
+    IOMMU usage for devices would be a better solution, allowing to implement
+    transparent context switching of virtual IOMMU domains.
+
+    Some very minor code cleanups, reworded commit messages.
+
+Dmitry Osipenko (21):
+  iommu/tegra: gart: Remove pr_fmt and clean up includes
+  iommu/tegra: gart: Clean up driver probe errors handling
+  iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+  iommu: Introduce iotlb_sync_map callback
+  iommu/tegra: gart: Optimize mapping / unmapping performance
+  dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+  ARM: dts: tegra20: Update Memory Controller node to the new binding
+  memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+    Tegra20
+  memory: tegra: Adapt to Tegra20 device-tree binding changes
+  memory: tegra: Read client ID on GART page fault
+  memory: tegra: Use of_device_get_match_data()
+  memory: tegra: Use relaxed versions of readl/writel
+  iommu/tegra: gart: Integrate with Memory Controller driver
+  iommu/tegra: gart: Fix spinlock recursion
+  iommu/tegra: gart: Fix NULL pointer dereference
+  iommu/tegra: gart: Allow only one active domain at a time
+  iommu/tegra: gart: Don't use managed resources
+  iommu/tegra: gart: Prepend error/debug messages with "gart:"
+  iommu/tegra: gart: Don't detach devices from inactive domains
+  iommu/tegra: gart: Simplify clients-tracking code
+  iommu/tegra: gart: Perform code refactoring
+
+ .../bindings/iommu/nvidia,tegra20-gart.txt    |  14 -
+ .../memory-controllers/nvidia,tegra20-mc.txt  |  27 +-
+ arch/arm/boot/dts/tegra20.dtsi                |  15 +-
+ drivers/iommu/Kconfig                         |   1 +
+ drivers/iommu/iommu.c                         |   8 +-
+ drivers/iommu/tegra-gart.c                    | 470 +++++++-----------
+ drivers/memory/tegra/mc.c                     |  93 +++-
+ drivers/memory/tegra/mc.h                     |  10 +-
+ include/linux/iommu.h                         |   1 +
+ include/soc/tegra/mc.h                        |  29 +-
+ 10 files changed, 307 insertions(+), 361 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+
+-- 
+2.19.1
