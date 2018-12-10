@@ -1,41 +1,54 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v6 2/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
- and improve debugging
-Date: Mon, 10 Dec 2018 15:35:24 +0000
-Message-ID: <20181210153524.GB24554@edgewater-inn.cambridge.arm.com>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <20181210011504.122604-3-drinkcat@chromium.org>
+From: Qian Cai <cai@gmx.us>
+Subject: Re: [PATCH v3 0/7] dma-debug cleanup and dynamic allocation
+Date: Mon, 10 Dec 2018 10:50:18 -0500
+Message-ID: <75cd198e-3a4d-0bb4-1b2b-956c8c4e5f9b@gmx.us>
+References: <cover.1544447601.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181210011504.122604-3-drinkcat@chromium.org>
-Sender: stable-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infr
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <cover.1544447601.git.robin.murphy@arm.com>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, hch@lst.de
+Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, salil.mehta@huawei.com, john.garry@huawei.com, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 10, 2018 at 09:15:03AM +0800, Nicolas Boichat wrote:
-> IOMMUs using ARMv7 short-descriptor format require page tables
-> (level 1 and 2) to be allocated within the first 4GB of RAM, even
-> on 64-bit systems.
+On 12/10/18 9:00 AM, Robin Murphy wrote:
+> Hi all,
 > 
-> For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
-> is defined (e.g. on arm64 platforms).
+> Here's some assorted cleanup and improvements to dma-debug which grew
+> out of the problem that certain drivers use very large numbers of DMA
+> mappings, and knowing when to override "dma_debug_entries=..." and what
+> value to override it with can be a less-than-obvious task for users.
 > 
-> For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32. Note
-> that we do not explicitly pass GFP_DMA[32] to kmem_cache_zalloc,
-> as this is not strictly necessary, and would cause a warning
-> in mm/sl*b.c, as we did not update GFP_SLAB_BUG_MASK.
+> The main part is patch #4, wherein we make dma-debug clever enough
+> to allocate more entries dynamically if needed, such that the
+> preallocation value becomes more of a quality-of-life option than a
+> necessity. Patches #5 and #6 do some cruft-removal to allow patch #7
+> to make the allocation behaviour more efficient in general.
 > 
-> Also, print an error when the physical address does not fit in
-> 32-bit, to make debugging easier in the future.
+> Patches #1, #2 and #4 are some other cleanup and handy features which
+> fell out of the discussion/development.
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
-> Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
-> ---
+> Robin.
+> 
+> 
+> Robin Murphy (7):
+>   dma-debug: Use pr_fmt()
+>   dma-debug: Expose nr_total_entries in debugfs
+>   dma-debug: Dynamically expand the dma_debug_entry pool
+>   dma-debug: Make leak-like behaviour apparent
+>   x86/dma/amd-gart: Stop resizing dma_debug_entry pool
+>   dma/debug: Remove dma_debug_resize_entries()
+>   dma-debug: Batch dma_debug_entry allocation
+> 
+>  Documentation/DMA-API.txt                 |  20 +-
+>  Documentation/x86/x86_64/boot-options.txt |   5 +-
+>  arch/x86/kernel/amd_gart_64.c             |  23 ---
+>  include/linux/dma-debug.h                 |   7 -
+>  kernel/dma/debug.c                        | 217 ++++++++++------------
+>  5 files changed, 109 insertions(+), 163 deletions(-)
+> 
 
-Acked-by: Will Deacon <will.deacon@arm.com>
-
-Will
+Tested-by: Qian Cai <cai@lca.pw>
