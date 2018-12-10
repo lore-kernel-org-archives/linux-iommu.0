@@ -1,217 +1,55 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: dma_declare_coherent_memory on main memory
-Date: Mon, 10 Dec 2018 20:02:00 +0100
-Message-ID: <20181210190159.GA30648@lst.de>
-References: <20181207153432.GA24917@lst.de> <20181210072648.ore6xttedsgpndi4@pengutronix.de>
+Subject: Re: [PATCH 04/10] arm: implement DMA_ATTR_NON_CONSISTENT
+Date: Mon, 10 Dec 2018 20:16:34 +0100
+Message-ID: <20181210191634.GB30648@lst.de>
+References: <20181208173702.15158-1-hch@lst.de>
+ <20181208173702.15158-5-hch@lst.de>
+ <3aeb99c505fd1c33199fcc26fe5e0bf239dee57e.camel@collabora.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20181210072648.ore6xttedsgpndi4@pengutronix.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Christoph Hellwig <hch@lst.de>, Shawn Guo <shawnguo@kernel.org>, Fabio Estevam <fabio.estevam@nxp.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org, linux-sh@vger.kernel.org
+In-Reply-To: <3aeb99c505fd1c33199fcc26fe5e0bf239dee57e.camel@collabora.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Ezequiel Garcia <ezequiel@collabora.com>
+Cc: linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org, "Matwey V. Kornilov" <matwey@sai.msu.ru>, iommu@lists.linux-foundation.org, openrisc@lists.librecores.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, linux-arm-kernel@vger.kernel.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 10, 2018 at 08:26:48AM +0100, Sascha Hauer wrote:
-> > the ARM imx27/31 ports and various sh boards use
-> > dma_declare_coherent_memory on main memory taken from the memblock
-> > allocator.
-> > 
-> > Is there any good reason these couldn't be switched to CMA areas?
-> > Getting rid of these magic dma_declare_coherent_memory area would
-> > help making the dma allocator a lot simpler.
-> 
-> At least for i.MX27/31 I'd say this predates CMA support, so historical
-> reasons.
-
-Ok.  Do you still have test hardware for i.MX?  If so I'd love to see
-if the patch below works.  Note that this is the brute force approach,
-just having a global CMA pool might be a little more elegant.
-
-diff --git a/arch/arm/configs/imx_v4_v5_defconfig b/arch/arm/configs/imx_v4_v5_defconfig
-index 8661dd9b064a..88852e7e5e7e 100644
---- a/arch/arm/configs/imx_v4_v5_defconfig
-+++ b/arch/arm/configs/imx_v4_v5_defconfig
-@@ -185,3 +185,5 @@ CONFIG_NLS_ISO8859_1=y
- CONFIG_NLS_ISO8859_15=m
- CONFIG_FONTS=y
- CONFIG_FONT_8x8=y
-+CONFIG_CMA=y
-+CONFIG_DMA_CMA=y
-diff --git a/arch/arm/configs/imx_v6_v7_defconfig b/arch/arm/configs/imx_v6_v7_defconfig
-index 1ad5736c8fa6..16c8d717316c 100644
---- a/arch/arm/configs/imx_v6_v7_defconfig
-+++ b/arch/arm/configs/imx_v6_v7_defconfig
-@@ -444,3 +444,5 @@ CONFIG_PROVE_LOCKING=y
- # CONFIG_DEBUG_BUGVERBOSE is not set
- # CONFIG_FTRACE is not set
- # CONFIG_ARM_UNWIND is not set
-+CONFIG_CMA=y
-+CONFIG_DMA_CMA=y
-diff --git a/arch/arm/mach-imx/mach-imx27_visstrim_m10.c b/arch/arm/mach-imx/mach-imx27_visstrim_m10.c
-index 5169dfba9718..2339a50d5459 100644
---- a/arch/arm/mach-imx/mach-imx27_visstrim_m10.c
-+++ b/arch/arm/mach-imx/mach-imx27_visstrim_m10.c
-@@ -23,6 +23,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/cma.h>
- #include <linux/platform_device.h>
- #include <linux/mtd/physmap.h>
- #include <linux/i2c.h>
-@@ -35,6 +36,7 @@
- #include <linux/platform_data/asoc-mx27vis.h>
- #include <media/soc_camera.h>
- #include <sound/tlv320aic32x4.h>
-+#include <asm/dma-contiguous.h>
- #include <asm/mach-types.h>
- #include <asm/mach/arch.h>
- #include <asm/mach/time.h>
-@@ -245,6 +247,7 @@ static phys_addr_t mx2_camera_base __initdata;
- static void __init visstrim_analog_camera_init(void)
- {
- 	struct platform_device *pdev;
-+	struct cma *cma;
- 
- 	gpio_set_value(TVP5150_PWDN, 1);
- 	ndelay(1);
-@@ -257,9 +260,10 @@ static void __init visstrim_analog_camera_init(void)
- 	if (IS_ERR(pdev))
- 		return;
- 
--	dma_declare_coherent_memory(&pdev->dev, mx2_camera_base,
--				    mx2_camera_base, MX2_CAMERA_BUF_SIZE,
--				    DMA_MEMORY_EXCLUSIVE);
-+	if (cma_init_reserved_mem(mx2_camera_base, MX2_CAMERA_BUF_SIZE, 0,
-+			"visstrim-cam", &cma))
-+		return;
-+	dma_contiguous_early_fixup(mx2_camera_base, MX2_CAMERA_BUF_SIZE);
- }
- 
- static void __init visstrim_reserve(void)
-@@ -440,13 +444,16 @@ static const struct imx_ssi_platform_data visstrim_m10_ssi_pdata __initconst = {
- static void __init visstrim_coda_init(void)
- {
- 	struct platform_device *pdev;
-+	struct cma *cma;
- 
- 	pdev = imx27_add_coda();
--	dma_declare_coherent_memory(&pdev->dev,
--				    mx2_camera_base + MX2_CAMERA_BUF_SIZE,
--				    mx2_camera_base + MX2_CAMERA_BUF_SIZE,
--				    MX2_CAMERA_BUF_SIZE,
--				    DMA_MEMORY_EXCLUSIVE);
-+	if (IS_ERR(pdev))
-+		return;
-+	if (cma_init_reserved_mem(mx2_camera_base + MX2_CAMERA_BUF_SIZE,
-+			MX2_CAMERA_BUF_SIZE, 0, "visstrim-coda", &cma))
-+		return;
-+	dma_contiguous_early_fixup(mx2_camera_base + MX2_CAMERA_BUF_SIZE,
-+			MX2_CAMERA_BUF_SIZE);
- }
- 
- /* DMA deinterlace */
-@@ -459,21 +466,22 @@ static void __init visstrim_deinterlace_init(void)
- {
- 	int ret = -ENOMEM;
- 	struct platform_device *pdev = &visstrim_deinterlace;
-+	struct cma *cma;
- 
- 	ret = platform_device_register(pdev);
- 
--	dma_declare_coherent_memory(&pdev->dev,
--				    mx2_camera_base + 2 * MX2_CAMERA_BUF_SIZE,
--				    mx2_camera_base + 2 * MX2_CAMERA_BUF_SIZE,
--				    MX2_CAMERA_BUF_SIZE,
--				    DMA_MEMORY_EXCLUSIVE);
-+	if (cma_init_reserved_mem(mx2_camera_base + 2 * MX2_CAMERA_BUF_SIZE,
-+			MX2_CAMERA_BUF_SIZE, 0, "visstrim-deinterlace", &cma))
-+		return;
-+	dma_contiguous_early_fixup(mx2_camera_base + 2 * MX2_CAMERA_BUF_SIZE,
-+			MX2_CAMERA_BUF_SIZE);
- }
- 
- /* Emma-PrP for format conversion */
- static void __init visstrim_emmaprp_init(void)
- {
- 	struct platform_device *pdev;
--	int ret;
-+	struct cma *cma;
- 
- 	pdev = imx27_add_mx2_emmaprp();
- 	if (IS_ERR(pdev))
-@@ -483,12 +491,12 @@ static void __init visstrim_emmaprp_init(void)
- 	 * Use the same memory area as the analog camera since both
- 	 * devices are, by nature, exclusive.
- 	 */
--	ret = dma_declare_coherent_memory(&pdev->dev,
--				mx2_camera_base, mx2_camera_base,
--				MX2_CAMERA_BUF_SIZE,
--				DMA_MEMORY_EXCLUSIVE);
--	if (ret)
-+	if (cma_init_reserved_mem(mx2_camera_base, MX2_CAMERA_BUF_SIZE, 0,
-+			"visstrim-emmaprp", &cma)) {
- 		pr_err("Failed to declare memory for emmaprp\n");
-+		return;
-+	}
-+	dma_contiguous_early_fixup(mx2_camera_base, MX2_CAMERA_BUF_SIZE);
- }
- 
- /* Audio */
-diff --git a/arch/arm/mach-imx/mach-mx31moboard.c b/arch/arm/mach-imx/mach-mx31moboard.c
-index 643a3d749703..1c0705ec0ccd 100644
---- a/arch/arm/mach-imx/mach-mx31moboard.c
-+++ b/arch/arm/mach-imx/mach-mx31moboard.c
-@@ -13,6 +13,7 @@
-  */
- 
- #include <linux/delay.h>
-+#include <linux/cma.h>
- #include <linux/dma-mapping.h>
- #include <linux/gfp.h>
- #include <linux/gpio.h>
-@@ -37,6 +38,7 @@
- #include <linux/usb/otg.h>
- #include <linux/usb/ulpi.h>
- 
-+#include <asm/dma-contiguous.h>
- #include <asm/mach-types.h>
- #include <asm/mach/arch.h>
- #include <asm/mach/time.h>
-@@ -466,6 +468,7 @@ static int __init mx31moboard_init_cam(void)
- {
- 	int ret;
- 	struct platform_device *pdev;
-+	struct cma *cma;
- 
- 	imx31_add_ipu_core();
- 
-@@ -473,18 +476,18 @@ static int __init mx31moboard_init_cam(void)
- 	if (IS_ERR(pdev))
- 		return PTR_ERR(pdev);
- 
--	ret = dma_declare_coherent_memory(&pdev->dev,
--					  mx3_camera_base, mx3_camera_base,
--					  MX3_CAMERA_BUF_SIZE,
--					  DMA_MEMORY_EXCLUSIVE);
-+	ret = cma_init_reserved_mem(mx3_camera_base, MX3_CAMERA_BUF_SIZE, 0,
-+			"mx31cam", &cma);
- 	if (ret)
--		goto err;
-+		goto out_device_put;
-+	dma_contiguous_early_fixup(mx3_camera_base, MX3_CAMERA_BUF_SIZE);
- 
- 	ret = platform_device_add(pdev);
- 	if (ret)
--err:
--		platform_device_put(pdev);
--
-+		goto out_device_put;
-+	return 0;
-+out_device_put:
-+	platform_device_put(pdev);
- 	return ret;
- 
- }
+T24gU2F0LCBEZWMgMDgsIDIwMTggYXQgMDc6NTI6MDRQTSAtMDMwMCwgRXplcXVpZWwgR2FyY2lh
+IHdyb3RlOgo+ID4gICNpZmRlZiBDT05GSUdfRE1BX0FQSV9ERUJVRwo+ID4gQEAgLTc3Myw3ICs3
+OTEsNyBAQCBzdGF0aWMgdm9pZCAqX19kbWFfYWxsb2Moc3RydWN0IGRldmljZSAqZGV2LCBzaXpl
+X3Qgc2l6ZSwgZG1hX2FkZHJfdCAqaGFuZGxlLAo+ID4gIAo+ID4gIAlpZiAoY21hKQo+ID4gIAkJ
+YnVmLT5hbGxvY2F0b3IgPSAmY21hX2FsbG9jYXRvcjsKPiA+IC0JZWxzZSBpZiAoaXNfY29oZXJl
+bnQpCj4gPiArCWVsc2UgaWYgKGlzX2NvaGVyZW50IHx8IChhdHRycyAmIERNQV9BVFRSX05PTl9D
+T05TSVNURU5UKSkKPiA+ICAJCWJ1Zi0+YWxsb2NhdG9yID0gJnNpbXBsZV9hbGxvY2F0b3I7Cj4g
+Cj4gUmVhZGluZyB0aHJvdWdoIHlvdXIgY29kZSBJIGNhbid0IHJlYWxseSBzZWUgd2hlcmUgdGhl
+IHBncHJvdCBpcyBjaGFuZ2VkCj4gZm9yIG5vbi1jb25zaXN0ZW50IHJlcXVlc3RzLiBOYW1lbHks
+IF9fZ2V0X2RtYV9wZ3Byb3Qgb25seQo+IHJldHVybnMgd3JpdGVjb21iaW5lIG9yIGNvaGVyZW50
+IG1lbW9yeS4KCldlIGRvbid0IGxvb2sgYXQgdGhlIHBncHJvdCBhdCBhbGwgZm9yIHRoZSBzaW1w
+bGUgYWxsb2NhdG9yLCBhbmQKZG9uJ3QgbG9vayBhdCBwcm90IGZvciB0aGUgRE1BX0FUVFJfTk9O
+X0NPTlNJU1RFTlQgY2FzZSBpbiB0aGUKQ01BIGFsbG9jYXRvciwgc28gdGhpcyBzaG91bGQgbm90
+IGJlIGEgcHJvYmxlbS4gIEhvd2V2ZXIgd2UgbmVlZCB0bwp0YWtlIERNQV9BVFRSX05PTl9DT05T
+SVNURU5UIGludG8gYWNjb3VudCBmb3IgY2FsY3VsYXRpbmcgdGhlIG1tYXAKcGdwcm90LCB3aXRo
+IHNvbWV0aGluZyBsaWtlIHRoaXMgYXMgYW4gaW5jcmVtZW50YWwgcGF0Y2g6CgpkaWZmIC0tZ2l0
+IGEvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYyBiL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMK
+aW5kZXggYjNiNjZiNDFjNDUwLi42YWM3ZTQzMGE0N2MgMTAwNjQ0Ci0tLSBhL2FyY2gvYXJtL21t
+L2RtYS1tYXBwaW5nLmMKKysrIGIvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYwpAQCAtODczLDcg
+Kzg3Myw4IEBAIGludCBhcm1fZG1hX21tYXAoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgdm1f
+YXJlYV9zdHJ1Y3QgKnZtYSwKIAkJIHZvaWQgKmNwdV9hZGRyLCBkbWFfYWRkcl90IGRtYV9hZGRy
+LCBzaXplX3Qgc2l6ZSwKIAkJIHVuc2lnbmVkIGxvbmcgYXR0cnMpCiB7Ci0Jdm1hLT52bV9wYWdl
+X3Byb3QgPSBfX2dldF9kbWFfcGdwcm90KGF0dHJzLCB2bWEtPnZtX3BhZ2VfcHJvdCk7CisJaWYg
+KCEoYXR0cnMgJiBETUFfQVRUUl9OT05fQ09OU0lTVEVOVCkpCisJCXZtYS0+dm1fcGFnZV9wcm90
+ID0gX19nZXRfZG1hX3BncHJvdChhdHRycywgdm1hLT52bV9wYWdlX3Byb3QpOwogCXJldHVybiBf
+X2FybV9kbWFfbW1hcChkZXYsIHZtYSwgY3B1X2FkZHIsIGRtYV9hZGRyLCBzaXplLCBhdHRycyk7
+CiB9CiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
+LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
+Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
