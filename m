@@ -1,51 +1,35 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [PATCH v3 5/7] x86/dma/amd-gart: Stop resizing dma_debug_entry
-	pool
-Date: Mon, 10 Dec 2018 22:26:30 +0100 (CET)
-Message-ID: <alpine.DEB.2.21.1812102226140.1667@nanos.tec.linutronix.de>
-References: <cover.1544447601.git.robin.murphy@arm.com>
-	<a967f11a3a4a862287c7dc180946df0067bdcf80.1544447601.git.robin.murphy@arm.com>
+From: "Luck, Tony" <tony.luck@intel.com>
+Subject: Re: [RFC] avoid indirect calls for DMA direct mappings v2
+Date: Mon, 10 Dec 2018 13:51:13 -0800
+Message-ID: <20181210215113.GA22180@agluck-desk>
+References: <20181207190720.18517-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <a967f11a3a4a862287c7dc180946df0067bdcf80.1544447601.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181207190720.18517-1-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Jesper Dangaard Brouer <brouer@redhat.com>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 10 Dec 2018, Robin Murphy wrote:
-
-> dma-debug is now capable of adding new entries to its pool on-demand if
-> the initial preallocation was insufficient, so the IOMMU_LEAK logic no
-> longer needs to explicitly change the pool size. This does lose it the
-> ability to save a couple of megabytes of RAM by reducing the pool size
-> below its default, but it seems unlikely that that is a realistic
-> concern these days (or indeed that anyone is actively debugging AGP
-> drivers' DMA usage any more). Getting rid of dma_debug_resize_entries()
-> will make room for further streamlining in the dma-debug code itself.
+On Fri, Dec 07, 2018 at 11:07:05AM -0800, Christoph Hellwig wrote:
+> This works is based on the dma-mapping tree, so you probably want to
+> want this git tree for testing:
 > 
-> Removing the call reveals quite a lot of cruft which has been useless
-> for nearly a decade since commit 19c1a6f5764d ("x86 gart: reimplement
-> IOMMU_LEAK feature by using DMA_API_DEBUG"), including the entire
-> 'iommu=leak' parameter, which controlled nothing except whether
-> dma_debug_resize_entries() was called or not.
-> 
-> CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> CC: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> CC: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-> CC: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-> CC: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-> Reviewed-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>     git://git.infradead.org/users/hch/misc.git dma-direct-calls.2
 
-Acked-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Pulled this tree. Got HEAD
+
+	33b9fc015171 ("dma-mapping: bypass indirect calls for dma-direct")
+
+But the ia64 build fails with:
+
+arch/ia64/mm/init.c:75:21: warning: 'enum dma_data_direction' declared inside parameter list [enabled by default]
+arch/ia64/mm/init.c:75:21: warning: its scope is only this definition or declaration, which is probably not what you want [enabled by default]
+arch/ia64/mm/init.c:75:40: error: parameter 4 ('dir') has incomplete type
+arch/ia64/mm/init.c:74:6: error: function declaration isn't a prototype [-Werror=strict-prototypes]
+arch/ia64/mm/init.c: In function 'arch_sync_dma_for_cpu':
+arch/ia64/mm/init.c:77:2: error: implicit declaration of function '__phys_to_pfn' [-Werror=implicit-function-declaration]
+
+-Tony
