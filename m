@@ -1,11 +1,8 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v6 10/12] iommu/vt-d: Add first level page table interface
-Date: Mon, 10 Dec 2018 09:59:04 +0800
-Message-ID: <20181210015906.27929-11-baolu.lu@linux.intel.com>
+Subject: [PATCH v6 08/12] iommu/vt-d: Pass pasid table to context mapping
+Date: Mon, 10 Dec 2018 09:59:02 +0800
+Message-ID: <20181210015906.27929-9-baolu.lu@linux.intel.com>
 References: <20181210015906.27929-1-baolu.lu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181210015906.27929-1-baolu.lu@linux.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
@@ -13,167 +10,76 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds an interface to setup the PASID entries for first
-level page table translation.
+So that the pasid related info, such as the pasid table and the
+maximum of pasid could be used during setting up scalable mode
+context.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Cc: Liu Yi L <yi.l.liu@intel.com>
+Cc: Sanjay Kumar <sanjay.k.kumar@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel-pasid.c | 80 +++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h | 11 +++++
- include/linux/intel-iommu.h |  1 +
- 3 files changed, 92 insertions(+)
+ drivers/iommu/intel-iommu.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 6d2b2e87e6fc..c3dcf4dc2496 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -10,6 +10,7 @@
- #define pr_fmt(fmt)	"DMAR: " fmt
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a077ff3f67a6..55c4ffda1246 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1920,6 +1920,7 @@ static void domain_exit(struct dmar_domain *domain)
  
- #include <linux/bitops.h>
-+#include <linux/cpufeature.h>
- #include <linux/dmar.h>
- #include <linux/intel-iommu.h>
- #include <linux/iommu.h>
-@@ -389,6 +390,26 @@ static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
- 	pasid_set_bits(&pe->val[1], 1 << 23, value);
- }
- 
-+/*
-+ * Setup the First Level Page table Pointer field (Bit 140~191)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_flptr(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[2], VTD_PAGE_MASK, value);
-+}
-+
-+/*
-+ * Setup the First Level Paging Mode field (Bit 130~131) of a
-+ * scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_flpm(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
-+}
-+
- static void
- pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
- 				    u16 did, int pasid)
-@@ -459,6 +480,65 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
- }
- 
-+/*
-+ * Set up the scalable mode pasid table entry for first only
-+ * translation type.
-+ */
-+int intel_pasid_setup_first_level(struct intel_iommu *iommu,
-+				  struct device *dev, pgd_t *pgd,
-+				  int pasid, u16 did, int flags)
-+{
-+	struct pasid_entry *pte;
-+
-+	if (!ecap_flts(iommu->ecap)) {
-+		pr_err("No first level translation support on %s\n",
-+		       iommu->name);
-+		return -EINVAL;
-+	}
-+
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (WARN_ON(!pte))
-+		return -EINVAL;
-+
-+	pasid_clear_entry(pte);
-+
-+	/* Setup the first level page table pointer: */
-+	pasid_set_flptr(pte, (u64)__pa(pgd));
-+	if (flags & PASID_FLAG_SUPERVISOR_MODE) {
-+		if (!ecap_srs(iommu->ecap)) {
-+			pr_err("No supervisor request support on %s\n",
-+			       iommu->name);
-+			return -EINVAL;
-+		}
-+		pasid_set_sre(pte);
-+	}
-+
-+#ifdef CONFIG_X86
-+	if (cpu_feature_enabled(X86_FEATURE_LA57))
-+		pasid_set_flpm(pte, 1);
-+#endif /* CONFIG_X86 */
-+
-+	pasid_set_domain_id(pte, did);
-+	pasid_set_address_width(pte, iommu->agaw);
-+	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+
-+	/* Setup Present and PASID Granular Transfer Type: */
-+	pasid_set_translation_type(pte, 1);
-+	pasid_set_present(pte);
-+
-+	if (!ecap_coherent(iommu->ecap))
-+		clflush_cache_range(pte, sizeof(*pte));
-+
-+	if (cap_caching_mode(iommu->cap)) {
-+		pasid_cache_invalidation_with_pasid(iommu, did, pasid);
-+		iotlb_invalidation_with_pasid(iommu, did, pasid);
-+	} else {
-+		iommu_flush_write_buffer(iommu);
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * Set up the scalable mode pasid entry for second only translation type.
-  */
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 55bb8715329d..512c63ec8a22 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -25,6 +25,14 @@
-  */
- #define FLPT_DEFAULT_DID		1
- 
-+/*
-+ * The SUPERVISOR_MODE flag indicates a first level translation which
-+ * can be used for access to kernel addresses. It is valid only for
-+ * access to the kernel's static 1:1 mapping of physical memory — not
-+ * to vmalloc or even module mappings.
-+ */
-+#define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-+
- struct pasid_dir_entry {
- 	u64 val;
+ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 				      struct intel_iommu *iommu,
++				      struct pasid_table *table,
+ 				      u8 bus, u8 devfn)
+ {
+ 	u16 did = domain->iommu_did[iommu->seq_id];
+@@ -2042,6 +2043,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ struct domain_context_mapping_data {
+ 	struct dmar_domain *domain;
+ 	struct intel_iommu *iommu;
++	struct pasid_table *table;
  };
-@@ -51,6 +59,9 @@ struct pasid_table *intel_pasid_get_table(struct device *dev);
- int intel_pasid_get_dev_max_id(struct device *dev);
- struct pasid_entry *intel_pasid_get_entry(struct device *dev, int pasid);
- void intel_pasid_clear_entry(struct device *dev, int pasid);
-+int intel_pasid_setup_first_level(struct intel_iommu *iommu,
-+				  struct device *dev, pgd_t *pgd,
-+				  int pasid, u16 did, int flags);
- int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- 				   struct dmar_domain *domain,
- 				   struct device *dev, int pasid);
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 5fdd33ed2cce..4ad62396e81e 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -178,6 +178,7 @@
-  */
  
- #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
-+#define ecap_flts(e)		(((e) >> 47) & 0x1)
- #define ecap_slts(e)		(((e) >> 46) & 0x1)
- #define ecap_smts(e)		(((e) >> 43) & 0x1)
- #define ecap_dit(e)		((e >> 41) & 0x1)
+ static int domain_context_mapping_cb(struct pci_dev *pdev,
+@@ -2050,25 +2052,31 @@ static int domain_context_mapping_cb(struct pci_dev *pdev,
+ 	struct domain_context_mapping_data *data = opaque;
+ 
+ 	return domain_context_mapping_one(data->domain, data->iommu,
+-					  PCI_BUS_NUM(alias), alias & 0xff);
++					  data->table, PCI_BUS_NUM(alias),
++					  alias & 0xff);
+ }
+ 
+ static int
+ domain_context_mapping(struct dmar_domain *domain, struct device *dev)
+ {
++	struct domain_context_mapping_data data;
++	struct pasid_table *table;
+ 	struct intel_iommu *iommu;
+ 	u8 bus, devfn;
+-	struct domain_context_mapping_data data;
+ 
+ 	iommu = device_to_iommu(dev, &bus, &devfn);
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
++	table = intel_pasid_get_table(dev);
++
+ 	if (!dev_is_pci(dev))
+-		return domain_context_mapping_one(domain, iommu, bus, devfn);
++		return domain_context_mapping_one(domain, iommu, table,
++						  bus, devfn);
+ 
+ 	data.domain = domain;
+ 	data.iommu = iommu;
++	data.table = table;
+ 
+ 	return pci_for_each_dma_alias(to_pci_dev(dev),
+ 				      &domain_context_mapping_cb, &data);
 -- 
 2.17.1
