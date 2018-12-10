@@ -1,103 +1,69 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Mon, 10 Dec 2018 16:54:05 +0100
-Message-ID: <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de>
-References: <20181129170351.GC27951@lst.de>
- <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de>
- <20181130105346.GB26765@lst.de>
- <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de>
- <20181130131056.GA5211@lst.de>
- <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de>
- <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de>
- <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de>
- <20181204142426.GA2743@lst.de>
- <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de>
- <20181205140550.GA27549@lst.de>
- <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de>
- <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de>
- <7B6DDB28-8BF6-4589-84ED-F1D4D13BFED6@xenosoft.de>
- <8a2c4581-0c85-8065-f37e-984755eb31ab@xenosoft.de>
- <424bb228-c9e5-6593-1ab7-5950d9b2bd4e@xenosoft.de>
- <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de>
- <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
+Date: Mon, 10 Dec 2018 16:31:45 +0000
+Message-ID: <67137be3-c56f-fb01-5ebe-86e9ebf5714b@arm.com>
+References: <20181206184343.GA30569@jordon-HP-15-Notebook-PC>
+ <d02ad9d7-d0f6-c891-bb7e-fdf6661f651c@arm.com>
+ <CAFqt6zYF5fFQuGFGss3D1q=jKJGPOD33XLmZiAkBFT9zx_55LA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
-Content-Language: de-DE
+In-Reply-To: <CAFqt6zYF5fFQuGFGss3D1q=jKJGPOD33XLmZiAkBFT9zx_55LA@mail.gmail.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Souptick Joarder <jrdr.linux@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, joro@8bytes.org, Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Next step: 64ecd2c160bbef31465c4d34efc0f076a2aad4df (powerpc/dma: use 
-phys_to_dma instead of get_dma_offset)
+On 07/12/2018 20:41, Souptick Joarder wrote:
+> On Fri, Dec 7, 2018 at 7:17 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 06/12/2018 18:43, Souptick Joarder wrote:
+>>> Convert to use vm_insert_range() to map range of kernel
+>>> memory to user vma.
+>>>
+>>> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+>>> Reviewed-by: Matthew Wilcox <willy@infradead.org>
+>>> ---
+>>>    drivers/iommu/dma-iommu.c | 13 +++----------
+>>>    1 file changed, 3 insertions(+), 10 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index d1b0475..a2c65e2 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -622,17 +622,10 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+>>>
+>>>    int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
+>>>    {
+>>> -     unsigned long uaddr = vma->vm_start;
+>>> -     unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>>> -     int ret = -ENXIO;
+>>> +     unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>>>
+>>> -     for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
+>>> -             ret = vm_insert_page(vma, uaddr, pages[i]);
+>>> -             if (ret)
+>>> -                     break;
+>>> -             uaddr += PAGE_SIZE;
+>>> -     }
+>>> -     return ret;
+>>> +     return vm_insert_range(vma, vma->vm_start,
+>>> +                             pages + vma->vm_pgoff, count);
+>>
+>> You also need to adjust count to compensate for the pages skipped by
+>> vm_pgoff, otherwise you've got an out-of-bounds dereference triggered
+>> from userspace, which is pretty high up the "not good" scale (not to
+>> mention the entire call would then propagate -EFAULT back from
+>> vm_insert_page() and thus always appear to fail for nonzero offsets).
+> 
+> So this should something similar to ->
+> 
+>          return vm_insert_range(vma, vma->vm_start,
+>                                  pages + vma->vm_pgoff, count - vma->vm_pgoff);
+> 
 
-The P5020 board boots and the PASEMI onboard ethernet works.
+Yup, I think that looks appropriate.
 
--- Christian
-
-
-On 09 December 2018 at 7:26PM, Christian Zigotzky wrote:
-> Next step: c1bfcad4b0cf38ce5b00f7ad880d3a13484c123a (dma-mapping, 
-> powerpc: simplify the arch dma_set_mask override)
->
-> Result: No problems with the PASEMI onboard ethernet and with booting 
-> the X5000 (P5020 board).
->
-> -- Christian
->
->
-> On 09 December 2018 at 3:20PM, Christian Zigotzky wrote:
->> Next step: 602307b034734ce77a05da4b99333a2eaf6b6482 (powerpc/fsl_pci: 
->> simplify fsl_pci_dma_set_mask)
->>
->> git checkout 602307b034734ce77a05da4b99333a2eaf6b6482
->>
->> The PASEMI onboard ethernet works and the X5000 boots.
->>
->> -- Christian
->>
->>
->> On 08 December 2018 at 2:47PM, Christian Zigotzky wrote:
->>> Next step: e15cd8173ef85e9cc3e2a9c7cc2982f5c1355615 (powerpc/dma: 
->>> fix an off-by-one in dma_capable)
->>>
->>> git checkout e15cd8173ef85e9cc3e2a9c7cc2982f5c1355615
->>>
->>> The PASEMI onboard ethernet also works with this commit and the 
->>> X5000 boots without any problems.
->>>
->>> -- Christian
->>>
->>>
->>> On 08 December 2018 at 11:29AM, Christian Zigotzky wrote:
->>>> Next step: 7ebc44c535f6bd726d553756d38b137acc718443 (powerpc/dma: 
->>>> remove max_direct_dma_addr)
->>>>
->>>> git checkout 7ebc44c535f6bd726d553756d38b137acc718443
->>>>
->>>> OK, the PASEMI onboard ethernet works and the P5020 board boots.
->>>>
->>>> -- Christian
->>>>
->>>>
->>>> On 07 December 2018 at 7:33PM, Christian Zigotzky wrote:
->>>>> Next step: 13c1fdec5682b6e13257277fa16aa31f342d167d (powerpc/dma: 
->>>>> move pci_dma_dev_setup_swiotlb to fsl_pci.c)
->>>>>
->>>>> git checkout 13c1fdec5682b6e13257277fa16aa31f342d167d
->>>>>
->>>>> Result: The PASEMI onboard ethernet works and the P5020 board boots.
->>>>>
->>>>> — Christian
->>>>
->>>>
->>>>
->>>
->>>
->>
->>
->
->
+Robin.
