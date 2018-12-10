@@ -1,129 +1,58 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4] iommu/dma: Use NUMA aware memory allocations in
- __iommu_dma_alloc_pages()
-Date: Mon, 10 Dec 2018 12:03:40 +0000
-Message-ID: <f973d8ea-66b4-68bd-c5e9-af0c94c85c11@arm.com>
-References: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v3 0/7] dma-debug cleanup and dynamic allocation
+Date: Mon, 10 Dec 2018 14:00:26 +0000
+Message-ID: <cover.1544447601.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org
-Cc: will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: hch-jcswGhMUV9g@public.gmane.org
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/11/2018 11:14, John Garry wrote:
-> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> 
-> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
-> respective device NUMA node. The ternary operator which would be for
-> alloc_pages_node() is tidied along with this.
-> 
-> The motivation for this change is to have a policy for page allocation
-> consistent with direct DMA mapping, which attempts to allocate pages local
-> to the device, as mentioned in [1].
-> 
-> In addition, for certain workloads it has been observed a marginal
-> performance improvement. The patch caused an observation of 0.9% average
-> throughput improvement for running tcrypt with HiSilicon crypto engine.
-> 
-> We also include a modification to use kvzalloc() for kzalloc()/vzalloc()
-> combination.
-> 
-> [1] https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1692998.html
+Hi all,
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Here's some assorted cleanup and improvements to dma-debug which grew
+out of the problem that certain drivers use very large numbers of DMA
+mappings, and knowing when to override "dma_debug_entries=..." and what
+value to override it with can be a less-than-obvious task for users.
 
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> [JPG: Added kvzalloc(), drop pages ** being device local, remove ternary operator, update message]
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
-> Difference:
-> v1->v2:
-> - Add Ganapatrao's tag and change author
-> 
-> v2->v3:
-> - removed ternary operator
-> - stopped making pages ** allocation local to device
-> 
-> v3->v4:
-> - Update commit message to include motivation for patch, including
->    headline performance improvement for test.
-> 
-> Some notes:
-> This patch was originally posted by Ganapatrao in [2].
-> 
-> However, after initial review, it was never reposted (due to lack of
-> cycles, I think). In addition, the functionality in its sibling patches
-> were merged through patches, as mentioned in [2]; this also refers to a
-> discussion on device local allocations vs CPU local allocations for DMA
-> pool, and which is better [1].
-> 
-> However, as mentioned in [1], dma_alloc_coherent() uses the locality
-> information from the device - as in direct DMA - so this patch is just
-> applying this same policy.
-> 
-> And from some testing, mentioned in commit message, shows marginal
-> improvement.
-> 
-> [2] https://lore.kernel.org/patchwork/patch/833004/
-> [3] https://lkml.org/lkml/2018/8/22/391
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index d1b0475..4afb1a8 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -449,20 +449,17 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
->   	kvfree(pages);
->   }
->   
-> -static struct page **__iommu_dma_alloc_pages(unsigned int count,
-> -		unsigned long order_mask, gfp_t gfp)
-> +static struct page **__iommu_dma_alloc_pages(struct device *dev,
-> +		unsigned int count, unsigned long order_mask, gfp_t gfp)
->   {
->   	struct page **pages;
-> -	unsigned int i = 0, array_size = count * sizeof(*pages);
-> +	unsigned int i = 0, nid = dev_to_node(dev);
->   
->   	order_mask &= (2U << MAX_ORDER) - 1;
->   	if (!order_mask)
->   		return NULL;
->   
-> -	if (array_size <= PAGE_SIZE)
-> -		pages = kzalloc(array_size, GFP_KERNEL);
-> -	else
-> -		pages = vzalloc(array_size);
-> +	pages = kvzalloc(count * sizeof(*pages), GFP_KERNEL);
->   	if (!pages)
->   		return NULL;
->   
-> @@ -481,10 +478,12 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
->   		for (order_mask &= (2U << __fls(count)) - 1;
->   		     order_mask; order_mask &= ~order_size) {
->   			unsigned int order = __fls(order_mask);
-> +			gfp_t alloc_flags = gfp;
->   
->   			order_size = 1U << order;
-> -			page = alloc_pages((order_mask - order_size) ?
-> -					   gfp | __GFP_NORETRY : gfp, order);
-> +			if (order_mask > order_size)
-> +				alloc_flags |= __GFP_NORETRY;
-> +			page = alloc_pages_node(nid, alloc_flags, order);
->   			if (!page)
->   				continue;
->   			if (!order)
-> @@ -569,7 +568,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->   		alloc_sizes = min_size;
->   
->   	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
-> +	pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
-> +					gfp);
->   	if (!pages)
->   		return NULL;
->   
-> 
+The main part is patch #4, wherein we make dma-debug clever enough
+to allocate more entries dynamically if needed, such that the
+preallocation value becomes more of a quality-of-life option than a
+necessity. Patches #5 and #6 do some cruft-removal to allow patch #7
+to make the allocation behaviour more efficient in general.
+
+Patches #1, #2 and #4 are some other cleanup and handy features which
+fell out of the discussion/development.
+
+Robin.
+
+
+Robin Murphy (7):
+  dma-debug: Use pr_fmt()
+  dma-debug: Expose nr_total_entries in debugfs
+  dma-debug: Dynamically expand the dma_debug_entry pool
+  dma-debug: Make leak-like behaviour apparent
+  x86/dma/amd-gart: Stop resizing dma_debug_entry pool
+  dma/debug: Remove dma_debug_resize_entries()
+  dma-debug: Batch dma_debug_entry allocation
+
+ Documentation/DMA-API.txt                 |  20 +-
+ Documentation/x86/x86_64/boot-options.txt |   5 +-
+ arch/x86/kernel/amd_gart_64.c             |  23 ---
+ include/linux/dma-debug.h                 |   7 -
+ kernel/dma/debug.c                        | 217 ++++++++++------------
+ 5 files changed, 109 insertions(+), 163 deletions(-)
+
+-- 
+2.19.1.dirty
