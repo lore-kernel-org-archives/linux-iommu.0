@@ -1,207 +1,119 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 3/7] dma-debug: Dynamically expand the dma_debug_entry pool
-Date: Mon, 10 Dec 2018 14:00:29 +0000
-Message-ID: <048517d818d7b9a898e5c9e9ab14bbeed4b34911.1544447601.git.robin.murphy@arm.com>
-References: <cover.1544447601.git.robin.murphy@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v5 5/7] iommu: Add virtio-iommu driver
+Date: Mon, 10 Dec 2018 15:06:47 +0000
+Message-ID: <29bdf062-06cb-4b7d-1753-33fac609ddc3@arm.com>
+References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
+ <20181122193801.50510-6-jean-philippe.brucker@arm.com>
+ <20181123165742-mutt-send-email-mst@kernel.org>
+ <fd221210-7e12-1d15-0c80-52a761f6893d@arm.com>
+ <20181127125424-mutt-send-email-mst@kernel.org>
+ <ef97313f-4795-9537-e0b8-8bf6751db6a6@arm.com>
+ <20181127131455-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1544447601.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: hch-jcswGhMUV9g@public.gmane.org
-Cc: cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <virtio-dev-return-5152-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+In-Reply-To: <20181127131455-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Mark Rutland <Mark.Rutland@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, Robin Murphy <Robin.Murphy@arm.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
 List-Id: iommu@lists.linux-foundation.org
 
-Certain drivers such as large multi-queue network adapters can use pools
-of mapped DMA buffers larger than the default dma_debug_entry pool of
-65536 entries, with the result that merely probing such a device can
-cause DMA debug to disable itself during boot unless explicitly given an
-appropriate "dma_debug_entries=..." option.
+On 27/11/2018 18:53, Michael S. Tsirkin wrote:
+> On Tue, Nov 27, 2018 at 06:10:46PM +0000, Jean-Philippe Brucker wrote:
+>> On 27/11/2018 18:04, Michael S. Tsirkin wrote:
+>>> On Tue, Nov 27, 2018 at 05:50:50PM +0000, Jean-Philippe Brucker wrote:
+>>>> On 23/11/2018 22:02, Michael S. Tsirkin wrote:
+>>>>>> +/*
+>>>>>> + * __viommu_sync_req - Complete all in-flight requests
+>>>>>> + *
+>>>>>> + * Wait for all added requests to complete. When this function returns, all
+>>>>>> + * requests that were in-flight at the time of the call have completed.
+>>>>>> + */
+>>>>>> +static int __viommu_sync_req(struct viommu_dev *viommu)
+>>>>>> +{
+>>>>>> +	int ret = 0;
+>>>>>> +	unsigned int len;
+>>>>>> +	size_t write_len;
+>>>>>> +	struct viommu_request *req;
+>>>>>> +	struct virtqueue *vq = viommu->vqs[VIOMMU_REQUEST_VQ];
+>>>>>> +
+>>>>>> +	assert_spin_locked(&viommu->request_lock);
+>>>>>> +
+>>>>>> +	virtqueue_kick(vq);
+>>>>>> +
+>>>>>> +	while (!list_empty(&viommu->requests)) {
+>>>>>> +		len = 0;
+>>>>>> +		req = virtqueue_get_buf(vq, &len);
+>>>>>> +		if (!req)
+>>>>>> +			continue;
+>>>>>> +
+>>>>>> +		if (!len)
+>>>>>> +			viommu_set_req_status(req->buf, req->len,
+>>>>>> +					      VIRTIO_IOMMU_S_IOERR);
+>>>>>> +
+>>>>>> +		write_len = req->len - req->write_offset;
+>>>>>> +		if (req->writeback && len == write_len)
+>>>>>> +			memcpy(req->writeback, req->buf + req->write_offset,
+>>>>>> +			       write_len);
+>>>>>> +
+>>>>>> +		list_del(&req->list);
+>>>>>> +		kfree(req);
+>>>>>> +	}
+>>>>>
+>>>>> I didn't notice this in the past but it seems this will spin
+>>>>> with interrupts disabled until host handles the request.
+>>>>> Please do not do this - host execution can be another
+>>>>> task that needs the same host CPU. This will then disable
+>>>>> interrupts for a very very long time.
+>>>>
+>>>> In the guest yes, but that doesn't prevent the host from running another
+>>>> task right?
+>>>
+>>> Doesn't prevent it but it will delay it significantly
+>>> until scheduler decides to kick the VCPU task out.
+>>>
+>>>> My tests run fine when QEMU is bound to a single CPU, even
+>>>> though vcpu and viommu run in different threads
+>>>>
+>>>>> What to do then? Queue in software and wake up task.
+>>>>
+>>>> Unfortunately I can't do anything here, because IOMMU drivers can't
+>>>> sleep in the iommu_map() or iommu_unmap() path.
+>>>>
+>>>> The problem is the same
+>>>> for all IOMMU drivers. That's because the DMA API allows drivers to call
+>>>> some functions with interrupts disabled. For example
+>>>> Documentation/DMA-API-HOWTO.txt allows dma_alloc_coherent() and
+>>>> dma_unmap_single() to be called in interrupt context.
+>>>
+>>> In fact I don't really understand how it's supposed to
+>>> work at all: you only sync when ring is full.
+>>> So host may not have seen your map request if ring
+>>> is not full.
+>>> Why is it safe to use the address with a device then?
+>>
+>> viommu_map() calls viommu_send_req_sync(), which does the sync
+>> immediately after adding the MAP request.
+>>
+>> Thanks,
+>> Jean
+> 
+> I see. So it happens on every request. Maybe you should clear
+> event index then. This way if exits are disabled you know that
+> host is processing the ring. Event index is good for when
+> you don't care when it will be processed, you just want
+> to reduce number of exits as much as possible.
+> 
 
-Developers trying to debug some other driver on such a system may not be
-immediately aware of this, and at worst it can hide bugs if they fail to
-realise that dma-debug has already disabled itself unexpectedly by the
-time their code of interest gets to run. Even once they do realise, it
-can be a bit of a pain to emprirically determine a suitable number of
-preallocated entries to configure, short of massively over-allocating.
+I think that's already the case: since we don't attach a callback to the
+request queue, VRING_AVAIL_F_NO_INTERRUPT is set in avail_flags_shadow,
+which causes the used event index to stay clear.
 
-There's really no need for such a static limit, though, since we can
-quite easily expand the pool at runtime in those rare cases that the
-preallocated entries are insufficient, which is arguably the least
-surprising and most useful behaviour. To that end, refactor the
-prealloc_memory() logic a little bit to generalise it for runtime
-reallocations as well.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-
-v3: Drop refactoring of dma_debug_resize_entries(), misc. cosmetic tweaks
-
- Documentation/DMA-API.txt | 11 +++---
- kernel/dma/debug.c        | 79 ++++++++++++++++++++-------------------
- 2 files changed, 46 insertions(+), 44 deletions(-)
-
-diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
-index 6bdb095393b0..0fcb7561af1e 100644
---- a/Documentation/DMA-API.txt
-+++ b/Documentation/DMA-API.txt
-@@ -717,8 +717,8 @@ dma-api/num_errors		The number in this file shows how many
- dma-api/min_free_entries	This read-only file can be read to get the
- 				minimum number of free dma_debug_entries the
- 				allocator has ever seen. If this value goes
--				down to zero the code will disable itself
--				because it is not longer reliable.
-+				down to zero the code will attempt to increase
-+				nr_total_entries to compensate.
- 
- dma-api/num_free_entries	The current number of free dma_debug_entries
- 				in the allocator.
-@@ -745,10 +745,9 @@ driver filter at boot time. The debug code will only print errors for that
- driver afterwards. This filter can be disabled or changed later using debugfs.
- 
- When the code disables itself at runtime this is most likely because it ran
--out of dma_debug_entries. These entries are preallocated at boot. The number
--of preallocated entries is defined per architecture. If it is too low for you
--boot with 'dma_debug_entries=<your_desired_number>' to overwrite the
--architectural default.
-+out of dma_debug_entries and was unable to allocate more on-demand. 65536
-+entries are preallocated at boot - if this is too low for you boot with
-+'dma_debug_entries=<your_desired_number>' to overwrite the default.
- 
- ::
- 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 29486eb9d1dc..ef7c90b7a346 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -47,6 +47,8 @@
- #ifndef PREALLOC_DMA_DEBUG_ENTRIES
- #define PREALLOC_DMA_DEBUG_ENTRIES (1 << 16)
- #endif
-+/* If the pool runs out, add this many new entries at once */
-+#define DMA_DEBUG_DYNAMIC_ENTRIES 256
- 
- enum {
- 	dma_debug_single,
-@@ -646,6 +648,34 @@ static void add_dma_entry(struct dma_debug_entry *entry)
- 	 */
- }
- 
-+static int dma_debug_create_entries(u32 num_entries, gfp_t gfp)
-+{
-+	struct dma_debug_entry *entry, *next_entry;
-+	int i;
-+
-+	for (i = 0; i < num_entries; ++i) {
-+		entry = kzalloc(sizeof(*entry), gfp);
-+		if (!entry)
-+			goto out_err;
-+
-+		list_add_tail(&entry->list, &free_entries);
-+	}
-+
-+	num_free_entries += num_entries;
-+	nr_total_entries += num_entries;
-+
-+	return 0;
-+
-+out_err:
-+
-+	list_for_each_entry_safe(entry, next_entry, &free_entries, list) {
-+		list_del(&entry->list);
-+		kfree(entry);
-+	}
-+
-+	return -ENOMEM;
-+}
-+
- static struct dma_debug_entry *__dma_entry_alloc(void)
- {
- 	struct dma_debug_entry *entry;
-@@ -672,12 +702,14 @@ static struct dma_debug_entry *dma_entry_alloc(void)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&free_entries_lock, flags);
--
--	if (list_empty(&free_entries)) {
--		global_disable = true;
--		spin_unlock_irqrestore(&free_entries_lock, flags);
--		pr_err("debugging out of memory - disabling\n");
--		return NULL;
-+	if (num_free_entries == 0) {
-+		if (dma_debug_create_entries(DMA_DEBUG_DYNAMIC_ENTRIES,
-+					     GFP_ATOMIC)) {
-+			global_disable = true;
-+			spin_unlock_irqrestore(&free_entries_lock, flags);
-+			pr_err("debugging out of memory - disabling\n");
-+			return NULL;
-+		}
- 	}
- 
- 	entry = __dma_entry_alloc();
-@@ -764,36 +796,6 @@ int dma_debug_resize_entries(u32 num_entries)
-  *   2. Preallocate a given number of dma_debug_entry structs
-  */
- 
--static int prealloc_memory(u32 num_entries)
--{
--	struct dma_debug_entry *entry, *next_entry;
--	int i;
--
--	for (i = 0; i < num_entries; ++i) {
--		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
--		if (!entry)
--			goto out_err;
--
--		list_add_tail(&entry->list, &free_entries);
--	}
--
--	num_free_entries = num_entries;
--	min_free_entries = num_entries;
--
--	pr_info("preallocated %d debug entries\n", num_entries);
--
--	return 0;
--
--out_err:
--
--	list_for_each_entry_safe(entry, next_entry, &free_entries, list) {
--		list_del(&entry->list);
--		kfree(entry);
--	}
--
--	return -ENOMEM;
--}
--
- static ssize_t filter_read(struct file *file, char __user *user_buf,
- 			   size_t count, loff_t *ppos)
- {
-@@ -1038,14 +1040,15 @@ static int dma_debug_init(void)
- 		return 0;
- 	}
- 
--	if (prealloc_memory(nr_prealloc_entries) != 0) {
-+	if (dma_debug_create_entries(nr_prealloc_entries, GFP_KERNEL) != 0) {
- 		pr_err("debugging out of memory error - disabled\n");
- 		global_disable = true;
- 
- 		return 0;
- 	}
- 
--	nr_total_entries = num_free_entries;
-+	min_free_entries = num_free_entries;
-+	pr_info("preallocated %d debug entries\n", nr_total_entries);
- 
- 	dma_debug_initialized = true;
- 
--- 
-2.19.1.dirty
+Thanks,
+Jean
