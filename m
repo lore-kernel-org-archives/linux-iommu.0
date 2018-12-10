@@ -1,7 +1,7 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Mon, 10 Dec 2018 02:06:44 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE95394@SHSMSX101.ccr.corp.intel.com>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Mon, 10 Dec 2018 10:57:22 +0800
+Message-ID: <bf1ee4a3-6d3f-e0db-a02a-1db819843a60@linux.intel.com>
 References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
 	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
 	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
@@ -14,7 +14,7 @@ References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
 	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
 	<20181207102926.GM16835@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <20181207102926.GM16835-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
@@ -28,40 +28,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Friday, December 7, 2018 6:29 PM
-> 
+Hi Joerg,
+
+On 12/7/18 6:29 PM, 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' wrote:
 > Hi,
 > 
 > On Mon, Nov 26, 2018 at 07:29:45AM +0000, Tian, Kevin wrote:
-> > btw Baolu just reminded me one thing which is worthy of noting here.
-> > 'primary' vs. 'aux' concept makes sense only when we look from a device
-> > p.o.v. That binding relationship is not (*should not be*) carry-and-
-> forwarded
-> > cross devices. every domain must be explicitly attached to other devices
-> > (instead of implicitly attached being above example), and new
-> primary/aux
-> > attribute on another device will be decided at attach time.
+>> btw Baolu just reminded me one thing which is worthy of noting here.
+>> 'primary' vs. 'aux' concept makes sense only when we look from a device
+>> p.o.v. That binding relationship is not (*should not be*) carry-and-forwarded
+>> cross devices. every domain must be explicitly attached to other devices
+>> (instead of implicitly attached being above example), and new primary/aux
+>> attribute on another device will be decided at attach time.
 > 
 > Okay, so after all the discussions we had I learned a few more things
 > about the scalable mode feature and thought a bit longer about how to
 > best support it in the IOMMU-API.
 
-Thanks for thinking through this.
+Thanks for thinking about this.
 
 > 
 > The concept of sub-domains I initially proposed certainly makes no
 > sense, but scalable-mode specific attach/detach functions do. So instead
 > of a sub-domain mode, I'd like to propose device-feature sets.
-
-Can I interpret above as that you agree with the aux domain concept (i.e. one
-device can be linked to multiple domains) in general, and now we're just trying
-to address the remaining open in API level?
-
 > 
 > The posted patch-set already includes this as device-attributes, but I
 > don't like this naming as we are really talking about additional
@@ -74,64 +67,11 @@ to address the remaining open in API level?
 > 		/* ... */
 > 	};
 > 
-
-Does above represent whether a device implements aux/sva features,
-or whether a device has been enabled by driver to support aux/sva 
-features?
-
 > 	/* Check if a device supports a given feature of the IOMMU-API */
-> 	bool iommu_dev_has_feature(struct device *dev, enum
-> iommu_dev_features *feat);
+> 	bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features *feat);
 
-If the latter we also need iommu_dev_set_feature so driver can poke
-it based on its own configuration. 
+Here we pass in a pointer of "enum iommu_dev_features", do we want
+to return anything here?
 
-> 
-> 	/*
-> 	 * Only works if iommu_dev_has_feature(dev,
-> IOMMU_DEV_FEAT_AUX)
-> 	 * returns true
-> 	 *
-> 	 * Also, as long as domains are attached to a device through
-> 	 * this interface, any trys to call iommu_attach_device() should
-> 	 * fail (iommu_detach_device() can't fail, so we fail on the
-> 	 * tryint to re-attach). This should make us safe against a
-> 	 * device being attached to a guest as a whole while there are
-> 	 * still pasid users on it (aux and sva).
-
-yes, it makes sense.
-
-> 	 */
-> 	int iommu_aux_attach_device(struct iommu_domain *domain,
-> 				    struct device *dev);
-> 
-> 	int iommu_aux_detach_device(struct iommu_domain *domain,
-> 				    struct device *dev);
-> 	/*
-> 	 * I know we are targeting a system-wide pasid-space, so that
-> 	 * the pasid would be the same for one domain on all devices,
-> 	 * let's just keep the option open to have different
-> 	 * pasid-spaces in one system. Also this way we can use it to
-> 	 * check whether the domain is attached to this device at all.
-> 	 *
-> 	 * returns pasid or <0 if domain has no pasid on that device.
-> 	 */
-> 	int iommu_aux_get_pasid(struct iommu_domain *domain,
-> 				struct device *dev);
-> 
-> 	/* So we need a iommu_aux_detach_all()? */
-
-for what scenario?
-
-> 
-> This concept can also be easily extended for supporting SVA in parallel
-> on the same device, with the same constraints regarding the behavior of
-> iommu_attach_device()/iommu_detach_device().
-> 
-> So what do you think about that approach?
-> 
-> Regards,
-> 
-> 	Joerg
-> 
-> 
+Best regards,
+Lu Baolu
