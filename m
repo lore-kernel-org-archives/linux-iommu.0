@@ -1,23 +1,16 @@
-From: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Mon, 10 Dec 2018 09:59:17 +0100
-Message-ID: <20181210085917.GO16835@8bytes.org>
-References: <11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
-	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
-	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
-	<20181107164323.GA19831@8bytes.org>
-	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
-	<20181123112125.GF1586@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
-	<20181207102926.GM16835@8bytes.org>
-	<bf1ee4a3-6d3f-e0db-a02a-1db819843a60@linux.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4] iommu/dma: Use NUMA aware memory allocations in
+	__iommu_dma_alloc_pages()
+Date: Mon, 10 Dec 2018 10:05:26 +0100
+Message-ID: <20181210090526.GP16835@8bytes.org>
+References: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
+	<df449701-5ecb-26c7-cb17-b3fe03cc29e7@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <bf1ee4a3-6d3f-e0db-a02a-1db819843a60-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <df449701-5ecb-26c7-cb17-b3fe03cc29e7-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,22 +20,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lu Baolu,
+On Fri, Dec 07, 2018 at 05:57:42PM +0000, John Garry wrote:
+> A friendly reminder. Can you please let me know your position on this patch?
 
-On Mon, Dec 10, 2018 at 10:57:22AM +0800, Lu Baolu wrote:
-> > 	/* Check if a device supports a given feature of the IOMMU-API */
-> > 	bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features *feat);
-> 
-> Here we pass in a pointer of "enum iommu_dev_features", do we want
-> to return anything here?
+I am waiting for a Reviewed-by or at least Acked-by from Robin on it
+before I put it in my tree.
 
-Yeah, this is a mistake on my side, The enum parameter should be passed
-by-value, so not pointer there. It doesn't need to return anything in
-this parameter.
 
 Regards,
 
