@@ -1,41 +1,51 @@
-From: Joe Jin <joe.jin@oracle.com>
-Subject: Re: [PATCH v2 1/2] swiotlb: add debugfs to track swiotlb buffer usage
-Date: Mon, 10 Dec 2018 13:05:44 -0800
-Message-ID: <34883ba5-b444-3d37-4d40-9b0a651dd2eb@oracle.com>
-References: <1544402278-8175-1-git-send-email-dongli.zhang@oracle.com>
- <41becd27-8c3a-da2b-e5ed-e361ba20e4d4@linux.intel.com>
+From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: Re: [PATCH v3 5/7] x86/dma/amd-gart: Stop resizing dma_debug_entry
+	pool
+Date: Mon, 10 Dec 2018 22:26:30 +0100 (CET)
+Message-ID: <alpine.DEB.2.21.1812102226140.1667@nanos.tec.linutronix.de>
+References: <cover.1544447601.git.robin.murphy@arm.com>
+	<a967f11a3a4a862287c7dc180946df0067bdcf80.1544447601.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <41becd27-8c3a-da2b-e5ed-e361ba20e4d4@linux.intel.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tim Chen <tim.c.chen@linux.intel.com>, Dongli Zhang <dongli.zhang@oracle.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <a967f11a3a4a862287c7dc180946df0067bdcf80.1544447601.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, cai-0UDz38MK/Mo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/10/18 12:00 PM, Tim Chen wrote:
->> @@ -528,6 +538,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
->>  		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
->>  	return SWIOTLB_MAP_ERROR;
->>  found:
->> +#ifdef CONFIG_DEBUG_FS
->> +	io_tlb_used += nslots;
->> +#endif
-> One nit I have about this patch is there are too many CONFIG_DEBUG_FS.
-> 
-> For example here, instead of io_tlb_used, we can have a macro defined,
-> perhaps something like inc_iotlb_used(nslots).  It can be placed in the
-> same section that swiotlb_create_debugfs is defined so there's a single
-> place where all the CONFIG_DEBUG_FS stuff is located.
-> 
-> Then define inc_iotlb_used to be null when we don't have
-> CONFIG_DEBUG_FS.
-> 
+On Mon, 10 Dec 2018, Robin Murphy wrote:
 
-Dongli had removed above ifdef/endif on his next patch, "[PATCH v2 2/2]
-swiotlb: checking whether swiotlb buffer is full with io_tlb_used"
+> dma-debug is now capable of adding new entries to its pool on-demand if
+> the initial preallocation was insufficient, so the IOMMU_LEAK logic no
+> longer needs to explicitly change the pool size. This does lose it the
+> ability to save a couple of megabytes of RAM by reducing the pool size
+> below its default, but it seems unlikely that that is a realistic
+> concern these days (or indeed that anyone is actively debugging AGP
+> drivers' DMA usage any more). Getting rid of dma_debug_resize_entries()
+> will make room for further streamlining in the dma-debug code itself.
+> 
+> Removing the call reveals quite a lot of cruft which has been useless
+> for nearly a decade since commit 19c1a6f5764d ("x86 gart: reimplement
+> IOMMU_LEAK feature by using DMA_API_DEBUG"), including the entire
+> 'iommu=leak' parameter, which controlled nothing except whether
+> dma_debug_resize_entries() was called or not.
+> 
+> CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+> CC: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> CC: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+> CC: "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+> CC: x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+> Reviewed-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-Thanks,
-Joe
+Acked-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
