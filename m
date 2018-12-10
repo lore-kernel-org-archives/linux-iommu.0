@@ -1,119 +1,41 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v5 5/7] iommu: Add virtio-iommu driver
-Date: Mon, 10 Dec 2018 15:06:47 +0000
-Message-ID: <29bdf062-06cb-4b7d-1753-33fac609ddc3@arm.com>
-References: <20181122193801.50510-1-jean-philippe.brucker@arm.com>
- <20181122193801.50510-6-jean-philippe.brucker@arm.com>
- <20181123165742-mutt-send-email-mst@kernel.org>
- <fd221210-7e12-1d15-0c80-52a761f6893d@arm.com>
- <20181127125424-mutt-send-email-mst@kernel.org>
- <ef97313f-4795-9537-e0b8-8bf6751db6a6@arm.com>
- <20181127131455-mutt-send-email-mst@kernel.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v6 2/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
+ and improve debugging
+Date: Mon, 10 Dec 2018 15:35:24 +0000
+Message-ID: <20181210153524.GB24554@edgewater-inn.cambridge.arm.com>
+References: <20181210011504.122604-1-drinkcat@chromium.org>
+ <20181210011504.122604-3-drinkcat@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-5152-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20181127131455-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Mark Rutland <Mark.Rutland@arm.com>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "joro@8bytes.org" <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, Robin Murphy <Robin.Murphy@arm.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181210011504.122604-3-drinkcat@chromium.org>
+Sender: stable-owner@vger.kernel.org
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infr
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/11/2018 18:53, Michael S. Tsirkin wrote:
-> On Tue, Nov 27, 2018 at 06:10:46PM +0000, Jean-Philippe Brucker wrote:
->> On 27/11/2018 18:04, Michael S. Tsirkin wrote:
->>> On Tue, Nov 27, 2018 at 05:50:50PM +0000, Jean-Philippe Brucker wrote:
->>>> On 23/11/2018 22:02, Michael S. Tsirkin wrote:
->>>>>> +/*
->>>>>> + * __viommu_sync_req - Complete all in-flight requests
->>>>>> + *
->>>>>> + * Wait for all added requests to complete. When this function returns, all
->>>>>> + * requests that were in-flight at the time of the call have completed.
->>>>>> + */
->>>>>> +static int __viommu_sync_req(struct viommu_dev *viommu)
->>>>>> +{
->>>>>> +	int ret = 0;
->>>>>> +	unsigned int len;
->>>>>> +	size_t write_len;
->>>>>> +	struct viommu_request *req;
->>>>>> +	struct virtqueue *vq = viommu->vqs[VIOMMU_REQUEST_VQ];
->>>>>> +
->>>>>> +	assert_spin_locked(&viommu->request_lock);
->>>>>> +
->>>>>> +	virtqueue_kick(vq);
->>>>>> +
->>>>>> +	while (!list_empty(&viommu->requests)) {
->>>>>> +		len = 0;
->>>>>> +		req = virtqueue_get_buf(vq, &len);
->>>>>> +		if (!req)
->>>>>> +			continue;
->>>>>> +
->>>>>> +		if (!len)
->>>>>> +			viommu_set_req_status(req->buf, req->len,
->>>>>> +					      VIRTIO_IOMMU_S_IOERR);
->>>>>> +
->>>>>> +		write_len = req->len - req->write_offset;
->>>>>> +		if (req->writeback && len == write_len)
->>>>>> +			memcpy(req->writeback, req->buf + req->write_offset,
->>>>>> +			       write_len);
->>>>>> +
->>>>>> +		list_del(&req->list);
->>>>>> +		kfree(req);
->>>>>> +	}
->>>>>
->>>>> I didn't notice this in the past but it seems this will spin
->>>>> with interrupts disabled until host handles the request.
->>>>> Please do not do this - host execution can be another
->>>>> task that needs the same host CPU. This will then disable
->>>>> interrupts for a very very long time.
->>>>
->>>> In the guest yes, but that doesn't prevent the host from running another
->>>> task right?
->>>
->>> Doesn't prevent it but it will delay it significantly
->>> until scheduler decides to kick the VCPU task out.
->>>
->>>> My tests run fine when QEMU is bound to a single CPU, even
->>>> though vcpu and viommu run in different threads
->>>>
->>>>> What to do then? Queue in software and wake up task.
->>>>
->>>> Unfortunately I can't do anything here, because IOMMU drivers can't
->>>> sleep in the iommu_map() or iommu_unmap() path.
->>>>
->>>> The problem is the same
->>>> for all IOMMU drivers. That's because the DMA API allows drivers to call
->>>> some functions with interrupts disabled. For example
->>>> Documentation/DMA-API-HOWTO.txt allows dma_alloc_coherent() and
->>>> dma_unmap_single() to be called in interrupt context.
->>>
->>> In fact I don't really understand how it's supposed to
->>> work at all: you only sync when ring is full.
->>> So host may not have seen your map request if ring
->>> is not full.
->>> Why is it safe to use the address with a device then?
->>
->> viommu_map() calls viommu_send_req_sync(), which does the sync
->> immediately after adding the MAP request.
->>
->> Thanks,
->> Jean
+On Mon, Dec 10, 2018 at 09:15:03AM +0800, Nicolas Boichat wrote:
+> IOMMUs using ARMv7 short-descriptor format require page tables
+> (level 1 and 2) to be allocated within the first 4GB of RAM, even
+> on 64-bit systems.
 > 
-> I see. So it happens on every request. Maybe you should clear
-> event index then. This way if exits are disabled you know that
-> host is processing the ring. Event index is good for when
-> you don't care when it will be processed, you just want
-> to reduce number of exits as much as possible.
+> For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
+> is defined (e.g. on arm64 platforms).
 > 
+> For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32. Note
+> that we do not explicitly pass GFP_DMA[32] to kmem_cache_zalloc,
+> as this is not strictly necessary, and would cause a warning
+> in mm/sl*b.c, as we did not update GFP_SLAB_BUG_MASK.
+> 
+> Also, print an error when the physical address does not fit in
+> 32-bit, to make debugging easier in the future.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
+> Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+> ---
 
-I think that's already the case: since we don't attach a callback to the
-request queue, VRING_AVAIL_F_NO_INTERRUPT is set in avail_flags_shadow,
-which causes the used event index to stay clear.
+Acked-by: Will Deacon <will.deacon@arm.com>
 
-Thanks,
-Jean
+Will
