@@ -1,55 +1,120 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 04/10] arm: implement DMA_ATTR_NON_CONSISTENT
-Date: Mon, 10 Dec 2018 20:16:34 +0100
-Message-ID: <20181210191634.GB30648@lst.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 02/10] arm64/iommu: don't remap contiguous allocations for
+	coherent devices
+Date: Mon, 10 Dec 2018 19:19:30 +0000
+Message-ID: <eaf8ce49-ab5e-7c02-a028-74671172b684@arm.com>
 References: <20181208173702.15158-1-hch@lst.de>
- <20181208173702.15158-5-hch@lst.de>
- <3aeb99c505fd1c33199fcc26fe5e0bf239dee57e.camel@collabora.com>
+	<20181208173702.15158-3-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <3aeb99c505fd1c33199fcc26fe5e0bf239dee57e.camel@collabora.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Ezequiel Garcia <ezequiel@collabora.com>
-Cc: linux-parisc@vger.kernel.org, Vineet Gupta <vgupta@synopsys.com>, linux-mips@vger.kernel.org, dri-devel@lists.freedesktop.org, "Matwey V. Kornilov" <matwey@sai.msu.ru>, iommu@lists.linux-foundation.org, openrisc@lists.librecores.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, linux-arm-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181208173702.15158-3-hch-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, "Matwey V. Kornilov" <matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org>, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, linux-arm-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gU2F0LCBEZWMgMDgsIDIwMTggYXQgMDc6NTI6MDRQTSAtMDMwMCwgRXplcXVpZWwgR2FyY2lh
-IHdyb3RlOgo+ID4gICNpZmRlZiBDT05GSUdfRE1BX0FQSV9ERUJVRwo+ID4gQEAgLTc3Myw3ICs3
-OTEsNyBAQCBzdGF0aWMgdm9pZCAqX19kbWFfYWxsb2Moc3RydWN0IGRldmljZSAqZGV2LCBzaXpl
-X3Qgc2l6ZSwgZG1hX2FkZHJfdCAqaGFuZGxlLAo+ID4gIAo+ID4gIAlpZiAoY21hKQo+ID4gIAkJ
-YnVmLT5hbGxvY2F0b3IgPSAmY21hX2FsbG9jYXRvcjsKPiA+IC0JZWxzZSBpZiAoaXNfY29oZXJl
-bnQpCj4gPiArCWVsc2UgaWYgKGlzX2NvaGVyZW50IHx8IChhdHRycyAmIERNQV9BVFRSX05PTl9D
-T05TSVNURU5UKSkKPiA+ICAJCWJ1Zi0+YWxsb2NhdG9yID0gJnNpbXBsZV9hbGxvY2F0b3I7Cj4g
-Cj4gUmVhZGluZyB0aHJvdWdoIHlvdXIgY29kZSBJIGNhbid0IHJlYWxseSBzZWUgd2hlcmUgdGhl
-IHBncHJvdCBpcyBjaGFuZ2VkCj4gZm9yIG5vbi1jb25zaXN0ZW50IHJlcXVlc3RzLiBOYW1lbHks
-IF9fZ2V0X2RtYV9wZ3Byb3Qgb25seQo+IHJldHVybnMgd3JpdGVjb21iaW5lIG9yIGNvaGVyZW50
-IG1lbW9yeS4KCldlIGRvbid0IGxvb2sgYXQgdGhlIHBncHJvdCBhdCBhbGwgZm9yIHRoZSBzaW1w
-bGUgYWxsb2NhdG9yLCBhbmQKZG9uJ3QgbG9vayBhdCBwcm90IGZvciB0aGUgRE1BX0FUVFJfTk9O
-X0NPTlNJU1RFTlQgY2FzZSBpbiB0aGUKQ01BIGFsbG9jYXRvciwgc28gdGhpcyBzaG91bGQgbm90
-IGJlIGEgcHJvYmxlbS4gIEhvd2V2ZXIgd2UgbmVlZCB0bwp0YWtlIERNQV9BVFRSX05PTl9DT05T
-SVNURU5UIGludG8gYWNjb3VudCBmb3IgY2FsY3VsYXRpbmcgdGhlIG1tYXAKcGdwcm90LCB3aXRo
-IHNvbWV0aGluZyBsaWtlIHRoaXMgYXMgYW4gaW5jcmVtZW50YWwgcGF0Y2g6CgpkaWZmIC0tZ2l0
-IGEvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYyBiL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMK
-aW5kZXggYjNiNjZiNDFjNDUwLi42YWM3ZTQzMGE0N2MgMTAwNjQ0Ci0tLSBhL2FyY2gvYXJtL21t
-L2RtYS1tYXBwaW5nLmMKKysrIGIvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYwpAQCAtODczLDcg
-Kzg3Myw4IEBAIGludCBhcm1fZG1hX21tYXAoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgdm1f
-YXJlYV9zdHJ1Y3QgKnZtYSwKIAkJIHZvaWQgKmNwdV9hZGRyLCBkbWFfYWRkcl90IGRtYV9hZGRy
-LCBzaXplX3Qgc2l6ZSwKIAkJIHVuc2lnbmVkIGxvbmcgYXR0cnMpCiB7Ci0Jdm1hLT52bV9wYWdl
-X3Byb3QgPSBfX2dldF9kbWFfcGdwcm90KGF0dHJzLCB2bWEtPnZtX3BhZ2VfcHJvdCk7CisJaWYg
-KCEoYXR0cnMgJiBETUFfQVRUUl9OT05fQ09OU0lTVEVOVCkpCisJCXZtYS0+dm1fcGFnZV9wcm90
-ID0gX19nZXRfZG1hX3BncHJvdChhdHRycywgdm1hLT52bV9wYWdlX3Byb3QpOwogCXJldHVybiBf
-X2FybV9kbWFfbW1hcChkZXYsIHZtYSwgY3B1X2FkZHIsIGRtYV9hZGRyLCBzaXplLCBhdHRycyk7
-CiB9CiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
-LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
-Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On 08/12/2018 17:36, Christoph Hellwig wrote:
+> There is no need to have an additional kernel mapping for a contiguous
+> allocation if the device already is DMA coherent, so skip it.
+
+FWIW, the "need" was that it kept the code in this path simple and the 
+mapping behaviour consistent with the regular iommu_dma_alloc() case. 
+One could quite easily retort that there is no need for the extra 
+complexity of this patch, since vmalloc is cheap on a 64-bit architecture ;)
+
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> ---
+>   arch/arm64/mm/dma-mapping.c | 35 ++++++++++++++++++++++-------------
+>   1 file changed, 22 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 4c0f498069e8..d39b60113539 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -255,13 +255,18 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>   						    size >> PAGE_SHIFT);
+>   			return NULL;
+>   		}
+> +
+> +		if (coherent) {
+> +			memset(addr, 0, size);
+> +			return addr;
+> +		}
+> +
+>   		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
+>   						   prot,
+>   						   __builtin_return_address(0));
+>   		if (addr) {
+>   			memset(addr, 0, size);
+> -			if (!coherent)
+> -				__dma_flush_area(page_to_virt(page), iosize);
+> +			__dma_flush_area(page_to_virt(page), iosize);
+
+Oh poo - seems I missed it at the time but the existing logic here is 
+wrong. Let me send a separate fix to flip those statements into the 
+correct order...
+
+Robin.
+
+>   		} else {
+>   			iommu_dma_unmap_page(dev, *handle, iosize, 0, attrs);
+>   			dma_release_from_contiguous(dev, page,
+> @@ -309,7 +314,9 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>   
+>   		iommu_dma_unmap_page(dev, handle, iosize, 0, attrs);
+>   		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
+> -		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+> +
+> +		if (!dev_is_dma_coherent(dev))
+> +			dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+>   	} else if (is_vmalloc_addr(cpu_addr)){
+>   		struct vm_struct *area = find_vm_area(cpu_addr);
+>   
+> @@ -336,11 +343,12 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>   		return ret;
+>   
+>   	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> -		/*
+> -		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+> -		 * hence in the vmalloc space.
+> -		 */
+> -		unsigned long pfn = vmalloc_to_pfn(cpu_addr);
+> +		unsigned long pfn;
+> +
+> +		if (dev_is_dma_coherent(dev))
+> +			pfn = virt_to_pfn(cpu_addr);
+> +		else
+> +			pfn = vmalloc_to_pfn(cpu_addr);
+>   		return __swiotlb_mmap_pfn(vma, pfn, size);
+>   	}
+>   
+> @@ -359,11 +367,12 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+>   	struct vm_struct *area = find_vm_area(cpu_addr);
+>   
+>   	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> -		/*
+> -		 * DMA_ATTR_FORCE_CONTIGUOUS allocations are always remapped,
+> -		 * hence in the vmalloc space.
+> -		 */
+> -		struct page *page = vmalloc_to_page(cpu_addr);
+> +		struct page *page;
+> +
+> +		if (dev_is_dma_coherent(dev))
+> +			page = virt_to_page(cpu_addr);
+> +		else
+> +			page = vmalloc_to_page(cpu_addr);
+>   		return __swiotlb_get_sgtable_page(sgt, page, size);
+>   	}
+>   
+> 
