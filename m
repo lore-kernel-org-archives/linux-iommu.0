@@ -1,7 +1,7 @@
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v6 07/12] iommu/vt-d: Setup pasid entry for RID2PASID support
-Date: Mon, 10 Dec 2018 09:59:01 +0800
-Message-ID: <20181210015906.27929-8-baolu.lu@linux.intel.com>
+Subject: [PATCH v6 09/12] iommu/vt-d: Setup context and enable RID2PASID support
+Date: Mon, 10 Dec 2018 09:59:03 +0800
+Message-ID: <20181210015906.27929-10-baolu.lu@linux.intel.com>
 References: <20181210015906.27929-1-baolu.lu@linux.intel.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181210015906.27929-1-baolu.lu@linux.intel.com>
@@ -10,18 +10,8 @@ To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
 Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-when the scalable mode is enabled, there is no second level
-page translation pointer in the context entry any more (for
-DMA request without PASID). Instead, a new RID2PASID field
-is introduced in the context entry. Software can choose any
-PASID value to set RID2PASID and then setup the translation
-in the corresponding PASID entry. Upon receiving a DMA request
-without PASID, hardware will firstly look at this RID2PASID
-field and then treat this request as a request with a pasid
-value specified in RID2PASID field.
-
-Though software is allowed to use any PASID for the RID2PASID,
-we will always use the PASID 0 as a sort of design decision.
+This patch enables the translation for requests without PASID in
+the scalable mode by setting up the root and context entries.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -31,59 +21,217 @@ Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Ashok Raj <ashok.raj@intel.com>
 ---
- drivers/iommu/intel-iommu.c | 20 ++++++++++++++++++++
- drivers/iommu/intel-pasid.h |  1 +
- 2 files changed, 21 insertions(+)
+ drivers/iommu/intel-iommu.c | 136 ++++++++++++++++++++++++++++--------
+ drivers/iommu/intel-pasid.h |   1 +
+ include/linux/intel-iommu.h |   1 +
+ 3 files changed, 108 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e741238e2326..a077ff3f67a6 100644
+index 55c4ffda1246..21e5f1b9a2ca 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2462,6 +2462,22 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 			dmar_remove_one_dev_info(domain, dev);
- 			return NULL;
- 		}
+@@ -1197,6 +1197,8 @@ static void iommu_set_root_entry(struct intel_iommu *iommu)
+ 	unsigned long flag;
+ 
+ 	addr = virt_to_phys(iommu->root_entry);
++	if (sm_supported(iommu))
++		addr |= DMA_RTADDR_SMT;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+ 	dmar_writeq(iommu->reg + DMAR_RTADDR_REG, addr);
+@@ -1918,6 +1920,56 @@ static void domain_exit(struct dmar_domain *domain)
+ 	free_domain_mem(domain);
+ }
+ 
++/*
++ * Get the PASID directory size for scalable mode context entry.
++ * Value of X in the PDTS field of a scalable mode context entry
++ * indicates PASID directory with 2^(X + 7) entries.
++ */
++static inline unsigned long context_get_sm_pds(struct pasid_table *table)
++{
++	int pds, max_pde;
 +
-+		/* Setup the PASID entry for requests without PASID: */
-+		spin_lock(&iommu->lock);
-+		if (hw_pass_through && domain_type_is_si(domain))
-+			ret = intel_pasid_setup_pass_through(iommu, domain,
-+					dev, PASID_RID2PASID);
-+		else
-+			ret = intel_pasid_setup_second_level(iommu, domain,
-+					dev, PASID_RID2PASID);
-+		spin_unlock(&iommu->lock);
-+		if (ret) {
-+			pr_err("Setup RID2PASID for %s failed\n",
-+			       dev_name(dev));
-+			dmar_remove_one_dev_info(domain, dev);
-+			return NULL;
++	max_pde = table->max_pasid >> PASID_PDE_SHIFT;
++	pds = find_first_bit((unsigned long *)&max_pde, MAX_NR_PASID_BITS);
++	if (pds < 7)
++		return 0;
++
++	return pds - 7;
++}
++
++/*
++ * Set the RID_PASID field of a scalable mode context entry. The
++ * IOMMU hardware will use the PASID value set in this field for
++ * DMA translations of DMA requests without PASID.
++ */
++static inline void
++context_set_sm_rid2pasid(struct context_entry *context, unsigned long pasid)
++{
++	context->hi |= pasid & ((1 << 20) - 1);
++	context->hi |= (1 << 20);
++}
++
++/*
++ * Set the DTE(Device-TLB Enable) field of a scalable mode context
++ * entry.
++ */
++static inline void context_set_sm_dte(struct context_entry *context)
++{
++	context->lo |= (1 << 2);
++}
++
++/*
++ * Set the PRE(Page Request Enable) field of a scalable mode context
++ * entry.
++ */
++static inline void context_set_sm_pre(struct context_entry *context)
++{
++	context->lo |= (1 << 4);
++}
++
++/* Convert value to context PASID directory size field coding. */
++#define context_pdts(pds)	(((pds) & 0x7) << 9)
++
+ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 				      struct intel_iommu *iommu,
+ 				      struct pasid_table *table,
+@@ -1928,8 +1980,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 	struct device_domain_info *info = NULL;
+ 	struct context_entry *context;
+ 	unsigned long flags;
+-	struct dma_pte *pgd;
+-	int ret, agaw;
++	int ret;
+ 
+ 	WARN_ON(did == 0);
+ 
+@@ -1975,41 +2026,67 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 		}
+ 	}
+ 
+-	pgd = domain->pgd;
+-
+ 	context_clear_entry(context);
+-	context_set_domain_id(context, did);
+ 
+-	/*
+-	 * Skip top levels of page tables for iommu which has less agaw
+-	 * than default.  Unnecessary for PT mode.
+-	 */
+-	if (translation != CONTEXT_TT_PASS_THROUGH) {
+-		for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
+-			ret = -ENOMEM;
+-			pgd = phys_to_virt(dma_pte_addr(pgd));
+-			if (!dma_pte_present(pgd))
+-				goto out_unlock;
+-		}
++	if (sm_supported(iommu)) {
++		unsigned long pds;
+ 
+-		info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
+-		if (info && info->ats_supported)
+-			translation = CONTEXT_TT_DEV_IOTLB;
+-		else
+-			translation = CONTEXT_TT_MULTI_LEVEL;
++		WARN_ON(!table);
++
++		/* Setup the PASID DIR pointer: */
++		pds = context_get_sm_pds(table);
++		context->lo = (u64)virt_to_phys(table->table) |
++				context_pdts(pds);
++
++		/* Setup the RID_PASID field: */
++		context_set_sm_rid2pasid(context, PASID_RID2PASID);
+ 
+-		context_set_address_root(context, virt_to_phys(pgd));
+-		context_set_address_width(context, agaw);
+-	} else {
+ 		/*
+-		 * In pass through mode, AW must be programmed to
+-		 * indicate the largest AGAW value supported by
+-		 * hardware. And ASR is ignored by hardware.
++		 * Setup the Device-TLB enable bit and Page request
++		 * Enable bit:
+ 		 */
+-		context_set_address_width(context, iommu->msagaw);
++		info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
++		if (info && info->ats_supported)
++			context_set_sm_dte(context);
++		if (info && info->pri_supported)
++			context_set_sm_pre(context);
++	} else {
++		struct dma_pte *pgd = domain->pgd;
++		int agaw;
++
++		context_set_domain_id(context, did);
++		context_set_translation_type(context, translation);
++
++		if (translation != CONTEXT_TT_PASS_THROUGH) {
++			/*
++			 * Skip top levels of page tables for iommu which has
++			 * less agaw than default. Unnecessary for PT mode.
++			 */
++			for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
++				ret = -ENOMEM;
++				pgd = phys_to_virt(dma_pte_addr(pgd));
++				if (!dma_pte_present(pgd))
++					goto out_unlock;
++			}
++
++			info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
++			if (info && info->ats_supported)
++				translation = CONTEXT_TT_DEV_IOTLB;
++			else
++				translation = CONTEXT_TT_MULTI_LEVEL;
++
++			context_set_address_root(context, virt_to_phys(pgd));
++			context_set_address_width(context, agaw);
++		} else {
++			/*
++			 * In pass through mode, AW must be programmed to
++			 * indicate the largest AGAW value supported by
++			 * hardware. And ASR is ignored by hardware.
++			 */
++			context_set_address_width(context, iommu->msagaw);
 +		}
  	}
  
- 	if (dev && domain_context_mapping(domain, dev)) {
-@@ -4825,6 +4841,10 @@ static void __dmar_remove_one_dev_info(struct device_domain_info *info)
- 	iommu = info->iommu;
+-	context_set_translation_type(context, translation);
+ 	context_set_fault_enable(context);
+ 	context_set_present(context);
+ 	domain_flush_cache(domain, context, sizeof(*context));
+@@ -5180,7 +5257,6 @@ static void intel_iommu_put_resv_regions(struct device *dev,
+ }
  
- 	if (info->dev) {
-+		if (dev_is_pci(info->dev) && sm_supported(iommu))
-+			intel_pasid_tear_down_entry(iommu, info->dev,
-+					PASID_RID2PASID);
-+
- 		iommu_disable_dev_iotlb(info);
- 		domain_context_clear(iommu, info->dev);
- 		intel_pasid_free_table(info->dev);
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+-#define MAX_NR_PASID_BITS (20)
+ static inline unsigned long intel_iommu_get_pts(struct device *dev)
+ {
+ 	int pts, max_pasid;
 diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index 3c70522091d3..d6f4fead4491 100644
+index d6f4fead4491..55bb8715329d 100644
 --- a/drivers/iommu/intel-pasid.h
 +++ b/drivers/iommu/intel-pasid.h
-@@ -10,6 +10,7 @@
- #ifndef __INTEL_PASID_H
- #define __INTEL_PASID_H
+@@ -17,6 +17,7 @@
+ #define PASID_PTE_PRESENT		1
+ #define PDE_PFN_MASK			PAGE_MASK
+ #define PASID_PDE_SHIFT			6
++#define MAX_NR_PASID_BITS		20
  
-+#define PASID_RID2PASID			0x0
- #define PASID_MIN			0x1
- #define PASID_MAX			0x100000
- #define PASID_PTE_MASK			0x3F
+ /*
+  * Domain ID reserved for pasid entries programmed for first-level
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index cb3ebda47fa7..5fdd33ed2cce 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -258,6 +258,7 @@
+ 
+ /* DMA_RTADDR_REG */
+ #define DMA_RTADDR_RTT (((u64)1) << 11)
++#define DMA_RTADDR_SMT (((u64)1) << 10)
+ 
+ /* CCMD_REG */
+ #define DMA_CCMD_ICC (((u64)1) << 63)
 -- 
 2.17.1
