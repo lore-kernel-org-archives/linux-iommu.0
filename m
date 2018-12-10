@@ -1,11 +1,13 @@
 From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v6 00/12] iommu/vt-d: Add scalable mode support
-Date: Mon, 10 Dec 2018 09:58:54 +0800
-Message-ID: <20181210015906.27929-1-baolu.lu@linux.intel.com>
+Subject: [PATCH v6 01/12] iommu/vt-d: Enumerate the scalable mode capability
+Date: Mon, 10 Dec 2018 09:58:55 +0800
+Message-ID: <20181210015906.27929-2-baolu.lu@linux.intel.com>
+References: <20181210015906.27929-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181210015906.27929-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,124 +21,160 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse
 Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-Intel vt-d rev3.0 [1] introduces a new translation mode called
-'scalable mode', which enables PASID-granular translations for
-first level, second level, nested and pass-through modes. The
-vt-d scalable mode is the key ingredient to enable Scalable I/O
-Virtualization (Scalable IOV) [2] [3], which allows sharing a
-device in minimal possible granularity (ADI - Assignable Device
-Interface). It also includes all the capabilities required to
-enable Shared Virtual Addressing (SVA). As a result, previous
-Extended Context (ECS) mode is deprecated (no production ever
-implements ECS).
-
-Each scalable mode pasid table entry is 64 bytes in length, with
-fields point to the first level page table and the second level
-page table. The PGTT (Pasid Granular Translation Type) field is
-used by hardware to determine the translation type.
-
-
-          A Scalable Mode            .-------------.
-           PASID Entry             .-|             |
-       .------------------.      .-| | 1st Level   |
-      7|                  |      | | | Page Table  |
-       .------------------.      | | |             |
-      6|                  |      | | |             |
-       '------------------'      | | '-------------'
-      5|                  |      | '-------------'
-       '------------------'      '-------------'
-      4|                  |    ^
-       '------------------'   /
-      3|                  |  /       .-------------.
-       .----.-------.-----. /      .-|             |
-      2|    | FLPTR |     |/     .-| | 2nd Level   |
-       .----'-------'-----.      | | | Page Table  |
-      1|                  |      | | |             |
-       .-.-------..------..      | | |             |
-      0| | SLPTR || PGTT ||----> | | '-------------'
-       '-'-------''------''      | '-------------'
-       6             |    0      '-------------'
-       3             v
-             .------------------------------------.
-             | PASID Granular Translation Type    |
-             |                                    |
-             | 001b: 1st level translation only   |
-             | 101b: 2nd level translation only   |
-             | 011b: Nested translation           |
-             | 100b: Pass through                 |
-             '------------------------------------'
-
-This patch series adds the scalable mode support in the Intel
-IOMMU driver. It will make all the Intel IOMMU features work
-in scalable mode. The changes are all constrained within the
-Intel IOMMU driver, as it's purely internal format change.
-
-References:
-[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
-[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
-[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
-
-Change log:
-v5->v6:
-  - [02/12] Move pasid table allocation out of lock range
-            and replace GFP_ATOMIC with GFP_KERNEL when
-            allocating the pasid memory.
-
-v4->v5:
-  - [04/12] Add a comment to explain why we only print
-            two QWORDs of an invalid descriptor.
-  - [06/12] Fix domain agaw being less than iommu agaw.
-  - [09/12] Move data type to local branch.
-  - [11/12] Hold iommu lock when setup pasid entry for
-            SVM.
-  - All rebased on top of vt-d branch of iommu tree.
-
-v3->v4:
-  - Rebase all patches to 4.20-rc1.
-  - Use the right PASID directory table size.
-  - Add a function for pass through translation setting up.
-  - Refine the parameters passed to first level translation
-    mode interface.
-
-v2->v3:
-  - Rebase all patches on top of vt-d branch of iommu repo.
-  - Set the pasid directory table size to 1 page for devices
-    which have no pasid support.
-  - Fix various comments received during v2 review period.
-    All were code style related.
-
-v1->v2:
-  - Rebase all patches on top of v4.19-rc1;
-  - Add 256-bit invalidation descriptor support;
-  - Reserve a domain id for first level and pass-through
-    usage to make hardware cache entries more efficiently;
-  - Various code refinements.
-
-Lu Baolu (12):
-  iommu/vt-d: Enumerate the scalable mode capability
-  iommu/vt-d: Manage scalalble mode PASID tables
-  iommu/vt-d: Move page table helpers into header
-  iommu/vt-d: Add 256-bit invalidation descriptor support
-  iommu/vt-d: Reserve a domain id for FL and PT modes
-  iommu/vt-d: Add second level page table interface
-  iommu/vt-d: Setup pasid entry for RID2PASID support
-  iommu/vt-d: Pass pasid table to context mapping
-  iommu/vt-d: Setup context and enable RID2PASID support
-  iommu/vt-d: Add first level page table interface
-  iommu/vt-d: Shared virtual address in scalable mode
-  iommu/vt-d: Remove deferred invalidation
-
- .../admin-guide/kernel-parameters.txt         |  12 +-
- drivers/iommu/dmar.c                          |  91 ++--
- drivers/iommu/intel-iommu.c                   | 351 +++++++-------
- drivers/iommu/intel-pasid.c                   | 449 +++++++++++++++++-
- drivers/iommu/intel-pasid.h                   |  40 +-
- drivers/iommu/intel-svm.c                     | 171 +++----
- drivers/iommu/intel_irq_remapping.c           |   6 +-
- include/linux/intel-iommu.h                   |  75 ++-
- 8 files changed, 838 insertions(+), 357 deletions(-)
-
--- 
-2.17.1
+VGhlIEludGVsIHZ0LWQgc3BlYyByZXYzLjAgaW50cm9kdWNlcyBhIG5ldyB0cmFuc2xhdGlvbgpt
+b2RlIGNhbGxlZCBzY2FsYWJsZSBtb2RlLCB3aGljaCBlbmFibGVzIFBBU0lELWdyYW51bGFyCnRy
+YW5zbGF0aW9ucyBmb3IgZmlyc3QgbGV2ZWwsIHNlY29uZCBsZXZlbCwgbmVzdGVkIGFuZApwYXNz
+LXRocm91Z2ggbW9kZXMuIEF0IHRoZSBzYW1lIHRpbWUsIHRoZSBwcmV2aW91cwpFeHRlbmRlZCBD
+b250ZXh0IChFQ1MpIG1vZGUgaXMgZGVwcmVjYXRlZCAobm8gcHJvZHVjdGlvbgpldmVyIGltcGxl
+bWVudHMgRUNTKS4KClRoaXMgcGF0Y2ggYWRkcyBlbnVtZXJhdGlvbiBmb3IgU2NhbGFibGUgTW9k
+ZSBhbmQgcmVtb3Zlcwp0aGUgZGVwcmVjYXRlZCBFQ1MgZW51bWVyYXRpb24uIEl0IHByb3ZpZGVz
+IGEgYm9vdCB0aW1lCm9wdGlvbiB0byBkaXNhYmxlIHNjYWxhYmxlIG1vZGUgZXZlbiBoYXJkd2Fy
+ZSBjbGFpbXMgdG8Kc3VwcG9ydCBpdC4KCkNjOiBBc2hvayBSYWogPGFzaG9rLnJhakBpbnRlbC5j
+b20+CkNjOiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPgpDYzogS2V2
+aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+ClNpZ25lZC1vZmYtYnk6IFNhbmpheSBLdW1h
+ciA8c2FuamF5Lmsua3VtYXJAaW50ZWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBMaXUgWWkgTCA8eWku
+bC5saXVAaW50ZWwuY29tPgpTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXgu
+aW50ZWwuY29tPgpSZXZpZXdlZC1ieTogQXNob2sgUmFqIDxhc2hvay5yYWpAaW50ZWwuY29tPgpS
+ZXZpZXdlZC1ieTogS2V2aW4gVGlhbiA8a2V2aW4udGlhbkBpbnRlbC5jb20+Ci0tLQogLi4uL2Fk
+bWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dCAgICAgICAgIHwgMTIgKystLQogZHJpdmVy
+cy9pb21tdS9pbnRlbC1pb21tdS5jICAgICAgICAgICAgICAgICAgIHwgNjQgKysrKystLS0tLS0t
+LS0tLS0tLQogaW5jbHVkZS9saW51eC9pbnRlbC1pb21tdS5oICAgICAgICAgICAgICAgICAgIHwg
+IDEgKwogMyBmaWxlcyBjaGFuZ2VkLCAyNCBpbnNlcnRpb25zKCspLCA1MyBkZWxldGlvbnMoLSkK
+CmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2FkbWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJz
+LnR4dCBiL0RvY3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFtZXRlcnMudHh0Cmlu
+ZGV4IGFlZmQzNThhNWNhMy4uNzAzODRkODY4MmVhIDEwMDY0NAotLS0gYS9Eb2N1bWVudGF0aW9u
+L2FkbWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dAorKysgYi9Eb2N1bWVudGF0aW9uL2Fk
+bWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dApAQCAtMTY4MywxMiArMTY4MywxMiBAQAog
+CQkJQnkgZGVmYXVsdCwgc3VwZXIgcGFnZSB3aWxsIGJlIHN1cHBvcnRlZCBpZiBJbnRlbCBJT01N
+VQogCQkJaGFzIHRoZSBjYXBhYmlsaXR5LiBXaXRoIHRoaXMgb3B0aW9uLCBzdXBlciBwYWdlIHdp
+bGwKIAkJCW5vdCBiZSBzdXBwb3J0ZWQuCi0JCWVjc19vZmYgW0RlZmF1bHQgT2ZmXQotCQkJQnkg
+ZGVmYXVsdCwgZXh0ZW5kZWQgY29udGV4dCB0YWJsZXMgd2lsbCBiZSBzdXBwb3J0ZWQgaWYKLQkJ
+CXRoZSBoYXJkd2FyZSBhZHZlcnRpc2VzIHRoYXQgaXQgaGFzIHN1cHBvcnQgYm90aCBmb3IgdGhl
+Ci0JCQlleHRlbmRlZCB0YWJsZXMgdGhlbXNlbHZlcywgYW5kIGFsc28gUEFTSUQgc3VwcG9ydC4g
+V2l0aAotCQkJdGhpcyBvcHRpb24gc2V0LCBleHRlbmRlZCB0YWJsZXMgd2lsbCBub3QgYmUgdXNl
+ZCBldmVuCi0JCQlvbiBoYXJkd2FyZSB3aGljaCBjbGFpbXMgdG8gc3VwcG9ydCB0aGVtLgorCQlz
+bV9vZmYgW0RlZmF1bHQgT2ZmXQorCQkJQnkgZGVmYXVsdCwgc2NhbGFibGUgbW9kZSB3aWxsIGJl
+IHN1cHBvcnRlZCBpZiB0aGUKKwkJCWhhcmR3YXJlIGFkdmVydGlzZXMgdGhhdCBpdCBoYXMgc3Vw
+cG9ydCBmb3IgdGhlIHNjYWxhYmxlCisJCQltb2RlIHRyYW5zbGF0aW9uLiBXaXRoIHRoaXMgb3B0
+aW9uIHNldCwgc2NhbGFibGUgbW9kZQorCQkJd2lsbCBub3QgYmUgdXNlZCBldmVuIG9uIGhhcmR3
+YXJlIHdoaWNoIGNsYWltcyB0byBzdXBwb3J0CisJCQlpdC4KIAkJdGJvb3Rfbm9mb3JjZSBbRGVm
+YXVsdCBPZmZdCiAJCQlEbyBub3QgZm9yY2UgdGhlIEludGVsIElPTU1VIGVuYWJsZWQgdW5kZXIg
+dGJvb3QuCiAJCQlCeSBkZWZhdWx0LCB0Ym9vdCB3aWxsIGZvcmNlIEludGVsIElPTU1VIG9uLCB3
+aGljaApkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJpdmVycy9p
+b21tdS9pbnRlbC1pb21tdS5jCmluZGV4IGYzYWZhYjgyZjNlZS4uYzBmZmRlNmNiMjFhIDEwMDY0
+NAotLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKKysrIGIvZHJpdmVycy9pb21tdS9p
+bnRlbC1pb21tdS5jCkBAIC00MDUsMzggKzQwNSwxNiBAQCBzdGF0aWMgaW50IGRtYXJfbWFwX2dm
+eCA9IDE7CiBzdGF0aWMgaW50IGRtYXJfZm9yY2VkYWM7CiBzdGF0aWMgaW50IGludGVsX2lvbW11
+X3N0cmljdDsKIHN0YXRpYyBpbnQgaW50ZWxfaW9tbXVfc3VwZXJwYWdlID0gMTsKLXN0YXRpYyBp
+bnQgaW50ZWxfaW9tbXVfZWNzID0gMTsKLXN0YXRpYyBpbnQgaW50ZWxfaW9tbXVfcGFzaWQyODsK
+K3N0YXRpYyBpbnQgaW50ZWxfaW9tbXVfc20gPSAxOwogc3RhdGljIGludCBpb21tdV9pZGVudGl0
+eV9tYXBwaW5nOwogCiAjZGVmaW5lIElERU5UTUFQX0FMTAkJMQogI2RlZmluZSBJREVOVE1BUF9H
+RlgJCTIKICNkZWZpbmUgSURFTlRNQVBfQVpBTElBCQk0CiAKLS8qIEJyb2Fkd2VsbCBhbmQgU2t5
+bGFrZSBoYXZlIGJyb2tlbiBFQ1Mgc3VwcG9ydCDigJQgbm9ybWFsIHNvLWNhbGxlZCAic2Vjb25k
+Ci0gKiBsZXZlbCIgdHJhbnNsYXRpb24gb2YgRE1BIHJlcXVlc3RzLXdpdGhvdXQtUEFTSUQgZG9l
+c24ndCBhY3R1YWxseSBoYXBwZW4KLSAqIHVubGVzcyB5b3UgYWxzbyBzZXQgdGhlIE5FU1RFIGJp
+dCBpbiBhbiBleHRlbmRlZCBjb250ZXh0LWVudHJ5LiBXaGljaCBvZgotICogY291cnNlIG1lYW5z
+IHRoYXQgU1ZNIGRvZXNuJ3Qgd29yayBiZWNhdXNlIGl0J3MgdHJ5aW5nIHRvIGRvIG5lc3RlZAot
+ICogdHJhbnNsYXRpb24gb2YgdGhlIHBoeXNpY2FsIGFkZHJlc3NlcyBpdCBmaW5kcyBpbiB0aGUg
+cHJvY2VzcyBwYWdlIHRhYmxlcywKLSAqIHRocm91Z2ggdGhlIElPVkEtPnBoeXMgbWFwcGluZyBm
+b3VuZCBpbiB0aGUgInNlY29uZCBsZXZlbCIgcGFnZSB0YWJsZXMuCi0gKgotICogVGhlIFZULWQg
+c3BlY2lmaWNhdGlvbiB3YXMgcmV0cm9hY3RpdmVseSBjaGFuZ2VkIHRvIGNoYW5nZSB0aGUgZGVm
+aW5pdGlvbgotICogb2YgdGhlIGNhcGFiaWxpdHkgYml0cyBhbmQgcHJldGVuZCB0aGF0IEJyb2Fk
+d2VsbC9Ta3lsYWtlIG5ldmVyIGhhcHBlbmVkLi4uCi0gKiBidXQgdW5mb3J0dW5hdGVseSB0aGUg
+d3JvbmcgYml0IHdhcyBjaGFuZ2VkLiBJdCdzIEVDUyB3aGljaCBpcyBicm9rZW4sIGJ1dAotICog
+Zm9yIHNvbWUgcmVhc29uIGl0IHdhcyB0aGUgUEFTSUQgY2FwYWJpbGl0eSBiaXQgd2hpY2ggd2Fz
+IHJlZGVmaW5lZCAoZnJvbQotICogYml0IDI4IG9uIEJEVy9TS0wgdG8gYml0IDQwIGluIGZ1dHVy
+ZSkuCi0gKgotICogU28gb3VyIHRlc3QgZm9yIEVDUyBuZWVkcyB0byBlc2NoZXcgdGhvc2UgaW1w
+bGVtZW50YXRpb25zIHdoaWNoIHNldCB0aGUgb2xkCi0gKiBQQVNJRCBjYXBhYmlpdHkgYml0IDI4
+LCBzaW5jZSB0aG9zZSBhcmUgdGhlIG9uZXMgb24gd2hpY2ggRUNTIGlzIGJyb2tlbi4KLSAqIFVu
+bGVzcyB3ZSBhcmUgd29ya2luZyBhcm91bmQgdGhlICdwYXNpZDI4JyBsaW1pdGF0aW9ucywgdGhh
+dCBpcywgYnkgcHV0dGluZwotICogdGhlIGRldmljZSBpbnRvIHBhc3N0aHJvdWdoIG1vZGUgZm9y
+IG5vcm1hbCBETUEgYW5kIHRodXMgbWFza2luZyB0aGUgYnVnLgotICovCi0jZGVmaW5lIGVjc19l
+bmFibGVkKGlvbW11KSAoaW50ZWxfaW9tbXVfZWNzICYmIGVjYXBfZWNzKGlvbW11LT5lY2FwKSAm
+JiBcCi0JCQkgICAgKGludGVsX2lvbW11X3Bhc2lkMjggfHwgIWVjYXBfYnJva2VuX3Bhc2lkKGlv
+bW11LT5lY2FwKSkpCi0vKiBQQVNJRCBzdXBwb3J0IGlzIHRodXMgZW5hYmxlZCBpZiBFQ1MgaXMg
+ZW5hYmxlZCBhbmQgKmVpdGhlciogb2YgdGhlIG9sZAotICogb3IgbmV3IGNhcGFiaWxpdHkgYml0
+cyBhcmUgc2V0LiAqLwotI2RlZmluZSBwYXNpZF9lbmFibGVkKGlvbW11KSAoZWNzX2VuYWJsZWQo
+aW9tbXUpICYmCQkJXAotCQkJICAgICAgKGVjYXBfcGFzaWQoaW9tbXUtPmVjYXApIHx8IGVjYXBf
+YnJva2VuX3Bhc2lkKGlvbW11LT5lY2FwKSkpCisjZGVmaW5lIHNtX3N1cHBvcnRlZChpb21tdSkJ
+KGludGVsX2lvbW11X3NtICYmIGVjYXBfc210cygoaW9tbXUpLT5lY2FwKSkKKyNkZWZpbmUgcGFz
+aWRfc3VwcG9ydGVkKGlvbW11KQkoc21fc3VwcG9ydGVkKGlvbW11KSAmJgkJCVwKKwkJCQkgZWNh
+cF9wYXNpZCgoaW9tbXUpLT5lY2FwKSkKIAogaW50IGludGVsX2lvbW11X2dmeF9tYXBwZWQ7CiBF
+WFBPUlRfU1lNQk9MX0dQTChpbnRlbF9pb21tdV9nZnhfbWFwcGVkKTsKQEAgLTUxNiwxNSArNDk0
+LDkgQEAgc3RhdGljIGludCBfX2luaXQgaW50ZWxfaW9tbXVfc2V0dXAoY2hhciAqc3RyKQogCQl9
+IGVsc2UgaWYgKCFzdHJuY21wKHN0ciwgInNwX29mZiIsIDYpKSB7CiAJCQlwcl9pbmZvKCJEaXNh
+YmxlIHN1cHBvcnRlZCBzdXBlciBwYWdlXG4iKTsKIAkJCWludGVsX2lvbW11X3N1cGVycGFnZSA9
+IDA7Ci0JCX0gZWxzZSBpZiAoIXN0cm5jbXAoc3RyLCAiZWNzX29mZiIsIDcpKSB7Ci0JCQlwcmlu
+dGsoS0VSTl9JTkZPCi0JCQkJIkludGVsLUlPTU1VOiBkaXNhYmxlIGV4dGVuZGVkIGNvbnRleHQg
+dGFibGUgc3VwcG9ydFxuIik7Ci0JCQlpbnRlbF9pb21tdV9lY3MgPSAwOwotCQl9IGVsc2UgaWYg
+KCFzdHJuY21wKHN0ciwgInBhc2lkMjgiLCA3KSkgewotCQkJcHJpbnRrKEtFUk5fSU5GTwotCQkJ
+CSJJbnRlbC1JT01NVTogZW5hYmxlIHByZS1wcm9kdWN0aW9uIFBBU0lEIHN1cHBvcnRcbiIpOwot
+CQkJaW50ZWxfaW9tbXVfcGFzaWQyOCA9IDE7Ci0JCQlpb21tdV9pZGVudGl0eV9tYXBwaW5nIHw9
+IElERU5UTUFQX0dGWDsKKwkJfSBlbHNlIGlmICghc3RybmNtcChzdHIsICJzbV9vZmYiLCA2KSkg
+eworCQkJcHJfaW5mbygiSW50ZWwtSU9NTVU6IGRpc2FibGUgc2NhbGFibGUgbW9kZSBzdXBwb3J0
+XG4iKTsKKwkJCWludGVsX2lvbW11X3NtID0gMDsKIAkJfSBlbHNlIGlmICghc3RybmNtcChzdHIs
+ICJ0Ym9vdF9ub2ZvcmNlIiwgMTMpKSB7CiAJCQlwcmludGsoS0VSTl9JTkZPCiAJCQkJIkludGVs
+LUlPTU1VOiBub3QgZm9yY2luZyBvbiBhZnRlciB0Ym9vdC4gVGhpcyBjb3VsZCBleHBvc2Ugc2Vj
+dXJpdHkgcmlzayBmb3IgdGJvb3RcbiIpOwpAQCAtNzcxLDcgKzc0Myw3IEBAIHN0cnVjdCBjb250
+ZXh0X2VudHJ5ICppb21tdV9jb250ZXh0X2FkZHIoc3RydWN0IGludGVsX2lvbW11ICppb21tdSwg
+dTggYnVzLAogCXU2NCAqZW50cnk7CiAKIAllbnRyeSA9ICZyb290LT5sbzsKLQlpZiAoZWNzX2Vu
+YWJsZWQoaW9tbXUpKSB7CisJaWYgKHNtX3N1cHBvcnRlZChpb21tdSkpIHsKIAkJaWYgKGRldmZu
+ID49IDB4ODApIHsKIAkJCWRldmZuIC09IDB4ODA7CiAJCQllbnRyeSA9ICZyb290LT5oaTsKQEAg
+LTkxMyw3ICs4ODUsNyBAQCBzdGF0aWMgdm9pZCBmcmVlX2NvbnRleHRfdGFibGUoc3RydWN0IGlu
+dGVsX2lvbW11ICppb21tdSkKIAkJaWYgKGNvbnRleHQpCiAJCQlmcmVlX3BndGFibGVfcGFnZShj
+b250ZXh0KTsKIAotCQlpZiAoIWVjc19lbmFibGVkKGlvbW11KSkKKwkJaWYgKCFzbV9zdXBwb3J0
+ZWQoaW9tbXUpKQogCQkJY29udGludWU7CiAKIAkJY29udGV4dCA9IGlvbW11X2NvbnRleHRfYWRk
+cihpb21tdSwgaSwgMHg4MCwgMCk7CkBAIC0xMjY1LDggKzEyMzcsNiBAQCBzdGF0aWMgdm9pZCBp
+b21tdV9zZXRfcm9vdF9lbnRyeShzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11KQogCXVuc2lnbmVk
+IGxvbmcgZmxhZzsKIAogCWFkZHIgPSB2aXJ0X3RvX3BoeXMoaW9tbXUtPnJvb3RfZW50cnkpOwot
+CWlmIChlY3NfZW5hYmxlZChpb21tdSkpCi0JCWFkZHIgfD0gRE1BX1JUQUREUl9SVFQ7CiAKIAly
+YXdfc3Bpbl9sb2NrX2lycXNhdmUoJmlvbW11LT5yZWdpc3Rlcl9sb2NrLCBmbGFnKTsKIAlkbWFy
+X3dyaXRlcShpb21tdS0+cmVnICsgRE1BUl9SVEFERFJfUkVHLCBhZGRyKTsKQEAgLTE3NTUsNyAr
+MTcyNSw3IEBAIHN0YXRpYyB2b2lkIGZyZWVfZG1hcl9pb21tdShzdHJ1Y3QgaW50ZWxfaW9tbXUg
+KmlvbW11KQogCWZyZWVfY29udGV4dF90YWJsZShpb21tdSk7CiAKICNpZmRlZiBDT05GSUdfSU5U
+RUxfSU9NTVVfU1ZNCi0JaWYgKHBhc2lkX2VuYWJsZWQoaW9tbXUpKSB7CisJaWYgKHBhc2lkX3N1
+cHBvcnRlZChpb21tdSkpIHsKIAkJaWYgKGVjYXBfcHJzKGlvbW11LT5lY2FwKSkKIAkJCWludGVs
+X3N2bV9maW5pc2hfcHJxKGlvbW11KTsKIAkJaW50ZWxfc3ZtX2V4aXQoaW9tbXUpOwpAQCAtMjQ2
+NCw4ICsyNDM0LDggQEAgc3RhdGljIHN0cnVjdCBkbWFyX2RvbWFpbiAqZG1hcl9pbnNlcnRfb25l
+X2Rldl9pbmZvKHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUsCiAJCSAgICBkbWFyX2ZpbmRfbWF0
+Y2hlZF9hdHNyX3VuaXQocGRldikpCiAJCQlpbmZvLT5hdHNfc3VwcG9ydGVkID0gMTsKIAotCQlp
+ZiAoZWNzX2VuYWJsZWQoaW9tbXUpKSB7Ci0JCQlpZiAocGFzaWRfZW5hYmxlZChpb21tdSkpIHsK
+KwkJaWYgKHNtX3N1cHBvcnRlZChpb21tdSkpIHsKKwkJCWlmIChwYXNpZF9zdXBwb3J0ZWQoaW9t
+bXUpKSB7CiAJCQkJaW50IGZlYXR1cmVzID0gcGNpX3Bhc2lkX2ZlYXR1cmVzKHBkZXYpOwogCQkJ
+CWlmIChmZWF0dXJlcyA+PSAwKQogCQkJCQlpbmZvLT5wYXNpZF9zdXBwb3J0ZWQgPSBmZWF0dXJl
+cyB8IDE7CkBAIC0zMjc3LDcgKzMyNDcsNyBAQCBzdGF0aWMgaW50IF9faW5pdCBpbml0X2RtYXJz
+KHZvaWQpCiAJCSAqIFdlIG5lZWQgdG8gZW5zdXJlIHRoZSBzeXN0ZW0gcGFzaWQgdGFibGUgaXMg
+bm8gYmlnZ2VyCiAJCSAqIHRoYW4gdGhlIHNtYWxsZXN0IHN1cHBvcnRlZC4KIAkJICovCi0JCWlm
+IChwYXNpZF9lbmFibGVkKGlvbW11KSkgeworCQlpZiAocGFzaWRfc3VwcG9ydGVkKGlvbW11KSkg
+ewogCQkJdTMyIHRlbXAgPSAyIDw8IGVjYXBfcHNzKGlvbW11LT5lY2FwKTsKIAogCQkJaW50ZWxf
+cGFzaWRfbWF4X2lkID0gbWluX3QodTMyLCB0ZW1wLApAQCAtMzMzOCw3ICszMzA4LDcgQEAgc3Rh
+dGljIGludCBfX2luaXQgaW5pdF9kbWFycyh2b2lkKQogCQlpZiAoIWVjYXBfcGFzc190aHJvdWdo
+KGlvbW11LT5lY2FwKSkKIAkJCWh3X3Bhc3NfdGhyb3VnaCA9IDA7CiAjaWZkZWYgQ09ORklHX0lO
+VEVMX0lPTU1VX1NWTQotCQlpZiAocGFzaWRfZW5hYmxlZChpb21tdSkpCisJCWlmIChwYXNpZF9z
+dXBwb3J0ZWQoaW9tbXUpKQogCQkJaW50ZWxfc3ZtX2luaXQoaW9tbXUpOwogI2VuZGlmCiAJfQpA
+QCAtMzQ0Miw3ICszNDEyLDcgQEAgc3RhdGljIGludCBfX2luaXQgaW5pdF9kbWFycyh2b2lkKQog
+CQlpb21tdV9mbHVzaF93cml0ZV9idWZmZXIoaW9tbXUpOwogCiAjaWZkZWYgQ09ORklHX0lOVEVM
+X0lPTU1VX1NWTQotCQlpZiAocGFzaWRfZW5hYmxlZChpb21tdSkgJiYgZWNhcF9wcnMoaW9tbXUt
+PmVjYXApKSB7CisJCWlmIChwYXNpZF9zdXBwb3J0ZWQoaW9tbXUpICYmIGVjYXBfcHJzKGlvbW11
+LT5lY2FwKSkgewogCQkJcmV0ID0gaW50ZWxfc3ZtX2VuYWJsZV9wcnEoaW9tbXUpOwogCQkJaWYg
+KHJldCkKIAkJCQlnb3RvIGZyZWVfaW9tbXU7CkBAIC00MzMxLDcgKzQzMDEsNyBAQCBzdGF0aWMg
+aW50IGludGVsX2lvbW11X2FkZChzdHJ1Y3QgZG1hcl9kcmhkX3VuaXQgKmRtYXJ1KQogCQlnb3Rv
+IG91dDsKIAogI2lmZGVmIENPTkZJR19JTlRFTF9JT01NVV9TVk0KLQlpZiAocGFzaWRfZW5hYmxl
+ZChpb21tdSkpCisJaWYgKHBhc2lkX3N1cHBvcnRlZChpb21tdSkpCiAJCWludGVsX3N2bV9pbml0
+KGlvbW11KTsKICNlbmRpZgogCkBAIC00MzQ4LDcgKzQzMTgsNyBAQCBzdGF0aWMgaW50IGludGVs
+X2lvbW11X2FkZChzdHJ1Y3QgZG1hcl9kcmhkX3VuaXQgKmRtYXJ1KQogCWlvbW11X2ZsdXNoX3dy
+aXRlX2J1ZmZlcihpb21tdSk7CiAKICNpZmRlZiBDT05GSUdfSU5URUxfSU9NTVVfU1ZNCi0JaWYg
+KHBhc2lkX2VuYWJsZWQoaW9tbXUpICYmIGVjYXBfcHJzKGlvbW11LT5lY2FwKSkgeworCWlmIChw
+YXNpZF9zdXBwb3J0ZWQoaW9tbXUpICYmIGVjYXBfcHJzKGlvbW11LT5lY2FwKSkgewogCQlyZXQg
+PSBpbnRlbF9zdm1fZW5hYmxlX3BycShpb21tdSk7CiAJCWlmIChyZXQpCiAJCQlnb3RvIGRpc2Fi
+bGVfaW9tbXU7CmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmggYi9pbmNs
+dWRlL2xpbnV4L2ludGVsLWlvbW11LmgKaW5kZXggYTU4YmMwNWQ2Nzk4Li44YzliNjA2M2QyNzUg
+MTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaAorKysgYi9pbmNsdWRlL2xp
+bnV4L2ludGVsLWlvbW11LmgKQEAgLTE3Nyw2ICsxNzcsNyBAQAogICogRXh0ZW5kZWQgQ2FwYWJp
+bGl0eSBSZWdpc3RlcgogICovCiAKKyNkZWZpbmUgZWNhcF9zbXRzKGUpCQkoKChlKSA+PiA0Mykg
+JiAweDEpCiAjZGVmaW5lIGVjYXBfZGl0KGUpCQkoKGUgPj4gNDEpICYgMHgxKQogI2RlZmluZSBl
+Y2FwX3Bhc2lkKGUpCQkoKGUgPj4gNDApICYgMHgxKQogI2RlZmluZSBlY2FwX3BzcyhlKQkJKChl
+ID4+IDM1KSAmIDB4MWYpCi0tIAoyLjE3LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
