@@ -1,13 +1,11 @@
-From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: [PATCH v6 3/3] mm: Add /sys/kernel/slab/cache/cache_dma32
-Date: Mon, 10 Dec 2018 09:15:04 +0800
-Message-ID: <20181210011504.122604-4-drinkcat@chromium.org>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v6 00/12] iommu/vt-d: Add scalable mode support
+Date: Mon, 10 Dec 2018 09:58:54 +0800
+Message-ID: <20181210015906.27929-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181210011504.122604-1-drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,117 +15,128 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Levin Alexander <Alexander.Levin-0li6OtcxBFHby3iVrkZq2A@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Christoph Lameter <cl-vYTEC60ixJUAvxtiuMwx3w@public.gmane.org>, Huaisheng Ye <yehs1-6jq1YtArVR3QT0dZR+AlfA@public.gmane.org>, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, David Rientjes <rientjes-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Mike Rapoport <rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, hsinyi-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joonsoo Kim <iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pekka Enberg <penberg-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Mel Gorman <mgorman-3eNAlZScCAx27rWaFMvyedHuzzzSOjJt@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-A previous patch in this series adds support for SLAB_CACHE_DMA32
-kmem caches. This adds the corresponding
-/sys/kernel/slab/cache/cache_dma32 entries, and fixes slabinfo
-tool.
+Hi,
 
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
----
+Intel vt-d rev3.0 [1] introduces a new translation mode called
+'scalable mode', which enables PASID-granular translations for
+first level, second level, nested and pass-through modes. The
+vt-d scalable mode is the key ingredient to enable Scalable I/O
+Virtualization (Scalable IOV) [2] [3], which allows sharing a
+device in minimal possible granularity (ADI - Assignable Device
+Interface). It also includes all the capabilities required to
+enable Shared Virtual Addressing (SVA). As a result, previous
+Extended Context (ECS) mode is deprecated (no production ever
+implements ECS).
 
-There were different opinions on whether this sysfs entry should
-be added, so I'll leave it up to the mm/slub maintainers to decide
-whether they want to pick this up, or drop it.
+Each scalable mode pasid table entry is 64 bytes in length, with
+fields point to the first level page table and the second level
+page table. The PGTT (Pasid Granular Translation Type) field is
+used by hardware to determine the translation type.
 
-No change since v5.
 
- Documentation/ABI/testing/sysfs-kernel-slab |  9 +++++++++
- mm/slub.c                                   | 11 +++++++++++
- tools/vm/slabinfo.c                         |  7 ++++++-
- 3 files changed, 26 insertions(+), 1 deletion(-)
+          A Scalable Mode            .-------------.
+           PASID Entry             .-|             |
+       .------------------.      .-| | 1st Level   |
+      7|                  |      | | | Page Table  |
+       .------------------.      | | |             |
+      6|                  |      | | |             |
+       '------------------'      | | '-------------'
+      5|                  |      | '-------------'
+       '------------------'      '-------------'
+      4|                  |    ^
+       '------------------'   /
+      3|                  |  /       .-------------.
+       .----.-------.-----. /      .-|             |
+      2|    | FLPTR |     |/     .-| | 2nd Level   |
+       .----'-------'-----.      | | | Page Table  |
+      1|                  |      | | |             |
+       .-.-------..------..      | | |             |
+      0| | SLPTR || PGTT ||----> | | '-------------'
+       '-'-------''------''      | '-------------'
+       6             |    0      '-------------'
+       3             v
+             .------------------------------------.
+             | PASID Granular Translation Type    |
+             |                                    |
+             | 001b: 1st level translation only   |
+             | 101b: 2nd level translation only   |
+             | 011b: Nested translation           |
+             | 100b: Pass through                 |
+             '------------------------------------'
 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-slab b/Documentation/ABI/testing/sysfs-kernel-slab
-index 29601d93a1c2ea..d742c6cfdffbe9 100644
---- a/Documentation/ABI/testing/sysfs-kernel-slab
-+++ b/Documentation/ABI/testing/sysfs-kernel-slab
-@@ -106,6 +106,15 @@ Description:
- 		are from ZONE_DMA.
- 		Available when CONFIG_ZONE_DMA is enabled.
- 
-+What:		/sys/kernel/slab/cache/cache_dma32
-+Date:		December 2018
-+KernelVersion:	4.21
-+Contact:	Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-+Description:
-+		The cache_dma32 file is read-only and specifies whether objects
-+		are from ZONE_DMA32.
-+		Available when CONFIG_ZONE_DMA32 is enabled.
-+
- What:		/sys/kernel/slab/cache/cpu_slabs
- Date:		May 2007
- KernelVersion:	2.6.22
-diff --git a/mm/slub.c b/mm/slub.c
-index 4caadb926838ef..840f3719d9d543 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -5104,6 +5104,14 @@ static ssize_t cache_dma_show(struct kmem_cache *s, char *buf)
- SLAB_ATTR_RO(cache_dma);
- #endif
- 
-+#ifdef CONFIG_ZONE_DMA32
-+static ssize_t cache_dma32_show(struct kmem_cache *s, char *buf)
-+{
-+	return sprintf(buf, "%d\n", !!(s->flags & SLAB_CACHE_DMA32));
-+}
-+SLAB_ATTR_RO(cache_dma32);
-+#endif
-+
- static ssize_t usersize_show(struct kmem_cache *s, char *buf)
- {
- 	return sprintf(buf, "%u\n", s->usersize);
-@@ -5444,6 +5452,9 @@ static struct attribute *slab_attrs[] = {
- #ifdef CONFIG_ZONE_DMA
- 	&cache_dma_attr.attr,
- #endif
-+#ifdef CONFIG_ZONE_DMA32
-+	&cache_dma32_attr.attr,
-+#endif
- #ifdef CONFIG_NUMA
- 	&remote_node_defrag_ratio_attr.attr,
- #endif
-diff --git a/tools/vm/slabinfo.c b/tools/vm/slabinfo.c
-index 334b16db0ebbe9..4ee1bf6e498dfa 100644
---- a/tools/vm/slabinfo.c
-+++ b/tools/vm/slabinfo.c
-@@ -29,7 +29,7 @@ struct slabinfo {
- 	char *name;
- 	int alias;
- 	int refs;
--	int aliases, align, cache_dma, cpu_slabs, destroy_by_rcu;
-+	int aliases, align, cache_dma, cache_dma32, cpu_slabs, destroy_by_rcu;
- 	unsigned int hwcache_align, object_size, objs_per_slab;
- 	unsigned int sanity_checks, slab_size, store_user, trace;
- 	int order, poison, reclaim_account, red_zone;
-@@ -531,6 +531,8 @@ static void report(struct slabinfo *s)
- 		printf("** Hardware cacheline aligned\n");
- 	if (s->cache_dma)
- 		printf("** Memory is allocated in a special DMA zone\n");
-+	if (s->cache_dma32)
-+		printf("** Memory is allocated in a special DMA32 zone\n");
- 	if (s->destroy_by_rcu)
- 		printf("** Slabs are destroyed via RCU\n");
- 	if (s->reclaim_account)
-@@ -599,6 +601,8 @@ static void slabcache(struct slabinfo *s)
- 		*p++ = '*';
- 	if (s->cache_dma)
- 		*p++ = 'd';
-+	if (s->cache_dma32)
-+		*p++ = 'D';
- 	if (s->hwcache_align)
- 		*p++ = 'A';
- 	if (s->poison)
-@@ -1205,6 +1209,7 @@ static void read_slab_dir(void)
- 			slab->aliases = get_obj("aliases");
- 			slab->align = get_obj("align");
- 			slab->cache_dma = get_obj("cache_dma");
-+			slab->cache_dma32 = get_obj("cache_dma32");
- 			slab->cpu_slabs = get_obj("cpu_slabs");
- 			slab->destroy_by_rcu = get_obj("destroy_by_rcu");
- 			slab->hwcache_align = get_obj("hwcache_align");
+This patch series adds the scalable mode support in the Intel
+IOMMU driver. It will make all the Intel IOMMU features work
+in scalable mode. The changes are all constrained within the
+Intel IOMMU driver, as it's purely internal format change.
+
+References:
+[1] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+[2] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+[3] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+
+Change log:
+v5->v6:
+  - [02/12] Move pasid table allocation out of lock range
+            and replace GFP_ATOMIC with GFP_KERNEL when
+            allocating the pasid memory.
+
+v4->v5:
+  - [04/12] Add a comment to explain why we only print
+            two QWORDs of an invalid descriptor.
+  - [06/12] Fix domain agaw being less than iommu agaw.
+  - [09/12] Move data type to local branch.
+  - [11/12] Hold iommu lock when setup pasid entry for
+            SVM.
+  - All rebased on top of vt-d branch of iommu tree.
+
+v3->v4:
+  - Rebase all patches to 4.20-rc1.
+  - Use the right PASID directory table size.
+  - Add a function for pass through translation setting up.
+  - Refine the parameters passed to first level translation
+    mode interface.
+
+v2->v3:
+  - Rebase all patches on top of vt-d branch of iommu repo.
+  - Set the pasid directory table size to 1 page for devices
+    which have no pasid support.
+  - Fix various comments received during v2 review period.
+    All were code style related.
+
+v1->v2:
+  - Rebase all patches on top of v4.19-rc1;
+  - Add 256-bit invalidation descriptor support;
+  - Reserve a domain id for first level and pass-through
+    usage to make hardware cache entries more efficiently;
+  - Various code refinements.
+
+Lu Baolu (12):
+  iommu/vt-d: Enumerate the scalable mode capability
+  iommu/vt-d: Manage scalalble mode PASID tables
+  iommu/vt-d: Move page table helpers into header
+  iommu/vt-d: Add 256-bit invalidation descriptor support
+  iommu/vt-d: Reserve a domain id for FL and PT modes
+  iommu/vt-d: Add second level page table interface
+  iommu/vt-d: Setup pasid entry for RID2PASID support
+  iommu/vt-d: Pass pasid table to context mapping
+  iommu/vt-d: Setup context and enable RID2PASID support
+  iommu/vt-d: Add first level page table interface
+  iommu/vt-d: Shared virtual address in scalable mode
+  iommu/vt-d: Remove deferred invalidation
+
+ .../admin-guide/kernel-parameters.txt         |  12 +-
+ drivers/iommu/dmar.c                          |  91 ++--
+ drivers/iommu/intel-iommu.c                   | 351 +++++++-------
+ drivers/iommu/intel-pasid.c                   | 449 +++++++++++++++++-
+ drivers/iommu/intel-pasid.h                   |  40 +-
+ drivers/iommu/intel-svm.c                     | 171 +++----
+ drivers/iommu/intel_irq_remapping.c           |   6 +-
+ include/linux/intel-iommu.h                   |  75 ++-
+ 8 files changed, 838 insertions(+), 357 deletions(-)
+
 -- 
-2.20.0.rc2.403.gdbc3b29805-goog
+2.17.1
