@@ -1,61 +1,55 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/4] iommu/sysfs: Rename iommu_release_device()
-Date: Tue, 11 Dec 2018 16:05:10 +0100
-Message-ID: <20181211150513.15161-2-joro@8bytes.org>
-References: <20181211150513.15161-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211150513.15161-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Joerg Roedel <joro@8bytes.org>, jroedel@suse.de, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/4 v2] Consolidate iommu_ops->add/remove_device() calls
+Date: Tue, 11 Dec 2018 16:05:09 +0100
+Message-ID: <20181211150513.15161-1-joro@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+Hi,
 
-Remove the iommu_ prefix from the function and a few other
-static data structures so that the iommu_release_device name
-can be re-used in iommu core code.
+here is the second version of the patch-set to wrap the
+invocation of iommu_ops->add/remove_device() into functions.
+The functions will do more setup stuff later when the the
+iommu-related pointers in 'struct device' are consolidated.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/iommu-sysfs.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Since version one this patch-set was rebased to v4.20-rc6
+and I removed the pointer checks for the function pointers,
+as suggested by Robin. I checked all 16 drivers and all of
+them implement the add/remove_device call-backs.
 
-diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
-index 36d1a7ce7fc4..71c2249d3260 100644
---- a/drivers/iommu/iommu-sysfs.c
-+++ b/drivers/iommu/iommu-sysfs.c
-@@ -22,25 +22,25 @@ static struct attribute *devices_attr[] = {
- 	NULL,
- };
- 
--static const struct attribute_group iommu_devices_attr_group = {
-+static const struct attribute_group devices_attr_group = {
- 	.name = "devices",
- 	.attrs = devices_attr,
- };
- 
--static const struct attribute_group *iommu_dev_groups[] = {
--	&iommu_devices_attr_group,
-+static const struct attribute_group *dev_groups[] = {
-+	&devices_attr_group,
- 	NULL,
- };
- 
--static void iommu_release_device(struct device *dev)
-+static void release_device(struct device *dev)
- {
- 	kfree(dev);
- }
- 
- static struct class iommu_class = {
- 	.name = "iommu",
--	.dev_release = iommu_release_device,
--	.dev_groups = iommu_dev_groups,
-+	.dev_release = release_device,
-+	.dev_groups = dev_groups,
- };
- 
- static int __init iommu_dev_init(void)
+Please review, if there are no objections I plan to queue
+these patches in the IOMMU tree.
+
+Thanks,
+
+	Joerg
+
+Joerg Roedel (4):
+  iommu/sysfs: Rename iommu_release_device()
+  iommu: Consolitate ->add/remove_device() calls
+  iommu/of: Don't call iommu_ops->add_device directly
+  ACPI/IORT: Don't call iommu_ops->add_device directly
+
+ drivers/acpi/arm64/iort.c   |  4 +--
+ drivers/iommu/iommu-sysfs.c | 12 ++++-----
+ drivers/iommu/iommu.c       | 51 ++++++++++++++++++-------------------
+ drivers/iommu/of_iommu.c    |  6 ++---
+ include/linux/iommu.h       |  3 +++
+ 5 files changed, 39 insertions(+), 37 deletions(-)
+
 -- 
 2.17.1
