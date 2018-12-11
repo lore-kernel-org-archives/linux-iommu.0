@@ -1,68 +1,64 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] dma-debug: fix soft lockup when a lot of debug are
- enabled
-Date: Tue, 11 Dec 2018 11:51:14 +0000
-Message-ID: <613667c4-f850-d88c-7a2e-76dda5d966f5@arm.com>
-References: <20181211103616.22137-1-anders.roxell@linaro.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/9 v2] Access dev->iommu_fwspec through functions
+Date: Tue, 11 Dec 2018 13:19:01 +0100
+Message-ID: <20181211121910.5604-1-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211103616.22137-1-anders.roxell@linaro.org>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Anders Roxell <anders.roxell@linaro.org>, hch@lst.de
-Cc: m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, rostedt@goodmis.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Anders,
+Hi,
 
-On 11/12/2018 10:36, Anders Roxell wrote:
-> When running a kernel in qemu with enough debugging options (slub-debug,
-> ftrace, kcov, kasan, ubsan, ...) enabled together, that results in a
-> slow initcall. So a 'watchdog: BUG: soft lockup' happens:
-> 
-> [   44.105619] Call trace:
-> [   44.106709]  __slab_alloc+0x70/0x88
-> [   44.107757]  kmem_cache_alloc_trace+0x13c/0x590
-> [   44.108764]  prealloc_memory+0xb8/0x240
-> [   44.109768]  dma_debug_init+0x174/0x1f0
-> [   44.110725]  do_one_initcall+0x430/0x8b0
-> [   44.111719]  do_initcall_level+0x548/0x5b4
-> [   44.112672]  do_initcalls+0x28/0x4c
-> [   44.113628]  do_basic_setup+0x34/0x3c
-> [   44.114559]  kernel_init_freeable+0x194/0x24c
-> [   44.115570]  kernel_init+0x24/0x18c
-> [   44.116498]  ret_from_fork+0x10/0x18
-> 
-> Rework to call cond_resched(), in the function prealloc_memory()'s
-> for-loop.
+here is the second patch-set to wrap accesses to
+dev->iommu_fwspec into functions so that the pointer
+location can be changed more easily later on.
 
-Funnily enough I've just done a bit of work in this area which should 
-make allocation a lot more efficient - would you mind giving this series 
-a spin on the same setup to see how much it helps the performance?
+This version is rebased to v4.20-rc6 and addresses Robin's
+comments. The Ack from will is also added.
 
-https://lore.kernel.org/lkml/cover.1544447601.git.robin.murphy@arm.com/
+If there are no objections I'd like to queue these patches
+soon.
 
-Thanks,
-Robin.
+Regards,
 
-> 
-> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-> ---
->   kernel/dma/debug.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 231ca4628062..2abdc265aec4 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -767,6 +767,7 @@ static int prealloc_memory(u32 num_entries)
->   	int i;
->   
->   	for (i = 0; i < num_entries; ++i) {
-> +		cond_resched();
->   		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
->   		if (!entry)
->   			goto out_err;
-> 
+	Joerg
+
+Joerg Roedel (9):
+  iommu: Introduce wrappers around dev->iommu_fwspec
+  ACPI/IORT: Use helper functions to access dev->iommu_fwspec
+  iommu/arm-smmu: Use helper functions to access dev->iommu_fwspec
+  iommu/dma: Use helper functions to access dev->iommu_fwspec
+  iommu/ipmmu-vmsa: Use helper functions to access dev->iommu_fwspec
+  iommu/mediatek: Use helper functions to access dev->iommu_fwspec
+  iommu/of: Use helper functions to access dev->iommu_fwspec
+  iommu/qcom: Use helper functions to access dev->iommu_fwspec
+  iommu/tegra: Use helper functions to access dev->iommu_fwspec
+
+ drivers/acpi/arm64/iort.c    | 19 ++++++++++---------
+ drivers/iommu/arm-smmu-v3.c  | 16 +++++++++-------
+ drivers/iommu/arm-smmu.c     | 12 ++++++------
+ drivers/iommu/dma-iommu.c    |  2 +-
+ drivers/iommu/iommu.c        | 14 +++++++-------
+ drivers/iommu/ipmmu-vmsa.c   | 12 ++++++++----
+ drivers/iommu/mtk_iommu.c    | 21 ++++++++++++---------
+ drivers/iommu/mtk_iommu_v1.c | 28 ++++++++++++++++------------
+ drivers/iommu/of_iommu.c     | 10 +++++++---
+ drivers/iommu/qcom_iommu.c   | 18 ++++++++++--------
+ drivers/iommu/tegra-smmu.c   |  2 +-
+ include/linux/iommu.h        | 11 +++++++++++
+ 12 files changed, 98 insertions(+), 67 deletions(-)
+
+-- 
+2.17.1
