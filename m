@@ -1,37 +1,41 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RFC] avoid indirect calls for DMA direct mappings v2
-Date: Tue, 11 Dec 2018 07:51:12 +0100
-Message-ID: <20181211065112.GA13668@lst.de>
-References: <20181207190720.18517-1-hch@lst.de> <20181210215113.GA22180@agluck-desk>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v4] iommu/dma: Use NUMA aware memory allocations in
+ __iommu_dma_alloc_pages()
+Date: Tue, 11 Dec 2018 10:30:30 +0100
+Message-ID: <20181211093030.3x532vs6dwz2ucp7@8bytes.org>
+References: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181210215113.GA22180@agluck-desk>
+In-Reply-To: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Luck, Tony" <tony.luck@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Jesper Dangaard Brouer <brouer@redhat.com>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
+To: John Garry <john.garry@huawei.com>
+Cc: robin.murphy@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 10, 2018 at 01:51:13PM -0800, Luck, Tony wrote:
-> But the ia64 build fails with:
+On Fri, Nov 30, 2018 at 07:14:00PM +0800, John Garry wrote:
+> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> 
+> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
+> respective device NUMA node. The ternary operator which would be for
+> alloc_pages_node() is tidied along with this.
+> 
+> The motivation for this change is to have a policy for page allocation
+> consistent with direct DMA mapping, which attempts to allocate pages local
+> to the device, as mentioned in [1].
+> 
+> In addition, for certain workloads it has been observed a marginal
+> performance improvement. The patch caused an observation of 0.9% average
+> throughput improvement for running tcrypt with HiSilicon crypto engine.
+> 
+> We also include a modification to use kvzalloc() for kzalloc()/vzalloc()
+> combination.
+> 
+> [1] https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1692998.html
+> 
+> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
+> [JPG: Added kvzalloc(), drop pages ** being device local, remove ternary operator, update message]
+> Signed-off-by: John Garry <john.garry@huawei.com>
 
-Yes, I just got the same complaint form the buildbot, unfortunately
-I don't have a good ia64 cross compiler locally given that Debian
-is lacking one, and the one provided by the buildbot doesn't build on
-Debian either..
-
-This should fix it:
-
-diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
-index 2c51733f1dfd..a007afaa556c 100644
---- a/arch/ia64/mm/init.c
-+++ b/arch/ia64/mm/init.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/init.h>
- 
-+#include <linux/dma-noncoherent.h>
- #include <linux/efi.h>
- #include <linux/elf.h>
- #include <linux/memblock.h>
+Applied, thanks.
