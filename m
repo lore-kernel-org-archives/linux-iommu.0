@@ -1,14 +1,24 @@
-From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
-Date: Tue, 11 Dec 2018 10:31:01 -0800
-Message-ID: <20181211183101.GA31936@infradead.org>
-References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Tue, 11 Dec 2018 18:34:23 +0000
+Message-ID: <4be63d12-fa1c-b180-761b-5e8ceed58545@arm.com>
+References: <11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
+	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
+	<20181107164323.GA19831@8bytes.org>
+	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
+	<20181123112125.GF1586@8bytes.org>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
+	<20181207102926.GM16835@8bytes.org>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE95394@SHSMSX101.ccr.corp.intel.com>
+	<20181210085745.GN16835@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181211182104.18241-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20181210085745.GN16835-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,18 +28,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
-> Implement the virtio-iommu driver, following specification v0.9 [1].
+On 10/12/2018 08:57, 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' wrote:
+> Hi Kevin,
 > 
-> Only minor changes since v5 [2]. I fixed issues reported by Michael and
-> added tags from Eric and Bharat. Thanks!
+> On Mon, Dec 10, 2018 at 02:06:44AM +0000, Tian, Kevin wrote:
+>> Can I interpret above as that you agree with the aux domain concept (i.e. one
+>> device can be linked to multiple domains) in general, and now we're just trying
+>> to address the remaining open in API level?
 > 
-> You can find Linux driver and kvmtool device on v0.9 branches [3],
-> module and x86 support on virtio-iommu/devel. Also tested with Eric's
-> QEMU device [4].
+> Yes, I thouht about alternatives, but in the end they are all harder to
+> use than the aux-domain concept. We just need to make sure that we have
+> a clear definition of what the API extension do and how they impact the
+> behavior of existing functions.
+> 
+>>> 	enum iommu_dev_features {
+>>> 		/* ... */
+>>> 		IOMMU_DEV_FEAT_AUX,
+>>> 		IOMMU_DEV_FEAT_SVA,
+>>> 		/* ... */
+>>> 	};
+>>>
+>>
+>> Does above represent whether a device implements aux/sva features,
+>> or whether a device has been enabled by driver to support aux/sva 
+>> features?
+> 
+> These represent whether the device together with the IOMMU support them,
+> basically whether these features are usable via the IOMMU-API.
+> 
+> 
+>>
+>>> 	/* Check if a device supports a given feature of the IOMMU-API */
+>>> 	bool iommu_dev_has_feature(struct device *dev, enum
+>>> iommu_dev_features *feat);
+>>
+>> If the latter we also need iommu_dev_set_feature so driver can poke
+>> it based on its own configuration.
+> 
+> Do you mean we need an explict enable-API for the features? I thought
+> about that too, but some features clearly don't need it and I didn't
+> want to complicate the usage. My assumption was that when the feature is
+> available, it is also enabled.
 
-Just curious, what is the use case for it?
+The cost of enabling those features for a device does seem negligible.
+For the SMMU we need to allocate about 70k of additional memory for the
+initial PASID table, but enabling the PASID cap shouldn't add any
+overhead otherwise. Same for PRI, shouldn't add any overhead.
+
+As for ATS, it supposedly makes things faster, although it does mean
+more invalidation requests. There currently is a global pci=noats
+parameter, but maybe we need something with finer granularity to
+enable/disable it per device?
+
+Thanks,
+Jean
