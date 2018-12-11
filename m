@@ -1,105 +1,112 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/9] iommu: Introduce wrappers around dev->iommu_fwspec
-Date: Tue, 11 Dec 2018 13:19:02 +0100
-Message-ID: <20181211121910.5604-2-joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 2/9] ACPI/IORT: Use helper functions to access
+	dev->iommu_fwspec
+Date: Tue, 11 Dec 2018 13:19:03 +0100
+Message-ID: <20181211121910.5604-3-joro@8bytes.org>
 References: <20181211121910.5604-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211121910.5604-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181211121910.5604-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Sudeep Holla <sudeep.holla-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-These wrappers will be used to easily change the location of
-the field later when all users are converted.
+Use the new helpers dev_iommu_fwspec_get()/set() to access
+the dev->iommu_fwspec pointer. This makes it easier to move
+that pointer later into another struct.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 14 +++++++-------
- include/linux/iommu.h | 11 +++++++++++
- 2 files changed, 18 insertions(+), 7 deletions(-)
+ drivers/acpi/arm64/iort.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index edbdf5d6962c..4cfd407b972c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1976,7 +1976,7 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops)
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 70f4e80b9246..736381673638 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -779,7 +779,7 @@ static inline bool iort_iommu_driver_enabled(u8 type)
+ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
  {
+ 	struct acpi_iort_node *iommu;
 -	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
  
- 	if (fwspec)
- 		return ops == fwspec->ops ? 0 : -EINVAL;
-@@ -1988,26 +1988,26 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 	of_node_get(to_of_node(iommu_fwnode));
- 	fwspec->iommu_fwnode = iommu_fwnode;
- 	fwspec->ops = ops;
--	dev->iommu_fwspec = fwspec;
-+	dev_iommu_fwspec_set(dev, fwspec);
- 	return 0;
+ 	iommu = iort_get_iort_node(fwspec->iommu_fwnode);
+ 
+@@ -794,9 +794,10 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+ 	return NULL;
  }
- EXPORT_SYMBOL_GPL(iommu_fwspec_init);
  
- void iommu_fwspec_free(struct device *dev)
+-static inline const struct iommu_ops *iort_fwspec_iommu_ops(
+-				struct iommu_fwspec *fwspec)
++static inline const struct iommu_ops *iort_fwspec_iommu_ops(struct device *dev)
  {
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
- 	if (fwspec) {
- 		fwnode_handle_put(fwspec->iommu_fwnode);
- 		kfree(fwspec);
--		dev->iommu_fwspec = NULL;
-+		dev_iommu_fwspec_set(dev, NULL);
- 	}
++
+ 	return (fwspec && fwspec->ops) ? fwspec->ops : NULL;
  }
- EXPORT_SYMBOL_GPL(iommu_fwspec_free);
  
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+@@ -824,6 +825,7 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
+  */
+ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
  {
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	size_t size;
- 	int i;
+ 	struct acpi_iort_its_group *its;
+ 	struct acpi_iort_node *iommu_node, *its_node = NULL;
+ 	int i, resv = 0;
+@@ -841,9 +843,9 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ 	 * a given PCI or named component may map IDs to.
+ 	 */
  
-@@ -2016,11 +2016,11 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+-	for (i = 0; i < dev->iommu_fwspec->num_ids; i++) {
++	for (i = 0; i < fwspec->num_ids; i++) {
+ 		its_node = iort_node_map_id(iommu_node,
+-					dev->iommu_fwspec->ids[i],
++					fwspec->ids[i],
+ 					NULL, IORT_MSI_TYPE);
+ 		if (its_node)
+ 			break;
+@@ -874,8 +876,7 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ 	return (resv == its->its_count) ? resv : -ENODEV;
+ }
+ #else
+-static inline const struct iommu_ops *iort_fwspec_iommu_ops(
+-				struct iommu_fwspec *fwspec)
++static inline const struct iommu_ops *iort_fwspec_iommu_ops(struct device *dev);
+ { return NULL; }
+ static inline int iort_add_device_replay(const struct iommu_ops *ops,
+ 					 struct device *dev)
+@@ -1045,7 +1046,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 	 * If we already translated the fwspec there
+ 	 * is nothing left to do, return the iommu_ops.
+ 	 */
+-	ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
++	ops = iort_fwspec_iommu_ops(dev);
+ 	if (ops)
+ 		return ops;
  
- 	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
- 	if (size > sizeof(*fwspec)) {
--		fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
-+		fwspec = krealloc(fwspec, size, GFP_KERNEL);
- 		if (!fwspec)
- 			return -ENOMEM;
- 
--		dev->iommu_fwspec = fwspec;
-+		dev_iommu_fwspec_set(dev, fwspec);
+@@ -1084,7 +1085,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 	 * add_device callback for dev, replay it to get things in order.
+ 	 */
+ 	if (!err) {
+-		ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
++		ops = iort_fwspec_iommu_ops(dev);
+ 		err = iort_add_device_replay(ops, dev);
  	}
  
- 	for (i = 0; i < num_ids; i++)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a1d28f42cb77..f93fdcf7d130 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -398,6 +398,17 @@ void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
- const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
- 
-+static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
-+{
-+	return dev->iommu_fwspec;
-+}
-+
-+static inline void dev_iommu_fwspec_set(struct device *dev,
-+					struct iommu_fwspec *fwspec)
-+{
-+	dev->iommu_fwspec = fwspec;
-+}
-+
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
 -- 
 2.17.1
