@@ -1,231 +1,58 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 6/9] iommu/mediatek: Use helper functions to access dev->iommu_fwspec
-Date: Tue, 11 Dec 2018 13:19:07 +0100
-Message-ID: <20181211121910.5604-7-joro@8bytes.org>
-References: <20181211121910.5604-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211121910.5604-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 00/21] IOMMU: Tegra GART driver clean up and
+	optimization
+Date: Tue, 11 Dec 2018 16:22:31 +0300
+Message-ID: <0eb25577-cd64-11d5-1de6-8efa129b3b7b@gmail.com>
+References: <20181209202950.31486-1-digetx@gmail.com>
+	<20181211095317.tv43aaefnsezmic7@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181211095317.tv43aaefnsezmic7-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+On 11.12.2018 12:53, Joerg Roedel wrote:
+> On Sun, Dec 09, 2018 at 11:29:29PM +0300, Dmitry Osipenko wrote:
+>> Dmitry Osipenko (21):
+>>   iommu/tegra: gart: Remove pr_fmt and clean up includes
+>>   iommu/tegra: gart: Clean up driver probe errors handling
+>>   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+>>   iommu: Introduce iotlb_sync_map callback
+>>   iommu/tegra: gart: Optimize mapping / unmapping performance
+>>   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+>>   ARM: dts: tegra20: Update Memory Controller node to the new binding
+>>   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+>>     Tegra20
+>>   memory: tegra: Adapt to Tegra20 device-tree binding changes
+>>   memory: tegra: Read client ID on GART page fault
+>>   memory: tegra: Use of_device_get_match_data()
+>>   memory: tegra: Use relaxed versions of readl/writel
+>>   iommu/tegra: gart: Integrate with Memory Controller driver
+>>   iommu/tegra: gart: Fix spinlock recursion
+>>   iommu/tegra: gart: Fix NULL pointer dereference
+>>   iommu/tegra: gart: Allow only one active domain at a time
+>>   iommu/tegra: gart: Don't use managed resources
+>>   iommu/tegra: gart: Prepend error/debug messages with "gart:"
+>>   iommu/tegra: gart: Don't detach devices from inactive domains
+>>   iommu/tegra: gart: Simplify clients-tracking code
+>>   iommu/tegra: gart: Perform code refactoring
+> 
+> This is making progress, but some parts have no Ack or Review yet, I'll
+> wait for Thierry before applying these patches into the iommu tree.
 
-Use the new helpers dev_iommu_fwspec_get()/set() to access
-the dev->iommu_fwspec pointer. This makes it easier to move
-that pointer later into another struct.
+Okay, waiting.. zZZ :) Pretty much all of the patches are actually reviewed, those that are missing review/ack tags just have changes that were requested in a review comments to the previous version of the series. I hope it won't take much time to finalize the review of the patches.
 
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/mtk_iommu.c    | 21 ++++++++++++---------
- drivers/iommu/mtk_iommu_v1.c | 28 ++++++++++++++++------------
- 2 files changed, 28 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 44bd5b9166bb..0783fba05d19 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -244,7 +244,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- {
- 	struct mtk_smi_larb_iommu    *larb_mmu;
- 	unsigned int                 larbid, portid;
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	int i;
- 
- 	for (i = 0; i < fwspec->num_ids; ++i) {
-@@ -336,7 +336,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
--	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
-+	struct mtk_iommu_data *data = dev_iommu_fwspec_get(dev)->iommu_priv;
- 
- 	if (!data)
- 		return -ENODEV;
-@@ -355,7 +355,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- static void mtk_iommu_detach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
--	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
-+	struct mtk_iommu_data *data = dev_iommu_fwspec_get(dev)->iommu_priv;
- 
- 	if (!data)
- 		return;
-@@ -417,13 +417,14 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 
- static int mtk_iommu_add_device(struct device *dev)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct mtk_iommu_data *data;
- 	struct iommu_group *group;
- 
--	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
-+	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
- 		return -ENODEV; /* Not a iommu client device */
- 
--	data = dev->iommu_fwspec->iommu_priv;
-+	data = fwspec->iommu_priv;
- 	iommu_device_link(&data->iommu, dev);
- 
- 	group = iommu_group_get_for_dev(dev);
-@@ -436,12 +437,13 @@ static int mtk_iommu_add_device(struct device *dev)
- 
- static void mtk_iommu_remove_device(struct device *dev)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct mtk_iommu_data *data;
- 
--	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
-+	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
- 		return;
- 
--	data = dev->iommu_fwspec->iommu_priv;
-+	data = fwspec->iommu_priv;
- 	iommu_device_unlink(&data->iommu, dev);
- 
- 	iommu_group_remove_device(dev);
-@@ -468,6 +470,7 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 
- static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct platform_device *m4updev;
- 
- 	if (args->args_count != 1) {
-@@ -476,13 +479,13 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 		return -EINVAL;
- 	}
- 
--	if (!dev->iommu_fwspec->iommu_priv) {
-+	if (!fwspec->iommu_priv) {
- 		/* Get the m4u device */
- 		m4updev = of_find_device_by_node(args->np);
- 		if (WARN_ON(!m4updev))
- 			return -EINVAL;
- 
--		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(m4updev);
-+		fwspec->iommu_priv = platform_get_drvdata(m4updev);
- 	}
- 
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 0e780848f59b..d22a2a145bd2 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -206,7 +206,7 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
- {
- 	struct mtk_smi_larb_iommu    *larb_mmu;
- 	unsigned int                 larbid, portid;
--	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	int i;
- 
- 	for (i = 0; i < fwspec->num_ids; ++i) {
-@@ -271,7 +271,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- 				   struct device *dev)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
--	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
-+	struct mtk_iommu_data *data = dev_iommu_fwspec_get(dev)->iommu_priv;
- 	int ret;
- 
- 	if (!data)
-@@ -293,7 +293,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
- static void mtk_iommu_detach_device(struct iommu_domain *domain,
- 				    struct device *dev)
- {
--	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
-+	struct mtk_iommu_data *data = dev_iommu_fwspec_get(dev)->iommu_priv;
- 
- 	if (!data)
- 		return;
-@@ -371,6 +371,7 @@ static struct iommu_ops mtk_iommu_ops;
- static int mtk_iommu_create_mapping(struct device *dev,
- 				    struct of_phandle_args *args)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct mtk_iommu_data *data;
- 	struct platform_device *m4updev;
- 	struct dma_iommu_mapping *mtk_mapping;
-@@ -383,28 +384,29 @@ static int mtk_iommu_create_mapping(struct device *dev,
- 		return -EINVAL;
- 	}
- 
--	if (!dev->iommu_fwspec) {
-+	if (!fwspec) {
- 		ret = iommu_fwspec_init(dev, &args->np->fwnode, &mtk_iommu_ops);
- 		if (ret)
- 			return ret;
--	} else if (dev->iommu_fwspec->ops != &mtk_iommu_ops) {
-+		fwspec = dev_iommu_fwspec_get(dev);
-+	} else if (dev_iommu_fwspec_get(dev)->ops != &mtk_iommu_ops) {
- 		return -EINVAL;
- 	}
- 
--	if (!dev->iommu_fwspec->iommu_priv) {
-+	if (!fwspec->iommu_priv) {
- 		/* Get the m4u device */
- 		m4updev = of_find_device_by_node(args->np);
- 		if (WARN_ON(!m4updev))
- 			return -EINVAL;
- 
--		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(m4updev);
-+		fwspec->iommu_priv = platform_get_drvdata(m4updev);
- 	}
- 
- 	ret = iommu_fwspec_add_ids(dev, args->args, 1);
- 	if (ret)
- 		return ret;
- 
--	data = dev->iommu_fwspec->iommu_priv;
-+	data = fwspec->iommu_priv;
- 	m4udev = data->dev;
- 	mtk_mapping = m4udev->archdata.iommu;
- 	if (!mtk_mapping) {
-@@ -422,6 +424,7 @@ static int mtk_iommu_create_mapping(struct device *dev,
- 
- static int mtk_iommu_add_device(struct device *dev)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct dma_iommu_mapping *mtk_mapping;
- 	struct of_phandle_args iommu_spec;
- 	struct of_phandle_iterator it;
-@@ -440,7 +443,7 @@ static int mtk_iommu_add_device(struct device *dev)
- 		of_node_put(iommu_spec.np);
- 	}
- 
--	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
-+	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
- 		return -ENODEV; /* Not a iommu client device */
- 
- 	/*
-@@ -458,7 +461,7 @@ static int mtk_iommu_add_device(struct device *dev)
- 	if (err)
- 		return err;
- 
--	data = dev->iommu_fwspec->iommu_priv;
-+	data = fwspec->iommu_priv;
- 	mtk_mapping = data->dev->archdata.iommu;
- 	err = arm_iommu_attach_device(dev, mtk_mapping);
- 	if (err) {
-@@ -471,12 +474,13 @@ static int mtk_iommu_add_device(struct device *dev)
- 
- static void mtk_iommu_remove_device(struct device *dev)
- {
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct mtk_iommu_data *data;
- 
--	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
-+	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
- 		return;
- 
--	data = dev->iommu_fwspec->iommu_priv;
-+	data = fwspec->iommu_priv;
- 	iommu_device_unlink(&data->iommu, dev);
- 
- 	iommu_group_remove_device(dev);
--- 
-2.17.1
+Thierry, could you please acknowledge that you'll come back to these patches? More than two months passed since the last time you were replying regarding this series.
