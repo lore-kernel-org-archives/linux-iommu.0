@@ -1,86 +1,51 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 2/2] ACPI / scan: Refactor _CCA enforcement
-Date: Tue, 11 Dec 2018 11:15:04 +0100
-Message-ID: <CAJZ5v0g=RSXxFWU-Yu0UA2AFV+qNoW7Q6t1S8ecydrTrHJZwXA@mail.gmail.com>
-References: <cover.1544199754.git.robin.murphy@arm.com> <fe956f04bfe7f8293f6205ee224b087046e40a91.1544199754.git.robin.murphy@arm.com>
+From: Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH] dma-debug: fix soft lockup when a lot of debug are enabled
+Date: Tue, 11 Dec 2018 11:36:16 +0100
+Message-ID: <20181211103616.22137-1-anders.roxell@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <fe956f04bfe7f8293f6205ee224b087046e40a91.1544199754.git.robin.murphy@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bjorn Helgaas <bhelgaas@google.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: hch@lst.de
+Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, rostedt@goodmis.org, Anders Roxell <anders.roxell@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 7, 2018 at 5:31 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Rather than checking the DMA attribute at each callsite, just pass it
-> through for acpi_dma_configure() to handle directly. That can then deal
-> with the relatively exceptional DEV_DMA_NOT_SUPPORTED case by explicitly
-> installing dummy DMA ops instead of just skipping setup entirely. This
-> will then free up the dev->dma_ops == NULL case for some valuable
-> fastpath optimisations.
->
-> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
-> CC: Len Brown <lenb@kernel.org>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Bjorn Helgaas <bhelgaas@google.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+When running a kernel in qemu with enough debugging options (slub-debug,
+ftrace, kcov, kasan, ubsan, ...) enabled together, that results in a
+slow initcall. So a 'watchdog: BUG: soft lockup' happens:
 
-The changes in this patch are fine by me:
+[   44.105619] Call trace:
+[   44.106709]  __slab_alloc+0x70/0x88
+[   44.107757]  kmem_cache_alloc_trace+0x13c/0x590
+[   44.108764]  prealloc_memory+0xb8/0x240
+[   44.109768]  dma_debug_init+0x174/0x1f0
+[   44.110725]  do_one_initcall+0x430/0x8b0
+[   44.111719]  do_initcall_level+0x548/0x5b4
+[   44.112672]  do_initcalls+0x28/0x4c
+[   44.113628]  do_basic_setup+0x34/0x3c
+[   44.114559]  kernel_init_freeable+0x194/0x24c
+[   44.115570]  kernel_init+0x24/0x18c
+[   44.116498]  ret_from_fork+0x10/0x18
 
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Rework to call cond_resched(), in the function prealloc_memory()'s
+for-loop.
 
-> ---
->  drivers/acpi/scan.c      | 5 +++++
->  drivers/base/platform.c  | 3 +--
->  drivers/pci/pci-driver.c | 3 +--
->  3 files changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index bd1c59fb0e17..b75ae34ed188 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1456,6 +1456,11 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->         const struct iommu_ops *iommu;
->         u64 dma_addr = 0, size = 0;
->
-> +       if (attr == DEV_DMA_NOT_SUPPORTED) {
-> +               set_dma_ops(dev, &dma_dummy_ops);
-> +               return 0;
-> +       }
-> +
->         iort_dma_setup(dev, &dma_addr, &size);
->
->         iommu = iort_iommu_configure(dev);
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index 41b91af95afb..c6daca875c17 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -1138,8 +1138,7 @@ int platform_dma_configure(struct device *dev)
->                 ret = of_dma_configure(dev, dev->of_node, true);
->         } else if (has_acpi_companion(dev)) {
->                 attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
-> -               if (attr != DEV_DMA_NOT_SUPPORTED)
-> -                       ret = acpi_dma_configure(dev, attr);
-> +               ret = acpi_dma_configure(dev, attr);
->         }
->
->         return ret;
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index bef17c3fca67..f899a28b90f8 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -1602,8 +1602,7 @@ static int pci_dma_configure(struct device *dev)
->                 struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
->                 enum dev_dma_attr attr = acpi_get_dma_attr(adev);
->
-> -               if (attr != DEV_DMA_NOT_SUPPORTED)
-> -                       ret = acpi_dma_configure(dev, attr);
-> +               ret = acpi_dma_configure(dev, attr);
->         }
->
->         pci_put_host_bridge_device(bridge);
-> --
-> 2.19.1.dirty
->
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ kernel/dma/debug.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 231ca4628062..2abdc265aec4 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -767,6 +767,7 @@ static int prealloc_memory(u32 num_entries)
+ 	int i;
+ 
+ 	for (i = 0; i < num_entries; ++i) {
++		cond_resched();
+ 		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+ 		if (!entry)
+ 			goto out_err;
+-- 
+2.19.2
