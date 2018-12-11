@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 8/9] iommu/qcom: Use helper functions to access dev->iommu_fwspec
-Date: Tue, 11 Dec 2018 13:19:09 +0100
-Message-ID: <20181211121910.5604-9-joro@8bytes.org>
+Subject: [PATCH 3/9] iommu/arm-smmu: Use helper functions to access dev->iommu_fwspec
+Date: Tue, 11 Dec 2018 13:19:04 +0100
+Message-ID: <20181211121910.5604-4-joro@8bytes.org>
 References: <20181211121910.5604-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181211121910.5604-1-joro@8bytes.org>
@@ -16,87 +16,134 @@ Use the new helpers dev_iommu_fwspec_get()/set() to access
 the dev->iommu_fwspec pointer. This makes it easier to move
 that pointer later into another struct.
 
-Cc: Rob Clark <robdclark@gmail.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/qcom_iommu.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 16 +++++++++-------
+ drivers/iommu/arm-smmu.c    | 12 ++++++------
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index ee70e9921cf1..f437bf9c5ebd 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -354,7 +354,8 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6947ccf26512..8f2d3a30d090 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1691,24 +1691,26 @@ static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
  
- static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ static void arm_smmu_detach_dev(struct device *dev)
  {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev->iommu_fwspec);
+-	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct qcom_iommu_dev *qcom_iommu = to_iommu(fwspec);
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 	int ret;
++	struct arm_smmu_master_data *master = fwspec->iommu_priv;
  
-@@ -365,7 +366,7 @@ static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev
+ 	master->ste.assigned = false;
+-	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
++	arm_smmu_install_ste_for_dev(fwspec);
+ }
  
- 	/* Ensure that the domain is finalized */
- 	pm_runtime_get_sync(qcom_iommu->dev);
--	ret = qcom_iommu_init_domain(domain, qcom_iommu, dev->iommu_fwspec);
-+	ret = qcom_iommu_init_domain(domain, qcom_iommu, fwspec);
- 	pm_runtime_put_sync(qcom_iommu->dev);
- 	if (ret < 0)
- 		return ret;
-@@ -387,7 +388,7 @@ static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int ret = 0;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_master_data *master;
+ 	struct arm_smmu_strtab_ent *ste;
  
- static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
+-	if (!dev->iommu_fwspec)
++	if (!fwspec)
+ 		return -ENOENT;
+ 
+-	master = dev->iommu_fwspec->iommu_priv;
++	master = fwspec->iommu_priv;
+ 	smmu = master->smmu;
+ 	ste = &master->ste;
+ 
+@@ -1748,7 +1750,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		ste->s2_cfg = &smmu_domain->s2_cfg;
+ 	}
+ 
+-	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
++	arm_smmu_install_ste_for_dev(fwspec);
+ out_unlock:
+ 	mutex_unlock(&smmu_domain->init_mutex);
+ 	return ret;
+@@ -1839,7 +1841,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	int i, ret;
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_master_data *master;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct iommu_group *group;
+ 
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+@@ -1890,7 +1892,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 
+ static void arm_smmu_remove_device(struct device *dev)
  {
 -	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct qcom_iommu_dev *qcom_iommu = to_iommu(fwspec);
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 	unsigned i;
-@@ -500,7 +501,7 @@ static bool qcom_iommu_capable(enum iommu_cap cap)
+ 	struct arm_smmu_master_data *master;
+ 	struct arm_smmu_device *smmu;
  
- static int qcom_iommu_add_device(struct device *dev)
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 5a28ae892504..988d0362cd03 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1103,7 +1103,7 @@ static bool arm_smmu_free_sme(struct arm_smmu_device *smmu, int idx)
+ 
+ static int arm_smmu_master_alloc_smes(struct device *dev)
  {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev->iommu_fwspec);
-+	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev_iommu_fwspec_get(dev));
- 	struct iommu_group *group;
- 	struct device_link *link;
- 
-@@ -531,7 +532,7 @@ static int qcom_iommu_add_device(struct device *dev)
- 
- static void qcom_iommu_remove_device(struct device *dev)
- {
--	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev->iommu_fwspec);
-+	struct qcom_iommu_dev *qcom_iommu = to_iommu(dev_iommu_fwspec_get(dev));
- 
- 	if (!qcom_iommu)
- 		return;
-@@ -543,6 +544,7 @@ static void qcom_iommu_remove_device(struct device *dev)
- 
- static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct qcom_iommu_dev *qcom_iommu;
- 	struct platform_device *iommu_pdev;
- 	unsigned asid = args->args[0];
-@@ -568,14 +570,14 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	    WARN_ON(asid > qcom_iommu->num_ctxs))
- 		return -EINVAL;
+ 	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
+ 	struct arm_smmu_device *smmu = cfg->smmu;
+ 	struct arm_smmu_smr *smrs = smmu->smrs;
+@@ -1206,7 +1206,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int ret;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
  
--	if (!dev->iommu_fwspec->iommu_priv) {
--		dev->iommu_fwspec->iommu_priv = qcom_iommu;
-+	if (!fwspec->iommu_priv) {
-+		fwspec->iommu_priv = qcom_iommu;
- 	} else {
- 		/* make sure devices iommus dt node isn't referring to
- 		 * multiple different iommu devices.  Multiple context
- 		 * banks are ok, but multiple devices are not:
+@@ -1380,7 +1380,7 @@ static int arm_smmu_add_device(struct device *dev)
+ {
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_master_cfg *cfg;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	int i, ret;
+ 
+ 	if (using_legacy_binding) {
+@@ -1391,7 +1391,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 		 * will allocate/initialise a new one. Thus we need to update fwspec for
+ 		 * later use.
  		 */
--		if (WARN_ON(qcom_iommu != dev->iommu_fwspec->iommu_priv))
-+		if (WARN_ON(qcom_iommu != fwspec->iommu_priv))
- 			return -EINVAL;
- 	}
+-		fwspec = dev->iommu_fwspec;
++		fwspec = dev_iommu_fwspec_get(dev);
+ 		if (ret)
+ 			goto out_free;
+ 	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
+@@ -1445,7 +1445,7 @@ static int arm_smmu_add_device(struct device *dev)
  
+ static void arm_smmu_remove_device(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_master_cfg *cfg;
+ 	struct arm_smmu_device *smmu;
+ 
+@@ -1465,7 +1465,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 
+ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
+ 	struct iommu_group *group = NULL;
+ 	int i, idx;
 -- 
 2.17.1
