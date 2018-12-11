@@ -1,56 +1,86 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 00/21] IOMMU: Tegra GART driver clean up and
-	optimization
-Date: Tue, 11 Dec 2018 10:53:17 +0100
-Message-ID: <20181211095317.tv43aaefnsezmic7@8bytes.org>
-References: <20181209202950.31486-1-digetx@gmail.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH 2/2] ACPI / scan: Refactor _CCA enforcement
+Date: Tue, 11 Dec 2018 11:15:04 +0100
+Message-ID: <CAJZ5v0g=RSXxFWU-Yu0UA2AFV+qNoW7Q6t1S8ecydrTrHJZwXA@mail.gmail.com>
+References: <cover.1544199754.git.robin.murphy@arm.com> <fe956f04bfe7f8293f6205ee224b087046e40a91.1544199754.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181209202950.31486-1-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <fe956f04bfe7f8293f6205ee224b087046e40a91.1544199754.git.robin.murphy@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Bjorn Helgaas <bhelgaas@google.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Dec 09, 2018 at 11:29:29PM +0300, Dmitry Osipenko wrote:
-> Dmitry Osipenko (21):
->   iommu/tegra: gart: Remove pr_fmt and clean up includes
->   iommu/tegra: gart: Clean up driver probe errors handling
->   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
->   iommu: Introduce iotlb_sync_map callback
->   iommu/tegra: gart: Optimize mapping / unmapping performance
->   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
->   ARM: dts: tegra20: Update Memory Controller node to the new binding
->   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
->     Tegra20
->   memory: tegra: Adapt to Tegra20 device-tree binding changes
->   memory: tegra: Read client ID on GART page fault
->   memory: tegra: Use of_device_get_match_data()
->   memory: tegra: Use relaxed versions of readl/writel
->   iommu/tegra: gart: Integrate with Memory Controller driver
->   iommu/tegra: gart: Fix spinlock recursion
->   iommu/tegra: gart: Fix NULL pointer dereference
->   iommu/tegra: gart: Allow only one active domain at a time
->   iommu/tegra: gart: Don't use managed resources
->   iommu/tegra: gart: Prepend error/debug messages with "gart:"
->   iommu/tegra: gart: Don't detach devices from inactive domains
->   iommu/tegra: gart: Simplify clients-tracking code
->   iommu/tegra: gart: Perform code refactoring
+On Fri, Dec 7, 2018 at 5:31 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> Rather than checking the DMA attribute at each callsite, just pass it
+> through for acpi_dma_configure() to handle directly. That can then deal
+> with the relatively exceptional DEV_DMA_NOT_SUPPORTED case by explicitly
+> installing dummy DMA ops instead of just skipping setup entirely. This
+> will then free up the dev->dma_ops == NULL case for some valuable
+> fastpath optimisations.
+>
+> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
+> CC: Len Brown <lenb@kernel.org>
+> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> CC: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-This is making progress, but some parts have no Ack or Review yet, I'll
-wait for Thierry before applying these patches into the iommu tree.
+The changes in this patch are fine by me:
 
-Regards,
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-	Joerg
+> ---
+>  drivers/acpi/scan.c      | 5 +++++
+>  drivers/base/platform.c  | 3 +--
+>  drivers/pci/pci-driver.c | 3 +--
+>  3 files changed, 7 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index bd1c59fb0e17..b75ae34ed188 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1456,6 +1456,11 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+>         const struct iommu_ops *iommu;
+>         u64 dma_addr = 0, size = 0;
+>
+> +       if (attr == DEV_DMA_NOT_SUPPORTED) {
+> +               set_dma_ops(dev, &dma_dummy_ops);
+> +               return 0;
+> +       }
+> +
+>         iort_dma_setup(dev, &dma_addr, &size);
+>
+>         iommu = iort_iommu_configure(dev);
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index 41b91af95afb..c6daca875c17 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -1138,8 +1138,7 @@ int platform_dma_configure(struct device *dev)
+>                 ret = of_dma_configure(dev, dev->of_node, true);
+>         } else if (has_acpi_companion(dev)) {
+>                 attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
+> -               if (attr != DEV_DMA_NOT_SUPPORTED)
+> -                       ret = acpi_dma_configure(dev, attr);
+> +               ret = acpi_dma_configure(dev, attr);
+>         }
+>
+>         return ret;
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index bef17c3fca67..f899a28b90f8 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -1602,8 +1602,7 @@ static int pci_dma_configure(struct device *dev)
+>                 struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
+>                 enum dev_dma_attr attr = acpi_get_dma_attr(adev);
+>
+> -               if (attr != DEV_DMA_NOT_SUPPORTED)
+> -                       ret = acpi_dma_configure(dev, attr);
+> +               ret = acpi_dma_configure(dev, attr);
+>         }
+>
+>         pci_put_host_bridge_device(bridge);
+> --
+> 2.19.1.dirty
+>
