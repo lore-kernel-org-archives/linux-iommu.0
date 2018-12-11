@@ -1,41 +1,40 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v4] iommu/dma: Use NUMA aware memory allocations in
- __iommu_dma_alloc_pages()
-Date: Tue, 11 Dec 2018 10:30:30 +0100
-Message-ID: <20181211093030.3x532vs6dwz2ucp7@8bytes.org>
-References: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v6 00/12] iommu/vt-d: Add scalable mode support
+Date: Tue, 11 Dec 2018 10:46:42 +0100
+Message-ID: <20181211094642.hdrgyv4shu74ykrv@8bytes.org>
+References: <20181210015906.27929-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1543576440-222098-1-git-send-email-john.garry@huawei.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: John Garry <john.garry@huawei.com>
-Cc: robin.murphy@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, ganapatrao.kulkarni@cavium.com, hch@lst.de, m.szyprowski@samsung.com, linuxarm@huawei.com
+In-Reply-To: <20181210015906.27929-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 30, 2018 at 07:14:00PM +0800, John Garry wrote:
-> From: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> 
-> Change function __iommu_dma_alloc_pages() to allocate pages for DMA from
-> respective device NUMA node. The ternary operator which would be for
-> alloc_pages_node() is tidied along with this.
-> 
-> The motivation for this change is to have a policy for page allocation
-> consistent with direct DMA mapping, which attempts to allocate pages local
-> to the device, as mentioned in [1].
-> 
-> In addition, for certain workloads it has been observed a marginal
-> performance improvement. The patch caused an observation of 0.9% average
-> throughput improvement for running tcrypt with HiSilicon crypto engine.
-> 
-> We also include a modification to use kvzalloc() for kzalloc()/vzalloc()
-> combination.
-> 
-> [1] https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1692998.html
-> 
-> Signed-off-by: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> [JPG: Added kvzalloc(), drop pages ** being device local, remove ternary operator, update message]
-> Signed-off-by: John Garry <john.garry@huawei.com>
+On Mon, Dec 10, 2018 at 09:58:54AM +0800, Lu Baolu wrote:
+> Lu Baolu (12):
+>   iommu/vt-d: Enumerate the scalable mode capability
+>   iommu/vt-d: Manage scalalble mode PASID tables
+>   iommu/vt-d: Move page table helpers into header
+>   iommu/vt-d: Add 256-bit invalidation descriptor support
+>   iommu/vt-d: Reserve a domain id for FL and PT modes
+>   iommu/vt-d: Add second level page table interface
+>   iommu/vt-d: Setup pasid entry for RID2PASID support
+>   iommu/vt-d: Pass pasid table to context mapping
+>   iommu/vt-d: Setup context and enable RID2PASID support
+>   iommu/vt-d: Add first level page table interface
+>   iommu/vt-d: Shared virtual address in scalable mode
+>   iommu/vt-d: Remove deferred invalidation
 
 Applied, thanks.
