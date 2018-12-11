@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/6] iommu/of: Use device_iommu_mapped()
-Date: Tue, 11 Dec 2018 14:43:39 +0100
-Message-ID: <20181211134343.10664-3-joro@8bytes.org>
+Subject: [PATCH 6/6] dmaengine: sh: rcar-dmac: Use device_iommu_mapped()
+Date: Tue, 11 Dec 2018 14:43:43 +0100
+Message-ID: <20181211134343.10664-7-joro@8bytes.org>
 References: <20181211134343.10664-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181211134343.10664-1-joro@8bytes.org>
@@ -18,21 +18,21 @@ already mapped by an IOMMU.
 Acked-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/of_iommu.c | 2 +-
+ drivers/dma/sh/rcar-dmac.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index c5dd63072529..bfcf139503f0 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -220,7 +220,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 	 * If we have reason to believe the IOMMU driver missed the initial
- 	 * add_device callback for dev, replay it to get things in order.
+diff --git a/drivers/dma/sh/rcar-dmac.c b/drivers/dma/sh/rcar-dmac.c
+index 74fa2b1a6a86..2b4f25698169 100644
+--- a/drivers/dma/sh/rcar-dmac.c
++++ b/drivers/dma/sh/rcar-dmac.c
+@@ -1809,7 +1809,7 @@ static int rcar_dmac_probe(struct platform_device *pdev)
+ 	 * level we can't disable it selectively, so ignore channel 0 for now if
+ 	 * the device is part of an IOMMU group.
  	 */
--	if (ops && ops->add_device && dev->bus && !dev->iommu_group)
-+	if (ops && ops->add_device && dev->bus && !device_iommu_mapped(dev))
- 		err = ops->add_device(dev);
- 
- 	/* Ignore all other errors apart from EPROBE_DEFER */
+-	if (pdev->dev.iommu_group) {
++	if (device_iommu_mapped(&pdev->dev)) {
+ 		dmac->n_channels--;
+ 		channels_offset = 1;
+ 	}
 -- 
 2.17.1
