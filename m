@@ -1,15 +1,23 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v6 00/21] IOMMU: Tegra GART driver clean up and
-	optimization
-Date: Tue, 11 Dec 2018 16:22:31 +0300
-Message-ID: <0eb25577-cd64-11d5-1de6-8efa129b3b7b@gmail.com>
-References: <20181209202950.31486-1-digetx@gmail.com>
-	<20181211095317.tv43aaefnsezmic7@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Tue, 11 Dec 2018 13:35:23 +0000
+Message-ID: <fc173d9f-57e2-dd87-95d0-1c615f2e14e3@arm.com>
+References: <20181019181158.2395-1-jean-philippe.brucker@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE0E176@SHSMSX101.ccr.corp.intel.com>
+	<11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
+	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
+	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
+	<20181107164323.GA19831@8bytes.org>
+	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
+	<20181123112125.GF1586@8bytes.org>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
+	<20181207102926.GM16835@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181211095317.tv43aaefnsezmic7-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20181207102926.GM16835-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -20,39 +28,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11.12.2018 12:53, Joerg Roedel wrote:
-> On Sun, Dec 09, 2018 at 11:29:29PM +0300, Dmitry Osipenko wrote:
->> Dmitry Osipenko (21):
->>   iommu/tegra: gart: Remove pr_fmt and clean up includes
->>   iommu/tegra: gart: Clean up driver probe errors handling
->>   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
->>   iommu: Introduce iotlb_sync_map callback
->>   iommu/tegra: gart: Optimize mapping / unmapping performance
->>   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
->>   ARM: dts: tegra20: Update Memory Controller node to the new binding
->>   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
->>     Tegra20
->>   memory: tegra: Adapt to Tegra20 device-tree binding changes
->>   memory: tegra: Read client ID on GART page fault
->>   memory: tegra: Use of_device_get_match_data()
->>   memory: tegra: Use relaxed versions of readl/writel
->>   iommu/tegra: gart: Integrate with Memory Controller driver
->>   iommu/tegra: gart: Fix spinlock recursion
->>   iommu/tegra: gart: Fix NULL pointer dereference
->>   iommu/tegra: gart: Allow only one active domain at a time
->>   iommu/tegra: gart: Don't use managed resources
->>   iommu/tegra: gart: Prepend error/debug messages with "gart:"
->>   iommu/tegra: gart: Don't detach devices from inactive domains
->>   iommu/tegra: gart: Simplify clients-tracking code
->>   iommu/tegra: gart: Perform code refactoring
+On 07/12/2018 10:29, 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' wrote:
+> Hi,
 > 
-> This is making progress, but some parts have no Ack or Review yet, I'll
-> wait for Thierry before applying these patches into the iommu tree.
+> On Mon, Nov 26, 2018 at 07:29:45AM +0000, Tian, Kevin wrote:
+>> btw Baolu just reminded me one thing which is worthy of noting here.
+>> 'primary' vs. 'aux' concept makes sense only when we look from a device
+>> p.o.v. That binding relationship is not (*should not be*) carry-and-forwarded
+>> cross devices. every domain must be explicitly attached to other devices
+>> (instead of implicitly attached being above example), and new primary/aux
+>> attribute on another device will be decided at attach time.
+> 
+> Okay, so after all the discussions we had I learned a few more things
+> about the scalable mode feature and thought a bit longer about how to
+> best support it in the IOMMU-API.
+> 
+> The concept of sub-domains I initially proposed certainly makes no
+> sense, but scalable-mode specific attach/detach functions do. So instead
+> of a sub-domain mode, I'd like to propose device-feature sets.
+> 
+> The posted patch-set already includes this as device-attributes, but I
+> don't like this naming as we are really talking about additional
+> feature sets of a device. So how about we introduce this:
+> 
+> 	enum iommu_dev_features {
+> 		/* ... */
+> 		IOMMU_DEV_FEAT_AUX,
+> 		IOMMU_DEV_FEAT_SVA,
+> 		/* ... */
+> 	};
+> 
+> 	/* Check if a device supports a given feature of the IOMMU-API */
+> 	bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features *feat);
+> 
+> 	/*
+> 	 * Only works if iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)
+> 	 * returns true
+> 	 *
+> 	 * Also, as long as domains are attached to a device through
+> 	 * this interface, any trys to call iommu_attach_device() should
+> 	 * fail (iommu_detach_device() can't fail, so we fail on the
+> 	 * tryint to re-attach). This should make us safe against a
+> 	 * device being attached to a guest as a whole while there are
+> 	 * still pasid users on it (aux and sva).
+> 	 */
+> 	int iommu_aux_attach_device(struct iommu_domain *domain,
+> 				    struct device *dev);
+> 
+> 	int iommu_aux_detach_device(struct iommu_domain *domain,
+> 				    struct device *dev);
+> 	/*
+> 	 * I know we are targeting a system-wide pasid-space, so that
+> 	 * the pasid would be the same for one domain on all devices,
+> 	 * let's just keep the option open to have different
+> 	 * pasid-spaces in one system. Also this way we can use it to
+> 	 * check whether the domain is attached to this device at all.
+> 	 *
+> 	 * returns pasid or <0 if domain has no pasid on that device.
+> 	 */
+> 	int iommu_aux_get_pasid(struct iommu_domain *domain,
+> 				struct device *dev);>
+> 	/* So we need a iommu_aux_detach_all()? */
 
-Okay, waiting.. zZZ :) Pretty much all of the patches are actually reviewed, those that are missing review/ack tags just have changes that were requested in a review comments to the previous version of the series. I hope it won't take much time to finalize the review of the patches.
+This could be useful for device drivers that want to do bulk cleanup on
+device removal. If they rely on Function Level Reset to disable PASID
+states for example, they could also cleanup with a detach_all(). But
+most will probably need to clean up individual PASID states (for example
+free all mdevs) and therefore don't need detach_all()
 
-Thierry, could you please acknowledge that you'll come back to these patches? More than two months passed since the last time you were replying regarding this series.
+> This concept can also be easily extended for supporting SVA in parallel
+> on the same device, with the same constraints regarding the behavior of
+> iommu_attach_device()/iommu_detach_device().
+
+So this would be without the initial step of attaching an "ext" domain
+to the device in order to enable SVA/PASID?
+
+If I understood it correctly, I agree with the
+iommu_attach/detach_device() behavior for SVA as well. If a device is
+bound to an mm, then the device cannot be attached to another domain
+with iommu_attach_device(). This prevents leaks and forces the device
+driver to clean up PASID states when switching to a different driver
+(e.g. vfio-pci)
+
+Thanks,
+Jean
