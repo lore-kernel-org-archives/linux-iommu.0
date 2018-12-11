@@ -1,41 +1,69 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
-Date: Tue, 11 Dec 2018 19:07:41 +0000
-Message-ID: <f9cb0ebe-4d9f-50f1-9f61-89d0e55ceddc@arm.com>
-References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
- <20181211183101.GA31936@infradead.org>
+From: Will Deacon <will.deacon@arm.com>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.21
+Date: Tue, 11 Dec 2018 20:08:48 +0000
+Message-ID: <20181211200847.GB5218@edgewater-inn.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-5185-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20181211183101.GA31936@infradead.org>
-Content-Language: en-US
-To: Christoph Hellwig <hch@infradead.org>
-Cc: mark.rutland@arm.com, virtio-dev@lists.oasis-open.org, kevin.tian@intel.com, tnowicki@caviumnetworks.com, devicetree@vger.kernel.org, marc.zyngier@arm.com, linux-pci@vger.kernel.org, mst@redhat.com, will.deacon@arm.com, frowand.list@gmail.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, kvmarm@lists.cs.columbia.edu, bhelgaas@google.com, robin.murphy@arm.com, jasowang@redhat.com
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/12/2018 18:31, Christoph Hellwig wrote:
-> On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
->> Implement the virtio-iommu driver, following specification v0.9 [1].
->>
->> Only minor changes since v5 [2]. I fixed issues reported by Michael and
->> added tags from Eric and Bharat. Thanks!
->>
->> You can find Linux driver and kvmtool device on v0.9 branches [3],
->> module and x86 support on virtio-iommu/devel. Also tested with Eric's
->> QEMU device [4].
-> 
-> Just curious, what is the use case for it?
+Hi Joerg,
 
-The main use case is assigning a device to guest userspace, using VFIO
-both in the host and in the guest (the most cited example being DPDK).
-There are others, and I wrote a little more about them last week:
-https://www.spinics.net/lists/linux-pci/msg78529.html
+Please pull the following arm-smmu updates for 4.21. This includes the
+clock and pm_runtime updates to the arm-smmu driver, as well as some
+non-critical fixes for the arm-smmu-v3 driver.
 
-Thanks,
-Jean
+Cheers,
+
+Will
+
+--->8
+
+The following changes since commit 9ff01193a20d391e8dbce4403dd5ef87c7eaaca6:
+
+  Linux 4.20-rc3 (2018-11-18 13:33:44 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 89cddc563743cb1e0068867ac97013b2a5bf86aa:
+
+  iommu/arm-smmu: Add support for qcom,smmu-v2 variant (2018-12-10 14:56:00 +0000)
+
+----------------------------------------------------------------
+Robin Murphy (1):
+      iommu/arm-smmu-v3: Fix big-endian CMD_SYNC writes
+
+Sricharan R (3):
+      iommu/arm-smmu: Add pm_runtime/sleep ops
+      iommu/arm-smmu: Invoke pm_runtime across the driver
+      iommu/arm-smmu: Add the device_link between masters and smmu
+
+Vivek Gautam (2):
+      dt-bindings: arm-smmu: Add bindings for qcom,smmu-v2
+      iommu/arm-smmu: Add support for qcom,smmu-v2 variant
+
+Will Deacon (1):
+      iommu/arm-smmu-v3: Use explicit mb() when moving cons pointer
+
+Zhen Lei (1):
+      iommu/arm-smmu-v3: Avoid memory corruption from Hisilicon MSI payloads
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  39 +++++
+ drivers/iommu/arm-smmu-v3.c                        |  22 ++-
+ drivers/iommu/arm-smmu.c                           | 170 +++++++++++++++++++--
+ 3 files changed, 216 insertions(+), 15 deletions(-)
