@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 9/9] iommu/tegra: Use helper functions to access dev->iommu_fwspec
-Date: Tue, 11 Dec 2018 13:19:10 +0100
-Message-ID: <20181211121910.5604-10-joro@8bytes.org>
+Subject: [PATCH 1/9] iommu: Introduce wrappers around dev->iommu_fwspec
+Date: Tue, 11 Dec 2018 13:19:02 +0100
+Message-ID: <20181211121910.5604-2-joro@8bytes.org>
 References: <20181211121910.5604-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20181211121910.5604-1-joro@8bytes.org>
@@ -12,28 +12,94 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Use the new helpers dev_iommu_fwspec_get()/set() to access
-the dev->iommu_fwspec pointer. This makes it easier to move
-that pointer later into another struct.
+These wrappers will be used to easily change the location of
+the field later when all users are converted.
 
-Cc: Thierry Reding <thierry.reding@gmail.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/tegra-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 14 +++++++-------
+ include/linux/iommu.h | 11 +++++++++++
+ 2 files changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 0d03341317c4..0d026cb2dfff 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -846,7 +846,7 @@ static struct iommu_group *tegra_smmu_group_get(struct tegra_smmu *smmu,
- 
- static struct iommu_group *tegra_smmu_device_group(struct device *dev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index edbdf5d6962c..4cfd407b972c 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1976,7 +1976,7 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 		      const struct iommu_ops *ops)
  {
 -	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct tegra_smmu *smmu = dev->archdata.iommu;
- 	struct iommu_group *group;
  
+ 	if (fwspec)
+ 		return ops == fwspec->ops ? 0 : -EINVAL;
+@@ -1988,26 +1988,26 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 	of_node_get(to_of_node(iommu_fwnode));
+ 	fwspec->iommu_fwnode = iommu_fwnode;
+ 	fwspec->ops = ops;
+-	dev->iommu_fwspec = fwspec;
++	dev_iommu_fwspec_set(dev, fwspec);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_fwspec_init);
+ 
+ void iommu_fwspec_free(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 
+ 	if (fwspec) {
+ 		fwnode_handle_put(fwspec->iommu_fwnode);
+ 		kfree(fwspec);
+-		dev->iommu_fwspec = NULL;
++		dev_iommu_fwspec_set(dev, NULL);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(iommu_fwspec_free);
+ 
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ {
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	size_t size;
+ 	int i;
+ 
+@@ -2016,11 +2016,11 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ 
+ 	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
+ 	if (size > sizeof(*fwspec)) {
+-		fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
++		fwspec = krealloc(fwspec, size, GFP_KERNEL);
+ 		if (!fwspec)
+ 			return -ENOMEM;
+ 
+-		dev->iommu_fwspec = fwspec;
++		dev_iommu_fwspec_set(dev, fwspec);
+ 	}
+ 
+ 	for (i = 0; i < num_ids; i++)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a1d28f42cb77..f93fdcf7d130 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -398,6 +398,17 @@ void iommu_fwspec_free(struct device *dev);
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+ 
++static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
++{
++	return dev->iommu_fwspec;
++}
++
++static inline void dev_iommu_fwspec_set(struct device *dev,
++					struct iommu_fwspec *fwspec)
++{
++	dev->iommu_fwspec = fwspec;
++}
++
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
 -- 
 2.17.1
