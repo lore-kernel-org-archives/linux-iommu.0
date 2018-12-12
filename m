@@ -1,7 +1,7 @@
-From: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Wed, 12 Dec 2018 10:29:21 +0100
-Message-ID: <20181212092920.GT16835@8bytes.org>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
+Date: Wed, 12 Dec 2018 09:31:27 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE9D6CA@SHSMSX101.ccr.corp.intel.com>
 References: <11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
 	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
 	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
@@ -11,13 +11,14 @@ References: <11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
 	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
 	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
 	<20181207102926.GM16835@8bytes.org>
-	<fc173d9f-57e2-dd87-95d0-1c615f2e14e3@arm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19BE95394@SHSMSX101.ccr.corp.intel.com>
+	<20181210085745.GN16835@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <fc173d9f-57e2-dd87-95d0-1c615f2e14e3-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20181210085745.GN16835-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,45 +28,86 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 11, 2018 at 01:35:23PM +0000, Jean-Philippe Brucker wrote:
-> > 	/* So we need a iommu_aux_detach_all()? */
+> From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'
+> Sent: Monday, December 10, 2018 4:58 PM
 > 
-> This could be useful for device drivers that want to do bulk cleanup on
-> device removal. If they rely on Function Level Reset to disable PASID
-> states for example, they could also cleanup with a detach_all(). But
-> most will probably need to clean up individual PASID states (for example
-> free all mdevs) and therefore don't need detach_all()
-
-Yeah, so the more I think about it, the more dangerous it seems to have
-this function. It creates subtle error cases for the users of SVA and
-aux-domains because their mapping goes away without notice. It is
-certainly better to force an orderly shutdown of all users before the
-device can be re-assigned.
-
-> > This concept can also be easily extended for supporting SVA in parallel
-> > on the same device, with the same constraints regarding the behavior of
-> > iommu_attach_device()/iommu_detach_device().
+> Hi Kevin,
 > 
-> So this would be without the initial step of attaching an "ext" domain
-> to the device in order to enable SVA/PASID?
+> On Mon, Dec 10, 2018 at 02:06:44AM +0000, Tian, Kevin wrote:
+> > Can I interpret above as that you agree with the aux domain concept (i.e.
+> one
+> > device can be linked to multiple domains) in general, and now we're just
+> trying
+> > to address the remaining open in API level?
+> 
+> Yes, I thouht about alternatives, but in the end they are all harder to
+> use than the aux-domain concept. We just need to make sure that we have
+> a clear definition of what the API extension do and how they impact the
+> behavior of existing functions.
 
-No, I don't think anymore we should introduce a special domain type to
-enable these features. Separate enable/disable functions per feature
-seem to be a better choice.
+sounds great!
 
-> If I understood it correctly, I agree with the
-> iommu_attach/detach_device() behavior for SVA as well. If a device is
-> bound to an mm, then the device cannot be attached to another domain
-> with iommu_attach_device(). This prevents leaks and forces the device
-> driver to clean up PASID states when switching to a different driver
-> (e.g. vfio-pci)
+> 
+> > > 	enum iommu_dev_features {
+> > > 		/* ... */
+> > > 		IOMMU_DEV_FEAT_AUX,
+> > > 		IOMMU_DEV_FEAT_SVA,
+> > > 		/* ... */
+> > > 	};
+> > >
+> >
+> > Does above represent whether a device implements aux/sva features,
+> > or whether a device has been enabled by driver to support aux/sva
+> > features?
+> 
+> These represent whether the device together with the IOMMU support
+> them,
+> basically whether these features are usable via the IOMMU-API.
 
-Right, the API should ensure we are safe on that side.
+"device together with IOMMU" or just "IOMMU itself"? 
 
-Thanks,
+the former might be OK for sva. As Jean replied in another mail, enabling
+it in both IOMMU and device side just consumes some resources, while 
+not impacting other usages on that device.
 
-	Joerg
+however there is a problem with aux. A device may implement both
+SR-IOV and Scalable IOV capabilities, but at any time only one of them
+can be enabled. Driver will provide interfaces for end user to choose.
+In such case we cannot assume that device-side Scalable-IOV can be
+always enabled while IOMMU is in scalable mode.
+
+It works better if we position those features just representing IOMMU 
+support only. In that case, aux is related only to scalable mode of IOMMU
+itself, which is orthogonal to whether device side supports SIOV.
+
+> 
+> 
+> >
+> > > 	/* Check if a device supports a given feature of the IOMMU-API */
+> > > 	bool iommu_dev_has_feature(struct device *dev, enum
+> > > iommu_dev_features *feat);
+> >
+> > If the latter we also need iommu_dev_set_feature so driver can poke
+> > it based on its own configuration.
+> 
+> Do you mean we need an explict enable-API for the features? I thought
+> about that too, but some features clearly don't need it and I didn't
+> want to complicate the usage. My assumption was that when the feature is
+> available, it is also enabled.
+> 
+> > > 	/* So we need a iommu_aux_detach_all()? */
+> >
+> > for what scenario?
+> 
+> Maybe for detaching any PASID users from a device so that it can be
+> assigned to a VM as a whole. But I am not sure it is needed.
+> 
+
+yes, possibly useful in reset path as Jean pointed out.
+
+Thanks
+Kevin
