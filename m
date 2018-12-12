@@ -1,58 +1,83 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
-Date: Wed, 12 Dec 2018 09:35:19 -0500
-Message-ID: <20181212093413-mutt-send-email-mst@kernel.org>
-References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
- <20181212103545.GV16835@8bytes.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 12/34] powerpc/cell: move dma direct window setup out
+ of dma_configure
+Date: Wed, 12 Dec 2018 15:36:04 +0100
+Message-ID: <20181212143604.GA5137@lst.de>
+References: <20181114082314.8965-1-hch@lst.de> <20181114082314.8965-13-hch@lst.de> <871s6r3sno.fsf@concordia.ellerman.id.au>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <virtio-dev-return-5188-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181212103545.GV16835@8bytes.org>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
+In-Reply-To: <871s6r3sno.fsf@concordia.ellerman.id.au>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Christoph Hellwig <hch@lst.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 12, 2018 at 11:35:45AM +0100, Joerg Roedel wrote:
-> Hi,
+On Sun, Dec 09, 2018 at 09:23:39PM +1100, Michael Ellerman wrote:
+> Christoph Hellwig <hch@lst.de> writes:
 > 
-> to make progress on this, we should first agree on the protocol used
-> between guest and host. I have a few points to discuss on the protocol
-> first.
+> > Configure the dma settings at device setup time, and stop playing games
+> > with get_pci_dma_ops.  This prepares for using the common dma_configure
+> > code later on.
+> >
+> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > ---
+> >  arch/powerpc/platforms/cell/iommu.c | 20 +++++++++++---------
+> >  1 file changed, 11 insertions(+), 9 deletions(-)
 > 
-> On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
-> > [1] Virtio-iommu specification v0.9, sources and pdf
-> >     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
-> >     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
-> 
-> Looking at this I wonder why it doesn't make the IOTLB visible to the
-> guest. the UNMAP requests seem to require that the TLB is already
-> flushed to make the unmap visible.
-> 
-> I think that will cost significant performance for both, vfio and
-> dma-iommu use-cases which both do (vfio at least to some degree),
-> deferred flushing.
-> 
-> I also wonder whether the protocol should implement a
-> protocol version handshake
+> This one's crashing, haven't dug into why yet:
 
-virtio has a builtin version handshake so devices don't need to.
+Can you provide a gdb assembly of the exact crash site?  This looks
+like for some odd reason the DT structures aren't fully setup by the
+time we are probing the device, which seems odd.
 
-> and iommu-feature set queries.
-> 
-> > [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
-> >     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
-> 
-> Unfortunatly gitweb seems to be broken on linux-arm.org. What is missing
-> in this patch-set to make this work on x86?
+Either way, something like the patch below would ensure we call
+cell_iommu_get_fixed_address from a similar context as before, can you
+check if that fixes the issue?
 
-And I wonder about pcc too.
-
-> Regards,
-> 
-> 	Joerg
+diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
+index 93c7e4aef571..4891b338bf9f 100644
+--- a/arch/powerpc/platforms/cell/iommu.c
++++ b/arch/powerpc/platforms/cell/iommu.c
+@@ -569,19 +569,12 @@ static struct iommu_table *cell_get_iommu_table(struct device *dev)
+ 	return &window->table;
+ }
+ 
+-static u64 cell_iommu_get_fixed_address(struct device *dev);
+-
+ static void cell_dma_dev_setup(struct device *dev)
+ {
+-	if (cell_iommu_enabled) {
+-		u64 addr = cell_iommu_get_fixed_address(dev);
+-
+-		if (addr != OF_BAD_ADDR)
+-			set_dma_offset(dev, addr + dma_iommu_fixed_base);
++	if (cell_iommu_enabled)
+ 		set_iommu_table_base(dev, cell_get_iommu_table(dev));
+-	} else {
++	else
+ 		set_dma_offset(dev, cell_dma_nommu_offset);
+-	}
+ }
+ 
+ static void cell_pci_dma_dev_setup(struct pci_dev *dev)
+@@ -865,8 +858,16 @@ static u64 cell_iommu_get_fixed_address(struct device *dev)
+ 
+ static bool cell_pci_iommu_bypass_supported(struct pci_dev *pdev, u64 mask)
+ {
+-	return mask == DMA_BIT_MASK(64) &&
+-		cell_iommu_get_fixed_address(&pdev->dev) != OF_BAD_ADDR;
++	if (mask == DMA_BIT_MASK(64)) {
++		u64 addr = cell_iommu_get_fixed_address(&pdev->dev);
++
++		if (addr != OF_BAD_ADDR) {
++			set_dma_offset(&pdev->dev, dma_iommu_fixed_base + addr);
++			return true;
++		}
++	}
++
++	return true;
+ }
+ 
+ static void insert_16M_pte(unsigned long addr, unsigned long *ptab,
