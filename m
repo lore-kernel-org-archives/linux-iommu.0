@@ -1,84 +1,55 @@
-From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v6 00/21] IOMMU: Tegra GART driver clean up and
- optimization
-Date: Wed, 12 Dec 2018 11:24:15 +0100
-Message-ID: <20181212102415.GM15092@ulmo>
-References: <20181209202950.31486-1-digetx@gmail.com>
- <20181211095317.tv43aaefnsezmic7@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
+Date: Wed, 12 Dec 2018 11:35:45 +0100
+Message-ID: <20181212103545.GV16835@8bytes.org>
+References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="uwB7x3tnyrZQfZJI"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
 Content-Disposition: inline
-In-Reply-To: <20181211095317.tv43aaefnsezmic7@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Dmitry Osipenko <digetx@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com, lorenzo.pieralisi@arm.com, tnowicki@caviumnetworks.com, mst@redhat.com, marc.zyngier@arm.com, linux-pci@vger.kernel.org, jasowang@redhat.com, will.deacon@arm.com, robin.murphy@arm.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, devicetree@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
---uwB7x3tnyrZQfZJI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+to make progress on this, we should first agree on the protocol used
+between guest and host. I have a few points to discuss on the protocol
+first.
 
-On Tue, Dec 11, 2018 at 10:53:17AM +0100, Joerg Roedel wrote:
-> On Sun, Dec 09, 2018 at 11:29:29PM +0300, Dmitry Osipenko wrote:
-> > Dmitry Osipenko (21):
-> >   iommu/tegra: gart: Remove pr_fmt and clean up includes
-> >   iommu/tegra: gart: Clean up driver probe errors handling
-> >   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
-> >   iommu: Introduce iotlb_sync_map callback
-> >   iommu/tegra: gart: Optimize mapping / unmapping performance
-> >   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
-> >   ARM: dts: tegra20: Update Memory Controller node to the new binding
-> >   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
-> >     Tegra20
-> >   memory: tegra: Adapt to Tegra20 device-tree binding changes
-> >   memory: tegra: Read client ID on GART page fault
-> >   memory: tegra: Use of_device_get_match_data()
-> >   memory: tegra: Use relaxed versions of readl/writel
-> >   iommu/tegra: gart: Integrate with Memory Controller driver
-> >   iommu/tegra: gart: Fix spinlock recursion
-> >   iommu/tegra: gart: Fix NULL pointer dereference
-> >   iommu/tegra: gart: Allow only one active domain at a time
-> >   iommu/tegra: gart: Don't use managed resources
-> >   iommu/tegra: gart: Prepend error/debug messages with "gart:"
-> >   iommu/tegra: gart: Don't detach devices from inactive domains
-> >   iommu/tegra: gart: Simplify clients-tracking code
-> >   iommu/tegra: gart: Perform code refactoring
->=20
-> This is making progress, but some parts have no Ack or Review yet, I'll
-> wait for Thierry before applying these patches into the iommu tree.
+On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
+> [1] Virtio-iommu specification v0.9, sources and pdf
+>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
 
-So appart from the one issue in the "memory controller integration"
-patch this looks good and I've acked the remaining patches. Once the one
-remaining issue is fixed I think this is ready to be merged.
+Looking at this I wonder why it doesn't make the IOTLB visible to the
+guest. the UNMAP requests seem to require that the TLB is already
+flushed to make the unmap visible.
 
-Joerg, given the dependencies between the various parts of the series, I
-think it may be better for you to merge everything through the IOMMU
-tree if you don't mind.
+I think that will cost significant performance for both, vfio and
+dma-iommu use-cases which both do (vfio at least to some degree),
+deferred flushing.
 
-Thierry
+I also wonder whether the protocol should implement a
+protocol version handshake and iommu-feature set queries.
 
---uwB7x3tnyrZQfZJI
-Content-Type: application/pgp-signature; name="signature.asc"
+> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
+>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
 
------BEGIN PGP SIGNATURE-----
+Unfortunatly gitweb seems to be broken on linux-arm.org. What is missing
+in this patch-set to make this work on x86?
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ4c8ACgkQ3SOs138+
-s6Ek+hAAm6Xaia2wnPAyQoDzIPdb1xFkdfVusp69nfAlVotjQ8HfB0arU+On09RB
-wXfGQH/vbKNgTHd1vRVcKItq4gMoF7GqMREK/thwWzoT20Bw3olIz7ZaG+3mIYIj
-u9NzPSujgklgdXyanA/OwXt8F1418zqj/wTi662xqE1ylkTjJQh2N6BSfwMLv0X8
-ZQWYTkYNCh8E7GzYHCS0jeE9Cqyd/eXTm5QK8Lfl7oUKH2XZVY9t/Te5nJERDNEs
-UTmtSuC+JsQYbxa2K9ogUvlOFAzB01Ovuc+mEzmek7MKVcNd36sllzcXWocbPTIE
-aMjSFs+eIQvQgkjNiO9oAWSQNoTha+iiPNEVEVtm9oHoVt+K/YWgn49ZySgzkG/X
-DjppZOBA3XHY5muFKDPYcTEw1K4OoI5FjwuRmaKwV+dBUY2k82/h/jMyVUZRqqO0
-NBO+NHk3k4zkxxN9pql/b+6UJ1yZiTb2/+djahQwiM6YK2soK6CEe3jaHKbvfsHV
-5Lm+FV3NfU9fqyafaSs/FMU59WU8vxb2vBJ4BAosgxRXyM/A8wXjHu4zIra+chtw
-c5a1dfFMWr829ZMaVJb9bqkekvadAkMwnJv/2rVUYOH7KrRHoL1/Rs52xfjz7tSs
-FrtQTnMfZK2muHlolT4HY7bBXW1LUwMEwby+RAYGX+SoTrAMY+U=
-=1/qQ
------END PGP SIGNATURE-----
+Regards,
 
---uwB7x3tnyrZQfZJI--
+	Joerg
