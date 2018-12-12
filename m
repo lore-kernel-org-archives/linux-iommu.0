@@ -1,86 +1,121 @@
-From: Anders Roxell <anders.roxell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] dma-debug: fix soft lockup when a lot of debug are enabled
-Date: Wed, 12 Dec 2018 19:15:36 +0100
-Message-ID: <CADYN=9+FpcMUqtLgkvWQnf2uQOgS3VhwCLHmcriD_5LSVBZFKQ@mail.gmail.com>
-References: <20181211103616.22137-1-anders.roxell@linaro.org>
-	<613667c4-f850-d88c-7a2e-76dda5d966f5@arm.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: [PATCH v7 00/24] Tegra GART driver clean up and optimization
+Date: Wed, 12 Dec 2018 23:38:43 +0300
+Message-ID: <20181212203907.23461-1-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <613667c4-f850-d88c-7a2e-76dda5d966f5-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org, rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 11 Dec 2018 at 12:51, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->
-> Hi Anders,
+Hello,
 
-Hi Robin,
+This patch-series integrates the GART (IOMMU) driver with the Memory
+Controller driver, that allows to report the name of a faulty memory
+client on GART page fault. A major code clean up and performance
+optimization is performed in this series as well.
 
->
-> On 11/12/2018 10:36, Anders Roxell wrote:
-> > When running a kernel in qemu with enough debugging options (slub-debug,
-> > ftrace, kcov, kasan, ubsan, ...) enabled together, that results in a
-> > slow initcall. So a 'watchdog: BUG: soft lockup' happens:
-> >
-> > [   44.105619] Call trace:
-> > [   44.106709]  __slab_alloc+0x70/0x88
-> > [   44.107757]  kmem_cache_alloc_trace+0x13c/0x590
-> > [   44.108764]  prealloc_memory+0xb8/0x240
-> > [   44.109768]  dma_debug_init+0x174/0x1f0
-> > [   44.110725]  do_one_initcall+0x430/0x8b0
-> > [   44.111719]  do_initcall_level+0x548/0x5b4
-> > [   44.112672]  do_initcalls+0x28/0x4c
-> > [   44.113628]  do_basic_setup+0x34/0x3c
-> > [   44.114559]  kernel_init_freeable+0x194/0x24c
-> > [   44.115570]  kernel_init+0x24/0x18c
-> > [   44.116498]  ret_from_fork+0x10/0x18
-> >
-> > Rework to call cond_resched(), in the function prealloc_memory()'s
-> > for-loop.
->
-> Funnily enough I've just done a bit of work in this area which should
-> make allocation a lot more efficient - would you mind giving this series
-> a spin on the same setup to see how much it helps the performance?
->
-> https://lore.kernel.org/lkml/cover.1544447601.git.robin.murphy-5wv7dgnIgG8@public.gmane.org/
+Changelog:
 
-I tried it on todays next tag and couldn't reproduce the soft lockup.
+v7: Addressed review comments to v6 from Thierry Reding.
 
-Cheers,
-Anders
+    Added three new (minor) patches that further prettifying the drivers
+    code.
 
->
-> Thanks,
-> Robin.
->
-> >
-> > Signed-off-by: Anders Roxell <anders.roxell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > ---
-> >   kernel/dma/debug.c | 1 +
-> >   1 file changed, 1 insertion(+)
-> >
-> > diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> > index 231ca4628062..2abdc265aec4 100644
-> > --- a/kernel/dma/debug.c
-> > +++ b/kernel/dma/debug.c
-> > @@ -767,6 +767,7 @@ static int prealloc_memory(u32 num_entries)
-> >       int i;
-> >
-> >       for (i = 0; i < num_entries; ++i) {
-> > +             cond_resched();
-> >               entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-> >               if (!entry)
-> >                       goto out_err;
-> >
+    New patches in v7:
+        1) "memory: tegra: Do not try to probe SMMU on Tegra20"
+        2) "memory: tegra: Do not ask for IRQ sharing"
+        3) "memory: tegra: Clean up error messages"
+
+    Incorporated another "one-line" change into the "perform code refactoring"
+    patch: now GART translation is kept disabled in HW while GART is suspended.
+
+v6: v5 that is re-based on the recent linux-next.
+
+v5: Addressed review comments from Thierry Reding to v4. Added WARN_ON() to
+    make sure that active domain isn't getting released, kept include headers
+    where necessary, etc.. All changes are quite minor.
+
+    Added new patch "memory: tegra: Use relaxed versions of readl/writel".
+
+v4: In the v3 Rob Herring requested to make device-tree binding changes
+    backwards-compatible with the older kernels, that is achieved by
+    changing the 'compatible' value of the DT node.
+
+    The code-refactoring patches got some more (minor) polish.
+
+    Added new patch "memory: tegra: Use of_device_get_match_data()".
+
+v3: Memory Controller integration part has been reworked and now GART's
+    device-tree binding is changed. Adding Rob Herring for the device-tree
+    changes reviewing.
+
+    GART now disallows more than one active domain at a time.
+
+    Fixed "spinlock recursion", "NULL pointer dereference" and "detaching
+    of all devices from inactive domains".
+
+    New code-refactoring patches.
+
+    The previously standalone patch "memory: tegra: Don't invoke Tegra30+
+    specific memory timing setup on Tegra20" is now included into this
+    series because there is a dependency on that patch and it wasn't applied
+    yet.
+
+v2: Addressed review comments from Robin Murphy to v1 by moving devices
+    iommu_fwspec check to gart_iommu_add_device().
+
+    Dropped the "Provide single domain and group for all devices" patch from
+    the series for now because after some more considering it became not
+    exactly apparent whether that is what we need, that was also suggested
+    by Robin Murphy in the review comment. Maybe something like a runtime
+    IOMMU usage for devices would be a better solution, allowing to implement
+    transparent context switching of virtual IOMMU domains.
+
+    Some very minor code cleanups, reworded commit messages.
+
+Dmitry Osipenko (24):
+  iommu/tegra: gart: Remove pr_fmt and clean up includes
+  iommu/tegra: gart: Clean up driver probe errors handling
+  iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+  iommu: Introduce iotlb_sync_map callback
+  iommu/tegra: gart: Optimize mapping / unmapping performance
+  dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+  ARM: dts: tegra20: Update Memory Controller node to the new binding
+  memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+    Tegra20
+  memory: tegra: Adapt to Tegra20 device-tree binding changes
+  memory: tegra: Read client ID on GART page fault
+  memory: tegra: Use of_device_get_match_data()
+  memory: tegra: Use relaxed versions of readl/writel
+  iommu/tegra: gart: Integrate with Memory Controller driver
+  memory: tegra: Do not try to probe SMMU on Tegra20
+  memory: tegra: Do not ask for IRQ sharing
+  memory: tegra: Clean up error messages
+  iommu/tegra: gart: Fix spinlock recursion
+  iommu/tegra: gart: Fix NULL pointer dereference
+  iommu/tegra: gart: Allow only one active domain at a time
+  iommu/tegra: gart: Don't use managed resources
+  iommu/tegra: gart: Prepend error/debug messages with "gart:"
+  iommu/tegra: gart: Don't detach devices from inactive domains
+  iommu/tegra: gart: Simplify clients-tracking code
+  iommu/tegra: gart: Perform code refactoring
+
+ .../bindings/iommu/nvidia,tegra20-gart.txt    |  14 -
+ .../memory-controllers/nvidia,tegra20-mc.txt  |  27 +-
+ arch/arm/boot/dts/tegra20.dtsi                |  15 +-
+ drivers/iommu/Kconfig                         |   1 +
+ drivers/iommu/iommu.c                         |   8 +-
+ drivers/iommu/tegra-gart.c                    | 473 +++++++-----------
+ drivers/iommu/tegra-smmu.c                    |   4 -
+ drivers/memory/tegra/mc.c                     | 118 +++--
+ drivers/memory/tegra/mc.h                     |  10 +-
+ include/linux/iommu.h                         |   1 +
+ include/soc/tegra/mc.h                        |  27 +-
+ 11 files changed, 323 insertions(+), 375 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+
+-- 
+2.20.0
