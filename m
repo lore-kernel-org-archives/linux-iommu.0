@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v7 17/24] iommu/tegra: gart: Fix spinlock recursion
-Date: Wed, 12 Dec 2018 23:39:00 +0300
-Message-ID: <20181212203907.23461-18-digetx@gmail.com>
+Subject: [PATCH v7 18/24] iommu/tegra: gart: Fix NULL pointer dereference
+Date: Wed, 12 Dec 2018 23:39:01 +0300
+Message-ID: <20181212203907.23461-19-digetx@gmail.com>
 References: <20181212203907.23461-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,68 +12,31 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fix spinlock recursion bug that happens on IOMMU domain destruction if
-any of the allocated domains have devices attached to them.
+Fix NULL pointer dereference on IOMMU domain destruction that happens
+because clients list is being iterated unsafely and its elements are
+getting deleted during the iteration.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/tegra-gart.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/iommu/tegra-gart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index b35ffa312a83..a7a9400e0cd8 100644
+index a7a9400e0cd8..7fdd8b12efd5 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -197,25 +197,33 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
- 	return err;
- }
+@@ -260,9 +260,9 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
+ 	if (gart) {
+ 		spin_lock(&gart->client_lock);
+ 		if (!list_empty(&gart->client)) {
+-			struct gart_client *c;
++			struct gart_client *c, *tmp;
  
--static void gart_iommu_detach_dev(struct iommu_domain *domain,
--				  struct device *dev)
-+static void __gart_iommu_detach_dev(struct iommu_domain *domain,
-+				    struct device *dev)
- {
- 	struct gart_domain *gart_domain = to_gart_domain(domain);
- 	struct gart_device *gart = gart_domain->gart;
- 	struct gart_client *c;
- 
--	spin_lock(&gart->client_lock);
--
- 	list_for_each_entry(c, &gart->client, list) {
- 		if (c->dev == dev) {
- 			list_del(&c->list);
- 			devm_kfree(gart->dev, c);
- 			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
--			goto out;
-+			return;
- 		}
- 	}
--	dev_err(gart->dev, "Couldn't find\n");
--out:
-+
-+	dev_err(gart->dev, "Couldn't find %s to detach\n", dev_name(dev));
-+}
-+
-+static void gart_iommu_detach_dev(struct iommu_domain *domain,
-+				  struct device *dev)
-+{
-+	struct gart_domain *gart_domain = to_gart_domain(domain);
-+	struct gart_device *gart = gart_domain->gart;
-+
-+	spin_lock(&gart->client_lock);
-+	__gart_iommu_detach_dev(domain, dev);
- 	spin_unlock(&gart->client_lock);
- }
- 
-@@ -255,7 +263,7 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
- 			struct gart_client *c;
- 
- 			list_for_each_entry(c, &gart->client, list)
--				gart_iommu_detach_dev(domain, c->dev);
-+				__gart_iommu_detach_dev(domain, c->dev);
+-			list_for_each_entry(c, &gart->client, list)
++			list_for_each_entry_safe(c, tmp, &gart->client, list)
+ 				__gart_iommu_detach_dev(domain, c->dev);
  		}
  		spin_unlock(&gart->client_lock);
- 	}
 -- 
 2.20.0
