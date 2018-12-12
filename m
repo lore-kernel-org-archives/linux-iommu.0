@@ -1,24 +1,17 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Wed, 12 Dec 2018 09:31:27 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE9D6CA@SHSMSX101.ccr.corp.intel.com>
-References: <11f88122-afd3-a34c-3cd4-db681bf5498b@arm.com>
-	<20181106162539.4gmkvg57mja3bn7k@8bytes.org>
-	<e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
-	<20181107164323.GA19831@8bytes.org>
-	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
-	<20181123112125.GF1586@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
-	<20181207102926.GM16835@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE95394@SHSMSX101.ccr.corp.intel.com>
-	<20181210085745.GN16835@8bytes.org>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH v4 1/2] dt-bindings: arm-smmu: Add binding doc for Qcom
+	smmu-500
+Date: Wed, 12 Dec 2018 15:18:06 +0530
+Message-ID: <CAFp+6iF80P-o=Z-aNOMQwWMTcO4jcgSR0wOzd4GvmB3zTvWZLw@mail.gmail.com>
+References: <20181011094930.17010-1-vivek.gautam@codeaurora.org>
+	<20181011094930.17010-2-vivek.gautam@codeaurora.org>
+	<20181011221630.GA5841@bogus>
+	<9ca4bb4f-3e6e-21cc-819e-80b979b934d0@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181210085745.GN16835-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <9ca4bb4f-3e6e-21cc-819e-80b979b934d0-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,86 +21,51 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Brown <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
+	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'
-> Sent: Monday, December 10, 2018 4:58 PM
-> 
-> Hi Kevin,
-> 
-> On Mon, Dec 10, 2018 at 02:06:44AM +0000, Tian, Kevin wrote:
-> > Can I interpret above as that you agree with the aux domain concept (i.e.
-> one
-> > device can be linked to multiple domains) in general, and now we're just
-> trying
-> > to address the remaining open in API level?
-> 
-> Yes, I thouht about alternatives, but in the end they are all harder to
-> use than the aux-domain concept. We just need to make sure that we have
-> a clear definition of what the API extension do and how they impact the
-> behavior of existing functions.
+Hi Will,
 
-sounds great!
+On Fri, Oct 12, 2018 at 11:37 AM Vivek Gautam
+<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>
+>
+>
+> On 10/12/2018 3:46 AM, Rob Herring wrote:
+> > On Thu, 11 Oct 2018 15:19:29 +0530, Vivek Gautam wrote:
+> >> Qcom's implementation of arm,mmu-500 works well with current
+> >> arm-smmu driver implementation. Adding a soc specific compatible
+> >> along with arm,mmu-500 makes the bindings future safe.
+> >>
+> >> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> >> ---
+> >>
+> >> Changes since v3:
+> >>   - Refined language more to state things directly for the bindings
+> >>     description.
+> >>
+> >>   Documentation/devicetree/bindings/iommu/arm,smmu.txt | 4 ++++
+> >>   1 file changed, 4 insertions(+)
+> >>
+> > Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>
+> Thank you Rob.
+>
 
-> 
-> > > 	enum iommu_dev_features {
-> > > 		/* ... */
-> > > 		IOMMU_DEV_FEAT_AUX,
-> > > 		IOMMU_DEV_FEAT_SVA,
-> > > 		/* ... */
-> > > 	};
-> > >
-> >
-> > Does above represent whether a device implements aux/sva features,
-> > or whether a device has been enabled by driver to support aux/sva
-> > features?
-> 
-> These represent whether the device together with the IOMMU support
-> them,
-> basically whether these features are usable via the IOMMU-API.
+Can you please pick this one as well to your tree? This goes on top of the
+bindings patch for "qcom,smmu-v2". So, it can't go through Andy's tree.
+Will ask Andy to pick the second patch of the series, that adds the dt node.
 
-"device together with IOMMU" or just "IOMMU itself"? 
+I guess as I sent this one along with the dt patch, I would have
+mistakenly added
+you to 'cc' list rather than 'to' list.
+Let me know if you would like me to resend it.
 
-the former might be OK for sva. As Jean replied in another mail, enabling
-it in both IOMMU and device side just consumes some resources, while 
-not impacting other usages on that device.
+Thank
+Vivek
 
-however there is a problem with aux. A device may implement both
-SR-IOV and Scalable IOV capabilities, but at any time only one of them
-can be enabled. Driver will provide interfaces for end user to choose.
-In such case we cannot assume that device-side Scalable-IOV can be
-always enabled while IOMMU is in scalable mode.
-
-It works better if we position those features just representing IOMMU 
-support only. In that case, aux is related only to scalable mode of IOMMU
-itself, which is orthogonal to whether device side supports SIOV.
-
-> 
-> 
-> >
-> > > 	/* Check if a device supports a given feature of the IOMMU-API */
-> > > 	bool iommu_dev_has_feature(struct device *dev, enum
-> > > iommu_dev_features *feat);
-> >
-> > If the latter we also need iommu_dev_set_feature so driver can poke
-> > it based on its own configuration.
-> 
-> Do you mean we need an explict enable-API for the features? I thought
-> about that too, but some features clearly don't need it and I didn't
-> want to complicate the usage. My assumption was that when the feature is
-> available, it is also enabled.
-> 
-> > > 	/* So we need a iommu_aux_detach_all()? */
-> >
-> > for what scenario?
-> 
-> Maybe for detaching any PASID users from a device so that it can be
-> assigned to a VM as a whole. But I am not sure it is needed.
-> 
-
-yes, possibly useful in reset path as Jean pointed out.
-
-Thanks
-Kevin
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
