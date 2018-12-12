@@ -1,24 +1,14 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Wed, 12 Dec 2018 10:03:48 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19BE9D851@SHSMSX101.ccr.corp.intel.com>
-References: <e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
-	<20181107164323.GA19831@8bytes.org>
-	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
-	<20181123112125.GF1586@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
-	<20181207102926.GM16835@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE95394@SHSMSX101.ccr.corp.intel.com>
-	<20181210085745.GN16835@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE9D6CA@SHSMSX101.ccr.corp.intel.com>
-	<20181212095403.GU16835@8bytes.org>
+From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v6 09/21] memory: tegra: Adapt to Tegra20 device-tree
+	binding changes
+Date: Wed, 12 Dec 2018 11:05:09 +0100
+Message-ID: <20181212100509.GF15092@ulmo>
+References: <20181209202950.31486-1-digetx@gmail.com>
+	<20181209202950.31486-10-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2585307149063635147=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181212095403.GU16835-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20181209202950.31486-10-digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,49 +18,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Hunter <jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Wednesday, December 12, 2018 5:54 PM
-> 
-> Hi Kevin,
-> 
-> On Wed, Dec 12, 2018 at 09:31:27AM +0000, Tian, Kevin wrote:
-> > > From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'
-> > > Sent: Monday, December 10, 2018 4:58 PM
-> > > These represent whether the device together with the IOMMU support
-> > > them,
-> > > basically whether these features are usable via the IOMMU-API.
-> >
-> > "device together with IOMMU" or just "IOMMU itself"?
-> 
-> No, it should mean device together with IOMMU support it. It is a way
-> for users of the IOMMU-API to check whether they can successfully use
-> the aux-specific functions.
-> 
-> > however there is a problem with aux. A device may implement both
-> > SR-IOV and Scalable IOV capabilities, but at any time only one of them
-> > can be enabled. Driver will provide interfaces for end user to choose.
-> > In such case we cannot assume that device-side Scalable-IOV can be
-> > always enabled while IOMMU is in scalable mode.
-> >
-> > It works better if we position those features just representing IOMMU
-> > support only. In that case, aux is related only to scalable mode of IOMMU
-> > itself, which is orthogonal to whether device side supports SIOV.
-> 
-> Yeah, but we don't make that decision in the IOMMU code. Whether the
-> device exposes SR-IOV or PASID based isolation is decided in PCI code
-> based on user input (SR-IOV is also enabled in PCI code and IOMMU just
-> uses the new devices that appear).
-> 
-> Only if the user enabled scalable mode on the device and the IOMMU
-> supports it too, the feature-check function returns true for the aux
-> feature.
-> 
 
-Then this is another proof for an enable/disable part in API. :-)
+--===============2585307149063635147==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="8TaQrIeukR7mmbKf"
+Content-Disposition: inline
 
-Thanks
-kevin
+
+--8TaQrIeukR7mmbKf
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Dec 09, 2018 at 11:29:38PM +0300, Dmitry Osipenko wrote:
+> The tegra20-mc device-tree binding has been changed, GART has been
+> squashed into Memory Controller and now the clock property is mandatory
+> for Tegra20, the DT compatible has been changed as well. Adapt driver to
+> the DT changes.
+>=20
+> Signed-off-by: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+>  drivers/memory/tegra/mc.c | 21 ++++++++-------------
+>  drivers/memory/tegra/mc.h |  6 ------
+>  include/soc/tegra/mc.h    |  2 +-
+>  3 files changed, 9 insertions(+), 20 deletions(-)
+
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+
+--8TaQrIeukR7mmbKf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ3VUACgkQ3SOs138+
+s6FhWA/+MEvfdkIB2BINTp/t9VcU2fno9yZ3NKsAdnSlQ9cqVzaMDopgDEFuHwwx
+L2CLmgslF6g1XGzUHnAF5wdpjWeIuIlokvvti/SLzsd+k97/bS7yTONuXOFVZ7kL
+yNrhbvCeGVqFBE0rhHr4plMa3vDabI5AZfFyJ2+feZ3Yg7dMMlb0YIAzNUKOngeM
+4+PSdc7uHZCpiL8/cPjgyFiqZ/Y6VZuthtIjaiJIm9h7j5XoCcCqRUnI7AUY9wtY
+q/BjYJRE8+HrvQe3sgAIOoP1onmZE0yNc5HsgepTkl7Sc6f2kfSAvFGVPAIC/k4n
+n5BoTdfoxHCFjFEpclcAgaRQqFzQYg8FndRRtVbvmQ552cxeoXiV50D0mFGTrgvg
+3j9NoN4V3hqNB05QN8GnZiKxAgBMwwsS3YhnnED4X7qtrXbvlRFSEmF84s39RCh7
+iAACUo1VPlMIPUNmTdZ0foXwHRwdBOJ5Iv22stknzWZ2rodYzT6IoN8bg4NP9NVF
+BPurKINP2AJgXOJgQpHa2+lI5I1sYnkUXhOsqPIKekHkZiTVhpd9M0y0dYhdc1m5
+LQRRAtAviLSc/T8CWUK8XIWG4tMT2a0K788sUZhFzHcfKnBxHLgsWYKc5Csmxx/j
+5vaqT8KQEgubrJtNmIho8SziQoT9ophUgBWwOI8hyPagjeL6fAY=
+=skgE
+-----END PGP SIGNATURE-----
+
+--8TaQrIeukR7mmbKf--
+
+--===============2585307149063635147==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2585307149063635147==--
