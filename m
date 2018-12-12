@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v7 06/24] dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
-Date: Wed, 12 Dec 2018 23:38:49 +0300
-Message-ID: <20181212203907.23461-7-digetx@gmail.com>
+Subject: [PATCH v7 07/24] ARM: dts: tegra20: Update Memory Controller node to the new binding
+Date: Wed, 12 Dec 2018 23:38:50 +0300
+Message-ID: <20181212203907.23461-8-digetx@gmail.com>
 References: <20181212203907.23461-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,95 +12,43 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Splitting GART and Memory Controller wasn't a good decision that was made
-back in the day. Given that the GART driver wasn't ever been used by
-anything in the kernel, we decided that it will be better to correct the
-mistakes of the past and merge two bindings into a single one. As a result
-there is a DT ABI change for the Memory Controller that allows not to
-break newer kernels using older DT and not to break older kernels using
-newer DT, that is done by changing the 'compatible' of the node to
-'tegra20-mc-gart' and adding a new-required clock property. The new clock
-property also puts the tegra20-mc binding in line with the bindings of the
-later Tegra generations.
+Device tree binding of Memory Controller has been changed: GART has been
+squashed into the MC, there are a new mandatory clock and #iommu-cells
+properties, the compatible has been changed to 'tegra20-mc-gart'.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- .../bindings/iommu/nvidia,tegra20-gart.txt    | 14 ----------
- .../memory-controllers/nvidia,tegra20-mc.txt  | 27 +++++++++++++------
- 2 files changed, 19 insertions(+), 22 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
+ arch/arm/boot/dts/tegra20.dtsi | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt b/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
-deleted file mode 100644
-index 099d9362ebc1..000000000000
---- a/Documentation/devicetree/bindings/iommu/nvidia,tegra20-gart.txt
-+++ /dev/null
-@@ -1,14 +0,0 @@
--NVIDIA Tegra 20 GART
--
--Required properties:
--- compatible: "nvidia,tegra20-gart"
--- reg: Two pairs of cells specifying the physical address and size of
--  the memory controller registers and the GART aperture respectively.
--
--Example:
--
--	gart {
--		compatible = "nvidia,tegra20-gart";
--		reg = <0x7000f024 0x00000018	/* controller registers */
--		       0x58000000 0x02000000>;	/* GART aperture */
--	};
-diff --git a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
-index 7d60a50a4fa1..e55328237df4 100644
---- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
-+++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra20-mc.txt
-@@ -1,26 +1,37 @@
- NVIDIA Tegra20 MC(Memory Controller)
+diff --git a/arch/arm/boot/dts/tegra20.dtsi b/arch/arm/boot/dts/tegra20.dtsi
+index dcad6d6128cf..8c942e60703e 100644
+--- a/arch/arm/boot/dts/tegra20.dtsi
++++ b/arch/arm/boot/dts/tegra20.dtsi
+@@ -616,17 +616,14 @@
+ 	};
  
- Required properties:
--- compatible : "nvidia,tegra20-mc"
--- reg : Should contain 2 register ranges(address and length); see the
--  example below. Note that the MC registers are interleaved with the
--  GART registers, and hence must be represented as multiple ranges.
-+- compatible : "nvidia,tegra20-mc-gart"
-+- reg : Should contain 2 register ranges: physical base address and length of
-+  the controller's registers and the GART aperture respectively.
-+- clocks: Must contain an entry for each entry in clock-names.
-+  See ../clocks/clock-bindings.txt for details.
-+- clock-names: Must include the following entries:
-+  - mc: the module's clock input
- - interrupts : Should contain MC General interrupt.
- - #reset-cells : Should be 1. This cell represents memory client module ID.
-   The assignments may be found in header file <dt-bindings/memory/tegra20-mc.h>
-   or in the TRM documentation.
-+- #iommu-cells: Should be 0. This cell represents the number of cells in an
-+  IOMMU specifier needed to encode an address. GART supports only a single
-+  address space that is shared by all devices, therefore no additional
-+  information needed for the address encoding.
- 
- Example:
  	mc: memory-controller@7000f000 {
 -		compatible = "nvidia,tegra20-mc";
 -		reg = <0x7000f000 0x024
 -		       0x7000f03c 0x3c4>;
--		interrupts = <0 77 0x04>;
 +		compatible = "nvidia,tegra20-mc-gart";
 +		reg = <0x7000f000 0x400		/* controller registers */
 +		       0x58000000 0x02000000>;	/* GART aperture */
 +		clocks = <&tegra_car TEGRA20_CLK_MC>;
 +		clock-names = "mc";
-+		interrupts = <GIC_SPI 77 0x04>;
+ 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
  		#reset-cells = <1>;
+-	};
+-
+-	iommu@7000f024 {
+-		compatible = "nvidia,tegra20-gart";
+-		reg = <0x7000f024 0x00000018	/* controller registers */
+-		       0x58000000 0x02000000>;	/* GART aperture */
 +		#iommu-cells = <0>;
  	};
  
- 	video-codec@6001a000 {
- 		compatible = "nvidia,tegra20-vde";
- 		...
- 		resets = <&mc TEGRA20_MC_RESET_VDE>;
-+		iommus = <&mc>;
- 	};
+ 	memory-controller@7000f400 {
 -- 
 2.20.0
