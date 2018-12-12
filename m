@@ -1,157 +1,58 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Wed, 12 Dec 2018 15:15:56 +0100
-Message-ID: <20181212141556.GA4801@lst.de>
-References: <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de> <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de> <7B6DDB28-8BF6-4589-84ED-F1D4D13BFED6@xenosoft.de> <8a2c4581-0c85-8065-f37e-984755eb31ab@xenosoft.de> <424bb228-c9e5-6593-1ab7-5950d9b2bd4e@xenosoft.de> <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de> <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de> <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de> <4cfb3f26-74e1-db01-b014-759f188bb5a6@xenosoft.de> <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
+Date: Wed, 12 Dec 2018 09:35:19 -0500
+Message-ID: <20181212093413-mutt-send-email-mst@kernel.org>
+References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
+ <20181212103545.GV16835@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="Qxx1br4bt0+wmkIi"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <virtio-dev-return-5188-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
 Content-Disposition: inline
-In-Reply-To: <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <20181212103545.GV16835@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
+On Wed, Dec 12, 2018 at 11:35:45AM +0100, Joerg Roedel wrote:
+> Hi,
+> 
+> to make progress on this, we should first agree on the protocol used
+> between guest and host. I have a few points to discuss on the protocol
+> first.
+> 
+> On Tue, Dec 11, 2018 at 06:20:57PM +0000, Jean-Philippe Brucker wrote:
+> > [1] Virtio-iommu specification v0.9, sources and pdf
+> >     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+> >     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+> 
+> Looking at this I wonder why it doesn't make the IOTLB visible to the
+> guest. the UNMAP requests seem to require that the TLB is already
+> flushed to make the unmap visible.
+> 
+> I think that will cost significant performance for both, vfio and
+> dma-iommu use-cases which both do (vfio at least to some degree),
+> deferred flushing.
+> 
+> I also wonder whether the protocol should implement a
+> protocol version handshake
 
---Qxx1br4bt0+wmkIi
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+virtio has a builtin version handshake so devices don't need to.
 
-Thanks for bisecting.  I've spent some time going over the conversion
-but can't really pinpoint it.  I have three little patches that switch
-parts of the code to the generic version.  This is on top of the
-last good commmit (977706f9755d2d697aa6f45b4f9f0e07516efeda).
+> and iommu-feature set queries.
+> 
+> > [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
+> >     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+> 
+> Unfortunatly gitweb seems to be broken on linux-arm.org. What is missing
+> in this patch-set to make this work on x86?
 
-Can you check with whіch one things stop working?
+And I wonder about pcc too.
 
-
-
---Qxx1br4bt0+wmkIi
-Content-Type: text/x-patch; charset=us-ascii
-Content-Disposition: attachment; filename="0001-get_required_mask.patch"
-
->From 83a4b87de6bc6a75b500c9959de88e2157fbcd7c Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Wed, 12 Dec 2018 15:07:49 +0100
-Subject: get_required_mask
-
----
- arch/powerpc/kernel/dma-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
-index 5b15e53ee43d..2e682004959f 100644
---- a/arch/powerpc/kernel/dma-iommu.c
-+++ b/arch/powerpc/kernel/dma-iommu.c
-@@ -152,7 +152,7 @@ u64 dma_iommu_get_required_mask(struct device *dev)
- 		return 0;
- 
- 	if (dev_is_pci(dev)) {
--		u64 bypass_mask = dma_nommu_get_required_mask(dev);
-+		u64 bypass_mask = dma_direct_get_required_mask(dev);
- 
- 		if (dma_iommu_bypass_supported(dev, bypass_mask))
- 			return bypass_mask;
--- 
-2.19.2
-
-
---Qxx1br4bt0+wmkIi
-Content-Type: text/x-patch; charset=us-ascii
-Content-Disposition: attachment; filename="0002-swiotlb-dma_supported.patch"
-
->From c2579a3619575397929781a14895966cbc1d217b Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Wed, 12 Dec 2018 15:08:52 +0100
-Subject: swiotlb dma_supported
-
----
- arch/powerpc/kernel/dma-swiotlb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
-index aa11625c6691..52ee531c1a0d 100644
---- a/arch/powerpc/kernel/dma-swiotlb.c
-+++ b/arch/powerpc/kernel/dma-swiotlb.c
-@@ -36,7 +36,7 @@ const struct dma_map_ops powerpc_swiotlb_dma_ops = {
- 	.free = __dma_nommu_free_coherent,
- 	.map_sg = swiotlb_map_sg_attrs,
- 	.unmap_sg = swiotlb_unmap_sg_attrs,
--	.dma_supported = swiotlb_dma_supported,
-+	.dma_supported = dma_direct_supported,
- 	.map_page = swiotlb_map_page,
- 	.unmap_page = swiotlb_unmap_page,
- 	.sync_single_for_cpu = swiotlb_sync_single_for_cpu,
--- 
-2.19.2
-
-
---Qxx1br4bt0+wmkIi
-Content-Type: text/x-patch; charset=us-ascii
-Content-Disposition: attachment; filename="0003-nommu-dma_supported.patch"
-
->From 0105db9e6d8d031b4295116630fd0318fd146737 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Wed, 12 Dec 2018 15:10:36 +0100
-Subject: nommu dma_supported
-
----
- arch/powerpc/kernel/dma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-index a6590aa77181..f53d11d35230 100644
---- a/arch/powerpc/kernel/dma.c
-+++ b/arch/powerpc/kernel/dma.c
-@@ -179,7 +179,7 @@ const struct dma_map_ops dma_nommu_ops = {
- 	.alloc				= __dma_nommu_alloc_coherent,
- 	.free				= __dma_nommu_free_coherent,
- 	.map_sg				= dma_nommu_map_sg,
--	.dma_supported			= dma_nommu_dma_supported,
-+	.dma_supported			= dma_direct_supported,
- 	.map_page			= dma_nommu_map_page,
- #ifdef CONFIG_NOT_COHERENT_CACHE
- 	.sync_single_for_cpu 		= dma_nommu_sync_single,
--- 
-2.19.2
-
-
---Qxx1br4bt0+wmkIi
-Content-Type: text/x-patch; charset=us-ascii
-Content-Disposition: attachment; filename="0004-alloc-free.patch"
-
->From 4c5dd4d4a4b4e63be722fd29ada896c5962072b8 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Wed, 12 Dec 2018 15:11:38 +0100
-Subject: alloc/free
-
----
- arch/powerpc/kernel/dma.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-index f53d11d35230..d3db6d879559 100644
---- a/arch/powerpc/kernel/dma.c
-+++ b/arch/powerpc/kernel/dma.c
-@@ -176,8 +176,13 @@ static inline void dma_nommu_sync_single(struct device *dev,
- #endif
- 
- const struct dma_map_ops dma_nommu_ops = {
-+#ifdef CONFIG_NOT_COHERENT_CACHE
- 	.alloc				= __dma_nommu_alloc_coherent,
- 	.free				= __dma_nommu_free_coherent,
-+#else
-+	.alloc				= dma_direct_alloc,
-+	.free				= dma_direct_free,
-+#endif
- 	.map_sg				= dma_nommu_map_sg,
- 	.dma_supported			= dma_direct_supported,
- 	.map_page			= dma_nommu_map_page,
--- 
-2.19.2
-
-
---Qxx1br4bt0+wmkIi--
+> Regards,
+> 
+> 	Joerg
