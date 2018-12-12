@@ -1,51 +1,74 @@
-From: Srinath Mannam via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [RFC PATCH 0/3] PCIe Host request to reserve IOVA
-Date: Wed, 12 Dec 2018 11:16:06 +0530
-Message-ID: <1544593569-8923-1-git-send-email-srinath.mannam@broadcom.com>
-Reply-To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: [RFC PATCH 1/3] PCI: Add dma-resv window list
+Date: Wed, 12 Dec 2018 11:16:07 +0530
+Message-ID: <1544593569-8923-2-git-send-email-srinath.mannam@broadcom.com>
+References: <1544593569-8923-1-git-send-email-srinath.mannam@broadcom.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1544593569-8923-1-git-send-email-srinath.mannam@broadcom.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ray Jui <rjui@broadcom.com>
+Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Srinath Mannam <srinath.mannam@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Few SOCs have limitation that their PCIe host
-can't allow few inbound address ranges.
-Allowed inbound address ranges are listed in
-dma-ranges DT property and this address ranges
-are required to do IOVA mapping.
-Remaining address ranges have to be reserved in
-IOVA mapping.
+Add a dma_resv parameter in pci host bridge structure
+to hold resource entries list of memory regions for
+which IOVAs has to reserve.
 
-PCIe Host driver of those SOCs has to list all
-address ranges which have to reserve their IOVA
-address into PCIe host bridge resource entry list.
-IOMMU framework will reserve these IOVAs while
-initializing IOMMU domain.
+IOMMU framework reserve IOVA for this list of address
+range while initializing IOMMU domain of corresponding
+PCI EP connected to the HOST.
 
-This patch set is based on Linux-4.19-rc1.
+PCIe host driver will add resource entries to this
+list based on requirements.
+Few hosts can't use all inbound address, so those
+address regions will be add to this list to avoid
+IOMMU mapping.
 
-Srinath Mannam (3):
-  PCI: Add dma-resv window list
-  iommu/dma: IOVA reserve for PCI host reserve address list
-  PCI: iproc: Add dma reserve resources to host
+Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+---
+ drivers/pci/probe.c | 3 +++
+ include/linux/pci.h | 1 +
+ 2 files changed, 4 insertions(+)
 
- drivers/iommu/dma-iommu.c           |  8 ++++++
- drivers/pci/controller/pcie-iproc.c | 49 +++++++++++++++++++++++++++++++++++++
- drivers/pci/probe.c                 |  3 +++
- include/linux/pci.h                 |  1 +
- 4 files changed, 61 insertions(+)
-
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index ec78400..bbed0e7 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -544,6 +544,7 @@ struct pci_host_bridge *pci_alloc_host_bridge(size_t priv)
+ 		return NULL;
+ 
+ 	INIT_LIST_HEAD(&bridge->windows);
++	INIT_LIST_HEAD(&bridge->dma_resv);
+ 	bridge->dev.release = pci_release_host_bridge_dev;
+ 
+ 	/*
+@@ -572,6 +573,7 @@ struct pci_host_bridge *devm_pci_alloc_host_bridge(struct device *dev,
+ 		return NULL;
+ 
+ 	INIT_LIST_HEAD(&bridge->windows);
++	INIT_LIST_HEAD(&bridge->dma_resv);
+ 	bridge->dev.release = devm_pci_release_host_bridge_dev;
+ 
+ 	return bridge;
+@@ -581,6 +583,7 @@ EXPORT_SYMBOL(devm_pci_alloc_host_bridge);
+ void pci_free_host_bridge(struct pci_host_bridge *bridge)
+ {
+ 	pci_free_resource_list(&bridge->windows);
++	pci_free_resource_list(&bridge->dma_resv);
+ 
+ 	kfree(bridge);
+ }
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index e72ca8d..1f0a32a 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -472,6 +472,7 @@ struct pci_host_bridge {
+ 	void		*sysdata;
+ 	int		busnr;
+ 	struct list_head windows;	/* resource_entry */
++	struct list_head dma_resv;	/* reserv dma ranges */
+ 	u8 (*swizzle_irq)(struct pci_dev *, u8 *); /* Platform IRQ swizzler */
+ 	int (*map_irq)(const struct pci_dev *, u8, u8);
+ 	void (*release_fn)(struct pci_host_bridge *);
 -- 
 2.7.4
