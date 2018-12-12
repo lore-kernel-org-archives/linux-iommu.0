@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v7 21/24] iommu/tegra: gart: Prepend error/debug messages with "gart:"
-Date: Wed, 12 Dec 2018 23:39:04 +0300
-Message-ID: <20181212203907.23461-22-digetx@gmail.com>
+Subject: [PATCH v7 22/24] iommu/tegra: gart: Don't detach devices from inactive domains
+Date: Wed, 12 Dec 2018 23:39:05 +0300
+Message-ID: <20181212203907.23461-23-digetx@gmail.com>
 References: <20181212203907.23461-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,30 +12,56 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-GART became a part of Memory Controller, hence now the drivers device
-is Memory Controller and not GART. As a result all printed messages are
-prepended with the "tegra-mc 7000f000.memory-controller:", so let's
-prepend GART's messages with "gart:" in order to differentiate them
-from the MC.
+There could be unlimited number of allocated domains, but only one domain
+can be active at a time. Hence devices must be detached only from the
+active domain.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/tegra-gart.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/tegra-gart.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 2e0e6aff8f70..a3ce6918577d 100644
+index a3ce6918577d..74c9be13f043 100644
 --- a/drivers/iommu/tegra-gart.c
 +++ b/drivers/iommu/tegra-gart.c
-@@ -19,6 +19,8 @@
-  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-  */
+@@ -171,7 +171,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
+ 	struct gart_domain *gart_domain = to_gart_domain(domain);
+-	struct gart_device *gart = gart_domain->gart;
++	struct gart_device *gart = gart_handle;
+ 	struct gart_client *client, *c;
+ 	int err = 0;
  
-+#define dev_fmt(fmt)	"gart: " fmt
-+
- #include <linux/io.h>
- #include <linux/iommu.h>
- #include <linux/list.h>
+@@ -195,6 +195,7 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 		goto fail;
+ 	}
+ 	gart->active_domain = domain;
++	gart_domain->gart = gart;
+ 	list_add(&client->list, &gart->client);
+ 	spin_unlock(&gart->client_lock);
+ 	dev_dbg(gart->dev, "Attached %s\n", dev_name(dev));
+@@ -217,8 +218,10 @@ static void __gart_iommu_detach_dev(struct iommu_domain *domain,
+ 		if (c->dev == dev) {
+ 			list_del(&c->list);
+ 			kfree(c);
+-			if (list_empty(&gart->client))
++			if (list_empty(&gart->client)) {
+ 				gart->active_domain = NULL;
++				gart_domain->gart = NULL;
++			}
+ 			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
+ 			return;
+ 		}
+@@ -254,7 +257,6 @@ static struct iommu_domain *gart_iommu_domain_alloc(unsigned type)
+ 	if (!gart_domain)
+ 		return NULL;
+ 
+-	gart_domain->gart = gart;
+ 	gart_domain->domain.geometry.aperture_start = gart->iovmm_base;
+ 	gart_domain->domain.geometry.aperture_end = gart->iovmm_base +
+ 					gart->page_count * GART_PAGE_SIZE - 1;
 -- 
 2.20.0
