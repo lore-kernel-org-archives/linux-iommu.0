@@ -1,36 +1,38 @@
-From: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v6 00/21] IOMMU: Tegra GART driver clean up and
- optimization
-Date: Wed, 12 Dec 2018 15:49:35 +0300
-Message-ID: <e0eee0b5-5513-6f38-7b18-ca7a00255ff6@gmail.com>
-References: <20181209202950.31486-1-digetx@gmail.com>
- <20181211095317.tv43aaefnsezmic7@8bytes.org> <20181212102415.GM15092@ulmo>
- <20181212104331.GW16835@8bytes.org>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: [PATCH] iommu/io-pgtable-arm-v7s: Don't check PHYS_OFFSET if RAMDOMIZE_BASE is enabled
+Date: Wed, 12 Dec 2018 21:02:17 +0800
+Message-ID: <1544619737-6313-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181212104331.GW16835@8bytes.org>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Thierry Reding <thierry.reding@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, CK Hu <ck.hu@mediatek.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 12.12.2018 13:43, Joerg Roedel wrote:
-> Hi Thierry, Hi Dmitry,
-> 
-> On Wed, Dec 12, 2018 at 11:24:15AM +0100, Thierry Reding wrote:
->> So appart from the one issue in the "memory controller integration"
->> patch this looks good and I've acked the remaining patches. Once the one
->> remaining issue is fixed I think this is ready to be merged.
->>
->> Joerg, given the dependencies between the various parts of the series, I
->> think it may be better for you to merge everything through the IOMMU
->> tree if you don't mind.
-> 
-> Sounds good. Dmitry, can you please address Thierry's comments on patch
-> 13, add his Acks on the other patches and re-send? I'll queue it in the
-> iommu-tree then.
+If CONFIG_RANDOMIZE_BASE is enabled, the "memstart_addr" will be updated
+randomly, then the PHYS_OFFSET may be random.
 
-Sure, thanks to you both!
+Fixes: 82db33dc5e49 ("iommu/io-pgtable-arm: Check for v7s-incapable
+systems")
+Reported-by: CK Hu <ck.hu@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 445c3bd..70941e6 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -709,7 +709,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ {
+ 	struct arm_v7s_io_pgtable *data;
+ 
+-#ifdef PHYS_OFFSET
++#if defined(PHYS_OFFSET) && !defined(CONFIG_RANDOMIZE_BASE)
+ 	if (upper_32_bits(PHYS_OFFSET))
+ 		return NULL;
+ #endif
+-- 
+1.9.1
