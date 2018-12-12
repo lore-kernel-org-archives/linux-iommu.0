@@ -1,137 +1,41 @@
-From: Srinath Mannam via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [RFC PATCH 3/3] PCI: iproc: Add dma reserve resources to host
-Date: Wed, 12 Dec 2018 11:16:09 +0530
-Message-ID: <1544593569-8923-4-git-send-email-srinath.mannam@broadcom.com>
-References: <1544593569-8923-1-git-send-email-srinath.mannam@broadcom.com>
-Reply-To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1544593569-8923-1-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Wed, 12 Dec 2018 08:03:26 +0100
+Message-ID: <D81A7627-474E-448B-B64C-B51A636730CC@xenosoft.de>
+References: <20181129170351.GC27951@lst.de> <d0e04a85-f17d-414e-6fea-971414417430@xenosoft.de> <20181130105346.GB26765@lst.de> <8694431d-c669-b7b9-99fa-e99db5d45a7d@xenosoft.de> <20181130131056.GA5211@lst.de> <25999587-2d91-a63c-ed38-c3fb0075d9f1@xenosoft.de> <c5202d29-863d-1377-0e2d-762203b317e2@xenosoft.de> <58c61afb-290f-6196-c72c-ac7b61b84718@xenosoft.de> <20181204142426.GA2743@lst.de> <ef56d279-f75d-008e-71ba-7068c1b37c48@xenosoft.de> <20181205140550.GA27549@lst.de> <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de> <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de> <7B6DDB28-8BF6-4589-84ED-F1D4D13BFED6@xenosoft.de> <8a2c4581-0c85-8065-f37e-984755eb31ab@xenosoft.de> <424bb228-c9e5-6593-1ab7-5950d9b2bd4e@xenosoft.de> <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de> <1ecb7692-f3fb-a24
+ 6-91f9-2db1b9496305@xenosoft.de> <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de> <4cfb3f26-74e1-db01-b014-759f188bb5a6@xenosoft.de> <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de> <d447ac4e18bddd030aa2f56a0547c0132b3f8dcd.camel@kernel.crashing.org>
+Mime-Version: 1.0 (1.0)
+Content-Type: text/plain;
+        charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <d447ac4e18bddd030aa2f56a0547c0132b3f8dcd.camel@kernel.crashing.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-IPROC host has the limitation that it can use
-only those address ranges given by dma-ranges
-property as inbound address.
-So that the memory address holes in dma-ranges
-should be reserved to allocate as DMA address.
 
-All such reserved addresses are created as resource
-entries and add to dma_resv list of pci host bridge.
 
-These dma reserve resources created by parsing
-dma-ranges parameter.
+> On 12. Dec 2018, at 01:47, Benjamin Herrenschmidt <benh@kernel.crashing.or=
+g> wrote:
+>=20
+>> On Tue, 2018-12-11 at 19:17 +0100, Christian Zigotzky wrote:
+>> X5000 (P5020 board): U-Boot loads the kernel and the dtb file. Then the=20=
 
-Ex:
-dma-ranges = < \
-  0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
-  0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
-  0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+>> kernel starts but it doesn't find any hard disks (partitions). That=20
+>> means this is also the bad commit for the P5020 board.
+>=20
+> What are the disks hanging off ? A PCIe device of some sort ?
+>=20
+> Can you send good & bad dmesg logs ?
+>=20
+> Ben.
+>=20
+>=20
+Unfortunately not. It doesn=E2=80=99t detect any hard disk. That means the k=
+ernel ring buffer won=E2=80=99t save to log files. I don=E2=80=99t have a se=
+rial null modem cable for seeing all output. We use SATA disks. I will inves=
+tigate more in this problem with rollback the files in the bad commit.
 
-In the above example of dma-ranges, memory address from
-0x0 - 0x80000000,
-0x100000000 - 0x800000000,
-0x1000000000 - 0x8000000000 and
-0x10000000000 - 0xffffffffffffffff.
-are not allowed to use as inbound addresses.
-So that we need to add these address range to dma_resv
-list to reserve their IOVA address ranges.
-
-Signed-off-by: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
----
- drivers/pci/controller/pcie-iproc.c | 49 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
-
-diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-index 3160e93..43e465a 100644
---- a/drivers/pci/controller/pcie-iproc.c
-+++ b/drivers/pci/controller/pcie-iproc.c
-@@ -1154,25 +1154,74 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
- 	return ret;
- }
- 
-+static int
-+iproc_pcie_add_dma_resv_range(struct device *dev, struct list_head *resources,
-+			      uint64_t start, uint64_t end)
-+{
-+	struct resource *res;
-+
-+	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-+	if (!res)
-+		return -ENOMEM;
-+
-+	res->start = (resource_size_t)start;
-+	res->end = (resource_size_t)end;
-+	pci_add_resource_offset(resources, res, 0);
-+
-+	return 0;
-+}
-+
- static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
- {
-+	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
- 	struct of_pci_range range;
- 	struct of_pci_range_parser parser;
- 	int ret;
-+	uint64_t start, end;
-+	LIST_HEAD(resources);
- 
- 	/* Get the dma-ranges from DT */
- 	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
- 	if (ret)
- 		return ret;
- 
-+	start = 0;
- 	for_each_of_pci_range(&parser, &range) {
-+		end = range.pci_addr;
-+		/* dma-ranges list expected in sorted order */
-+		if (end < start) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
- 		/* Each range entry corresponds to an inbound mapping region */
- 		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
- 		if (ret)
- 			return ret;
-+
-+		if (end - start) {
-+			ret = iproc_pcie_add_dma_resv_range(pcie->dev,
-+							    &resources,
-+							    start, end);
-+			if (ret)
-+				goto out;
-+		}
-+		start = range.pci_addr + range.size;
- 	}
- 
-+	end = ~0;
-+	if (end - start) {
-+		ret = iproc_pcie_add_dma_resv_range(pcie->dev, &resources,
-+						    start, end);
-+		if (ret)
-+			goto out;
-+	}
-+
-+	list_splice_init(&resources, &host->dma_resv);
-+
- 	return 0;
-+out:
-+	pci_free_resource_list(&resources);
-+	return ret;
- }
- 
- static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
--- 
-2.7.4
+=E2=80=94 Christian
