@@ -1,68 +1,57 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v6 06/21] dt-bindings: memory: tegra: Squash tegra20-gart
- into tegra20-mc
-Date: Wed, 12 Dec 2018 11:02:14 +0100
-Message-ID: <20181212100214.GC15092@ulmo>
+Subject: Re: [PATCH v6 07/21] ARM: dts: tegra20: Update Memory Controller
+ node to the new binding
+Date: Wed, 12 Dec 2018 11:02:29 +0100
+Message-ID: <20181212100229.GD15092@ulmo>
 References: <20181209202950.31486-1-digetx@gmail.com>
- <20181209202950.31486-7-digetx@gmail.com>
+ <20181209202950.31486-8-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="KN5l+BnMqAQyZLvT"
+        protocol="application/pgp-signature"; boundary="JwB53PgKC5A7+0Ej"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181209202950.31486-7-digetx@gmail.com>
+In-Reply-To: <20181209202950.31486-8-digetx@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Dmitry Osipenko <digetx@gmail.com>
 Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---KN5l+BnMqAQyZLvT
+--JwB53PgKC5A7+0Ej
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 09, 2018 at 11:29:35PM +0300, Dmitry Osipenko wrote:
-> Splitting GART and Memory Controller wasn't a good decision that was made
-> back in the day. Given that the GART driver wasn't ever been used by
-> anything in the kernel, we decided that it will be better to correct the
-> mistakes of the past and merge two bindings into a single one. As a result
-> there is a DT ABI change for the Memory Controller that allows not to
-> break newer kernels using older DT and not to break older kernels using
-> newer DT, that is done by changing the 'compatible' of the node to
-> 'tegra20-mc-gart' and adding a new-required clock property. The new clock
-> property also puts the tegra20-mc binding in line with the bindings of the
-> later Tegra generations.
+On Sun, Dec 09, 2018 at 11:29:36PM +0300, Dmitry Osipenko wrote:
+> Device tree binding of Memory Controller has been changed: GART has been
+> squashed into the MC, there are a new mandatory clock and #iommu-cells
+> properties, the compatible has been changed to 'tegra20-mc-gart'.
 >=20
 > Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
 > ---
->  .../bindings/iommu/nvidia,tegra20-gart.txt    | 14 ----------
->  .../memory-controllers/nvidia,tegra20-mc.txt  | 27 +++++++++++++------
->  2 files changed, 19 insertions(+), 22 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra2=
-0-gart.txt
+>  arch/arm/boot/dts/tegra20.dtsi | 15 ++++++---------
+>  1 file changed, 6 insertions(+), 9 deletions(-)
 
 Acked-by: Thierry Reding <treding@nvidia.com>
 
---KN5l+BnMqAQyZLvT
+--JwB53PgKC5A7+0Ej
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ3KYACgkQ3SOs138+
-s6FZRA//cB/CHkKjPsOF+E9nDI2hDiPmyB3xhsehRWwGC5Vt5DasCimC/0yT6qXd
-aQrbl4QAlaTxxoGKRjPBOb09kTFto9ZPlKoxgFSNZSYN1eYg75l+i8uUHF6vLRwf
-Mwgk7NSRHS5mhGlBzzuuUEgQgNTBDOnAmd3n7kmDTgKy67cHkER9t9oilMFXL9FV
-3TacwTj6HjaO9Ec/V4K8lzi/Qi5wbjhTZpGyN/K+ojCM/T/5NAuUJjlOEyJHOIK6
-gg9xcBnsp4ApUyjEXXAcaabRBROl2/oorX6UsrsGAt7OfbJlzo1Z+R1bof4BOyGy
-kJHyrPYWxuHYegZTPPHm+p67uJBg5N8LC7mcWs+ZpypVgDjjUIjwZr7qDEkCtGrg
-suPXqEHUi47SAdQ+MNm6ISEmJX7PnIUbQcCi0/aOJ5J9Bm+d7+l421CrvTGn/e70
-mFnUwJCW6xWZLK/IpEvRBtY2fMnIssMrBLbXC76oNyA4dgEttHZitBc5Iei3sLsw
-4PSE2lF03RU2FZ2FCln4vn/ORACLrTAofeieL4vPHGAljFDLgdP3nL9E+wvHGqgq
-hWBRlptbxsyFyiK0nWO72mQslRYChirO0LYtxsJrVU42iQqSRYxibTqVNsdR3Tol
-4aKnjZuuuafbRyZjZfmEHIiTPEoyJpT9JEPbj799ji70cm2mZ20=
-=Qyix
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ3LUACgkQ3SOs138+
+s6GEFBAAuSSc+1QIBQ8l6lCc7s4lS7wgI3s3yQNLwQKke9yteMQyJh86aqFr4P6m
+OzmzqFI1HuCE7BhBkxZPjn0lWvsQzEbdjmjqrbbBEw/Iany8fwERcAEY4EY6kHLy
+mWWl/k7DnX2n1zO8KXzp+pRzAOvo191jx8TxO0DhWXibFi2N08rET2jZjZE7NHuq
+ykkV1etDZiF9qWeXRF5Lg5HjI5jDCyROjviokWveaa7eSUzUvGmD57c0JelGoz2i
+VIQJSHCaMpc/d/P1tzorvIqi972VOURzREy6tuopN8b1zZyRe+KwwbcngwfQ+xDV
+tFrNZRVa6/QZMh9v5vlXhGPpDr1fR/RaGq/S1CtJX0hg+uqyjckJDK6pYZkz8UI1
+5DpD2bfoasYvpDG8ShLkGXdKhra6vll+e0R1TrjBv1HcLzcLMg3T1VPCBvIF0Ix3
+8Wp9BU52LhykSdlQwalnmnl+THFaU+fSUv+stvqgVkVlQhCOW3kPINkYbbqrHUye
+lEhvCTrhV3+whFiUVVPCHC5/PoNqDM3R1k1QOIFCwADzVUKDMar+89wo6s4rKYqE
+EytYAl3XLGBdqtSfIMuak4uc1H2hPOgTt5w+tGgyHZ4UYAwV1YAw80NopFlQZuC3
+Muk4wHCaapWKgyyIhIr9IkKEdDUMz9wYyEtihZDEyCtAp074c5Y=
+=8FTX
 -----END PGP SIGNATURE-----
 
---KN5l+BnMqAQyZLvT--
+--JwB53PgKC5A7+0Ej--
