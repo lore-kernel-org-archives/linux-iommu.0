@@ -1,56 +1,373 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v6 12/21] memory: tegra: Use relaxed versions of
- readl/writel
-Date: Wed, 12 Dec 2018 11:05:56 +0100
-Message-ID: <20181212100556.GI15092@ulmo>
+Subject: Re: [PATCH v6 13/21] iommu/tegra: gart: Integrate with Memory
+ Controller driver
+Date: Wed, 12 Dec 2018 11:14:07 +0100
+Message-ID: <20181212101407.GJ15092@ulmo>
 References: <20181209202950.31486-1-digetx@gmail.com>
- <20181209202950.31486-13-digetx@gmail.com>
+ <20181209202950.31486-14-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="IR1Y5IvQhrKgS4e6"
+        protocol="application/pgp-signature"; boundary="Do4IU1xF/9sod/r6"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181209202950.31486-13-digetx@gmail.com>
+In-Reply-To: <20181209202950.31486-14-digetx@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Dmitry Osipenko <digetx@gmail.com>
 Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---IR1Y5IvQhrKgS4e6
+--Do4IU1xF/9sod/r6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 09, 2018 at 11:29:41PM +0300, Dmitry Osipenko wrote:
-> There is no need for inserting of memory barriers to access registers of
-> Memory Controller. Hence use the relaxed versions of the accessors.
+On Sun, Dec 09, 2018 at 11:29:42PM +0300, Dmitry Osipenko wrote:
+> The device-tree binding has been changed. There is no separate GART device
+> anymore, it is squashed into the Memory Controller. Integrate GART module
+> with the MC in a way it is done for the SMMU of Tegra30+.
 >=20
 > Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 > ---
->  drivers/memory/tegra/mc.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iommu/Kconfig      |  1 +
+>  drivers/iommu/tegra-gart.c | 77 ++++++++++++--------------------------
+>  drivers/memory/tegra/mc.c  | 41 ++++++++++++++++++++
+>  include/soc/tegra/mc.h     | 27 +++++++++++++
+>  4 files changed, 93 insertions(+), 53 deletions(-)
+>=20
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index d9a25715650e..83c099bb7288 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -282,6 +282,7 @@ config ROCKCHIP_IOMMU
+>  config TEGRA_IOMMU_GART
+>  	bool "Tegra GART IOMMU Support"
+>  	depends on ARCH_TEGRA_2x_SOC
+> +	depends on TEGRA_MC
+>  	select IOMMU_API
+>  	help
+>  	  Enables support for remapping discontiguous physical memory
+> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+> index 835fea461c59..0a72b6afa842 100644
+> --- a/drivers/iommu/tegra-gart.c
+> +++ b/drivers/iommu/tegra-gart.c
+> @@ -19,16 +19,17 @@
+>   * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+>   */
+> =20
+> -#include <linux/init.h>
+>  #include <linux/io.h>
+>  #include <linux/iommu.h>
+>  #include <linux/list.h>
+>  #include <linux/moduleparam.h>
+> -#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/vmalloc.h>
+> =20
+> +#include <soc/tegra/mc.h>
+> +
+>  /* bitmap of the page sizes currently supported */
+>  #define GART_IOMMU_PGSIZES	(SZ_4K)
+> =20
+> @@ -397,9 +398,8 @@ static const struct iommu_ops gart_iommu_ops =3D {
+>  	.iotlb_sync	=3D gart_iommu_sync,
+>  };
+> =20
+> -static int tegra_gart_suspend(struct device *dev)
+> +int tegra_gart_suspend(struct gart_device *gart)
+>  {
+> -	struct gart_device *gart =3D dev_get_drvdata(dev);
+>  	unsigned long iova;
+>  	u32 *data =3D gart->savedata;
+>  	unsigned long flags;
+> @@ -411,9 +411,8 @@ static int tegra_gart_suspend(struct device *dev)
+>  	return 0;
+>  }
+> =20
+> -static int tegra_gart_resume(struct device *dev)
+> +int tegra_gart_resume(struct gart_device *gart)
+>  {
+> -	struct gart_device *gart =3D dev_get_drvdata(dev);
+>  	unsigned long flags;
+> =20
+>  	spin_lock_irqsave(&gart->pte_lock, flags);
+> @@ -422,41 +421,39 @@ static int tegra_gart_resume(struct device *dev)
+>  	return 0;
+>  }
+> =20
+> -static int tegra_gart_probe(struct platform_device *pdev)
+> +struct gart_device *tegra_gart_probe(struct device *dev,
+> +				     const struct tegra_smmu_soc *soc,
+> +				     struct tegra_mc *mc)
+>  {
+>  	struct gart_device *gart;
+> -	struct resource *res, *res_remap;
+> +	struct resource *res_remap;
+>  	void __iomem *gart_regs;
+> -	struct device *dev =3D &pdev->dev;
+>  	int ret;
+> =20
+>  	BUILD_BUG_ON(PAGE_SHIFT !=3D GART_PAGE_SHIFT);
+> =20
+> +	/* Tegra30+ has an SMMU and no GART */
+> +	if (soc)
+> +		return NULL;
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+This looks weird. Why do we even call tegra_gart_probe() on anything but
+Tegra20?
 
---IR1Y5IvQhrKgS4e6
+> +
+>  	/* the GART memory aperture is required */
+> -	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	res_remap =3D platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -	if (!res || !res_remap) {
+> +	res_remap =3D platform_get_resource(to_platform_device(dev),
+> +					  IORESOURCE_MEM, 1);
+> +	if (!res_remap) {
+>  		dev_err(dev, "GART memory aperture expected\n");
+> -		return -ENXIO;
+> +		return ERR_PTR(-ENXIO);
+>  	}
+> =20
+>  	gart =3D devm_kzalloc(dev, sizeof(*gart), GFP_KERNEL);
+>  	if (!gart) {
+>  		dev_err(dev, "failed to allocate gart_device\n");
+> -		return -ENOMEM;
+> +		return ERR_PTR(-ENOMEM);
+>  	}
+> =20
+> -	gart_regs =3D devm_ioremap(dev, res->start, resource_size(res));
+> -	if (!gart_regs) {
+> -		dev_err(dev, "failed to remap GART registers\n");
+> -		return -ENXIO;
+> -	}
+> -
+> -	ret =3D iommu_device_sysfs_add(&gart->iommu, &pdev->dev, NULL,
+> -				     dev_name(&pdev->dev));
+> +	ret =3D iommu_device_sysfs_add(&gart->iommu, dev, NULL, "gart");
+>  	if (ret) {
+>  		dev_err(dev, "Failed to register IOMMU in sysfs\n");
+> -		return ret;
+> +		return ERR_PTR(ret);
+>  	}
+> =20
+>  	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
+> @@ -468,7 +465,8 @@ static int tegra_gart_probe(struct platform_device *p=
+dev)
+>  		goto remove_sysfs;
+>  	}
+> =20
+> -	gart->dev =3D &pdev->dev;
+> +	gart->dev =3D dev;
+> +	gart_regs =3D mc->regs + GART_REG_BASE;
+>  	spin_lock_init(&gart->pte_lock);
+>  	spin_lock_init(&gart->client_lock);
+>  	INIT_LIST_HEAD(&gart->client);
+> @@ -483,46 +481,19 @@ static int tegra_gart_probe(struct platform_device =
+*pdev)
+>  		goto unregister_iommu;
+>  	}
+> =20
+> -	platform_set_drvdata(pdev, gart);
+>  	do_gart_setup(gart, NULL);
+> =20
+>  	gart_handle =3D gart;
+> =20
+> -	return 0;
+> +	return gart;
+> =20
+>  unregister_iommu:
+>  	iommu_device_unregister(&gart->iommu);
+>  remove_sysfs:
+>  	iommu_device_sysfs_remove(&gart->iommu);
+> =20
+> -	return ret;
+> -}
+> -
+> -static const struct dev_pm_ops tegra_gart_pm_ops =3D {
+> -	.suspend	=3D tegra_gart_suspend,
+> -	.resume		=3D tegra_gart_resume,
+> -};
+> -
+> -static const struct of_device_id tegra_gart_of_match[] =3D {
+> -	{ .compatible =3D "nvidia,tegra20-gart", },
+> -	{ },
+> -};
+> -
+> -static struct platform_driver tegra_gart_driver =3D {
+> -	.probe		=3D tegra_gart_probe,
+> -	.driver =3D {
+> -		.name	=3D "tegra-gart",
+> -		.pm	=3D &tegra_gart_pm_ops,
+> -		.of_match_table =3D tegra_gart_of_match,
+> -		.suppress_bind_attrs =3D true,
+> -	},
+> -};
+> -
+> -static int __init tegra_gart_init(void)
+> -{
+> -	return platform_driver_register(&tegra_gart_driver);
+> +	return ERR_PTR(ret);
+>  }
+> -subsys_initcall(tegra_gart_init);
+> =20
+>  module_param(gart_debug, bool, 0644);
+>  MODULE_PARM_DESC(gart_debug, "Enable GART debugging");
+> diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+> index 55ecfb2d8cfd..4cae1c3a853b 100644
+> --- a/drivers/memory/tegra/mc.c
+> +++ b/drivers/memory/tegra/mc.c
+> @@ -702,13 +702,54 @@ static int tegra_mc_probe(struct platform_device *p=
+dev)
+>  				PTR_ERR(mc->smmu));
+>  	}
+> =20
+> +	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_GART)) {
+> +		mc->gart =3D tegra_gart_probe(&pdev->dev, mc->soc->smmu, mc);
+> +		if (IS_ERR(mc->gart))
+> +			dev_err(&pdev->dev, "failed to probe GART: %ld\n",
+> +				PTR_ERR(mc->gart));
+> +	}
+
+Perhaps if we add a check for for !mc->soc->smmu here we can avoid
+passing this data structure to tegra_gart_probe() and remove the
+corresponding check from tegra_gart_probe(). That seems more like a
+more logical sequence than attempting to probe GART on device that may
+not have one and return.
+
+Also, since there's no error return here, do we want to set mc->gart to
+NULL on error to avoid crashing later on...
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int tegra_mc_suspend(struct device *dev)
+> +{
+> +	struct tegra_mc *mc =3D dev_get_drvdata(dev);
+> +	int err;
+> +
+> +	if (mc->gart) {
+
+=2E.. like here?
+
+> +		err =3D tegra_gart_suspend(mc->gart);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+>  	return 0;
+>  }
+> =20
+> +static int tegra_mc_resume(struct device *dev)
+> +{
+> +	struct tegra_mc *mc =3D dev_get_drvdata(dev);
+> +	int err;
+> +
+> +	if (mc->gart) {
+
+And here?
+
+> +		err =3D tegra_gart_resume(mc->gart);
+> +		if (err)
+> +			return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct dev_pm_ops tegra_mc_pm_ops =3D {
+> +	.suspend =3D tegra_mc_suspend,
+> +	.resume =3D tegra_mc_resume,
+> +};
+> +
+>  static struct platform_driver tegra_mc_driver =3D {
+>  	.driver =3D {
+>  		.name =3D "tegra-mc",
+>  		.of_match_table =3D tegra_mc_of_match,
+> +		.pm =3D &tegra_mc_pm_ops,
+>  		.suppress_bind_attrs =3D true,
+>  	},
+>  	.prevent_deferred_probe =3D true,
+> diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+> index db5bfdf589b4..5da42e3fb801 100644
+> --- a/include/soc/tegra/mc.h
+> +++ b/include/soc/tegra/mc.h
+> @@ -77,6 +77,7 @@ struct tegra_smmu_soc {
+> =20
+>  struct tegra_mc;
+>  struct tegra_smmu;
+> +struct gart_device;
+> =20
+>  #ifdef CONFIG_TEGRA_IOMMU_SMMU
+>  struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+> @@ -96,6 +97,31 @@ static inline void tegra_smmu_remove(struct tegra_smmu=
+ *smmu)
+>  }
+>  #endif
+> =20
+> +#ifdef CONFIG_TEGRA_IOMMU_GART
+> +struct gart_device *tegra_gart_probe(struct device *dev,
+> +				     const struct tegra_smmu_soc *soc,
+> +				     struct tegra_mc *mc);
+> +int tegra_gart_suspend(struct gart_device *gart);
+> +int tegra_gart_resume(struct gart_device *gart);
+> +#else
+> +static inline struct gart_device *
+> +tegra_gart_probe(struct device *dev, const struct tegra_smmu_soc *soc,
+> +		 struct tegra_mc *mc)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline int tegra_gart_suspend(struct gart_device *gart)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int tegra_gart_resume(struct gart_device *gart)
+> +{
+> +	return -ENODEV;
+> +}
+> +#endif
+
+That doesn't look right. If we don't enable GART, then the dummy
+implementations will be used, but they return error codes, so
+suspend/resume of MC will also fail, causing the whole system to
+not be able to suspend if GART is disabled.
+
+I think it'd be better to avoid the dummy functions and instead add
+extra checks for IS_ENABLED(CONFIG_TEGRA_IOMMU_GART) where these are
+called. That way references to these functions should be discarded
+at translation time.
+
+To be specific, tegra_mc_suspend() and tegra_mc_resume() would change
+like this:
+
+	if (IS_ENABLED(CONFIG_TEGRA_IOMMU_GART) && mc->gart)
+
+Thierry
+
+--Do4IU1xF/9sod/r6
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ3YQACgkQ3SOs138+
-s6GGGhAAnVGGzhNNAjxLTjYdbjVxTO+bXB0nc146fW2vgphsGF+pQq6buITkXJk2
-bz1X74SxdrH2OS2WUS6kyh4wyAQWbWF3krxeOYHt4s4ylOPUk7QgYXmgUgTqCE/M
-Mnabz6tXbv4O9Rdqtkt9QbEkiohqxsSZCy55QFaPxSqkytHjDinhyFuKa4pmRUIn
-RkjOm2KaSyEIHQAyy3uZQSY1iFfsPx1OA29UVoa+xPtnSgBd/saYDWz+XkTgKgNx
-YLiPW36Dzf9HBMYN5XqDunXz4Kv3hgIxU1rbDppouVRrJrwYzIc/NWU6jHN7xsFZ
-BrRTj2fOCwCf+P/z5vkNRjK35FvYzK6PcEJ073ZS3IzvNsF923C4HUzNSRf2jVEA
-GhZKhnYN/bePEphSTBW0JF58N375gffXoMhSzdskZhBzVHtcr1vYB0akf58o7Hs+
-B2j+e/9o68dLhmuIReRlWEdf2LZXZA3rbFs/GFlUCOo7/hCngewR3OqZxdyVp4Up
-FVAHlNWKBO6O1orV1hfn0MwKhEiiE7149GjPqe+nMIrNDnyBB5/sTHrW2UveKdAC
-QUxACgCtD3fpEe5GrQzyw2cHiqf3OOx3faICD9cbHzU94bsGbuVqcayd9lK3UH31
-GzNcx4DNHFy2iuQLK+ppsPTZOlbzYxxf9RKfq6UZEy4oOBPls/s=
-=1jiE
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ324ACgkQ3SOs138+
+s6Fk7xAAsQkWgAOy3a1e8km4a/1eMiv+ODQ/SxbNo9Owwn4+IXOYQVrSP85ooA/Z
+fHAuNcOKgCGw/buzgv2CXzMBmQyHDr92OS1PSHWMpC0qtTOqlXTZIWiyizvk1lQ1
+glkqDjBj3uInQWunUadUhyD3gsyjSNxDXbCrJ0YlOjrGKtekWGqqtVyLK7Rb9/qg
+zvQNgTJf+tvy562WbWz3+OC6rxhE0iwnpwPibT89LpG6tYy9zEB4LIxieD1uhH6R
+r+iN4ghp/uFq1a2kK8x46C/OBFnuy+TwvTMC0R4Rf56tKkAG1FyG72o3Q2UGQb6P
+1NH3j+xvFyax0j834pYUp5GGy/T0w0M7dA3AYFWoMIQgpmUQxqRn8Lm1k7JZ6lHP
+mJFCMhwdm33vb04W/XC+nRu6l3HHvcQscCqxS7VIw4Cj+3FpTPrY1jSAgsyE0MRw
+dELYf9wVxj6ZfozyZAXRbwJit4S93ckrXRpMtDv9/n3ULZ66WO7IVuylWrd86rlx
+FmsFoQ/1CL/HrrnzSED/dh5kNC5H1Upn6n+R6tZua70oHAhlh3LuD5gUyAK8aWB9
+KMd5ZJ94t/fIn/FPPIyxgmZUGp6xL1ljvXQ47TFbfqiYAhnqd+NPDk2CJ2wwaEjj
+UQaZiHNJt8JzZMLbwLCq3MySIRtaArTn7B9yZFrW8UyH+mzS3jI=
+=aFQ1
 -----END PGP SIGNATURE-----
 
---IR1Y5IvQhrKgS4e6--
+--Do4IU1xF/9sod/r6--
