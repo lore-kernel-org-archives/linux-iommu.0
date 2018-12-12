@@ -1,61 +1,59 @@
 From: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v6 21/21] iommu/tegra: gart: Perform code refactoring
-Date: Wed, 12 Dec 2018 11:20:27 +0100
-Message-ID: <20181212102027.GK15092@ulmo>
+Subject: Re: [PATCH v6 18/21] iommu/tegra: gart: Prepend error/debug messages
+ with "gart:"
+Date: Wed, 12 Dec 2018 11:20:58 +0100
+Message-ID: <20181212102058.GL15092@ulmo>
 References: <20181209202950.31486-1-digetx@gmail.com>
- <20181209202950.31486-22-digetx@gmail.com>
+ <20181209202950.31486-19-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="SCOJXUq1iwCn05li"
+        protocol="application/pgp-signature"; boundary="/jkxxxtAhYIHVDuh"
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181209202950.31486-22-digetx@gmail.com>
+In-Reply-To: <20181209202950.31486-19-digetx@gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Dmitry Osipenko <digetx@gmail.com>
 Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---SCOJXUq1iwCn05li
+--/jkxxxtAhYIHVDuh
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Dec 09, 2018 at 11:29:50PM +0300, Dmitry Osipenko wrote:
-> Removed redundant safety-checks in the code and some debug code that
-> isn't actually very useful for debugging, like enormous pagetable dump
-> on each fault. The majority of the changes are code reshuffling,
-> variables/whitespaces clean up and removal of debug messages that
-> duplicate messages of the IOMMU-core.
+On Sun, Dec 09, 2018 at 11:29:47PM +0300, Dmitry Osipenko wrote:
+> GART became a part of Memory Controller, hence now the drivers device
+> is Memory Controller and not GART. As a result all printed messages are
+> prepended with the "tegra-mc 7000f000.memory-controller:", so let's
+> prepend GART's messages with "gart:" in order to differentiate them
+> from the MC.
 >=20
 > Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 > ---
->  drivers/iommu/tegra-gart.c | 244 +++++++++++++++----------------------
->  1 file changed, 96 insertions(+), 148 deletions(-)
-
-This is a little over the top in some places, but there are enough good
-changes to gloss that over:
+>  drivers/iommu/tegra-gart.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
 Acked-by: Thierry Reding <treding@nvidia.com>
 
---SCOJXUq1iwCn05li
+--/jkxxxtAhYIHVDuh
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ4OsACgkQ3SOs138+
-s6EGoQ/+OhpqPKQ5u8xJGxhe0MrI4exbUAh+zAC1y5Tmq+PbSTKpsf33/E0jao7Z
-3e3oVbeN0Fi7o5c5boHynwaXTea+C4KC4uwLhtBZ/FjWyQp68sJTSM88NaBJK7mq
-rQVUQ2ayUT5/pOGVT2V71WOwodL1g3SukQaM5owcgUwq2SVCfUe5QvzH1x2Gztor
-q/iM50vHYU8wtezVeSCB6Fm4951TAN8uHaRYeGiMyQ/OB5VDpD3kYzPzCt03kC/f
-yocv/dKZu56IFBnWQPJtVR0KzjL41ZyJxqm2/sa0pp1aYUVrmsXReyHsv1gBCMIs
-JAY5IoSe231YT4/98HH10NH4iqm/SE10aNpJSbuc00WIt8LvZSWVrqpm8LMYboLV
-odPOy/yPsdOEUISQYdBZpMrBWNc9bkLAwsMlbNlcB+4dItKU8tG2b2kpj4H/66D8
-5AfIAJbd9715R/iP3ff3YdBakLpVvDENvkI2v3t/TcThUoEyDjWVRUNU1TjNoScS
-xM5FkjRqvWZBQ1wgfuYyl97RHL3mkJDRpiw9gtGVlev4F7lq9z6RSsyhhnq27gzL
-kwZESih+tDiCfwoQq0ZC6eMz3Uz6AXvNrzd/OL9epicyFtnBPTzxI0I661BF4v4b
-2+qUFq2j597+RhSfvNsU3vhYvQcXqitqT8+rfGA85Ihsfe3n6Sc=
-=T0tQ
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ4QoACgkQ3SOs138+
+s6FaAA//W+T5CGeUZoovs6Ol4TC4GKo1Ig1hAN32fYi6MLJecFSOJJQhh1klmk8b
+8pCoOOEkbr5tOTKgReveh8RRIXL4V68aNpQ0iuGgrutH9kNJSHiEdWS0/cq8yyei
+kobNf8pgjUiu8ZL/HKyN3PjQSXFeAeCmK+tYsJTMPxT+XxYZvNEntMqSKobH+Aa9
+9q1LeyJz6y7ALgHBluAAuds0eSNRY10oUcG+feIe9TOM89Znt+KbQirChbRerst0
+4cScjW0zr8RIYV1oYY9y784UAtRFp97264AMevYtzAffhMqDC9ycsg6DafAUC2ed
+8quEH8VTH+7VdoVSy0m2AikAMZZ0hVoLb3Ub7B2Q8TC+XFAcoQjgW4J376DIZDW8
+jL6HQoriN/9URyQo8fNjs0Toa9/pCnJtS4SXwMFL5CgGJs2+ToyNGYlduLjVcKT/
+fdLdydRmNpImRvNUuYcKwDrtIPCL52AswBwu0WNzZpZmAl2cEmvmzOc5sJ+3sEwW
+nHtotQHjmd69BqxkdLd4K4cVxptT/XPhW+FSlMf9BoKra/mMWvfNbxddDJxdB3VX
+a1oYtCI11P8LvaVn7K2yDtCSf5BWaCk2Gs9R28QBjdSVcLPFaHVDW3oobat/dwRx
+3EXh0r4DeQdtSs23JQDfXCJi1LAmyvTbi6USoxm18hcx9oscMnI=
+=ZNdi
 -----END PGP SIGNATURE-----
 
---SCOJXUq1iwCn05li--
+--/jkxxxtAhYIHVDuh--
