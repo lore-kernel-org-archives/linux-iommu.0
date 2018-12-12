@@ -1,7 +1,7 @@
 From: Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH v7 16/24] memory: tegra: Clean up error messages
-Date: Wed, 12 Dec 2018 23:38:59 +0300
-Message-ID: <20181212203907.23461-17-digetx@gmail.com>
+Subject: [PATCH v7 17/24] iommu/tegra: gart: Fix spinlock recursion
+Date: Wed, 12 Dec 2018 23:39:00 +0300
+Message-ID: <20181212203907.23461-18-digetx@gmail.com>
 References: <20181212203907.23461-1-digetx@gmail.com>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,81 +12,68 @@ To: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia
 Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Make all messages to start with a lower case and don't unnecessarily go
-over 80 chars in the code.
+Fix spinlock recursion bug that happens on IOMMU domain destruction if
+any of the allocated domains have devices attached to them.
 
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Acked-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/memory/tegra/mc.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/iommu/tegra-gart.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
-index 570da2129fa6..0a53598d982f 100644
---- a/drivers/memory/tegra/mc.c
-+++ b/drivers/memory/tegra/mc.c
-@@ -163,7 +163,7 @@ static int tegra_mc_hotreset_assert(struct reset_controller_dev *rcdev,
- 		/* block clients DMA requests */
- 		err = rst_ops->block_dma(mc, rst);
- 		if (err) {
--			dev_err(mc->dev, "Failed to block %s DMA: %d\n",
-+			dev_err(mc->dev, "failed to block %s DMA: %d\n",
- 				rst->name, err);
- 			return err;
+diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
+index b35ffa312a83..a7a9400e0cd8 100644
+--- a/drivers/iommu/tegra-gart.c
++++ b/drivers/iommu/tegra-gart.c
+@@ -197,25 +197,33 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+ 	return err;
+ }
+ 
+-static void gart_iommu_detach_dev(struct iommu_domain *domain,
+-				  struct device *dev)
++static void __gart_iommu_detach_dev(struct iommu_domain *domain,
++				    struct device *dev)
+ {
+ 	struct gart_domain *gart_domain = to_gart_domain(domain);
+ 	struct gart_device *gart = gart_domain->gart;
+ 	struct gart_client *c;
+ 
+-	spin_lock(&gart->client_lock);
+-
+ 	list_for_each_entry(c, &gart->client, list) {
+ 		if (c->dev == dev) {
+ 			list_del(&c->list);
+ 			devm_kfree(gart->dev, c);
+ 			dev_dbg(gart->dev, "Detached %s\n", dev_name(dev));
+-			goto out;
++			return;
  		}
-@@ -173,7 +173,7 @@ static int tegra_mc_hotreset_assert(struct reset_controller_dev *rcdev,
- 		/* wait for completion of the outstanding DMA requests */
- 		while (!rst_ops->dma_idling(mc, rst)) {
- 			if (!retries--) {
--				dev_err(mc->dev, "Failed to flush %s DMA\n",
-+				dev_err(mc->dev, "failed to flush %s DMA\n",
- 					rst->name);
- 				return -EBUSY;
- 			}
-@@ -186,7 +186,7 @@ static int tegra_mc_hotreset_assert(struct reset_controller_dev *rcdev,
- 		/* clear clients DMA requests sitting before arbitration */
- 		err = rst_ops->hotreset_assert(mc, rst);
- 		if (err) {
--			dev_err(mc->dev, "Failed to hot reset %s: %d\n",
-+			dev_err(mc->dev, "failed to hot reset %s: %d\n",
- 				rst->name, err);
- 			return err;
- 		}
-@@ -215,7 +215,7 @@ static int tegra_mc_hotreset_deassert(struct reset_controller_dev *rcdev,
- 		/* take out client from hot reset */
- 		err = rst_ops->hotreset_deassert(mc, rst);
- 		if (err) {
--			dev_err(mc->dev, "Failed to deassert hot reset %s: %d\n",
-+			dev_err(mc->dev, "failed to deassert hot reset %s: %d\n",
- 				rst->name, err);
- 			return err;
- 		}
-@@ -225,7 +225,7 @@ static int tegra_mc_hotreset_deassert(struct reset_controller_dev *rcdev,
- 		/* allow new DMA requests to proceed to arbitration */
- 		err = rst_ops->unblock_dma(mc, rst);
- 		if (err) {
--			dev_err(mc->dev, "Failed to unblock %s DMA : %d\n",
-+			dev_err(mc->dev, "failed to unblock %s DMA : %d\n",
- 				rst->name, err);
- 			return err;
- 		}
-@@ -657,7 +657,8 @@ static int tegra_mc_probe(struct platform_device *pdev)
- 	{
- 		err = tegra_mc_setup_latency_allowance(mc);
- 		if (err < 0) {
--			dev_err(&pdev->dev, "failed to setup latency allowance: %d\n",
-+			dev_err(&pdev->dev,
-+				"failed to setup latency allowance: %d\n",
- 				err);
- 			return err;
- 		}
-@@ -678,7 +679,7 @@ static int tegra_mc_probe(struct platform_device *pdev)
- 		return mc->irq;
  	}
+-	dev_err(gart->dev, "Couldn't find\n");
+-out:
++
++	dev_err(gart->dev, "Couldn't find %s to detach\n", dev_name(dev));
++}
++
++static void gart_iommu_detach_dev(struct iommu_domain *domain,
++				  struct device *dev)
++{
++	struct gart_domain *gart_domain = to_gart_domain(domain);
++	struct gart_device *gart = gart_domain->gart;
++
++	spin_lock(&gart->client_lock);
++	__gart_iommu_detach_dev(domain, dev);
+ 	spin_unlock(&gart->client_lock);
+ }
  
--	WARN(!mc->soc->client_id_mask, "Missing client ID mask for this SoC\n");
-+	WARN(!mc->soc->client_id_mask, "missing client ID mask for this SoC\n");
+@@ -255,7 +263,7 @@ static void gart_iommu_domain_free(struct iommu_domain *domain)
+ 			struct gart_client *c;
  
- 	mc_writel(mc, mc->soc->intmask, MC_INTMASK);
- 
+ 			list_for_each_entry(c, &gart->client, list)
+-				gart_iommu_detach_dev(domain, c->dev);
++				__gart_iommu_detach_dev(domain, c->dev);
+ 		}
+ 		spin_unlock(&gart->client_lock);
+ 	}
 -- 
 2.20.0
