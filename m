@@ -1,70 +1,68 @@
-From: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 0/6] Auxiliary IOMMU domains and Arm SMMUv3
-Date: Wed, 12 Dec 2018 10:54:03 +0100
-Message-ID: <20181212095403.GU16835@8bytes.org>
-References: <e22e3631-2ecb-664d-5666-8e0f865dec83@linux.intel.com>
-	<20181107164323.GA19831@8bytes.org>
-	<758bb120-5bc0-1e2d-ccd0-9be0bcc5d8bc@linux.intel.com>
-	<20181123112125.GF1586@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE68777@SHSMSX101.ccr.corp.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE689B8@SHSMSX101.ccr.corp.intel.com>
-	<20181207102926.GM16835@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE95394@SHSMSX101.ccr.corp.intel.com>
-	<20181210085745.GN16835@8bytes.org>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19BE9D6CA@SHSMSX101.ccr.corp.intel.com>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v6 06/21] dt-bindings: memory: tegra: Squash tegra20-gart
+ into tegra20-mc
+Date: Wed, 12 Dec 2018 11:02:14 +0100
+Message-ID: <20181212100214.GC15092@ulmo>
+References: <20181209202950.31486-1-digetx@gmail.com>
+ <20181209202950.31486-7-digetx@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="KN5l+BnMqAQyZLvT"
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19BE9D6CA-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "christian.koenig-5C7GfCeVMHo@public.gmane.org" <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20181209202950.31486-7-digetx@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dmitry Osipenko <digetx@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Kevin,
 
-On Wed, Dec 12, 2018 at 09:31:27AM +0000, Tian, Kevin wrote:
-> > From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'
-> > Sent: Monday, December 10, 2018 4:58 PM
-> > These represent whether the device together with the IOMMU support
-> > them,
-> > basically whether these features are usable via the IOMMU-API.
-> 
-> "device together with IOMMU" or just "IOMMU itself"?
+--KN5l+BnMqAQyZLvT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No, it should mean device together with IOMMU support it. It is a way
-for users of the IOMMU-API to check whether they can successfully use
-the aux-specific functions.
+On Sun, Dec 09, 2018 at 11:29:35PM +0300, Dmitry Osipenko wrote:
+> Splitting GART and Memory Controller wasn't a good decision that was made
+> back in the day. Given that the GART driver wasn't ever been used by
+> anything in the kernel, we decided that it will be better to correct the
+> mistakes of the past and merge two bindings into a single one. As a result
+> there is a DT ABI change for the Memory Controller that allows not to
+> break newer kernels using older DT and not to break older kernels using
+> newer DT, that is done by changing the 'compatible' of the node to
+> 'tegra20-mc-gart' and adding a new-required clock property. The new clock
+> property also puts the tegra20-mc binding in line with the bindings of the
+> later Tegra generations.
+>=20
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/iommu/nvidia,tegra20-gart.txt    | 14 ----------
+>  .../memory-controllers/nvidia,tegra20-mc.txt  | 27 +++++++++++++------
+>  2 files changed, 19 insertions(+), 22 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iommu/nvidia,tegra2=
+0-gart.txt
 
-> however there is a problem with aux. A device may implement both
-> SR-IOV and Scalable IOV capabilities, but at any time only one of them
-> can be enabled. Driver will provide interfaces for end user to choose.
-> In such case we cannot assume that device-side Scalable-IOV can be
-> always enabled while IOMMU is in scalable mode.
-> 
-> It works better if we position those features just representing IOMMU 
-> support only. In that case, aux is related only to scalable mode of IOMMU
-> itself, which is orthogonal to whether device side supports SIOV.
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-Yeah, but we don't make that decision in the IOMMU code. Whether the
-device exposes SR-IOV or PASID based isolation is decided in PCI code
-based on user input (SR-IOV is also enabled in PCI code and IOMMU just
-uses the new devices that appear).
+--KN5l+BnMqAQyZLvT
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Only if the user enabled scalable mode on the device and the IOMMU
-supports it too, the feature-check function returns true for the aux
-feature.
+-----BEGIN PGP SIGNATURE-----
 
-Regards,
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ3KYACgkQ3SOs138+
+s6FZRA//cB/CHkKjPsOF+E9nDI2hDiPmyB3xhsehRWwGC5Vt5DasCimC/0yT6qXd
+aQrbl4QAlaTxxoGKRjPBOb09kTFto9ZPlKoxgFSNZSYN1eYg75l+i8uUHF6vLRwf
+Mwgk7NSRHS5mhGlBzzuuUEgQgNTBDOnAmd3n7kmDTgKy67cHkER9t9oilMFXL9FV
+3TacwTj6HjaO9Ec/V4K8lzi/Qi5wbjhTZpGyN/K+ojCM/T/5NAuUJjlOEyJHOIK6
+gg9xcBnsp4ApUyjEXXAcaabRBROl2/oorX6UsrsGAt7OfbJlzo1Z+R1bof4BOyGy
+kJHyrPYWxuHYegZTPPHm+p67uJBg5N8LC7mcWs+ZpypVgDjjUIjwZr7qDEkCtGrg
+suPXqEHUi47SAdQ+MNm6ISEmJX7PnIUbQcCi0/aOJ5J9Bm+d7+l421CrvTGn/e70
+mFnUwJCW6xWZLK/IpEvRBtY2fMnIssMrBLbXC76oNyA4dgEttHZitBc5Iei3sLsw
+4PSE2lF03RU2FZ2FCln4vn/ORACLrTAofeieL4vPHGAljFDLgdP3nL9E+wvHGqgq
+hWBRlptbxsyFyiK0nWO72mQslRYChirO0LYtxsJrVU42iQqSRYxibTqVNsdR3Tol
+4aKnjZuuuafbRyZjZfmEHIiTPEoyJpT9JEPbj799ji70cm2mZ20=
+=Qyix
+-----END PGP SIGNATURE-----
 
-	Joerg
+--KN5l+BnMqAQyZLvT--
