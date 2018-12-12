@@ -1,71 +1,60 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v4 1/2] dt-bindings: arm-smmu: Add binding doc for Qcom
-	smmu-500
-Date: Wed, 12 Dec 2018 15:18:06 +0530
-Message-ID: <CAFp+6iF80P-o=Z-aNOMQwWMTcO4jcgSR0wOzd4GvmB3zTvWZLw@mail.gmail.com>
-References: <20181011094930.17010-1-vivek.gautam@codeaurora.org>
-	<20181011094930.17010-2-vivek.gautam@codeaurora.org>
-	<20181011221630.GA5841@bogus>
-	<9ca4bb4f-3e6e-21cc-819e-80b979b934d0@codeaurora.org>
+From: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH 9/9] iommu/tegra: Use helper functions to access
+ dev->iommu_fwspec
+Date: Wed, 12 Dec 2018 10:53:28 +0100
+Message-ID: <20181212095328.GB15092@ulmo>
+References: <20181211121910.5604-1-joro@8bytes.org>
+ <20181211121910.5604-10-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9ca4bb4f-3e6e-21cc-819e-80b979b934d0-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Brown <david.brown-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, robh+dt <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="yNb1oOkm5a9FJOVX"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181211121910.5604-10-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
 
-On Fri, Oct 12, 2018 at 11:37 AM Vivek Gautam
-<vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->
->
->
-> On 10/12/2018 3:46 AM, Rob Herring wrote:
-> > On Thu, 11 Oct 2018 15:19:29 +0530, Vivek Gautam wrote:
-> >> Qcom's implementation of arm,mmu-500 works well with current
-> >> arm-smmu driver implementation. Adding a soc specific compatible
-> >> along with arm,mmu-500 makes the bindings future safe.
-> >>
-> >> Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> >> ---
-> >>
-> >> Changes since v3:
-> >>   - Refined language more to state things directly for the bindings
-> >>     description.
-> >>
-> >>   Documentation/devicetree/bindings/iommu/arm,smmu.txt | 4 ++++
-> >>   1 file changed, 4 insertions(+)
-> >>
-> > Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->
-> Thank you Rob.
->
+--yNb1oOkm5a9FJOVX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Can you please pick this one as well to your tree? This goes on top of the
-bindings patch for "qcom,smmu-v2". So, it can't go through Andy's tree.
-Will ask Andy to pick the second patch of the series, that adds the dt node.
+On Tue, Dec 11, 2018 at 01:19:10PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+>=20
+> Use the new helpers dev_iommu_fwspec_get()/set() to access
+> the dev->iommu_fwspec pointer. This makes it easier to move
+> that pointer later into another struct.
+>=20
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/iommu/tegra-smmu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-I guess as I sent this one along with the dt patch, I would have
-mistakenly added
-you to 'cc' list rather than 'to' list.
-Let me know if you would like me to resend it.
+Acked-by: Thierry Reding <treding@nvidia.com>
 
-Thank
-Vivek
+--yNb1oOkm5a9FJOVX
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlwQ2pUACgkQ3SOs138+
+s6EgZA//e4+EUwlbBiONcBMcFK3Lp+OMNWMDeI5NDEdtigsIto/yEl8kKnYw84sy
+5vvFhasY1oUEmxuIvctMxdcS+NHIUV4z+mV9iV1J6vMQFXcBB47JFnZfpfDxV2X2
++zFGe0UmOgLArSq78bL2BRvx9mJRlzapN5szI/GcHBjJuW/CKjySmNiZdDACIZML
+2nPZe6lUloJV4xgcoiULetrVVaQbdwCzldPXaQSVbrvjl2r8IcqcvTYVjkzaJ0ah
+gY5BEJsdp8hj3PdeYUNn4XCLtDWoh2CfdEpP7AjhpEUxzFoYTjk8k4XA6Lsh26hf
+i6qTUaI6ISSpPx01zTA0Zd9aFPvDLbE0+7uGzVHAWzY58og5FclzVS/MT0kslEkl
+XTYPcV9LlR7v67DxI/5p9yFoQJM0v3i+da8ERqZQuN2S0wprSYTN10htl1t51zNj
+MHnVO0SyIH4tIpHbWQjjCTPvvVEbntFu/kxi214QHkZ7Yd28tQG0O6LY/E3QgPsB
+VCOWKMCwFAgoKDdSn/lMBgEokV+ayjjhC7UYlquv/HB/lCYpnAZliYEe1ubZyD6e
+UQ+jJFJDzn4KmFpH+y63BMQmH+ffy28t8SSuWSlqrbwP1F0QsQzIzlt/DPInB+01
+/PfdHzsOmZlsXNYi3gAcG6CBZVe4birNpKcw8tjup/qd3MwOQEU=
+=7QgA
+-----END PGP SIGNATURE-----
+
+--yNb1oOkm5a9FJOVX--
