@@ -1,59 +1,38 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Check for v7s-incapable
- systems"
-Date: Thu, 13 Dec 2018 10:26:13 +0000
-Message-ID: <38526eab-3010-1ce6-a801-28f5c15dce44@arm.com>
-References: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: [PATCH v2 0/3] PCIe Host request to reserve IOVA
+Date: Thu, 13 Dec 2018 16:02:51 +0530
+Message-ID: <1544697174-6029-1-git-send-email-srinath.mannam@broadcom.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
-Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, CK Hu <ck.hu@mediatek.com>, Stephen Boyd <swboyd@chromium.org>
+To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, poza@codeaurora.org, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ray Jui <rjui@broadcom.com>
+Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Srinath Mannam <srinath.mannam@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-12-13 9:19 am, Yong Wu wrote:
-> This reverts commit 82db33dc5e49fb625262d81125625d07a0d6184e.
-> 
-> After the commit 29859aeb8a6e ("iommu/io-pgtable-arm-v7s: Abort
-> allocation when table address overflows the PTE"), v7s will return fail
-> if the page table allocation isn't expected. this PHYS_OFFSET check
-> is unnecessary now.
-> 
-> And this check may lead to fail. For example, If CONFIG_RANDOMIZE_BASE
-> is enabled, the "memstart_addr" will be updated randomly, then the
-> PHYS_OFFSET may be random.
+Few SOCs have limitation that their PCIe host can't allow few inbound
+address ranges.
+Allowed inbound address ranges are listed in dma-ranges DT property and
+this address ranges are required to do IOVA mapping.
+Remaining address ranges have to be reserved in IOVA mapping.
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+PCIe Host driver of those SOCs has to list all address ranges which have
+to reserve their IOVA address into PCIe host bridge resource entry list.
+IOMMU framework will reserve these IOVAs while initializing IOMMU domain.
 
-Joerg, if you have any more fixes to send for 4.19, please consider 
-picking this up directly.
+This patch set is based on Linux-4.19-rc1.
 
-Thanks,
-Robin.
+Changes from v1:
+  - Addressed Oza review comments.
 
-> Reported-by: CK Hu <ck.hu@mediatek.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->   drivers/iommu/io-pgtable-arm-v7s.c | 4 ----
->   1 file changed, 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index 445c3bd..cec29bf 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -709,10 +709,6 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->   {
->   	struct arm_v7s_io_pgtable *data;
->   
-> -#ifdef PHYS_OFFSET
-> -	if (upper_32_bits(PHYS_OFFSET))
-> -		return NULL;
-> -#endif
->   	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
->   		return NULL;
->   
-> 
+Srinath Mannam (3):
+  PCI: Add dma-resv window list
+  iommu/dma: IOVA reserve for PCI host reserve address list
+  PCI: iproc: Add dma reserve resources to host
+
+ drivers/iommu/dma-iommu.c           |  8 ++++++
+ drivers/pci/controller/pcie-iproc.c | 51 ++++++++++++++++++++++++++++++++++++-
+ drivers/pci/probe.c                 |  3 +++
+ include/linux/pci.h                 |  1 +
+ 4 files changed, 62 insertions(+), 1 deletion(-)
+
+-- 
+2.7.4
