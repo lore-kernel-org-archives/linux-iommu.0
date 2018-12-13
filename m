@@ -1,68 +1,57 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [RESEND PATCH v4 1/1] dt-bindings: arm-smmu: Add binding doc for
- Qcom smmu-500
-Date: Thu, 13 Dec 2018 10:45:24 +0000
-Message-ID: <20181213104524.GA31177@edgewater-inn.cambridge.arm.com>
-References: <20181213090507.6269-1-vivek.gautam@codeaurora.org>
+From: poza-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Subject: Re: [PATCH v2 0/3] PCIe Host request to reserve IOVA
+Date: Thu, 13 Dec 2018 16:16:59 +0530
+Message-ID: <c85f7eb4740d5d76747d1e9a7212b105@codeaurora.org>
+References: <1544697174-6029-1-git-send-email-srinath.mannam@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20181213090507.6269-1-vivek.gautam@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1544697174-6029-1-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 13, 2018 at 02:35:07PM +0530, Vivek Gautam wrote:
-> Qcom's implementation of arm,mmu-500 works well with current
-> arm-smmu driver implementation. Adding a soc specific compatible
-> along with arm,mmu-500 makes the bindings future safe.
+On 2018-12-13 16:02, Srinath Mannam wrote:
+> Few SOCs have limitation that their PCIe host can't allow few inbound
+> address ranges.
+> Allowed inbound address ranges are listed in dma-ranges DT property and
+> this address ranges are required to do IOVA mapping.
+> Remaining address ranges have to be reserved in IOVA mapping.
 > 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Cc: Will Deacon <will.deacon@arm.com>
-> ---
+> PCIe Host driver of those SOCs has to list all address ranges which 
+> have
+> to reserve their IOVA address into PCIe host bridge resource entry 
+> list.
+> IOMMU framework will reserve these IOVAs while initializing IOMMU 
+> domain.
 > 
-> Hi Joerg,
-> I am picking this out separately from the sdm845 smmu support
-> series [1], so that this can go through iommu tree.
-> The dt patch from the series [1] can be taken through arm-soc tree.
+> This patch set is based on Linux-4.19-rc1.
 > 
-> Hi Will,
-> As asked [2], here's the resend version of dt binding patch for sdm845.
-> Kindly ack this so that Joerg can pull this in.
-
-Acked-by: Will Deacon <will.deacon@arm.com>
-
-Joerg -- please can you take this on top of the pull request I sent already?
-Vivek included it as part of a separate series which I thought was going
-via arm-soc, but actually it needs to go with the other arm-smmu patches
-in order to avoid conflicts.
-
-Cheers,
-
-Will
-
->  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 4 ++++
->  1 file changed, 4 insertions(+)
+> Changes from v1:
+>   - Addressed Oza review comments.
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index a6504b37cc21..3133f3ba7567 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -27,6 +27,10 @@ conditions.
->                    "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
->                    "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
->  
-> +                  Qcom SoCs implementing "arm,mmu-500" must also include,
-> +                  as below, SoC-specific compatibles:
-> +                  "qcom,sdm845-smmu-500", "arm,mmu-500"
-> +
->  - reg           : Base address and size of the SMMU.
->  
->  - #global-interrupts : The number of global interrupts exposed by the
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
+> Srinath Mannam (3):
+>   PCI: Add dma-resv window list
+>   iommu/dma: IOVA reserve for PCI host reserve address list
+>   PCI: iproc: Add dma reserve resources to host
 > 
+>  drivers/iommu/dma-iommu.c           |  8 ++++++
+>  drivers/pci/controller/pcie-iproc.c | 51 
+> ++++++++++++++++++++++++++++++++++++-
+>  drivers/pci/probe.c                 |  3 +++
+>  include/linux/pci.h                 |  1 +
+>  4 files changed, 62 insertions(+), 1 deletion(-)
+
+Looks good to me.
+
+Reviewed-by: Oza Pawandeep <poza-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
