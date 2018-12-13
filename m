@@ -1,122 +1,196 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
-Date: Thu, 13 Dec 2018 12:50:22 +0900
-Message-ID: <CAAFQd5C+BygjdBhBOsiBW=4kOgC0a=V8s9om6jqa6yzmn0TEWw@mail.gmail.com>
-References: <20181204110122.12434-1-vivek.gautam@codeaurora.org>
- <99682bd2-1ca6-406a-890c-b34c25a1b2b3@arm.com> <CAFp+6iE7U3HCJwHkeL9A4DXUVryt13YxDCYfBDxcSSM2Z_vqcg@mail.gmail.com>
+From: poza-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Subject: Re: [RFC PATCH 3/3] PCI: iproc: Add dma reserve resources to host
+Date: Thu, 13 Dec 2018 11:33:31 +0530
+Message-ID: <117bb87c4567d14f189642b685dd8813@codeaurora.org>
+References: <1544593569-8923-1-git-send-email-srinath.mannam@broadcom.com>
+	<1544593569-8923-4-git-send-email-srinath.mannam@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAFp+6iE7U3HCJwHkeL9A4DXUVryt13YxDCYfBDxcSSM2Z_vqcg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>"open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, pratikp@codeaurora.org, jcrouse@codeaurora.org
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1544593569-8923-4-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 7, 2018 at 6:25 PM Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
->
-> Hi Robin,
->
-> On Tue, Dec 4, 2018 at 8:51 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> >
-> > On 04/12/2018 11:01, Vivek Gautam wrote:
-> > > Qualcomm SoCs have an additional level of cache called as
-> > > System cache, aka. Last level cache (LLC). This cache sits right
-> > > before the DDR, and is tightly coupled with the memory controller.
-> > > The cache is available to all the clients present in the SoC system.
-> > > The clients request their slices from this system cache, make it
-> > > active, and can then start using it.
-> > > For these clients with smmu, to start using the system cache for
-> > > buffers and, related page tables [1], memory attributes need to be
-> > > set accordingly.
-> > > This change updates the MAIR and TCR configurations with correct
-> > > attributes to use this system cache.
-> > >
-> > > To explain a little about memory attribute requirements here:
-> > >
-> > > Non-coherent I/O devices can't look-up into inner caches. However,
-> > > coherent I/O devices can. But both can allocate in the system cache
-> > > based on system policy and configured memory attributes in page
-> > > tables.
-> > > CPUs can access both inner and outer caches (including system cache,
-> > > aka. Last level cache), and can allocate into system cache too
-> > > based on memory attributes, and system policy.
-> > >
-> > > Further looking at memory types, we have following -
-> > > a) Normal uncached :- MAIR 0x44, inner non-cacheable,
-> > >                        outer non-cacheable;
-> > > b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
-> > >                        outer read write-back non-transient;
-> > >                        attribute setting for coherenet I/O devices.
-> > >
-> > > and, for non-coherent i/o devices that can allocate in system cache
-> > > another type gets added -
-> > > c) Normal sys-cached/non-inner-cached :-
-> > >                        MAIR 0xf4, inner non-cacheable,
-> > >                        outer read write-back non-transient
-> > >
-> > > So, CPU will automatically use the system cache for memory marked as
-> > > normal cached. The normal sys-cached is downgraded to normal non-cached
-> > > memory for CPUs.
-> > > Coherent I/O devices can use system cache by marking the memory as
-> > > normal cached.
-> > > Non-coherent I/O devices, to use system cache, should mark the memory as
-> > > normal sys-cached in page tables.
-> > >
-> > > This change is a realisation of following changes
-> > > from downstream msm-4.9:
-> > > iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT[2]
-> > > iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[3]
-> > >
-> > > [1] https://patchwork.kernel.org/patch/10302791/
-> > > [2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
-> > > [3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
-> > >
-> > > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> > > ---
-> > >
-> > > Changes since v1:
-> > >   - Addressed Tomasz's comments for basing the change on
-> > >     "NO_INNER_CACHE" concept for non-coherent I/O devices
-> > >     rather than capturing "SYS_CACHE". This is to indicate
-> > >     clearly the intent of non-coherent I/O devices that
-> > >     can't access inner caches.
-> >
-> > That seems backwards to me - there is already a fundamental assumption
-> > that non-coherent devices can't access caches. What we're adding here is
-> > a weird exception where they *can* use some level of cache despite still
-> > being non-coherent overall.
-> >
-> > In other words, it's not a case of downgrading coherent devices'
-> > accesses to bypass inner caches, it's upgrading non-coherent devices'
-> > accesses to hit the outer cache. That's certainly the understanding I
-> > got from talking with Pratik at Plumbers, and it does appear to fit with
-> > your explanation above despite the final conclusion you draw being
-> > different.
->
-> Thanks for the thorough review of the change.
-> Right, I guess it's rather an upgrade for non-coherent devices to use
-> an outer cache than a downgrade for coherent devices.
->
+On 2018-12-12 11:16, Srinath Mannam wrote:
+> IPROC host has the limitation that it can use
+> only those address ranges given by dma-ranges
+> property as inbound address.
+> So that the memory address holes in dma-ranges
+> should be reserved to allocate as DMA address.
+> 
+> All such reserved addresses are created as resource
+> entries and add to dma_resv list of pci host bridge.
+> 
+> These dma reserve resources created by parsing
+> dma-ranges parameter.
+> 
+> Ex:
+> dma-ranges = < \
+>   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
+>   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
+>   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+> 
+> In the above example of dma-ranges, memory address from
+> 0x0 - 0x80000000,
+> 0x100000000 - 0x800000000,
+> 0x1000000000 - 0x8000000000 and
+> 0x10000000000 - 0xffffffffffffffff.
+> are not allowed to use as inbound addresses.
+> So that we need to add these address range to dma_resv
+> list to reserve their IOVA address ranges.
+> 
+> Signed-off-by: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> ---
+>  drivers/pci/controller/pcie-iproc.c | 49 
+> +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+> 
+> diff --git a/drivers/pci/controller/pcie-iproc.c
+> b/drivers/pci/controller/pcie-iproc.c
+> index 3160e93..43e465a 100644
+> --- a/drivers/pci/controller/pcie-iproc.c
+> +++ b/drivers/pci/controller/pcie-iproc.c
+> @@ -1154,25 +1154,74 @@ static int iproc_pcie_setup_ib(struct 
+> iproc_pcie *pcie,
+>  	return ret;
+>  }
+> 
+> +static int
+> +iproc_pcie_add_dma_resv_range(struct device *dev, struct list_head 
+> *resources,
+> +			      uint64_t start, uint64_t end)
+> +{
+> +	struct resource *res;
+> +
+> +	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
+> +	if (!res)
+> +		return -ENOMEM;
+> +
+> +	res->start = (resource_size_t)start;
+> +	res->end = (resource_size_t)end;
+> +	pci_add_resource_offset(resources, res, 0);
+> +
+> +	return 0;
+> +}
+> +
+>  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
+>  {
+> +	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
+>  	struct of_pci_range range;
+>  	struct of_pci_range_parser parser;
+>  	int ret;
+> +	uint64_t start, end;
+> +	LIST_HEAD(resources);
+> 
+>  	/* Get the dma-ranges from DT */
+>  	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
+>  	if (ret)
+>  		return ret;
+> 
+> +	start = 0;
+>  	for_each_of_pci_range(&parser, &range) {
+> +		end = range.pci_addr;
+> +		/* dma-ranges list expected in sorted order */
+> +		if (end < start) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+>  		/* Each range entry corresponds to an inbound mapping region */
+>  		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
+>  		if (ret)
+>  			return ret;
+> +
+> +		if (end - start) {
+> +			ret = iproc_pcie_add_dma_resv_range(pcie->dev,
+> +							    &resources,
+> +							    start, end);
+> +			if (ret)
+> +				goto out;
+> +		}
+> +		start = range.pci_addr + range.size;
+>  	}
+> 
+> +	end = ~0;
+Hi Srinath,
 
-Note that it was not my suggestion to use "NO_INNER_CACHE" for
-enabling the system cache, sorry for not being clear. What I was
-asking for in my comment was regarding the previous patch disabling
-inner cache if system cache is requested, which may not make for
-coherent devices, which could benefit from using both inner and system
-cache.
+this series is based on following patch sets.
 
-So note that there are several cases here:
- - coherent, IC, system cache alloc,
- - coherent. non-IC, system cache alloc,
- - coherent, IC, system cache look-up,
- - noncoherent device, non-IC, system cache alloc,
- - noncoherent device, non-IC, system cache look-up.
+https://lkml.org/lkml/2017/5/16/19
+https://lkml.org/lkml/2017/5/16/23
+https://lkml.org/lkml/2017/5/16/21,
 
-Given the presence or lack of coherency for the device, which of the
-2/3 options is the best depends on the use case, e.g. DMA/CPU access
-pattern, sharing memory between multiple devices, etc.
+some comments to be adapted from the patch-set I did.
 
-Best regards,
-Tomasz
+end = ~0;
+you should consider DMA_MASK, to see iproc controller is in 32 bit or 64 
+bit system.
+please check following code snippet.
+
+if (tmp_dma_addr < DMA_BIT_MASK(sizeof(dma_addr_t) * 8)) {
++			lo = iova_pfn(iovad, tmp_dma_addr);
++			hi = iova_pfn(iovad,
++				      DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1);
++			reserve_iova(iovad, lo, hi);
++		}
+
+Also if this controller is integrated to 64bit platform, but decide to 
+restrict DMA to 32 bit for some reason, the code should address such 
+scenarios.
+so it is always safe to do
+
+#define BITS_PER_BYTE 8
+DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE)
+so please use kernle macro to find the end of DMA region.
+
+
+Also ideally according to SBSA v5
+
+8.3 PCI Express device view of memory
+
+Transactions from a PCI express device will either directly address the 
+memory system of the base server system
+or be presented to a SMMU for optional address translation and 
+permission policing.
+In systems that are compatible with level 3 or above of the SBSA, the 
+addresses sent by PCI express devices
+must be presented to the memory system or SMMU unmodified. In a system 
+where the PCI express does not use
+an SMMU, the PCI express devices have the same view of physical memory 
+as the PEs. In a system with a
+SMMU for PCI express there are no transformations to addresses being 
+sent by PCI express devices before they
+are presented as an input address to the SMMU.
+
+which is a limitation of iproc controller, please list the limitation in 
+detail as it violates SBSA.
+
+Regards,
+Oza.
+
+> +	if (end - start) {
+> +		ret = iproc_pcie_add_dma_resv_range(pcie->dev, &resources,
+> +						    start, end);
+> +		if (ret)
+> +			goto out;
+> +	}
+> +
+> +	list_splice_init(&resources, &host->dma_resv);
+> +
+>  	return 0;
+> +out:
+> +	pci_free_resource_list(&resources);
+> +	return ret;
+>  }
+> 
+>  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
