@@ -1,73 +1,42 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Thu, 13 Dec 2018 22:53:47 +0100
-Message-ID: <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
-References: <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
- <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de>
- <4cfb3f26-74e1-db01-b014-759f188bb5a6@xenosoft.de>
- <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de>
- <20181212141556.GA4801@lst.de>
- <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
- <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
- <20181213091021.GA2106@lst.de>
- <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
- <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
- <20181213112511.GA4574@lst.de>
- <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
- <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
+From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Subject: [PATCH] kernel/dma/direct: Do not include SME mask in the DMA
+ supported check
+Date: Thu, 13 Dec 2018 22:51:12 +0000
+Message-ID: <20181213225110.6567.69313.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
-Content-Language: de-DE
+Content-Language: en-US
+Content-ID: <4D87B982A8810C41AD4B5C04C918B735@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Alexander Duyck <alexander.duyck@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Guenter Roeck <linux@roeck-us.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On 13 December 2018 at 6:48PM, Christian Zigotzky wrote:
-> On 13 December 2018 at 2:34PM, Christian Zigotzky wrote:
->> On 13 December 2018 at 12:25PM, Christoph Hellwig wrote:
->>> On Thu, Dec 13, 2018 at 12:19:26PM +0100, Christian Zigotzky wrote:
->>>> I tried it again but I get the following error message:
->>>>
->>>> MODPOST vmlinux.o
->>>> arch/powerpc/kernel/dma-iommu.o: In function 
->>>> `.dma_iommu_get_required_mask':
->>>> (.text+0x274): undefined reference to `.dma_direct_get_required_mask'
->>>> make: *** [vmlinux] Error 1
->>> Sorry, you need this one liner before all the patches posted last time:
->>>
->>> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
->>> index d8819e3a1eb1..7e78c2798f2f 100644
->>> --- a/arch/powerpc/Kconfig
->>> +++ b/arch/powerpc/Kconfig
->>> @@ -154,6 +154,7 @@ config PPC
->>>       select CLONE_BACKWARDS
->>>       select DCACHE_WORD_ACCESS        if PPC64 && CPU_LITTLE_ENDIAN
->>>       select DYNAMIC_FTRACE            if FUNCTION_TRACER
->>> +    select DMA_DIRECT_OPS
->>>       select EDAC_ATOMIC_SCRUB
->>>       select EDAC_SUPPORT
->>>       select GENERIC_ATOMIC64            if PPC32
->>>
->> Thanks. Result: PASEMI onboard ethernet works and the X5000 (P5020 
->> board) boots with the patch '0001-get_required_mask.patch'.
->>
->> -- Christian
->>
->>
-> Next patch: '0002-swiotlb-dma_supported.patch' for the last good 
-> commit (977706f9755d2d697aa6f45b4f9f0e07516efeda).
->
-> The PASEMI onboard ethernet works and the X5000 (P5020 board) boots.
->
-> -- Christian
->
->
-Next patch: '0003-nommu-dma_supported.patch'
-
-No problems with the PASEMI onboard ethernet and the P5020 board boots.
-
--- Christian
+VGhlIGRtYV9kaXJlY3Rfc3VwcG9ydGVkKCkgZnVuY3Rpb24gaW50ZW5kcyB0byBjaGVjayB0aGUg
+RE1BIG1hc2sgYWdhaW5zdA0Kc3BlY2lmaWMgdmFsdWVzLiBIb3dldmVyLCB0aGUgcGh5c190b19k
+bWEoKSBmdW5jdGlvbiBpbmNsdWRlcyB0aGUgU01FDQplbmNyeXB0aW9uIG1hc2ssIHdoaWNoIGRl
+ZmVhdHMgdGhlIGludGVuZGVkIHB1cnBvc2Ugb2YgdGhlIGNoZWNrLiBUaGlzDQpyZXN1bHRzIGlu
+IGRyaXZlcnMgdGhhdCBzdXBwb3J0IGxlc3MgdGhhbiA0OC1iaXQgRE1BIChTTUUgZW5jcnlwdGlv
+biBtYXNrDQppcyBiaXQgNDcpIGZyb20gYmVpbmcgYWJsZSB0byBzZXQgdGhlIERNQSBtYXNrIHN1
+Y2Nlc3NmdWxseSB3aGVuIFNNRSBpcw0KYWN0aXZlLCB3aGljaCByZXN1bHRzIGluIHRoZSBkcml2
+ZXIgZmFpbGluZyB0byBpbml0aWFsaXplLg0KDQpDaGFuZ2UgdGhlIGZ1bmN0aW9uIHVzZWQgdG8g
+Y2hlY2sgdGhlIG1hc2sgZnJvbSBwaHlzX3RvX2RtYSgpIHRvDQpfX3BoeXNfdG9fZG1hKCkgc28g
+dGhhdCB0aGUgU01FIGVuY3J5cHRpb24gbWFzayBpcyBub3QgcGFydCBvZiB0aGUgY2hlY2suDQoN
+CkZpeGVzOiBjMWQwYWYxYTFkNWQgKCJrZXJuZWwvZG1hL2RpcmVjdDogdGFrZSBETUEgb2Zmc2V0
+IGludG8gYWNjb3VudCBpbiBkbWFfZGlyZWN0X3N1cHBvcnRlZCIpDQpTaWduZWQtb2ZmLWJ5OiBU
+b20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNreUBhbWQuY29tPg0KLS0tDQoga2VybmVsL2RtYS9k
+aXJlY3QuYyB8ICAgIDcgKysrKysrLQ0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyks
+IDEgZGVsZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2tlcm5lbC9kbWEvZGlyZWN0LmMgYi9rZXJu
+ZWwvZG1hL2RpcmVjdC5jDQppbmRleCAyMmExMmFiLi4zNzVjNzdlIDEwMDY0NA0KLS0tIGEva2Vy
+bmVsL2RtYS9kaXJlY3QuYw0KKysrIGIva2VybmVsL2RtYS9kaXJlY3QuYw0KQEAgLTMwOSw3ICsz
+MDksMTIgQEAgaW50IGRtYV9kaXJlY3Rfc3VwcG9ydGVkKHN0cnVjdCBkZXZpY2UgKmRldiwgdTY0
+IG1hc2spDQogDQogCW1pbl9tYXNrID0gbWluX3QodTY0LCBtaW5fbWFzaywgKG1heF9wZm4gLSAx
+KSA8PCBQQUdFX1NISUZUKTsNCiANCi0JcmV0dXJuIG1hc2sgPj0gcGh5c190b19kbWEoZGV2LCBt
+aW5fbWFzayk7DQorCS8qDQorCSAqIFRoaXMgY2hlY2sgbmVlZHMgdG8gYmUgYWdhaW5zdCB0aGUg
+YWN0dWFsIGJpdCBtYXNrIHZhbHVlLCBzbw0KKwkgKiB1c2UgX19waHlzX3RvX2RtYSgpIGhlcmUg
+c28gdGhhdCB0aGUgU01FIGVuY3J5cHRpb24gbWFzayBpc24ndA0KKwkgKiBwYXJ0IG9mIHRoZSBj
+aGVjay4NCisJICovDQorCXJldHVybiBtYXNrID49IF9fcGh5c190b19kbWEoZGV2LCBtaW5fbWFz
+ayk7DQogfQ0KIA0KIGludCBkbWFfZGlyZWN0X21hcHBpbmdfZXJyb3Ioc3RydWN0IGRldmljZSAq
+ZGV2LCBkbWFfYWRkcl90IGRtYV9hZGRyKQ0KDQo=
