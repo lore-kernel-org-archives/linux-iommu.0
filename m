@@ -1,79 +1,31 @@
-From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+From: Christoph Hellwig <hch@lst.de>
 Subject: Re: [PATCH] dma-direct: Fix return value of dma_direct_supported
-Date: Thu, 13 Dec 2018 19:45:57 +0000
-Message-ID: <ebe0d4aa-5f37-cc40-4a80-cfe499d5b8e4@amd.com>
-References: <20181003234746.3586.42014.stgit@localhost.localdomain>
- <5329f992-d3aa-c16c-1218-c26d758889b8@arm.com>
- <CAKgT0UfbAokpR=-xrfNjeYMroEDH4HtPgM6qK_nWmBqK3QOf6A@mail.gmail.com>
+Date: Thu, 13 Dec 2018 20:58:31 +0100
+Message-ID: <20181213195831.GA15478@lst.de>
+References: <20181003234746.3586.42014.stgit@localhost.localdomain> <5329f992-d3aa-c16c-1218-c26d758889b8@arm.com> <CAKgT0UfbAokpR=-xrfNjeYMroEDH4HtPgM6qK_nWmBqK3QOf6A@mail.gmail.com> <ebe0d4aa-5f37-cc40-4a80-cfe499d5b8e4@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAKgT0UfbAokpR=-xrfNjeYMroEDH4HtPgM6qK_nWmBqK3QOf6A@mail.gmail.com>
-Content-Language: en-US
-Content-ID: <A476C45E58342046B6EFC4F230F8426C@namprd12.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <ebe0d4aa-5f37-cc40-4a80-cfe499d5b8e4@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alexander Duyck <alexander.duyck@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
-Cc: "alexander.h.duyck@linux.intel.com" <alexander.h.duyck@linux.intel.com>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev@lists.ozlabs.org>, LKML <linux-kernel@vger.kernel.org>, Guenter Roeck <linux@roeck-us.net>, Greg KH <gregkh@linuxfoundation.org>
+To: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Cc: Alexander Duyck <alexander.duyck@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, "alexander.h.duyck@linux.intel.com" <alexander.h.duyck@linux.intel.com>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" <linuxppc-dev@lists.ozlabs.org>, LKML <linux-kernel@vger.kernel.org>, Guenter Roeck <linux@roeck-us.net>, Greg KH <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTAvMDQvMjAxOCAxMDoxMyBBTSwgQWxleGFuZGVyIER1eWNrIHdyb3RlOg0KPiBPbiBUaHUs
-IE9jdCA0LCAyMDE4IGF0IDQ6MjUgQU0gUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJwaHlAYXJtLmNv
-bT4gd3JvdGU6DQo+Pg0KPj4gT24gMDQvMTAvMTggMDA6NDgsIEFsZXhhbmRlciBEdXljayB3cm90
-ZToNCj4+PiBJdCBhcHBlYXJzIHRoYXQgaW4gY29tbWl0IDlkN2EyMjRiNDYzZSAoImRtYS1kaXJl
-Y3Q6IGFsd2F5cyBhbGxvdyBkbWEgbWFzaw0KPj4+IDw9IHBoeXNpc2NhbCBtZW1vcnkgc2l6ZSIp
-IHRoZSBsb2dpYyBvZiB0aGUgdGVzdCB3YXMgY2hhbmdlZCBmcm9tIGEgIjwiIHRvDQo+Pj4gYSAi
-Pj0iIGhvd2V2ZXIgSSBkb24ndCBzZWUgYW55IHJlYXNvbiBmb3IgdGhhdCBjaGFuZ2UuIEkgYW0g
-YXNzdW1pbmcgdGhhdA0KPj4+IHRoZXJlIHdhcyBzb21lIGFkZGl0aW9uYWwgY2hhbmdlIHBsYW5u
-ZWQsIHNwZWNpZmljYWxseSBJIHN1c3BlY3QgdGhlIGxvZ2ljDQo+Pj4gd2FzIGludGVuZGVkIHRv
-IGJlIHJldmVyc2VkIGFuZCBwb3NzaWJseSB1c2VkIGZvciBhIHJldHVybi4gU2luY2UgdGhhdCBp
-cw0KPj4+IHRoZSBjYXNlIEkgaGF2ZSBnb25lIGFoZWFkIGFuZCBkb25lIHRoYXQuDQo+Pg0KPj4g
-QmFoLCBzZWVtcyBJIGdvdCBodW5nIHVwIG9uIHRoZSBtaW5fbWFzayBjb2RlIGFib3ZlIGl0IGFu
-ZCB0b3RhbGx5DQo+PiBvdmVybG9va2VkIHRoYXQgdGhlIGNvbmRpdGlvbiBpdHNlbGYgZ290IGZs
-aXBwZWQuIEl0IHByb2JhYmx5IGFsc28gY2FuJ3QNCj4+IGhlbHAgdGhhdCBpdCdzIGFuIGludCBy
-ZXR1cm4gdHlwZSwgYnV0IHRyZWF0ZWQgYXMgYSBib29sIGJ5IGNhbGxlcnMNCj4+IHJhdGhlciB0
-aGFuICIwIGZvciBzdWNjZXNzIiBhcyBpbnQgdGVuZHMgdG8gaW1wbHkgaW4gaXNvbGF0aW9uLg0K
-Pj4NCj4+IEFueXdheSwgcGF5aW5nIGEgYml0IG1vcmUgYXR0ZW50aW9uIHRoaXMgdGltZSwgSSB0
-aGluayB0aGlzIGxvb2tzIGxpa2UNCj4+IHRoZSByaWdodCBmaXggLSBjaGVlcnMgQWxleC4NCj4+
-DQo+PiBSb2Jpbi4NCj4gDQo+IFRoYW5rcyBmb3IgdGhlIHJldmlldy4NCj4gDQo+IC0gQWxleA0K
-PiANCj4gUC5TLiBJdCBsb29rcyBsaWtlIEkgZm9yZ290IHRvIGFkZCBDaHJpc3RvcGggdG8gdGhl
-IG9yaWdpbmFsIG1haWwNCj4gc2luY2UgSSBoYWQganVzdCBjb3BpZWQgdGhlIFRvIGFuZCBDYyBm
-cm9tIHRoZSBvcmlnaW5hbCBzdWJtaXNzaW9uLCBzbw0KPiBJIGFkZGVkIGhpbSB0byB0aGUgQ2Mg
-Zm9yIHRoaXMuDQo+IA0KPj4+IFRoaXMgYWRkcmVzc2VzIGlzc3VlcyBJIGhhZCBvbiBteSBzeXN0
-ZW0gdGhhdCBwcmV2ZW50ZWQgbWUgZnJvbSBib290aW5nDQo+Pj4gd2l0aCB0aGUgYWJvdmUgbWVu
-dGlvbmVkIGNvbW1pdCBhcHBsaWVkIG9uIGFuIHg4Nl82NCBzeXN0ZW0gdy8gSW50ZWwgSU9NTVUu
-DQo+Pj4NCj4+PiBGaXhlczogOWQ3YTIyNGI0NjNlICgiZG1hLWRpcmVjdDogYWx3YXlzIGFsbG93
-IGRtYSBtYXNrIDw9IHBoeXNpc2NhbCBtZW1vcnkgc2l6ZSIpDQo+Pj4gU2lnbmVkLW9mZi1ieTog
-QWxleGFuZGVyIER1eWNrIDxhbGV4YW5kZXIuaC5kdXlja0BsaW51eC5pbnRlbC5jb20+DQo+Pj4g
-LS0tDQo+Pj4gICBrZXJuZWwvZG1hL2RpcmVjdC5jIHwgICAgNCArLS0tDQo+Pj4gICAxIGZpbGUg
-Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDMgZGVsZXRpb25zKC0pDQo+Pj4NCj4+PiBkaWZmIC0t
-Z2l0IGEva2VybmVsL2RtYS9kaXJlY3QuYyBiL2tlcm5lbC9kbWEvZGlyZWN0LmMNCj4+PiBpbmRl
-eCA1YTA4MDZiNTM1MWIuLjY1ODcyZjZjMmU5MyAxMDA2NDQNCj4+PiAtLS0gYS9rZXJuZWwvZG1h
-L2RpcmVjdC5jDQo+Pj4gKysrIGIva2VybmVsL2RtYS9kaXJlY3QuYw0KPj4+IEBAIC0zMDEsOSAr
-MzAxLDcgQEAgaW50IGRtYV9kaXJlY3Rfc3VwcG9ydGVkKHN0cnVjdCBkZXZpY2UgKmRldiwgdTY0
-IG1hc2spDQo+Pj4NCj4+PiAgICAgICBtaW5fbWFzayA9IG1pbl90KHU2NCwgbWluX21hc2ssICht
-YXhfcGZuIC0gMSkgPDwgUEFHRV9TSElGVCk7DQo+Pj4NCj4+PiAtICAgICBpZiAobWFzayA+PSBw
-aHlzX3RvX2RtYShkZXYsIG1pbl9tYXNrKSkNCj4+PiAtICAgICAgICAgICAgIHJldHVybiAwOw0K
-Pj4+IC0gICAgIHJldHVybiAxOw0KPj4+ICsgICAgIHJldHVybiBtYXNrID49IHBoeXNfdG9fZG1h
-KGRldiwgbWluX21hc2spOw0KDQpTbyBJIHRoaW5rIHRoaXMgbmVlZHMgdG8gYmUgX19waHlzX3Rv
-X2RtYSgpIGhlcmUuIEkgb25seSByZWNlbnRseSBnb3QgYQ0Kc3lzdGVtIHRoYXQgaGFkIGEgZGV2
-aWNlIHdoZXJlIHRoZSBkcml2ZXIgb25seSBzdXBwb3J0ZWQgMzItYml0IERNQSBhbmQNCmZvdW5k
-IHRoYXQgd2hlbiBTTUUgaXMgYWN0aXZlIHRoaXMgcmV0dXJucyAwIGFuZCBjYXVzZXMgdGhlIGRy
-aXZlciB0byBmYWlsDQp0byBpbml0aWFsaXplLiBUaGlzIGlzIGJlY2F1c2UgdGhlIFNNRSBlbmNy
-eXB0aW9uIGJpdCAoYml0IDQ3KSBpcyBwYXJ0IG9mDQp0aGUgY2hlY2sgd2hlbiB1c2luZyBwaHlz
-X3RvX2RtYSgpLiBEdXJpbmcgYWN0dWFsIERNQSB3aGVuIFNNRSBpcyBhY3RpdmUsDQpib3VuY2Ug
-YnVmZmVycyB3aWxsIGJlIHVzZWQgZm9yIGFueXRoaW5nIHRoYXQgY2FuJ3QgbWVldCB0aGUgNDgt
-Yml0DQpyZXF1aXJlbWVudC4gQnV0IGZvciB0aGlzIHRlc3QsIHVzaW5nIF9fcGh5c190b19kbWEo
-KSBzaG91bGQgZ2l2ZSB0aGUNCmRlc2lyZWQgcmVzdWx0cywgcmlnaHQ/DQoNCklmIHlvdSBhZ3Jl
-ZSB3aXRoIHRoaXMsIEknbGwgc3VibWl0IGEgcGF0Y2ggdG8gbWFrZSB0aGUgY2hhbmdlLiBJIG1p
-c3NlZA0KdGhpcyBpbiA0LjE5LCBzbyBJJ2xsIG5lZWQgdG8gc3VibWl0IHNvbWV0aGluZyB0byBz
-dGFibGUsIHRvby4gVGhlIG9ubHkNCmlzc3VlIHRoZXJlIGlzIHRoZSA0LjIwIGZpeCB3b24ndCBh
-cHBseSBjbGVhbmx5IHRvIDQuMTkuDQoNClRoYW5rcywNClRvbQ0KDQo+Pj4gICB9DQo+Pj4NCj4+
-PiAgIGludCBkbWFfZGlyZWN0X21hcHBpbmdfZXJyb3Ioc3RydWN0IGRldmljZSAqZGV2LCBkbWFf
-YWRkcl90IGRtYV9hZGRyKQ0KPj4+DQo+Pj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18NCj4+PiBpb21tdSBtYWlsaW5nIGxpc3QNCj4+PiBpb21tdUBsaXN0
-cy5saW51eC1mb3VuZGF0aW9uLm9yZw0KPj4+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11DQo+Pj4NCj4+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+PiBpb21tdSBtYWlsaW5nIGxpc3QNCj4+IGlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnDQo+PiBodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ0K
+On Thu, Dec 13, 2018 at 07:45:57PM +0000, Lendacky, Thomas wrote:
+> So I think this needs to be __phys_to_dma() here. I only recently got a
+> system that had a device where the driver only supported 32-bit DMA and
+> found that when SME is active this returns 0 and causes the driver to fail
+> to initialize. This is because the SME encryption bit (bit 47) is part of
+> the check when using phys_to_dma(). During actual DMA when SME is active,
+> bounce buffers will be used for anything that can't meet the 48-bit
+> requirement. But for this test, using __phys_to_dma() should give the
+> desired results, right?
+> 
+> If you agree with this, I'll submit a patch to make the change. I missed
+> this in 4.19, so I'll need to submit something to stable, too. The only
+> issue there is the 4.20 fix won't apply cleanly to 4.19.
+
+Yes, please send a patch.  Please make sure it includes a code comment
+that explains why the __-prefixed version is used.
