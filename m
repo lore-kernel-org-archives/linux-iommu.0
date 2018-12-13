@@ -1,196 +1,58 @@
-From: poza-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Subject: Re: [RFC PATCH 3/3] PCI: iproc: Add dma reserve resources to host
-Date: Thu, 13 Dec 2018 11:33:31 +0530
-Message-ID: <117bb87c4567d14f189642b685dd8813@codeaurora.org>
-References: <1544593569-8923-1-git-send-email-srinath.mannam@broadcom.com>
-	<1544593569-8923-4-git-send-email-srinath.mannam@broadcom.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Thu, 13 Dec 2018 09:41:50 +0100
+Message-ID: <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
+References: <1948cf84-49ab-543c-472c-d18e27751903@xenosoft.de>
+ <5a2ea855-b4b0-e48a-5c3e-c859a8451ca2@xenosoft.de>
+ <7B6DDB28-8BF6-4589-84ED-F1D4D13BFED6@xenosoft.de>
+ <8a2c4581-0c85-8065-f37e-984755eb31ab@xenosoft.de>
+ <424bb228-c9e5-6593-1ab7-5950d9b2bd4e@xenosoft.de>
+ <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de>
+ <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
+ <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de>
+ <4cfb3f26-74e1-db01-b014-759f188bb5a6@xenosoft.de>
+ <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de>
+ <20181212141556.GA4801@lst.de>
+ <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1544593569-8923-4-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
+Content-Language: de-DE
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018-12-12 11:16, Srinath Mannam wrote:
-> IPROC host has the limitation that it can use
-> only those address ranges given by dma-ranges
-> property as inbound address.
-> So that the memory address holes in dma-ranges
-> should be reserved to allocate as DMA address.
-> 
-> All such reserved addresses are created as resource
-> entries and add to dma_resv list of pci host bridge.
-> 
-> These dma reserve resources created by parsing
-> dma-ranges parameter.
-> 
-> Ex:
-> dma-ranges = < \
->   0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
->   0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
->   0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
-> 
-> In the above example of dma-ranges, memory address from
-> 0x0 - 0x80000000,
-> 0x100000000 - 0x800000000,
-> 0x1000000000 - 0x8000000000 and
-> 0x10000000000 - 0xffffffffffffffff.
-> are not allowed to use as inbound addresses.
-> So that we need to add these address range to dma_resv
-> list to reserve their IOVA address ranges.
-> 
-> Signed-off-by: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/pci/controller/pcie-iproc.c | 49 
-> +++++++++++++++++++++++++++++++++++++
->  1 file changed, 49 insertions(+)
-> 
-> diff --git a/drivers/pci/controller/pcie-iproc.c
-> b/drivers/pci/controller/pcie-iproc.c
-> index 3160e93..43e465a 100644
-> --- a/drivers/pci/controller/pcie-iproc.c
-> +++ b/drivers/pci/controller/pcie-iproc.c
-> @@ -1154,25 +1154,74 @@ static int iproc_pcie_setup_ib(struct 
-> iproc_pcie *pcie,
->  	return ret;
->  }
-> 
-> +static int
-> +iproc_pcie_add_dma_resv_range(struct device *dev, struct list_head 
-> *resources,
-> +			      uint64_t start, uint64_t end)
-> +{
-> +	struct resource *res;
-> +
-> +	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-> +	if (!res)
-> +		return -ENOMEM;
-> +
-> +	res->start = (resource_size_t)start;
-> +	res->end = (resource_size_t)end;
-> +	pci_add_resource_offset(resources, res, 0);
-> +
-> +	return 0;
-> +}
-> +
->  static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
->  {
-> +	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
->  	struct of_pci_range range;
->  	struct of_pci_range_parser parser;
->  	int ret;
-> +	uint64_t start, end;
-> +	LIST_HEAD(resources);
-> 
->  	/* Get the dma-ranges from DT */
->  	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
->  	if (ret)
->  		return ret;
-> 
-> +	start = 0;
->  	for_each_of_pci_range(&parser, &range) {
-> +		end = range.pci_addr;
-> +		/* dma-ranges list expected in sorted order */
-> +		if (end < start) {
-> +			ret = -EINVAL;
-> +			goto out;
-> +		}
->  		/* Each range entry corresponds to an inbound mapping region */
->  		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
->  		if (ret)
->  			return ret;
-> +
-> +		if (end - start) {
-> +			ret = iproc_pcie_add_dma_resv_range(pcie->dev,
-> +							    &resources,
-> +							    start, end);
-> +			if (ret)
-> +				goto out;
-> +		}
-> +		start = range.pci_addr + range.size;
->  	}
-> 
-> +	end = ~0;
-Hi Srinath,
+On 12 December 2018 at 3:39PM, Christian Zigotzky wrote:
+> Hi Christoph,
+>
+> Thanks a lot for your reply. I will test your patches tomorrow.
+>
+> Cheers,
+> Christian
+>
+> Sent from my iPhone
+>
+>> On 12. Dec 2018, at 15:15, Christoph Hellwig <hch@lst.de> wrote:
+>>
+>> Thanks for bisecting.  I've spent some time going over the conversion
+>> but can't really pinpoint it.  I have three little patches that switch
+>> parts of the code to the generic version.  This is on top of the
+>> last good commmit (977706f9755d2d697aa6f45b4f9f0e07516efeda).
+>>
+>> Can you check with whіch one things stop working?
+>>
+>>
+>> <0001-get_required_mask.patch>
+>> <0002-swiotlb-dma_supported.patch>
+>> <0003-nommu-dma_supported.patch>
+>> <0004-alloc-free.patch>
 
-this series is based on following patch sets.
+Today I tried the first patch (0001-get_required_mask.patch) with the 
+last good commit (977706f9755d2d697aa6f45b4f9f0e07516efeda). 
+Unfortunately this patch is already included in the last good commit 
+(977706f9755d2d697aa6f45b4f9f0e07516efeda). I will try the next patch.
 
-https://lkml.org/lkml/2017/5/16/19
-https://lkml.org/lkml/2017/5/16/23
-https://lkml.org/lkml/2017/5/16/21,
-
-some comments to be adapted from the patch-set I did.
-
-end = ~0;
-you should consider DMA_MASK, to see iproc controller is in 32 bit or 64 
-bit system.
-please check following code snippet.
-
-if (tmp_dma_addr < DMA_BIT_MASK(sizeof(dma_addr_t) * 8)) {
-+			lo = iova_pfn(iovad, tmp_dma_addr);
-+			hi = iova_pfn(iovad,
-+				      DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1);
-+			reserve_iova(iovad, lo, hi);
-+		}
-
-Also if this controller is integrated to 64bit platform, but decide to 
-restrict DMA to 32 bit for some reason, the code should address such 
-scenarios.
-so it is always safe to do
-
-#define BITS_PER_BYTE 8
-DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE)
-so please use kernle macro to find the end of DMA region.
-
-
-Also ideally according to SBSA v5
-
-8.3 PCI Express device view of memory
-
-Transactions from a PCI express device will either directly address the 
-memory system of the base server system
-or be presented to a SMMU for optional address translation and 
-permission policing.
-In systems that are compatible with level 3 or above of the SBSA, the 
-addresses sent by PCI express devices
-must be presented to the memory system or SMMU unmodified. In a system 
-where the PCI express does not use
-an SMMU, the PCI express devices have the same view of physical memory 
-as the PEs. In a system with a
-SMMU for PCI express there are no transformations to addresses being 
-sent by PCI express devices before they
-are presented as an input address to the SMMU.
-
-which is a limitation of iproc controller, please list the limitation in 
-detail as it violates SBSA.
-
-Regards,
-Oza.
-
-> +	if (end - start) {
-> +		ret = iproc_pcie_add_dma_resv_range(pcie->dev, &resources,
-> +						    start, end);
-> +		if (ret)
-> +			goto out;
-> +	}
-> +
-> +	list_splice_init(&resources, &host->dma_resv);
-> +
->  	return 0;
-> +out:
-> +	pci_free_resource_list(&resources);
-> +	return ret;
->  }
-> 
->  static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
+-- Christian
