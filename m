@@ -1,46 +1,55 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH] Revert "iommu/io-pgtable-arm: Check for v7s-incapable systems"
-Date: Thu, 13 Dec 2018 17:19:48 +0800
-Message-ID: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Thu, 13 Dec 2018 10:47:18 +0100
+Message-ID: <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
+References: <8a2c4581-0c85-8065-f37e-984755eb31ab@xenosoft.de>
+ <424bb228-c9e5-6593-1ab7-5950d9b2bd4e@xenosoft.de>
+ <c86d76b4-b199-557e-bc64-4235729c1e72@xenosoft.de>
+ <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
+ <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de>
+ <4cfb3f26-74e1-db01-b014-759f188bb5a6@xenosoft.de>
+ <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de>
+ <20181212141556.GA4801@lst.de>
+ <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
+ <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
+ <20181213091021.GA2106@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181213091021.GA2106@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, CK Hu <ck.hu@mediatek.com>, Stephen Boyd <swboyd@chromium.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-This reverts commit 82db33dc5e49fb625262d81125625d07a0d6184e.
+On 13 December 2018 at 10:10AM, Christoph Hellwig wrote:
+> On Thu, Dec 13, 2018 at 09:41:50AM +0100, Christian Zigotzky wrote:
+>> Today I tried the first patch (0001-get_required_mask.patch) with the last
+>> good commit (977706f9755d2d697aa6f45b4f9f0e07516efeda). Unfortunately this
+>> patch is already included in the last good commit
+>> (977706f9755d2d697aa6f45b4f9f0e07516efeda). I will try the next patch.
+> Hmm, I don't think this is the case.  This is my local git log output:
+>
+> commit 83a4b87de6bc6a75b500c9959de88e2157fbcd7c
+> Author: Christoph Hellwig <hch@lst.de>
+> Date:   Wed Dec 12 15:07:49 2018 +0100
+>
+>      get_required_mask
+>
+> commit 977706f9755d2d697aa6f45b4f9f0e07516efeda
+> Author: Christoph Hellwig <hch@lst.de>
+> Date:   Sat Nov 10 22:34:27 2018 +0100
+>
+>      powerpc/dma: remove dma_nommu_mmap_coherent
+>
+> I've also pushed a git branch with these out to:
+>
+>      git://git.infradead.org/users/hch/misc.git powerpc-dma.5-debug
+>
+Sorry Christioph. I was wrong. The first patch isn't included in the 
+last good commit. I will try it again. I can only test beside my main 
+work. That means it takes longer.
 
-After the commit 29859aeb8a6e ("iommu/io-pgtable-arm-v7s: Abort
-allocation when table address overflows the PTE"), v7s will return fail
-if the page table allocation isn't expected. this PHYS_OFFSET check
-is unnecessary now.
-
-And this check may lead to fail. For example, If CONFIG_RANDOMIZE_BASE
-is enabled, the "memstart_addr" will be updated randomly, then the
-PHYS_OFFSET may be random.
-
-Reported-by: CK Hu <ck.hu@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/io-pgtable-arm-v7s.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 445c3bd..cec29bf 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -709,10 +709,6 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
- {
- 	struct arm_v7s_io_pgtable *data;
- 
--#ifdef PHYS_OFFSET
--	if (upper_32_bits(PHYS_OFFSET))
--		return NULL;
--#endif
- 	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
- 		return NULL;
- 
--- 
-1.9.1
+-- Christian
