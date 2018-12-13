@@ -1,128 +1,68 @@
-From: Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: [PATCH v2 3/3] PCI: iproc: Add dma reserve resources to host
-Date: Thu, 13 Dec 2018 16:02:54 +0530
-Message-ID: <1544697174-6029-4-git-send-email-srinath.mannam@broadcom.com>
-References: <1544697174-6029-1-git-send-email-srinath.mannam@broadcom.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [RESEND PATCH v4 1/1] dt-bindings: arm-smmu: Add binding doc for
+ Qcom smmu-500
+Date: Thu, 13 Dec 2018 10:45:24 +0000
+Message-ID: <20181213104524.GA31177@edgewater-inn.cambridge.arm.com>
+References: <20181213090507.6269-1-vivek.gautam@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1544697174-6029-1-git-send-email-srinath.mannam@broadcom.com>
+Content-Disposition: inline
+In-Reply-To: <20181213090507.6269-1-vivek.gautam@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, poza@codeaurora.org, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ray Jui <rjui@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Srinath Mannam <srinath.mannam@broadcom.com>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-IPROC host has the limitation that it can use only those address ranges
-given by dma-ranges property as inbound address.
-So that the memory address holes in dma-ranges should be reserved to
-allocate as DMA address.
+On Thu, Dec 13, 2018 at 02:35:07PM +0530, Vivek Gautam wrote:
+> Qcom's implementation of arm,mmu-500 works well with current
+> arm-smmu driver implementation. Adding a soc specific compatible
+> along with arm,mmu-500 makes the bindings future safe.
+> 
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Cc: Will Deacon <will.deacon@arm.com>
+> ---
+> 
+> Hi Joerg,
+> I am picking this out separately from the sdm845 smmu support
+> series [1], so that this can go through iommu tree.
+> The dt patch from the series [1] can be taken through arm-soc tree.
+> 
+> Hi Will,
+> As asked [2], here's the resend version of dt binding patch for sdm845.
+> Kindly ack this so that Joerg can pull this in.
 
-Inbound address of host accessed by pcie devices will not be translated
-before it comes to IOMMU or directly to PE.
-But the limitation of this host is, access to few address ranges are
-ignored. So that IOVA ranges for these address ranges have to be reserved.
+Acked-by: Will Deacon <will.deacon@arm.com>
 
-All such addresses ranges are created as resource entries by parsing
-dma-ranges DT parameter and add to dma_resv list of pci host bridge.
+Joerg -- please can you take this on top of the pull request I sent already?
+Vivek included it as part of a separate series which I thought was going
+via arm-soc, but actually it needs to go with the other arm-smmu patches
+in order to avoid conflicts.
 
-Ex:
-dma-ranges = < \
-  0x43000000 0x00 0x80000000 0x00 0x80000000 0x00 0x80000000 \
-  0x43000000 0x08 0x00000000 0x08 0x00000000 0x08 0x00000000 \
-  0x43000000 0x80 0x00000000 0x80 0x00000000 0x40 0x00000000>
+Cheers,
 
-In the above example of dma-ranges, memory address from
-0x0 - 0x80000000,
-0x100000000 - 0x800000000,
-0x1000000000 - 0x8000000000 and
-0x10000000000 - 0xffffffffffffffff.
-are not allowed to use as inbound addresses.
-So that we need to add these address ranges to dma_resv list to reserve
-corresponding IOVA address ranges.
+Will
 
-Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-Based-on-patch-by: Oza Pawandeep <oza.oza@broadcom.com>
----
- drivers/pci/controller/pcie-iproc.c | 51 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-index 3160e93..636e92d 100644
---- a/drivers/pci/controller/pcie-iproc.c
-+++ b/drivers/pci/controller/pcie-iproc.c
-@@ -1154,25 +1154,74 @@ static int iproc_pcie_setup_ib(struct iproc_pcie *pcie,
- 	return ret;
- }
- 
-+static int
-+iproc_pcie_add_dma_resv_range(struct device *dev, struct list_head *resources,
-+			      uint64_t start, uint64_t end)
-+{
-+	struct resource *res;
-+
-+	res = devm_kzalloc(dev, sizeof(struct resource), GFP_KERNEL);
-+	if (!res)
-+		return -ENOMEM;
-+
-+	res->start = (resource_size_t)start;
-+	res->end = (resource_size_t)end;
-+	pci_add_resource_offset(resources, res, 0);
-+
-+	return 0;
-+}
-+
- static int iproc_pcie_map_dma_ranges(struct iproc_pcie *pcie)
- {
-+	struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
- 	struct of_pci_range range;
- 	struct of_pci_range_parser parser;
- 	int ret;
-+	uint64_t start, end;
-+	LIST_HEAD(resources);
- 
- 	/* Get the dma-ranges from DT */
- 	ret = of_pci_dma_range_parser_init(&parser, pcie->dev->of_node);
- 	if (ret)
- 		return ret;
- 
-+	start = 0;
- 	for_each_of_pci_range(&parser, &range) {
-+		end = range.pci_addr;
-+		/* dma-ranges list expected in sorted order */
-+		if (end < start) {
-+			ret = -EINVAL;
-+			goto out;
-+		}
- 		/* Each range entry corresponds to an inbound mapping region */
- 		ret = iproc_pcie_setup_ib(pcie, &range, IPROC_PCIE_IB_MAP_MEM);
- 		if (ret)
--			return ret;
-+			goto out;
-+
-+		if (end - start) {
-+			ret = iproc_pcie_add_dma_resv_range(pcie->dev,
-+							    &resources,
-+							    start, end);
-+			if (ret)
-+				goto out;
-+		}
-+		start = range.pci_addr + range.size;
- 	}
- 
-+	end = DMA_BIT_MASK(sizeof(dma_addr_t) * BITS_PER_BYTE);
-+	if (end - start) {
-+		ret = iproc_pcie_add_dma_resv_range(pcie->dev, &resources,
-+						    start, end);
-+		if (ret)
-+			goto out;
-+	}
-+
-+	list_splice_init(&resources, &host->dma_resv);
-+
- 	return 0;
-+out:
-+	pci_free_resource_list(&resources);
-+	return ret;
- }
- 
- static int iproce_pcie_get_msi(struct iproc_pcie *pcie,
--- 
-2.7.4
+>  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index a6504b37cc21..3133f3ba7567 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -27,6 +27,10 @@ conditions.
+>                    "qcom,msm8996-smmu-v2", "qcom,smmu-v2",
+>                    "qcom,sdm845-smmu-v2", "qcom,smmu-v2".
+>  
+> +                  Qcom SoCs implementing "arm,mmu-500" must also include,
+> +                  as below, SoC-specific compatibles:
+> +                  "qcom,sdm845-smmu-500", "arm,mmu-500"
+> +
+>  - reg           : Base address and size of the SMMU.
+>  
+>  - #global-interrupts : The number of global interrupts exposed by the
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
+> 
