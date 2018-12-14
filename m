@@ -1,51 +1,68 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Fri, 14 Dec 2018 13:00:26 +0100
-Message-ID: <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
-References: <1ecb7692-f3fb-a246-91f9-2db1b9496305@xenosoft.de>
- <6c997c03-e072-97a9-8ae0-38a4363df919@xenosoft.de>
- <4cfb3f26-74e1-db01-b014-759f188bb5a6@xenosoft.de>
- <82879d3f-83de-6438-c1d6-49c571dcb671@xenosoft.de>
- <20181212141556.GA4801@lst.de>
- <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
- <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
- <20181213091021.GA2106@lst.de>
- <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
- <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
- <20181213112511.GA4574@lst.de>
- <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
- <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
- <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
+From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Subject: [PATCH] nios2: use dma_direct_alloc_pages
+Date: Fri, 14 Dec 2018 13:10:15 +0100
+Message-ID: <20181214121015.26720-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: lftan-EIB2kfCEclfQT0dZR+AlfA@public.gmane.org
+Cc: nios2-dev-g9ZBwUv/Ih/yUk5EbOjzuce+I+R0W71w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12 December 2018 at 3:15PM, Christoph Hellwig wrote:
- > Thanks for bisecting.  I've spent some time going over the conversion
- > but can't really pinpoint it.  I have three little patches that switch
- > parts of the code to the generic version.  This is on top of the
- > last good commmit (977706f9755d2d697aa6f45b4f9f0e07516efeda).
- >
- > Can you check with whіch one things stop working?
+Use the generic dma allocator to get various quirks and support
+for CMA allocations (if enabled) for free.
 
-Hello Christoph,
+Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+---
+ arch/nios2/mm/dma-mapping.c | 17 +++++------------
+ 1 file changed, 5 insertions(+), 12 deletions(-)
 
-Great news! All your patches work!
-
-I tested all your patches (including the patch '0004-alloc-free.patch' 
-today) and the PASEMI onboard ethernet works and the P5020 board boots 
-without any problems. Thank you for your work!
-I have a few days off. That means, I will work less and only for the 
-A-EON first level Linux support. I can test again on Thursday next week.
-
-Have a nice weekend!
-
-Cheers,
-Christian
+diff --git a/arch/nios2/mm/dma-mapping.c b/arch/nios2/mm/dma-mapping.c
+index 4af9e5b5ba1c..5ecd21555495 100644
+--- a/arch/nios2/mm/dma-mapping.c
++++ b/arch/nios2/mm/dma-mapping.c
+@@ -65,15 +65,8 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ {
+ 	void *ret;
+ 
+-	/* optimized page clearing */
+-	gfp |= __GFP_ZERO;
+-
+-	if (dev == NULL || (dev->coherent_dma_mask < 0xffffffff))
+-		gfp |= GFP_DMA;
+-
+-	ret = (void *) __get_free_pages(gfp, get_order(size));
+-	if (ret != NULL) {
+-		*dma_handle = virt_to_phys(ret);
++	ret = dma_direct_alloc_pages(dev, size, dma_handle, gfp, attrs);
++	if (ret) {
+ 		flush_dcache_range((unsigned long) ret,
+ 			(unsigned long) ret + size);
+ 		ret = UNCAC_ADDR(ret);
+@@ -81,11 +74,11 @@ void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 
+ 	return ret;
+ }
++}
+ 
+ void arch_dma_free(struct device *dev, size_t size, void *vaddr,
+ 		dma_addr_t dma_handle, unsigned long attrs)
+ {
+-	unsigned long addr = (unsigned long) CAC_ADDR((unsigned long) vaddr);
+-
+-	free_pages(addr, get_order(size));
++	vaddr = (void *)CAC_ADDR((unsigned long)cpu_addr);
++	dma_direct_free_pages(dev, size, vaddr, dma_handle, attrs);
+ }
+-- 
+2.19.2
