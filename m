@@ -1,26 +1,84 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/2] dma-mapping: zero memory returned from dma_alloc_*
-Date: Fri, 14 Dec 2018 19:35:09 +0100
-Message-ID: <20181214183509.GA5247@lst.de>
-References: <20181214082515.14835-1-hch@lst.de> <20181214082515.14835-2-hch@lst.de> <20181214181056.GA17941@ravnborg.org>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH 13/15] ACPI / scan: Refactor _CCA enforcement
+Date: Fri, 14 Dec 2018 15:15:33 -0600
+Message-ID: <20181214211533.GE20725@google.com>
+References: <20181207190720.18517-1-hch@lst.de>
+ <20181207190720.18517-14-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20181214181056.GA17941@ravnborg.org>
+In-Reply-To: <20181207190720.18517-14-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Sam Ravnborg <sam@ravnborg.org>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Michal Simek <monstr@monstr.eu>, Ashutosh Dixit <ashutosh.dixit@intel.com>, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, linux-c6x-dev@linux-c6x.org, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-parisc@vger.kernel.org, linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Jesper Dangaard Brouer <brouer@redhat.com>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 14, 2018 at 07:10:56PM +0100, Sam Ravnborg wrote:
-> Hi Christoph,
+On Fri, Dec 07, 2018 at 11:07:18AM -0800, Christoph Hellwig wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
 > 
-> I stumbled upon this one:
+> Rather than checking the DMA attribute at each callsite, just pass it
+> through for acpi_dma_configure() to handle directly. That can then deal
+> with the relatively exceptional DEV_DMA_NOT_SUPPORTED case by explicitly
+> installing dummy DMA ops instead of just skipping setup entirely. This
+> will then free up the dev->dma_ops == NULL case for some valuable
+> fastpath optimisations.
 > 
-> #define __get_dma_pages(gfp_mask, order) \
->                 __get_free_pages((gfp_mask) | GFP_DMA, (order))
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/acpi/scan.c      | 5 +++++
+>  drivers/base/platform.c  | 3 +--
+>  drivers/pci/pci-driver.c | 3 +--
 
-This isn't directly related to the dma mapping, but another place
-that hides GFP_DMA allocations.  So no need for the treatment,
-but we really should kill this obsfucating wrapper..
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>	# drivers/pci part
+
+>  3 files changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index bd1c59fb0e17..b75ae34ed188 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1456,6 +1456,11 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+>  	const struct iommu_ops *iommu;
+>  	u64 dma_addr = 0, size = 0;
+>  
+> +	if (attr == DEV_DMA_NOT_SUPPORTED) {
+> +		set_dma_ops(dev, &dma_dummy_ops);
+> +		return 0;
+> +	}
+> +
+>  	iort_dma_setup(dev, &dma_addr, &size);
+>  
+>  	iommu = iort_iommu_configure(dev);
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index eae841935a45..c1ddf191711e 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -1138,8 +1138,7 @@ int platform_dma_configure(struct device *dev)
+>  		ret = of_dma_configure(dev, dev->of_node, true);
+>  	} else if (has_acpi_companion(dev)) {
+>  		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
+> -		if (attr != DEV_DMA_NOT_SUPPORTED)
+> -			ret = acpi_dma_configure(dev, attr);
+> +		ret = acpi_dma_configure(dev, attr);
+>  	}
+>  
+>  	return ret;
+> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> index bef17c3fca67..1b58e058b13f 100644
+> --- a/drivers/pci/pci-driver.c
+> +++ b/drivers/pci/pci-driver.c
+> @@ -1602,8 +1602,7 @@ static int pci_dma_configure(struct device *dev)
+>  		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
+>  		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
+>  
+> -		if (attr != DEV_DMA_NOT_SUPPORTED)
+> -			ret = acpi_dma_configure(dev, attr);
+> +		ret = acpi_dma_configure(dev, acpi_get_dma_attr(adev));
+>  	}
+>  
+>  	pci_put_host_bridge_device(bridge);
+> -- 
+> 2.19.1
+> 
