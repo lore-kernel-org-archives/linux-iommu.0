@@ -1,103 +1,96 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 1/2] dma-mapping: zero memory returned from dma_alloc_*
-Date: Fri, 14 Dec 2018 13:36:26 +0100
-Message-ID: <CAMuHMdUU36Jg0vNGV2WwkceNNGEnGX4yxwEecT3abKz0AG+epw@mail.gmail.com>
-References: <20181214082515.14835-1-hch@lst.de> <20181214082515.14835-2-hch@lst.de>
- <CAMuHMdWOr0EsgFQF8tjJYLxKVXx+Jwn73N8SVKt8AQGLKQ8V-A@mail.gmail.com> <20181214114719.GA3316@lst.de>
+From: Michael Ellerman <mpe@ellerman.id.au>
+Subject: Re: [PATCH 12/34] powerpc/cell: move dma direct window setup out of dma_configure
+Date: Sat, 15 Dec 2018 00:29:11 +1100
+Message-ID: <87mup8uti0.fsf@concordia.ellerman.id.au>
+References: <20181114082314.8965-1-hch@lst.de> <20181114082314.8965-13-hch@lst.de> <871s6r3sno.fsf@concordia.ellerman.id.au> <20181212143604.GA5137@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181214114719.GA3316@lst.de>
+In-Reply-To: <20181212143604.GA5137@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Linux IOMMU <iommu@lists.linux-foundation.org>, Michal Simek <monstr@monstr.eu>, ashutosh.dixit@intel.com, alpha <linux-alpha@vger.kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, linux-c6x-dev@linux-c6x.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, Openrisc <openrisc@lists.librecores.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Greg Ungerer <gerg@linux-m68k.org>
+Cc: Christoph Hellwig <hch@lst.de>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
-
-On Fri, Dec 14, 2018 at 12:47 PM Christoph Hellwig <hch@lst.de> wrote:
+Christoph Hellwig <hch@lst.de> writes:
+> On Sun, Dec 09, 2018 at 09:23:39PM +1100, Michael Ellerman wrote:
+>> Christoph Hellwig <hch@lst.de> writes:
+>> 
+>> > Configure the dma settings at device setup time, and stop playing games
+>> > with get_pci_dma_ops.  This prepares for using the common dma_configure
+>> > code later on.
+>> >
+>> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+>> > ---
+>> >  arch/powerpc/platforms/cell/iommu.c | 20 +++++++++++---------
+>> >  1 file changed, 11 insertions(+), 9 deletions(-)
+>> 
+>> This one's crashing, haven't dug into why yet:
 >
-> On Fri, Dec 14, 2018 at 10:54:32AM +0100, Geert Uytterhoeven wrote:
-> > > -       page = alloc_pages(flag, order);
-> > > +       page = alloc_pages(flag | GFP_ZERO, order);
-> > >         if (!page)
-> > >                 return NULL;
-> >
-> > There's second implementation below, which calls __get_free_pages() and
-> > does an explicit memset().  As __get_free_pages() calls alloc_pages(), perhaps
-> > it makes sense to replace the memset() by GFP_ZERO, to increase consistency?
->
-> It would, but this patch really tries to be minimally invasive to just
-> provide the zeroing everywhere.
+> Can you provide a gdb assembly of the exact crash site?  This looks
+> like for some odd reason the DT structures aren't fully setup by the
+> time we are probing the device, which seems odd.
 
-Fair enough.
+It's dev->of_node which is NULL.
 
-> There is plenty of opportunity
-> to improve the m68k dma allocator if I can get enough reviewers/testers:
->
->  - for one the coldfire/nommu case absolutely does not make sense to
->    me as there is not work done at all to make sure the memory is
->    mapped uncached despite the architecture implementing cache
->    flushing for the map interface.  So this whole implementation
->    looks broken to me and will need some major work (I had a previous
->    discussion with Greg on that which needs to be dug out)
->  - the "regular" implementation in this patch should probably be replaced
->    with the generic remapping helpers that have been added for the 4.21
->    merge window:
->
->         http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/0c3b3171ceccb8830c2bb5adff1b4e9b204c1450
->
-> Compile tested only patch below:
->
-> --
-> From ade86dc75b9850daf9111ebf9ce15825a6144f2d Mon Sep 17 00:00:00 2001
-> From: Christoph Hellwig <hch@lst.de>
-> Date: Fri, 14 Dec 2018 12:41:45 +0100
-> Subject: m68k: use the generic dma coherent remap allocator
->
-> This switche to using common code for the DMA allocations, including
-> potential use of the CMA allocator if configure.  Also add a few
-> comments where the existing behavior seems to be lacking.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+Because we were passed a platform_device which doesn't have an of_node.
 
-Thanks, looks OK to me.
-M68k doesn't have many drivers using the DMA framework, as most of them
-predated that framework.
+It's the cbe-mic device created in cell_publish_devices().
 
-> --- a/arch/m68k/kernel/dma.c
-> +++ b/arch/m68k/kernel/dma.c
+I can fix that by simply checking for a NULL node, then the system boots
+but then I have no network devices, due to:
 
->
-> -void arch_dma_free(struct device *dev, size_t size, void *addr,
-> -               dma_addr_t handle, unsigned long attrs)
-> +pgprot_t arch_dma_mmap_pgprot(struct device *dev, pgprot_t prot,
-> +               unsigned long attrs)
->  {
-> -       pr_debug("dma_free_coherent: %p, %x\n", addr, handle);
-> -       vfree(addr);
-> +       /*
-> +        * XXX: this doesn't seem to handle the sun3 MMU at all.
+  tg3 0000:00:01.0: enabling device (0140 -> 0142)
+  tg3 0000:00:01.0: DMA engine test failed, aborting
+  tg3: probe of 0000:00:01.0 failed with error -12
+  tg3 0000:00:01.1: enabling device (0140 -> 0142)
+  tg3 0000:00:01.1: DMA engine test failed, aborting
+  tg3: probe of 0000:00:01.1 failed with error -12
 
-Sun-3 selects NO_DMA, and this file is compiled for the HAS_DMA case only.
 
-> +        */
-> +       if (CPU_IS_040_OR_060) {
-> +               pgprot_val(prot) &= ~_PAGE_CACHE040;
-> +               pgprot_val(prot) |= _PAGE_GLOBAL040 | _PAGE_NOCACHE_S;
-> +       } else {
-> +               pgprot_val(prot) |= _PAGE_NOCACHE030;
-> +       }
-> +       return prot;
->  }
+I think the problem is that we don't want to set iommu_bypass_supported
+unless cell_iommu_fixed_mapping_init() succeeds.
 
-Gr{oetje,eeting}s,
+Yep. This makes it work for me on cell on top of your v5.
 
-                        Geert
+cheers
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
+index 348a815779c1..8329fda17cc8 100644
+--- a/arch/powerpc/platforms/cell/iommu.c
++++ b/arch/powerpc/platforms/cell/iommu.c
+@@ -813,6 +813,10 @@ static u64 cell_iommu_get_fixed_address(struct device *dev)
+ 	int i, len, best, naddr, nsize, pna, range_size;
+ 
+ 	np = of_node_get(dev->of_node);
++	if (!np)
++		/* We can be called for platform devices that have no of_node */
++		goto out;
++
+ 	while (1) {
+ 		naddr = of_n_addr_cells(np);
+ 		nsize = of_n_size_cells(np);
+@@ -1065,8 +1069,11 @@ static int __init cell_iommu_init(void)
+ 	/* Setup various callbacks */
+ 	cell_pci_controller_ops.dma_dev_setup = cell_pci_dma_dev_setup;
+ 
+-	if (!iommu_fixed_disabled && cell_iommu_fixed_mapping_init() == 0)
++	if (!iommu_fixed_disabled && cell_iommu_fixed_mapping_init() == 0) {
++		cell_pci_controller_ops.iommu_bypass_supported =
++			cell_pci_iommu_bypass_supported;
+ 		goto done;
++	}
+ 
+ 	/* Create an iommu for each /axon node.  */
+ 	for_each_node_by_name(np, "axon") {
+@@ -1085,10 +1092,6 @@ static int __init cell_iommu_init(void)
+ 	}
+  done:
+ 	/* Setup default PCI iommu ops */
+-	if (!iommu_fixed_disabled) {
+-		cell_pci_controller_ops.iommu_bypass_supported =
+-				cell_pci_iommu_bypass_supported;
+-	}
+ 	set_pci_dma_ops(&dma_iommu_ops);
+ 	cell_iommu_enabled = true;
+  bail:
