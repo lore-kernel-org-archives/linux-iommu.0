@@ -1,42 +1,24 @@
-From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-Subject: [PATCH] kernel/dma/direct: Do not include SME mask in the DMA
- supported check
-Date: Thu, 13 Dec 2018 22:51:12 +0000
-Message-ID: <20181213225110.6567.69313.stgit@tlendack-t1.amdoffice.net>
+From: Christoph Hellwig <hch@lst.de>
+Subject: ensure dma_alloc_coherent always returns zeroed memory
+Date: Fri, 14 Dec 2018 09:25:13 +0100
+Message-ID: <20181214082515.14835-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Language: en-US
-Content-ID: <4D87B982A8810C41AD4B5C04C918B735@namprd12.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Alexander Duyck <alexander.duyck@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg KH <gregkh@linuxfoundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Guenter Roeck <linux@roeck-us.net>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-snps-arc>,
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-snps-arc/>
+List-Post: <mailto:linux-snps-arc@lists.infradead.org>
+List-Help: <mailto:linux-snps-arc-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-snps-arc>,
+ <mailto:linux-snps-arc-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-snps-arc" <linux-snps-arc-bounces@lists.infradead.org>
+Errors-To: linux-snps-arc-bounces+gla-linux-snps-arc=m.gmane.org@lists.infradead.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-s390@vger.kernel.org, Michal Simek <monstr@monstr.eu>, linux-c6x-dev@linux-c6x.org, linux-parisc@vger.kernel.org, linux-xtensa@linux-xtensa.org, linux-kernel@vger.kernel.org, Ashutosh Dixit <ashutosh.dixit@intel.com>, linux-m68k@lists.linux-m68k.org, openrisc@lists.librecores.org, linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org, linux-snps-arc@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhlIGRtYV9kaXJlY3Rfc3VwcG9ydGVkKCkgZnVuY3Rpb24gaW50ZW5kcyB0byBjaGVjayB0aGUg
-RE1BIG1hc2sgYWdhaW5zdA0Kc3BlY2lmaWMgdmFsdWVzLiBIb3dldmVyLCB0aGUgcGh5c190b19k
-bWEoKSBmdW5jdGlvbiBpbmNsdWRlcyB0aGUgU01FDQplbmNyeXB0aW9uIG1hc2ssIHdoaWNoIGRl
-ZmVhdHMgdGhlIGludGVuZGVkIHB1cnBvc2Ugb2YgdGhlIGNoZWNrLiBUaGlzDQpyZXN1bHRzIGlu
-IGRyaXZlcnMgdGhhdCBzdXBwb3J0IGxlc3MgdGhhbiA0OC1iaXQgRE1BIChTTUUgZW5jcnlwdGlv
-biBtYXNrDQppcyBiaXQgNDcpIGZyb20gYmVpbmcgYWJsZSB0byBzZXQgdGhlIERNQSBtYXNrIHN1
-Y2Nlc3NmdWxseSB3aGVuIFNNRSBpcw0KYWN0aXZlLCB3aGljaCByZXN1bHRzIGluIHRoZSBkcml2
-ZXIgZmFpbGluZyB0byBpbml0aWFsaXplLg0KDQpDaGFuZ2UgdGhlIGZ1bmN0aW9uIHVzZWQgdG8g
-Y2hlY2sgdGhlIG1hc2sgZnJvbSBwaHlzX3RvX2RtYSgpIHRvDQpfX3BoeXNfdG9fZG1hKCkgc28g
-dGhhdCB0aGUgU01FIGVuY3J5cHRpb24gbWFzayBpcyBub3QgcGFydCBvZiB0aGUgY2hlY2suDQoN
-CkZpeGVzOiBjMWQwYWYxYTFkNWQgKCJrZXJuZWwvZG1hL2RpcmVjdDogdGFrZSBETUEgb2Zmc2V0
-IGludG8gYWNjb3VudCBpbiBkbWFfZGlyZWN0X3N1cHBvcnRlZCIpDQpTaWduZWQtb2ZmLWJ5OiBU
-b20gTGVuZGFja3kgPHRob21hcy5sZW5kYWNreUBhbWQuY29tPg0KLS0tDQoga2VybmVsL2RtYS9k
-aXJlY3QuYyB8ICAgIDcgKysrKysrLQ0KIDEgZmlsZSBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyks
-IDEgZGVsZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2tlcm5lbC9kbWEvZGlyZWN0LmMgYi9rZXJu
-ZWwvZG1hL2RpcmVjdC5jDQppbmRleCAyMmExMmFiLi4zNzVjNzdlIDEwMDY0NA0KLS0tIGEva2Vy
-bmVsL2RtYS9kaXJlY3QuYw0KKysrIGIva2VybmVsL2RtYS9kaXJlY3QuYw0KQEAgLTMwOSw3ICsz
-MDksMTIgQEAgaW50IGRtYV9kaXJlY3Rfc3VwcG9ydGVkKHN0cnVjdCBkZXZpY2UgKmRldiwgdTY0
-IG1hc2spDQogDQogCW1pbl9tYXNrID0gbWluX3QodTY0LCBtaW5fbWFzaywgKG1heF9wZm4gLSAx
-KSA8PCBQQUdFX1NISUZUKTsNCiANCi0JcmV0dXJuIG1hc2sgPj0gcGh5c190b19kbWEoZGV2LCBt
-aW5fbWFzayk7DQorCS8qDQorCSAqIFRoaXMgY2hlY2sgbmVlZHMgdG8gYmUgYWdhaW5zdCB0aGUg
-YWN0dWFsIGJpdCBtYXNrIHZhbHVlLCBzbw0KKwkgKiB1c2UgX19waHlzX3RvX2RtYSgpIGhlcmUg
-c28gdGhhdCB0aGUgU01FIGVuY3J5cHRpb24gbWFzayBpc24ndA0KKwkgKiBwYXJ0IG9mIHRoZSBj
-aGVjay4NCisJICovDQorCXJldHVybiBtYXNrID49IF9fcGh5c190b19kbWEoZGV2LCBtaW5fbWFz
-ayk7DQogfQ0KIA0KIGludCBkbWFfZGlyZWN0X21hcHBpbmdfZXJyb3Ioc3RydWN0IGRldmljZSAq
-ZGV2LCBkbWFfYWRkcl90IGRtYV9hZGRyKQ0KDQo=
+For security reasons we already returned zeroed memory from
+dma_alloc_coherent on most common platforms, but some implementation
+missed out.  Make sure we provide a consistent behavior.
