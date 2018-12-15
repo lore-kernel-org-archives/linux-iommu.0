@@ -1,16 +1,16 @@
-From: "Derrick, Jonathan" <jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 14/15] vmd: use the proper dma_* APIs instead of direct
-	methods calls
-Date: Fri, 14 Dec 2018 21:34:52 +0000
-Message-ID: <1544823277.19764.1.camel@intel.com>
-References: <20181207190720.18517-1-hch@lst.de>
-	<20181207190720.18517-15-hch@lst.de>
-	<20181214211757.GF20725@google.com>
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [RFC v2 14/20] iommu: introduce device fault data
+Date: Fri, 14 Dec 2018 16:30:23 -0800
+Message-ID: <20181214163023.156aada9@jacob-builder>
+References: <20180918142457.3325-1-eric.auger@redhat.com>
+	<20180918142457.3325-15-eric.auger@redhat.com>
+	<20180920150653.567287c5@jacob-builder>
+	<09404da4-98c6-7afc-4510-caeaeaf6e4c4@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0962957872867702132=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181214211757.GF20725-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <09404da4-98c6-7afc-4510-caeaeaf6e4c4-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,261 +20,311 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>, "helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "Yu, Fenghua" <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "toke-LJ9M9ZcSy1A@public.gmane.org" <toke-LJ9M9ZcSy1A@public.gmane.org>, "linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org" <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ilias.apalodimas-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Busch, Keith" <keith.busch-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Luck, Tony" <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "brouer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <brouer-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org" <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, "tariqt-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org" <tariqt-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org>
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============0962957872867702132==
-Content-Language: en-US
-Content-Type: multipart/signed; micalg=sha-1;
-	protocol="application/x-pkcs7-signature"; boundary="=-9E1D7a0ir8jkFqgEIfO9"
+On Wed, 12 Dec 2018 09:21:43 +0100
+Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 
---=-9E1D7a0ir8jkFqgEIfO9
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> Hi Jacob,
+> 
+> On 9/21/18 12:06 AM, Jacob Pan wrote:
+> > On Tue, 18 Sep 2018 16:24:51 +0200
+> > Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> >   
+> >> From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >>
+> >> Device faults detected by IOMMU can be reported outside IOMMU
+> >> subsystem for further processing. This patch intends to provide
+> >> a generic device fault data such that device drivers can be
+> >> communicated with IOMMU faults without model specific knowledge.
+> >>
+> >> The proposed format is the result of discussion at:
+> >> https://lkml.org/lkml/2017/11/10/291
+> >> Part of the code is based on Jean-Philippe Brucker's patchset
+> >> (https://patchwork.kernel.org/patch/9989315/).
+> >>
+> >> The assumption is that model specific IOMMU driver can filter and
+> >> handle most of the internal faults if the cause is within IOMMU
+> >> driver control. Therefore, the fault reasons can be reported are
+> >> grouped and generalized based common specifications such as PCI
+> >> ATS.
+> >>
+> >> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> >> Signed-off-by: Jean-Philippe Brucker
+> >> <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> Signed-off-by: Liu, Yi L
+> >> <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> Signed-off-by: Ashok Raj
+> >> <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> Signed-off-by: Eric Auger
+> >> <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> [moved part of the iommu_fault_event
+> >> struct in the uapi, enriched the fault reasons to be able to map
+> >> unrecoverable SMMUv3 errors]  
+> > Sounds good to me.
+> > There are also other "enrichment" we need to do to support mdev or
+> > finer granularity fault reporting below physical device. e.g. PASID
+> > level.
+> > 
+> > The current scheme works for PCIe physical device level, where each
+> > device registers a single handler only once. When device fault is
+> > detected by the IOMMU, it will find the matching handler and private
+> > data to report back. However, for devices partitioned by PASID and
+> > represented by mdev this may not work. Since IOMMU is not mdev aware
+> > and only works at physical device level.
+> > So I am thinking we should allow multiple registration of fault
+> > handler with different data and ID. i.e.
+> > 
+> > int iommu_register_device_fault_handler(struct device *dev,
+> > 					iommu_dev_fault_handler_t
+> > handler, int id,
+> > 					void *data)
+> > 
+> > where the new "id field" is
+> >  * @id: Identification of the handler private data, will be used by
+> > fault
+> >  *      reporting code to match the handler data to be returned.
+> > For page
+> >  *      request, this can be the PASID. ID must be unique per
+> > device, i.e.
+> >  *      each ID can only be registered once per device.
+> >  *      - IOMMU_DEV_FAULT_ID_UNRECOVERY (~0U) is reserved for fault
+> > reporting
+> >  *      w/o ID. e.g. unrecoverable faults.
+> > 
+> > I am still testing, but just wanted to have feedback on this idea.  
+> 
+> I am currently respinning this series. Do you have a respin for this
+> patch including iommu_register_device_fault_handler with the @id param
+> as you suggested above? Otherwise 2 solutions: I keep the code as is
+> or I do the modification myself implementing a list of fault_params?
+> 
+you can keep the code as is if it fits your current needs. Yi and I
+have thought of some new cases for supporting mdev. We are thinking to
+support many to many handler vs PASID relationship. i.e. allow
+registration of many fault handlers per device, each associated with an
+ID and data. The use case is that a physical device may register a
+fault handler for its own PASID or non-PASID related faults. Such
+physical device can also be partitioned into sub-device, e.g. mdev, but
+fault handler registration is at physical device level in that IOMMU is
+not mdev aware.
+Anyway, still need some work to flush out the details.
+> Besides do you plans for "[PATCH v5 00/23] IOMMU and VT-d driver
+> support for Shared Virtual Address (SVA)" respin - hope I didn't miss
+> anything? - ?
+> 
+You did not miss anything. Yes, we are still working on some internal
+integration issues. It should not affect the common interface much. Or
+I can send out a common API spin first once we have the functionality
+tested.
 
-Looks good to me
-Thanks Christoph
+Thanks for checking.
 
-Acked-by: Jon Derrick <jonathan.derrick-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Thanks
+> 
+> Eric
+> > 
+> > Thanks,
+> > 
+> > Jacob
+> > 
+> >   
+> >> ---
+> >>  include/linux/iommu.h      | 55 ++++++++++++++++++++++++-
+> >>  include/uapi/linux/iommu.h | 83
+> >> ++++++++++++++++++++++++++++++++++++++ 2 files changed, 136
+> >> insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> >> index 9bd3e63d562b..7529c14ff506 100644
+> >> --- a/include/linux/iommu.h
+> >> +++ b/include/linux/iommu.h
+> >> @@ -49,13 +49,17 @@ struct bus_type;
+> >>  struct device;
+> >>  struct iommu_domain;
+> >>  struct notifier_block;
+> >> +struct iommu_fault_event;
+> >>  
+> >>  /* iommu fault flags */
+> >> -#define IOMMU_FAULT_READ	0x0
+> >> -#define IOMMU_FAULT_WRITE	0x1
+> >> +#define IOMMU_FAULT_READ		(1 << 0)
+> >> +#define IOMMU_FAULT_WRITE		(1 << 1)
+> >> +#define IOMMU_FAULT_EXEC		(1 << 2)
+> >> +#define IOMMU_FAULT_PRIV		(1 << 3)
+> >>  
+> >>  typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+> >>  			struct device *, unsigned long, int, void
+> >> *); +typedef int (*iommu_dev_fault_handler_t)(struct
+> >> iommu_fault_event *, void *); 
+> >>  struct iommu_domain_geometry {
+> >>  	dma_addr_t aperture_start; /* First address that can be
+> >> mapped    */ @@ -262,6 +266,52 @@ struct iommu_device {
+> >>  	struct device *dev;
+> >>  };
+> >>  
+> >> +/**
+> >> + * struct iommu_fault_event - Generic per device fault data
+> >> + *
+> >> + * - PCI and non-PCI devices
+> >> + * - Recoverable faults (e.g. page request), information based on
+> >> PCI ATS
+> >> + * and PASID spec.
+> >> + * - Un-recoverable faults of device interest
+> >> + * - DMA remapping and IRQ remapping faults
+> >> + *
+> >> + * @fault: fault descriptor
+> >> + * @device_private: if present, uniquely identify device-specific
+> >> + *                  private data for an individual page request.
+> >> + * @iommu_private: used by the IOMMU driver for storing
+> >> fault-specific
+> >> + *                 data. Users should not modify this field before
+> >> + *                 sending the fault response.
+> >> + */
+> >> +struct iommu_fault_event {
+> >> +	struct iommu_fault fault;
+> >> +	u64 device_private;
+> >> +	u64 iommu_private;
+> >> +};
+> >> +
+> >> +/**
+> >> + * struct iommu_fault_param - per-device IOMMU fault data
+> >> + * @dev_fault_handler: Callback function to handle IOMMU faults at
+> >> device level
+> >> + * @data: handler private data
+> >> + *
+> >> + */
+> >> +struct iommu_fault_param {
+> >> +	iommu_dev_fault_handler_t handler;
+> >> +	void *data;
+> >> +};
+> >> +
+> >> +/**
+> >> + * struct iommu_param - collection of per-device IOMMU data
+> >> + *
+> >> + * @fault_param: IOMMU detected device fault reporting data
+> >> + *
+> >> + * TODO: migrate other per device data pointers under
+> >> iommu_dev_data, e.g.
+> >> + *	struct iommu_group	*iommu_group;
+> >> + *	struct iommu_fwspec	*iommu_fwspec;
+> >> + */
+> >> +struct iommu_param {
+> >> +	struct iommu_fault_param *fault_param;
+> >> +};
+> >> +
+> >>  int  iommu_device_register(struct iommu_device *iommu);
+> >>  void iommu_device_unregister(struct iommu_device *iommu);
+> >>  int  iommu_device_sysfs_add(struct iommu_device *iommu,
+> >> @@ -429,6 +479,7 @@ struct iommu_ops {};
+> >>  struct iommu_group {};
+> >>  struct iommu_fwspec {};
+> >>  struct iommu_device {};
+> >> +struct iommu_fault_param {};
+> >>  
+> >>  static inline bool iommu_present(struct bus_type *bus)
+> >>  {
+> >> diff --git a/include/uapi/linux/iommu.h
+> >> b/include/uapi/linux/iommu.h index 21adb2a964e5..a0fe5c2fb236
+> >> 100644 --- a/include/uapi/linux/iommu.h
+> >> +++ b/include/uapi/linux/iommu.h
+> >> @@ -150,5 +150,88 @@ struct iommu_guest_msi_binding {
+> >>  	__u64		gpa;
+> >>  	__u32		granule;
+> >>  };
+> >> +
+> >> +/*  Generic fault types, can be expanded IRQ remapping fault */
+> >> +enum iommu_fault_type {
+> >> +	IOMMU_FAULT_DMA_UNRECOV = 1,	/* unrecoverable
+> >> fault */
+> >> +	IOMMU_FAULT_PAGE_REQ,		/* page request
+> >> fault */ +};
+> >> +
+> >> +enum iommu_fault_reason {
+> >> +	IOMMU_FAULT_REASON_UNKNOWN = 0,
+> >> +
+> >> +	/* IOMMU internal error, no specific reason to report out
+> >> */
+> >> +	IOMMU_FAULT_REASON_INTERNAL,
+> >> +
+> >> +	/* Could not access the PASID table (fetch caused external
+> >> abort) */
+> >> +	IOMMU_FAULT_REASON_PASID_FETCH,
+> >> +
+> >> +	/* could not access the device context (fetch caused
+> >> external abort) */
+> >> +	IOMMU_FAULT_REASON_DEVICE_CONTEXT_FETCH,
+> >> +
+> >> +	/* pasid entry is invalid or has configuration errors */
+> >> +	IOMMU_FAULT_REASON_BAD_PASID_ENTRY,
+> >> +
+> >> +	/* device context entry is invalid or has configuration
+> >> errors */
+> >> +	IOMMU_FAULT_REASON_BAD_DEVICE_CONTEXT_ENTRY,
+> >> +	/*
+> >> +	 * PASID is out of range (e.g. exceeds the maximum PASID
+> >> +	 * supported by the IOMMU) or disabled.
+> >> +	 */
+> >> +	IOMMU_FAULT_REASON_PASID_INVALID,
+> >> +
+> >> +	/* source id is out of range */
+> >> +	IOMMU_FAULT_REASON_SOURCEID_INVALID,
+> >> +
+> >> +	/*
+> >> +	 * An external abort occurred fetching (or updating) a
+> >> translation
+> >> +	 * table descriptor
+> >> +	 */
+> >> +	IOMMU_FAULT_REASON_WALK_EABT,
+> >> +
+> >> +	/*
+> >> +	 * Could not access the page table entry (Bad address),
+> >> +	 * actual translation fault
+> >> +	 */
+> >> +	IOMMU_FAULT_REASON_PTE_FETCH,
+> >> +
+> >> +	/* Protection flag check failed */
+> >> +	IOMMU_FAULT_REASON_PERMISSION,
+> >> +
+> >> +	/* access flag check failed */
+> >> +	IOMMU_FAULT_REASON_ACCESS,
+> >> +
+> >> +	/* Output address of a translation stage caused Address
+> >> Size fault */
+> >> +	IOMMU_FAULT_REASON_OOR_ADDRESS
+> >> +};
+> >> +
+> >> +/**
+> >> + * struct iommu_fault - Generic fault data
+> >> + *
+> >> + * @type contains fault type
+> >> + * @reason fault reasons if relevant outside IOMMU driver.
+> >> + * IOMMU driver internal faults are not reported.
+> >> + * @addr: tells the offending page address
+> >> + * @fetch_addr: tells the address that caused an abort, if any
+> >> + * @pasid: contains process address space ID, used in shared
+> >> virtual memory
+> >> + * @page_req_group_id: page request group index
+> >> + * @last_req: last request in a page request group
+> >> + * @pasid_valid: indicates if the PRQ has a valid PASID
+> >> + * @prot: page access protection flag:
+> >> + *	IOMMU_FAULT_READ, IOMMU_FAULT_WRITE
+> >> + */
+> >> +
+> >> +struct iommu_fault {
+> >> +	__u32	type;   /* enum iommu_fault_type */
+> >> +	__u32	reason; /* enum iommu_fault_reason */
+> >> +	__u64	addr;
+> >> +	__u64	fetch_addr;
+> >> +	__u32	pasid;
+> >> +	__u32	page_req_group_id;
+> >> +	__u32	last_req;
+> >> +	__u32	pasid_valid;
+> >> +	__u32	prot;
+> >> +	__u32	access;
+> >> +};
+> >>  #endif /* _UAPI_IOMMU_H */
+> >>    
+> > 
+> > [Jacob Pan]
+> >   
 
-On Fri, 2018-12-14 at 15:17 -0600, Bjorn Helgaas wrote:
-> Conventional spelling in subject is
->=20
->   PCI: vmd: Use dma_* APIs instead of direct method calls
->=20
-> On Fri, Dec 07, 2018 at 11:07:19AM -0800, Christoph Hellwig wrote:
-> > With the bypass support for the direct mapping we might not always have
-> > methods to call, so use the proper APIs instead.  The only downside is
-> > that we will create two dma-debug entries for each mapping if
-> > CONFIG_DMA_DEBUG is enabled.
-> >=20
-> > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
->=20
-> You cc'd the VMD maintainers already, and I have no objection to this
-> from a PCI core point of view, so:
->=20
-> Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->=20
-> > ---
-> >  drivers/pci/controller/vmd.c | 42 +++++++++++++++---------------------
-> >  1 file changed, 17 insertions(+), 25 deletions(-)
-> >=20
-> > diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.=
-c
-> > index 98ce79eac128..3890812cdf87 100644
-> > --- a/drivers/pci/controller/vmd.c
-> > +++ b/drivers/pci/controller/vmd.c
-> > @@ -307,39 +307,32 @@ static struct device *to_vmd_dev(struct device *d=
-ev)
-> >  	return &vmd->dev->dev;
-> >  }
-> > =20
-> > -static const struct dma_map_ops *vmd_dma_ops(struct device *dev)
-> > -{
-> > -	return get_dma_ops(to_vmd_dev(dev));
-> > -}
-> > -
-> >  static void *vmd_alloc(struct device *dev, size_t size, dma_addr_t *ad=
-dr,
-> >  		       gfp_t flag, unsigned long attrs)
-> >  {
-> > -	return vmd_dma_ops(dev)->alloc(to_vmd_dev(dev), size, addr, flag,
-> > -				       attrs);
-> > +	return dma_alloc_attrs(to_vmd_dev(dev), size, addr, flag, attrs);
-> >  }
-> > =20
-> >  static void vmd_free(struct device *dev, size_t size, void *vaddr,
-> >  		     dma_addr_t addr, unsigned long attrs)
-> >  {
-> > -	return vmd_dma_ops(dev)->free(to_vmd_dev(dev), size, vaddr, addr,
-> > -				      attrs);
-> > +	return dma_free_attrs(to_vmd_dev(dev), size, vaddr, addr, attrs);
-> >  }
-> > =20
-> >  static int vmd_mmap(struct device *dev, struct vm_area_struct *vma,
-> >  		    void *cpu_addr, dma_addr_t addr, size_t size,
-> >  		    unsigned long attrs)
-> >  {
-> > -	return vmd_dma_ops(dev)->mmap(to_vmd_dev(dev), vma, cpu_addr, addr,
-> > -				      size, attrs);
-> > +	return dma_mmap_attrs(to_vmd_dev(dev), vma, cpu_addr, addr, size,
-> > +			attrs);
-> >  }
-> > =20
-> >  static int vmd_get_sgtable(struct device *dev, struct sg_table *sgt,
-> >  			   void *cpu_addr, dma_addr_t addr, size_t size,
-> >  			   unsigned long attrs)
-> >  {
-> > -	return vmd_dma_ops(dev)->get_sgtable(to_vmd_dev(dev), sgt, cpu_addr,
-> > -					     addr, size, attrs);
-> > +	return dma_get_sgtable_attrs(to_vmd_dev(dev), sgt, cpu_addr, addr, si=
-ze,
-> > +			attrs);
-> >  }
-> > =20
-> >  static dma_addr_t vmd_map_page(struct device *dev, struct page *page,
-> > @@ -347,61 +340,60 @@ static dma_addr_t vmd_map_page(struct device *dev=
-, struct page *page,
-> >  			       enum dma_data_direction dir,
-> >  			       unsigned long attrs)
-> >  {
-> > -	return vmd_dma_ops(dev)->map_page(to_vmd_dev(dev), page, offset, size=
-,
-> > -					  dir, attrs);
-> > +	return dma_map_page_attrs(to_vmd_dev(dev), page, offset, size, dir,
-> > +			attrs);
-> >  }
-> > =20
-> >  static void vmd_unmap_page(struct device *dev, dma_addr_t addr, size_t=
- size,
-> >  			   enum dma_data_direction dir, unsigned long attrs)
-> >  {
-> > -	vmd_dma_ops(dev)->unmap_page(to_vmd_dev(dev), addr, size, dir, attrs)=
-;
-> > +	dma_unmap_page_attrs(to_vmd_dev(dev), addr, size, dir, attrs);
-> >  }
-> > =20
-> >  static int vmd_map_sg(struct device *dev, struct scatterlist *sg, int =
-nents,
-> >  		      enum dma_data_direction dir, unsigned long attrs)
-> >  {
-> > -	return vmd_dma_ops(dev)->map_sg(to_vmd_dev(dev), sg, nents, dir, attr=
-s);
-> > +	return dma_map_sg_attrs(to_vmd_dev(dev), sg, nents, dir, attrs);
-> >  }
-> > =20
-> >  static void vmd_unmap_sg(struct device *dev, struct scatterlist *sg, i=
-nt nents,
-> >  			 enum dma_data_direction dir, unsigned long attrs)
-> >  {
-> > -	vmd_dma_ops(dev)->unmap_sg(to_vmd_dev(dev), sg, nents, dir, attrs);
-> > +	dma_unmap_sg_attrs(to_vmd_dev(dev), sg, nents, dir, attrs);
-> >  }
-> > =20
-> >  static void vmd_sync_single_for_cpu(struct device *dev, dma_addr_t add=
-r,
-> >  				    size_t size, enum dma_data_direction dir)
-> >  {
-> > -	vmd_dma_ops(dev)->sync_single_for_cpu(to_vmd_dev(dev), addr, size, di=
-r);
-> > +	dma_sync_single_for_cpu(to_vmd_dev(dev), addr, size, dir);
-> >  }
-> > =20
-> >  static void vmd_sync_single_for_device(struct device *dev, dma_addr_t =
-addr,
-> >  				       size_t size, enum dma_data_direction dir)
-> >  {
-> > -	vmd_dma_ops(dev)->sync_single_for_device(to_vmd_dev(dev), addr, size,
-> > -						 dir);
-> > +	dma_sync_single_for_device(to_vmd_dev(dev), addr, size, dir);
-> >  }
-> > =20
-> >  static void vmd_sync_sg_for_cpu(struct device *dev, struct scatterlist=
- *sg,
-> >  				int nents, enum dma_data_direction dir)
-> >  {
-> > -	vmd_dma_ops(dev)->sync_sg_for_cpu(to_vmd_dev(dev), sg, nents, dir);
-> > +	dma_sync_sg_for_cpu(to_vmd_dev(dev), sg, nents, dir);
-> >  }
-> > =20
-> >  static void vmd_sync_sg_for_device(struct device *dev, struct scatterl=
-ist *sg,
-> >  				   int nents, enum dma_data_direction dir)
-> >  {
-> > -	vmd_dma_ops(dev)->sync_sg_for_device(to_vmd_dev(dev), sg, nents, dir)=
-;
-> > +	dma_sync_sg_for_device(to_vmd_dev(dev), sg, nents, dir);
-> >  }
-> > =20
-> >  static int vmd_dma_supported(struct device *dev, u64 mask)
-> >  {
-> > -	return vmd_dma_ops(dev)->dma_supported(to_vmd_dev(dev), mask);
-> > +	return dma_supported(to_vmd_dev(dev), mask);
-> >  }
-> > =20
-> >  static u64 vmd_get_required_mask(struct device *dev)
-> >  {
-> > -	return vmd_dma_ops(dev)->get_required_mask(to_vmd_dev(dev));
-> > +	return dma_get_required_mask(to_vmd_dev(dev));
-> >  }
-> > =20
-> >  static void vmd_teardown_dma_ops(struct vmd_dev *vmd)
-> > --=20
-> > 2.19.1
-> >=20
---=-9E1D7a0ir8jkFqgEIfO9
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-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
-PNauajAtxgRKfqfSMb+IcL/VXiPtVZOxVq+CTZeDJkaEmn/79vg8OYxpR+YhFF+tGlKf/Zc4id1P
-AgMBAAGjggI3MIICMzAdBgNVHQ4EFgQU4oawcWXM1cPGdwGcIszDfjORVZAwHwYDVR0jBBgwFoAU
-HmkqtNwo/kcYTiELP7ysES/wmPUwZQYDVR0fBF4wXDBaoFigVoZUaHR0cDovL3d3dy5pbnRlbC5j
-b20vcmVwb3NpdG9yeS9DUkwvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENB
-JTIwNEEuY3JsMIGfBggrBgEFBQcBAQSBkjCBjzBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRl
-bC5jb20vcmVwb3NpdG9yeS9jZXJ0aWZpY2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIw
-SXNzdWluZyUyMENBJTIwNEEuY3J0MCIGCCsGAQUFBzABhhZodHRwOi8vb2NzcC5pbnRlbC5jb20v
-MAsGA1UdDwQEAwIHgDA8BgkrBgEEAYI3FQcELzAtBiUrBgEEAYI3FQiGw4x1hJnlUYP9gSiFjp9T
-gpHACWeB3r05lfBDAgFkAgEJMB8GA1UdJQQYMBYGCCsGAQUFBwMEBgorBgEEAYI3CgMMMCkGCSsG
-AQQBgjcVCgQcMBowCgYIKwYBBQUHAwQwDAYKKwYBBAGCNwoDDDBRBgNVHREESjBIoCoGCisGAQQB
-gjcUAgOgHAwaam9uYXRoYW4uZGVycmlja0BpbnRlbC5jb22BGmpvbmF0aGFuLmRlcnJpY2tAaW50
-ZWwuY29tMA0GCSqGSIb3DQEBBQUAA4IBAQBxGkHe05DNpYel4b9WbbyQqD1G6y6YA6C93TjKULZi
-p8+gO1LL096ixD44+frVm3jtXMikoadRHQJmBJdzsCywNE1KgtrYF0k4zRWr7a28nyfGgQe4UHHD
-7ARyZFeGd7AKSQ1y4/LU57I2Aw2HKx9/PXavv1JXjjO2/bqTfnZDJTQmOQ0nvlO3/gvbbABxZHqz
-NtfHZsQWS7s+Elk2xGUQ0Po2pMCQoaPo9R96mm+84UP9q3OvSqMoaZwfzoUeAx2wGJYl0h3S+ABr
-CPVfCgq9qnmVCn5DyHWE3V/BRjJCoILLBLxAxnmSdH4pF6wJ6pYRLEw9qoyNhpzGUIJU/Lk1MYIC
-FzCCAhMCAQEwgZAweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYDVQQHEwtTYW50YSBD
-bGFyYTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIkludGVsIEV4dGVybmFs
-IEJhc2ljIElzc3VpbmcgQ0EgNEECEzMAAMamAkocC+WQNPgAAAAAxqYwCQYFKw4DAhoFAKBdMBgG
-CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE4MTIxNDIxMzQzN1owIwYJ
-KoZIhvcNAQkEMRYEFK7zC/uHskddgHFj61MTCip8FKViMA0GCSqGSIb3DQEBAQUABIIBAJzKQJAe
-2tvDuvtNXIvTKMqBHNncZjrGPda2y86cWqiDaQj+f+bJDfmE/I2ns1X/x93TXscn7K63zEfpuZWp
-sFoZEl2grOPxeiNQ327E8NXBgUQY+JAbWCRpn3BXC3McSJlaVIihVHvBkafsrN18qHzdgSeewlbL
-3lWJtC8VFQwsZjg21OZVuibrDo+8VZijh7F0arfHfzcKyGyxCK/UHNeMooM2FK5W83AakV2EA6lz
-WNirX2RxXqQyDcpkvvHT1nP+MZf9vzerqc81YFQpR/qYuVLsyffVPJclFseCql0fixQi4y5Sbsvs
-C/NHHvl2wmD3/J1CYwaeCk0rwvRItrgAAAAAAAA=
-
-
---=-9E1D7a0ir8jkFqgEIfO9--
-
---===============0962957872867702132==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============0962957872867702132==--
+[Jacob Pan]
