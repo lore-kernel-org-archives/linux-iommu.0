@@ -1,51 +1,73 @@
-From: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Subject: Re: [PATCH 3/6] sparc: remove the sparc32_dma_ops indirection
-Date: Sat, 15 Dec 2018 06:57:42 -0800
-Message-ID: <53761fd8-06f1-6443-1997-f518e725925e@roeck-us.net>
-References: <20181208174115.16237-1-hch@lst.de>
-	<20181208174115.16237-4-hch@lst.de>
-	<20181215063018.GA11415@roeck-us.net>
-	<20181215104720.GA1575@lst.de>
+From: Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [15/15] dma-mapping: bypass indirect calls for dma-direct
+Date: Sat, 15 Dec 2018 09:46:54 -0800
+Message-ID: <20181215174654.GA25694@roeck-us.net>
+References: <20181207190720.18517-16-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181215104720.GA1575-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: linux-parisc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Ezequiel Garcia <ezequiel-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, linux-mips-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, "Matwey V. Kornilov" <matwey-TTlVxmypnbovJsYlp49lxw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, openrisc-cunTk1MwBs9a3B2Vnqf2dGD2FQJk+8+b@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181207190720.18517-16-hch@lst.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Jesper Dangaard Brouer <brouer@redhat.com>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, linux-ia64@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/15/18 2:47 AM, Christoph Hellwig wrote:
-> On Fri, Dec 14, 2018 at 10:30:18PM -0800, Guenter Roeck wrote:
->> and so on, until qemu is terminated. This is seen with all sparc32
->> qemu emulations. Reverting the patch fixes the problem.
-> 
-> Hi Guenter,
-> 
-> can you check which of the three new ops is used in this case?  Or
-> provide the qemu config and rootfs?
+Hi,
+
+On Fri, Dec 07, 2018 at 11:07:20AM -0800, Christoph Hellwig wrote:
+> Avoid expensive indirect calls in the fast path DMA mapping
+> operations by directly calling the dma_direct_* ops if we are using
+> the directly mapped DMA operations.
 > 
 
-sparc32 defconfig+CONFIG_SQUASHFS=y+CONFIG_DEVTMPFS=y, and:
+This patch results in arm64 boot failures. Reverting the patch fixes
+the problem. Bisect results are attached. Per logs, the system fails
+to instantiate the root device. Examples from two logs:
 
-qemu-system-sparc -M SPARCClassic -kernel arch/sparc/boot/image \
-	-no-reboot -snapshot -drive file=/var/cache/buildbot/sparc/hda.sqf,if=scsi,format=raw \
-	-append 'root=/dev/sda rw init=/sbin/init.sh panic=1 console=ttyS0' \
-	-nographic
+[   22.843080] nvme nvme0: pci function 0000:00:02.0
+[   22.853820] nvme 0000:00:02.0: enabling device (0000 -> 0002)
+[   22.884178] nvme nvme0: Removing after probe failure status: -12
 
-qemu version doesn't seem to matter. I used gcc-7.3.0 using the toolchain from kernel.org
-to build the image.
-
-Root file system is at https://github.com/groeck/linux-build-test/tree/master/rootfs/sparc/.
+[   15.451963] xhci_hcd 0000:00:02.0: xHCI Host Controller
+[   15.453294] xhci_hcd 0000:00:02.0: new USB bus registered, assigned bus number 1
+[   15.456042] xhci_hcd 0000:00:02.0: can't setup: -12
+[   15.457003] xhci_hcd 0000:00:02.0: USB bus 1 deregistered
+[   15.458340] xhci_hcd 0000:00:02.0: init 0000:00:02.0 fail, -12
+[   15.458825] xhci_hcd: probe of 0000:00:02.0 failed with error -12
 
 Guenter
+
+---
+# bad: [d14b746c6c1ca310f679ef13f661587454e2c588] Add linux-next specific files for 20181214
+# good: [40e020c129cfc991e8ab4736d2665351ffd1468d] Linux 4.20-rc6
+git bisect start 'HEAD' 'v4.20-rc6'
+# bad: [ddfdda7f7d1ebdca0851f30a814e76749f08be99] Merge remote-tracking branch 'spi-nor/spi-nor/next'
+git bisect bad ddfdda7f7d1ebdca0851f30a814e76749f08be99
+# bad: [466d2f8b964745cc8db7f126607e19526385f2d5] Merge remote-tracking branch 'file-locks/locks-next'
+git bisect bad 466d2f8b964745cc8db7f126607e19526385f2d5
+# bad: [c43abf670f074a3eba2eebf9568ba95b2fe57f00] Merge remote-tracking branch 'arm-soc/for-next'
+git bisect bad c43abf670f074a3eba2eebf9568ba95b2fe57f00
+# good: [e4337d9d50eb940a25d3808ef76bb0eaa61a0146] Merge branch 'next/dt' into for-next
+git bisect good e4337d9d50eb940a25d3808ef76bb0eaa61a0146
+# bad: [32d851d8e81b1152d3e663b6c0b318474d649098] Merge remote-tracking branch 'dma-mapping/for-next'
+git bisect bad 32d851d8e81b1152d3e663b6c0b318474d649098
+# good: [32550839013d8e72d35c1cc0a756c818d7f9ae32] Merge remote-tracking branch 'scsi-fixes/fixes'
+git bisect good 32550839013d8e72d35c1cc0a756c818d7f9ae32
+# good: [8ea3ac17b6557f30697c624d1cd4ff2b30af82e1] Merge remote-tracking branch 'kbuild/for-next'
+git bisect good 8ea3ac17b6557f30697c624d1cd4ff2b30af82e1
+# good: [ad78dee0b630527bdfed809d1f5ed95c601886ae] dma-debug: Batch dma_debug_entry allocation
+git bisect good ad78dee0b630527bdfed809d1f5ed95c601886ae
+# good: [55897af63091ebc2c3f239c6a6666f748113ac50] dma-direct: merge swiotlb_dma_ops into the dma_direct code
+git bisect good 55897af63091ebc2c3f239c6a6666f748113ac50
+# good: [7d32be2e5abb2d88cf321357178d05c461b1cc83] leaking_addresses: do not parse binary files
+git bisect good 7d32be2e5abb2d88cf321357178d05c461b1cc83
+# good: [9db33987ee2e5abb32a40dca44a2953391786833] leaking_addresses: remove version number
+git bisect good 9db33987ee2e5abb32a40dca44a2953391786833
+# good: [7fd0d1346c1f96371a9a4996a590b86d570098f9] Merge remote-tracking branch 'leaks/leaks-next'
+git bisect good 7fd0d1346c1f96371a9a4996a590b86d570098f9
+# bad: [356da6d0cde3323236977fce54c1f9612a742036] dma-mapping: bypass indirect calls for dma-direct
+git bisect bad 356da6d0cde3323236977fce54c1f9612a742036
+# good: [190d4e5916a2d70a11009022b968fca948fb5dc7] vmd: use the proper dma_* APIs instead of direct methods calls
+git bisect good 190d4e5916a2d70a11009022b968fca948fb5dc7
+# first bad commit: [356da6d0cde3323236977fce54c1f9612a742036] dma-mapping: bypass indirect calls for dma-direct
