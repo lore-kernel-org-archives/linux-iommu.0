@@ -1,19 +1,92 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [RESEND PATCH] kernel/dma/direct: Do not include SME mask in
- the DMA supported check
-Date: Mon, 17 Dec 2018 18:02:48 +0100
-Message-ID: <20181217170248.GA12907@lst.de>
-References: <20181213225110.6567.69313.stgit@tlendack-t1.amdoffice.net> <8e875df2cf082ec6eeaf5e713bf9fa987325308d.1545057470.git.thomas.lendacky@amd.com>
+From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 0/9] Use vm_insert_range
+Date: Tue, 18 Dec 2018 01:49:42 +0530
+Message-ID: <20181217201942.GA31335@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <8e875df2cf082ec6eeaf5e713bf9fa987325308d.1545057470.git.thomas.lendacky@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Christoph Hellwig <hch@lst.de>, Alexander Duyck <alexander.duyck@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Guenter Roeck <linux@roeck-us.net>, Greg KH <gregkh@linuxfoundation.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, kirill.shutemov-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org, sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, stefanr-MtYdepGKPcBMYopoZt5u/LNAH6kLmebB@public.gmane.org, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, jgross-IBi9RG/b67k@public.gmane.org
+Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks,
+Previouly drivers have their own way of mapping range of
+kernel pages/memory into user vma and this was done by
+invoking vm_insert_page() within a loop.
 
-applied to the dma-mapping for-linus tree.
+As this pattern is common across different drivers, it can
+be generalized by creating a new function and use it across
+the drivers.
+
+vm_insert_range is the new API which will be used to map a
+range of kernel memory/pages to user vma.
+
+All the applicable places are converted to use new vm_insert_range
+in this patch series.
+
+v1 -> v2:
+        Address review comment on mm/memory.c. Add EXPORT_SYMBOL
+        for vm_insert_range and corrected the documentation part
+        for this API.
+
+        In drivers/gpu/drm/xen/xen_drm_front_gem.c, replace err
+        with ret as suggested.
+
+        In drivers/iommu/dma-iommu.c, handle the scenario of partial
+        mmap() of large buffer by passing *pages + vma->vm_pgoff* to
+        vm_insert_range().
+
+v2 -> v3:
+        Declaration of vm_insert_range() moved to include/linux/mm.h
+
+v3 -> v4:
+	Address review comments.
+	
+	In mm/memory.c. Added error check.
+
+	In arch/arm/mm/dma-mapping.c, remove part of error check as the
+	similar is checked inside vm_insert_range.
+
+	In rockchip/rockchip_drm_gem.c, vma->vm_pgoff is respected as
+	this might be passed as non zero value considering partial
+	mapping of large buffer.
+
+	In iommu/dma-iommu.c, count is modifed as (count - vma->vm_pgoff)
+	to handle partial mapping scenario in v2.
+
+Souptick Joarder (9):
+  mm: Introduce new vm_insert_range API
+  arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
+  drivers/firewire/core-iso.c: Convert to use vm_insert_range
+  drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
+  drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
+  iommu/dma-iommu.c: Convert to use vm_insert_range
+  videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range
+  xen/gntdev.c: Convert to use vm_insert_range
+  xen/privcmd-buf.c: Convert to use vm_insert_range
+
+ arch/arm/mm/dma-mapping.c                         | 21 ++++--------
+ drivers/firewire/core-iso.c                       | 15 ++-------
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c       | 19 ++---------
+ drivers/gpu/drm/xen/xen_drm_front_gem.c           | 20 ++++-------
+ drivers/iommu/dma-iommu.c                         | 13 ++-----
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c | 23 ++++---------
+ drivers/xen/gntdev.c                              | 11 +++---
+ drivers/xen/privcmd-buf.c                         |  8 ++---
+ include/linux/mm.h                                |  2 ++
+ mm/memory.c                                       | 41 +++++++++++++++++++++++
+ mm/nommu.c                                        |  7 ++++
+ 11 files changed, 83 insertions(+), 97 deletions(-)
+
+-- 
+1.9.1
