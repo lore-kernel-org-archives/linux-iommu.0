@@ -1,48 +1,50 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/2] dma-mapping: zero memory returned from dma_alloc_*
-Date: Mon, 17 Dec 2018 12:59:31 +0100
-Message-ID: <20181217115931.GA6853@lst.de>
-References: <20181214082515.14835-1-hch@lst.de> <20181214082515.14835-2-hch@lst.de> <CAMuHMdWOr0EsgFQF8tjJYLxKVXx+Jwn73N8SVKt8AQGLKQ8V-A@mail.gmail.com> <20181214114719.GA3316@lst.de> <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v7 00/24] Tegra GART driver clean up and optimization
+Date: Mon, 17 Dec 2018 15:22:55 +0300
+Message-ID: <75ffa70b-b0f3-0feb-c1ea-94a805a7bd0c@gmail.com>
+References: <20181212203907.23461-1-digetx@gmail.com>
+ <20181217091455.kkxpyojp4r4fyhrw@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5ae55118-6858-9121-6b3e-9b19b41550ef@westnet.com.au>
+In-Reply-To: <20181217091455.kkxpyojp4r4fyhrw@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Ungerer <gregungerer@westnet.com.au>
-Cc: Christoph Hellwig <hch@lst.de>, Geert Uytterhoeven <geert@linux-m68k.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, Michal Simek <monstr@monstr.eu>, ashutosh.dixit@intel.com, alpha <linux-alpha@vger.kernel.org>, arcml <linux-snps-arc@lists.infradead.org>, linux-c6x-dev@linux-c6x.org, linux-m68k <linux-m68k@lists.linux-m68k.org>, Openrisc <openrisc@lists.librecores.org>, Parisc List <linux-parisc@vger.kernel.org>, linux-s390 <linux-s390@vger.kernel.org>, sparclinux <sparclinux@vger.kernel.org>, linux-xtensa@linux-xtensa.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Dec 15, 2018 at 12:14:29AM +1000, Greg Ungerer wrote:
-> Yep, that is right. Certainly the MMU case is broken. Some noMMU cases work
-> by virtue of the SoC only having an instruction cache (the older V2 cores).
+On 17.12.2018 12:14, Joerg Roedel wrote:
+> On Wed, Dec 12, 2018 at 11:38:43PM +0300, Dmitry Osipenko wrote:
+>> Dmitry Osipenko (24):
+>>   iommu/tegra: gart: Remove pr_fmt and clean up includes
+>>   iommu/tegra: gart: Clean up driver probe errors handling
+>>   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+>>   iommu: Introduce iotlb_sync_map callback
+>>   iommu/tegra: gart: Optimize mapping / unmapping performance
+>>   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+>>   ARM: dts: tegra20: Update Memory Controller node to the new binding
+>>   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+>>     Tegra20
+>>   memory: tegra: Adapt to Tegra20 device-tree binding changes
+>>   memory: tegra: Read client ID on GART page fault
+>>   memory: tegra: Use of_device_get_match_data()
+>>   memory: tegra: Use relaxed versions of readl/writel
+>>   iommu/tegra: gart: Integrate with Memory Controller driver
+>>   memory: tegra: Do not try to probe SMMU on Tegra20
+>>   memory: tegra: Do not ask for IRQ sharing
+>>   memory: tegra: Clean up error messages
+>>   iommu/tegra: gart: Fix spinlock recursion
+>>   iommu/tegra: gart: Fix NULL pointer dereference
+>>   iommu/tegra: gart: Allow only one active domain at a time
+>>   iommu/tegra: gart: Don't use managed resources
+>>   iommu/tegra: gart: Prepend error/debug messages with "gart:"
+>>   iommu/tegra: gart: Don't detach devices from inactive domains
+>>   iommu/tegra: gart: Simplify clients-tracking code
+>>   iommu/tegra: gart: Perform code refactoring
+> 
+> Applied, thanks.
+> 
 
-Is there a good an easy case to detect if a core has a cache?  Either
-runtime or in Kconfig?
-
-> The MMU case is fixable, but I think it will mean changing away from
-> the fall-back virtual:physical 1:1 mapping it uses for the kernel address
-> space. So not completely trivial. Either that or a dedicated area of RAM
-> for coherent allocations that we can mark as non-cachable via the really
-> course grained and limited ACR registers - not really very appealing.
-
-What about CF_PAGE_NOCACHE?  Reading arch/m68k/include/asm/mcf_pgtable.h
-suggest this would cause an uncached mapping, in which case something
-like this should work:
-
-	http://git.infradead.org/users/hch/misc.git/commitdiff/4b8711d436e8d56edbc5ca19aa2be639705bbfef
-
-> The noMMU case in general is probably limited to something like that same
-> type of dedicated RAM/ACR register mechamism.
->
-> The most commonly used periperal with DMA is the FEC ethernet module,
-> and it has some "special" (used very loosely) cache flushing for
-> parts like the 532x family which probably makes it mostly work right.
-> There is a PCI bus on the 54xx family of parts, and I know general
-> ethernet cards on it (like e1000's) have problems I am sure are
-> related to the fact that coherent memory allocations aren't.
-
-If we really just care about FEC we can just switch it do use
-DMA_ATTR_NON_CONSISTENT and do explicit cache flushing.  But as far
-as I can tell FEC only uses DMA coherent allocations for the TSO
-headers anyway, is TSO even used on this SOC?
+Awesome, thanks!
