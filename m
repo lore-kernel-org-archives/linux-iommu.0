@@ -1,35 +1,31 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Check for v7s-incapable
- systems"
-Date: Mon, 17 Dec 2018 10:20:04 +0100
-Message-ID: <20181217092004.3s2nwcuwus3wdljs@8bytes.org>
-References: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
+From: Hanjun Guo <guohanjun@huawei.com>
+Subject: Re: [PATCH 3/6] ACPI/IORT: Use device_iommu_mapped()
+Date: Mon, 17 Dec 2018 17:21:13 +0800
+Message-ID: <2c279b05-f845-94ac-f0ad-a0c54f48a7ca@huawei.com>
+References: <20181211134343.10664-1-joro@8bytes.org>
+ <20181211134343.10664-4-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
+In-Reply-To: <20181211134343.10664-4-joro@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, CK Hu <ck.hu@mediatek.com>, Stephen Boyd <swboyd@chromium.org>
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: Russell Currey <ruscur@russell.cc>, Sam Bobroff <sbobroff@linux.ibm.com>, oohall@gmail.com, Benjamin Herrenschmidt <benh@kernel.crashing.org>, Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vkoul@kernel.org>, jroedel@suse.de, Mathias Nyman <mathias.nyman@intel.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org, dmaengine@vger.kernel.org, linux-usb@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 13, 2018 at 05:19:48PM +0800, Yong Wu wrote:
-> This reverts commit 82db33dc5e49fb625262d81125625d07a0d6184e.
+On 2018/12/11 21:43, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
 > 
-> After the commit 29859aeb8a6e ("iommu/io-pgtable-arm-v7s: Abort
-> allocation when table address overflows the PTE"), v7s will return fail
-> if the page table allocation isn't expected. this PHYS_OFFSET check
-> is unnecessary now.
+> Replace the iommu-check with a proper and readable function
+> call.
 > 
-> And this check may lead to fail. For example, If CONFIG_RANDOMIZE_BASE
-> is enabled, the "memstart_addr" will be updated randomly, then the
-> PHYS_OFFSET may be random.
-> 
-> Reported-by: CK Hu <ck.hu@mediatek.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/iommu/io-pgtable-arm-v7s.c | 4 ----
->  1 file changed, 4 deletions(-)
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 
-Applied to iommu/fixes, thanks.
+Acked-by: Hanjun Guo <hanjun.guo@linaro.org>
+
+Thanks
+Hanjun
