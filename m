@@ -1,35 +1,35 @@
-From: Hanjun Guo <guohanjun@huawei.com>
-Subject: Re: [PATCH 2/9] ACPI/IORT: Use helper functions to access
- dev->iommu_fwspec
-Date: Mon, 17 Dec 2018 17:17:56 +0800
-Message-ID: <20f1319b-c9f7-888c-51f8-31ead4c58dde@huawei.com>
-References: <20181211121910.5604-1-joro@8bytes.org>
- <20181211121910.5604-3-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] Revert "iommu/io-pgtable-arm: Check for v7s-incapable
+ systems"
+Date: Mon, 17 Dec 2018 10:20:04 +0100
+Message-ID: <20181217092004.3s2nwcuwus3wdljs@8bytes.org>
+References: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211121910.5604-3-joro@8bytes.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1544692788-24427-1-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Sudeep Holla <sudeep.holla@arm.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>, Thierry Reding <thierry.reding@gmail.com>, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, CK Hu <ck.hu@mediatek.com>, Stephen Boyd <swboyd@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2018/12/11 20:19, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
+On Thu, Dec 13, 2018 at 05:19:48PM +0800, Yong Wu wrote:
+> This reverts commit 82db33dc5e49fb625262d81125625d07a0d6184e.
 > 
-> Use the new helpers dev_iommu_fwspec_get()/set() to access
-> the dev->iommu_fwspec pointer. This makes it easier to move
-> that pointer later into another struct.
+> After the commit 29859aeb8a6e ("iommu/io-pgtable-arm-v7s: Abort
+> allocation when table address overflows the PTE"), v7s will return fail
+> if the page table allocation isn't expected. this PHYS_OFFSET check
+> is unnecessary now.
 > 
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> And this check may lead to fail. For example, If CONFIG_RANDOMIZE_BASE
+> is enabled, the "memstart_addr" will be updated randomly, then the
+> PHYS_OFFSET may be random.
+> 
+> Reported-by: CK Hu <ck.hu@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
->  drivers/acpi/arm64/iort.c | 19 ++++++++++---------
->  1 file changed, 10 insertions(+), 9 deletions(-)
+>  drivers/iommu/io-pgtable-arm-v7s.c | 4 ----
+>  1 file changed, 4 deletions(-)
 
-Acked-by: Hanjun Guo <hanjun.guo@linaro.org>
-
-Thanks
-Hanjun
+Applied to iommu/fixes, thanks.
