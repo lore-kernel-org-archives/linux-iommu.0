@@ -1,58 +1,98 @@
-From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 6/9] iommu/dma-iommu.c: Convert to use vm_insert_range
-Date: Tue, 18 Dec 2018 01:54:48 +0530
-Message-ID: <20181217202448.GA14918@jordon-HP-15-Notebook-PC>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org, willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mhocko-IBi9RG/b67k@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [PATCH V3 0/2] Replace all open encodings for NUMA_NO_NODE
+Date: Tue, 18 Dec 2018 15:42:11 +0530
+Message-ID: <1545127933-10711-1-git-send-email-anshuman.khandual@arm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Cc: ocfs2-devel@oss.oracle.com, linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org, linux-media@vger.kernel.org, iommu@lists.linux-foundation.org, linux-rdma@vger.kernel.org, dmaengine@vger.kernel.org, linux-block@vger.kernel.org, sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-ia64@vger.kernel.org, linux-alpha@vger.kernel.org, akpm@linux-foundation.org, jiangqi903@gmail.com, hverkuil@xs4all.nl, vkoul@kernel.org, sfr@canb.auug.org.au, dledford@redhat.com, mpe@ellerman.id.au, axboe@kernel.dk, jeffrey.t.kirsher@intel.com, david@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Convert to use vm_insert_range() to map range of kernel
-memory to user vma.
+Changes in V3:
 
-Signed-off-by: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
----
- drivers/iommu/dma-iommu.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+- Dropped all references to NUMA_NO_NODE as per Lubomir Rinetl
+- Split the patch into two creating a new one specifically for tools
+- Folded Stephen's linux-next build fix into the second patch
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d1b0475..de7ffd8 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -622,17 +622,10 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 
- int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
- {
--	unsigned long uaddr = vma->vm_start;
--	unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	int ret = -ENXIO;
-+	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
- 
--	for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
--		ret = vm_insert_page(vma, uaddr, pages[i]);
--		if (ret)
--			break;
--		uaddr += PAGE_SIZE;
--	}
--	return ret;
-+	return vm_insert_range(vma, vma->vm_start, pages + vma->vm_pgoff,
-+				count - vma->vm_pgoff);
- }
- 
- static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+Changes in V2: (https://patchwork.kernel.org/patch/10698089/)
+
+- Added inclusion of 'numa.h' header at various places per Andrew
+- Updated 'dev_to_node' to use NUMA_NO_NODE instead per Vinod
+
+Changes in V1: (https://lkml.org/lkml/2018/11/23/485)
+
+- Dropped OCFS2 changes per Joseph
+- Dropped media/video drivers changes per Hans
+
+RFC - https://patchwork.kernel.org/patch/10678035/
+
+Build tested this with multiple cross compiler options like alpha, sparc,
+arm64, x86, powerpc, powerpc64le etc with their default config which might
+not have compiled tested all driver related changes. I will appreciate
+folks giving this a test in their respective build environments.
+
+All these places for replacement were found by running the following grep
+patterns on the entire kernel code. Please let me know if this might have
+missed some instances. This might also have replaced some false positives.
+I will appreciate suggestions, inputs and review.
+
+1. git grep "nid == -1"
+2. git grep "node == -1"
+3. git grep "nid = -1"
+4. git grep "node = -1"
+
+NOTE: I can still split the first patch into multiple ones - one for each
+subsystem as suggested by Lubomir if that would be better.
+
+Anshuman Khandual (1):
+  mm: Replace all open encodings for NUMA_NO_NODE
+
+Stephen Rothwell (1):
+  Tools: Replace open encodings for NUMA_NO_NODE
+
+ arch/alpha/include/asm/topology.h             |  3 ++-
+ arch/ia64/kernel/numa.c                       |  2 +-
+ arch/ia64/mm/discontig.c                      |  6 +++---
+ arch/powerpc/include/asm/pci-bridge.h         |  3 ++-
+ arch/powerpc/kernel/paca.c                    |  3 ++-
+ arch/powerpc/kernel/pci-common.c              |  3 ++-
+ arch/powerpc/mm/numa.c                        | 14 +++++++-------
+ arch/powerpc/platforms/powernv/memtrace.c     |  5 +++--
+ arch/sparc/kernel/pci_fire.c                  |  3 ++-
+ arch/sparc/kernel/pci_schizo.c                |  3 ++-
+ arch/sparc/kernel/psycho_common.c             |  3 ++-
+ arch/sparc/kernel/sbus.c                      |  3 ++-
+ arch/sparc/mm/init_64.c                       |  6 +++---
+ arch/x86/include/asm/pci.h                    |  3 ++-
+ arch/x86/kernel/apic/x2apic_uv_x.c            |  7 ++++---
+ arch/x86/kernel/smpboot.c                     |  3 ++-
+ drivers/block/mtip32xx/mtip32xx.c             |  5 +++--
+ drivers/dma/dmaengine.c                       |  4 +++-
+ drivers/infiniband/hw/hfi1/affinity.c         |  3 ++-
+ drivers/infiniband/hw/hfi1/init.c             |  3 ++-
+ drivers/iommu/dmar.c                          |  5 +++--
+ drivers/iommu/intel-iommu.c                   |  3 ++-
+ drivers/misc/sgi-xp/xpc_uv.c                  |  3 ++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  5 +++--
+ include/linux/device.h                        |  2 +-
+ init/init_task.c                              |  3 ++-
+ kernel/kthread.c                              |  3 ++-
+ kernel/sched/fair.c                           | 15 ++++++++-------
+ lib/cpumask.c                                 |  3 ++-
+ mm/huge_memory.c                              | 13 +++++++------
+ mm/hugetlb.c                                  |  3 ++-
+ mm/ksm.c                                      |  2 +-
+ mm/memory.c                                   |  7 ++++---
+ mm/memory_hotplug.c                           | 12 ++++++------
+ mm/mempolicy.c                                |  2 +-
+ mm/page_alloc.c                               |  4 ++--
+ mm/page_ext.c                                 |  2 +-
+ net/core/pktgen.c                             |  3 ++-
+ net/qrtr/qrtr.c                               |  3 ++-
+ tools/include/linux/numa.h                    | 16 ++++++++++++++++
+ tools/perf/bench/numa.c                       |  6 +++---
+ 41 files changed, 123 insertions(+), 77 deletions(-)
+ create mode 100644 tools/include/linux/numa.h
+
 -- 
-1.9.1
+2.7.4
