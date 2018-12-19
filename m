@@ -1,83 +1,37 @@
-From: Andrew Jones <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/2] ACPI/IORT: Handle potential overflow in iort_dma_setup
-Date: Wed, 19 Dec 2018 14:18:49 +0100
-Message-ID: <20181219131849.hziujd5zgclangce@kamzik.brq.redhat.com>
-References: <20181218184841.20034-1-drjones@redhat.com>
-	<20181218184841.20034-2-drjones@redhat.com>
-	<1503e3b8-1a6c-3b66-fa1e-d13f4e19f31f@arm.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] dma-mapping fix for 4.20
+Date: Wed, 19 Dec 2018 15:24:19 +0100
+Message-ID: <20181219142419.GA1112@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1503e3b8-1a6c-3b66-fa1e-d13f4e19f31f-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Dec 19, 2018 at 12:21:35PM +0000, Robin Murphy wrote:
-> On 18/12/2018 18:48, Andrew Jones wrote:
-> > The sum of dmaaddr and size may overflow, particularly considering
-> > there are cases where size will be U64_MAX.
-> 
-> Only if the firmware is broken in the first place, though. It would be weird
-> to describe an explicit _DMA range of base=0 and size=U64_MAX, because it's
-> effectively the same as just not having one at all, but it's not strictly
-> illegal. However, since the ACPI System Memory address space is at most
-> 64-bit, anything that would actually overflow here is already describing an
-> impossibility - really, we should probably scream even louder about a
-> firmware bug and reject it entirely, rather than quietly hiding it.
+The following changes since commit 6531e115b7ab84f563fcd7f0d2d05ccf971aaaf9:
 
-Ah, looking again I see the paths. Either acpi_dma_get_range() returns
-success, in which case base and size are fine, or it returns an EINVAL,
-in which case base=size=0, or it returns ENODEV in which case base is
-zero, so size may be set to U64_MAX by rc_dma_get_range() with no problem.
-The !dev_is_pci(dev) path is also fine since base=0.
+  Merge branch 'akpm' (patches from Andrew) (2018-12-14 15:35:30 -0800)
 
-While I agree that we should complain when firmware provides bad ACPI
-tables, my understanding of setting iort.memory_address_limit=64 was
-that it simply meant "no limit", regardless of the base. However I now
-see that it won't be used unless base=0. So I don't think we have a
-problem, and we don't even seem to be missing firmware sanity checks.
+are available in the Git repository at:
 
-It might be nice to have a comment explaining this stuff somewhere, but
-otherwise sorry for the noise.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.20-4
 
-Thanks,
-drew
+for you to fetch changes up to c92a54cfa0257e8ffd66b2a17d49e9c0bd4b769f:
 
-> 
-> Robin.
-> 
-> > Signed-off-by: Andrew Jones <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > ---
-> >   drivers/acpi/arm64/iort.c | 7 ++++++-
-> >   1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index 70f4e80b9246..a0f4c157ba5e 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -1002,7 +1002,12 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
-> >   	}
-> >   	if (!ret) {
-> > -		msb = fls64(dmaaddr + size - 1);
-> > +		u64 dmaaddr_max = dmaaddr + size - 1;
-> > +		if (dmaaddr_max >= dmaaddr)
-> > +			msb = fls64(dmaaddr_max);
-> > +		else
-> > +			msb = 64;
-> > +
-> >   		/*
-> >   		 * Round-up to the power-of-two mask or set
-> >   		 * the mask to the whole 64-bit address space
-> > 
+  dma-direct: do not include SME mask in the DMA supported check (2018-12-17 18:02:11 +0100)
+
+----------------------------------------------------------------
+dma-mapping fix for 4.21
+
+Fix a regression in dma-direct that didn't take account the magic AMD
+memory encryption mask in the DMA address.
+
+----------------------------------------------------------------
+Lendacky, Thomas (1):
+      dma-direct: do not include SME mask in the DMA supported check
+
+ kernel/dma/direct.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
