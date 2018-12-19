@@ -1,480 +1,70 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v3 2/6] iommu/arm-smmu: Add support to program multiple
- ARM SMMU's identically
-Date: Wed, 19 Dec 2018 18:07:20 +0000
-Message-ID: <5e1b242c-d2d5-9478-6726-2921bea9f3dc@arm.com>
+From: Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH v3 2/6] iommu/arm-smmu: Add support to program multiple
+	ARM SMMU's identically
+Date: Wed, 19 Dec 2018 20:36:54 +0000
+Message-ID: <BYAPR12MB2759C4AB588260ECB46046E3B3BE0@BYAPR12MB2759.namprd12.prod.outlook.com>
 References: <1543887414-18209-1-git-send-email-vdumpa@nvidia.com>
- <1543887414-18209-3-git-send-email-vdumpa@nvidia.com>
+	<1543887414-18209-3-git-send-email-vdumpa@nvidia.com>
+	<5e1b242c-d2d5-9478-6726-2921bea9f3dc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1543887414-18209-3-git-send-email-vdumpa@nvidia.com>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Krishna Reddy <vdumpa@nvidia.com>, will.deacon@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, treding@nvidia.com, yhsu@nvidia.com, snikam@nvidia.com, praithatha@nvidia.com, talho@nvidia.com, avanbrunt@nvidia.com, thomasz@nvidia.com, olof@lixom.net, jtukkinen@nvidia.com, mperttunen@nvidia.com, jon.he@arm.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5e1b242c-d2d5-9478-6726-2921bea9f3dc-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Sachin Nikam <Snikam-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Thomas Zeng (SW-TEGRA)" <thomasz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Juha Tukkinen <jtukkinen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Pritesh Raithatha <praithatha-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "jon.he-5wv7dgnIgG8@public.gmane.org" <jon.he-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Timo Alho <talho-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Yu-Huan Hsu <YHsu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexander Van Brunt <avanbrunt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Krishna,
+Hi Robin,
+Thanks for the feedback :)
 
-On 04/12/2018 01:36, Krishna Reddy wrote:
-> Add support to program multiple ARM SMMU's identically as one SMMU device.
-> Tegra194 uses Two ARM SMMU's as one SMMU device and both ARM SMMU's need
-> to be programmed identically.
+>The whole point of the library idea was to factor out the code in such a way that all the details
+>specific to a particular implementation can be kept together. But what this patch does is insert
+>Tegra194-specific handling all through the 'common' code, which is the exact opposite of that concept
+>and just makes more hard-to-maintain mess.
 
-The whole point of the library idea was to factor out the code in such a 
-way that all the details specific to a particular implementation can be 
-kept together. But what this patch does is insert Tegra194-specific 
-handling all through the 'common' code, which is the exact opposite of 
-that concept and just makes more hard-to-maintain mess.
+In an attempt to reuse most of the ARM SMMU implementation, which heavily relies on data from arm_smmu_device,
+The library code has been added with some functionality only usable by Tegra194 SMMU driver. 
+In V4 patches, I am working on to add a mechanism to override writel/readl functions in library so that
+Tegra smmu driver can override read/write functions and handle programming of multiple instances on its own. 
 
-The amount of copy-paste duplication in patch #4 has the opposite 
-problem - about 95% of that isn't Tegra194-specific at all (I mean, how 
-many fsl_mc instances does it have?), and having multiple copies of 
-generic code with the potential to diverge is also not what anyone 
-wants. Plus I don't think ending up building multiple separate drivers 
-will even work in general - thanks to the current state of 
-bus_set_iommu() etc., you can't use the regular driver for your third 
-SMMU at the same time.
+>The amount of copy-paste duplication in patch #4 has the opposite problem - about 95% of that isn't 
+>Tegra194-specific at all (I mean, how many fsl_mc instances does it have?), and having multiple copies of
+> generic code with the potential to diverge is also not what anyone wants.
 
-I think what really needs to be done is to conceptually split the driver 
-into "architecture" and "implementation" layers - at some point after 
-the holidays we're probably going to sit down and go through all the 
-various quirks and specifics we know about to try and figure out what 
-that should actually look like.
+I have split the code in a way that library only contains the code that deals with register programming.
+And avoided platform driver code and DT parsing code getting into library, which can allow drivers changing
+Independently if necessary in future.
 
-Robin.
+> Plus I don't think ending up building 
+> multiple separate drivers will even work in general - thanks to the current state of
+>bus_set_iommu() etc., you can't use the regular driver for your third SMMU at the same time.
 
-> Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
-> ---
->   drivers/iommu/lib-arm-smmu.c | 191 ++++++++++++++++++++++++++++++++-----------
->   1 file changed, 144 insertions(+), 47 deletions(-)
-> 
-> diff --git a/drivers/iommu/lib-arm-smmu.c b/drivers/iommu/lib-arm-smmu.c
-> index 6aba5db..7036763 100644
-> --- a/drivers/iommu/lib-arm-smmu.c
-> +++ b/drivers/iommu/lib-arm-smmu.c
-> @@ -69,9 +69,9 @@
->    * therefore this actually makes more sense than it might first appear.
->    */
->   #ifdef CONFIG_64BIT
-> -#define smmu_write_atomic_lq		writeq_relaxed
-> +#define smmu_write_atomic_lq		writeq_all_relaxed
->   #else
-> -#define smmu_write_atomic_lq		writel_relaxed
-> +#define smmu_write_atomic_lq		writel_all_relaxed
->   #endif
->   
->   /* Translation context bank */
-> @@ -135,6 +135,48 @@ struct arm_smmu_domain {
->   	struct iommu_domain		domain;
->   };
->   
-> +#define to_smmu_intance(smmu, inst, addr) \
-> +	(addr - smmu->bases[0] + smmu->bases[inst])
-> +
-> +static void writel_all(struct arm_smmu_device *smmu,
-> +		       u32 value, void __iomem *addr)
-> +{
-> +	int i;
-> +
-> +	writel(value, addr);
-> +	for (i = 1; i < smmu->num_smmus; i++) {
-> +		void __iomem *reg_addr = to_smmu_intance(smmu, i, addr);
-> +
-> +		writel(value, reg_addr);
-> +	}
-> +}
-> +
-> +static void writel_all_relaxed(struct arm_smmu_device *smmu,
-> +			       u32 value, void __iomem *addr)
-> +{
-> +	int i;
-> +
-> +	writel_relaxed(value, addr);
-> +	for (i = 1; i < smmu->num_smmus; i++) {
-> +		void __iomem *reg_addr = to_smmu_intance(smmu, i, addr);
-> +
-> +		writel_relaxed(value, reg_addr);
-> +	}
-> +}
-> +
-> +static void writeq_all_relaxed(struct arm_smmu_device *smmu,
-> +			       u64 value, void __iomem *addr)
-> +{
-> +	int i;
-> +
-> +	writeq_relaxed(value, addr);
-> +	for (i = 1; i < smmu->num_smmus; i++) {
-> +		void __iomem *reg_addr = to_smmu_intance(smmu, i, addr);
-> +
-> +		writeq_relaxed(value, reg_addr);
-> +	}
-> +}
-> +
->   static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
->   {
->   	return container_of(dom, struct arm_smmu_domain, domain);
-> @@ -179,25 +221,37 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
->   
->   static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
->   {
-> -	void __iomem *base = ARM_SMMU_GR0(smmu);
-> +	int i;
->   	unsigned long flags;
->   
->   	spin_lock_irqsave(&smmu->global_sync_lock, flags);
-> -	__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_GR0_sTLBGSYNC,
-> -			    base + ARM_SMMU_GR0_sTLBGSTATUS);
-> +	for (i = 0; i < smmu->num_smmus; i++) {
-> +		void __iomem *base = ARM_SMMU_GR0(smmu);
-> +
-> +		if (i > 0)
-> +			base = to_smmu_intance(smmu, i, base);
-> +		__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_GR0_sTLBGSYNC,
-> +				    base + ARM_SMMU_GR0_sTLBGSTATUS);
-> +	}
->   	spin_unlock_irqrestore(&smmu->global_sync_lock, flags);
->   }
->   
->   static void arm_smmu_tlb_sync_context(void *cookie)
->   {
-> +	int i;
->   	struct arm_smmu_domain *smmu_domain = cookie;
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> -	void __iomem *base = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
->   	unsigned long flags;
->   
->   	spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-> -	__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_CB_TLBSYNC,
-> -			    base + ARM_SMMU_CB_TLBSTATUS);
-> +	for (i = 0; i < smmu->num_smmus; i++) {
-> +		void __iomem *base = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
-> +
-> +		if (i > 0)
-> +			base = to_smmu_intance(smmu, i, base);
-> +		__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_CB_TLBSYNC,
-> +				    base + ARM_SMMU_CB_TLBSTATUS);
-> +	}
->   	spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
->   }
->   
-> @@ -212,13 +266,14 @@ static void arm_smmu_tlb_inv_context_s1(void *cookie)
->   {
->   	struct arm_smmu_domain *smmu_domain = cookie;
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> -	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	void __iomem *base = ARM_SMMU_CB(smmu, cfg->cbndx);
->   
->   	/*
->   	 * NOTE: this is not a relaxed write; it needs to guarantee that PTEs
->   	 * cleared by the current CPU are visible to the SMMU before the TLBI.
->   	 */
-> -	writel(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
-> +	writel_all(smmu, cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
->   	arm_smmu_tlb_sync_context(cookie);
->   }
->   
-> @@ -229,7 +284,7 @@ static void arm_smmu_tlb_inv_context_s2(void *cookie)
->   	void __iomem *base = ARM_SMMU_GR0(smmu);
->   
->   	/* NOTE: see above */
-> -	writel(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
-> +	writel_all(smmu, smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
->   	arm_smmu_tlb_sync_global(smmu);
->   }
->   
-> @@ -237,11 +292,12 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->   				size_t granule, bool leaf, void *cookie)
->   {
->   	struct arm_smmu_domain *smmu_domain = cookie;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-> -	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
-> +	void __iomem *reg = ARM_SMMU_CB(smmu, cfg->cbndx);
->   
-> -	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-> +	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
->   		wmb();
->   
->   	if (stage1) {
-> @@ -251,7 +307,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->   			iova &= ~12UL;
->   			iova |= cfg->asid;
->   			do {
-> -				writel_relaxed(iova, reg);
-> +				writel_all_relaxed(smmu, iova, reg);
->   				iova += granule;
->   			} while (size -= granule);
->   		} else {
-> @@ -267,7 +323,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->   			      ARM_SMMU_CB_S2_TLBIIPAS2;
->   		iova >>= 12;
->   		do {
-> -			smmu_write_atomic_lq(iova, reg);
-> +			smmu_write_atomic_lq(smmu, iova, reg);
->   			iova += granule >> 12;
->   		} while (size -= granule);
->   	}
-> @@ -283,12 +339,13 @@ static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
->   				size_t granule, bool leaf, void *cookie)
->   {
->   	struct arm_smmu_domain *smmu_domain = cookie;
-> -	void __iomem *base = ARM_SMMU_GR0(smmu_domain->smmu);
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	void __iomem *base = ARM_SMMU_GR0(smmu);
->   
-> -	if (smmu_domain->smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
-> +	if (smmu->features & ARM_SMMU_FEAT_COHERENT_WALK)
->   		wmb();
->   
-> -	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
-> +	writel_all_relaxed(smmu, smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
->   }
->   
->   static const struct iommu_gather_ops arm_smmu_s1_tlb_ops = {
-> @@ -309,7 +366,8 @@ static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v1 = {
->   	.tlb_sync	= arm_smmu_tlb_sync_vmid,
->   };
->   
-> -irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-> +static irqreturn_t __arm_smmu_context_fault(int irq, void *dev,
-> +					    void __iomem *cb_base)
->   {
->   	u32 fsr, fsynr;
->   	unsigned long iova;
-> @@ -317,9 +375,7 @@ irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> -	void __iomem *cb_base;
->   
-> -	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
->   	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
->   
->   	if (!(fsr & FSR_FAULT))
-> @@ -336,11 +392,33 @@ irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->   	return IRQ_HANDLED;
->   }
->   
-> -irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-> +static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-> +{
-> +	int i;
-> +	irqreturn_t irq_ret = IRQ_NONE;
-> +	struct iommu_domain *domain = dev;
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +
-> +	for (i = 0; i < smmu->num_smmus; i++) {
-> +		void __iomem *cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
-> +
-> +		if (i > 0)
-> +			cb_base = to_smmu_intance(smmu, i, cb_base);
-> +		irq_ret = __arm_smmu_context_fault(irq, dev, cb_base);
-> +		if (irq_ret == IRQ_HANDLED)
-> +			break;
-> +	}
-> +
-> +	return irq_ret;
-> +}
-> +
-> +static irqreturn_t __arm_smmu_global_fault(int irq, void *dev,
-> +					   void __iomem *gr0_base)
->   {
-> -	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
->   	struct arm_smmu_device *smmu = dev;
-> -	void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
-> +	u32 gfsr, gfsynr0, gfsynr1, gfsynr2;
->   
->   	gfsr = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSR);
->   	gfsynr0 = readl_relaxed(gr0_base + ARM_SMMU_GR0_sGFSYNR0);
-> @@ -360,6 +438,25 @@ irqreturn_t arm_smmu_global_fault(int irq, void *dev)
->   	return IRQ_HANDLED;
->   }
->   
-> +irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-> +{
-> +	int i;
-> +	irqreturn_t irq_ret = IRQ_NONE;
-> +	struct arm_smmu_device *smmu = dev;
-> +
-> +	for (i = 0; i < smmu->num_smmus; i++) {
-> +		void __iomem *gr0_base = ARM_SMMU_GR0_NS(smmu);
-> +
-> +		if (i > 0)
-> +			gr0_base = to_smmu_intance(smmu, i, gr0_base);
-> +		irq_ret = __arm_smmu_global_fault(irq, dev, gr0_base);
-> +		if (irq_ret == IRQ_HANDLED)
-> +			break;
-> +	}
-> +
-> +	return irq_ret;
-> +}
-> +
->   static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->   				       struct io_pgtable_cfg *pgtbl_cfg)
->   {
-> @@ -423,7 +520,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   
->   	/* Unassigned context banks only need disabling */
->   	if (!cfg) {
-> -		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
-> +		writel_all_relaxed(smmu, 0, cb_base + ARM_SMMU_CB_SCTLR);
->   		return;
->   	}
->   
-> @@ -440,7 +537,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   		if (smmu->features & ARM_SMMU_FEAT_VMID16)
->   			reg |= cfg->vmid << CBA2R_VMID_SHIFT;
->   
-> -		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
-> +		writel_all_relaxed(smmu, reg, gr1_base + ARM_SMMU_GR1_CBA2R(idx));
->   	}
->   
->   	/* CBAR */
-> @@ -459,7 +556,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   		/* 8-bit VMIDs live in CBAR */
->   		reg |= cfg->vmid << CBAR_VMID_SHIFT;
->   	}
-> -	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
-> +	writel_all_relaxed(smmu, reg, gr1_base + ARM_SMMU_GR1_CBAR(idx));
->   
->   	/*
->   	 * TTBCR
-> @@ -467,14 +564,14 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   	 * access behaviour of some fields (in particular, ASID[15:8]).
->   	 */
->   	if (stage1 && smmu->version > ARM_SMMU_V1)
-> -		writel_relaxed(cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
-> -	writel_relaxed(cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
-> +		writel_all_relaxed(smmu, cb->tcr[1], cb_base + ARM_SMMU_CB_TTBCR2);
-> +	writel_all_relaxed(smmu, cb->tcr[0], cb_base + ARM_SMMU_CB_TTBCR);
->   
->   	/* TTBRs */
->   	if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> -		writel_relaxed(cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-> -		writel_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-> -		writel_relaxed(cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
-> +		writel_all_relaxed(smmu, cfg->asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-> +		writel_all_relaxed(smmu, cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
-> +		writel_all_relaxed(smmu, cb->ttbr[1], cb_base + ARM_SMMU_CB_TTBR1);
->   	} else {
->   		writeq_relaxed(cb->ttbr[0], cb_base + ARM_SMMU_CB_TTBR0);
->   		if (stage1)
-> @@ -484,8 +581,8 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   
->   	/* MAIRs (stage-1 only) */
->   	if (stage1) {
-> -		writel_relaxed(cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
-> -		writel_relaxed(cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
-> +		writel_all_relaxed(smmu, cb->mair[0], cb_base + ARM_SMMU_CB_S1_MAIR0);
-> +		writel_all_relaxed(smmu, cb->mair[1], cb_base + ARM_SMMU_CB_S1_MAIR1);
->   	}
->   
->   	/* SCTLR */
-> @@ -495,7 +592,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
->   		reg |= SCTLR_E;
->   
-> -	writel_relaxed(reg, cb_base + ARM_SMMU_CB_SCTLR);
-> +	writel_all_relaxed(smmu, reg, cb_base + ARM_SMMU_CB_SCTLR);
->   }
->   
->   static int arm_smmu_init_domain_context(struct iommu_domain *domain,
-> @@ -763,7 +860,7 @@ static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
->   
->   	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
->   		reg |= SMR_VALID;
-> -	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
-> +	writel_all_relaxed(smmu, reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
->   }
->   
->   static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
-> @@ -776,7 +873,7 @@ static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
->   	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
->   	    smmu->smrs[idx].valid)
->   		reg |= S2CR_EXIDVALID;
-> -	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
-> +	writel_all_relaxed(smmu, reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
->   }
->   
->   static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
-> @@ -1071,9 +1168,9 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
->   	/* ATS1 registers can only be written atomically */
->   	va = iova & ~0xfffUL;
->   	if (smmu->version == ARM_SMMU_V2)
-> -		smmu_write_atomic_lq(va, cb_base + ARM_SMMU_CB_ATS1PR);
-> +		smmu_write_atomic_lq(smmu, va, cb_base + ARM_SMMU_CB_ATS1PR);
->   	else /* Register is only 32-bit in v1 */
-> -		writel_relaxed(va, cb_base + ARM_SMMU_CB_ATS1PR);
-> +		writel_all_relaxed(smmu, va, cb_base + ARM_SMMU_CB_ATS1PR);
->   
->   	if (readl_poll_timeout_atomic(cb_base + ARM_SMMU_CB_ATSR, tmp,
->   				      !(tmp & ATSR_ACTIVE), 5, 50)) {
-> @@ -1346,7 +1443,7 @@ void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   
->   	/* clear global FSR */
->   	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-> -	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-> +	writel_all(smmu, reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
->   
->   	/*
->   	 * Reset stream mapping groups: Initial values mark all SMRn as
-> @@ -1371,7 +1468,7 @@ void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   		 * TLB entries for reduced latency.
->   		 */
->   		reg |= ARM_MMU500_ACR_SMTNMB_TLBEN | ARM_MMU500_ACR_S2CRB_TLBEN;
-> -		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-> +		writel_all_relaxed(smmu, reg, gr0_base + ARM_SMMU_GR0_sACR);
->   	}
->   
->   	/* Make sure all context banks are disabled and clear CB_FSR  */
-> @@ -1379,7 +1476,7 @@ void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   		void __iomem *cb_base = ARM_SMMU_CB(smmu, i);
->   
->   		arm_smmu_write_context_bank(smmu, i);
-> -		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
-> +		writel_all_relaxed(smmu, FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
->   		/*
->   		 * Disable MMU-500's not-particularly-beneficial next-page
->   		 * prefetcher for the sake of errata #841119 and #826419.
-> @@ -1387,13 +1484,13 @@ void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   		if (smmu->model == ARM_MMU500) {
->   			reg = readl_relaxed(cb_base + ARM_SMMU_CB_ACTLR);
->   			reg &= ~ARM_MMU500_ACTLR_CPRE;
-> -			writel_relaxed(reg, cb_base + ARM_SMMU_CB_ACTLR);
-> +			writel_all_relaxed(smmu, reg, cb_base + ARM_SMMU_CB_ACTLR);
->   		}
->   	}
->   
->   	/* Invalidate the TLB, just in case */
-> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
-> -	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
-> +	writel_all_relaxed(smmu, 0, gr0_base + ARM_SMMU_GR0_TLBIALLH);
-> +	writel_all_relaxed(smmu, 0, gr0_base + ARM_SMMU_GR0_TLBIALLNSNH);
->   
->   	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
->   
-> @@ -1424,7 +1521,7 @@ void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   
->   	/* Push the button */
->   	arm_smmu_tlb_sync_global(smmu);
-> -	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> +	writel_all(smmu, reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
->   }
->   
->   static int arm_smmu_id_size_to_bits(int size)
-> @@ -1666,6 +1763,6 @@ int arm_smmu_device_remove(struct platform_device *pdev)
->   		dev_err(&pdev->dev, "removing device with active domains!\n");
->   
->   	/* Turn the thing off */
-> -	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> +	writel_all(smmu, sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
->   	return 0;
->   }
-> 
+Good point!
+>From code, platform_dma_configure/of_dma_configure/of_iommu_configure takes care
+of setting right iommu_ops for devices based on the iommu DT node they have in iommus=<> entry.
+
+If iommu.c is updated to use dev->bus->dma_configure(),  then it doesn't really need to use dev->bus->iommu_ops.
+dev->bus->dma_configure() can be used to set dev->dma_ops to the right one, if dev->dma_ops is not
+already set. 
+If this approach looks good, I can make a patch to clean up bus->iommu_ops usage related code to allow
+devices to use specific SMMU instance as they need.
+
+>I think what really needs to be done is to conceptually split the driver into "architecture" and "implementation"
+> layers - at some point after the holidays we're probably going to sit down and go through all the various quirks and
+> specifics we know about to try and figure out what that should actually look like.
+
+If you can provide some high level details on what to keep in library vs implementation after holidays, I would be
+ happy to rework the patches.  Will look forward for further discussions on this.
+
+-KR
