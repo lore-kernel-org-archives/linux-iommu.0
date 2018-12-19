@@ -1,14 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/2] ACPI/IORT: Handle potential overflow in iort_dma_setup
-Date: Wed, 19 Dec 2018 12:21:35 +0000
-Message-ID: <1503e3b8-1a6c-3b66-fa1e-d13f4e19f31f@arm.com>
+Subject: Re: [PATCH 2/2] iommu/dma: Handle potential overflow in
+	iommu_dma_init_domain
+Date: Wed, 19 Dec 2018 13:02:11 +0000
+Message-ID: <8cb9b345-ebcd-a1eb-933c-d35ec8a1a066@arm.com>
 References: <20181218184841.20034-1-drjones@redhat.com>
-	<20181218184841.20034-2-drjones@redhat.com>
+	<20181218184841.20034-3-drjones@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181218184841.20034-2-drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20181218184841.20034-3-drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,41 +25,70 @@ Cc: sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 18/12/2018 18:48, Andrew Jones wrote:
-> The sum of dmaaddr and size may overflow, particularly considering
-> there are cases where size will be U64_MAX.
+> The sum of base and size may overflow, particularly considering there
+> are cases where size will be U64_MAX. Also, end_pfn is unused, so we
+> remove it. Finally, as size doesn't actually need to be IOMMU page
+> aligned we remove it from the comment stating both it and base should
+> be. I wonder if we shouldn't at least warn when base is not aligned?
 
-Only if the firmware is broken in the first place, though. It would be 
-weird to describe an explicit _DMA range of base=0 and size=U64_MAX, 
-because it's effectively the same as just not having one at all, but 
-it's not strictly illegal. However, since the ACPI System Memory address 
-space is at most 64-bit, anything that would actually overflow here is 
-already describing an impossibility - really, we should probably scream 
-even louder about a firmware bug and reject it entirely, rather than 
-quietly hiding it.
+TBH if we're going to do anything here we may as well just get rid of 
+size altogether. It's pretty unrealistic that the check it's used in 
+would ever actually fail, and even if a sufficiently weird system did 
+exist for that to happen, I don't think it would make much practical 
+difference to just carry on at this point and let DMA mapping calls fail 
+later.
 
 Robin.
 
+> 
 > Signed-off-by: Andrew Jones <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
->   drivers/acpi/arm64/iort.c | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
+>   drivers/iommu/dma-iommu.c | 15 +++++++++------
+>   1 file changed, 9 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 70f4e80b9246..a0f4c157ba5e 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -1002,7 +1002,12 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
->   	}
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index d1b04753b204..a0b01398b15c 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -281,9 +281,9 @@ static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
+>    * @size: Size of IOVA space
+>    * @dev: Device the domain is being initialised for
+>    *
+> - * @base and @size should be exact multiples of IOMMU page granularity to
+> - * avoid rounding surprises. If necessary, we reserve the page at address 0
+> - * to ensure it is an invalid IOVA. It is safe to reinitialise a domain, but
+> + * @base should be an exact multiple of IOMMU page granularity to avoid
+> + * rounding surprises. If necessary, we reserve the page at address 0 to
+> + * ensure it is an invalid IOVA. It is safe to reinitialise a domain, but
+>    * any change which could make prior IOVAs invalid will fail.
+>    */
+>   int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+> @@ -291,21 +291,24 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>   {
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>   	struct iova_domain *iovad = &cookie->iovad;
+> -	unsigned long order, base_pfn, end_pfn;
+> +	dma_addr_t max_addr = base + size - 1;
+> +	unsigned long order, base_pfn;
+>   	int attr;
 >   
->   	if (!ret) {
-> -		msb = fls64(dmaaddr + size - 1);
-> +		u64 dmaaddr_max = dmaaddr + size - 1;
-> +		if (dmaaddr_max >= dmaaddr)
-> +			msb = fls64(dmaaddr_max);
-> +		else
-> +			msb = 64;
+>   	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+>   		return -EINVAL;
+>   
+> +	if (max_addr < base)
+> +		max_addr = U64_MAX;
 > +
->   		/*
->   		 * Round-up to the power-of-two mask or set
->   		 * the mask to the whole 64-bit address space
+>   	/* Use the smallest supported page size for IOVA granularity */
+>   	order = __ffs(domain->pgsize_bitmap);
+>   	base_pfn = max_t(unsigned long, 1, base >> order);
+> -	end_pfn = (base + size - 1) >> order;
+>   
+>   	/* Check the domain allows at least some access to the device... */
+>   	if (domain->geometry.force_aperture) {
+>   		if (base > domain->geometry.aperture_end ||
+> -		    base + size <= domain->geometry.aperture_start) {
+> +		    max_addr < domain->geometry.aperture_start) {
+>   			pr_warn("specified DMA range outside IOMMU capability\n");
+>   			return -EFAULT;
+>   		}
 > 
