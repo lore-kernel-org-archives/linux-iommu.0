@@ -1,70 +1,64 @@
-From: Krishna Reddy <vdumpa-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH v3 2/6] iommu/arm-smmu: Add support to program multiple
-	ARM SMMU's identically
-Date: Wed, 19 Dec 2018 20:36:54 +0000
-Message-ID: <BYAPR12MB2759C4AB588260ECB46046E3B3BE0@BYAPR12MB2759.namprd12.prod.outlook.com>
-References: <1543887414-18209-1-git-send-email-vdumpa@nvidia.com>
-	<1543887414-18209-3-git-send-email-vdumpa@nvidia.com>
-	<5e1b242c-d2d5-9478-6726-2921bea9f3dc@arm.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
+Date: Wed, 19 Dec 2018 18:09:59 -0500
+Message-ID: <20181219180417-mutt-send-email-mst@kernel.org>
+References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
+ <20181212103545.GV16835@8bytes.org>
+ <9110873f-d344-b6b9-c722-9accfc329db2@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5e1b242c-d2d5-9478-6726-2921bea9f3dc-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Sachin Nikam <Snikam-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "Thomas Zeng (SW-TEGRA)" <thomasz-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Juha Tukkinen <jtukkinen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Pritesh Raithatha <praithatha-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "jon.he-5wv7dgnIgG8@public.gmane.org" <jon.he-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Timo Alho <talho-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Yu-Huan Hsu <YHsu-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Alexander Van Brunt <avanbrunt-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <virtio-dev-return-5202-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+Content-Disposition: inline
+In-Reply-To: <9110873f-d344-b6b9-c722-9accfc329db2@arm.com>
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "jasowang@redhat.com" <jasowang@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Murph>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-Thanks for the feedback :)
+On Thu, Dec 13, 2018 at 12:50:29PM +0000, Jean-Philippe Brucker wrote:
+> >> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
+> >>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
+> > 
+> > Unfortunatly gitweb seems to be broken on linux-arm.org. What is missing
+> > in this patch-set to make this work on x86?
+> 
+> You should be able to access it here:
+> http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/virtio-iommu/devel
+> 
+> That branch contains missing bits for x86 support:
+> 
+> * ACPI support. We have the code but it's waiting for an IORT spec
+> update, to reserve the IORT node ID. I expect it to take a while, given
+> that I'm alone requesting a change for something that's not upstream or
+> in hardware.
 
->The whole point of the library idea was to factor out the code in such a way that all the details
->specific to a particular implementation can be kept together. But what this patch does is insert
->Tegra194-specific handling all through the 'common' code, which is the exact opposite of that concept
->and just makes more hard-to-maintain mess.
+Frankly I think you should take a hard look at just getting the data
+needed from the PCI device itself.  You don't need to depend on virtio,
+it can be a small driver that gets you that data from the device config
+space and then just goes away.
 
-In an attempt to reuse most of the ARM SMMU implementation, which heavily relies on data from arm_smmu_device,
-The library code has been added with some functionality only usable by Tegra194 SMMU driver. 
-In V4 patches, I am working on to add a mechanism to override writel/readl functions in library so that
-Tegra smmu driver can override read/write functions and handle programming of multiple instances on its own. 
+If you want help with writing such a small driver let me know.
 
->The amount of copy-paste duplication in patch #4 has the opposite problem - about 95% of that isn't 
->Tegra194-specific at all (I mean, how many fsl_mc instances does it have?), and having multiple copies of
-> generic code with the potential to diverge is also not what anyone wants.
+If there's an advantage to virtio-iommu then that would be its
+portability, and it all goes out of the window because
+of dependencies on ACPI and DT and OF and the rest of the zoo.
 
-I have split the code in a way that library only contains the code that deals with register programming.
-And avoided platform driver code and DT parsing code getting into library, which can allow drivers changing
-Independently if necessary in future.
 
-> Plus I don't think ending up building 
-> multiple separate drivers will even work in general - thanks to the current state of
->bus_set_iommu() etc., you can't use the regular driver for your third SMMU at the same time.
+> * DMA ops for x86 (see "HACK" commit). I'd like to use dma-iommu but I'm
+> not sure how to implement the glue that sets dma_ops properly.
+> 
+> Thanks,
+> Jean
 
-Good point!
->From code, platform_dma_configure/of_dma_configure/of_iommu_configure takes care
-of setting right iommu_ops for devices based on the iommu DT node they have in iommus=<> entry.
+OK so IIUC you are looking into Christoph's suggestions to fix that up?
 
-If iommu.c is updated to use dev->bus->dma_configure(),  then it doesn't really need to use dev->bus->iommu_ops.
-dev->bus->dma_configure() can be used to set dev->dma_ops to the right one, if dev->dma_ops is not
-already set. 
-If this approach looks good, I can make a patch to clean up bus->iommu_ops usage related code to allow
-devices to use specific SMMU instance as they need.
+There's still a bit of time left before the merge window,
+maybe you can make above changes.
 
->I think what really needs to be done is to conceptually split the driver into "architecture" and "implementation"
-> layers - at some point after the holidays we're probably going to sit down and go through all the various quirks and
-> specifics we know about to try and figure out what that should actually look like.
-
-If you can provide some high level details on what to keep in library vs implementation after holidays, I would be
- happy to rework the patches.  Will look forward for further discussions on this.
-
--KR
+-- 
+MST
