@@ -1,64 +1,64 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 3/4] iommu/of: Don't call iommu_ops->add_device directly
-Date: Wed, 19 Dec 2018 10:54:18 +0100
-Message-ID: <30d86186-e0a2-2be1-2295-20510fbd74ba@samsung.com>
-References: <20181211150513.15161-1-joro@8bytes.org>
-        <CGME20181211150640epcas5p4ffdd63a1900ebfe4a04eea24d2c86de6@epcas5p4.samsung.com>
-        <20181211150513.15161-4-joro@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] ACPI/IORT: Handle potential overflow in iort_dma_setup
+Date: Wed, 19 Dec 2018 12:21:35 +0000
+Message-ID: <1503e3b8-1a6c-3b66-fa1e-d13f4e19f31f@arm.com>
+References: <20181218184841.20034-1-drjones@redhat.com>
+	<20181218184841.20034-2-drjones@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20181211150513.15161-4-joro@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, jroedel@suse.de, Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20181218184841.20034-2-drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Language: en-GB
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andrew Jones <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On 18/12/2018 18:48, Andrew Jones wrote:
+> The sum of dmaaddr and size may overflow, particularly considering
+> there are cases where size will be U64_MAX.
 
-This patch landed in today's linux-next and causes a regression.
+Only if the firmware is broken in the first place, though. It would be 
+weird to describe an explicit _DMA range of base=0 and size=U64_MAX, 
+because it's effectively the same as just not having one at all, but 
+it's not strictly illegal. However, since the ACPI System Memory address 
+space is at most 64-bit, anything that would actually overflow here is 
+already describing an impossibility - really, we should probably scream 
+even louder about a firmware bug and reject it entirely, rather than 
+quietly hiding it.
 
-On 2018-12-11 16:05, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
->
-> Make sure to invoke this call-back through the proper
-> function of the IOMMU-API.
->
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Robin.
+
+> Signed-off-by: Andrew Jones <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/of_iommu.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index c5dd63072529..4d4847de727e 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -218,10 +218,10 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->  		ops = dev->iommu_fwspec->ops;
->  	/*
->  	 * If we have reason to believe the IOMMU driver missed the initial
-> -	 * add_device callback for dev, replay it to get things in order.
-> +	 * probe for dev, replay it to get things in order.
->  	 */
-> -	if (ops && ops->add_device && dev->bus && !dev->iommu_group)
-> -		err = ops->add_device(dev);
-> +	if (dev->bus && !dev->iommu_group)
-> +		err = iommu_probe_device(dev);
-
-This change removes a check for NULL ops, what causes NULL pointer
-exception on first device without IOMMU.
-
-I'm also not sure if this is a good idea to call iommu_probe_device(),
-which comes from dev->bus->iommu_ops, which might be different from ops
-from local variable.
-
->  
->  	/* Ignore all other errors apart from EPROBE_DEFER */
->  	if (err == -EPROBE_DEFER) {
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+>   drivers/acpi/arm64/iort.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 70f4e80b9246..a0f4c157ba5e 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -1002,7 +1002,12 @@ void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
+>   	}
+>   
+>   	if (!ret) {
+> -		msb = fls64(dmaaddr + size - 1);
+> +		u64 dmaaddr_max = dmaaddr + size - 1;
+> +		if (dmaaddr_max >= dmaaddr)
+> +			msb = fls64(dmaaddr_max);
+> +		else
+> +			msb = 64;
+> +
+>   		/*
+>   		 * Round-up to the power-of-two mask or set
+>   		 * the mask to the whole 64-bit address space
+> 
