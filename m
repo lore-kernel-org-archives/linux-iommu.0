@@ -1,15 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH dma-mapping tree] arm64: default to the direct mapping
-	in get_arch_dma_ops
-Date: Wed, 19 Dec 2018 17:55:02 +0100
-Message-ID: <20181219165502.GA25904@lst.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH dma-mapping tree] arm64: default to the direct mapping in
+	get_arch_dma_ops
+Date: Wed, 19 Dec 2018 16:59:03 +0000
+Message-ID: <3a6c8eff-a5dd-6a17-71ed-f480df3801d8@arm.com>
 References: <20181214150240.26427-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 In-Reply-To: <20181214150240.26427-1-hch-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,10 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As all maintainers seem to be off to their holidays already I've
-applied this now given that I don't want to leave arm64 in broken
-state in linux-next any longer.
+On 14/12/2018 15:02, Christoph Hellwig wrote:
+> Otherwise the direct mapping won't work at all given that a NULL
+> dev->dma_ops causes a fallback.  Note that we already explicitly set
+> dev->dma_ops to dma_dummy_ops for dma-incapable devices, so this
+> fallback should not be needed anyway.
+
+Sorry, I'd somehow completely missed that you'd sent a proper patch for 
+this - indeed it looks like the right change to make.
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+> Fixes: 356da6d0cd ("dma-mapping: bypass indirect calls for dma-direct")
+> Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> Reported-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>   arch/arm64/include/asm/dma-mapping.h | 6 +-----
+>   1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+> index 273e778f7de2..95dbf3ef735a 100644
+> --- a/arch/arm64/include/asm/dma-mapping.h
+> +++ b/arch/arm64/include/asm/dma-mapping.h
+> @@ -26,11 +26,7 @@
+>   
+>   static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+>   {
+> -	/*
+> -	 * We expect no ISA devices, and all other DMA masters are expected to
+> -	 * have someone call arch_setup_dma_ops at device creation time.
+> -	 */
+> -	return &dma_dummy_ops;
+> +	return NULL;
+>   }
+>   
+>   void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+> 
