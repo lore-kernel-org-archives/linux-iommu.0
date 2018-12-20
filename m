@@ -1,9 +1,9 @@
 From: "kernelci.org bot" <bot-ssFOTAMYnuFg9hUCZPvPmw@public.gmane.org>
-Subject: next/master boot bisection: next-20181219 on synquacer-dtb
-Date: Wed, 19 Dec 2018 19:49:35 -0800 (PST)
-Message-ID: <5c1b114f.1c69fb81.6be62.efd8@mx.google.com>
+Subject: next/master boot bisection: next-20181219 on r8a7796-m3ulcb
+Date: Wed, 19 Dec 2018 23:25:11 -0800 (PST)
+Message-ID: <5c1b43d7.1c69fb81.83c33.4d08@mx.google.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1169666693923572012=="
+Content-Type: multipart/mixed; boundary="===============4166725299162160480=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,11 +18,11 @@ To: tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, guillaume.tucker-ZGY8o
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
---===============1169666693923572012==
+--===============4166725299162160480==
 Content-Type: multipart/alternative;
- boundary="===============5246285008454728645=="
+ boundary="===============2154827206612283128=="
 
---===============5246285008454728645==
+--===============2154827206612283128==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -35,15 +35,15 @@ Content-Transfer-Encoding: quoted-printable
 * Hope this helps!                                              *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-next/master boot bisection: next-20181219 on synquacer-dtb
+next/master boot bisection: next-20181219 on r8a7796-m3ulcb
 
 Summary:
   Start:      02fc169594e9 Add linux-next specific files for 20181219
-  Details:    https://kernelci.org/boot/id/5c1a268c59b51498440a81ae
+  Details:    https://kernelci.org/boot/id/5c1a262459b51498440a8181
   Plain log:  https://storage.kernelci.org//next/master/next-20181219/arm64=
-/defconfig/lab-mhart/boot-synquacer-dtb.txt
+/defconfig/lab-baylibre/boot-r8a7796-m3ulcb.txt
   HTML log:   https://storage.kernelci.org//next/master/next-20181219/arm64=
-/defconfig/lab-mhart/boot-synquacer-dtb.html
+/defconfig/lab-baylibre/boot-r8a7796-m3ulcb.html
   Result:     641fb0efbff0 iommu/of: Don't call iommu_ops->add_device direc=
 tly
 
@@ -56,9 +56,9 @@ Parameters:
   URL:        http://git.kernel.org/pub/scm/linux/kernel/git/next/linux-nex=
 t.git
   Branch:     master
-  Target:     synquacer-dtb
+  Target:     r8a7796-m3ulcb
   CPU arch:   arm64
-  Lab:        lab-mhart
+  Lab:        lab-baylibre
   Config:     defconfig
   Test suite: boot
 
@@ -157,7 +157,7 @@ git bisect bad 641fb0efbff063ed57f108c2eb4a4d26dbd5badd
 n't call iommu_ops->add_device directly
 ---------------------------------------------------------------------------=
 ----
---===============5246285008454728645==
+--===============2154827206612283128==
 Content-Type: text/html; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
@@ -196,8 +196,8 @@ div.disclaimer {
   font-size: 0.8em;
 }
       </style>
-      <title>next/master boot bisection: next-20181219 on synquacer-dtb</ti=
-tle>
+      <title>next/master boot bisection: next-20181219 on r8a7796-m3ulcb</t=
+itle>
     </head>
     <body>
       <div class=3D"disclaimer">
@@ -214,7 +214,7 @@ he
         </p>
       </div>
       <p>
-        <h1>next/master boot bisection: next-20181219 on synquacer-dtb</h1>
+        <h1>next/master boot bisection: next-20181219 on r8a7796-m3ulcb</h1>
       </p>
       <p>
         <h2>Summary:</h2>
@@ -222,15 +222,15 @@ he
           <tr><th>Start</th><td><pre>02fc169594e9 Add linux-next specific f=
 iles for 20181219</pre></td></tr>
           <tr><th>Details</th><td><a href=3D"https://kernelci.org/boot/id/5=
-c1a268c59b51498440a81ae">next-20181219</a></td></tr>
+c1a262459b51498440a8181">next-20181219</a></td></tr>
           <tr><th>Plain log</th><td><a href=3D"https://storage.kernelci.org=
-//next/master/next-20181219/arm64/defconfig/lab-mhart/boot-synquacer-dtb.tx=
-t">https://storage.kernelci.org//next/master/next-20181219/arm64/defconfig/=
-lab-mhart/boot-synquacer-dtb.txt</a></td></tr>
+//next/master/next-20181219/arm64/defconfig/lab-baylibre/boot-r8a7796-m3ulc=
+b.txt">https://storage.kernelci.org//next/master/next-20181219/arm64/defcon=
+fig/lab-baylibre/boot-r8a7796-m3ulcb.txt</a></td></tr>
           <tr><th>HTML log</th><td><a href=3D"https://storage.kernelci.org/=
-/next/master/next-20181219/arm64/defconfig/lab-mhart/boot-synquacer-dtb.htm=
-l">https://storage.kernelci.org//next/master/next-20181219/arm64/defconfig/=
-lab-mhart/boot-synquacer-dtb.html</a></td></tr>
+/next/master/next-20181219/arm64/defconfig/lab-baylibre/boot-r8a7796-m3ulcb=
+.html">https://storage.kernelci.org//next/master/next-20181219/arm64/defcon=
+fig/lab-baylibre/boot-r8a7796-m3ulcb.html</a></td></tr>
           <tr><th>Result</th><td><pre>641fb0efbff0 iommu/of: Don't call iom=
 mu_ops->add_device directly</pre></td></tr>
         </table>
@@ -249,9 +249,9 @@ mu_ops->add_device directly</pre></td></tr>
           <tr><th>URL</th><td>http://git.kernel.org/pub/scm/linux/kernel/gi=
 t/next/linux-next.git</td></tr>
           <tr><th>Branch</th><td>master</td></tr>
-          <tr><th>Target</th><td>synquacer-dtb</td></tr>
+          <tr><th>Target</th><td>r8a7796-m3ulcb</td></tr>
           <tr><th>CPU arch</th><td>arm64</td></tr>
-          <tr><th>Lab</th><td>lab-mhart</td></tr>
+          <tr><th>Lab</th><td>lab-baylibre</td></tr>
           <tr><th>Config</th><td>defconfig</td></tr>
           <tr><th>Test suite</th><td>boot</td></tr>
         </table>
@@ -346,13 +346,13 @@ n't call iommu_ops->add_device directly</pre>
       </p>
     </body>
 </html>
---===============5246285008454728645==--
+--===============2154827206612283128==--
 
---===============1169666693923572012==
+--===============4166725299162160480==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============1169666693923572012==--
+--===============4166725299162160480==--
