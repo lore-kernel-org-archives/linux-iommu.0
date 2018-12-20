@@ -1,93 +1,103 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH 2/2] ACPI / scan: Refactor _CCA enforcement
-Date: Thu, 20 Dec 2018 09:08:48 -0600
-Message-ID: <20181220150848.GA183878@google.com>
-References: <cover.1544199754.git.robin.murphy@arm.com>
- <fe956f04bfe7f8293f6205ee224b087046e40a91.1544199754.git.robin.murphy@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 3/4] iommu/of: Don't call iommu_ops->add_device directly
+Date: Thu, 20 Dec 2018 16:42:17 +0100
+Message-ID: <CAMuHMdXr5tVuWf4dJzBLRfdqpMCMBSg-+t35nb=Rmh9PM=abJg@mail.gmail.com>
+References: <20181211150513.15161-1-joro@8bytes.org> <CGME20181211150640epcas5p4ffdd63a1900ebfe4a04eea24d2c86de6@epcas5p4.samsung.com>
+ <20181211150513.15161-4-joro@8bytes.org> <30d86186-e0a2-2be1-2295-20510fbd74ba@samsung.com>
+ <20181219143451.GY16835@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <fe956f04bfe7f8293f6205ee224b087046e40a91.1544199754.git.robin.murphy@arm.com>
+In-Reply-To: <20181219143451.GY16835@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: hch@lst.de, linux-pci@vger.kernel.org, catalin.marinas@arm.com, rjw@rjwysocki.net, linux-kernel@vger.kernel.org, will.deacon@arm.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, gregkh@linuxfoundation.org, lenb@kernel.org, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>, Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 07, 2018 at 04:31:35PM +0000, Robin Murphy wrote:
-> Rather than checking the DMA attribute at each callsite, just pass it
-> through for acpi_dma_configure() to handle directly. That can then deal
-> with the relatively exceptional DEV_DMA_NOT_SUPPORTED case by explicitly
-> installing dummy DMA ops instead of just skipping setup entirely. This
-> will then free up the dev->dma_ops == NULL case for some valuable
-> fastpath optimisations.
-> 
-> CC: Rafael J. Wysocki <rjw@rjwysocki.net>
-> CC: Len Brown <lenb@kernel.org>
-> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> CC: Bjorn Helgaas <bhelgaas@google.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Hi Jörg,
 
-FWIW, if this hasn't been applied already (I think you targeted a DMA
-tree):
+On Wed, Dec 19, 2018 at 5:51 PM Joerg Roedel <joro@8bytes.org> wrote:
+> On Wed, Dec 19, 2018 at 10:54:18AM +0100, Marek Szyprowski wrote:
+> > On 2018-12-11 16:05, Joerg Roedel wrote:
+> > > From: Joerg Roedel <jroedel@suse.de>
+> > >
+> > > Make sure to invoke this call-back through the proper
+> > > function of the IOMMU-API.
+> > >
+> > > Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> > > ---
+> > >  drivers/iommu/of_iommu.c | 6 +++---
+> > >  1 file changed, 3 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> > > index c5dd63072529..4d4847de727e 100644
+> > > --- a/drivers/iommu/of_iommu.c
+> > > +++ b/drivers/iommu/of_iommu.c
+> > > @@ -218,10 +218,10 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+> > >             ops = dev->iommu_fwspec->ops;
+> > >     /*
+> > >      * If we have reason to believe the IOMMU driver missed the initial
+> > > -    * add_device callback for dev, replay it to get things in order.
+> > > +    * probe for dev, replay it to get things in order.
+> > >      */
+> > > -   if (ops && ops->add_device && dev->bus && !dev->iommu_group)
+> > > -           err = ops->add_device(dev);
+> > > +   if (dev->bus && !dev->iommu_group)
+> > > +           err = iommu_probe_device(dev);
+> >
+> > This change removes a check for NULL ops, what causes NULL pointer
+> > exception on first device without IOMMU.
+>
+> Bummer, this check was supposed to be in iommu_probe_device(), but
+> apparently it got lost. Does the attached patch fix it?
+>
+> > I'm also not sure if this is a good idea to call iommu_probe_device(),
+> > which comes from dev->bus->iommu_ops, which might be different from ops
+> > from local variable.
+>
+> The local variable comes from dev->iommu_fwspec->ops, which should be
+> exactly the same as dev->bus->iommu_ops. I'll leave that for now until
+> it turns out to be a problem (which I don't expect).
+>
+>
+> Regards,
+>
+>         Joerg
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index a2131751dcff..3ed4db334341 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -114,10 +114,14 @@ void iommu_device_unregister(struct iommu_device *iommu)
+>  int iommu_probe_device(struct device *dev)
+>  {
+>         const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +       int ret = -EINVAL;
+>
+>         WARN_ON(dev->iommu_group);
+>
+> -       return ops->add_device(dev);
+> +       if (ops)
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Is this sufficient? The old code checked for ops->add_device != NULL,
+too.
 
-> ---
->  drivers/acpi/scan.c      | 5 +++++
->  drivers/base/platform.c  | 3 +--
->  drivers/pci/pci-driver.c | 3 +--
->  3 files changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index bd1c59fb0e17..b75ae34ed188 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1456,6 +1456,11 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->  	const struct iommu_ops *iommu;
->  	u64 dma_addr = 0, size = 0;
->  
-> +	if (attr == DEV_DMA_NOT_SUPPORTED) {
-> +		set_dma_ops(dev, &dma_dummy_ops);
-> +		return 0;
-> +	}
+> +               ret = ops->add_device(dev);
 > +
->  	iort_dma_setup(dev, &dma_addr, &size);
->  
->  	iommu = iort_iommu_configure(dev);
-> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> index 41b91af95afb..c6daca875c17 100644
-> --- a/drivers/base/platform.c
-> +++ b/drivers/base/platform.c
-> @@ -1138,8 +1138,7 @@ int platform_dma_configure(struct device *dev)
->  		ret = of_dma_configure(dev, dev->of_node, true);
->  	} else if (has_acpi_companion(dev)) {
->  		attr = acpi_get_dma_attr(to_acpi_device_node(dev->fwnode));
-> -		if (attr != DEV_DMA_NOT_SUPPORTED)
-> -			ret = acpi_dma_configure(dev, attr);
-> +		ret = acpi_dma_configure(dev, attr);
->  	}
->  
->  	return ret;
-> diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-> index bef17c3fca67..f899a28b90f8 100644
-> --- a/drivers/pci/pci-driver.c
-> +++ b/drivers/pci/pci-driver.c
-> @@ -1602,8 +1602,7 @@ static int pci_dma_configure(struct device *dev)
->  		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
->  		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
->  
-> -		if (attr != DEV_DMA_NOT_SUPPORTED)
-> -			ret = acpi_dma_configure(dev, attr);
-> +		ret = acpi_dma_configure(dev, attr);
->  	}
->  
->  	pci_put_host_bridge_device(bridge);
-> -- 
-> 2.19.1.dirty
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> +       return ret;
+>  }
+>
+>  void iommu_release_device(struct device *dev)
+
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
