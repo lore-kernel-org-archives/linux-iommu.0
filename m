@@ -1,144 +1,359 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
-Date: Thu, 20 Dec 2018 13:17:34 -0500
-Message-ID: <20181220130443-mutt-send-email-mst@kernel.org>
-References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
- <20181212103545.GV16835@8bytes.org>
- <9110873f-d344-b6b9-c722-9accfc329db2@arm.com>
- <20181219180417-mutt-send-email-mst@kernel.org>
- <e1c7aee9-083d-103a-87a9-b59d5e63d7aa@arm.com>
+From: "kernelci.org bot" <bot-ssFOTAMYnuFg9hUCZPvPmw@public.gmane.org>
+Subject: next/master boot bisection: next-20181220 on tegra124-nyan-big
+Date: Thu, 20 Dec 2018 10:14:24 -0800 (PST)
+Message-ID: <5c1bdc00.1c69fb81.43f6c.9225@mx.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-Content-Disposition: inline
-In-Reply-To: <e1c7aee9-083d-103a-87a9-b59d5e63d7aa@arm.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Marc Zyngier <Marc.Zyngier@arm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <Will.Deacon@arm.com>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "robh+dt@kernel.org" <robh+dt@kernel.org>, "bhelgaas@google.com" <bhelgaas@google.com>, Robin Murphy <Robin.Murphy@arm.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>
+Content-Type: multipart/mixed; boundary="===============7096869641478231079=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, guillaume.tucker-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, matthew.hart-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, khilman-rdvid1DuHRBWk0Htik3J/w@public.gmane.org, enric.balletbo-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 20, 2018 at 05:59:46PM +0000, Jean-Philippe Brucker wrote:
-> On 19/12/2018 23:09, Michael S. Tsirkin wrote:
-> > On Thu, Dec 13, 2018 at 12:50:29PM +0000, Jean-Philippe Brucker wrote:
-> >>>> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.1
-> >>>> =A0=A0=A0=A0 git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9
-> >>>
-> >>> Unfortunatly gitweb seems to be broken on linux-arm.org. What is miss=
-ing
-> >>> in this patch-set to make this work on x86?
-> >>
-> >> You should be able to access it here:
-> >> http://www.linux-arm.org/git?p=3Dlinux-jpb.git;a=3Dshortlog;h=3Drefs/h=
-eads/virtio-iommu/devel
-> >>
-> >> That branch contains missing bits for x86 support:
-> >>
-> >> * ACPI support. We have the code but it's waiting for an IORT spec
-> >> update, to reserve the IORT node ID. I expect it to take a while, given
-> >> that I'm alone requesting a change for something that's not upstream or
-> >> in hardware.
-> > =
+--===============7096869641478231079==
+Content-Type: multipart/alternative;
+ boundary="===============2843772672283829003=="
 
-> > Frankly I think you should take a hard look at just getting the data
-> > needed from the PCI device itself.  You don't need to depend on virtio,
-> > it can be a small driver that gets you that data from the device config
-> > space and then just goes away.
-> > =
+--===============2843772672283829003==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 
-> > If you want help with writing such a small driver let me know.
-> > =
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* This automated bisection report was sent to you on the basis  *
+* that you may be involved with the breaking commit it has      *
+* found.  No manual investigation has been done to verify it,   *
+* and the root cause of the problem may be somewhere else.      *
+* Hope this helps!                                              *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-> > If there's an advantage to virtio-iommu then that would be its
-> > portability, and it all goes out of the window because
-> > of dependencies on ACPI and DT and OF and the rest of the zoo.
-> =
+next/master boot bisection: next-20181220 on tegra124-nyan-big
 
-> But the portable solutions are ACPI and DT.
-> =
+Summary:
+  Start:      1efde6eb1819 Add linux-next specific files for 20181220
+  Details:    https://kernelci.org/boot/id/5c1b9ce459b514bfcd0a8184
+  Plain log:  https://storage.kernelci.org//next/master/next-20181220/arm/t=
+egra_defconfig/lab-collabora/boot-tegra124-nyan-big.txt
+  HTML log:   https://storage.kernelci.org//next/master/next-20181220/arm/t=
+egra_defconfig/lab-collabora/boot-tegra124-nyan-big.html
+  Result:     641fb0efbff0 iommu/of: Don't call iommu_ops->add_device direc=
+tly
 
-> Describing the DMA dependency through a device would require the guest
-> to probe the device before all others. How do we communicate this?
-> * pass a kernel parameter saying something like "probe_first=3D00:01.0"
-> * make sure that the PCI root complex is probed before any other
-> platform device (since the IOMMU can manage DMA of platform devices).
+Checks:
+  revert:     PASS
+  verify:     PASS
 
-My idea was to just find and probe the specific device.
+Parameters:
+  Tree:       next
+  URL:        http://git.kernel.org/pub/scm/linux/kernel/git/next/linux-nex=
+t.git
+  Branch:     master
+  Target:     tegra124-nyan-big
+  CPU arch:   arm
+  Lab:        lab-collabora
+  Config:     tegra_defconfig
+  Test suite: boot
 
-> * change DT, ACPI and PCI core code to handle this probe_first kernel
-> parameter.
-> =
+Breaking commit found:
 
-> Better go with something standard, that any OS and hypervisor knows how
-> to use, and that other IOMMU devices already use.
-> =
+---------------------------------------------------------------------------=
+----
+commit 641fb0efbff063ed57f108c2eb4a4d26dbd5badd
+Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date:   Wed Dec 5 14:39:45 2018 +0100
 
-> >> * DMA ops for x86 (see "HACK" commit). I'd like to use dma-iommu but I=
-'m
-> >> not sure how to implement the glue that sets dma_ops properly.
-> >>
-> >> Thanks,
-> >> Jean
-> > =
+    iommu/of: Don't call iommu_ops->add_device directly
+    =
 
-> > OK so IIUC you are looking into Christoph's suggestions to fix that up?
-> =
+    Make sure to invoke this call-back through the proper
+    function of the IOMMU-API.
+    =
 
-> Eventually yes. I'll give it a try next year, once the dma-iommu changes
-> are on the list. It's not a priority for me, given that x86 already has
-> a pvIOMMU with VT-d, and that Arm still needs one.
+    Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-
-Well that's a kind of a weak usecase, isn't it?
-Can we just build VTD on ARM?
-
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d9a25715650e..009fa98e9363 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -174,7 +174,7 @@ config DMAR_TABLE
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index dbe73456f1a1..d8947b28db2d 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -222,10 +222,10 @@ const struct iommu_ops *of_iommu_configure(struct dev=
+ice *dev,
+ 	}
+ 	/*
+ 	 * If we have reason to believe the IOMMU driver missed the initial
+-	 * add_device callback for dev, replay it to get things in order.
++	 * probe for dev, replay it to get things in order.
+ 	 */
+-	if (ops && ops->add_device && dev->bus && !device_iommu_mapped(dev))
+-		err =3D ops->add_device(dev);
++	if (dev->bus && !device_iommu_mapped(dev))
++		err =3D iommu_probe_device(dev);
  =
 
- config INTEL_IOMMU
- 	bool "Support for Intel IOMMU using DMA Remapping Devices"
--	depends on PCI_MSI && ACPI && (X86 || IA64_GENERIC)
-+	depends on PCI_MSI && ACPI && (X86 || IA64_GENERIC || ARM)
- 	select IOMMU_API
- 	select IOMMU_IOVA
- 	select NEED_DMA_MAP_STATE
+ 	/* Ignore all other errors apart from EPROBE_DEFER */
+ 	if (err =3D=3D -EPROBE_DEFER) {
+---------------------------------------------------------------------------=
+----
 
 
-didn't try this one ...
+Git bisection log:
+
+---------------------------------------------------------------------------=
+----
+git bisect start
+# good: [c5c08bed843c2b2c048c16d1296d7631d7c1620e] virtio: fix test build a=
+fter uio.h change
+git bisect good c5c08bed843c2b2c048c16d1296d7631d7c1620e
+# bad: [1efde6eb181908e1095b4a5db90af0c024016bec] Add linux-next specific f=
+iles for 20181220
+git bisect bad 1efde6eb181908e1095b4a5db90af0c024016bec
+# good: [6580aac4d9913a22e269d7df8db1f9efb8d7fe14] Merge remote-tracking br=
+anch 'crypto/master'
+git bisect good 6580aac4d9913a22e269d7df8db1f9efb8d7fe14
+# bad: [75f962d8fe5279ac9e64f3d411b8e38b84da8d6b] Merge remote-tracking bra=
+nch 'spi/for-next'
+git bisect bad 75f962d8fe5279ac9e64f3d411b8e38b84da8d6b
+# good: [d675ba4b9e6ccd782e4db9109cbab708a85b8ff8] Merge tag 'drm-msm-next-=
+2018-12-12' of git://people.freedesktop.org/~robclark/linux into drm-next
+git bisect good d675ba4b9e6ccd782e4db9109cbab708a85b8ff8
+# good: [6173f57441f9c05050aad441a2188eaabbfea7a0] Merge remote-tracking br=
+anch 'block/for-next'
+git bisect good 6173f57441f9c05050aad441a2188eaabbfea7a0
+# good: [1531a9f0415ba8ea0f4e31d6f5a1ef059d19dc6d] Merge remote-tracking br=
+anch 'regulator/for-next'
+git bisect good 1531a9f0415ba8ea0f4e31d6f5a1ef059d19dc6d
+# bad: [e2267b2875b0798814d0a76a304318e0c6d60c3e] Merge remote-tracking bra=
+nch 'vfio/next'
+git bisect bad e2267b2875b0798814d0a76a304318e0c6d60c3e
+# good: [96ae0a1f40d405f8f0221f4fa8b9b2ef4bbbc01e] Merge remote-tracking br=
+anch 'watchdog/master'
+git bisect good 96ae0a1f40d405f8f0221f4fa8b9b2ef4bbbc01e
+# bad: [d2e1a003af569e912d5f115a3c20b89a19f5caa0] ACPI/IORT: Don't call iom=
+mu_ops->add_device directly
+git bisect bad d2e1a003af569e912d5f115a3c20b89a19f5caa0
+# good: [9b468f7d9cf1f089b7287865776eb100504681b7] iommu/arm-smmu: Use help=
+er functions to access dev->iommu_fwspec
+git bisect good 9b468f7d9cf1f089b7287865776eb100504681b7
+# good: [170ecbd5ff09aa9c8c1025a8563f76e01a24bb50] iommu/of: Use device_iom=
+mu_mapped()
+git bisect good 170ecbd5ff09aa9c8c1025a8563f76e01a24bb50
+# good: [f884f6ee62604aec60fe1760f94724be192d97c0] dmaengine: sh: rcar-dmac=
+: Use device_iommu_mapped()
+git bisect good f884f6ee62604aec60fe1760f94724be192d97c0
+# good: [cc5aed44a3a8e4fca721636cf881a52f8d68a098] iommu: Consolitate ->add=
+/remove_device() calls
+git bisect good cc5aed44a3a8e4fca721636cf881a52f8d68a098
+# bad: [641fb0efbff063ed57f108c2eb4a4d26dbd5badd] iommu/of: Don't call iomm=
+u_ops->add_device directly
+git bisect bad 641fb0efbff063ed57f108c2eb4a4d26dbd5badd
+# first bad commit: [641fb0efbff063ed57f108c2eb4a4d26dbd5badd] iommu/of: Do=
+n't call iommu_ops->add_device directly
+---------------------------------------------------------------------------=
+----
+--===============2843772672283829003==
+Content-Type: text/html; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+
+<!doctype html>
+<html lang=3D"en">
+    <head>
+      <meta charset=3D"utf-8">
+      <style>
+h1 {
+  font-size: 1.1em;
+}
+h2 {
+  font-size: 1.0em;
+}
+table {
+  border: none;
+}
+th {
+  font-weight: bold;
+  padding: 4px 10px 4px 10px;
+  text-align: left;
+  vertical-align: bottom;
+}
+td {
+  vertical-align: bottom;
+  padding: 4px;
+}
+pre {
+  display: inline;
+}
+div.disclaimer {
+  background-color: #eeeeee;
+  width: 480px;
+  padding: 2px 8px 2px 8px;
+  font-size: 0.8em;
+}
+      </style>
+      <title>next/master boot bisection: next-20181220 on tegra124-nyan-big=
+</title>
+    </head>
+    <body>
+      <div class=3D"disclaimer">
+        <p>
+          This automated bisection report was sent to you on the basis that=
+ you
+          may be involved with the breaking commit it has found.  No manual
+          investigation has been done to verify it, and the root cause of t=
+he
+          problem may be somewhere else.
+        </p>
+        <p>
+          Hope this helps!
+        </p>
+      </div>
+      <p>
+        <h1>next/master boot bisection: next-20181220 on tegra124-nyan-big<=
+/h1>
+      </p>
+      <p>
+        <h2>Summary:</h2>
+        <table>
+          <tr><th>Start</th><td><pre>1efde6eb1819 Add linux-next specific f=
+iles for 20181220</pre></td></tr>
+          <tr><th>Details</th><td><a href=3D"https://kernelci.org/boot/id/5=
+c1b9ce459b514bfcd0a8184">next-20181220</a></td></tr>
+          <tr><th>Plain log</th><td><a href=3D"https://storage.kernelci.org=
+//next/master/next-20181220/arm/tegra_defconfig/lab-collabora/boot-tegra124=
+-nyan-big.txt">https://storage.kernelci.org//next/master/next-20181220/arm/=
+tegra_defconfig/lab-collabora/boot-tegra124-nyan-big.txt</a></td></tr>
+          <tr><th>HTML log</th><td><a href=3D"https://storage.kernelci.org/=
+/next/master/next-20181220/arm/tegra_defconfig/lab-collabora/boot-tegra124-=
+nyan-big.html">https://storage.kernelci.org//next/master/next-20181220/arm/=
+tegra_defconfig/lab-collabora/boot-tegra124-nyan-big.html</a></td></tr>
+          <tr><th>Result</th><td><pre>641fb0efbff0 iommu/of: Don't call iom=
+mu_ops->add_device directly</pre></td></tr>
+        </table>
+      </p>
+      <p>
+        <h2>Checks:</h2>
+        <table>
+          <tr><th>revert</th><td>PASS</td></tr>
+          <tr><th>verify</th><td>PASS</td></tr>
+        </table>
+      </p>
+      <p>
+        <h2>Parameters:</h2>
+        <table>
+          <tr><th>Tree</th><td>next</td></tr>
+          <tr><th>URL</th><td>http://git.kernel.org/pub/scm/linux/kernel/gi=
+t/next/linux-next.git</td></tr>
+          <tr><th>Branch</th><td>master</td></tr>
+          <tr><th>Target</th><td>tegra124-nyan-big</td></tr>
+          <tr><th>CPU arch</th><td>arm</td></tr>
+          <tr><th>Lab</th><td>lab-collabora</td></tr>
+          <tr><th>Config</th><td>tegra_defconfig</td></tr>
+          <tr><th>Test suite</th><td>boot</td></tr>
+        </table>
+      </p>
+      <p>
+        <h2>Breaking commit found:</h2>
+        <pre>commit 641fb0efbff063ed57f108c2eb4a4d26dbd5badd
+Author: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date:   Wed Dec 5 14:39:45 2018 +0100
+
+    iommu/of: Don't call iommu_ops->add_device directly
+    =
+
+    Make sure to invoke this call-back through the proper
+    function of the IOMMU-API.
+    =
+
+    Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index dbe73456f1a1..d8947b28db2d 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -222,10 +222,10 @@ const struct iommu_ops *of_iommu_configure(struct dev=
+ice *dev,
+ 	}
+ 	/*
+ 	 * If we have reason to believe the IOMMU driver missed the initial
+-	 * add_device callback for dev, replay it to get things in order.
++	 * probe for dev, replay it to get things in order.
+ 	 */
+-	if (ops && ops->add_device && dev->bus && !device_iommu_mapped(dev))
+-		err =3D ops->add_device(dev);
++	if (dev->bus && !device_iommu_mapped(dev))
++		err =3D iommu_probe_device(dev);
+ =
+
+ 	/* Ignore all other errors apart from EPROBE_DEFER */
+ 	if (err =3D=3D -EPROBE_DEFER) {</pre>
+      </p>
+      <p>
+        <h2>Git bisection log:</h2>
+        <pre>
+git bisect start
+# good: [c5c08bed843c2b2c048c16d1296d7631d7c1620e] virtio: fix test build a=
+fter uio.h change
+git bisect good c5c08bed843c2b2c048c16d1296d7631d7c1620e
+# bad: [1efde6eb181908e1095b4a5db90af0c024016bec] Add linux-next specific f=
+iles for 20181220
+git bisect bad 1efde6eb181908e1095b4a5db90af0c024016bec
+# good: [6580aac4d9913a22e269d7df8db1f9efb8d7fe14] Merge remote-tracking br=
+anch 'crypto/master'
+git bisect good 6580aac4d9913a22e269d7df8db1f9efb8d7fe14
+# bad: [75f962d8fe5279ac9e64f3d411b8e38b84da8d6b] Merge remote-tracking bra=
+nch 'spi/for-next'
+git bisect bad 75f962d8fe5279ac9e64f3d411b8e38b84da8d6b
+# good: [d675ba4b9e6ccd782e4db9109cbab708a85b8ff8] Merge tag 'drm-msm-next-=
+2018-12-12' of git://people.freedesktop.org/~robclark/linux into drm-next
+git bisect good d675ba4b9e6ccd782e4db9109cbab708a85b8ff8
+# good: [6173f57441f9c05050aad441a2188eaabbfea7a0] Merge remote-tracking br=
+anch 'block/for-next'
+git bisect good 6173f57441f9c05050aad441a2188eaabbfea7a0
+# good: [1531a9f0415ba8ea0f4e31d6f5a1ef059d19dc6d] Merge remote-tracking br=
+anch 'regulator/for-next'
+git bisect good 1531a9f0415ba8ea0f4e31d6f5a1ef059d19dc6d
+# bad: [e2267b2875b0798814d0a76a304318e0c6d60c3e] Merge remote-tracking bra=
+nch 'vfio/next'
+git bisect bad e2267b2875b0798814d0a76a304318e0c6d60c3e
+# good: [96ae0a1f40d405f8f0221f4fa8b9b2ef4bbbc01e] Merge remote-tracking br=
+anch 'watchdog/master'
+git bisect good 96ae0a1f40d405f8f0221f4fa8b9b2ef4bbbc01e
+# bad: [d2e1a003af569e912d5f115a3c20b89a19f5caa0] ACPI/IORT: Don't call iom=
+mu_ops->add_device directly
+git bisect bad d2e1a003af569e912d5f115a3c20b89a19f5caa0
+# good: [9b468f7d9cf1f089b7287865776eb100504681b7] iommu/arm-smmu: Use help=
+er functions to access dev->iommu_fwspec
+git bisect good 9b468f7d9cf1f089b7287865776eb100504681b7
+# good: [170ecbd5ff09aa9c8c1025a8563f76e01a24bb50] iommu/of: Use device_iom=
+mu_mapped()
+git bisect good 170ecbd5ff09aa9c8c1025a8563f76e01a24bb50
+# good: [f884f6ee62604aec60fe1760f94724be192d97c0] dmaengine: sh: rcar-dmac=
+: Use device_iommu_mapped()
+git bisect good f884f6ee62604aec60fe1760f94724be192d97c0
+# good: [cc5aed44a3a8e4fca721636cf881a52f8d68a098] iommu: Consolitate ->add=
+/remove_device() calls
+git bisect good cc5aed44a3a8e4fca721636cf881a52f8d68a098
+# bad: [641fb0efbff063ed57f108c2eb4a4d26dbd5badd] iommu/of: Don't call iomm=
+u_ops->add_device directly
+git bisect bad 641fb0efbff063ed57f108c2eb4a4d26dbd5badd
+# first bad commit: [641fb0efbff063ed57f108c2eb4a4d26dbd5badd] iommu/of: Do=
+n't call iommu_ops->add_device directly</pre>
+      </p>
+    </body>
+</html>
+--===============2843772672283829003==--
+
+--===============7096869641478231079==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 
-
-> It shouldn't block
-> this series.
-> =
-
-> > There's still a bit of time left before the merge window,
-> > maybe you can make above changes.
-> =
-
-> I'll wait to see if Joerg has other concerns about the design or the
-> code, and resend in January. I think that IOMMU driver changes should go
-> through his tree.
-> =
-
-> Thanks,
-> Jean
-
-Sorry which changes do you mean?
-
--- =
-
-MST
+--===============7096869641478231079==--
