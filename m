@@ -1,56 +1,30 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu: Check for iommu_ops == NULL in iommu_probe_device()
-Date: Thu, 20 Dec 2018 10:08:33 +0100
-Message-ID: <20181220090833.6643-1-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 3/4] iommu/of: Don't call iommu_ops->add_device directly
+Date: Thu, 20 Dec 2018 10:13:09 +0100
+Message-ID: <20181220091309.GZ16835@8bytes.org>
+References: <20181211150513.15161-1-joro@8bytes.org>
+ <CGME20181211150640epcas5p4ffdd63a1900ebfe4a04eea24d2c86de6@epcas5p4.samsung.com>
+ <20181211150513.15161-4-joro@8bytes.org>
+ <30d86186-e0a2-2be1-2295-20510fbd74ba@samsung.com>
+ <20181219143451.GY16835@8bytes.org>
+ <442867b9-2d36-4b14-56ee-b4bb8e6be4c0@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <442867b9-2d36-4b14-56ee-b4bb8e6be4c0@samsung.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, jroedel@suse.de, Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Hi Marek,
 
-This check needs to be there and got lost at some point
-during development. Add it again.
+On Wed, Dec 19, 2018 at 03:53:51PM +0100, Marek Szyprowski wrote:
+> Yes, it fixes this issue.
 
-Fixes: 641fb0efbff0 ('iommu/of: Don't call iommu_ops->add_device directly')
-Reported-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Reported-by: kernelci.org bot <bot-ssFOTAMYnuFg9hUCZPvPmw@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Thanks a lot, patch is sent out and in iommu tree.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a2131751dcff..3ed4db334341 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -114,10 +114,14 @@ void iommu_device_unregister(struct iommu_device *iommu)
- int iommu_probe_device(struct device *dev)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+	int ret = -EINVAL;
- 
- 	WARN_ON(dev->iommu_group);
- 
--	return ops->add_device(dev);
-+	if (ops)
-+		ret = ops->add_device(dev);
-+
-+	return ret;
- }
- 
- void iommu_release_device(struct device *dev)
--- 
-2.13.7
+Regards,
+
+	Joerg
