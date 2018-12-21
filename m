@@ -1,52 +1,135 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: question about broadcast invalidation and atc invalidation
-Date: Fri, 21 Dec 2018 11:53:07 +0000
-Message-ID: <fb76a20b-0ff4-d64e-4f9c-c160254b07ce@arm.com>
-References: <e33aad8d-ab12-e1c7-0b8b-85fe09260270@hisilicon.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v4 02/18] iommu/mediatek: Use a struct as the platform
+ data
+Date: Fri, 21 Dec 2018 18:44:55 +0100
+Message-ID: <be32c912-359e-73c9-ca24-d0cbface47d3@gmail.com>
+References: <1544258371-4600-1-git-send-email-yong.wu@mediatek.com>
+ <1544258371-4600-3-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e33aad8d-ab12-e1c7-0b8b-85fe09260270-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1544258371-4600-3-git-send-email-yong.wu@mediatek.com>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhongmiao <zhongmiao-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Chengchuanning (Hisi-Turing)" <chengchuanning-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+Cc: Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>, Arvind Yadav <arvind.yadav.cs@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
 
-On 21/12/2018 09:31, Zhongmiao wrote:
-> Hi Jean:
-> 	Now Soft need to make sure build atc inv cmd to smmu after Execute 
-> "TLBI" (dvm sync). I don't think it's very reasonable. Why  Smmu The 
-> smmu automatically sends the inv atc command when smmu receive 
-> broadcast invalidation ?
 
-I'd also like to see this done by hardware, but it's not
-straightforward. I see two difficulties with turning broadcast TLBI into
-ATC invalidation:
+On 08/12/2018 09:39, Yong Wu wrote:
+> Use a struct as the platform special data instead of the enumeration.
+> This is a prepare patch for adding mt8183 iommu support.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
 
-* TLBI uses VMID and ASID to target the TLB entries to invalidate, but
-ATS uses RID and PASID. The SMMU would need to do a reverse lookup to
-convert VMID:ASID into RID:PASID, and there may be multiple RID:PASID
-pairs associated to one VMID:ASID.
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-* ATS flow control. Each endpoint has a limited number of in-flight ATC
-invalidate requests. If the CPU is sending TLBI too fast, the SMMU would
-have to buffer them or back-pressure the interconnect, while waiting for
-in-flight ATC invalidate to complete.
-
-So for the moment the architecture doesn't support this. We use MMU
-notifiers to convert VMID:ASID into RID:PASID and wait for ATC
-invalidation to complete.
-
-Thanks,
-Jean
+>  drivers/iommu/mtk_iommu.c | 24 ++++++++++++++++--------
+>  drivers/iommu/mtk_iommu.h |  6 +++++-
+>  2 files changed, 21 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 44bd5b9..9a2225b 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -54,7 +54,7 @@
+>  #define REG_MMU_CTRL_REG			0x110
+>  #define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
+>  #define F_MMU_TF_PROTECT_SEL_SHIFT(data) \
+> -	((data)->m4u_plat == M4U_MT2712 ? 4 : 5)
+> +	((data)->plat_data->m4u_plat == M4U_MT2712 ? 4 : 5)
+>  /* It's named by F_MMU_TF_PROT_SEL in mt2712. */
+>  #define F_MMU_TF_PROTECT_SEL(prot, data) \
+>  	(((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
+> @@ -517,7 +517,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  	}
+>  
+>  	regval = F_MMU_TF_PROTECT_SEL(2, data);
+> -	if (data->m4u_plat == M4U_MT8173)
+> +	if (data->plat_data->m4u_plat == M4U_MT8173)
+>  		regval |= F_MMU_PREFETCH_RT_REPLACE_MOD;
+>  	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
+>  
+> @@ -538,14 +538,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
+>  	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
+>  
+> -	if (data->m4u_plat == M4U_MT8173)
+> +	if (data->plat_data->m4u_plat == M4U_MT8173)
+>  		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
+>  	else
+>  		regval = lower_32_bits(data->protect_base) |
+>  			 upper_32_bits(data->protect_base);
+>  	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
+>  
+> -	if (data->enable_4GB && data->m4u_plat != M4U_MT8173) {
+> +	if (data->enable_4GB && data->plat_data->m4u_plat != M4U_MT8173) {
+>  		/*
+>  		 * If 4GB mode is enabled, the validate PA range is from
+>  		 * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
+> @@ -556,7 +556,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+>  
+>  	/* It's MISC control register whose default value is ok except mt8173.*/
+> -	if (data->m4u_plat == M4U_MT8173)
+> +	if (data->plat_data->m4u_plat == M4U_MT8173)
+>  		writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
+>  
+>  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
+> @@ -589,7 +589,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>  	if (!data)
+>  		return -ENOMEM;
+>  	data->dev = dev;
+> -	data->m4u_plat = (enum mtk_iommu_plat)of_device_get_match_data(dev);
+> +	data->plat_data = of_device_get_match_data(dev);
+>  
+>  	/* Protect memory. HW will access here while translation fault.*/
+>  	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
+> @@ -733,9 +733,17 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>  	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
+>  };
+>  
+> +static const struct mtk_iommu_plat_data mt2712_data = {
+> +	.m4u_plat     = M4U_MT2712,
+> +};
+> +
+> +static const struct mtk_iommu_plat_data mt8173_data = {
+> +	.m4u_plat     = M4U_MT8173,
+> +};
+> +
+>  static const struct of_device_id mtk_iommu_of_ids[] = {
+> -	{ .compatible = "mediatek,mt2712-m4u", .data = (void *)M4U_MT2712},
+> -	{ .compatible = "mediatek,mt8173-m4u", .data = (void *)M4U_MT8173},
+> +	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
+> +	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+>  	{}
+>  };
+>  
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index 778498b..333a0ef 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -41,6 +41,10 @@ enum mtk_iommu_plat {
+>  	M4U_MT8173,
+>  };
+>  
+> +struct mtk_iommu_plat_data {
+> +	enum mtk_iommu_plat m4u_plat;
+> +};
+> +
+>  struct mtk_iommu_domain;
+>  
+>  struct mtk_iommu_data {
+> @@ -57,7 +61,7 @@ struct mtk_iommu_data {
+>  	bool				tlb_flush_active;
+>  
+>  	struct iommu_device		iommu;
+> -	enum mtk_iommu_plat		m4u_plat;
+> +	const struct mtk_iommu_plat_data *plat_data;
+>  
+>  	struct list_head		list;
+>  };
+> 
