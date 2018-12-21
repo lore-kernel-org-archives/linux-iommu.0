@@ -1,15 +1,15 @@
 From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v4 03/18] memory: mtk-smi: Use a general config_port
- interface
-Date: Fri, 21 Dec 2018 18:47:39 +0100
-Message-ID: <aa91ceb7-673b-7022-d718-f9f61d4b2f23@gmail.com>
+Subject: Re: [PATCH v4 04/18] memory: mtk-smi: Use a struct for the platform
+ data for smi-common
+Date: Fri, 21 Dec 2018 18:49:09 +0100
+Message-ID: <7a216644-bc10-c31d-209a-abbcf20a14b6@gmail.com>
 References: <1544258371-4600-1-git-send-email-yong.wu@mediatek.com>
- <1544258371-4600-4-git-send-email-yong.wu@mediatek.com>
+ <1544258371-4600-5-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1544258371-4600-4-git-send-email-yong.wu@mediatek.com>
+In-Reply-To: <1544258371-4600-5-git-send-email-yong.wu@mediatek.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
 To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
@@ -19,72 +19,116 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 On 08/12/2018 09:39, Yong Wu wrote:
-> The config_port of mt2712 and mt8183 are the same. Use a general
-> config_port interface instead.
+> Use a struct as the platform special data instead of the enumeration.
 > 
-> In addition, in mt2712, larb8 and larb9 are the bdpsys larbs which
-> are not the normal larb, their register space are different from the
-> normal one. thus, we can not call the general config_port. In mt8183,
-> IPU0/1 and CCU connect with smi-common directly, they also are not
-> the normal larb. Hence, we add a "larb_special_mask" for these special
-> larbs.
+> Also there is a minor change that moving the position of
+> "enum mtk_smi_gen" definition, this is because we expect define
+> "struct mtk_smi_common_plat" before it is referred.
 > 
-> This is also a preparing patch for adding mt8183 SMI support.
+> This is a preparing patch for mt8183.
 > 
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/memory/mtk-smi.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index 8f2d152..3b9ad0e 100644
-> --- a/drivers/memory/mtk-smi.c
-> +++ b/drivers/memory/mtk-smi.c
-> @@ -53,6 +53,7 @@ struct mtk_smi_larb_gen {
->  	bool need_larbid;
->  	int port_in_larb[MTK_LARB_NR_MAX + 1];
->  	void (*config_port)(struct device *);
-> +	unsigned int larb_special_mask; /* The special larbs mask. */
-
-I'm not really happy with the name larb_special_mask but I can't think of
-anything else. The comment is not needed as it just rewords the name of the
-variable.
-
-Other then that (or even without changing anything):
 
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
+> ---
+>  drivers/memory/mtk-smi.c | 35 ++++++++++++++++++++++++-----------
+>  1 file changed, 24 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index 3b9ad0e..a5ddd42 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -49,6 +49,15 @@
+>  #define SMI_LARB_NONSEC_CON(id)	(0x380 + ((id) * 4))
+>  #define F_MMU_EN		BIT(0)
+>  
+> +enum mtk_smi_gen {
+> +	MTK_SMI_GEN1,
+> +	MTK_SMI_GEN2
+> +};
+> +
+> +struct mtk_smi_common_plat {
+> +	enum mtk_smi_gen gen;
+> +};
+> +
+>  struct mtk_smi_larb_gen {
+>  	bool need_larbid;
+>  	int port_in_larb[MTK_LARB_NR_MAX + 1];
+> @@ -61,6 +70,8 @@ struct mtk_smi {
+>  	struct clk			*clk_apb, *clk_smi;
+>  	struct clk			*clk_async; /*only needed by mt2701*/
+>  	void __iomem			*smi_ao_base;
+> +
+> +	const struct mtk_smi_common_plat *plat;
 >  };
 >  
->  struct mtk_smi {
-> @@ -176,17 +177,13 @@ void mtk_smi_larb_put(struct device *larbdev)
->  	return -ENODEV;
->  }
+>  struct mtk_smi_larb { /* larb: local arbiter */
+> @@ -72,11 +83,6 @@ struct mtk_smi_larb { /* larb: local arbiter */
+>  	u32				*mmu;
+>  };
 >  
-> -static void mtk_smi_larb_config_port_mt2712(struct device *dev)
-> +static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+> -enum mtk_smi_gen {
+> -	MTK_SMI_GEN1,
+> -	MTK_SMI_GEN2
+> -};
+> -
+>  static int mtk_smi_enable(const struct mtk_smi *smi)
 >  {
->  	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
->  	u32 reg;
->  	int i;
->  
-> -	/*
-> -	 * larb 8/9 is the bdpsys larb, the iommu_en is enabled defaultly.
-> -	 * Don't need to set it again.
-> -	 */
-> -	if (larb->larbid == 8 || larb->larbid == 9)
-> +	if (BIT(larb->larbid) & larb->larb_gen->larb_special_mask)
->  		return;
->  
->  	for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
-> @@ -261,7 +258,8 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
->  
->  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2712 = {
->  	.need_larbid = true,
-> -	.config_port = mtk_smi_larb_config_port_mt2712,
-> +	.config_port       = mtk_smi_larb_config_port_gen2_general,
-> +	.larb_special_mask = BIT(8) | BIT(9),          /* bdpsys */
+>  	int ret;
+> @@ -351,18 +357,26 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
+>  	}
 >  };
 >  
->  static const struct of_device_id mtk_smi_larb_of_ids[] = {
+> +static const struct mtk_smi_common_plat mtk_smi_common_gen1 = {
+> +	.gen = MTK_SMI_GEN1,
+> +};
+> +
+> +static const struct mtk_smi_common_plat mtk_smi_common_gen2 = {
+> +	.gen = MTK_SMI_GEN2,
+> +};
+> +
+>  static const struct of_device_id mtk_smi_common_of_ids[] = {
+>  	{
+>  		.compatible = "mediatek,mt8173-smi-common",
+> -		.data = (void *)MTK_SMI_GEN2
+> +		.data = &mtk_smi_common_gen2,
+>  	},
+>  	{
+>  		.compatible = "mediatek,mt2701-smi-common",
+> -		.data = (void *)MTK_SMI_GEN1
+> +		.data = &mtk_smi_common_gen1,
+>  	},
+>  	{
+>  		.compatible = "mediatek,mt2712-smi-common",
+> -		.data = (void *)MTK_SMI_GEN2
+> +		.data = &mtk_smi_common_gen2,
+>  	},
+>  	{}
+>  };
+> @@ -372,13 +386,13 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>  	struct device *dev = &pdev->dev;
+>  	struct mtk_smi *common;
+>  	struct resource *res;
+> -	enum mtk_smi_gen smi_gen;
+>  	int ret;
+>  
+>  	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
+>  	if (!common)
+>  		return -ENOMEM;
+>  	common->dev = dev;
+> +	common->plat = of_device_get_match_data(dev);
+>  
+>  	common->clk_apb = devm_clk_get(dev, "apb");
+>  	if (IS_ERR(common->clk_apb))
+> @@ -394,8 +408,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>  	 * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
+>  	 * base.
+>  	 */
+> -	smi_gen = (enum mtk_smi_gen)of_device_get_match_data(dev);
+> -	if (smi_gen == MTK_SMI_GEN1) {
+> +	if (common->plat->gen == MTK_SMI_GEN1) {
+>  		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  		common->smi_ao_base = devm_ioremap_resource(dev, res);
+>  		if (IS_ERR(common->smi_ao_base))
 > 
