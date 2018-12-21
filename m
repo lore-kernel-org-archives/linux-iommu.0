@@ -1,36 +1,32 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: [GIT PULL] dma-mapping updates for Linux 4.21
-Date: Fri, 21 Dec 2018 10:45:49 +0100
-Message-ID: <20181221094549.GA14522@infradead.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 4.21
+Date: Fri, 21 Dec 2018 10:48:12 +0100
+Message-ID: <20181221094812.GA2713@lst.de>
+References: <20181221094549.GA14522@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
+In-Reply-To: <20181221094549.GA14522@infradead.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux-foundation.org, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Linus,
+On Fri, Dec 21, 2018 at 10:45:49AM +0100, Christoph Hellwig wrote:
+> The following changes since commit c9d76d0655c06b8c1f944e46c4fd9e9cf4b331c0:
+> 
+>   dma-mapping: fix return type of dma_set_max_seg_size() (2018-11-27 08:39:52 +0100)
 
-an early pull request as requested.  Besides the usual contextual
-conflicts in Kconfig files that can be solved by taking both updates
-and applying them manually there are some real conflicts this time:
+And that actually is the first commit already in the tree, sorry.
 
-  - the RISC-V tree has some updates to
-    Documentation/features/io/sg-chain/arch-support.txt, which is
-    removed in this tree.  It should be put to rest.
-  - the sparc64 tree has various updates to replace the name field
-    with the full_name one in the OF device, including in code
-    that gets refctored in the dma-mapping tree.  I've applied an
-    equivalent change to the refactored version, so take the
-    dma-mapping tree version of arch/sparc/kernel/ioport.c.
+Updated git-request-pull output attached:
 
 
-The following changes since commit c9d76d0655c06b8c1f944e46c4fd9e9cf4b331c0:
+The following changes since commit ef78e5ec9214376c5cb989f5da70b02d0c117b66:
 
-  dma-mapping: fix return type of dma_set_max_seg_size() (2018-11-27 08:39:52 +0100)
+  ia64: export node_distance function (2018-11-26 18:30:40 -0800)
 
 are available in the Git repository at:
 
@@ -140,6 +136,9 @@ Marek Szyprowski (1):
 Nathan Chancellor (1):
       PCI: Remove unused attr variable in pci_dma_configure
 
+Niklas Söderlund (1):
+      dma-mapping: fix return type of dma_set_max_seg_size()
+
 Robin Murphy (9):
       dma-debug: Expose nr_total_entries in debugfs
       dma-debug: Use pr_fmt()
@@ -180,7 +179,7 @@ Thierry Reding (1):
  arch/hexagon/Kconfig                               |   1 -
  arch/ia64/Kconfig                                  |   4 +-
  arch/ia64/hp/common/hwsw_iommu.c                   |   2 +-
- arch/ia64/hp/common/sba_iommu.c                    |  87 ++----
+ arch/ia64/hp/common/sba_iommu.c                    |  87 ++---
  arch/ia64/kernel/dma-mapping.c                     |  21 +-
  arch/ia64/mm/init.c                                |  19 +-
  arch/ia64/sn/pci/pci_dma.c                         |   8 +-
@@ -221,7 +220,7 @@ Thierry Reding (1):
  arch/sparc/include/asm/pci_64.h                    |  52 ---
  arch/sparc/kernel/iommu.c                          |  12 +-
  arch/sparc/kernel/iommu_common.h                   |   2 -
- arch/sparc/kernel/ioport.c                         | 243 +++------------
+ arch/sparc/kernel/ioport.c                         | 243 +++-----------
  arch/sparc/kernel/pci_sun4v.c                      |  14 +-
  arch/sparc/mm/io-unit.c                            |  80 +++--
  arch/sparc/mm/iommu.c                              | 160 ++++++----
@@ -251,7 +250,7 @@ Thierry Reding (1):
  include/linux/dma-debug.h                          |  34 --
  include/linux/dma-direct.h                         |  19 +-
  include/linux/dma-iommu.h                          |   1 -
- include/linux/dma-mapping.h                        | 347 +++++++++------------
+ include/linux/dma-mapping.h                        | 350 +++++++++------------
  include/linux/dma-noncoherent.h                    |   7 +-
  include/linux/scatterlist.h                        |   6 +-
  include/linux/swiotlb.h                            |  77 ++---
@@ -266,7 +265,7 @@ Thierry Reding (1):
  kernel/dma/virt.c                                  |   2 +-
  lib/Kconfig                                        |   2 +-
  lib/scatterlist.c                                  |   2 +-
- 112 files changed, 1407 insertions(+), 2338 deletions(-)
+ 112 files changed, 1408 insertions(+), 2340 deletions(-)
  delete mode 100644 Documentation/features/io/sg-chain/arch-support.txt
  delete mode 100644 arch/riscv/include/asm/dma-mapping.h
  delete mode 100644 arch/sparc/include/asm/pci_32.h
