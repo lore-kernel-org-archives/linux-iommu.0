@@ -1,137 +1,153 @@
-From: Souptick Joarder <jrdr.linux-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v5 0/9] Use vm_insert_range
-Date: Wed, 26 Dec 2018 19:11:57 +0530
-Message-ID: <CAFqt6za-vq4GihKbSJjF1_=_xnWvBbpCQDf8iuhF0e8XJY4JVA@mail.gmail.com>
-References: <20181224131841.GA22017@jordon-HP-15-Notebook-PC>
-	<20181224152059.GA26090@n2100.armlinux.org.uk>
+From: Eric Wong <e@80x24.org>
+Subject: iommu_intel or i915 regression in 4.18, 4.19.12 and drm-tip
+Date: Thu, 27 Dec 2018 11:49:48 +0000
+Message-ID: <20181227114948.ev4b3jte3ubsc5us@dcvr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20181224152059.GA26090-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux-MM <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, linux1394-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Stephen Rothwell <sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org>, oleksandr_andrushchenko-uRwfk40T5oI@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Matthew Wilcox <willy-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, airlied-cv59FeDIM0c@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, pawel-FA/gS7QP4orQT0dZR+AlfA@public.gmane.org, Rik van Riel <riel-ebMLmSuQjDVBDgjK7y7TUQ@public.gmane.org>, rppt-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iamjoonsoo.kim-Hm3cg6mZ9cc@public.gmane.org, vbabka-AlSwsSmVLrQ@public.gmane.org, Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, hjc-TNX95d0MmH7DzftRWevZcw@public.gmane.org, xen-devel-GuqFBffKawuEi8DpZVb4nw@public.gmane.org, Kyungmin Park <kyungmin.park-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, stefanr-MtYdepGKPcDRv0WFA/ZhaQ@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Jani Nikula <jani.nikula@linux.intel.com>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>
+Cc: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Dec 24, 2018 at 8:51 PM Russell King - ARM Linux
-<linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org> wrote:
->
-> Having discussed with Matthew offlist, I think we've come to the
-> following conclusion - there's a number of drivers that buggily
-> ignore vm_pgoff.
->
-> So, what I proposed is:
->
-> static int __vm_insert_range(struct vm_struct *vma, struct page *pages,
->                              size_t num, unsigned long offset)
-> {
->         unsigned long count = vma_pages(vma);
->         unsigned long uaddr = vma->vm_start;
->         int ret;
->
->         /* Fail if the user requested offset is beyond the end of the object */
->         if (offset > num)
->                 return -ENXIO;
->
->         /* Fail if the user requested size exceeds available object size */
->         if (count > num - offset)
->                 return -ENXIO;
->
->         /* Never exceed the number of pages that the user requested */
->         for (i = 0; i < count; i++) {
->                 ret = vm_insert_page(vma, uaddr, pages[offset + i]);
->                 if (ret < 0)
->                         return ret;
->                 uaddr += PAGE_SIZE;
->         }
->
->         return 0;
-> }
->
-> /*
->  * Maps an object consisting of `num' `pages', catering for the user's
->  * requested vm_pgoff
->  */
-> int vm_insert_range(struct vm_struct *vma, struct page *pages, size_t num)
-> {
->         return __vm_insert_range(vma, pages, num, vma->vm_pgoff);
-> }
->
-> /*
->  * Maps a set of pages, always starting at page[0]
->  */
-> int vm_insert_range_buggy(struct vm_struct *vma, struct page *pages, size_t num)
-> {
->         return __vm_insert_range(vma, pages, num, 0);
-> }
->
-> With this, drivers such as iommu/dma-iommu.c can be converted thusly:
->
->  int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma+)
->  {
-> -       unsigned long uaddr = vma->vm_start;
-> -       unsigned int i, count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> -       int ret = -ENXIO;
-> -
-> -       for (i = vma->vm_pgoff; i < count && uaddr < vma->vm_end; i++) {
-> -               ret = vm_insert_page(vma, uaddr, pages[i]);
-> -               if (ret)
-> -                       break;
-> -               uaddr += PAGE_SIZE;
-> -       }
-> -       return ret;
-> +       return vm_insert_range(vma, pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
-> }
->
-> and drivers such as firewire/core-iso.c:
->
->  int fw_iso_buffer_map_vma(struct fw_iso_buffer *buffer,
->                           struct vm_area_struct *vma)
->  {
-> -       unsigned long uaddr;
-> -       int i, err;
-> -
-> -       uaddr = vma->vm_start;
-> -       for (i = 0; i < buffer->page_count; i++) {
-> -               err = vm_insert_page(vma, uaddr, buffer->pages[i]);
-> -               if (err)
-> -                       return err;
-> -
-> -               uaddr += PAGE_SIZE;
-> -       }
-> -
-> -       return 0;
-> +       return vm_insert_range_buggy(vma, buffer->pages, buffer->page_count);
-> }
->
-> and this gives us something to grep for to find these buggy drivers.
->
-> Now, this may not look exactly equivalent, but if you look at
-> fw_device_op_mmap(), buffer->page_count is basically vma_pages(vma)
-> at this point, which means this should be equivalent.
->
-> We _could_ then at a later date "fix" these drivers to behave according
-> to the normal vm_pgoff offsetting simply by removing the _buggy suffix
-> on the function name... and if that causes regressions, it gives us an
-> easy way to revert (as long as vm_insert_range_buggy() remains
-> available.)
->
-> In the case of firewire/core-iso.c, it currently ignores the mmap offset
-> entirely, so making the above suggested change would be tantamount to
-> causing it to return -ENXIO for any non-zero mmap offset.
->
-> IMHO, this approach is way simpler, and easier to get it correct at
-> each call site, rather than the current approach which seems to be
-> error-prone.
+I just got a used Thinkpad X201 (Core i5 M 520, Intel QM57
+chipset) and hit some kernel panics while trying to view
+image/animation-intensive stuff in Firefox (X11) unless I use
+"iommu_intel=igfx_off".
 
-Thanks Russell.
-I will drop this patch series and rework on it as suggested.
+With Debian stable backport kernels, "linux-image-4.17.0-0.bpo.3-amd64"
+(4.17.17-1~bpo9+1) has no problems.  But "linux-image-4.18.0-0.bpo.3-amd64"
+(4.18.20-2~bpo9+1) gives a blank screen before I can login via agetty
+and run startx.
+
+Building 4.19.12 myself got me into X11 and able to start
+Firefox to panic the kernel.  I also updated to the latest BIOS
+(1.40), but it's an EOL laptop (but it's still the most powerful
+laptop I use).  I intend to replace the BIOS with Coreboot soon...
+
+Initially, I thought I was hitting another GPU hang from 4.18+:
+
+	https://bugs.freedesktop.org/show_bug.cgi?id=107945
+
+But building drm-tip @ commit 28bb1fc015cedadf3b099b8bd0bb27609849f362
+("drm-tip: 2018y-12m-25d-08h-12m-37s UTC integration manifest")
+I was still able to reproduce the panic unless I use iommu_intel=igfx_off
+"i915.reset=1" did not help matters, either.
+
+Below is what I got from netconsole while on drm-tip:
+
+Kernel panic - not syncing: DMAR hardware is malfunctioning
+Shutting down cpus with NMI
+Kernel Offset: disabled
+---[ end Kernel panic - not syncing: DMAR hardware is malfunctioning ]---
+------------[ cut here ]------------
+sched: Unexpected reschedule of offline CPU#3!
+WARNING: CPU: 0 PID: 105 at native_smp_send_reschedule+0x34/0x40
+Modules linked in: netconsole ccm snd_hda_codec_hdmi snd_hda_codec_conexant snd_hda_codec_generic intel_powerclamp coretemp kvm_intel kvm irqbypass crc32_pclmul crc32c_intel ghash_clmulni_intel arc4 iwldvm aesni_intel aes_x86_64 crypto_simd cryptd mac80211 glue_helper intel_cstate iwlwifi intel_uncore i915 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper cfbfillrect syscopyarea intel_ips cfbimgblt sysfillrect sysimgblt fb_sys_fops cfbcopyarea thinkpad_acpi prime_numbers cfg80211 ledtrig_audio i2c_i801 sg snd_hda_intel led_class snd_hda_codec drm ac drm_panel_orientation_quirks snd_hwdep battery e1000e agpgart snd_hda_core snd_pcm snd_timer ptp snd soundcore pps_core ehci_pci ehci_hcd lpc_ich video mfd_core button acpi_cpufreq ecryptfs ip_tables x_tables ipv6 evdev thermal [last unloaded: net
+ console]
+CPU: 0 PID: 105 Comm: kworker/u8:3 Not tainted 4.20.0-rc7b1+ #1
+Hardware name: LENOVO 3680FBU/3680FBU, BIOS 6QET70WW (1.40 ) 10/11/2012
+Workqueue: i915 __i915_gem_free_work [i915]
+RIP: 0010:native_smp_send_reschedule+0x34/0x40
+Code: 05 69 c6 c9 00 73 15 48 8b 05 18 2d b3 00 be fd 00 00 00 48 8b 40 30 e9 9a 58 7d 00 89 fe 48 c7 c7 78 73 af 81 e8 dc c2 01 00 <0f> 0b c3 66 0f 1f 84 00 00 00 00 00 66 66 66 66 90 8b 05 0d 7d df
+RSP: 0018:ffff888075003d98 EFLAGS: 00010092
+RAX: 000000000000002e RBX: ffff8880751a0740 RCX: 0000000000000006
+RDX: 0000000000000007 RSI: 0000000000000082 RDI: ffff888075015440
+RBP: ffff88806e823700 R08: 0000000000000000 R09: ffff888072fc07c0
+R10: ffff888075003d60 R11: 00000000fff5c002 R12: ffff8880751a0740
+R13: ffff8880751a0740 R14: 0000000000000000 R15: 0000000000000003
+FS:  0000000000000000(0000) GS:ffff888075000000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdb1f53f000 CR3: 0000000001c0a004 CR4: 00000000000206f0
+Call Trace:
+ <IRQ>
+ ? check_preempt_curr+0x4e/0x90
+ ? ttwu_do_wakeup.isra.19+0x14/0xf0
+ ? try_to_wake_up+0x323/0x410
+ ? autoremove_wake_function+0xe/0x30
+ ? __wake_up_common+0x8d/0x140
+ ? __wake_up_common_lock+0x6c/0x90
+ ? irq_work_run_list+0x49/0x80
+ ? tick_sched_handle.isra.6+0x50/0x50
+ ? update_process_times+0x3b/0x50
+ ? tick_sched_handle.isra.6+0x30/0x50
+ ? tick_sched_timer+0x3b/0x80
+ ? __hrtimer_run_queues+0xea/0x270
+ ? hrtimer_interrupt+0x101/0x240
+ ? smp_apic_timer_interrupt+0x6a/0x150
+ ? apic_timer_interrupt+0xf/0x20
+ </IRQ>
+ ? panic+0x1ca/0x212
+ ? panic+0x1c7/0x212
+ ? __iommu_flush_iotlb+0x19e/0x1c0
+ ? iommu_flush_iotlb_psi+0x96/0xf0
+ ? intel_unmap+0xbf/0xf0
+ ? i915_gem_object_put_pages_gtt+0x36/0x220 [i915]
+ ? drm_ht_remove+0x20/0x20 [drm]
+ ? drm_mm_remove_node+0x1ad/0x310 [drm]
+ ? __pm_runtime_resume+0x54/0x70
+ ? __i915_gem_object_unset_pages+0x129/0x170 [i915]
+ ? __i915_gem_object_put_pages+0x70/0xa0 [i915]
+ ? __i915_gem_free_objects+0x245/0x4e0 [i915]
+ ? __switch_to_asm+0x24/0x60
+ ? __i915_gem_free_work+0x65/0xa0 [i915]
+ ? process_one_work+0x1fd/0x410
+ ? worker_thread+0x49/0x3f0
+ ? kthread+0xf8/0x130
+ ? process_one_work+0x410/0x410
+ ? kthread_park+0x90/0x90
+ ? ret_from_fork+0x35/0x40
+WARNING: CPU: 0 PID: 105 at native_smp_send_reschedule+0x34/0x40
+---[ end trace 7dd2184d8c86cef5 ]---
+------------[ cut here ]------------
+sched: Unexpected reschedule of offline CPU#2!
+WARNING: CPU: 0 PID: 105 at native_smp_send_reschedule+0x34/0x40
+Modules linked in: netconsole ccm snd_hda_codec_hdmi snd_hda_codec_conexant snd_hda_codec_generic intel_powerclamp coretemp kvm_intel kvm irqbypass crc32_pclmul crc32c_intel ghash_clmulni_intel arc4 iwldvm aesni_intel aes_x86_64 crypto_simd cryptd mac80211 glue_helper intel_cstate iwlwifi intel_uncore i915 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper cfbfillrect syscopyarea intel_ips cfbimgblt sysfillrect sysimgblt fb_sys_fops cfbcopyarea thinkpad_acpi prime_numbers cfg80211 ledtrig_audio i2c_i801 sg snd_hda_intel led_class snd_hda_codec drm ac drm_panel_orientation_quirks snd_hwdep battery e1000e agpgart snd_hda_core snd_pcm snd_timer ptp snd soundcore pps_core ehci_pci ehci_hcd lpc_ich video mfd_core button acpi_cpufreq ecryptfs ip_tables x_tables ipv6 evdev thermal [last unloaded: net
+ console]
+CPU: 0 PID: 105 Comm: kworker/u8:3 Tainted: G        W         4.20.0-rc7b1+ #1
+Hardware name: LENOVO 3680FBU/3680FBU, BIOS 6QET70WW (1.40 ) 10/11/2012
+Workqueue: i915 __i915_gem_free_work [i915]
+RIP: 0010:native_smp_send_reschedule+0x34/0x40
+Code: 05 69 c6 c9 00 73 15 48 8b 05 18 2d b3 00 be fd 00 00 00 48 8b 40 30 e9 9a 58 7d 00 89 fe 48 c7 c7 78 73 af 81 e8 dc c2 01 00 <0f> 0b c3 66 0f 1f 84 00 00 00 00 00 66 66 66 66 90 8b 05 0d 7d df
+RSP: 0018:ffff888075003d10 EFLAGS: 00010086
+RAX: 000000000000002e RBX: ffff888075120740 RCX: 0000000000000006
+RDX: 0000000000000007 RSI: 0000000000000096 RDI: ffff888075015440
+RBP: ffff88807378b700 R08: 0000000000000000 R09: ffff888072fc07c0
+R10: ffff888075003cd8 R11: 00000000ffeb4a02 R12: ffff888075120740
+R13: ffff888075120740 R14: 0000000000000004 R15: 0000000000000002
+FS:  0000000000000000(0000) GS:ffff888075000000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdb1f53f000 CR3: 0000000001c0a004 CR4: 00000000000206f0
+Call Trace:
+ <IRQ>
+ ? check_preempt_curr+0x4e/0x90
+ ? ttwu_do_wakeup.isra.19+0x14/0xf0
+ ? try_to_wake_up+0x323/0x410
+ ? __wake_up_common+0x8d/0x140
+ ? ep_poll_callback+0xbd/0x2a0
+ ? __wake_up_common+0x8d/0x140
+ ? __wake_up_common_lock+0x6c/0x90
+ ? irq_work_run_list+0x49/0x80
+ ? tick_sched_handle.isra.6+0x50/0x50
+ ? update_process_times+0x3b/0x50
+ ? tick_sched_handle.isra.6+0x30/0x50
+ ? tick_sched_timer+0x3b/0x80
+ ? __hrtimer_run_queues+0xea/0x270
+ ? hrtimer_interrupt+0x101/0x240
+ ? smp_apic_timer_interrupt+0x6a/0x150
+ ? apic_timer_interrupt+0xf/0x20
+ </IRQ>
+ ? panic+0x1ca/0x212
+ ? panic+0x1c7/0x212
+ ? __iommu_flush_iotlb+0x19e/0x1c0
+ ? iommu_flush_iotlb_psi+0x96/0xf0
+ ? intel_unmap+0xbf/0xf0
+ ? i915_gem_object_put_pages_gtt+0x36/0x220 [i915]
+ ? drm_ht_remove+0x20/0x20 [drm]
+---[ end trace 7dd2184d8c86cef6 ]---
+
+
+Thanks.  I barely use graphics and certainly not with KVM;
+so I don't think I'll be missing anything igfx_off.  But
+maybe this bugreport can help other X201 users.
