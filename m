@@ -1,17 +1,15 @@
-From: Liviu Dudau <liviu-I3yL/QOVVjH10XsdtD+oqA@public.gmane.org>
-Subject: Re: [PATCH dma-mapping tree] arm64: default to the direct mapping in
-	get_arch_dma_ops
-Date: Fri, 28 Dec 2018 22:05:29 +0000
-Message-ID: <20181228220529.GB20342@bart.dudau.co.uk>
-References: <20181214150240.26427-1-hch@lst.de> <20181219165502.GA25904@lst.de>
-	<20181228173057.GA20342@bart.dudau.co.uk>
-	<20181228175900.GB16929@lst.de>
+From: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Subject: Re: [PATCH] lib/genalloc.c: rename addr_in_gen_pool to
+	gen_pool_has_addr
+Date: Fri, 28 Dec 2018 15:39:58 -0800
+Message-ID: <20181228153958.40cfb7a9b446225d73c585cd@linux-foundation.org>
+References: <20181228083950.20398-1-sjhuang@iluvatar.ai>
+	<20181228084834.GA8658@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20181228175900.GB16929-jcswGhMUV9g@public.gmane.org>
+In-Reply-To: <20181228084834.GA8658-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,39 +20,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: sfr-3FnU+UHB4dNDw9hX6IcOSA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shijie8-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, Huang Shijie <sjhuang-/sZsJll8jXBVVK5P2UUDPg@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 28, 2018 at 06:59:00PM +0100, Christoph Hellwig wrote:
-> On Fri, Dec 28, 2018 at 05:30:57PM +0000, Liviu Dudau wrote:
-> > On Wed, Dec 19, 2018 at 05:55:02PM +0100, Christoph Hellwig wrote:
-> > > As all maintainers seem to be off to their holidays already I've
-> > > applied this now given that I don't want to leave arm64 in broken
-> > > state in linux-next any longer.
-> > 
-> > Hi Christoph,
-> > 
-> > Talking about linux-next being broken, I found out that with
-> > next-20181224 the nvme driver with an HMB NVMe SSD (Toshiba RC-100)
-> > also fails on a RK3399 board (NanoPC T4). It works with v4.20 just fine.
-> > 
-> > The reason for linking it to your patchset is that I get this on
-> > next-20181224 (the DMA addresses looks the same for the allocated buffers):
+On Fri, 28 Dec 2018 09:48:34 +0100 Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org> wrote:
+
+> On Fri, Dec 28, 2018 at 04:39:50PM +0800, Huang Shijie wrote:
+> > Follow the kernel conventions, rename addr_in_gen_pool to
+> > gen_pool_has_addr.
 > 
-> Your patch looks correct.  Can you send the dma_alloc_coherent
-> to dma_alloc_attrs switch to linux-nvme list with a proper commit log
-> and signoff?
+> Which convention?
 
-Sure, but that still doesn't make nvme work. Do you have any suggestions?
+That symbols from subsystem foo should be called foo_*.  Not uniformly
+observed by any means, but it is a thing.
 
-Best regards,
-Liviu
+> The old name certainly looks more sensible to me.
 
+It does read better, but it's rather a standout in this case:
 
--- 
-           ________________________________________________________
-  ________|                                                        |_______
-  \       |  With enough courage, you can do without a reputation  |      /
-   \      |                                  -- Rhett Butler       |     /
-   /      |________________________________________________________|     \
-  /__________)                                                  (_________\
+q:/usr/src/25> grep EXPORT_SYMBOL lib/genalloc.c
+EXPORT_SYMBOL(gen_pool_create);
+EXPORT_SYMBOL(gen_pool_add_virt);
+EXPORT_SYMBOL(gen_pool_virt_to_phys);
+EXPORT_SYMBOL(gen_pool_destroy);
+EXPORT_SYMBOL(gen_pool_alloc);
+EXPORT_SYMBOL(gen_pool_alloc_algo);
+EXPORT_SYMBOL(gen_pool_dma_alloc);
+EXPORT_SYMBOL(gen_pool_free);
+EXPORT_SYMBOL(gen_pool_for_each_chunk);
+EXPORT_SYMBOL(addr_in_gen_pool);
+EXPORT_SYMBOL_GPL(gen_pool_avail);
+EXPORT_SYMBOL_GPL(gen_pool_size);
+EXPORT_SYMBOL(gen_pool_set_algo);
+EXPORT_SYMBOL(gen_pool_first_fit);
+EXPORT_SYMBOL(gen_pool_first_fit_align);
+EXPORT_SYMBOL(gen_pool_fixed_alloc);
+EXPORT_SYMBOL(gen_pool_first_fit_order_align);
+EXPORT_SYMBOL(gen_pool_best_fit);
+EXPORT_SYMBOL_GPL(gen_pool_get);
+EXPORT_SYMBOL(devm_gen_pool_create);
+EXPORT_SYMBOL_GPL(of_gen_pool_get);
