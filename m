@@ -1,7 +1,7 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v5 19/20] iommu/mediatek: Add shutdown callback
-Date: Tue, 1 Jan 2019 11:55:51 +0800
-Message-ID: <1546314952-15990-20-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v5 20/20] iommu/mediatek: Switch to SPDX license identifier
+Date: Tue, 1 Jan 2019 11:55:52 +0800
+Message-ID: <1546314952-15990-21-git-send-email-yong.wu@mediatek.com>
 References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,64 +21,171 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugge
 Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In the reboot burning test, if some Multimedia HW has something wrong,
-It may keep send the invalid request to IOMMU. In order to avoid
-affect the reboot flow, we add the shutdown callback to disable
-M4U HW when shutdown.
+Switch to SPDX license identifier for MediaTek iommu/smi and their
+header files.
 
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c    | 6 ++++++
- drivers/iommu/mtk_iommu_v1.c | 6 ++++++
- 2 files changed, 12 insertions(+)
+ drivers/iommu/mtk_iommu.c                     | 10 +---------
+ drivers/iommu/mtk_iommu.h                     | 10 +---------
+ drivers/iommu/mtk_iommu_v1.c                  | 10 +---------
+ drivers/memory/mtk-smi.c                      | 10 +---------
+ include/dt-bindings/memory/mt2701-larb-port.h | 10 +---------
+ include/dt-bindings/memory/mt8173-larb-port.h | 10 +---------
+ include/soc/mediatek/smi.h                    | 10 +---------
+ 7 files changed, 7 insertions(+), 63 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ddf1969..dcb02e3 100644
+index dcb02e3..36526c9 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -703,6 +703,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	return 0;
- }
+@@ -1,15 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
+ #include <linux/memblock.h>
+ #include <linux/bug.h>
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index c500bfd..e09f2220 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -1,15 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
  
-+static void mtk_iommu_shutdown(struct platform_device *pdev)
-+{
-+	mtk_iommu_remove(pdev);
-+}
-+
- static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-@@ -784,6 +789,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- static struct platform_driver mtk_iommu_driver = {
- 	.probe	= mtk_iommu_probe,
- 	.remove	= mtk_iommu_remove,
-+	.shutdown = mtk_iommu_shutdown,
- 	.driver	= {
- 		.name = "mtk-iommu",
- 		.of_match_table = of_match_ptr(mtk_iommu_of_ids),
+ #ifndef _MTK_IOMMU_H_
 diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 6ede428..517dfbd 100644
+index 517dfbd..f8b8275 100644
 --- a/drivers/iommu/mtk_iommu_v1.c
 +++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -662,6 +662,11 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	return 0;
- }
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * IOMMU API for MTK architected m4u v1 implementations
+  *
+@@ -5,15 +6,6 @@
+  * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+  *
+  * Based on driver/iommu/mtk_iommu.c
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
+ #include <linux/memblock.h>
+ #include <linux/bug.h>
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index 10e6493..9688341 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -1,15 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0
+ /*
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
+ #include <linux/clk.h>
+ #include <linux/component.h>
+diff --git a/include/dt-bindings/memory/mt2701-larb-port.h b/include/dt-bindings/memory/mt2701-larb-port.h
+index 6764d74..c511f0f 100644
+--- a/include/dt-bindings/memory/mt2701-larb-port.h
++++ b/include/dt-bindings/memory/mt2701-larb-port.h
+@@ -1,15 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (c) 2015 MediaTek Inc.
+  * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
  
-+static void mtk_iommu_shutdown(struct platform_device *pdev)
-+{
-+	mtk_iommu_remove(pdev);
-+}
-+
- static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-@@ -699,6 +704,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- static struct platform_driver mtk_iommu_driver = {
- 	.probe	= mtk_iommu_probe,
- 	.remove	= mtk_iommu_remove,
-+	.shutdown = mtk_iommu_shutdown,
- 	.driver	= {
- 		.name = "mtk-iommu-v1",
- 		.of_match_table = mtk_iommu_of_ids,
+ #ifndef _MT2701_LARB_PORT_H_
+diff --git a/include/dt-bindings/memory/mt8173-larb-port.h b/include/dt-bindings/memory/mt8173-larb-port.h
+index 111b4b0..a62bfeb 100644
+--- a/include/dt-bindings/memory/mt8173-larb-port.h
++++ b/include/dt-bindings/memory/mt8173-larb-port.h
+@@ -1,15 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
+ #ifndef __DTS_IOMMU_PORT_MT8173_H
+ #define __DTS_IOMMU_PORT_MT8173_H
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+index 5201e90..2b410d2 100644
+--- a/include/soc/mediatek/smi.h
++++ b/include/soc/mediatek/smi.h
+@@ -1,15 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
+ #ifndef MTK_IOMMU_SMI_H
+ #define MTK_IOMMU_SMI_H
 -- 
 1.9.1
