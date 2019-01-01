@@ -1,8 +1,7 @@
 From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH 05/13] memory: mtk-smi: Add device-link between smi-larb and
-	smi-common
-Date: Tue, 1 Jan 2019 12:51:08 +0800
-Message-ID: <1546318276-18993-6-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH 06/13] media: mtk-jpeg: Get rid of mtk_smi_larb_get/put
+Date: Tue, 1 Jan 2019 12:51:09 +0800
+Message-ID: <1546318276-18993-7-git-send-email-yong.wu@mediatek.com>
 References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,75 +18,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Rick Chang <rick.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Normally, If the smi-larb HW need work, we should enable the smi-common
-HW power and clock firstly.
-This patch adds device-link between the smi-larb dev and the smi-common
-dev. then If pm_runtime_get_sync(smi-larb-dev), the pm_runtime_get_sync
-(smi-common-dev) will be called automatically.
+MediaTek IOMMU has already added device_link between the consumer
+and smi-larb device. If the jpg device call the pm_runtime_get_sync,
+the smi-larb's pm_runtime_get_sync also be called automatically.
 
-Since smi is built-in driver like IOMMU and never unbound,
-DL_FLAG_AUTOREMOVE_* is not needed.
-
-CC: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Suggested-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+CC: Rick Chang <rick.chang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/memory/mtk-smi.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c | 22 ----------------------
+ drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h |  2 --
+ 2 files changed, 24 deletions(-)
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index 9688341..30930e4 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -271,6 +271,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct device_node *smi_node;
- 	struct platform_device *smi_pdev;
-+	struct device_link *link;
+diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+index 2a5d500..23da32c 100644
+--- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
++++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+@@ -29,7 +29,6 @@
+ #include <media/v4l2-ioctl.h>
+ #include <media/videobuf2-core.h>
+ #include <media/videobuf2-dma-contig.h>
+-#include <soc/mediatek/smi.h>
  
- 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
- 	if (!larb)
-@@ -310,6 +311,12 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
- 		if (!platform_get_drvdata(smi_pdev))
- 			return -EPROBE_DEFER;
- 		larb->smi_common_dev = &smi_pdev->dev;
-+		link = device_link_add(dev, larb->smi_common_dev,
-+				       DL_FLAG_PM_RUNTIME);
-+		if (!link) {
-+			dev_err(dev, "Unable to link smi-common dev\n");
-+			return -ENODEV;
-+		}
- 	} else {
- 		dev_err(dev, "Failed to get the smi_common device\n");
- 		return -EINVAL;
-@@ -333,17 +340,9 @@ static int __maybe_unused mtk_smi_larb_resume(struct device *dev)
- 	const struct mtk_smi_larb_gen *larb_gen = larb->larb_gen;
- 	int ret;
+ #include "mtk_jpeg_hw.h"
+ #include "mtk_jpeg_core.h"
+@@ -901,11 +900,6 @@ static int mtk_jpeg_queue_init(void *priv, struct vb2_queue *src_vq,
  
--	/* Power on smi-common. */
--	ret = pm_runtime_get_sync(larb->smi_common_dev);
--	if (ret < 0) {
--		dev_err(dev, "Failed to pm get for smi-common(%d).\n", ret);
--		return ret;
--	}
+ static void mtk_jpeg_clk_on(struct mtk_jpeg_dev *jpeg)
+ {
+-	int ret;
 -
- 	ret = mtk_smi_clk_enable(&larb->smi);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to enable clock(%d).\n", ret);
--		pm_runtime_put_sync(larb->smi_common_dev);
- 		return ret;
- 	}
- 
-@@ -358,7 +357,6 @@ static int __maybe_unused mtk_smi_larb_suspend(struct device *dev)
- 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
- 
- 	mtk_smi_clk_disable(&larb->smi);
--	pm_runtime_put_sync(larb->smi_common_dev);
- 	return 0;
+-	ret = mtk_smi_larb_get(jpeg->larb);
+-	if (ret)
+-		dev_err(jpeg->dev, "mtk_smi_larb_get larbvdec fail %d\n", ret);
+ 	clk_prepare_enable(jpeg->clk_jdec_smi);
+ 	clk_prepare_enable(jpeg->clk_jdec);
+ }
+@@ -914,7 +908,6 @@ static void mtk_jpeg_clk_off(struct mtk_jpeg_dev *jpeg)
+ {
+ 	clk_disable_unprepare(jpeg->clk_jdec);
+ 	clk_disable_unprepare(jpeg->clk_jdec_smi);
+-	mtk_smi_larb_put(jpeg->larb);
  }
  
+ static irqreturn_t mtk_jpeg_dec_irq(int irq, void *priv)
+@@ -1059,21 +1052,6 @@ static int mtk_jpeg_release(struct file *file)
+ 
+ static int mtk_jpeg_clk_init(struct mtk_jpeg_dev *jpeg)
+ {
+-	struct device_node *node;
+-	struct platform_device *pdev;
+-
+-	node = of_parse_phandle(jpeg->dev->of_node, "mediatek,larb", 0);
+-	if (!node)
+-		return -EINVAL;
+-	pdev = of_find_device_by_node(node);
+-	if (WARN_ON(!pdev)) {
+-		of_node_put(node);
+-		return -EINVAL;
+-	}
+-	of_node_put(node);
+-
+-	jpeg->larb = &pdev->dev;
+-
+ 	jpeg->clk_jdec = devm_clk_get(jpeg->dev, "jpgdec");
+ 	if (IS_ERR(jpeg->clk_jdec))
+ 		return PTR_ERR(jpeg->clk_jdec);
+diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+index 1a6cdfd..e35fb79 100644
+--- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
++++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+@@ -55,7 +55,6 @@ enum mtk_jpeg_ctx_state {
+  * @dec_reg_base:	JPEG registers mapping
+  * @clk_jdec:		JPEG hw working clock
+  * @clk_jdec_smi:	JPEG SMI bus clock
+- * @larb:		SMI device
+  */
+ struct mtk_jpeg_dev {
+ 	struct mutex		lock;
+@@ -69,7 +68,6 @@ struct mtk_jpeg_dev {
+ 	void __iomem		*dec_reg_base;
+ 	struct clk		*clk_jdec;
+ 	struct clk		*clk_jdec_smi;
+-	struct device		*larb;
+ };
+ 
+ /**
 -- 
 1.9.1
