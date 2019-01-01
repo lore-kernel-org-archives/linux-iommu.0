@@ -1,74 +1,77 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH v5 07/20] iommu/mediatek: Add bclk can be supported optionally
-Date: Tue, 1 Jan 2019 11:55:39 +0800
-Message-ID: <1546314952-15990-8-git-send-email-yong.wu@mediatek.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v5 09/20] iommu/mediatek: Refine protect memory definition
+Date: Tue, 1 Jan 2019 11:55:41 +0800
+Message-ID: <1546314952-15990-10-git-send-email-yong.wu@mediatek.com>
 References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
-Cc: Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1546314952-15990-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In some SoCs, M4U doesn't have its "bclk", it will use the EMI
-clock instead which has always been enabled when entering kernel.
+The protect memory setting is a little different in the different SoCs.
+In the register REG_MMU_CTRL_REG(0x110), the TF_PROT(translation fault
+protect) shift bit is normally 4 while it shift 5 bits only in the
+mt8173. This patch delete the complex MACRO and use a common if-else
+instead.
 
-This also is a preparing patch for mt8183.
+Also, use "F_MMU_TF_PROT_TO_PROGRAM_ADDR" instead of the hard code(2)
+which means the M4U will output the dirty data to the programmed
+address that we allocated dynamically when translation fault occurs.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 10 +++++++---
- drivers/iommu/mtk_iommu.h |  3 +++
- 2 files changed, 10 insertions(+), 3 deletions(-)
+@Nicalos, I don't put it in the plat_data since only the previous mt8173
+shift 5. As I know, the latest SoC always use the new setting like mt2712
+and mt8183. Thus, I think it is unnecessary to put it in plat_data and
+let all the latest SoC set it. Hence, I still keep "== mt8173" for this
+like the reg REG_MMU_CTRL_REG.
+---
+ drivers/iommu/mtk_iommu.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ae1aa5a..847082c 100644
+index eca1536..35a1263 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -613,9 +613,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (data->irq < 0)
- 		return data->irq;
+@@ -53,11 +53,7 @@
  
--	data->bclk = devm_clk_get(dev, "bclk");
--	if (IS_ERR(data->bclk))
--		return PTR_ERR(data->bclk);
-+	if (data->plat_data->has_bclk) {
-+		data->bclk = devm_clk_get(dev, "bclk");
-+		if (IS_ERR(data->bclk))
-+			return PTR_ERR(data->bclk);
-+	}
+ #define REG_MMU_CTRL_REG			0x110
+ #define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
+-#define F_MMU_TF_PROTECT_SEL_SHIFT(data) \
+-	((data)->plat_data->m4u_plat == M4U_MT2712 ? 4 : 5)
+-/* It's named by F_MMU_TF_PROT_SEL in mt2712. */
+-#define F_MMU_TF_PROTECT_SEL(prot, data) \
+-	(((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
++#define F_MMU_TF_PROT_TO_PROGRAM_ADDR		2
  
- 	larb_nr = of_count_phandle_with_args(dev->of_node,
- 					     "mediatek,larbs", NULL);
-@@ -739,11 +741,13 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- static const struct mtk_iommu_plat_data mt2712_data = {
- 	.m4u_plat     = M4U_MT2712,
- 	.has_4gb_mode = true,
-+	.has_bclk     = true,
- };
+ #define REG_MMU_IVRP_PADDR			0x114
  
- static const struct mtk_iommu_plat_data mt8173_data = {
- 	.m4u_plat     = M4U_MT8173,
- 	.has_4gb_mode = true,
-+	.has_bclk     = true,
- };
+@@ -521,9 +517,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 		return ret;
+ 	}
  
- static const struct of_device_id mtk_iommu_of_ids[] = {
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 5890e55..b8749ac 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -44,6 +44,9 @@ enum mtk_iommu_plat {
- struct mtk_iommu_plat_data {
- 	enum mtk_iommu_plat m4u_plat;
- 	bool                has_4gb_mode;
-+
-+	/* HW will use the EMI clock if there isn't the "bclk". */
-+	bool                has_bclk;
- };
+-	regval = F_MMU_TF_PROTECT_SEL(2, data);
+ 	if (data->plat_data->m4u_plat == M4U_MT8173)
+-		regval |= F_MMU_PREFETCH_RT_REPLACE_MOD;
++		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
++			  (F_MMU_TF_PROT_TO_PROGRAM_ADDR << 5);
++	else
++		regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR << 4;
+ 	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
  
- struct mtk_iommu_domain;
+ 	regval = F_L2_MULIT_HIT_EN |
 -- 
 1.9.1
