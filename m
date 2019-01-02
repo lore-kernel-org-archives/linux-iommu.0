@@ -1,14 +1,14 @@
 From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v5 08/20] iommu/mediatek: Add larb-id remapped support
-Date: Wed, 2 Jan 2019 14:15:15 +0800
-Message-ID: <CANMq1KCz9mkrou2+C_FTKWsaa3+riofn5VXHdE==Ux3vLJf=zA@mail.gmail.com>
+Subject: Re: [PATCH v5 09/20] iommu/mediatek: Refine protect memory definition
+Date: Wed, 2 Jan 2019 14:23:32 +0800
+Message-ID: <CANMq1KC0zciUAtvcYoxfBOOMbGFu_Un031QemtuDopjWvwk3cw@mail.gmail.com>
 References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
-	<1546314952-15990-9-git-send-email-yong.wu@mediatek.com>
+	<1546314952-15990-10-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1546314952-15990-9-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <1546314952-15990-10-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,82 +24,67 @@ List-Id: iommu@lists.linux-foundation.org
 
 On Tue, Jan 1, 2019 at 11:58 AM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
 >
-> The larb-id may be remapped in the smi-common, this means the
-> larb-id reported in the mtk_iommu_isr isn't the real larb-id,
+> The protect memory setting is a little different in the different SoCs.
+> In the register REG_MMU_CTRL_REG(0x110), the TF_PROT(translation fault
+> protect) shift bit is normally 4 while it shift 5 bits only in the
+> mt8173. This patch delete the complex MACRO and use a common if-else
+> instead.
 >
-> Take mt8183 as a example:
->                        M4U
->                         |
-> ---------------------------------------------
-> |               SMI common                  |
-> -0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
->  |     |     |     |     |     |      |     |
-> larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
-> disp  vdec  img   cam   venc  img    cam
-> As above, larb0 connects with the id 0 in smi-common.
->           larb1 connects with the id 7 in smi-common.
->           ...
-> If the larb-id reported in the isr is 7, actually it's larb1(vdec).
-> In order to output the right larb-id in the isr, we add a larb-id
-> remapping relationship in this patch.
->
-> If there is no this larb-id remapping in some SoCs, use the linear
-> mapping array instead.
->
-> This also is a preparing patch for mt8183.
+> Also, use "F_MMU_TF_PROT_TO_PROGRAM_ADDR" instead of the hard code(2)
+> which means the M4U will output the dirty data to the programmed
+> address that we allocated dynamically when translation fault occurs.
 >
 > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
+> @Nicalos, I don't put it in the plat_data since only the previous mt8173
+> shift 5. As I know, the latest SoC always use the new setting like mt2712
+> and mt8183. Thus, I think it is unnecessary to put it in plat_data and
+> let all the latest SoC set it. Hence, I still keep "== mt8173" for this
+> like the reg REG_MMU_CTRL_REG.
 
-I think it's a little cleaner this way, thanks.
+Should be ok this way. But maybe one way to avoid hard-coding 4/5
+below is to have 2 macros:
 
-Reviewed-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+#define F_MMU_TF_PROT_TO_PROGRAM_ADDR (2 << 4)
+#define F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173 (2 << 5)
+
+And still use the if below?
 
 > ---
->  drivers/iommu/mtk_iommu.c | 4 ++++
->  drivers/iommu/mtk_iommu.h | 2 ++
->  2 files changed, 6 insertions(+)
+>  drivers/iommu/mtk_iommu.c | 12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
 >
 > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 847082c..eca1536 100644
+> index eca1536..35a1263 100644
 > --- a/drivers/iommu/mtk_iommu.c
 > +++ b/drivers/iommu/mtk_iommu.c
-> @@ -220,6 +220,8 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
->         fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
->         fault_port = F_MMU0_INT_ID_PORT_ID(regval);
+> @@ -53,11 +53,7 @@
 >
-> +       fault_larb = data->plat_data->larbid_remap[fault_larb];
-> +
->         if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
->                                write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
->                 dev_err_ratelimited(
-> @@ -742,12 +744,14 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->         .m4u_plat     = M4U_MT2712,
->         .has_4gb_mode = true,
->         .has_bclk     = true,
-> +       .larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
->  };
+>  #define REG_MMU_CTRL_REG                       0x110
+>  #define F_MMU_PREFETCH_RT_REPLACE_MOD          BIT(4)
+> -#define F_MMU_TF_PROTECT_SEL_SHIFT(data) \
+> -       ((data)->plat_data->m4u_plat == M4U_MT2712 ? 4 : 5)
+> -/* It's named by F_MMU_TF_PROT_SEL in mt2712. */
+> -#define F_MMU_TF_PROTECT_SEL(prot, data) \
+> -       (((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
+> +#define F_MMU_TF_PROT_TO_PROGRAM_ADDR          2
 >
->  static const struct mtk_iommu_plat_data mt8173_data = {
->         .m4u_plat     = M4U_MT8173,
->         .has_4gb_mode = true,
->         .has_bclk     = true,
-> +       .larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
->  };
+>  #define REG_MMU_IVRP_PADDR                     0x114
 >
->  static const struct of_device_id mtk_iommu_of_ids[] = {
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index b8749ac..eec19a6 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -47,6 +47,8 @@ struct mtk_iommu_plat_data {
+> @@ -521,9 +517,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>                 return ret;
+>         }
 >
->         /* HW will use the EMI clock if there isn't the "bclk". */
->         bool                has_bclk;
-> +
-> +       unsigned char       larbid_remap[MTK_LARB_NR_MAX];
->  };
+> -       regval = F_MMU_TF_PROTECT_SEL(2, data);
+>         if (data->plat_data->m4u_plat == M4U_MT8173)
+> -               regval |= F_MMU_PREFETCH_RT_REPLACE_MOD;
+> +               regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
+> +                         (F_MMU_TF_PROT_TO_PROGRAM_ADDR << 5);
+> +       else
+> +               regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR << 4;
+>         writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
 >
->  struct mtk_iommu_domain;
+>         regval = F_L2_MULIT_HIT_EN |
 > --
 > 1.9.1
 >
