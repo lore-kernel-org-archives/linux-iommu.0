@@ -1,84 +1,85 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v5 18/20] iommu/mediatek: Fix VLD_PA_RANGE register
- backup when suspend
-Date: Wed, 2 Jan 2019 17:31:53 +0800
-Message-ID: <1546421513.32203.12.camel@mhfsdcap03>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v5 11/20] iommu/mediatek: Move vld_pa_rng into plat_data
+Date: Wed, 2 Jan 2019 17:32:20 +0800
+Message-ID: <1546421540.32203.13.camel@mhfsdcap03>
 References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
-         <1546314952-15990-19-git-send-email-yong.wu@mediatek.com>
-         <CANMq1KDnduh+X30GzNgTb7Q3Dace8O4uNAzeULTgBRUdEsp_XA@mail.gmail.com>
+	<1546314952-15990-12-git-send-email-yong.wu@mediatek.com>
+	<CANMq1KAZumH0=iLFgi7=P2mCE4B=7nw_FW9ir4Dwp4M3f8Ukjg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CANMq1KDnduh+X30GzNgTb7Q3Dace8O4uNAzeULTgBRUdEsp_XA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, youlin.pei@mediatek.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CANMq1KAZumH0=iLFgi7=P2mCE4B=7nw_FW9ir4Dwp4M3f8Ukjg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2019-01-02 at 14:54 +0800, Nicolas Boichat wrote:
-> On Tue, Jan 1, 2019 at 11:59 AM Yong Wu <yong.wu@mediatek.com> wrote:
+On Wed, 2019-01-02 at 14:45 +0800, Nicolas Boichat wrote:
+> On Tue, Jan 1, 2019 at 11:58 AM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
 > >
-> > The register VLD_PA_RNG(0x118) was forgot to backup while adding 4GB
-> > mode support for mt2712. this patch add it.
+> > Both mt8173 and mt8183 don't have this vld_pa_rng(valid physical address
+> > range) register while mt2712 have. Move it into the plat_data.
 > >
-> > Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
-> > for 4GB mode")
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 > > ---
-> >  drivers/iommu/mtk_iommu.c | 2 ++
+> >  drivers/iommu/mtk_iommu.c | 3 ++-
 > >  drivers/iommu/mtk_iommu.h | 1 +
-> >  2 files changed, 3 insertions(+)
+> >  2 files changed, 3 insertions(+), 1 deletion(-)
 > >
 > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 7fcef19..ddf1969 100644
+> > index 8d8ab21..2913ddb 100644
 > > --- a/drivers/iommu/mtk_iommu.c
 > > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -716,6 +716,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
-> >         reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
-> >         reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
-> >         reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
-> > +       reg->vld_pa_range = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
-> 
-> Don't we want to add:
-> if (data->plat_data->vld_pa_rng)
-> before this save/restore operation? Or it doesn't matter?
-
-It doesn't matter. If some SoCs don't have it, the register doesn't
-conflict with the others. Reading it will return 0, and writing 0 will
-have no effect.
-
-> 
-> >         clk_disable_unprepare(data->bclk);
-> >         return 0;
-> >  }
-> > @@ -740,6 +741,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
-> >         writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
-> >         writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
-> >         writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
-> > +       writel_relaxed(reg->vld_pa_range, base + REG_MMU_VLD_PA_RNG);
-> >         if (m4u_dom)
-> >                 writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
-> >                        base + REG_MMU_PT_BASE_ADDR);
-> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> > index 0a7c463..c500bfd 100644
-> > --- a/drivers/iommu/mtk_iommu.h
-> > +++ b/drivers/iommu/mtk_iommu.h
-> > @@ -33,6 +33,7 @@ struct mtk_iommu_suspend_reg {
-> >         u32                             int_control0;
-> >         u32                             int_main_control;
-> >         u32                             ivrp_paddr;
-> > +       u32                             vld_pa_range;
-> 
-> Well, please be consistent ,-) Either vld_pa_rng, or valid_pa_range ,-)
-
-Thanks. I will use "vld_pa_rng", Keep same with the register name from
-CODA.
-
-> 
+> > @@ -548,7 +548,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+> >                          upper_32_bits(data->protect_base);
+> >         writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
+> >
+> > -       if (data->enable_4GB && data->plat_data->m4u_plat != M4U_MT8173) {
+> > +       if (data->enable_4GB && data->plat_data->vld_pa_rng) {
+> >                 /*
+> >                  * If 4GB mode is enabled, the validate PA range is from
+> >                  * 0x1_0000_0000 to 0x1_ffff_ffff. here record bit[32:30].
+> > @@ -741,6 +741,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+> >         .m4u_plat     = M4U_MT2712,
+> >         .has_4gb_mode = true,
+> >         .has_bclk     = true,
+> > +       .vld_pa_rng   = true,
+> >         .larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 > >  };
 > >
-> >  enum mtk_iommu_plat {
+> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > index b46aeaa..a8c5d1e 100644
+> > --- a/drivers/iommu/mtk_iommu.h
+> > +++ b/drivers/iommu/mtk_iommu.h
+> > @@ -48,6 +48,7 @@ struct mtk_iommu_plat_data {
+> >         /* HW will use the EMI clock if there isn't the "bclk". */
+> >         bool                has_bclk;
+> >         bool                reset_axi;
+> > +       bool                vld_pa_rng;
+> 
+> Since this is not a register name, maybe we can use something more
+> readable, like valid_pa_range?
+> 
+> (or at the very least describe it in a comment in the struct?)
+
+I will add a comment about it. like:
+
+           bool vld_pa_rng; /* valid pa range */
+
+
+> 
+> >         unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+> >  };
+> >
 > > --
 > > 1.9.1
 > >
