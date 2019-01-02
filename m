@@ -1,74 +1,84 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: [PATCH 5/5] dma-mapping: remove a few unused exports
-Date: Wed,  2 Jan 2019 09:33:19 +0100
-Message-ID: <20190102083319.12374-6-hch@lst.de>
-References: <20190102083319.12374-1-hch@lst.de>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v5 18/20] iommu/mediatek: Fix VLD_PA_RANGE register
+ backup when suspend
+Date: Wed, 2 Jan 2019 17:31:53 +0800
+Message-ID: <1546421513.32203.12.camel@mhfsdcap03>
+References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
+         <1546314952-15990-19-git-send-email-yong.wu@mediatek.com>
+         <CANMq1KDnduh+X30GzNgTb7Q3Dace8O4uNAzeULTgBRUdEsp_XA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190102083319.12374-1-hch-jcswGhMUV9g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Corentin Labbe <clabbe.montjoie-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CANMq1KDnduh+X30GzNgTb7Q3Dace8O4uNAzeULTgBRUdEsp_XA@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>, Yingjoe Chen <yingjoe.chen@mediatek.com>, youlin.pei@mediatek.com
 List-Id: iommu@lists.linux-foundation.org
 
-Now that the slow path DMA API calls are implemented out of line a few
-helpers only used by them don't need to be exported anymore.
+On Wed, 2019-01-02 at 14:54 +0800, Nicolas Boichat wrote:
+> On Tue, Jan 1, 2019 at 11:59 AM Yong Wu <yong.wu@mediatek.com> wrote:
+> >
+> > The register VLD_PA_RNG(0x118) was forgot to backup while adding 4GB
+> > mode support for mt2712. this patch add it.
+> >
+> > Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
+> > for 4GB mode")
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >  drivers/iommu/mtk_iommu.c | 2 ++
+> >  drivers/iommu/mtk_iommu.h | 1 +
+> >  2 files changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index 7fcef19..ddf1969 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -716,6 +716,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+> >         reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+> >         reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
+> >         reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
+> > +       reg->vld_pa_range = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
+> 
+> Don't we want to add:
+> if (data->plat_data->vld_pa_rng)
+> before this save/restore operation? Or it doesn't matter?
 
-Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
----
- kernel/dma/coherent.c | 2 --
- kernel/dma/debug.c    | 2 --
- 2 files changed, 4 deletions(-)
+It doesn't matter. If some SoCs don't have it, the register doesn't
+conflict with the others. Reading it will return 0, and writing 0 will
+have no effect.
 
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 597d40893862..66f0fb7e9a3a 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -223,7 +223,6 @@ int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
- 	 */
- 	return mem->flags & DMA_MEMORY_EXCLUSIVE;
- }
--EXPORT_SYMBOL(dma_alloc_from_dev_coherent);
- 
- void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle)
- {
-@@ -268,7 +267,6 @@ int dma_release_from_dev_coherent(struct device *dev, int order, void *vaddr)
- 
- 	return __dma_release_from_coherent(mem, order, vaddr);
- }
--EXPORT_SYMBOL(dma_release_from_dev_coherent);
- 
- int dma_release_from_global_coherent(int order, void *vaddr)
- {
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 1e0157113d15..23cf5361bcf1 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1512,7 +1512,6 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
- 
- 	add_dma_entry(entry);
- }
--EXPORT_SYMBOL(debug_dma_alloc_coherent);
- 
- void debug_dma_free_coherent(struct device *dev, size_t size,
- 			 void *virt, dma_addr_t addr)
-@@ -1540,7 +1539,6 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
- 
- 	check_unmap(&ref);
- }
--EXPORT_SYMBOL(debug_dma_free_coherent);
- 
- void debug_dma_map_resource(struct device *dev, phys_addr_t addr, size_t size,
- 			    int direction, dma_addr_t dma_addr)
--- 
-2.19.2
+> 
+> >         clk_disable_unprepare(data->bclk);
+> >         return 0;
+> >  }
+> > @@ -740,6 +741,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+> >         writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
+> >         writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
+> >         writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+> > +       writel_relaxed(reg->vld_pa_range, base + REG_MMU_VLD_PA_RNG);
+> >         if (m4u_dom)
+> >                 writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
+> >                        base + REG_MMU_PT_BASE_ADDR);
+> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > index 0a7c463..c500bfd 100644
+> > --- a/drivers/iommu/mtk_iommu.h
+> > +++ b/drivers/iommu/mtk_iommu.h
+> > @@ -33,6 +33,7 @@ struct mtk_iommu_suspend_reg {
+> >         u32                             int_control0;
+> >         u32                             int_main_control;
+> >         u32                             ivrp_paddr;
+> > +       u32                             vld_pa_range;
+> 
+> Well, please be consistent ,-) Either vld_pa_rng, or valid_pa_range ,-)
+
+Thanks. I will use "vld_pa_rng", Keep same with the register name from
+CODA.
+
+> 
+> >  };
+> >
+> >  enum mtk_iommu_plat {
+> > --
+> > 1.9.1
+> >
