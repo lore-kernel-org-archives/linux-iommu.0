@@ -1,15 +1,16 @@
-From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v5 18/20] iommu/mediatek: Fix VLD_PA_RANGE register backup
-	when suspend
-Date: Wed, 2 Jan 2019 14:54:09 +0800
-Message-ID: <CANMq1KDnduh+X30GzNgTb7Q3Dace8O4uNAzeULTgBRUdEsp_XA@mail.gmail.com>
-References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
-	<1546314952-15990-19-git-send-email-yong.wu@mediatek.com>
+From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Add support to use Last level cache
+Date: Wed, 2 Jan 2019 12:52:26 +0530
+Message-ID: <CAFp+6iHc5PMCkp_LP+=vsr+eX=6XDUecV_knrmEHjUozbB2R5A@mail.gmail.com>
+References: <20181204110122.12434-1-vivek.gautam@codeaurora.org>
+	<99682bd2-1ca6-406a-890c-b34c25a1b2b3@arm.com>
+	<CAFp+6iE7U3HCJwHkeL9A4DXUVryt13YxDCYfBDxcSSM2Z_vqcg@mail.gmail.com>
+	<CAAFQd5C+BygjdBhBOsiBW=4kOgC0a=V8s9om6jqa6yzmn0TEWw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1546314952-15990-19-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <CAAFQd5C+BygjdBhBOsiBW=4kOgC0a=V8s9om6jqa6yzmn0TEWw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,63 +20,147 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 1, 2019 at 11:59 AM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+On Thu, Dec 13, 2018 at 9:20 AM Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
 >
-> The register VLD_PA_RNG(0x118) was forgot to backup while adding 4GB
-> mode support for mt2712. this patch add it.
+> On Fri, Dec 7, 2018 at 6:25 PM Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> >
+> > Hi Robin,
+> >
+> > On Tue, Dec 4, 2018 at 8:51 PM Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> > >
+> > > On 04/12/2018 11:01, Vivek Gautam wrote:
+> > > > Qualcomm SoCs have an additional level of cache called as
+> > > > System cache, aka. Last level cache (LLC). This cache sits right
+> > > > before the DDR, and is tightly coupled with the memory controller.
+> > > > The cache is available to all the clients present in the SoC system.
+> > > > The clients request their slices from this system cache, make it
+> > > > active, and can then start using it.
+> > > > For these clients with smmu, to start using the system cache for
+> > > > buffers and, related page tables [1], memory attributes need to be
+> > > > set accordingly.
+> > > > This change updates the MAIR and TCR configurations with correct
+> > > > attributes to use this system cache.
+> > > >
+> > > > To explain a little about memory attribute requirements here:
+> > > >
+> > > > Non-coherent I/O devices can't look-up into inner caches. However,
+> > > > coherent I/O devices can. But both can allocate in the system cache
+> > > > based on system policy and configured memory attributes in page
+> > > > tables.
+> > > > CPUs can access both inner and outer caches (including system cache,
+> > > > aka. Last level cache), and can allocate into system cache too
+> > > > based on memory attributes, and system policy.
+> > > >
+> > > > Further looking at memory types, we have following -
+> > > > a) Normal uncached :- MAIR 0x44, inner non-cacheable,
+> > > >                        outer non-cacheable;
+> > > > b) Normal cached :-   MAIR 0xff, inner read write-back non-transient,
+> > > >                        outer read write-back non-transient;
+> > > >                        attribute setting for coherenet I/O devices.
+> > > >
+> > > > and, for non-coherent i/o devices that can allocate in system cache
+> > > > another type gets added -
+> > > > c) Normal sys-cached/non-inner-cached :-
+> > > >                        MAIR 0xf4, inner non-cacheable,
+> > > >                        outer read write-back non-transient
+> > > >
+> > > > So, CPU will automatically use the system cache for memory marked as
+> > > > normal cached. The normal sys-cached is downgraded to normal non-cached
+> > > > memory for CPUs.
+> > > > Coherent I/O devices can use system cache by marking the memory as
+> > > > normal cached.
+> > > > Non-coherent I/O devices, to use system cache, should mark the memory as
+> > > > normal sys-cached in page tables.
+> > > >
+> > > > This change is a realisation of following changes
+> > > > from downstream msm-4.9:
+> > > > iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT[2]
+> > > > iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[3]
+> > > >
+> > > > [1] https://patchwork.kernel.org/patch/10302791/
+> > > > [2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
+> > > > [3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
+> > > >
+> > > > Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> > > > ---
+> > > >
+> > > > Changes since v1:
+> > > >   - Addressed Tomasz's comments for basing the change on
+> > > >     "NO_INNER_CACHE" concept for non-coherent I/O devices
+> > > >     rather than capturing "SYS_CACHE". This is to indicate
+> > > >     clearly the intent of non-coherent I/O devices that
+> > > >     can't access inner caches.
+> > >
+> > > That seems backwards to me - there is already a fundamental assumption
+> > > that non-coherent devices can't access caches. What we're adding here is
+> > > a weird exception where they *can* use some level of cache despite still
+> > > being non-coherent overall.
+> > >
+> > > In other words, it's not a case of downgrading coherent devices'
+> > > accesses to bypass inner caches, it's upgrading non-coherent devices'
+> > > accesses to hit the outer cache. That's certainly the understanding I
+> > > got from talking with Pratik at Plumbers, and it does appear to fit with
+> > > your explanation above despite the final conclusion you draw being
+> > > different.
+> >
+> > Thanks for the thorough review of the change.
+> > Right, I guess it's rather an upgrade for non-coherent devices to use
+> > an outer cache than a downgrade for coherent devices.
+> >
 >
-> Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
-> for 4GB mode")
-> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/iommu/mtk_iommu.c | 2 ++
->  drivers/iommu/mtk_iommu.h | 1 +
->  2 files changed, 3 insertions(+)
->
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 7fcef19..ddf1969 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -716,6 +716,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
->         reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
->         reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
->         reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
-> +       reg->vld_pa_range = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
+> Note that it was not my suggestion to use "NO_INNER_CACHE" for
+> enabling the system cache, sorry for not being clear. What I was
+> asking for in my comment was regarding the previous patch disabling
+> inner cache if system cache is requested, which may not make for
+> coherent devices, which could benefit from using both inner and system
+> cache.
 
-Don't we want to add:
-if (data->plat_data->vld_pa_rng)
-before this save/restore operation? Or it doesn't matter?
+Sorry for not taking the cue correctly. The intention of the change was to
+let coherent devices use system cache as well. But I guess the change
+wasn't designed correctly.
 
->         clk_disable_unprepare(data->bclk);
->         return 0;
->  }
-> @@ -740,6 +741,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->         writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
->         writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
->         writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
-> +       writel_relaxed(reg->vld_pa_range, base + REG_MMU_VLD_PA_RNG);
->         if (m4u_dom)
->                 writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
->                        base + REG_MMU_PT_BASE_ADDR);
-> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index 0a7c463..c500bfd 100644
-> --- a/drivers/iommu/mtk_iommu.h
-> +++ b/drivers/iommu/mtk_iommu.h
-> @@ -33,6 +33,7 @@ struct mtk_iommu_suspend_reg {
->         u32                             int_control0;
->         u32                             int_main_control;
->         u32                             ivrp_paddr;
-> +       u32                             vld_pa_range;
-
-Well, please be consistent ,-) Either vld_pa_rng, or valid_pa_range ,-)
-
->  };
 >
->  enum mtk_iommu_plat {
-> --
-> 1.9.1
+> So note that there are several cases here:
+>  - coherent, IC, system cache alloc,
+>  - coherent. non-IC, system cache alloc,
+>  - coherent, IC, system cache look-up,
+>  - noncoherent device, non-IC, system cache alloc,
+>  - noncoherent device, non-IC, system cache look-up.
 >
+> Given the presence or lack of coherency for the device, which of the
+> 2/3 options is the best depends on the use case, e.g. DMA/CPU access
+> pattern, sharing memory between multiple devices, etc.
+>
+
+- coherent, IC, system cache alloc,
+- coherent, IC, system cache look-up,
+These two are default for coherent mappings. Coherent devices and
+coherent IOMMUs can use inner caches/outer caches, and can allocate
+and lookup in system caches.
+
+- noncoherent device, non-IC, system cache look-up,  --> Always
+- noncoherent device, non-IC, system cache allocate.  --> Depends on
+system policy.
+
+So, any page table memory for non-coherent SMMUs could very well
+use system cache and CPU is free to look-up into it.
+And so do the non-coherent and coherent devices can use the system cache.
+
+Best regards
+Vivek
+
+> Best regards,
+> Tomasz
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+--
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
