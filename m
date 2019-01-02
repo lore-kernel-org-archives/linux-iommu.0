@@ -1,100 +1,172 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v5 09/20] iommu/mediatek: Refine protect memory definition
-Date: Wed, 2 Jan 2019 17:33:35 +0800
-Message-ID: <1546421615.32203.14.camel@mhfsdcap03>
-References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
-	<1546314952-15990-10-git-send-email-yong.wu@mediatek.com>
-	<CANMq1KC0zciUAtvcYoxfBOOMbGFu_Un031QemtuDopjWvwk3cw@mail.gmail.com>
+From: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: Re: iommu_intel or i915 regression in 4.18, 4.19.12 and drm-tip
+Date: Wed, 02 Jan 2019 11:42:29 +0200
+Message-ID: <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
+References: <20181227114948.ev4b3jte3ubsc5us@dcvr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CANMq1KC0zciUAtvcYoxfBOOMbGFu_Un031QemtuDopjWvwk3cw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20181227114948.ev4b3jte3ubsc5us@dcvr>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>, David Woodhouse <dwmw2@infradead.org>, Eric Wong <e@80x24.org>, Jani Nikula <jani.nikula@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2019-01-02 at 14:23 +0800, Nicolas Boichat wrote:
-> On Tue, Jan 1, 2019 at 11:58 AM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
-> >
-> > The protect memory setting is a little different in the different SoCs.
-> > In the register REG_MMU_CTRL_REG(0x110), the TF_PROT(translation fault
-> > protect) shift bit is normally 4 while it shift 5 bits only in the
-> > mt8173. This patch delete the complex MACRO and use a common if-else
-> > instead.
-> >
-> > Also, use "F_MMU_TF_PROT_TO_PROGRAM_ADDR" instead of the hard code(2)
-> > which means the M4U will output the dirty data to the programmed
-> > address that we allocated dynamically when translation fault occurs.
-> >
-> > Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> > ---
-> > @Nicalos, I don't put it in the plat_data since only the previous mt8173
-> > shift 5. As I know, the latest SoC always use the new setting like mt2712
-> > and mt8183. Thus, I think it is unnecessary to put it in plat_data and
-> > let all the latest SoC set it. Hence, I still keep "== mt8173" for this
-> > like the reg REG_MMU_CTRL_REG.
+Quoting Eric Wong (2018-12-27 13:49:48)
+> I just got a used Thinkpad X201 (Core i5 M 520, Intel QM57
+> chipset) and hit some kernel panics while trying to view
+> image/animation-intensive stuff in Firefox (X11) unless I use
+> "iommu_intel=igfx_off".
 > 
-> Should be ok this way. But maybe one way to avoid hard-coding 4/5
-> below is to have 2 macros:
+> With Debian stable backport kernels, "linux-image-4.17.0-0.bpo.3-amd64"
+> (4.17.17-1~bpo9+1) has no problems.  But "linux-image-4.18.0-0.bpo.3-amd64"
+> (4.18.20-2~bpo9+1) gives a blank screen before I can login via agetty
+> and run startx.
+
+Could you open a new bug at (and attach relevant information there):
+
+https://01.org/linuxgraphics/documentation/how-report-bugs
+
+Most confusing about this is that 4.17 would have worked to begin with,
+without intel_iommu=igfx_off (unless it was the default for older
+kernel?)
+
+Did you maybe update other parts of the system while updating the
+kernel?
+
+If you could attach full boot dmesg from working and non-working kernel +
+have config file of both kernel's in Bugzilla. That'd be a good start!
+
+Regards, Joonas
+
+> Building 4.19.12 myself got me into X11 and able to start
+> Firefox to panic the kernel.  I also updated to the latest BIOS
+> (1.40), but it's an EOL laptop (but it's still the most powerful
+> laptop I use).  I intend to replace the BIOS with Coreboot soon...
 > 
-> #define F_MMU_TF_PROT_TO_PROGRAM_ADDR (2 << 4)
-> #define F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173 (2 << 5)
+> Initially, I thought I was hitting another GPU hang from 4.18+:
 > 
-> And still use the if below?
-
-Thanks for your quick review.
-
-OK for me.
-
-I will wait Matthias's review for memory/ part. then send the next
-version.
-
+>         https://bugs.freedesktop.org/show_bug.cgi?id=107945
 > 
-> > ---
-> >  drivers/iommu/mtk_iommu.c | 12 +++++-------
-> >  1 file changed, 5 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index eca1536..35a1263 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -53,11 +53,7 @@
-> >
-> >  #define REG_MMU_CTRL_REG                       0x110
-> >  #define F_MMU_PREFETCH_RT_REPLACE_MOD          BIT(4)
-> > -#define F_MMU_TF_PROTECT_SEL_SHIFT(data) \
-> > -       ((data)->plat_data->m4u_plat == M4U_MT2712 ? 4 : 5)
-> > -/* It's named by F_MMU_TF_PROT_SEL in mt2712. */
-> > -#define F_MMU_TF_PROTECT_SEL(prot, data) \
-> > -       (((prot) & 0x3) << F_MMU_TF_PROTECT_SEL_SHIFT(data))
-> > +#define F_MMU_TF_PROT_TO_PROGRAM_ADDR          2
-> >
-> >  #define REG_MMU_IVRP_PADDR                     0x114
-> >
-> > @@ -521,9 +517,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
-> >                 return ret;
-> >         }
-> >
-> > -       regval = F_MMU_TF_PROTECT_SEL(2, data);
-> >         if (data->plat_data->m4u_plat == M4U_MT8173)
-> > -               regval |= F_MMU_PREFETCH_RT_REPLACE_MOD;
-> > +               regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
-> > +                         (F_MMU_TF_PROT_TO_PROGRAM_ADDR << 5);
-> > +       else
-> > +               regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR << 4;
-> >         writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
-> >
-> >         regval = F_L2_MULIT_HIT_EN |
-> > --
-> > 1.9.1
-> >
+> But building drm-tip @ commit 28bb1fc015cedadf3b099b8bd0bb27609849f362
+> ("drm-tip: 2018y-12m-25d-08h-12m-37s UTC integration manifest")
+> I was still able to reproduce the panic unless I use iommu_intel=igfx_off
+> "i915.reset=1" did not help matters, either.
+> 
+> Below is what I got from netconsole while on drm-tip:
+> 
+> Kernel panic - not syncing: DMAR hardware is malfunctioning
+> Shutting down cpus with NMI
+> Kernel Offset: disabled
+> ---[ end Kernel panic - not syncing: DMAR hardware is malfunctioning ]---
+> ------------[ cut here ]------------
+> sched: Unexpected reschedule of offline CPU#3!
+> WARNING: CPU: 0 PID: 105 at native_smp_send_reschedule+0x34/0x40
+> Modules linked in: netconsole ccm snd_hda_codec_hdmi snd_hda_codec_conexant snd_hda_codec_generic intel_powerclamp coretemp kvm_intel kvm irqbypass crc32_pclmul crc32c_intel ghash_clmulni_intel arc4 iwldvm aesni_intel aes_x86_64 crypto_simd cryptd mac80211 glue_helper intel_cstate iwlwifi intel_uncore i915 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper cfbfillrect syscopyarea intel_ips cfbimgblt sysfillrect sysimgblt fb_sys_fops cfbcopyarea thinkpad_acpi prime_numbers cfg80211 ledtrig_audio i2c_i801 sg snd_hda_intel led_class snd_hda_codec drm ac drm_panel_orientation_quirks snd_hwdep battery e1000e agpgart snd_hda_core snd_pcm snd_timer ptp snd soundcore pps_core ehci_pci ehci_hcd lpc_ich video mfd_core button acpi_cpufreq ecryptfs ip_tables x_tables ipv6 evdev thermal [last unloaded: n
+ etconsole]
+> CPU: 0 PID: 105 Comm: kworker/u8:3 Not tainted 4.20.0-rc7b1+ #1
+> Hardware name: LENOVO 3680FBU/3680FBU, BIOS 6QET70WW (1.40 ) 10/11/2012
+> Workqueue: i915 __i915_gem_free_work [i915]
+> RIP: 0010:native_smp_send_reschedule+0x34/0x40
+> Code: 05 69 c6 c9 00 73 15 48 8b 05 18 2d b3 00 be fd 00 00 00 48 8b 40 30 e9 9a 58 7d 00 89 fe 48 c7 c7 78 73 af 81 e8 dc c2 01 00 <0f> 0b c3 66 0f 1f 84 00 00 00 00 00 66 66 66 66 90 8b 05 0d 7d df
+> RSP: 0018:ffff888075003d98 EFLAGS: 00010092
+> RAX: 000000000000002e RBX: ffff8880751a0740 RCX: 0000000000000006
+> RDX: 0000000000000007 RSI: 0000000000000082 RDI: ffff888075015440
+> RBP: ffff88806e823700 R08: 0000000000000000 R09: ffff888072fc07c0
+> R10: ffff888075003d60 R11: 00000000fff5c002 R12: ffff8880751a0740
+> R13: ffff8880751a0740 R14: 0000000000000000 R15: 0000000000000003
+> FS:  0000000000000000(0000) GS:ffff888075000000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fdb1f53f000 CR3: 0000000001c0a004 CR4: 00000000000206f0
+> Call Trace:
+>  <IRQ>
+>  ? check_preempt_curr+0x4e/0x90
+>  ? ttwu_do_wakeup.isra.19+0x14/0xf0
+>  ? try_to_wake_up+0x323/0x410
+>  ? autoremove_wake_function+0xe/0x30
+>  ? __wake_up_common+0x8d/0x140
+>  ? __wake_up_common_lock+0x6c/0x90
+>  ? irq_work_run_list+0x49/0x80
+>  ? tick_sched_handle.isra.6+0x50/0x50
+>  ? update_process_times+0x3b/0x50
+>  ? tick_sched_handle.isra.6+0x30/0x50
+>  ? tick_sched_timer+0x3b/0x80
+>  ? __hrtimer_run_queues+0xea/0x270
+>  ? hrtimer_interrupt+0x101/0x240
+>  ? smp_apic_timer_interrupt+0x6a/0x150
+>  ? apic_timer_interrupt+0xf/0x20
+>  </IRQ>
+>  ? panic+0x1ca/0x212
+>  ? panic+0x1c7/0x212
+>  ? __iommu_flush_iotlb+0x19e/0x1c0
+>  ? iommu_flush_iotlb_psi+0x96/0xf0
+>  ? intel_unmap+0xbf/0xf0
+>  ? i915_gem_object_put_pages_gtt+0x36/0x220 [i915]
+>  ? drm_ht_remove+0x20/0x20 [drm]
+>  ? drm_mm_remove_node+0x1ad/0x310 [drm]
+>  ? __pm_runtime_resume+0x54/0x70
+>  ? __i915_gem_object_unset_pages+0x129/0x170 [i915]
+>  ? __i915_gem_object_put_pages+0x70/0xa0 [i915]
+>  ? __i915_gem_free_objects+0x245/0x4e0 [i915]
+>  ? __switch_to_asm+0x24/0x60
+>  ? __i915_gem_free_work+0x65/0xa0 [i915]
+>  ? process_one_work+0x1fd/0x410
+>  ? worker_thread+0x49/0x3f0
+>  ? kthread+0xf8/0x130
+>  ? process_one_work+0x410/0x410
+>  ? kthread_park+0x90/0x90
+>  ? ret_from_fork+0x35/0x40
+> WARNING: CPU: 0 PID: 105 at native_smp_send_reschedule+0x34/0x40
+> ---[ end trace 7dd2184d8c86cef5 ]---
+> ------------[ cut here ]------------
+> sched: Unexpected reschedule of offline CPU#2!
+> WARNING: CPU: 0 PID: 105 at native_smp_send_reschedule+0x34/0x40
+> Modules linked in: netconsole ccm snd_hda_codec_hdmi snd_hda_codec_conexant snd_hda_codec_generic intel_powerclamp coretemp kvm_intel kvm irqbypass crc32_pclmul crc32c_intel ghash_clmulni_intel arc4 iwldvm aesni_intel aes_x86_64 crypto_simd cryptd mac80211 glue_helper intel_cstate iwlwifi intel_uncore i915 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper cfbfillrect syscopyarea intel_ips cfbimgblt sysfillrect sysimgblt fb_sys_fops cfbcopyarea thinkpad_acpi prime_numbers cfg80211 ledtrig_audio i2c_i801 sg snd_hda_intel led_class snd_hda_codec drm ac drm_panel_orientation_quirks snd_hwdep battery e1000e agpgart snd_hda_core snd_pcm snd_timer ptp snd soundcore pps_core ehci_pci ehci_hcd lpc_ich video mfd_core button acpi_cpufreq ecryptfs ip_tables x_tables ipv6 evdev thermal [last unloaded: n
+ etconsole]
+> CPU: 0 PID: 105 Comm: kworker/u8:3 Tainted: G        W         4.20.0-rc7b1+ #1
+> Hardware name: LENOVO 3680FBU/3680FBU, BIOS 6QET70WW (1.40 ) 10/11/2012
+> Workqueue: i915 __i915_gem_free_work [i915]
+> RIP: 0010:native_smp_send_reschedule+0x34/0x40
+> Code: 05 69 c6 c9 00 73 15 48 8b 05 18 2d b3 00 be fd 00 00 00 48 8b 40 30 e9 9a 58 7d 00 89 fe 48 c7 c7 78 73 af 81 e8 dc c2 01 00 <0f> 0b c3 66 0f 1f 84 00 00 00 00 00 66 66 66 66 90 8b 05 0d 7d df
+> RSP: 0018:ffff888075003d10 EFLAGS: 00010086
+> RAX: 000000000000002e RBX: ffff888075120740 RCX: 0000000000000006
+> RDX: 0000000000000007 RSI: 0000000000000096 RDI: ffff888075015440
+> RBP: ffff88807378b700 R08: 0000000000000000 R09: ffff888072fc07c0
+> R10: ffff888075003cd8 R11: 00000000ffeb4a02 R12: ffff888075120740
+> R13: ffff888075120740 R14: 0000000000000004 R15: 0000000000000002
+> FS:  0000000000000000(0000) GS:ffff888075000000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fdb1f53f000 CR3: 0000000001c0a004 CR4: 00000000000206f0
+> Call Trace:
+>  <IRQ>
+>  ? check_preempt_curr+0x4e/0x90
+>  ? ttwu_do_wakeup.isra.19+0x14/0xf0
+>  ? try_to_wake_up+0x323/0x410
+>  ? __wake_up_common+0x8d/0x140
+>  ? ep_poll_callback+0xbd/0x2a0
+>  ? __wake_up_common+0x8d/0x140
+>  ? __wake_up_common_lock+0x6c/0x90
+>  ? irq_work_run_list+0x49/0x80
+>  ? tick_sched_handle.isra.6+0x50/0x50
+>  ? update_process_times+0x3b/0x50
+>  ? tick_sched_handle.isra.6+0x30/0x50
+>  ? tick_sched_timer+0x3b/0x80
+>  ? __hrtimer_run_queues+0xea/0x270
+>  ? hrtimer_interrupt+0x101/0x240
+>  ? smp_apic_timer_interrupt+0x6a/0x150
+>  ? apic_timer_interrupt+0xf/0x20
+>  </IRQ>
+>  ? panic+0x1ca/0x212
+>  ? panic+0x1c7/0x212
+>  ? __iommu_flush_iotlb+0x19e/0x1c0
+>  ? iommu_flush_iotlb_psi+0x96/0xf0
+>  ? intel_unmap+0xbf/0xf0
+>  ? i915_gem_object_put_pages_gtt+0x36/0x220 [i915]
+>  ? drm_ht_remove+0x20/0x20 [drm]
+> ---[ end trace 7dd2184d8c86cef6 ]---
+> 
+> 
+> Thanks.  I barely use graphics and certainly not with KVM;
+> so I don't think I'll be missing anything igfx_off.  But
+> maybe this bugreport can help other X201 users.
