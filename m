@@ -1,98 +1,105 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Wed, 2 Jan 2019 13:51:45 +0800
-Message-ID: <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
+From: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v5 08/20] iommu/mediatek: Add larb-id remapped support
+Date: Wed, 2 Jan 2019 14:15:15 +0800
+Message-ID: <CANMq1KCz9mkrou2+C_FTKWsaa3+riofn5VXHdE==Ux3vLJf=zA@mail.gmail.com>
+References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
+	<1546314952-15990-9-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20181210011504.122604-1-drinkcat@chromium.org>
-Sender: stable-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>, hch@
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1546314952-15990-9-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, lkml <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Yingjoe Chen <yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm Mailing List <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+On Tue, Jan 1, 2019 at 11:58 AM Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org> wrote:
+>
+> The larb-id may be remapped in the smi-common, this means the
+> larb-id reported in the mtk_iommu_isr isn't the real larb-id,
+>
+> Take mt8183 as a example:
+>                        M4U
+>                         |
+> ---------------------------------------------
+> |               SMI common                  |
+> -0-----7-----5-----6-----1-----2------3-----4- <- Id remapped
+>  |     |     |     |     |     |      |     |
+> larb0 larb1 IPU0  IPU1 larb4 larb5  larb6  CCU
+> disp  vdec  img   cam   venc  img    cam
+> As above, larb0 connects with the id 0 in smi-common.
+>           larb1 connects with the id 7 in smi-common.
+>           ...
+> If the larb-id reported in the isr is 7, actually it's larb1(vdec).
+> In order to output the right larb-id in the isr, we add a larb-id
+> remapping relationship in this patch.
+>
+> If there is no this larb-id remapping in some SoCs, use the linear
+> mapping array instead.
+>
+> This also is a preparing patch for mt8183.
+>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-On Mon, Dec 10, 2018 at 9:15 AM Nicolas Boichat <drinkcat@chromium.org> wrote:
->
-> This is a follow-up to the discussion in [1], [2].
->
-> IOMMUs using ARMv7 short-descriptor format require page tables
-> (level 1 and 2) to be allocated within the first 4GB of RAM, even
-> on 64-bit systems.
->
-> For L1 tables that are bigger than a page, we can just use __get_free_pages
-> with GFP_DMA32 (on arm64 systems only, arm would still use GFP_DMA).
->
-> For L2 tables that only take 1KB, it would be a waste to allocate a full
-> page, so we considered 3 approaches:
->  1. This series, adding support for GFP_DMA32 slab caches.
->  2. genalloc, which requires pre-allocating the maximum number of L2 page
->     tables (4096, so 4MB of memory).
->  3. page_frag, which is not very memory-efficient as it is unable to reuse
->     freed fragments until the whole page is freed. [3]
->
-> This series is the most memory-efficient approach.
+I think it's a little cleaner this way, thanks.
 
-Does anyone have any further comment on this series? If not, which
-maintainer is going to pick this up? I assume Andrew Morton?
+Reviewed-by: Nicolas Boichat <drinkcat-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
 
-Thanks,
-
-> stable@ note:
->   We confirmed that this is a regression, and IOMMU errors happen on 4.19
->   and linux-next/master on MT8173 (elm, Acer Chromebook R13). The issue
->   most likely starts from commit ad67f5a6545f ("arm64: replace ZONE_DMA
->   with ZONE_DMA32"), i.e. 4.15, and presumably breaks a number of Mediatek
->   platforms (and maybe others?).
+> ---
+>  drivers/iommu/mtk_iommu.c | 4 ++++
+>  drivers/iommu/mtk_iommu.h | 2 ++
+>  2 files changed, 6 insertions(+)
 >
-> [1] https://lists.linuxfoundation.org/pipermail/iommu/2018-November/030876.html
-> [2] https://lists.linuxfoundation.org/pipermail/iommu/2018-December/031696.html
-> [3] https://patchwork.codeaurora.org/patch/671639/
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 847082c..eca1536 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -220,6 +220,8 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+>         fault_larb = F_MMU0_INT_ID_LARB_ID(regval);
+>         fault_port = F_MMU0_INT_ID_PORT_ID(regval);
 >
-> Changes since v1:
->  - Add support for SLAB_CACHE_DMA32 in slab and slub (patches 1/2)
->  - iommu/io-pgtable-arm-v7s (patch 3):
->    - Changed approach to use SLAB_CACHE_DMA32 added by the previous
->      commit.
->    - Use DMA or DMA32 depending on the architecture (DMA for arm,
->      DMA32 for arm64).
+> +       fault_larb = data->plat_data->larbid_remap[fault_larb];
+> +
+>         if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
+>                                write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+>                 dev_err_ratelimited(
+> @@ -742,12 +744,14 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>         .m4u_plat     = M4U_MT2712,
+>         .has_4gb_mode = true,
+>         .has_bclk     = true,
+> +       .larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+>  };
 >
-> Changes since v2:
->  - Reworded and expanded commit messages
->  - Added cache_dma32 documentation in PATCH 2/3.
+>  static const struct mtk_iommu_plat_data mt8173_data = {
+>         .m4u_plat     = M4U_MT8173,
+>         .has_4gb_mode = true,
+>         .has_bclk     = true,
+> +       .larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+>  };
 >
-> v3 used the page_frag approach, see [3].
+>  static const struct of_device_id mtk_iommu_of_ids[] = {
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index b8749ac..eec19a6 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -47,6 +47,8 @@ struct mtk_iommu_plat_data {
 >
-> Changes since v4:
->  - Dropped change that removed GFP_DMA32 from GFP_SLAB_BUG_MASK:
->    instead we can just call kmem_cache_*alloc without GFP_DMA32
->    parameter. This also means that we can drop PATCH v4 1/3, as we
->    do not make any changes in GFP flag verification.
->  - Dropped hunks that added cache_dma32 sysfs file, and moved
->    the hunks to PATCH v5 3/3, so that maintainer can decide whether
->    to pick the change independently.
+>         /* HW will use the EMI clock if there isn't the "bclk". */
+>         bool                has_bclk;
+> +
+> +       unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+>  };
 >
-> Changes since v5:
->  - Rename ARM_V7S_TABLE_SLAB_CACHE to ARM_V7S_TABLE_SLAB_FLAGS.
->  - Add stable@ to cc.
->
-> Nicolas Boichat (3):
->   mm: Add support for kmem caches in DMA32 zone
->   iommu/io-pgtable-arm-v7s: Request DMA32 memory, and improve debugging
->   mm: Add /sys/kernel/slab/cache/cache_dma32
->
->  Documentation/ABI/testing/sysfs-kernel-slab |  9 +++++++++
->  drivers/iommu/io-pgtable-arm-v7s.c          | 19 +++++++++++++++----
->  include/linux/slab.h                        |  2 ++
->  mm/slab.c                                   |  2 ++
->  mm/slab.h                                   |  3 ++-
->  mm/slab_common.c                            |  2 +-
->  mm/slub.c                                   | 16 ++++++++++++++++
->  tools/vm/slabinfo.c                         |  7 ++++++-
->  8 files changed, 53 insertions(+), 7 deletions(-)
->
+>  struct mtk_iommu_domain;
 > --
-> 2.20.0.rc2.403.gdbc3b29805-goog
+> 1.9.1
 >
