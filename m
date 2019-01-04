@@ -1,78 +1,67 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 02/15] swiotlb: remove dma_mark_clean
-Date: Fri, 4 Jan 2019 09:09:10 +0100
-Message-ID: <20190104080910.GA15221@lst.de>
-References: <20181207190720.18517-1-hch@lst.de> <20181207190720.18517-3-hch@lst.de> <CA+8MBb+9prWYSmp25K-LMUv1_0eekvFqXhoj87CV9zcaXfMDGg@mail.gmail.com> <20190103072356.GA24163@lst.de> <CA+8MBbKXTRGLn1Wvpp1avQCZ186i5Cbo0puvSoNNuKO7_AcwZg@mail.gmail.com>
+From: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Subject: Re: iommu_intel or i915 regression in 4.18, 4.19.12 and drm-tip
+Date: Fri, 04 Jan 2019 10:39:23 +0200
+Message-ID: <154659116310.4596.13613897418163029789@jlahtine-desk.ger.corp.intel.com>
+References: <20181227114948.ev4b3jte3ubsc5us@dcvr>
+ <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
+ <20190104010626.e6yqdqkmdcqjepke@dcvr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CA+8MBbKXTRGLn1Wvpp1avQCZ186i5Cbo0puvSoNNuKO7_AcwZg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tony Luck <tony.luck@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Linus Torvalds <torvalds@linux-foundation.org>, Jesper Dangaard Brouer <brouer@redhat.com>, Tariq Toukan <tariqt@mellanox.com>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>, Robin Murphy <robin.murphy@arm.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Fenghua Yu <fenghua.yu@intel.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Keith Busch <keith.busch@intel.com>, Jonathan Derrick <jonathan.derrick@intel.com>, linux-pci@vger.kernel.org, "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>, X86-ML <x86@kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190104010626.e6yqdqkmdcqjepke@dcvr>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Eric Wong <e@80x24.org>
+Cc: David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org, Rodrigo Vivi <rodrigo.vivi@intel.com>, David Woodhouse <dwmw2@infradead.org>, intel-gfx@lists.freedesktop.org
 List-Id: iommu@lists.linux-foundation.org
 
-One more ifdef to rescue..
-
-Btw, do you know why we only play these mark clean bits for swiotlb
-and not for the various iommus?
-
-Also do you have any good receipe to build an ia64 cross compiler on
-a recent Debian system?  Unlike most architectures Debian doesn't have
-a pre-built one, and the script from the kernel buіldbot doesn't work
-either unfortunately.
-
----
->From 3f5f3297aa989cf27b3fe10e2d010422332574b3 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Fri, 4 Jan 2019 09:06:05 +0100
-Subject: ia64: fix compile without swiotlb
-
-Some non-generic ia64 configs don't build swiotlb, and thus should not
-pull in the generic non-coherent DMA infrastructure.
-
-Fixes: 68c608345c ("swiotlb: remove dma_mark_clean")
-Reported-by: Tony Luck <tony.luck@gmail.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/ia64/Kconfig   | 2 +-
- arch/ia64/mm/init.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-index ccd56f5df8cd..8d7396bd1790 100644
---- a/arch/ia64/Kconfig
-+++ b/arch/ia64/Kconfig
-@@ -31,7 +31,7 @@ config IA64
- 	select HAVE_MEMBLOCK_NODE_MAP
- 	select HAVE_VIRT_CPU_ACCOUNTING
- 	select ARCH_HAS_DMA_COHERENT_TO_PFN if SWIOTLB
--	select ARCH_HAS_SYNC_DMA_FOR_CPU
-+	select ARCH_HAS_SYNC_DMA_FOR_CPU if SWIOTLB
- 	select VIRT_TO_BUS
- 	select ARCH_DISCARD_MEMBLOCK
- 	select GENERIC_IRQ_PROBE
-diff --git a/arch/ia64/mm/init.c b/arch/ia64/mm/init.c
-index 055382622f07..29d841525ca1 100644
---- a/arch/ia64/mm/init.c
-+++ b/arch/ia64/mm/init.c
-@@ -67,6 +67,7 @@ __ia64_sync_icache_dcache (pte_t pte)
- 	set_bit(PG_arch_1, &page->flags);	/* mark page as clean */
- }
- 
-+#ifdef CONFIG_SWIOTLB
- /*
-  * Since DMA is i-cache coherent, any (complete) pages that were written via
-  * DMA can be marked as "clean" so that lazy_mmu_prot_update() doesn't have to
-@@ -81,6 +82,7 @@ void arch_sync_dma_for_cpu(struct device *dev, phys_addr_t paddr,
- 		set_bit(PG_arch_1, &pfn_to_page(pfn)->flags);
- 	} while (++pfn <= PHYS_PFN(paddr + size - 1));
- }
-+#endif
- 
- inline void
- ia64_set_rbs_bot (void)
--- 
-2.20.1
+UXVvdGluZyBFcmljIFdvbmcgKDIwMTktMDEtMDQgMDM6MDY6MjYpCj4gSm9vbmFzIExhaHRpbmVu
+IDxqb29uYXMubGFodGluZW5AbGludXguaW50ZWwuY29tPiB3cm90ZToKPiA+IFF1b3RpbmcgRXJp
+YyBXb25nICgyMDE4LTEyLTI3IDEzOjQ5OjQ4KQo+ID4gPiBJIGp1c3QgZ290IGEgdXNlZCBUaGlu
+a3BhZCBYMjAxIChDb3JlIGk1IE0gNTIwLCBJbnRlbCBRTTU3Cj4gPiA+IGNoaXBzZXQpIGFuZCBo
+aXQgc29tZSBrZXJuZWwgcGFuaWNzIHdoaWxlIHRyeWluZyB0byB2aWV3Cj4gPiA+IGltYWdlL2Fu
+aW1hdGlvbi1pbnRlbnNpdmUgc3R1ZmYgaW4gRmlyZWZveCAoWDExKSB1bmxlc3MgSSB1c2UKPiA+
+ID4gImlvbW11X2ludGVsPWlnZnhfb2ZmIi4KPiA+ID4gCj4gPiA+IFdpdGggRGViaWFuIHN0YWJs
+ZSBiYWNrcG9ydCBrZXJuZWxzLCAibGludXgtaW1hZ2UtNC4xNy4wLTAuYnBvLjMtYW1kNjQiCj4g
+PiA+ICg0LjE3LjE3LTF+YnBvOSsxKSBoYXMgbm8gcHJvYmxlbXMuICBCdXQgImxpbnV4LWltYWdl
+LTQuMTguMC0wLmJwby4zLWFtZDY0Igo+ID4gPiAoNC4xOC4yMC0yfmJwbzkrMSkgZ2l2ZXMgYSBi
+bGFuayBzY3JlZW4gYmVmb3JlIEkgY2FuIGxvZ2luIHZpYSBhZ2V0dHkKPiA+ID4gYW5kIHJ1biBz
+dGFydHguCj4gCj4gPiBNb3N0IGNvbmZ1c2luZyBhYm91dCB0aGlzIGlzIHRoYXQgNC4xNyB3b3Vs
+ZCBoYXZlIHdvcmtlZCB0byBiZWdpbiB3aXRoLAo+ID4gd2l0aG91dCBpbnRlbF9pb21tdT1pZ2Z4
+X29mZiAodW5sZXNzIGl0IHdhcyB0aGUgZGVmYXVsdCBmb3Igb2xkZXIKPiA+IGtlcm5lbD8pCj4g
+Cj4gWWVhaCwgc28gdGhlIERlYmlhbiBicG8gNC4xNyguMTcpIGtlcm5lbCBkaWQgbm90IHNldAo+
+IENPTkZJR19JTlRFTF9JT01NVV9ERUZBVUxUX09OLCBzbyBJIGRpZG4ndCBlbmNvdW50ZXIgcHJv
+YmxlbXMuCj4gTXkgc2VsZi1idWlsdCBrZXJuZWxzIGFsbCBzZXQgQ09ORklHX0lOVEVMX0lPTU1V
+X0RFRkFVTFRfT04uCgpTbyBpdCdzIHRoZSBjYXNlIHRoYXQgSU9NTVUgbmV2ZXIgd29ya2VkIG9u
+IHlvdXIgbWFjaGluZS4KCk15IHJlY29tbWVuZGF0aW9uIHdvdWxkIGJlIHRvIHNpbXBseSB1c2Ug
+aW50ZWxfaW9tbXU9aWdmeF9vZmYgaWYgeW91Cm5lZWQgSU9NTVUuCgpPbGQgaGFyZHdhcmUgaXMg
+a25vd24gdG8gaGF2ZSBpc3N1ZXMgd2l0aCBJT01NVSwgYW5kIHJldHJvYWN0aXZlbHkKZW5hYmxp
+bmcgSU9NTVUgb24gdGhvc2UgbWFjaGluZXMganVzdCBicmluZ3MgdGhlbSB1cCA6LwoKUmVnYXJk
+cywgSm9vbmFzCgo+IEJvb3RpbmcgdGhlIERlYmlhbiA0LjE3IGtlcm5lbCB3aXRoICJpbnRlbF9p
+b21tdT1vbiIgZ2l2ZXMgdGhlCj4gc2FtZSBoYW5naW5nIHByb2JsZW0gSSBoaXQgd2l0aCBzZWxm
+LWJ1aWx0IDQuMTkuezEyLDEzfSBrZXJuZWxzLgo+IAo+IEknbSBub3Qgc3VyZSBob3cgZmFyIGJh
+Y2sgdGhlIHByb2JsZW0gZ29lcyAobWF5YmUgZm9yZXZlciksCj4gc2luY2UgSSBvbmx5IGdvdCB0
+aGlzIGhhcmR3YXJlLiAgTm90IHN1cmUgd2hhdCdzIHRoZSBwcm9ibGVtCj4gd2l0aCBEZWJpYW4g
+NC4xOCwgZWl0aGVyOyBidXQgKHNlbGYtYnVpbHQpIDQuMTkuMTMgaXMgZmluZSB3L28KPiBDT05G
+SUdfSU5URUxfSU9NTVVfREVGQVVMVF9PTi4KPiAKPiBEZWJpYW4gYmFja3BvcnRzIGRvZXNuJ3Qg
+aGF2ZSBrZXJuZWxzIGZvciA0LjE5IG9yIDQuMjAsIHlldC4KPiAKPiA+IERpZCB5b3UgbWF5YmUg
+dXBkYXRlIG90aGVyIHBhcnRzIG9mIHRoZSBzeXN0ZW0gd2hpbGUgdXBkYXRpbmcgdGhlCj4gPiBr
+ZXJuZWw/Cj4gCj4gRGVmaW5pdGVseSBub3Q7IGp1c3QgdGhlIGtlcm5lbCArIGhlYWRlcnMgKCJt
+YWtlIGJpbmRlYi1wa2cpIi4KPiAKPiA+IElmIHlvdSBjb3VsZCBhdHRhY2ggZnVsbCBib290IGRt
+ZXNnIGZyb20gd29ya2luZyBhbmQgbm9uLXdvcmtpbmcga2VybmVsICsKPiA+IGhhdmUgY29uZmln
+IGZpbGUgb2YgYm90aCBrZXJuZWwncyBpbiBCdWd6aWxsYS4gVGhhdCdkIGJlIGEgZ29vZCBzdGFy
+dCEKPiAKPiBTb3JyeSwgSSBnZXQgYW54aWV0eSBhdHRhY2tzIHdoZW4gaXQgY29tZXMgdG8gbG9n
+aW5zIGFuZCBmb3Jtcy4KPiBBbnl3YXlzLCBJIG1hbmFnZWQgdG8gZ2V0IHRoZSBEZWJpYW4ga2Vy
+bmVsIGRtZXNnIG91dHB1dCB1cGxvYWRlZAo+IHdpdGggYW5kIHdpdGhvdXQgaW9tbXVfaW50ZWw9
+b246Cj4gaHR0cHM6Ly9idWdzLmZyZWVkZXNrdG9wLm9yZy9hdHRhY2htZW50LmNnaT9idWdpZD0x
+MDkyMTkKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
+LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
+Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
