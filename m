@@ -1,51 +1,117 @@
-From: Horia Geanta <horia.geanta@nxp.com>
-Subject: Re: [PATCH v3] crypto: talitos - fix ablkcipher for CONFIG_VMAP_STACK
-Date: Fri, 4 Jan 2019 15:24:44 +0000
-Message-ID: <VI1PR0402MB34853754B8F90F5904710526988E0@VI1PR0402MB3485.eurprd04.prod.outlook.com>
-References: <ae7b64e9415874060977e32ed48b62f1f6148084.1545346337.git.christophe.leroy@c-s.fr>
- <VI1PR0402MB3485FC2A3758BCEAC05BF3A2988E0@VI1PR0402MB3485.eurprd04.prod.outlook.com>
+From: thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org
+Subject: [PATCH] arm64: dts: stratix10: Add Stratix10 SMMU support
+Date: Fri,  4 Jan 2019 13:23:46 -0600
+Message-ID: <1546629826-1167-1-git-send-email-thor.thayer@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <stable-owner@vger.kernel.org>
-Content-Language: en-US
-Sender: stable-owner@vger.kernel.org
-To: Christophe Leroy <christophe.leroy@c-s.fr>, Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>
-Cc: "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dinguyen-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 1/4/2019 5:17 PM, Horia Geanta wrote:=0A=
-> On 12/21/2018 10:07 AM, Christophe Leroy wrote:=0A=
-> [snip]=0A=
->> IV cannot be on stack when CONFIG_VMAP_STACK is selected because the sta=
-ck=0A=
->> cannot be DMA mapped anymore.=0A=
->> This looks better, thanks.=0A=
-> =0A=
->> This patch copies the IV into the extended descriptor when iv is not=0A=
->> a valid linear address.=0A=
->>=0A=
-> Though I am not sure the checks in place are enough.=0A=
-> =0A=
->> Fixes: 4de9d0b547b9 ("crypto: talitos - Add ablkcipher algorithms")=0A=
->> Cc: stable@vger.kernel.org=0A=
->> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>=0A=
->> ---=0A=
->>  v3: Using struct edesc buffer.=0A=
->>=0A=
->>  v2: Using per-request context.=0A=
-> [snip]=0A=
->> +	if (ivsize && !virt_addr_valid(iv))=0A=
->> +		alloc_len +=3D ivsize;=0A=
-> [snip]=0A=
->>  =0A=
->> +	if (ivsize && !virt_addr_valid(iv))=0A=
-> A more precise condition would be (!is_vmalloc_addr || is_vmalloc_addr(iv=
-))=0A=
->=0A=
-Sorry for the typo, I meant:=0A=
-(!virt_addr_valid(iv) || is_vmalloc_addr(iv))=0A=
-=0A=
-> It matches the checks in debug_dma_map_single() helper, though I am not s=
-ure=0A=
-> they are enough to rule out all exceptions of DMA API.=0A=
+From: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+
+Now there are device tree clocks for the ARM64 SMMU,
+add SMMU support to the Stratix10 Device Tree which
+includes adding the SMMU node and adding IOMMU stream
+ids to the SMMU peripherals.
+
+Signed-off-by: Thor Thayer <thor.thayer-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi | 29 +++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+index b2c9bb664595..e3f5eaa3657d 100644
+--- a/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
++++ b/arch/arm64/boot/dts/altera/socfpga_stratix10.dtsi
+@@ -161,6 +161,7 @@
+ 			tx-fifo-depth = <16384>;
+ 			rx-fifo-depth = <16384>;
+ 			snps,multicast-filter-bins = <256>;
++			iommus = <&smmu 1>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -177,6 +178,7 @@
+ 			tx-fifo-depth = <16384>;
+ 			rx-fifo-depth = <16384>;
+ 			snps,multicast-filter-bins = <256>;
++			iommus = <&smmu 2>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -193,6 +195,7 @@
+ 			tx-fifo-depth = <16384>;
+ 			rx-fifo-depth = <16384>;
+ 			snps,multicast-filter-bins = <256>;
++			iommus = <&smmu 3>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -303,6 +306,7 @@
+ 			clocks = <&clkmgr STRATIX10_L4_MP_CLK>,
+ 				 <&clkmgr STRATIX10_SDMMC_CLK>;
+ 			clock-names = "biu", "ciu";
++			iommus = <&smmu 5>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -336,6 +340,29 @@
+ 			reg = <0xffd11000 0x1000>;
+ 		};
+ 
++		smmu: iommu@fa000000 {
++			compatible = "arm,mmu-500", "arm,smmu-v2";
++			reg = <0xfa000000 0x40000>;
++			#global-interrupts = <2>;
++			#iommu-cells = <1>;
++			clocks = <&clkmgr STRATIX10_L4_MAIN_CLK>;
++			clock-names = "iommu";
++			interrupt-parent = <&intc>;
++			interrupts = <0 128 4>,	/* Global Secure Fault */
++				<0 129 4>, /* Global Non-secure Fault */
++				/* Non-secure Context Interrupts (32) */
++				<0 138 4>, <0 139 4>, <0 140 4>, <0 141 4>,
++				<0 142 4>, <0 143 4>, <0 144 4>, <0 145 4>,
++				<0 146 4>, <0 147 4>, <0 148 4>, <0 149 4>,
++				<0 150 4>, <0 151 4>, <0 152 4>, <0 153 4>,
++				<0 154 4>, <0 155 4>, <0 156 4>, <0 157 4>,
++				<0 158 4>, <0 159 4>, <0 160 4>, <0 161 4>,
++				<0 162 4>, <0 163 4>, <0 164 4>, <0 165 4>,
++				<0 166 4>, <0 167 4>, <0 168 4>, <0 169 4>;
++			stream-match-mask = <0x7ff0>;
++			status = "disabled";
++		};
++
+ 		spi0: spi@ffda4000 {
+ 			compatible = "snps,dw-apb-ssi";
+ 			#address-cells = <1>;
+@@ -445,6 +472,7 @@
+ 			resets = <&rst USB0_RESET>, <&rst USB0_OCP_RESET>;
+ 			reset-names = "dwc2", "dwc2-ecc";
+ 			clocks = <&clkmgr STRATIX10_USB_CLK>;
++			iommus = <&smmu 6>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -457,6 +485,7 @@
+ 			resets = <&rst USB1_RESET>, <&rst USB1_OCP_RESET>;
+ 			reset-names = "dwc2", "dwc2-ecc";
+ 			clocks = <&clkmgr STRATIX10_USB_CLK>;
++			iommus = <&smmu 7>;
+ 			status = "disabled";
+ 		};
+ 
+-- 
+2.7.4
