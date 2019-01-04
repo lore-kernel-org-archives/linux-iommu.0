@@ -1,60 +1,57 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: crash in gart_unmap_page() with master snapshot (commit
- e1ef035d272e)
-Date: Fri, 4 Jan 2019 09:53:18 +0100
-Message-ID: <20190104085318.GA15939@lst.de>
-References: <20190102083854.GA28932@unicorn.suse.cz>
+From: Horia Geanta <horia.geanta@nxp.com>
+Subject: Re: [PATCH v3] crypto: talitos - fix ablkcipher for CONFIG_VMAP_STACK
+Date: Fri, 4 Jan 2019 15:17:25 +0000
+Message-ID: <VI1PR0402MB3485FC2A3758BCEAC05BF3A2988E0@VI1PR0402MB3485.eurprd04.prod.outlook.com>
+References: <ae7b64e9415874060977e32ed48b62f1f6148084.1545346337.git.christophe.leroy@c-s.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190102083854.GA28932@unicorn.suse.cz>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Michal Kubecek <mkubecek@suse.cz>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
+To: Christophe Leroy <christophe.leroy@c-s.fr>, Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>
+Cc: "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Michal,
-
-can you try the patch below?
-
----
->From 6b22ae23a1971646dacc8a0ad313a6329a04cf98 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Fri, 4 Jan 2019 09:50:33 +0100
-Subject: x86/amd_gart: fix unmapping of non-GART mappings
-
-In many cases we don't have to create a GART mapping at all, which
-also means there is nothing to unmap.  Fix the range check that was
-incorrectly modified when removing the mapping_error method.
-
-Fixes: 9e8aa6b546 ("x86/amd_gart: remove the mapping_error dma_map_ops method")
-Reported-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/x86/kernel/amd_gart_64.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index e0ff3ac8c127..2c0aa34af69c 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -256,7 +256,15 @@ static void gart_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 	int npages;
- 	int i;
- 
--	if (dma_addr == DMA_MAPPING_ERROR ||
-+	if (WARN_ON_ONCE(dma_addr == DMA_MAPPING_ERROR))
-+		return;
-+
-+	/*
-+	 * This driver will not always use a GART mapping, but might have
-+	 * created a direct mapping instead.  If that is the case there is
-+	 * nothing to unmap here.
-+	 */
-+	if (dma_addr < iommu_bus_base ||
- 	    dma_addr >= iommu_bus_base + iommu_size)
- 		return;
- 
--- 
-2.20.1
+On 12/21/2018 10:07 AM, Christophe Leroy wrote:=0A=
+[snip]=0A=
+> IV cannot be on stack when CONFIG_VMAP_STACK is selected because the stac=
+k=0A=
+> cannot be DMA mapped anymore.=0A=
+> This looks better, thanks.=0A=
+=0A=
+> This patch copies the IV into the extended descriptor when iv is not=0A=
+> a valid linear address.=0A=
+> =0A=
+Though I am not sure the checks in place are enough.=0A=
+=0A=
+> Fixes: 4de9d0b547b9 ("crypto: talitos - Add ablkcipher algorithms")=0A=
+> Cc: stable@vger.kernel.org=0A=
+> Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>=0A=
+> ---=0A=
+>  v3: Using struct edesc buffer.=0A=
+> =0A=
+>  v2: Using per-request context.=0A=
+[snip]=0A=
+> +	if (ivsize && !virt_addr_valid(iv))=0A=
+> +		alloc_len +=3D ivsize;=0A=
+[snip]=0A=
+>  =0A=
+> +	if (ivsize && !virt_addr_valid(iv))=0A=
+A more precise condition would be (!is_vmalloc_addr || is_vmalloc_addr(iv))=
+=0A=
+=0A=
+It matches the checks in debug_dma_map_single() helper, though I am not sur=
+e=0A=
+they are enough to rule out all exceptions of DMA API.=0A=
+=0A=
+> +		iv =3D memcpy(((u8 *)edesc) + alloc_len - ivsize, iv, ivsize);=0A=
+> +=0A=
+>  	edesc->src_nents =3D src_nents;=0A=
+>  	edesc->dst_nents =3D dst_nents;=0A=
+> -	edesc->iv_dma =3D iv_dma;=0A=
+> +	if (ivsize)=0A=
+> +		edesc->iv_dma =3D dma_map_single(dev, iv, ivsize, DMA_TO_DEVICE);=0A=
+> +	else=0A=
+> +		edesc->iv_dma =3D 0;=0A=
+> +=0A=
