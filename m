@@ -1,58 +1,63 @@
-From: Eric Wong <e@80x24.org>
-Subject: Re: iommu_intel or i915 regression in 4.18, 4.19.12 and drm-tip
-Date: Fri, 4 Jan 2019 01:06:26 +0000
-Message-ID: <20190104010626.e6yqdqkmdcqjepke@dcvr>
-References: <20181227114948.ev4b3jte3ubsc5us@dcvr>
- <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
+From: Dongli Zhang <dongli.zhang-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] swiotlb: add debugfs to track swiotlb buffer usage
+Date: Fri, 4 Jan 2019 09:34:33 +0800
+Message-ID: <98fdfb0c-0207-9a0a-4875-b834cfd1b2c3@oracle.com>
+References: <1544402278-8175-1-git-send-email-dongli.zhang@oracle.com>
+	<41becd27-8c3a-da2b-e5ed-e361ba20e4d4@linux.intel.com>
+	<34883ba5-b444-3d37-4d40-9b0a651dd2eb@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>, David Woodhouse <dwmw2@infradead.org>, Jani Nikula <jani.nikula@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>, iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <34883ba5-b444-3d37-4d40-9b0a651dd2eb-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org
+Cc: Tim Chen <tim.c.chen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, Joe Jin <joe.jin-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Joonas Lahtinen <joonas.lahtinen@linux.intel.com> wrote:
-> Quoting Eric Wong (2018-12-27 13:49:48)
-> > I just got a used Thinkpad X201 (Core i5 M 520, Intel QM57
-> > chipset) and hit some kernel panics while trying to view
-> > image/animation-intensive stuff in Firefox (X11) unless I use
-> > "iommu_intel=igfx_off".
-> > 
-> > With Debian stable backport kernels, "linux-image-4.17.0-0.bpo.3-amd64"
-> > (4.17.17-1~bpo9+1) has no problems.  But "linux-image-4.18.0-0.bpo.3-amd64"
-> > (4.18.20-2~bpo9+1) gives a blank screen before I can login via agetty
-> > and run startx.
+Hi Konrad,
 
-> Most confusing about this is that 4.17 would have worked to begin with,
-> without intel_iommu=igfx_off (unless it was the default for older
-> kernel?)
+Would you please take a look on those two patches?
 
-Yeah, so the Debian bpo 4.17(.17) kernel did not set
-CONFIG_INTEL_IOMMU_DEFAULT_ON, so I didn't encounter problems.
-My self-built kernels all set CONFIG_INTEL_IOMMU_DEFAULT_ON.
+In addition, there is another patch correcting an error in comment.
 
-Booting the Debian 4.17 kernel with "intel_iommu=on" gives the
-same hanging problem I hit with self-built 4.19.{12,13} kernels.
+https://lkml.org/lkml/2018/12/5/1721
 
-I'm not sure how far back the problem goes (maybe forever),
-since I only got this hardware.  Not sure what's the problem
-with Debian 4.18, either; but (self-built) 4.19.13 is fine w/o
-CONFIG_INTEL_IOMMU_DEFAULT_ON.
+Thank you very much!
 
-Debian backports doesn't have kernels for 4.19 or 4.20, yet.
+Dongli Zhang
 
-> Did you maybe update other parts of the system while updating the
-> kernel?
-
-Definitely not; just the kernel + headers ("make bindeb-pkg)".
-
-> If you could attach full boot dmesg from working and non-working kernel +
-> have config file of both kernel's in Bugzilla. That'd be a good start!
-
-Sorry, I get anxiety attacks when it comes to logins and forms.
-Anyways, I managed to get the Debian kernel dmesg output uploaded
-with and without iommu_intel=on:
-https://bugs.freedesktop.org/attachment.cgi?bugid=109219
+On 12/11/2018 05:05 AM, Joe Jin wrote:
+> On 12/10/18 12:00 PM, Tim Chen wrote:
+>>> @@ -528,6 +538,9 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>>>  		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
+>>>  	return SWIOTLB_MAP_ERROR;
+>>>  found:
+>>> +#ifdef CONFIG_DEBUG_FS
+>>> +	io_tlb_used += nslots;
+>>> +#endif
+>> One nit I have about this patch is there are too many CONFIG_DEBUG_FS.
+>>
+>> For example here, instead of io_tlb_used, we can have a macro defined,
+>> perhaps something like inc_iotlb_used(nslots).  It can be placed in the
+>> same section that swiotlb_create_debugfs is defined so there's a single
+>> place where all the CONFIG_DEBUG_FS stuff is located.
+>>
+>> Then define inc_iotlb_used to be null when we don't have
+>> CONFIG_DEBUG_FS.
+>>
+> 
+> Dongli had removed above ifdef/endif on his next patch, "[PATCH v2 2/2]
+> swiotlb: checking whether swiotlb buffer is full with io_tlb_used"
+> 
+> Thanks,
+> Joe
+> 
