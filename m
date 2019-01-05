@@ -1,55 +1,57 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 4/4] drm/vmwgfx: unwind spaghetti code in vmw_dma_select_mode
-Date: Sat,  5 Jan 2019 09:01:08 +0100
-Message-ID: <20190105080108.14837-5-hch@lst.de>
-References: <20190105080108.14837-1-hch@lst.de>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Sat, 5 Jan 2019 17:03:52 +0100
+Message-ID: <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
+References: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
+ <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
+ <20181213091021.GA2106@lst.de>
+ <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
+ <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
+ <20181213112511.GA4574@lst.de>
+ <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
+ <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
+ <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
+ <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
+ <20190103073622.GA24323@lst.de>
+ <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190105080108.14837-1-hch@lst.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: thellstrom@vmware.com
-Cc: iommu@lists.linux-foundation.org, linux-graphics-maintainer@vmware.com, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
+Content-Language: de-DE
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-SnVzdCB1c2UgYSBzaW1wbGUgaWYvZWxzZSBjaGFpbiB0byBzZWxlY3QgdGhlIERNQSBtb2RlLgoK
-U2lnbmVkLW9mZi1ieTogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+Ci0tLQogZHJpdmVy
-cy9ncHUvZHJtL3Ztd2dmeC92bXdnZnhfZHJ2LmMgfCAyNSArKysrKystLS0tLS0tLS0tLS0tLS0t
-LS0tCiAxIGZpbGUgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCAxOSBkZWxldGlvbnMoLSkKCmRp
-ZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vdm13Z2Z4L3Ztd2dmeF9kcnYuYyBiL2RyaXZlcnMv
-Z3B1L2RybS92bXdnZngvdm13Z2Z4X2Rydi5jCmluZGV4IGMyMDYwZjZjYzllOC4uODYzODc3MzVh
-OTBiIDEwMDY0NAotLS0gYS9kcml2ZXJzL2dwdS9kcm0vdm13Z2Z4L3Ztd2dmeF9kcnYuYworKysg
-Yi9kcml2ZXJzL2dwdS9kcm0vdm13Z2Z4L3Ztd2dmeF9kcnYuYwpAQCAtNTY2LDM0ICs1NjYsMjEg
-QEAgc3RhdGljIGludCB2bXdfZG1hX3NlbGVjdF9tb2RlKHN0cnVjdCB2bXdfcHJpdmF0ZSAqZGV2
-X3ByaXYpCiAJCVt2bXdfZG1hX21hcF9wb3B1bGF0ZV0gPSAiS2VlcGluZyBETUEgbWFwcGluZ3Mu
-IiwKIAkJW3Ztd19kbWFfbWFwX2JpbmRdID0gIkdpdmluZyB1cCBETUEgbWFwcGluZ3MgZWFybHku
-In07CiAKLQlpZiAoaW50ZWxfaW9tbXVfZW5hYmxlZCkgeworCWlmICh2bXdfZm9yY2VfY29oZXJl
-bnQpCisJCWRldl9wcml2LT5tYXBfbW9kZSA9IHZtd19kbWFfYWxsb2NfY29oZXJlbnQ7CisJZWxz
-ZSBpZiAoaW50ZWxfaW9tbXVfZW5hYmxlZCkKIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13X2Rt
-YV9tYXBfcG9wdWxhdGU7Ci0JCWdvdG8gb3V0X2ZpeHVwOwotCX0KLQotCWlmICghKHZtd19mb3Jj
-ZV9pb21tdSB8fCB2bXdfZm9yY2VfY29oZXJlbnQpKSB7CisJZWxzZSBpZiAoIXZtd19mb3JjZV9p
-b21tdSkKIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13X2RtYV9waHlzOwotCQlEUk1fSU5GTygi
-RE1BIG1hcCBtb2RlOiAlc1xuIiwgbmFtZXNbZGV2X3ByaXYtPm1hcF9tb2RlXSk7Ci0JCXJldHVy
-biAwOwotCX0KLQotI2lmZGVmIENPTkZJR19TV0lPVExCCi0JaWYgKHN3aW90bGJfbnJfdGJsKCkp
-CisJZWxzZSBpZiAoSVNfRU5BQkxFRChDT05GSUdfU1dJT1RMQikgJiYgc3dpb3RsYl9ucl90Ymwo
-KSkKIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13X2RtYV9hbGxvY19jb2hlcmVudDsKIAllbHNl
-Ci0jZW5kaWYKIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13X2RtYV9tYXBfcG9wdWxhdGU7CiAK
-LW91dF9maXh1cDoKLQlpZiAoZGV2X3ByaXYtPm1hcF9tb2RlID09IHZtd19kbWFfbWFwX3BvcHVs
-YXRlICYmCi0JICAgIHZtd19yZXN0cmljdF9pb21tdSkKKwlpZiAoZGV2X3ByaXYtPm1hcF9tb2Rl
-ID09IHZtd19kbWFfbWFwX3BvcHVsYXRlICYmIHZtd19yZXN0cmljdF9pb21tdSkKIAkJZGV2X3By
-aXYtPm1hcF9tb2RlID0gdm13X2RtYV9tYXBfYmluZDsKIAotCWlmICh2bXdfZm9yY2VfY29oZXJl
-bnQpCi0JCWRldl9wcml2LT5tYXBfbW9kZSA9IHZtd19kbWFfYWxsb2NfY29oZXJlbnQ7Ci0KIAlE
-Uk1fSU5GTygiRE1BIG1hcCBtb2RlOiAlc1xuIiwgbmFtZXNbZGV2X3ByaXYtPm1hcF9tb2RlXSk7
-Ci0KIAlyZXR1cm4gMDsKIH0KIAotLSAKMi4yMC4xCgpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBs
-aXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1h
-bi9saXN0aW5mby9kcmktZGV2ZWwK
+Next step: c446404b041130fbd9d1772d184f24715cf2362f (powerpc/dma: remove 
+dma_nommu_mmap_coherent)
+
+git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+
+git checkout c446404b041130fbd9d1772d184f24715cf2362f
+
+Output:
+
+Note: checking out 'c446404b041130fbd9d1772d184f24715cf2362f'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+   git checkout -b <new-branch-name>
+
+HEAD is now at c446404... powerpc/dma: remove dma_nommu_mmap_coherent
+
+-----
+
+Link to the Git: 
+http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+
+Result: PASEMI onboard ethernet works and the X5000 (P5020 board) boots.
+
+-- Christian
