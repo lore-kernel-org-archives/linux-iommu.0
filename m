@@ -1,57 +1,70 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Sat, 5 Jan 2019 17:03:52 +0100
-Message-ID: <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
-References: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
- <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
- <20181213091021.GA2106@lst.de>
- <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
- <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
- <20181213112511.GA4574@lst.de>
- <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
- <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
- <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
- <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
- <20190103073622.GA24323@lst.de>
- <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
+From: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: [GIT PULL] dma-mapping fixes for Linux 4.21-rc1
+Date: Sun, 6 Jan 2019 19:28:46 +0100
+Message-ID: <20190106182846.GA10665@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
-Content-Language: de-DE
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Next step: c446404b041130fbd9d1772d184f24715cf2362f (powerpc/dma: remove 
-dma_nommu_mmap_coherent)
+Hi Linus,
 
-git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+please pull regression fixes, and code removals enabling them for
+4.21-rc1.
 
-git checkout c446404b041130fbd9d1772d184f24715cf2362f
+The following changes since commit 96d4f267e40f9509e8a66e2b39e8b95655617693:
 
-Output:
+  Remove 'type' argument from access_ok() function (2019-01-03 18:57:57 -0800)
 
-Note: checking out 'c446404b041130fbd9d1772d184f24715cf2362f'.
+are available in the Git repository at:
 
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by performing another checkout.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-4.21-1
 
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -b with the checkout command again. Example:
+for you to fetch changes up to 8270f3a11ceef64bdb0ab141180e8d2f17c619ec:
 
-   git checkout -b <new-branch-name>
+  dma-direct: fix DMA_ATTR_NO_KERNEL_MAPPING for remapped allocations (2019-01-05 08:28:29 +0100)
 
-HEAD is now at c446404... powerpc/dma: remove dma_nommu_mmap_coherent
+----------------------------------------------------------------
+dma-mapping fixes for Linux 4.21-rc1
 
------
+Fix various regressions introduced in this cycles:
 
-Link to the Git: 
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+ - fix dma-debug tracking for the map_page / map_single consolidatation
+ - properly stub out DMA mapping symbols for !HAS_DMA builds to avoid
+   link failures
+ - fix AMD Gart direct mappings
+ - setup the dma address for no kernel mappings using the remap
+   allocator
 
-Result: PASEMI onboard ethernet works and the X5000 (P5020 board) boots.
+----------------------------------------------------------------
+Christoph Hellwig (7):
+      dma-mapping: implement dma_map_single_attrs using dma_map_page_attrs
+      dma-mapping: implement dmam_alloc_coherent using dmam_alloc_attrs
+      dma-mapping: remove dmam_{declare,release}_coherent_memory
+      dma-mapping: properly stub out the DMA API for !CONFIG_HAS_DMA
+      dma-mapping: remove a few unused exports
+      x86/amd_gart: fix unmapping of non-GART mappings
+      dma-direct: fix DMA_ATTR_NO_KERNEL_MAPPING for remapped allocations
 
--- Christian
+ Documentation/driver-model/devres.txt |   1 -
+ arch/x86/kernel/amd_gart_64.c         |  10 +-
+ include/linux/dma-debug.h             |  11 +-
+ include/linux/dma-mapping.h           | 340 +++++++++++++++++++---------------
+ kernel/dma/coherent.c                 |   2 -
+ kernel/dma/debug.c                    |  19 +-
+ kernel/dma/mapping.c                  |  94 ----------
+ kernel/dma/remap.c                    |  13 +-
+ 8 files changed, 215 insertions(+), 275 deletions(-)
