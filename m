@@ -1,74 +1,137 @@
-From: Thomas Hellstrom <thellstrom@vmware.com>
-Subject: Re: [PATCH 2/4] drm/vmwgfx: remove CONFIG_INTEL_IOMMU ifdefs
-Date: Tue, 8 Jan 2019 10:03:18 +0000
-Message-ID: <182509fca5848141f1db96d32781d2c0daf0d206.camel@vmware.com>
-References: <20190105080108.14837-1-hch@lst.de>
- <20190105080108.14837-3-hch@lst.de>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [RFC v3 00/21] SMMUv3 Nested Stage Setup
+Date: Tue,  8 Jan 2019 11:26:12 +0100
+Message-ID: <20190108102633.17482-1-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190105080108.14837-3-hch@lst.de>
-Content-Language: en-US
-Content-ID: <3CE4D785C13AE942ABC8EF2E355CE681@namprd05.prod.outlook.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: "hch@lst.de" <hch@lst.de>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Linux-graphics-maintainer <Linux-graphics-maintainer@vmware.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, peter.maydell-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, christoffer.dall-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-UmV2aWV3ZWQtYnk6IFRob21hcyBIZWxsc3Ryb20gPHRoZWxsc3Ryb21Adm13YXJlLmNvbT4NCg0K
-T24gU2F0LCAyMDE5LTAxLTA1IGF0IDA5OjAxICswMTAwLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90
-ZToNCj4gaW50ZWxfaW9tbXVfZW5hYmxlZCBpcyBkZWZpbmVkIGFzIGFsd2F5cyBmYWxzZSBmb3IN
-Cj4gIUNPTkZJR19JTlRFTF9JT01NVSwNCj4gc28gcmVtb3ZlIHRoZSBpZmRlZnMgYXJvdW5kIGl0
-Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+DQo+
-IC0tLQ0KPiAgZHJpdmVycy9ncHUvZHJtL3Ztd2dmeC92bXdnZnhfZHJ2LmMgfCAxOCAtLS0tLS0t
-LS0tLS0tLS0tLS0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxOCBkZWxldGlvbnMoLSkNCj4gDQo+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vdm13Z2Z4L3Ztd2dmeF9kcnYuYw0KPiBiL2RyaXZl
-cnMvZ3B1L2RybS92bXdnZngvdm13Z2Z4X2Rydi5jDQo+IGluZGV4IDY5ZTMyNWIyZDk1NC4uMjM2
-MDUyYWQyMzNjIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vdm13Z2Z4L3Ztd2dmeF9k
-cnYuYw0KPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vdm13Z2Z4L3Ztd2dmeF9kcnYuYw0KPiBAQCAt
-NTY3LDEyICs1NjcsMTAgQEAgc3RhdGljIGludCB2bXdfZG1hX3NlbGVjdF9tb2RlKHN0cnVjdA0K
-PiB2bXdfcHJpdmF0ZSAqZGV2X3ByaXYpDQo+ICAJCVt2bXdfZG1hX21hcF9iaW5kXSA9ICJHaXZp
-bmcgdXAgRE1BIG1hcHBpbmdzIGVhcmx5LiJ9Ow0KPiAgCWNvbnN0IHN0cnVjdCBkbWFfbWFwX29w
-cyAqZG1hX29wcyA9IGdldF9kbWFfb3BzKGRldl9wcml2LT5kZXYtDQo+ID5kZXYpOw0KPiAgDQo+
-IC0jaWZkZWYgQ09ORklHX0lOVEVMX0lPTU1VDQo+ICAJaWYgKGludGVsX2lvbW11X2VuYWJsZWQp
-IHsNCj4gIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13X2RtYV9tYXBfcG9wdWxhdGU7DQo+ICAJ
-CWdvdG8gb3V0X2ZpeHVwOw0KPiAgCX0NCj4gLSNlbmRpZg0KPiAgDQo+ICAJaWYgKCEodm13X2Zv
-cmNlX2lvbW11IHx8IHZtd19mb3JjZV9jb2hlcmVudCkpIHsNCj4gIAkJZGV2X3ByaXYtPm1hcF9t
-b2RlID0gdm13X2RtYV9waHlzOw0KPiBAQCAtNTg5LDkgKzU4Nyw3IEBAIHN0YXRpYyBpbnQgdm13
-X2RtYV9zZWxlY3RfbW9kZShzdHJ1Y3Qgdm13X3ByaXZhdGUNCj4gKmRldl9wcml2KQ0KPiAgCQlk
-ZXZfcHJpdi0+bWFwX21vZGUgPSB2bXdfZG1hX21hcF9wb3B1bGF0ZTsNCj4gICNlbmRpZg0KPiAg
-DQo+IC0jaWZkZWYgQ09ORklHX0lOVEVMX0lPTU1VDQo+ICBvdXRfZml4dXA6DQo+IC0jZW5kaWYN
-Cj4gIAlpZiAoZGV2X3ByaXYtPm1hcF9tb2RlID09IHZtd19kbWFfbWFwX3BvcHVsYXRlICYmDQo+
-ICAJICAgIHZtd19yZXN0cmljdF9pb21tdSkNCj4gIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13
-X2RtYV9tYXBfYmluZDsNCj4gQEAgLTU5OSwxMyArNTk1LDYgQEAgc3RhdGljIGludCB2bXdfZG1h
-X3NlbGVjdF9tb2RlKHN0cnVjdA0KPiB2bXdfcHJpdmF0ZSAqZGV2X3ByaXYpDQo+ICAJaWYgKHZt
-d19mb3JjZV9jb2hlcmVudCkNCj4gIAkJZGV2X3ByaXYtPm1hcF9tb2RlID0gdm13X2RtYV9hbGxv
-Y19jb2hlcmVudDsNCj4gIA0KPiAtI2lmICFkZWZpbmVkKENPTkZJR19TV0lPVExCKSAmJiAhZGVm
-aW5lZChDT05GSUdfSU5URUxfSU9NTVUpDQo+IC0JLyoNCj4gLQkgKiBObyBjb2hlcmVudCBwYWdl
-IHBvb2wNCj4gLQkgKi8NCj4gLQlpZiAoZGV2X3ByaXYtPm1hcF9tb2RlID09IHZtd19kbWFfYWxs
-b2NfY29oZXJlbnQpDQo+IC0JCXJldHVybiAtRUlOVkFMOw0KPiAtI2VuZGlmDQo+ICAJRFJNX0lO
-Rk8oIkRNQSBtYXAgbW9kZTogJXNcbiIsIG5hbWVzW2Rldl9wcml2LT5tYXBfbW9kZV0pOw0KPiAg
-DQo+ICAJcmV0dXJuIDA7DQo+IEBAIC02MTksNyArNjA4LDYgQEAgc3RhdGljIGludCB2bXdfZG1h
-X3NlbGVjdF9tb2RlKHN0cnVjdCB2bXdfcHJpdmF0ZQ0KPiAqZGV2X3ByaXYpDQo+ICAgKiBXaXRo
-IDMyLWJpdCB3ZSBjYW4gb25seSBoYW5kbGUgMzIgYml0IFBGTnMuIE9wdGlvbmFsbHkgc2V0IHRo
-YXQNCj4gICAqIHJlc3RyaWN0aW9uIGFsc28gZm9yIDY0LWJpdCBzeXN0ZW1zLg0KPiAgICovDQo+
-IC0jaWZkZWYgQ09ORklHX0lOVEVMX0lPTU1VDQo+ICBzdGF0aWMgaW50IHZtd19kbWFfbWFza3Mo
-c3RydWN0IHZtd19wcml2YXRlICpkZXZfcHJpdikNCj4gIHsNCj4gIAlzdHJ1Y3QgZHJtX2Rldmlj
-ZSAqZGV2ID0gZGV2X3ByaXYtPmRldjsNCj4gQEAgLTYzMSwxMiArNjE5LDYgQEAgc3RhdGljIGlu
-dCB2bXdfZG1hX21hc2tzKHN0cnVjdCB2bXdfcHJpdmF0ZQ0KPiAqZGV2X3ByaXYpDQo+ICAJfQ0K
-PiAgCXJldHVybiAwOw0KPiAgfQ0KPiAtI2Vsc2UNCj4gLXN0YXRpYyBpbnQgdm13X2RtYV9tYXNr
-cyhzdHJ1Y3Qgdm13X3ByaXZhdGUgKmRldl9wcml2KQ0KPiAtew0KPiAtCXJldHVybiAwOw0KPiAt
-fQ0KPiAtI2VuZGlmDQo+ICANCj4gIHN0YXRpYyBpbnQgdm13X2RyaXZlcl9sb2FkKHN0cnVjdCBk
-cm1fZGV2aWNlICpkZXYsIHVuc2lnbmVkIGxvbmcNCj4gY2hpcHNldCkNCj4gIHsNCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5n
-IGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVk
-ZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+This series allows a virtualizer to program the nested stage mode.
+This is useful when both the host and the guest are exposed with
+an SMMUv3 and a PCI device is assigned to the guest using VFIO.
+
+In this mode, the physical IOMMU must be programmed to translate
+the two stages: the one set up by the guest (IOVA -> GPA) and the
+one set up by the host VFIO driver as part of the assignment process
+(GPA -> HPA).
+
+On Intel, this is traditionnaly achieved by combining the 2 stages
+into a single physical stage. However this relies on the capability
+to trap on each guest translation structure update. This is possible
+by using the VTD Caching Mode. Unfortunately the ARM SMMUv3 does
+not offer a similar mechanism.
+
+However, the ARM SMMUv3 architecture supports 2 physical stages! Those
+were devised exactly with that use case in mind. Assuming the HW
+implements both stages (optional), the guest now can use stage 1
+while the host uses stage 2.
+
+This assumes the virtualizer has means to propagate guest settings
+to the host SMMUv3 driver. This series brings this VFIO/IOMMU
+infrastructure.  Those services are:
+- bind the guest stage 1 configuration to the stream table entry
+- propagate guest TLB invalidations
+- bind MSI IOVAs
+- propagate faults collected at physical level up to the virtualizer
+
+This series largely reuses the user API and infrastructure originally
+devised for SVA/SVM and patches submitted by Jacob, Yi Liu, Tianyu in
+[1-2] and Jean-Philippe [3-4].
+
+Best Regards
+
+Eric
+
+This series can be found at:
+https://github.com/eauger/linux/tree/v5.0-rc1-2stage-rfc-v3
+
+This was tested on Qualcomm HW featuring SMMUv3 and with adapted QEMU
+vSMMUv3.
+
+References:
+[1] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
+    Address (SVA)
+    https://lwn.net/Articles/754331/
+[2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
+    (VFIO part)
+    https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
+[3] [v2,00/40] Shared Virtual Addressing for the IOMMU
+    https://patchwork.ozlabs.org/cover/912129/
+[4] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
+    https://patchwork.kernel.org/cover/10608299/
+
+History:
+
+v2 -> v3:
+- When registering the S1 MSI binding we now store the device handle. This
+  addresses Robin's comment about discimination of devices beonging to
+  different S1 groups and using different physical MSI doorbells.
+- Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
+  set the eventfd and expose the faults through an mmappable fault region
+
+v1 -> v2:
+- Added the fault reporting capability
+- asid properly passed on invalidation (fix assignment of multiple
+  devices)
+- see individual change logs for more info
+
+Eric Auger (12):
+  iommu: Introduce bind_guest_msi
+  vfio: VFIO_IOMMU_BIND_MSI
+  iommu/smmuv3: Get prepared for nested stage support
+  iommu/smmuv3: Implement set_pasid_table
+  iommu/smmuv3: Implement cache_invalidate
+  dma-iommu: Implement NESTED_MSI cookie
+  iommu/smmuv3: Implement bind_guest_msi
+  iommu/smmuv3: Report non recoverable faults
+  vfio-pci: Add a new VFIO_REGION_TYPE_NESTED region type
+  vfio-pci: Register an iommu fault handler
+  vfio-pci: Add VFIO_PCI_DMA_FAULT_IRQ_INDEX
+  vfio: Document nested stage control
+
+Jacob Pan (4):
+  iommu: Introduce set_pasid_table API
+  iommu: introduce device fault data
+  driver core: add per device iommu param
+  iommu: introduce device fault report API
+
+Jean-Philippe Brucker (2):
+  iommu/arm-smmu-v3: Link domains and devices
+  iommu/arm-smmu-v3: Maintain a SID->device structure
+
+Liu, Yi L (3):
+  iommu: Introduce cache_invalidate API
+  vfio: VFIO_IOMMU_SET_PASID_TABLE
+  vfio: VFIO_IOMMU_CACHE_INVALIDATE
+
+ Documentation/vfio.txt              |  62 ++++
+ drivers/iommu/arm-smmu-v3.c         | 460 ++++++++++++++++++++++++++--
+ drivers/iommu/dma-iommu.c           | 112 ++++++-
+ drivers/iommu/iommu.c               | 187 ++++++++++-
+ drivers/vfio/pci/vfio_pci.c         | 147 ++++++++-
+ drivers/vfio/pci/vfio_pci_intrs.c   |  19 ++
+ drivers/vfio/pci/vfio_pci_private.h |   3 +
+ drivers/vfio/vfio_iommu_type1.c     | 105 +++++++
+ include/linux/device.h              |   3 +
+ include/linux/dma-iommu.h           |  11 +
+ include/linux/iommu.h               | 127 +++++++-
+ include/uapi/linux/iommu.h          | 234 ++++++++++++++
+ include/uapi/linux/vfio.h           |  38 +++
+ 13 files changed, 1476 insertions(+), 32 deletions(-)
+ create mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.17.2
