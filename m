@@ -1,89 +1,79 @@
-From: Thomas Hellstrom <thellstrom-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
-Subject: Re: fix DMA ops layering violations in vmwgfx
-Date: Tue, 8 Jan 2019 18:25:32 +0000
-Message-ID: <842d92f893669381578a2d5fd31603195a2cb19f.camel@vmware.com>
-References: <20190105080108.14837-1-hch@lst.de>
-	<99091bb861e21d5bb4182f08dedbc494c637cc0f.camel@vmware.com>
-	<20190108131227.GB6003@lst.de>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Wed, 9 Jan 2019 10:31:33 +0100
+Message-ID: <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
+References: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
+ <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
+ <20181213091021.GA2106@lst.de>
+ <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
+ <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
+ <20181213112511.GA4574@lst.de>
+ <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
+ <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
+ <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
+ <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
+ <20190103073622.GA24323@lst.de>
+ <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
+ <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190108131227.GB6003-jcswGhMUV9g@public.gmane.org>
-Content-Language: en-US
-Content-ID: <9E1EE877606E5F4190E59AE021DE7242-HX+pjaQZbrqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "hch-jcswGhMUV9g@public.gmane.org" <hch-jcswGhMUV9g@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Linux-graphics-maintainer <Linux-graphics-maintainer-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
+Content-Language: de-DE
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 2019-01-08 at 14:12 +0100, hch-jcswGhMUV9g@public.gmane.org wrote:
-> On Tue, Jan 08, 2019 at 09:51:45AM +0000, Thomas Hellstrom wrote:
-> > Hi, Christoph,
-> > 
-> > On Sat, 2019-01-05 at 09:01 +0100, Christoph Hellwig wrote:
-> > > Hi Thomas,
-> > > 
-> > > vmwgfx has been doing some odd checks based on DMA ops which rely
-> > > on deep DMA mapping layer internals, and I think the changes in
-> > > Linux 4.21 finally broke most of these implicit assumptions.
-> > 
-> > Thanks. 
-> > What we're really trying to do here is to try to detect the
-> > situation
-> > where DMA remapping using hardware IOMMUs is going on but memory is
-> > still coherent, since the driver can currently only work with
-> > coherent
-> > memory[1]. Currently we use intel_iommu_enabled to detect this
-> > situation, but it would be really helpful if there were a generic
-> > bool
-> > that advertizes this situation since we need to deal with other
-> > IOMMUs
-> > as well going forward. Any suggestion?
-> 
-> I'm missing the link of the [1] reference above. 
+Next step: a64e18ba191ba9102fb174f27d707485ffd9389c (powerpc/dma: remove 
+dma_nommu_get_required_mask)
 
-Sorry. I meant to remove the reference since the explanation would be
-rather lengthy.
+git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
 
-> But if you need
-> coherent memory you should simply always use dma_alloc_coherent, that
-> is the only gurantee you get.  If you use any other dma mapping
-> methods
-> you will otherwise need to explicitly transfer ownership by mapping/
-> unmapping or using dma_sync* before and after every device access.
+git checkout a64e18ba191ba9102fb174f27d707485ffd9389c
 
-The problem is that graphics applications typically allocate huge
-amounts of DMA memory. The GPU may want to map half of available system
-memory or more. Moreover this memory might need to be mappable by
-multiple devices, which would rule out dma_alloc_coherent() in many
-situations.
+Link to the Git: 
+http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
 
-Using SWIOTLB with bounce-buffers is also typically out of the question
-for performance- and memory usage reasons. Moreover the sync operations
-would often affect sub-regions of 2D and 3D textures, which makes the
-dma_sync API inefficient even if it maps to no-ops. vmwgfx would rather
-not load in these situations.
+Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
+boots. I also successfully tested sound, hardware 3D acceleration, 
+Bluetooth, network, booting with a label etc. The uImages work also in a 
+virtual e5500 quad-core QEMU machine.
 
-Finally graphics applications, do not always provide conservative sync
-regions.
+-- Christian
 
-> 
-> And the whole DMA API bypass using the phys mode is something that
-> I'd really prefer not to see in any driver as it tends to cause
-> major problems sooner or later.
 
-I fully understand this. However, given the above, the DMA API is quite
-awkward for graphics operation. It would be easier to motivate a full
-removal of the phys mode if we could query the DMA API whether the
-dma_sync operations are no-ops or not.
-
-/Thomas
+On 05 January 2019 at 5:03PM, Christian Zigotzky wrote:
+> Next step: c446404b041130fbd9d1772d184f24715cf2362f (powerpc/dma: 
+> remove dma_nommu_mmap_coherent)
+>
+> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+>
+> git checkout c446404b041130fbd9d1772d184f24715cf2362f
+>
+> Output:
+>
+> Note: checking out 'c446404b041130fbd9d1772d184f24715cf2362f'.
+>
+> You are in 'detached HEAD' state. You can look around, make experimental
+> changes and commit them, and you can discard any commits you make in this
+> state without impacting any branches by performing another checkout.
+>
+> If you want to create a new branch to retain commits you create, you may
+> do so (now or later) by using -b with the checkout command again. 
+> Example:
+>
+>   git checkout -b <new-branch-name>
+>
+> HEAD is now at c446404... powerpc/dma: remove dma_nommu_mmap_coherent
+>
+> -----
+>
+> Link to the Git: 
+> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+>
+> Result: PASEMI onboard ethernet works and the X5000 (P5020 board) boots.
+>
+> -- Christian
+>
