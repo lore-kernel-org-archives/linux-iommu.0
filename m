@@ -1,189 +1,271 @@
-From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v5 7/8] vfio/type1: Add domain at(de)taching group helpers
-Date: Thu, 10 Jan 2019 11:00:26 +0800
-Message-ID: <20190110030027.31447-8-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v5 4/8] iommu/vt-d: Aux-domain specific domain attach/detach
+Date: Thu, 10 Jan 2019 11:00:23 +0800
+Message-ID: <20190110030027.31447-5-baolu.lu@linux.intel.com>
 References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190110030027.31447-1-baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Kirti Wankhede <kwankhede-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tiwei.bie-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zeng-i9wRM+HIrmnmtl4Z8vJ8Kg761KYD1DLY@public.gmane.org, yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190110030027.31447-1-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>
+Cc: ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng@vger.kernel.org, Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This adds helpers to attach or detach a domain to a
-group. This will replace iommu_attach_group() which
-only works for non-mdev devices.
+When multiple domains per device has been enabled by the
+device driver, the device will tag the default PASID for
+the domain to all DMA traffics out of the subset of this
+device; and the IOMMU should translate the DMA requests
+in PASID granularity.
 
-If a domain is attaching to a group which includes the
-mediated devices, it should attach to the iommu device
-(a pci device which represents the mdev in iommu scope)
-instead. The added helper supports attaching domain to
-groups for both pci and mdev devices.
+This adds the intel_iommu_aux_attach/detach_device() ops
+to support managing PASID granular translation structures
+when the device driver has enabled multiple domains per
+device.
 
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Sanjay Kumar <sanjay.k.kumar-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 84 ++++++++++++++++++++++++++++++---
- 1 file changed, 77 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-iommu.c | 152 ++++++++++++++++++++++++++++++++++++
+ include/linux/intel-iommu.h |  10 +++
+ 2 files changed, 162 insertions(+)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 7651cfb14836..97278ac8da95 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -91,6 +91,7 @@ struct vfio_dma {
- struct vfio_group {
- 	struct iommu_group	*iommu_group;
- 	struct list_head	next;
-+	bool			mdev_group;	/* An mdev group */
- };
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index e9119d45a29d..b8fb6a4bd447 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2482,6 +2482,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 	info->iommu = iommu;
+ 	info->pasid_table = NULL;
+ 	info->auxd_enabled = 0;
++	INIT_LIST_HEAD(&info->auxiliary_domains);
  
- /*
-@@ -1298,6 +1299,75 @@ static bool vfio_iommu_has_sw_msi(struct iommu_group *group, phys_addr_t *base)
- 	return ret;
+ 	if (dev && dev_is_pci(dev)) {
+ 		struct pci_dev *pdev = to_pci_dev(info->dev);
+@@ -5058,6 +5059,131 @@ static void intel_iommu_domain_free(struct iommu_domain *domain)
+ 	domain_exit(to_dmar_domain(domain));
  }
  
-+static struct device *vfio_mdev_get_iommu_device(struct device *dev)
++/*
++ * Check whether a @domain could be attached to the @dev through the
++ * aux-domain attach/detach APIs.
++ */
++static inline bool
++is_aux_domain(struct device *dev, struct iommu_domain *domain)
 +{
-+	struct device *(*fn)(struct device *dev);
-+	struct device *iommu_device;
++	struct device_domain_info *info = dev->archdata.iommu;
 +
-+	fn = symbol_get(mdev_get_iommu_device);
-+	if (fn) {
-+		iommu_device = fn(dev);
-+		symbol_put(mdev_get_iommu_device);
-+
-+		return iommu_device;
-+	}
-+
-+	return NULL;
++	return info && info->auxd_enabled &&
++			domain->type == IOMMU_DOMAIN_UNMANAGED;
 +}
 +
-+static int vfio_mdev_attach_domain(struct device *dev, void *data)
++static void auxiliary_link_device(struct dmar_domain *domain,
++				  struct device *dev)
 +{
-+	struct iommu_domain *domain = data;
-+	struct device *iommu_device;
++	struct device_domain_info *info = dev->archdata.iommu;
 +
-+	iommu_device = vfio_mdev_get_iommu_device(dev);
-+	if (iommu_device) {
-+		if (iommu_dev_has_feature(iommu_device, IOMMU_DEV_FEAT_AUX))
-+			return iommu_aux_attach_device(domain, iommu_device);
-+		else
-+			return iommu_attach_device(domain, iommu_device);
-+	}
++	assert_spin_locked(&device_domain_lock);
++	if (WARN_ON(!info))
++		return;
 +
-+	return -EINVAL;
++	domain->auxd_refcnt++;
++	list_add(&domain->auxd, &info->auxiliary_domains);
 +}
 +
-+static int vfio_mdev_detach_domain(struct device *dev, void *data)
++static void auxiliary_unlink_device(struct dmar_domain *domain,
++				    struct device *dev)
 +{
-+	struct iommu_domain *domain = data;
-+	struct device *iommu_device;
++	struct device_domain_info *info = dev->archdata.iommu;
 +
-+	iommu_device = vfio_mdev_get_iommu_device(dev);
-+	if (iommu_device) {
-+		if (iommu_dev_has_feature(iommu_device, IOMMU_DEV_FEAT_AUX))
-+			iommu_aux_detach_device(domain, iommu_device);
-+		else
-+			iommu_detach_device(domain, iommu_device);
++	assert_spin_locked(&device_domain_lock);
++	if (WARN_ON(!info))
++		return;
++
++	list_del(&domain->auxd);
++	domain->auxd_refcnt--;
++
++	if (!domain->auxd_refcnt && domain->default_pasid > 0)
++		intel_pasid_free_id(domain->default_pasid);
++}
++
++static int aux_domain_add_dev(struct dmar_domain *domain,
++			      struct device *dev)
++{
++	int ret;
++	u8 bus, devfn;
++	unsigned long flags;
++	struct intel_iommu *iommu;
++
++	iommu = device_to_iommu(dev, &bus, &devfn);
++	if (!iommu)
++		return -ENODEV;
++
++	if (domain->default_pasid <= 0) {
++		int pasid;
++
++		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
++					     pci_max_pasids(to_pci_dev(dev)),
++					     GFP_KERNEL);
++		if (pasid <= 0) {
++			pr_err("Can't allocate default pasid\n");
++			return -ENODEV;
++		}
++		domain->default_pasid = pasid;
 +	}
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	/*
++	 * iommu->lock must be held to attach domain to iommu and setup the
++	 * pasid entry for second level translation.
++	 */
++	spin_lock(&iommu->lock);
++	ret = domain_attach_iommu(domain, iommu);
++	if (ret)
++		goto attach_failed;
++
++	/* Setup the PASID entry for mediated devices: */
++	ret = intel_pasid_setup_second_level(iommu, domain, dev,
++					     domain->default_pasid);
++	if (ret)
++		goto table_failed;
++	spin_unlock(&iommu->lock);
++
++	auxiliary_link_device(domain, dev);
++
++	spin_unlock_irqrestore(&device_domain_lock, flags);
 +
 +	return 0;
++
++table_failed:
++	domain_detach_iommu(domain, iommu);
++attach_failed:
++	spin_unlock(&iommu->lock);
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++	if (!domain->auxd_refcnt && domain->default_pasid > 0)
++		intel_pasid_free_id(domain->default_pasid);
++
++	return ret;
 +}
 +
-+static int vfio_iommu_attach_group(struct vfio_domain *domain,
-+				   struct vfio_group *group)
++static void aux_domain_remove_dev(struct dmar_domain *domain,
++				  struct device *dev)
 +{
-+	if (group->mdev_group)
-+		return iommu_group_for_each_dev(group->iommu_group,
-+						domain->domain,
-+						vfio_mdev_attach_domain);
-+	else
-+		return iommu_attach_group(domain->domain, group->iommu_group);
++	struct device_domain_info *info;
++	struct intel_iommu *iommu;
++	unsigned long flags;
++
++	if (!is_aux_domain(dev, &domain->domain))
++		return;
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	info = dev->archdata.iommu;
++	iommu = info->iommu;
++
++	auxiliary_unlink_device(domain, dev);
++
++	spin_lock(&iommu->lock);
++	intel_pasid_tear_down_entry(iommu, dev, domain->default_pasid);
++	domain_detach_iommu(domain, iommu);
++	spin_unlock(&iommu->lock);
++
++	spin_unlock_irqrestore(&device_domain_lock, flags);
 +}
 +
-+static void vfio_iommu_detach_group(struct vfio_domain *domain,
-+				    struct vfio_group *group)
-+{
-+	if (group->mdev_group)
-+		iommu_group_for_each_dev(group->iommu_group, domain->domain,
-+					 vfio_mdev_detach_domain);
-+	else
-+		iommu_detach_group(domain->domain, group->iommu_group);
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
+ static int prepare_domain_attach_device(struct iommu_domain *domain,
+ 					struct device *dev)
  {
-@@ -1373,7 +1443,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 			goto out_domain;
+@@ -5111,6 +5237,9 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 		return -EPERM;
  	}
  
--	ret = iommu_attach_group(domain->domain, iommu_group);
-+	ret = vfio_iommu_attach_group(domain, group);
- 	if (ret)
- 		goto out_domain;
++	if (is_aux_domain(dev, domain))
++		return -EPERM;
++
+ 	/* normally dev is not mapped */
+ 	if (unlikely(domain_context_mapped(dev))) {
+ 		struct dmar_domain *old_domain;
+@@ -5134,12 +5263,33 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	return domain_add_dev_info(to_dmar_domain(domain), dev);
+ }
  
-@@ -1405,8 +1475,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	list_for_each_entry(d, &iommu->domain_list, next) {
- 		if (d->domain->ops == domain->domain->ops &&
- 		    d->prot == domain->prot) {
--			iommu_detach_group(domain->domain, iommu_group);
--			if (!iommu_attach_group(d->domain, iommu_group)) {
-+			vfio_iommu_detach_group(domain, group);
-+			if (!vfio_iommu_attach_group(d, group)) {
- 				list_add(&group->next, &d->group_list);
- 				iommu_domain_free(domain->domain);
- 				kfree(domain);
-@@ -1414,7 +1484,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 				return 0;
- 			}
++static int intel_iommu_aux_attach_device(struct iommu_domain *domain,
++					 struct device *dev)
++{
++	int ret;
++
++	if (!is_aux_domain(dev, domain))
++		return -EPERM;
++
++	ret = prepare_domain_attach_device(domain, dev);
++	if (ret)
++		return ret;
++
++	return aux_domain_add_dev(to_dmar_domain(domain), dev);
++}
++
+ static void intel_iommu_detach_device(struct iommu_domain *domain,
+ 				      struct device *dev)
+ {
+ 	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
+ }
  
--			ret = iommu_attach_group(domain->domain, iommu_group);
-+			ret = vfio_iommu_attach_group(domain, group);
- 			if (ret)
- 				goto out_domain;
- 		}
-@@ -1440,7 +1510,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	return 0;
++static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
++					  struct device *dev)
++{
++	aux_domain_remove_dev(to_dmar_domain(domain), dev);
++}
++
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot)
+@@ -5480,6 +5630,8 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.domain_free		= intel_iommu_domain_free,
+ 	.attach_dev		= intel_iommu_attach_device,
+ 	.detach_dev		= intel_iommu_detach_device,
++	.aux_attach_dev		= intel_iommu_aux_attach_device,
++	.aux_detach_dev		= intel_iommu_aux_detach_device,
+ 	.map			= intel_iommu_map,
+ 	.unmap			= intel_iommu_unmap,
+ 	.iova_to_phys		= intel_iommu_iova_to_phys,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 7cf9f7f3724a..b563a61a6c39 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -492,9 +492,11 @@ struct dmar_domain {
+ 					/* Domain ids per IOMMU. Use u16 since
+ 					 * domain ids are 16 bit wide according
+ 					 * to VT-d spec, section 9.3 */
++	unsigned int	auxd_refcnt;	/* Refcount of auxiliary attaching */
  
- out_detach:
--	iommu_detach_group(domain->domain, iommu_group);
-+	vfio_iommu_detach_group(domain, group);
- out_domain:
- 	iommu_domain_free(domain->domain);
- out_free:
-@@ -1531,7 +1601,7 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 		if (!group)
- 			continue;
+ 	bool has_iotlb_device;
+ 	struct list_head devices;	/* all devices' list */
++	struct list_head auxd;		/* link to device's auxiliary list */
+ 	struct iova_domain iovad;	/* iova's that belong to this domain */
  
--		iommu_detach_group(domain->domain, iommu_group);
-+		vfio_iommu_detach_group(domain, group);
- 		list_del(&group->next);
- 		kfree(group);
- 		/*
-@@ -1596,7 +1666,7 @@ static void vfio_release_domain(struct vfio_domain *domain, bool external)
- 	list_for_each_entry_safe(group, group_tmp,
- 				 &domain->group_list, next) {
- 		if (!external)
--			iommu_detach_group(domain->domain, group->iommu_group);
-+			vfio_iommu_detach_group(domain, group);
- 		list_del(&group->next);
- 		kfree(group);
- 	}
+ 	struct dma_pte	*pgd;		/* virtual address */
+@@ -513,6 +515,11 @@ struct dmar_domain {
+ 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
+ 	u64		max_addr;	/* maximum mapped address */
+ 
++	int		default_pasid;	/*
++					 * The default pasid used for non-SVM
++					 * traffic on mediated devices.
++					 */
++
+ 	struct iommu_domain domain;	/* generic domain data structure for
+ 					   iommu core */
+ };
+@@ -562,6 +569,9 @@ struct device_domain_info {
+ 	struct list_head link;	/* link to domain siblings */
+ 	struct list_head global; /* link to global list */
+ 	struct list_head table;	/* link to pasid table */
++	struct list_head auxiliary_domains; /* auxiliary domains
++					     * attached to this device
++					     */
+ 	u8 bus;			/* PCI bus number */
+ 	u8 devfn;		/* PCI devfn number */
+ 	u16 pfsid;		/* SRIOV physical function source ID */
 -- 
 2.17.1
