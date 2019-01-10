@@ -1,15 +1,15 @@
-From: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>
-Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
-	dma_direct code
-Date: Thu, 10 Jan 2019 16:26:43 +0100
-Message-ID: <CAF=iVctGGs1OzHBg6MgpxrFbT_19T4YvH8muBZtsLJBDwGhrvQ@mail.gmail.com>
-References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
-	<20190110135741.GA9255@lst.de>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/3] swiotlb: Export maximum allocation size
+Date: Thu, 10 Jan 2019 12:02:05 -0500
+Message-ID: <20190110170205.GB27546@char.us.oracle.com>
+References: <20190110134433.15672-1-joro@8bytes.org>
+	<20190110134433.15672-2-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190110135741.GA9255-jcswGhMUV9g@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190110134433.15672-2-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +19,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: Sibren Vasse <freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, =?UTF-8?Q?Michel_D=C3=A4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, brijesh.singh-5C7GfCeVMHo@public.gmane.org, "Michael S . Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, jon.grimm-5C7GfCeVMHo@public.gmane.org, jfehlig-IBi9RG/b67k@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-jcswGhMUV9g@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAxMCBKYW4gMjAxOSBhdCAxNDo1NywgQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3Qu
-ZGU+IHdyb3RlOgo+Cj4gT24gVGh1LCBKYW4gMTAsIDIwMTkgYXQgMTA6NTk6MDJBTSArMDEwMCwg
-TWljaGVsIETDpG56ZXIgd3JvdGU6Cj4gPgo+ID4gSGkgQ2hyaXN0b3BoLAo+ID4KPiA+Cj4gPiBo
-dHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnLzEwOTIzNCAocGxlYXNlIGlnbm9yZSBjb21tZW50
-cyAjNi0jOSkgd2FzCj4gPiBiaXNlY3RlZCB0byB5b3VyIGNvbW1pdCA1NTg5N2FmNjMwOTEgImRt
-YS1kaXJlY3Q6IG1lcmdlIHN3aW90bGJfZG1hX29wcwo+ID4gaW50byB0aGUgZG1hX2RpcmVjdCBj
-b2RlIi4gQW55IGlkZWFzPwo+Cj4gRnJvbSB0aGUgdHJhY2UgaXQgbG9va3MgbGlrZSB3ZSBnaXQg
-dGhlIGNhc2Ugd2hlcmUgc3dpb3RsYiB0cmllcwo+IHRvIGNvcHkgYmFjayBkYXRhIGZyb20gYSBi
-b3VuY2UgYnVmZmVyLCBidXQgaGl0cyBhIGRhbmdsaW5nIG9yIE5VTEwKPiBwb2ludGVyLiAgU28g
-YSBjb3VwbGUgcXVlc3Rpb25zIGZvciB0aGUgc3VibWl0dGVyOgpNeSBhcG9sb2dpZXMgaWYgSSBt
-aXN1bmRlcnN0YW5kIHNvbWV0aGluZywgdGhpcyBzdWJqZWN0IG1hdHRlciBpcyBuZXcgdG8gbWUu
-Cgo+Cj4gIC0gZG9lcyB0aGUgc3lzdGVtIGhhdmUgbW9yZSB0aGFuIDRHQiBtZW1vcnkgYW5kIHRo
-dXMgdXNlIHN3aW90bGI/Ck15IHN5c3RlbSBoYXMgOEdCIG1lbW9yeS4gVGhlIG90aGVyIHJlcG9y
-dCBvbiB0aGUgYnVnIHRyYWNrZXIgaGFkIDE2R0IuCgo+ICAgIChjaGVjayAvcHJvYy9tZW1pbmZv
-LCBhbmQgaWYgc29tZXRoaW5nIFNXSU9UTEIgYXBwZWFycyBpbiBkbWVzZykKL3Byb2MvbWVtaW5m
-bzogaHR0cHM6Ly9wdHBiLnB3LzRyeEkKQ2FuIEkgZ3JlcCBkbWVzZyBmb3IgYSBzdHJpbmc/Cgo+
-ICAtIGRvZXMgdGhlIGRldmljZSB0aGlzIGhhcHBlbnMgb24gaGF2ZSBhIERNQSBtYXNrIHNtYWxs
-ZXIgdGhhbgo+ICAgIHRoZSBhdmFpbGFibGUgbWVtb3J5LCB0aGF0IGlzIHNob3VsZCBzd2lvdGxi
-IGJlIHVzZWQgaGVyZSB0byBzdGFydAo+ICAgIHdpdGg/Ckl0J3MgYSBNU0kgUmFkZW9uIFJYIDU3
-MCBHYW1pbmcgWCA0R0IuIFRoZSBvdGhlciByZXBvcnQgd2FzIGEgUlggNTgwLgpsc2h3IG91dHB1
-dDogaHR0cHM6Ly9wdHBiLnB3LzZzMEgKCgpSZWdhcmRzLAoKU2licmVuCl9fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
-dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Thu, Jan 10, 2019 at 02:44:31PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> The SWIOTLB implementation has a maximum size it can
+> allocate dma-handles for. This needs to be exported so that
+> device drivers don't try to allocate larger chunks.
+> 
+> This is especially important for block device drivers like
+> virtio-blk, that might do DMA through SWIOTLB.
+
+Why not use swiotlb_nr_tbl ? That is how drivers/gpu/drm use to figure if they
+need to limit the size of pages.
+> 
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  include/linux/swiotlb.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 7c007ed7505f..0bcc80a97036 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -72,6 +72,11 @@ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
+>  	return paddr >= io_tlb_start && paddr < io_tlb_end;
+>  }
+>  
+> +static inline size_t swiotlb_max_alloc_size(void)
+> +{
+> +	return ((1UL << IO_TLB_SHIFT) * IO_TLB_SEGSIZE);
+> +}
+> +
+>  bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
+>  		size_t size, enum dma_data_direction dir, unsigned long attrs);
+>  void __init swiotlb_exit(void);
+> @@ -95,6 +100,13 @@ static inline unsigned int swiotlb_max_segment(void)
+>  {
+>  	return 0;
+>  }
+> +
+> +static inline size_t swiotlb_max_alloc_size(void)
+> +{
+> +	/* There is no limit when SWIOTLB isn't used */
+> +	return ~0UL;
+> +}
+> +
+>  #endif /* CONFIG_SWIOTLB */
+>  
+>  extern void swiotlb_print_info(void);
+> -- 
+> 2.17.1
+> 
