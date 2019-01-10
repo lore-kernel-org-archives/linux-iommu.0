@@ -1,59 +1,41 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 3/3] virtio-blk: Consider virtio_max_dma_size() for maximum segment size
-Date: Thu, 10 Jan 2019 14:44:33 +0100
-Message-ID: <20190110134433.15672-4-joro@8bytes.org>
-References: <20190110134433.15672-1-joro@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190110134433.15672-1-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, hch@lst.de, Joerg Roedel <jroedel@suse.de>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
+ dma_direct code
+Date: Thu, 10 Jan 2019 14:57:41 +0100
+Message-ID: <20190110135741.GA9255@lst.de>
+References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Michel =?iso-8859-1?Q?D=E4nzer?= <michel@daenzer.net>
+Cc: Sibren Vasse <freedesktop@sibrenvasse.nl>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, x86@kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
-
-Segments can't be larger than the maximum DMA allocation
-size supported by virtio on the platform. Take that into
-account when setting the maximum segment size for a block
-device.
-
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/block/virtio_blk.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index b16a887bbd02..6062faa8d213 100644
---- a/drivers/block/virtio_blk.c
-+++ b/drivers/block/virtio_blk.c
-@@ -723,7 +723,7 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	struct request_queue *q;
- 	int err, index;
- 
--	u32 v, blk_size, sg_elems, opt_io_size;
-+	u32 v, blk_size, seg_size, sg_elems, opt_io_size;
- 	u16 min_io_size;
- 	u8 physical_block_exp, alignment_offset;
- 
-@@ -826,14 +826,16 @@ static int virtblk_probe(struct virtio_device *vdev)
- 	/* No real sector limit. */
- 	blk_queue_max_hw_sectors(q, -1U);
- 
-+	seg_size = virtio_max_dma_size(vdev);
-+
- 	/* Host can optionally specify maximum segment size and number of
- 	 * segments. */
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_SIZE_MAX,
- 				   struct virtio_blk_config, size_max, &v);
- 	if (!err)
--		blk_queue_max_segment_size(q, v);
--	else
--		blk_queue_max_segment_size(q, -1U);
-+		seg_size = min(v, seg_size);
-+
-+	blk_queue_max_segment_size(q, seg_size);
- 
- 	/* Host can optionally specify the block size of the device */
- 	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
--- 
-2.17.1
+T24gVGh1LCBKYW4gMTAsIDIwMTkgYXQgMTA6NTk6MDJBTSArMDEwMCwgTWljaGVsIETDpG56ZXIg
+d3JvdGU6Cj4gCj4gSGkgQ2hyaXN0b3BoLAo+IAo+IAo+IGh0dHBzOi8vYnVncy5mcmVlZGVza3Rv
+cC5vcmcvMTA5MjM0IChwbGVhc2UgaWdub3JlIGNvbW1lbnRzICM2LSM5KSB3YXMKPiBiaXNlY3Rl
+ZCB0byB5b3VyIGNvbW1pdCA1NTg5N2FmNjMwOTEgImRtYS1kaXJlY3Q6IG1lcmdlIHN3aW90bGJf
+ZG1hX29wcwo+IGludG8gdGhlIGRtYV9kaXJlY3QgY29kZSIuIEFueSBpZGVhcz8KCkZyb20gdGhl
+IHRyYWNlIGl0IGxvb2tzIGxpa2Ugd2UgZ2l0IHRoZSBjYXNlIHdoZXJlIHN3aW90bGIgdHJpZXMK
+dG8gY29weSBiYWNrIGRhdGEgZnJvbSBhIGJvdW5jZSBidWZmZXIsIGJ1dCBoaXRzIGEgZGFuZ2xp
+bmcgb3IgTlVMTApwb2ludGVyLiAgU28gYSBjb3VwbGUgcXVlc3Rpb25zIGZvciB0aGUgc3VibWl0
+dGVyOgoKIC0gZG9lcyB0aGUgc3lzdGVtIGhhdmUgbW9yZSB0aGFuIDRHQiBtZW1vcnkgYW5kIHRo
+dXMgdXNlIHN3aW90bGI/CiAgIChjaGVjayAvcHJvYy9tZW1pbmZvLCBhbmQgaWYgc29tZXRoaW5n
+IFNXSU9UTEIgYXBwZWFycyBpbiBkbWVzZykKIC0gZG9lcyB0aGUgZGV2aWNlIHRoaXMgaGFwcGVu
+cyBvbiBoYXZlIGEgRE1BIG1hc2sgc21hbGxlciB0aGFuCiAgIHRoZSBhdmFpbGFibGUgbWVtb3J5
+LCB0aGF0IGlzIHNob3VsZCBzd2lvdGxiIGJlIHVzZWQgaGVyZSB0byBzdGFydAogICB3aXRoPwpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwg
+bWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
