@@ -1,17 +1,15 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+From: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>
 Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
 	dma_direct code
-Date: Thu, 10 Jan 2019 15:48:37 +0100
-Message-ID: <20190110144837.GA10362@lst.de>
+Date: Thu, 10 Jan 2019 16:26:43 +0100
+Message-ID: <CAF=iVctGGs1OzHBg6MgpxrFbT_19T4YvH8muBZtsLJBDwGhrvQ@mail.gmail.com>
 References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
 	<20190110135741.GA9255@lst.de>
-	<a3f0fd49-2286-ee2a-f0e8-dfe82aac73fb@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <a3f0fd49-2286-ee2a-f0e8-dfe82aac73fb-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20190110135741.GA9255-jcswGhMUV9g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,31 +19,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: christian.koenig-5C7GfCeVMHo@public.gmane.org
-Cc: Sibren Vasse <freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Michel =?iso-8859-1?Q?D=E4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Sibren Vasse <freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, =?UTF-8?Q?Michel_D=C3=A4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 10, 2019 at 03:00:31PM +0100, Christian K=F6nig wrote:
->>  From the trace it looks like we git the case where swiotlb tries
->> to copy back data from a bounce buffer, but hits a dangling or NULL
->> pointer.  So a couple questions for the submitter:
->>
->>   - does the system have more than 4GB memory and thus use swiotlb?
->>     (check /proc/meminfo, and if something SWIOTLB appears in dmesg)
->>   - does the device this happens on have a DMA mask smaller than
->>     the available memory, that is should swiotlb be used here to start
->>     with?
->
-> Rather unlikely. The device is an AMD GPU, so we can address memory up to =
-
-> 1TB.
-
-So we probably somehow got a false positive.
-
-For now I'like the reported to confirm that the dma_direct_unmap_page+0x92
-backtrace really is in the swiotlb code (I can't think of anything else,
-but I'd rather be sure).
-
-Second it would be great to print what the contents of io_tlb_start
-and io_tlb_end are, e.g. by doing a printk_once in is_swiotlb_buffer,
-maybe that gives a clue why we are hitting the swiotlb code here.
+T24gVGh1LCAxMCBKYW4gMjAxOSBhdCAxNDo1NywgQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3Qu
+ZGU+IHdyb3RlOgo+Cj4gT24gVGh1LCBKYW4gMTAsIDIwMTkgYXQgMTA6NTk6MDJBTSArMDEwMCwg
+TWljaGVsIETDpG56ZXIgd3JvdGU6Cj4gPgo+ID4gSGkgQ2hyaXN0b3BoLAo+ID4KPiA+Cj4gPiBo
+dHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnLzEwOTIzNCAocGxlYXNlIGlnbm9yZSBjb21tZW50
+cyAjNi0jOSkgd2FzCj4gPiBiaXNlY3RlZCB0byB5b3VyIGNvbW1pdCA1NTg5N2FmNjMwOTEgImRt
+YS1kaXJlY3Q6IG1lcmdlIHN3aW90bGJfZG1hX29wcwo+ID4gaW50byB0aGUgZG1hX2RpcmVjdCBj
+b2RlIi4gQW55IGlkZWFzPwo+Cj4gRnJvbSB0aGUgdHJhY2UgaXQgbG9va3MgbGlrZSB3ZSBnaXQg
+dGhlIGNhc2Ugd2hlcmUgc3dpb3RsYiB0cmllcwo+IHRvIGNvcHkgYmFjayBkYXRhIGZyb20gYSBi
+b3VuY2UgYnVmZmVyLCBidXQgaGl0cyBhIGRhbmdsaW5nIG9yIE5VTEwKPiBwb2ludGVyLiAgU28g
+YSBjb3VwbGUgcXVlc3Rpb25zIGZvciB0aGUgc3VibWl0dGVyOgpNeSBhcG9sb2dpZXMgaWYgSSBt
+aXN1bmRlcnN0YW5kIHNvbWV0aGluZywgdGhpcyBzdWJqZWN0IG1hdHRlciBpcyBuZXcgdG8gbWUu
+Cgo+Cj4gIC0gZG9lcyB0aGUgc3lzdGVtIGhhdmUgbW9yZSB0aGFuIDRHQiBtZW1vcnkgYW5kIHRo
+dXMgdXNlIHN3aW90bGI/Ck15IHN5c3RlbSBoYXMgOEdCIG1lbW9yeS4gVGhlIG90aGVyIHJlcG9y
+dCBvbiB0aGUgYnVnIHRyYWNrZXIgaGFkIDE2R0IuCgo+ICAgIChjaGVjayAvcHJvYy9tZW1pbmZv
+LCBhbmQgaWYgc29tZXRoaW5nIFNXSU9UTEIgYXBwZWFycyBpbiBkbWVzZykKL3Byb2MvbWVtaW5m
+bzogaHR0cHM6Ly9wdHBiLnB3LzRyeEkKQ2FuIEkgZ3JlcCBkbWVzZyBmb3IgYSBzdHJpbmc/Cgo+
+ICAtIGRvZXMgdGhlIGRldmljZSB0aGlzIGhhcHBlbnMgb24gaGF2ZSBhIERNQSBtYXNrIHNtYWxs
+ZXIgdGhhbgo+ICAgIHRoZSBhdmFpbGFibGUgbWVtb3J5LCB0aGF0IGlzIHNob3VsZCBzd2lvdGxi
+IGJlIHVzZWQgaGVyZSB0byBzdGFydAo+ICAgIHdpdGg/Ckl0J3MgYSBNU0kgUmFkZW9uIFJYIDU3
+MCBHYW1pbmcgWCA0R0IuIFRoZSBvdGhlciByZXBvcnQgd2FzIGEgUlggNTgwLgpsc2h3IG91dHB1
+dDogaHR0cHM6Ly9wdHBiLnB3LzZzMEgKCgpSZWdhcmRzLAoKU2licmVuCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21t
+dUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
+bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
