@@ -1,37 +1,38 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Support page request in scalable mode
-Date: Fri, 11 Jan 2019 12:29:41 +0100
-Message-ID: <20190111112941.nv6p2veleipwyirs@8bytes.org>
-References: <20190111050457.27234-1-baolu.lu@linux.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/1] iova: Allow compiling the library without IOMMU
+	support
+Date: Fri, 11 Jan 2019 12:27:06 +0100
+Message-ID: <20190111112706.cdjjw3jbkz3mg3ia@8bytes.org>
+References: <20190102211657.13192-1-sakari.ailus@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190111050457.27234-1-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu Yi L <yi.l.liu@intel.com>, Kevin Tian <kevin.tian@intel.com>
+In-Reply-To: <20190102211657.13192-1-sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: mchehab-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hans.verkuil-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, bingbu.cao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, rajmohan.mani-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, yong.zhi-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tian.shu.qiu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 11, 2019 at 01:04:57PM +0800, Lu Baolu wrote:
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On Wed, Jan 02, 2019 at 11:16:57PM +0200, Sakari Ailus wrote:
+> Drivers such as the Intel IPU3 ImgU driver use the IOVA library to manage
+> the device's own virtual address space while not implementing the IOMMU
+> API. Currently the IOVA library is only compiled if the IOMMU support is
+> enabled, resulting into a failure during linking due to missing symbols.
 > 
-> VT-d Rev3.0 has made a few changes to the page request interface,
+> Fix this by defining IOVA library Kconfig bits independently of IOMMU
+> support configuration, and descending to the iommu directory
+> unconditionally during the build.
 > 
-> 1. widened PRQ descriptor from 128 bits to 256 bits;
-> 2. removed streaming response type;
-> 3. introduced private data that requires page response even the
->    request is not last request in group (LPIG).
-> 
-> This is a supplement to commit 1c4f88b7f1f92 ("iommu/vt-d: Shared
-> virtual address in scalable mode") and makes the svm code compliant
-> with VT-d Rev3.0.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Liu Yi L <yi.l.liu@intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Fixes: 1c4f88b7f1f92 ("iommu/vt-d: Shared virtual address in scalable mode")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Sakari Ailus <sakari.ailus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-Applied for v5.1, thanks.
+Applied, thanks.
