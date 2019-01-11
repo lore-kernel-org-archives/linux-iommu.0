@@ -1,39 +1,37 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/of: Fix probe-deferral
-Date: Fri, 11 Jan 2019 12:28:49 +0100
-Message-ID: <20190111112849.y2gfhpw2lk3fjojb@8bytes.org>
-References: <b158bd8aae8e9fd1a7fc7960cf17fa623dd47b11.1546880690.git.robin.murphy@arm.com>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Support page request in scalable mode
+Date: Fri, 11 Jan 2019 12:29:41 +0100
+Message-ID: <20190111112941.nv6p2veleipwyirs@8bytes.org>
+References: <20190111050457.27234-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <b158bd8aae8e9fd1a7fc7960cf17fa623dd47b11.1546880690.git.robin.murphy@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20190111050457.27234-1-baolu.lu@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>, Liu Yi L <yi.l.liu@intel.com>, Kevin Tian <kevin.tian@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 07, 2019 at 05:04:50PM +0000, Robin Murphy wrote:
-> Whilst iommu_probe_device() does check for non-NULL ops as the previous
-> code did, it does not do so in the same order relative to the other
-> checks, and as a result means that -EPROBE_DEFER returned by of_xlate()
-> (plus any real error condition too) gets overwritten with -EINVAL and
-> leads to various misbehaviour.
+On Fri, Jan 11, 2019 at 01:04:57PM +0800, Lu Baolu wrote:
+> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > 
-> Reinstate the original logic, but without implicitly relying on ops
-> being set to infer !err as the initial condition (now that the validity
-> of ops for its own sake is checked elsewhere).
+> VT-d Rev3.0 has made a few changes to the page request interface,
 > 
-> Fixes: 641fb0efbff0 ("iommu/of: Don't call iommu_ops->add_device directly")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> 1. widened PRQ descriptor from 128 bits to 256 bits;
+> 2. removed streaming response type;
+> 3. introduced private data that requires page response even the
+>    request is not last request in group (LPIG).
+> 
+> This is a supplement to commit 1c4f88b7f1f92 ("iommu/vt-d: Shared
+> virtual address in scalable mode") and makes the svm code compliant
+> with VT-d Rev3.0.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Fixes: 1c4f88b7f1f92 ("iommu/vt-d: Shared virtual address in scalable mode")
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Applied to iommu/fixes, thanks.
+Applied for v5.1, thanks.
