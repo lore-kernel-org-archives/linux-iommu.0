@@ -1,56 +1,119 @@
-From: He Zhe <zhe.he-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Subject: Re: [PATCH v2] kernel/dma: Fix panic caused by passing swiotlb to
-	command line
-Date: Fri, 11 Jan 2019 09:49:03 +0800
-Message-ID: <bf0c7631-f5c1-42cc-fa1a-d7f4f5b9e6eb@windriver.com>
-References: <1543832571-121638-1-git-send-email-zhe.he@windriver.com>
-	<b35907a9-4d30-493b-3839-731b10d71c63@windriver.com>
-	<20190107090702.GA14033@lst.de>
-	<CAPbh3rupHC_G0=5dBhhpoXvXO_=i-Y6p=9WdRtn9W19jRpVVcg@mail.gmail.com>
-	<1cef7480-0838-c044-9bca-9b7adacb0f17@windriver.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Fri, 11 Jan 2019 03:10:13 +0100
+Message-ID: <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de>
+References: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
+ <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
+ <20181213091021.GA2106@lst.de>
+ <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
+ <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
+ <20181213112511.GA4574@lst.de>
+ <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
+ <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
+ <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
+ <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
+ <20190103073622.GA24323@lst.de>
+ <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
+ <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
+ <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1cef7480-0838-c044-9bca-9b7adacb0f17-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: konrad-Gq0aWv8utHQdnm+yROfE0A@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
+Content-Language: de-DE
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
+Next step: 891dcc1072f1fa27a83da920d88daff6ca08fc02 (powerpc/dma: remove 
+dma_nommu_dma_supported)
+
+git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+
+git checkout 891dcc1072f1fa27a83da920d88daff6ca08fc02
+
+Output:
+
+Note: checking out '891dcc1072f1fa27a83da920d88daff6ca08fc02'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+git checkout -b <new-branch-name>
+
+HEAD is now at 891dcc1... powerpc/dma: remove dma_nommu_dma_supported
+
+---
+
+Link to the Git: 
+http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+
+Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
+boots. I also successfully tested sound, hardware 3D acceleration, 
+Bluetooth, network, booting with a label etc. The uImages work also in a 
+virtual e5500 quad-core QEMU machine.
+
+-- Christian
 
 
-On 1/11/19 9:46 AM, He Zhe wrote:
+On 09 January 2019 at 10:31AM, Christian Zigotzky wrote:
+> Next step: a64e18ba191ba9102fb174f27d707485ffd9389c (powerpc/dma: 
+> remove dma_nommu_get_required_mask)
 >
-> On 1/11/19 1:27 AM, Konrad Rzeszutek Wilk wrote:
->> Let's skip it. There was another patch that would allocate a default 4MB size if it there was an misue of swiotlb parameters.
-> But this patch mainly fixes a crash. Could you please point me to the patch you mentioned?
-
-And the v2 is modified according to your suggestion.
-
-Zhe
-
+> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
 >
-> Thanks,
-> Zhe
+> git checkout a64e18ba191ba9102fb174f27d707485ffd9389c
 >
+> Link to the Git: 
+> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+>
+> Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
+> boots. I also successfully tested sound, hardware 3D acceleration, 
+> Bluetooth, network, booting with a label etc. The uImages work also in 
+> a virtual e5500 quad-core QEMU machine.
+>
+> -- Christian
+>
+>
+> On 05 January 2019 at 5:03PM, Christian Zigotzky wrote:
+>> Next step: c446404b041130fbd9d1772d184f24715cf2362f (powerpc/dma: 
+>> remove dma_nommu_mmap_coherent)
 >>
+>> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
 >>
->> On Mon, Jan 7, 2019, 4:07 AM Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org <mailto:hch-jcswGhMUV9g@public.gmane.org> wrote:
+>> git checkout c446404b041130fbd9d1772d184f24715cf2362f
 >>
->>     On Mon, Jan 07, 2019 at 04:46:51PM +0800, He Zhe wrote:
->>     > Kindly ping.
+>> Output:
 >>
->>     Konrad, I'll pick this up through the DMA mapping tree unless you
->>     protest in the next few days.
+>> Note: checking out 'c446404b041130fbd9d1772d184f24715cf2362f'.
 >>
+>> You are in 'detached HEAD' state. You can look around, make experimental
+>> changes and commit them, and you can discard any commits you make in 
+>> this
+>> state without impacting any branches by performing another checkout.
+>>
+>> If you want to create a new branch to retain commits you create, you may
+>> do so (now or later) by using -b with the checkout command again. 
+>> Example:
+>>
+>>   git checkout -b <new-branch-name>
+>>
+>> HEAD is now at c446404... powerpc/dma: remove dma_nommu_mmap_coherent
+>>
+>> -----
+>>
+>> Link to the Git: 
+>> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
+>>
+>> Result: PASEMI onboard ethernet works and the X5000 (P5020 board) boots.
+>>
+>> -- Christian
+>>
+>
 >
