@@ -1,62 +1,207 @@
-From: Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
-Date: Fri, 11 Jan 2019 11:29:31 +0800
-Message-ID: <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
-References: <20190110134433.15672-1-joro@8bytes.org>
+From: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH 1/1] iommu/vt-d: Support page request in scalable mode
+Date: Fri, 11 Jan 2019 13:04:57 +0800
+Message-ID: <20190111050457.27234-1-baolu.lu@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190110134433.15672-1-joro@8bytes.org>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, "Michael S . Tsirkin" <mst@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, hch@lst.de
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 
-On 2019/1/10 下午9:44, Joerg Roedel wrote:
-> Hi,
->
-> there is a problem with virtio-blk driven devices when
-> virtio-ring uses SWIOTLB through the DMA-API. This happens
-> for example in AMD-SEV enabled guests, where the guest RAM
-> is mostly encrypted and all emulated DMA has to happen
-> to/from the SWIOTLB aperture.
->
-> The problem is a limitation of the SWIOTLB implementation,
-> which does not support allocations larger than 256kb. When
-> the virtio-blk driver tries to read/write a block larger
-> than that, the allocation of the dma-handle fails and an IO
-> error is reported.
->
-> This patch-set adds a check to the virtio-code whether it
-> might be using SWIOTLB bounce buffering and limits the
-> maximum segment size in the virtio-blk driver in this case,
-> so that it doesn't try to do larger reads/writes.
+VT-d Rev3.0 has made a few changes to the page request interface,
 
+1. widened PRQ descriptor from 128 bits to 256 bits;
+2. removed streaming response type;
+3. introduced private data that requires page response even the
+   request is not last request in group (LPIG).
 
-Just wonder if my understanding is correct IOMMU_PLATFORM must be set 
-for all virtio devices under AMD-SEV guests?
+This is a supplement to commit 1c4f88b7f1f92 ("iommu/vt-d: Shared
+virtual address in scalable mode") and makes the svm code compliant
+with VT-d Rev3.0.
 
-Thanks
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Liu Yi L <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Kevin Tian <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Fixes: 1c4f88b7f1f92 ("iommu/vt-d: Shared virtual address in scalable mode")
+Signed-off-by: Lu Baolu <baolu.lu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/intel-svm.c   | 77 ++++++++++++++++++++++---------------
+ include/linux/intel-iommu.h | 21 +++++-----
+ include/linux/intel-svm.h   |  2 +-
+ 3 files changed, 55 insertions(+), 45 deletions(-)
 
-
->
-> Please review.
->
-> Thanks,
->
-> 	Joerg
->
-> Joerg Roedel (3):
->    swiotlb: Export maximum allocation size
->    virtio: Introduce virtio_max_dma_size()
->    virtio-blk: Consider virtio_max_dma_size() for maximum segment size
->
->   drivers/block/virtio_blk.c   | 10 ++++++----
->   drivers/virtio/virtio_ring.c | 11 +++++++++++
->   include/linux/swiotlb.h      | 12 ++++++++++++
->   include/linux/virtio.h       |  2 ++
->   4 files changed, 31 insertions(+), 4 deletions(-)
->
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index a2a2aa4439aa..79add5716552 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -470,20 +470,31 @@ EXPORT_SYMBOL_GPL(intel_svm_is_pasid_valid);
+ 
+ /* Page request queue descriptor */
+ struct page_req_dsc {
+-	u64 srr:1;
+-	u64 bof:1;
+-	u64 pasid_present:1;
+-	u64 lpig:1;
+-	u64 pasid:20;
+-	u64 bus:8;
+-	u64 private:23;
+-	u64 prg_index:9;
+-	u64 rd_req:1;
+-	u64 wr_req:1;
+-	u64 exe_req:1;
+-	u64 priv_req:1;
+-	u64 devfn:8;
+-	u64 addr:52;
++	union {
++		struct {
++			u64 type:8;
++			u64 pasid_present:1;
++			u64 priv_data_present:1;
++			u64 rsvd:6;
++			u64 rid:16;
++			u64 pasid:20;
++			u64 exe_req:1;
++			u64 pm_req:1;
++			u64 rsvd2:10;
++		};
++		u64 qw_0;
++	};
++	union {
++		struct {
++			u64 rd_req:1;
++			u64 wr_req:1;
++			u64 lpig:1;
++			u64 prg_index:9;
++			u64 addr:52;
++		};
++		u64 qw_1;
++	};
++	u64 priv_data[2];
+ };
+ 
+ #define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
+@@ -596,7 +607,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		/* Accounting for major/minor faults? */
+ 		rcu_read_lock();
+ 		list_for_each_entry_rcu(sdev, &svm->devs, list) {
+-			if (sdev->sid == PCI_DEVID(req->bus, req->devfn))
++			if (sdev->sid == req->rid)
+ 				break;
+ 		}
+ 		/* Other devices can go away, but the drivers are not permitted
+@@ -609,33 +620,35 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 
+ 		if (sdev && sdev->ops && sdev->ops->fault_cb) {
+ 			int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
+-				(req->exe_req << 1) | (req->priv_req);
+-			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr, req->private, rwxp, result);
++				(req->exe_req << 1) | (req->pm_req);
++			sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr,
++					    req->priv_data, rwxp, result);
+ 		}
+ 		/* We get here in the error case where the PASID lookup failed,
+ 		   and these can be NULL. Do not use them below this point! */
+ 		sdev = NULL;
+ 		svm = NULL;
+ 	no_pasid:
+-		if (req->lpig) {
+-			/* Page Group Response */
++		if (req->lpig || req->priv_data_present) {
++			/*
++			 * Per VT-d spec. v3.0 ch7.7, system software must
++			 * respond with page group response if private data
++			 * is present (PDP) or last page in group (LPIG) bit
++			 * is set. This is an additional VT-d feature beyond
++			 * PCI ATS spec.
++			 */
+ 			resp.qw0 = QI_PGRP_PASID(req->pasid) |
+-				QI_PGRP_DID((req->bus << 8) | req->devfn) |
++				QI_PGRP_DID(req->rid) |
+ 				QI_PGRP_PASID_P(req->pasid_present) |
++				QI_PGRP_PDP(req->pasid_present) |
++				QI_PGRP_RESP_CODE(result) |
+ 				QI_PGRP_RESP_TYPE;
+ 			resp.qw1 = QI_PGRP_IDX(req->prg_index) |
+-				QI_PGRP_PRIV(req->private) |
+-				QI_PGRP_RESP_CODE(result);
+-		} else if (req->srr) {
+-			/* Page Stream Response */
+-			resp.qw0 = QI_PSTRM_IDX(req->prg_index) |
+-				QI_PSTRM_PRIV(req->private) |
+-				QI_PSTRM_BUS(req->bus) |
+-				QI_PSTRM_PASID(req->pasid) |
+-				QI_PSTRM_RESP_TYPE;
+-			resp.qw1 = QI_PSTRM_ADDR(address) |
+-				QI_PSTRM_DEVFN(req->devfn) |
+-				QI_PSTRM_RESP_CODE(result);
++				QI_PGRP_LPIG(req->lpig);
++
++			if (req->priv_data_present)
++				memcpy(&resp.qw2, req->priv_data,
++				       sizeof(req->priv_data));
+ 		}
+ 		resp.qw2 = 0;
+ 		resp.qw3 = 0;
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 0605f3bf6e79..fa364de9db18 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -374,20 +374,17 @@ enum {
+ #define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xfff) << 52))
+ #define QI_DEV_EIOTLB_MAX_INVS	32
+ 
+-#define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
+-#define QI_PGRP_PRIV(priv)	(((u64)(priv)) << 32)
+-#define QI_PGRP_RESP_CODE(res)	((u64)(res))
+-#define QI_PGRP_PASID(pasid)	(((u64)(pasid)) << 32)
+-#define QI_PGRP_DID(did)	(((u64)(did)) << 16)
++/* Page group response descriptor QW0 */
+ #define QI_PGRP_PASID_P(p)	(((u64)(p)) << 4)
++#define QI_PGRP_PDP(p)		(((u64)(p)) << 5)
++#define QI_PGRP_RESP_CODE(res)	(((u64)(res)) << 12)
++#define QI_PGRP_DID(rid)	(((u64)(rid)) << 16)
++#define QI_PGRP_PASID(pasid)	(((u64)(pasid)) << 32)
++
++/* Page group response descriptor QW1 */
++#define QI_PGRP_LPIG(x)		(((u64)(x)) << 2)
++#define QI_PGRP_IDX(idx)	(((u64)(idx)) << 3)
+ 
+-#define QI_PSTRM_ADDR(addr)	(((u64)(addr)) & VTD_PAGE_MASK)
+-#define QI_PSTRM_DEVFN(devfn)	(((u64)(devfn)) << 4)
+-#define QI_PSTRM_RESP_CODE(res)	((u64)(res))
+-#define QI_PSTRM_IDX(idx)	(((u64)(idx)) << 55)
+-#define QI_PSTRM_PRIV(priv)	(((u64)(priv)) << 32)
+-#define QI_PSTRM_BUS(bus)	(((u64)(bus)) << 24)
+-#define QI_PSTRM_PASID(pasid)	(((u64)(pasid)) << 4)
+ 
+ #define QI_RESP_SUCCESS		0x0
+ #define QI_RESP_INVALID		0x1
+diff --git a/include/linux/intel-svm.h b/include/linux/intel-svm.h
+index 99bc5b3ae26e..e3f76315ca4d 100644
+--- a/include/linux/intel-svm.h
++++ b/include/linux/intel-svm.h
+@@ -20,7 +20,7 @@ struct device;
+ 
+ struct svm_dev_ops {
+ 	void (*fault_cb)(struct device *dev, int pasid, u64 address,
+-			 u32 private, int rwxp, int response);
++			 void *private, int rwxp, int response);
+ };
+ 
+ /* Values for rxwp in fault_cb callback */
+-- 
+2.17.1
