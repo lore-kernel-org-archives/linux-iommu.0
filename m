@@ -1,26 +1,36 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
- tables
-Date: Fri, 11 Jan 2019 11:21:55 +0100
-Message-ID: <20190111102155.in5rctq5krs4ewfi@8bytes.org>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
+Subject: Re: [PATCH 3/4] iommu/of: Don't call iommu_ops->add_device directly
+Date: Fri, 11 Jan 2019 11:23:29 +0100
+Message-ID: <20190111102328.hm6y4chellntpnhl@8bytes.org>
+References: <20181211150513.15161-1-joro@8bytes.org>
+ <CGME20181211150640epcas5p4ffdd63a1900ebfe4a04eea24d2c86de6@epcas5p4.samsung.com>
+ <20181211150513.15161-4-joro@8bytes.org>
+ <30d86186-e0a2-2be1-2295-20510fbd74ba@samsung.com>
+ <20181219143451.GY16835@8bytes.org>
+ <CAMuHMdXr5tVuWf4dJzBLRfdqpMCMBSg-+t35nb=Rmh9PM=abJg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <stable-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
-Sender: stable-owner@vger.kernel.org
-To: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Will Deacon <will.deacon@arm.com>, Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>
+In-Reply-To: <CAMuHMdXr5tVuWf4dJzBLRfdqpMCMBSg-+t35nb=Rmh9PM=abJg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Joerg Roedel <jroedel@suse.de>, Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
-> Does anyone have any further comment on this series? If not, which
-> maintainer is going to pick this up? I assume Andrew Morton?
 
-Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
-this should go through mm.
+Hi Geert,
+
+On Thu, Dec 20, 2018 at 04:42:17PM +0100, Geert Uytterhoeven wrote:
+> > -       return ops->add_device(dev);
+> > +       if (ops)
+> 
+> Is this sufficient? The old code checked for ops->add_device != NULL,
+> too.
+
+Robin brought up that all iommu-ops implementations support the
+add_device call-back, so we can remove that check and make the call-back
+mandatory for new implementations too.
 
 Regards,
 
