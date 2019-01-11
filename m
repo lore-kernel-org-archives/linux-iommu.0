@@ -1,43 +1,39 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v6 0/7] Add virtio-iommu driver
-Date: Fri, 11 Jan 2019 13:00:30 +0000
-Message-ID: <08283b53-2f87-05e7-e71c-8780b34d9018@arm.com>
-References: <20181211182104.18241-1-jean-philippe.brucker@arm.com>
- <20181212103545.GV16835@8bytes.org>
- <9110873f-d344-b6b9-c722-9accfc329db2@arm.com>
- <20190111122846.GE5825@8bytes.org>
+From: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 01/13] dt-binding: mediatek: Get rid of mediatek,larb for
+ multimedia HW
+Date: Fri, 11 Jan 2019 08:58:21 -0600
+Message-ID: <20190111145821.GA32150@bogus>
+References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
+ <1546318276-18993-2-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-5316-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20190111122846.GE5825@8bytes.org>
-Content-Language: en-US
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>, "mst@redhat.com" <mst@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>, "robh+dt@kernel.org" <robh+dt@kernel.org>, Mark Rutland <Mark.Rutland@arm.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "frowand.list@gmail.com" <frowand.list@gmail.com>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "eric.auger@redhat.com" <eric.auger@redhat.com>, "tnowicki@caviumnetworks.com" <tnowicki@caviumnetworks.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, Marc Zyngier <Marc.Zyngier@arm.com>, Robin Murphy <Robin.Mur>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1546318276-18993-2-git-send-email-yong.wu@mediatek.com>
+Sender: linux-kernel-owner@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/01/2019 12:28, Joerg Roedel wrote:
-> Hi Jean-Philippe,
+On Tue, 1 Jan 2019 12:51:04 +0800, Yong Wu wrote:
+> After adding device_link between the consumer with the smi-larbs,
+> if the consumer call its owner pm_runtime_get(_sync), the
+> pm_runtime_get(_sync) of smi-larb and smi-common will be called
+> automatically. Thus, the consumer don't need the property.
 > 
-> On Thu, Dec 13, 2018 at 12:50:29PM +0000, Jean-Philippe Brucker wrote:
->> We already do deferred flush: UNMAP requests are added to the queue by
->> iommu_unmap(), and then flushed out by iotlb_sync(). So we switch to the
->> host only on iotlb_sync(), or when the request queue is full.
+> And IOMMU also know which larb this consumer connects with from
+> iommu id in the "iommus=" property.
 > 
-> So the mappings can stay in place until iotlb_sync() returns? What
-> happens when the guest sends a map-request for a region it sent and
-> unmap request before, but did not call iotlb_sync inbetween?
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+> I guess it should go through Matthias's tree if the patch is ok,
+> thus I don't separate to different patches. If it's really needed,
+> please feel free to tell me.
+> ---
+>  .../devicetree/bindings/display/mediatek/mediatek,disp.txt       | 9 ---------
+>  .../devicetree/bindings/media/mediatek-jpeg-decoder.txt          | 4 ----
+>  Documentation/devicetree/bindings/media/mediatek-mdp.txt         | 8 --------
+>  Documentation/devicetree/bindings/media/mediatek-vcodec.txt      | 4 ----
+>  4 files changed, 25 deletions(-)
+> 
 
-At that point the unmap is still in the request queue, and the host will
-handle it before getting to the map request. For correctness requests
-are necessarily handled in-order by the host. So if the map and unmap
-refer to the same domain and IOVA, the host will remove the old mapping
-before creating the new one.
-
-Thanks,
-Jean
+Reviewed-by: Rob Herring <robh@kernel.org>
