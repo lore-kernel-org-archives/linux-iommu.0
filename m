@@ -1,39 +1,64 @@
-From: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 01/13] dt-binding: mediatek: Get rid of mediatek,larb for
- multimedia HW
-Date: Fri, 11 Jan 2019 08:58:21 -0600
-Message-ID: <20190111145821.GA32150@bogus>
-References: <1546318276-18993-1-git-send-email-yong.wu@mediatek.com>
- <1546318276-18993-2-git-send-email-yong.wu@mediatek.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: [PATCH 0/9] Use vm_insert_range and vm_insert_range_buggy
+Date: Fri, 11 Jan 2019 20:35:41 +0530
+Message-ID: <20190111150541.GA2670@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1546318276-18993-2-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, yong.wu@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+To: akpm@linux-foundation.org, willy@infradead.org, mhocko@suse.com, kirill.shutemov@linux.intel.com, vbabka@suse.cz, riel@surriel.com, sfr@canb.auug.org.au, rppt@linux.vnet.ibm.com, peterz@infradead.org, linux@armlinux.org.uk, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, keescook@chromium.org, m.szyprowski@samsung.com, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, heiko@sntech.de, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, kyungmin.park@samsung.com, mchehab@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com
+Cc: linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 1 Jan 2019 12:51:04 +0800, Yong Wu wrote:
-> After adding device_link between the consumer with the smi-larbs,
-> if the consumer call its owner pm_runtime_get(_sync), the
-> pm_runtime_get(_sync) of smi-larb and smi-common will be called
-> automatically. Thus, the consumer don't need the property.
-> 
-> And IOMMU also know which larb this consumer connects with from
-> iommu id in the "iommus=" property.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
-> I guess it should go through Matthias's tree if the patch is ok,
-> thus I don't separate to different patches. If it's really needed,
-> please feel free to tell me.
-> ---
->  .../devicetree/bindings/display/mediatek/mediatek,disp.txt       | 9 ---------
->  .../devicetree/bindings/media/mediatek-jpeg-decoder.txt          | 4 ----
->  Documentation/devicetree/bindings/media/mediatek-mdp.txt         | 8 --------
->  Documentation/devicetree/bindings/media/mediatek-vcodec.txt      | 4 ----
->  4 files changed, 25 deletions(-)
-> 
+Previouly drivers have their own way of mapping range of
+kernel pages/memory into user vma and this was done by
+invoking vm_insert_page() within a loop.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+As this pattern is common across different drivers, it can
+be generalized by creating new functions and use it across
+the drivers.
+
+vm_insert_range() is the API which could be used to mapped
+kernel memory/pages in drivers which has considered vm_pgoff
+
+vm_insert_range_buggy() is the API which could be used to map
+range of kernel memory/pages in drivers which has not considered
+vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
+
+We _could_ then at a later "fix" these drivers which are using
+vm_insert_range_buggy() to behave according to the normal vm_pgoff
+offsetting simply by removing the _buggy suffix on the function
+name and if that causes regressions, it gives us an easy way to revert.
+
+There is an existing bug in [7/9], where user passed length is not
+verified against object_count. For any value of length > object_count
+it will end up overrun page array which could lead to a potential bug.
+This is fixed as part of these conversion.
+
+Souptick Joarder (9):
+  mm: Introduce new vm_insert_range and vm_insert_range_buggy API
+  arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
+  drivers/firewire/core-iso.c: Convert to use vm_insert_range_buggy
+  drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
+  drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
+  iommu/dma-iommu.c: Convert to use vm_insert_range
+  videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range_buggy
+  xen/gntdev.c: Convert to use vm_insert_range
+  xen/privcmd-buf.c: Convert to use vm_insert_range_buggy
+
+ arch/arm/mm/dma-mapping.c                         | 22 ++----
+ drivers/firewire/core-iso.c                       | 15 +----
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c       | 17 +----
+ drivers/gpu/drm/xen/xen_drm_front_gem.c           | 18 ++---
+ drivers/iommu/dma-iommu.c                         | 12 +---
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c | 22 ++----
+ drivers/xen/gntdev.c                              | 16 ++---
+ drivers/xen/privcmd-buf.c                         |  8 +--
+ include/linux/mm.h                                |  4 ++
+ mm/memory.c                                       | 81 +++++++++++++++++++++++
+ mm/nommu.c                                        | 14 ++++
+ 11 files changed, 129 insertions(+), 100 deletions(-)
+
+-- 
+1.9.1
