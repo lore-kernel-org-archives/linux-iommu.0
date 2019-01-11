@@ -1,208 +1,225 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC v3 17/21] iommu/smmuv3: Report non recoverable faults
-Date: Fri, 11 Jan 2019 17:46:39 +0000
-Message-ID: <dae89fd8-6a82-d2f0-a8c7-ddbf12a7b047@arm.com>
+Subject: Re: [RFC v3 01/21] iommu: Introduce set_pasid_table API
+Date: Fri, 11 Jan 2019 18:16:06 +0000
+Message-ID: <0203e4ce-eace-be6e-7e95-5a02c069c8e8@arm.com>
 References: <20190108102633.17482-1-eric.auger@redhat.com>
- <20190108102633.17482-18-eric.auger@redhat.com>
+ <20190108102633.17482-2-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190108102633.17482-18-eric.auger@redhat.com>
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <20190108102633.17482-2-eric.auger@redhat.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
 To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, will.deacon@arm.com, robin.murphy@arm.com
-Cc: marc.zyngier@arm.com, peter.maydell@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com, christoffer.dall@arm.com
+Cc: marc.zyngier@arm.com, kevin.tian@intel.com, ashok.raj@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
 On 08/01/2019 10:26, Eric Auger wrote:
-> When a stage 1 related fault event is read from the event queue,
-> let's propagate it to potential external fault listeners, ie. users
-> who registered a fault handler.
+> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > 
+> In virtualization use case, when a guest is assigned
+> a PCI host device, protected by a virtual IOMMU on a guest,
+> the physical IOMMU must be programmed to be consistent with
+> the guest mappings. If the physical IOMMU supports two
+> translation stages it makes sense to program guest mappings
+> onto the first stage/level (ARM/VTD terminology) while to host
+> owns the stage/level 2.
+> 
+> In that case, it is mandated to trap on guest configuration
+> settings and pass those to the physical iommu driver.
+> 
+> This patch adds a new API to the iommu subsystem that allows
+> to set the pasid table information.
+> 
+> A generic iommu_pasid_table_config struct is introduced in
+> a new iommu.h uapi header. This is going to be used by the VFIO
+> user API. We foresee at least two specializations of this struct,
+> for PASID table passing and ARM SMMUv3.
+
+Last sentence is a bit confusing. With SMMUv3 it is also used for the
+PASID table, even when it only has one entry and PASID is disabled.
+
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 124 ++++++++++++++++++++++++++++++++----
->  1 file changed, 113 insertions(+), 11 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 999ee470a2ae..6a711cbbb228 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -168,6 +168,26 @@
->  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
->  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
->  
-> +/* Events */
-> +#define ARM_SMMU_EVT_F_UUT		0x01
-> +#define ARM_SMMU_EVT_C_BAD_STREAMID	0x02
-> +#define ARM_SMMU_EVT_F_STE_FETCH	0x03
-> +#define ARM_SMMU_EVT_C_BAD_STE		0x04
-> +#define ARM_SMMU_EVT_F_BAD_ATS_TREQ	0x05
-> +#define ARM_SMMU_EVT_F_STREAM_DISABLED	0x06
-> +#define ARM_SMMU_EVT_F_TRANSL_FORBIDDEN	0x07
-> +#define ARM_SMMU_EVT_C_BAD_SUBSTREAMID	0x08
-> +#define ARM_SMMU_EVT_F_CD_FETCH		0x09
-> +#define ARM_SMMU_EVT_C_BAD_CD		0x0a
-> +#define ARM_SMMU_EVT_F_WALK_EABT	0x0b
-> +#define ARM_SMMU_EVT_F_TRANSLATION	0x10
-> +#define ARM_SMMU_EVT_F_ADDR_SIZE	0x11
-> +#define ARM_SMMU_EVT_F_ACCESS		0x12
-> +#define ARM_SMMU_EVT_F_PERMISSION	0x13
-> +#define ARM_SMMU_EVT_F_TLB_CONFLICT	0x20
-> +#define ARM_SMMU_EVT_F_CFG_CONFLICT	0x21
-> +#define ARM_SMMU_EVT_E_PAGE_REQUEST	0x24
-> +
->  /* Common MSI config fields */
->  #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
->  #define MSI_CFG2_SH			GENMASK(5, 4)
-> @@ -333,6 +353,11 @@
->  #define EVTQ_MAX_SZ_SHIFT		7
->  
->  #define EVTQ_0_ID			GENMASK_ULL(7, 0)
-> +#define EVTQ_0_SUBSTREAMID		GENMASK_ULL(31, 12)
-> +#define EVTQ_0_STREAMID			GENMASK_ULL(63, 32)
-> +#define EVTQ_1_S2			GENMASK_ULL(39, 39)
-> +#define EVTQ_1_CLASS			GENMASK_ULL(40, 41)
-> +#define EVTQ_3_FETCH_ADDR		GENMASK_ULL(51, 3)
->  
->  /* PRI queue */
->  #define PRIQ_ENT_DWORDS			2
-> @@ -1270,7 +1295,6 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
->  	return 0;
+> ---
+> 
+> This patch generalizes the API introduced by Jacob & co-authors in
+> https://lwn.net/Articles/754331/
+> 
+> v2 -> v3:
+> - replace unbind/bind by set_pasid_table
+> - move table pointer and pasid bits in the generic part of the struct
+> 
+> v1 -> v2:
+> - restore the original pasid table name
+> - remove the struct device * parameter in the API
+> - reworked iommu_pasid_smmuv3
+> ---
+>  drivers/iommu/iommu.c      | 10 ++++++++
+>  include/linux/iommu.h      | 14 +++++++++++
+>  include/uapi/linux/iommu.h | 50 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 74 insertions(+)
+>  create mode 100644 include/uapi/linux/iommu.h
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 3ed4db334341..0f2b7f1fc7c8 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1393,6 +1393,16 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
 >  }
+>  EXPORT_SYMBOL_GPL(iommu_attach_device);
 >  
-> -__maybe_unused
->  static struct arm_smmu_master_data *
->  arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
->  {
-> @@ -1296,24 +1320,102 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
->  	return master;
->  }
->  
-> +static void arm_smmu_report_event(struct arm_smmu_device *smmu, u64 *evt)
+> +int iommu_set_pasid_table(struct iommu_domain *domain,
+> +			  struct iommu_pasid_table_config *cfg)
 > +{
-> +	u64 fetch_addr = FIELD_GET(EVTQ_3_FETCH_ADDR, evt[3]);
-> +	u32 sid = FIELD_GET(EVTQ_0_STREAMID, evt[0]);
-> +	bool s1 = !FIELD_GET(EVTQ_1_S2, evt[1]);
-> +	u8 type = FIELD_GET(EVTQ_0_ID, evt[0]);
-> +	struct arm_smmu_master_data *master;
-> +	struct iommu_fault_event event;
-> +	bool propagate = true;
-> +	u64 addr = evt[2];
-> +	int i;
+> +	if (unlikely(!domain->ops->set_pasid_table))
+> +		return -ENODEV;
 > +
-> +	master = arm_smmu_find_master(smmu, sid);
-> +	if (WARN_ON(!master))
-> +		return;
+> +	return domain->ops->set_pasid_table(domain, cfg);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_set_pasid_table);
 > +
-> +	event.fault.type = IOMMU_FAULT_DMA_UNRECOV;
+>  static void __iommu_detach_device(struct iommu_domain *domain,
+>  				  struct device *dev)
+>  {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index e90da6b6f3d1..1da2a2357ea4 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -25,6 +25,7 @@
+>  #include <linux/errno.h>
+>  #include <linux/err.h>
+>  #include <linux/of.h>
+> +#include <uapi/linux/iommu.h>
+>  
+>  #define IOMMU_READ	(1 << 0)
+>  #define IOMMU_WRITE	(1 << 1)
+> @@ -184,6 +185,7 @@ struct iommu_resv_region {
+>   * @domain_window_disable: Disable a particular window for a domain
+>   * @of_xlate: add OF master IDs to iommu grouping
+>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+> + * @set_pasid_table: set pasid table
+>   */
+>  struct iommu_ops {
+>  	bool (*capable)(enum iommu_cap);
+> @@ -226,6 +228,9 @@ struct iommu_ops {
+>  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+>  	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+>  
+> +	int (*set_pasid_table)(struct iommu_domain *domain,
+> +			       struct iommu_pasid_table_config *cfg);
 > +
-> +	switch (type) {
-> +	case ARM_SMMU_EVT_C_BAD_STREAMID:
-> +		event.fault.reason = IOMMU_FAULT_REASON_SOURCEID_INVALID;
-> +		break;
-> +	case ARM_SMMU_EVT_F_STREAM_DISABLED:
-> +	case ARM_SMMU_EVT_C_BAD_SUBSTREAMID:
-> +		event.fault.reason = IOMMU_FAULT_REASON_PASID_INVALID;
-> +		break;
-> +	case ARM_SMMU_EVT_F_CD_FETCH:
-> +		event.fault.reason = IOMMU_FAULT_REASON_PASID_FETCH;
-> +		break;
-> +	case ARM_SMMU_EVT_F_WALK_EABT:
-> +		event.fault.reason = IOMMU_FAULT_REASON_WALK_EABT;
-> +		event.fault.addr = addr;
-> +		event.fault.fetch_addr = fetch_addr;
-> +		propagate = s1;
-> +		break;
-> +	case ARM_SMMU_EVT_F_TRANSLATION:
-> +		event.fault.reason = IOMMU_FAULT_REASON_PTE_FETCH;
-> +		event.fault.addr = addr;
-> +		event.fault.fetch_addr = fetch_addr;
-> +		propagate = s1;
-> +		break;
-> +	case ARM_SMMU_EVT_F_PERMISSION:
-> +		event.fault.reason = IOMMU_FAULT_REASON_PERMISSION;
-> +		event.fault.addr = addr;
-> +		propagate = s1;
-> +		break;
-> +	case ARM_SMMU_EVT_F_ACCESS:
-> +		event.fault.reason = IOMMU_FAULT_REASON_ACCESS;
-> +		event.fault.addr = addr;
-> +		propagate = s1;
-> +		break;
-> +	case ARM_SMMU_EVT_C_BAD_STE:
-> +		event.fault.reason = IOMMU_FAULT_REASON_BAD_DEVICE_CONTEXT_ENTRY;
-> +		break;
-> +	case ARM_SMMU_EVT_C_BAD_CD:
-> +		event.fault.reason = IOMMU_FAULT_REASON_BAD_PASID_ENTRY;
-> +		break;
-> +	case ARM_SMMU_EVT_F_ADDR_SIZE:
-> +		event.fault.reason = IOMMU_FAULT_REASON_OOR_ADDRESS;
-> +		propagate = s1;
-> +		break;
-> +	case ARM_SMMU_EVT_F_STE_FETCH:
-> +		event.fault.reason = IOMMU_FAULT_REASON_DEVICE_CONTEXT_FETCH;
-> +		event.fault.fetch_addr = fetch_addr;
-> +		break;
-> +	/* End of addition */
-> +	case ARM_SMMU_EVT_E_PAGE_REQUEST:
-> +	case ARM_SMMU_EVT_F_TLB_CONFLICT:
-> +	case ARM_SMMU_EVT_F_CFG_CONFLICT:
-> +	case ARM_SMMU_EVT_F_BAD_ATS_TREQ:
-> +	case ARM_SMMU_EVT_F_TRANSL_FORBIDDEN:
-> +	case ARM_SMMU_EVT_F_UUT:
-> +	default:
-> +		event.fault.reason = IOMMU_FAULT_REASON_UNKNOWN;
-> +	}
-> +	/* only propagate the error if it relates to stage 1 */
-> +	if (s1)
+>  	unsigned long pgsize_bitmap;
+>  };
+>  
+> @@ -287,6 +292,8 @@ extern int iommu_attach_device(struct iommu_domain *domain,
+>  			       struct device *dev);
+>  extern void iommu_detach_device(struct iommu_domain *domain,
+>  				struct device *dev);
+> +extern int iommu_set_pasid_table(struct iommu_domain *domain,
+> +				 struct iommu_pasid_table_config *cfg);
+>  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+>  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
+>  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+> @@ -696,6 +703,13 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+>  	return NULL;
+>  }
+>  
+> +static inline
+> +int iommu_set_pasid_table(struct iommu_domain *domain,
+> +			  struct iommu_pasid_table_config *cfg)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  #ifdef CONFIG_IOMMU_DEBUGFS
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> new file mode 100644
+> index 000000000000..7a7cf7a3de7c
+> --- /dev/null
+> +++ b/include/uapi/linux/iommu.h
+> @@ -0,0 +1,50 @@
+> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +/*
+> + * IOMMU user API definitions
+> + *
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
 
-if (propagate)
+I don't think we need both the boilerplate and the SPDX header
 
-But I don't quite understand how we're deciding what to propagate: a
-C_BAD_STE is most likely a bug in the SMMU driver, but is reported to
-userspace. On the other hand a stage-2 F_TRANSLATION is likely an error
-from the VMM (didn't setup stage-2 mappings properly), but we're not
-reporting it. Maybe we should add a bit to event.fault that tells
-whether the fault was stage 1 or 2, and let the VMM deal with it?
+> + */
+> +
+> +#ifndef _UAPI_IOMMU_H
+> +#define _UAPI_IOMMU_H
+> +
+> +#include <linux/types.h>
+> +
+> +/**
+> + * SMMUv3 Stream Table Entry stage 1 related information
+> + * @abort: shall the STE lead to abort
+> + * @s1fmt: STE s1fmt field as set by the guest
+> + * @s1dss: STE s1dss as set by the guest
+> + * All field names match the smmu 3.0/3.1 spec (ARM IHI 0070A)
 
-> +		iommu_report_device_fault(master->dev, &event);
+Not really the case for @abort. Could you clarify whether @abort is
+valid in combination with @bypass?
 
-We should return here if the fault is successfully injected
+> + */
+> +struct iommu_pasid_smmuv3 {
+> +	__u8 abort;
+> +	__u8 s1fmt;
+> +	__u8 s1dss;
+> +};
+> +
+> +/**
+> + * PASID table data used to bind guest PASID table to the host IOMMU
+> + * Note PASID table corresponds to the Context Table on ARM SMMUv3.
+> + *
+> + * @version: API version to prepare for future extensions
+> + * @format: format of the PASID table
+> + *
+> + */
+> +struct iommu_pasid_table_config {
+> +#define PASID_TABLE_CFG_VERSION_1 1
+> +	__u32	version;
+> +#define IOMMU_PASID_FORMAT_SMMUV3	(1 << 0)
+> +	__u32	format;
+> +	__u64	base_ptr;
+> +	__u8	pasid_bits;
+> +	__u8	bypass;
+
+We need some padding, in case someone adds a new struct to the union
+that requires 64-byte alignment
+
+And 'bypass' might not be the right name if we're making it common,
+maybe 'reset' would be clearer? Or we just need to explain that bypass
+is the initial state of a nesting domain
 
 Thanks,
 Jean
 
+> +	union {
+> +		struct iommu_pasid_smmuv3 smmuv3;
+> +	};
+> +};
 > +
-> +	dev_info(smmu->dev, "event 0x%02x received:\n", type);
-> +	for (i = 0; i < EVTQ_ENT_DWORDS; ++i) {
-> +		dev_info(smmu->dev, "\t0x%016llx\n",
-> +			 (unsigned long long)evt[i]);
-> +	}
-> +}
-> +
->  /* IRQ and event handlers */
->  static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
->  {
-> -	int i;
->  	struct arm_smmu_device *smmu = dev;
->  	struct arm_smmu_queue *q = &smmu->evtq.q;
->  	u64 evt[EVTQ_ENT_DWORDS];
->  
->  	do {
-> -		while (!queue_remove_raw(q, evt)) {
-> -			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
-> -
-> -			dev_info(smmu->dev, "event 0x%02x received:\n", id);
-> -			for (i = 0; i < ARRAY_SIZE(evt); ++i)
-> -				dev_info(smmu->dev, "\t0x%016llx\n",
-> -					 (unsigned long long)evt[i]);
-> -
-> -		}
-> +		while (!queue_remove_raw(q, evt))
-> +			arm_smmu_report_event(smmu, evt);
->  
->  		/*
->  		 * Not much we can do on overflow, so scream and pretend we're
+> +#endif /* _UAPI_IOMMU_H */
 > 
