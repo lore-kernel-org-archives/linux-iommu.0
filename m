@@ -1,223 +1,115 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC v3 01/21] iommu: Introduce set_pasid_table API
-Date: Fri, 11 Jan 2019 11:43:16 -0700
-Message-ID: <20190111114316.71e77d5f@x1.home>
-References: <20190108102633.17482-1-eric.auger@redhat.com>
- <20190108102633.17482-2-eric.auger@redhat.com>
+From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Subject: Re: [PATCH 3/3] videobuf2: replace a layering violation with
+ dma_map_resource
+Date: Fri, 11 Jan 2019 17:54:16 -0200
+Message-ID: <20190111175416.7d291e25@coco.lan>
+References: <20190111181731.11782-1-hch@lst.de>
+ <20190111181731.11782-4-hch@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <20190108102633.17482-2-eric.auger@redhat.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Eric Auger <eric.auger@redhat.com>
-Cc: yi.l.liu@linux.intel.com, kevin.tian@intel.com, jacob.jun.pan@linux.intel.com, ashok.raj@intel.com, kvm@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, marc.zyngier@arm.com, iommu@lists.linux-foundation.org, robin.murphy@arm.com, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190111181731.11782-4-hch@lst.de>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= <niklas.soderlund+renesas@ragnatech.se>, Pawel Osciak <pawel@osciak.com>, Russell King <linux@armlinux.org.uk>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Kyungmin Park <kyungmin.park@samsung.com>, linux-media@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue,  8 Jan 2019 11:26:13 +0100
-Eric Auger <eric.auger@redhat.com> wrote:
+Em Fri, 11 Jan 2019 19:17:31 +0100
+Christoph Hellwig <hch@lst.de> escreveu:
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> vb2_dc_get_userptr pokes into arm direct mapping details to get the
+> resemblance of a dma address for a a physical address that does is
+> not backed by a page struct.  Not only is this not portable to other
+> architectures with dma direct mapping offsets, but also not to uses
+> of IOMMUs of any kind.  Switch to the proper dma_map_resource /
+> dma_unmap_resource interface instead.
+
+Makes sense to me. I'm assuming that you'll be pushing it together
+with other mm patches, so:
+
+Acked-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+
 > 
-> In virtualization use case, when a guest is assigned
-> a PCI host device, protected by a virtual IOMMU on a guest,
-> the physical IOMMU must be programmed to be consistent with
-> the guest mappings. If the physical IOMMU supports two
-> translation stages it makes sense to program guest mappings
-> onto the first stage/level (ARM/VTD terminology) while to host
-> owns the stage/level 2.
-> 
-> In that case, it is mandated to trap on guest configuration
-> settings and pass those to the physical iommu driver.
-> 
-> This patch adds a new API to the iommu subsystem that allows
-> to set the pasid table information.
-> 
-> A generic iommu_pasid_table_config struct is introduced in
-> a new iommu.h uapi header. This is going to be used by the VFIO
-> user API. We foresee at least two specializations of this struct,
-> for PASID table passing and ARM SMMUv3.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
+>  .../common/videobuf2/videobuf2-dma-contig.c   | 41 ++++---------------
+>  1 file changed, 9 insertions(+), 32 deletions(-)
 > 
-> This patch generalizes the API introduced by Jacob & co-authors in
-> https://lwn.net/Articles/754331/
-> 
-> v2 -> v3:
-> - replace unbind/bind by set_pasid_table
-> - move table pointer and pasid bits in the generic part of the struct
-> 
-> v1 -> v2:
-> - restore the original pasid table name
-> - remove the struct device * parameter in the API
-> - reworked iommu_pasid_smmuv3
-> ---
->  drivers/iommu/iommu.c      | 10 ++++++++
->  include/linux/iommu.h      | 14 +++++++++++
->  include/uapi/linux/iommu.h | 50 ++++++++++++++++++++++++++++++++++++++
->  3 files changed, 74 insertions(+)
->  create mode 100644 include/uapi/linux/iommu.h
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 3ed4db334341..0f2b7f1fc7c8 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1393,6 +1393,16 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> index aff0ab7bf83d..82389aead6ed 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> @@ -439,42 +439,14 @@ static void vb2_dc_put_userptr(void *buf_priv)
+>  				set_page_dirty_lock(pages[i]);
+>  		sg_free_table(sgt);
+>  		kfree(sgt);
+> +	} else {
+> +		dma_unmap_resource(buf->dev, buf->dma_addr, buf->size,
+> +				   buf->dma_dir, 0);
+>  	}
+>  	vb2_destroy_framevec(buf->vec);
+>  	kfree(buf);
 >  }
->  EXPORT_SYMBOL_GPL(iommu_attach_device);
 >  
-> +int iommu_set_pasid_table(struct iommu_domain *domain,
-> +			  struct iommu_pasid_table_config *cfg)
-> +{
-> +	if (unlikely(!domain->ops->set_pasid_table))
-> +		return -ENODEV;
-> +
-> +	return domain->ops->set_pasid_table(domain, cfg);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_set_pasid_table);
-> +
->  static void __iommu_detach_device(struct iommu_domain *domain,
->  				  struct device *dev)
+> -/*
+> - * For some kind of reserved memory there might be no struct page available,
+> - * so all that can be done to support such 'pages' is to try to convert
+> - * pfn to dma address or at the last resort just assume that
+> - * dma address == physical address (like it has been assumed in earlier version
+> - * of videobuf2-dma-contig
+> - */
+> -
+> -#ifdef __arch_pfn_to_dma
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	return (dma_addr_t)__arch_pfn_to_dma(dev, pfn);
+> -}
+> -#elif defined(__pfn_to_bus)
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	return (dma_addr_t)__pfn_to_bus(pfn);
+> -}
+> -#elif defined(__pfn_to_phys)
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	return (dma_addr_t)__pfn_to_phys(pfn);
+> -}
+> -#else
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	/* really, we cannot do anything better at this point */
+> -	return (dma_addr_t)(pfn) << PAGE_SHIFT;
+> -}
+> -#endif
+> -
+>  static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+>  	unsigned long size, enum dma_data_direction dma_dir)
 >  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e90da6b6f3d1..1da2a2357ea4 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -25,6 +25,7 @@
->  #include <linux/errno.h>
->  #include <linux/err.h>
->  #include <linux/of.h>
-> +#include <uapi/linux/iommu.h>
+> @@ -528,7 +500,12 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+>  		for (i = 1; i < n_pages; i++)
+>  			if (nums[i-1] + 1 != nums[i])
+>  				goto fail_pfnvec;
+> -		buf->dma_addr = vb2_dc_pfn_to_dma(buf->dev, nums[0]);
+> +		buf->dma_addr = dma_map_resource(buf->dev,
+> +				__pfn_to_phys(nums[0]), size, buf->dma_dir, 0);
+> +		if (dma_mapping_error(buf->dev, buf->dma_addr)) {
+> +			ret = -ENOMEM;
+> +			goto fail_pfnvec;
+> +		}
+>  		goto out;
+>  	}
 >  
->  #define IOMMU_READ	(1 << 0)
->  #define IOMMU_WRITE	(1 << 1)
-> @@ -184,6 +185,7 @@ struct iommu_resv_region {
->   * @domain_window_disable: Disable a particular window for a domain
->   * @of_xlate: add OF master IDs to iommu grouping
->   * @pgsize_bitmap: bitmap of all possible supported page sizes
-> + * @set_pasid_table: set pasid table
->   */
->  struct iommu_ops {
->  	bool (*capable)(enum iommu_cap);
-> @@ -226,6 +228,9 @@ struct iommu_ops {
->  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
->  	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
->  
-> +	int (*set_pasid_table)(struct iommu_domain *domain,
-> +			       struct iommu_pasid_table_config *cfg);
-> +
->  	unsigned long pgsize_bitmap;
->  };
->  
-> @@ -287,6 +292,8 @@ extern int iommu_attach_device(struct iommu_domain *domain,
->  			       struct device *dev);
->  extern void iommu_detach_device(struct iommu_domain *domain,
->  				struct device *dev);
-> +extern int iommu_set_pasid_table(struct iommu_domain *domain,
-> +				 struct iommu_pasid_table_config *cfg);
->  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-> @@ -696,6 +703,13 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->  	return NULL;
->  }
->  
-> +static inline
-> +int iommu_set_pasid_table(struct iommu_domain *domain,
-> +			  struct iommu_pasid_table_config *cfg)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  #endif /* CONFIG_IOMMU_API */
->  
->  #ifdef CONFIG_IOMMU_DEBUGFS
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> new file mode 100644
-> index 000000000000..7a7cf7a3de7c
-> --- /dev/null
-> +++ b/include/uapi/linux/iommu.h
-> @@ -0,0 +1,50 @@
-> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> +/*
-> + * IOMMU user API definitions
-> + *
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#ifndef _UAPI_IOMMU_H
-> +#define _UAPI_IOMMU_H
-> +
-> +#include <linux/types.h>
-> +
-> +/**
-> + * SMMUv3 Stream Table Entry stage 1 related information
-> + * @abort: shall the STE lead to abort
-> + * @s1fmt: STE s1fmt field as set by the guest
-> + * @s1dss: STE s1dss as set by the guest
-> + * All field names match the smmu 3.0/3.1 spec (ARM IHI 0070A)
-> + */
-> +struct iommu_pasid_smmuv3 {
-> +	__u8 abort;
-> +	__u8 s1fmt;
-> +	__u8 s1dss;
-> +};
-> +
 
-I can find STE.S1DSS and STE.S1FMT in the spec, but not STE.ABORT, is
-this something to do with Config[2:0]?  Are we allowed to describe what
-these fields are beyond their name and why they're necessary here vs
-the other fields or do the spec restrictions preclude that?
 
-> +/**
-> + * PASID table data used to bind guest PASID table to the host IOMMU
-> + * Note PASID table corresponds to the Context Table on ARM SMMUv3.
-> + *
-> + * @version: API version to prepare for future extensions
-> + * @format: format of the PASID table
-> + *
-> + */
-> +struct iommu_pasid_table_config {
-> +#define PASID_TABLE_CFG_VERSION_1 1
-> +	__u32	version;
-> +#define IOMMU_PASID_FORMAT_SMMUV3	(1 << 0)
-> +	__u32	format;
-> +	__u64	base_ptr;
-> +	__u8	pasid_bits;
-> +	__u8	bypass;
-> +	union {
-> +		struct iommu_pasid_smmuv3 smmuv3;
-> +	};
-> +};
 
-Structure is not naturally aligned or explicitly aligned for
-interchange with userspace.  It might work for smmuv3 since the
-structure is only composed of bytes, but looks troublesome in general.
-Should each format type also contain a version?  Is format intended to
-be a bit-field or a signature?  It seems we only need a signature, but
-only having a single format defined, it looks like a bit-field, which
-makes me worry what we do when we exhaust the bits.  The bypass field
-should be better defined, is it 0/1?  zero/non-zero?  more selective?
 Thanks,
-
-Alex
-
-> +
-> +#endif /* _UAPI_IOMMU_H */
+Mauro
