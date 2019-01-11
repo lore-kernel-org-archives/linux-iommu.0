@@ -1,119 +1,169 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Fri, 11 Jan 2019 03:10:13 +0100
-Message-ID: <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de>
-References: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
- <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
- <20181213091021.GA2106@lst.de>
- <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
- <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
- <20181213112511.GA4574@lst.de>
- <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
- <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
- <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
- <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
- <20190103073622.GA24323@lst.de>
- <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
- <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
- <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v4 2/2] dts: arm64/sdm845: Add node for arm,mmu-500
+Date: Thu, 10 Jan 2019 19:15:04 -0800
+Message-ID: <20190111031504.GC17247@minitux>
+References: <20181011094930.17010-1-vivek.gautam@codeaurora.org>
+ <20181011094930.17010-3-vivek.gautam@codeaurora.org>
+ <20190108065935.GA11536@builder>
+ <9675f7d8-a726-07d3-34b7-99b7464a6303@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
-Content-Language: de-DE
+Content-Disposition: inline
+In-Reply-To: <9675f7d8-a726-07d3-34b7-99b7464a6303@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: joro@8bytes.org, robh+dt@kernel.org, andy.gross@linaro.org, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, mark.rutland@arm.com, david.brown@linaro.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, will.deacon@arm.com, dianders@chromium.org
 List-Id: iommu@lists.linux-foundation.org
 
-Next step: 891dcc1072f1fa27a83da920d88daff6ca08fc02 (powerpc/dma: remove 
-dma_nommu_dma_supported)
+On Tue 08 Jan 03:18 PST 2019, Vivek Gautam wrote:
 
-git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+> 
+> On 1/8/2019 12:29 PM, Bjorn Andersson wrote:
+> > On Thu 11 Oct 02:49 PDT 2018, Vivek Gautam wrote:
+> > 
+> > > Add device node for arm,mmu-500 available on sdm845.
+> > > This MMU-500 with single TCU and multiple TBU architecture
+> > > is shared among all the peripherals except gpu.
+> > > 
+> > Hi Vivek,
+> > 
+> > Applying this patch together with UFS ([1] and [2]) ontop of v5.0-rc1
+> > causes my MTP reboot once the UFSHCD module is inserted and probed.
+> > Independently the patches seems to work fine.
+> > 
+> > Do you have any suggestion to why this would be?
+> 
+> 
+> Hi Bjorn,
+> 
+> Enabling SMMU on sdm845 when you have UFS also enabled, would need addition
+> of
+> 'iommus' property to ufs dt node.
+> You will need to add the following with ufs:
+> 
+> iommus = <&apps_smmu 0x100 0xf>;
+> 
 
-git checkout 891dcc1072f1fa27a83da920d88daff6ca08fc02
+Thanks, this do address the sudden restart of my MTP, but provides a
+fault.
 
-Output:
+[    7.391117] arm-smmu 15000000.iommu: Unhandled context fault: fsr=0x402, iova=0xffffdf3e0, fsynr=0x290000, cb=0
+[    7.747406] ufshcd-qcom 1d84000.ufshc: ufshcd_verify_dev_init: NOP OUT failed -11
 
-Note: checking out '891dcc1072f1fa27a83da920d88daff6ca08fc02'.
-
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by performing another checkout.
-
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -b with the checkout command again. Example:
-
-git checkout -b <new-branch-name>
-
-HEAD is now at 891dcc1... powerpc/dma: remove dma_nommu_dma_supported
-
----
-
-Link to the Git: 
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
-
-Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
-boots. I also successfully tested sound, hardware 3D acceleration, 
-Bluetooth, network, booting with a label etc. The uImages work also in a 
-virtual e5500 quad-core QEMU machine.
-
--- Christian
+The only thing done ontop of v5.0-rc1, is to take your patch adding
+apps_smmu, add the ufs nodes as Evan proposed and specify iommus in the
+ufshcd node.
 
 
-On 09 January 2019 at 10:31AM, Christian Zigotzky wrote:
-> Next step: a64e18ba191ba9102fb174f27d707485ffd9389c (powerpc/dma: 
-> remove dma_nommu_get_required_mask)
->
-> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->
-> git checkout a64e18ba191ba9102fb174f27d707485ffd9389c
->
-> Link to the Git: 
-> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
->
-> Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
-> boots. I also successfully tested sound, hardware 3D acceleration, 
-> Bluetooth, network, booting with a label etc. The uImages work also in 
-> a virtual e5500 quad-core QEMU machine.
->
-> -- Christian
->
->
-> On 05 January 2019 at 5:03PM, Christian Zigotzky wrote:
->> Next step: c446404b041130fbd9d1772d184f24715cf2362f (powerpc/dma: 
->> remove dma_nommu_mmap_coherent)
->>
->> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->>
->> git checkout c446404b041130fbd9d1772d184f24715cf2362f
->>
->> Output:
->>
->> Note: checking out 'c446404b041130fbd9d1772d184f24715cf2362f'.
->>
->> You are in 'detached HEAD' state. You can look around, make experimental
->> changes and commit them, and you can discard any commits you make in 
->> this
->> state without impacting any branches by performing another checkout.
->>
->> If you want to create a new branch to retain commits you create, you may
->> do so (now or later) by using -b with the checkout command again. 
->> Example:
->>
->>   git checkout -b <new-branch-name>
->>
->> HEAD is now at c446404... powerpc/dma: remove dma_nommu_mmap_coherent
->>
->> -----
->>
->> Link to the Git: 
->> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
->>
->> Result: PASEMI onboard ethernet works and the X5000 (P5020 board) boots.
->>
->> -- Christian
->>
->
->
+With Coreboot UFS seems to work without specifying iommus, but with it
+UFS fails to come up.
+
+Regards,
+Bjorn
+
+> Thanks
+> Vivek
+> 
+> > 
+> > [1] https://lore.kernel.org/lkml/20181210192826.241350-4-evgreen@chromium.org/
+> > [2] https://lore.kernel.org/lkml/20181210192826.241350-5-evgreen@chromium.org/
+> > 
+> > Regards,
+> > Bjorn
+> > 
+> > > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> > > ---
+> > > 
+> > > Changes since v3:
+> > >   - none.
+> > > 
+> > >   arch/arm64/boot/dts/qcom/sdm845.dtsi | 72 ++++++++++++++++++++++++++++++++++++
+> > >   1 file changed, 72 insertions(+)
+> > > 
+> > > diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> > > index b72bdb0a31a5..0aace729643d 100644
+> > > --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> > > +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
+> > > @@ -1297,6 +1297,78 @@
+> > >   			cell-index = <0>;
+> > >   		};
+> > > +		apps_smmu: iommu@15000000 {
+> > > +			compatible = "qcom,sdm845-smmu-500", "arm,mmu-500";
+> > > +			reg = <0x15000000 0x80000>;
+> > > +			#iommu-cells = <2>;
+> > > +			#global-interrupts = <1>;
+> > > +			interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 181 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 182 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 315 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 318 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 319 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 320 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 321 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 322 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 323 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 324 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 325 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 326 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 327 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 328 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 329 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 330 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 331 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 332 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 333 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 338 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 339 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 340 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 341 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 342 IRQ_TYPE_LEVEL_HIGH>,
+> > > +				     <GIC_SPI 343 IRQ_TYPE_LEVEL_HIGH>;
+> > > +		};
+> > > +
+> > >   		apss_shared: mailbox@17990000 {
+> > >   			compatible = "qcom,sdm845-apss-shared";
+> > >   			reg = <0x17990000 0x1000>;
+> > > -- 
+> > > QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> > > of Code Aurora Forum, hosted by The Linux Foundation
+> > > 
