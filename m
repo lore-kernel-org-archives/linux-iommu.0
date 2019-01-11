@@ -1,24 +1,27 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] Fix typo. Change tlb_range_add to iotlb_range_add and
- tlb_sync to iotlb_sync
-Date: Fri, 11 Jan 2019 11:05:43 +0100
-Message-ID: <20190111100543.GD5825@8bytes.org>
-References: <20181204182734.20184-1-murphyt7@tcd.ie>
- <20181205160439.bjbh7stdey32hjgj@8bytes.org>
- <CALQxJutDpN6SagB89=cPvNczmD8kRXwaq-yzor7kULU4iLt2uA@mail.gmail.com>
+Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page
+ tables
+Date: Fri, 11 Jan 2019 11:21:55 +0100
+Message-ID: <20190111102155.in5rctq5krs4ewfi@8bytes.org>
+References: <20181210011504.122604-1-drinkcat@chromium.org>
+ <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CALQxJutDpN6SagB89=cPvNczmD8kRXwaq-yzor7kULU4iLt2uA@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Murphy <murphyt7@tcd.ie>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com>
+Sender: stable-owner@vger.kernel.org
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Will Deacon <will.deacon@arm.com>, Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 20, 2018 at 03:47:28PM +0000, Tom Murphy wrote:
-> Ah shoot, it looks like I forgot to change flush_tlb_all -> flush_iotlb_all
-> 
-> Should I submit another patch?
+On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
+> Does anyone have any further comment on this series? If not, which
+> maintainer is going to pick this up? I assume Andrew Morton?
 
-Yes, please.
+Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
+this should go through mm.
+
+Regards,
+
+	Joerg
