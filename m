@@ -1,160 +1,44 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Sat, 12 Jan 2019 19:14:53 +0100
-Message-ID: <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de>
-References: <2242B4B2-6311-492E-BFF9-6740E36EC6D4@xenosoft.de>
- <84558d7f-5a7f-5219-0c3a-045e6b4c494f@xenosoft.de>
- <20181213091021.GA2106@lst.de>
- <835bd119-081e-a5ea-1899-189d439c83d6@xenosoft.de>
- <76bc684a-b4d2-1d26-f18d-f5c9ba65978c@xenosoft.de>
- <20181213112511.GA4574@lst.de>
- <e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
- <ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
- <e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
- <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
- <20190103073622.GA24323@lst.de>
- <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
- <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
- <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
- <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [GIT PULL] remove dma_zalloc_coherent
+Date: Sat, 12 Jan 2019 10:27:58 -0800
+Message-ID: <CAHk-=wiYxY9H-XDgawJd+Y4AM4qtK=7RQZ_GhswcUSYWw=eckA@mail.gmail.com>
+References: <20190112181355.GA31454@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de>
-Content-Language: de-DE
+In-Reply-To: <20190112181355.GA31454@infradead.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: iommu@lists.linux-foundation.org, Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Next step: 4558b6e1ddf3dcf5a86d6a5d16c2ac1600c7df39 (swiotlb: remove 
-swiotlb_dma_supported)
+On Sat, Jan 12, 2019 at 10:14 AM Christoph Hellwig <hch@infradead.org> wrote:
+>
+> Lets see if this works better as a pull request than the
+> plain patches:
 
-git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+So I'm still debating this myself, which is why I haven't reacted.
 
-git checkout 4558b6e1ddf3dcf5a86d6a5d16c2ac1600c7df39
+The reason I'm not entirely sure this makes sense is that not every
+user actually mmaps things into user space.
 
-Output:
+And now if somebody for some reason doesn't want the overhead, there
+is really *no* way to say that.
 
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by performing another checkout.
+Maybe nobody cares. But from what I can tell, the mmap case is
+actually really quite rare (well, at least the regular
+"dma_mmap_attrs/coherent()" kind).
 
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -b with the checkout command again. Example:
+I'd be happier if there at least was an interface to specify "yes, I
+want zeroing". But there isn't. You did not, for example, just make
+__GFP_ZERO work. No. You just said "GFP_ZERO hasn't worked reliably,
+so we had that other interface, and now we're doing it
+unconditionally, so we can remove the other interface".
 
-   git checkout -b <new-branch-name>
+This all *despite* the fact that as far as I can tell, 95% of the
+users don't actually need or care about zeroing and don't really want
+it.
 
-HEAD is now at 4558b6e... swiotlb: remove swiotlb_dma_supported
+So explain that.
 
-----
-
-Link to the Git: 
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
-
-Results: PASEMI onboard ethernet (X1000) works and the X5000 (P5020 
-board) boots. I also successfully tested sound, hardware 3D 
-acceleration, Bluetooth, network, booting with a label etc. The uImages 
-work also in a virtual e5500 quad-core QEMU machine.
-
--- Christian
-
-
-On 11 January 2019 at 03:10AM, Christian Zigotzky wrote:
-> Next step: 891dcc1072f1fa27a83da920d88daff6ca08fc02 (powerpc/dma: 
-> remove dma_nommu_dma_supported)
->
-> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->
-> git checkout 891dcc1072f1fa27a83da920d88daff6ca08fc02
->
-> Output:
->
-> Note: checking out '891dcc1072f1fa27a83da920d88daff6ca08fc02'.
->
-> You are in 'detached HEAD' state. You can look around, make experimental
-> changes and commit them, and you can discard any commits you make in this
-> state without impacting any branches by performing another checkout.
->
-> If you want to create a new branch to retain commits you create, you may
-> do so (now or later) by using -b with the checkout command again. 
-> Example:
->
-> git checkout -b <new-branch-name>
->
-> HEAD is now at 891dcc1... powerpc/dma: remove dma_nommu_dma_supported
->
-> ---
->
-> Link to the Git: 
-> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
->
-> Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
-> boots. I also successfully tested sound, hardware 3D acceleration, 
-> Bluetooth, network, booting with a label etc. The uImages work also in 
-> a virtual e5500 quad-core QEMU machine.
->
-> -- Christian
->
->
-> On 09 January 2019 at 10:31AM, Christian Zigotzky wrote:
->> Next step: a64e18ba191ba9102fb174f27d707485ffd9389c (powerpc/dma: 
->> remove dma_nommu_get_required_mask)
->>
->> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->>
->> git checkout a64e18ba191ba9102fb174f27d707485ffd9389c
->>
->> Link to the Git: 
->> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
->>
->> Results: PASEMI onboard ethernet works and the X5000 (P5020 board) 
->> boots. I also successfully tested sound, hardware 3D acceleration, 
->> Bluetooth, network, booting with a label etc. The uImages work also 
->> in a virtual e5500 quad-core QEMU machine.
->>
->> -- Christian
->>
->>
->> On 05 January 2019 at 5:03PM, Christian Zigotzky wrote:
->>> Next step: c446404b041130fbd9d1772d184f24715cf2362f (powerpc/dma: 
->>> remove dma_nommu_mmap_coherent)
->>>
->>> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->>>
->>> git checkout c446404b041130fbd9d1772d184f24715cf2362f
->>>
->>> Output:
->>>
->>> Note: checking out 'c446404b041130fbd9d1772d184f24715cf2362f'.
->>>
->>> You are in 'detached HEAD' state. You can look around, make 
->>> experimental
->>> changes and commit them, and you can discard any commits you make in 
->>> this
->>> state without impacting any branches by performing another checkout.
->>>
->>> If you want to create a new branch to retain commits you create, you 
->>> may
->>> do so (now or later) by using -b with the checkout command again. 
->>> Example:
->>>
->>>   git checkout -b <new-branch-name>
->>>
->>> HEAD is now at c446404... powerpc/dma: remove dma_nommu_mmap_coherent
->>>
->>> -----
->>>
->>> Link to the Git: 
->>> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6
->>>
->>> Result: PASEMI onboard ethernet works and the X5000 (P5020 board) 
->>> boots.
->>>
->>> -- Christian
->>>
->>
->>
->
->
+              Linus
