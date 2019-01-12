@@ -1,240 +1,255 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC v3 18/21] vfio-pci: Add a new VFIO_REGION_TYPE_NESTED
- region type
-Date: Fri, 11 Jan 2019 16:58:38 -0700
-Message-ID: <20190111165838.06a22ab8@x1.home>
-References: <20190108102633.17482-1-eric.auger@redhat.com>
-        <20190108102633.17482-19-eric.auger@redhat.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: [GIT PULL] remove dma_zalloc_coherent
+Date: Sat, 12 Jan 2019 19:13:55 +0100
+Message-ID: <20190112181355.GA31454@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190108102633.17482-19-eric.auger@redhat.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue,  8 Jan 2019 11:26:30 +0100
-Eric Auger <eric.auger@redhat.com> wrote:
+Lets see if this works better as a pull request than the
+plain patches:
 
-> This patch adds a new 64kB region aiming to report nested mode
-> translation faults.
-> 
-> The region contains a header with the size of the queue,
-> the producer and consumer indices and then the actual
-> fault queue data. The producer is updated by the kernel while
-> the consumer is updated by the userspace.
-> 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> 
-> ---
-> ---
->  drivers/vfio/pci/vfio_pci.c         | 102 +++++++++++++++++++++++++++-
->  drivers/vfio/pci/vfio_pci_private.h |   2 +
->  include/uapi/linux/vfio.h           |  15 ++++
->  3 files changed, 118 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-> index ff60bd1ea587..2ba181ab2edd 100644
-> --- a/drivers/vfio/pci/vfio_pci.c
-> +++ b/drivers/vfio/pci/vfio_pci.c
-> @@ -56,6 +56,11 @@ module_param(disable_idle_d3, bool, S_IRUGO | S_IWUSR);
->  MODULE_PARM_DESC(disable_idle_d3,
->  		 "Disable using the PCI D3 low power state for idle, unused devices");
->  
-> +#define VFIO_FAULT_REGION_SIZE 0x10000
+We've always had a weird situation around dma_zalloc_coherent.  To
+safely support mapping the allocations to userspace major architectures
+like x86 and arm have always zeroed allocations from dma_alloc_coherent,
+but a couple other architectures were missing that zeroing either always
+or in corner cases.  Then later we grew anothe dma_zalloc_coherent
+interface to explicitly request zeroing, but that just added __GFP_ZERO
+to the allocation flags, which for some allocators that didn't end
+up using the page allocator ended up being a no-op and still not
+zeroing the allocations.
 
-Why 64K?
+So for this merge window I fixed up all remaining architectures to zero
+the memory in dma_alloc_coherent, and made dma_zalloc_coherent a no-op
+wrapper around dma_alloc_coherent, which fixes all of the above issues.
 
-> +#define VFIO_FAULT_QUEUE_SIZE	\
-> +	((VFIO_FAULT_REGION_SIZE - sizeof(struct vfio_fault_region_header)) / \
-> +	sizeof(struct iommu_fault))
-> +
->  static inline bool vfio_vga_disabled(void)
->  {
->  #ifdef CONFIG_VFIO_PCI_VGA
-> @@ -1226,6 +1231,100 @@ static const struct vfio_device_ops vfio_pci_ops = {
->  static int vfio_pci_reflck_attach(struct vfio_pci_device *vdev);
->  static void vfio_pci_reflck_put(struct vfio_pci_reflck *reflck);
->  
-> +static size_t
-> +vfio_pci_dma_fault_rw(struct vfio_pci_device *vdev, char __user *buf,
-> +		      size_t count, loff_t *ppos, bool iswrite)
-> +{
-> +	unsigned int i = VFIO_PCI_OFFSET_TO_INDEX(*ppos) - VFIO_PCI_NUM_REGIONS;
-> +	void *base = vdev->region[i].data;
-> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
-> +
-> +	if (pos >= vdev->region[i].size)
-> +		return -EINVAL;
-> +
-> +	count = min(count, (size_t)(vdev->region[i].size - pos));
-> +
-> +	if (copy_to_user(buf, base + pos, count))
-> +		return -EFAULT;
-> +
-> +	*ppos += count;
-> +
-> +	return count;
-> +}
-> +
-> +static int vfio_pci_dma_fault_mmap(struct vfio_pci_device *vdev,
-> +				   struct vfio_pci_region *region,
-> +				   struct vm_area_struct *vma)
-> +{
-> +	u64 phys_len, req_len, pgoff, req_start;
-> +	unsigned long long addr;
-> +	unsigned int index;
-> +
-> +	index = vma->vm_pgoff >> (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT);
-> +
-> +	if (vma->vm_end < vma->vm_start)
-> +		return -EINVAL;
-> +	if ((vma->vm_flags & VM_SHARED) == 0)
-> +		return -EINVAL;
-> +
-> +	phys_len = VFIO_FAULT_REGION_SIZE;
-> +
-> +	req_len = vma->vm_end - vma->vm_start;
-> +	pgoff = vma->vm_pgoff &
-> +		((1U << (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
-> +	req_start = pgoff << PAGE_SHIFT;
-> +
-> +	if (req_start + req_len > phys_len)
-> +		return -EINVAL;
-> +
-> +	addr = virt_to_phys(vdev->fault_region);
-> +	vma->vm_private_data = vdev;
-> +	vma->vm_pgoff = (addr >> PAGE_SHIFT) + pgoff;
-> +
-> +	return remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
-> +			       req_len, vma->vm_page_prot);
-> +}
-> +
-> +void vfio_pci_dma_fault_release(struct vfio_pci_device *vdev,
-> +				struct vfio_pci_region *region)
-> +{
-> +}
-> +
-> +static const struct vfio_pci_regops vfio_pci_dma_fault_regops = {
-> +	.rw		= vfio_pci_dma_fault_rw,
-> +	.mmap		= vfio_pci_dma_fault_mmap,
-> +	.release	= vfio_pci_dma_fault_release,
-> +};
-> +
-> +static int vfio_pci_init_dma_fault_region(struct vfio_pci_device *vdev)
-> +{
-> +	u32 flags = VFIO_REGION_INFO_FLAG_READ | VFIO_REGION_INFO_FLAG_WRITE |
-> +		    VFIO_REGION_INFO_FLAG_MMAP;
-> +	int ret;
-> +
-> +	spin_lock_init(&vdev->fault_queue_lock);
-> +
-> +	vdev->fault_region = kmalloc(VFIO_FAULT_REGION_SIZE, GFP_KERNEL);
-> +	if (!vdev->fault_region)
-> +		return -ENOMEM;
-> +
-> +	ret = vfio_pci_register_dev_region(vdev,
-> +		VFIO_REGION_TYPE_NESTED,
-> +		VFIO_REGION_SUBTYPE_NESTED_FAULT_REGION,
-> +		&vfio_pci_dma_fault_regops, VFIO_FAULT_REGION_SIZE,
-> +		flags, vdev->fault_region);
-> +	if (ret) {
-> +		kfree(vdev->fault_region);
-> +		return ret;
-> +	}
-> +
-> +	vdev->fault_region->header.prod = 0;
-> +	vdev->fault_region->header.cons = 0;
-> +	vdev->fault_region->header.reserved = 0;
+dma_zalloc_coherent is now pointless and can go away, and Luis helped
+me writing a cocchinelle script and patch series to kill it, which I
+think we should apply now just after -rc1 to finally settle these
+issue.
 
-Use kzalloc above or else we're leaking kernel memory to userspace
-anyway.
+The following changes since commit 3bd6e94bec122a951d462c239b47954cf5f36e33:
 
-> +	vdev->fault_region->header.size = VFIO_FAULT_QUEUE_SIZE;
-> +	return 0;
-> +}
-> +
->  static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  {
->  	struct vfio_pci_device *vdev;
-> @@ -1300,7 +1399,7 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  		pci_set_power_state(pdev, PCI_D3hot);
->  	}
->  
-> -	return ret;
-> +	return vfio_pci_init_dma_fault_region(vdev);
+  arch: restore generic-y += shmparam.h for some architectures (2019-01-06 18:16:11 -0800)
 
-Missing lots of cleanup should this fail.  Why is this done on probe
-anyway?  This looks like something we'd do from vfio_pci_enable() and
-therefore our release callback would free fault_region rather than what
-we have below.
+are available in the Git repository at:
 
->  }
->  
->  static void vfio_pci_remove(struct pci_dev *pdev)
-> @@ -1315,6 +1414,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
->  
->  	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
->  	kfree(vdev->region);
-> +	kfree(vdev->fault_region);
->  	mutex_destroy(&vdev->ioeventfds_lock);
->  	kfree(vdev);
->  
-> diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
-> index 8c0009f00818..38b5d1764a26 100644
-> --- a/drivers/vfio/pci/vfio_pci_private.h
-> +++ b/drivers/vfio/pci/vfio_pci_private.h
-> @@ -120,6 +120,8 @@ struct vfio_pci_device {
->  	int			ioeventfds_nr;
->  	struct eventfd_ctx	*err_trigger;
->  	struct eventfd_ctx	*req_trigger;
-> +	spinlock_t              fault_queue_lock;
-> +	struct vfio_fault_region *fault_region;
->  	struct list_head	dummy_resources_list;
->  	struct mutex		ioeventfds_lock;
->  	struct list_head	ioeventfds_list;
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 352e795a93c8..b78c2c62af6d 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -307,6 +307,9 @@ struct vfio_region_info_cap_type {
->  #define VFIO_REGION_TYPE_GFX                    (1)
->  #define VFIO_REGION_SUBTYPE_GFX_EDID            (1)
->  
-> +#define VFIO_REGION_TYPE_NESTED			(2)
-> +#define VFIO_REGION_SUBTYPE_NESTED_FAULT_REGION	(1)
-> +
->  /**
->   * struct vfio_region_gfx_edid - EDID region layout.
->   *
-> @@ -697,6 +700,18 @@ struct vfio_device_ioeventfd {
->  
->  #define VFIO_DEVICE_IOEVENTFD		_IO(VFIO_TYPE, VFIO_BASE + 16)
->  
-> +struct vfio_fault_region_header {
-> +	__u32	size;		/* Read-Only */
-> +	__u32	prod;		/* Read-Only */
+  git://git.infradead.org/users/hch/dma-mapping.git tags/remove-dma_zalloc_coherent-5.0
 
-We can't really enforce read-only if it's mmap'd.  I worry about
-synchronization here too, perhaps there should be a ring offset such
-that the ring can be in a separate page from the header and then sparse
-mmap support can ensure that the user access is restricted.  I also
-wonder if there are other transports that make sense here, this almost
-feels like a vhost sort of thing.  Thanks,
+for you to fetch changes up to dfd32cad146e3624970eee9329e99d2c6ef751b3:
 
-Alex
+  dma-mapping: remove dma_zalloc_coherent() (2019-01-08 07:58:49 -0500)
 
-> +	__u32	cons;
-> +	__u32	reserved;	/* must be 0 */
-> +};
-> +
-> +struct vfio_fault_region {
-> +	struct vfio_fault_region_header header;
-> +	struct iommu_fault queue[0];
-> +};
-> +
->  /* -------- API for Type1 VFIO IOMMU -------- */
->  
->  /**
+----------------------------------------------------------------
+remove dma_zalloc_coherent
+
+We've always had a weird situation around dma_zalloc_coherent.  To
+safely support mapping the allocations to userspace major architectures
+like x86 and arm have always zeroed allocations from dma_alloc_coherent,
+but a couple other architectures were missing that zeroing either always
+or in corner cases.  Then later we grew anothe dma_zalloc_coherent
+interface to explicitly request zeroing, but that just added __GFP_ZERO
+to the allocation flags, which for some allocators that didn't end
+up using the page allocator ended up being a no-op and still not
+zeroing the allocations.
+
+So for this merge window I fixed up all remaining architectures to zero
+the memory in dma_alloc_coherent, and made dma_zalloc_coherent a no-op
+wrapper around dma_alloc_coherent, which fixes all of the above issues.
+
+dma_zalloc_coherent is now pointless and can go away, and Luis helped
+me writing a cocchinelle script and patch series to kill it, which I
+think we should apply now just after -rc1 to finally settle these
+issue.
+
+----------------------------------------------------------------
+Luis Chamberlain (3):
+      cross-tree: phase out dma_zalloc_coherent()
+      cross-tree: phase out dma_zalloc_coherent() on headers
+      dma-mapping: remove dma_zalloc_coherent()
+
+ arch/mips/lantiq/xway/dma.c                        |  6 +-
+ arch/powerpc/platforms/pasemi/dma_lib.c            |  2 +-
+ arch/powerpc/sysdev/fsl_rmu.c                      |  7 ++-
+ drivers/ata/sata_fsl.c                             |  4 +-
+ drivers/atm/he.c                                   | 39 ++++++-------
+ drivers/atm/idt77252.c                             | 16 ++---
+ drivers/block/skd_main.c                           |  4 +-
+ drivers/crypto/amcc/crypto4xx_core.c               |  6 +-
+ drivers/crypto/cavium/cpt/cptpf_main.c             |  4 +-
+ drivers/crypto/cavium/cpt/cptvf_main.c             |  7 ++-
+ drivers/crypto/cavium/nitrox/nitrox_lib.c          |  6 +-
+ drivers/crypto/ccp/ccp-dev-v5.c                    |  6 +-
+ drivers/crypto/hisilicon/sec/sec_algs.c            |  4 +-
+ drivers/crypto/hisilicon/sec/sec_drv.c             | 15 ++---
+ drivers/crypto/ixp4xx_crypto.c                     |  6 +-
+ drivers/crypto/mediatek/mtk-platform.c             | 16 ++---
+ drivers/crypto/qat/qat_common/adf_admin.c          | 12 ++--
+ drivers/crypto/qat/qat_common/qat_algs.c           | 24 ++++----
+ drivers/crypto/qat/qat_common/qat_asym_algs.c      | 68 +++++++++++-----------
+ drivers/dma/imx-sdma.c                             |  8 +--
+ drivers/dma/mediatek/mtk-hsdma.c                   |  4 +-
+ drivers/dma/mxs-dma.c                              |  6 +-
+ drivers/dma/xgene-dma.c                            |  4 +-
+ drivers/dma/xilinx/xilinx_dma.c                    | 14 ++---
+ drivers/dma/xilinx/zynqmp_dma.c                    |  6 +-
+ drivers/gpu/drm/drm_pci.c                          |  5 +-
+ drivers/infiniband/hw/bnxt_re/qplib_rcfw.c         |  4 +-
+ drivers/infiniband/hw/bnxt_re/qplib_res.c          |  8 +--
+ drivers/infiniband/hw/cxgb3/cxio_hal.c             |  6 +-
+ drivers/infiniband/hw/cxgb4/qp.c                   |  5 +-
+ drivers/infiniband/hw/hfi1/init.c                  | 29 ++++-----
+ drivers/infiniband/hw/hfi1/pio.c                   |  9 ++-
+ drivers/infiniband/hw/hfi1/sdma.c                  | 27 +++------
+ drivers/infiniband/hw/hns/hns_roce_alloc.c         | 11 ++--
+ drivers/infiniband/hw/hns/hns_roce_hw_v2.c         | 10 ++--
+ drivers/infiniband/hw/i40iw/i40iw_utils.c          |  4 +-
+ drivers/infiniband/hw/mthca/mthca_memfree.c        |  5 +-
+ drivers/infiniband/hw/ocrdma/ocrdma_hw.c           | 14 ++---
+ drivers/infiniband/hw/ocrdma/ocrdma_stats.c        |  4 +-
+ drivers/infiniband/hw/ocrdma/ocrdma_verbs.c        |  6 +-
+ drivers/infiniband/hw/qedr/verbs.c                 |  4 +-
+ drivers/infiniband/hw/vmw_pvrdma/pvrdma_main.c     |  4 +-
+ drivers/input/touchscreen/raspberrypi-ts.c         |  4 +-
+ drivers/iommu/mtk_iommu_v1.c                       |  5 +-
+ drivers/media/pci/intel/ipu3/ipu3-cio2.c           |  4 +-
+ .../media/platform/mtk-vcodec/mtk_vcodec_util.c    |  2 +-
+ drivers/misc/genwqe/card_utils.c                   |  4 +-
+ drivers/mmc/host/sdhci.c                           |  5 +-
+ drivers/net/ethernet/aeroflex/greth.c              | 12 ++--
+ drivers/net/ethernet/alacritech/slicoss.c          | 12 ++--
+ drivers/net/ethernet/amazon/ena/ena_com.c          | 61 +++++++++----------
+ drivers/net/ethernet/apm/xgene-v2/main.c           |  8 +--
+ drivers/net/ethernet/atheros/alx/main.c            |  7 +--
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c    |  4 +-
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c       |  8 +--
+ drivers/net/ethernet/broadcom/bcmsysport.c         |  4 +-
+ drivers/net/ethernet/broadcom/bgmac.c              | 12 ++--
+ drivers/net/ethernet/broadcom/bnx2.c               |  4 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x.h        |  2 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.h    |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 16 ++---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c      |  4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c  |  4 +-
+ drivers/net/ethernet/broadcom/tg3.c                | 22 +++----
+ drivers/net/ethernet/cavium/thunder/nicvf_queues.c |  2 +-
+ drivers/net/ethernet/chelsio/cxgb3/sge.c           |  2 +-
+ drivers/net/ethernet/chelsio/cxgb4/sge.c           |  2 +-
+ drivers/net/ethernet/chelsio/cxgb4vf/sge.c         |  2 +-
+ drivers/net/ethernet/emulex/benet/be_cmds.c        | 68 +++++++++++-----------
+ drivers/net/ethernet/emulex/benet/be_ethtool.c     | 18 +++---
+ drivers/net/ethernet/emulex/benet/be_main.c        | 18 +++---
+ drivers/net/ethernet/faraday/ftgmac100.c           | 14 ++---
+ drivers/net/ethernet/faraday/ftmac100.c            |  7 +--
+ drivers/net/ethernet/hisilicon/hix5hd2_gmac.c      |  4 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  5 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  5 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  5 +-
+ .../net/ethernet/huawei/hinic/hinic_hw_api_cmd.c   | 16 ++---
+ drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c   |  8 +--
+ drivers/net/ethernet/huawei/hinic/hinic_hw_io.c    |  6 +-
+ drivers/net/ethernet/huawei/hinic/hinic_hw_qp.c    | 10 ++--
+ drivers/net/ethernet/huawei/hinic/hinic_hw_wq.c    |  8 +--
+ drivers/net/ethernet/ibm/emac/mal.c                |  4 +-
+ drivers/net/ethernet/intel/e1000/e1000_ethtool.c   |  8 +--
+ drivers/net/ethernet/intel/e1000e/netdev.c         |  4 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  4 +-
+ drivers/net/ethernet/intel/ixgb/ixgb_main.c        |  8 +--
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |  6 +-
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |  2 +-
+ drivers/net/ethernet/marvell/pxa168_eth.c          | 18 +++---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c        | 18 +++---
+ drivers/net/ethernet/mellanox/mlx4/alloc.c         |  8 +--
+ drivers/net/ethernet/mellanox/mlx5/core/alloc.c    |  4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 10 ++--
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c   |  6 +-
+ .../net/ethernet/netronome/nfp/nfp_net_common.c    | 12 ++--
+ drivers/net/ethernet/ni/nixge.c                    | 12 ++--
+ .../net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c   | 12 ++--
+ drivers/net/ethernet/pasemi/pasemi_mac.c           |  6 +-
+ drivers/net/ethernet/qlogic/qed/qed_cxt.c          | 16 ++---
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_ctx.c    | 28 ++++-----
+ drivers/net/ethernet/qualcomm/emac/emac-mac.c      |  2 +-
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c    | 12 ++--
+ drivers/net/ethernet/sfc/falcon/nic.c              |  4 +-
+ drivers/net/ethernet/sfc/nic.c                     |  4 +-
+ drivers/net/ethernet/sgi/meth.c                    |  4 +-
+ drivers/net/ethernet/socionext/netsec.c            |  4 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 40 +++++--------
+ drivers/net/ethernet/tundra/tsi108_eth.c           |  8 +--
+ drivers/net/ethernet/xilinx/ll_temac_main.c        | 12 ++--
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c  | 12 ++--
+ drivers/net/fddi/defxx.c                           |  6 +-
+ drivers/net/fddi/skfp/skfddi.c                     |  8 +--
+ drivers/net/vmxnet3/vmxnet3_drv.c                  |  8 +--
+ drivers/net/wan/fsl_ucc_hdlc.c                     |  7 +--
+ drivers/net/wireless/ath/ath10k/ce.c               |  7 +--
+ drivers/net/wireless/ath/ath10k/mac.c              |  8 +--
+ drivers/net/wireless/ath/ath10k/pci.c              |  3 +-
+ drivers/net/wireless/ath/ath10k/wmi.c              |  2 +-
+ drivers/net/wireless/ath/wcn36xx/dxe.c             | 17 +++---
+ drivers/net/wireless/ath/wil6210/txrx_edma.c       |  8 +--
+ drivers/net/wireless/broadcom/b43/dma.c            |  6 +-
+ drivers/net/wireless/broadcom/b43legacy/dma.c      |  6 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    | 16 ++---
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c       | 39 +++++--------
+ drivers/net/wireless/ralink/rt2x00/rt2x00mmio.c    |  6 +-
+ drivers/ntb/hw/mscc/ntb_hw_switchtec.c             |  8 +--
+ drivers/nvme/host/pci.c                            |  8 +--
+ drivers/pci/controller/pcie-iproc-msi.c            |  6 +-
+ drivers/pci/switch/switchtec.c                     |  8 +--
+ drivers/rapidio/devices/tsi721.c                   | 22 +++----
+ drivers/rapidio/devices/tsi721_dma.c               |  8 +--
+ drivers/s390/net/ism_drv.c                         | 15 +++--
+ drivers/scsi/3w-sas.c                              |  5 +-
+ drivers/scsi/a100u2w.c                             |  8 +--
+ drivers/scsi/arcmsr/arcmsr_hba.c                   | 18 ++++--
+ drivers/scsi/be2iscsi/be_main.c                    |  4 +-
+ drivers/scsi/be2iscsi/be_mgmt.c                    | 11 ++--
+ drivers/scsi/bfa/bfad_bsg.c                        |  6 +-
+ drivers/scsi/bnx2fc/bnx2fc_hwi.c                   | 49 ++++++++--------
+ drivers/scsi/bnx2fc/bnx2fc_tgt.c                   | 44 +++++++-------
+ drivers/scsi/bnx2i/bnx2i_hwi.c                     |  8 +--
+ drivers/scsi/csiostor/csio_wr.c                    |  4 +-
+ drivers/scsi/lpfc/lpfc_bsg.c                       |  4 +-
+ drivers/scsi/lpfc/lpfc_init.c                      | 14 ++---
+ drivers/scsi/lpfc/lpfc_mbox.c                      |  6 +-
+ drivers/scsi/lpfc/lpfc_sli.c                       | 15 +++--
+ drivers/scsi/megaraid/megaraid_mbox.c              | 15 ++---
+ drivers/scsi/megaraid/megaraid_sas_base.c          | 26 ++++-----
+ drivers/scsi/megaraid/megaraid_sas_fusion.c        |  5 +-
+ drivers/scsi/mesh.c                                |  5 +-
+ drivers/scsi/mvumi.c                               |  9 +--
+ drivers/scsi/pm8001/pm8001_sas.c                   |  4 +-
+ drivers/scsi/qedf/qedf_main.c                      | 29 +++++----
+ drivers/scsi/qedi/qedi_main.c                      | 39 ++++++-------
+ drivers/scsi/qla2xxx/qla_attr.c                    |  4 +-
+ drivers/scsi/qla2xxx/qla_bsg.c                     |  4 +-
+ drivers/scsi/qla2xxx/qla_gs.c                      | 14 +++--
+ drivers/scsi/qla2xxx/qla_init.c                    |  8 +--
+ drivers/scsi/qla4xxx/ql4_init.c                    |  4 +-
+ drivers/scsi/qla4xxx/ql4_mbx.c                     | 18 +++---
+ drivers/scsi/qla4xxx/ql4_nx.c                      |  4 +-
+ drivers/scsi/qla4xxx/ql4_os.c                      | 10 ++--
+ drivers/scsi/smartpqi/smartpqi_init.c              | 32 +++++-----
+ drivers/soc/fsl/qbman/dpaa_sys.c                   |  2 +-
+ drivers/spi/spi-pic32-sqi.c                        |  6 +-
+ drivers/staging/mt7621-eth/mtk_eth_soc.c           |  3 +-
+ .../interface/vchiq_arm/vchiq_2835_arm.c           |  6 +-
+ drivers/staging/vt6655/device_main.c               | 19 ++----
+ drivers/usb/gadget/udc/bdc/bdc_core.c              | 13 ++---
+ drivers/usb/host/uhci-hcd.c                        |  6 +-
+ drivers/usb/host/xhci-mem.c                        |  8 +--
+ drivers/video/fbdev/da8xx-fb.c                     |  6 +-
+ include/linux/dma-mapping.h                        |  9 ---
+ include/linux/pci-dma-compat.h                     |  2 +-
+ scripts/coccinelle/api/alloc/alloc_cast.cocci      |  8 +--
+ scripts/coccinelle/api/alloc/zalloc-simple.cocci   | 11 +---
+ sound/aoa/soundbus/i2sbus/core.c                   |  4 +-
+ sound/sparc/dbri.c                                 |  4 +-
+ 179 files changed, 923 insertions(+), 975 deletions(-)
