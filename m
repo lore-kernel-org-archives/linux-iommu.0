@@ -1,7 +1,7 @@
-From: "Singh, Brijesh" <brijesh.singh@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
-Date: Mon, 14 Jan 2019 19:09:20 +0000
-Message-ID: <b0dad138-cc87-9e51-9303-f29696e68385@amd.com>
+Date: Mon, 14 Jan 2019 19:12:08 +0000
+Message-ID: <cb290df3-4e17-a403-6d69-cf5a8a41c987@arm.com>
 References: <20190110134433.15672-1-joro@8bytes.org>
  <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
  <20190111091502.GC5825@8bytes.org>
@@ -10,56 +10,64 @@ References: <20190110134433.15672-1-joro@8bytes.org>
  <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com>
  <20190114131114-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190114131114-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-Content-ID: <9EA19D22B291F445A177EDECC5289AD3@namprd12.prod.outlook.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
 To: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
-Cc: "Singh, Brijesh" <brijesh.singh@amd.com>, Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "jfehlig@suse.com" <jfehlig@suse.com>, "Grimm, Jon" <Jon.Grimm@amd.com>
+Cc: Jens Axboe <axboe@kernel.dk>, brijesh.singh@amd.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, jon.grimm@amd.com, jfehlig@suse.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCk9uIDEvMTQvMTkgMTI6MjAgUE0sIE1pY2hhZWwgUy4gVHNpcmtpbiB3cm90ZToNCj4gT24g
-TW9uLCBKYW4gMTQsIDIwMTkgYXQgMDg6NDE6MzdQTSArMDgwMCwgSmFzb24gV2FuZyB3cm90ZToN
-Cj4+DQo+PiBPbiAyMDE5LzEvMTQg5LiL5Y2INTo1MCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6
-DQo+Pj4gT24gTW9uLCBKYW4gMTQsIDIwMTkgYXQgMDU6NDE6NTZQTSArMDgwMCwgSmFzb24gV2Fu
-ZyB3cm90ZToNCj4+Pj4gT24gMjAxOS8xLzExIOS4i+WNiDU6MTUsIEpvZXJnIFJvZWRlbCB3cm90
-ZToNCj4+Pj4+IE9uIEZyaSwgSmFuIDExLCAyMDE5IGF0IDExOjI5OjMxQU0gKzA4MDAsIEphc29u
-IFdhbmcgd3JvdGU6DQo+Pj4+Pj4gSnVzdCB3b25kZXIgaWYgbXkgdW5kZXJzdGFuZGluZyBpcyBj
-b3JyZWN0IElPTU1VX1BMQVRGT1JNIG11c3QgYmUgc2V0IGZvcg0KPj4+Pj4+IGFsbCB2aXJ0aW8g
-ZGV2aWNlcyB1bmRlciBBTUQtU0VWIGd1ZXN0cz8NCj4+Pj4+IFllcywgdGhhdCBpcyBjb3JyZWN0
-LiBFbXVsYXRlZCBETUEgY2FuIG9ubHkgaGFwcGVuIG9uIHRoZSBTV0lPVExCDQo+Pj4+PiBhcGVy
-dHVyZSwgYmVjYXVzZSB0aGF0IG1lbW9yeSBpcyBub3QgZW5jcnlwdGVkLiBUaGUgZ3Vlc3QgYm91
-bmNlcyB0aGUNCj4+Pj4+IGRhdGEgdGhlbiB0byBpdHMgZW5jcnlwdGVkIG1lbW9yeS4NCj4+Pj4+
-DQo+Pj4+PiBSZWdhcmRzLA0KPj4+Pj4NCj4+Pj4+IAlKb2VyZw0KPj4+Pg0KPj4+PiBUaGFua3Ms
-IGhhdmUgeW91IHRlc3RlZCB2aG9zdC1uZXQgaW4gdGhpcyBjYXNlLiBJIHN1c3BlY3QgaXQgbWF5
-IG5vdCB3b3JrDQo+Pj4gV2hpY2ggYnJpbmdzIG1lIGJhY2sgdG8gbXkgcGV0IHBldmVlIHRoYXQg
-d2UgbmVlZCB0byB0YWtlIGFjdGlvbnMNCj4+PiB0aGF0IHZpcnRpbyB1c2VzIHRoZSBwcm9wZXIg
-ZG1hIG1hcHBpbmcgQVBJIGJ5IGRlZmF1bHQgd2l0aCBxdWlya3MNCj4+PiBmb3IgbGVnYWN5IGNh
-c2VzLiAgVGhlIG1hZ2ljIGJ5cGFzcyBpdCB1c2VzIGlzIGp1c3QgY2F1c2luZyBwcm9ibGVtcw0K
-Pj4+IG92ZXIgcHJvYmxlbXMuDQo+Pg0KPj4NCj4+IFllcywgSSBmdWxseSBhZ3JlZSB3aXRoIHlv
-dS4gVGhpcyBpcyBwcm9iYWJseSBhbiBleGFjdCBleGFtcGxlIG9mIHN1Y2gNCj4+IHByb2JsZW0u
-DQo+Pg0KPj4gVGhhbmtzDQo+IA0KPiBJIGRvbid0IHRoaW5rIHNvIC0gdGhlIGlzc3VlIGlzIHJl
-YWxseSB0aGF0IERNQSBBUEkgZG9lcyBub3QgeWV0IGhhbmRsZQ0KPiB0aGUgU0VWIGNhc2UgMTAw
-JSBjb3JyZWN0bHkuIEkgc3VzcGVjdCBwYXNzdGhyb3VnaCBkZXZpY2VzIHdvdWxkIGhhdmUNCj4g
-dGhlIHNhbWUgaXNzdWUuDQo+IA0KDQoNCkluIGNhc2Ugb2YgU0VWLCBlbXVsYXRlZCBETUEgaXMg
-cGVyZm9ybWVkIHRocm91Z2ggdGhlIFNXSU9UTEINCih3aGljaCBib3VuY2VzIHRoZSBlbmNyeXB0
-ZWQgYnVmZmVycykuIFRoZSBpc3N1ZSByZXBvcnRlZCBoZXJlIHdpbGwNCmhhcHBlbiBvbiBhbnkg
-cGxhdGZvcm0gd2hpY2ggaXMgbWFraW5nIHVzZSBvZiBTV0lPVExCLiBXZSBjb3VsZA0KZWFzaWx5
-IHJlcHJvZHVjZSB0aGUgdGhlIHZpcnRpby1ibGsgZmFpbHVyZSBpZiB3ZSBjb25maWd1cmUNCnN3
-aW90bGI9Zm9yY2UgaW4gbm9uIFNFViBndWVzdC4gVW5mb3J0dW5hdGVseSBpbiBjYXNlIG9mIFNF
-ViB0aGUNClNXSU9UTEIgaXMgbXVzdC4gQXMgSm9yZ2UgaGlnaGxpZ2h0ZWQgdGhlIG1haW4gaXNz
-dWUgaXMgbGltaXRhdGlvbg0Kb2YgdGhlIFNXSU9UTEIsIGl0IGRvZXMgbm90IHN1cHBvcnQgYWxs
-b2NhdGlvbi9tYXAgbGFyZ2VyIHRoYW4gMjU2S2IuDQoNCg0KPiBJbiBmYWN0IHdob2V2ZXIgc2V0
-cyBJT01NVV9QTEFURk9STSBpcyBjb21wbGV0ZWx5IHVuYWZmZWN0ZWQgYnkNCj4gQ2hyaXN0b3Bo
-J3MgcGV0IHBlZXZlLg0KPiANCj4gQ2hyaXN0b3BoIGlzIHNheWluZyB0aGF0ICFJT01NVV9QTEFU
-Rk9STSBkZXZpY2VzIHNob3VsZCBoaWRlIHRoZQ0KPiBjb21wYXRpYmlsaXR5IGNvZGUgaW4gYSBz
-cGVjaWFsIHBlci1kZXZpY2UgRE1BIEFQSSBpbXBsZW1lbnRhdGlvbi4NCj4gV2hpY2ggd291bGQg
-YmUgZmluZSBlc3BlY2lhbGx5IGlmIHdlIGNhbiBtYW5hZ2Ugbm90IHRvIGludHJvZHVjZSBhIGJ1
-bmNoDQo+IG9mIGluZGlyZWN0IGNhbGxzIGFsbCBvdmVyIHRoZSBwbGFjZSBhbmQgaHVydCBwZXJm
-b3JtYW5jZS4gIEl0J3MganVzdA0KPiB0aGF0IHRoZSBiZW5lZml0IGlzIHVubGlrZWx5IHRvIGJl
-IGJpZyAoZS5nLiB3ZSBjYW4ndCBhbHNvIGdldCByaWQgb2YNCj4gdGhlIHZpcnRpbyBzcGVjaWZp
-YyBtZW1vcnkgYmFycmllcnMpIHNvIG5vIG9uZSB3YXMgbW90aXZhdGVkIGVub3VnaCB0bw0KPiB3
-b3JrIG9uIGl0Lg0KPiANCg==
+On 14/01/2019 18:20, Michael S. Tsirkin wrote:
+> On Mon, Jan 14, 2019 at 08:41:37PM +0800, Jason Wang wrote:
+>>
+>> On 2019/1/14 下午5:50, Christoph Hellwig wrote:
+>>> On Mon, Jan 14, 2019 at 05:41:56PM +0800, Jason Wang wrote:
+>>>> On 2019/1/11 下午5:15, Joerg Roedel wrote:
+>>>>> On Fri, Jan 11, 2019 at 11:29:31AM +0800, Jason Wang wrote:
+>>>>>> Just wonder if my understanding is correct IOMMU_PLATFORM must be set for
+>>>>>> all virtio devices under AMD-SEV guests?
+>>>>> Yes, that is correct. Emulated DMA can only happen on the SWIOTLB
+>>>>> aperture, because that memory is not encrypted. The guest bounces the
+>>>>> data then to its encrypted memory.
+>>>>>
+>>>>> Regards,
+>>>>>
+>>>>> 	Joerg
+>>>>
+>>>> Thanks, have you tested vhost-net in this case. I suspect it may not work
+>>> Which brings me back to my pet pevee that we need to take actions
+>>> that virtio uses the proper dma mapping API by default with quirks
+>>> for legacy cases.  The magic bypass it uses is just causing problems
+>>> over problems.
+>>
+>>
+>> Yes, I fully agree with you. This is probably an exact example of such
+>> problem.
+>>
+>> Thanks
+> 
+> I don't think so - the issue is really that DMA API does not yet handle
+> the SEV case 100% correctly. I suspect passthrough devices would have
+> the same issue.
+
+Huh? Regardless of which virtio devices use it or not, the DMA API is 
+handling the SEV case as correctly as it possibly can, by forcing 
+everything through the unencrypted bounce buffer. If the segments being 
+mapped are too big for that bounce buffer in the first place, there's 
+nothing it can possibly do except fail, gracefully or otherwise.
+
+Now, in theory, yes, the real issue at hand is not unique to virtio-blk 
+nor SEV - any driver whose device has a sufficiently large DMA segment 
+size and who manages to get sufficient physically-contiguous memory 
+could technically generate a scatterlist segment longer than SWIOTLB can 
+handle. However, in practice that basically never happens, not least 
+because very few drivers ever override the default 64K DMA segment 
+limit. AFAICS nothing in drivers/virtio is calling 
+dma_set_max_seg_size() or otherwise assigning any dma_parms to replace 
+the defaults either, so the really interesting question here is how are 
+these apparently-out-of-spec 256K segments getting generated at all?
+
+Robin.
