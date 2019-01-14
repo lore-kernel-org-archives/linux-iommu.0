@@ -1,73 +1,47 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
-Date: Mon, 14 Jan 2019 19:12:08 +0000
-Message-ID: <cb290df3-4e17-a403-6d69-cf5a8a41c987@arm.com>
-References: <20190110134433.15672-1-joro@8bytes.org>
- <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
- <20190111091502.GC5825@8bytes.org>
- <38bcbd46-674c-348a-cbd6-66bd431e986a@redhat.com>
- <20190114095002.GA29874@lst.de>
- <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com>
- <20190114131114-mutt-send-email-mst@kernel.org>
+From: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>
+Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
+ dma_direct code
+Date: Mon, 14 Jan 2019 20:32:18 +0100
+Message-ID: <CAF=iVcsG0N++=kTrBpQk=-6mJqLHrj2o6aRt1Opezthw01zQYw@mail.gmail.com>
+References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
+ <20190110135741.GA9255@lst.de>
+ <CAF=iVctGGs1OzHBg6MgpxrFbT_19T4YvH8muBZtsLJBDwGhrvQ@mail.gmail.com>
+ <20190114181314.GC8897@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190114131114-mutt-send-email-mst@kernel.org>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>
-Cc: Jens Axboe <axboe@kernel.dk>, brijesh.singh@amd.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, jon.grimm@amd.com, jfehlig@suse.com, linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20190114181314.GC8897-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Sibren Vasse <freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, =?UTF-8?Q?Michel_D=C3=A4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/01/2019 18:20, Michael S. Tsirkin wrote:
-> On Mon, Jan 14, 2019 at 08:41:37PM +0800, Jason Wang wrote:
->>
->> On 2019/1/14 下午5:50, Christoph Hellwig wrote:
->>> On Mon, Jan 14, 2019 at 05:41:56PM +0800, Jason Wang wrote:
->>>> On 2019/1/11 下午5:15, Joerg Roedel wrote:
->>>>> On Fri, Jan 11, 2019 at 11:29:31AM +0800, Jason Wang wrote:
->>>>>> Just wonder if my understanding is correct IOMMU_PLATFORM must be set for
->>>>>> all virtio devices under AMD-SEV guests?
->>>>> Yes, that is correct. Emulated DMA can only happen on the SWIOTLB
->>>>> aperture, because that memory is not encrypted. The guest bounces the
->>>>> data then to its encrypted memory.
->>>>>
->>>>> Regards,
->>>>>
->>>>> 	Joerg
->>>>
->>>> Thanks, have you tested vhost-net in this case. I suspect it may not work
->>> Which brings me back to my pet pevee that we need to take actions
->>> that virtio uses the proper dma mapping API by default with quirks
->>> for legacy cases.  The magic bypass it uses is just causing problems
->>> over problems.
->>
->>
->> Yes, I fully agree with you. This is probably an exact example of such
->> problem.
->>
->> Thanks
-> 
-> I don't think so - the issue is really that DMA API does not yet handle
-> the SEV case 100% correctly. I suspect passthrough devices would have
-> the same issue.
-
-Huh? Regardless of which virtio devices use it or not, the DMA API is 
-handling the SEV case as correctly as it possibly can, by forcing 
-everything through the unencrypted bounce buffer. If the segments being 
-mapped are too big for that bounce buffer in the first place, there's 
-nothing it can possibly do except fail, gracefully or otherwise.
-
-Now, in theory, yes, the real issue at hand is not unique to virtio-blk 
-nor SEV - any driver whose device has a sufficiently large DMA segment 
-size and who manages to get sufficient physically-contiguous memory 
-could technically generate a scatterlist segment longer than SWIOTLB can 
-handle. However, in practice that basically never happens, not least 
-because very few drivers ever override the default 64K DMA segment 
-limit. AFAICS nothing in drivers/virtio is calling 
-dma_set_max_seg_size() or otherwise assigning any dma_parms to replace 
-the defaults either, so the really interesting question here is how are 
-these apparently-out-of-spec 256K segments getting generated at all?
-
-Robin.
+T24gTW9uLCAxNCBKYW4gMjAxOSBhdCAxOToxMywgQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3Qu
+ZGU+IHdyb3RlOgo+Cj4gSG1tLCBJIHdvbmRlciBpZiB3ZSBhcmUgbm90IGFjdHVhbGx5IHVzaW5n
+IHN3aW90bGIgaW4gdGhlIGVuZCwKPiBjYW4geW91IGNoZWNrIGlmIHlvdXIgZG1lc2cgY29udGFp
+bnMgdGhpcyBsaW5lIG9yIG5vdD8KPgo+IFBDSS1ETUE6IFVzaW5nIHNvZnR3YXJlIGJvdW5jZSBi
+dWZmZXJpbmcgZm9yIElPIChTV0lPVExCKQpUaGlzIGxpbmUgZG9lcyBub3QgYXBwZWFyIGluIG15
+IGRtZXNnLgoKPgo+IElmIG5vdCBJIGd1ZXNzIHdlIGZvdW5kIGEgYnVnIGluIHN3aW90bGIgZXhp
+dCB2cyBpc19zd2lvdGxiX2J1ZmZlciwKPiBhbmQgeW91IGNhbiB0cnkgdGhpcyBwYXRjaDoKPgo+
+IGRpZmYgLS1naXQgYS9rZXJuZWwvZG1hL3N3aW90bGIuYyBiL2tlcm5lbC9kbWEvc3dpb3RsYi5j
+Cj4gaW5kZXggZDYzNjE3NzZkYzVjLi4xZmI2ZmQ2OGI5YzcgMTAwNjQ0Cj4gLS0tIGEva2VybmVs
+L2RtYS9zd2lvdGxiLmMKPiArKysgYi9rZXJuZWwvZG1hL3N3aW90bGIuYwo+IEBAIC0zNzgsNiAr
+Mzc4LDggQEAgdm9pZCBfX2luaXQgc3dpb3RsYl9leGl0KHZvaWQpCj4gICAgICAgICAgICAgICAg
+IG1lbWJsb2NrX2ZyZWVfbGF0ZShpb190bGJfc3RhcnQsCj4gICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBQQUdFX0FMSUdOKGlvX3RsYl9uc2xhYnMgPDwgSU9fVExCX1NISUZUKSk7
+Cj4gICAgICAgICB9Cj4gKyAgICAgICBpb190bGJfc3RhcnQgPSAwOwo+ICsgICAgICAgaW9fdGxi
+X2VuZCA9IDA7Cj4gICAgICAgICBpb190bGJfbnNsYWJzID0gMDsKPiAgICAgICAgIG1heF9zZWdt
+ZW50ID0gMDsKPiAgfQpXaXRoIHRoZSBwYXRjaCBhcHBsaWVkIHRvIHY1LjAtcmMyIEkgY2FuIG5v
+IGxvbmdlciByZXByb2R1Y2UgdGhlIGlzc3VlLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwphbWQtZ2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZy
+ZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2FtZC1nZngK
