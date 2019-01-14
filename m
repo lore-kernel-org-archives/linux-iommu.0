@@ -1,38 +1,33 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: implement generic dma_map_ops for IOMMUs
-Date: Mon, 14 Jan 2019 10:41:40 +0100
-Message-ID: <20190114094159.27326-1-hch@lst.de>
+From: Jason Wang <jasowang@redhat.com>
+Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
+Date: Mon, 14 Jan 2019 17:41:56 +0800
+Message-ID: <38bcbd46-674c-348a-cbd6-66bd431e986a@redhat.com>
+References: <20190110134433.15672-1-joro@8bytes.org>
+ <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
+ <20190111091502.GC5825@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190111091502.GC5825@8bytes.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, hch@lst.de
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
 
-please take a look at this series, which implements a completely generic
-set of dma_map_ops for IOMMU drivers.  This is done by taking the
-existing arm64 code, moving it to drivers/iommu and then massaging it
-so that it can also work for architectures with DMA remapping.  This
-should help future ports to support IOMMUs more easily, and also allow
-to remove various custom IOMMU dma_map_ops implementations, like Tom
-was planning to for the AMD one.
+On 2019/1/11 下午5:15, Joerg Roedel wrote:
+> On Fri, Jan 11, 2019 at 11:29:31AM +0800, Jason Wang wrote:
+>> Just wonder if my understanding is correct IOMMU_PLATFORM must be set for
+>> all virtio devices under AMD-SEV guests?
+> Yes, that is correct. Emulated DMA can only happen on the SWIOTLB
+> aperture, because that memory is not encrypted. The guest bounces the
+> data then to its encrypted memory.
+>
+> Regards,
+>
+> 	Joerg
 
-A git tree is also available at:
 
-    git://git.infradead.org/users/hch/misc.git dma-iommu-ops
-
-Gitweb:
-
-    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops
+Thanks, have you tested vhost-net in this case. I suspect it may not work
