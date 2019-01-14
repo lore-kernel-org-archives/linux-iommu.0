@@ -1,65 +1,58 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH] Revert
- "ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()"
-Date: Mon, 14 Jan 2019 14:22:40 +0100
-Message-ID: <20190114132240.12125-1-m.szyprowski@samsung.com>
-References: <CGME20190114132250eucas1p2abdf2f36bad3554e37dfbf40e539f594@eucas1p2.samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/3] dma-mapping: don't BUG when calling dma_map_resource
+ on RAM
+Date: Mon, 14 Jan 2019 14:16:46 +0000
+Message-ID: <f8f9e4f0-87fc-9f4f-37ea-39297acc8d31@arm.com>
+References: <20190111181731.11782-1-hch@lst.de>
+ <20190111181731.11782-3-hch@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190111181731.11782-3-hch@lst.de>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Thierry Reding <treding@nvidia.com>, Russell King <rmk+kernel@armlinux.org.uk>, Ben Skeggs <bskeggs@redhat.com>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+To: Christoph Hellwig <hch@lst.de>, Pawel Osciak <pawel@osciak.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>
+Cc: Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Mauro Carvalho Chehab <mchehab@kernel.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-This reverts commit 1874619a7df4b14b23b14877e705ae15325773e3.
+On 11/01/2019 18:17, Christoph Hellwig wrote:
+> Use WARN_ON_ONCE to print a stack trace and return a proper error
+> code instead.
 
-That patch broke IOMMU support for devices, which fails to probe for the
-first time and use deferred probe approach. When non-NULL dma_ops is set
-in arm_iommu_detach_device(), the given device later ignored by
-arch_setup_dma_ops() and stays with non-IOMMU dma_ops.
+I was racking my brain to remember the reasoning behind BUG_ON() being 
+the only viable way to prevent errors getting through unhandled, but of 
+course that was before we had a standardised DMA_MAPPING_ERROR that 
+would work across all implementations.
 
-Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()"
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- arch/arm/mm/dma-mapping.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>   include/linux/dma-mapping.h | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index d3087829a6df..91add0751aa5 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -353,7 +353,8 @@ static inline dma_addr_t dma_map_resource(struct device *dev,
+>   	BUG_ON(!valid_dma_direction(dir));
+>   
+>   	/* Don't allow RAM to be mapped */
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index 3c8534904209..5827a89b7de1 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1145,11 +1145,6 @@ int arm_dma_supported(struct device *dev, u64 mask)
- 	return __dma_supported(dev, mask, false);
- }
- 
--static const struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
--{
--	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
--}
--
- #ifdef CONFIG_ARM_DMA_USE_IOMMU
- 
- static int __dma_info_to_prot(enum dma_data_direction dir, unsigned long attrs)
-@@ -2294,7 +2289,7 @@ void arm_iommu_detach_device(struct device *dev)
- 	iommu_detach_device(mapping->domain, dev);
- 	kref_put(&mapping->kref, release_iommu_mapping);
- 	to_dma_iommu_mapping(dev) = NULL;
--	set_dma_ops(dev, arm_get_dma_map_ops(dev->archdata.dma_coherent));
-+	set_dma_ops(dev, NULL);
- 
- 	pr_debug("Detached IOMMU controller from %s device.\n", dev_name(dev));
- }
-@@ -2355,6 +2350,11 @@ static void arm_teardown_iommu_dma_ops(struct device *dev) { }
- 
- #endif	/* CONFIG_ARM_DMA_USE_IOMMU */
- 
-+static const struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
-+{
-+	return coherent ? &arm_coherent_dma_ops : &arm_dma_ops;
-+}
-+
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 			const struct iommu_ops *iommu, bool coherent)
- {
--- 
-2.17.1
+Ugh, I'm pretty sure that that "pfn_valid means RAM" misunderstanding 
+originally came from me - it might be nice to have a less-misleading 
+comment here, but off-hand I can't think of a succinct way to say "only 
+for 'DMA' access to MMIO registers/SRAMs/etc. and not for anything the 
+kernel knows as actual system/device memory" to better explain the WARN...
+
+Either way, though,
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> -	BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
+> +	if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+> +		return DMA_MAPPING_ERROR;
+>   
+>   	if (dma_is_direct(ops))
+>   		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
+> 
