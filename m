@@ -1,65 +1,58 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/3] dma-mapping: remove the default map_resource
- implementation
-Date: Mon, 14 Jan 2019 18:08:55 +0100
-Message-ID: <20190114170855.GA7485@lst.de>
-References: <20190111181731.11782-1-hch@lst.de> <20190111181731.11782-2-hch@lst.de> <c882430e-1dbd-df86-d686-0381dcaa668e@arm.com>
+From: =?UTF-8?Q?Michel_D=c3=a4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>
+Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
+ dma_direct code
+Date: Mon, 14 Jan 2019 18:22:18 +0100
+Message-ID: <210e1ae4-235a-7c74-bc59-8e8b1de904c8@daenzer.net>
+References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
+ <20190110135741.GA9255@lst.de>
+ <a3f0fd49-2286-ee2a-f0e8-dfe82aac73fb@gmail.com>
+ <20190110144837.GA10362@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <c882430e-1dbd-df86-d686-0381dcaa668e@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Pawel Osciak <pawel@osciak.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Mauro Carvalho Chehab <mchehab@kernel.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20190110144837.GA10362-jcswGhMUV9g@public.gmane.org>
+Content-Language: en-CA
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Cc: Sibren Vasse <freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 14, 2019 at 01:12:33PM +0000, Robin Murphy wrote:
-> Ignoring the offset was kind of intentional there, because at the time I 
-> was primarily thinking about it in terms of the Keystone 2 platform where 
-> the peripherals are all in the same place (0-2GB) in both the bus and CPU 
-> physical address maps, and only the view of RAM differs between the two 
-> (2-4GB vs. 32-34GB). However, on something like BCM283x, the peripherals 
-> region is also offset from its bus address in the CPU view, but at a 
-> *different* offset relative to that of RAM.
-
-I was more thinking of the PCIe P2P case, where we need to apply a
-consistent offset to translate between the CPU and the bus view.
-
-But this isn't really used for PCIe P2P, so I guess keeping the original
-sematics might be a better idea.  That being said the videobuf code seems
-to rely on these offsets, so we might be between a rock and a hard place.
-
-> Fortunately, I'm not aware of any platform which has a DMA engine behind an 
-> IOMMU (and thus *needs* to use dma_map_resource() to avoid said IOMMU 
-> blocking the slave device register reads/writes) and also has any nonzero 
-> offsets, and AFAIK the IOMMU-less platforms above aren't using 
-> dma_map_resource() at all, so this change shouldn't actually break 
-> anything, but I guess we have a bit of a problem making it truly generic 
-> and robust :(
-
-Note that we don't actually use the code in this patch for ARM/ARM64
-platforms with IOMMUs, as both the ARM and the ARM64 iommu code have
-their own implementations of ->map_resource that actually program
-the iommu (which at least for the PCIe P2P case would be wrong).
-
-> Is this perhaps another shove in the direction of overhauling 
-> dma_pfn_offset into an arbitrary "DMA ranges" lookup table?
-
-It is long overdue anyway.
-
->>   		addr = ops->map_resource(dev, phys_addr, size, dir, attrs);
->
-> Might it be reasonable to do:
->
-> 	if (!dma_is_direct(ops) && ops->map_resource)
-> 		addr = ops->map_resource(...);
-> 	else
-> 		addr = dma_direct_map_resource(...);
->
-> and avoid having to explicitly wire up the dma_direct callback elsewhere?
-
-No, I absolutely _want_ the callback explicitly wired up.  That is the
-only way to ensure we actually intentionally support it and don't just
-get a default that often won't work.  Same issue for ->mmap and
-->get_sgtable.
+T24gMjAxOS0wMS0xMCAzOjQ4IHAubS4sIENocmlzdG9waCBIZWxsd2lnIHdyb3RlOgo+IE9uIFRo
+dSwgSmFuIDEwLCAyMDE5IGF0IDAzOjAwOjMxUE0gKzAxMDAsIENocmlzdGlhbiBLw7ZuaWcgd3Jv
+dGU6Cj4+PiAgRnJvbSB0aGUgdHJhY2UgaXQgbG9va3MgbGlrZSB3ZSBnaXQgdGhlIGNhc2Ugd2hl
+cmUgc3dpb3RsYiB0cmllcwo+Pj4gdG8gY29weSBiYWNrIGRhdGEgZnJvbSBhIGJvdW5jZSBidWZm
+ZXIsIGJ1dCBoaXRzIGEgZGFuZ2xpbmcgb3IgTlVMTAo+Pj4gcG9pbnRlci4gIFNvIGEgY291cGxl
+IHF1ZXN0aW9ucyBmb3IgdGhlIHN1Ym1pdHRlcjoKPj4+Cj4+PiAgIC0gZG9lcyB0aGUgc3lzdGVt
+IGhhdmUgbW9yZSB0aGFuIDRHQiBtZW1vcnkgYW5kIHRodXMgdXNlIHN3aW90bGI/Cj4+PiAgICAg
+KGNoZWNrIC9wcm9jL21lbWluZm8sIGFuZCBpZiBzb21ldGhpbmcgU1dJT1RMQiBhcHBlYXJzIGlu
+IGRtZXNnKQo+Pj4gICAtIGRvZXMgdGhlIGRldmljZSB0aGlzIGhhcHBlbnMgb24gaGF2ZSBhIERN
+QSBtYXNrIHNtYWxsZXIgdGhhbgo+Pj4gICAgIHRoZSBhdmFpbGFibGUgbWVtb3J5LCB0aGF0IGlz
+IHNob3VsZCBzd2lvdGxiIGJlIHVzZWQgaGVyZSB0byBzdGFydAo+Pj4gICAgIHdpdGg/Cj4+Cj4+
+IFJhdGhlciB1bmxpa2VseS4gVGhlIGRldmljZSBpcyBhbiBBTUQgR1BVLCBzbyB3ZSBjYW4gYWRk
+cmVzcyBtZW1vcnkgdXAgdG8gCj4+IDFUQi4KPiAKPiBTbyB3ZSBwcm9iYWJseSBzb21laG93IGdv
+dCBhIGZhbHNlIHBvc2l0aXZlLgo+IAo+IEZvciBub3cgSSdsaWtlIHRoZSByZXBvcnRlZCB0byBj
+b25maXJtIHRoYXQgdGhlIGRtYV9kaXJlY3RfdW5tYXBfcGFnZSsweDkyCj4gYmFja3RyYWNlIHJl
+YWxseSBpcyBpbiB0aGUgc3dpb3RsYiBjb2RlIChJIGNhbid0IHRoaW5rIG9mIGFueXRoaW5nIGVs
+c2UsCj4gYnV0IEknZCByYXRoZXIgYmUgc3VyZSkuCj4gCj4gU2Vjb25kIGl0IHdvdWxkIGJlIGdy
+ZWF0IHRvIHByaW50IHdoYXQgdGhlIGNvbnRlbnRzIG9mIGlvX3RsYl9zdGFydAo+IGFuZCBpb190
+bGJfZW5kIGFyZSwgZS5nLiBieSBkb2luZyBhIHByaW50a19vbmNlIGluIGlzX3N3aW90bGJfYnVm
+ZmVyLAo+IG1heWJlIHRoYXQgZ2l2ZXMgYSBjbHVlIHdoeSB3ZSBhcmUgaGl0dGluZyB0aGUgc3dp
+b3RsYiBjb2RlIGhlcmUuCgpBbnkgcHJvZ3Jlc3M/IGh0dHBzOi8vYnVnemlsbGEua2VybmVsLm9y
+Zy9zaG93X2J1Zy5jZ2k/aWQ9MjAyMjYxIHdhcwphbHNvIGZpbGVkIGFib3V0IHRoaXMuCgpJIGhv
+cGUgZXZlcnlvbmUncyBjbGVhciB0aGF0IHRoaXMgbmVlZHMgdG8gYmUgcmVzb2x2ZWQgb25lIHdh
+eSBvcgphbm90aGVyIGJ5IDUuMCBmaW5hbCAodGhvdWdoIHRoZSBzb29uZXIsIHRoZSBiZXR0ZXIg
+OikuCgoKLS0gCkVhcnRobGluZyBNaWNoZWwgRMOkbnplciAgICAgICAgICAgICAgIHwgICAgICAg
+ICAgICAgICBodHRwOi8vd3d3LmFtZC5jb20KTGlicmUgc29mdHdhcmUgZW50aHVzaWFzdCAgICAg
+ICAgICAgICB8ICAgICAgICAgICAgIE1lc2EgYW5kIFggZGV2ZWxvcGVyCl9fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmFtZC1nZnggbWFpbGluZyBsaXN0CmFt
+ZC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
+L21haWxtYW4vbGlzdGluZm8vYW1kLWdmeAo=
