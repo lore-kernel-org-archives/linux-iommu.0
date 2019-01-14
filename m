@@ -1,33 +1,84 @@
-From: Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
-Date: Mon, 14 Jan 2019 17:41:56 +0800
-Message-ID: <38bcbd46-674c-348a-cbd6-66bd431e986a@redhat.com>
-References: <20190110134433.15672-1-joro@8bytes.org>
- <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
- <20190111091502.GC5825@8bytes.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH 01/19] dma-mapping: add a Kconfig symbol to indicated arch_dma_prep_coherent presence
+Date: Mon, 14 Jan 2019 10:41:41 +0100
+Message-ID: <20190114094159.27326-2-hch@lst.de>
+References: <20190114094159.27326-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190111091502.GC5825@8bytes.org>
-Content-Language: en-US
+In-Reply-To: <20190114094159.27326-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, hch@lst.de
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+Add a Kconfig symbol that indicates an architecture provides a
+arch_dma_prep_coherent implementation, and provide a stub otherwise.
 
-On 2019/1/11 下午5:15, Joerg Roedel wrote:
-> On Fri, Jan 11, 2019 at 11:29:31AM +0800, Jason Wang wrote:
->> Just wonder if my understanding is correct IOMMU_PLATFORM must be set for
->> all virtio devices under AMD-SEV guests?
-> Yes, that is correct. Emulated DMA can only happen on the SWIOTLB
-> aperture, because that memory is not encrypted. The guest bounces the
-> data then to its encrypted memory.
->
-> Regards,
->
-> 	Joerg
+This will allow the generic dma-iommu code to it while still allowing
+to be built for cache coherent architectures.
 
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/arm64/Kconfig              | 1 +
+ arch/csky/Kconfig               | 1 +
+ include/linux/dma-noncoherent.h | 6 ++++++
+ kernel/dma/Kconfig              | 3 +++
+ 4 files changed, 11 insertions(+)
 
-Thanks, have you tested vhost-net in this case. I suspect it may not work
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index a4168d366127..ae3f581a9bcc 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -13,6 +13,7 @@ config ARM64
+ 	select ARCH_HAS_DEVMEM_IS_ALLOWED
+ 	select ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	select ARCH_HAS_DMA_MMAP_PGPROT
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_ACPI_TABLE_UPGRADE if ACPI
+ 	select ARCH_HAS_ELF_RANDOMIZE
+ 	select ARCH_HAS_FAST_MULTIPLIER
+diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
+index 398113c845f5..8b84d4362ff6 100644
+--- a/arch/csky/Kconfig
++++ b/arch/csky/Kconfig
+@@ -1,5 +1,6 @@
+ config CSKY
+ 	def_bool y
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+ 	select ARCH_USE_BUILTIN_BSWAP
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index 69b36ed31a99..9741767e400f 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -72,6 +72,12 @@ static inline void arch_sync_dma_for_cpu_all(struct device *dev)
+ }
+ #endif /* CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL */
+ 
++#ifdef CONFIG_ARCH_HAS_DMA_PREP_COHERENT
+ void arch_dma_prep_coherent(struct page *page, size_t size);
++#else
++static inline void arch_dma_prep_coherent(struct page *page, size_t size)
++{
++}
++#endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
+ 
+ #endif /* _LINUX_DMA_NONCOHERENT_H */
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index ca88b867e7fe..541128a32c5d 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -29,6 +29,9 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU
+ config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+ 	bool
+ 
++config ARCH_HAS_DMA_PREP_COHERENT
++	bool
++
+ config ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	bool
+ 
+-- 
+2.20.1
