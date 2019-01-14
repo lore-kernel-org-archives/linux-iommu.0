@@ -1,42 +1,66 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
- dma_direct code
-Date: Mon, 14 Jan 2019 19:13:14 +0100
-Message-ID: <20190114181314.GC8897@lst.de>
-References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
- <20190110135741.GA9255@lst.de>
- <CAF=iVctGGs1OzHBg6MgpxrFbT_19T4YvH8muBZtsLJBDwGhrvQ@mail.gmail.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
+Date: Mon, 14 Jan 2019 13:20:45 -0500
+Message-ID: <20190114131114-mutt-send-email-mst@kernel.org>
+References: <20190110134433.15672-1-joro@8bytes.org>
+ <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
+ <20190111091502.GC5825@8bytes.org>
+ <38bcbd46-674c-348a-cbd6-66bd431e986a@redhat.com>
+ <20190114095002.GA29874@lst.de>
+ <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <CAF=iVctGGs1OzHBg6MgpxrFbT_19T4YvH8muBZtsLJBDwGhrvQ@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Sibren Vasse <sibren@sibrenvasse.nl>
-Cc: Sibren Vasse <freedesktop@sibrenvasse.nl>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Michel =?iso-8859-1?Q?D=E4nzer?= <michel@daenzer.net>, x86@kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, amd-gfx@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jason Wang <jasowang@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-SG1tLCBJIHdvbmRlciBpZiB3ZSBhcmUgbm90IGFjdHVhbGx5IHVzaW5nIHN3aW90bGIgaW4gdGhl
-IGVuZCwKY2FuIHlvdSBjaGVjayBpZiB5b3VyIGRtZXNnIGNvbnRhaW5zIHRoaXMgbGluZSBvciBu
-b3Q/CgpQQ0ktRE1BOiBVc2luZyBzb2Z0d2FyZSBib3VuY2UgYnVmZmVyaW5nIGZvciBJTyAoU1dJ
-T1RMQikKCklmIG5vdCBJIGd1ZXNzIHdlIGZvdW5kIGEgYnVnIGluIHN3aW90bGIgZXhpdCB2cyBp
-c19zd2lvdGxiX2J1ZmZlciwKYW5kIHlvdSBjYW4gdHJ5IHRoaXMgcGF0Y2g6CgpkaWZmIC0tZ2l0
-IGEva2VybmVsL2RtYS9zd2lvdGxiLmMgYi9rZXJuZWwvZG1hL3N3aW90bGIuYwppbmRleCBkNjM2
-MTc3NmRjNWMuLjFmYjZmZDY4YjljNyAxMDA2NDQKLS0tIGEva2VybmVsL2RtYS9zd2lvdGxiLmMK
-KysrIGIva2VybmVsL2RtYS9zd2lvdGxiLmMKQEAgLTM3OCw2ICszNzgsOCBAQCB2b2lkIF9faW5p
-dCBzd2lvdGxiX2V4aXQodm9pZCkKIAkJbWVtYmxvY2tfZnJlZV9sYXRlKGlvX3RsYl9zdGFydCwK
-IAkJCQkgICBQQUdFX0FMSUdOKGlvX3RsYl9uc2xhYnMgPDwgSU9fVExCX1NISUZUKSk7CiAJfQor
-CWlvX3RsYl9zdGFydCA9IDA7CisJaW9fdGxiX2VuZCA9IDA7CiAJaW9fdGxiX25zbGFicyA9IDA7
-CiAJbWF4X3NlZ21lbnQgPSAwOwogfQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVl
-ZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5m
-by9kcmktZGV2ZWwK
+On Mon, Jan 14, 2019 at 08:41:37PM +0800, Jason Wang wrote:
+> 
+> On 2019/1/14 下午5:50, Christoph Hellwig wrote:
+> > On Mon, Jan 14, 2019 at 05:41:56PM +0800, Jason Wang wrote:
+> > > On 2019/1/11 下午5:15, Joerg Roedel wrote:
+> > > > On Fri, Jan 11, 2019 at 11:29:31AM +0800, Jason Wang wrote:
+> > > > > Just wonder if my understanding is correct IOMMU_PLATFORM must be set for
+> > > > > all virtio devices under AMD-SEV guests?
+> > > > Yes, that is correct. Emulated DMA can only happen on the SWIOTLB
+> > > > aperture, because that memory is not encrypted. The guest bounces the
+> > > > data then to its encrypted memory.
+> > > > 
+> > > > Regards,
+> > > > 
+> > > > 	Joerg
+> > > 
+> > > Thanks, have you tested vhost-net in this case. I suspect it may not work
+> > Which brings me back to my pet pevee that we need to take actions
+> > that virtio uses the proper dma mapping API by default with quirks
+> > for legacy cases.  The magic bypass it uses is just causing problems
+> > over problems.
+> 
+> 
+> Yes, I fully agree with you. This is probably an exact example of such
+> problem.
+> 
+> Thanks
+
+I don't think so - the issue is really that DMA API does not yet handle
+the SEV case 100% correctly. I suspect passthrough devices would have
+the same issue.
+
+In fact whoever sets IOMMU_PLATFORM is completely unaffected by
+Christoph's pet peeve.
+
+Christoph is saying that !IOMMU_PLATFORM devices should hide the
+compatibility code in a special per-device DMA API implementation.
+Which would be fine especially if we can manage not to introduce a bunch
+of indirect calls all over the place and hurt performance.  It's just
+that the benefit is unlikely to be big (e.g. we can't also get rid of
+the virtio specific memory barriers) so no one was motivated enough to
+work on it.
+
+-- 
+MST
