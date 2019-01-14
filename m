@@ -1,58 +1,81 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 2/3] dma-mapping: don't BUG when calling dma_map_resource
- on RAM
-Date: Mon, 14 Jan 2019 14:16:46 +0000
-Message-ID: <f8f9e4f0-87fc-9f4f-37ea-39297acc8d31@arm.com>
-References: <20190111181731.11782-1-hch@lst.de>
- <20190111181731.11782-3-hch@lst.de>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/2] ACPI/IORT: Handle potential overflow in iort_dma_setup
+Date: Mon, 14 Jan 2019 16:29:27 +0100
+Message-ID: <45ec247e-1517-0d68-0287-c3f0e957fe32@redhat.com>
+References: <20181218184841.20034-1-drjones@redhat.com>
+	<20181218184841.20034-2-drjones@redhat.com>
+	<1503e3b8-1a6c-3b66-fa1e-d13f4e19f31f@arm.com>
+	<20181219131849.hziujd5zgclangce@kamzik.brq.redhat.com>
+	<fbf8dc04-6f80-b30b-c9ef-87fa3a33d0ec@redhat.com>
+	<7acdfce6-0a0b-bf68-c5ff-8979721f4e83@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190111181731.11782-3-hch@lst.de>
-Content-Language: en-GB
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>, Pawel Osciak <pawel@osciak.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>
-Cc: Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Mauro Carvalho Chehab <mchehab@kernel.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <7acdfce6-0a0b-bf68-c5ff-8979721f4e83-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Andrew Jones <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/01/2019 18:17, Christoph Hellwig wrote:
-> Use WARN_ON_ONCE to print a stack trace and return a proper error
-> code instead.
+Hi Robin,
 
-I was racking my brain to remember the reasoning behind BUG_ON() being 
-the only viable way to prevent errors getting through unhandled, but of 
-course that was before we had a standardised DMA_MAPPING_ERROR that 
-would work across all implementations.
-
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->   include/linux/dma-mapping.h | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
+On 1/14/19 12:10 PM, Robin Murphy wrote:
+> On 10/01/2019 10:44, Auger Eric wrote:
+>> Hi Robin, Drew,
+>>
+>> On 12/19/18 2:18 PM, Andrew Jones wrote:
+>>> On Wed, Dec 19, 2018 at 12:21:35PM +0000, Robin Murphy wrote:
+>>>> On 18/12/2018 18:48, Andrew Jones wrote:
+>>>>> The sum of dmaaddr and size may overflow, particularly considering
+>>>>> there are cases where size will be U64_MAX.
+>>>>
+>>>> Only if the firmware is broken in the first place, though. It would
+>>>> be weird
+>>>> to describe an explicit _DMA range of base=0 and size=U64_MAX,
+>>>> because it's
+>>>> effectively the same as just not having one at all, but it's not
+>>>> strictly
+>>>> illegal. However, since the ACPI System Memory address space is at most
+>>>> 64-bit, anything that would actually overflow here is already
+>>>> describing an
+>>>> impossibility - really, we should probably scream even louder about a
+>>>> firmware bug and reject it entirely, rather than quietly hiding it.
+>>>
+>>> Ah, looking again I see the paths. Either acpi_dma_get_range() returns
+>>> success, in which case base and size are fine, or it returns an EINVAL,
+>>> in which case base=size=0, or it returns ENODEV in which case base is
+>>> zero, so size may be set to U64_MAX by rc_dma_get_range() with no
+>>> problem.
+>>> The !dev_is_pci(dev) path is also fine since base=0.
+>>
+>> So practically putting an explicit memory_address_limit=64 is harmless
+>> as dmaaddr always is 0, right?
+>>
+>> In QEMU I intended to update the ACPI code to comply with the rev D
+>> spec. in that case the RC table revision is 1 (rev D) and the
+>> memory_address_limit needs to be filled. If we don't want to restrict
+>> the limit, isn't it the right choice to set 64 here?
 > 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index d3087829a6df..91add0751aa5 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -353,7 +353,8 @@ static inline dma_addr_t dma_map_resource(struct device *dev,
->   	BUG_ON(!valid_dma_direction(dir));
->   
->   	/* Don't allow RAM to be mapped */
+> Indeed, the Memory Address Size Limit doesn't cater for offsets so can't
+> run into this kind of overflow in the first place. For a fully-emulated
+> PCI hierarchy I'd say 64 is not just harmless but in fact entirely
+> correct - you're going to have more fun with VFIO passthrough if the
+> host tables have more restrictive limits, but I guess that's a problem
+> for the future ;)
+Yes but that's a good point to notice!
 
-Ugh, I'm pretty sure that that "pfn_valid means RAM" misunderstanding 
-originally came from me - it might be nice to have a less-misleading 
-comment here, but off-hand I can't think of a succinct way to say "only 
-for 'DMA' access to MMIO registers/SRAMs/etc. and not for anything the 
-kernel knows as actual system/device memory" to better explain the WARN...
+Thanks
 
-Either way, though,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> -	BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
-> +	if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
-> +		return DMA_MAPPING_ERROR;
->   
->   	if (dma_is_direct(ops))
->   		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
+Eric
 > 
+> Robin.
