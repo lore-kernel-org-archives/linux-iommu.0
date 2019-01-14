@@ -1,66 +1,69 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
-Date: Mon, 14 Jan 2019 13:20:45 -0500
-Message-ID: <20190114131114-mutt-send-email-mst@kernel.org>
-References: <20190110134433.15672-1-joro@8bytes.org>
- <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com>
- <20190111091502.GC5825@8bytes.org>
- <38bcbd46-674c-348a-cbd6-66bd431e986a@redhat.com>
- <20190114095002.GA29874@lst.de>
- <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com>
+From: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>
+Subject: Re: amdgpu/TTM oopses since merging swiotlb_dma_ops into the
+ dma_direct code
+Date: Mon, 14 Jan 2019 20:00:10 +0100
+Message-ID: <CAF=iVcvRx3VbJN5+x2Mo0xKzLpSsove+4Cumrr8J2Xhq5TAB6A@mail.gmail.com>
+References: <61f8f660-005c-190c-c08f-b563de2eae18@daenzer.net>
+ <20190110135741.GA9255@lst.de>
+ <a3f0fd49-2286-ee2a-f0e8-dfe82aac73fb@gmail.com>
+ <20190110144837.GA10362@lst.de>
+ <CAF=iVcsEMfWyJck7RJ8-EGvKipXU=5eq3iv61mo49_7Wd4pHuw@mail.gmail.com>
+ <20190114181041.GB8897@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jason Wang <jasowang@redhat.com>
-Cc: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20190114181041.GB8897-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Sibren Vasse <freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, =?UTF-8?Q?Michel_D=C3=A4nzer?= <michel-otUistvHUpPR7s880joybQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, christian.koenig-5C7GfCeVMHo@public.gmane.org, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 14, 2019 at 08:41:37PM +0800, Jason Wang wrote:
-> 
-> On 2019/1/14 下午5:50, Christoph Hellwig wrote:
-> > On Mon, Jan 14, 2019 at 05:41:56PM +0800, Jason Wang wrote:
-> > > On 2019/1/11 下午5:15, Joerg Roedel wrote:
-> > > > On Fri, Jan 11, 2019 at 11:29:31AM +0800, Jason Wang wrote:
-> > > > > Just wonder if my understanding is correct IOMMU_PLATFORM must be set for
-> > > > > all virtio devices under AMD-SEV guests?
-> > > > Yes, that is correct. Emulated DMA can only happen on the SWIOTLB
-> > > > aperture, because that memory is not encrypted. The guest bounces the
-> > > > data then to its encrypted memory.
-> > > > 
-> > > > Regards,
-> > > > 
-> > > > 	Joerg
-> > > 
-> > > Thanks, have you tested vhost-net in this case. I suspect it may not work
-> > Which brings me back to my pet pevee that we need to take actions
-> > that virtio uses the proper dma mapping API by default with quirks
-> > for legacy cases.  The magic bypass it uses is just causing problems
-> > over problems.
-> 
-> 
-> Yes, I fully agree with you. This is probably an exact example of such
-> problem.
-> 
-> Thanks
-
-I don't think so - the issue is really that DMA API does not yet handle
-the SEV case 100% correctly. I suspect passthrough devices would have
-the same issue.
-
-In fact whoever sets IOMMU_PLATFORM is completely unaffected by
-Christoph's pet peeve.
-
-Christoph is saying that !IOMMU_PLATFORM devices should hide the
-compatibility code in a special per-device DMA API implementation.
-Which would be fine especially if we can manage not to introduce a bunch
-of indirect calls all over the place and hurt performance.  It's just
-that the benefit is unlikely to be big (e.g. we can't also get rid of
-the virtio specific memory barriers) so no one was motivated enough to
-work on it.
-
--- 
-MST
+T24gTW9uLCAxNCBKYW4gMjAxOSBhdCAxOToxMCwgQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBsc3Qu
+ZGU+IHdyb3RlOgo+Cj4gT24gVGh1LCBKYW4gMTAsIDIwMTkgYXQgMDY6NTI6MjZQTSArMDEwMCwg
+U2licmVuIFZhc3NlIHdyb3RlOgo+ID4gT24gVGh1LCAxMCBKYW4gMjAxOSBhdCAxNTo0OCwgQ2hy
+aXN0b3BoIEhlbGx3aWcgPGhjaEBsc3QuZGU+IHdyb3RlOgo+ID4gPgo+ID4gPiBPbiBUaHUsIEph
+biAxMCwgMjAxOSBhdCAwMzowMDozMVBNICswMTAwLCBDaHJpc3RpYW4gS8O2bmlnIHdyb3RlOgo+
+ID4gPiA+PiAgRnJvbSB0aGUgdHJhY2UgaXQgbG9va3MgbGlrZSB3ZSBnaXQgdGhlIGNhc2Ugd2hl
+cmUgc3dpb3RsYiB0cmllcwo+ID4gPiA+PiB0byBjb3B5IGJhY2sgZGF0YSBmcm9tIGEgYm91bmNl
+IGJ1ZmZlciwgYnV0IGhpdHMgYSBkYW5nbGluZyBvciBOVUxMCj4gPiA+ID4+IHBvaW50ZXIuICBT
+byBhIGNvdXBsZSBxdWVzdGlvbnMgZm9yIHRoZSBzdWJtaXR0ZXI6Cj4gPiA+ID4+Cj4gPiA+ID4+
+ICAgLSBkb2VzIHRoZSBzeXN0ZW0gaGF2ZSBtb3JlIHRoYW4gNEdCIG1lbW9yeSBhbmQgdGh1cyB1
+c2Ugc3dpb3RsYj8KPiA+ID4gPj4gICAgIChjaGVjayAvcHJvYy9tZW1pbmZvLCBhbmQgaWYgc29t
+ZXRoaW5nIFNXSU9UTEIgYXBwZWFycyBpbiBkbWVzZykKPiA+ID4gPj4gICAtIGRvZXMgdGhlIGRl
+dmljZSB0aGlzIGhhcHBlbnMgb24gaGF2ZSBhIERNQSBtYXNrIHNtYWxsZXIgdGhhbgo+ID4gPiA+
+PiAgICAgdGhlIGF2YWlsYWJsZSBtZW1vcnksIHRoYXQgaXMgc2hvdWxkIHN3aW90bGIgYmUgdXNl
+ZCBoZXJlIHRvIHN0YXJ0Cj4gPiA+ID4+ICAgICB3aXRoPwo+ID4gPiA+Cj4gPiA+ID4gUmF0aGVy
+IHVubGlrZWx5LiBUaGUgZGV2aWNlIGlzIGFuIEFNRCBHUFUsIHNvIHdlIGNhbiBhZGRyZXNzIG1l
+bW9yeSB1cCB0bwo+ID4gPiA+IDFUQi4KPiA+ID4KPiA+ID4gU28gd2UgcHJvYmFibHkgc29tZWhv
+dyBnb3QgYSBmYWxzZSBwb3NpdGl2ZS4KPiA+ID4KPiA+ID4gRm9yIG5vdyBJJ2xpa2UgdGhlIHJl
+cG9ydGVkIHRvIGNvbmZpcm0gdGhhdCB0aGUgZG1hX2RpcmVjdF91bm1hcF9wYWdlKzB4OTIKPiA+
+ID4gYmFja3RyYWNlIHJlYWxseSBpcyBpbiB0aGUgc3dpb3RsYiBjb2RlIChJIGNhbid0IHRoaW5r
+IG9mIGFueXRoaW5nIGVsc2UsCj4gPiA+IGJ1dCBJJ2QgcmF0aGVyIGJlIHN1cmUpLgo+ID4gSSdt
+IG5vdCBzdXJlIHdoYXQgeW91IHdhbnQgbWUgdG8gY29uZmlybS4gQ291bGQgeW91IGVsYWJvcmF0
+ZT8KPgo+IFBsZWFzZSBvcGVuIHRoZSB2bWxpbnV4IGZpbGUgZm9yIHdoaWNoIHRoaXMgaGFwcGVu
+ZCBpbiBnZGIsCj4gdGhlbiBzZW5kIHRoZSBvdXRwdXQgZnJvbSB0aGlzIGNvbW1hbmQKPgo+ICAg
+ICAgICAgbCAqKGRtYV9kaXJlY3RfdW5tYXBfcGFnZSsweDkyKQo+Cj4gdG8gdGhpcyB0aHJlYWQu
+Ck15IGNhbGwgdHJhY2UgY29udGFpbmVkOgpKYW4gMTAgMTY6MzQ6NTEgPGhvc3RuYW1lPiBrZXJu
+ZWw6ICBkbWFfZGlyZWN0X3VubWFwX3BhZ2UrMHg3YS8weDgwCgooZ2RiKSBsaXN0ICooZG1hX2Rp
+cmVjdF91bm1hcF9wYWdlKzB4N2EpCjB4ZmZmZmZmZmY4MTBmYTI4YSBpcyBpbiBkbWFfZGlyZWN0
+X3VubWFwX3BhZ2UgKGtlcm5lbC9kbWEvZGlyZWN0LmM6MjkxKS4KMjg2ICAgICAgICAgICAgICAg
+ICAgICAgc2l6ZV90IHNpemUsIGVudW0gZG1hX2RhdGFfZGlyZWN0aW9uIGRpciwKdW5zaWduZWQg
+bG9uZyBhdHRycykKMjg3ICAgICB7CjI4OCAgICAgICAgICAgICBwaHlzX2FkZHJfdCBwaHlzID0g
+ZG1hX3RvX3BoeXMoZGV2LCBhZGRyKTsKMjg5CjI5MCAgICAgICAgICAgICBpZiAoIShhdHRycyAm
+IERNQV9BVFRSX1NLSVBfQ1BVX1NZTkMpKQoyOTEgICAgICAgICAgICAgICAgICAgICBkbWFfZGly
+ZWN0X3N5bmNfc2luZ2xlX2Zvcl9jcHUoZGV2LCBhZGRyLCBzaXplLCBkaXIpOwoyOTIKMjkzICAg
+ICAgICAgICAgIGlmICh1bmxpa2VseShpc19zd2lvdGxiX2J1ZmZlcihwaHlzKSkpCjI5NCAgICAg
+ICAgICAgICAgICAgICAgIHN3aW90bGJfdGJsX3VubWFwX3NpbmdsZShkZXYsIHBoeXMsIHNpemUs
+IGRpciwgYXR0cnMpOwoyOTUgICAgIH0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KYW1kLWdmeCBtYWlsaW5nIGxpc3QKYW1kLWdmeEBsaXN0cy5mcmVlZGVz
+a3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9h
+bWQtZ2Z4Cg==
