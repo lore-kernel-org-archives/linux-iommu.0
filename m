@@ -1,101 +1,69 @@
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 2/8] iommu/vt-d: Add per-device IOMMU feature ops
- entries
-Date: Mon, 14 Jan 2019 13:30:28 +0800
-Message-ID: <9fd40493-6140-c4e9-f6c8-fefbe4c33ccd@linux.intel.com>
-References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
- <20190110030027.31447-3-baolu.lu@linux.intel.com>
- <20190111111644.epawu474jdjv4a33@8bytes.org>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v5 12/20] memory: mtk-smi: Add gals support
+Date: Mon, 14 Jan 2019 14:57:28 +0800
+Message-ID: <1547449048.24830.15.camel@mhfsdcap03>
+References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
+         <1546314952-15990-13-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190111111644.epawu474jdjv4a33@8bytes.org>
-Content-Language: en-US
+In-Reply-To: <1546314952-15990-13-git-send-email-yong.wu@mediatek.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Matthias,
 
-Thanks for reviewing my patch.
+   Gentle ping about this and the other mtk-smi part in this patchset.
 
-On 1/11/19 7:16 PM, Joerg Roedel wrote:
-> Hi,
+   The memory part don't have its specific maintainer, normally we need
+SoC maintain's help. Thus, For this file(memory/mtk-smi.c), your review
+is needed before Joerg accept it.
+
+    Appreciate in advance.
+
+On Tue, 2019-01-01 at 11:55 +0800, Yong Wu wrote:
+> In some SoCs like mt8183, SMI add GALS(Global Async Local Sync) module
+> which can help synchronize for the modules in different clock frequency.
+> It can be seen as a "asynchronous fifo". This is a example diagram:
 > 
-> this looks a bit confusing to me because I can see no checking whether
-> the device actually supports scalable mode.
-
-Yes. I should put some checking there. Device scalable mode capability
-is exposed in PCI extended capability list.
-
-> More below:
+>             M4U
+>              |
+>          ----------
+>          |        |
+>      gals0-rx   gals1-rx
+>          |        |
+>          |        |
+>      gals0-tx   gals1-tx
+>          |        |
+>         ------------
+>          SMI Common
+>         ------------
+>              |
+>   +-----+--------+-----+- ...
+>   |     |        |     |
+>   |  gals-rx  gals-rx  |
+>   |     |        |     |
+>   |     |        |     |
+>   |  gals-tx  gals-tx  |
+>   |     |        |     |
+> larb1 larb2   larb3  larb4
 > 
-> On Thu, Jan 10, 2019 at 11:00:21AM +0800, Lu Baolu wrote:
->> +static int intel_iommu_enable_auxd(struct device *dev)
->> +{
->> +	struct device_domain_info *info;
->> +	struct dmar_domain *domain;
->> +	unsigned long flags;
->> +
->> +	if (!scalable_mode_support())
->> +		return -ENODEV;
->> +
->> +	domain = get_valid_domain_for_dev(dev);
->> +	if (!domain)
->> +		return -ENODEV;
->> +
->> +	spin_lock_irqsave(&device_domain_lock, flags);
->> +	info = dev->archdata.iommu;
->> +	info->auxd_enabled = 1;
->> +	spin_unlock_irqrestore(&device_domain_lock, flags);
->> +
->> +	return 0;
->> +}
+> GALS only help transfer the command/data while it doesn't have the
+> configuring register, thus it has the special "smi" clock and doesn't
+> have the "apb" clock. From the diagram above, we add "gals0" and
+> "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
 > 
-> This code sets a flag to mark scalable mode enabled. Doesn't the device
-> need some handling too, like enabling the PASID capability and all?
-
-Yes. My design was rough. We should prepare the device for scalable mode
-instead of assuming that everything is ready.
-
+> This patch adds gals clock supporting in the SMI. Note that some larbs
+> may still don't have the "gals" clock like larb1 and larb4 above.
 > 
->> +
->> +static bool
->> +intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
->> +{
->> +	struct device_domain_info *info = dev->archdata.iommu;
->> +
->> +	if (feat == IOMMU_DEV_FEAT_AUX)
->> +		return scalable_mode_support() && info && info->auxd_enabled;
->> +
->> +	return false;
->> +}
+> This is also a preparing patch for mt8183 which has GALS.
 > 
-> Why is this checking the auxd_enabled flag?
-
-We need an API to check whether this feature is enabled. In vfio, it
-is used like below,
-
-if (iommu_dev_has_feat(dev, FEAT_AUX_DOMAIN))
-     iommu_aux_attach_device(dev, domain)
-else
-     iommu_attach_device(dev, domain)
-
-> The function should just
-> return whether the device _supports_ scalable mode, not whether it is
-> enabled.
-
-Do we want to have an API to tell whether device has aux-domain feature?
-It could be included in the enable API. The enable API returns failure
-if device doesn't support aux-domain.
-
-> 
-> Regards,
-> 
-> 	Joerg
-> 
-
-Best regards,
-Lu Baolu
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/memory/mtk-smi.c | 36 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 36 insertions(+)
+[...]
+  
