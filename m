@@ -1,67 +1,115 @@
-From: Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH] Revert "ARM: dma-mapping: Set proper DMA ops in
- arm_iommu_detach_device()"
-Date: Mon, 14 Jan 2019 17:09:03 +0100
-Message-ID: <20190114160902.GB9218@ulmo>
-References: <CGME20190114132250eucas1p2abdf2f36bad3554e37dfbf40e539f594@eucas1p2.samsung.com>
- <20190114132240.12125-1-m.szyprowski@samsung.com>
+From: Nicolas Pitre <nicolas.pitre@linaro.org>
+Subject: Re: [PATCH 07/11] mmc: mvsdio: handle highmem pages
+Date: Mon, 14 Jan 2019 11:29:07 -0500 (EST)
+Message-ID: <nycvar.YSQ.7.76.1901141107030.4477@knanqh.ubzr>
+References: <20190114095804.27978-1-hch@lst.de> <20190114095804.27978-8-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="CdrF4e02JqNVZeln"
+Content-Type: text/plain; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190114132240.12125-1-m.szyprowski@samsung.com>
-Content-Disposition: inline
+In-Reply-To: <20190114095804.27978-8-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Russell King <rmk+kernel@armlinux.org.uk>, Ben Skeggs <bskeggs@redhat.com>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Russell King <linux@armlinux.org.uk>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
---CdrF4e02JqNVZeln
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, 14 Jan 2019, Christoph Hellwig wrote:
 
-On Mon, Jan 14, 2019 at 02:22:40PM +0100, Marek Szyprowski wrote:
-> This reverts commit 1874619a7df4b14b23b14877e705ae15325773e3.
->=20
-> That patch broke IOMMU support for devices, which fails to probe for the
-> first time and use deferred probe approach. When non-NULL dma_ops is set
-> in arm_iommu_detach_device(), the given device later ignored by
-> arch_setup_dma_ops() and stays with non-IOMMU dma_ops.
->=20
-> Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-> Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iommu_de=
-tach_device()"
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Instead of setting up a kernel pointer to track the current PIO address,
+> track the offset in the current page, and do an atomic kmap for the page
+> while doing the actual PIO operations.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+Just a small suggestion below
+
+
 > ---
->  arch/arm/mm/dma-mapping.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
+>  drivers/mmc/host/mvsdio.c | 48 +++++++++++++++++++++++----------------
+>  1 file changed, 29 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/mvsdio.c b/drivers/mmc/host/mvsdio.c
+> index e22bbff89c8d..545e370d6dae 100644
+> --- a/drivers/mmc/host/mvsdio.c
+> +++ b/drivers/mmc/host/mvsdio.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/module.h>
+>  #include <linux/init.h>
+>  #include <linux/io.h>
+> +#include <linux/highmem.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/mbus.h>
+>  #include <linux/delay.h>
+> @@ -42,7 +43,8 @@ struct mvsd_host {
+>  	unsigned int intr_en;
+>  	unsigned int ctrl;
+>  	unsigned int pio_size;
+> -	void *pio_ptr;
+> +	struct scatterlist *pio_sg;
+> +	unsigned int pio_offset; /* offset in words into the segment */
+>  	unsigned int sg_frags;
+>  	unsigned int ns_per_clk;
+>  	unsigned int clock;
+> @@ -96,9 +98,9 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
+>  	if (tmout_index > MVSD_HOST_CTRL_TMOUT_MAX)
+>  		tmout_index = MVSD_HOST_CTRL_TMOUT_MAX;
+>  
+> -	dev_dbg(host->dev, "data %s at 0x%08x: blocks=%d blksz=%d tmout=%u (%d)\n",
+> +	dev_dbg(host->dev, "data %s at 0x%08llx: blocks=%d blksz=%d tmout=%u (%d)\n",
+>  		(data->flags & MMC_DATA_READ) ? "read" : "write",
+> -		(u32)sg_virt(data->sg), data->blocks, data->blksz,
+> +		(u64)sg_phys(data->sg), data->blocks, data->blksz,
+>  		tmout, tmout_index);
+>  
+>  	host->ctrl &= ~MVSD_HOST_CTRL_TMOUT_MASK;
+> @@ -118,10 +120,11 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
+>  		 * boundary.
+>  		 */
+>  		host->pio_size = data->blocks * data->blksz;
+> -		host->pio_ptr = sg_virt(data->sg);
+> +		host->pio_sg = data->sg;
+> +		host->pio_offset = data->sg->offset / 2;
+>  		if (!nodma)
+> -			dev_dbg(host->dev, "fallback to PIO for data at 0x%p size %d\n",
+> -				host->pio_ptr, host->pio_size);
+> +			dev_dbg(host->dev, "fallback to PIO for data at 0x%x size %d\n",
+> +				host->pio_offset, host->pio_size);
+>  		return 1;
+>  	} else {
+>  		dma_addr_t phys_addr;
+> @@ -291,8 +294,9 @@ static u32 mvsd_finish_data(struct mvsd_host *host, struct mmc_data *data,
+>  {
+>  	void __iomem *iobase = host->base;
+>  
+> -	if (host->pio_ptr) {
+> -		host->pio_ptr = NULL;
+> +	if (host->pio_sg) {
+> +		host->pio_sg = NULL;
+> +		host->pio_offset = 0;
+>  		host->pio_size = 0;
+>  	} else {
+>  		dma_unmap_sg(mmc_dev(host->mmc), data->sg, host->sg_frags,
+> @@ -376,11 +380,12 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
+>  	if (host->pio_size &&
+>  	    (intr_status & host->intr_en &
+>  	     (MVSD_NOR_RX_READY | MVSD_NOR_RX_FIFO_8W))) {
+> -		u16 *p = host->pio_ptr;
+> +		u16 *p = kmap_atomic(sg_page(host->pio_sg));
+> +		unsigned int o = host->pio_offset;
 
-Can you point out exactly what drivers break because of this change? We
-need to find a solution that works for everyone. Reverting is only
-marginally useful because somebody will just end up wanting to revert
-the revert because a different driver is now broken.
+To minimize code change, you could do:
 
-Thierry
+		u16 *p0 = kmap_atomic(sg_page(host->pio_sg));
+		u16 *p = p0 + host->pio_offset;
 
---CdrF4e02JqNVZeln
-Content-Type: application/pgp-signature; name="signature.asc"
+and at the end:
 
------BEGIN PGP SIGNATURE-----
+		host->pio_offset = p - p0;
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlw8tBsACgkQ3SOs138+
-s6GvdA//W9RbyrwK0Z1YF6WLWPz/Vrii+8f8EHn/G8ZOdAmYNIJLbATdEhoF+3zo
-Fr6+hdn1ZOtXfyMMTXz63/c47xpiJVqpCj09vIt5qv7Mixu4xA90obTA227xDvVE
-7ta1T3DXzMskYiUgqSQUceJh2MIHLjpF4yFtoAvsn4y9Uji7CkcVbaoCmRVy3fGJ
-rNGPBRSbbIR29Ox3fpECd+zf+9Ca4YhwD08+IuZ04vBO2JOnAh/gzephofRsYf/o
-uqkxLdRux2c5tvzJIkuovYrbSYKNCuB/2GMy+mDVdUVpKpuOeI+XnryipeaGLX1W
-wD+hXq7uJ63s6HEH7IkIb6s7TjZEhHmtYSA8vw5KWbGPj47t1Yr3P+aD4dZ5hOaU
-w9EhRJW3WKUgWH5jioTtXU9npYXwDfJG3+TKe+XNB2fQ6gOhttoch+lMggtgNEzK
-a85jKxcnXV7Xpo7UHz7KJGivug20QvAsYSipVjhn6CXBdIg6PEfOgOmAULhpX/O7
-gQxUdeVhvW4N8WS4nkVMJ8Kudo8370WQ7gHW7kYSLE7ncksa17cbMegb3jq5dvax
-9HygtnaTqdO8VlbdXghXU8C7X3z1eWeUJO2ZcedmsVPSRzJ4lfYxfK4ep/YsqS2q
-fgCBQmOzZV6JNPJNUZzeVedrIArWbr6DejaXff4LjfO/Y94Q7rA=
-=cziU
------END PGP SIGNATURE-----
+leaving the middle code unchanged.
 
---CdrF4e02JqNVZeln--
+This might also produce slightly better assembly with the post increment 
+instructions on ARM if the compiler doesn't figure it out on its own 
+otherwise.
+
+
+Nicolas
