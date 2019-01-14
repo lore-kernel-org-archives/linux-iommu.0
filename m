@@ -1,69 +1,38 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v5 12/20] memory: mtk-smi: Add gals support
-Date: Mon, 14 Jan 2019 14:57:28 +0800
-Message-ID: <1547449048.24830.15.camel@mhfsdcap03>
-References: <1546314952-15990-1-git-send-email-yong.wu@mediatek.com>
-         <1546314952-15990-13-git-send-email-yong.wu@mediatek.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: implement generic dma_map_ops for IOMMUs
+Date: Mon, 14 Jan 2019 10:41:40 +0100
+Message-ID: <20190114094159.27326-1-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1546314952-15990-13-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>, Tomasz Figa <tfiga@google.com>, Will Deacon <will.deacon@arm.com>, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, arnd@arndb.de, yingjoe.chen@mediatek.com, youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Matthias,
+Hi Robin,
 
-   Gentle ping about this and the other mtk-smi part in this patchset.
+please take a look at this series, which implements a completely generic
+set of dma_map_ops for IOMMU drivers.  This is done by taking the
+existing arm64 code, moving it to drivers/iommu and then massaging it
+so that it can also work for architectures with DMA remapping.  This
+should help future ports to support IOMMUs more easily, and also allow
+to remove various custom IOMMU dma_map_ops implementations, like Tom
+was planning to for the AMD one.
 
-   The memory part don't have its specific maintainer, normally we need
-SoC maintain's help. Thus, For this file(memory/mtk-smi.c), your review
-is needed before Joerg accept it.
+A git tree is also available at:
 
-    Appreciate in advance.
+    git://git.infradead.org/users/hch/misc.git dma-iommu-ops
 
-On Tue, 2019-01-01 at 11:55 +0800, Yong Wu wrote:
-> In some SoCs like mt8183, SMI add GALS(Global Async Local Sync) module
-> which can help synchronize for the modules in different clock frequency.
-> It can be seen as a "asynchronous fifo". This is a example diagram:
-> 
->             M4U
->              |
->          ----------
->          |        |
->      gals0-rx   gals1-rx
->          |        |
->          |        |
->      gals0-tx   gals1-tx
->          |        |
->         ------------
->          SMI Common
->         ------------
->              |
->   +-----+--------+-----+- ...
->   |     |        |     |
->   |  gals-rx  gals-rx  |
->   |     |        |     |
->   |     |        |     |
->   |  gals-tx  gals-tx  |
->   |     |        |     |
-> larb1 larb2   larb3  larb4
-> 
-> GALS only help transfer the command/data while it doesn't have the
-> configuring register, thus it has the special "smi" clock and doesn't
-> have the "apb" clock. From the diagram above, we add "gals0" and
-> "gals1" clocks for smi-common and add a "gals" clock for smi-larb.
-> 
-> This patch adds gals clock supporting in the SMI. Note that some larbs
-> may still don't have the "gals" clock like larb1 and larb4 above.
-> 
-> This is also a preparing patch for mt8183 which has GALS.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/memory/mtk-smi.c | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
-[...]
-  
+Gitweb:
+
+    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-iommu-ops
