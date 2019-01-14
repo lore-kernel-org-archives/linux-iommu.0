@@ -1,24 +1,101 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [GIT PULL] remove dma_zalloc_coherent
-Date: Sat, 12 Jan 2019 19:35:01 +0000
-Message-ID: <154732170177.23453.284678672823966812.pr-tracker-bot@kernel.org>
-References: <20190112181355.GA31454@infradead.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 2/8] iommu/vt-d: Add per-device IOMMU feature ops
+ entries
+Date: Mon, 14 Jan 2019 13:30:28 +0800
+Message-ID: <9fd40493-6140-c4e9-f6c8-fefbe4c33ccd@linux.intel.com>
+References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
+ <20190110030027.31447-3-baolu.lu@linux.intel.com>
+ <20190111111644.epawu474jdjv4a33@8bytes.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190112181355.GA31454@infradead.org>
+In-Reply-To: <20190111111644.epawu474jdjv4a33@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, xin.zeng@intel.com, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The pull request you sent on Sat, 12 Jan 2019 19:13:55 +0100:
+Hi Joerg,
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/remove-dma_zalloc_coherent-5.0
+Thanks for reviewing my patch.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/66c56cfa64d9dbb9efa8a06c1aece77e8d57ea19
+On 1/11/19 7:16 PM, Joerg Roedel wrote:
+> Hi,
+> 
+> this looks a bit confusing to me because I can see no checking whether
+> the device actually supports scalable mode.
 
-Thank you!
+Yes. I should put some checking there. Device scalable mode capability
+is exposed in PCI extended capability list.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+> More below:
+> 
+> On Thu, Jan 10, 2019 at 11:00:21AM +0800, Lu Baolu wrote:
+>> +static int intel_iommu_enable_auxd(struct device *dev)
+>> +{
+>> +	struct device_domain_info *info;
+>> +	struct dmar_domain *domain;
+>> +	unsigned long flags;
+>> +
+>> +	if (!scalable_mode_support())
+>> +		return -ENODEV;
+>> +
+>> +	domain = get_valid_domain_for_dev(dev);
+>> +	if (!domain)
+>> +		return -ENODEV;
+>> +
+>> +	spin_lock_irqsave(&device_domain_lock, flags);
+>> +	info = dev->archdata.iommu;
+>> +	info->auxd_enabled = 1;
+>> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+>> +
+>> +	return 0;
+>> +}
+> 
+> This code sets a flag to mark scalable mode enabled. Doesn't the device
+> need some handling too, like enabling the PASID capability and all?
+
+Yes. My design was rough. We should prepare the device for scalable mode
+instead of assuming that everything is ready.
+
+> 
+>> +
+>> +static bool
+>> +intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	struct device_domain_info *info = dev->archdata.iommu;
+>> +
+>> +	if (feat == IOMMU_DEV_FEAT_AUX)
+>> +		return scalable_mode_support() && info && info->auxd_enabled;
+>> +
+>> +	return false;
+>> +}
+> 
+> Why is this checking the auxd_enabled flag?
+
+We need an API to check whether this feature is enabled. In vfio, it
+is used like below,
+
+if (iommu_dev_has_feat(dev, FEAT_AUX_DOMAIN))
+     iommu_aux_attach_device(dev, domain)
+else
+     iommu_attach_device(dev, domain)
+
+> The function should just
+> return whether the device _supports_ scalable mode, not whether it is
+> enabled.
+
+Do we want to have an API to tell whether device has aux-domain feature?
+It could be included in the enable API. The enable API returns failure
+if device doesn't support aux-domain.
+
+> 
+> Regards,
+> 
+> 	Joerg
+> 
+
+Best regards,
+Lu Baolu
