@@ -1,317 +1,121 @@
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v5 4/8] iommu/vt-d: Aux-domain specific domain
- attach/detach
-Date: Mon, 14 Jan 2019 12:26:03 +0000
-Message-ID: <20190114122603.00001450@huawei.com>
-References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
-        <20190110030027.31447-5-baolu.lu@linux.intel.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 3/3] videobuf2: replace a layering violation with
+ dma_map_resource
+Date: Mon, 14 Jan 2019 13:42:26 +0100
+Message-ID: <6f8892ac-c2aa-10df-c74f-ba032bf75160@samsung.com>
+References: <20190111181731.11782-1-hch@lst.de>
+ <CGME20190111181812epcas2p1eeb68a16701631513eaf297073f7299f@epcas2p1.samsung.com>
+ <20190111181731.11782-4-hch@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190110030027.31447-5-baolu.lu@linux.intel.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Zeng@mail.linuxfoundation.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20190111181731.11782-4-hch@lst.de>
+Content-Language: en-US
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Christoph Hellwig <hch@lst.de>, Pawel Osciak <pawel@osciak.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>
+Cc: Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Mauro Carvalho Chehab <mchehab@kernel.org>, linuxppc-dev@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 10 Jan 2019 11:00:23 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+Hi Christoph,
 
-> When multiple domains per device has been enabled by the
-> device driver, the device will tag the default PASID for
-> the domain to all DMA traffics out of the subset of this
-> device; and the IOMMU should translate the DMA requests
-> in PASID granularity.
-> 
-> This adds the intel_iommu_aux_attach/detach_device() ops
-> to support managing PASID granular translation structures
-> when the device driver has enabled multiple domains per
-> device.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+On 2019-01-11 19:17, Christoph Hellwig wrote:
+> vb2_dc_get_userptr pokes into arm direct mapping details to get the
+> resemblance of a dma address for a a physical address that does is
+> not backed by a page struct.  Not only is this not portable to other
+> architectures with dma direct mapping offsets, but also not to uses
+> of IOMMUs of any kind.  Switch to the proper dma_map_resource /
+> dma_unmap_resource interface instead.
+>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-The following is probably a rather naive review given I don't know
-the driver or hardware well at all.  Still, it seems like things
-are a lot less balanced than I'd expect and isn't totally obvious
-to me why that is.
+There are checks for IOMMU presence in other places in vb2-dma-contig,
+so it was used only when no IOMMU is available, but I agree that the
+hacky code should be replaced by a generic code if possible.
+
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+V4L2 pipeline works fine on older Exynos-based boards with CMA and IOMMU
+disabled.
 
 > ---
->  drivers/iommu/intel-iommu.c | 152 ++++++++++++++++++++++++++++++++++++
->  include/linux/intel-iommu.h |  10 +++
->  2 files changed, 162 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index e9119d45a29d..b8fb6a4bd447 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -2482,6 +2482,7 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
->  	info->iommu = iommu;
->  	info->pasid_table = NULL;
->  	info->auxd_enabled = 0;
-> +	INIT_LIST_HEAD(&info->auxiliary_domains);
->  
->  	if (dev && dev_is_pci(dev)) {
->  		struct pci_dev *pdev = to_pci_dev(info->dev);
-> @@ -5058,6 +5059,131 @@ static void intel_iommu_domain_free(struct iommu_domain *domain)
->  	domain_exit(to_dmar_domain(domain));
+>  .../common/videobuf2/videobuf2-dma-contig.c   | 41 ++++---------------
+>  1 file changed, 9 insertions(+), 32 deletions(-)
+>
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> index aff0ab7bf83d..82389aead6ed 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> @@ -439,42 +439,14 @@ static void vb2_dc_put_userptr(void *buf_priv)
+>  				set_page_dirty_lock(pages[i]);
+>  		sg_free_table(sgt);
+>  		kfree(sgt);
+> +	} else {
+> +		dma_unmap_resource(buf->dev, buf->dma_addr, buf->size,
+> +				   buf->dma_dir, 0);
+>  	}
+>  	vb2_destroy_framevec(buf->vec);
+>  	kfree(buf);
 >  }
 >  
-> +/*
-> + * Check whether a @domain could be attached to the @dev through the
-> + * aux-domain attach/detach APIs.
-> + */
-> +static inline bool
-> +is_aux_domain(struct device *dev, struct iommu_domain *domain)
-
-I'm finding the distinction between an aux domain capability on
-a given device and whether one is actually in use to be obscured
-slightly in the function naming.
-
-This one for example is actually checking if we have a domain
-that is capable of being enabled for aux domain use, but not
-yet actually in that mode?
-
-Mind you I'm not sure I have a better answer for the naming.
-can_aux_domain_be_enabled?  is_unattached_aux_domain?
-
-
-
-> +{
-> +	struct device_domain_info *info = dev->archdata.iommu;
-> +
-> +	return info && info->auxd_enabled &&
-> +			domain->type == IOMMU_DOMAIN_UNMANAGED;
-> +}
-> +
-> +static void auxiliary_link_device(struct dmar_domain *domain,
-> +				  struct device *dev)
-> +{
-> +	struct device_domain_info *info = dev->archdata.iommu;
-> +
-> +	assert_spin_locked(&device_domain_lock);
-> +	if (WARN_ON(!info))
-> +		return;
-> +
-> +	domain->auxd_refcnt++;
-> +	list_add(&domain->auxd, &info->auxiliary_domains);
-> +}
-> +
-> +static void auxiliary_unlink_device(struct dmar_domain *domain,
-> +				    struct device *dev)
-> +{
-> +	struct device_domain_info *info = dev->archdata.iommu;
-> +
-> +	assert_spin_locked(&device_domain_lock);
-> +	if (WARN_ON(!info))
-> +		return;
-> +
-> +	list_del(&domain->auxd);
-> +	domain->auxd_refcnt--;
-> +
-> +	if (!domain->auxd_refcnt && domain->default_pasid > 0)
-> +		intel_pasid_free_id(domain->default_pasid);
-
-This seems unbalanced wrt to what is happening in auxiliary_link_device.
-If this is necessary then it would be good to have comments saying why.
-To my uniformed eye, looks like we could do this at the end of
-aux_domain_remove_dev, except that we need to hold the lock.
-As such perhaps it makes sense to do the pasid allocation under that
-lock in the first place?
-
-I'm not 100% sure, but is there a race if you get the final
-remove running against a new add currently?
-
-> +}
-> +
-> +static int aux_domain_add_dev(struct dmar_domain *domain,
-> +			      struct device *dev)
-> +{
-> +	int ret;
-> +	u8 bus, devfn;
-> +	unsigned long flags;
-> +	struct intel_iommu *iommu;
-> +
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +
-> +	if (domain->default_pasid <= 0) {
-
-device_domain_lock isn't held, so we might be in process of removing, see
-the pasid as set, just as it becomes unset and hence leave here without
-one set?
-
-> +		int pasid;
-> +
-> +		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
-> +					     pci_max_pasids(to_pci_dev(dev)),
-> +					     GFP_KERNEL);
-> +		if (pasid <= 0) {
-> +			pr_err("Can't allocate default pasid\n");
-> +			return -ENODEV;
-> +		}
-> +		domain->default_pasid = pasid;
-> +	}
-> +
-> +	spin_lock_irqsave(&device_domain_lock, flags);
-> +	/*
-> +	 * iommu->lock must be held to attach domain to iommu and setup the
-> +	 * pasid entry for second level translation.
-> +	 */
-> +	spin_lock(&iommu->lock);
-> +	ret = domain_attach_iommu(domain, iommu);
-> +	if (ret)
-> +		goto attach_failed;
-> +
-> +	/* Setup the PASID entry for mediated devices: */
-> +	ret = intel_pasid_setup_second_level(iommu, domain, dev,
-> +					     domain->default_pasid);
-> +	if (ret)
-> +		goto table_failed;
-> +	spin_unlock(&iommu->lock);
-> +
-> +	auxiliary_link_device(domain, dev);
-> +
-> +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> +
-> +	return 0;
-> +
-> +table_failed:
-> +	domain_detach_iommu(domain, iommu);
-> +attach_failed:
-> +	spin_unlock(&iommu->lock);
-> +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> +	if (!domain->auxd_refcnt && domain->default_pasid > 0)
-> +		intel_pasid_free_id(domain->default_pasid);
-
-It would be odd for this to race against a remove, but in
-theory it 'might' I think, potentially giving a double free.
-
-> +
-> +	return ret;
-> +}
-> +
-> +static void aux_domain_remove_dev(struct dmar_domain *domain,
-> +				  struct device *dev)
-> +{
-> +	struct device_domain_info *info;
-> +	struct intel_iommu *iommu;
-> +	unsigned long flags;
-> +
-> +	if (!is_aux_domain(dev, &domain->domain))
-> +		return;
-> +
-> +	spin_lock_irqsave(&device_domain_lock, flags);
-> +	info = dev->archdata.iommu;
-> +	iommu = info->iommu;
-> +
-> +	auxiliary_unlink_device(domain, dev);
-> +
-> +	spin_lock(&iommu->lock);
-> +	intel_pasid_tear_down_entry(iommu, dev, domain->default_pasid);
-> +	domain_detach_iommu(domain, iommu);
-> +	spin_unlock(&iommu->lock);
-> +
-> +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> +}
-> +
->  static int prepare_domain_attach_device(struct iommu_domain *domain,
->  					struct device *dev)
+> -/*
+> - * For some kind of reserved memory there might be no struct page available,
+> - * so all that can be done to support such 'pages' is to try to convert
+> - * pfn to dma address or at the last resort just assume that
+> - * dma address == physical address (like it has been assumed in earlier version
+> - * of videobuf2-dma-contig
+> - */
+> -
+> -#ifdef __arch_pfn_to_dma
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	return (dma_addr_t)__arch_pfn_to_dma(dev, pfn);
+> -}
+> -#elif defined(__pfn_to_bus)
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	return (dma_addr_t)__pfn_to_bus(pfn);
+> -}
+> -#elif defined(__pfn_to_phys)
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	return (dma_addr_t)__pfn_to_phys(pfn);
+> -}
+> -#else
+> -static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+> -{
+> -	/* really, we cannot do anything better at this point */
+> -	return (dma_addr_t)(pfn) << PAGE_SHIFT;
+> -}
+> -#endif
+> -
+>  static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+>  	unsigned long size, enum dma_data_direction dma_dir)
 >  {
-> @@ -5111,6 +5237,9 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->  		return -EPERM;
+> @@ -528,7 +500,12 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+>  		for (i = 1; i < n_pages; i++)
+>  			if (nums[i-1] + 1 != nums[i])
+>  				goto fail_pfnvec;
+> -		buf->dma_addr = vb2_dc_pfn_to_dma(buf->dev, nums[0]);
+> +		buf->dma_addr = dma_map_resource(buf->dev,
+> +				__pfn_to_phys(nums[0]), size, buf->dma_dir, 0);
+> +		if (dma_mapping_error(buf->dev, buf->dma_addr)) {
+> +			ret = -ENOMEM;
+> +			goto fail_pfnvec;
+> +		}
+>  		goto out;
 >  	}
 >  
-> +	if (is_aux_domain(dev, domain))
-> +		return -EPERM;
-> +
->  	/* normally dev is not mapped */
->  	if (unlikely(domain_context_mapped(dev))) {
->  		struct dmar_domain *old_domain;
-> @@ -5134,12 +5263,33 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->  	return domain_add_dev_info(to_dmar_domain(domain), dev);
->  }
->  
-> +static int intel_iommu_aux_attach_device(struct iommu_domain *domain,
-> +					 struct device *dev)
-> +{
-> +	int ret;
-> +
-> +	if (!is_aux_domain(dev, domain))
-> +		return -EPERM;
-> +
-> +	ret = prepare_domain_attach_device(domain, dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return aux_domain_add_dev(to_dmar_domain(domain), dev);
-> +}
-> +
->  static void intel_iommu_detach_device(struct iommu_domain *domain,
->  				      struct device *dev)
->  {
->  	dmar_remove_one_dev_info(to_dmar_domain(domain), dev);
->  }
->  
-> +static void intel_iommu_aux_detach_device(struct iommu_domain *domain,
-> +					  struct device *dev)
-> +{
-> +	aux_domain_remove_dev(to_dmar_domain(domain), dev);
-> +}
-> +
->  static int intel_iommu_map(struct iommu_domain *domain,
->  			   unsigned long iova, phys_addr_t hpa,
->  			   size_t size, int iommu_prot)
-> @@ -5480,6 +5630,8 @@ const struct iommu_ops intel_iommu_ops = {
->  	.domain_free		= intel_iommu_domain_free,
->  	.attach_dev		= intel_iommu_attach_device,
->  	.detach_dev		= intel_iommu_detach_device,
-> +	.aux_attach_dev		= intel_iommu_aux_attach_device,
-> +	.aux_detach_dev		= intel_iommu_aux_detach_device,
->  	.map			= intel_iommu_map,
->  	.unmap			= intel_iommu_unmap,
->  	.iova_to_phys		= intel_iommu_iova_to_phys,
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 7cf9f7f3724a..b563a61a6c39 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -492,9 +492,11 @@ struct dmar_domain {
->  					/* Domain ids per IOMMU. Use u16 since
->  					 * domain ids are 16 bit wide according
->  					 * to VT-d spec, section 9.3 */
-> +	unsigned int	auxd_refcnt;	/* Refcount of auxiliary attaching */
->  
->  	bool has_iotlb_device;
->  	struct list_head devices;	/* all devices' list */
-> +	struct list_head auxd;		/* link to device's auxiliary list */
->  	struct iova_domain iovad;	/* iova's that belong to this domain */
->  
->  	struct dma_pte	*pgd;		/* virtual address */
-> @@ -513,6 +515,11 @@ struct dmar_domain {
->  					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
->  	u64		max_addr;	/* maximum mapped address */
->  
-> +	int		default_pasid;	/*
-> +					 * The default pasid used for non-SVM
-> +					 * traffic on mediated devices.
-> +					 */
-> +
->  	struct iommu_domain domain;	/* generic domain data structure for
->  					   iommu core */
->  };
-> @@ -562,6 +569,9 @@ struct device_domain_info {
->  	struct list_head link;	/* link to domain siblings */
->  	struct list_head global; /* link to global list */
->  	struct list_head table;	/* link to pasid table */
-> +	struct list_head auxiliary_domains; /* auxiliary domains
-> +					     * attached to this device
-> +					     */
->  	u8 bus;			/* PCI bus number */
->  	u8 devfn;		/* PCI devfn number */
->  	u16 pfsid;		/* SRIOV physical function source ID */
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
