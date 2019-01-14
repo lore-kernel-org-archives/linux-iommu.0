@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 15/19] dma-iommu: refactor iommu_dma_alloc
-Date: Mon, 14 Jan 2019 10:41:55 +0100
-Message-ID: <20190114094159.27326-16-hch@lst.de>
+Subject: [PATCH 08/19] dma-iommu: move __iommu_dma_map
+Date: Mon, 14 Jan 2019 10:41:48 +0100
+Message-ID: <20190114094159.27326-9-hch@lst.de>
 References: <20190114094159.27326-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -12,90 +12,77 @@ To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Tom Lendacky <thomas.lendacky@amd.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Split all functionality related to non-coherent devices into a
-separate helper, and make the decision flow more obvious.
+Moving this function up to its unmap counterpart helps to keep related
+code together for the following changes.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 51 +++++++++++++++++++--------------------
- 1 file changed, 25 insertions(+), 26 deletions(-)
+ drivers/iommu/dma-iommu.c | 46 +++++++++++++++++++--------------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 956cb218c6ba..fd25c995bde4 100644
+index 8f3dc6ab3da1..0727c109bcab 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -760,6 +760,22 @@ static void *iommu_dma_alloc_pool(struct device *dev, size_t size,
- 	return vaddr;
+@@ -437,6 +437,29 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+ 	iommu_dma_free_iova(cookie, dma_addr, size);
  }
  
-+static void *iommu_dma_alloc_noncoherent(struct device *dev, size_t size,
-+		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
++static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
++		size_t size, int prot, struct iommu_domain *domain)
 +{
-+	/*
-+	 * In atomic context we can't remap anything, so we'll only get the
-+	 * virtually contiguous buffer we need by way of a physically
-+	 * contiguous allocation.
-+	 */
-+	if (!gfpflags_allow_blocking(gfp))
-+		return iommu_dma_alloc_pool(dev, size, dma_handle, gfp, attrs);
-+	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
-+		return iommu_dma_alloc_contiguous_remap(dev, size, dma_handle,
-+				gfp, attrs);
-+	return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	size_t iova_off = 0;
++	dma_addr_t iova;
++
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
++		iova_off = iova_offset(&cookie->iovad, phys);
++		size = iova_align(&cookie->iovad, size + iova_off);
++	}
++
++	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
++	if (!iova)
++		return DMA_MAPPING_ERROR;
++
++	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
++		iommu_dma_free_iova(cookie, iova, size);
++		return DMA_MAPPING_ERROR;
++	}
++	return iova + iova_off;
 +}
 +
- static void iommu_dma_sync_single_for_cpu(struct device *dev,
- 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+ static void __iommu_dma_free_pages(struct page **pages, int count)
  {
-@@ -1033,40 +1049,23 @@ static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ 	while (count--)
+@@ -684,29 +707,6 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+ 		arch_sync_dma_for_device(dev, sg_phys(sg), sg->length, dir);
  }
  
- static void *iommu_dma_alloc(struct device *dev, size_t size,
--		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
-+		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
--	bool coherent = dev_is_dma_coherent(dev);
--	size_t iosize = size;
--	void *addr;
+-static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+-		size_t size, int prot, struct iommu_domain *domain)
+-{
+-	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	size_t iova_off = 0;
+-	dma_addr_t iova;
 -
- 	/*
- 	 * Some drivers rely on this, and we probably don't want the
- 	 * possibility of stale kernel data being read by devices anyway.
- 	 */
- 	gfp |= __GFP_ZERO;
- 
--	if (!gfpflags_allow_blocking(gfp)) {
--		/*
--		 * In atomic context we can't remap anything, so we'll only
--		 * get the virtually contiguous buffer we need by way of a
--		 * physically contiguous allocation.
--		 */
--		if (!coherent)
--			return iommu_dma_alloc_pool(dev, iosize, handle, gfp,
--					attrs);
--		return iommu_dma_alloc_contiguous(dev, iosize, handle, gfp,
-+	if (!dev_is_dma_coherent(dev))
-+		return iommu_dma_alloc_noncoherent(dev, size, dma_handle, gfp,
- 				attrs);
--	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
--		if (coherent)
--			addr = iommu_dma_alloc_contiguous(dev, iosize, handle,
--					gfp, attrs);
--		else
--			addr = iommu_dma_alloc_contiguous_remap(dev, iosize,
--					handle, gfp, attrs);
--	} else {
--		addr = iommu_dma_alloc_remap(dev, iosize, handle, gfp, attrs);
+-	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
+-		iova_off = iova_offset(&cookie->iovad, phys);
+-		size = iova_align(&cookie->iovad, size + iova_off);
 -	}
--	return addr;
-+
-+	if (gfpflags_allow_blocking(gfp) &&
-+	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS))
-+		return iommu_dma_alloc_remap(dev, size, dma_handle, gfp, attrs);
-+
-+	return iommu_dma_alloc_contiguous(dev, size, dma_handle, gfp, attrs);
- }
- 
- static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+-
+-	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+-	if (!iova)
+-		return DMA_MAPPING_ERROR;
+-
+-	if (iommu_map(domain, iova, phys - iova_off, size, prot)) {
+-		iommu_dma_free_iova(cookie, iova, size);
+-		return DMA_MAPPING_ERROR;
+-	}
+-	return iova + iova_off;
+-}
+-
+ static dma_addr_t __iommu_dma_map_page(struct device *dev, struct page *page,
+ 		unsigned long offset, size_t size, int prot)
+ {
 -- 
 2.20.1
