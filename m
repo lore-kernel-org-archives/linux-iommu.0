@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/3] dma: Introduce dma_max_mapping_size()
-Date: Tue, 15 Jan 2019 14:22:56 +0100
-Message-ID: <20190115132257.6426-3-joro@8bytes.org>
+Subject: [PATCH 1/3] swiotlb: Introduce swiotlb_max_mapping_size()
+Date: Tue, 15 Jan 2019 14:22:55 +0100
+Message-ID: <20190115132257.6426-2-joro@8bytes.org>
 References: <20190115132257.6426-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190115132257.6426-1-joro@8bytes.org>
@@ -12,75 +12,51 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel@suse.de>
 
-The function returns the maximum size that can be mapped
-using DMA-API functions. The patch also adds the
-implementation for direct DMA and a new dma_map_ops pointer
-so that other implementations can expose their limit.
+The function returns the maximum size that can be remapped
+by the SWIOTLB implementation. This function will be later
+exposed to users through the DMA-API.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- include/linux/dma-mapping.h | 16 ++++++++++++++++
- kernel/dma/direct.c         | 10 ++++++++++
- 2 files changed, 26 insertions(+)
+ include/linux/swiotlb.h | 5 +++++
+ kernel/dma/swiotlb.c    | 5 +++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f6ded992c183..a3ca8a71a704 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -130,6 +130,7 @@ struct dma_map_ops {
- 			enum dma_data_direction direction);
- 	int (*dma_supported)(struct device *dev, u64 mask);
- 	u64 (*get_required_mask)(struct device *dev);
-+	size_t (*max_mapping_size)(struct device *dev);
- };
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 7c007ed7505f..ceb623321f38 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -62,6 +62,7 @@ extern void swiotlb_tbl_sync_single(struct device *hwdev,
  
- #define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
-@@ -257,6 +258,8 @@ static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
- }
- #endif
+ extern int
+ swiotlb_dma_supported(struct device *hwdev, u64 mask);
++extern size_t swiotlb_max_mapping_size(struct device *dev);
  
-+size_t dma_direct_max_mapping_size(struct device *dev);
-+
- #ifdef CONFIG_HAS_DMA
- #include <asm/dma-mapping.h>
- 
-@@ -440,6 +443,19 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ #ifdef CONFIG_SWIOTLB
+ extern enum swiotlb_force swiotlb_force;
+@@ -95,6 +96,10 @@ static inline unsigned int swiotlb_max_segment(void)
+ {
  	return 0;
  }
- 
-+static inline size_t dma_max_mapping_size(struct device *dev)
++static inline size_t swiotlb_max_mapping_size(struct device *dev)
 +{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	size_t size = SIZE_MAX;
-+
-+	if (dma_is_direct(ops))
-+		size = dma_direct_max_mapping_size(dev);
-+	else if (ops && ops->max_mapping_size)
-+		size = ops->max_mapping_size(dev);
-+
-+	return size;
++	return SIZE_MAX;
 +}
-+
- void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 		gfp_t flag, unsigned long attrs);
- void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 355d16acee6d..84917e1003c4 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -380,3 +380,13 @@ int dma_direct_supported(struct device *dev, u64 mask)
- 	 */
- 	return mask >= __phys_to_dma(dev, min_mask);
+ #endif /* CONFIG_SWIOTLB */
+ 
+ extern void swiotlb_print_info(void);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index d6361776dc5c..c950b3e9f683 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -660,3 +660,8 @@ swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ {
+ 	return __phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
  }
 +
-+size_t dma_direct_max_mapping_size(struct device *dev)
++size_t swiotlb_max_mapping_size(struct device *dev)
 +{
-+	/*
-+	 * Return the minimum of the direct DMA limit and the SWIOTLB limit.
-+	 * Since direct DMA has no limit, it is fine to just return the SWIOTLB
-+	 * limit.
-+	 */
-+	return swiotlb_max_mapping_size(dev);
++	return ((size_t)1 << IO_TLB_SHIFT) * IO_TLB_SEGSIZE;
 +}
 -- 
 2.17.1
