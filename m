@@ -1,42 +1,97 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 2/3] dma: Introduce dma_max_mapping_size()
-Date: Tue, 15 Jan 2019 18:54:18 +0100
-Message-ID: <20190115175418.GA11402@lst.de>
-References: <20190115132257.6426-1-joro@8bytes.org> <20190115132257.6426-3-joro@8bytes.org> <20190115133754.GB29225@lst.de> <20190115162322.GA4681@8bytes.org>
+From: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
+Date: Tue, 15 Jan 2019 20:33:35 +0100
+Message-ID: <20190115203335.111bfcdc@thinkpad>
+References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
+        <1547573850-9459-2-git-send-email-pmorel@linux.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190115162322.GA4681@8bytes.org>
+In-Reply-To: <1547573850-9459-2-git-send-email-pmorel@linux.ibm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Christoph Hellwig <hch@lst.de>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
+To: Pierre Morel <pmorel@linux.ibm.com>
+Cc: joro@8bytes.org, linux-s390@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, shameerali.kolothum.thodi@huawei.com, walling@linux.ibm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 15, 2019 at 05:23:22PM +0100, Joerg Roedel wrote:
-> Right, I thought about that too, but didn't find a generic way to check
-> for all the cases. There are various checks that could be done:
-> 
-> 	1) Check if SWIOTLB is initialized at all, if not, return
-> 	   SIZE_MAX as the limit. This can't be checked from dma-direct
-> 	   code right now, but could be easily implemented.
+On Tue, 15 Jan 2019 18:37:30 +0100
+Pierre Morel <pmorel@linux.ibm.com> wrote:
 
-Yes, this is the low hanging fruit.
+> The s390 iommu can only allow DMA transactions between the zPCI device
+> entries start_dma and end_dma.
+> 
+> Let's declare the regions before start_dma and after end_dma as
+> reserved regions using the appropriate callback in iommu_ops.
+> 
+> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+> ---
+>  drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 22d4db3..5ca91a1 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -363,6 +363,33 @@ void zpci_destroy_iommu(struct zpci_dev *zdev)
+>  	iommu_device_sysfs_remove(&zdev->iommu_dev);
+>  }
+> 
+> +static void s390_get_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> +	struct iommu_resv_region *region;
+> +	struct zpci_dev *zdev = to_pci_dev(dev)->sysdata;
+> +
+> +	region = iommu_alloc_resv_region(0, zdev->start_dma,
+> +					 0, IOMMU_RESV_RESERVED);
+> +	if (!region)
+> +		return;
+> +	list_add_tail(&region->list, head);
+> +
+> +	region = iommu_alloc_resv_region(zdev->end_dma + 1,
+> +					 ~0UL - zdev->end_dma,
+> +					 0, IOMMU_RESV_RESERVED);
 
-> 	2) Check for swiotlb=force needs to be done.
-> 
-> 	3) Check whether the device can access all of available RAM. I
-> 	   have no idea how to check that in an architecture independent
-> 	   way. It also has to take memory hotplug into account as well
-> 	   as the DMA mask of the device.
-> 
-> 	   An easy approximation could be to omit the limit if the
-> 	   dma-mask covers all of the physical address bits available
-> 	   on the platform. It would require to pass the dma-mask as an
-> 	   additional parameter like it is done in dma_supported().
-> 
-> Any better ideas for how to implement 3)?
+Can you guarantee that start_dma will never be 0 and end_dma never ~0UL,
+even with future HW?
 
-And yeah, this is hard.  So I'd just go for the low hanging fruit
-for now and only implement 1) with a comment mentioning that
-we are a little pessimistic.
+In any of these cases, your code would reserve strange ranges, and sysfs
+would report broken reserved ranges.
+
+Maybe add a check for start_dma > 0 and end_dma < ULONG_MAX?
+
+> +	if (!region)
+> +		return;
+> +	list_add_tail(&region->list, head);
+> +}
+> +
+> +static void s390_put_resv_regions(struct device *dev, struct list_head *head)
+> +{
+> +	struct iommu_resv_region *entry, *next;
+> +
+> +	list_for_each_entry_safe(entry, next, head, list)
+> +		kfree(entry);
+> +}
+
+It looks very wrong that there is no matching list_del() for the previous
+list_add_tail(). However, it seems to be done like this everywhere else,
+and the calling functions (currently) only use temporary list_heads as
+far as I can see, so I guess it should be OK (for now).
+
+Still, a list_del() would be nice :-)
+
+> +
+>  static const struct iommu_ops s390_iommu_ops = {
+>  	.capable = s390_iommu_capable,
+>  	.domain_alloc = s390_domain_alloc,
+> @@ -376,6 +403,8 @@ static const struct iommu_ops s390_iommu_ops = {
+>  	.remove_device = s390_iommu_remove_device,
+>  	.device_group = generic_device_group,
+>  	.pgsize_bitmap = S390_IOMMU_PGSIZES,
+> +	.get_resv_regions = s390_get_resv_regions,
+> +	.put_resv_regions = s390_put_resv_regions,
+>  };
+> 
+>  static int __init s390_iommu_init(void)
+
+With the start/end_dma issue addressed (if necessary):
+Acked-by: Gerald Schaefer <gerald.schaefer@de.ibm.com>
