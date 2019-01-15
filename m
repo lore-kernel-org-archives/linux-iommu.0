@@ -1,55 +1,94 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Tue, 15 Jan 2019 16:17:32 +0100
-Message-ID: <20190115151732.GA2325@lst.de>
-References: <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de> <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de> <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de> <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de> <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de> <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de> <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de> <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de> <20190115133558.GA29225@lst.de> <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de>
+From: Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH] Revert "ARM: dma-mapping: Set proper DMA ops in
+ arm_iommu_detach_device()"
+Date: Tue, 15 Jan 2019 16:29:11 +0100
+Message-ID: <20190115152910.GA12652@ulmo>
+References: <CGME20190114132250eucas1p2abdf2f36bad3554e37dfbf40e539f594@eucas1p2.samsung.com>
+ <20190114132240.12125-1-m.szyprowski@samsung.com>
+ <20190114160902.GB9218@ulmo>
+ <4f7fd8db-33e4-9c8d-2fee-1ca9c98a9276@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="SLDf9lqlvOQaIe6s"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <4f7fd8db-33e4-9c8d-2fee-1ca9c98a9276@arm.com>
 Content-Disposition: inline
-In-Reply-To: <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Christoph Hellwig <hch@lst.de>, Russell King <rmk+kernel@armlinux.org.uk>, Ben Skeggs <bskeggs@redhat.com>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 15, 2019 at 02:56:34PM +0100, Christian Zigotzky wrote:
-> On 15 January 2019 at 2:35PM, Christoph Hellwig wrote:
->> On Tue, Jan 15, 2019 at 11:55:25AM +0100, Christian Zigotzky wrote:
->>> Next step: 21074ef03c0816ae158721a78cabe9035938dddd (powerpc/dma: use the
->>> generic direct mapping bypass)
->>>
->>> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->>>
->>> git checkout 21074ef03c0816ae158721a78cabe9035938dddd
->>>
->>> I was able to compile the kernel for the AmigaOne X1000 (Nemo board with PA
->>> Semi PA6T-1682M SoC). It boots but the PA Semi onboard ethernet doesn't
->>> work.
->> Thanks.  But we are exactly missing the steps that are relevant.  I've
->> pushed a fixed up powerpc-dma.6 tree, which will only change starting from
->> the first commit that didn't link.
->>
->> The first commit that changed from the old one is this one:
->>
->> http://git.infradead.org/users/hch/misc.git/commitdiff/257002094bc5935dd63207a380d9698ab81f0775
->>
->> which was that one that your compile failed on first.
->>
->> Thanks again for all your work!
->>
-> Thank you! I tried the commit 240d7ecd7f6fa62e074e8a835e620047954f0b28 
-> (powerpc/dma: use the dma-direct allocator for coherent platforms) again.
->
-> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
->
-> git checkout 240d7ecd7f6fa62e074e8a835e620047954f0b28
->
-> I modified the 'dma.c' patch because of the undefined references to 
-> '__dma_nommu_free_coherent' and '__dma_nommu_alloc_coherent':
+--SLDf9lqlvOQaIe6s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So 257002094bc5935dd63207a380d9698ab81f0775 above is the fixed version
-for the commit - this switched the ifdef in dma.c around that I had
-inverted.  Can you try that one instead?  And then move on with the
-commits after it in the updated powerpc-dma.6 branch - they are
-identical to the original branch except for carrying this fix forward.
+On Mon, Jan 14, 2019 at 04:38:20PM +0000, Robin Murphy wrote:
+> On 14/01/2019 16:09, Thierry Reding wrote:
+> > On Mon, Jan 14, 2019 at 02:22:40PM +0100, Marek Szyprowski wrote:
+> > > This reverts commit 1874619a7df4b14b23b14877e705ae15325773e3.
+> > >=20
+> > > That patch broke IOMMU support for devices, which fails to probe for =
+the
+> > > first time and use deferred probe approach. When non-NULL dma_ops is =
+set
+> > > in arm_iommu_detach_device(), the given device later ignored by
+> > > arch_setup_dma_ops() and stays with non-IOMMU dma_ops.
+> > >=20
+> > > Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
+> > > Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iomm=
+u_detach_device()"
+> > > Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> > > ---
+> > >   arch/arm/mm/dma-mapping.c | 12 ++++++------
+> > >   1 file changed, 6 insertions(+), 6 deletions(-)
+> >=20
+> > Can you point out exactly what drivers break because of this change? We
+> > need to find a solution that works for everyone. Reverting is only
+> > marginally useful because somebody will just end up wanting to revert
+> > the revert because a different driver is now broken.
+>=20
+> At first glance, it sounds like what we really want is for
+> arch_teardown_iommu_ops() to completely clear any ops that
+> arch_setup_dma_ops() installed - does the below suffice?
+>=20
+> Robin.
+>=20
+> ----->8-----
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index f1e2922e447c..1e3e08a1c456 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -2390,4 +2390,6 @@ void arch_teardown_dma_ops(struct device *dev)
+>  		return;
+>=20
+>  	arm_teardown_iommu_dma_ops(dev);
+> +	/* Let arch_setup_dma_ops() start again from scratch upon re-probe */
+> +	set_dma_ops(dev, NULL);
+>  }
+
+Seems to work fine on Tegra:
+
+Tested-by: Thierry Reding <treding@nvidia.com>
+
+--SLDf9lqlvOQaIe6s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlw9/EIACgkQ3SOs138+
+s6FxyQ//ZXUg6+LaxF3qtCgUCjlJAxBQEY573IAkyXQRnqOtvp01En0lJhfI5fRy
+oPY84NIYecY/Okx9GKAnsOSZ3/qDKN+XwHiwEnIF8Jwom8zDholM7xxHdQQDBxCE
+QW9pHFDVVxNlm2tI1S//+Rrb/V8mSbxt/4Ufn9pOwh9ZEghQgyAVzXM8O0WYr+lu
+ddkl/u50sBNO3VfJPTUP4gJFMus1RuYV35U37hqdgZNK9Scy8aB2ocpk0phA5LK1
+7kX/jrFSkCw9mvGgnBH1Lqfwxl4ts6c+MWSz8A7tNFOhFystJLi7qQOkYHujU1on
+yAFaC7Mq8VuUdigXsQ3pyTxBLQFAm/ifV1ut44VXnZU3OIuSCJHPHoVL9FnO3237
+bqQBvA8LxO9mWsP9GFaHs38TaMkD1hoLispjSeZbRNa+EvI8xRBsqOBIW5mvXE8p
+p125mj1mNIKdzOtmh2x1tFrorXMT6JgpD4AkDyj8450dpKeT73CELCntYkvdBzyh
+pV8XidIaT1ilF5s2UOYzY8od4QeH1RyMIPiqCZHQQzqnx5U+u7KBeyCBi4osqtCj
+pDwGeMuz6IxnPdKJRnfVIgOpq1YTelR/SknqK5mEI8vJGqHKDLsLWZRN0+kPB1dh
+u9abmsyph4ctT+vL1gy8xh0moEBIBix0C7rodaP2MzxfrymikjM=
+=hfU3
+-----END PGP SIGNATURE-----
+
+--SLDf9lqlvOQaIe6s--
