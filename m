@@ -1,61 +1,86 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 0/3] Fix virtio-blk issue with SWIOTLB
-Date: Tue, 15 Jan 2019 14:20:19 +0100
-Message-ID: <20190115132019.GA28778@lst.de>
-References: <20190110134433.15672-1-joro@8bytes.org> <5ae1341e-62ec-0478-552b-259eabf9fb17@redhat.com> <20190111091502.GC5825@8bytes.org> <38bcbd46-674c-348a-cbd6-66bd431e986a@redhat.com> <20190114095002.GA29874@lst.de> <ac6d83d8-02de-dbdf-e309-3a1115642d50@redhat.com> <20190114131114-mutt-send-email-mst@kernel.org> <20190115083742.GF5825@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 2/3] dma: Introduce dma_max_mapping_size()
+Date: Tue, 15 Jan 2019 14:22:56 +0100
+Message-ID: <20190115132257.6426-3-joro@8bytes.org>
+References: <20190115132257.6426-1-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190115083742.GF5825@8bytes.org>
+In-Reply-To: <20190115132257.6426-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com
+To: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, joro@8bytes.org, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 15, 2019 at 09:37:42AM +0100, Joerg Roedel wrote:
-> On Mon, Jan 14, 2019 at 01:20:45PM -0500, Michael S. Tsirkin wrote:
-> > Which would be fine especially if we can manage not to introduce a bunch
-> > of indirect calls all over the place and hurt performance.
-> 
-> Which indirect calls? In case of unset dma_ops the DMA-API functions
-> call directly into the dma-direct implementation, no indirect calls at
-> all.
+From: Joerg Roedel <jroedel@suse.de>
 
-True.  But the NULL-ops dma direct case still has two issues that might
-not work for virtio:
+The function returns the maximum size that can be mapped
+using DMA-API functions. The patch also adds the
+implementation for direct DMA and a new dma_map_ops pointer
+so that other implementations can expose their limit.
 
- (a) if the architecture supports devices that are not DMA coherent it
-     will dip into a special allocator and do cache maintainance for
-     streaming mappings.  Although it would be a bit of a hack we could
-     work around this in virtio doings something like:
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ include/linux/dma-mapping.h | 16 ++++++++++++++++
+ kernel/dma/direct.c         | 10 ++++++++++
+ 2 files changed, 26 insertions(+)
 
-#if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-    defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-	dev->dma_coherent = true;
-#endif
-
-    except that won't work for mips, which has a mode where it does
-    a system instead of device level coherency flag and thus doesn't
-    look at this struct device field
-
- (b) we can still mangle the DMA address, either using the
-     dma_pfn_offset field in struct device, or by a full override
-     of __phys_to_dma / __dma_to_phys by the architecture code.
-     The first could be solved using a hack like the one above,
-     but the latter would be a little harder.  In the long run
-     I'd love to get rid of that hook and have everyone use the
-     generic offset code, but for that we first need to support
-     multiple ranges with different offset and do quite some
-     nasty arch code surgery.
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index f6ded992c183..a3ca8a71a704 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -130,6 +130,7 @@ struct dma_map_ops {
+ 			enum dma_data_direction direction);
+ 	int (*dma_supported)(struct device *dev, u64 mask);
+ 	u64 (*get_required_mask)(struct device *dev);
++	size_t (*max_mapping_size)(struct device *dev);
+ };
  
-So for the legacy virtio case I fear we need to keep local dma mapping
-implementation for now.  I just wish now recent hypervisor would ever
-offer devices in this broken legacy mode..
-
-> 
-> Regards,
-> 
-> 	Joerg
----end quoted text---
+ #define DMA_MAPPING_ERROR		(~(dma_addr_t)0)
+@@ -257,6 +258,8 @@ static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
+ }
+ #endif
+ 
++size_t dma_direct_max_mapping_size(struct device *dev);
++
+ #ifdef CONFIG_HAS_DMA
+ #include <asm/dma-mapping.h>
+ 
+@@ -440,6 +443,19 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ 	return 0;
+ }
+ 
++static inline size_t dma_max_mapping_size(struct device *dev)
++{
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++	size_t size = SIZE_MAX;
++
++	if (dma_is_direct(ops))
++		size = dma_direct_max_mapping_size(dev);
++	else if (ops && ops->max_mapping_size)
++		size = ops->max_mapping_size(dev);
++
++	return size;
++}
++
+ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		gfp_t flag, unsigned long attrs);
+ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 355d16acee6d..84917e1003c4 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -380,3 +380,13 @@ int dma_direct_supported(struct device *dev, u64 mask)
+ 	 */
+ 	return mask >= __phys_to_dma(dev, min_mask);
+ }
++
++size_t dma_direct_max_mapping_size(struct device *dev)
++{
++	/*
++	 * Return the minimum of the direct DMA limit and the SWIOTLB limit.
++	 * Since direct DMA has no limit, it is fine to just return the SWIOTLB
++	 * limit.
++	 */
++	return swiotlb_max_mapping_size(dev);
++}
+-- 
+2.17.1
