@@ -1,225 +1,42 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [PATCH v7 7/7] iommu/virtio: Add event queue
-Date: Tue, 15 Jan 2019 12:19:59 +0000
-Message-ID: <20190115121959.23763-8-jean-philippe.brucker@arm.com>
-References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/3] swiotlb: Export maximum allocation size
+Date: Tue, 15 Jan 2019 14:05:36 +0100
+Message-ID: <20190115130536.GA28364@lst.de>
+References: <20190110134433.15672-1-joro@8bytes.org> <20190110134433.15672-2-joro@8bytes.org> <20190110170205.GB27546@char.us.oracle.com> <20190111091231.GB5825@8bytes.org> <20190114204907.GH32038@char.us.oracle.com> <20190114165800-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <virtio-dev-return-5339-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
-To: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, devicetree@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, joro@8bytes.org, mst@redhat.com
-Cc: jasowang@redhat.com, robh+dt@kernel.org, mark.rutland@arm.com, bhelgaas@google.com, frowand.list@gmail.com, kvmarm@lists.cs.columbia.edu, eric.auger@redhat.com, tnowicki@caviumnetworks.com, kevin.tian@intel.com, marc.zyngier@arm.com, robin.murphy@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, bharat.bhushan@nxp.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190114165800-mutt-send-email-mst@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Joerg Roedel <joro@8bytes.org>, Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, hch@lst.de, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-The event queue offers a way for the device to report access faults from
-endpoints. It is implemented on virtqueue #1. Whenever the host needs to
-signal a fault, it fills one of the buffers offered by the guest and
-interrupts it.
+On Mon, Jan 14, 2019 at 04:59:27PM -0500, Michael S. Tsirkin wrote:
+> On Mon, Jan 14, 2019 at 03:49:07PM -0500, Konrad Rzeszutek Wilk wrote:
+> > On Fri, Jan 11, 2019 at 10:12:31AM +0100, Joerg Roedel wrote:
+> > > On Thu, Jan 10, 2019 at 12:02:05PM -0500, Konrad Rzeszutek Wilk wrote:
+> > > > Why not use swiotlb_nr_tbl ? That is how drivers/gpu/drm use to figure if they
+> > > > need to limit the size of pages.
+> > > 
+> > > That function just exports the overall size of the swiotlb aperture, no?
+> > > What I need here is the maximum size for a single mapping.
+> > 
+> > Yes. The other drivers just assumed that if there is SWIOTLB they would use
+> > the smaller size by default (as in they knew the limitation).
+> > 
+> > But I agree it would be better to have something smarter - and also convert the
+> > DRM drivers to piggy back on this.
+> > 
+> > Or alternatively we could make SWIOTLB handle bigger sizes..
+> 
+> 
+> Just a thought: is it a good idea to teach blk_queue_max_segment_size
+> to get the dma size? This will help us find other devices
+> possibly missing this check.
 
-Tested-by: Bharat Bhushan <bharat.bhushan@nxp.com>
-Tested-by: Eric Auger <eric.auger@redhat.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- drivers/iommu/virtio-iommu.c      | 115 +++++++++++++++++++++++++++---
- include/uapi/linux/virtio_iommu.h |  19 +++++
- 2 files changed, 125 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 5e194493a531..4620dd221ffd 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -29,7 +29,8 @@
- #define MSI_IOVA_LENGTH			0x100000
- 
- #define VIOMMU_REQUEST_VQ		0
--#define VIOMMU_NR_VQS			1
-+#define VIOMMU_EVENT_VQ			1
-+#define VIOMMU_NR_VQS			2
- 
- struct viommu_dev {
- 	struct iommu_device		iommu;
-@@ -41,6 +42,7 @@ struct viommu_dev {
- 	struct virtqueue		*vqs[VIOMMU_NR_VQS];
- 	spinlock_t			request_lock;
- 	struct list_head		requests;
-+	void				*evts;
- 
- 	/* Device configuration */
- 	struct iommu_domain_geometry	geometry;
-@@ -82,6 +84,15 @@ struct viommu_request {
- 	char				buf[];
- };
- 
-+#define VIOMMU_FAULT_RESV_MASK		0xffffff00
-+
-+struct viommu_event {
-+	union {
-+		u32			head;
-+		struct virtio_iommu_fault fault;
-+	};
-+};
-+
- #define to_viommu_domain(domain)	\
- 	container_of(domain, struct viommu_domain, domain)
- 
-@@ -503,6 +514,68 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
- 	return ret;
- }
- 
-+static int viommu_fault_handler(struct viommu_dev *viommu,
-+				struct virtio_iommu_fault *fault)
-+{
-+	char *reason_str;
-+
-+	u8 reason	= fault->reason;
-+	u32 flags	= le32_to_cpu(fault->flags);
-+	u32 endpoint	= le32_to_cpu(fault->endpoint);
-+	u64 address	= le64_to_cpu(fault->address);
-+
-+	switch (reason) {
-+	case VIRTIO_IOMMU_FAULT_R_DOMAIN:
-+		reason_str = "domain";
-+		break;
-+	case VIRTIO_IOMMU_FAULT_R_MAPPING:
-+		reason_str = "page";
-+		break;
-+	case VIRTIO_IOMMU_FAULT_R_UNKNOWN:
-+	default:
-+		reason_str = "unknown";
-+		break;
-+	}
-+
-+	/* TODO: find EP by ID and report_iommu_fault */
-+	if (flags & VIRTIO_IOMMU_FAULT_F_ADDRESS)
-+		dev_err_ratelimited(viommu->dev, "%s fault from EP %u at %#llx [%s%s%s]\n",
-+				    reason_str, endpoint, address,
-+				    flags & VIRTIO_IOMMU_FAULT_F_READ ? "R" : "",
-+				    flags & VIRTIO_IOMMU_FAULT_F_WRITE ? "W" : "",
-+				    flags & VIRTIO_IOMMU_FAULT_F_EXEC ? "X" : "");
-+	else
-+		dev_err_ratelimited(viommu->dev, "%s fault from EP %u\n",
-+				    reason_str, endpoint);
-+	return 0;
-+}
-+
-+static void viommu_event_handler(struct virtqueue *vq)
-+{
-+	int ret;
-+	unsigned int len;
-+	struct scatterlist sg[1];
-+	struct viommu_event *evt;
-+	struct viommu_dev *viommu = vq->vdev->priv;
-+
-+	while ((evt = virtqueue_get_buf(vq, &len)) != NULL) {
-+		if (len > sizeof(*evt)) {
-+			dev_err(viommu->dev,
-+				"invalid event buffer (len %u != %zu)\n",
-+				len, sizeof(*evt));
-+		} else if (!(evt->head & VIOMMU_FAULT_RESV_MASK)) {
-+			viommu_fault_handler(viommu, &evt->fault);
-+		}
-+
-+		sg_init_one(sg, evt, sizeof(*evt));
-+		ret = virtqueue_add_inbuf(vq, sg, 1, evt, GFP_ATOMIC);
-+		if (ret)
-+			dev_err(viommu->dev, "could not add event buffer\n");
-+	}
-+
-+	virtqueue_kick(vq);
-+}
-+
- /* IOMMU API */
- 
- static struct iommu_domain *viommu_domain_alloc(unsigned type)
-@@ -886,16 +959,35 @@ static struct iommu_ops viommu_ops = {
- static int viommu_init_vqs(struct viommu_dev *viommu)
- {
- 	struct virtio_device *vdev = dev_to_virtio(viommu->dev);
--	const char *name = "request";
--	void *ret;
-+	const char *names[] = { "request", "event" };
-+	vq_callback_t *callbacks[] = {
-+		NULL, /* No async requests */
-+		viommu_event_handler,
-+	};
- 
--	ret = virtio_find_single_vq(vdev, NULL, name);
--	if (IS_ERR(ret)) {
--		dev_err(viommu->dev, "cannot find VQ\n");
--		return PTR_ERR(ret);
--	}
-+	return virtio_find_vqs(vdev, VIOMMU_NR_VQS, viommu->vqs, callbacks,
-+			       names, NULL);
-+}
- 
--	viommu->vqs[VIOMMU_REQUEST_VQ] = ret;
-+static int viommu_fill_evtq(struct viommu_dev *viommu)
-+{
-+	int i, ret;
-+	struct scatterlist sg[1];
-+	struct viommu_event *evts;
-+	struct virtqueue *vq = viommu->vqs[VIOMMU_EVENT_VQ];
-+	size_t nr_evts = vq->num_free;
-+
-+	viommu->evts = evts = devm_kmalloc_array(viommu->dev, nr_evts,
-+						 sizeof(*evts), GFP_KERNEL);
-+	if (!evts)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < nr_evts; i++) {
-+		sg_init_one(sg, &evts[i], sizeof(*evts));
-+		ret = virtqueue_add_inbuf(vq, sg, 1, &evts[i], GFP_KERNEL);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	return 0;
- }
-@@ -964,6 +1056,11 @@ static int viommu_probe(struct virtio_device *vdev)
- 
- 	virtio_device_ready(vdev);
- 
-+	/* Populate the event queue with buffers */
-+	ret = viommu_fill_evtq(viommu);
-+	if (ret)
-+		goto err_free_vqs;
-+
- 	ret = iommu_device_sysfs_add(&viommu->iommu, dev, NULL, "%s",
- 				     virtio_bus_name(vdev));
- 	if (ret)
-diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-index ae6145cf5928..ba1b460c9944 100644
---- a/include/uapi/linux/virtio_iommu.h
-+++ b/include/uapi/linux/virtio_iommu.h
-@@ -139,4 +139,23 @@ struct virtio_iommu_req_probe {
- 	 */
- };
- 
-+/* Fault types */
-+#define VIRTIO_IOMMU_FAULT_R_UNKNOWN		0
-+#define VIRTIO_IOMMU_FAULT_R_DOMAIN		1
-+#define VIRTIO_IOMMU_FAULT_R_MAPPING		2
-+
-+#define VIRTIO_IOMMU_FAULT_F_READ		(1 << 0)
-+#define VIRTIO_IOMMU_FAULT_F_WRITE		(1 << 1)
-+#define VIRTIO_IOMMU_FAULT_F_EXEC		(1 << 2)
-+#define VIRTIO_IOMMU_FAULT_F_ADDRESS		(1 << 8)
-+
-+struct virtio_iommu_fault {
-+	__u8					reason;
-+	__u8					reserved[3];
-+	__le32					flags;
-+	__le32					endpoint;
-+	__u8					reserved2[4];
-+	__le64					address;
-+};
-+
- #endif
--- 
-2.19.1
+Yes, we should.  Both the existing DMA size communicated through dma_params
+which is set by the driver, and this new DMA-ops exposed one which needs
+to be added.  I'm working on some preliminary patches for the first part,
+as I think I introduced a bug related to that in the SCSI layer in 5.0..
