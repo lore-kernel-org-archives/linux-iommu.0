@@ -1,54 +1,52 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 2/3] dma: Introduce dma_max_mapping_size()
-Date: Tue, 15 Jan 2019 17:23:22 +0100
-Message-ID: <20190115162322.GA4681@8bytes.org>
-References: <20190115132257.6426-1-joro@8bytes.org>
- <20190115132257.6426-3-joro@8bytes.org>
- <20190115133754.GB29225@lst.de>
+From: Dmitry Osipenko <digetx@gmail.com>
+Subject: Re: [PATCH v7 00/24] Tegra GART driver clean up and optimization
+Date: Tue, 15 Jan 2019 19:33:54 +0300
+Message-ID: <bbefe330-d3e8-3eea-0f9e-a2b0b7915120@gmail.com>
+References: <20181212203907.23461-1-digetx@gmail.com>
+ <20181217091455.kkxpyojp4r4fyhrw@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190115133754.GB29225@lst.de>
+In-Reply-To: <20181217091455.kkxpyojp4r4fyhrw@8bytes.org>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 15, 2019 at 02:37:54PM +0100, Christoph Hellwig wrote:
-> > +size_t dma_direct_max_mapping_size(struct device *dev)
-> > +{
-> > +	/*
-> > +	 * Return the minimum of the direct DMA limit and the SWIOTLB limit.
-> > +	 * Since direct DMA has no limit, it is fine to just return the SWIOTLB
-> > +	 * limit.
-> > +	 */
-> > +	return swiotlb_max_mapping_size(dev);
+17.12.2018 12:14, Joerg Roedel пишет:
+> On Wed, Dec 12, 2018 at 11:38:43PM +0300, Dmitry Osipenko wrote:
+>> Dmitry Osipenko (24):
+>>   iommu/tegra: gart: Remove pr_fmt and clean up includes
+>>   iommu/tegra: gart: Clean up driver probe errors handling
+>>   iommu/tegra: gart: Ignore devices without IOMMU phandle in DT
+>>   iommu: Introduce iotlb_sync_map callback
+>>   iommu/tegra: gart: Optimize mapping / unmapping performance
+>>   dt-bindings: memory: tegra: Squash tegra20-gart into tegra20-mc
+>>   ARM: dts: tegra20: Update Memory Controller node to the new binding
+>>   memory: tegra: Don't invoke Tegra30+ specific memory timing setup on
+>>     Tegra20
+>>   memory: tegra: Adapt to Tegra20 device-tree binding changes
+>>   memory: tegra: Read client ID on GART page fault
+>>   memory: tegra: Use of_device_get_match_data()
+>>   memory: tegra: Use relaxed versions of readl/writel
+>>   iommu/tegra: gart: Integrate with Memory Controller driver
+>>   memory: tegra: Do not try to probe SMMU on Tegra20
+>>   memory: tegra: Do not ask for IRQ sharing
+>>   memory: tegra: Clean up error messages
+>>   iommu/tegra: gart: Fix spinlock recursion
+>>   iommu/tegra: gart: Fix NULL pointer dereference
+>>   iommu/tegra: gart: Allow only one active domain at a time
+>>   iommu/tegra: gart: Don't use managed resources
+>>   iommu/tegra: gart: Prepend error/debug messages with "gart:"
+>>   iommu/tegra: gart: Don't detach devices from inactive domains
+>>   iommu/tegra: gart: Simplify clients-tracking code
+>>   iommu/tegra: gart: Perform code refactoring
 > 
-> Well, if we don't actually use the swiotlb buffers despite it being
-> compiled in or even allocated we don't need the limit.
+> Applied, thanks.
+> 
 
-Right, I thought about that too, but didn't find a generic way to check
-for all the cases. There are various checks that could be done:
+Hello Joerg,
 
-	1) Check if SWIOTLB is initialized at all, if not, return
-	   SIZE_MAX as the limit. This can't be checked from dma-direct
-	   code right now, but could be easily implemented.
-
-	2) Check for swiotlb=force needs to be done.
-
-	3) Check whether the device can access all of available RAM. I
-	   have no idea how to check that in an architecture independent
-	   way. It also has to take memory hotplug into account as well
-	   as the DMA mask of the device.
-
-	   An easy approximation could be to omit the limit if the
-	   dma-mask covers all of the physical address bits available
-	   on the platform. It would require to pass the dma-mask as an
-	   additional parameter like it is done in dma_supported().
-
-Any better ideas for how to implement 3)?
-
-Regards,
-
-	Joerg
+Should I expect that the patches will appear in the IOMMU git and in -next consequently? Please let me know if there is any problem with the applying of the patches.
