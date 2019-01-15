@@ -1,295 +1,311 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC v3 18/21] vfio-pci: Add a new VFIO_REGION_TYPE_NESTED
- region type
-Date: Mon, 14 Jan 2019 16:04:22 -0700
-Message-ID: <20190114160422.6e320df9@x1.home>
-References: <20190108102633.17482-1-eric.auger@redhat.com>
-        <20190108102633.17482-19-eric.auger@redhat.com>
-        <20190111165838.06a22ab8@x1.home>
-        <497dad10-8832-3f2c-3ff8-fbcdd4c41ae4@redhat.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 1/8] iommu: Add APIs for multiple domains per device
+Date: Tue, 15 Jan 2019 09:33:25 +0800
+Message-ID: <8e0418e6-27ca-8952-db5a-d781ea6876ac@linux.intel.com>
+References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
+ <20190110030027.31447-2-baolu.lu@linux.intel.com>
+ <20190114112230.00002ec1@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <497dad10-8832-3f2c-3ff8-fbcdd4c41ae4@redhat.com>
+In-Reply-To: <20190114112230.00002ec1@huawei.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Zeng@mail.linuxfoundation.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 14 Jan 2019 21:48:06 +0100
-Auger Eric <eric.auger@redhat.com> wrote:
+Hi,
 
-> Hi Alex,
+On 1/14/19 7:22 PM, Jonathan Cameron wrote:
+> On Thu, 10 Jan 2019 11:00:20 +0800
+> Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > 
-> On 1/12/19 12:58 AM, Alex Williamson wrote:
-> > On Tue,  8 Jan 2019 11:26:30 +0100
-> > Eric Auger <eric.auger@redhat.com> wrote:
-> >   
-> >> This patch adds a new 64kB region aiming to report nested mode
-> >> translation faults.
-> >>
-> >> The region contains a header with the size of the queue,
-> >> the producer and consumer indices and then the actual
-> >> fault queue data. The producer is updated by the kernel while
-> >> the consumer is updated by the userspace.
-> >>
-> >> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> >>
-> >> ---
-> >> ---
-> >>  drivers/vfio/pci/vfio_pci.c         | 102 +++++++++++++++++++++++++++-
-> >>  drivers/vfio/pci/vfio_pci_private.h |   2 +
-> >>  include/uapi/linux/vfio.h           |  15 ++++
-> >>  3 files changed, 118 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-> >> index ff60bd1ea587..2ba181ab2edd 100644
-> >> --- a/drivers/vfio/pci/vfio_pci.c
-> >> +++ b/drivers/vfio/pci/vfio_pci.c
-> >> @@ -56,6 +56,11 @@ module_param(disable_idle_d3, bool, S_IRUGO | S_IWUSR);
-> >>  MODULE_PARM_DESC(disable_idle_d3,
-> >>  		 "Disable using the PCI D3 low power state for idle, unused devices");
-> >>  
-> >> +#define VFIO_FAULT_REGION_SIZE 0x10000  
-> > 
-> > Why 64K?  
-> For the region to be mmappable with 64kB page size.
-
-Isn't hard coding 64K just as bad as hard coding 4K?  The kernel knows
-what PAGE_SIZE is after all.  Is there some target number of queue
-entries here that we could round up to a multiple of PAGE_SIZE?
- 
-> >> +#define VFIO_FAULT_QUEUE_SIZE	\
-> >> +	((VFIO_FAULT_REGION_SIZE - sizeof(struct vfio_fault_region_header)) / \
-> >> +	sizeof(struct iommu_fault))
-> >> +
-> >>  static inline bool vfio_vga_disabled(void)
-> >>  {
-> >>  #ifdef CONFIG_VFIO_PCI_VGA
-> >> @@ -1226,6 +1231,100 @@ static const struct vfio_device_ops vfio_pci_ops = {
-> >>  static int vfio_pci_reflck_attach(struct vfio_pci_device *vdev);
-> >>  static void vfio_pci_reflck_put(struct vfio_pci_reflck *reflck);
-> >>  
-> >> +static size_t
-> >> +vfio_pci_dma_fault_rw(struct vfio_pci_device *vdev, char __user *buf,
-> >> +		      size_t count, loff_t *ppos, bool iswrite)
-> >> +{
-> >> +	unsigned int i = VFIO_PCI_OFFSET_TO_INDEX(*ppos) - VFIO_PCI_NUM_REGIONS;
-> >> +	void *base = vdev->region[i].data;
-> >> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
-> >> +
-> >> +	if (pos >= vdev->region[i].size)
-> >> +		return -EINVAL;
-> >> +
-> >> +	count = min(count, (size_t)(vdev->region[i].size - pos));
-> >> +
-> >> +	if (copy_to_user(buf, base + pos, count))
-> >> +		return -EFAULT;
-> >> +
-> >> +	*ppos += count;
-> >> +
-> >> +	return count;
-> >> +}
-> >> +
-> >> +static int vfio_pci_dma_fault_mmap(struct vfio_pci_device *vdev,
-> >> +				   struct vfio_pci_region *region,
-> >> +				   struct vm_area_struct *vma)
-> >> +{
-> >> +	u64 phys_len, req_len, pgoff, req_start;
-> >> +	unsigned long long addr;
-> >> +	unsigned int index;
-> >> +
-> >> +	index = vma->vm_pgoff >> (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT);
-> >> +
-> >> +	if (vma->vm_end < vma->vm_start)
-> >> +		return -EINVAL;
-> >> +	if ((vma->vm_flags & VM_SHARED) == 0)
-> >> +		return -EINVAL;
-> >> +
-> >> +	phys_len = VFIO_FAULT_REGION_SIZE;
-> >> +
-> >> +	req_len = vma->vm_end - vma->vm_start;
-> >> +	pgoff = vma->vm_pgoff &
-> >> +		((1U << (VFIO_PCI_OFFSET_SHIFT - PAGE_SHIFT)) - 1);
-> >> +	req_start = pgoff << PAGE_SHIFT;
-> >> +
-> >> +	if (req_start + req_len > phys_len)
-> >> +		return -EINVAL;
-> >> +
-> >> +	addr = virt_to_phys(vdev->fault_region);
-> >> +	vma->vm_private_data = vdev;
-> >> +	vma->vm_pgoff = (addr >> PAGE_SHIFT) + pgoff;
-> >> +
-> >> +	return remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
-> >> +			       req_len, vma->vm_page_prot);
-> >> +}
-> >> +
-> >> +void vfio_pci_dma_fault_release(struct vfio_pci_device *vdev,
-> >> +				struct vfio_pci_region *region)
-> >> +{
-> >> +}
-> >> +
-> >> +static const struct vfio_pci_regops vfio_pci_dma_fault_regops = {
-> >> +	.rw		= vfio_pci_dma_fault_rw,
-> >> +	.mmap		= vfio_pci_dma_fault_mmap,
-> >> +	.release	= vfio_pci_dma_fault_release,
-> >> +};
-> >> +
-> >> +static int vfio_pci_init_dma_fault_region(struct vfio_pci_device *vdev)
-> >> +{
-> >> +	u32 flags = VFIO_REGION_INFO_FLAG_READ | VFIO_REGION_INFO_FLAG_WRITE |
-> >> +		    VFIO_REGION_INFO_FLAG_MMAP;
-> >> +	int ret;
-> >> +
-> >> +	spin_lock_init(&vdev->fault_queue_lock);
-> >> +
-> >> +	vdev->fault_region = kmalloc(VFIO_FAULT_REGION_SIZE, GFP_KERNEL);
-> >> +	if (!vdev->fault_region)
-> >> +		return -ENOMEM;
-> >> +
-> >> +	ret = vfio_pci_register_dev_region(vdev,
-> >> +		VFIO_REGION_TYPE_NESTED,
-> >> +		VFIO_REGION_SUBTYPE_NESTED_FAULT_REGION,
-> >> +		&vfio_pci_dma_fault_regops, VFIO_FAULT_REGION_SIZE,
-> >> +		flags, vdev->fault_region);
-> >> +	if (ret) {
-> >> +		kfree(vdev->fault_region);
-> >> +		return ret;
-> >> +	}
-> >> +
-> >> +	vdev->fault_region->header.prod = 0;
-> >> +	vdev->fault_region->header.cons = 0;
-> >> +	vdev->fault_region->header.reserved = 0;  
-> > 
-> > Use kzalloc above or else we're leaking kernel memory to userspace
-> > anyway.  
-> sure
-> >   
-> >> +	vdev->fault_region->header.size = VFIO_FAULT_QUEUE_SIZE;
-> >> +	return 0;
-> >> +}
-> >> +
-> >>  static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> >>  {
-> >>  	struct vfio_pci_device *vdev;
-> >> @@ -1300,7 +1399,7 @@ static int vfio_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-> >>  		pci_set_power_state(pdev, PCI_D3hot);
-> >>  	}
-> >>  
-> >> -	return ret;
-> >> +	return vfio_pci_init_dma_fault_region(vdev);  
-> > 
-> > Missing lots of cleanup should this fail.  Why is this done on probe
-> > anyway?  This looks like something we'd do from vfio_pci_enable() and
-> > therefore our release callback would free fault_region rather than what
-> > we have below.  
-> OK. That's fine to put in the vfio_pci_enable().
-> >   
-> >>  }
-> >>  
-> >>  static void vfio_pci_remove(struct pci_dev *pdev)
-> >> @@ -1315,6 +1414,7 @@ static void vfio_pci_remove(struct pci_dev *pdev)
-> >>  
-> >>  	vfio_iommu_group_put(pdev->dev.iommu_group, &pdev->dev);
-> >>  	kfree(vdev->region);
-> >> +	kfree(vdev->fault_region);
-> >>  	mutex_destroy(&vdev->ioeventfds_lock);
-> >>  	kfree(vdev);
-> >>  
-> >> diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
-> >> index 8c0009f00818..38b5d1764a26 100644
-> >> --- a/drivers/vfio/pci/vfio_pci_private.h
-> >> +++ b/drivers/vfio/pci/vfio_pci_private.h
-> >> @@ -120,6 +120,8 @@ struct vfio_pci_device {
-> >>  	int			ioeventfds_nr;
-> >>  	struct eventfd_ctx	*err_trigger;
-> >>  	struct eventfd_ctx	*req_trigger;
-> >> +	spinlock_t              fault_queue_lock;
-> >> +	struct vfio_fault_region *fault_region;
-> >>  	struct list_head	dummy_resources_list;
-> >>  	struct mutex		ioeventfds_lock;
-> >>  	struct list_head	ioeventfds_list;
-> >> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> >> index 352e795a93c8..b78c2c62af6d 100644
-> >> --- a/include/uapi/linux/vfio.h
-> >> +++ b/include/uapi/linux/vfio.h
-> >> @@ -307,6 +307,9 @@ struct vfio_region_info_cap_type {
-> >>  #define VFIO_REGION_TYPE_GFX                    (1)
-> >>  #define VFIO_REGION_SUBTYPE_GFX_EDID            (1)
-> >>  
-> >> +#define VFIO_REGION_TYPE_NESTED			(2)
-> >> +#define VFIO_REGION_SUBTYPE_NESTED_FAULT_REGION	(1)
-> >> +
-> >>  /**
-> >>   * struct vfio_region_gfx_edid - EDID region layout.
-> >>   *
-> >> @@ -697,6 +700,18 @@ struct vfio_device_ioeventfd {
-> >>  
-> >>  #define VFIO_DEVICE_IOEVENTFD		_IO(VFIO_TYPE, VFIO_BASE + 16)
-> >>  
-> >> +struct vfio_fault_region_header {
-> >> +	__u32	size;		/* Read-Only */
-> >> +	__u32	prod;		/* Read-Only */  
-> > 
-> > We can't really enforce read-only if it's mmap'd.  
-> Do we really need to? Assuming the kernel always uses
-> VFIO_FAULT_QUEUE_SIZE to check prod and cons indice - which is not the
-> case at the moment by the way :-( -s, the queue cannot
-> be overflown .
+>> Sharing a physical PCI device in a finer-granularity way
+>> is becoming a consensus in the industry. IOMMU vendors
+>> are also engaging efforts to support such sharing as well
+>> as possible. Among the efforts, the capability of support
+>> finer-granularity DMA isolation is a common requirement
+>> due to the security consideration. With finer-granularity
+>> DMA isolation, all DMA requests out of or to a subset of
+>> a physical PCI device can be protected by the IOMMU. As a
+>> result, there is a request in software to attach multiple
+>> domains to a physical PCI device. One example of such use
+>> model is the Intel Scalable IOV [1] [2]. The Intel vt-d
+>> 3.0 spec [3] introduces the scalable mode which enables
+>> PASID granularity DMA isolation.
+>>
+>> This adds the APIs to support multiple domains per device.
+>> In order to ease the discussions, we call it 'a domain in
+>> auxiliary mode' or simply 'auxiliary domain' when multiple
+>> domains are attached to a physical device.
+>>
+>> The APIs include:
+>>
+>> * iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)
+>>    - Check whether both IOMMU and device support IOMMU aux
+>>      domain feature. Below aux-domain specific interfaces
+>>      are available only after this returns true.
+>>
+>> * iommu_dev_enable/disable_feature(dev, IOMMU_DEV_FEAT_AUX)
+>>    - Enable/disable device specific aux-domain feature.
+>>
+>> * iommu_aux_attach_device(domain, dev)
+>>    - Attaches @domain to @dev in the auxiliary mode. Multiple
+>>      domains could be attached to a single device in the
+>>      auxiliary mode with each domain representing an isolated
+>>      address space for an assignable subset of the device.
+>>
+>> * iommu_aux_detach_device(domain, dev)
+>>    - Detach @domain which has been attached to @dev in the
+>>      auxiliary mode.
+>>
+>> * iommu_aux_get_pasid(domain, dev)
+>>    - Return ID used for finer-granularity DMA translation.
+>>      For the Intel Scalable IOV usage model, this will be
+>>      a PASID. The device which supports Scalable IOV needs
+>>      to write this ID to the device register so that DMA
+>>      requests could be tagged with a right PASID prefix.
+>>
+>> This has been updated with the latest proposal from Joerg
+>> posted here [5].
+>>
+>> Many people involved in discussions of this design.
+>>
+>> Kevin Tian <kevin.tian@intel.com>
+>> Liu Yi L <yi.l.liu@intel.com>
+>> Ashok Raj <ashok.raj@intel.com>
+>> Sanjay Kumar <sanjay.k.kumar@intel.com>
+>> Jacob Pan <jacob.jun.pan@linux.intel.com>
+>> Alex Williamson <alex.williamson@redhat.com>
+>> Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> Joerg Roedel <joro@8bytes.org>
+>>
+>> and some discussions can be found here [4] [5].
+>>
+>> [1] https://software.intel.com/en-us/download/intel-scalable-io-virtualization-technical-specification
+>> [2] https://schd.ws/hosted_files/lc32018/00/LC3-SIOV-final.pdf
+>> [3] https://software.intel.com/en-us/download/intel-virtualization-technology-for-directed-io-architecture-specification
+>> [4] https://lkml.org/lkml/2018/7/26/4
+>> [5] https://www.spinics.net/lists/iommu/msg31874.html
+>>
+>> Cc: Ashok Raj <ashok.raj@intel.com>
+>> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>> Cc: Kevin Tian <kevin.tian@intel.com>
+>> Cc: Liu Yi L <yi.l.liu@intel.com>
+>> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+>> Suggested-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> Suggested-by: Joerg Roedel <jroedel@suse.de>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > 
-> The header also can be checked each time the kernel fills any event in
-> the queue
-> (vfio_pci_iommu_dev_fault_handler). If inconsistent the kernel may stop
-> using the queue. If the user-space mangles with those RO fields, this
-> will break error reporting on the guest but the problem should be
-> confined here?
+> One trivial comment inline.
 
-I guess this is a matter of whether the performance benefit is worth
-the hardening and I can imagine that it could be, but we do need that
-hardening and well defined behavior to the user.  If we put it into a
-single page then we need to define if a user write to the producer index
-resets the index or if it's just a shadow of internal state and will be
-restored on the next update.  Does a user write to the size register
-change the size of the queue or is it ignored?  Is there an event that
-will restore it?  Maybe the size should be exposed as a part of a
-region info capability like we've done for some of the new nvlink
-regions.
+Thank you!
 
-> > I worry about synchronization here too, perhaps there should be a ring offset such
-> > that the ring can be in a separate page from the header and then sparse
-> > mmap support can ensure that the user access is restricted.  
 > 
-> I was assuming a single writer and single reader lock-free circular
-> buffer here. My understanding was it was safe to consider concurrent
-> read and write. What I am missing anyway is atomic counter operations to
-> guarantee the indices are updated after the push/pop action as explained in
-> https://www.kernel.org/doc/Documentation/circular-buffers.txt. I am not
-> comfortable about how to enforce this on user side though.
+>> ---
+>>   drivers/iommu/iommu.c | 80 +++++++++++++++++++++++++++++++++++++++++++
+>>   include/linux/iommu.h | 61 +++++++++++++++++++++++++++++++++
+>>   2 files changed, 141 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 3ed4db334341..9166b6145409 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -2033,3 +2033,83 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+>>   	return 0;
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+>> +
+>> +/*
+>> + * Per device IOMMU features.
+>> + */
+>> +bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> +
+>> +	if (ops && ops->dev_has_feat)
+>> +		return ops->dev_has_feat(dev, feat);
+>> +
+>> +	return false;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_dev_has_feature);
+>> +
+>> +int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> +
+>> +	if (ops && ops->dev_enable_feat)
+>> +		return ops->dev_enable_feat(dev, feat);
+>> +
+>> +	return -ENODEV;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_dev_enable_feature);
+>> +
+>> +int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> +
+>> +	if (ops && ops->dev_disable_feat)
+>> +		return ops->dev_disable_feat(dev, feat);
+>> +
+>> +	return -ENODEV;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
+>> +
+>> +/*
+>> + * Aux-domain specific attach/detach.
+>> + *
+>> + * Only works if iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX) returns true.
+>> + * Also, as long as domains are attached to a device through this interface,
+>> + * any tries to call iommu_attach_device() should fail (iommu_detach_device()
+>> + * can't fail, so we fail on the tryint to re-attach). This should make us safe
+> 
+> when trying to re-attach. (perhaps?)
 
-It doesn't seem enforceable to the user without slowing down the
-interface, either via ioctl or non-mmap.  I think it's fine to have
-acquire and release semantics, we just need to define them and have
-safe, predictable behavior when the user does something wrong (and
-expect them to do something wrong, intentionally or not).
+Yes. I will fix it.
 
-> In case I split the header and the actual buffer into 2 different
-> possible 64kB pages, the first one will be very scarcely used.
+Best regards,
+Lu Baolu
 
-Yes, it's wasteful, a shared page would be preferred, but it's also
-only a page.
-
-> > wonder if there are other transports that make sense here, this almost
-> > feels like a vhost sort of thing.  Thanks,  
-> Using something more sophisticated may be useful for PRI where answers
-> need to be provided. For the case of unrecoverable faults, I wonder
-> whether it is worth the pain exposing a fault region compared to the
-> original IOCTL approach introduced in
-> [RFC v2 18/20] vfio: VFIO_IOMMU_GET_FAULT_EVENTS
-> https://lkml.org/lkml/2018/9/18/1094
-
-Not sure I understand the pain aspect, if we don't support mmap on a
-region then we can fill a user read from a region just as easily as we
-can fill a buffer passed via ioctl.  Thanks,
-
-Alex
+> 
+>> + * against a device being attached to a guest as a whole while there are still
+>> + * pasid users on it (aux and sva).
+>> + */
+>> +int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
+>> +{
+>> +	int ret = -ENODEV;
+>> +
+>> +	if (domain->ops->aux_attach_dev)
+>> +		ret = domain->ops->aux_attach_dev(domain, dev);
+>> +
+>> +	if (!ret)
+>> +		trace_attach_device_to_domain(dev);
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_aux_attach_device);
+>> +
+>> +void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
+>> +{
+>> +	if (domain->ops->aux_detach_dev) {
+>> +		domain->ops->aux_detach_dev(domain, dev);
+>> +		trace_detach_device_from_domain(dev);
+>> +	}
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_aux_detach_device);
+>> +
+>> +int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+>> +{
+>> +	int ret = -ENODEV;
+>> +
+>> +	if (domain->ops->aux_get_pasid)
+>> +		ret = domain->ops->aux_get_pasid(domain, dev);
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index e90da6b6f3d1..f4c3d2a2cc87 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -156,6 +156,11 @@ struct iommu_resv_region {
+>>   	enum iommu_resv_type	type;
+>>   };
+>>   
+>> +/* Per device IOMMU features */
+>> +enum iommu_dev_features {
+>> +	IOMMU_DEV_FEAT_AUX,	/* Aux-domain feature */
+>> +};
+>> +
+>>   #ifdef CONFIG_IOMMU_API
+>>   
+>>   /**
+>> @@ -183,6 +188,10 @@ struct iommu_resv_region {
+>>    * @domain_window_enable: Configure and enable a particular window for a domain
+>>    * @domain_window_disable: Disable a particular window for a domain
+>>    * @of_xlate: add OF master IDs to iommu grouping
+>> + * @dev_has/enable/disable_feat: per device entries to check/enable/disable
+>> + *                               iommu specific features.
+>> + * @aux_attach/detach_dev: aux-domain specific attach/detach entries.
+>> + * @aux_get_pasid: get the pasid given an aux-domain
+>>    * @pgsize_bitmap: bitmap of all possible supported page sizes
+>>    */
+>>   struct iommu_ops {
+>> @@ -226,6 +235,16 @@ struct iommu_ops {
+>>   	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+>>   	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+>>   
+>> +	/* Per device IOMMU features */
+>> +	bool (*dev_has_feat)(struct device *dev, enum iommu_dev_features f);
+>> +	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
+>> +	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
+>> +
+>> +	/* Aux-domain specific attach/detach entries */
+>> +	int (*aux_attach_dev)(struct iommu_domain *domain, struct device *dev);
+>> +	void (*aux_detach_dev)(struct iommu_domain *domain, struct device *dev);
+>> +	int (*aux_get_pasid)(struct iommu_domain *domain, struct device *dev);
+>> +
+>>   	unsigned long pgsize_bitmap;
+>>   };
+>>   
+>> @@ -412,6 +431,13 @@ static inline void dev_iommu_fwspec_set(struct device *dev,
+>>   int iommu_probe_device(struct device *dev);
+>>   void iommu_release_device(struct device *dev);
+>>   
+>> +bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features feat);
+>> +int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat);
+>> +int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat);
+>> +int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev);
+>> +void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
+>> +int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
+>> +
+>>   #else /* CONFIG_IOMMU_API */
+>>   
+>>   struct iommu_ops {};
+>> @@ -696,6 +722,41 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+>>   	return NULL;
+>>   }
+>>   
+>> +static inline bool
+>> +iommu_dev_has_feature(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	return false;
+>> +}
+>> +
+>> +static inline int
+>> +iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>> +static inline int
+>> +iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>> +static inline int
+>> +iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>> +static inline void
+>> +iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
+>> +{
+>> +}
+>> +
+>> +static inline int
+>> +iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>>   #endif /* CONFIG_IOMMU_API */
+>>   
+>>   #ifdef CONFIG_IOMMU_DEBUGFS
+> 
+> 
+> 
