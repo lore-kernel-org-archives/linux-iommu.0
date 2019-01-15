@@ -1,112 +1,38 @@
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-Subject: Re: [PATCH v5 4/8] iommu/vt-d: Aux-domain specific domain
- attach/detach
-Date: Tue, 15 Jan 2019 13:31:42 +0000
-Message-ID: <20190115133142.0000744c@huawei.com>
-References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
-        <20190110030027.31447-5-baolu.lu@linux.intel.com>
-        <20190114122603.00001450@huawei.com>
-        <cf37ed74-81ea-9708-8d99-5bc3b64b1f23@linux.intel.com>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Tue, 15 Jan 2019 14:35:58 +0100
+Message-ID: <20190115133558.GA29225@lst.de>
+References: <008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de> <20190103073622.GA24323@lst.de> <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de> <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de> <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de> <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de> <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de> <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de> <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de> <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cf37ed74-81ea-9708-8d99-5bc3b64b1f23@linux.intel.com>
+Content-Disposition: inline
+In-Reply-To: <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Zeng@mail.linuxfoundation.org, yi.y.sun@intel.com, jacob.jun.pan@intel.com, kvm@vger.kernel.org
+To: Christian Zigotzky <chzigotzky@xenosoft.de>
+Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 15 Jan 2019 10:10:21 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Tue, Jan 15, 2019 at 11:55:25AM +0100, Christian Zigotzky wrote:
+> Next step: 21074ef03c0816ae158721a78cabe9035938dddd (powerpc/dma: use the 
+> generic direct mapping bypass)
+>
+> git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+>
+> git checkout 21074ef03c0816ae158721a78cabe9035938dddd
+>
+> I was able to compile the kernel for the AmigaOne X1000 (Nemo board with PA 
+> Semi PA6T-1682M SoC). It boots but the PA Semi onboard ethernet doesn't 
+> work.
 
-> Hi,
-> 
-> On 1/14/19 8:26 PM, Jonathan Cameron wrote:
-> > On Thu, 10 Jan 2019 11:00:23 +0800
-> > Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> >   
-> >> When multiple domains per device has been enabled by the
-> >> device driver, the device will tag the default PASID for
-> >> the domain to all DMA traffics out of the subset of this
-> >> device; and the IOMMU should translate the DMA requests
-> >> in PASID granularity.
-> >>
-> >> This adds the intel_iommu_aux_attach/detach_device() ops
-> >> to support managing PASID granular translation structures
-> >> when the device driver has enabled multiple domains per
-> >> device.
-> >>
-> >> Cc: Ashok Raj <ashok.raj@intel.com>
-> >> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >> Cc: Kevin Tian <kevin.tian@intel.com>
-> >> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-> >> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>  
-> > 
-> > The following is probably a rather naive review given I don't know
-> > the driver or hardware well at all.  Still, it seems like things
-> > are a lot less balanced than I'd expect and isn't totally obvious
-> > to me why that is.  
-> 
-> Thank you!
+Thanks.  But we are exactly missing the steps that are relevant.  I've
+pushed a fixed up powerpc-dma.6 tree, which will only change starting from
+the first commit that didn't link.
 
-You are welcome.
+The first commit that changed from the old one is this one:
 
-...
+http://git.infradead.org/users/hch/misc.git/commitdiff/257002094bc5935dd63207a380d9698ab81f0775
 
-> >> +/*
-> >> + * Check whether a @domain could be attached to the @dev through the
-> >> + * aux-domain attach/detach APIs.
-> >> + */
-> >> +static inline bool
-> >> +is_aux_domain(struct device *dev, struct iommu_domain *domain)  
-> > 
-> > I'm finding the distinction between an aux domain capability on
-> > a given device and whether one is actually in use to be obscured
-> > slightly in the function naming.
-> > 
-> > This one for example is actually checking if we have a domain
-> > that is capable of being enabled for aux domain use, but not
-> > yet actually in that mode?
-> > 
-> > Mind you I'm not sure I have a better answer for the naming.
-> > can_aux_domain_be_enabled?  is_unattached_aux_domain?
-> > 
-> >   
-> 
-> device aux mode vs. normal mode
-> ===============================
-> 
-> When we talk about the auxiliary mode (simply aux-mode), it means "the
-> device works in aux-mode or normal mode". "normal mode" means that the
-> device (and it's corresponding IOMMU) supports only RID (PCI Request ID)
-> based DMA translation; while, aux-mode means the the device (and it's
-> IOMMU) supports fine-grained DMA translation, like PASID based DMA
-> translation with Intel VT-d scalable mode.
-> 
-> We are adding below APIs to switch a device between these two modes:
-> 
-> int iommu_dev_enable/disable_feature(dev, IOMMU_DEV_FEAT_AUX)
-> 
-> And this API (still under discussion) to check which mode the device is
-> working in:
-> 
-> bool iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)
-> 
-> aux-domain
-> ==========
-> 
-> If a device is working in aux-mode and we are going to attach a domain
-> to this device, we say "this domain will be attached to the device in
-> aux mode", and simply "aux domain". So a domain is "normal" when it is
-> going to attach to a device in normal mode; and is "aux-domain" when it
-> is going to attach to a device in aux mode.
+which was that one that your compile failed on first.
 
-Hmm.. OK I guess.  It still feels like there is more need to refer to
-the docs than there should be.  Still, your code and I may well never
-read it again so I don't mind :)
-
-> 
-> >   
-> >> +{
+Thanks again for all your work!
