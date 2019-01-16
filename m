@@ -1,79 +1,36 @@
-From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
- from a domain
-Date: Wed, 16 Jan 2019 14:08:55 +0000
-Message-ID: <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
-References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
- <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH 3/3] virtio-blk: Consider dma_max_mapping_size() for
+ maximum segment size
+Date: Wed, 16 Jan 2019 15:10:43 +0100
+Message-ID: <20190116141043.qbsdbdt72akxpdtj@suse.de>
+References: <20190115132257.6426-1-joro@8bytes.org>
+ <20190115132257.6426-4-joro@8bytes.org>
+ <20190116090355-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
-Content-Language: en-US
-Content-ID: <C5D6EE8EA4D0564E83AE9DF91E392B13@namprd12.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <20190116090355-mutt-send-email-mst@kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-Sm9lcmcsDQoNCk9uIDEvMTYvMTkgODoyNiBQTSwgam9yb0A4Ynl0ZXMub3JnIHdyb3RlOg0KPiBP
-biBXZWQsIEphbiAxNiwgMjAxOSBhdCAwNDoxNjoyNUFNICswMDAwLCBTdXRoaWt1bHBhbml0LCBT
-dXJhdmVlIHdyb3RlOg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMg
-Yi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jDQo+PiBpbmRleCA1MjU2NTliODhhZGUuLmFiMzFi
-YTc1ZGExYiAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMNCj4+ICsr
-KyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMNCj4+IEBAIC0xMjQ4LDcgKzEyNDgsMTMgQEAg
-c3RhdGljIHZvaWQgX19kb21haW5fZmx1c2hfcGFnZXMoc3RydWN0IHByb3RlY3Rpb25fZG9tYWlu
-ICpkb21haW4sDQo+PiAgIAlidWlsZF9pbnZfaW9tbXVfcGFnZXMoJmNtZCwgYWRkcmVzcywgc2l6
-ZSwgZG9tYWluLT5pZCwgcGRlKTsNCj4+ICAgDQo+PiAgIAlmb3IgKGkgPSAwOyBpIDwgYW1kX2lv
-bW11X2dldF9udW1faW9tbXVzKCk7ICsraSkgew0KPj4gLQkJaWYgKCFkb21haW4tPmRldl9pb21t
-dVtpXSkNCj4+ICsJCS8qDQo+PiArCQkgKiBUaGUgZGV2X2NudCBpcyB6ZXJvIHdoZW4gYWxsIGRl
-dmljZXMgYXJlIGRldGFjaGVkDQo+PiArCQkgKiBmcm9tIHRoZSBkb21haW4uIFRoaXMgaXMgdGhl
-IGNhc2Ugd2hlbiBWRklPIGRldGFjaGVzDQo+PiArCQkgKiBhbGwgZGV2aWNlcyBmcm9tIHRoZSBn
-cm91cCBiZWZvcmUgZmx1c2hpbmcgSU9NTVUgcGFnZXMuDQo+PiArCQkgKiBTbywgYWx3YXlzIGlz
-c3VlIHRoZSBmbHVzaCBjb21tYW5kLg0KPj4gKwkJICovDQo+PiArCQlpZiAoZG9tYWluLT5kZXZf
-Y250ICYmICFkb21haW4tPmRldl9pb21tdVtpXSkNCj4+ICAgCQkJY29udGludWU7DQo+IA0KPiBU
-aGlzIGRvZXNuJ3QgbG9vayBsaWtlIHRoZSBjb3JyZWN0IGZpeC4gV2Ugc3RpbGwgbWlzcyB0aGUg
-Zmx1c2ggaWYgd2UNCj4gZGV0YWNoIHRoZSBsYXN0IGRldmljZSBmcm9tIHRoZSBkb21haW4uIA0K
-DQpBY3R1YWxseSwgSSBhbSBub3Qgc3VyZSBob3cgd2Ugd291bGQgYmUgbWlzc2luZyB0aGUgZmx1
-c2ggb24gdGhlIGxhc3QgZGV2aWNlLg0KSW4gbXkgdGVzdCwgSSBhbSBzZWVpbmcgdGhlIGZsdXNo
-IGNvbW1hbmQgYmVpbmcgaXNzdWVkIGNvcnJlY3RseSBkdXJpbmcNCnZmaW9fdW5tYXBfdW5waW4o
-KSwgd2hpY2ggaXMgYWZ0ZXIgYWxsIGRldmljZXMgYXJlIGRldGFjaGVkLg0KQWx0aG91Z2gsIEkg
-bWlnaHQgYmUgbWlzc2luZyB5b3VyIHBvaW50IGhlcmUuIENvdWxkIHlvdSBwbGVhc2UgZWxhYm9y
-YXRlPw0KDQo+IEhvdyBhYm91dCB0aGUgYXR0YWNoZWQgZGlmZj8gSWYNCj4gSSB1bmRlcnN0YW5k
-IHRoZSBwcm9ibGVtIGNvcnJlY3RseSwgaXQgc2hvdWxkIGZpeCB0aGUgcHJvYmxlbSBtb3JlDQo+
-IHJlbGlhYmx5Lg0KPiANCj4gVGhhbmtzLA0KPiANCj4gCUpvZXJnDQo+IA0KPiBkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMN
-Cj4gaW5kZXggODdiYTIzYTc1YjM4Li5kYzFlMmE4YTE5ZDcgMTAwNjQ0DQo+IC0tLSBhL2RyaXZl
-cnMvaW9tbXUvYW1kX2lvbW11LmMNCj4gKysrIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYw0K
-PiBAQCAtMTk5MSwyNSArMTk5MSwzNiBAQCBzdGF0aWMgdm9pZCBkb19hdHRhY2goc3RydWN0IGlv
-bW11X2Rldl9kYXRhICpkZXZfZGF0YSwNCj4gICANCj4gICBzdGF0aWMgdm9pZCBkb19kZXRhY2go
-c3RydWN0IGlvbW11X2Rldl9kYXRhICpkZXZfZGF0YSkNCj4gICB7DQo+ICsJc3RydWN0IHByb3Rl
-Y3Rpb25fZG9tYWluICpkb21haW4gPSBkZXZfZGF0YS0+ZG9tYWluOw0KPiAgIAlzdHJ1Y3QgYW1k
-X2lvbW11ICppb21tdTsNCj4gICAJdTE2IGFsaWFzOw0KPiAgIA0KPiAgIAlpb21tdSA9IGFtZF9p
-b21tdV9ybG9va3VwX3RhYmxlW2Rldl9kYXRhLT5kZXZpZF07DQo+ICAgCWFsaWFzID0gZGV2X2Rh
-dGEtPmFsaWFzOw0KPiAgIA0KPiAtCS8qIGRlY3JlYXNlIHJlZmVyZW5jZSBjb3VudGVycyAqLw0K
-PiAtCWRldl9kYXRhLT5kb21haW4tPmRldl9pb21tdVtpb21tdS0+aW5kZXhdIC09IDE7DQo+IC0J
-ZGV2X2RhdGEtPmRvbWFpbi0+ZGV2X2NudCAgICAgICAgICAgICAgICAgLT0gMTsNCj4gLQ0KPiAg
-IAkvKiBVcGRhdGUgZGF0YSBzdHJ1Y3R1cmVzICovDQo+ICAgCWRldl9kYXRhLT5kb21haW4gPSBO
-VUxMOw0KPiAgIAlsaXN0X2RlbCgmZGV2X2RhdGEtPmxpc3QpOw0KPiAtCWNsZWFyX2R0ZV9lbnRy
-eShkZXZfZGF0YS0+ZGV2aWQpOw0KPiAtCWlmIChhbGlhcyAhPSBkZXZfZGF0YS0+ZGV2aWQpDQo+
-IC0JCWNsZWFyX2R0ZV9lbnRyeShhbGlhcyk7DQo+ICAgDQo+ICsJY2xlYXJfZHRlX2VudHJ5KGRl
-dl9kYXRhLT5kZXZpZCk7DQo+ICAgCS8qIEZsdXNoIHRoZSBEVEUgZW50cnkgKi8NCj4gICAJZGV2
-aWNlX2ZsdXNoX2R0ZShkZXZfZGF0YSk7DQo+ICsNCj4gKwlpZiAoYWxpYXMgIT0gZGV2X2RhdGEt
-PmRldmlkKSB7DQo+ICsJCWNsZWFyX2R0ZV9lbnRyeShhbGlhcyk7DQo+ICsJCS8qIEZsdXNoIHRo
-ZSBBbGlhcyBEVEUgZW50cnkgKi8NCj4gKwkJZGV2aWNlX2ZsdXNoX2R0ZShhbGlhcyk7DQo+ICsJ
-fQ0KPiArDQo+ICsJLyogRmx1c2ggSU9UTEIgKi8NCj4gKwlkb21haW5fZmx1c2hfdGxiX3BkZShk
-b21haW4pOw0KPiArDQo+ICsJLyogV2FpdCBmb3IgdGhlIGZsdXNoZXMgdG8gZmluaXNoICovDQo+
-ICsJZG9tYWluX2ZsdXNoX2NvbXBsZXRlKGRvbWFpbik7DQo+ICsNCj4gKwkvKiBkZWNyZWFzZSBy
-ZWZlcmVuY2UgY291bnRlcnMgLSBuZWVkcyB0byBoYXBwZW4gYWZ0ZXIgdGhlIGZsdXNoZXMgKi8N
-Cj4gKwlkb21haW4tPmRldl9pb21tdVtpb21tdS0+aW5kZXhdIC09IDE7DQo+ICsJZG9tYWluLT5k
-ZXZfY250ICAgICAgICAgICAgICAgICAtPSAxOw0KPiAgIH0NCg0KSSBoYXZlIGFsc28gY29uc2lk
-ZXJlZCB0aGlzLiBUaGlzIHdvdWxkIGFsc28gd29yay4gQnV0IHNpbmNlIHdlIGFyZSBhbHJlYWR5
-DQpkb2luZyBwYWdlIGZsdXNoZXMgZHVyaW5nIHBhZ2UgdW5tYXBwaW5nIGxhdGVyIG9uIGFmdGVy
-IGFsbCBkZXZpY2VzIGFyZSBkZXRhY2hlZC4NClNvLCB3b3VsZCB0aGlzIGJlIG5lY2Vzc2FyeT8g
-UGxlYXNlIHNlZSB2ZmlvX2lvbW11X3R5cGUxX2RldGFjaF9ncm91cCgpLg0KDQpBbHNvLCBpZiB3
-ZSBjb25zaWRlciB0aGUgY2FzZSB3aGVyZSB0aGVyZSBhcmUgbW9yZSB0aGFuIG9uZSBkZXZpY2Vz
-IHNoYXJpbmcNCnRoZSBkb21haW4uIFRoaXMgd291bGQgaXNzdWUgcGFnZSBmbHVzaCBldmVyeSB0
-aW1lIHdlIGRldGFjaCBhIGRldmljZSwNCmFuZCB3aGlsZSBvdGhlciBkZXZpY2VzIHN0aWxsIGF0
-dGFjaGVkIHRvIHRoZSBkb21haW4uDQoNClJlZ2FyZHMsDQpTdXJhdmVlDQoNCg==
+On Wed, Jan 16, 2019 at 09:05:40AM -0500, Michael S. Tsirkin wrote:
+> On Tue, Jan 15, 2019 at 02:22:57PM +0100, Joerg Roedel wrote:
+> > +	max_size = dma_max_mapping_size(&vdev->dev);
+> > +
+> 
+> 
+> Should this be limited to ACCESS_PLATFORM?
+> 
+> I see no reason to limit this without as guest can
+> access any memory.
+
+Actually, yes. This should be inside a use_dma_api check. I had it in
+v1, but it went away without the vring layer for propagating the limit.
+I'll add that again.
+
+Thanks,
+
+	Joerg
