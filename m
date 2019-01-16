@@ -1,7 +1,7 @@
 From: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 2/5] iommu/tegra-smmu: Use non-secure register for flushing
-Date: Wed, 16 Jan 2019 12:50:11 -0800
-Message-ID: <1547671814-30088-2-git-send-email-navneetk@nvidia.com>
+Subject: [PATCH 3/5] iommu/tegra-smmu: Fix client enablement order
+Date: Wed, 16 Jan 2019 12:50:12 -0800
+Message-ID: <1547671814-30088-3-git-send-email-navneetk@nvidia.com>
 References: <1547671814-30088-1-git-send-email-navneetk@nvidia.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,28 +21,53 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use PTB_ASID instead of SMMU_CONFIG to flush smmu.
-PTB_ASID can be accessed from non-secure mode, SMMU_CONFIG cannot be.
-Using SMMU_CONFIG could pose a problem when kernel doesn't have secure
-mode access enabled from boot.
+Enable clients' translation only after setting up the swgroups.
 
 Signed-off-by: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/tegra-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/tegra-smmu.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index ee4d8a8..fa175d9 100644
+index fa175d9..1a44cf6 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -235,7 +235,7 @@ static inline void smmu_flush_tlb_group(struct tegra_smmu *smmu,
+@@ -353,6 +353,20 @@ static void tegra_smmu_enable(struct tegra_smmu *smmu, unsigned int swgroup,
+ 	unsigned int i;
+ 	u32 value;
  
- static inline void smmu_flush(struct tegra_smmu *smmu)
- {
--	smmu_readl(smmu, SMMU_CONFIG);
-+	smmu_readl(smmu, SMMU_PTB_ASID);
++	group = tegra_smmu_find_swgroup(smmu, swgroup);
++	if (group) {
++		value = smmu_readl(smmu, group->reg);
++		value &= ~SMMU_ASID_MASK;
++		value |= SMMU_ASID_VALUE(asid);
++		value |= SMMU_ASID_ENABLE;
++		smmu_writel(smmu, value, group->reg);
++	} else {
++		pr_warn("%s group from swgroup %u not found\n", __func__,
++				swgroup);
++		/* No point moving ahead if group was not found */
++		return;
++	}
++
+ 	for (i = 0; i < smmu->soc->num_clients; i++) {
+ 		const struct tegra_mc_client *client = &smmu->soc->clients[i];
+ 
+@@ -363,15 +377,6 @@ static void tegra_smmu_enable(struct tegra_smmu *smmu, unsigned int swgroup,
+ 		value |= BIT(client->smmu.bit);
+ 		smmu_writel(smmu, value, client->smmu.reg);
+ 	}
+-
+-	group = tegra_smmu_find_swgroup(smmu, swgroup);
+-	if (group) {
+-		value = smmu_readl(smmu, group->reg);
+-		value &= ~SMMU_ASID_MASK;
+-		value |= SMMU_ASID_VALUE(asid);
+-		value |= SMMU_ASID_ENABLE;
+-		smmu_writel(smmu, value, group->reg);
+-	}
  }
  
- static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
+ static void tegra_smmu_disable(struct tegra_smmu *smmu, unsigned int swgroup,
 -- 
 2.7.4
