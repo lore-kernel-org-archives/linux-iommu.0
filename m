@@ -1,118 +1,51 @@
-From: Pierre Morel <pmorel@linux.ibm.com>
-Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
-Date: Wed, 16 Jan 2019 10:33:52 +0100
-Message-ID: <c7bd79f9-85f4-6fa7-8f4e-20eb3ed87d46@linux.ibm.com>
-References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
- <1547573850-9459-2-git-send-email-pmorel@linux.ibm.com>
- <20190115203335.111bfcdc@thinkpad>
-Reply-To: pmorel@linux.ibm.com
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: remove block layer bounce buffering for MMC
+Date: Wed, 16 Jan 2019 11:24:43 +0100
+Message-ID: <CAK8P3a16ZoBt=HpZByb_1iH+-0e9O0F0sPX+ROfO9hWnJR94qg@mail.gmail.com>
+References: <20190114095804.27978-1-hch@lst.de> <CAPDyKFqCOWmd3kE=f3bgOgYX-aQKCmbuRH98sTr05sHN71vXZA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190115203335.111bfcdc@thinkpad>
-Content-Language: en-US
+In-Reply-To: <CAPDyKFqCOWmd3kE=f3bgOgYX-aQKCmbuRH98sTr05sHN71vXZA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Gerald Schaefer <gerald.schaefer@de.ibm.com>
-Cc: joro@8bytes.org, linux-s390@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, shameerali.kolothum.thodi@huawei.com, walling@linux.ibm.com
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Christoph Hellwig <hch@lst.de>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Nicolas Pitre <nico@fluxnic.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 15/01/2019 20:33, Gerald Schaefer wrote:
-> On Tue, 15 Jan 2019 18:37:30 +0100
-> Pierre Morel <pmorel@linux.ibm.com> wrote:
-> 
->> The s390 iommu can only allow DMA transactions between the zPCI device
->> entries start_dma and end_dma.
->>
->> Let's declare the regions before start_dma and after end_dma as
->> reserved regions using the appropriate callback in iommu_ops.
->>
->> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
->> ---
->>   drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
->>   1 file changed, 29 insertions(+)
->>
->> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
->> index 22d4db3..5ca91a1 100644
->> --- a/drivers/iommu/s390-iommu.c
->> +++ b/drivers/iommu/s390-iommu.c
->> @@ -363,6 +363,33 @@ void zpci_destroy_iommu(struct zpci_dev *zdev)
->>   	iommu_device_sysfs_remove(&zdev->iommu_dev);
->>   }
->>
->> +static void s390_get_resv_regions(struct device *dev, struct list_head *head)
->> +{
->> +	struct iommu_resv_region *region;
->> +	struct zpci_dev *zdev = to_pci_dev(dev)->sysdata;
->> +
->> +	region = iommu_alloc_resv_region(0, zdev->start_dma,
->> +					 0, IOMMU_RESV_RESERVED);
->> +	if (!region)
->> +		return;
->> +	list_add_tail(&region->list, head);
->> +
->> +	region = iommu_alloc_resv_region(zdev->end_dma + 1,
->> +					 ~0UL - zdev->end_dma,
->> +					 0, IOMMU_RESV_RESERVED);
-> 
-> Can you guarantee that start_dma will never be 0 and end_dma never ~0UL,
-> even with future HW?
-> 
-> In any of these cases, your code would reserve strange ranges, and sysfs
-> would report broken reserved ranges.
-> 
-> Maybe add a check for start_dma > 0 and end_dma < ULONG_MAX?
+On Mon, Jan 14, 2019 at 11:27 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+>
+> +Linus Walleij (recently made a cleanup of the mmc bounce buffering code).
+>
+> On Mon, 14 Jan 2019 at 10:58, Christoph Hellwig <hch@lst.de> wrote:
+> >
+> > Hi everyone,
+> >
+> > this series converts the remaining MMC host drivers to properly kmap the
+> > scatterlist entries it does PIO operations on, and then goes on to
+> > remove the usage of block layer bounce buffering (which I plan to remove
+> > eventually) from the MMC layer.
+> >
+> > As a bonus I've converted various drivers to the proper scatterlist
+> > helpers so that at least in theory they are ready for chained
+> > scatterlists.
+> >
+> > All the changes are compile tested only as I don't have any of the
+> > hardware, so a careful review would be appreciated.
+>
+> Thanks for posting this. I will have a look as soon as I can, but
+> first needs to catch up with things since the holidays.
 
-Yes, thanks.
+Linus probably knows more here, but I have a vague recollection of
+the MMC bounce buffer code being needed mostly for performance
+reasons: when the scatterlist is discontiguous, that can result in
+a request being split up into separate MMC commands, which due
+to the lack of queued commands combined with the need for
+garbage collection on sub-page writes results in a huge slowdown
+compared to having larger bounce buffers all the time.
 
-> 
->> +	if (!region)
->> +		return;
->> +	list_add_tail(&region->list, head);
->> +}
->> +
->> +static void s390_put_resv_regions(struct device *dev, struct list_head *head)
->> +{
->> +	struct iommu_resv_region *entry, *next;
->> +
->> +	list_for_each_entry_safe(entry, next, head, list)
->> +		kfree(entry);
->> +}
-> 
-> It looks very wrong that there is no matching list_del() for the previous
-> list_add_tail(). However, it seems to be done like this everywhere else,
-> and the calling functions (currently) only use temporary list_heads as
-> far as I can see, so I guess it should be OK (for now).
-> 
-> Still, a list_del() would be nice :-)
+We had discussed finding a different way to do this (separate
+from the bounce buffering), but I don't know if that ever happened,
+or if this is even the code that you are changing here.
 
-hum.
-right.
-
-> 
->> +
->>   static const struct iommu_ops s390_iommu_ops = {
->>   	.capable = s390_iommu_capable,
->>   	.domain_alloc = s390_domain_alloc,
->> @@ -376,6 +403,8 @@ static const struct iommu_ops s390_iommu_ops = {
->>   	.remove_device = s390_iommu_remove_device,
->>   	.device_group = generic_device_group,
->>   	.pgsize_bitmap = S390_IOMMU_PGSIZES,
->> +	.get_resv_regions = s390_get_resv_regions,
->> +	.put_resv_regions = s390_put_resv_regions,
->>   };
->>
->>   static int __init s390_iommu_init(void)
-> 
-> With the start/end_dma issue addressed (if necessary):
-> Acked-by: Gerald Schaefer <gerald.schaefer@de.ibm.com>
-> 
-
-Thanks.
-
-Regards,
-Pierre
-
--- 
-Pierre Morel
-Linux/KVM/QEMU in Böblingen - Germany
+       Arnd
