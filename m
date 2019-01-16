@@ -1,181 +1,115 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] i2c: imx: dma map the i2c data i/o register
-Date: Wed, 16 Jan 2019 17:55:19 +0000
-Message-ID: <7f9a9486-250d-cc92-1ce5-b5c1afc96f2d@arm.com>
-References: <20190116161713.12748-1-laurentiu.tudor@nxp.com>
+Subject: Re: [PATCH] dma-debug: add dumping facility via debugfs
+Date: Wed, 16 Jan 2019 18:10:13 +0000
+Message-ID: <2f43688f-9c08-a9c4-6175-caa3d2e40261@arm.com>
+References: <1547646265-9414-1-git-send-email-clabbe@baylibre.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190116161713.12748-1-laurentiu.tudor@nxp.com>
+In-Reply-To: <1547646265-9414-1-git-send-email-clabbe@baylibre.com>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>, linux-i2c@vger.kernel.org, linux-imx@nxp.com, iommu@lists.linux-foundation.org, kernel@pengutronix.de, wsa@the-dreams.de
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+To: Corentin Labbe <clabbe@baylibre.com>, hch@lst.de, m.szyprowski@samsung.com
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 16/01/2019 16:17, Laurentiu Tudor wrote:
-> This is an attempt to fix an iommu exception when doing dma to the
-> i2c controller with EDMA. Without these mappings the smmu raises a
-> context fault [1] exactly with the address of the i2c data i/o reg.
-> This was seen on an NXP LS1043A chip while working on enabling SMMU.
+On 16/01/2019 13:44, Corentin Labbe wrote:
+> While debugging a DMA mapping leak, I needed to access
+> debug_dma_dump_mappings() but easily from user space.
+> 
+> This patch adds a /sys/kernel/debug/dma-api/dump file which contain all
+> current DMA mapping.
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>   kernel/dma/debug.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++
+>   1 file changed, 47 insertions(+)
+> 
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 23cf5361bcf1..9253382f5729 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -144,6 +144,7 @@ static struct dentry *num_free_entries_dent __read_mostly;
+>   static struct dentry *min_free_entries_dent __read_mostly;
+>   static struct dentry *nr_total_entries_dent __read_mostly;
+>   static struct dentry *filter_dent           __read_mostly;
+> +static struct dentry *dump_dent             __read_mostly;
+>   
+>   /* per-driver filter related state */
+>   
+> @@ -840,6 +841,47 @@ static const struct file_operations filter_fops = {
+>   	.llseek = default_llseek,
+>   };
+>   
+> +static int dump_read(struct seq_file *seq, void *v)
+> +{
+> +	int idx;
+> +
+> +	for (idx = 0; idx < HASH_SIZE; idx++) {
+> +		struct hash_bucket *bucket = &dma_entry_hash[idx];
+> +		struct dma_debug_entry *entry;
+> +		unsigned long flags;
+> +
+> +		spin_lock_irqsave(&bucket->lock, flags);
+> +
+> +		list_for_each_entry(entry, &bucket->list, list) {
+> +			seq_printf(seq,
+> +				   "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx %s %s\n",
+> +				   dev_name(entry->dev),
+> +				   dev_driver_string(entry->dev),
+> +				   type2name[entry->type], idx,
+> +				   phys_addr(entry), entry->pfn,
+> +				   entry->dev_addr, entry->size,
+> +				   dir2name[entry->direction],
+> +				   maperr2str[entry->map_err_type]);
+> +		}
+> +
+> +		spin_unlock_irqrestore(&bucket->lock, flags);
+> +	}
+> +	return 0;
+> +}
 
-Rather than gradually adding much the same code to potentially every 
-possible client driver, can it not be implemented once in the edma 
-driver as was done for pl330 and rcar-dmac? That also sidesteps any of 
-the nastiness of smuggling a dma_addr_t via a phys_addr_t variable.
+It's a shame that this is pretty much a duplication of 
+debug_dma_dump_mappings(), but there seems no straightforward way to 
+define one in terms of the other :/
+
+(although given that we'd rather not have that weird external interface 
+anyway, maybe "now you can use debugfs instead" might be justification 
+enough for cleaning it up...)
+
+> +
+> +static int dump_open(struct inode *inode, struct file *file)
+> +{
+> +	return single_open(file, dump_read, inode->i_private);
+> +}
+> +
+> +static const struct file_operations dump_fops = {
+> +	.owner = THIS_MODULE,
+> +	.open = dump_open,
+> +	.read = seq_read,
+> +	.llseek = seq_lseek,
+> +	.release = single_release,
+> +};
+> +
+
+DEFINE_SHOW_ATTRIBUTE()?
 
 Robin.
 
-> [1] arm-smmu 9000000.iommu: Unhandled context fault: fsr=0x402,
->      iova=0x02180004, fsynr=0x150021, cb=7
-> 
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> ---
->   drivers/i2c/busses/i2c-imx.c | 57 +++++++++++++++++++++++++++++-------
->   1 file changed, 47 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/i2c/busses/i2c-imx.c b/drivers/i2c/busses/i2c-imx.c
-> index 4e34b1572756..07cc8f4b45b9 100644
-> --- a/drivers/i2c/busses/i2c-imx.c
-> +++ b/drivers/i2c/busses/i2c-imx.c
-> @@ -202,6 +202,9 @@ struct imx_i2c_struct {
->   	struct pinctrl_state *pinctrl_pins_gpio;
->   
->   	struct imx_i2c_dma	*dma;
-> +
-> +	dma_addr_t		dma_tx_addr;
-> +	dma_addr_t		dma_rx_addr;
->   };
->   
->   static const struct imx_i2c_hwdata imx1_i2c_hwdata = {
-> @@ -274,17 +277,20 @@ static inline unsigned char imx_i2c_read_reg(struct imx_i2c_struct *i2c_imx,
->   
->   /* Functions for DMA support */
->   static int i2c_imx_dma_request(struct imx_i2c_struct *i2c_imx,
-> -			       dma_addr_t phy_addr)
-> +			       phys_addr_t phy_addr)
+>   static int dma_debug_fs_init(void)
 >   {
->   	struct imx_i2c_dma *dma;
->   	struct dma_slave_config dma_sconfig;
->   	struct device *dev = &i2c_imx->adapter.dev;
->   	int ret;
-> +	phys_addr_t i2dr_pa;
+>   	dma_debug_dent = debugfs_create_dir("dma-api", NULL);
+> @@ -894,6 +936,11 @@ static int dma_debug_fs_init(void)
+>   	if (!filter_dent)
+>   		goto out_err;
 >   
->   	dma = devm_kzalloc(dev, sizeof(*dma), GFP_KERNEL);
->   	if (!dma)
->   		return -ENOMEM;
->   
-> +	i2dr_pa = phy_addr + (IMX_I2C_I2DR << i2c_imx->hwdata->regshift);
-> +
->   	dma->chan_tx = dma_request_chan(dev, "tx");
->   	if (IS_ERR(dma->chan_tx)) {
->   		ret = PTR_ERR(dma->chan_tx);
-> @@ -293,15 +299,25 @@ static int i2c_imx_dma_request(struct imx_i2c_struct *i2c_imx,
->   		goto fail_al;
->   	}
->   
-> -	dma_sconfig.dst_addr = phy_addr +
-> -				(IMX_I2C_I2DR << i2c_imx->hwdata->regshift);
-> +	i2c_imx->dma_tx_addr = dma_map_resource(dma->chan_tx->device->dev,
-> +						i2dr_pa,
-> +						DMA_SLAVE_BUSWIDTH_1_BYTE,
-> +						DMA_MEM_TO_DEV, 0);
-> +	ret = dma_mapping_error(dma->chan_tx->device->dev,
-> +				i2c_imx->dma_tx_addr);
-> +	if (ret) {
-> +		dev_err(dev, "can't dma map tx destination (%d)\n", ret);
-> +		goto fail_tx;
-> +	}
-> +
-> +	dma_sconfig.dst_addr = i2c_imx->dma_tx_addr;
->   	dma_sconfig.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
->   	dma_sconfig.dst_maxburst = 1;
->   	dma_sconfig.direction = DMA_MEM_TO_DEV;
->   	ret = dmaengine_slave_config(dma->chan_tx, &dma_sconfig);
->   	if (ret < 0) {
->   		dev_err(dev, "can't configure tx channel (%d)\n", ret);
-> -		goto fail_tx;
-> +		goto fail_tx_dma;
->   	}
->   
->   	dma->chan_rx = dma_request_chan(dev, "rx");
-> @@ -309,18 +325,28 @@ static int i2c_imx_dma_request(struct imx_i2c_struct *i2c_imx,
->   		ret = PTR_ERR(dma->chan_rx);
->   		if (ret != -ENODEV && ret != -EPROBE_DEFER)
->   			dev_err(dev, "can't request DMA rx channel (%d)\n", ret);
-> -		goto fail_tx;
-> +		goto fail_tx_dma;
->   	}
->   
-> -	dma_sconfig.src_addr = phy_addr +
-> -				(IMX_I2C_I2DR << i2c_imx->hwdata->regshift);
-> +	i2c_imx->dma_rx_addr = dma_map_resource(dma->chan_rx->device->dev,
-> +						i2dr_pa,
-> +						DMA_SLAVE_BUSWIDTH_1_BYTE,
-> +						DMA_DEV_TO_MEM, 0);
-> +	ret = dma_mapping_error(dma->chan_rx->device->dev,
-> +				i2c_imx->dma_rx_addr);
-> +	if (ret) {
-> +		dev_err(dev, "can't dma map rx source (%d)\n", ret);
-> +		goto fail_rx;
-> +	}
-> +
-> +	dma_sconfig.src_addr = i2c_imx->dma_rx_addr;
->   	dma_sconfig.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
->   	dma_sconfig.src_maxburst = 1;
->   	dma_sconfig.direction = DMA_DEV_TO_MEM;
->   	ret = dmaengine_slave_config(dma->chan_rx, &dma_sconfig);
->   	if (ret < 0) {
->   		dev_err(dev, "can't configure rx channel (%d)\n", ret);
-> -		goto fail_rx;
-> +		goto fail_rx_dma;
->   	}
->   
->   	i2c_imx->dma = dma;
-> @@ -330,8 +356,14 @@ static int i2c_imx_dma_request(struct imx_i2c_struct *i2c_imx,
->   
->   	return 0;
->   
-> +fail_rx_dma:
-> +	dma_unmap_resource(dma->chan_rx->device->dev, i2c_imx->dma_rx_addr,
-> +			   DMA_SLAVE_BUSWIDTH_1_BYTE, DMA_DEV_TO_MEM, 0);
->   fail_rx:
->   	dma_release_channel(dma->chan_rx);
-> +fail_tx_dma:
-> +	dma_unmap_resource(dma->chan_tx->device->dev, i2c_imx->dma_tx_addr,
-> +			   DMA_SLAVE_BUSWIDTH_1_BYTE, DMA_MEM_TO_DEV, 0);
->   fail_tx:
->   	dma_release_channel(dma->chan_tx);
->   fail_al:
-> @@ -1057,7 +1089,7 @@ static int i2c_imx_probe(struct platform_device *pdev)
->   	struct imxi2c_platform_data *pdata = dev_get_platdata(&pdev->dev);
->   	void __iomem *base;
->   	int irq, ret;
-> -	dma_addr_t phy_addr;
-> +	phys_addr_t phy_addr;
->   
->   	dev_dbg(&pdev->dev, "<%s>\n", __func__);
->   
-> @@ -1072,7 +1104,7 @@ static int i2c_imx_probe(struct platform_device *pdev)
->   	if (IS_ERR(base))
->   		return PTR_ERR(base);
->   
-> -	phy_addr = (dma_addr_t)res->start;
-> +	phy_addr = res->start;
->   	i2c_imx = devm_kzalloc(&pdev->dev, sizeof(*i2c_imx), GFP_KERNEL);
->   	if (!i2c_imx)
->   		return -ENOMEM;
-> @@ -1220,6 +1252,11 @@ static int i2c_imx_remove(struct platform_device *pdev)
->   	pm_runtime_put_noidle(&pdev->dev);
->   	pm_runtime_disable(&pdev->dev);
->   
-> +	dma_unmap_resource(&pdev->dev, i2c_imx->dma_tx_addr,
-> +			   DMA_SLAVE_BUSWIDTH_1_BYTE, DMA_MEM_TO_DEV, 0);
-> +	dma_unmap_resource(&pdev->dev, i2c_imx->dma_rx_addr,
-> +			   DMA_SLAVE_BUSWIDTH_1_BYTE, DMA_DEV_TO_MEM, 0);
+> +	dump_dent = debugfs_create_file("dump", 0444,
+> +					dma_debug_dent, NULL, &dump_fops);
+> +	if (!dump_dent)
+> +		goto out_err;
 > +
 >   	return 0;
->   }
 >   
+>   out_err:
 > 
