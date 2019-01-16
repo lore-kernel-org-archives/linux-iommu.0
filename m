@@ -1,29 +1,37 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v7 00/24] Tegra GART driver clean up and optimization
-Date: Wed, 16 Jan 2019 13:55:34 +0100
-Message-ID: <20190116125534.354irioqwfu36ajj@8bytes.org>
-References: <20181212203907.23461-1-digetx@gmail.com>
- <20181217091455.kkxpyojp4r4fyhrw@8bytes.org>
- <bbefe330-d3e8-3eea-0f9e-a2b0b7915120@gmail.com>
+From: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/amd: Mark translation invalid during device detach
+Date: Wed, 16 Jan 2019 14:03:34 +0100
+Message-ID: <20190116130334.svrjkyr3dnfcj3u6@8bytes.org>
+References: <20190116041432.3484-1-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <bbefe330-d3e8-3eea-0f9e-a2b0b7915120@gmail.com>
+In-Reply-To: <20190116041432.3484-1-Suravee.Suthikulpanit@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Dmitry Osipenko <digetx@gmail.com>
-Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 15, 2019 at 07:33:54PM +0300, Dmitry Osipenko wrote:
-> Should I expect that the patches will appear in the IOMMU git and in
-> -next consequently? Please let me know if there is any problem with
-> the applying of the patches.
+Hi Suravee,
 
-Hmm, I thought I applied these patches already, but obviously they
-didn't show up in the iommu-tree. I have no idea how that happened, but
-they are now applied.
+On Wed, Jan 16, 2019 at 04:15:10AM +0000, Suthikulpanit, Suravee wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> 
+> When a device switches domain, IOMMU driver detach device from the old
+> domain, and attach device to the new domain. During this period
+> the host table root pointer is not set, which means DMA translation
+> should be marked as invalid (clear TV bit).
+> 
+> So, clear the TV bit when detach the device. The TV bit will be set
+> again when attaching device to the new domain.
 
-Thanks for the reminder,
+Is there a specific problem with setting the TV bit?
 
-       Joerg
+Note that the update will clear all other fields in the first 128 bits
+of the DTE, which means that IR, IW and Mode are all set to 0. This
+effectivly blocks all DMA requests from the device, which is by design.
+
+Regards,
+
+	Joerg
