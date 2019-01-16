@@ -1,7 +1,8 @@
 From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: [PATCH] iommu/amd: Mark translation invalid during device detach
-Date: Wed, 16 Jan 2019 04:15:10 +0000
-Message-ID: <20190116041432.3484-1-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices from
+ a domain
+Date: Wed, 16 Jan 2019 04:16:25 +0000
+Message-ID: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
@@ -14,34 +15,52 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-When a device switches domain, IOMMU driver detach device from the old
-domain, and attach device to the new domain. During this period
-the host table root pointer is not set, which means DMA translation
-should be marked as invalid (clear TV bit).
+When a VM is terminated, the VFIO driver detaches all pass-through
+devices from VFIO domain by clearing domain id and page table root
+pointer from each device table entry (DTE), and then invalidates
+the DTE. Then, the VFIO driver unmap pages and invalidate IOMMU pages.
 
-So, clear the TV bit when detach the device. The TV bit will be set
-again when attaching device to the new domain.
+Currently, the IOMMU driver keeps track of which IOMMU and how many
+devices are attached to the domain. When invalidate IOMMU pages,
+the driver checks if the IOMMU is still attached to the domain before
+issuing the invalidate page command.
+
+However, since VFIO has already detached all devices from the domain,
+the subsequent INVALIDATE_IOMMU_PAGES commands are being skipped as
+there is no IOMMU attached to the domain. This results in data
+corruption and could cause the PCI device to end up in indeterministic
+state.
+
+Fix this by always issuing the IOMMU pages invalidate command when
+device count is zero, which is the case when detaching all the devices
+from the domain.
 
 Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 87ba23a75b38..525659b88ade 100644
+index 525659b88ade..ab31ba75da1b 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1956,7 +1956,7 @@ static void set_dte_entry(u16 devid, struct protectio=
-n_domain *domain,
- static void clear_dte_entry(u16 devid)
- {
- 	/* remove entry from the device table seen by the hardware */
--	amd_iommu_dev_table[devid].data[0]  =3D DTE_FLAG_V | DTE_FLAG_TV;
-+	amd_iommu_dev_table[devid].data[0]  =3D DTE_FLAG_V;
- 	amd_iommu_dev_table[devid].data[1] &=3D DTE_FLAG_MASK;
+@@ -1248,7 +1248,13 @@ static void __domain_flush_pages(struct protection_d=
+omain *domain,
+ 	build_inv_iommu_pages(&cmd, address, size, domain->id, pde);
 =20
- 	amd_iommu_apply_erratum_63(devid);
+ 	for (i =3D 0; i < amd_iommu_get_num_iommus(); ++i) {
+-		if (!domain->dev_iommu[i])
++		/*
++		 * The dev_cnt is zero when all devices are detached
++		 * from the domain. This is the case when VFIO detaches
++		 * all devices from the group before flushing IOMMU pages.
++		 * So, always issue the flush command.
++		 */
++		if (domain->dev_cnt && !domain->dev_iommu[i])
+ 			continue;
+=20
+ 		/*
 --=20
 2.17.1
