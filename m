@@ -1,54 +1,29 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v3 17/21] iommu/smmuv3: Report non recoverable faults
-Date: Wed, 16 Jan 2019 13:49:48 +0100
-Message-ID: <93599256-947f-d267-6b72-0759e17b4df1@redhat.com>
-References: <20190108102633.17482-1-eric.auger@redhat.com>
- <20190108102633.17482-18-eric.auger@redhat.com>
- <dae89fd8-6a82-d2f0-a8c7-ddbf12a7b047@arm.com>
- <e634adee-f7ab-b90d-aac6-06400fa9ffb4@redhat.com>
- <c0328bbe-e02c-c337-ec52-c899dc0025d3@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v7 00/24] Tegra GART driver clean up and optimization
+Date: Wed, 16 Jan 2019 13:55:34 +0100
+Message-ID: <20190116125534.354irioqwfu36ajj@8bytes.org>
+References: <20181212203907.23461-1-digetx@gmail.com>
+ <20181217091455.kkxpyojp4r4fyhrw@8bytes.org>
+ <bbefe330-d3e8-3eea-0f9e-a2b0b7915120@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <c0328bbe-e02c-c337-ec52-c899dc0025d3@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "yi.l.liu@linux.intel.com" <yi.l.liu@linux.intel.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
-Cc: Marc Zyngier <Marc.Zyngier@arm.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <bbefe330-d3e8-3eea-0f9e-a2b0b7915120@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dmitry Osipenko <digetx@gmail.com>
+Cc: Thierry Reding <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, devicetree@vger.kernel.org, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean,
+On Tue, Jan 15, 2019 at 07:33:54PM +0300, Dmitry Osipenko wrote:
+> Should I expect that the patches will appear in the IOMMU git and in
+> -next consequently? Please let me know if there is any problem with
+> the applying of the patches.
 
-On 1/16/19 1:25 PM, Jean-Philippe Brucker wrote:
-> On 15/01/2019 21:06, Auger Eric wrote:
->>>> +		iommu_report_device_fault(master->dev, &event);
->>>
->>> We should return here if the fault is successfully injected
->>
->> Even if the fault gets injected in the guest can't it be still useful to
->> get the message below on host side?
-> 
-> I don't think we should let the guest flood the host log by issuing
-> invalid DMA (or are there other cases where the guest can freely print
-> stuff in the host?) We do print all errors at the moment, but we should
-> tighten this once there is an upstream solution to let the guest control
-> DMA mappings.
-OK thank you for the clarification. Yes it makes sense to skip those
-traces then.
+Hmm, I thought I applied these patches already, but obviously they
+didn't show up in the iommu-tree. I have no idea how that happened, but
+they are now applied.
 
-Thanks
+Thanks for the reminder,
 
-Eric
-> 
-> Thanks,
-> Jean
-> 
+       Joerg
