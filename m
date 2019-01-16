@@ -1,51 +1,79 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: remove block layer bounce buffering for MMC
-Date: Wed, 16 Jan 2019 11:24:43 +0100
-Message-ID: <CAK8P3a16ZoBt=HpZByb_1iH+-0e9O0F0sPX+ROfO9hWnJR94qg@mail.gmail.com>
-References: <20190114095804.27978-1-hch@lst.de> <CAPDyKFqCOWmd3kE=f3bgOgYX-aQKCmbuRH98sTr05sHN71vXZA@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH] Revert
+ "ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()"
+Date: Wed, 16 Jan 2019 11:36:51 +0100
+Message-ID: <a24660a6-a9d7-ce97-5e2b-17928981551c@samsung.com>
+References: <CGME20190114132250eucas1p2abdf2f36bad3554e37dfbf40e539f594@eucas1p2.samsung.com>
+        <20190114132240.12125-1-m.szyprowski@samsung.com>
+        <20190114160902.GB9218@ulmo> <4f7fd8db-33e4-9c8d-2fee-1ca9c98a9276@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAPDyKFqCOWmd3kE=f3bgOgYX-aQKCmbuRH98sTr05sHN71vXZA@mail.gmail.com>
+In-Reply-To: <4f7fd8db-33e4-9c8d-2fee-1ca9c98a9276@arm.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Christoph Hellwig <hch@lst.de>, Linus Walleij <linus.walleij@linaro.org>, Russell King <linux@armlinux.org.uk>, Nicolas Pitre <nico@fluxnic.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>, Thierry Reding <treding@nvidia.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Christoph Hellwig <hch@lst.de>, Russell King <rmk+kernel@armlinux.org.uk>, Ben Skeggs <bskeggs@redhat.com>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 14, 2019 at 11:27 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> +Linus Walleij (recently made a cleanup of the mmc bounce buffering code).
->
-> On Mon, 14 Jan 2019 at 10:58, Christoph Hellwig <hch@lst.de> wrote:
-> >
-> > Hi everyone,
-> >
-> > this series converts the remaining MMC host drivers to properly kmap the
-> > scatterlist entries it does PIO operations on, and then goes on to
-> > remove the usage of block layer bounce buffering (which I plan to remove
-> > eventually) from the MMC layer.
-> >
-> > As a bonus I've converted various drivers to the proper scatterlist
-> > helpers so that at least in theory they are ready for chained
-> > scatterlists.
-> >
-> > All the changes are compile tested only as I don't have any of the
-> > hardware, so a careful review would be appreciated.
->
-> Thanks for posting this. I will have a look as soon as I can, but
-> first needs to catch up with things since the holidays.
+Hi Robin,
 
-Linus probably knows more here, but I have a vague recollection of
-the MMC bounce buffer code being needed mostly for performance
-reasons: when the scatterlist is discontiguous, that can result in
-a request being split up into separate MMC commands, which due
-to the lack of queued commands combined with the need for
-garbage collection on sub-page writes results in a huge slowdown
-compared to having larger bounce buffers all the time.
+On 2019-01-14 17:38, Robin Murphy wrote:
+> On 14/01/2019 16:09, Thierry Reding wrote:
+>> On Mon, Jan 14, 2019 at 02:22:40PM +0100, Marek Szyprowski wrote:
+>>> This reverts commit 1874619a7df4b14b23b14877e705ae15325773e3.
+>>>
+>>> That patch broke IOMMU support for devices, which fails to probe for
+>>> the
+>>> first time and use deferred probe approach. When non-NULL dma_ops is
+>>> set
+>>> in arm_iommu_detach_device(), the given device later ignored by
+>>> arch_setup_dma_ops() and stays with non-IOMMU dma_ops.
+>>>
+>>> Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
+>>> Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in
+>>> arm_iommu_detach_device()"
+>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>> ---
+>>>   arch/arm/mm/dma-mapping.c | 12 ++++++------
+>>>   1 file changed, 6 insertions(+), 6 deletions(-)
+>>
+>> Can you point out exactly what drivers break because of this change? We
+>> need to find a solution that works for everyone. Reverting is only
+>> marginally useful because somebody will just end up wanting to revert
+>> the revert because a different driver is now broken.
+>
+> At first glance, it sounds like what we really want is for
+> arch_teardown_iommu_ops() to completely clear any ops that
+> arch_setup_dma_ops() installed - does the below suffice?
 
-We had discussed finding a different way to do this (separate
-from the bounce buffering), but I don't know if that ever happened,
-or if this is even the code that you are changing here.
+I've initially also thought about similar fix, but then I found the
+commit 1874619a7df4b14b23b14877e705ae15325773e3, which was the source of
+this problem.
 
-       Arnd
+Robin: do you plan to send this fix as a complete patch or do you want
+me to resend it with the above commit message and your's suggested-by?
+
+>
+> Robin.
+>
+> ----->8-----
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index f1e2922e447c..1e3e08a1c456 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -2390,4 +2390,6 @@ void arch_teardown_dma_ops(struct device *dev)
+>          return;
+>
+>      arm_teardown_iommu_dma_ops(dev);
+> +    /* Let arch_setup_dma_ops() start again from scratch upon
+> re-probe */
+> +    set_dma_ops(dev, NULL);
+>  }
+>
+>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
