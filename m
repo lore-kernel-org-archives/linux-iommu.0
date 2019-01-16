@@ -1,95 +1,53 @@
-From: Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] dma-debug: add dumping facility via debugfs
-Date: Wed, 16 Jan 2019 13:44:25 +0000
-Message-ID: <1547646265-9414-1-git-send-email-clabbe@baylibre.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Subject: Re: remove block layer bounce buffering for MMC
+Date: Wed, 16 Jan 2019 14:51:16 +0100
+Message-ID: <CACRpkdY4SRxJiH8PEwTNAyPum_=e3VhG30y8wJhfcdML--9BdQ@mail.gmail.com>
+References: <20190114095804.27978-1-hch@lst.de> <CAPDyKFqCOWmd3kE=f3bgOgYX-aQKCmbuRH98sTr05sHN71vXZA@mail.gmail.com>
+ <CAK8P3a16ZoBt=HpZByb_1iH+-0e9O0F0sPX+ROfO9hWnJR94qg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAK8P3a16ZoBt=HpZByb_1iH+-0e9O0F0sPX+ROfO9hWnJR94qg@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Christoph Hellwig <hch@lst.de>, Russell King <linux@armlinux.org.uk>, Nicolas Pitre <nico@fluxnic.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-While debugging a DMA mapping leak, I needed to access
-debug_dma_dump_mappings() but easily from user space.
+On Wed, Jan 16, 2019 at 11:25 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> On Mon, Jan 14, 2019 at 11:27 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
+> >
+> > +Linus Walleij (recently made a cleanup of the mmc bounce buffering code).
 
-This patch adds a /sys/kernel/debug/dma-api/dump file which contain all
-current DMA mapping.
+Nah it's not THAT bounce buffer.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- kernel/dma/debug.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+> Linus probably knows more here, but I have a vague recollection of
+> the MMC bounce buffer code being needed mostly for performance
+> reasons: when the scatterlist is discontiguous, that can result in
+> a request being split up into separate MMC commands, which due
+> to the lack of queued commands combined with the need for
+> garbage collection on sub-page writes results in a huge slowdown
+> compared to having larger bounce buffers all the time.
+>
+> We had discussed finding a different way to do this (separate
+> from the bounce buffering), but I don't know if that ever happened,
+> or if this is even the code that you are changing here.
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 23cf5361bcf1..9253382f5729 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -144,6 +144,7 @@ static struct dentry *num_free_entries_dent __read_mostly;
- static struct dentry *min_free_entries_dent __read_mostly;
- static struct dentry *nr_total_entries_dent __read_mostly;
- static struct dentry *filter_dent           __read_mostly;
-+static struct dentry *dump_dent             __read_mostly;
- 
- /* per-driver filter related state */
- 
-@@ -840,6 +841,47 @@ static const struct file_operations filter_fops = {
- 	.llseek = default_llseek,
- };
- 
-+static int dump_read(struct seq_file *seq, void *v)
-+{
-+	int idx;
-+
-+	for (idx = 0; idx < HASH_SIZE; idx++) {
-+		struct hash_bucket *bucket = &dma_entry_hash[idx];
-+		struct dma_debug_entry *entry;
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&bucket->lock, flags);
-+
-+		list_for_each_entry(entry, &bucket->list, list) {
-+			seq_printf(seq,
-+				   "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx %s %s\n",
-+				   dev_name(entry->dev),
-+				   dev_driver_string(entry->dev),
-+				   type2name[entry->type], idx,
-+				   phys_addr(entry), entry->pfn,
-+				   entry->dev_addr, entry->size,
-+				   dir2name[entry->direction],
-+				   maperr2str[entry->map_err_type]);
-+		}
-+
-+		spin_unlock_irqrestore(&bucket->lock, flags);
-+	}
-+	return 0;
-+}
-+
-+static int dump_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, dump_read, inode->i_private);
-+}
-+
-+static const struct file_operations dump_fops = {
-+	.owner = THIS_MODULE,
-+	.open = dump_open,
-+	.read = seq_read,
-+	.llseek = seq_lseek,
-+	.release = single_release,
-+};
-+
- static int dma_debug_fs_init(void)
- {
- 	dma_debug_dent = debugfs_create_dir("dma-api", NULL);
-@@ -894,6 +936,11 @@ static int dma_debug_fs_init(void)
- 	if (!filter_dent)
- 		goto out_err;
- 
-+	dump_dent = debugfs_create_file("dump", 0444,
-+					dma_debug_dent, NULL, &dump_fops);
-+	if (!dump_dent)
-+		goto out_err;
-+
- 	return 0;
- 
- out_err:
--- 
-2.19.2
+Nope not the same code.
+
+The term "bounce buffer" is sadly used as ambigously as
+__underscores in front of function names.
+
+That other "bounce buffer" was first deleted and then
+reimplemented as a local hack in the SDHCI driver core
+after it caused performance regressions on the i.MX and
+some laptops, see commit:
+
+commit bd9b902798ab14d19ca116b10bde581ddff8f905
+mmc: sdhci: Implement an SDHCI-specific bounce buffer
+
+That should be orthogonal to Christoph's changes in this
+patch series.
+
+Yours,
+Linus Walleij
