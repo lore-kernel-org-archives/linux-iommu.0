@@ -1,46 +1,44 @@
-From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
- from a domain
-Date: Wed, 16 Jan 2019 14:40:59 +0000
-Message-ID: <df209299-8fd1-189c-9c44-b398cf790d1a@amd.com>
-References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
- <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
+From: Konrad Rzeszutek Wilk <konrad-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] swiotlb: clear io_tlb_start and io_tlb_end in swiotlb_exit
+Date: Wed, 16 Jan 2019 09:57:47 -0500
+Message-ID: <20190116145746.GA30966@localhost.localdomain>
+References: <20190114201408.12270-1-hch@lst.de>
+	<20190114202513.GG32038@char.us.oracle.com>
+	<20190114203323.GA11412@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
-Content-Language: en-US
-Content-ID: <55E42008F81E184F813F8AE32ECB453D@namprd12.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190114203323.GA11412-jcswGhMUV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+Cc: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>, michel-otUistvHUpPR7s880joybQ@public.gmane.org, freedesktop-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Sm9lcmcsDQoNCk9uIDEvMTYvMTkgODoyNiBQTSwgam9yb0A4Ynl0ZXMub3JnIHdyb3RlOg0KPiBI
-b3cgYWJvdXQgdGhlIGF0dGFjaGVkIGRpZmY/IElmDQo+IEkgdW5kZXJzdGFuZCB0aGUgcHJvYmxl
-bSBjb3JyZWN0bHksIGl0IHNob3VsZCBmaXggdGhlIHByb2JsZW0gbW9yZQ0KPiByZWxpYWJseS4N
-Cj4gDQo+IFRoYW5rcywNCj4gDQo+IAlKb2VyZw0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-aW9tbXUvYW1kX2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jDQo+IGluZGV4IDg3
-YmEyM2E3NWIzOC4uZGMxZTJhOGExOWQ3IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lvbW11L2Ft
-ZF9pb21tdS5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMNCj4gQEAgLTE5OTEs
-MjUgKzE5OTEsMzYgQEAgc3RhdGljIHZvaWQgZG9fYXR0YWNoKHN0cnVjdCBpb21tdV9kZXZfZGF0
-YSAqZGV2X2RhdGEsDQo+ICAgDQo+ICAgc3RhdGljIHZvaWQgZG9fZGV0YWNoKHN0cnVjdCBpb21t
-dV9kZXZfZGF0YSAqZGV2X2RhdGEpDQo+ICAgew0KPiArCXN0cnVjdCBwcm90ZWN0aW9uX2RvbWFp
-biAqZG9tYWluID0gZGV2X2RhdGEtPmRvbWFpbjsNCj4gICAJc3RydWN0IGFtZF9pb21tdSAqaW9t
-bXU7DQo+ICAgCXUxNiBhbGlhczsNCj4gICANCj4gICAJaW9tbXUgPSBhbWRfaW9tbXVfcmxvb2t1
-cF90YWJsZVtkZXZfZGF0YS0+ZGV2aWRdOw0KPiAgIAlhbGlhcyA9IGRldl9kYXRhLT5hbGlhczsN
-Cj4gICANCj4gLQkvKiBkZWNyZWFzZSByZWZlcmVuY2UgY291bnRlcnMgKi8NCj4gLQlkZXZfZGF0
-YS0+ZG9tYWluLT5kZXZfaW9tbXVbaW9tbXUtPmluZGV4XSAtPSAxOw0KPiAtCWRldl9kYXRhLT5k
-b21haW4tPmRldl9jbnQgICAgICAgICAgICAgICAgIC09IDE7DQo+IC0NCj4gICAJLyogVXBkYXRl
-IGRhdGEgc3RydWN0dXJlcyAqLw0KPiAgIAlkZXZfZGF0YS0+ZG9tYWluID0gTlVMTDsNCj4gICAJ
-bGlzdF9kZWwoJmRldl9kYXRhLT5saXN0KTsNCj4gLQljbGVhcl9kdGVfZW50cnkoZGV2X2RhdGEt
-PmRldmlkKTsNCj4gLQlpZiAoYWxpYXMgIT0gZGV2X2RhdGEtPmRldmlkKQ0KPiAtCQljbGVhcl9k
-dGVfZW50cnkoYWxpYXMpOw0KPiAgIA0KPiArCWNsZWFyX2R0ZV9lbnRyeShkZXZfZGF0YS0+ZGV2
-aWQpOw0KPiAgIAkvKiBGbHVzaCB0aGUgRFRFIGVudHJ5ICovDQo+ICAgCWRldmljZV9mbHVzaF9k
-dGUoZGV2X2RhdGEpOw0KPiArDQo+ICsJaWYgKGFsaWFzICE9IGRldl9kYXRhLT5kZXZpZCkgew0K
-PiArCQljbGVhcl9kdGVfZW50cnkoYWxpYXMpOw0KPiArCQkvKiBGbHVzaCB0aGUgQWxpYXMgRFRF
-IGVudHJ5ICovDQo+ICsJCWRldmljZV9mbHVzaF9kdGUoYWxpYXMpOw0KPiArCX0NCj4gKw0KDQpB
-Y3R1YWxseSwgZGV2aWNlX2ZsdXNoX2R0ZShhbGlhcykgc2hvdWxkIGJlIG5lZWRlZCByZWdhcmRs
-ZXNzIG9mIHRoaXMgcGF0Y2guDQpBcmUgeW91IHBsYW5uaW5nIHRvIGFkZCB0aGlzPw0KDQpSZWdh
-cmRzLA0KU3VyYXZlZQ0K
+On Mon, Jan 14, 2019 at 09:33:23PM +0100, Christoph Hellwig wrote:
+> On Mon, Jan 14, 2019 at 03:25:13PM -0500, Konrad Rzeszutek Wilk wrote:
+> > On Mon, Jan 14, 2019 at 09:14:08PM +0100, Christoph Hellwig wrote:
+> > > Otherwise is_swiotlb_buffer will return false positives when
+> > > we first initialize a swiotlb buffer, but then free it because
+> > > we have an IOMMU available.
+> > > 
+> > > Fixes: 55897af63091 ("dma-direct: merge swiotlb_dma_ops into the dma_direct code")
+> > > Reported-by: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>
+> > > Signed-off-by: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> > > Tested-by: Sibren Vasse <sibren-DLwv2wemLo05ZU0pBKPMFg@public.gmane.org>
+> > 
+> > Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> 
+> Do you want to send this to Linus, or do you want me to pick it up
+> through the dma-mapping tree?
+
+I will do it. Thanks!
