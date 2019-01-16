@@ -1,56 +1,74 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: remove block layer bounce buffering for MMC
-Date: Wed, 16 Jan 2019 14:54:18 +0100
-Message-ID: <CAK8P3a15eGQ+gxxZxGVxsJXpkYSQPOZ5UmRNr7biS--Ye+Unsg@mail.gmail.com>
-References: <20190114095804.27978-1-hch@lst.de> <CAPDyKFqCOWmd3kE=f3bgOgYX-aQKCmbuRH98sTr05sHN71vXZA@mail.gmail.com>
- <CAK8P3a16ZoBt=HpZByb_1iH+-0e9O0F0sPX+ROfO9hWnJR94qg@mail.gmail.com> <CACRpkdY4SRxJiH8PEwTNAyPum_=e3VhG30y8wJhfcdML--9BdQ@mail.gmail.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 3/3] virtio-blk: Consider dma_max_mapping_size() for
+ maximum segment size
+Date: Wed, 16 Jan 2019 09:05:40 -0500
+Message-ID: <20190116090355-mutt-send-email-mst@kernel.org>
+References: <20190115132257.6426-1-joro@8bytes.org>
+ <20190115132257.6426-4-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CACRpkdY4SRxJiH8PEwTNAyPum_=e3VhG30y8wJhfcdML--9BdQ@mail.gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20190115132257.6426-4-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Christoph Hellwig <hch@lst.de>, Russell King <linux@armlinux.org.uk>, Nicolas Pitre <nico@fluxnic.net>, Aaro Koskinen <aaro.koskinen@iki.fi>, Ben Dooks <ben-linux@fluff.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-omap <linux-omap@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 16, 2019 at 2:51 PM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Wed, Jan 16, 2019 at 11:25 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Mon, Jan 14, 2019 at 11:27 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
-> > >
-> > > +Linus Walleij (recently made a cleanup of the mmc bounce buffering code).
->
-> Nah it's not THAT bounce buffer.
->
-> > Linus probably knows more here, but I have a vague recollection of
-> > the MMC bounce buffer code being needed mostly for performance
-> > reasons: when the scatterlist is discontiguous, that can result in
-> > a request being split up into separate MMC commands, which due
-> > to the lack of queued commands combined with the need for
-> > garbage collection on sub-page writes results in a huge slowdown
-> > compared to having larger bounce buffers all the time.
-> >
-> > We had discussed finding a different way to do this (separate
-> > from the bounce buffering), but I don't know if that ever happened,
-> > or if this is even the code that you are changing here.
->
-> Nope not the same code.
->
-> The term "bounce buffer" is sadly used as ambigously as
-> __underscores in front of function names.
->
-> That other "bounce buffer" was first deleted and then
-> reimplemented as a local hack in the SDHCI driver core
-> after it caused performance regressions on the i.MX and
-> some laptops, see commit:
->
-> commit bd9b902798ab14d19ca116b10bde581ddff8f905
-> mmc: sdhci: Implement an SDHCI-specific bounce buffer
->
-> That should be orthogonal to Christoph's changes in this
-> patch series.
+On Tue, Jan 15, 2019 at 02:22:57PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> Segments can't be larger than the maximum DMA mapping size
+> supported on the platform. Take that into account when
+> setting the maximum segment size for a block device.
+> 
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/block/virtio_blk.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> index b16a887bbd02..6193962a7fec 100644
+> --- a/drivers/block/virtio_blk.c
+> +++ b/drivers/block/virtio_blk.c
+> @@ -723,7 +723,7 @@ static int virtblk_probe(struct virtio_device *vdev)
+>  	struct request_queue *q;
+>  	int err, index;
+>  
+> -	u32 v, blk_size, sg_elems, opt_io_size;
+> +	u32 v, blk_size, max_size, sg_elems, opt_io_size;
+>  	u16 min_io_size;
+>  	u8 physical_block_exp, alignment_offset;
+>  
+> @@ -826,14 +826,16 @@ static int virtblk_probe(struct virtio_device *vdev)
+>  	/* No real sector limit. */
+>  	blk_queue_max_hw_sectors(q, -1U);
+>  
+> +	max_size = dma_max_mapping_size(&vdev->dev);
+> +
 
-Ok, thanks for the clarification. Please ignore my comments then.
 
-    Arnd
+Should this be limited to ACCESS_PLATFORM?
+
+I see no reason to limit this without as guest can
+access any memory.
+
+
+I'd like a bit of time to consider this point.
+
+>  	/* Host can optionally specify maximum segment size and number of
+>  	 * segments. */
+>  	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_SIZE_MAX,
+>  				   struct virtio_blk_config, size_max, &v);
+>  	if (!err)
+> -		blk_queue_max_segment_size(q, v);
+> -	else
+> -		blk_queue_max_segment_size(q, -1U);
+> +		max_size = min(max_size, v);
+> +
+> +	blk_queue_max_segment_size(q, max_size);
+>  
+>  	/* Host can optionally specify the block size of the device */
+>  	err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+> -- 
+> 2.17.1
