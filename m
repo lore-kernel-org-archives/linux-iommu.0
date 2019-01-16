@@ -1,79 +1,43 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] Revert
- "ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()"
-Date: Wed, 16 Jan 2019 11:36:51 +0100
-Message-ID: <a24660a6-a9d7-ce97-5e2b-17928981551c@samsung.com>
-References: <CGME20190114132250eucas1p2abdf2f36bad3554e37dfbf40e539f594@eucas1p2.samsung.com>
-        <20190114132240.12125-1-m.szyprowski@samsung.com>
-        <20190114160902.GB9218@ulmo> <4f7fd8db-33e4-9c8d-2fee-1ca9c98a9276@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC v3 17/21] iommu/smmuv3: Report non recoverable faults
+Date: Wed, 16 Jan 2019 12:25:38 +0000
+Message-ID: <c0328bbe-e02c-c337-ec52-c899dc0025d3@arm.com>
+References: <20190108102633.17482-1-eric.auger@redhat.com>
+ <20190108102633.17482-18-eric.auger@redhat.com>
+ <dae89fd8-6a82-d2f0-a8c7-ddbf12a7b047@arm.com>
+ <e634adee-f7ab-b90d-aac6-06400fa9ffb4@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <4f7fd8db-33e4-9c8d-2fee-1ca9c98a9276@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <e634adee-f7ab-b90d-aac6-06400fa9ffb4@redhat.com>
 Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Thierry Reding <treding@nvidia.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Christoph Hellwig <hch@lst.de>, Russell King <rmk+kernel@armlinux.org.uk>, Ben Skeggs <bskeggs@redhat.com>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Auger Eric <eric.auger@redhat.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "jacob.jun.pan@linux.intel.com" <jacob.jun.pan@linux.intel.com>, "yi.l.liu@linux.intel.com" <yi.l.liu@linux.intel.com>, Will Deacon <Will.Deacon@arm.com>, Robin Murphy <Robin.Murphy@arm.com>
+Cc: Marc Zyngier <Marc.Zyngier@arm.com>, "kevin.tian@intel.com" <kevin.tian@intel.com>, "ashok.raj@intel.com" <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On 2019-01-14 17:38, Robin Murphy wrote:
-> On 14/01/2019 16:09, Thierry Reding wrote:
->> On Mon, Jan 14, 2019 at 02:22:40PM +0100, Marek Szyprowski wrote:
->>> This reverts commit 1874619a7df4b14b23b14877e705ae15325773e3.
->>>
->>> That patch broke IOMMU support for devices, which fails to probe for
->>> the
->>> first time and use deferred probe approach. When non-NULL dma_ops is
->>> set
->>> in arm_iommu_detach_device(), the given device later ignored by
->>> arch_setup_dma_ops() and stays with non-IOMMU dma_ops.
->>>
->>> Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
->>> Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in
->>> arm_iommu_detach_device()"
->>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>> ---
->>>   arch/arm/mm/dma-mapping.c | 12 ++++++------
->>>   1 file changed, 6 insertions(+), 6 deletions(-)
+On 15/01/2019 21:06, Auger Eric wrote:
+>>> +		iommu_report_device_fault(master->dev, &event);
 >>
->> Can you point out exactly what drivers break because of this change? We
->> need to find a solution that works for everyone. Reverting is only
->> marginally useful because somebody will just end up wanting to revert
->> the revert because a different driver is now broken.
->
-> At first glance, it sounds like what we really want is for
-> arch_teardown_iommu_ops() to completely clear any ops that
-> arch_setup_dma_ops() installed - does the below suffice?
+>> We should return here if the fault is successfully injected
+> 
+> Even if the fault gets injected in the guest can't it be still useful to
+> get the message below on host side?
 
-I've initially also thought about similar fix, but then I found the
-commit 1874619a7df4b14b23b14877e705ae15325773e3, which was the source of
-this problem.
+I don't think we should let the guest flood the host log by issuing
+invalid DMA (or are there other cases where the guest can freely print
+stuff in the host?) We do print all errors at the moment, but we should
+tighten this once there is an upstream solution to let the guest control
+DMA mappings.
 
-Robin: do you plan to send this fix as a complete patch or do you want
-me to resend it with the above commit message and your's suggested-by?
-
->
-> Robin.
->
-> ----->8-----
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index f1e2922e447c..1e3e08a1c456 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2390,4 +2390,6 @@ void arch_teardown_dma_ops(struct device *dev)
->          return;
->
->      arm_teardown_iommu_dma_ops(dev);
-> +    /* Let arch_setup_dma_ops() start again from scratch upon
-> re-probe */
-> +    set_dma_ops(dev, NULL);
->  }
->
->
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Thanks,
+Jean
