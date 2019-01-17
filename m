@@ -1,57 +1,51 @@
-From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
- from a domain
-Date: Thu, 17 Jan 2019 11:48:44 +0000
-Message-ID: <d5d1e325-cbbd-487a-66b9-8723c505ec02@amd.com>
-References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
- <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
- <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
- <20190116170852.GD4681@8bytes.org>
- <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
+Date: Thu, 17 Jan 2019 13:02:12 +0000
+Message-ID: <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
+References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
-Content-Language: en-US
-Content-ID: <E65043004400F14F8E5630B4CD67589E@namprd12.prod.outlook.com>
+In-Reply-To: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+To: Pierre Morel <pmorel@linux.ibm.com>, gerald.schaefer@de.ibm.com
+Cc: linux-s390@vger.kernel.org, walling@linux.ibm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Sm9lcmcsDQoNCk9uIDEvMTcvMTkgMzo0NCBQTSwgU3VyYXZlZSBTdXRoaWt1bHBhbml0IHdyb3Rl
-Og0KPiBKb2VyZywNCj4gDQo+IE9uIDEvMTcvMTkgMTI6MDggQU0sIGpvcm9AOGJ5dGVzLm9yZyB3
-cm90ZToNCj4+IE9uIFdlZCwgSmFuIDE2LCAyMDE5IGF0IDAyOjA4OjU1UE0gKzAwMDAsIFN1dGhp
-a3VscGFuaXQsIFN1cmF2ZWUgd3JvdGU6DQo+Pj4gQWN0dWFsbHksIEkgYW0gbm90IHN1cmUgaG93
-IHdlIHdvdWxkIGJlIG1pc3NpbmcgdGhlIGZsdXNoIG9uIHRoZSBsYXN0IGRldmljZS4NCj4+PiBJ
-biBteSB0ZXN0LCBJIGFtIHNlZWluZyB0aGUgZmx1c2ggY29tbWFuZCBiZWluZyBpc3N1ZWQgY29y
-cmVjdGx5IGR1cmluZw0KPj4+IHZmaW9fdW5tYXBfdW5waW4oKSwgd2hpY2ggaXMgYWZ0ZXIgYWxs
-IGRldmljZXMgYXJlIGRldGFjaGVkLg0KPj4+IEFsdGhvdWdoLCBJIG1pZ2h0IGJlIG1pc3Npbmcg
-eW91ciBwb2ludCBoZXJlLiBDb3VsZCB5b3UgcGxlYXNlIGVsYWJvcmF0ZT8NCj4+DQo+PiBPa2F5
-LCB5b3UgYXJlIHJpZ2h0LCB0aGUgcGF0Y2ggZWZmZWN0aXZseSBhZGRzIGFuIHVuY29uZGl0aW9u
-YWwgZmx1c2ggb2YNCj4+IHRoZSBkb21haW4gb24gYWxsIGlvbW11cyB3aGVuIHRoZSBsYXN0IGRl
-dmljZSBpcyBkZXRhY2hlZC4gU28gaXQgaXMNCj4+IGNvcnJlY3QgaW4gdGhhdCByZWdhcmQuIEJ1
-dCB0aGF0IGNvZGUgcGF0aCBpcyBhbHNvIHVzZWQgaW4gdGhlDQo+PiBpb21tdV91bm1hcCgpIHBh
-dGguDQo+Pg0KPj4gVGhlIHByb2JsZW0gbm93IGlzLCB0aGF0IHdpdGggeW91ciBjaGFuZ2Ugd2Ug
-c2VuZCBmbHVzaCBjb21tYW5kcyB0byBhbGwNCj4+IElPTU1VcyBpbiB0aGUgdW5tYXAgcGF0aCB3
-aGVuIG5vIGRldmljZSBpcyBhdHRhY2hlZCB0byB0aGUgZG9tYWluLg0KPj4gVGhpcyB3aWxsIGh1
-cnQgcGVyZm9ybWFuY2UgdGhlcmUsIG5vPw0KPj4NCj4+IFJlZ2FyZHMsDQo+Pg0KPj4gwqDCoMKg
-wqBKb2VyZw0KPj4NCj4gDQo+IFNvdW5kcyBsaWtlIHdlIG5lZWQgYSB3YXkgdG8gdHJhY2sgc3Rh
-dGUgb2YgZWFjaCBJT01NVSBmb3IgYSBkb21haW4uDQo+IFdoYXQgaWYgd2UgZGVmaW5lIHRoZSBm
-b2xsb3dpbmc6DQo+IA0KPiAgwqAgZW51bSBJT01NVV9ET01BSU5fU1RBVEVTIHsNCj4gIMKgwqDC
-oCBET01BSU5fRlJFRSA9IC0xLA0KPiAgwqDCoMKgIERPTUFJTl9ERVRBQ0hFRCA9IDAsDQo+ICDC
-oMKgwqAgRE9NQUlOX0FUVEFDSEVEID49IDENCj4gIMKgIH0NCj4gDQo+IFdlIHNob3VsZCBiZSBh
-YmxlIHRvIHVzZSB0aGUgZGV2X2lvbW11W10gdG8gaGVscCB0cmFjayB0aGUgc3RhdGUuDQo+ICDC
-oMKgwqAgLSBJbiBhbWRfaW9tbXVfZG9tYWluX2FsbG9jLCB3ZSBpbml0aWFsaXplIHRoZSBhcnJh
-eSB0byBET01BSU5fRlJFRQ0KPiAgwqDCoMKgIC0gSW4gZG9fYXR0YWNoKCksIHdlIGNoYW5nZSB0
-byBET01BSU5fQVRUQUNIIG9yIHdlIGNhbiBpbmNyZW1lbnQgdGhlIGNvdW50DQo+ICDCoMKgwqDC
-oMKgIGlmIGl0IGlzIGFscmVhZHkgaW4gRE9NQUlOX0FUVEFDSCBzdGF0ZS4NCj4gIMKgwqDCoCAt
-IEluIGRvX2RldGFjaCgpLiB3ZSBjaGFuZ2UgdG8gRE9NQUlOX0RFVEFDSC4NCj4gDQo+IFRoZW4s
-IGluIF9fZG9tYWluX2ZsdXNoX3BhZ2VzLCB3ZSBpc3N1ZSBjb21tYW5kIHdoZW4gdGhlIGRldl9p
-b21tdVtdID49IDAuDQo+IFRoaXMgc2hvdWxkIHByZXNlcnZlIHByZXZpb3VzIGJlaGF2aW9yLCBh
-bmQgb25seSBhZGQgZmx1c2hpbmcgY29uZGl0aW9uIHRvDQo+IHRoZSBzcGVjaWZpYyBJT01NVSBp
-biBkZXRhY2hlZCBzdGF0ZS4gUGxlYXNlIGxldCBtZSBrbm93IHdoYXQgeW91IHRoaW5rLg0KPiAN
-Cj4gUmVnYXJkcywNCj4gU3VyYXZlZQ0KDQpCeSB0aGUgd2F5LCBJIGp1c3Qgc2VudCBWMiBvZiB0
-aGlzIHBhdGNoIHNpbmNlIGl0IG1pZ2h0IGJlIG1vcmUgY2xlYXIuDQoNClJlZ2FyZHMsDQpTdXJh
-dmVlDQo=
+On 15/01/2019 17:37, Pierre Morel wrote:
+> The s390 iommu can only allow DMA transactions between the zPCI device
+> entries start_dma and end_dma.
+> 
+> Let's declare the regions before start_dma and after end_dma as
+> reserved regions using the appropriate callback in iommu_ops.
+> 
+> The reserved region may later be retrieved from sysfs or from
+> the vfio iommu internal interface.
+
+For this particular case, I think the best solution is to give VFIO the 
+ability to directly interrogate the domain geometry (which s390 appears 
+to set correctly already). The idea of reserved regions was really for 
+'unexpected' holes inside the usable address space - using them to also 
+describe places that are entirely outside that address space rather 
+confuses things IMO.
+
+Furthermore, even if we *did* end up going down the route of actively 
+reserving addresses beyond the usable aperture, it doesn't seem sensible 
+for individual drivers to do it themselves when the core API already 
+describes the relevant information generically.
+
+Robin.
+
+> 
+> This seems to me related with the work Shameer has started on
+> vfio_iommu_type1 so I add Alex and Shameer to the CC list.
+> 
+> 
+> Pierre Morel (1):
+>    iommu/s390: Declare s390 iommu reserved regions
+> 
+>   drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
+>   1 file changed, 29 insertions(+)
+> 
