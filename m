@@ -1,71 +1,26 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 2/2] iommu/arm-smmu: Add support for non-coherent page table
-	mappings
-Date: Thu, 17 Jan 2019 14:57:18 +0530
-Message-ID: <20190117092718.1396-3-vivek.gautam@codeaurora.org>
-References: <20190117092718.1396-1-vivek.gautam@codeaurora.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Thu, 17 Jan 2019 10:31:17 +0100
+Message-ID: <20190117093117.GA31557@lst.de>
+References: <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de> <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de> <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de> <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de> <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de> <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de> <20190115133558.GA29225@lst.de> <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de> <20190115151732.GA2325@lst.de> <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190117092718.1396-1-vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christian Zigotzky <chzigotzky@xenosoft.de>
+Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Adding a device tree option for arm smmu to enable non-cacheable
-memory for page tables.
-We already enable a smmu feature for coherent walk based on
-whether the smmu device is dma-coherent or not. Have an option
-to enable non-cacheable page table memory to force set it for
-particular smmu devices.
+On Thu, Jan 17, 2019 at 10:21:11AM +0100, Christian Zigotzky wrote:
+> The X1000 boots and the PASEMI onboard ethernet works!
+>
+> Bad news for the X5000 (P5020 board). U-Boot loads the kernel and the dtb 
+> file. Then the kernel starts but it doesn't find any hard disks 
+> (partitions).
 
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Thanks for bisecting so far, and lets stop here until I manage to
+resolve the problem.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index af18a7e7f917..7ebbcf1b2eb3 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -188,6 +188,7 @@ struct arm_smmu_device {
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-+#define ARM_SMMU_OPT_PGTBL_NON_COHERENT (1 << 1)
- 	u32				options;
- 	enum arm_smmu_arch_version	version;
- 	enum arm_smmu_implementation	model;
-@@ -273,6 +274,7 @@ static bool using_legacy_binding, using_generic_binding;
- 
- static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
-+	{ ARM_SMMU_OPT_PGTBL_NON_COHERENT, "arm,smmu-pgtable-non-coherent" },
- 	{ 0, NULL},
- };
- 
-@@ -902,6 +904,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu_domain->non_strict)
- 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
- 
-+	/* Non coherent page table mappings only for Stage-1 */
-+	if (smmu->options & ARM_SMMU_OPT_PGTBL_NON_COHERENT &&
-+	    smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_COHERENT;
-+
- 	smmu_domain->smmu = smmu;
- 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
- 	if (!pgtbl_ops) {
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Can you send me the .config and the dtb file for this board?
