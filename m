@@ -1,152 +1,57 @@
 From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: [PATCH v2] iommu/amd: Fix IOMMU page flush when detach all devices
+Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
  from a domain
-Date: Thu, 17 Jan 2019 11:47:35 +0000
-Message-ID: <20190117114714.126410-1-Suravee.Suthikulpanit@amd.com>
+Date: Thu, 17 Jan 2019 11:48:44 +0000
+Message-ID: <d5d1e325-cbbd-487a-66b9-8723c505ec02@amd.com>
+References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
+ <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
+ <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
+ <20190116170852.GD4681@8bytes.org>
+ <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
 Content-Language: en-US
+Content-ID: <E65043004400F14F8E5630B4CD67589E@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+To: "joro@8bytes.org" <joro@8bytes.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-
-When a VM is terminated, the VFIO driver detaches all pass-through
-devices from VFIO domain by clearing domain id and page table root
-pointer from each device table entry (DTE), and then invalidates
-the DTE. Then, the VFIO driver unmap pages and invalidate IOMMU pages.
-
-Currently, the IOMMU driver keeps track of which IOMMU and how many
-devices are attached to the domain. When invalidate IOMMU pages,
-the driver checks if the IOMMU is still attached to the domain before
-issuing the invalidate page command.
-
-However, since VFIO has already detached all devices from the domain,
-the subsequent INVALIDATE_IOMMU_PAGES commands are being skipped as
-there is no IOMMU attached to the domain. This results in data
-corruption and could cause the PCI device to end up in indeterministic
-state.
-
-Fix this by introducing IOMMU domain states attached, detached,
-and free. Then only issuing the IOMMU pages invalidate command when
-domain is in attached and detached states.
-
-Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd_iommu.c       | 25 ++++++++++++++++++++-----
- drivers/iommu/amd_iommu_types.h |  8 +++++++-
- 2 files changed, 27 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 525659b88ade..1c64a26c50fb 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1248,7 +1248,14 @@ static void __domain_flush_pages(struct protection_d=
-omain *domain,
- 	build_inv_iommu_pages(&cmd, address, size, domain->id, pde);
-=20
- 	for (i =3D 0; i < amd_iommu_get_num_iommus(); ++i) {
--		if (!domain->dev_iommu[i])
-+		/*
-+		 * We issue the command only when the domain is
-+		 * in ATTACHED and DETACHED state. This is required
-+		 * since VFIO detaches all devices from the group
-+		 * before invalidating IOMMU pages. Please see
-+		 * vfio_iommu_type1_detach_group().
-+		 */
-+		if (domain->dev_iommu[i] =3D=3D IOMMU_DOMAIN_STATE_FREE)
- 			continue;
-=20
- 		/*
-@@ -1292,7 +1299,8 @@ static void domain_flush_complete(struct protection_d=
-omain *domain)
- 	int i;
-=20
- 	for (i =3D 0; i < amd_iommu_get_num_iommus(); ++i) {
--		if (domain && !domain->dev_iommu[i])
-+		if (domain &&
-+		    domain->dev_iommu[i] < IOMMU_DOMAIN_STATE_ATTACHED)
- 			continue;
-=20
- 		/*
-@@ -1978,8 +1986,11 @@ static void do_attach(struct iommu_dev_data *dev_dat=
-a,
- 	list_add(&dev_data->list, &domain->dev_list);
-=20
- 	/* Do reference counting */
--	domain->dev_iommu[iommu->index] +=3D 1;
--	domain->dev_cnt                 +=3D 1;
-+	if (domain->dev_iommu[iommu->index] < IOMMU_DOMAIN_STATE_ATTACHED)
-+		domain->dev_iommu[iommu->index] =3D IOMMU_DOMAIN_STATE_ATTACHED;
-+	else
-+		domain->dev_iommu[iommu->index] +=3D 1;
-+	domain->dev_cnt +=3D 1;
-=20
- 	/* Update device table */
- 	set_dte_entry(dev_data->devid, domain, ats, dev_data->iommu_v2);
-@@ -2904,6 +2915,7 @@ static int protection_domain_init(struct protection_d=
-omain *domain)
-=20
- static struct protection_domain *protection_domain_alloc(void)
- {
-+	int i;
- 	struct protection_domain *domain;
-=20
- 	domain =3D kzalloc(sizeof(*domain), GFP_KERNEL);
-@@ -2915,6 +2927,9 @@ static struct protection_domain *protection_domain_al=
-loc(void)
-=20
- 	add_domain_to_list(domain);
-=20
-+	for (i =3D 0; i < MAX_IOMMUS; i++)
-+		domain->dev_iommu[i] =3D IOMMU_DOMAIN_STATE_FREE;
-+
- 	return domain;
-=20
- out_err:
-@@ -3364,7 +3379,7 @@ static int __flush_pasid(struct protection_domain *do=
-main, int pasid,
- 	 * prevent device TLB refill from IOMMU TLB
- 	 */
- 	for (i =3D 0; i < amd_iommu_get_num_iommus(); ++i) {
--		if (domain->dev_iommu[i] =3D=3D 0)
-+		if (domain->dev_iommu[i] < IOMMU_DOMAIN_STATE_ATTACHED)
- 			continue;
-=20
- 		ret =3D iommu_queue_command(amd_iommus[i], &cmd);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_type=
-s.h
-index eae0741f72dc..6d17cdcfa306 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -461,6 +461,12 @@ struct amd_irte_ops;
-=20
- #define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
-=20
-+enum IOMMU_DOMAIN_STATES {
-+	IOMMU_DOMAIN_STATE_FREE =3D -1,
-+	IOMMU_DOMAIN_STATE_DETTACHED,
-+	IOMMU_DOMAIN_STATE_ATTACHED
-+};
-+
- /*
-  * This structure contains generic data for  IOMMU protection domains
-  * independent of their use.
-@@ -480,7 +486,7 @@ struct protection_domain {
- 	unsigned long flags;	/* flags to find out type of domain */
- 	bool updated;		/* complete domain flush required */
- 	unsigned dev_cnt;	/* devices assigned to this domain */
--	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
-+	int dev_iommu[MAX_IOMMUS]; /* per-IOMMU domain state and reference count =
-*/
- };
-=20
- /*
---=20
-2.17.1
+Sm9lcmcsDQoNCk9uIDEvMTcvMTkgMzo0NCBQTSwgU3VyYXZlZSBTdXRoaWt1bHBhbml0IHdyb3Rl
+Og0KPiBKb2VyZywNCj4gDQo+IE9uIDEvMTcvMTkgMTI6MDggQU0sIGpvcm9AOGJ5dGVzLm9yZyB3
+cm90ZToNCj4+IE9uIFdlZCwgSmFuIDE2LCAyMDE5IGF0IDAyOjA4OjU1UE0gKzAwMDAsIFN1dGhp
+a3VscGFuaXQsIFN1cmF2ZWUgd3JvdGU6DQo+Pj4gQWN0dWFsbHksIEkgYW0gbm90IHN1cmUgaG93
+IHdlIHdvdWxkIGJlIG1pc3NpbmcgdGhlIGZsdXNoIG9uIHRoZSBsYXN0IGRldmljZS4NCj4+PiBJ
+biBteSB0ZXN0LCBJIGFtIHNlZWluZyB0aGUgZmx1c2ggY29tbWFuZCBiZWluZyBpc3N1ZWQgY29y
+cmVjdGx5IGR1cmluZw0KPj4+IHZmaW9fdW5tYXBfdW5waW4oKSwgd2hpY2ggaXMgYWZ0ZXIgYWxs
+IGRldmljZXMgYXJlIGRldGFjaGVkLg0KPj4+IEFsdGhvdWdoLCBJIG1pZ2h0IGJlIG1pc3Npbmcg
+eW91ciBwb2ludCBoZXJlLiBDb3VsZCB5b3UgcGxlYXNlIGVsYWJvcmF0ZT8NCj4+DQo+PiBPa2F5
+LCB5b3UgYXJlIHJpZ2h0LCB0aGUgcGF0Y2ggZWZmZWN0aXZseSBhZGRzIGFuIHVuY29uZGl0aW9u
+YWwgZmx1c2ggb2YNCj4+IHRoZSBkb21haW4gb24gYWxsIGlvbW11cyB3aGVuIHRoZSBsYXN0IGRl
+dmljZSBpcyBkZXRhY2hlZC4gU28gaXQgaXMNCj4+IGNvcnJlY3QgaW4gdGhhdCByZWdhcmQuIEJ1
+dCB0aGF0IGNvZGUgcGF0aCBpcyBhbHNvIHVzZWQgaW4gdGhlDQo+PiBpb21tdV91bm1hcCgpIHBh
+dGguDQo+Pg0KPj4gVGhlIHByb2JsZW0gbm93IGlzLCB0aGF0IHdpdGggeW91ciBjaGFuZ2Ugd2Ug
+c2VuZCBmbHVzaCBjb21tYW5kcyB0byBhbGwNCj4+IElPTU1VcyBpbiB0aGUgdW5tYXAgcGF0aCB3
+aGVuIG5vIGRldmljZSBpcyBhdHRhY2hlZCB0byB0aGUgZG9tYWluLg0KPj4gVGhpcyB3aWxsIGh1
+cnQgcGVyZm9ybWFuY2UgdGhlcmUsIG5vPw0KPj4NCj4+IFJlZ2FyZHMsDQo+Pg0KPj4gwqDCoMKg
+wqBKb2VyZw0KPj4NCj4gDQo+IFNvdW5kcyBsaWtlIHdlIG5lZWQgYSB3YXkgdG8gdHJhY2sgc3Rh
+dGUgb2YgZWFjaCBJT01NVSBmb3IgYSBkb21haW4uDQo+IFdoYXQgaWYgd2UgZGVmaW5lIHRoZSBm
+b2xsb3dpbmc6DQo+IA0KPiAgwqAgZW51bSBJT01NVV9ET01BSU5fU1RBVEVTIHsNCj4gIMKgwqDC
+oCBET01BSU5fRlJFRSA9IC0xLA0KPiAgwqDCoMKgIERPTUFJTl9ERVRBQ0hFRCA9IDAsDQo+ICDC
+oMKgwqAgRE9NQUlOX0FUVEFDSEVEID49IDENCj4gIMKgIH0NCj4gDQo+IFdlIHNob3VsZCBiZSBh
+YmxlIHRvIHVzZSB0aGUgZGV2X2lvbW11W10gdG8gaGVscCB0cmFjayB0aGUgc3RhdGUuDQo+ICDC
+oMKgwqAgLSBJbiBhbWRfaW9tbXVfZG9tYWluX2FsbG9jLCB3ZSBpbml0aWFsaXplIHRoZSBhcnJh
+eSB0byBET01BSU5fRlJFRQ0KPiAgwqDCoMKgIC0gSW4gZG9fYXR0YWNoKCksIHdlIGNoYW5nZSB0
+byBET01BSU5fQVRUQUNIIG9yIHdlIGNhbiBpbmNyZW1lbnQgdGhlIGNvdW50DQo+ICDCoMKgwqDC
+oMKgIGlmIGl0IGlzIGFscmVhZHkgaW4gRE9NQUlOX0FUVEFDSCBzdGF0ZS4NCj4gIMKgwqDCoCAt
+IEluIGRvX2RldGFjaCgpLiB3ZSBjaGFuZ2UgdG8gRE9NQUlOX0RFVEFDSC4NCj4gDQo+IFRoZW4s
+IGluIF9fZG9tYWluX2ZsdXNoX3BhZ2VzLCB3ZSBpc3N1ZSBjb21tYW5kIHdoZW4gdGhlIGRldl9p
+b21tdVtdID49IDAuDQo+IFRoaXMgc2hvdWxkIHByZXNlcnZlIHByZXZpb3VzIGJlaGF2aW9yLCBh
+bmQgb25seSBhZGQgZmx1c2hpbmcgY29uZGl0aW9uIHRvDQo+IHRoZSBzcGVjaWZpYyBJT01NVSBp
+biBkZXRhY2hlZCBzdGF0ZS4gUGxlYXNlIGxldCBtZSBrbm93IHdoYXQgeW91IHRoaW5rLg0KPiAN
+Cj4gUmVnYXJkcywNCj4gU3VyYXZlZQ0KDQpCeSB0aGUgd2F5LCBJIGp1c3Qgc2VudCBWMiBvZiB0
+aGlzIHBhdGNoIHNpbmNlIGl0IG1pZ2h0IGJlIG1vcmUgY2xlYXIuDQoNClJlZ2FyZHMsDQpTdXJh
+dmVlDQo=
