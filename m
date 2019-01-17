@@ -1,88 +1,51 @@
-From: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 5/5] iommu/tegra-smmu: Add resv_regions ops
-Date: Wed, 16 Jan 2019 12:50:14 -0800
-Message-ID: <1547671814-30088-5-git-send-email-navneetk@nvidia.com>
-References: <1547671814-30088-1-git-send-email-navneetk@nvidia.com>
+From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
+ from a domain
+Date: Thu, 17 Jan 2019 08:44:36 +0000
+Message-ID: <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
+References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
+ <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
+ <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
+ <20190116170852.GD4681@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1547671814-30088-1-git-send-email-navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190116170852.GD4681@8bytes.org>
+Content-Language: en-US
+Content-ID: <FEDC9507A1464F4B82B738600F34B9E8@namprd12.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "joro@8bytes.org" <joro@8bytes.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add support for get/put reserved regions.
-
-Signed-off-by: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/tegra-smmu.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 4b43c63..e848a45 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -22,6 +22,9 @@
- #include <soc/tegra/ahb.h>
- #include <soc/tegra/mc.h>
- 
-+#define MSI_IOVA_BASE	0x8000000
-+#define MSI_IOVA_LENGTH	0x100000
-+
- struct tegra_smmu_group {
- 	struct list_head list;
- 	const struct tegra_smmu_group_soc *soc;
-@@ -882,6 +885,31 @@ static int tegra_smmu_of_xlate(struct device *dev,
- 	return iommu_fwspec_add_ids(dev, &id, 1);
- }
- 
-+static void tegra_smmu_get_resv_regions(struct device *dev,
-+		struct list_head *head)
-+{
-+	struct iommu_resv_region *region;
-+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+
-+	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+					prot, IOMMU_RESV_SW_MSI);
-+	if (!region)
-+		return;
-+
-+	list_add_tail(&region->list, head);
-+
-+	iommu_dma_get_resv_regions(dev, head);
-+}
-+
-+static void tegra_smmu_put_resv_regions(struct device *dev,
-+		struct list_head *head)
-+{
-+	struct iommu_resv_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, head, list)
-+		kfree(entry);
-+}
-+
- static const struct iommu_ops tegra_smmu_ops = {
- 	.capable = tegra_smmu_capable,
- 	.domain_alloc = tegra_smmu_domain_alloc,
-@@ -896,6 +924,9 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.iova_to_phys = tegra_smmu_iova_to_phys,
- 	.of_xlate = tegra_smmu_of_xlate,
- 	.pgsize_bitmap = SZ_4K,
-+
-+	.get_resv_regions = tegra_smmu_get_resv_regions,
-+	.put_resv_regions = tegra_smmu_put_resv_regions,
- };
- 
- static void tegra_smmu_ahb_enable(void)
--- 
-2.7.4
+Sm9lcmcsDQoNCk9uIDEvMTcvMTkgMTI6MDggQU0sIGpvcm9AOGJ5dGVzLm9yZyB3cm90ZToNCj4g
+T24gV2VkLCBKYW4gMTYsIDIwMTkgYXQgMDI6MDg6NTVQTSArMDAwMCwgU3V0aGlrdWxwYW5pdCwg
+U3VyYXZlZSB3cm90ZToNCj4+IEFjdHVhbGx5LCBJIGFtIG5vdCBzdXJlIGhvdyB3ZSB3b3VsZCBi
+ZSBtaXNzaW5nIHRoZSBmbHVzaCBvbiB0aGUgbGFzdCBkZXZpY2UuDQo+PiBJbiBteSB0ZXN0LCBJ
+IGFtIHNlZWluZyB0aGUgZmx1c2ggY29tbWFuZCBiZWluZyBpc3N1ZWQgY29ycmVjdGx5IGR1cmlu
+Zw0KPj4gdmZpb191bm1hcF91bnBpbigpLCB3aGljaCBpcyBhZnRlciBhbGwgZGV2aWNlcyBhcmUg
+ZGV0YWNoZWQuDQo+PiBBbHRob3VnaCwgSSBtaWdodCBiZSBtaXNzaW5nIHlvdXIgcG9pbnQgaGVy
+ZS4gQ291bGQgeW91IHBsZWFzZSBlbGFib3JhdGU/DQo+IA0KPiBPa2F5LCB5b3UgYXJlIHJpZ2h0
+LCB0aGUgcGF0Y2ggZWZmZWN0aXZseSBhZGRzIGFuIHVuY29uZGl0aW9uYWwgZmx1c2ggb2YNCj4g
+dGhlIGRvbWFpbiBvbiBhbGwgaW9tbXVzIHdoZW4gdGhlIGxhc3QgZGV2aWNlIGlzIGRldGFjaGVk
+LiBTbyBpdCBpcw0KPiBjb3JyZWN0IGluIHRoYXQgcmVnYXJkLiBCdXQgdGhhdCBjb2RlIHBhdGgg
+aXMgYWxzbyB1c2VkIGluIHRoZQ0KPiBpb21tdV91bm1hcCgpIHBhdGguDQo+IA0KPiBUaGUgcHJv
+YmxlbSBub3cgaXMsIHRoYXQgd2l0aCB5b3VyIGNoYW5nZSB3ZSBzZW5kIGZsdXNoIGNvbW1hbmRz
+IHRvIGFsbA0KPiBJT01NVXMgaW4gdGhlIHVubWFwIHBhdGggd2hlbiBubyBkZXZpY2UgaXMgYXR0
+YWNoZWQgdG8gdGhlIGRvbWFpbi4NCj4gVGhpcyB3aWxsIGh1cnQgcGVyZm9ybWFuY2UgdGhlcmUs
+IG5vPw0KPiANCj4gUmVnYXJkcywNCj4gDQo+IAlKb2VyZw0KPiANCg0KU291bmRzIGxpa2Ugd2Ug
+bmVlZCBhIHdheSB0byB0cmFjayBzdGF0ZSBvZiBlYWNoIElPTU1VIGZvciBhIGRvbWFpbi4NCldo
+YXQgaWYgd2UgZGVmaW5lIHRoZSBmb2xsb3dpbmc6DQoNCiAgIGVudW0gSU9NTVVfRE9NQUlOX1NU
+QVRFUyB7DQogICAgIERPTUFJTl9GUkVFID0gLTEsDQogICAgIERPTUFJTl9ERVRBQ0hFRCA9IDAs
+DQogICAgIERPTUFJTl9BVFRBQ0hFRCA+PSAxDQogICB9DQoNCldlIHNob3VsZCBiZSBhYmxlIHRv
+IHVzZSB0aGUgZGV2X2lvbW11W10gdG8gaGVscCB0cmFjayB0aGUgc3RhdGUuDQogICAgIC0gSW4g
+YW1kX2lvbW11X2RvbWFpbl9hbGxvYywgd2UgaW5pdGlhbGl6ZSB0aGUgYXJyYXkgdG8gRE9NQUlO
+X0ZSRUUNCiAgICAgLSBJbiBkb19hdHRhY2goKSwgd2UgY2hhbmdlIHRvIERPTUFJTl9BVFRBQ0gg
+b3Igd2UgY2FuIGluY3JlbWVudCB0aGUgY291bnQNCiAgICAgICBpZiBpdCBpcyBhbHJlYWR5IGlu
+IERPTUFJTl9BVFRBQ0ggc3RhdGUuDQogICAgIC0gSW4gZG9fZGV0YWNoKCkuIHdlIGNoYW5nZSB0
+byBET01BSU5fREVUQUNILg0KDQpUaGVuLCBpbiBfX2RvbWFpbl9mbHVzaF9wYWdlcywgd2UgaXNz
+dWUgY29tbWFuZCB3aGVuIHRoZSBkZXZfaW9tbXVbXSA+PSAwLg0KVGhpcyBzaG91bGQgcHJlc2Vy
+dmUgcHJldmlvdXMgYmVoYXZpb3IsIGFuZCBvbmx5IGFkZCBmbHVzaGluZyBjb25kaXRpb24gdG8N
+CnRoZSBzcGVjaWZpYyBJT01NVSBpbiBkZXRhY2hlZCBzdGF0ZS4gUGxlYXNlIGxldCBtZSBrbm93
+IHdoYXQgeW91IHRoaW5rLg0KDQpSZWdhcmRzLA0KU3VyYXZlZQ0K
