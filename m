@@ -1,14 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/tegra-smmu: Fix domain_alloc
-Date: Thu, 17 Jan 2019 16:50:08 +0000
-Message-ID: <4f3104b7-120e-d71b-e7ea-9790ed2a3c97@arm.com>
+Subject: Re: [PATCH 5/5] iommu/tegra-smmu: Add resv_regions ops
+Date: Thu, 17 Jan 2019 17:06:04 +0000
+Message-ID: <749b1bfa-b2b4-336f-fbc4-2a2bed72ee35@arm.com>
 References: <1547671814-30088-1-git-send-email-navneetk@nvidia.com>
-	<e55f408d-d518-f12d-4233-1b70263400f4@gmail.com>
+	<1547671814-30088-5-git-send-email-navneetk@nvidia.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e55f408d-d518-f12d-4233-1b70263400f4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1547671814-30088-5-git-send-email-navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-GB
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -19,76 +19,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+To: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTcvMDEvMjAxOSAxNToxMywgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+IDE2LjAxLjIwMTkg
-MjM6NTAsIE5hdm5lZXQgS3VtYXIg0L/QuNGI0LXRgjoKPj4gKiBBbGxvY2F0ZSBkbWEgaW92YSBj
-b29raWUgZm9yIGEgZG9tYWluIHdoaWxlIGFkZGluZyBkbWEgaW9tbXUKPj4gZGV2aWNlcy4KPj4g
-KiBQZXJmb3JtIGEgc3RyaWN0ZXIgY2hlY2sgZm9yIGRvbWFpbiB0eXBlIHBhcmFtZXRlci4KPj4K
-PiAKPiBDb21taXQgbWVzc2FnZSBzaG91bGQgdGVsbCB3aGF0IGV4YWN0bHkgaXMgZ2V0dGluZyAi
-Zml4ZWQiLiBBcHBhcmVudGx5IHlvdSdyZSB0cnlpbmcgdG8gc3VwcG9ydCBUMTMyIEFSTTY0IGhl
-cmUuCj4gCj4+IFNpZ25lZC1vZmYtYnk6IE5hdm5lZXQgS3VtYXIgPG5hdm5lZXRrQG52aWRpYS5j
-b20+Cj4+IC0tLQo+PiAgIGRyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jIHwgNDMgKysrKysrKysr
-KysrKysrKysrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tLQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAy
-NyBpbnNlcnRpb25zKCspLCAxNiBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvdGVncmEtc21tdS5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMKPj4gaW5k
-ZXggNTQzZjdjOS4uZWU0ZDhhOCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS90ZWdyYS1z
-bW11LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMKPj4gQEAgLTE2LDYgKzE2
-LDcgQEAKPj4gICAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+Cj4+ICAgI2luY2x1
-ZGUgPGxpbnV4L3NsYWIuaD4KPj4gICAjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBpbmcuaD4KPj4g
-KyNpbmNsdWRlIDxsaW51eC9kbWEtaW9tbXUuaD4KPj4gICAKPj4gICAjaW5jbHVkZSA8c29jL3Rl
-Z3JhL2FoYi5oPgo+PiAgICNpbmNsdWRlIDxzb2MvdGVncmEvbWMuaD4KPj4gQEAgLTI3MSw4ICsy
-NzIsMTAgQEAgc3RhdGljIGJvb2wgdGVncmFfc21tdV9jYXBhYmxlKGVudW0gaW9tbXVfY2FwIGNh
-cCkKPj4gICBzdGF0aWMgc3RydWN0IGlvbW11X2RvbWFpbiAqdGVncmFfc21tdV9kb21haW5fYWxs
-b2ModW5zaWduZWQgdHlwZSkKPj4gICB7Cj4+ICAgCXN0cnVjdCB0ZWdyYV9zbW11X2FzICphczsK
-Pj4gKwlpbnQgcmV0Owo+PiAgIAo+PiAtCWlmICh0eXBlICE9IElPTU1VX0RPTUFJTl9VTk1BTkFH
-RUQpCj4+ICsJaWYgKHR5cGUgIT0gSU9NTVVfRE9NQUlOX1VOTUFOQUdFRCAmJiB0eXBlICE9IElP
-TU1VX0RPTUFJTl9ETUEgJiYKPj4gKwkJCXR5cGUgIT0gSU9NTVVfRE9NQUlOX0lERU5USVRZKQo+
-PiAgIAkJcmV0dXJuIE5VTEw7Cj4gCj4gU2hvdWxkIGJlIGJldHRlciB0byB3cml0ZSB0aGVzZSBs
-aW5lcyBsaWtlIHRoaXMgZm9yIHRoZSBzYWtlIG9mIHJlYWRhYmlsaXR5Ogo+IAo+IAlpZiAodHlw
-ZSAhPSBJT01NVV9ET01BSU5fVU5NQU5BR0VEICYmCj4gCSAgICB0eXBlICE9IElPTU1VX0RPTUFJ
-Tl9ETUEgJiYKPiAJICAgIHR5cGUgIT0gSU9NTVVfRE9NQUlOX0lERU5USVRZKQo+IAkJcmV0dXJu
-IE5VTEw7CgpGdXJ0aGVybW9yZSwgQUZBSUNTIHRoZXJlJ3Mgbm8gc3BlY2lhbCBoYW5kbGluZyBi
-ZWluZyBhZGRlZCBmb3IgaWRlbnRpdHkgCmRvbWFpbnMgLSBkb24ndCBwcmV0ZW5kIHRvIHN1cHBv
-cnQgdGhlbSBieSBnaXZpbmcgYmFjayBhIHJlZ3VsYXIgCnRyYW5zbGF0aW9uIGRvbWFpbiwgdGhh
-dCdzIGp1c3QgbWlzbGVhZGluZyBhbmQgYnJva2VuLgoKPiAKPiAKPj4gICAKPj4gICAJYXMgPSBr
-emFsbG9jKHNpemVvZigqYXMpLCBHRlBfS0VSTkVMKTsKPj4gQEAgLTI4MSwyNiArMjg0LDIyIEBA
-IHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICp0ZWdyYV9zbW11X2RvbWFpbl9hbGxvYyh1bnNp
-Z25lZCB0eXBlKQo+PiAgIAo+PiAgIAlhcy0+YXR0ciA9IFNNTVVfUERfUkVBREFCTEUgfCBTTU1V
-X1BEX1dSSVRBQkxFIHwgU01NVV9QRF9OT05TRUNVUkU7Cj4+ICAgCj4+ICsJcmV0ID0gKHR5cGUg
-PT0gSU9NTVVfRE9NQUlOX0RNQSkgPyBpb21tdV9nZXRfZG1hX2Nvb2tpZSgmYXMtPmRvbWFpbikg
-Ogo+PiArCQktRU5PREVWOwo+IAo+IFRoaXMgbWFrZXMgdG8gZmFpbCBhbGxvY2F0aW9uIG9mIGRv
-bWFpbiB0aGF0IGhhcyB0eXBlIG90aGVyIHRoYW4gSU9NTVVfRE9NQUlOX0RNQS4KPiAKPiBTaG91
-bGQgYmU6Cj4gCj4gCWlmICh0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpIHsKPiAJCWVyciA9IGlv
-bW11X2dldF9kbWFfY29va2llKCZhcy0+ZG9tYWluKTsKPiAJCWlmIChlcnIpCj4gCQkJZ290byBm
-cmVlX2FzOwo+IAl9Cj4gCj4gCj4+ICsJaWYgKHJldCkKPj4gKwkJZ290byBmcmVlX2FzOwo+PiAr
-Cj4+ICAgCWFzLT5wZCA9IGFsbG9jX3BhZ2UoR0ZQX0tFUk5FTCB8IF9fR0ZQX0RNQSB8IF9fR0ZQ
-X1pFUk8pOwo+PiAtCWlmICghYXMtPnBkKSB7Cj4+IC0JCWtmcmVlKGFzKTsKPj4gLQkJcmV0dXJu
-IE5VTEw7Cj4+IC0JfQo+PiArCWlmICghYXMtPnBkKQo+PiArCQlnb3RvIHB1dF9kbWFfY29va2ll
-Owo+PiAgIAo+PiAgIAlhcy0+Y291bnQgPSBrY2FsbG9jKFNNTVVfTlVNX1BERSwgc2l6ZW9mKHUz
-MiksIEdGUF9LRVJORUwpOwo+PiAtCWlmICghYXMtPmNvdW50KSB7Cj4+IC0JCV9fZnJlZV9wYWdl
-KGFzLT5wZCk7Cj4+IC0JCWtmcmVlKGFzKTsKPj4gLQkJcmV0dXJuIE5VTEw7Cj4+IC0JfQo+PiAr
-CWlmICghYXMtPmNvdW50KQo+PiArCQlnb3RvIGZyZWVfcGRfcmFuZ2U7Cj4+ICAgCj4+ICAgCWFz
-LT5wdHMgPSBrY2FsbG9jKFNNTVVfTlVNX1BERSwgc2l6ZW9mKCphcy0+cHRzKSwgR0ZQX0tFUk5F
-TCk7Cj4+IC0JaWYgKCFhcy0+cHRzKSB7Cj4+IC0JCWtmcmVlKGFzLT5jb3VudCk7Cj4+IC0JCV9f
-ZnJlZV9wYWdlKGFzLT5wZCk7Cj4+IC0JCWtmcmVlKGFzKTsKPj4gLQkJcmV0dXJuIE5VTEw7Cj4+
-IC0JfQo+PiArCWlmICghYXMtPnB0cykKPj4gKwkJZ290byBmcmVlX3B0czsKPj4gICAKPj4gICAJ
-Lyogc2V0dXAgYXBlcnR1cmUgKi8KPj4gICAJYXMtPmRvbWFpbi5nZW9tZXRyeS5hcGVydHVyZV9z
-dGFydCA9IDA7Cj4+IEBAIC0zMDgsNiArMzA3LDE4IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9t
-YWluICp0ZWdyYV9zbW11X2RvbWFpbl9hbGxvYyh1bnNpZ25lZCB0eXBlKQo+PiAgIAlhcy0+ZG9t
-YWluLmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsKPj4gICAKPj4gICAJcmV0dXJuICZh
-cy0+ZG9tYWluOwo+PiArCj4+ICtmcmVlX3B0czoKPj4gKwlrZnJlZShhcy0+cHRzKTsKPj4gK2Zy
-ZWVfcGRfcmFuZ2U6Cj4+ICsJX19mcmVlX3BhZ2UoYXMtPnBkKTsKPj4gK3B1dF9kbWFfY29va2ll
-Ogo+PiArCWlmICh0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpCgpGV0lXIHlvdSBkb24ndCBzdHJp
-Y3RseSBuZWVkIHRoYXQgY2hlY2sgLSBzaW5jZSBkb21haW4tPmlvdmFfY29va2llIAp3b24ndCBi
-ZSBzZXQgZm9yIG90aGVyIGRvbWFpbiB0eXBlcyBhbnl3YXksIGlvbW11X3B1dF9kbWFfY29va2ll
-KCkgd2lsbCAKc2ltcGx5IGlnbm9yZSB0aGVtLgoKPj4gKwkJaW9tbXVfcHV0X2RtYV9jb29raWUo
-JmFzLT5kb21haW4pOwo+PiArZnJlZV9hczoKPj4gKwlrZnJlZShhcyk7Cj4+ICsKPj4gKwlyZXR1
-cm4gTlVMTDsKPj4gICB9Cj4+ICAgCj4+ICAgc3RhdGljIHZvaWQgdGVncmFfc21tdV9kb21haW5f
-ZnJlZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4pCgpIb3cgYWJvdXQgbm90IGxlYWtpbmcg
-dGhlIGNvb2tpZSB3aGVuIHlvdSBmcmVlIGEgRE1BIG9wcyBkb21haW4/CgpSb2Jpbi4KX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
-aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
-b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On 16/01/2019 20:50, Navneet Kumar wrote:
+> Add support for get/put reserved regions.
+
+For any particular reason? If you're aiming to get 
+VFIO-passthrough-with-MSIs working on Tegra, this probably won't be 
+correct anyway...
+
+> Signed-off-by: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+> ---
+>   drivers/iommu/tegra-smmu.c | 31 +++++++++++++++++++++++++++++++
+>   1 file changed, 31 insertions(+)
+> 
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 4b43c63..e848a45 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -22,6 +22,9 @@
+>   #include <soc/tegra/ahb.h>
+>   #include <soc/tegra/mc.h>
+>   
+> +#define MSI_IOVA_BASE	0x8000000
+
+...because this arbitrary IOVA relies on writes to the MSI doorbell 
+undergoing address translation at the IOMMU just like any other access. 
+Looking at Tegra 134, that seems to implement an MSI doorbell internal 
+to the PCIe root complex, far upstream of translation, therefore at the 
+very least you'd need to reserve whatever IOVA region is shadowed by 
+that doorbell in PCI memory space...
+
+> +#define MSI_IOVA_LENGTH	0x100000
+> +
+>   struct tegra_smmu_group {
+>   	struct list_head list;
+>   	const struct tegra_smmu_group_soc *soc;
+> @@ -882,6 +885,31 @@ static int tegra_smmu_of_xlate(struct device *dev,
+>   	return iommu_fwspec_add_ids(dev, &id, 1);
+>   }
+>   
+> +static void tegra_smmu_get_resv_regions(struct device *dev,
+> +		struct list_head *head)
+> +{
+> +	struct iommu_resv_region *region;
+> +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +
+> +	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +					prot, IOMMU_RESV_SW_MSI);
+
+...and as an untranslatable hardware MSI region, not a software-managed one.
+
+Robin.
+
+> +	if (!region)
+> +		return;
+> +
+> +	list_add_tail(&region->list, head);
+> +
+> +	iommu_dma_get_resv_regions(dev, head);
+> +}
+> +
+> +static void tegra_smmu_put_resv_regions(struct device *dev,
+> +		struct list_head *head)
+> +{
+> +	struct iommu_resv_region *entry, *next;
+> +
+> +	list_for_each_entry_safe(entry, next, head, list)
+> +		kfree(entry);
+> +}
+> +
+>   static const struct iommu_ops tegra_smmu_ops = {
+>   	.capable = tegra_smmu_capable,
+>   	.domain_alloc = tegra_smmu_domain_alloc,
+> @@ -896,6 +924,9 @@ static const struct iommu_ops tegra_smmu_ops = {
+>   	.iova_to_phys = tegra_smmu_iova_to_phys,
+>   	.of_xlate = tegra_smmu_of_xlate,
+>   	.pgsize_bitmap = SZ_4K,
+> +
+> +	.get_resv_regions = tegra_smmu_get_resv_regions,
+> +	.put_resv_regions = tegra_smmu_put_resv_regions,
+>   };
+>   
+>   static void tegra_smmu_ahb_enable(void)
+> 
