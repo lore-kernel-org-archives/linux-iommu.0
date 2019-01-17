@@ -1,86 +1,40 @@
-From: Pierre Morel <pmorel@linux.ibm.com>
-Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
-Date: Thu, 17 Jan 2019 14:02:12 +0100
-Message-ID: <c5e7e9c6-15ed-99fb-3cd6-81ec8f2d3dff@linux.ibm.com>
-References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
- <5FC3163CFD30C246ABAA99954A238FA83928BF16@lhreml524-mbs.china.huawei.com>
-Reply-To: pmorel@linux.ibm.com
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: Fail to boot Dom0 on Xen Arm64 after "dma-mapping:
+ bypass indirect calls for dma-direct"
+Date: Thu, 17 Jan 2019 06:11:58 -0800
+Message-ID: <20190117141157.GA5184@infradead.org>
+References: <d3e4984f-f996-c38f-3cf1-c16450ef7a99@arm.com>
+ <20190116181904.GA6228@infradead.org>
+ <1855c743-becd-fd52-50b9-86398f6cb985@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA83928BF16@lhreml524-mbs.china.huawei.com>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, "gerald.schaefer@de.ibm.com" <gerald.schaefer@de.ibm.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "walling@linux.ibm.com" <walling@linux.ibm.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+Content-Disposition: inline
+In-Reply-To: <1855c743-becd-fd52-50b9-86398f6cb985@arm.com>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+To: Julien Grall <julien.grall@arm.com>
+Cc: Juergen Gross <jgross@suse.com>, Stefano Stabellini <sstabellini@kernel.org>, Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org, leo.yan@linaro.org, xen-devel <xen-devel@lists.xenproject.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/01/2019 10:23, Shameerali Kolothum Thodi wrote:
-> Hi Pierre,
-> 
->> -----Original Message-----
->> From: Pierre Morel [mailto:pmorel@linux.ibm.com]
->> Sent: 15 January 2019 17:37
->> To: gerald.schaefer@de.ibm.com
->> Cc: joro@8bytes.org; linux-s390@vger.kernel.org;
->> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
->> alex.williamson@redhat.com; Shameerali Kolothum Thodi
->> <shameerali.kolothum.thodi@huawei.com>; walling@linux.ibm.com
->> Subject: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
->>
->> The s390 iommu can only allow DMA transactions between the zPCI device
->> entries start_dma and end_dma.
->>
->> Let's declare the regions before start_dma and after end_dma as
->> reserved regions using the appropriate callback in iommu_ops.
->>
->> The reserved region may later be retrieved from sysfs or from
->> the vfio iommu internal interface.
-> 
-> Just in case you are planning to use the sysfs interface to retrieve the valid
-> regions, and intend to use that in Qemu vfio path, please see the discussion
-> here [1] (If you haven't seen this already)
-> 
-> Thanks,
-> Shameer
-> 
-> [1] https://lists.gnu.org/archive/html/qemu-devel/2017-11/msg03651.html
->   
->> This seems to me related with the work Shameer has started on
->> vfio_iommu_type1 so I add Alex and Shameer to the CC list.
->>
->> Pierre Morel (1):
->>    iommu/s390: Declare s390 iommu reserved regions
->>
->>   drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
->>   1 file changed, 29 insertions(+)
->>
->> --
->> 2.7.4
-> 
-
-Thanks Shameer,
-
-Interesting discussion indeed.
-
-AFAIK the patch series you are working on will provide a way to retrieve 
-the reserved region through the VFIO IOMMU interface, using capabilities 
-in the VFIO_IOMMU_GET_INFO.
-Before this patch, the iommu_type1 was not able to retrieve the 
-forbidden region from the s390_iommu.
-
-See this patch is a contribution, so that these regions will appear in 
-the reserved list when the VFIO_IOMM_GET_INFO will be able to report the 
-information.
-
-I am expecting to be able to to retrieve this information from the 
-VFIO_IOMMU_GET_INFO syscall as soon as it is available.
-
-Regards,
-Pierre
-
-
--- 
-Pierre Morel
-Linux/KVM/QEMU in Böblingen - Germany
+T24gVGh1LCBKYW4gMTcsIDIwMTkgYXQgMTE6NDM6NDlBTSArMDAwMCwgSnVsaWVuIEdyYWxsIHdy
+b3RlOgo+IExvb2tpbmcgYXQgdGhlIGNoYW5nZSBmb3IgYXJtNjQsIHlvdSB3aWxsIGFsd2F5cyBj
+YWxsIGRtYS1kaXJlY3QgQVBJLiBJbgo+IHByZXZpb3VzIExpbnV4IHZlcnNpb24sIHhlbi1zd2lv
+dGxiIHdpbGwgY2FsbCBkZXYtPmFyY2hkYXRhLmRldl9kbWFfb3BzIChhCj4gY29weSBvZiBkZXYt
+PmRtYV9vcHMgYmVmb3JlIHNldHRpbmcgWGVuIERNQSBvcHMpIGlmIG5vdCBOVUxMLiBEb2VzIGl0
+IG1lYW4KPiB3ZSBleHBlY3QgZGV2LT5kbWFfb3BzIHRvIGFsd2F5cyBiZSBOVUxMIGFuZCBoZW5j
+ZSB1c2luZyBkbWEtZGlyZWN0IEFQST8KClRoZSB3YXkgSSB1bmRlcnN0b29kIHRoZSBjb2RlIGZy
+b20gaW5zcGVjdGluZyBpdCBhbmQgc2tpbmcgdGhlCm1haW50YWluZXJzIGEgZmV3IGFza2luZ3Mg
+aXMgdGhhdCBmb3IgRE9NMCB3ZSBhbHdheXMgdXNlIHhlbi1zd2lvdGxiCmFzIHRoZSBhY3R1YWwg
+ZG1hX21hcF9vcHMsIGJ1dCB0aGVuIHVzZSB0aGUgZnVuY3Rpb25zIGluIHBhZ2UtY29oZXJlbnQu
+aApvbmx5IHRvIGRlYWwgd2l0aCBjYWNoZSBtYWludGFpbmFuY2UsIHNvIGl0IHNob3VsZCBiZSBz
+YWZlLgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KWGVu
+LWRldmVsIG1haWxpbmcgbGlzdApYZW4tZGV2ZWxAbGlzdHMueGVucHJvamVjdC5vcmcKaHR0cHM6
+Ly9saXN0cy54ZW5wcm9qZWN0Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbi1kZXZlbA==
