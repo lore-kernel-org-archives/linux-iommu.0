@@ -1,51 +1,60 @@
-From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
- from a domain
-Date: Thu, 17 Jan 2019 08:44:36 +0000
-Message-ID: <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
-References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
- <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
- <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
- <20190116170852.GD4681@8bytes.org>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Thu, 17 Jan 2019 10:21:11 +0100
+Message-ID: <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de>
+References: <71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
+ <1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
+ <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
+ <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de>
+ <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de>
+ <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de>
+ <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de>
+ <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de>
+ <20190115133558.GA29225@lst.de>
+ <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de>
+ <20190115151732.GA2325@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190116170852.GD4681@8bytes.org>
-Content-Language: en-US
-Content-ID: <FEDC9507A1464F4B82B738600F34B9E8@namprd12.prod.outlook.com>
+In-Reply-To: <20190115151732.GA2325@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: "joro@8bytes.org" <joro@8bytes.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Sm9lcmcsDQoNCk9uIDEvMTcvMTkgMTI6MDggQU0sIGpvcm9AOGJ5dGVzLm9yZyB3cm90ZToNCj4g
-T24gV2VkLCBKYW4gMTYsIDIwMTkgYXQgMDI6MDg6NTVQTSArMDAwMCwgU3V0aGlrdWxwYW5pdCwg
-U3VyYXZlZSB3cm90ZToNCj4+IEFjdHVhbGx5LCBJIGFtIG5vdCBzdXJlIGhvdyB3ZSB3b3VsZCBi
-ZSBtaXNzaW5nIHRoZSBmbHVzaCBvbiB0aGUgbGFzdCBkZXZpY2UuDQo+PiBJbiBteSB0ZXN0LCBJ
-IGFtIHNlZWluZyB0aGUgZmx1c2ggY29tbWFuZCBiZWluZyBpc3N1ZWQgY29ycmVjdGx5IGR1cmlu
-Zw0KPj4gdmZpb191bm1hcF91bnBpbigpLCB3aGljaCBpcyBhZnRlciBhbGwgZGV2aWNlcyBhcmUg
-ZGV0YWNoZWQuDQo+PiBBbHRob3VnaCwgSSBtaWdodCBiZSBtaXNzaW5nIHlvdXIgcG9pbnQgaGVy
-ZS4gQ291bGQgeW91IHBsZWFzZSBlbGFib3JhdGU/DQo+IA0KPiBPa2F5LCB5b3UgYXJlIHJpZ2h0
-LCB0aGUgcGF0Y2ggZWZmZWN0aXZseSBhZGRzIGFuIHVuY29uZGl0aW9uYWwgZmx1c2ggb2YNCj4g
-dGhlIGRvbWFpbiBvbiBhbGwgaW9tbXVzIHdoZW4gdGhlIGxhc3QgZGV2aWNlIGlzIGRldGFjaGVk
-LiBTbyBpdCBpcw0KPiBjb3JyZWN0IGluIHRoYXQgcmVnYXJkLiBCdXQgdGhhdCBjb2RlIHBhdGgg
-aXMgYWxzbyB1c2VkIGluIHRoZQ0KPiBpb21tdV91bm1hcCgpIHBhdGguDQo+IA0KPiBUaGUgcHJv
-YmxlbSBub3cgaXMsIHRoYXQgd2l0aCB5b3VyIGNoYW5nZSB3ZSBzZW5kIGZsdXNoIGNvbW1hbmRz
-IHRvIGFsbA0KPiBJT01NVXMgaW4gdGhlIHVubWFwIHBhdGggd2hlbiBubyBkZXZpY2UgaXMgYXR0
-YWNoZWQgdG8gdGhlIGRvbWFpbi4NCj4gVGhpcyB3aWxsIGh1cnQgcGVyZm9ybWFuY2UgdGhlcmUs
-IG5vPw0KPiANCj4gUmVnYXJkcywNCj4gDQo+IAlKb2VyZw0KPiANCg0KU291bmRzIGxpa2Ugd2Ug
-bmVlZCBhIHdheSB0byB0cmFjayBzdGF0ZSBvZiBlYWNoIElPTU1VIGZvciBhIGRvbWFpbi4NCldo
-YXQgaWYgd2UgZGVmaW5lIHRoZSBmb2xsb3dpbmc6DQoNCiAgIGVudW0gSU9NTVVfRE9NQUlOX1NU
-QVRFUyB7DQogICAgIERPTUFJTl9GUkVFID0gLTEsDQogICAgIERPTUFJTl9ERVRBQ0hFRCA9IDAs
-DQogICAgIERPTUFJTl9BVFRBQ0hFRCA+PSAxDQogICB9DQoNCldlIHNob3VsZCBiZSBhYmxlIHRv
-IHVzZSB0aGUgZGV2X2lvbW11W10gdG8gaGVscCB0cmFjayB0aGUgc3RhdGUuDQogICAgIC0gSW4g
-YW1kX2lvbW11X2RvbWFpbl9hbGxvYywgd2UgaW5pdGlhbGl6ZSB0aGUgYXJyYXkgdG8gRE9NQUlO
-X0ZSRUUNCiAgICAgLSBJbiBkb19hdHRhY2goKSwgd2UgY2hhbmdlIHRvIERPTUFJTl9BVFRBQ0gg
-b3Igd2UgY2FuIGluY3JlbWVudCB0aGUgY291bnQNCiAgICAgICBpZiBpdCBpcyBhbHJlYWR5IGlu
-IERPTUFJTl9BVFRBQ0ggc3RhdGUuDQogICAgIC0gSW4gZG9fZGV0YWNoKCkuIHdlIGNoYW5nZSB0
-byBET01BSU5fREVUQUNILg0KDQpUaGVuLCBpbiBfX2RvbWFpbl9mbHVzaF9wYWdlcywgd2UgaXNz
-dWUgY29tbWFuZCB3aGVuIHRoZSBkZXZfaW9tbXVbXSA+PSAwLg0KVGhpcyBzaG91bGQgcHJlc2Vy
-dmUgcHJldmlvdXMgYmVoYXZpb3IsIGFuZCBvbmx5IGFkZCBmbHVzaGluZyBjb25kaXRpb24gdG8N
-CnRoZSBzcGVjaWZpYyBJT01NVSBpbiBkZXRhY2hlZCBzdGF0ZS4gUGxlYXNlIGxldCBtZSBrbm93
-IHdoYXQgeW91IHRoaW5rLg0KDQpSZWdhcmRzLA0KU3VyYXZlZQ0K
+Hi All,
+
+I compiled the fixed '257002094bc5935dd63207a380d9698ab81f0775' 
+(powerpc/dma: use the dma-direct allocator for coherent platforms) today.
+
+git clone git://git.infradead.org/users/hch/misc.git -b powerpc-dma.6 a
+
+git checkout 257002094bc5935dd63207a380d9698ab81f0775
+
+Link to the Git: 
+http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6 
+
+
+env LANG=C make CROSS_COMPILE=powerpc-linux-gnu- ARCH=powerpc zImage
+
+env LANG=C make CROSS_COMPILE=powerpc-linux-gnu- ARCH=powerpc uImage
+
+The X1000 boots and the PASEMI onboard ethernet works!
+
+Bad news for the X5000 (P5020 board). U-Boot loads the kernel and the 
+dtb file. Then the kernel starts but it doesn't find any hard disks 
+(partitions).
+
+Cheers,
+Christian
+
+
+On 15 January 2019 at 4:17PM, Christoph Hellwig wrote:
+
+So 257002094bc5935dd63207a380d9698ab81f0775 above is the fixed version
+for the commit - this switched the ifdef in dma.c around that I had
+inverted.  Can you try that one instead?  And then move on with the
+commits after it in the updated powerpc-dma.6 branch - they are
+identical to the original branch except for carrying this fix forward.
