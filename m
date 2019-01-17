@@ -1,82 +1,89 @@
-From: Dmitry Osipenko <digetx-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu/tegra-smmu: Fix domain_alloc
-Date: Thu, 17 Jan 2019 18:13:49 +0300
-Message-ID: <e55f408d-d518-f12d-4233-1b70263400f4@gmail.com>
-References: <1547671814-30088-1-git-send-email-navneetk@nvidia.com>
+From: Konrad Rzeszutek Wilk <konrad@darnok.org>
+Subject: Re: [PATCH v2 2/2] swiotlb: checking whether swiotlb buffer is full
+ with io_tlb_used
+Date: Thu, 17 Jan 2019 10:25:23 -0500
+Message-ID: <20190117152520.GA24900@localhost.localdomain>
+References: <1544402278-8175-1-git-send-email-dongli.zhang@oracle.com>
+ <1544402278-8175-2-git-send-email-dongli.zhang@oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1547671814-30088-1-git-send-email-navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Navneet Kumar <navneetk-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jonathanh-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1544402278-8175-2-git-send-email-dongli.zhang@oracle.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Dongli Zhang <dongli.zhang@oracle.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, joe.jin@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-MTYuMDEuMjAxOSAyMzo1MCwgTmF2bmVldCBLdW1hciDQv9C40YjQtdGCOgo+ICogQWxsb2NhdGUg
-ZG1hIGlvdmEgY29va2llIGZvciBhIGRvbWFpbiB3aGlsZSBhZGRpbmcgZG1hIGlvbW11Cj4gZGV2
-aWNlcy4KPiAqIFBlcmZvcm0gYSBzdHJpY3RlciBjaGVjayBmb3IgZG9tYWluIHR5cGUgcGFyYW1l
-dGVyLgo+IAoKQ29tbWl0IG1lc3NhZ2Ugc2hvdWxkIHRlbGwgd2hhdCBleGFjdGx5IGlzIGdldHRp
-bmcgImZpeGVkIi4gQXBwYXJlbnRseSB5b3UncmUgdHJ5aW5nIHRvIHN1cHBvcnQgVDEzMiBBUk02
-NCBoZXJlLgoKPiBTaWduZWQtb2ZmLWJ5OiBOYXZuZWV0IEt1bWFyIDxuYXZuZWV0a0BudmlkaWEu
-Y29tPgo+IC0tLQo+ICBkcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYyB8IDQzICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDI3IGlu
-c2VydGlvbnMoKyksIDE2IGRlbGV0aW9ucygtKQo+IAo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lv
-bW11L3RlZ3JhLXNtbXUuYyBiL2RyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jCj4gaW5kZXggNTQz
-ZjdjOS4uZWU0ZDhhOCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYwo+
-ICsrKyBiL2RyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jCj4gQEAgLTE2LDYgKzE2LDcgQEAKPiAg
-I2luY2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPgo+ICAjaW5jbHVkZSA8bGludXgvc2xh
-Yi5oPgo+ICAjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBpbmcuaD4KPiArI2luY2x1ZGUgPGxpbnV4
-L2RtYS1pb21tdS5oPgo+ICAKPiAgI2luY2x1ZGUgPHNvYy90ZWdyYS9haGIuaD4KPiAgI2luY2x1
-ZGUgPHNvYy90ZWdyYS9tYy5oPgo+IEBAIC0yNzEsOCArMjcyLDEwIEBAIHN0YXRpYyBib29sIHRl
-Z3JhX3NtbXVfY2FwYWJsZShlbnVtIGlvbW11X2NhcCBjYXApCj4gIHN0YXRpYyBzdHJ1Y3QgaW9t
-bXVfZG9tYWluICp0ZWdyYV9zbW11X2RvbWFpbl9hbGxvYyh1bnNpZ25lZCB0eXBlKQo+ICB7Cj4g
-IAlzdHJ1Y3QgdGVncmFfc21tdV9hcyAqYXM7Cj4gKwlpbnQgcmV0Owo+ICAKPiAtCWlmICh0eXBl
-ICE9IElPTU1VX0RPTUFJTl9VTk1BTkFHRUQpCj4gKwlpZiAodHlwZSAhPSBJT01NVV9ET01BSU5f
-VU5NQU5BR0VEICYmIHR5cGUgIT0gSU9NTVVfRE9NQUlOX0RNQSAmJgo+ICsJCQl0eXBlICE9IElP
-TU1VX0RPTUFJTl9JREVOVElUWSkKPiAgCQlyZXR1cm4gTlVMTDsKClNob3VsZCBiZSBiZXR0ZXIg
-dG8gd3JpdGUgdGhlc2UgbGluZXMgbGlrZSB0aGlzIGZvciB0aGUgc2FrZSBvZiByZWFkYWJpbGl0
-eToKCglpZiAodHlwZSAhPSBJT01NVV9ET01BSU5fVU5NQU5BR0VEICYmIAoJICAgIHR5cGUgIT0g
-SU9NTVVfRE9NQUlOX0RNQSAmJgoJICAgIHR5cGUgIT0gSU9NTVVfRE9NQUlOX0lERU5USVRZKQoJ
-CXJldHVybiBOVUxMOwoKCj4gIAo+ICAJYXMgPSBremFsbG9jKHNpemVvZigqYXMpLCBHRlBfS0VS
-TkVMKTsKPiBAQCAtMjgxLDI2ICsyODQsMjIgQEAgc3RhdGljIHN0cnVjdCBpb21tdV9kb21haW4g
-KnRlZ3JhX3NtbXVfZG9tYWluX2FsbG9jKHVuc2lnbmVkIHR5cGUpCj4gIAo+ICAJYXMtPmF0dHIg
-PSBTTU1VX1BEX1JFQURBQkxFIHwgU01NVV9QRF9XUklUQUJMRSB8IFNNTVVfUERfTk9OU0VDVVJF
-Owo+ICAKPiArCXJldCA9ICh0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpID8gaW9tbXVfZ2V0X2Rt
-YV9jb29raWUoJmFzLT5kb21haW4pIDoKPiArCQktRU5PREVWOwoKVGhpcyBtYWtlcyB0byBmYWls
-IGFsbG9jYXRpb24gb2YgZG9tYWluIHRoYXQgaGFzIHR5cGUgb3RoZXIgdGhhbiBJT01NVV9ET01B
-SU5fRE1BLgoKU2hvdWxkIGJlOgoKCWlmICh0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpIHsKCQll
-cnIgPSBpb21tdV9nZXRfZG1hX2Nvb2tpZSgmYXMtPmRvbWFpbik7CgkJaWYgKGVycikKCQkJZ290
-byBmcmVlX2FzOwoJfQoKCj4gKwlpZiAocmV0KQo+ICsJCWdvdG8gZnJlZV9hczsKPiArCj4gIAlh
-cy0+cGQgPSBhbGxvY19wYWdlKEdGUF9LRVJORUwgfCBfX0dGUF9ETUEgfCBfX0dGUF9aRVJPKTsK
-PiAtCWlmICghYXMtPnBkKSB7Cj4gLQkJa2ZyZWUoYXMpOwo+IC0JCXJldHVybiBOVUxMOwo+IC0J
-fQo+ICsJaWYgKCFhcy0+cGQpCj4gKwkJZ290byBwdXRfZG1hX2Nvb2tpZTsKPiAgCj4gIAlhcy0+
-Y291bnQgPSBrY2FsbG9jKFNNTVVfTlVNX1BERSwgc2l6ZW9mKHUzMiksIEdGUF9LRVJORUwpOwo+
-IC0JaWYgKCFhcy0+Y291bnQpIHsKPiAtCQlfX2ZyZWVfcGFnZShhcy0+cGQpOwo+IC0JCWtmcmVl
-KGFzKTsKPiAtCQlyZXR1cm4gTlVMTDsKPiAtCX0KPiArCWlmICghYXMtPmNvdW50KQo+ICsJCWdv
-dG8gZnJlZV9wZF9yYW5nZTsKPiAgCj4gIAlhcy0+cHRzID0ga2NhbGxvYyhTTU1VX05VTV9QREUs
-IHNpemVvZigqYXMtPnB0cyksIEdGUF9LRVJORUwpOwo+IC0JaWYgKCFhcy0+cHRzKSB7Cj4gLQkJ
-a2ZyZWUoYXMtPmNvdW50KTsKPiAtCQlfX2ZyZWVfcGFnZShhcy0+cGQpOwo+IC0JCWtmcmVlKGFz
-KTsKPiAtCQlyZXR1cm4gTlVMTDsKPiAtCX0KPiArCWlmICghYXMtPnB0cykKPiArCQlnb3RvIGZy
-ZWVfcHRzOwo+ICAKPiAgCS8qIHNldHVwIGFwZXJ0dXJlICovCj4gIAlhcy0+ZG9tYWluLmdlb21l
-dHJ5LmFwZXJ0dXJlX3N0YXJ0ID0gMDsKPiBAQCAtMzA4LDYgKzMwNywxOCBAQCBzdGF0aWMgc3Ry
-dWN0IGlvbW11X2RvbWFpbiAqdGVncmFfc21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlwZSkK
-PiAgCWFzLT5kb21haW4uZ2VvbWV0cnkuZm9yY2VfYXBlcnR1cmUgPSB0cnVlOwo+ICAKPiAgCXJl
-dHVybiAmYXMtPmRvbWFpbjsKPiArCj4gK2ZyZWVfcHRzOgo+ICsJa2ZyZWUoYXMtPnB0cyk7Cj4g
-K2ZyZWVfcGRfcmFuZ2U6Cj4gKwlfX2ZyZWVfcGFnZShhcy0+cGQpOwo+ICtwdXRfZG1hX2Nvb2tp
-ZToKPiArCWlmICh0eXBlID09IElPTU1VX0RPTUFJTl9ETUEpCj4gKwkJaW9tbXVfcHV0X2RtYV9j
-b29raWUoJmFzLT5kb21haW4pOwo+ICtmcmVlX2FzOgo+ICsJa2ZyZWUoYXMpOwo+ICsKPiArCXJl
-dHVybiBOVUxMOwo+ICB9Cj4gIAo+ICBzdGF0aWMgdm9pZCB0ZWdyYV9zbW11X2RvbWFpbl9mcmVl
-KHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbikKPiAKCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+On Mon, Dec 10, 2018 at 08:37:58AM +0800, Dongli Zhang wrote:
+> This patch uses io_tlb_used to help check whether swiotlb buffer is full.
+> io_tlb_used is no longer used for only debugfs. It is also used to help
+> optimize swiotlb_tbl_map_single().
+
+Please split this up.
+
+That is have the 'if (unlikely(nslots > io_tlb_nslabs - io_tlb_used))'
+as a seperate patch.
+
+And the #ifdef folding in the previous patch.
+
+Also rebase on top of latest Linus please.
+
+> 
+> Suggested-by: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> ---
+>  kernel/dma/swiotlb.c | 10 ++++------
+>  1 file changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 3979c2c..9300341 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -76,12 +76,10 @@ static phys_addr_t io_tlb_start, io_tlb_end;
+>   */
+>  static unsigned long io_tlb_nslabs;
+>  
+> -#ifdef CONFIG_DEBUG_FS
+>  /*
+>   * The number of used IO TLB block
+>   */
+>  static unsigned long io_tlb_used;
+> -#endif
+>  
+>  /*
+>   * This is a free list describing the number of free entries available from
+> @@ -489,6 +487,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>  	 * request and allocate a buffer from that IO TLB pool.
+>  	 */
+>  	spin_lock_irqsave(&io_tlb_lock, flags);
+> +
+> +	if (unlikely(nslots > io_tlb_nslabs - io_tlb_used))
+> +		goto not_found;
+> +
+>  	index = ALIGN(io_tlb_index, stride);
+>  	if (index >= io_tlb_nslabs)
+>  		index = 0;
+> @@ -538,9 +540,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>  		dev_warn(hwdev, "swiotlb buffer is full (sz: %zd bytes)\n", size);
+>  	return SWIOTLB_MAP_ERROR;
+>  found:
+> -#ifdef CONFIG_DEBUG_FS
+>  	io_tlb_used += nslots;
+> -#endif
+>  	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>  
+>  	/*
+> @@ -602,9 +602,7 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+>  		for (i = index - 1; (OFFSET(i, IO_TLB_SEGSIZE) != IO_TLB_SEGSIZE -1) && io_tlb_list[i]; i--)
+>  			io_tlb_list[i] = ++count;
+>  
+> -#ifdef CONFIG_DEBUG_FS
+>  		io_tlb_used -= nslots;
+> -#endif
+>  	}
+>  	spin_unlock_irqrestore(&io_tlb_lock, flags);
+>  }
+> -- 
+> 2.7.4
+> 
