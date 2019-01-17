@@ -1,155 +1,71 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: Re: [RFC PATCH] i2c: imx: dma map the i2c data i/o register
-Date: Thu, 17 Jan 2019 09:58:08 +0000
-Message-ID: <90fcd7fb-13b2-97fe-d9cd-3c5e1d0fc6b7@nxp.com>
-References: <20190116161713.12748-1-laurentiu.tudor@nxp.com>
- <7f9a9486-250d-cc92-1ce5-b5c1afc96f2d@arm.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [PATCH 0/9] Use vm_insert_range and vm_insert_range_buggy
+Date: Thu, 17 Jan 2019 17:09:43 +0530
+Message-ID: <CAFqt6zYxCxzGjv3ea+dYQHcmt2P849ZgaVSH=b05m9P4=MTBEA@mail.gmail.com>
+References: <20190111150541.GA2670@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <7f9a9486-250d-cc92-1ce5-b5c1afc96f2d@arm.com>
-Content-Language: en-US
-Content-ID: <5B8D9E4B8806CE43831C480BDACE8ECD@eurprd04.prod.outlook.com>
+In-Reply-To: <20190111150541.GA2670@jordon-HP-15-Notebook-PC>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, dl-linux-imx <linux-imx@nxp.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kernel@pengutronix.de" <kernel@pengutronix.de>, "wsa@the-dreams.de" <wsa@the-dreams.de>
-Cc: "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, vbabka@suse.cz, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org, Boris Ostrovsky <boris.ost>
+Cc: linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sDQoNCk9uIDE2LjAxLjIwMTkgMTk6NTUsIFJvYmluIE11cnBoeSB3cm90ZToNCj4g
-T24gMTYvMDEvMjAxOSAxNjoxNywgTGF1cmVudGl1IFR1ZG9yIHdyb3RlOg0KPj4gVGhpcyBpcyBh
-biBhdHRlbXB0IHRvIGZpeCBhbiBpb21tdSBleGNlcHRpb24gd2hlbiBkb2luZyBkbWEgdG8gdGhl
-DQo+PiBpMmMgY29udHJvbGxlciB3aXRoIEVETUEuIFdpdGhvdXQgdGhlc2UgbWFwcGluZ3MgdGhl
-IHNtbXUgcmFpc2VzIGENCj4+IGNvbnRleHQgZmF1bHQgWzFdIGV4YWN0bHkgd2l0aCB0aGUgYWRk
-cmVzcyBvZiB0aGUgaTJjIGRhdGEgaS9vIHJlZy4NCj4+IFRoaXMgd2FzIHNlZW4gb24gYW4gTlhQ
-IExTMTA0M0EgY2hpcCB3aGlsZSB3b3JraW5nIG9uIGVuYWJsaW5nIFNNTVUuDQo+IA0KPiBSYXRo
-ZXIgdGhhbiBncmFkdWFsbHkgYWRkaW5nIG11Y2ggdGhlIHNhbWUgY29kZSB0byBwb3RlbnRpYWxs
-eSBldmVyeSANCj4gcG9zc2libGUgY2xpZW50IGRyaXZlciwgY2FuIGl0IG5vdCBiZSBpbXBsZW1l
-bnRlZCBvbmNlIGluIHRoZSBlZG1hIA0KPiBkcml2ZXIgYXMgd2FzIGRvbmUgZm9yIHBsMzMwIGFu
-ZCByY2FyLWRtYWM/IFRoYXQgYWxzbyBzaWRlc3RlcHMgYW55IG9mIA0KPiB0aGUgbmFzdGluZXNz
-IG9mIHNtdWdnbGluZyBhIGRtYV9hZGRyX3QgdmlhIGEgcGh5c19hZGRyX3QgdmFyaWFibGUuDQoN
-ClRoYW5rcyBmb3IgdGhlIHBvaW50ZXIuIEkgd2FzIGFjdHVhbGx5IHVuc3VyZSB3aGVyZSB0aGlz
-IHNob3VsZCBiZSANCnRhY2tsZWQ6IGVpdGhlciBpMmMgb3IgZG1hIHNpZGUuIFBsdXMgSSBzb21l
-aG93IG1hbmFnZWQgdG8gY29tcGxldGVseSANCm1pc3MgdGhlIHN1cHBvcnQgYWRkZWQgaW4gdGhl
-IGRtYSBkcml2ZXJzIHlvdSBtZW50aW9uLiBJJ2xsIHN0YXJ0IA0KbG9va2luZyBpbnRvIHN0ZWFs
-aW5nIHNvbWUgb2YgeW91ciBjb2RlIFsxXS4gOi0pDQoNClsxXSANCmh0dHBzOi8vZ2l0Lmtlcm5l
-bC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC9jb21taXQv
-P2lkPTRkNmQ3NGUyMjA5NjU0M2NiM2IzNWU3MTdjZjFiOWFlYTM2NTVmMzcNCg0KLS0tDQpCZXN0
-IFJlZ2FyZHMsIExhdXJlbnRpdQ0KDQoNCj4gDQo+PiBbMV0gYXJtLXNtbXUgOTAwMDAwMC5pb21t
-dTogVW5oYW5kbGVkIGNvbnRleHQgZmF1bHQ6IGZzcj0weDQwMiwNCj4+IMKgwqDCoMKgIGlvdmE9
-MHgwMjE4MDAwNCwgZnN5bnI9MHgxNTAwMjEsIGNiPTcNCj4+DQo+PiBTaWduZWQtb2ZmLWJ5OiBM
-YXVyZW50aXUgVHVkb3IgPGxhdXJlbnRpdS50dWRvckBueHAuY29tPg0KPj4gLS0tDQo+PiDCoCBk
-cml2ZXJzL2kyYy9idXNzZXMvaTJjLWlteC5jIHwgNTcgKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKystLS0tLS0tDQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgNDcgaW5zZXJ0aW9ucygrKSwgMTAg
-ZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMt
-aW14LmMgYi9kcml2ZXJzL2kyYy9idXNzZXMvaTJjLWlteC5jDQo+PiBpbmRleCA0ZTM0YjE1NzI3
-NTYuLjA3Y2M4ZjRiNDViOSAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMt
-aW14LmMNCj4+ICsrKyBiL2RyaXZlcnMvaTJjL2J1c3Nlcy9pMmMtaW14LmMNCj4+IEBAIC0yMDIs
-NiArMjAyLDkgQEAgc3RydWN0IGlteF9pMmNfc3RydWN0IHsNCj4+IMKgwqDCoMKgwqAgc3RydWN0
-IHBpbmN0cmxfc3RhdGUgKnBpbmN0cmxfcGluc19ncGlvOw0KPj4gwqDCoMKgwqDCoCBzdHJ1Y3Qg
-aW14X2kyY19kbWHCoMKgwqAgKmRtYTsNCj4+ICsNCj4+ICvCoMKgwqAgZG1hX2FkZHJfdMKgwqDC
-oMKgwqDCoMKgIGRtYV90eF9hZGRyOw0KPj4gK8KgwqDCoCBkbWFfYWRkcl90wqDCoMKgwqDCoMKg
-wqAgZG1hX3J4X2FkZHI7DQo+PiDCoCB9Ow0KPj4gwqAgc3RhdGljIGNvbnN0IHN0cnVjdCBpbXhf
-aTJjX2h3ZGF0YSBpbXgxX2kyY19od2RhdGEgPSB7DQo+PiBAQCAtMjc0LDE3ICsyNzcsMjAgQEAg
-c3RhdGljIGlubGluZSB1bnNpZ25lZCBjaGFyIA0KPj4gaW14X2kyY19yZWFkX3JlZyhzdHJ1Y3Qg
-aW14X2kyY19zdHJ1Y3QgKmkyY19pbXgsDQo+PiDCoCAvKiBGdW5jdGlvbnMgZm9yIERNQSBzdXBw
-b3J0ICovDQo+PiDCoCBzdGF0aWMgaW50IGkyY19pbXhfZG1hX3JlcXVlc3Qoc3RydWN0IGlteF9p
-MmNfc3RydWN0ICppMmNfaW14LA0KPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCBkbWFfYWRkcl90IHBoeV9hZGRyKQ0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoCBwaHlzX2FkZHJfdCBwaHlfYWRkcikNCj4+IMKgIHsNCj4+IMKgwqDCoMKgwqAg
-c3RydWN0IGlteF9pMmNfZG1hICpkbWE7DQo+PiDCoMKgwqDCoMKgIHN0cnVjdCBkbWFfc2xhdmVf
-Y29uZmlnIGRtYV9zY29uZmlnOw0KPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgZGV2aWNlICpkZXYgPSAm
-aTJjX2lteC0+YWRhcHRlci5kZXY7DQo+PiDCoMKgwqDCoMKgIGludCByZXQ7DQo+PiArwqDCoMKg
-IHBoeXNfYWRkcl90IGkyZHJfcGE7DQo+PiDCoMKgwqDCoMKgIGRtYSA9IGRldm1fa3phbGxvYyhk
-ZXYsIHNpemVvZigqZG1hKSwgR0ZQX0tFUk5FTCk7DQo+PiDCoMKgwqDCoMKgIGlmICghZG1hKQ0K
-Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiAtRU5PTUVNOw0KPj4gK8KgwqDCoCBpMmRyX3Bh
-ID0gcGh5X2FkZHIgKyAoSU1YX0kyQ19JMkRSIDw8IGkyY19pbXgtPmh3ZGF0YS0+cmVnc2hpZnQp
-Ow0KPj4gKw0KPj4gwqDCoMKgwqDCoCBkbWEtPmNoYW5fdHggPSBkbWFfcmVxdWVzdF9jaGFuKGRl
-diwgInR4Iik7DQo+PiDCoMKgwqDCoMKgIGlmIChJU19FUlIoZG1hLT5jaGFuX3R4KSkgew0KPj4g
-wqDCoMKgwqDCoMKgwqDCoMKgIHJldCA9IFBUUl9FUlIoZG1hLT5jaGFuX3R4KTsNCj4+IEBAIC0y
-OTMsMTUgKzI5OSwyNSBAQCBzdGF0aWMgaW50IGkyY19pbXhfZG1hX3JlcXVlc3Qoc3RydWN0IA0K
-Pj4gaW14X2kyY19zdHJ1Y3QgKmkyY19pbXgsDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBm
-YWlsX2FsOw0KPj4gwqDCoMKgwqDCoCB9DQo+PiAtwqDCoMKgIGRtYV9zY29uZmlnLmRzdF9hZGRy
-ID0gcGh5X2FkZHIgKw0KPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAoSU1YX0ky
-Q19JMkRSIDw8IGkyY19pbXgtPmh3ZGF0YS0+cmVnc2hpZnQpOw0KPj4gK8KgwqDCoCBpMmNfaW14
-LT5kbWFfdHhfYWRkciA9IGRtYV9tYXBfcmVzb3VyY2UoZG1hLT5jaGFuX3R4LT5kZXZpY2UtPmRl
-diwNCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGky
-ZHJfcGEsDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBETUFfU0xBVkVfQlVTV0lEVEhfMV9CWVRFLA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgRE1BX01FTV9UT19ERVYsIDApOw0KPj4gK8KgwqDCoCBy
-ZXQgPSBkbWFfbWFwcGluZ19lcnJvcihkbWEtPmNoYW5fdHgtPmRldmljZS0+ZGV2LA0KPj4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpMmNfaW14LT5kbWFfdHhfYWRkcik7DQo+PiAr
-wqDCoMKgIGlmIChyZXQpIHsNCj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKGRldiwgImNhbid0
-IGRtYSBtYXAgdHggZGVzdGluYXRpb24gKCVkKVxuIiwgcmV0KTsNCj4+ICvCoMKgwqDCoMKgwqDC
-oCBnb3RvIGZhaWxfdHg7DQo+PiArwqDCoMKgIH0NCj4+ICsNCj4+ICvCoMKgwqAgZG1hX3Njb25m
-aWcuZHN0X2FkZHIgPSBpMmNfaW14LT5kbWFfdHhfYWRkcjsNCj4+IMKgwqDCoMKgwqAgZG1hX3Nj
-b25maWcuZHN0X2FkZHJfd2lkdGggPSBETUFfU0xBVkVfQlVTV0lEVEhfMV9CWVRFOw0KPj4gwqDC
-oMKgwqDCoCBkbWFfc2NvbmZpZy5kc3RfbWF4YnVyc3QgPSAxOw0KPj4gwqDCoMKgwqDCoCBkbWFf
-c2NvbmZpZy5kaXJlY3Rpb24gPSBETUFfTUVNX1RPX0RFVjsNCj4+IMKgwqDCoMKgwqAgcmV0ID0g
-ZG1hZW5naW5lX3NsYXZlX2NvbmZpZyhkbWEtPmNoYW5fdHgsICZkbWFfc2NvbmZpZyk7DQo+PiDC
-oMKgwqDCoMKgIGlmIChyZXQgPCAwKSB7DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgZGV2X2Vycihk
-ZXYsICJjYW4ndCBjb25maWd1cmUgdHggY2hhbm5lbCAoJWQpXG4iLCByZXQpOw0KPj4gLcKgwqDC
-oMKgwqDCoMKgIGdvdG8gZmFpbF90eDsNCj4+ICvCoMKgwqDCoMKgwqDCoCBnb3RvIGZhaWxfdHhf
-ZG1hOw0KPj4gwqDCoMKgwqDCoCB9DQo+PiDCoMKgwqDCoMKgIGRtYS0+Y2hhbl9yeCA9IGRtYV9y
-ZXF1ZXN0X2NoYW4oZGV2LCAicngiKTsNCj4+IEBAIC0zMDksMTggKzMyNSwyOCBAQCBzdGF0aWMg
-aW50IGkyY19pbXhfZG1hX3JlcXVlc3Qoc3RydWN0IA0KPj4gaW14X2kyY19zdHJ1Y3QgKmkyY19p
-bXgsDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0ID0gUFRSX0VSUihkbWEtPmNoYW5fcngpOw0K
-Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChyZXQgIT0gLUVOT0RFViAmJiByZXQgIT0gLUVQUk9C
-RV9ERUZFUikNCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldl9lcnIoZGV2LCAiY2Fu
-J3QgcmVxdWVzdCBETUEgcnggY2hhbm5lbCAoJWQpXG4iLCByZXQpOw0KPj4gLcKgwqDCoMKgwqDC
-oMKgIGdvdG8gZmFpbF90eDsNCj4+ICvCoMKgwqDCoMKgwqDCoCBnb3RvIGZhaWxfdHhfZG1hOw0K
-Pj4gwqDCoMKgwqDCoCB9DQo+PiAtwqDCoMKgIGRtYV9zY29uZmlnLnNyY19hZGRyID0gcGh5X2Fk
-ZHIgKw0KPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAoSU1YX0kyQ19JMkRSIDw8
-IGkyY19pbXgtPmh3ZGF0YS0+cmVnc2hpZnQpOw0KPj4gK8KgwqDCoCBpMmNfaW14LT5kbWFfcnhf
-YWRkciA9IGRtYV9tYXBfcmVzb3VyY2UoZG1hLT5jaGFuX3J4LT5kZXZpY2UtPmRldiwNCj4+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGkyZHJfcGEsDQo+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBETUFfU0xB
-VkVfQlVTV0lEVEhfMV9CWVRFLA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgRE1BX0RFVl9UT19NRU0sIDApOw0KPj4gK8KgwqDCoCByZXQgPSBkbWFf
-bWFwcGluZ19lcnJvcihkbWEtPmNoYW5fcngtPmRldmljZS0+ZGV2LA0KPj4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBpMmNfaW14LT5kbWFfcnhfYWRkcik7DQo+PiArwqDCoMKgIGlm
-IChyZXQpIHsNCj4+ICvCoMKgwqDCoMKgwqDCoCBkZXZfZXJyKGRldiwgImNhbid0IGRtYSBtYXAg
-cnggc291cmNlICglZClcbiIsIHJldCk7DQo+PiArwqDCoMKgwqDCoMKgwqAgZ290byBmYWlsX3J4
-Ow0KPj4gK8KgwqDCoCB9DQo+PiArDQo+PiArwqDCoMKgIGRtYV9zY29uZmlnLnNyY19hZGRyID0g
-aTJjX2lteC0+ZG1hX3J4X2FkZHI7DQo+PiDCoMKgwqDCoMKgIGRtYV9zY29uZmlnLnNyY19hZGRy
-X3dpZHRoID0gRE1BX1NMQVZFX0JVU1dJRFRIXzFfQllURTsNCj4+IMKgwqDCoMKgwqAgZG1hX3Nj
-b25maWcuc3JjX21heGJ1cnN0ID0gMTsNCj4+IMKgwqDCoMKgwqAgZG1hX3Njb25maWcuZGlyZWN0
-aW9uID0gRE1BX0RFVl9UT19NRU07DQo+PiDCoMKgwqDCoMKgIHJldCA9IGRtYWVuZ2luZV9zbGF2
-ZV9jb25maWcoZG1hLT5jaGFuX3J4LCAmZG1hX3Njb25maWcpOw0KPj4gwqDCoMKgwqDCoCBpZiAo
-cmV0IDwgMCkgew0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgIGRldl9lcnIoZGV2LCAiY2FuJ3QgY29u
-ZmlndXJlIHJ4IGNoYW5uZWwgKCVkKVxuIiwgcmV0KTsNCj4+IC3CoMKgwqDCoMKgwqDCoCBnb3Rv
-IGZhaWxfcng7DQo+PiArwqDCoMKgwqDCoMKgwqAgZ290byBmYWlsX3J4X2RtYTsNCj4+IMKgwqDC
-oMKgwqAgfQ0KPj4gwqDCoMKgwqDCoCBpMmNfaW14LT5kbWEgPSBkbWE7DQo+PiBAQCAtMzMwLDgg
-KzM1NiwxNCBAQCBzdGF0aWMgaW50IGkyY19pbXhfZG1hX3JlcXVlc3Qoc3RydWN0IA0KPj4gaW14
-X2kyY19zdHJ1Y3QgKmkyY19pbXgsDQo+PiDCoMKgwqDCoMKgIHJldHVybiAwOw0KPj4gK2ZhaWxf
-cnhfZG1hOg0KPj4gK8KgwqDCoCBkbWFfdW5tYXBfcmVzb3VyY2UoZG1hLT5jaGFuX3J4LT5kZXZp
-Y2UtPmRldiwgaTJjX2lteC0+ZG1hX3J4X2FkZHIsDQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBETUFfU0xBVkVfQlVTV0lEVEhfMV9CWVRFLCBETUFfREVWX1RPX01FTSwgMCk7DQo+
-PiDCoCBmYWlsX3J4Og0KPj4gwqDCoMKgwqDCoCBkbWFfcmVsZWFzZV9jaGFubmVsKGRtYS0+Y2hh
-bl9yeCk7DQo+PiArZmFpbF90eF9kbWE6DQo+PiArwqDCoMKgIGRtYV91bm1hcF9yZXNvdXJjZShk
-bWEtPmNoYW5fdHgtPmRldmljZS0+ZGV2LCBpMmNfaW14LT5kbWFfdHhfYWRkciwNCj4+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIERNQV9TTEFWRV9CVVNXSURUSF8xX0JZVEUsIERNQV9N
-RU1fVE9fREVWLCAwKTsNCj4+IMKgIGZhaWxfdHg6DQo+PiDCoMKgwqDCoMKgIGRtYV9yZWxlYXNl
-X2NoYW5uZWwoZG1hLT5jaGFuX3R4KTsNCj4+IMKgIGZhaWxfYWw6DQo+PiBAQCAtMTA1Nyw3ICsx
-MDg5LDcgQEAgc3RhdGljIGludCBpMmNfaW14X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2Ug
-DQo+PiAqcGRldikNCj4+IMKgwqDCoMKgwqAgc3RydWN0IGlteGkyY19wbGF0Zm9ybV9kYXRhICpw
-ZGF0YSA9IGRldl9nZXRfcGxhdGRhdGEoJnBkZXYtPmRldik7DQo+PiDCoMKgwqDCoMKgIHZvaWQg
-X19pb21lbSAqYmFzZTsNCj4+IMKgwqDCoMKgwqAgaW50IGlycSwgcmV0Ow0KPj4gLcKgwqDCoCBk
-bWFfYWRkcl90IHBoeV9hZGRyOw0KPj4gK8KgwqDCoCBwaHlzX2FkZHJfdCBwaHlfYWRkcjsNCj4+
-IMKgwqDCoMKgwqAgZGV2X2RiZygmcGRldi0+ZGV2LCAiPCVzPlxuIiwgX19mdW5jX18pOw0KPj4g
-QEAgLTEwNzIsNyArMTEwNCw3IEBAIHN0YXRpYyBpbnQgaTJjX2lteF9wcm9iZShzdHJ1Y3QgcGxh
-dGZvcm1fZGV2aWNlIA0KPj4gKnBkZXYpDQo+PiDCoMKgwqDCoMKgIGlmIChJU19FUlIoYmFzZSkp
-DQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIFBUUl9FUlIoYmFzZSk7DQo+PiAtwqDCoMKg
-IHBoeV9hZGRyID0gKGRtYV9hZGRyX3QpcmVzLT5zdGFydDsNCj4+ICvCoMKgwqAgcGh5X2FkZHIg
-PSByZXMtPnN0YXJ0Ow0KPj4gwqDCoMKgwqDCoCBpMmNfaW14ID0gZGV2bV9remFsbG9jKCZwZGV2
-LT5kZXYsIHNpemVvZigqaTJjX2lteCksIEdGUF9LRVJORUwpOw0KPj4gwqDCoMKgwqDCoCBpZiAo
-IWkyY19pbXgpDQo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIC1FTk9NRU07DQo+PiBAQCAt
-MTIyMCw2ICsxMjUyLDExIEBAIHN0YXRpYyBpbnQgaTJjX2lteF9yZW1vdmUoc3RydWN0IA0KPj4g
-cGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPj4gwqDCoMKgwqDCoCBwbV9ydW50aW1lX3B1dF9ub2lk
-bGUoJnBkZXYtPmRldik7DQo+PiDCoMKgwqDCoMKgIHBtX3J1bnRpbWVfZGlzYWJsZSgmcGRldi0+
-ZGV2KTsNCj4+ICvCoMKgwqAgZG1hX3VubWFwX3Jlc291cmNlKCZwZGV2LT5kZXYsIGkyY19pbXgt
-PmRtYV90eF9hZGRyLA0KPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgRE1BX1NMQVZF
-X0JVU1dJRFRIXzFfQllURSwgRE1BX01FTV9UT19ERVYsIDApOw0KPj4gK8KgwqDCoCBkbWFfdW5t
-YXBfcmVzb3VyY2UoJnBkZXYtPmRldiwgaTJjX2lteC0+ZG1hX3J4X2FkZHIsDQo+PiArwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBETUFfU0xBVkVfQlVTV0lEVEhfMV9CWVRFLCBETUFfREVW
-X1RPX01FTSwgMCk7DQo+PiArDQo+PiDCoMKgwqDCoMKgIHJldHVybiAwOw0KPj4gwqAgfQ0KPj4=
+On Fri, Jan 11, 2019 at 8:31 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
+>
+> Previouly drivers have their own way of mapping range of
+> kernel pages/memory into user vma and this was done by
+> invoking vm_insert_page() within a loop.
+>
+> As this pattern is common across different drivers, it can
+> be generalized by creating new functions and use it across
+> the drivers.
+>
+> vm_insert_range() is the API which could be used to mapped
+> kernel memory/pages in drivers which has considered vm_pgoff
+>
+> vm_insert_range_buggy() is the API which could be used to map
+> range of kernel memory/pages in drivers which has not considered
+> vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
+>
+> We _could_ then at a later "fix" these drivers which are using
+> vm_insert_range_buggy() to behave according to the normal vm_pgoff
+> offsetting simply by removing the _buggy suffix on the function
+> name and if that causes regressions, it gives us an easy way to revert.
+>
+> There is an existing bug in [7/9], where user passed length is not
+> verified against object_count. For any value of length > object_count
+> it will end up overrun page array which could lead to a potential bug.
+> This is fixed as part of these conversion.
+>
+> Souptick Joarder (9):
+>   mm: Introduce new vm_insert_range and vm_insert_range_buggy API
+>   arch/arm/mm/dma-mapping.c: Convert to use vm_insert_range
+>   drivers/firewire/core-iso.c: Convert to use vm_insert_range_buggy
+>   drm/rockchip/rockchip_drm_gem.c: Convert to use vm_insert_range
+>   drm/xen/xen_drm_front_gem.c: Convert to use vm_insert_range
+>   iommu/dma-iommu.c: Convert to use vm_insert_range
+>   videobuf2/videobuf2-dma-sg.c: Convert to use vm_insert_range_buggy
+>   xen/gntdev.c: Convert to use vm_insert_range
+>   xen/privcmd-buf.c: Convert to use vm_insert_range_buggy
+
+Any further comment on these patches ?
+
+>
+>  arch/arm/mm/dma-mapping.c                         | 22 ++----
+>  drivers/firewire/core-iso.c                       | 15 +----
+>  drivers/gpu/drm/rockchip/rockchip_drm_gem.c       | 17 +----
+>  drivers/gpu/drm/xen/xen_drm_front_gem.c           | 18 ++---
+>  drivers/iommu/dma-iommu.c                         | 12 +---
+>  drivers/media/common/videobuf2/videobuf2-dma-sg.c | 22 ++----
+>  drivers/xen/gntdev.c                              | 16 ++---
+>  drivers/xen/privcmd-buf.c                         |  8 +--
+>  include/linux/mm.h                                |  4 ++
+>  mm/memory.c                                       | 81 +++++++++++++++++++++++
+>  mm/nommu.c                                        | 14 ++++
+>  11 files changed, 129 insertions(+), 100 deletions(-)
+>
+> --
+> 1.9.1
+>
