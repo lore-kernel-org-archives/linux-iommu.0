@@ -1,82 +1,143 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 3/3] videobuf2: replace a layering violation with
- dma_map_resource
-Date: Fri, 18 Jan 2019 10:41:06 +0100
-Message-ID: <f4222474-0515-c0a2-ef5e-523b56869210@samsung.com>
-References: <20190111181731.11782-1-hch@lst.de>
-        <CGME20190111181812epcas2p1eeb68a16701631513eaf297073f7299f@epcas2p1.samsung.com>
-        <20190111181731.11782-4-hch@lst.de>
-        <6f8892ac-c2aa-10df-c74f-ba032bf75160@samsung.com>
-        <20190117172152.GA32292@lst.de>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [RFC v3 00/21] SMMUv3 Nested Stage Setup
+Date: Fri, 18 Jan 2019 11:02:25 +0100
+Message-ID: <293d58aa-6978-9262-64c3-d92317d8759a@redhat.com>
+References: <20190108102633.17482-1-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190117172152.GA32292@lst.de>
+In-Reply-To: <20190108102633.17482-1-eric.auger@redhat.com>
 Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Pawel Osciak <pawel@osciak.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Russell King <linux@armlinux.org.uk>, Mauro Carvalho Chehab <mchehab@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+To: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+Hi,
+On 1/8/19 11:26 AM, Eric Auger wrote:
+> This series allows a virtualizer to program the nested stage mode.
+> This is useful when both the host and the guest are exposed with
+> an SMMUv3 and a PCI device is assigned to the guest using VFIO.
+> 
+> In this mode, the physical IOMMU must be programmed to translate
+> the two stages: the one set up by the guest (IOVA -> GPA) and the
+> one set up by the host VFIO driver as part of the assignment process
+> (GPA -> HPA).
+> 
+> On Intel, this is traditionnaly achieved by combining the 2 stages
+> into a single physical stage. However this relies on the capability
+> to trap on each guest translation structure update. This is possible
+> by using the VTD Caching Mode. Unfortunately the ARM SMMUv3 does
+> not offer a similar mechanism.
+> 
+> However, the ARM SMMUv3 architecture supports 2 physical stages! Those
+> were devised exactly with that use case in mind. Assuming the HW
+> implements both stages (optional), the guest now can use stage 1
+> while the host uses stage 2.
+> 
+> This assumes the virtualizer has means to propagate guest settings
+> to the host SMMUv3 driver. This series brings this VFIO/IOMMU
+> infrastructure.  Those services are:
+> - bind the guest stage 1 configuration to the stream table entry
+> - propagate guest TLB invalidations
+> - bind MSI IOVAs
+> - propagate faults collected at physical level up to the virtualizer
+> 
+> This series largely reuses the user API and infrastructure originally
+> devised for SVA/SVM and patches submitted by Jacob, Yi Liu, Tianyu in
+> [1-2] and Jean-Philippe [3-4].
+> 
+> Best Regards
+> 
+> Eric
+> 
+> This series can be found at:
+> https://github.com/eauger/linux/tree/v5.0-rc1-2stage-rfc-v3
+If someone is willing to test this series with QEMU you can use the
+branch below, until I send a formal respin.
 
-On 2019-01-17 18:21, Christoph Hellwig wrote:
-> On Mon, Jan 14, 2019 at 01:42:26PM +0100, Marek Szyprowski wrote:
->> On 2019-01-11 19:17, Christoph Hellwig wrote:
->>> vb2_dc_get_userptr pokes into arm direct mapping details to get the
->>> resemblance of a dma address for a a physical address that does is
->>> not backed by a page struct.  Not only is this not portable to other
->>> architectures with dma direct mapping offsets, but also not to uses
->>> of IOMMUs of any kind.  Switch to the proper dma_map_resource /
->>> dma_unmap_resource interface instead.
->>>
->>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->> There are checks for IOMMU presence in other places in vb2-dma-contig,
->> so it was used only when no IOMMU is available, but I agree that the
->> hacky code should be replaced by a generic code if possible.
->>
->> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>
->> V4L2 pipeline works fine on older Exynos-based boards with CMA and IOMMU
->> disabled.
-> Do you know if these rely on the offsets?  E.g. would they still work
-> with the patch below applied on top.  That would keep the map_resource
-> semantics as-is as solve the issue pointed out by Robin for now.
+https://github.com/eauger/qemu/commits/v3.1.0-rc5-2stage-v3-for-rfc3-test-only.
 
-AFAIK that code was only used for sharing buffers between hardware
-modules that are a part of the same SoC, usually implemented as platform
-devices. AFAIR this never worked for devices on different buses. So far
-I wasn't aware on ANY which would require an offset for the DMA access.
 
-The first version of videobuf2-dc code even incorrectly used paddr
-instead of dma_addr as a buffer 'address' returned to the client
-drivers, because in case of those SoC this was exactly the same (see
-commits 472af2b05bdefcaee7e754e22cbf131110017ad6 and
-ba7fcb0c954921534707f08ebc4d8beeb2eb17e7).
+Thanks
 
-> If not I can only think of a flag to bypass the offseting for now, but
-> that would be pretty ugly.  Or go for the long-term solution of
-> discovering the relationship between the two devices, as done by the
-> PCIe P2P code..
->
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 8e0359b04957..25bd19974223 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -359,7 +359,7 @@ EXPORT_SYMBOL(dma_direct_map_sg);
->  dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
->  		size_t size, enum dma_data_direction dir, unsigned long attrs)
->  {
-> -	dma_addr_t dma_addr = phys_to_dma(dev, paddr);
-> +	dma_addr_t dma_addr = paddr;
->  
->  	if (unlikely(!dma_direct_possible(dev, dma_addr, size))) {
->  		report_addr(dev, dma_addr, size);
->
->
->
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Eric
+
+
+> 
+> This was tested on Qualcomm HW featuring SMMUv3 and with adapted QEMU
+> vSMMUv3.
+> 
+> References:
+> [1] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
+>     Address (SVA)
+>     https://lwn.net/Articles/754331/
+> [2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
+>     (VFIO part)
+>     https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
+> [3] [v2,00/40] Shared Virtual Addressing for the IOMMU
+>     https://patchwork.ozlabs.org/cover/912129/
+> [4] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
+>     https://patchwork.kernel.org/cover/10608299/
+> 
+> History:
+> 
+> v2 -> v3:
+> - When registering the S1 MSI binding we now store the device handle. This
+>   addresses Robin's comment about discimination of devices beonging to
+>   different S1 groups and using different physical MSI doorbells.
+> - Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
+>   set the eventfd and expose the faults through an mmappable fault region
+> 
+> v1 -> v2:
+> - Added the fault reporting capability
+> - asid properly passed on invalidation (fix assignment of multiple
+>   devices)
+> - see individual change logs for more info
+> 
+> Eric Auger (12):
+>   iommu: Introduce bind_guest_msi
+>   vfio: VFIO_IOMMU_BIND_MSI
+>   iommu/smmuv3: Get prepared for nested stage support
+>   iommu/smmuv3: Implement set_pasid_table
+>   iommu/smmuv3: Implement cache_invalidate
+>   dma-iommu: Implement NESTED_MSI cookie
+>   iommu/smmuv3: Implement bind_guest_msi
+>   iommu/smmuv3: Report non recoverable faults
+>   vfio-pci: Add a new VFIO_REGION_TYPE_NESTED region type
+>   vfio-pci: Register an iommu fault handler
+>   vfio-pci: Add VFIO_PCI_DMA_FAULT_IRQ_INDEX
+>   vfio: Document nested stage control
+> 
+> Jacob Pan (4):
+>   iommu: Introduce set_pasid_table API
+>   iommu: introduce device fault data
+>   driver core: add per device iommu param
+>   iommu: introduce device fault report API
+> 
+> Jean-Philippe Brucker (2):
+>   iommu/arm-smmu-v3: Link domains and devices
+>   iommu/arm-smmu-v3: Maintain a SID->device structure
+> 
+> Liu, Yi L (3):
+>   iommu: Introduce cache_invalidate API
+>   vfio: VFIO_IOMMU_SET_PASID_TABLE
+>   vfio: VFIO_IOMMU_CACHE_INVALIDATE
+> 
+>  Documentation/vfio.txt              |  62 ++++
+>  drivers/iommu/arm-smmu-v3.c         | 460 ++++++++++++++++++++++++++--
+>  drivers/iommu/dma-iommu.c           | 112 ++++++-
+>  drivers/iommu/iommu.c               | 187 ++++++++++-
+>  drivers/vfio/pci/vfio_pci.c         | 147 ++++++++-
+>  drivers/vfio/pci/vfio_pci_intrs.c   |  19 ++
+>  drivers/vfio/pci/vfio_pci_private.h |   3 +
+>  drivers/vfio/vfio_iommu_type1.c     | 105 +++++++
+>  include/linux/device.h              |   3 +
+>  include/linux/dma-iommu.h           |  11 +
+>  include/linux/iommu.h               | 127 +++++++-
+>  include/uapi/linux/iommu.h          | 234 ++++++++++++++
+>  include/uapi/linux/vfio.h           |  38 +++
+>  13 files changed, 1476 insertions(+), 32 deletions(-)
+>  create mode 100644 include/uapi/linux/iommu.h
+> 
