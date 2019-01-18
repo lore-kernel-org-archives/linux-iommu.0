@@ -1,59 +1,35 @@
-From: Srinath Mannam <srinath.mannam@broadcom.com>
-Subject: [PATCH 3/3] PCI: iproc: Add PCIe 32bit outbound memory configuration
-Date: Fri, 18 Jan 2019 09:53:23 +0530
-Message-ID: <1547785403-32268-4-git-send-email-srinath.mannam@broadcom.com>
-References: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
+From: Dongli Zhang <dongli.zhang@oracle.com>
+Subject: [PATCH v3 1/3] swiotlb: fix comment on swiotlb_bounce()
+Date: Fri, 18 Jan 2019 15:10:26 +0800
+Message-ID: <1547795428-10595-1-git-send-email-dongli.zhang@oracle.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>
-Cc: bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Srinath Mannam <srinath.mannam@broadcom.com>, Abhishek Shah <abhishek.shah@broadcom.com>, Ray Jui <ray.jui@broadcom.com>
+To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, joe.jin@oracle.com, dongli.zhang@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-IPROC PCIe RC supports outbound memory mapping with SOC address inside
-4GB address boundary, which is 32 bit AXI address.
-This patch add the support.
+Fix the comment as swiotlb_bounce() is used to copy from original dma
+location to swiotlb buffer during swiotlb_tbl_map_single(), while to
+copy from swiotlb buffer to original dma location during
+swiotlb_tbl_unmap_single().
 
-Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-Signed-off-by: Abhishek Shah <abhishek.shah@broadcom.com>
-Signed-off-by: Ray Jui <ray.jui@broadcom.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
-Reviewed-by: Vikram Prakash <vikram.prakash@broadcom.com>
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
 ---
- drivers/pci/controller/pcie-iproc.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ kernel/dma/swiotlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-index ee89d56..4d0e63b 100644
---- a/drivers/pci/controller/pcie-iproc.c
-+++ b/drivers/pci/controller/pcie-iproc.c
-@@ -982,8 +982,25 @@ static int iproc_pcie_setup_ob(struct iproc_pcie *pcie, u64 axi_addr,
- 			resource_size_t window_size =
- 				ob_map->window_sizes[size_idx] * SZ_1M;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 1fb6fd6..1d8b377 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -385,7 +385,7 @@ void __init swiotlb_exit(void)
+ }
  
--			if (size < window_size)
--				continue;
-+			/*
-+			 * Keep iterating until we reach the last window and
-+			 * with the minimal window size at index zero. In this
-+			 * case, we take a compromise by mapping it using the
-+			 * minimum window size that can be supported
-+			 */
-+			if (size < window_size) {
-+				if (size_idx > 0 || window_idx > 0)
-+					continue;
-+
-+				/*
-+				 * For the corner case of reaching the minimal
-+				 * window size that can be supported on the
-+				 * last window
-+				 */
-+				axi_addr = ALIGN_DOWN(axi_addr, window_size);
-+				pci_addr = ALIGN_DOWN(pci_addr, window_size);
-+				size = window_size;
-+			}
- 
- 			if (!IS_ALIGNED(axi_addr, window_size) ||
- 			    !IS_ALIGNED(pci_addr, window_size)) {
+ /*
+- * Bounce: copy the swiotlb buffer back to the original dma location
++ * Bounce: copy the swiotlb buffer from or back to the original dma location
+  */
+ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+ 			   size_t size, enum dma_data_direction dir)
 -- 
 2.7.4
