@@ -1,205 +1,64 @@
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: [PATCH] dmaengine: fsl-edma: dma map slave device address
-Date: Fri, 18 Jan 2019 12:06:23 +0200
-Message-ID: <20190118100623.13271-1-laurentiu.tudor@nxp.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Fri, 18 Jan 2019 12:10:26 +0100
+Message-ID: <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
+References: <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
+ <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de>
+ <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de>
+ <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de>
+ <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de>
+ <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de>
+ <20190115133558.GA29225@lst.de>
+ <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de>
+ <20190115151732.GA2325@lst.de>
+ <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de>
+ <20190118083539.GA30479@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190118083539.GA30479@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: vkoul@kernel.org, dmaengine@vger.kernel.org, linux-imx@nxp.com
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com, Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-This mapping needs to be created in order for slave dma transfers
-to work on systems with SMMU. The implementation mostly mimics the
-one in pl330 dma driver, authored by Robin Murphy.
+For which commit?
 
-Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
----
-Original approach was to add the missing mappings in the i2c client driver,
-see here for discussion: https://patchwork.ozlabs.org/patch/1026013/
+-- Christian
 
- drivers/dma/fsl-edma-common.c | 66 ++++++++++++++++++++++++++++++++---
- drivers/dma/fsl-edma-common.h |  4 +++
- drivers/dma/fsl-edma.c        |  1 +
- drivers/dma/mcf-edma.c        |  1 +
- 4 files changed, 68 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/dma/fsl-edma-common.c b/drivers/dma/fsl-edma-common.c
-index 8876c4c1bb2c..0e95ee24b6d4 100644
---- a/drivers/dma/fsl-edma-common.c
-+++ b/drivers/dma/fsl-edma-common.c
-@@ -6,6 +6,7 @@
- #include <linux/dmapool.h>
- #include <linux/module.h>
- #include <linux/slab.h>
-+#include <linux/dma-mapping.h>
- 
- #include "fsl-edma-common.h"
- 
-@@ -173,12 +174,62 @@ int fsl_edma_resume(struct dma_chan *chan)
- }
- EXPORT_SYMBOL_GPL(fsl_edma_resume);
- 
-+static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
-+{
-+	if (fsl_chan->dma_dir != DMA_NONE)
-+		dma_unmap_resource(fsl_chan->vchan.chan.device->dev,
-+				   fsl_chan->dma_dev_addr,
-+				   fsl_chan->dma_dev_size,
-+				   fsl_chan->dma_dir, 0);
-+	fsl_chan->dma_dir = DMA_NONE;
-+}
-+
-+static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
-+				    enum dma_transfer_direction dir)
-+{
-+	struct device *dev = fsl_chan->vchan.chan.device->dev;
-+	enum dma_data_direction dma_dir;
-+	phys_addr_t addr = 0;
-+	u32 size = 0;
-+
-+	switch (dir) {
-+	case DMA_MEM_TO_DEV:
-+		dma_dir = DMA_FROM_DEVICE;
-+		addr = fsl_chan->cfg.dst_addr;
-+		size = fsl_chan->cfg.dst_maxburst;
-+		break;
-+	case DMA_DEV_TO_MEM:
-+		dma_dir = DMA_TO_DEVICE;
-+		addr = fsl_chan->cfg.src_addr;
-+		size = fsl_chan->cfg.src_maxburst;
-+		break;
-+	default:
-+		dma_dir = DMA_NONE;
-+		break;
-+	}
-+
-+	/* Already mapped for this config? */
-+	if (fsl_chan->dma_dir == dma_dir)
-+		return true;
-+
-+	fsl_edma_unprep_slave_dma(fsl_chan);
-+
-+	fsl_chan->dma_dev_addr = dma_map_resource(dev, addr, size, dma_dir, 0);
-+	if (dma_mapping_error(dev, fsl_chan->dma_dev_addr))
-+		return false;
-+	fsl_chan->dma_dev_size = size;
-+	fsl_chan->dma_dir = dma_dir;
-+
-+	return true;
-+}
-+
- int fsl_edma_slave_config(struct dma_chan *chan,
- 				 struct dma_slave_config *cfg)
- {
- 	struct fsl_edma_chan *fsl_chan = to_fsl_edma_chan(chan);
- 
- 	memcpy(&fsl_chan->cfg, cfg, sizeof(*cfg));
-+	fsl_edma_unprep_slave_dma(fsl_chan);
- 
- 	return 0;
- }
-@@ -378,6 +429,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
- 	if (!is_slave_direction(direction))
- 		return NULL;
- 
-+	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
-+		return NULL;
-+
- 	sg_len = buf_len / period_len;
- 	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
- 	if (!fsl_desc)
-@@ -409,11 +463,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
- 
- 		if (direction == DMA_MEM_TO_DEV) {
- 			src_addr = dma_buf_next;
--			dst_addr = fsl_chan->cfg.dst_addr;
-+			dst_addr = fsl_chan->dma_dev_addr;
- 			soff = fsl_chan->cfg.dst_addr_width;
- 			doff = 0;
- 		} else {
--			src_addr = fsl_chan->cfg.src_addr;
-+			src_addr = fsl_chan->dma_dev_addr;
- 			dst_addr = dma_buf_next;
- 			soff = 0;
- 			doff = fsl_chan->cfg.src_addr_width;
-@@ -444,6 +498,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
- 	if (!is_slave_direction(direction))
- 		return NULL;
- 
-+	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
-+		return NULL;
-+
- 	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
- 	if (!fsl_desc)
- 		return NULL;
-@@ -468,11 +525,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
- 
- 		if (direction == DMA_MEM_TO_DEV) {
- 			src_addr = sg_dma_address(sg);
--			dst_addr = fsl_chan->cfg.dst_addr;
-+			dst_addr = fsl_chan->dma_dev_addr;
- 			soff = fsl_chan->cfg.dst_addr_width;
- 			doff = 0;
- 		} else {
--			src_addr = fsl_chan->cfg.src_addr;
-+			src_addr = fsl_chan->dma_dev_addr;
- 			dst_addr = sg_dma_address(sg);
- 			soff = 0;
- 			doff = fsl_chan->cfg.src_addr_width;
-@@ -555,6 +612,7 @@ void fsl_edma_free_chan_resources(struct dma_chan *chan)
- 	fsl_edma_chan_mux(fsl_chan, 0, false);
- 	fsl_chan->edesc = NULL;
- 	vchan_get_all_descriptors(&fsl_chan->vchan, &head);
-+	fsl_edma_unprep_slave_dma(fsl_chan);
- 	spin_unlock_irqrestore(&fsl_chan->vchan.lock, flags);
- 
- 	vchan_dma_desc_free_list(&fsl_chan->vchan, &head);
-diff --git a/drivers/dma/fsl-edma-common.h b/drivers/dma/fsl-edma-common.h
-index 8917e8865959..b435d8e1e3a1 100644
---- a/drivers/dma/fsl-edma-common.h
-+++ b/drivers/dma/fsl-edma-common.h
-@@ -6,6 +6,7 @@
- #ifndef _FSL_EDMA_COMMON_H_
- #define _FSL_EDMA_COMMON_H_
- 
-+#include <linux/dma-direction.h>
- #include "virt-dma.h"
- 
- #define EDMA_CR_EDBG		BIT(1)
-@@ -120,6 +121,9 @@ struct fsl_edma_chan {
- 	struct dma_slave_config		cfg;
- 	u32				attr;
- 	struct dma_pool			*tcd_pool;
-+	dma_addr_t			dma_dev_addr;
-+	u32				dma_dev_size;
-+	enum dma_data_direction		dma_dir;
- };
- 
- struct fsl_edma_desc {
-diff --git a/drivers/dma/fsl-edma.c b/drivers/dma/fsl-edma.c
-index 34d70112fcc9..75e8a7ba3a22 100644
---- a/drivers/dma/fsl-edma.c
-+++ b/drivers/dma/fsl-edma.c
-@@ -254,6 +254,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
- 		fsl_chan->pm_state = RUNNING;
- 		fsl_chan->slave_id = 0;
- 		fsl_chan->idle = true;
-+		fsl_chan->dma_dir = DMA_NONE;
- 		fsl_chan->vchan.desc_free = fsl_edma_free_desc;
- 		vchan_init(&fsl_chan->vchan, &fsl_edma->dma_dev);
- 
-diff --git a/drivers/dma/mcf-edma.c b/drivers/dma/mcf-edma.c
-index 5de1b07eddff..7de54b2fafdb 100644
---- a/drivers/dma/mcf-edma.c
-+++ b/drivers/dma/mcf-edma.c
-@@ -214,6 +214,7 @@ static int mcf_edma_probe(struct platform_device *pdev)
- 		mcf_chan->edma = mcf_edma;
- 		mcf_chan->slave_id = i;
- 		mcf_chan->idle = true;
-+		mcf_chan->dma_dir = DMA_NONE;
- 		mcf_chan->vchan.desc_free = fsl_edma_free_desc;
- 		vchan_init(&mcf_chan->vchan, &mcf_edma->dma_dev);
- 		iowrite32(0x0, &regs->tcd[i].csr);
--- 
-2.17.1
+On 18 January 2019 at 09:35AM, Christoph Hellwig wrote:
+> Hi Christian,
+>
+> can you check if the debug printks in this patch trigger?
+>
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 355d16acee6d..e46c9b64ec0d 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -118,8 +118,11 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>   			page = NULL;
+>   		}
+>   	}
+> -	if (!page)
+> +	if (!page) {
+>   		page = alloc_pages_node(dev_to_node(dev), gfp, page_order);
+> +		if (!page)
+> +			pr_warn("failed to allocate memory with gfp 0x%x\n", gfp);
+> +	}
+>   
+>   	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+>   		__free_pages(page, page_order);
+> @@ -139,6 +142,10 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>   		}
+>   	}
+>   
+> +	if (!page) {
+> +		pr_warn("failed to allocate DMA memory!\n");
+> +		dump_stack();
+> +	}
+>   	return page;
+>   }
+>   
+>
