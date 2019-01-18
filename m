@@ -1,20 +1,72 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Fri, 18 Jan 2019 12:28:42 +0100
-Message-ID: <20190118112842.GA9115@lst.de>
-References: <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de> <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de> <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de> <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de> <20190115133558.GA29225@lst.de> <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de> <20190115151732.GA2325@lst.de> <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de> <20190118083539.GA30479@lst.de> <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
+Subject: Re: [PATCH] dma-debug: add dumping facility via debugfs
+Date: Fri, 18 Jan 2019 12:35:43 +0100
+Message-ID: <20190118113543.GA9481@lst.de>
+References: <1547646265-9414-1-git-send-email-clabbe@baylibre.com> <2f43688f-9c08-a9c4-6175-caa3d2e40261@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
+In-Reply-To: <2f43688f-9c08-a9c4-6175-caa3d2e40261@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Corentin Labbe <clabbe@baylibre.com>, hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, joro@8bytes.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 18, 2019 at 12:10:26PM +0100, Christian Zigotzky wrote:
-> For which commit?
+On Wed, Jan 16, 2019 at 06:10:13PM +0000, Robin Murphy wrote:
+> It's a shame that this is pretty much a duplication of 
+> debug_dma_dump_mappings(), but there seems no straightforward way to define 
+> one in terms of the other :/
 
-On top of 257002094bc5935dd63207a380d9698ab81f0775, that is the first
-one you identified as breaking the detection of the SATA disks.
+We could always play some macro magic, but I think that is worse than
+duplicating a little bit of functionality.
+
+Btw, the dev argument to debug_dma_dump_mappings is always NULL and
+could be removed..
+
+> (although given that we'd rather not have that weird external interface 
+> anyway, maybe "now you can use debugfs instead" might be justification 
+> enough for cleaning it up...)
+
+One argument against that is the system might be in a shape where you
+can't easily read a file when it is in that shape.  The argument for
+that is that in many systems the full list of mappings might overwhelm
+the kernel log.
+
+Adding Joerg, who originally wrote the code in case he has an opinion.
+
+>
+>> +
+>> +static int dump_open(struct inode *inode, struct file *file)
+>> +{
+>> +	return single_open(file, dump_read, inode->i_private);
+>> +}
+>> +
+>> +static const struct file_operations dump_fops = {
+>> +	.owner = THIS_MODULE,
+>> +	.open = dump_open,
+>> +	.read = seq_read,
+>> +	.llseek = seq_lseek,
+>> +	.release = single_release,
+>> +};
+>> +
+>
+> DEFINE_SHOW_ATTRIBUTE()?
+>
+> Robin.
+>
+>>   static int dma_debug_fs_init(void)
+>>   {
+>>   	dma_debug_dent = debugfs_create_dir("dma-api", NULL);
+>> @@ -894,6 +936,11 @@ static int dma_debug_fs_init(void)
+>>   	if (!filter_dent)
+>>   		goto out_err;
+>>   +	dump_dent = debugfs_create_file("dump", 0444,
+>> +					dma_debug_dent, NULL, &dump_fops);
+>> +	if (!dump_dent)
+>> +		goto out_err;
+>> +
+>>   	return 0;
+>>     out_err:
+>>
+---end quoted text---
