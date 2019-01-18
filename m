@@ -1,16 +1,14 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
-Date: Fri, 18 Jan 2019 13:51:11 +0000
-Message-ID: <668fe734-e4bf-0342-ab8c-df54d9022db4@arm.com>
-References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
-	<cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
-	<3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/3] Add IPROC PCIe new features
+Date: Fri, 18 Jan 2019 08:41:49 -0600
+Message-ID: <20190118144149.GA25249@google.com>
+References: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1547785403-32268-1-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,53 +18,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: pmorel-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org
-Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, walling-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUGllcnJlLAoKT24gMTgvMDEvMjAxOSAxMzoyOSwgUGllcnJlIE1vcmVsIHdyb3RlOgo+IE9u
-IDE3LzAxLzIwMTkgMTQ6MDIsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gT24gMTUvMDEvMjAxOSAx
-NzozNywgUGllcnJlIE1vcmVsIHdyb3RlOgo+Pj4gVGhlIHMzOTAgaW9tbXUgY2FuIG9ubHkgYWxs
-b3cgRE1BIHRyYW5zYWN0aW9ucyBiZXR3ZWVuIHRoZSB6UENJIGRldmljZQo+Pj4gZW50cmllcyBz
-dGFydF9kbWEgYW5kIGVuZF9kbWEuCj4+Pgo+Pj4gTGV0J3MgZGVjbGFyZSB0aGUgcmVnaW9ucyBi
-ZWZvcmUgc3RhcnRfZG1hIGFuZCBhZnRlciBlbmRfZG1hIGFzCj4+PiByZXNlcnZlZCByZWdpb25z
-IHVzaW5nIHRoZSBhcHByb3ByaWF0ZSBjYWxsYmFjayBpbiBpb21tdV9vcHMuCj4+Pgo+Pj4gVGhl
-IHJlc2VydmVkIHJlZ2lvbiBtYXkgbGF0ZXIgYmUgcmV0cmlldmVkIGZyb20gc3lzZnMgb3IgZnJv
-bQo+Pj4gdGhlIHZmaW8gaW9tbXUgaW50ZXJuYWwgaW50ZXJmYWNlLgo+Pgo+PiBGb3IgdGhpcyBw
-YXJ0aWN1bGFyIGNhc2UsIEkgdGhpbmsgdGhlIGJlc3Qgc29sdXRpb24gaXMgdG8gZ2l2ZSBWRklP
-Cj4+IHRoZSBhYmlsaXR5IHRvIGRpcmVjdGx5IGludGVycm9nYXRlIHRoZSBkb21haW4gZ2VvbWV0
-cnkgKHdoaWNoIHMzOTAKPj4gYXBwZWFycyB0byBzZXQgY29ycmVjdGx5IGFscmVhZHkpLiBUaGUg
-aWRlYSBvZiByZXNlcnZlZCByZWdpb25zIHdhcwo+PiByZWFsbHkgZm9yICd1bmV4cGVjdGVkJyBo
-b2xlcyBpbnNpZGUgdGhlIHVzYWJsZSBhZGRyZXNzIHNwYWNlIC0gdXNpbmcKPj4gdGhlbSB0byBh
-bHNvIGRlc2NyaWJlIHBsYWNlcyB0aGF0IGFyZSBlbnRpcmVseSBvdXRzaWRlIHRoYXQgYWRkcmVz
-cwo+PiBzcGFjZSByYXRoZXIgY29uZnVzZXMgdGhpbmdzIElNTy4KPj4KPj4gRnVydGhlcm1vcmUs
-IGV2ZW4gaWYgd2UgKmRpZCogZW5kIHVwIGdvaW5nIGRvd24gdGhlIHJvdXRlIG9mIGFjdGl2ZWx5
-Cj4+IHJlc2VydmluZyBhZGRyZXNzZXMgYmV5b25kIHRoZSB1c2FibGUgYXBlcnR1cmUsIGl0IGRv
-ZXNuJ3Qgc2VlbQo+PiBzZW5zaWJsZSBmb3IgaW5kaXZpZHVhbCBkcml2ZXJzIHRvIGRvIGl0IHRo
-ZW1zZWx2ZXMgd2hlbiB0aGUgY29yZSBBUEkKPj4gYWxyZWFkeSBkZXNjcmliZXMgdGhlIHJlbGV2
-YW50IGluZm9ybWF0aW9uIGdlbmVyaWNhbGx5Lgo+Pgo+PiBSb2Jpbi4KPiAKPiBSb2JpbiwKPiAK
-PiBJIGFscmVhZHkgcG9zdGVkIGEgcGF0Y2ggcmV0cmlldmluZyB0aGUgZ2VvbWV0cnkgdGhyb3Vn
-aAo+IFZGSU9fSU9NTVVfR0VUX0lORk8gdXNpbmcgYSBzcGVjaWZpYyBjYXBhYmlsaXR5IGZvciB0
-aGUgZ2VvbWV0cnkgWzFdLAo+IGFuZCBBRkFJVSwgQWxleCBkaWQgbm90IGFncmVlIHdpdGggdGhp
-cy4KCk9uIGFybSB3ZSBhbHNvIG5lZWQgdG8gcmVwb3J0IHRoZSBJT01NVSBnZW9tZXRyeSB0byB1
-c2Vyc3BhY2UgKG1heCBJT1ZBCnNpemUgaW4gcGFydGljdWxhcikuIFNoYW1lZXIgaGFzIGJlZW4g
-d29ya2luZyBvbiBhIHNvbHV0aW9uIFsyXSB0aGF0CnByZXNlbnRzIGEgdW5pZmllZCB2aWV3IG9m
-IGJvdGggZ2VvbWV0cnkgYW5kIHJlc2VydmVkIHJlZ2lvbnMgaW50byB0aGUKVkZJT19JT01NVV9H
-RVRfSU5GTyBjYWxsLCBhbmQgSSB0aGluayB3ZSBzaG91bGQgZ28gd2l0aCB0aGF0LiBJZiBJCnVu
-ZGVyc3RhbmQgY29ycmVjdGx5IGl0J3MgY3VycmVudGx5IGJsb2NrZWQgb24gdGhlIFJNUlIgcHJv
-YmxlbSBhbmQKd2UncmUgd2FpdGluZyBmb3IgSmFjb2Igb3IgQXNob2sgdG8gdGFrZSBhIGxvb2sg
-YXQgaXQsIGFzIEtldmluIHBpbmdlZAp0aGVtIG9uIHRocmVhZCBbMV0/CgpbMl0gaHR0cHM6Ly9s
-a21sLm9yZy9sa21sLzIwMTgvNC8xOC8yOTMKClRoYW5rcywKSmVhbgoKPiAKPiBXaGF0IGlzIGRp
-ZmZlcmVudCBpbiB3aGF0IHlvdSBwcm9wb3NlPwo+IAo+IEBBbGV4OiBJIHdhcyBob3BpbmcgdGhh
-dCB0aGlzIHBhdGNoIGdvZXMgaW4geW91ciBkaXJlY3Rpb24uIFdoYXQgZG8geW91Cj4gdGhpbms/
-Cj4gCj4gVGhhbmtzLAo+IFBpZXJyZQo+IAo+IFsxXTogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcv
-cGF0Y2h3b3JrL3BhdGNoLzEwMzAzNjkvCj4gCj4+Cj4+Pgo+Pj4gVGhpcyBzZWVtcyB0byBtZSBy
-ZWxhdGVkIHdpdGggdGhlIHdvcmsgU2hhbWVlciBoYXMgc3RhcnRlZCBvbgo+Pj4gdmZpb19pb21t
-dV90eXBlMSBzbyBJIGFkZCBBbGV4IGFuZCBTaGFtZWVyIHRvIHRoZSBDQyBsaXN0Lgo+Pj4KPj4+
-Cj4+PiBQaWVycmUgTW9yZWwgKDEpOgo+Pj4gwqDCoCBpb21tdS9zMzkwOiBEZWNsYXJlIHMzOTAg
-aW9tbXUgcmVzZXJ2ZWQgcmVnaW9ucwo+Pj4KPj4+IMKgIGRyaXZlcnMvaW9tbXUvczM5MC1pb21t
-dS5jIHwgMjkgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPj4+IMKgIDEgZmlsZSBjaGFu
-Z2VkLCAyOSBpbnNlcnRpb25zKCspCj4+Pgo+Pgo+IAo+IAoKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Fri, Jan 18, 2019 at 09:53:20AM +0530, Srinath Mannam wrote:
+> Add changes related to IPROC PCIe RC IP new features.
+> 
+> This patch set is based on Linux-5.0-rc2.
+> 
+> Srinath Mannam (3):
+>   PCI: iproc: Add feature to set order mode
+
+Since this apparently refers to a PCIe feature, the subject should use the
+exact terminology used in the PCIe spec.
+
+>   PCI: iproc: CRS state check in config request
+
+This subject should start with a verb, not "CRS".
+
+>   PCI: iproc: Add PCIe 32bit outbound memory configuration
+> 
+>  drivers/pci/controller/pcie-iproc.c | 172 +++++++++++++++++++++++++++++++++++-
+>  drivers/pci/controller/pcie-iproc.h |  16 ++++
+>  2 files changed, 184 insertions(+), 4 deletions(-)
+> 
+> -- 
+> 2.7.4
+> 
