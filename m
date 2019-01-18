@@ -1,143 +1,205 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v3 00/21] SMMUv3 Nested Stage Setup
-Date: Fri, 18 Jan 2019 11:02:25 +0100
-Message-ID: <293d58aa-6978-9262-64c3-d92317d8759a@redhat.com>
-References: <20190108102633.17482-1-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: [PATCH] dmaengine: fsl-edma: dma map slave device address
+Date: Fri, 18 Jan 2019 12:06:23 +0200
+Message-ID: <20190118100623.13271-1-laurentiu.tudor@nxp.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190108102633.17482-1-eric.auger@redhat.com>
-Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+To: vkoul@kernel.org, dmaengine@vger.kernel.org, linux-imx@nxp.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com, Laurentiu Tudor <laurentiu.tudor@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-On 1/8/19 11:26 AM, Eric Auger wrote:
-> This series allows a virtualizer to program the nested stage mode.
-> This is useful when both the host and the guest are exposed with
-> an SMMUv3 and a PCI device is assigned to the guest using VFIO.
-> 
-> In this mode, the physical IOMMU must be programmed to translate
-> the two stages: the one set up by the guest (IOVA -> GPA) and the
-> one set up by the host VFIO driver as part of the assignment process
-> (GPA -> HPA).
-> 
-> On Intel, this is traditionnaly achieved by combining the 2 stages
-> into a single physical stage. However this relies on the capability
-> to trap on each guest translation structure update. This is possible
-> by using the VTD Caching Mode. Unfortunately the ARM SMMUv3 does
-> not offer a similar mechanism.
-> 
-> However, the ARM SMMUv3 architecture supports 2 physical stages! Those
-> were devised exactly with that use case in mind. Assuming the HW
-> implements both stages (optional), the guest now can use stage 1
-> while the host uses stage 2.
-> 
-> This assumes the virtualizer has means to propagate guest settings
-> to the host SMMUv3 driver. This series brings this VFIO/IOMMU
-> infrastructure.  Those services are:
-> - bind the guest stage 1 configuration to the stream table entry
-> - propagate guest TLB invalidations
-> - bind MSI IOVAs
-> - propagate faults collected at physical level up to the virtualizer
-> 
-> This series largely reuses the user API and infrastructure originally
-> devised for SVA/SVM and patches submitted by Jacob, Yi Liu, Tianyu in
-> [1-2] and Jean-Philippe [3-4].
-> 
-> Best Regards
-> 
-> Eric
-> 
-> This series can be found at:
-> https://github.com/eauger/linux/tree/v5.0-rc1-2stage-rfc-v3
-If someone is willing to test this series with QEMU you can use the
-branch below, until I send a formal respin.
+This mapping needs to be created in order for slave dma transfers
+to work on systems with SMMU. The implementation mostly mimics the
+one in pl330 dma driver, authored by Robin Murphy.
 
-https://github.com/eauger/qemu/commits/v3.1.0-rc5-2stage-v3-for-rfc3-test-only.
+Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+---
+Original approach was to add the missing mappings in the i2c client driver,
+see here for discussion: https://patchwork.ozlabs.org/patch/1026013/
 
+ drivers/dma/fsl-edma-common.c | 66 ++++++++++++++++++++++++++++++++---
+ drivers/dma/fsl-edma-common.h |  4 +++
+ drivers/dma/fsl-edma.c        |  1 +
+ drivers/dma/mcf-edma.c        |  1 +
+ 4 files changed, 68 insertions(+), 4 deletions(-)
 
-Thanks
-
-Eric
-
-
-> 
-> This was tested on Qualcomm HW featuring SMMUv3 and with adapted QEMU
-> vSMMUv3.
-> 
-> References:
-> [1] [PATCH v5 00/23] IOMMU and VT-d driver support for Shared Virtual
->     Address (SVA)
->     https://lwn.net/Articles/754331/
-> [2] [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
->     (VFIO part)
->     https://lists.linuxfoundation.org/pipermail/iommu/2017-April/021475.html
-> [3] [v2,00/40] Shared Virtual Addressing for the IOMMU
->     https://patchwork.ozlabs.org/cover/912129/
-> [4] [PATCH v3 00/10] Shared Virtual Addressing for the IOMMU
->     https://patchwork.kernel.org/cover/10608299/
-> 
-> History:
-> 
-> v2 -> v3:
-> - When registering the S1 MSI binding we now store the device handle. This
->   addresses Robin's comment about discimination of devices beonging to
->   different S1 groups and using different physical MSI doorbells.
-> - Change the fault reporting API: use VFIO_PCI_DMA_FAULT_IRQ_INDEX to
->   set the eventfd and expose the faults through an mmappable fault region
-> 
-> v1 -> v2:
-> - Added the fault reporting capability
-> - asid properly passed on invalidation (fix assignment of multiple
->   devices)
-> - see individual change logs for more info
-> 
-> Eric Auger (12):
->   iommu: Introduce bind_guest_msi
->   vfio: VFIO_IOMMU_BIND_MSI
->   iommu/smmuv3: Get prepared for nested stage support
->   iommu/smmuv3: Implement set_pasid_table
->   iommu/smmuv3: Implement cache_invalidate
->   dma-iommu: Implement NESTED_MSI cookie
->   iommu/smmuv3: Implement bind_guest_msi
->   iommu/smmuv3: Report non recoverable faults
->   vfio-pci: Add a new VFIO_REGION_TYPE_NESTED region type
->   vfio-pci: Register an iommu fault handler
->   vfio-pci: Add VFIO_PCI_DMA_FAULT_IRQ_INDEX
->   vfio: Document nested stage control
-> 
-> Jacob Pan (4):
->   iommu: Introduce set_pasid_table API
->   iommu: introduce device fault data
->   driver core: add per device iommu param
->   iommu: introduce device fault report API
-> 
-> Jean-Philippe Brucker (2):
->   iommu/arm-smmu-v3: Link domains and devices
->   iommu/arm-smmu-v3: Maintain a SID->device structure
-> 
-> Liu, Yi L (3):
->   iommu: Introduce cache_invalidate API
->   vfio: VFIO_IOMMU_SET_PASID_TABLE
->   vfio: VFIO_IOMMU_CACHE_INVALIDATE
-> 
->  Documentation/vfio.txt              |  62 ++++
->  drivers/iommu/arm-smmu-v3.c         | 460 ++++++++++++++++++++++++++--
->  drivers/iommu/dma-iommu.c           | 112 ++++++-
->  drivers/iommu/iommu.c               | 187 ++++++++++-
->  drivers/vfio/pci/vfio_pci.c         | 147 ++++++++-
->  drivers/vfio/pci/vfio_pci_intrs.c   |  19 ++
->  drivers/vfio/pci/vfio_pci_private.h |   3 +
->  drivers/vfio/vfio_iommu_type1.c     | 105 +++++++
->  include/linux/device.h              |   3 +
->  include/linux/dma-iommu.h           |  11 +
->  include/linux/iommu.h               | 127 +++++++-
->  include/uapi/linux/iommu.h          | 234 ++++++++++++++
->  include/uapi/linux/vfio.h           |  38 +++
->  13 files changed, 1476 insertions(+), 32 deletions(-)
->  create mode 100644 include/uapi/linux/iommu.h
-> 
+diff --git a/drivers/dma/fsl-edma-common.c b/drivers/dma/fsl-edma-common.c
+index 8876c4c1bb2c..0e95ee24b6d4 100644
+--- a/drivers/dma/fsl-edma-common.c
++++ b/drivers/dma/fsl-edma-common.c
+@@ -6,6 +6,7 @@
+ #include <linux/dmapool.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
++#include <linux/dma-mapping.h>
+ 
+ #include "fsl-edma-common.h"
+ 
+@@ -173,12 +174,62 @@ int fsl_edma_resume(struct dma_chan *chan)
+ }
+ EXPORT_SYMBOL_GPL(fsl_edma_resume);
+ 
++static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
++{
++	if (fsl_chan->dma_dir != DMA_NONE)
++		dma_unmap_resource(fsl_chan->vchan.chan.device->dev,
++				   fsl_chan->dma_dev_addr,
++				   fsl_chan->dma_dev_size,
++				   fsl_chan->dma_dir, 0);
++	fsl_chan->dma_dir = DMA_NONE;
++}
++
++static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
++				    enum dma_transfer_direction dir)
++{
++	struct device *dev = fsl_chan->vchan.chan.device->dev;
++	enum dma_data_direction dma_dir;
++	phys_addr_t addr = 0;
++	u32 size = 0;
++
++	switch (dir) {
++	case DMA_MEM_TO_DEV:
++		dma_dir = DMA_FROM_DEVICE;
++		addr = fsl_chan->cfg.dst_addr;
++		size = fsl_chan->cfg.dst_maxburst;
++		break;
++	case DMA_DEV_TO_MEM:
++		dma_dir = DMA_TO_DEVICE;
++		addr = fsl_chan->cfg.src_addr;
++		size = fsl_chan->cfg.src_maxburst;
++		break;
++	default:
++		dma_dir = DMA_NONE;
++		break;
++	}
++
++	/* Already mapped for this config? */
++	if (fsl_chan->dma_dir == dma_dir)
++		return true;
++
++	fsl_edma_unprep_slave_dma(fsl_chan);
++
++	fsl_chan->dma_dev_addr = dma_map_resource(dev, addr, size, dma_dir, 0);
++	if (dma_mapping_error(dev, fsl_chan->dma_dev_addr))
++		return false;
++	fsl_chan->dma_dev_size = size;
++	fsl_chan->dma_dir = dma_dir;
++
++	return true;
++}
++
+ int fsl_edma_slave_config(struct dma_chan *chan,
+ 				 struct dma_slave_config *cfg)
+ {
+ 	struct fsl_edma_chan *fsl_chan = to_fsl_edma_chan(chan);
+ 
+ 	memcpy(&fsl_chan->cfg, cfg, sizeof(*cfg));
++	fsl_edma_unprep_slave_dma(fsl_chan);
+ 
+ 	return 0;
+ }
+@@ -378,6 +429,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
+ 	if (!is_slave_direction(direction))
+ 		return NULL;
+ 
++	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
++		return NULL;
++
+ 	sg_len = buf_len / period_len;
+ 	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
+ 	if (!fsl_desc)
+@@ -409,11 +463,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
+ 
+ 		if (direction == DMA_MEM_TO_DEV) {
+ 			src_addr = dma_buf_next;
+-			dst_addr = fsl_chan->cfg.dst_addr;
++			dst_addr = fsl_chan->dma_dev_addr;
+ 			soff = fsl_chan->cfg.dst_addr_width;
+ 			doff = 0;
+ 		} else {
+-			src_addr = fsl_chan->cfg.src_addr;
++			src_addr = fsl_chan->dma_dev_addr;
+ 			dst_addr = dma_buf_next;
+ 			soff = 0;
+ 			doff = fsl_chan->cfg.src_addr_width;
+@@ -444,6 +498,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
+ 	if (!is_slave_direction(direction))
+ 		return NULL;
+ 
++	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
++		return NULL;
++
+ 	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
+ 	if (!fsl_desc)
+ 		return NULL;
+@@ -468,11 +525,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
+ 
+ 		if (direction == DMA_MEM_TO_DEV) {
+ 			src_addr = sg_dma_address(sg);
+-			dst_addr = fsl_chan->cfg.dst_addr;
++			dst_addr = fsl_chan->dma_dev_addr;
+ 			soff = fsl_chan->cfg.dst_addr_width;
+ 			doff = 0;
+ 		} else {
+-			src_addr = fsl_chan->cfg.src_addr;
++			src_addr = fsl_chan->dma_dev_addr;
+ 			dst_addr = sg_dma_address(sg);
+ 			soff = 0;
+ 			doff = fsl_chan->cfg.src_addr_width;
+@@ -555,6 +612,7 @@ void fsl_edma_free_chan_resources(struct dma_chan *chan)
+ 	fsl_edma_chan_mux(fsl_chan, 0, false);
+ 	fsl_chan->edesc = NULL;
+ 	vchan_get_all_descriptors(&fsl_chan->vchan, &head);
++	fsl_edma_unprep_slave_dma(fsl_chan);
+ 	spin_unlock_irqrestore(&fsl_chan->vchan.lock, flags);
+ 
+ 	vchan_dma_desc_free_list(&fsl_chan->vchan, &head);
+diff --git a/drivers/dma/fsl-edma-common.h b/drivers/dma/fsl-edma-common.h
+index 8917e8865959..b435d8e1e3a1 100644
+--- a/drivers/dma/fsl-edma-common.h
++++ b/drivers/dma/fsl-edma-common.h
+@@ -6,6 +6,7 @@
+ #ifndef _FSL_EDMA_COMMON_H_
+ #define _FSL_EDMA_COMMON_H_
+ 
++#include <linux/dma-direction.h>
+ #include "virt-dma.h"
+ 
+ #define EDMA_CR_EDBG		BIT(1)
+@@ -120,6 +121,9 @@ struct fsl_edma_chan {
+ 	struct dma_slave_config		cfg;
+ 	u32				attr;
+ 	struct dma_pool			*tcd_pool;
++	dma_addr_t			dma_dev_addr;
++	u32				dma_dev_size;
++	enum dma_data_direction		dma_dir;
+ };
+ 
+ struct fsl_edma_desc {
+diff --git a/drivers/dma/fsl-edma.c b/drivers/dma/fsl-edma.c
+index 34d70112fcc9..75e8a7ba3a22 100644
+--- a/drivers/dma/fsl-edma.c
++++ b/drivers/dma/fsl-edma.c
+@@ -254,6 +254,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
+ 		fsl_chan->pm_state = RUNNING;
+ 		fsl_chan->slave_id = 0;
+ 		fsl_chan->idle = true;
++		fsl_chan->dma_dir = DMA_NONE;
+ 		fsl_chan->vchan.desc_free = fsl_edma_free_desc;
+ 		vchan_init(&fsl_chan->vchan, &fsl_edma->dma_dev);
+ 
+diff --git a/drivers/dma/mcf-edma.c b/drivers/dma/mcf-edma.c
+index 5de1b07eddff..7de54b2fafdb 100644
+--- a/drivers/dma/mcf-edma.c
++++ b/drivers/dma/mcf-edma.c
+@@ -214,6 +214,7 @@ static int mcf_edma_probe(struct platform_device *pdev)
+ 		mcf_chan->edma = mcf_edma;
+ 		mcf_chan->slave_id = i;
+ 		mcf_chan->idle = true;
++		mcf_chan->dma_dir = DMA_NONE;
+ 		mcf_chan->vchan.desc_free = fsl_edma_free_desc;
+ 		vchan_init(&mcf_chan->vchan, &mcf_edma->dma_dev);
+ 		iowrite32(0x0, &regs->tcd[i].csr);
+-- 
+2.17.1
