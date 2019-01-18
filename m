@@ -1,119 +1,223 @@
-From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
-Date: Fri, 18 Jan 2019 10:51:20 -0500
-Message-ID: <20190118103235-mutt-send-email-mst@kernel.org>
-References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
+From: Angelo Dureghello <angelo@sysam.it>
+Subject: Re: [PATCH] dmaengine: fsl-edma: dma map slave device address
+Date: Fri, 18 Jan 2019 22:50:16 +0100
+Message-ID: <20190118215015.GA6677@jerusalem>
+References: <20190118100623.13271-1-laurentiu.tudor@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190115121959.23763-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+In-Reply-To: <20190118100623.13271-1-laurentiu.tudor@nxp.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc: vkoul@kernel.org, dmaengine@vger.kernel.org, linux-imx@nxp.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Laurentiu,
 
-On Tue, Jan 15, 2019 at 12:19:52PM +0000, Jean-Philippe Brucker wrote:
-> Implement the virtio-iommu driver, following specification v0.9 [1].
+On Fri, Jan 18, 2019 at 12:06:23PM +0200, Laurentiu Tudor wrote:
+> This mapping needs to be created in order for slave dma transfers
+> to work on systems with SMMU. The implementation mostly mimics the
+> one in pl330 dma driver, authored by Robin Murphy.
 > 
-> This is a simple rebase onto Linux v5.0-rc2. We now use the
-> dev_iommu_fwspec_get() helper introduced in v5.0 instead of accessing
-> dev->iommu_fwspec, but there aren't any functional change from v6 [2].
+> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> Original approach was to add the missing mappings in the i2c client driver,
+> see here for discussion: https://patchwork.ozlabs.org/patch/1026013/
 > 
-> Our current goal for virtio-iommu is to get a paravirtual IOMMU working
-> on Arm, and enable device assignment to guest userspace. In this
-> use-case the mappings are static, and don't require optimal performance,
-> so this series tries to keep things simple. However there is plenty more
-> to do for features and optimizations, and having this base in v5.1 would
-> be good. Given that most of the changes are to drivers/iommu, I believe
-> the driver and future changes should go via the IOMMU tree.
+>  drivers/dma/fsl-edma-common.c | 66 ++++++++++++++++++++++++++++++++---
+>  drivers/dma/fsl-edma-common.h |  4 +++
+>  drivers/dma/fsl-edma.c        |  1 +
+>  drivers/dma/mcf-edma.c        |  1 +
+>  4 files changed, 68 insertions(+), 4 deletions(-)
 > 
-> You can find Linux driver and kvmtool device on v0.9.2 branches [3],
-> module and x86 support on virtio-iommu/devel. Also tested with Eric's
-> QEMU device [4]. Please note that the series depends on Robin's
-> probe-deferral fix [5], which will hopefully land in v5.0.
-> 
-> [1] Virtio-iommu specification v0.9, sources and pdf
->     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
->     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
-> 
-> [2] [PATCH v6 0/7] Add virtio-iommu driver
->     https://lists.linuxfoundation.org/pipermail/iommu/2018-December/032127.html
-> 
-> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.2
->     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9.2
-> 
-> [4] [RFC v9 00/17] VIRTIO-IOMMU device
->     https://www.mail-archive.com/qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org/msg575578.html
-> 
-> [5] [PATCH] iommu/of: Fix probe-deferral
->     https://www.spinics.net/lists/arm-kernel/msg698371.html
-
-Thanks for the work!
-So really my only issue with this is that there's no
-way for the IOMMU to describe the devices that it
-covers.
-
-As a result that is then done in a platform-specific way.
-
-And this means that for example it does not solve the problem that e.g.
-some power people have in that their platform simply does not have a way
-to specify which devices are covered by the IOMMU.
-
-Solving that problem would make me much more excited about
-this device.
-
-On the other hand I can see that while there have been some
-developments most of the code has been stable for quite a while now.
-
-So what I am trying to do right about now, is making a small module that
-loads early and pokes at the IOMMU sufficiently to get the data about
-which devices use the IOMMU out of it using standard virtio config
-space.  IIUC it's claimed to be impossible without messy changes to the
-boot sequence.
-
-If I succeed at least on some platforms I'll ask that this design is
-worked into this device, minimizing info that goes through DT/ACPI.  If
-I see I can't make it in time to meet the next merge window, I plan
-merging the existing patches using DT (barring surprises).
-
-As I only have a very small amount of time to spend on this attempt, If
-someone else wants to try doing that in parallel, that would be great!
-
-
-> Jean-Philippe Brucker (7):
->   dt-bindings: virtio-mmio: Add IOMMU description
->   dt-bindings: virtio: Add virtio-pci-iommu node
->   of: Allow the iommu-map property to omit untranslated devices
->   PCI: OF: Initialize dev->fwnode appropriately
->   iommu: Add virtio-iommu driver
->   iommu/virtio: Add probe request
->   iommu/virtio: Add event queue
-> 
->  .../devicetree/bindings/virtio/iommu.txt      |   66 +
->  .../devicetree/bindings/virtio/mmio.txt       |   30 +
->  MAINTAINERS                                   |    7 +
->  drivers/iommu/Kconfig                         |   11 +
->  drivers/iommu/Makefile                        |    1 +
->  drivers/iommu/virtio-iommu.c                  | 1158 +++++++++++++++++
->  drivers/of/base.c                             |   10 +-
->  drivers/pci/of.c                              |    7 +
->  include/uapi/linux/virtio_ids.h               |    1 +
->  include/uapi/linux/virtio_iommu.h             |  161 +++
->  10 files changed, 1449 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
->  create mode 100644 drivers/iommu/virtio-iommu.c
->  create mode 100644 include/uapi/linux/virtio_iommu.h
-> 
+> diff --git a/drivers/dma/fsl-edma-common.c b/drivers/dma/fsl-edma-common.c
+> index 8876c4c1bb2c..0e95ee24b6d4 100644
+> --- a/drivers/dma/fsl-edma-common.c
+> +++ b/drivers/dma/fsl-edma-common.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/dmapool.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+> +#include <linux/dma-mapping.h>
+>  
+>  #include "fsl-edma-common.h"
+>  
+> @@ -173,12 +174,62 @@ int fsl_edma_resume(struct dma_chan *chan)
+>  }
+>  EXPORT_SYMBOL_GPL(fsl_edma_resume);
+>  
+> +static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
+> +{
+> +	if (fsl_chan->dma_dir != DMA_NONE)
+> +		dma_unmap_resource(fsl_chan->vchan.chan.device->dev,
+> +				   fsl_chan->dma_dev_addr,
+> +				   fsl_chan->dma_dev_size,
+> +				   fsl_chan->dma_dir, 0);
+> +	fsl_chan->dma_dir = DMA_NONE;
+> +}
+> +
+> +static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
+> +				    enum dma_transfer_direction dir)
+> +{
+> +	struct device *dev = fsl_chan->vchan.chan.device->dev;
+> +	enum dma_data_direction dma_dir;
+> +	phys_addr_t addr = 0;
+> +	u32 size = 0;
+> +
+> +	switch (dir) {
+> +	case DMA_MEM_TO_DEV:
+> +		dma_dir = DMA_FROM_DEVICE;
+> +		addr = fsl_chan->cfg.dst_addr;
+> +		size = fsl_chan->cfg.dst_maxburst;
+> +		break;
+> +	case DMA_DEV_TO_MEM:
+> +		dma_dir = DMA_TO_DEVICE;
+> +		addr = fsl_chan->cfg.src_addr;
+> +		size = fsl_chan->cfg.src_maxburst;
+> +		break;
+> +	default:
+> +		dma_dir = DMA_NONE;
+> +		break;
+> +	}
+> +
+> +	/* Already mapped for this config? */
+> +	if (fsl_chan->dma_dir == dma_dir)
+> +		return true;
+> +
+> +	fsl_edma_unprep_slave_dma(fsl_chan);
+> +
+> +	fsl_chan->dma_dev_addr = dma_map_resource(dev, addr, size, dma_dir, 0);
+> +	if (dma_mapping_error(dev, fsl_chan->dma_dev_addr))
+> +		return false;
+> +	fsl_chan->dma_dev_size = size;
+> +	fsl_chan->dma_dir = dma_dir;
+> +
+> +	return true;
+> +}
+> +
+>  int fsl_edma_slave_config(struct dma_chan *chan,
+>  				 struct dma_slave_config *cfg)
+>  {
+>  	struct fsl_edma_chan *fsl_chan = to_fsl_edma_chan(chan);
+>  
+>  	memcpy(&fsl_chan->cfg, cfg, sizeof(*cfg));
+> +	fsl_edma_unprep_slave_dma(fsl_chan);
+>  
+>  	return 0;
+>  }
+> @@ -378,6 +429,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
+>  	if (!is_slave_direction(direction))
+>  		return NULL;
+>  
+> +	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
+> +		return NULL;
+> +
+>  	sg_len = buf_len / period_len;
+>  	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
+>  	if (!fsl_desc)
+> @@ -409,11 +463,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
+>  
+>  		if (direction == DMA_MEM_TO_DEV) {
+>  			src_addr = dma_buf_next;
+> -			dst_addr = fsl_chan->cfg.dst_addr;
+> +			dst_addr = fsl_chan->dma_dev_addr;
+>  			soff = fsl_chan->cfg.dst_addr_width;
+>  			doff = 0;
+>  		} else {
+> -			src_addr = fsl_chan->cfg.src_addr;
+> +			src_addr = fsl_chan->dma_dev_addr;
+>  			dst_addr = dma_buf_next;
+>  			soff = 0;
+>  			doff = fsl_chan->cfg.src_addr_width;
+> @@ -444,6 +498,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
+>  	if (!is_slave_direction(direction))
+>  		return NULL;
+>  
+> +	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
+> +		return NULL;
+> +
+>  	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
+>  	if (!fsl_desc)
+>  		return NULL;
+> @@ -468,11 +525,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
+>  
+>  		if (direction == DMA_MEM_TO_DEV) {
+>  			src_addr = sg_dma_address(sg);
+> -			dst_addr = fsl_chan->cfg.dst_addr;
+> +			dst_addr = fsl_chan->dma_dev_addr;
+>  			soff = fsl_chan->cfg.dst_addr_width;
+>  			doff = 0;
+>  		} else {
+> -			src_addr = fsl_chan->cfg.src_addr;
+> +			src_addr = fsl_chan->dma_dev_addr;
+>  			dst_addr = sg_dma_address(sg);
+>  			soff = 0;
+>  			doff = fsl_chan->cfg.src_addr_width;
+> @@ -555,6 +612,7 @@ void fsl_edma_free_chan_resources(struct dma_chan *chan)
+>  	fsl_edma_chan_mux(fsl_chan, 0, false);
+>  	fsl_chan->edesc = NULL;
+>  	vchan_get_all_descriptors(&fsl_chan->vchan, &head);
+> +	fsl_edma_unprep_slave_dma(fsl_chan);
+>  	spin_unlock_irqrestore(&fsl_chan->vchan.lock, flags);
+>  
+>  	vchan_dma_desc_free_list(&fsl_chan->vchan, &head);
+> diff --git a/drivers/dma/fsl-edma-common.h b/drivers/dma/fsl-edma-common.h
+> index 8917e8865959..b435d8e1e3a1 100644
+> --- a/drivers/dma/fsl-edma-common.h
+> +++ b/drivers/dma/fsl-edma-common.h
+> @@ -6,6 +6,7 @@
+>  #ifndef _FSL_EDMA_COMMON_H_
+>  #define _FSL_EDMA_COMMON_H_
+>  
+> +#include <linux/dma-direction.h>
+>  #include "virt-dma.h"
+>  
+>  #define EDMA_CR_EDBG		BIT(1)
+> @@ -120,6 +121,9 @@ struct fsl_edma_chan {
+>  	struct dma_slave_config		cfg;
+>  	u32				attr;
+>  	struct dma_pool			*tcd_pool;
+> +	dma_addr_t			dma_dev_addr;
+> +	u32				dma_dev_size;
+> +	enum dma_data_direction		dma_dir;
+>  };
+>  
+>  struct fsl_edma_desc {
+> diff --git a/drivers/dma/fsl-edma.c b/drivers/dma/fsl-edma.c
+> index 34d70112fcc9..75e8a7ba3a22 100644
+> --- a/drivers/dma/fsl-edma.c
+> +++ b/drivers/dma/fsl-edma.c
+> @@ -254,6 +254,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
+>  		fsl_chan->pm_state = RUNNING;
+>  		fsl_chan->slave_id = 0;
+>  		fsl_chan->idle = true;
+> +		fsl_chan->dma_dir = DMA_NONE;
+>  		fsl_chan->vchan.desc_free = fsl_edma_free_desc;
+>  		vchan_init(&fsl_chan->vchan, &fsl_edma->dma_dev);
+>  
+> diff --git a/drivers/dma/mcf-edma.c b/drivers/dma/mcf-edma.c
+> index 5de1b07eddff..7de54b2fafdb 100644
+> --- a/drivers/dma/mcf-edma.c
+> +++ b/drivers/dma/mcf-edma.c
+> @@ -214,6 +214,7 @@ static int mcf_edma_probe(struct platform_device *pdev)
+>  		mcf_chan->edma = mcf_edma;
+>  		mcf_chan->slave_id = i;
+>  		mcf_chan->idle = true;
+> +		mcf_chan->dma_dir = DMA_NONE;
+>  		mcf_chan->vchan.desc_free = fsl_edma_free_desc;
+>  		vchan_init(&mcf_chan->vchan, &mcf_edma->dma_dev);
+>  		iowrite32(0x0, &regs->tcd[i].csr);
 > -- 
-> 2.19.1
+> 2.17.1
+> 
+
+I tested this patch on:
+
+- Vybrid VF50N (Toradex Colibri VF50)
+- ColdFire mcf54415 (Sysam stmark2 board)
+
+and dma still works properly.
+
+Tested-by: Angelo Dureghello <angelo@sysam.it>
