@@ -1,7 +1,7 @@
 From: Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 1/3] dma-mapping: remove the default map_resource implementation
-Date: Fri, 18 Jan 2019 12:37:25 +0100
-Message-ID: <20190118113727.3270-2-hch@lst.de>
+Subject: [PATCH 3/3] videobuf2: replace a layering violation with dma_map_resource
+Date: Fri, 18 Jan 2019 12:37:27 +0100
+Message-ID: <20190118113727.3270-4-hch@lst.de>
 References: <20190118113727.3270-1-hch@lst.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -9,137 +9,85 @@ Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20190118113727.3270-1-hch@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Pawel Osciak <pawel@osciak.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>
-Cc: Russell King <linux@armlinux.org.uk>, Mauro Carvalho Chehab <mchehab@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Russell King <linux@armlinux.org.uk>, Mauro Carvalho Chehab <mchehab@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org, linux-kernel@vger.kernel.org, Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Instead provide a proper implementation in the direct mapping code, and
-also wire it up for arm and powerpc, leaving an error return for all the
-IOMMU or virtual mapping instances for which we'd have to wire up an
-actual implementation
+vb2_dc_get_userptr pokes into arm direct mapping details to get the
+resemblance of a dma address for a a physical address that does is
+not backed by a page struct.  Not only is this not portable to other
+architectures with dma direct mapping offsets, but also not to uses
+of IOMMUs of any kind.  Switch to the proper dma_map_resource /
+dma_unmap_resource interface instead.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 ---
- arch/arm/mm/dma-mapping.c         |  2 ++
- arch/powerpc/kernel/dma-swiotlb.c |  1 +
- arch/powerpc/kernel/dma.c         |  1 +
- include/linux/dma-mapping.h       | 12 +++++++-----
- kernel/dma/direct.c               | 14 ++++++++++++++
- 5 files changed, 25 insertions(+), 5 deletions(-)
+ .../common/videobuf2/videobuf2-dma-contig.c   | 41 ++++---------------
+ 1 file changed, 9 insertions(+), 32 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index f1e2922e447c..3c8534904209 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -188,6 +188,7 @@ const struct dma_map_ops arm_dma_ops = {
- 	.unmap_page		= arm_dma_unmap_page,
- 	.map_sg			= arm_dma_map_sg,
- 	.unmap_sg		= arm_dma_unmap_sg,
-+	.map_resource		= dma_direct_map_resource,
- 	.sync_single_for_cpu	= arm_dma_sync_single_for_cpu,
- 	.sync_single_for_device	= arm_dma_sync_single_for_device,
- 	.sync_sg_for_cpu	= arm_dma_sync_sg_for_cpu,
-@@ -211,6 +212,7 @@ const struct dma_map_ops arm_coherent_dma_ops = {
- 	.get_sgtable		= arm_dma_get_sgtable,
- 	.map_page		= arm_coherent_dma_map_page,
- 	.map_sg			= arm_dma_map_sg,
-+	.map_resource		= dma_direct_map_resource,
- 	.dma_supported		= arm_dma_supported,
- };
- EXPORT_SYMBOL(arm_coherent_dma_ops);
-diff --git a/arch/powerpc/kernel/dma-swiotlb.c b/arch/powerpc/kernel/dma-swiotlb.c
-index 7d5fc9751622..fbb2506a414e 100644
---- a/arch/powerpc/kernel/dma-swiotlb.c
-+++ b/arch/powerpc/kernel/dma-swiotlb.c
-@@ -55,6 +55,7 @@ const struct dma_map_ops powerpc_swiotlb_dma_ops = {
- 	.dma_supported = swiotlb_dma_supported,
- 	.map_page = dma_direct_map_page,
- 	.unmap_page = dma_direct_unmap_page,
-+	.map_resource = dma_direct_map_resource,
- 	.sync_single_for_cpu = dma_direct_sync_single_for_cpu,
- 	.sync_single_for_device = dma_direct_sync_single_for_device,
- 	.sync_sg_for_cpu = dma_direct_sync_sg_for_cpu,
-diff --git a/arch/powerpc/kernel/dma.c b/arch/powerpc/kernel/dma.c
-index b1903ebb2e9c..258b9e8ebb99 100644
---- a/arch/powerpc/kernel/dma.c
-+++ b/arch/powerpc/kernel/dma.c
-@@ -273,6 +273,7 @@ const struct dma_map_ops dma_nommu_ops = {
- 	.dma_supported			= dma_nommu_dma_supported,
- 	.map_page			= dma_nommu_map_page,
- 	.unmap_page			= dma_nommu_unmap_page,
-+	.map_resource			= dma_direct_map_resource,
- 	.get_required_mask		= dma_nommu_get_required_mask,
- #ifdef CONFIG_NOT_COHERENT_CACHE
- 	.sync_single_for_cpu 		= dma_nommu_sync_single,
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f6ded992c183..9842085e6774 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -208,6 +208,8 @@ dma_addr_t dma_direct_map_page(struct device *dev, struct page *page,
- 		unsigned long attrs);
- int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
- 		enum dma_data_direction dir, unsigned long attrs);
-+dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs);
+diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+index aff0ab7bf83d..82389aead6ed 100644
+--- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
++++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+@@ -439,42 +439,14 @@ static void vb2_dc_put_userptr(void *buf_priv)
+ 				set_page_dirty_lock(pages[i]);
+ 		sg_free_table(sgt);
+ 		kfree(sgt);
++	} else {
++		dma_unmap_resource(buf->dev, buf->dma_addr, buf->size,
++				   buf->dma_dir, 0);
+ 	}
+ 	vb2_destroy_framevec(buf->vec);
+ 	kfree(buf);
+ }
  
- #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
-     defined(CONFIG_SWIOTLB)
-@@ -346,19 +348,19 @@ static inline dma_addr_t dma_map_resource(struct device *dev,
- 					  unsigned long attrs)
- {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
--	dma_addr_t addr;
-+	dma_addr_t addr = DMA_MAPPING_ERROR;
- 
- 	BUG_ON(!valid_dma_direction(dir));
- 
- 	/* Don't allow RAM to be mapped */
- 	BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
- 
--	addr = phys_addr;
--	if (ops && ops->map_resource)
-+	if (dma_is_direct(ops))
-+		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
-+	else if (ops->map_resource)
- 		addr = ops->map_resource(dev, phys_addr, size, dir, attrs);
- 
- 	debug_dma_map_resource(dev, phys_addr, size, dir, addr);
+-/*
+- * For some kind of reserved memory there might be no struct page available,
+- * so all that can be done to support such 'pages' is to try to convert
+- * pfn to dma address or at the last resort just assume that
+- * dma address == physical address (like it has been assumed in earlier version
+- * of videobuf2-dma-contig
+- */
 -
- 	return addr;
- }
+-#ifdef __arch_pfn_to_dma
+-static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+-{
+-	return (dma_addr_t)__arch_pfn_to_dma(dev, pfn);
+-}
+-#elif defined(__pfn_to_bus)
+-static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+-{
+-	return (dma_addr_t)__pfn_to_bus(pfn);
+-}
+-#elif defined(__pfn_to_phys)
+-static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+-{
+-	return (dma_addr_t)__pfn_to_phys(pfn);
+-}
+-#else
+-static inline dma_addr_t vb2_dc_pfn_to_dma(struct device *dev, unsigned long pfn)
+-{
+-	/* really, we cannot do anything better at this point */
+-	return (dma_addr_t)(pfn) << PAGE_SHIFT;
+-}
+-#endif
+-
+ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+ 	unsigned long size, enum dma_data_direction dma_dir)
+ {
+@@ -528,7 +500,12 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+ 		for (i = 1; i < n_pages; i++)
+ 			if (nums[i-1] + 1 != nums[i])
+ 				goto fail_pfnvec;
+-		buf->dma_addr = vb2_dc_pfn_to_dma(buf->dev, nums[0]);
++		buf->dma_addr = dma_map_resource(buf->dev,
++				__pfn_to_phys(nums[0]), size, buf->dma_dir, 0);
++		if (dma_mapping_error(buf->dev, buf->dma_addr)) {
++			ret = -ENOMEM;
++			goto fail_pfnvec;
++		}
+ 		goto out;
+ 	}
  
-@@ -369,7 +371,7 @@ static inline void dma_unmap_resource(struct device *dev, dma_addr_t addr,
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
- 
- 	BUG_ON(!valid_dma_direction(dir));
--	if (ops && ops->unmap_resource)
-+	if (!dma_is_direct(ops) && ops->unmap_resource)
- 		ops->unmap_resource(dev, addr, size, dir, attrs);
- 	debug_dma_unmap_resource(dev, addr, size, dir);
- }
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 355d16acee6d..25bd19974223 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -356,6 +356,20 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
- }
- EXPORT_SYMBOL(dma_direct_map_sg);
- 
-+dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	dma_addr_t dma_addr = paddr;
-+
-+	if (unlikely(!dma_direct_possible(dev, dma_addr, size))) {
-+		report_addr(dev, dma_addr, size);
-+		return DMA_MAPPING_ERROR;
-+	}
-+
-+	return dma_addr;
-+}
-+EXPORT_SYMBOL(dma_direct_map_resource);
-+
- /*
-  * Because 32-bit DMA masks are so common we expect every architecture to be
-  * able to satisfy them - either by not supporting more physical memory, or by
 -- 
 2.20.1
