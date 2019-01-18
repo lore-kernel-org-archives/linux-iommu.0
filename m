@@ -1,47 +1,82 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Fri, 18 Jan 2019 09:35:39 +0100
-Message-ID: <20190118083539.GA30479@lst.de>
-References: <3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de> <23284859-bf0a-9cd5-a480-2a7fd7802056@xenosoft.de> <075f70e3-7a4a-732f-b501-05a1a8e3c853@xenosoft.de> <b04d08ea-61f9-3212-b9a3-ad79e3b8bd05@xenosoft.de> <21f72a6a-9095-7034-f169-95e876228b2a@xenosoft.de> <27148ac2-2a92-5536-d886-2c0971ab43d9@xenosoft.de> <20190115133558.GA29225@lst.de> <685f0c06-af1b-0bec-ac03-f9bf1f7a2b35@xenosoft.de> <20190115151732.GA2325@lst.de> <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 3/3] videobuf2: replace a layering violation with
+ dma_map_resource
+Date: Fri, 18 Jan 2019 10:41:06 +0100
+Message-ID: <f4222474-0515-c0a2-ef5e-523b56869210@samsung.com>
+References: <20190111181731.11782-1-hch@lst.de>
+        <CGME20190111181812epcas2p1eeb68a16701631513eaf297073f7299f@epcas2p1.samsung.com>
+        <20190111181731.11782-4-hch@lst.de>
+        <6f8892ac-c2aa-10df-c74f-ba032bf75160@samsung.com>
+        <20190117172152.GA32292@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <e9345547-4dc6-747a-29ec-6375dc8bfe83@xenosoft.de>
+In-Reply-To: <20190117172152.GA32292@lst.de>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Cc: Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: Pawel Osciak <pawel@osciak.com>, Kyungmin Park <kyungmin.park@samsung.com>, =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas@ragnatech.se>, Russell King <linux@armlinux.org.uk>, Mauro Carvalho Chehab <mchehab@kernel.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christian,
+Hi Christoph,
 
-can you check if the debug printks in this patch trigger?
+On 2019-01-17 18:21, Christoph Hellwig wrote:
+> On Mon, Jan 14, 2019 at 01:42:26PM +0100, Marek Szyprowski wrote:
+>> On 2019-01-11 19:17, Christoph Hellwig wrote:
+>>> vb2_dc_get_userptr pokes into arm direct mapping details to get the
+>>> resemblance of a dma address for a a physical address that does is
+>>> not backed by a page struct.  Not only is this not portable to other
+>>> architectures with dma direct mapping offsets, but also not to uses
+>>> of IOMMUs of any kind.  Switch to the proper dma_map_resource /
+>>> dma_unmap_resource interface instead.
+>>>
+>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>> There are checks for IOMMU presence in other places in vb2-dma-contig,
+>> so it was used only when no IOMMU is available, but I agree that the
+>> hacky code should be replaced by a generic code if possible.
+>>
+>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>
+>> V4L2 pipeline works fine on older Exynos-based boards with CMA and IOMMU
+>> disabled.
+> Do you know if these rely on the offsets?  E.g. would they still work
+> with the patch below applied on top.  That would keep the map_resource
+> semantics as-is as solve the issue pointed out by Robin for now.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 355d16acee6d..e46c9b64ec0d 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -118,8 +118,11 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 			page = NULL;
- 		}
- 	}
--	if (!page)
-+	if (!page) {
- 		page = alloc_pages_node(dev_to_node(dev), gfp, page_order);
-+		if (!page)
-+			pr_warn("failed to allocate memory with gfp 0x%x\n", gfp);
-+	}
- 
- 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 		__free_pages(page, page_order);
-@@ -139,6 +142,10 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		}
- 	}
- 
-+	if (!page) {
-+		pr_warn("failed to allocate DMA memory!\n");
-+		dump_stack();
-+	}
- 	return page;
- }
- 
+AFAIK that code was only used for sharing buffers between hardware
+modules that are a part of the same SoC, usually implemented as platform
+devices. AFAIR this never worked for devices on different buses. So far
+I wasn't aware on ANY which would require an offset for the DMA access.
+
+The first version of videobuf2-dc code even incorrectly used paddr
+instead of dma_addr as a buffer 'address' returned to the client
+drivers, because in case of those SoC this was exactly the same (see
+commits 472af2b05bdefcaee7e754e22cbf131110017ad6 and
+ba7fcb0c954921534707f08ebc4d8beeb2eb17e7).
+
+> If not I can only think of a flag to bypass the offseting for now, but
+> that would be pretty ugly.  Or go for the long-term solution of
+> discovering the relationship between the two devices, as done by the
+> PCIe P2P code..
+>
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 8e0359b04957..25bd19974223 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -359,7 +359,7 @@ EXPORT_SYMBOL(dma_direct_map_sg);
+>  dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
+>  		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>  {
+> -	dma_addr_t dma_addr = phys_to_dma(dev, paddr);
+> +	dma_addr_t dma_addr = paddr;
+>  
+>  	if (unlikely(!dma_direct_possible(dev, dma_addr, size))) {
+>  		report_addr(dev, dma_addr, size);
+>
+>
+>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
