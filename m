@@ -1,77 +1,102 @@
-From: Pierre Morel <pmorel@linux.ibm.com>
-Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
-Date: Fri, 18 Jan 2019 14:29:20 +0100
-Message-ID: <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
-References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
- <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
-Reply-To: pmorel@linux.ibm.com
+From: LABBE Corentin <clabbe@baylibre.com>
+Subject: Re: [PATCH] dma-debug: add dumping facility via debugfs
+Date: Fri, 18 Jan 2019 14:41:36 +0100
+Message-ID: <20190118134136.GA1078@Red>
+References: <1547646265-9414-1-git-send-email-clabbe@baylibre.com>
+ <2f43688f-9c08-a9c4-6175-caa3d2e40261@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <2f43688f-9c08-a9c4-6175-caa3d2e40261@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, gerald.schaefer@de.ibm.com
-Cc: linux-s390@vger.kernel.org, walling@linux.ibm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: hch@lst.de, m.szyprowski@samsung.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 17/01/2019 14:02, Robin Murphy wrote:
-> On 15/01/2019 17:37, Pierre Morel wrote:
->> The s390 iommu can only allow DMA transactions between the zPCI device
->> entries start_dma and end_dma.
->>
->> Let's declare the regions before start_dma and after end_dma as
->> reserved regions using the appropriate callback in iommu_ops.
->>
->> The reserved region may later be retrieved from sysfs or from
->> the vfio iommu internal interface.
+On Wed, Jan 16, 2019 at 06:10:13PM +0000, Robin Murphy wrote:
+> On 16/01/2019 13:44, Corentin Labbe wrote:
+> > While debugging a DMA mapping leak, I needed to access
+> > debug_dma_dump_mappings() but easily from user space.
+> > 
+> > This patch adds a /sys/kernel/debug/dma-api/dump file which contain all
+> > current DMA mapping.
+> > 
+> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> > ---
+> >   kernel/dma/debug.c | 47 ++++++++++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 47 insertions(+)
+> > 
+> > diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> > index 23cf5361bcf1..9253382f5729 100644
+> > --- a/kernel/dma/debug.c
+> > +++ b/kernel/dma/debug.c
+> > @@ -144,6 +144,7 @@ static struct dentry *num_free_entries_dent __read_mostly;
+> >   static struct dentry *min_free_entries_dent __read_mostly;
+> >   static struct dentry *nr_total_entries_dent __read_mostly;
+> >   static struct dentry *filter_dent           __read_mostly;
+> > +static struct dentry *dump_dent             __read_mostly;
+> >   
+> >   /* per-driver filter related state */
+> >   
+> > @@ -840,6 +841,47 @@ static const struct file_operations filter_fops = {
+> >   	.llseek = default_llseek,
+> >   };
+> >   
+> > +static int dump_read(struct seq_file *seq, void *v)
+> > +{
+> > +	int idx;
+> > +
+> > +	for (idx = 0; idx < HASH_SIZE; idx++) {
+> > +		struct hash_bucket *bucket = &dma_entry_hash[idx];
+> > +		struct dma_debug_entry *entry;
+> > +		unsigned long flags;
+> > +
+> > +		spin_lock_irqsave(&bucket->lock, flags);
+> > +
+> > +		list_for_each_entry(entry, &bucket->list, list) {
+> > +			seq_printf(seq,
+> > +				   "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx %s %s\n",
+> > +				   dev_name(entry->dev),
+> > +				   dev_driver_string(entry->dev),
+> > +				   type2name[entry->type], idx,
+> > +				   phys_addr(entry), entry->pfn,
+> > +				   entry->dev_addr, entry->size,
+> > +				   dir2name[entry->direction],
+> > +				   maperr2str[entry->map_err_type]);
+> > +		}
+> > +
+> > +		spin_unlock_irqrestore(&bucket->lock, flags);
+> > +	}
+> > +	return 0;
+> > +}
 > 
-> For this particular case, I think the best solution is to give VFIO the 
-> ability to directly interrogate the domain geometry (which s390 appears 
-> to set correctly already). The idea of reserved regions was really for 
-> 'unexpected' holes inside the usable address space - using them to also 
-> describe places that are entirely outside that address space rather 
-> confuses things IMO.
+> It's a shame that this is pretty much a duplication of 
+> debug_dma_dump_mappings(), but there seems no straightforward way to 
+> define one in terms of the other :/
 > 
-> Furthermore, even if we *did* end up going down the route of actively 
-> reserving addresses beyond the usable aperture, it doesn't seem sensible 
-> for individual drivers to do it themselves when the core API already 
-> describes the relevant information generically.
+> (although given that we'd rather not have that weird external interface 
+> anyway, maybe "now you can use debugfs instead" might be justification 
+> enough for cleaning it up...)
 > 
-> Robin.
-
-Robin,
-
-I already posted a patch retrieving the geometry through 
-VFIO_IOMMU_GET_INFO using a specific capability for the geometry [1], 
-and AFAIU, Alex did not agree with this.
-
-What is different in what you propose?
-
-@Alex: I was hoping that this patch goes in your direction. What do you 
-think?
-
-Thanks,
-Pierre
-
-[1]: https://lore.kernel.org/patchwork/patch/1030369/
-
+> > +
+> > +static int dump_open(struct inode *inode, struct file *file)
+> > +{
+> > +	return single_open(file, dump_read, inode->i_private);
+> > +}
+> > +
+> > +static const struct file_operations dump_fops = {
+> > +	.owner = THIS_MODULE,
+> > +	.open = dump_open,
+> > +	.read = seq_read,
+> > +	.llseek = seq_lseek,
+> > +	.release = single_release,
+> > +};
+> > +
 > 
->>
->> This seems to me related with the work Shameer has started on
->> vfio_iommu_type1 so I add Alex and Shameer to the CC list.
->>
->>
->> Pierre Morel (1):
->>    iommu/s390: Declare s390 iommu reserved regions
->>
->>   drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
->>   1 file changed, 29 insertions(+)
->>
+> DEFINE_SHOW_ATTRIBUTE()?
 > 
 
+I will use it
 
--- 
-Pierre Morel
-Linux/KVM/QEMU in Böblingen - Germany
+Thanks
