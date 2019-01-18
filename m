@@ -1,103 +1,72 @@
-From: Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v2] dma-debug: add dumping facility via debugfs
-Date: Fri, 18 Jan 2019 13:44:18 +0000
-Message-ID: <1547819058-3552-1-git-send-email-clabbe@baylibre.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: corbet@lwn.net, hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
+Date: Fri, 18 Jan 2019 13:51:11 +0000
+Message-ID: <668fe734-e4bf-0342-ab8c-df54d9022db4@arm.com>
+References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
+	<cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
+	<3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: pmorel-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org
+Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, walling-tEXmvtCZX7AybS5Ee8rs3A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-While debugging a DMA mapping leak, I needed to access
-debug_dma_dump_mappings() but easily from user space.
-
-This patch adds a /sys/kernel/debug/dma-api/dump file which contain all
-current DMA mapping.
-
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
-Changes since v1:
-- Use DEFINE_SHOW_ATTRIBUTE
-- Add Documentation
-
- Documentation/DMA-API.txt |  3 +++
- kernel/dma/debug.c        | 36 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 39 insertions(+)
-
-diff --git a/Documentation/DMA-API.txt b/Documentation/DMA-API.txt
-index e133ccd60228..78114ee63057 100644
---- a/Documentation/DMA-API.txt
-+++ b/Documentation/DMA-API.txt
-@@ -696,6 +696,9 @@ dma-api/disabled		This read-only file contains the character 'Y'
- 				happen when it runs out of memory or if it was
- 				disabled at boot time
- 
-+dma-api/dump			This read-only file contains current DMA
-+				mappings.
-+
- dma-api/error_count		This file is read-only and shows the total
- 				numbers of errors found.
- 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 23cf5361bcf1..b4827b1c9070 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -144,6 +144,7 @@ static struct dentry *num_free_entries_dent __read_mostly;
- static struct dentry *min_free_entries_dent __read_mostly;
- static struct dentry *nr_total_entries_dent __read_mostly;
- static struct dentry *filter_dent           __read_mostly;
-+static struct dentry *dump_dent             __read_mostly;
- 
- /* per-driver filter related state */
- 
-@@ -840,6 +841,36 @@ static const struct file_operations filter_fops = {
- 	.llseek = default_llseek,
- };
- 
-+static int dump_show(struct seq_file *seq, void *v)
-+{
-+	int idx;
-+
-+	for (idx = 0; idx < HASH_SIZE; idx++) {
-+		struct hash_bucket *bucket = &dma_entry_hash[idx];
-+		struct dma_debug_entry *entry;
-+		unsigned long flags;
-+
-+		spin_lock_irqsave(&bucket->lock, flags);
-+
-+		list_for_each_entry(entry, &bucket->list, list) {
-+			seq_printf(seq,
-+				   "%s %s %s idx %d P=%llx N=%lx D=%llx L=%llx %s %s\n",
-+				   dev_name(entry->dev),
-+				   dev_driver_string(entry->dev),
-+				   type2name[entry->type], idx,
-+				   phys_addr(entry), entry->pfn,
-+				   entry->dev_addr, entry->size,
-+				   dir2name[entry->direction],
-+				   maperr2str[entry->map_err_type]);
-+		}
-+
-+		spin_unlock_irqrestore(&bucket->lock, flags);
-+	}
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(dump);
-+
- static int dma_debug_fs_init(void)
- {
- 	dma_debug_dent = debugfs_create_dir("dma-api", NULL);
-@@ -894,6 +925,11 @@ static int dma_debug_fs_init(void)
- 	if (!filter_dent)
- 		goto out_err;
- 
-+	dump_dent = debugfs_create_file("dump", 0444,
-+					dma_debug_dent, NULL, &dump_fops);
-+	if (!dump_dent)
-+		goto out_err;
-+
- 	return 0;
- 
- out_err:
--- 
-2.19.2
+SGkgUGllcnJlLAoKT24gMTgvMDEvMjAxOSAxMzoyOSwgUGllcnJlIE1vcmVsIHdyb3RlOgo+IE9u
+IDE3LzAxLzIwMTkgMTQ6MDIsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gT24gMTUvMDEvMjAxOSAx
+NzozNywgUGllcnJlIE1vcmVsIHdyb3RlOgo+Pj4gVGhlIHMzOTAgaW9tbXUgY2FuIG9ubHkgYWxs
+b3cgRE1BIHRyYW5zYWN0aW9ucyBiZXR3ZWVuIHRoZSB6UENJIGRldmljZQo+Pj4gZW50cmllcyBz
+dGFydF9kbWEgYW5kIGVuZF9kbWEuCj4+Pgo+Pj4gTGV0J3MgZGVjbGFyZSB0aGUgcmVnaW9ucyBi
+ZWZvcmUgc3RhcnRfZG1hIGFuZCBhZnRlciBlbmRfZG1hIGFzCj4+PiByZXNlcnZlZCByZWdpb25z
+IHVzaW5nIHRoZSBhcHByb3ByaWF0ZSBjYWxsYmFjayBpbiBpb21tdV9vcHMuCj4+Pgo+Pj4gVGhl
+IHJlc2VydmVkIHJlZ2lvbiBtYXkgbGF0ZXIgYmUgcmV0cmlldmVkIGZyb20gc3lzZnMgb3IgZnJv
+bQo+Pj4gdGhlIHZmaW8gaW9tbXUgaW50ZXJuYWwgaW50ZXJmYWNlLgo+Pgo+PiBGb3IgdGhpcyBw
+YXJ0aWN1bGFyIGNhc2UsIEkgdGhpbmsgdGhlIGJlc3Qgc29sdXRpb24gaXMgdG8gZ2l2ZSBWRklP
+Cj4+IHRoZSBhYmlsaXR5IHRvIGRpcmVjdGx5IGludGVycm9nYXRlIHRoZSBkb21haW4gZ2VvbWV0
+cnkgKHdoaWNoIHMzOTAKPj4gYXBwZWFycyB0byBzZXQgY29ycmVjdGx5IGFscmVhZHkpLiBUaGUg
+aWRlYSBvZiByZXNlcnZlZCByZWdpb25zIHdhcwo+PiByZWFsbHkgZm9yICd1bmV4cGVjdGVkJyBo
+b2xlcyBpbnNpZGUgdGhlIHVzYWJsZSBhZGRyZXNzIHNwYWNlIC0gdXNpbmcKPj4gdGhlbSB0byBh
+bHNvIGRlc2NyaWJlIHBsYWNlcyB0aGF0IGFyZSBlbnRpcmVseSBvdXRzaWRlIHRoYXQgYWRkcmVz
+cwo+PiBzcGFjZSByYXRoZXIgY29uZnVzZXMgdGhpbmdzIElNTy4KPj4KPj4gRnVydGhlcm1vcmUs
+IGV2ZW4gaWYgd2UgKmRpZCogZW5kIHVwIGdvaW5nIGRvd24gdGhlIHJvdXRlIG9mIGFjdGl2ZWx5
+Cj4+IHJlc2VydmluZyBhZGRyZXNzZXMgYmV5b25kIHRoZSB1c2FibGUgYXBlcnR1cmUsIGl0IGRv
+ZXNuJ3Qgc2VlbQo+PiBzZW5zaWJsZSBmb3IgaW5kaXZpZHVhbCBkcml2ZXJzIHRvIGRvIGl0IHRo
+ZW1zZWx2ZXMgd2hlbiB0aGUgY29yZSBBUEkKPj4gYWxyZWFkeSBkZXNjcmliZXMgdGhlIHJlbGV2
+YW50IGluZm9ybWF0aW9uIGdlbmVyaWNhbGx5Lgo+Pgo+PiBSb2Jpbi4KPiAKPiBSb2JpbiwKPiAK
+PiBJIGFscmVhZHkgcG9zdGVkIGEgcGF0Y2ggcmV0cmlldmluZyB0aGUgZ2VvbWV0cnkgdGhyb3Vn
+aAo+IFZGSU9fSU9NTVVfR0VUX0lORk8gdXNpbmcgYSBzcGVjaWZpYyBjYXBhYmlsaXR5IGZvciB0
+aGUgZ2VvbWV0cnkgWzFdLAo+IGFuZCBBRkFJVSwgQWxleCBkaWQgbm90IGFncmVlIHdpdGggdGhp
+cy4KCk9uIGFybSB3ZSBhbHNvIG5lZWQgdG8gcmVwb3J0IHRoZSBJT01NVSBnZW9tZXRyeSB0byB1
+c2Vyc3BhY2UgKG1heCBJT1ZBCnNpemUgaW4gcGFydGljdWxhcikuIFNoYW1lZXIgaGFzIGJlZW4g
+d29ya2luZyBvbiBhIHNvbHV0aW9uIFsyXSB0aGF0CnByZXNlbnRzIGEgdW5pZmllZCB2aWV3IG9m
+IGJvdGggZ2VvbWV0cnkgYW5kIHJlc2VydmVkIHJlZ2lvbnMgaW50byB0aGUKVkZJT19JT01NVV9H
+RVRfSU5GTyBjYWxsLCBhbmQgSSB0aGluayB3ZSBzaG91bGQgZ28gd2l0aCB0aGF0LiBJZiBJCnVu
+ZGVyc3RhbmQgY29ycmVjdGx5IGl0J3MgY3VycmVudGx5IGJsb2NrZWQgb24gdGhlIFJNUlIgcHJv
+YmxlbSBhbmQKd2UncmUgd2FpdGluZyBmb3IgSmFjb2Igb3IgQXNob2sgdG8gdGFrZSBhIGxvb2sg
+YXQgaXQsIGFzIEtldmluIHBpbmdlZAp0aGVtIG9uIHRocmVhZCBbMV0/CgpbMl0gaHR0cHM6Ly9s
+a21sLm9yZy9sa21sLzIwMTgvNC8xOC8yOTMKClRoYW5rcywKSmVhbgoKPiAKPiBXaGF0IGlzIGRp
+ZmZlcmVudCBpbiB3aGF0IHlvdSBwcm9wb3NlPwo+IAo+IEBBbGV4OiBJIHdhcyBob3BpbmcgdGhh
+dCB0aGlzIHBhdGNoIGdvZXMgaW4geW91ciBkaXJlY3Rpb24uIFdoYXQgZG8geW91Cj4gdGhpbms/
+Cj4gCj4gVGhhbmtzLAo+IFBpZXJyZQo+IAo+IFsxXTogaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcv
+cGF0Y2h3b3JrL3BhdGNoLzEwMzAzNjkvCj4gCj4+Cj4+Pgo+Pj4gVGhpcyBzZWVtcyB0byBtZSBy
+ZWxhdGVkIHdpdGggdGhlIHdvcmsgU2hhbWVlciBoYXMgc3RhcnRlZCBvbgo+Pj4gdmZpb19pb21t
+dV90eXBlMSBzbyBJIGFkZCBBbGV4IGFuZCBTaGFtZWVyIHRvIHRoZSBDQyBsaXN0Lgo+Pj4KPj4+
+Cj4+PiBQaWVycmUgTW9yZWwgKDEpOgo+Pj4gwqDCoCBpb21tdS9zMzkwOiBEZWNsYXJlIHMzOTAg
+aW9tbXUgcmVzZXJ2ZWQgcmVnaW9ucwo+Pj4KPj4+IMKgIGRyaXZlcnMvaW9tbXUvczM5MC1pb21t
+dS5jIHwgMjkgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysKPj4+IMKgIDEgZmlsZSBjaGFu
+Z2VkLCAyOSBpbnNlcnRpb25zKCspCj4+Pgo+Pgo+IAo+IAoKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
+LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2lvbW11
