@@ -1,15 +1,14 @@
-From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] PCI: iproc: CRS state check in config request
-Date: Fri, 18 Jan 2019 09:08:51 -0600
-Message-ID: <20190118150851.GC25249@google.com>
-References: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
-	<1547785403-32268-3-git-send-email-srinath.mannam@broadcom.com>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
+Date: Fri, 18 Jan 2019 10:51:20 -0500
+Message-ID: <20190118103235-mutt-send-email-mst@kernel.org>
+References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1547785403-32268-3-git-send-email-srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <20190115121959.23763-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,103 +18,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Cc: Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 18, 2019 at 09:53:22AM +0530, Srinath Mannam wrote:
-> In the current implementation, config read of 0xffff0001 data
-> is assumed as CRS completion. but sometimes 0xffff0001 can be
-> a valid data.
-> IPROC PCIe RC has a register to show config request status flags
-> like SC, UR, CRS and CA.
-> So that extra check is added in the code to confirm the CRS
-> state using this register before reissue config request.
 
-s/. but/.  But/  (Sentences start with a capital letter.)
-
-Please wrap this text correctly.  If it's a single paragraph, wrap it so
-the lines are filled.  It *looks* like it's intended to be separate
-paragraphs; they should be separated by blank lines.
-
-> Signed-off-by: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/pci/controller/pcie-iproc.c | 23 +++++++++++++++++++++--
->  1 file changed, 21 insertions(+), 2 deletions(-)
+On Tue, Jan 15, 2019 at 12:19:52PM +0000, Jean-Philippe Brucker wrote:
+> Implement the virtio-iommu driver, following specification v0.9 [1].
 > 
-> diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-> index 13ce80f..ee89d56 100644
-> --- a/drivers/pci/controller/pcie-iproc.c
-> +++ b/drivers/pci/controller/pcie-iproc.c
-> @@ -63,6 +63,10 @@
->  #define APB_ERR_EN_SHIFT		0
->  #define APB_ERR_EN			BIT(APB_ERR_EN_SHIFT)
->  
-> +#define CFG_RD_SUCCESS			0
-> +#define CFG_RD_UR			1
-> +#define CFG_RD_CRS			2
-> +#define CFG_RD_CA			3
->  #define CFG_RETRY_STATUS		0xffff0001
->  #define CFG_RETRY_STATUS_TIMEOUT_US	500000 /* 500 milliseconds */
->  
-> @@ -300,6 +304,9 @@ enum iproc_pcie_reg {
->  	IPROC_PCIE_IARR4,
->  	IPROC_PCIE_IMAP4,
->  
-> +	/* config read status */
-> +	IPROC_PCIE_CFG_RD_STATUS,
-> +
->  	/* link status */
->  	IPROC_PCIE_LINK_STATUS,
->  
-> @@ -370,6 +377,7 @@ static const u16 iproc_pcie_reg_paxb_v2[] = {
->  	[IPROC_PCIE_IMAP3]		= 0xe08,
->  	[IPROC_PCIE_IARR4]		= 0xe68,
->  	[IPROC_PCIE_IMAP4]		= 0xe70,
-> +	[IPROC_PCIE_CFG_RD_STATUS]	= 0xee0,
->  	[IPROC_PCIE_LINK_STATUS]	= 0xf0c,
->  	[IPROC_PCIE_APB_ERR_EN]		= 0xf40,
->  	[IPROC_PCIE_ORDERING_CFG]	= 0x2000,
-> @@ -501,10 +509,12 @@ static void __iomem *iproc_pcie_map_ep_cfg_reg(struct iproc_pcie *pcie,
->  	return (pcie->base + offset);
->  }
->  
-> -static unsigned int iproc_pcie_cfg_retry(void __iomem *cfg_data_p)
-> +static unsigned int iproc_pcie_cfg_retry(struct iproc_pcie *pcie,
-> +					 void __iomem *cfg_data_p)
->  {
->  	int timeout = CFG_RETRY_STATUS_TIMEOUT_US;
->  	unsigned int data;
-> +	u32 status;
->  
->  	/*
->  	 * As per PCIe spec r3.1, sec 2.3.2, CRS Software Visibility only
-> @@ -525,6 +535,15 @@ static unsigned int iproc_pcie_cfg_retry(void __iomem *cfg_data_p)
->  	 */
->  	data = readl(cfg_data_p);
->  	while (data == CFG_RETRY_STATUS && timeout--) {
-> +		/*
-> +		 * CRS state is set in CFG_RD status register
-> +		 * This will handle the case where CFG_RETRY_STATUS is
-> +		 * valid config data.
-> +		 */
-> +		status = iproc_pcie_read_reg(pcie, IPROC_PCIE_CFG_RD_STATUS);
-> +		if (status != CFG_RD_CRS)
-> +			return data;
-> +
->  		udelay(1);
->  		data = readl(cfg_data_p);
->  	}
-> @@ -603,7 +622,7 @@ static int iproc_pcie_config_read(struct pci_bus *bus, unsigned int devfn,
->  	if (!cfg_data_p)
->  		return PCIBIOS_DEVICE_NOT_FOUND;
->  
-> -	data = iproc_pcie_cfg_retry(cfg_data_p);
-> +	data = iproc_pcie_cfg_retry(pcie, cfg_data_p);
->  
->  	*val = data;
->  	if (size <= 2)
+> This is a simple rebase onto Linux v5.0-rc2. We now use the
+> dev_iommu_fwspec_get() helper introduced in v5.0 instead of accessing
+> dev->iommu_fwspec, but there aren't any functional change from v6 [2].
+> 
+> Our current goal for virtio-iommu is to get a paravirtual IOMMU working
+> on Arm, and enable device assignment to guest userspace. In this
+> use-case the mappings are static, and don't require optimal performance,
+> so this series tries to keep things simple. However there is plenty more
+> to do for features and optimizations, and having this base in v5.1 would
+> be good. Given that most of the changes are to drivers/iommu, I believe
+> the driver and future changes should go via the IOMMU tree.
+> 
+> You can find Linux driver and kvmtool device on v0.9.2 branches [3],
+> module and x86 support on virtio-iommu/devel. Also tested with Eric's
+> QEMU device [4]. Please note that the series depends on Robin's
+> probe-deferral fix [5], which will hopefully land in v5.0.
+> 
+> [1] Virtio-iommu specification v0.9, sources and pdf
+>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
+>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
+> 
+> [2] [PATCH v6 0/7] Add virtio-iommu driver
+>     https://lists.linuxfoundation.org/pipermail/iommu/2018-December/032127.html
+> 
+> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.2
+>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9.2
+> 
+> [4] [RFC v9 00/17] VIRTIO-IOMMU device
+>     https://www.mail-archive.com/qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org/msg575578.html
+> 
+> [5] [PATCH] iommu/of: Fix probe-deferral
+>     https://www.spinics.net/lists/arm-kernel/msg698371.html
+
+Thanks for the work!
+So really my only issue with this is that there's no
+way for the IOMMU to describe the devices that it
+covers.
+
+As a result that is then done in a platform-specific way.
+
+And this means that for example it does not solve the problem that e.g.
+some power people have in that their platform simply does not have a way
+to specify which devices are covered by the IOMMU.
+
+Solving that problem would make me much more excited about
+this device.
+
+On the other hand I can see that while there have been some
+developments most of the code has been stable for quite a while now.
+
+So what I am trying to do right about now, is making a small module that
+loads early and pokes at the IOMMU sufficiently to get the data about
+which devices use the IOMMU out of it using standard virtio config
+space.  IIUC it's claimed to be impossible without messy changes to the
+boot sequence.
+
+If I succeed at least on some platforms I'll ask that this design is
+worked into this device, minimizing info that goes through DT/ACPI.  If
+I see I can't make it in time to meet the next merge window, I plan
+merging the existing patches using DT (barring surprises).
+
+As I only have a very small amount of time to spend on this attempt, If
+someone else wants to try doing that in parallel, that would be great!
+
+
+> Jean-Philippe Brucker (7):
+>   dt-bindings: virtio-mmio: Add IOMMU description
+>   dt-bindings: virtio: Add virtio-pci-iommu node
+>   of: Allow the iommu-map property to omit untranslated devices
+>   PCI: OF: Initialize dev->fwnode appropriately
+>   iommu: Add virtio-iommu driver
+>   iommu/virtio: Add probe request
+>   iommu/virtio: Add event queue
+> 
+>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
+>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
+>  MAINTAINERS                                   |    7 +
+>  drivers/iommu/Kconfig                         |   11 +
+>  drivers/iommu/Makefile                        |    1 +
+>  drivers/iommu/virtio-iommu.c                  | 1158 +++++++++++++++++
+>  drivers/of/base.c                             |   10 +-
+>  drivers/pci/of.c                              |    7 +
+>  include/uapi/linux/virtio_ids.h               |    1 +
+>  include/uapi/linux/virtio_iommu.h             |  161 +++
+>  10 files changed, 1449 insertions(+), 3 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
+>  create mode 100644 drivers/iommu/virtio-iommu.c
+>  create mode 100644 include/uapi/linux/virtio_iommu.h
+> 
 > -- 
-> 2.7.4
-> 
+> 2.19.1
