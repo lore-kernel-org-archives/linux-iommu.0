@@ -1,101 +1,54 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH] iommu/vt-d: Implement dma_[un]map_resource()
-Date: Fri, 18 Jan 2019 17:05:59 -0700
-Message-ID: <20190119000559.12784-1-logang@deltatee.com>
+From: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: Fail to boot Dom0 on Xen Arm64 after "dma-mapping: bypass indirect
+	calls for dma-direct"
+Date: Fri, 18 Jan 2019 16:43:59 -0800 (PST)
+Message-ID: <alpine.DEB.2.10.1901181552090.18561@sstabellini-ThinkPad-X260>
+References: <d3e4984f-f996-c38f-3cf1-c16450ef7a99@arm.com>
+	<20190116181904.GA6228@infradead.org>
+	<1855c743-becd-fd52-50b9-86398f6cb985@arm.com>
+	<20190117141157.GA5184@infradead.org>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: Christoph Hellwig <hch@lst.de>, Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190117141157.GA5184-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Juergen Gross <jgross-IBi9RG/b67k@public.gmane.org>, Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Julien Grall <julien.grall-5wv7dgnIgG8@public.gmane.org>, leo.yan-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, xen-devel <xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the Intel IOMMU uses the default dma_[un]map_resource()
-implementations does nothing and simply returns the physical address
-unmodified.
+On Thu, 17 Jan 2019, Christoph Hellwig wrote:
+> On Thu, Jan 17, 2019 at 11:43:49AM +0000, Julien Grall wrote:
+> > Looking at the change for arm64, you will always call dma-direct API. In
+> > previous Linux version, xen-swiotlb will call dev->archdata.dev_dma_ops (a
+> > copy of dev->dma_ops before setting Xen DMA ops) if not NULL. Does it mean
+> > we expect dev->dma_ops to always be NULL and hence using dma-direct API?
+> 
+> The way I understood the code from inspecting it and sking the
+> maintainers a few askings is that for DOM0 we always use xen-swiotlb
+> as the actual dma_map_ops, but then use the functions in page-coherent.h
+> only to deal with cache maintainance, so it should be safe.
 
-However, this doesn't create the IOVA entries necessary for addresses
-mapped this way to work when the IOMMU is enabled. Thus, when the
-IOMMU is enabled, drivers relying on dma_map_resource() will trigger
-DMAR errors. We see this when running ntb_transport with the IOMMU
-enabled, DMA, and switchtec hardware.
+Yes, what you wrote is correct, the stuff in
+include/xen/arm/page-coherent.h is only to deal with cache maintenance,
+specifically any cache maintenance operations that might be required by
+map/unmap_page, dma_sync_single_for_cpu/device.
 
-The implementation for intel_map_resource() is nearly identical to
-intel_map_page(), we just have to re-create __intel_map_single().
-dma_unmap_resource() uses intel_unmap_page() directly as the
-functions are identical.
+It looks like it is safe today to make the dma_direct calls directly,
+especially considering that on arm64 it looks like the only other option
+is iommu_dma_ops which has never been used with Xen so far (the IOMMU
+has not been exposed to guests yet).
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
----
- drivers/iommu/intel-iommu.c | 25 ++++++++++++++++++++-----
- 1 file changed, 20 insertions(+), 5 deletions(-)
+On arm32 we don't have this problem because dev->dma_ops is always !=
+NULL with MMU enable (required on Xen), right?
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2bd9ac285c0d..81fb265f7730 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3649,11 +3649,9 @@ static int iommu_no_mapping(struct device *dev)
- 	return 0;
- }
- 
--static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
--				   unsigned long offset, size_t size, int dir,
--				   u64 dma_mask)
-+static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
-+				     size_t size, int dir, u64 dma_mask)
- {
--	phys_addr_t paddr = page_to_phys(page) + offset;
- 	struct dmar_domain *domain;
- 	phys_addr_t start_paddr;
- 	unsigned long iova_pfn;
-@@ -3710,6 +3708,14 @@ static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
- 	return DMA_MAPPING_ERROR;
- }
- 
-+static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
-+				   unsigned long offset, size_t size, int dir,
-+				   u64 dma_mask)
-+{
-+	return __intel_map_single(dev, page_to_phys(page) + offset, size, dir,
-+				  dma_mask);
-+}
-+
- static dma_addr_t intel_map_page(struct device *dev, struct page *page,
- 				 unsigned long offset, size_t size,
- 				 enum dma_data_direction dir,
-@@ -3718,6 +3724,13 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
- 	return __intel_map_page(dev, page, offset, size, dir, *dev->dma_mask);
- }
- 
-+static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
-+				     size_t size, enum dma_data_direction dir,
-+				     unsigned long attrs)
-+{
-+	return __intel_map_single(dev, phys_addr, size, dir, *dev->dma_mask);
-+}
-+
- static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
- {
- 	struct dmar_domain *domain;
-@@ -3924,6 +3937,8 @@ static const struct dma_map_ops intel_dma_ops = {
- 	.unmap_sg = intel_unmap_sg,
- 	.map_page = intel_map_page,
- 	.unmap_page = intel_unmap_page,
-+	.map_resource = intel_map_resource,
-+	.unmap_resource = intel_unmap_page,
- 	.dma_supported = dma_direct_supported,
- };
- 
-@@ -4080,7 +4095,7 @@ static int init_iommu_hw(void)
- 				iommu_disable_protect_mem_regions(iommu);
- 			continue;
- 		}
--	
-+
- 		iommu_flush_write_buffer(iommu);
- 
- 		iommu_set_root_entry(iommu);
--- 
-2.19.0
+So the patch looks fine, I only have an optional suggestion to add a
+check on dma_ops being unset. I'll reply to the patch. 
