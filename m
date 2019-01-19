@@ -1,45 +1,42 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH] iommu/vt-d: Implement dma_[un]map_resource()
-Date: Sat, 19 Jan 2019 11:46:22 -0700
-Message-ID: <9f25790b-4418-19a4-708a-27c502f82c4f@deltatee.com>
-References: <20190119000559.12784-1-logang@deltatee.com>
- <20190119094002.GA21653@lst.de>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v6 2/3] iommu/io-pgtable-arm-v7s: Request DMA32 memory,
+ and improve debugging
+Date: Sat, 19 Jan 2019 23:57:39 +0000
+Message-ID: <20190119235737.GE26876@brain-police>
+References: <20181210011504.122604-1-drinkcat@chromium.org>
+ <20181210011504.122604-3-drinkcat@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190119094002.GA21653@lst.de>
-Content-Language: en-US
-Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20181210011504.122604-3-drinkcat@chromium.org>
+Sender: stable-owner@vger.kernel.org
+To: Nicolas Boichat <drinkcat@chromium.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Andrew Morton <akpm@linux-foundation.org>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, yingjoe.chen@mediatek.com, hch@infr
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019-01-19 2:40 a.m., Christoph Hellwig wrote:
-> Which resources do you plan to map?  At least for PCIe P2P adding
-> an address translation seems wrong to me.
-
-It's mapping a PCI BAR but not for PCIe P2P. In this case, we are using
-the Intel I/OAT DMA engine to copy data from a PCI BAR to/from memory. See:
-
-http://lkml.kernel.org/r/20190119001001.13087-1-logang@deltatee.com
-
->>
->> The implementation for intel_map_resource() is nearly identical to
->> intel_map_page(), we just have to re-create __intel_map_single().
->> dma_unmap_resource() uses intel_unmap_page() directly as the
->> functions are identical.
+On Mon, Dec 10, 2018 at 09:15:03AM +0800, Nicolas Boichat wrote:
+> IOMMUs using ARMv7 short-descriptor format require page tables
+> (level 1 and 2) to be allocated within the first 4GB of RAM, even
+> on 64-bit systems.
 > 
-> Instead of having two tiny wrappers I'd just revert
-> 964f2311a6862f1fbcc044d0828ad90030928b7f if we need to pass a real
-> physical address now.
+> For level 1/2 pages, ensure GFP_DMA32 is used if CONFIG_ZONE_DMA32
+> is defined (e.g. on arm64 platforms).
+> 
+> For level 2 pages, allocate a slab cache in SLAB_CACHE_DMA32. Note
+> that we do not explicitly pass GFP_DMA[32] to kmem_cache_zalloc,
+> as this is not strictly necessary, and would cause a warning
+> in mm/sl*b.c, as we did not update GFP_SLAB_BUG_MASK.
+> 
+> Also, print an error when the physical address does not fit in
+> 32-bit, to make debugging easier in the future.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: ad67f5a6545f ("arm64: replace ZONE_DMA with ZONE_DMA32")
+> Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
 
-Ok, I can resubmit this with that cleanup. Should I do it in two commits
-(1 revert + 1 new) or is one commit that just restores the original
-helper fine?
+Assuming you're routing all of this via akpm:
 
-Thanks,
+Acked-by: Will Deacon <will.deacon@arm.com>
 
-Logan
+Will
