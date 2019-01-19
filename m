@@ -1,223 +1,101 @@
-From: Angelo Dureghello <angelo@sysam.it>
-Subject: Re: [PATCH] dmaengine: fsl-edma: dma map slave device address
-Date: Fri, 18 Jan 2019 22:50:16 +0100
-Message-ID: <20190118215015.GA6677@jerusalem>
-References: <20190118100623.13271-1-laurentiu.tudor@nxp.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: [PATCH] iommu/vt-d: Implement dma_[un]map_resource()
+Date: Fri, 18 Jan 2019 17:05:59 -0700
+Message-ID: <20190119000559.12784-1-logang@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190118100623.13271-1-laurentiu.tudor@nxp.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc: vkoul@kernel.org, dmaengine@vger.kernel.org, linux-imx@nxp.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com
+To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: Christoph Hellwig <hch@lst.de>, Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurentiu,
+Currently the Intel IOMMU uses the default dma_[un]map_resource()
+implementations does nothing and simply returns the physical address
+unmodified.
 
-On Fri, Jan 18, 2019 at 12:06:23PM +0200, Laurentiu Tudor wrote:
-> This mapping needs to be created in order for slave dma transfers
-> to work on systems with SMMU. The implementation mostly mimics the
-> one in pl330 dma driver, authored by Robin Murphy.
-> 
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> Original approach was to add the missing mappings in the i2c client driver,
-> see here for discussion: https://patchwork.ozlabs.org/patch/1026013/
-> 
->  drivers/dma/fsl-edma-common.c | 66 ++++++++++++++++++++++++++++++++---
->  drivers/dma/fsl-edma-common.h |  4 +++
->  drivers/dma/fsl-edma.c        |  1 +
->  drivers/dma/mcf-edma.c        |  1 +
->  4 files changed, 68 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/dma/fsl-edma-common.c b/drivers/dma/fsl-edma-common.c
-> index 8876c4c1bb2c..0e95ee24b6d4 100644
-> --- a/drivers/dma/fsl-edma-common.c
-> +++ b/drivers/dma/fsl-edma-common.c
-> @@ -6,6 +6,7 @@
->  #include <linux/dmapool.h>
->  #include <linux/module.h>
->  #include <linux/slab.h>
-> +#include <linux/dma-mapping.h>
->  
->  #include "fsl-edma-common.h"
->  
-> @@ -173,12 +174,62 @@ int fsl_edma_resume(struct dma_chan *chan)
->  }
->  EXPORT_SYMBOL_GPL(fsl_edma_resume);
->  
-> +static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
-> +{
-> +	if (fsl_chan->dma_dir != DMA_NONE)
-> +		dma_unmap_resource(fsl_chan->vchan.chan.device->dev,
-> +				   fsl_chan->dma_dev_addr,
-> +				   fsl_chan->dma_dev_size,
-> +				   fsl_chan->dma_dir, 0);
-> +	fsl_chan->dma_dir = DMA_NONE;
-> +}
-> +
-> +static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
-> +				    enum dma_transfer_direction dir)
-> +{
-> +	struct device *dev = fsl_chan->vchan.chan.device->dev;
-> +	enum dma_data_direction dma_dir;
-> +	phys_addr_t addr = 0;
-> +	u32 size = 0;
-> +
-> +	switch (dir) {
-> +	case DMA_MEM_TO_DEV:
-> +		dma_dir = DMA_FROM_DEVICE;
-> +		addr = fsl_chan->cfg.dst_addr;
-> +		size = fsl_chan->cfg.dst_maxburst;
-> +		break;
-> +	case DMA_DEV_TO_MEM:
-> +		dma_dir = DMA_TO_DEVICE;
-> +		addr = fsl_chan->cfg.src_addr;
-> +		size = fsl_chan->cfg.src_maxburst;
-> +		break;
-> +	default:
-> +		dma_dir = DMA_NONE;
-> +		break;
-> +	}
-> +
-> +	/* Already mapped for this config? */
-> +	if (fsl_chan->dma_dir == dma_dir)
-> +		return true;
-> +
-> +	fsl_edma_unprep_slave_dma(fsl_chan);
-> +
-> +	fsl_chan->dma_dev_addr = dma_map_resource(dev, addr, size, dma_dir, 0);
-> +	if (dma_mapping_error(dev, fsl_chan->dma_dev_addr))
-> +		return false;
-> +	fsl_chan->dma_dev_size = size;
-> +	fsl_chan->dma_dir = dma_dir;
-> +
-> +	return true;
-> +}
-> +
->  int fsl_edma_slave_config(struct dma_chan *chan,
->  				 struct dma_slave_config *cfg)
->  {
->  	struct fsl_edma_chan *fsl_chan = to_fsl_edma_chan(chan);
->  
->  	memcpy(&fsl_chan->cfg, cfg, sizeof(*cfg));
-> +	fsl_edma_unprep_slave_dma(fsl_chan);
->  
->  	return 0;
->  }
-> @@ -378,6 +429,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
->  	if (!is_slave_direction(direction))
->  		return NULL;
->  
-> +	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
-> +		return NULL;
-> +
->  	sg_len = buf_len / period_len;
->  	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
->  	if (!fsl_desc)
-> @@ -409,11 +463,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
->  
->  		if (direction == DMA_MEM_TO_DEV) {
->  			src_addr = dma_buf_next;
-> -			dst_addr = fsl_chan->cfg.dst_addr;
-> +			dst_addr = fsl_chan->dma_dev_addr;
->  			soff = fsl_chan->cfg.dst_addr_width;
->  			doff = 0;
->  		} else {
-> -			src_addr = fsl_chan->cfg.src_addr;
-> +			src_addr = fsl_chan->dma_dev_addr;
->  			dst_addr = dma_buf_next;
->  			soff = 0;
->  			doff = fsl_chan->cfg.src_addr_width;
-> @@ -444,6 +498,9 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
->  	if (!is_slave_direction(direction))
->  		return NULL;
->  
-> +	if (!fsl_edma_prep_slave_dma(fsl_chan, direction))
-> +		return NULL;
-> +
->  	fsl_desc = fsl_edma_alloc_desc(fsl_chan, sg_len);
->  	if (!fsl_desc)
->  		return NULL;
-> @@ -468,11 +525,11 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
->  
->  		if (direction == DMA_MEM_TO_DEV) {
->  			src_addr = sg_dma_address(sg);
-> -			dst_addr = fsl_chan->cfg.dst_addr;
-> +			dst_addr = fsl_chan->dma_dev_addr;
->  			soff = fsl_chan->cfg.dst_addr_width;
->  			doff = 0;
->  		} else {
-> -			src_addr = fsl_chan->cfg.src_addr;
-> +			src_addr = fsl_chan->dma_dev_addr;
->  			dst_addr = sg_dma_address(sg);
->  			soff = 0;
->  			doff = fsl_chan->cfg.src_addr_width;
-> @@ -555,6 +612,7 @@ void fsl_edma_free_chan_resources(struct dma_chan *chan)
->  	fsl_edma_chan_mux(fsl_chan, 0, false);
->  	fsl_chan->edesc = NULL;
->  	vchan_get_all_descriptors(&fsl_chan->vchan, &head);
-> +	fsl_edma_unprep_slave_dma(fsl_chan);
->  	spin_unlock_irqrestore(&fsl_chan->vchan.lock, flags);
->  
->  	vchan_dma_desc_free_list(&fsl_chan->vchan, &head);
-> diff --git a/drivers/dma/fsl-edma-common.h b/drivers/dma/fsl-edma-common.h
-> index 8917e8865959..b435d8e1e3a1 100644
-> --- a/drivers/dma/fsl-edma-common.h
-> +++ b/drivers/dma/fsl-edma-common.h
-> @@ -6,6 +6,7 @@
->  #ifndef _FSL_EDMA_COMMON_H_
->  #define _FSL_EDMA_COMMON_H_
->  
-> +#include <linux/dma-direction.h>
->  #include "virt-dma.h"
->  
->  #define EDMA_CR_EDBG		BIT(1)
-> @@ -120,6 +121,9 @@ struct fsl_edma_chan {
->  	struct dma_slave_config		cfg;
->  	u32				attr;
->  	struct dma_pool			*tcd_pool;
-> +	dma_addr_t			dma_dev_addr;
-> +	u32				dma_dev_size;
-> +	enum dma_data_direction		dma_dir;
->  };
->  
->  struct fsl_edma_desc {
-> diff --git a/drivers/dma/fsl-edma.c b/drivers/dma/fsl-edma.c
-> index 34d70112fcc9..75e8a7ba3a22 100644
-> --- a/drivers/dma/fsl-edma.c
-> +++ b/drivers/dma/fsl-edma.c
-> @@ -254,6 +254,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
->  		fsl_chan->pm_state = RUNNING;
->  		fsl_chan->slave_id = 0;
->  		fsl_chan->idle = true;
-> +		fsl_chan->dma_dir = DMA_NONE;
->  		fsl_chan->vchan.desc_free = fsl_edma_free_desc;
->  		vchan_init(&fsl_chan->vchan, &fsl_edma->dma_dev);
->  
-> diff --git a/drivers/dma/mcf-edma.c b/drivers/dma/mcf-edma.c
-> index 5de1b07eddff..7de54b2fafdb 100644
-> --- a/drivers/dma/mcf-edma.c
-> +++ b/drivers/dma/mcf-edma.c
-> @@ -214,6 +214,7 @@ static int mcf_edma_probe(struct platform_device *pdev)
->  		mcf_chan->edma = mcf_edma;
->  		mcf_chan->slave_id = i;
->  		mcf_chan->idle = true;
-> +		mcf_chan->dma_dir = DMA_NONE;
->  		mcf_chan->vchan.desc_free = fsl_edma_free_desc;
->  		vchan_init(&mcf_chan->vchan, &mcf_edma->dma_dev);
->  		iowrite32(0x0, &regs->tcd[i].csr);
-> -- 
-> 2.17.1
-> 
+However, this doesn't create the IOVA entries necessary for addresses
+mapped this way to work when the IOMMU is enabled. Thus, when the
+IOMMU is enabled, drivers relying on dma_map_resource() will trigger
+DMAR errors. We see this when running ntb_transport with the IOMMU
+enabled, DMA, and switchtec hardware.
 
-I tested this patch on:
+The implementation for intel_map_resource() is nearly identical to
+intel_map_page(), we just have to re-create __intel_map_single().
+dma_unmap_resource() uses intel_unmap_page() directly as the
+functions are identical.
 
-- Vybrid VF50N (Toradex Colibri VF50)
-- ColdFire mcf54415 (Sysam stmark2 board)
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+---
+ drivers/iommu/intel-iommu.c | 25 ++++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
 
-and dma still works properly.
-
-Tested-by: Angelo Dureghello <angelo@sysam.it>
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 2bd9ac285c0d..81fb265f7730 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3649,11 +3649,9 @@ static int iommu_no_mapping(struct device *dev)
+ 	return 0;
+ }
+ 
+-static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
+-				   unsigned long offset, size_t size, int dir,
+-				   u64 dma_mask)
++static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
++				     size_t size, int dir, u64 dma_mask)
+ {
+-	phys_addr_t paddr = page_to_phys(page) + offset;
+ 	struct dmar_domain *domain;
+ 	phys_addr_t start_paddr;
+ 	unsigned long iova_pfn;
+@@ -3710,6 +3708,14 @@ static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
+ 	return DMA_MAPPING_ERROR;
+ }
+ 
++static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
++				   unsigned long offset, size_t size, int dir,
++				   u64 dma_mask)
++{
++	return __intel_map_single(dev, page_to_phys(page) + offset, size, dir,
++				  dma_mask);
++}
++
+ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
+ 				 unsigned long offset, size_t size,
+ 				 enum dma_data_direction dir,
+@@ -3718,6 +3724,13 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
+ 	return __intel_map_page(dev, page, offset, size, dir, *dev->dma_mask);
+ }
+ 
++static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
++				     size_t size, enum dma_data_direction dir,
++				     unsigned long attrs)
++{
++	return __intel_map_single(dev, phys_addr, size, dir, *dev->dma_mask);
++}
++
+ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
+ {
+ 	struct dmar_domain *domain;
+@@ -3924,6 +3937,8 @@ static const struct dma_map_ops intel_dma_ops = {
+ 	.unmap_sg = intel_unmap_sg,
+ 	.map_page = intel_map_page,
+ 	.unmap_page = intel_unmap_page,
++	.map_resource = intel_map_resource,
++	.unmap_resource = intel_unmap_page,
+ 	.dma_supported = dma_direct_supported,
+ };
+ 
+@@ -4080,7 +4095,7 @@ static int init_iommu_hw(void)
+ 				iommu_disable_protect_mem_regions(iommu);
+ 			continue;
+ 		}
+-	
++
+ 		iommu_flush_write_buffer(iommu);
+ 
+ 		iommu_set_root_entry(iommu);
+-- 
+2.19.0
