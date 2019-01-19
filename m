@@ -1,14 +1,15 @@
 From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Implement dma_[un]map_resource()
-Date: Sat, 19 Jan 2019 10:40:02 +0100
-Message-ID: <20190119094002.GA21653@lst.de>
-References: <20190119000559.12784-1-logang@deltatee.com>
+Subject: Re: [PATCH] arm64/xen: fix xen-swiotlb cache flushing
+Date: Sat, 19 Jan 2019 10:43:01 +0100
+Message-ID: <20190119094301.GB21653@lst.de>
+References: <20190117171842.26173-1-hch@lst.de>
+	<alpine.DEB.2.10.1901181612150.18561@sstabellini-ThinkPad-X260>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20190119000559.12784-1-logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.10.1901181612150.18561@sstabellini-ThinkPad-X260>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,26 +19,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Logan Gunthorpe <logang-OTvnGxWRz7hWk0Htik3J/w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+To: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: jgross-IBi9RG/b67k@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, julien.grall-5wv7dgnIgG8@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 18, 2019 at 05:05:59PM -0700, Logan Gunthorpe wrote:
-> However, this doesn't create the IOVA entries necessary for addresses
-> mapped this way to work when the IOMMU is enabled. Thus, when the
-> IOMMU is enabled, drivers relying on dma_map_resource() will trigger
-> DMAR errors. We see this when running ntb_transport with the IOMMU
-> enabled, DMA, and switchtec hardware.
+[full quote deleted, please take a little more care when quoting]
 
-Which resources do you plan to map?  At least for PCIe P2P adding
-an address translation seems wrong to me.
-
+On Fri, Jan 18, 2019 at 04:44:23PM -0800, Stefano Stabellini wrote:
+> >  #ifdef CONFIG_XEN
+> > -	if (xen_initial_domain()) {
+> > -		dev->archdata.dev_dma_ops = dev->dma_ops;
+> > +	if (xen_initial_domain())
+> >  		dev->dma_ops = xen_dma_ops;
+> > -	}
+> >  #endif
+> >  }
 > 
-> The implementation for intel_map_resource() is nearly identical to
-> intel_map_page(), we just have to re-create __intel_map_single().
-> dma_unmap_resource() uses intel_unmap_page() directly as the
-> functions are identical.
+> This is an optional suggestion, but it would be nice to add a check on
+> dev->dma_ops being unset here, something like:
+> 
+>   #ifdef CONFIG_XEN
+>   if (xen_initial_domain()) {
+>       if (dev->dma_ops != NULL)
+>           warning/error
+>       dev->dma_ops = xen_dma_ops;
+>   }
+> 
+> Does it make sense?
 
-Instead of having two tiny wrappers I'd just revert
-964f2311a6862f1fbcc044d0828ad90030928b7f if we need to pass a real
-physical address now.
+Well, no such check existed before, so this probably should be a
+separate patch if we care enough.  I have a series for 5.1 pending
+that moves the IOMMU handling to the comment code which will make
+the ops assginment a lot cleaner, and I guess I could fold such
+a check in that.  Doing it now will just create churn as it would
+have to get reworked anyway
+
+> Reviewed-by: Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+
+Where should we pick this up?  I could pick it up through the dma-mapping
+tree given that is where the problem is introduced, but the Xen or arm64
+trees would also fit.
