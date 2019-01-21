@@ -1,77 +1,80 @@
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: Add support for non-coherent page
-	table mappings
-Date: Mon, 21 Jan 2019 11:35:30 +0530
-Message-ID: <CAFp+6iFh26JgBUx1jkm4EHNY1vs93Uz2qngxP27D0f7dcpX2GQ@mail.gmail.com>
-References: <20190117092718.1396-1-vivek.gautam@codeaurora.org>
-	<20190117092718.1396-3-vivek.gautam@codeaurora.org>
-	<20190120000117.GH26876@brain-police>
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Subject: Re: [PATCH 0/3] iommu/arm-smmu: Add support to use Last level cache
+Date: Mon, 21 Jan 2019 08:26:02 +0100
+Message-ID: <CAKv+Gu8P-5hxZ8+OV_xSZteTvCLw-Sc-=KJM1i=3aWajcS9bUw@mail.gmail.com>
+References: <20190121055335.15430-1-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190120000117.GH26876@brain-police>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "list-Y9sIeH5OGRo@public.gmane.org:IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>,
-	Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, " <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, open list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190121055335.15430-1-vivek.gautam@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Vivek Gautam <vivek.gautam@codeaurora.org>
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, pdaly@codeaurora.org, linux-arm-msm@vger.kernel.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, tfiga@chromium.org, jcrouse@codeaurora.org, pratikp@codeaurora.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-
-
-On Sun, Jan 20, 2019 at 5:31 AM Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+On Mon, 21 Jan 2019 at 06:54, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
 >
-> On Thu, Jan 17, 2019 at 02:57:18PM +0530, Vivek Gautam wrote:
-> > Adding a device tree option for arm smmu to enable non-cacheable
-> > memory for page tables.
-> > We already enable a smmu feature for coherent walk based on
-> > whether the smmu device is dma-coherent or not. Have an option
-> > to enable non-cacheable page table memory to force set it for
-> > particular smmu devices.
+> Qualcomm SoCs have an additional level of cache called as
+> System cache, aka. Last level cache (LLC). This cache sits right
+> before the DDR, and is tightly coupled with the memory controller.
+> The clients using this cache request their slices from this
+> system cache, make it active, and can then start using it.
+> For these clients with smmu, to start using the system cache for
+> buffers and, related page tables [1], memory attributes need to be
+> set accordingly. This series add the required support.
 >
-> Hmm, I must be missing something here. What is the difference between this
-> new property, and simply omitting dma-coherent on the SMMU?
 
-So, this is what I understood from the email thread for Last level
-cache support -
-Robin pointed to the fact that we may need to add support for setting
-non-cacheable
-mappings in the TCR.
-Currently, we don't do that for SMMUs that omit dma-coherent.
-We rely on the interconnect to handle the configuration set in TCR,
-and let interconnect
-ignore the cacheability if it can't support.
+Does this actually improve performance on reads from a device? The
+non-cache coherent DMA routines perform an unconditional D-cache
+invalidate by VA to the PoC before reading from the buffers filled by
+the device, and I would expect the PoC to be defined as lying beyond
+the LLC to still guarantee the architected behavior.
 
-Moreover, Robin suggested that we should take care of SMMUs, for which
-removing snoop latency on walks by making mappings as non-cacheable
-outweighs the cost of cache maintenance on PTE updates.
 
-So, this change adds another property to do this non-cacheable mappings
-explicitly. As I pointed, omitting 'dma-coherent', and corresponding
-IO_PGTABLE_QUIRK_NO_DMA' does takes care of few things.
 
-Should we handle the TCR settings too with this quirk?
-
-Regards
-Vivek
+> This change is a realisation of following changes from downstream msm-4.9:
+> iommu: io-pgtable-arm: Support DOMAIN_ATTRIBUTE_USE_UPSTREAM_HINT[2]
+> iommu: io-pgtable-arm: Implement IOMMU_USE_UPSTREAM_HINT[3]
 >
-> Will
+> Changes since v2:
+>  - Split the patches into io-pgtable-arm driver and arm-smmu driver.
+>  - Converted smmu domain attributes to a bitmap, so multiple attributes
+>    can be managed easily.
+>  - With addition of non-coherent page table mapping support [4], this
+>    patch series now aligns with the understanding of upgrading the
+>    non-coherent devices to use some level of outer cache.
+>  - Updated the macros and comments to reflect the use of QCOM_SYS_CACHE.
+>  - QCOM_SYS_CACHE can still be used at stage 2, so that doens't depend on
+>    stage-1 mapping.
+>  - Added change to disable the attribute from arm_smmu_domain_set_attr()
+>    when needed.
+>  - Removed the page protection controls for QCOM_SYS_CACHE at the DMA API
+>    level.
+>
+> Goes on top of the non-coherent page tables support patch series [4]
+>
+> [1] https://patchwork.kernel.org/patch/10302791/
+> [2] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=bf762276796e79ca90014992f4d9da5593fa7d51
+> [3] https://source.codeaurora.org/quic/la/kernel/msm-4.9/commit/?h=msm-4.9&id=d4c72c413ea27c43f60825193d4de9cb8ffd9602
+> [4] https://lore.kernel.org/patchwork/cover/1032938/
+>
+> Vivek Gautam (3):
+>   iommu/arm-smmu: Move to bitmap for arm_smmu_domain atrributes
+>   iommu/io-pgtable-arm: Add support to use system cache
+>   iommu/arm-smmu: Add support to use system cache
+>
+>  drivers/iommu/arm-smmu.c       | 28 ++++++++++++++++++++++++----
+>  drivers/iommu/io-pgtable-arm.c | 15 +++++++++++++--
+>  drivers/iommu/io-pgtable.h     |  4 ++++
+>  include/linux/iommu.h          |  2 ++
+>  4 files changed, 43 insertions(+), 6 deletions(-)
+>
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+> of Code Aurora Forum, hosted by The Linux Foundation
+>
+>
 > _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-
-
---
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
