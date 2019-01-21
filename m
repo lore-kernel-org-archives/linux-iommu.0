@@ -1,140 +1,118 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [PATCH v7 0/7] Add virtio-iommu driver
-Date: Mon, 21 Jan 2019 11:29:05 +0000
-Message-ID: <0ba215f5-e856-bf31-8dd9-a85710714a7a@arm.com>
-References: <20190115121959.23763-1-jean-philippe.brucker@arm.com>
- <20190118103235-mutt-send-email-mst@kernel.org>
+From: Pierre Morel <pmorel@linux.ibm.com>
+Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
+Date: Mon, 21 Jan 2019 12:51:14 +0100
+Message-ID: <d180bb2d-354f-0d05-8773-7a196a4de3cb@linux.ibm.com>
+References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
+ <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
+ <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
+ <668fe734-e4bf-0342-ab8c-df54d9022db4@arm.com>
+Reply-To: pmorel@linux.ibm.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <virtio-dev-return-5341-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
-Sender: <virtio-dev@lists.oasis-open.org>
-List-Post: <mailto:virtio-dev@lists.oasis-open.org>
-List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
-List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
-List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
-In-Reply-To: <20190118103235-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <668fe734-e4bf-0342-ab8c-df54d9022db4@arm.com>
 Content-Language: en-US
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: mark.rutland@arm.com, virtio-dev@lists.oasis-open.org, kevin.tian@intel.com, tnowicki@caviumnetworks.com, devicetree@vger.kernel.org, marc.zyngier@arm.com, linux-pci@vger.kernel.org, will.deacon@arm.com, robin.murphy@arm.com, virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, kvmarm@lists.cs.columbia.edu, bhelgaas@google.com, frowand.list@gmail.com, jasowang@redhat.com
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, gerald.schaefer@de.ibm.com
+Cc: linux-s390@vger.kernel.org, walling@linux.ibm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 18/01/2019 14:51, Jean-Philippe Brucker wrote:
+> Hi Pierre,
+> 
+> On 18/01/2019 13:29, Pierre Morel wrote:
+>> On 17/01/2019 14:02, Robin Murphy wrote:
+>>> On 15/01/2019 17:37, Pierre Morel wrote:
+>>>> The s390 iommu can only allow DMA transactions between the zPCI device
+>>>> entries start_dma and end_dma.
+>>>>
 
-On 18/01/2019 15:51, Michael S. Tsirkin wrote:
-> 
-> On Tue, Jan 15, 2019 at 12:19:52PM +0000, Jean-Philippe Brucker wrote:
->> Implement the virtio-iommu driver, following specification v0.9 [1].
->>
->> This is a simple rebase onto Linux v5.0-rc2. We now use the
->> dev_iommu_fwspec_get() helper introduced in v5.0 instead of accessing
->> dev->iommu_fwspec, but there aren't any functional change from v6 [2].
->>
->> Our current goal for virtio-iommu is to get a paravirtual IOMMU working
->> on Arm, and enable device assignment to guest userspace. In this
->> use-case the mappings are static, and don't require optimal performance,
->> so this series tries to keep things simple. However there is plenty more
->> to do for features and optimizations, and having this base in v5.1 would
->> be good. Given that most of the changes are to drivers/iommu, I believe
->> the driver and future changes should go via the IOMMU tree.
->>
->> You can find Linux driver and kvmtool device on v0.9.2 branches [3],
->> module and x86 support on virtio-iommu/devel. Also tested with Eric's
->> QEMU device [4]. Please note that the series depends on Robin's
->> probe-deferral fix [5], which will hopefully land in v5.0.
->>
->> [1] Virtio-iommu specification v0.9, sources and pdf
->>     git://linux-arm.org/virtio-iommu.git virtio-iommu/v0.9
->>     http://jpbrucker.net/virtio-iommu/spec/v0.9/virtio-iommu-v0.9.pdf
->>
->> [2] [PATCH v6 0/7] Add virtio-iommu driver
->>     https://lists.linuxfoundation.org/pipermail/iommu/2018-December/032127.html
->>
->> [3] git://linux-arm.org/linux-jpb.git virtio-iommu/v0.9.2
->>     git://linux-arm.org/kvmtool-jpb.git virtio-iommu/v0.9.2
->>
->> [4] [RFC v9 00/17] VIRTIO-IOMMU device
->>     https://www.mail-archive.com/qemu-devel@nongnu.org/msg575578.html
->>
->> [5] [PATCH] iommu/of: Fix probe-deferral
->>     https://www.spinics.net/lists/arm-kernel/msg698371.html
-> 
-> Thanks for the work!
-> So really my only issue with this is that there's no
-> way for the IOMMU to describe the devices that it
-> covers.
-> 
-> As a result that is then done in a platform-specific way.
-> 
-> And this means that for example it does not solve the problem that e.g.
-> some power people have in that their platform simply does not have a way
-> to specify which devices are covered by the IOMMU.
+...
 
-Isn't power using device tree? I haven't looked much at power because I
-was told a while ago that they already paravirtualize their IOMMU and
-don't need virtio-iommu, except perhaps for some legacy platforms. Or
-something along those lines. But I would certainly be interested in
-enabling the IOMMU for more architectures.
-
-As for the enumeration problem, I still don't think we can get much
-better than DT and ACPI as solutions (and IMO they are necessary to make
-this device portable). But I believe that getting DT and ACPI support is
-just a one-off inconvenience. That is, once the required bindings are
-accepted, any future extension can then be done at the virtio level with
-feature bits and probe requests, without having to update ACPI or DT.
-
-Thanks,
-Jean
-
-> Solving that problem would make me much more excited about
-> this device.
-> 
-> On the other hand I can see that while there have been some
-> developments most of the code has been stable for quite a while now.
-> 
-> So what I am trying to do right about now, is making a small module that
-> loads early and pokes at the IOMMU sufficiently to get the data about
-> which devices use the IOMMU out of it using standard virtio config
-> space.  IIUC it's claimed to be impossible without messy changes to the
-> boot sequence.
-> 
-> If I succeed at least on some platforms I'll ask that this design is
-> worked into this device, minimizing info that goes through DT/ACPI.  If
-> I see I can't make it in time to meet the next merge window, I plan
-> merging the existing patches using DT (barring surprises).
-> 
-> As I only have a very small amount of time to spend on this attempt, If
-> someone else wants to try doing that in parallel, that would be great!
-> 
-> 
->> Jean-Philippe Brucker (7):
->>   dt-bindings: virtio-mmio: Add IOMMU description
->>   dt-bindings: virtio: Add virtio-pci-iommu node
->>   of: Allow the iommu-map property to omit untranslated devices
->>   PCI: OF: Initialize dev->fwnode appropriately
->>   iommu: Add virtio-iommu driver
->>   iommu/virtio: Add probe request
->>   iommu/virtio: Add event queue
 >>
->>  .../devicetree/bindings/virtio/iommu.txt      |   66 +
->>  .../devicetree/bindings/virtio/mmio.txt       |   30 +
->>  MAINTAINERS                                   |    7 +
->>  drivers/iommu/Kconfig                         |   11 +
->>  drivers/iommu/Makefile                        |    1 +
->>  drivers/iommu/virtio-iommu.c                  | 1158 +++++++++++++++++
->>  drivers/of/base.c                             |   10 +-
->>  drivers/pci/of.c                              |    7 +
->>  include/uapi/linux/virtio_ids.h               |    1 +
->>  include/uapi/linux/virtio_iommu.h             |  161 +++
->>  10 files changed, 1449 insertions(+), 3 deletions(-)
->>  create mode 100644 Documentation/devicetree/bindings/virtio/iommu.txt
->>  create mode 100644 drivers/iommu/virtio-iommu.c
->>  create mode 100644 include/uapi/linux/virtio_iommu.h
->>
->> -- 
->> 2.19.1
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>> I already posted a patch retrieving the geometry through
+>> VFIO_IOMMU_GET_INFO using a specific capability for the geometry [1],
+>> and AFAIU, Alex did not agree with this.
 > 
+> On arm we also need to report the IOMMU geometry to userspace (max IOVA
+> size in particular). Shameer has been working on a solution [2] that
+> presents a unified view of both geometry and reserved regions into the
+> VFIO_IOMMU_GET_INFO call, and I think we should go with that. If I
+> understand correctly it's currently blocked on the RMRR problem and
+> we're waiting for Jacob or Ashok to take a look at it, as Kevin pinged
+> them on thread [1]?
+> 
+> [2] https://lkml.org/lkml/2018/4/18/293
+> 
+> Thanks,
+> Jean
+> 
+
+Hi Jean,
+
+I hopped that this proposition went in the same direction based on the 
+following assumptions:
+
+
+- The goal of the get_resv_region is defined in iommu.h as:
+-----
+* @get_resv_regions: Request list of reserved regions for a device
+-----
+
+- A iommu reserve region is a region which should not be mapped.
+Isn't it exactly what happens outside the aperture?
+Shouldn't it be reported by the iommu reserved region?
+
+- If we use VFIO and want to get all reserved region we will have the 
+VFIO_IOMMU_GET_INFO call provided by Shameer and it can get all reserved 
+regions depending from the iommu driver itself at once by calling the 
+get_reserved_region callback instead of having to merge them with the 
+aperture.
+
+- If there are other reserved region, depending on the system 
+configuration and not on the IOMMU itself, the VFIO_IOMMU_GET_INFO call 
+will have to merge them with the region gotten from the iommu driver.
+
+- If we do not use QEMU nor VFIO at all, AFAIU, the standard way to 
+retrieve the reserved regions associated with a device is to call the 
+get_reserved_region callback from the associated iommu.
+
+Please tell me were I am wrong.
+
+Regards,
+Pierre
+
+
+>>
+>> What is different in what you propose?
+>>
+>> @Alex: I was hoping that this patch goes in your direction. What do you
+>> think?
+>>
+>> Thanks,
+>> Pierre
+>>
+>> [1]: https://lore.kernel.org/patchwork/patch/1030369/
+>>
+>>>
+>>>>
+>>>> This seems to me related with the work Shameer has started on
+>>>> vfio_iommu_type1 so I add Alex and Shameer to the CC list.
+>>>>
+>>>>
+>>>> Pierre Morel (1):
+>>>>     iommu/s390: Declare s390 iommu reserved regions
+>>>>
+>>>>    drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
+>>>>    1 file changed, 29 insertions(+)
+>>>>
+>>>
+>>
+>>
+> 
+
+
+-- 
+Pierre Morel
+Linux/KVM/QEMU in Böblingen - Germany
