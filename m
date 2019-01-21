@@ -1,96 +1,135 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
-Date: Mon, 21 Jan 2019 12:49:34 +0000
-Message-ID: <70a30a0a-cee6-ac59-61fc-b4b018467179@arm.com>
-References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
- <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
- <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Add support for non-coherent
+ page tables
+Date: Mon, 21 Jan 2019 13:12:09 +0000
+Message-ID: <a508a6a5-8e1f-3660-51ef-e65bc382931e@arm.com>
+References: <20190117092718.1396-1-vivek.gautam@codeaurora.org>
+ <20190117092718.1396-2-vivek.gautam@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
+In-Reply-To: <20190117092718.1396-2-vivek.gautam@codeaurora.org>
 Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: pmorel@linux.ibm.com, gerald.schaefer@de.ibm.com
-Cc: linux-s390@vger.kernel.org, walling@linux.ibm.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, alex.williamson@redhat.com
+To: Vivek Gautam <vivek.gautam@codeaurora.org>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/01/2019 13:29, Pierre Morel wrote:
-> On 17/01/2019 14:02, Robin Murphy wrote:
->> On 15/01/2019 17:37, Pierre Morel wrote:
->>> The s390 iommu can only allow DMA transactions between the zPCI device
->>> entries start_dma and end_dma.
->>>
->>> Let's declare the regions before start_dma and after end_dma as
->>> reserved regions using the appropriate callback in iommu_ops.
->>>
->>> The reserved region may later be retrieved from sysfs or from
->>> the vfio iommu internal interface.
->>
->> For this particular case, I think the best solution is to give VFIO 
->> the ability to directly interrogate the domain geometry (which s390 
->> appears to set correctly already). The idea of reserved regions was 
->> really for 'unexpected' holes inside the usable address space - using 
->> them to also describe places that are entirely outside that address 
->> space rather confuses things IMO.
->>
->> Furthermore, even if we *did* end up going down the route of actively 
->> reserving addresses beyond the usable aperture, it doesn't seem 
->> sensible for individual drivers to do it themselves when the core API 
->> already describes the relevant information generically.
->>
->> Robin.
+On 17/01/2019 09:27, Vivek Gautam wrote:
+>  From Robin's comment [1] about touching TCR configurations -
 > 
-> Robin,
+> "TBH if we're going to touch the TCR attributes at all then we should
+> probably correct that sloppiness first - there's an occasional argument
+> for using non-cacheable pagetables even on a coherent SMMU if reducing
+> snoop traffic/latency on walks outweighs the cost of cache maintenance
+> on PTE updates, but anyone thinking they can get that by overriding
+> dma-coherent silently gets the worst of both worlds thanks to this
+> current TCR value."
 > 
-> I already posted a patch retrieving the geometry through 
-> VFIO_IOMMU_GET_INFO using a specific capability for the geometry [1], 
-> and AFAIU, Alex did not agree with this.
+> We have IO_PGTABLE_QUIRK_NO_DMA quirk present, but we don't force
+> anybody _not_ using dma-coherent smmu to have non-cacheable page table
+> mappings.
+> Having another quirk flag can help in having non-cacheable memory for
+> page tables once and for all.
 > 
-> What is different in what you propose?
+> [1] https://lore.kernel.org/patchwork/patch/1020906/
+> 
+> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+> ---
+>   drivers/iommu/io-pgtable-arm.c | 17 ++++++++++++-----
+>   drivers/iommu/io-pgtable.h     |  6 ++++++
+>   2 files changed, 18 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 237cacd4a62b..c76919c30f1a 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -780,7 +780,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>   	struct arm_lpae_io_pgtable *data;
+>   
+>   	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
+> -			    IO_PGTABLE_QUIRK_NON_STRICT))
+> +			    IO_PGTABLE_QUIRK_NON_STRICT |
+> +			    IO_PGTABLE_QUIRK_NON_COHERENT))
+>   		return NULL;
+>   
+>   	data = arm_lpae_alloc_pgtable(cfg);
+> @@ -788,9 +789,14 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>   		return NULL;
+>   
+>   	/* TCR */
+> -	reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
+> -	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
+> -	      (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+> +	reg = ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT;
+> +
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_NON_COHERENT)
+> +		reg |= ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT |
+> +		       ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_ORGN0_SHIFT;
+> +	else
+> +		reg |= ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT |
+> +		       ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT;
+>   
+>   	switch (ARM_LPAE_GRANULE(data)) {
+>   	case SZ_4K:
+> @@ -873,7 +879,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+>   
+>   	/* The NS quirk doesn't apply at stage 2 */
+>   	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
+> -			    IO_PGTABLE_QUIRK_NON_STRICT))
+> +			    IO_PGTABLE_QUIRK_NON_STRICT |
+> +			    IO_PGTABLE_QUIRK_NON_COHERENT))
+>   		return NULL;
+>   
+>   	data = arm_lpae_alloc_pgtable(cfg);
+> diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
+> index 47d5ae559329..46604cf7b017 100644
+> --- a/drivers/iommu/io-pgtable.h
+> +++ b/drivers/iommu/io-pgtable.h
+> @@ -75,6 +75,11 @@ struct io_pgtable_cfg {
+>   	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
+>   	 *	on unmap, for DMA domains using the flush queue mechanism for
+>   	 *	delayed invalidation.
+> +	 *
+> +	 * IO_PGTABLE_QUIRK_NON_COHERENT: Enforce non-cacheable mappings for
+> +	 *      pagetables even on a coherent SMMU for cases where reducing
+> +	 *      snoop traffic/latency on walks outweighs the cost of cache
+> +	 *      maintenance on PTE updates.
 
-I didn't mean to imply that aperture and reserved regions are mutually 
-exclusive, just that they are conceptually distinct things, i.e. there 
-is a fundamental difference between "address which could in theory be 
-mapped but wouldn't work as expected" and "address which is physically 
-impossible to map at all".
+Hmm, we can't actually "enforce" anything with this as-is - all we're 
+doing is setting the attributes that the IOMMU will use for pagetable 
+walks, and that has no impact on how the CPU actually writes PTEs to 
+memory. In particular, in the case of a hardware-coherent IOMMU which is 
+described as such, even if we make the dma_map/sync calls they still 
+won't do anything since they 'know' that the IOMMU is coherent. Thus if 
+we then set up a non-cacheable TCR we would have no proper means of 
+making pagetables correctly visible to the walker.
 
-Admittedly I hadn't closely followed all of the previous discussions, 
-and Alex has a fair point - for VFIO users who will mostly care about 
-checking whether two address maps are compatible, it probably is more 
-useful to just describe a single list of usable regions, rather than the 
-absolute bounds plus a list of unusable holes within them. That still 
-doesn't give us any need to conflate things throughout the kernel 
-internals, though - the typical usage there is to size an IOVA allocator 
-or page table based on the aperture, then carve out any necessary 
-reservations. In that context, having to be aware of and handle 
-'impossible' reservations outside the aperture just invites bugs and 
-adds complexity that would be better avoided.
+Aw crap, this is turning out to be a microcosm of the PCIe no-snoop 
+mess... :(
+
+To start with, at least, what we want is to set a non-cacheable TCR if 
+the IOMMU is *not* coherent (as far as Linux is concerned - that 
+includes the firmware-lying-about-the-hardware situation I was alluding 
+to before), but even that isn't necessarily as straightforward as it 
+seems. AFAICS, if QUIRK_NO_DMA is set then we definitely have to use a 
+cacheable TCR; we can't strictly rely on the inverse being true, but in 
+practice we *might* get away with it since we already disallow most 
+cases in which the DMA API calls would actually do anything for a 
+known-coherent IOMMU device.
 
 Robin.
 
-> 
-> @Alex: I was hoping that this patch goes in your direction. What do you 
-> think?
-> 
-> Thanks,
-> Pierre
-> 
-> [1]: https://lore.kernel.org/patchwork/patch/1030369/
-> 
->>
->>>
->>> This seems to me related with the work Shameer has started on
->>> vfio_iommu_type1 so I add Alex and Shameer to the CC list.
->>>
->>>
->>> Pierre Morel (1):
->>>    iommu/s390: Declare s390 iommu reserved regions
->>>
->>>   drivers/iommu/s390-iommu.c | 29 +++++++++++++++++++++++++++++
->>>   1 file changed, 29 insertions(+)
->>>
->>
-> 
+>   	 */
+>   	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+>   	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+> @@ -82,6 +87,7 @@ struct io_pgtable_cfg {
+>   	#define IO_PGTABLE_QUIRK_ARM_MTK_4GB	BIT(3)
+>   	#define IO_PGTABLE_QUIRK_NO_DMA		BIT(4)
+>   	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(5)
+> +	#define IO_PGTABLE_QUIRK_NON_COHERENT	BIT(6)
+>   	unsigned long			quirks;
+>   	unsigned long			pgsize_bitmap;
+>   	unsigned int			ias;
 > 
