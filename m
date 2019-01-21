@@ -1,24 +1,54 @@
-From: pr-tracker-bot@kernel.org
-Subject: Re: [git pull] IOMMU Fixes for Linux v5.0-rc1
-Date: Mon, 21 Jan 2019 18:35:01 +0000
-Message-ID: <154809570198.8142.17981951725375784933.pr-tracker-bot@kernel.org>
-References: <20190121094536.si5x3wltlllsxcod@8bytes.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190121094536.si5x3wltlllsxcod@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+From: Stefano Stabellini <sstabellini@kernel.org>
+Subject: Re: [PATCH] arm64/xen: fix xen-swiotlb cache flushing
+Date: Mon, 21 Jan 2019 15:56:29 -0800 (PST)
+Message-ID: <alpine.DEB.2.10.1901211554300.12685@sstabellini-ThinkPad-X260>
+References: <20190117171842.26173-1-hch@lst.de>
+ <alpine.DEB.2.10.1901181612150.18561@sstabellini-ThinkPad-X260>
+ <20190119094301.GB21653@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+In-Reply-To: <20190119094301.GB21653@lst.de>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: jgross@suse.com, Stefano Stabellini <sstabellini@kernel.org>, iommu@lists.linux-foundation.org, julien.grall@arm.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com
 List-Id: iommu@lists.linux-foundation.org
 
-The pull request you sent on Mon, 21 Jan 2019 10:45:42 +0100:
-
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.0-rc3
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/52e60b754438f34d23348698534e9ca63cd751d7
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+T24gU2F0LCAxOSBKYW4gMjAxOSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gW2Z1bGwgcXVv
+dGUgZGVsZXRlZCwgcGxlYXNlIHRha2UgYSBsaXR0bGUgbW9yZSBjYXJlIHdoZW4gcXVvdGluZ10K
+PiAKPiBPbiBGcmksIEphbiAxOCwgMjAxOSBhdCAwNDo0NDoyM1BNIC0wODAwLCBTdGVmYW5vIFN0
+YWJlbGxpbmkgd3JvdGU6Cj4gPiA+ICAjaWZkZWYgQ09ORklHX1hFTgo+ID4gPiAtCWlmICh4ZW5f
+aW5pdGlhbF9kb21haW4oKSkgewo+ID4gPiAtCQlkZXYtPmFyY2hkYXRhLmRldl9kbWFfb3BzID0g
+ZGV2LT5kbWFfb3BzOwo+ID4gPiArCWlmICh4ZW5faW5pdGlhbF9kb21haW4oKSkKPiA+ID4gIAkJ
+ZGV2LT5kbWFfb3BzID0geGVuX2RtYV9vcHM7Cj4gPiA+IC0JfQo+ID4gPiAgI2VuZGlmCj4gPiA+
+ICB9Cj4gPiAKPiA+IFRoaXMgaXMgYW4gb3B0aW9uYWwgc3VnZ2VzdGlvbiwgYnV0IGl0IHdvdWxk
+IGJlIG5pY2UgdG8gYWRkIGEgY2hlY2sgb24KPiA+IGRldi0+ZG1hX29wcyBiZWluZyB1bnNldCBo
+ZXJlLCBzb21ldGhpbmcgbGlrZToKPiA+IAo+ID4gICAjaWZkZWYgQ09ORklHX1hFTgo+ID4gICBp
+ZiAoeGVuX2luaXRpYWxfZG9tYWluKCkpIHsKPiA+ICAgICAgIGlmIChkZXYtPmRtYV9vcHMgIT0g
+TlVMTCkKPiA+ICAgICAgICAgICB3YXJuaW5nL2Vycm9yCj4gPiAgICAgICBkZXYtPmRtYV9vcHMg
+PSB4ZW5fZG1hX29wczsKPiA+ICAgfQo+ID4gCj4gPiBEb2VzIGl0IG1ha2Ugc2Vuc2U/Cj4gCj4g
+V2VsbCwgbm8gc3VjaCBjaGVjayBleGlzdGVkIGJlZm9yZSwgc28gdGhpcyBwcm9iYWJseSBzaG91
+bGQgYmUgYQo+IHNlcGFyYXRlIHBhdGNoIGlmIHdlIGNhcmUgZW5vdWdoLiAgSSBoYXZlIGEgc2Vy
+aWVzIGZvciA1LjEgcGVuZGluZwo+IHRoYXQgbW92ZXMgdGhlIElPTU1VIGhhbmRsaW5nIHRvIHRo
+ZSBjb21tZW50IGNvZGUgd2hpY2ggd2lsbCBtYWtlCj4gdGhlIG9wcyBhc3NnaW5tZW50IGEgbG90
+IGNsZWFuZXIsIGFuZCBJIGd1ZXNzIEkgY291bGQgZm9sZCBzdWNoCj4gYSBjaGVjayBpbiB0aGF0
+LiAgRG9pbmcgaXQgbm93IHdpbGwganVzdCBjcmVhdGUgY2h1cm4gYXMgaXQgd291bGQKPiBoYXZl
+IHRvIGdldCByZXdvcmtlZCBhbnl3YXkKCkZpbmUgYnkgbWUsIHRoYW5rIHlvdSEKCgo+ID4gUmV2
+aWV3ZWQtYnk6IFN0ZWZhbm8gU3RhYmVsbGluaSA8c3N0YWJlbGxpbmlAa2VybmVsLm9yZz4KPiAK
+PiBXaGVyZSBzaG91bGQgd2UgcGljayB0aGlzIHVwPyAgSSBjb3VsZCBwaWNrIGl0IHVwIHRocm91
+Z2ggdGhlIGRtYS1tYXBwaW5nCj4gdHJlZSBnaXZlbiB0aGF0IGlzIHdoZXJlIHRoZSBwcm9ibGVt
+IGlzIGludHJvZHVjZWQsIGJ1dCB0aGUgWGVuIG9yIGFybTY0Cj4gdHJlZXMgd291bGQgYWxzbyBm
+aXQuCgpJIGFtIGhhcHB5IGZvciB5b3UgdG8gY2FycnkgaXQgaW4gdGhlIGRtYS1tYXBwaW5nIHRy
+ZWUsIGVzcGVjaWFsbHkgaWYKeW91IGhhdmUgb3RoZXIgZml4ZXMgdG8gc2VuZC4gT3RoZXJ3aXNl
+LCBsZXQgbWUga25vdy4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fClhlbi1kZXZlbCBtYWlsaW5nIGxpc3QKWGVuLWRldmVsQGxpc3RzLnhlbnByb2plY3Qu
+b3JnCmh0dHBzOi8vbGlzdHMueGVucHJvamVjdC5vcmcvbWFpbG1hbi9saXN0aW5mby94ZW4tZGV2
+ZWw=
