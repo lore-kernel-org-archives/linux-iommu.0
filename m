@@ -1,110 +1,75 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/3] iommu/arm-smmu: Add support to use Last level cache
-Date: Mon, 21 Jan 2019 15:15:15 +0000
-Message-ID: <55213eaf-d90d-0f2f-9f01-5e964e087d3f@arm.com>
-References: <20190121055335.15430-1-vivek.gautam@codeaurora.org>
- <CAKv+Gu8P-5hxZ8+OV_xSZteTvCLw-Sc-=KJM1i=3aWajcS9bUw@mail.gmail.com>
- <CAFp+6iEp-bzMrZz8cFUciTFKm7TwAoLdYpsSTD73kDfCRh60bA@mail.gmail.com>
- <CAKv+Gu9z_mGwdZYMKPfM_g2MZwrCF5=f4WAdn_R6wJ1A9xSZ_Q@mail.gmail.com>
- <dbba5a8a-70c0-dd01-713c-081eb412e2d7@arm.com>
- <CAKv+Gu8K5f0va9q4FYk9x1puoOTDjZ0c25qokm2izSVAwd1gmQ@mail.gmail.com>
- <964779d6-c676-3379-bf1e-cde0dd82d63d@arm.com>
- <CAKv+Gu_Oz-QEFnq9KiOBHQrC8o+0ykkEZBm0vCWfYDfFB8QTcQ@mail.gmail.com>
+From: Thierry Reding <treding@nvidia.com>
+Subject: Re: [PATCH] ARM: dma-mapping: Clear DMA ops on teardown
+Date: Mon, 21 Jan 2019 16:34:40 +0100
+Message-ID: <20190121153439.GA21078@ulmo>
+References: <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <CAKv+Gu_Oz-QEFnq9KiOBHQrC8o+0ykkEZBm0vCWfYDfFB8QTcQ@mail.gmail.com>
-Content-Language: en-GB
+In-Reply-To: <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
+Content-Disposition: inline
 Sender: linux-kernel-owner@vger.kernel.org
-To: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, Jordan Crouse <jcrouse@codeaurora.org>, pratikp@codeaurora.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, hch@lst.de, rmk+kernel@armlinux.org.uk, bskeggs@redhat.com, tjakobi@math.uni-bielefeld.de, b.zolnierkie@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/01/2019 14:24, Ard Biesheuvel wrote:
-> On Mon, 21 Jan 2019 at 14:56, Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 21/01/2019 13:36, Ard Biesheuvel wrote:
->>> On Mon, 21 Jan 2019 at 14:25, Robin Murphy <robin.murphy@arm.com> wrote:
->>>>
->>>> On 21/01/2019 10:50, Ard Biesheuvel wrote:
->>>>> On Mon, 21 Jan 2019 at 11:17, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
->>>>>>
->>>>>> Hi,
->>>>>>
->>>>>>
->>>>>> On Mon, Jan 21, 2019 at 12:56 PM Ard Biesheuvel
->>>>>> <ard.biesheuvel@linaro.org> wrote:
->>>>>>>
->>>>>>> On Mon, 21 Jan 2019 at 06:54, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
->>>>>>>>
->>>>>>>> Qualcomm SoCs have an additional level of cache called as
->>>>>>>> System cache, aka. Last level cache (LLC). This cache sits right
->>>>>>>> before the DDR, and is tightly coupled with the memory controller.
->>>>>>>> The clients using this cache request their slices from this
->>>>>>>> system cache, make it active, and can then start using it.
->>>>>>>> For these clients with smmu, to start using the system cache for
->>>>>>>> buffers and, related page tables [1], memory attributes need to be
->>>>>>>> set accordingly. This series add the required support.
->>>>>>>>
->>>>>>>
->>>>>>> Does this actually improve performance on reads from a device? The
->>>>>>> non-cache coherent DMA routines perform an unconditional D-cache
->>>>>>> invalidate by VA to the PoC before reading from the buffers filled by
->>>>>>> the device, and I would expect the PoC to be defined as lying beyond
->>>>>>> the LLC to still guarantee the architected behavior.
->>>>>>
->>>>>> We have seen performance improvements when running Manhattan
->>>>>> GFXBench benchmarks.
->>>>>>
->>>>>
->>>>> Ah ok, that makes sense, since in that case, the data flow is mostly
->>>>> to the device, not from the device.
->>>>>
->>>>>> As for the PoC, from my knowledge on sdm845 the system cache, aka
->>>>>> Last level cache (LLC) lies beyond the point of coherency.
->>>>>> Non-cache coherent buffers will not be cached to system cache also, and
->>>>>> no additional software cache maintenance ops are required for system cache.
->>>>>> Pratik can add more if I am missing something.
->>>>>>
->>>>>> To take care of the memory attributes from DMA APIs side, we can add a
->>>>>> DMA_ATTR definition to take care of any dma non-coherent APIs calls.
->>>>>>
->>>>>
->>>>> So does the device use the correct inner non-cacheable, outer
->>>>> writeback cacheable attributes if the SMMU is in pass-through?
->>>>>
->>>>> We have been looking into another use case where the fact that the
->>>>> SMMU overrides memory attributes is causing issues (WC mappings used
->>>>> by the radeon and amdgpu driver). So if the SMMU would honour the
->>>>> existing attributes, would you still need the SMMU changes?
->>>>
->>>> Even if we could force a stage 2 mapping with the weakest pagetable
->>>> attributes (such that combining would work), there would still need to
->>>> be a way to set the TCR attributes appropriately if this behaviour is
->>>> wanted for the SMMU's own table walks as well.
->>>>
->>>
->>> Isn't that just a matter of implementing support for SMMUs that lack
->>> the 'dma-coherent' attribute?
->>
->> Not quite - in general they need INC-ONC attributes in case there
->> actually is something in the architectural outer-cacheable domain.
-> 
-> But is it a problem to use INC-ONC attributes for the SMMU PTW on this
-> chip? AIUI, the reason for the SMMU changes is to avoid the
-> performance hit of snooping, which is more expensive than cache
-> maintenance of SMMU page tables. So are you saying the by-VA cache
-> maintenance is not relayed to this system cache, resulting in page
-> table updates to be invisible to masters using INC-ONC attributes?
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I only have a relatively vague impression of how this Qcom interconnect 
-actually behaves, but AIUI the outer attribute has no correctness impact 
-(it's effectively mismatched between CPU and devices already), only some 
-degree of latency improvement which is effectively the opposite of 
-no-snoop, in allowing certain non-coherent device traffic to still 
-allocate in the LLC. I'm assuming that if that latency matters for the 
-device accesses themselves, it might also matter for the associated 
-table walks depending on the TLB miss rate.
+On Mon, Jan 21, 2019 at 02:52:16PM +0000, Robin Murphy wrote:
+> Installing the appropriate non-IOMMU DMA ops in arm_iommu_detch_device()
+> serves the case where IOMMU-aware drivers choose to control their own
+> mapping but still make DMA API calls, however it also affects the case
+> when the arch code itself tears down the mapping upon driver unbinding,
+> where the ops now get left in place and can inhibit arch_setup_dma_ops()
+> on subsequent re-probe attempts.
+>=20
+> Fix the latter case by making sure that arch_teardown_dma_ops() cleans
+> up whenever the ops were automatically installed by its counterpart.
+>=20
+> Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
+> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iommu_de=
+tach_device()"
+> Tested-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>=20
+> Sorry for the delay - there was a giant email infrastructure cock-up just
+> at the point I wanted to go back through my archive and double-check the
+> discussion around the original commit...
+>=20
+> Robin.
+>=20
+>  arch/arm/mm/dma-mapping.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-Robin.
+I had also tested your draft on Tegra last week and this looks
+identical, so:
+
+Tested-by: Thierry Reding <treding@nvidia.com>
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxF5osACgkQ3SOs138+
+s6Hu1w/+PREMHDE0jWgKBN3n9eINXN6aliHOhCeWQxco5/iJjCSeCofcMvFzuKx2
+p8nZ8OfIMZvj4AatYeryqn7bPLSQiRfwVtC8qOfERTv7z+8m4F+o4rPSKmr0/1qI
+rSqpTFY4exsTlp7Lp7DHsg2sbd0Av6UvgiNJSLpTLai0loCYfPuF+lvbdlw/x6wC
+CNa6SBE+rI/u+QRNY1jRPkgEMovOnsvkKY4bf7+v3elI3X7bZhObqyNLnTLkNpYL
+w01hvCpxpo4vrX12kTDzuhOxxnKF1md/QrlviZWl/K6CI5L/UqlP1ttSj3p5INna
+nGQ4Zjr+ykq1enUBHlLwkfVGD7mV//BaVxvIyMtKtWewJ3YoQbPhrcWCAg1pqjJ7
+C9ksb5Njf7vOyF5KPGdcyePUIVw7NaIytAQrRE3ww7iuZg78fBs7oxjdzyK4D6G5
++2DcaumIx18jwD44wP8g6z0foo1GgN6IitWoAcH/UhVX9ID/eMl5KNxHogW1N2bW
+GJDagpZCD09vxmKBcYFctXGbL3RoLKS4+mVu93vjPNhRs813nXAPMC5E+NZcI6vZ
+l7CYkq3/V6af54QGr7/0K87mIT6dIjkOCVYNjH4ZHPLjJolBZ8iS5636DyDoldk0
+SlUgLWwfZ80fcqNh19syiJRaVIpW2CahirFJilXtoFd2cvDOLPM=
+=LcGP
+-----END PGP SIGNATURE-----
+
+--gBBFr7Ir9EOA20Yy--
