@@ -1,57 +1,51 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Mon, 21 Jan 2019 15:38:38 +0100
-Message-ID: <bfe4adcc-01c1-7b46-f40a-8e020ff77f58@xenosoft.de>
-References: <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
- <20190118112842.GA9115@lst.de>
- <a2ca0118-5915-8b1c-7cfa-71cb4b43eaa6@xenosoft.de>
- <20190118121810.GA13327@lst.de>
- <eceebeda-0e18-00f6-06e7-def2eb0aa961@xenosoft.de>
- <20190118125500.GA15657@lst.de>
- <e11e61b1-6468-122e-fc2b-3b3f857186bb@xenosoft.de>
- <f39d4fc6-7e4e-9132-c03f-59f1b52260e0@xenosoft.de>
- <b9e5e081-a3cc-2625-4e08-2d55c2ba224b@xenosoft.de>
- <20190119130222.GA24346@lst.de> <20190119140452.GA25198@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] ARM: dma-mapping: Clear DMA ops on teardown
+Date: Mon, 21 Jan 2019 14:52:16 +0000
+Message-ID: <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190119140452.GA25198@lst.de>
-Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: m.szyprowski@samsung.com, hch@lst.de, treding@nvidia.com, rmk+kernel@armlinux.org.uk, bskeggs@redhat.com, tjakobi@math.uni-bielefeld.de, b.zolnierkie@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Christoph,
+Installing the appropriate non-IOMMU DMA ops in arm_iommu_detch_device()
+serves the case where IOMMU-aware drivers choose to control their own
+mapping but still make DMA API calls, however it also affects the case
+when the arch code itself tears down the mapping upon driver unbinding,
+where the ops now get left in place and can inhibit arch_setup_dma_ops()
+on subsequent re-probe attempts.
 
-Thanks for your reply. I successfully compiled a kernel (uImage) for the 
-X5000 from your Git 'powerpc-dma.6-debug' (both patches) today.
+Fix the latter case by making sure that arch_teardown_dma_ops() cleans
+up whenever the ops were automatically installed by its counterpart.
 
-It detects the SATA hard disk drive and boots without any problems. I 
-will test the first patch in next days.
+Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iommu_detach_device()"
+Tested-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
 
-Thanks for your help,
+Sorry for the delay - there was a giant email infrastructure cock-up just
+at the point I wanted to go back through my archive and double-check the
+discussion around the original commit...
 
-Christian
+Robin.
 
+ arch/arm/mm/dma-mapping.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On 19 January 2019 at 3:04PM, Christoph Hellwig wrote:
-> On Sat, Jan 19, 2019 at 02:02:22PM +0100, Christoph Hellwig wrote:
->> Interesting.  This suggest it is related to the use of ZONE_DMA by
->> the FSL SOCs that your board uses.  Let me investigate this a bit more.
-> As a hack to check that theory I've pushed a new commit to the
-> powerpc-dma.6-debug branch to use old powerpc GFP_DMA selection
-> with the new dma direct code:
->
-> http://git.infradead.org/users/hch/misc.git/commitdiff/5c532d07c2f3c3972104de505d06b8d85f403f06
->
-> And another one that drops the addressability checks that powerpc
-> never had:
->
-> http://git.infradead.org/users/hch/misc.git/commitdiff/18e7629b38465ca98f8e7eed639123a13ac3b669
->
-> Can you first test with both patches, and then just with the first
-> in case that worked?
->
->
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index f1e2922e447c..1e3e08a1c456 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2390,4 +2390,6 @@ void arch_teardown_dma_ops(struct device *dev)
+ 		return;
+ 
+ 	arm_teardown_iommu_dma_ops(dev);
++	/* Let arch_setup_dma_ops() start again from scratch upon re-probe */
++	set_dma_ops(dev, NULL);
+ }
+-- 
+2.20.1.dirty
