@@ -1,102 +1,57 @@
-From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: Re: [PATCH 0/3] iommu/arm-smmu: Add support to use Last level cache
-Date: Mon, 21 Jan 2019 15:24:55 +0100
-Message-ID: <CAKv+Gu_Oz-QEFnq9KiOBHQrC8o+0ykkEZBm0vCWfYDfFB8QTcQ@mail.gmail.com>
-References: <20190121055335.15430-1-vivek.gautam@codeaurora.org>
- <CAKv+Gu8P-5hxZ8+OV_xSZteTvCLw-Sc-=KJM1i=3aWajcS9bUw@mail.gmail.com>
- <CAFp+6iEp-bzMrZz8cFUciTFKm7TwAoLdYpsSTD73kDfCRh60bA@mail.gmail.com>
- <CAKv+Gu9z_mGwdZYMKPfM_g2MZwrCF5=f4WAdn_R6wJ1A9xSZ_Q@mail.gmail.com>
- <dbba5a8a-70c0-dd01-713c-081eb412e2d7@arm.com> <CAKv+Gu8K5f0va9q4FYk9x1puoOTDjZ0c25qokm2izSVAwd1gmQ@mail.gmail.com>
- <964779d6-c676-3379-bf1e-cde0dd82d63d@arm.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Mon, 21 Jan 2019 15:38:38 +0100
+Message-ID: <bfe4adcc-01c1-7b46-f40a-8e020ff77f58@xenosoft.de>
+References: <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
+ <20190118112842.GA9115@lst.de>
+ <a2ca0118-5915-8b1c-7cfa-71cb4b43eaa6@xenosoft.de>
+ <20190118121810.GA13327@lst.de>
+ <eceebeda-0e18-00f6-06e7-def2eb0aa961@xenosoft.de>
+ <20190118125500.GA15657@lst.de>
+ <e11e61b1-6468-122e-fc2b-3b3f857186bb@xenosoft.de>
+ <f39d4fc6-7e4e-9132-c03f-59f1b52260e0@xenosoft.de>
+ <b9e5e081-a3cc-2625-4e08-2d55c2ba224b@xenosoft.de>
+ <20190119130222.GA24346@lst.de> <20190119140452.GA25198@lst.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <964779d6-c676-3379-bf1e-cde0dd82d63d@arm.com>
+In-Reply-To: <20190119140452.GA25198@lst.de>
+Content-Language: de-DE
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Vivek Gautam <vivek.gautam@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Tomasz Figa <tfiga@chromium.org>, Jordan Crouse <jcrouse@codeaurora.org>, pratikp@codeaurora.org, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 21 Jan 2019 at 14:56, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 21/01/2019 13:36, Ard Biesheuvel wrote:
-> > On Mon, 21 Jan 2019 at 14:25, Robin Murphy <robin.murphy@arm.com> wrote:
-> >>
-> >> On 21/01/2019 10:50, Ard Biesheuvel wrote:
-> >>> On Mon, 21 Jan 2019 at 11:17, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
-> >>>>
-> >>>> Hi,
-> >>>>
-> >>>>
-> >>>> On Mon, Jan 21, 2019 at 12:56 PM Ard Biesheuvel
-> >>>> <ard.biesheuvel@linaro.org> wrote:
-> >>>>>
-> >>>>> On Mon, 21 Jan 2019 at 06:54, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
-> >>>>>>
-> >>>>>> Qualcomm SoCs have an additional level of cache called as
-> >>>>>> System cache, aka. Last level cache (LLC). This cache sits right
-> >>>>>> before the DDR, and is tightly coupled with the memory controller.
-> >>>>>> The clients using this cache request their slices from this
-> >>>>>> system cache, make it active, and can then start using it.
-> >>>>>> For these clients with smmu, to start using the system cache for
-> >>>>>> buffers and, related page tables [1], memory attributes need to be
-> >>>>>> set accordingly. This series add the required support.
-> >>>>>>
-> >>>>>
-> >>>>> Does this actually improve performance on reads from a device? The
-> >>>>> non-cache coherent DMA routines perform an unconditional D-cache
-> >>>>> invalidate by VA to the PoC before reading from the buffers filled by
-> >>>>> the device, and I would expect the PoC to be defined as lying beyond
-> >>>>> the LLC to still guarantee the architected behavior.
-> >>>>
-> >>>> We have seen performance improvements when running Manhattan
-> >>>> GFXBench benchmarks.
-> >>>>
-> >>>
-> >>> Ah ok, that makes sense, since in that case, the data flow is mostly
-> >>> to the device, not from the device.
-> >>>
-> >>>> As for the PoC, from my knowledge on sdm845 the system cache, aka
-> >>>> Last level cache (LLC) lies beyond the point of coherency.
-> >>>> Non-cache coherent buffers will not be cached to system cache also, and
-> >>>> no additional software cache maintenance ops are required for system cache.
-> >>>> Pratik can add more if I am missing something.
-> >>>>
-> >>>> To take care of the memory attributes from DMA APIs side, we can add a
-> >>>> DMA_ATTR definition to take care of any dma non-coherent APIs calls.
-> >>>>
-> >>>
-> >>> So does the device use the correct inner non-cacheable, outer
-> >>> writeback cacheable attributes if the SMMU is in pass-through?
-> >>>
-> >>> We have been looking into another use case where the fact that the
-> >>> SMMU overrides memory attributes is causing issues (WC mappings used
-> >>> by the radeon and amdgpu driver). So if the SMMU would honour the
-> >>> existing attributes, would you still need the SMMU changes?
-> >>
-> >> Even if we could force a stage 2 mapping with the weakest pagetable
-> >> attributes (such that combining would work), there would still need to
-> >> be a way to set the TCR attributes appropriately if this behaviour is
-> >> wanted for the SMMU's own table walks as well.
-> >>
-> >
-> > Isn't that just a matter of implementing support for SMMUs that lack
-> > the 'dma-coherent' attribute?
->
-> Not quite - in general they need INC-ONC attributes in case there
-> actually is something in the architectural outer-cacheable domain.
+Hello Christoph,
 
-But is it a problem to use INC-ONC attributes for the SMMU PTW on this
-chip? AIUI, the reason for the SMMU changes is to avoid the
-performance hit of snooping, which is more expensive than cache
-maintenance of SMMU page tables. So are you saying the by-VA cache
-maintenance is not relayed to this system cache, resulting in page
-table updates to be invisible to masters using INC-ONC attributes?
+Thanks for your reply. I successfully compiled a kernel (uImage) for the 
+X5000 from your Git 'powerpc-dma.6-debug' (both patches) today.
 
-> The
-> case of the outer cacheablility being not that but a hint to control
-> non-CPU traffic through some not-quite-transparent cache behind the PoC
-> definitely stays wrapped up in qcom-specific magic ;)
+It detects the SATA hard disk drive and boots without any problems. I 
+will test the first patch in next days.
+
+Thanks for your help,
+
+Christian
+
+
+On 19 January 2019 at 3:04PM, Christoph Hellwig wrote:
+> On Sat, Jan 19, 2019 at 02:02:22PM +0100, Christoph Hellwig wrote:
+>> Interesting.  This suggest it is related to the use of ZONE_DMA by
+>> the FSL SOCs that your board uses.  Let me investigate this a bit more.
+> As a hack to check that theory I've pushed a new commit to the
+> powerpc-dma.6-debug branch to use old powerpc GFP_DMA selection
+> with the new dma direct code:
 >
-
-I'm not surprised ...
+> http://git.infradead.org/users/hch/misc.git/commitdiff/5c532d07c2f3c3972104de505d06b8d85f403f06
+>
+> And another one that drops the addressability checks that powerpc
+> never had:
+>
+> http://git.infradead.org/users/hch/misc.git/commitdiff/18e7629b38465ca98f8e7eed639123a13ac3b669
+>
+> Can you first test with both patches, and then just with the first
+> in case that worked?
+>
+>
