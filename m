@@ -1,75 +1,105 @@
-From: Thierry Reding <treding@nvidia.com>
-Subject: Re: [PATCH] ARM: dma-mapping: Clear DMA ops on teardown
-Date: Mon, 21 Jan 2019 16:34:40 +0100
-Message-ID: <20190121153439.GA21078@ulmo>
-References: <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
+Date: Mon, 21 Jan 2019 15:50:48 +0000
+Message-ID: <c189fe32-3cbe-0294-8950-e29bce606679@arm.com>
+References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
+ <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
+ <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
+ <668fe734-e4bf-0342-ab8c-df54d9022db4@arm.com>
+ <d180bb2d-354f-0d05-8773-7a196a4de3cb@linux.ibm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <2f5833b7639543d614095cd3f5ab0dc0274e26d6.1548081277.git.robin.murphy@arm.com>
-Content-Disposition: inline
+In-Reply-To: <d180bb2d-354f-0d05-8773-7a196a4de3cb@linux.ibm.com>
+Content-Language: en-US
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, m.szyprowski@samsung.com, hch@lst.de, rmk+kernel@armlinux.org.uk, bskeggs@redhat.com, tjakobi@math.uni-bielefeld.de, b.zolnierkie@samsung.com
+To: pmorel@linux.ibm.com, Robin Murphy <robin.murphy@arm.com>, gerald.schaefer@de.ibm.com
+Cc: linux-s390@vger.kernel.org, walling@linux.ibm.com, alex.williamson@redhat.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, "eric.auger@redhat.com" <eric.auger@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
---gBBFr7Ir9EOA20Yy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 21/01/2019 11:51, Pierre Morel wrote:
+> On 18/01/2019 14:51, Jean-Philippe Brucker wrote:
+>> Hi Pierre,
+>>
+>> On 18/01/2019 13:29, Pierre Morel wrote:
+>>> On 17/01/2019 14:02, Robin Murphy wrote:
+>>>> On 15/01/2019 17:37, Pierre Morel wrote:
+>>>>> The s390 iommu can only allow DMA transactions between the zPCI device
+>>>>> entries start_dma and end_dma.
+>>>>>
+> 
+> ...
+> 
+>>>
+>>> I already posted a patch retrieving the geometry through
+>>> VFIO_IOMMU_GET_INFO using a specific capability for the geometry [1],
+>>> and AFAIU, Alex did not agree with this.
+>>
+>> On arm we also need to report the IOMMU geometry to userspace (max IOVA
+>> size in particular). Shameer has been working on a solution [2] that
+>> presents a unified view of both geometry and reserved regions into the
+>> VFIO_IOMMU_GET_INFO call, and I think we should go with that. If I
+>> understand correctly it's currently blocked on the RMRR problem and
+>> we're waiting for Jacob or Ashok to take a look at it, as Kevin pinged
+>> them on thread [1]?
+>>
+>> [2] https://lkml.org/lkml/2018/4/18/293
+>>
+>> Thanks,
+>> Jean
+>>
+> 
+> Hi Jean,
+> 
+> I hopped that this proposition went in the same direction based on the
+> following assumptions:
+> 
+> 
+> - The goal of the get_resv_region is defined in iommu.h as:
+> -----
+> * @get_resv_regions: Request list of reserved regions for a device
+> -----
+> 
+> - A iommu reserve region is a region which should not be mapped.
+> Isn't it exactly what happens outside the aperture?
+> Shouldn't it be reported by the iommu reserved region?
+> 
+> - If we use VFIO and want to get all reserved region we will have the
+> VFIO_IOMMU_GET_INFO call provided by Shameer and it can get all reserved
+> regions depending from the iommu driver itself at once by calling the
+> get_reserved_region callback instead of having to merge them with the
+> aperture.
+> 
+> - If there are other reserved region, depending on the system
+> configuration and not on the IOMMU itself, the VFIO_IOMMU_GET_INFO call
+> will have to merge them with the region gotten from the iommu driver.
 
-On Mon, Jan 21, 2019 at 02:52:16PM +0000, Robin Murphy wrote:
-> Installing the appropriate non-IOMMU DMA ops in arm_iommu_detch_device()
-> serves the case where IOMMU-aware drivers choose to control their own
-> mapping but still make DMA API calls, however it also affects the case
-> when the arch code itself tears down the mapping upon driver unbinding,
-> where the ops now get left in place and can inhibit arch_setup_dma_ops()
-> on subsequent re-probe attempts.
->=20
-> Fix the latter case by making sure that arch_teardown_dma_ops() cleans
-> up whenever the ops were automatically installed by its counterpart.
->=20
-> Reported-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Fixes: 1874619a7df4 "ARM: dma-mapping: Set proper DMA ops in arm_iommu_de=
-tach_device()"
-> Tested-by: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->=20
-> Sorry for the delay - there was a giant email infrastructure cock-up just
-> at the point I wanted to go back through my archive and double-check the
-> discussion around the original commit...
->=20
-> Robin.
->=20
->  arch/arm/mm/dma-mapping.c | 2 ++
->  1 file changed, 2 insertions(+)
+I guess that would only happen if VFIO wanted to reserve IOVA regions
+for its own use. But I don't see how that relates to the aperture
 
-I had also tested your draft on Tegra last week and this looks
-identical, so:
+> - If we do not use QEMU nor VFIO at all, AFAIU, the standard way to
+> retrieve the reserved regions associated with a device is to call the
+> get_reserved_region callback from the associated iommu.
+> 
+> Please tell me were I am wrong.
 
-Tested-by: Thierry Reding <treding@nvidia.com>
+Those are good points in my opinion (assuming the new reserved regions
+for aperture is done in the core API)
 
---gBBFr7Ir9EOA20Yy
-Content-Type: application/pgp-signature; name="signature.asc"
+To be reliable though, userspace can't get the aperture from sysfs
+reserved_regions, it will have to get it from VFIO. If a new application
+expects the aperture to be described in reserved_regions but is running
+under an old kernel, it will just assume a 64-bit aperture by mistake.
+Unless we introduce a new IOMMU_RESV_* type to distinguish the aperture?
 
------BEGIN PGP SIGNATURE-----
+Another thing to note is that we're currently adding nested support to
+VFIO for Arm and x86 archs. It requires providing low-level and
+sometimes arch-specific information about the IOMMU to userspace,
+information that is easier to describe using sysfs (e.g.
+/sys/class/iommu/<iommu>/*) than a VFIO ioctl. Among them is the input
+address size of the IOMMU, so we'll end up with redundant information in
+sysfs on x86 and Arm sides, but that's probably harmless.
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAlxF5osACgkQ3SOs138+
-s6Hu1w/+PREMHDE0jWgKBN3n9eINXN6aliHOhCeWQxco5/iJjCSeCofcMvFzuKx2
-p8nZ8OfIMZvj4AatYeryqn7bPLSQiRfwVtC8qOfERTv7z+8m4F+o4rPSKmr0/1qI
-rSqpTFY4exsTlp7Lp7DHsg2sbd0Av6UvgiNJSLpTLai0loCYfPuF+lvbdlw/x6wC
-CNa6SBE+rI/u+QRNY1jRPkgEMovOnsvkKY4bf7+v3elI3X7bZhObqyNLnTLkNpYL
-w01hvCpxpo4vrX12kTDzuhOxxnKF1md/QrlviZWl/K6CI5L/UqlP1ttSj3p5INna
-nGQ4Zjr+ykq1enUBHlLwkfVGD7mV//BaVxvIyMtKtWewJ3YoQbPhrcWCAg1pqjJ7
-C9ksb5Njf7vOyF5KPGdcyePUIVw7NaIytAQrRE3ww7iuZg78fBs7oxjdzyK4D6G5
-+2DcaumIx18jwD44wP8g6z0foo1GgN6IitWoAcH/UhVX9ID/eMl5KNxHogW1N2bW
-GJDagpZCD09vxmKBcYFctXGbL3RoLKS4+mVu93vjPNhRs813nXAPMC5E+NZcI6vZ
-l7CYkq3/V6af54QGr7/0K87mIT6dIjkOCVYNjH4ZHPLjJolBZ8iS5636DyDoldk0
-SlUgLWwfZ80fcqNh19syiJRaVIpW2CahirFJilXtoFd2cvDOLPM=
-=LcGP
------END PGP SIGNATURE-----
-
---gBBFr7Ir9EOA20Yy--
+Thanks,
+Jean
