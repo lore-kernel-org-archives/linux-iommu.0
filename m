@@ -1,42 +1,37 @@
-From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-Subject: Re: [PATCH 1/2] dma-direct: set_memory_{en,de}crypted() take number of pages
-Date: Tue, 22 Jan 2019 20:38:46 -0200
-Message-ID: <87womwfhc9.fsf@morokweng.localdomain>
-References: <20190122211758.8317-1-bauerman@linux.ibm.com> <bc09628a-d329-bb95-d737-b7c618860c6a@amd.com>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
+Date: Wed, 23 Jan 2019 06:51:05 +0800
+Message-ID: <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
+References: <20181210011504.122604-1-drinkcat@chromium.org>
+ <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com> <20190111102155.in5rctq5krs4ewfi@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-reply-to: <bc09628a-d329-bb95-d737-b7c618860c6a@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
-Cc: "x86@kernel.org" <x86@kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Paolo Bonzini <pbonzini@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Ram Pai <linuxram@us.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+Return-path: <stable-owner@vger.kernel.org>
+In-Reply-To: <20190111102155.in5rctq5krs4ewfi@8bytes.org>
+Sender: stable-owner@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>h
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Andrew,
 
-Lendacky, Thomas <Thomas.Lendacky@amd.com> writes:
-
-> On 1/22/19 3:17 PM, Thiago Jung Bauermann wrote:
->> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
->> index 355d16acee6d..bc78c37220ba 100644
->> --- a/kernel/dma/direct.c
->> +++ b/kernel/dma/direct.c
->> @@ -166,7 +166,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
->>  
->>  	ret = page_address(page);
->>  	if (force_dma_unencrypted()) {
->> -		set_memory_decrypted((unsigned long)ret, 1 << get_order(size));
->> +		set_memory_decrypted((unsigned long)ret, 1);
+On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
 >
-> The get_order() function will return the order for the specified size. To
-> then get the number of pages you perform the shift as is being done. The
-> change is definitely wrong since you are now hardcoding the page count to
-> 1. The call to __dma_direct_alloc_pages() will allocate more than one page
-> if the size is greater than a page.
+> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
+> > Does anyone have any further comment on this series? If not, which
+> > maintainer is going to pick this up? I assume Andrew Morton?
+>
+> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
+> this should go through mm.
 
-<facepalm>
+Gentle ping on this series, it seems like it's better if it goes
+through your tree.
 
-You are correct, of course. Sorry for the noise and thanks for explaining.
+Series still applies cleanly on linux-next, but I'm happy to resend if
+that helps.
 
--- 
-Thiago Jung Bauermann
-IBM Linux Technology Center
+Thanks!
+
+> Regards,
+>
+>         Joerg
