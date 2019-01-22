@@ -1,40 +1,40 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/intel: quirk to disable DMAR for QM57 igfx
-Date: Tue, 22 Jan 2019 11:39:14 +0100
-Message-ID: <20190122103914.msboylvkor5sb5lq@8bytes.org>
-References: <20181227114948.ev4b3jte3ubsc5us@dcvr>
- <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
- <20190104010626.e6yqdqkmdcqjepke@dcvr>
- <154659116310.4596.13613897418163029789@jlahtine-desk.ger.corp.intel.com>
- <20190118121705.a4usvhnskyblooja@dcvr>
+From: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
+ from a domain
+Date: Tue, 22 Jan 2019 11:44:54 +0100
+Message-ID: <20190122104454.nke2knuyqiswfh5w@8bytes.org>
+References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
+ <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
+ <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
+ <20190116170852.GD4681@8bytes.org>
+ <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190118121705.a4usvhnskyblooja@dcvr>
+In-Reply-To: <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Wong <e@80x24.org>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>, Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>, Jani Nikula <jani.nikula@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, iommu@lists.linux-foundation.org, intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 18, 2019 at 12:17:05PM +0000, Eric Wong wrote:
-> @@ -5411,6 +5411,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e20, quirk_iommu_g4x_gfx);
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_g4x_gfx);
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_g4x_gfx);
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_g4x_gfx);
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_iommu_g4x_gfx);
->  
->  static void quirk_iommu_rwbf(struct pci_dev *dev)
->  {
-> @@ -5457,7 +5458,6 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
->         }
->  }
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0040, quirk_calpella_no_shadow_gtt);
-> -DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_calpella_no_shadow_gtt);
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0062, quirk_calpella_no_shadow_gtt);
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x006a, quirk_calpella_no_shadow_gtt);
+Hi Suravee,
 
-This seems to make sense to me. Joonas, any comments or objections?
+On Thu, Jan 17, 2019 at 08:44:36AM +0000, Suthikulpanit, Suravee wrote:
+> Then, in __domain_flush_pages, we issue command when the dev_iommu[] >= 0.
+> This should preserve previous behavior, and only add flushing condition to
+> the specific IOMMU in detached state. Please let me know what you think.
+
+I think the whole point why VFIO is detaching all devices first and then
+goes into unmapping pages is that there are no flushes needed anymore
+when devices are detached.
+
+But when we follow your proposal we would still do IOTLB flushes even
+when no devices are attached anymore. So I'd like to avoid this, given
+the implications on unmapping performance. We should just flush the
+IOMMU TLB at detach time and be done with it.
+
+Makes sense?
 
 Regards,
 
