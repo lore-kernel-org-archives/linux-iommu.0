@@ -1,63 +1,37 @@
-From: "Frank Wunderlich" <frank-w@public-files.de>
-Subject: Aw: Re: [BUG] "access dev->iommu_fwspec" cause crash on BPI-R2
-Date: Tue, 22 Jan 2019 18:11:53 +0100
-Message-ID: <trinity-72bd264f-d4e0-444d-ac33-b708a0fc6503-1548177113835@3c-app-gmx-bs21>
-References: <trinity-76e7f2ce-27ce-4f3b-809f-7da9a35e5210-1548173349245@3c-app-gmx-bs21>
- <20190122164916.r343pqa2dtopzrxo@8bytes.org>
+From: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] arm64/xen: fix xen-swiotlb cache flushing
+Date: Tue, 22 Jan 2019 18:22:55 +0100
+Message-ID: <20190122172255.GA10879@lst.de>
+References: <20190117171842.26173-1-hch@lst.de>
+ <alpine.DEB.2.10.1901181612150.18561@sstabellini-ThinkPad-X260>
+ <20190119094301.GB21653@lst.de>
+ <alpine.DEB.2.10.1901211554300.12685@sstabellini-ThinkPad-X260>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190122164916.r343pqa2dtopzrxo@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Ryder Lee <ryder.lee@mediatek.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <xen-devel-bounces@lists.xenproject.org>
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.10.1901211554300.12685@sstabellini-ThinkPad-X260>
+List-Unsubscribe: <https://lists.xenproject.org/mailman/options/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=unsubscribe>
+List-Post: <mailto:xen-devel@lists.xenproject.org>
+List-Help: <mailto:xen-devel-request@lists.xenproject.org?subject=help>
+List-Subscribe: <https://lists.xenproject.org/mailman/listinfo/xen-devel>,
+ <mailto:xen-devel-request@lists.xenproject.org?subject=subscribe>
+Errors-To: xen-devel-bounces@lists.xenproject.org
+Sender: "Xen-devel" <xen-devel-bounces@lists.xenproject.org>
+To: Stefano Stabellini <sstabellini@kernel.org>
+Cc: jgross@suse.com, iommu@lists.linux-foundation.org, julien.grall@arm.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com, Christoph Hellwig <hch@lst.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-thanks for quick reply, this seems to fix it
-
-no crash, xserver works, like revert of the commit...pushed the fix to below github-repo
-
-regards Frank
-
-
-> Gesendet: Dienstag, 22. Januar 2019 um 17:49 Uhr
-> Von: "Joerg Roedel" <joro@8bytes.org>
-> An: "Frank Wunderlich" <frank-w@public-files.de>
-> Cc: "Matthias Brugger" <matthias.bgg@gmail.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, "Ryder Lee" <ryder.lee@mediatek.com>
-> Betreff: Re: [BUG] "access dev->iommu_fwspec" cause crash on BPI-R2
->
-> Hi Frank,
-> 
-> thanks for the report!
-> 
-> On Tue, Jan 22, 2019 at 05:09:09PM +0100, Frank Wunderlich wrote:
-> > Hi,
-> > 
-> > the following Patch breaks hdmi (at least) on Bananapi R2 (mt7623):
-> > 
-> > a9bf2eec5a6fc01a0a5250eaf0bf61dfd382a78a "iommu/mediatek: Use helper functions to access dev->iommu_fwspec"
-> 
-> Does the attached diff fix the issue for you?
-> 
-> Thanks,
-> 
-> 	Joerg
-> 
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index 6ede4286b835..f60bdb85c4c0 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -442,6 +442,10 @@ static int mtk_iommu_add_device(struct device *dev)
->  		iommu_spec.args_count = count;
->  
->  		mtk_iommu_create_mapping(dev, &iommu_spec);
-> +
-> +		/* dev->iommu_fwspec might have changed */
-> +		fwspec = dev_iommu_fwspec_get(dev);
-> +
->  		of_node_put(iommu_spec.np);
->  	}
->  
-> 
+T24gTW9uLCBKYW4gMjEsIDIwMTkgYXQgMDM6NTY6MjlQTSAtMDgwMCwgU3RlZmFubyBTdGFiZWxs
+aW5pIHdyb3RlOgo+ID4gV2hlcmUgc2hvdWxkIHdlIHBpY2sgdGhpcyB1cD8gIEkgY291bGQgcGlj
+ayBpdCB1cCB0aHJvdWdoIHRoZSBkbWEtbWFwcGluZwo+ID4gdHJlZSBnaXZlbiB0aGF0IGlzIHdo
+ZXJlIHRoZSBwcm9ibGVtIGlzIGludHJvZHVjZWQsIGJ1dCB0aGUgWGVuIG9yIGFybTY0Cj4gPiB0
+cmVlcyB3b3VsZCBhbHNvIGZpdC4KPiAKPiBJIGFtIGhhcHB5IGZvciB5b3UgdG8gY2FycnkgaXQg
+aW4gdGhlIGRtYS1tYXBwaW5nIHRyZWUsIGVzcGVjaWFsbHkgaWYKPiB5b3UgaGF2ZSBvdGhlciBm
+aXhlcyB0byBzZW5kLiBPdGhlcndpc2UsIGxldCBtZSBrbm93LgoKVGhhbmtzLCBJJ3ZlIHF1ZXVl
+ZCBpdCB1cCBmb3IgTGludXMuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpYZW4tZGV2ZWwgbWFpbGluZyBsaXN0Clhlbi1kZXZlbEBsaXN0cy54ZW5wcm9q
+ZWN0Lm9yZwpodHRwczovL2xpc3RzLnhlbnByb2plY3Qub3JnL21haWxtYW4vbGlzdGluZm8veGVu
+LWRldmVs
