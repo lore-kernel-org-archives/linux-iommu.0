@@ -1,68 +1,26 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [PATCH] iommu/intel: quirk to disable DMAR for QM57 igfx
-Date: Tue, 22 Jan 2019 11:46:39 +0100
-Message-ID: <CAKMK7uEX1T6_yXoq_d4Fs2LiWC_tDaEEXv-hTL=S-_4HEeya7A@mail.gmail.com>
-References: <20181227114948.ev4b3jte3ubsc5us@dcvr>
- <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
- <20190104010626.e6yqdqkmdcqjepke@dcvr>
- <154659116310.4596.13613897418163029789@jlahtine-desk.ger.corp.intel.com>
- <20190118121705.a4usvhnskyblooja@dcvr>
- <20190122103914.msboylvkor5sb5lq@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu: amd: call free_iova_fast with pfn in map_sg
+Date: Tue, 22 Jan 2019 11:57:47 +0100
+Message-ID: <20190122105747.qnelpj6xx6gp5dh7@8bytes.org>
+References: <20190117192902.15158-1-jsnitsel@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <20190122103914.msboylvkor5sb5lq@8bytes.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-Cc: Eric Wong <e@80x24.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, David Airlie <airlied@linux.ie>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, dri-devel <dri-devel@lists.freedesktop.org>, Rodrigo Vivi <rodrigo.vivi@intel.com>, David Woodhouse <dwmw2@infradead.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20190117192902.15158-1-jsnitsel@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBKYW4gMjIsIDIwMTkgYXQgMTE6MzkgQU0gSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRl
-cy5vcmc+IHdyb3RlOgo+Cj4gT24gRnJpLCBKYW4gMTgsIDIwMTkgYXQgMTI6MTc6MDVQTSArMDAw
-MCwgRXJpYyBXb25nIHdyb3RlOgo+ID4gQEAgLTU0MTEsNiArNTQxMSw3IEBAIERFQ0xBUkVfUENJ
-X0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDJlMjAsIHF1aXJrX2lvbW11X2c0
-eF9nZngpOwo+ID4gIERFQ0xBUkVfUENJX0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVM
-LCAweDJlMzAsIHF1aXJrX2lvbW11X2c0eF9nZngpOwo+ID4gIERFQ0xBUkVfUENJX0ZJWFVQX0hF
-QURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDJlNDAsIHF1aXJrX2lvbW11X2c0eF9nZngpOwo+
-ID4gIERFQ0xBUkVfUENJX0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDJlOTAs
-IHF1aXJrX2lvbW11X2c0eF9nZngpOwo+ID4gK0RFQ0xBUkVfUENJX0ZJWFVQX0hFQURFUihQQ0lf
-VkVORE9SX0lEX0lOVEVMLCAweDAwNDQsIHF1aXJrX2lvbW11X2c0eF9nZngpOwo+ID4KPiA+ICBz
-dGF0aWMgdm9pZCBxdWlya19pb21tdV9yd2JmKHN0cnVjdCBwY2lfZGV2ICpkZXYpCj4gPiAgewo+
-ID4gQEAgLTU0NTcsNyArNTQ1OCw2IEBAIHN0YXRpYyB2b2lkIHF1aXJrX2NhbHBlbGxhX25vX3No
-YWRvd19ndHQoc3RydWN0IHBjaV9kZXYgKmRldikKPiA+ICAgICAgICAgfQo+ID4gIH0KPiA+ICBE
-RUNMQVJFX1BDSV9GSVhVUF9IRUFERVIoUENJX1ZFTkRPUl9JRF9JTlRFTCwgMHgwMDQwLCBxdWly
-a19jYWxwZWxsYV9ub19zaGFkb3dfZ3R0KTsKPiA+IC1ERUNMQVJFX1BDSV9GSVhVUF9IRUFERVIo
-UENJX1ZFTkRPUl9JRF9JTlRFTCwgMHgwMDQ0LCBxdWlya19jYWxwZWxsYV9ub19zaGFkb3dfZ3R0
-KTsKPiA+ICBERUNMQVJFX1BDSV9GSVhVUF9IRUFERVIoUENJX1ZFTkRPUl9JRF9JTlRFTCwgMHgw
-MDYyLCBxdWlya19jYWxwZWxsYV9ub19zaGFkb3dfZ3R0KTsKPiA+ICBERUNMQVJFX1BDSV9GSVhV
-UF9IRUFERVIoUENJX1ZFTkRPUl9JRF9JTlRFTCwgMHgwMDZhLCBxdWlya19jYWxwZWxsYV9ub19z
-aGFkb3dfZ3R0KTsKPgo+IFRoaXMgc2VlbXMgdG8gbWFrZSBzZW5zZSB0byBtZS4gSm9vbmFzLCBh
-bnkgY29tbWVudHMgb3Igb2JqZWN0aW9ucz8KClRoaXMgaXMgaXJvbmxha2UsIHdoaWNoIGhhcyBh
-IGh1Z2UgaW9tbXUgaGFjayBpbiB0aGUgZ3B1IGRyaXZlciB0bwp3b3JrIGFyb3VuZCBoYXJkIGhh
-bmdzLCB3aGljaDoKLSBjYXVzZXMgbWFzc2l2ZSBzdGFsbHMgYW5kIGtpbGxzIHBlcmZvcm1hbmNl
-Ci0gaXNuJ3Qgd2VsbCB0ZXN0ZWQgKGl0J3MgdGhlIG9ubHkgb25lIHRoYXQgbmVlZHMgdGhpcyks
-IHNvIHRlbmRzIHRvIGJyZWFrCgpTbyBpZiB3ZSBkbyB0aGlzIHRoZW4gaW1vIHdlIHNob3VsZDoK
-LSBwcm9iYWJseSBudWtlIHRoYXQgdy9hIHRvbyAoY2hlY2sgZm9yIG5lZWRzX2lkbGVfbWFwcyBh
-bmQgYWxsIHRoZQpyZWxhdGVkIHN0dWZmIGluIGk5MTVfZ2VtX2d0dC5jKQotIHJvbGwgaXQgb3V0
-IGZvciBhbGwgYWZmZWN0ZWQgY2hpcHMgKGkuZS4gbmVlZCB0byBpbmNsdWRlIDB4MDA0MCkuCgpO
-b3RlIHRoYXQgdGhlIHN0cmluZyBvZiBwbGF0Zm9ybXMgd2hpY2ggaGF2ZSB2YXJpb3VzIGlzc3Vl
-cyB3aXRoIGlvbW11CmFuZCBpZ2Z4IGlzIHZlcnkgbG9uZywgdGh1cyBmYXIgd2Ugb25seSBkaXNh
-YmxlZCBpdCB3aGVyZSB0aGVyZSdzIG5vCndvcmthcm91bmQgdG8gc3RvcCBpdCBmcm9tIGhhbmdp
-bmcgdGhlIGJveCwgYnV0IG90aGVyd2lzZSBsZWZ0IGl0CmVuYWJsZWQuIFNvIGlmIHdlIG1ha2Ug
-YSBwb2xpY3kgY2hhbmdlIHRvIGFsc28gZGlzYWJsZSBpdCBhbnl3aGVyZQp3aGVyZSBpdCBkb2Vz
-bid0IHdvcmsgd2VsbCAoaW5zdGVhZCBvZiBub3QgYXQgYWxsKSwgdGhlcmUncyBhIHBpbGUKbW9y
-ZSBwbGF0Zm9ybXMgdG8gc3dpdGNoLgotRGFuaWVsCi0tIApEYW5pZWwgVmV0dGVyClNvZnR3YXJl
-IEVuZ2luZWVyLCBJbnRlbCBDb3Jwb3JhdGlvbgorNDEgKDApIDc5IDM2NSA1NyA0OCAtIGh0dHA6
-Ly9ibG9nLmZmd2xsLmNoCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9w
-Lm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1k
-ZXZlbAo=
+On Thu, Jan 17, 2019 at 12:29:02PM -0700, Jerry Snitselaar wrote:
+> In the error path of map_sg, free_iova_fast is being called with
+> address instead of the pfn. This results in a bad value getting into
+> the rcache, and can result in hitting a BUG_ON when
+> iova_magazine_free_pfns is called.
+> 
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+
+Applied, thanks.
