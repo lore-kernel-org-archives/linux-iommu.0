@@ -1,47 +1,184 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: Add support for non-coherent page
- table mappings
-Date: Tue, 22 Jan 2019 05:43:28 +0000
-Message-ID: <20190122054326.GA6445@brain-police>
-References: <20190117092718.1396-1-vivek.gautam@codeaurora.org>
- <20190117092718.1396-3-vivek.gautam@codeaurora.org>
- <20190120000117.GH26876@brain-police>
- <CAFp+6iFh26JgBUx1jkm4EHNY1vs93Uz2qngxP27D0f7dcpX2GQ@mail.gmail.com>
+From: Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [PATCH 1/9] mm: Introduce new vm_insert_range and
+ vm_insert_range_buggy API
+Date: Tue, 22 Jan 2019 12:30:47 +0530
+Message-ID: <CAFqt6zYOpbwc8518f27W8_YOkuprdJJLyJg1fFB==wrFZLdEYQ@mail.gmail.com>
+References: <20190111150712.GA2696@jordon-HP-15-Notebook-PC>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAFp+6iFh26JgBUx1jkm4EHNY1vs93Uz2qngxP27D0f7dcpX2GQ@mail.gmail.com>
+In-Reply-To: <20190111150712.GA2696@jordon-HP-15-Notebook-PC>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Vivek Gautam <vivek.gautam@codeaurora.org>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+To: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, Michal Hocko <mhocko@suse.com>, "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>, vbabka@suse.cz, Rik van Riel <riel@surriel.com>, Stephen Rothwell <sfr@canb.auug.org.au>, rppt@linux.vnet.ibm.com, Peter Zijlstra <peterz@infradead.org>, Russell King - ARM Linux <linux@armlinux.org.uk>, robin.murphy@arm.com, iamjoonsoo.kim@lge.com, treding@nvidia.com, Kees Cook <keescook@chromium.org>, Marek Szyprowski <m.szyprowski@samsung.com>, stefanr@s5r6.in-berlin.de, hjc@rock-chips.com, Heiko Stuebner <heiko@sntech.de>, airlied@linux.ie, oleksandr_andrushchenko@epam.com, joro@8bytes.org, pawel@osciak.com, Kyungmin Park <kyungmin.park@samsung.com>, mchehab@kernel.org, Boris Ostrovsky <boris.ost>
+Cc: linux-kernel@vger.kernel.org, Linux-MM <linux-mm@kvack.org>, linux-arm-kernel@lists.infradead.org, linux1394-devel@lists.sourceforge.net, dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org, xen-devel@lists.xen.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 21, 2019 at 11:35:30AM +0530, Vivek Gautam wrote:
-> On Sun, Jan 20, 2019 at 5:31 AM Will Deacon <will.deacon@arm.com> wrote:
-> > On Thu, Jan 17, 2019 at 02:57:18PM +0530, Vivek Gautam wrote:
-> > > Adding a device tree option for arm smmu to enable non-cacheable
-> > > memory for page tables.
-> > > We already enable a smmu feature for coherent walk based on
-> > > whether the smmu device is dma-coherent or not. Have an option
-> > > to enable non-cacheable page table memory to force set it for
-> > > particular smmu devices.
-> >
-> > Hmm, I must be missing something here. What is the difference between this
-> > new property, and simply omitting dma-coherent on the SMMU?
-> 
-> So, this is what I understood from the email thread for Last level
-> cache support -
-> Robin pointed to the fact that we may need to add support for setting
-> non-cacheable
-> mappings in the TCR.
-> Currently, we don't do that for SMMUs that omit dma-coherent.
-> We rely on the interconnect to handle the configuration set in TCR,
-> and let interconnect
-> ignore the cacheability if it can't support.
+On Fri, Jan 11, 2019 at 8:33 PM Souptick Joarder <jrdr.linux@gmail.com> wrote:
+>
+> Previouly drivers have their own way of mapping range of
+> kernel pages/memory into user vma and this was done by
+> invoking vm_insert_page() within a loop.
+>
+> As this pattern is common across different drivers, it can
+> be generalized by creating new functions and use it across
+> the drivers.
+>
+> vm_insert_range() is the API which could be used to mapped
+> kernel memory/pages in drivers which has considered vm_pgoff
+>
+> vm_insert_range_buggy() is the API which could be used to map
+> range of kernel memory/pages in drivers which has not considered
+> vm_pgoff. vm_pgoff is passed default as 0 for those drivers.
+>
+> We _could_ then at a later "fix" these drivers which are using
+> vm_insert_range_buggy() to behave according to the normal vm_pgoff
+> offsetting simply by removing the _buggy suffix on the function
+> name and if that causes regressions, it gives us an easy way to revert.
+>
+> Signed-off-by: Souptick Joarder <jrdr.linux@gmail.com>
+> Suggested-by: Russell King <linux@armlinux.org.uk>
+> Suggested-by: Matthew Wilcox <willy@infradead.org>
 
-I think that's a bug. With that fixed, can you get what you want by omitting
-"dma-coherent"?
+Any comment on these APIs ?
 
-Will
+> ---
+>  include/linux/mm.h |  4 +++
+>  mm/memory.c        | 81 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+>  mm/nommu.c         | 14 ++++++++++
+>  3 files changed, 99 insertions(+)
+>
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 5411de9..9d1dff6 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -2514,6 +2514,10 @@ unsigned long change_prot_numa(struct vm_area_struct *vma,
+>  int remap_pfn_range(struct vm_area_struct *, unsigned long addr,
+>                         unsigned long pfn, unsigned long size, pgprot_t);
+>  int vm_insert_page(struct vm_area_struct *, unsigned long addr, struct page *);
+> +int vm_insert_range(struct vm_area_struct *vma, struct page **pages,
+> +                               unsigned long num);
+> +int vm_insert_range_buggy(struct vm_area_struct *vma, struct page **pages,
+> +                               unsigned long num);
+>  vm_fault_t vmf_insert_pfn(struct vm_area_struct *vma, unsigned long addr,
+>                         unsigned long pfn);
+>  vm_fault_t vmf_insert_pfn_prot(struct vm_area_struct *vma, unsigned long addr,
+> diff --git a/mm/memory.c b/mm/memory.c
+> index 4ad2d29..00e66df 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -1520,6 +1520,87 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+>  }
+>  EXPORT_SYMBOL(vm_insert_page);
+>
+> +/**
+> + * __vm_insert_range - insert range of kernel pages into user vma
+> + * @vma: user vma to map to
+> + * @pages: pointer to array of source kernel pages
+> + * @num: number of pages in page array
+> + * @offset: user's requested vm_pgoff
+> + *
+> + * This allows drivers to insert range of kernel pages they've allocated
+> + * into a user vma.
+> + *
+> + * If we fail to insert any page into the vma, the function will return
+> + * immediately leaving any previously inserted pages present.  Callers
+> + * from the mmap handler may immediately return the error as their caller
+> + * will destroy the vma, removing any successfully inserted pages. Other
+> + * callers should make their own arrangements for calling unmap_region().
+> + *
+> + * Context: Process context.
+> + * Return: 0 on success and error code otherwise.
+> + */
+> +static int __vm_insert_range(struct vm_area_struct *vma, struct page **pages,
+> +                               unsigned long num, unsigned long offset)
+> +{
+> +       unsigned long count = vma_pages(vma);
+> +       unsigned long uaddr = vma->vm_start;
+> +       int ret, i;
+> +
+> +       /* Fail if the user requested offset is beyond the end of the object */
+> +       if (offset > num)
+> +               return -ENXIO;
+> +
+> +       /* Fail if the user requested size exceeds available object size */
+> +       if (count > num - offset)
+> +               return -ENXIO;
+> +
+> +       for (i = 0; i < count; i++) {
+> +               ret = vm_insert_page(vma, uaddr, pages[offset + i]);
+> +               if (ret < 0)
+> +                       return ret;
+> +               uaddr += PAGE_SIZE;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +/**
+> + * vm_insert_range - insert range of kernel pages starts with non zero offset
+> + * @vma: user vma to map to
+> + * @pages: pointer to array of source kernel pages
+> + * @num: number of pages in page array
+> + *
+> + * Maps an object consisting of `num' `pages', catering for the user's
+> + * requested vm_pgoff
+> + *
+> + * Context: Process context. Called by mmap handlers.
+> + * Return: 0 on success and error code otherwise.
+> + */
+> +int vm_insert_range(struct vm_area_struct *vma, struct page **pages,
+> +                               unsigned long num)
+> +{
+> +       return __vm_insert_range(vma, pages, num, vma->vm_pgoff);
+> +}
+> +EXPORT_SYMBOL(vm_insert_range);
+> +
+> +/**
+> + * vm_insert_range_buggy - insert range of kernel pages starts with zero offset
+> + * @vma: user vma to map to
+> + * @pages: pointer to array of source kernel pages
+> + * @num: number of pages in page array
+> + *
+> + * Maps a set of pages, always starting at page[0]
+> + *
+> + * Context: Process context. Called by mmap handlers.
+> + * Return: 0 on success and error code otherwise.
+> + */
+> +int vm_insert_range_buggy(struct vm_area_struct *vma, struct page **pages,
+> +                               unsigned long num)
+> +{
+> +       return __vm_insert_range(vma, pages, num, 0);
+> +}
+> +EXPORT_SYMBOL(vm_insert_range_buggy);
+> +
+>  static vm_fault_t insert_pfn(struct vm_area_struct *vma, unsigned long addr,
+>                         pfn_t pfn, pgprot_t prot, bool mkwrite)
+>  {
+> diff --git a/mm/nommu.c b/mm/nommu.c
+> index 749276b..21d101e 100644
+> --- a/mm/nommu.c
+> +++ b/mm/nommu.c
+> @@ -473,6 +473,20 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
+>  }
+>  EXPORT_SYMBOL(vm_insert_page);
+>
+> +int vm_insert_range(struct vm_area_struct *vma, struct page **pages,
+> +                       unsigned long num)
+> +{
+> +       return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vm_insert_range);
+> +
+> +int vm_insert_range_buggy(struct vm_area_struct *vma, struct page **pages,
+> +                               unsigned long num)
+> +{
+> +       return -EINVAL;
+> +}
+> +EXPORT_SYMBOL(vm_insert_range_buggy);
+> +
+>  /*
+>   *  sys_brk() for the most part doesn't need the global kernel
+>   *  lock, except when an application is doing something nasty
+> --
+> 1.9.1
+>
