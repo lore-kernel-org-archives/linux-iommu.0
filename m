@@ -1,111 +1,156 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v1] iommu/s390: Declare s390 iommu reserved regions
-Date: Tue, 22 Jan 2019 10:58:15 -0700
-Message-ID: <20190122105815.4796a2f9@w520.home>
-References: <1547573850-9459-1-git-send-email-pmorel@linux.ibm.com>
-        <cc070df1-e7dc-8cce-f443-879e0e5e2903@arm.com>
-        <3cd790d6-aa6f-e817-27ce-56d7a9b6b6e5@linux.ibm.com>
-        <668fe734-e4bf-0342-ab8c-df54d9022db4@arm.com>
-        <d180bb2d-354f-0d05-8773-7a196a4de3cb@linux.ibm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] dma: debug: no need to check return value of
+ debugfs_create functions
+Date: Tue, 22 Jan 2019 18:44:38 +0000
+Message-ID: <2b974ef1-4336-8187-cbc5-ba2a14691837@arm.com>
+References: <20190122152151.16139-39-gregkh@linuxfoundation.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <d180bb2d-354f-0d05-8773-7a196a4de3cb@linux.ibm.com>
+In-Reply-To: <20190122152151.16139-39-gregkh@linuxfoundation.org>
+Content-Language: en-GB
 Sender: linux-kernel-owner@vger.kernel.org
-To: Pierre Morel <pmorel@linux.ibm.com>
-Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Robin Murphy <robin.murphy@arm.com>, gerald.schaefer@de.ibm.com, linux-s390@vger.kernel.org, walling@linux.ibm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, Corentin Labbe <clabbe@baylibre.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 21 Jan 2019 12:51:14 +0100
-Pierre Morel <pmorel@linux.ibm.com> wrote:
+Hi Greg,
 
-> On 18/01/2019 14:51, Jean-Philippe Brucker wrote:
-> > Hi Pierre,
-> > 
-> > On 18/01/2019 13:29, Pierre Morel wrote:  
-> >> On 17/01/2019 14:02, Robin Murphy wrote:  
-> >>> On 15/01/2019 17:37, Pierre Morel wrote:  
-> >>>> The s390 iommu can only allow DMA transactions between the zPCI device
-> >>>> entries start_dma and end_dma.
-> >>>>  
+On 22/01/2019 15:21, Greg Kroah-Hartman wrote:
+> When calling debugfs functions, there is no need to ever check the
+> return value.  The function can work or not, but the code logic should
+> never do something different based on this.
 > 
-> ...
-> 
-> >>
-> >> I already posted a patch retrieving the geometry through
-> >> VFIO_IOMMU_GET_INFO using a specific capability for the geometry [1],
-> >> and AFAIU, Alex did not agree with this.  
-> > 
-> > On arm we also need to report the IOMMU geometry to userspace (max IOVA
-> > size in particular). Shameer has been working on a solution [2] that
-> > presents a unified view of both geometry and reserved regions into the
-> > VFIO_IOMMU_GET_INFO call, and I think we should go with that. If I
-> > understand correctly it's currently blocked on the RMRR problem and
-> > we're waiting for Jacob or Ashok to take a look at it, as Kevin pinged
-> > them on thread [1]?
-> > 
-> > [2] https://lkml.org/lkml/2018/4/18/293
-> > 
-> > Thanks,
-> > Jean
-> >   
-> 
-> Hi Jean,
-> 
-> I hopped that this proposition went in the same direction based on the 
-> following assumptions:
-> 
-> 
-> - The goal of the get_resv_region is defined in iommu.h as:
-> -----
-> * @get_resv_regions: Request list of reserved regions for a device
-> -----
-> 
-> - A iommu reserve region is a region which should not be mapped.
-> Isn't it exactly what happens outside the aperture?
-> Shouldn't it be reported by the iommu reserved region?
-> 
-> - If we use VFIO and want to get all reserved region we will have the 
-> VFIO_IOMMU_GET_INFO call provided by Shameer and it can get all reserved 
-> regions depending from the iommu driver itself at once by calling the 
-> get_reserved_region callback instead of having to merge them with the 
-> aperture.
-> 
-> - If there are other reserved region, depending on the system 
-> configuration and not on the IOMMU itself, the VFIO_IOMMU_GET_INFO call 
-> will have to merge them with the region gotten from the iommu driver.
-> 
-> - If we do not use QEMU nor VFIO at all, AFAIU, the standard way to 
-> retrieve the reserved regions associated with a device is to call the 
-> get_reserved_region callback from the associated iommu.
-> 
-> Please tell me were I am wrong.
+> Also delete the variables for the file dentries for the debugfs entries
+> as they are never used at all once they are created.
 
-The existing proposal by Shameer exposes an IOVA list, which includes
-ranges that the user _can_ map through the IOMMU, therefore this
-original patch is unnecessary, the IOMMU geometry is already the
-starting point of the IOVA list, creating the original node, which is
-split as necessary to account for the reserved regions.  To me,
-presenting a user interface that exposes ranges that _cannot_ be mapped
-is a strange interface.  If we started from a position of what
-information do we want to provide to the user and how will they consume
-it, would we present a list of reserved ranges?  I think the only
-argument for the negative ranges is that we already have them in the
-kernel, but I don't see that it necessarily makes them the right
-solution for userspace.
+Modulo one nit below, I certainly approve of the cleanup :)
 
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-> >> What is different in what you propose?
-> >>
-> >> @Alex: I was hoping that this patch goes in your direction. What do you
-> >> think?
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: iommu@lists.linux-foundation.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>   kernel/dma/debug.c | 81 ++++++----------------------------------------
+>   1 file changed, 10 insertions(+), 71 deletions(-)
+> 
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index 23cf5361bcf1..2f5fc8b9d39f 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -136,14 +136,6 @@ static u32 nr_prealloc_entries = PREALLOC_DMA_DEBUG_ENTRIES;
+>   
+>   /* debugfs dentry's for the stuff above */
+>   static struct dentry *dma_debug_dent        __read_mostly;
 
-I think it's unnecessary given that in Shameer's proposal:
+Does this actually need to be at file scope, or could it be punted to a 
+local in dma_debug_fs_init() while we're here?
 
- - We start from the IOMMU exposed geometry
- - We present a list of usable IOVA ranges, not a list of reserved
-   ranges
+Robin.
 
-Thanks,
-Alex
+> -static struct dentry *global_disable_dent   __read_mostly;
+> -static struct dentry *error_count_dent      __read_mostly;
+> -static struct dentry *show_all_errors_dent  __read_mostly;
+> -static struct dentry *show_num_errors_dent  __read_mostly;
+> -static struct dentry *num_free_entries_dent __read_mostly;
+> -static struct dentry *min_free_entries_dent __read_mostly;
+> -static struct dentry *nr_total_entries_dent __read_mostly;
+> -static struct dentry *filter_dent           __read_mostly;
+>   
+>   /* per-driver filter related state */
+>   
+> @@ -840,66 +832,18 @@ static const struct file_operations filter_fops = {
+>   	.llseek = default_llseek,
+>   };
+>   
+> -static int dma_debug_fs_init(void)
+> +static void dma_debug_fs_init(void)
+>   {
+>   	dma_debug_dent = debugfs_create_dir("dma-api", NULL);
+> -	if (!dma_debug_dent) {
+> -		pr_err("can not create debugfs directory\n");
+> -		return -ENOMEM;
+> -	}
+> -
+> -	global_disable_dent = debugfs_create_bool("disabled", 0444,
+> -			dma_debug_dent,
+> -			&global_disable);
+> -	if (!global_disable_dent)
+> -		goto out_err;
+> -
+> -	error_count_dent = debugfs_create_u32("error_count", 0444,
+> -			dma_debug_dent, &error_count);
+> -	if (!error_count_dent)
+> -		goto out_err;
+> -
+> -	show_all_errors_dent = debugfs_create_u32("all_errors", 0644,
+> -			dma_debug_dent,
+> -			&show_all_errors);
+> -	if (!show_all_errors_dent)
+> -		goto out_err;
+> -
+> -	show_num_errors_dent = debugfs_create_u32("num_errors", 0644,
+> -			dma_debug_dent,
+> -			&show_num_errors);
+> -	if (!show_num_errors_dent)
+> -		goto out_err;
+> -
+> -	num_free_entries_dent = debugfs_create_u32("num_free_entries", 0444,
+> -			dma_debug_dent,
+> -			&num_free_entries);
+> -	if (!num_free_entries_dent)
+> -		goto out_err;
+> -
+> -	min_free_entries_dent = debugfs_create_u32("min_free_entries", 0444,
+> -			dma_debug_dent,
+> -			&min_free_entries);
+> -	if (!min_free_entries_dent)
+> -		goto out_err;
+> -
+> -	nr_total_entries_dent = debugfs_create_u32("nr_total_entries", 0444,
+> -			dma_debug_dent,
+> -			&nr_total_entries);
+> -	if (!nr_total_entries_dent)
+> -		goto out_err;
+> -
+> -	filter_dent = debugfs_create_file("driver_filter", 0644,
+> -					  dma_debug_dent, NULL, &filter_fops);
+> -	if (!filter_dent)
+> -		goto out_err;
+> -
+> -	return 0;
+>   
+> -out_err:
+> -	debugfs_remove_recursive(dma_debug_dent);
+> -
+> -	return -ENOMEM;
+> +	debugfs_create_bool("disabled", 0444, dma_debug_dent, &global_disable);
+> +	debugfs_create_u32("error_count", 0444, dma_debug_dent, &error_count);
+> +	debugfs_create_u32("all_errors", 0644, dma_debug_dent, &show_all_errors);
+> +	debugfs_create_u32("num_errors", 0644, dma_debug_dent, &show_num_errors);
+> +	debugfs_create_u32("num_free_entries", 0444, dma_debug_dent, &num_free_entries);
+> +	debugfs_create_u32("min_free_entries", 0444, dma_debug_dent, &min_free_entries);
+> +	debugfs_create_u32("nr_total_entries", 0444, dma_debug_dent, &nr_total_entries);
+> +	debugfs_create_file("driver_filter", 0644, dma_debug_dent, NULL, &filter_fops);
+>   }
+>   
+>   static int device_dma_allocations(struct device *dev, struct dma_debug_entry **out_entry)
+> @@ -985,12 +929,7 @@ static int dma_debug_init(void)
+>   		spin_lock_init(&dma_entry_hash[i].lock);
+>   	}
+>   
+> -	if (dma_debug_fs_init() != 0) {
+> -		pr_err("error creating debugfs entries - disabling\n");
+> -		global_disable = true;
+> -
+> -		return 0;
+> -	}
+> +	dma_debug_fs_init();
+>   
+>   	nr_pages = DIV_ROUND_UP(nr_prealloc_entries, DMA_DEBUG_DYNAMIC_ENTRIES);
+>   	for (i = 0; i < nr_pages; ++i)
+> 
