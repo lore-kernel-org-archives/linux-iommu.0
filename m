@@ -1,99 +1,67 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: [PATCH v2] iommu/vt-d: Implement dma_[un]map_resource()
-Date: Tue, 22 Jan 2019 14:30:45 -0700
-Message-ID: <20190122213045.5667-1-logang@deltatee.com>
+From: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>
+Subject: Re: [PATCH 1/2] dma-direct: set_memory_{en,de}crypted() take number
+ of pages
+Date: Tue, 22 Jan 2019 21:40:16 +0000
+Message-ID: <bc09628a-d329-bb95-d737-b7c618860c6a@amd.com>
+References: <20190122211758.8317-1-bauerman@linux.ibm.com>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190122211758.8317-1-bauerman@linux.ibm.com>
+Content-Language: en-US
+Content-ID: <AF8680C2F258B34FB610853AB9622BB6@namprd12.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: Christoph Hellwig <hch@lst.de>, Logan Gunthorpe <logang@deltatee.com>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+To: Thiago Jung Bauermann <bauerman@linux.ibm.com>, "x86@kernel.org" <x86@kernel.org>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Paolo Bonzini <pbonzini@redhat.com>, =?utf-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Ram Pai <linuxram@us.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the Intel IOMMU uses the default dma_[un]map_resource()
-implementations does nothing and simply returns the physical address
-unmodified.
-
-However, this doesn't create the IOVA entries necessary for addresses
-mapped this way to work when the IOMMU is enabled. Thus, when the
-IOMMU is enabled, drivers relying on dma_map_resource() will trigger
-DMAR errors. We see this when running ntb_transport with the IOMMU
-enabled, DMA, and switchtec hardware.
-
-The implementation for intel_map_resource() is nearly identical to
-intel_map_page(), we just have to re-create __intel_map_single().
-dma_unmap_resource() uses intel_unmap_page() directly as the
-functions are identical.
-
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: David Woodhouse <dwmw2@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-
----
-
-Changes in v2:
-* Revert to a single __intel_map_single() helper instead of having
-  a second small __intel_map_page() helper. As requested by Christoph.
-
-
- drivers/iommu/intel-iommu.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2bd9ac285c0d..64dab37c0b96 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3649,11 +3649,9 @@ static int iommu_no_mapping(struct device *dev)
- 	return 0;
- }
-
--static dma_addr_t __intel_map_page(struct device *dev, struct page *page,
--				   unsigned long offset, size_t size, int dir,
--				   u64 dma_mask)
-+static dma_addr_t __intel_map_single(struct device *dev, phys_addr_t paddr,
-+				     size_t size, int dir, u64 dma_mask)
- {
--	phys_addr_t paddr = page_to_phys(page) + offset;
- 	struct dmar_domain *domain;
- 	phys_addr_t start_paddr;
- 	unsigned long iova_pfn;
-@@ -3715,7 +3713,15 @@ static dma_addr_t intel_map_page(struct device *dev, struct page *page,
- 				 enum dma_data_direction dir,
- 				 unsigned long attrs)
- {
--	return __intel_map_page(dev, page, offset, size, dir, *dev->dma_mask);
-+	return __intel_map_single(dev, page_to_phys(page) + offset, size,
-+				  dir, *dev->dma_mask);
-+}
-+
-+static dma_addr_t intel_map_resource(struct device *dev, phys_addr_t phys_addr,
-+				     size_t size, enum dma_data_direction dir,
-+				     unsigned long attrs)
-+{
-+	return __intel_map_single(dev, phys_addr, size, dir, *dev->dma_mask);
- }
-
- static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t size)
-@@ -3806,8 +3812,9 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
- 		return NULL;
- 	memset(page_address(page), 0, size);
-
--	*dma_handle = __intel_map_page(dev, page, 0, size, DMA_BIDIRECTIONAL,
--				       dev->coherent_dma_mask);
-+	*dma_handle = __intel_map_single(dev, page_to_phys(page), size,
-+					 DMA_BIDIRECTIONAL,
-+					 dev->coherent_dma_mask);
- 	if (*dma_handle != DMA_MAPPING_ERROR)
- 		return page_address(page);
- 	if (!dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT))
-@@ -3924,6 +3931,8 @@ static const struct dma_map_ops intel_dma_ops = {
- 	.unmap_sg = intel_unmap_sg,
- 	.map_page = intel_map_page,
- 	.unmap_page = intel_unmap_page,
-+	.map_resource = intel_map_resource,
-+	.unmap_resource = intel_unmap_page,
- 	.dma_supported = dma_direct_supported,
- };
-
---
-2.19.0
+T24gMS8yMi8xOSAzOjE3IFBNLCBUaGlhZ28gSnVuZyBCYXVlcm1hbm4gd3JvdGU6DQo+IEZyb206
+IFJhbSBQYWkgPGxpbnV4cmFtQHVzLmlibS5jb20+DQo+IA0KPiBzZXRfbWVtb3J5X2VuY3J5cHRl
+ZCgpIGFuZCBzZXRfbWVtb3J5X2RlY3J5cHRlZCgpIGV4cGVjdCB0aGUgbnVtYmVyIG9mDQo+IFBB
+R0VfU0laRSBwYWdlcyB0byBlbmNyeXB0IG9yIGRlY3J5cHQuIGRtYV9kaXJlY3RfYWxsb2MoKSBh
+bmQNCj4gZG1hX2RpcmVjdF9mcmVlKCkgaW5zdGVhZCBwYXNzIG51bWJlciBvZiBieXRlcy4gVGhp
+cyBlbmNyeXB0cy9kZWNyeXB0cyBhDQo+IGh1Z2UgbnVtYmVyIG9mIHBhZ2VzIHJlc3VsdGluZyBp
+biBkYXRhIGNvcnJ1cHRpb24uDQoNClRoYXQgaXMgbm90IHdoYXQgaXQgaXMgZG9pbmcuIFNlZSBj
+b21tZW50cyBiZWxvdy4NCg0KPiANCj4gRml4ZWQgaXQuDQo+IA0KPiBbIGJhdWVybWFubjogU2xp
+Z2h0bHkgcmV3b3JkZWQgY29tbWl0IG1lc3NhZ2UgYW5kIGFkZGVkIEZpeGVzOiB0YWcuIF0NCj4g
+Rml4ZXM6IGQ3YjQxN2ZhMDhkMSAoIng4Ni9tbTogQWRkIERNQSBzdXBwb3J0IGZvciBTRVYgbWVt
+b3J5IGVuY3J5cHRpb24iKQ0KPiBTaWduZWQtb2ZmLWJ5OiBSYW0gUGFpIDxsaW51eHJhbUB1cy5p
+Ym0uY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBUaGlhZ28gSnVuZyBCYXVlcm1hbm4gPGJhdWVybWFu
+QGxpbnV4LmlibS5jb20+DQo+IC0tLQ0KPiAga2VybmVsL2RtYS9kaXJlY3QuYyB8IDYgKystLS0t
+DQo+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPiAN
+Cj4gTm90ZXM6DQo+IA0KPiAxLiBUaGlzIHdhcyB0ZXN0ZWQgb24gcG93ZXJwYyB3aXRoIHBhdGNo
+ZXMgYWRkaW5nIHN1cHBvcnQgZm9yIHJ1bm5pbmcNCj4gICAgdW5kZXIgdGhlIHVsdHJhdmlzb3Is
+IHdoaWNoIGFyZSBub3QgeWV0IHVwc3RyZWFtLg0KPiANCj4gMi4gVGhlIGxpbmVzIGNoYW5nZWQg
+aW4gdGhpcyBwYXRjaCB3ZXJlIGFkZGVkIGJ5IGNvbW1pdCBjMTBmMDdhYTI3ZGENCj4gICAgKCJk
+bWEvZGlyZWN0OiBIYW5kbGUgZm9yY2UgZGVjcnlwdGlvbiBmb3IgRE1BIGNvaGVyZW50IGJ1ZmZl
+cnMgaW4NCj4gICAgY29tbW9uIGNvZGUiKSwgYnV0IGl0IG9ubHkgbW92ZXMgdGhlIGNvZGUgZnJv
+bSBhbiB4ODYtc3BlY2lmaWMgZmlsZS4NCj4gICAgVGhlcmVmb3JlIHRoZSBGaXhlcyB0YWcgcmVm
+ZXJlbmNlcyB0aGUgY29tbWl0IHRoYXQgZmlyc3QgaW50cm9kdWNlZA0KPiAgICB0aGUgY29kZS4N
+Cj4gDQo+IGRpZmYgLS1naXQgYS9rZXJuZWwvZG1hL2RpcmVjdC5jIGIva2VybmVsL2RtYS9kaXJl
+Y3QuYw0KPiBpbmRleCAzNTVkMTZhY2VlNmQuLmJjNzhjMzcyMjBiYSAxMDA2NDQNCj4gLS0tIGEv
+a2VybmVsL2RtYS9kaXJlY3QuYw0KPiArKysgYi9rZXJuZWwvZG1hL2RpcmVjdC5jDQo+IEBAIC0x
+NjYsNyArMTY2LDcgQEAgdm9pZCAqZG1hX2RpcmVjdF9hbGxvY19wYWdlcyhzdHJ1Y3QgZGV2aWNl
+ICpkZXYsIHNpemVfdCBzaXplLA0KPiAgDQo+ICAJcmV0ID0gcGFnZV9hZGRyZXNzKHBhZ2UpOw0K
+PiAgCWlmIChmb3JjZV9kbWFfdW5lbmNyeXB0ZWQoKSkgew0KPiAtCQlzZXRfbWVtb3J5X2RlY3J5
+cHRlZCgodW5zaWduZWQgbG9uZylyZXQsIDEgPDwgZ2V0X29yZGVyKHNpemUpKTsNCj4gKwkJc2V0
+X21lbW9yeV9kZWNyeXB0ZWQoKHVuc2lnbmVkIGxvbmcpcmV0LCAxKTsNCg0KVGhlIGdldF9vcmRl
+cigpIGZ1bmN0aW9uIHdpbGwgcmV0dXJuIHRoZSBvcmRlciBmb3IgdGhlIHNwZWNpZmllZCBzaXpl
+LiBUbw0KdGhlbiBnZXQgdGhlIG51bWJlciBvZiBwYWdlcyB5b3UgcGVyZm9ybSB0aGUgc2hpZnQg
+YXMgaXMgYmVpbmcgZG9uZS4gVGhlDQpjaGFuZ2UgaXMgZGVmaW5pdGVseSB3cm9uZyBzaW5jZSB5
+b3UgYXJlIG5vdyBoYXJkY29kaW5nIHRoZSBwYWdlIGNvdW50IHRvDQoxLiBUaGUgY2FsbCB0byBf
+X2RtYV9kaXJlY3RfYWxsb2NfcGFnZXMoKSB3aWxsIGFsbG9jYXRlIG1vcmUgdGhhbiBvbmUgcGFn
+ZQ0KaWYgdGhlIHNpemUgaXMgZ3JlYXRlciB0aGFuIGEgcGFnZS4NCg0KPiAgCQkqZG1hX2hhbmRs
+ZSA9IF9fcGh5c190b19kbWEoZGV2LCBwYWdlX3RvX3BoeXMocGFnZSkpOw0KPiAgCX0gZWxzZSB7
+DQo+ICAJCSpkbWFfaGFuZGxlID0gcGh5c190b19kbWEoZGV2LCBwYWdlX3RvX3BoeXMocGFnZSkp
+Ow0KPiBAQCAtMTg2LDEwICsxODYsOCBAQCB2b2lkIF9fZG1hX2RpcmVjdF9mcmVlX3BhZ2VzKHN0
+cnVjdCBkZXZpY2UgKmRldiwgc2l6ZV90IHNpemUsIHN0cnVjdCBwYWdlICpwYWdlKQ0KPiAgdm9p
+ZCBkbWFfZGlyZWN0X2ZyZWVfcGFnZXMoc3RydWN0IGRldmljZSAqZGV2LCBzaXplX3Qgc2l6ZSwg
+dm9pZCAqY3B1X2FkZHIsDQo+ICAJCWRtYV9hZGRyX3QgZG1hX2FkZHIsIHVuc2lnbmVkIGxvbmcg
+YXR0cnMpDQo+ICB7DQo+IC0JdW5zaWduZWQgaW50IHBhZ2Vfb3JkZXIgPSBnZXRfb3JkZXIoc2l6
+ZSk7DQo+IC0NCj4gIAlpZiAoZm9yY2VfZG1hX3VuZW5jcnlwdGVkKCkpDQo+IC0JCXNldF9tZW1v
+cnlfZW5jcnlwdGVkKCh1bnNpZ25lZCBsb25nKWNwdV9hZGRyLCAxIDw8IHBhZ2Vfb3JkZXIpOw0K
+PiArCQlzZXRfbWVtb3J5X2VuY3J5cHRlZCgodW5zaWduZWQgbG9uZyljcHVfYWRkciwgMSk7DQoN
+ClNhbWUgY29tbWVudCBoZXJlIGFzIGFib3ZlLg0KDQpUaGFua3MsDQpUb20NCg0KPiAgCV9fZG1h
+X2RpcmVjdF9mcmVlX3BhZ2VzKGRldiwgc2l6ZSwgdmlydF90b19wYWdlKGNwdV9hZGRyKSk7DQo+
+ICB9DQo+ICANCj4gDQo=
