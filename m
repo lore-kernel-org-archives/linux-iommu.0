@@ -1,42 +1,78 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/intel: quirk to disable DMAR for QM57 igfx
-Date: Wed, 23 Jan 2019 17:49:59 +0100
-Message-ID: <20190123164959.GF32526@8bytes.org>
-References: <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
- <20190104010626.e6yqdqkmdcqjepke@dcvr>
- <154659116310.4596.13613897418163029789@jlahtine-desk.ger.corp.intel.com>
- <20190118121705.a4usvhnskyblooja@dcvr>
- <20190122103914.msboylvkor5sb5lq@8bytes.org>
- <CAKMK7uEX1T6_yXoq_d4Fs2LiWC_tDaEEXv-hTL=S-_4HEeya7A@mail.gmail.com>
- <20190122110109.x3zoynemdl3ysbsn@8bytes.org>
- <154816850584.8871.13562920355478587539@jlahtine-desk.ger.corp.intel.com>
- <20190122165135.6rkdsxqepvmaoatn@8bytes.org>
- <154825575844.19121.1110495981060533179@jlahtine-desk.ger.corp.intel.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [PATCH 0/5 v3] Fix virtio-blk issue with SWIOTLB
+Date: Wed, 23 Jan 2019 12:09:48 -0500
+Message-ID: <20190123170946.GB22672@Konrads-MacBook-Pro.local>
+References: <20190123163049.24863-1-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <154825575844.19121.1110495981060533179@jlahtine-desk.ger.corp.intel.com>
+In-Reply-To: <20190123163049.24863-1-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: Daniel Vetter <daniel@ffwll.ch>, Eric Wong <e@80x24.org>, David Woodhouse <dwmw2@infradead.org>, David Airlie <airlied@linux.ie>, Jani Nikula <jani.nikula@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 23, 2019 at 05:02:38PM +0200, Joonas Lahtinen wrote:
-> We have many reports where just having intel_iommu=on (and using the
-> system normally, without any virtualization stuff going on) will cause
-> unexplained GPU hangs. For those users, simply switching to
-> intel_iommu=igfx_off solves the problems, and the debug often ends
-> there.
+On Wed, Jan 23, 2019 at 05:30:44PM +0100, Joerg Roedel wrote:
+> Hi,
+> 
+> here is the third version of this patch-set. Previous
+> versions can be found here:
+> 
+> 	V1: https://lore.kernel.org/lkml/20190110134433.15672-1-joro@8bytes.org/
+> 
+> 	V2: https://lore.kernel.org/lkml/20190115132257.6426-1-joro@8bytes.org/
+> 
+> The problem solved here is a limitation of the SWIOTLB implementation,
+> which does not support allocations larger than 256kb.  When the
+> virtio-blk driver tries to read/write a block larger than that, the
+> allocation of the dma-handle fails and an IO error is reported.
+> 
+> Changes to v2 are:
+> 
+> 	* Check if SWIOTLB is active before returning its limit in
+> 	  dma_direct_max_mapping_size()
+> 
+> 	* Only apply the maximum segment limit in virtio-blk when
+> 	  DMA-API is used for the vring
+> 
+> Please review.
+> 
+> Thanks,
+> 
+> 	Joerg
+> 
+> Joerg Roedel (5):
+>   swiotlb: Introduce swiotlb_max_mapping_size()
+>   swiotlb: Add is_swiotlb_active() function
+>   dma: Introduce dma_max_mapping_size()
+>   virtio: Introduce virtio_max_dma_size()
+>   virtio-blk: Consider virtio_max_dma_size() for maximum segment size
+> 
+>  drivers/block/virtio_blk.c   | 10 ++++++----
+>  drivers/virtio/virtio_ring.c | 10 ++++++++++
 
-If you can reproduce problems on your side, then you can try to enable
-CONFIG_INTEL_IOMMU_BROKEN_GFX_WA to force the GFX devices into the
-identity mapping. We can also add a boot-parameter and workarounds if it
-turns out that this is sufficient to make the GFX devices work with
-IOMMU enabled.
+The kvm-devel mailing list should have been copied on those.
+
+When you do can you please put 'Reviewed-by: Konrad Rzeszutek Wilk
+<konrad.wilk@oracle.com>' on all of them?
+
+Thank you!
+
+P.S.
+Christopher, I am assuming you are OK with this idea, if so - and once
+the owners of 'virtio' Ack, do you want to put it in my tree?
+
+Thanks!
+>  include/linux/dma-mapping.h  | 16 ++++++++++++++++
+>  include/linux/swiotlb.h      | 11 +++++++++++
+>  include/linux/virtio.h       |  2 ++
+>  kernel/dma/direct.c          | 11 +++++++++++
+>  kernel/dma/swiotlb.c         | 10 ++++++++++
+>  7 files changed, 66 insertions(+), 4 deletions(-)
 
 
-Regards,
-
-	Joerg
+> 
+> -- 
+> 2.17.1
+> 
