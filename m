@@ -1,62 +1,42 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 2/5] swiotlb: Add is_swiotlb_active() function
-Date: Wed, 23 Jan 2019 17:30:46 +0100
-Message-ID: <20190123163049.24863-3-joro@8bytes.org>
-References: <20190123163049.24863-1-joro@8bytes.org>
+Subject: Re: [PATCH] iommu/intel: quirk to disable DMAR for QM57 igfx
+Date: Wed, 23 Jan 2019 17:49:59 +0100
+Message-ID: <20190123164959.GF32526@8bytes.org>
+References: <154642214920.6261.102817444136744919@jlahtine-desk.ger.corp.intel.com>
+ <20190104010626.e6yqdqkmdcqjepke@dcvr>
+ <154659116310.4596.13613897418163029789@jlahtine-desk.ger.corp.intel.com>
+ <20190118121705.a4usvhnskyblooja@dcvr>
+ <20190122103914.msboylvkor5sb5lq@8bytes.org>
+ <CAKMK7uEX1T6_yXoq_d4Fs2LiWC_tDaEEXv-hTL=S-_4HEeya7A@mail.gmail.com>
+ <20190122110109.x3zoynemdl3ysbsn@8bytes.org>
+ <154816850584.8871.13562920355478587539@jlahtine-desk.ger.corp.intel.com>
+ <20190122165135.6rkdsxqepvmaoatn@8bytes.org>
+ <154825575844.19121.1110495981060533179@jlahtine-desk.ger.corp.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190123163049.24863-1-joro@8bytes.org>
+Content-Disposition: inline
+In-Reply-To: <154825575844.19121.1110495981060533179@jlahtine-desk.ger.corp.intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig <hch@lst.de>
-Cc: Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, joro@8bytes.org, jroedel@suse.de
+To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>, Eric Wong <e@80x24.org>, David Woodhouse <dwmw2@infradead.org>, David Airlie <airlied@linux.ie>, Jani Nikula <jani.nikula@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, intel-gfx <intel-gfx@lists.freedesktop.org>, dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+On Wed, Jan 23, 2019 at 05:02:38PM +0200, Joonas Lahtinen wrote:
+> We have many reports where just having intel_iommu=on (and using the
+> system normally, without any virtualization stuff going on) will cause
+> unexplained GPU hangs. For those users, simply switching to
+> intel_iommu=igfx_off solves the problems, and the debug often ends
+> there.
 
-This function will be used from dma_direct code to determine
-the maximum segment size of a dma mapping.
+If you can reproduce problems on your side, then you can try to enable
+CONFIG_INTEL_IOMMU_BROKEN_GFX_WA to force the GFX devices into the
+identity mapping. We can also add a boot-parameter and workarounds if it
+turns out that this is sufficient to make the GFX devices work with
+IOMMU enabled.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- include/linux/swiotlb.h | 6 ++++++
- kernel/dma/swiotlb.c    | 5 +++++
- 2 files changed, 11 insertions(+)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index ceb623321f38..5c087d330b4b 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -63,6 +63,7 @@ extern void swiotlb_tbl_sync_single(struct device *hwdev,
- extern int
- swiotlb_dma_supported(struct device *hwdev, u64 mask);
- extern size_t swiotlb_max_mapping_size(struct device *dev);
-+bool is_swiotlb_active(void);
- 
- #ifdef CONFIG_SWIOTLB
- extern enum swiotlb_force swiotlb_force;
-@@ -100,6 +101,11 @@ static inline size_t swiotlb_max_mapping_size(struct device *dev)
- {
- 	return SIZE_MAX;
- }
-+
-+static inline bool is_swiotlb_active(void)
-+{
-+	return false;
-+}
- #endif /* CONFIG_SWIOTLB */
- 
- extern void swiotlb_print_info(void);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 9cb21259cb0b..9fbd075081d9 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -667,3 +667,8 @@ size_t swiotlb_max_mapping_size(struct device *dev)
- {
- 	return ((size_t)1 << IO_TLB_SHIFT) * IO_TLB_SEGSIZE;
- }
-+
-+bool is_swiotlb_active(void)
-+{
-+	return !no_iotlb_memory;
-+}
--- 
-2.17.1
+Regards,
+
+	Joerg
