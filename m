@@ -1,43 +1,35 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/mediatek: Use correct fwspec in mtk_iommu_add_device()
-Date: Wed, 23 Jan 2019 08:53:27 +0100
-Message-ID: <20190123075327.27366-1-joro@8bytes.org>
+From: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
+ from a domain
+Date: Wed, 23 Jan 2019 08:56:58 +0100
+Message-ID: <20190123075658.GE32526@8bytes.org>
+References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
+ <20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
+ <60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
+ <20190116170852.GD4681@8bytes.org>
+ <0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
+ <20190122104454.nke2knuyqiswfh5w@8bytes.org>
+ <e27055c1-89b0-e804-b99c-c94965de5344@amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <e27055c1-89b0-e804-b99c-c94965de5344@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>, Joerg Roedel <jroedel@suse.de>
+To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+Hi Suravee,
 
-The mtk_iommu_add_device() function keeps the fwspec in an
-on-stack pointer and calls mtk_iommu_create_mapping(), which
-might change its source, dev->iommu_fwspec. This causes the
-on-stack pointer to be obsoleted and the device
-initialization to fail. Update the on-stack fwspec pointer
-after mtk_iommu_create_mapping() has been called.
+On Tue, Jan 22, 2019 at 03:53:18PM +0000, Suthikulpanit, Suravee wrote:
+> Thanks for the detail. Alright then, let's just go with the version you
+> sent on 1/16/19. Do you want me to resend V3 with that changes, or
+> would you be taking care of that?
 
-Reported-by: Frank Wunderlich <frank-w@public-files.de>
-Fixes: a9bf2eec5a6f ('iommu/mediatek: Use helper functions to access dev->iommu_fwspec')
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/mtk_iommu_v1.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Please send me a v3 based on the diff I sent last week. Also add a
+separate patch which adds the missing dte flush for the alias entry.
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 6ede4286b835..f60bdb85c4c0 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -442,6 +442,10 @@ static int mtk_iommu_add_device(struct device *dev)
- 		iommu_spec.args_count = count;
- 
- 		mtk_iommu_create_mapping(dev, &iommu_spec);
-+
-+		/* dev->iommu_fwspec might have changed */
-+		fwspec = dev_iommu_fwspec_get(dev);
-+
- 		of_node_put(iommu_spec.np);
- 	}
- 
--- 
-2.13.7
+Thanks,
+
+	Joerg
