@@ -1,37 +1,43 @@
-From: Nicolas Boichat <drinkcat@chromium.org>
-Subject: Re: [PATCH v6 0/3] iommu/io-pgtable-arm-v7s: Use DMA32 zone for page tables
-Date: Wed, 23 Jan 2019 06:51:05 +0800
-Message-ID: <CANMq1KCq7wEYXKLZGCZczZ_yQrmK=MkHbUXESKhHnx5G_CMNVg@mail.gmail.com>
-References: <20181210011504.122604-1-drinkcat@chromium.org>
- <CANMq1KAmFKpcxi49wJyfP4N01A80B2d-2RGY2Wrwg0BvaFxAxg@mail.gmail.com> <20190111102155.in5rctq5krs4ewfi@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Return-path: <stable-owner@vger.kernel.org>
-In-Reply-To: <20190111102155.in5rctq5krs4ewfi@8bytes.org>
-Sender: stable-owner@vger.kernel.org
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Lameter <cl@linux.com>, Pekka Enberg <penberg@kernel.org>, David Rientjes <rientjes@google.com>, Joonsoo Kim <iamjoonsoo.kim@lge.com>, Vlastimil Babka <vbabka@suse.cz>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Levin Alexander <Alexander.Levin@microsoft.com>, Huaisheng Ye <yehs1@lenovo.com>, Mike Rapoport <rppt@linux.vnet.ibm.com>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, lkml <linux-kernel@vger.kernel.org>, linux-mm@kvack.org, Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Tomasz Figa <tfiga@google.com>, Yingjoe Chen <yingjoe.chen@mediatek.com>h
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH] iommu/mediatek: Use correct fwspec in mtk_iommu_add_device()
+Date: Wed, 23 Jan 2019 08:53:27 +0100
+Message-ID: <20190123075327.27366-1-joro@8bytes.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Matthias Brugger <matthias.bgg@gmail.com>, linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Andrew,
+From: Joerg Roedel <jroedel@suse.de>
 
-On Fri, Jan 11, 2019 at 6:21 PM Joerg Roedel <joro@8bytes.org> wrote:
->
-> On Wed, Jan 02, 2019 at 01:51:45PM +0800, Nicolas Boichat wrote:
-> > Does anyone have any further comment on this series? If not, which
-> > maintainer is going to pick this up? I assume Andrew Morton?
->
-> Probably, yes. I don't like to carry the mm-changes in iommu-tree, so
-> this should go through mm.
+The mtk_iommu_add_device() function keeps the fwspec in an
+on-stack pointer and calls mtk_iommu_create_mapping(), which
+might change its source, dev->iommu_fwspec. This causes the
+on-stack pointer to be obsoleted and the device
+initialization to fail. Update the on-stack fwspec pointer
+after mtk_iommu_create_mapping() has been called.
 
-Gentle ping on this series, it seems like it's better if it goes
-through your tree.
+Reported-by: Frank Wunderlich <frank-w@public-files.de>
+Fixes: a9bf2eec5a6f ('iommu/mediatek: Use helper functions to access dev->iommu_fwspec')
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/mtk_iommu_v1.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Series still applies cleanly on linux-next, but I'm happy to resend if
-that helps.
-
-Thanks!
-
-> Regards,
->
->         Joerg
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 6ede4286b835..f60bdb85c4c0 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -442,6 +442,10 @@ static int mtk_iommu_add_device(struct device *dev)
+ 		iommu_spec.args_count = count;
+ 
+ 		mtk_iommu_create_mapping(dev, &iommu_spec);
++
++		/* dev->iommu_fwspec might have changed */
++		fwspec = dev_iommu_fwspec_get(dev);
++
+ 		of_node_put(iommu_spec.np);
+ 	}
+ 
+-- 
+2.13.7
