@@ -1,23 +1,13 @@
 From: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: Fix IOMMU page flush when detach all devices
-	from a domain
-Date: Thu, 24 Jan 2019 03:25:19 +0000
-Message-ID: <54a1da19-54dd-30cc-191b-7fe5dc4a58fa@amd.com>
-References: <20190116041546.3541-1-Suravee.Suthikulpanit@amd.com>
-	<20190116132648.i5n3hz3k7d2wxbrx@8bytes.org>
-	<60c24182-c58e-0575-b085-c7eebc00c49b@amd.com>
-	<20190116170852.GD4681@8bytes.org>
-	<0a61c07d-edfe-2738-380d-33d39e40fc0a@amd.com>
-	<20190122104454.nke2knuyqiswfh5w@8bytes.org>
-	<e27055c1-89b0-e804-b99c-c94965de5344@amd.com>
-	<20190123075658.GE32526@8bytes.org>
+Subject: [PATCH v3] iommu: amd: Fix IOMMU page flush when detach device from a
+	domain
+Date: Thu, 24 Jan 2019 04:16:45 +0000
+Message-ID: <20190124041619.1974-1-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190123075658.GE32526-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
-Content-ID: <342ACEEFC1AC6347A1BFEC3E7373A5BE-asWib9pRmPqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,34 +17,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Singh, Brijesh" <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: "Singh, Brijesh" <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Joerg,
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-On 1/23/19 2:56 PM, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org wrote:
-> Hi Suravee,
-> 
-> On Tue, Jan 22, 2019 at 03:53:18PM +0000, Suthikulpanit, Suravee wrote:
->> Thanks for the detail. Alright then, let's just go with the version you
->> sent on 1/16/19. Do you want me to resend V3 with that changes, or
->> would you be taking care of that?
-> 
-> Please send me a v3 based on the diff I sent last week. Also add a
-> separate patch which adds the missing dte flush for the alias entry.
-> 
-> Thanks,
-> 
-> 	Joerg
-> 
+When a VM is terminated, the VFIO driver detaches all pass-through
+devices from VFIO domain by clearing domain id and page table root
+pointer from each device table entry (DTE), and then invalidates
+the DTE. Then, the VFIO driver unmap pages and invalidate IOMMU pages.
 
-Actually, I just noticed that device_flush_dte() has already handled flushing the DTE
-for alias device as well. Please see the link below.
+Currently, the IOMMU driver keeps track of which IOMMU and how many
+devices are attached to the domain. When invalidate IOMMU pages,
+the driver checks if the IOMMU is still attached to the domain before
+issuing the invalidate page command.
 
-https://elixir.bootlin.com/linux/latest/source/drivers/iommu/amd_iommu.c#L1219
+However, since VFIO has already detached all devices from the domain,
+the subsequent INVALIDATE_IOMMU_PAGES commands are being skipped as
+there is no IOMMU attached to the domain. This results in data
+corruption and could cause the PCI device to end up in indeterministic
+state.
 
-So, we don't need to call device_flush_dte() for alias device in do_detach().
+Fix this by invalidate IOMMU pages when detach a device, and
+before decrementing the per-domain device reference counts.
 
-Regards,
-Suravee
+Cc: Boris Ostrovsky <boris.ostrovsky-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Suggested-by: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Co-developed-by: Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 87ba23a75b38..6cd4a00036c1 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1991,16 +1991,13 @@ static void do_attach(struct iommu_dev_data *dev_data,
+ 
+ static void do_detach(struct iommu_dev_data *dev_data)
+ {
++	struct protection_domain *domain = dev_data->domain;
+ 	struct amd_iommu *iommu;
+ 	u16 alias;
+ 
+ 	iommu = amd_iommu_rlookup_table[dev_data->devid];
+ 	alias = dev_data->alias;
+ 
+-	/* decrease reference counters */
+-	dev_data->domain->dev_iommu[iommu->index] -= 1;
+-	dev_data->domain->dev_cnt                 -= 1;
+-
+ 	/* Update data structures */
+ 	dev_data->domain = NULL;
+ 	list_del(&dev_data->list);
+@@ -2010,6 +2007,16 @@ static void do_detach(struct iommu_dev_data *dev_data)
+ 
+ 	/* Flush the DTE entry */
+ 	device_flush_dte(dev_data);
++
++	/* Flush IOTLB */
++	domain_flush_tlb_pde(domain);
++
++	/* Wait for the flushes to finish */
++	domain_flush_complete(domain);
++
++	/* decrease reference counters - needs to happen after the flushes */
++	domain->dev_iommu[iommu->index] -= 1;
++	domain->dev_cnt                 -= 1;
+ }
+ 
+ /*
+-- 
+2.17.1
