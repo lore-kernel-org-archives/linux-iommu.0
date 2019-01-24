@@ -1,33 +1,44 @@
-From: "joro@8bytes.org" <joro@8bytes.org>
-Subject: Re: [PATCH v3] iommu: amd: Fix IOMMU page flush when detach device
- from a domain
-Date: Thu, 24 Jan 2019 15:19:59 +0100
-Message-ID: <20190124141958.q3zwkpulwyr32fge@8bytes.org>
-References: <20190124041619.1974-1-Suravee.Suthikulpanit@amd.com>
- <20190124141145.GM32526@8bytes.org>
- <c965ccfb-1a98-1fc2-5980-2d7f17688e54@amd.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 2/5] swiotlb: Add is_swiotlb_active() function
+Date: Thu, 24 Jan 2019 16:00:00 +0100
+Message-ID: <20190124150000.GN32526@8bytes.org>
+References: <20190123163049.24863-1-joro@8bytes.org>
+ <20190123163049.24863-3-joro@8bytes.org>
+ <20190123212755.GA9032@lst.de>
+ <20190124082923.GI32526@8bytes.org>
+ <20190124084107.GA19441@lst.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c965ccfb-1a98-1fc2-5980-2d7f17688e54@amd.com>
+In-Reply-To: <20190124084107.GA19441@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
+To: Christoph Hellwig <hch@lst.de>
+Cc: "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 24, 2019 at 02:17:34PM +0000, Suthikulpanit, Suravee wrote:
-> On 1/24/19 9:11 PM, joro@8bytes.org wrote:
-> > On Thu, Jan 24, 2019 at 04:16:45AM +0000, Suthikulpanit, Suravee wrote:
-> >>   drivers/iommu/amd_iommu.c | 15 +++++++++++----
-> >>   1 file changed, 11 insertions(+), 4 deletions(-)
+On Thu, Jan 24, 2019 at 09:41:07AM +0100, Christoph Hellwig wrote:
+> On Thu, Jan 24, 2019 at 09:29:23AM +0100, Joerg Roedel wrote:
+> > > As I've just introduced and fixed a bug in this area in the current
+> > > cycle - I don't think no_iotlb_memory is what your want (and maybe
+> > > not useful at all): if the arch valls swiotlb_exit after previously
+> > > initializing a buffer it won't be set.  You probably want to check
+> > > for non-zero io_tlb_start and/or io_tlb_end.
 > > 
-> > Applied, thanks Suravee.
-> > 
+> > Okay, but that requires that I also set io_tlb_start and friends back to
+> > zero in the failure path of swiotlb_init(). Otherwise it could be left
+> > non-zero in case swiotlb_init_with_tbl() returns an error.
 > 
-> Thanks. Also, should this also back-ported to stable tree as well?
+> Indeed, and we'll need to do that anyway as otherwise the dma mapping
+> path might cause problems similar to the one when swiotlb_exit is
+> called that I fixed.
 
-I added a Fixes tag, so stable should pick it up.
+Turns out the the error path in swiotlb_init() is redundant because it
+will never be executed. If the function returns it will always return 0
+because in case of failure it will just panic (through memblock_alloc).
+
+I'll clean that up in a separate patch-set. There are more users of that
+function and all of them panic when the function fails.
 
 
 	Joerg
