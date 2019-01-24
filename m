@@ -1,33 +1,21 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Leave scalable mode default off
-Date: Thu, 24 Jan 2019 14:22:50 +0100
-Message-ID: <20190124132250.k3rnlpaqazmatzaf@8bytes.org>
-References: <20190124023132.20410-1-baolu.lu@linux.intel.com>
+From: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH v3] iommu: amd: Fix IOMMU page flush when detach device
+ from a domain
+Date: Thu, 24 Jan 2019 15:11:45 +0100
+Message-ID: <20190124141145.GM32526@8bytes.org>
+References: <20190124041619.1974-1-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20190124023132.20410-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20190124041619.1974-1-Suravee.Suthikulpanit@amd.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, ashok.raj@intel.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Liu Yi L <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Boris Ostrovsky <boris.ostrovsky@oracle.com>, "Singh, Brijesh" <brijesh.singh@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 24, 2019 at 10:31:32AM +0800, Lu Baolu wrote:
-> Commit 765b6a98c1de3 ("iommu/vt-d: Enumerate the scalable
-> mode capability") enables VT-d scalable mode if hardware
-> advertises the capability. As we will bring up different
-> features and use cases to upstream in different patch
-> series, it will leave some intermediate kernel versions
-> which support partial features. Hence, end user might run
-> into problems when they use such kernels on bare metals
-> or virtualization environments.
+On Thu, Jan 24, 2019 at 04:16:45AM +0000, Suthikulpanit, Suravee wrote:
+>  drivers/iommu/amd_iommu.c | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
 
-I don't get it, can you be more specific about the problems that users
-might run into? And is this patch needed as a fix for v5.0 or is it just
-a precaution because future patches might break something for users?
-
-
-Regards,
-
-	Joerg
+Applied, thanks Suravee.
