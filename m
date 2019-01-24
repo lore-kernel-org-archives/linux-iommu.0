@@ -1,58 +1,60 @@
-From: Srinath Mannam via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 0/3] Add IPROC PCIe new features
-Date: Thu, 24 Jan 2019 11:06:44 +0530
-Message-ID: <CABe79T6=2uf1SrpDEm9s3smDkcR0JB-Gq8VwDF4yL8zBL6w0zw@mail.gmail.com>
-References: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
-	<20190118144149.GA25249@google.com>
-Reply-To: Srinath Mannam <srinath.mannam-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 2/8] iommu/vt-d: Add per-device IOMMU feature ops
+ entries
+Date: Thu, 24 Jan 2019 14:47:39 +0800
+Message-ID: <b96994da-b3bd-1321-b45f-4c9c1fc4b0c4@linux.intel.com>
+References: <20190110030027.31447-1-baolu.lu@linux.intel.com>
+ <20190110030027.31447-3-baolu.lu@linux.intel.com>
+ <20190111111644.epawu474jdjv4a33@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190118144149.GA25249-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190111111644.epawu474jdjv4a33@8bytes.org>
+Content-Language: en-US
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, Alex Williamson <alex.williamson@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>, ashok.raj@intel.com, sanjay.k.kumar@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, yi.l.liu@intel.com, yi.y.sun@intel.com, peterx@redhat.com, tiwei.bie@intel.com, Zeng@8bytes.org, Xin <xin.zeng@intel.com>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Jacob Pan <jacob.jun.pan@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+Hi Joerg,
 
-Thank you for the review. I will address your comments in the next patchset.
+On 1/11/19 7:16 PM, Joerg Roedel wrote:
+>> +
+>> +static bool
+>> +intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
+>> +{
+>> +	struct device_domain_info *info = dev->archdata.iommu;
+>> +
+>> +	if (feat == IOMMU_DEV_FEAT_AUX)
+>> +		return scalable_mode_support() && info && info->auxd_enabled;
+>> +
+>> +	return false;
+>> +}
+> Why is this checking the auxd_enabled flag? The function should just
+> return whether the device_supports_  scalable mode, not whether it is
+> enabled.
 
-Regards,
-Srinath.
+Yes, as the API name implies, it should return the device capability
+instead of enable/disable status. I misused this API in the IOMMU
+driver.
 
-On Fri, Jan 18, 2019 at 8:11 PM Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
->
-> On Fri, Jan 18, 2019 at 09:53:20AM +0530, Srinath Mannam wrote:
-> > Add changes related to IPROC PCIe RC IP new features.
-> >
-> > This patch set is based on Linux-5.0-rc2.
-> >
-> > Srinath Mannam (3):
-> >   PCI: iproc: Add feature to set order mode
->
-> Since this apparently refers to a PCIe feature, the subject should use the
-> exact terminology used in the PCIe spec.
->
-> >   PCI: iproc: CRS state check in config request
->
-> This subject should start with a verb, not "CRS".
->
-> >   PCI: iproc: Add PCIe 32bit outbound memory configuration
-> >
-> >  drivers/pci/controller/pcie-iproc.c | 172 +++++++++++++++++++++++++++++++++++-
-> >  drivers/pci/controller/pcie-iproc.h |  16 ++++
-> >  2 files changed, 184 insertions(+), 4 deletions(-)
-> >
-> > --
-> > 2.7.4
-> >
+Since we already have iommu_dev_enable/disable_feature() to enable and
+disable an iommu specific feature, is it possible to add another API to
+query whether a specific feature has been enabled?
+
+How about
+
+bool iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX)?
+
+This is necessary for the third party drivers (like vfio) to determine
+which domain attach interface it should use:
+
+if (iommu_dev_feature_enabled(dev, IOMMU_DEV_FEAT_AUX))
+         iommmu_aux_attach_device(domain, dev)
+else
+         iommu_attach_device(domain, dev)
+
+
+Best regards,
+Lu Baolu
