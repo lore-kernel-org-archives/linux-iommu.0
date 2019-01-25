@@ -1,72 +1,94 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Fri, 25 Jan 2019 14:37:34 +0100
-Message-ID: <4d8d4854-dac9-a78e-77e5-0455e8ca56c4@xenosoft.de>
-References: <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
- <20190118112842.GA9115@lst.de>
- <a2ca0118-5915-8b1c-7cfa-71cb4b43eaa6@xenosoft.de>
- <20190118121810.GA13327@lst.de>
- <eceebeda-0e18-00f6-06e7-def2eb0aa961@xenosoft.de>
- <20190118125500.GA15657@lst.de>
- <e11e61b1-6468-122e-fc2b-3b3f857186bb@xenosoft.de>
- <f39d4fc6-7e4e-9132-c03f-59f1b52260e0@xenosoft.de>
- <b9e5e081-a3cc-2625-4e08-2d55c2ba224b@xenosoft.de>
- <20190119130222.GA24346@lst.de> <20190119140452.GA25198@lst.de>
- <bfe4adcc-01c1-7b46-f40a-8e020ff77f58@xenosoft.de>
- <8434e281-eb85-51d9-106f-f4faa559e89c@xenosoft.de>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH 1/3] PCI: iproc: Add feature to set order mode
+Date: Fri, 25 Jan 2019 09:05:31 -0600
+Message-ID: <20190125150531.GI14636@google.com>
+References: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
+ <1547785403-32268-2-git-send-email-srinath.mannam@broadcom.com>
+ <20190118150713.GB25249@google.com>
+ <CABe79T741K-jPpkgCWWOoFRGY2Nf3zs1ea=NO=sLke=WJUT9iA@mail.gmail.com>
+ <20190124193131.GG14636@google.com>
+ <CABe79T5Qu-j6j0sGn7PD-z+QidLMNc0U03g6RB1YgoXpaQ8=WA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <8434e281-eb85-51d9-106f-f4faa559e89c@xenosoft.de>
-Content-Language: de-DE
+Content-Disposition: inline
+In-Reply-To: <CABe79T5Qu-j6j0sGn7PD-z+QidLMNc0U03g6RB1YgoXpaQ8=WA@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+To: Srinath Mannam <srinath.mannam@broadcom.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arun Ananthapadmanaban <arun.ananthapadmanaban@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Next step just with the first patch: 
-5c532d07c2f3c3972104de505d06b8d85f403f06 (use powerpc zone selection)
-
-git clone git://git.infradead.org/users/hch/misc.git -b 
-powerpc-dma.6-debug a
-
-git checkout 5c532d07c2f3c3972104de505d06b8d85f403f06
-
-Link to the Git: 
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6-debug
-
-Results:
-
-X5000: The kernel detects the SATA hard disk drive and boots without any 
-problems.
-
-X1000: The kernel boots and the P.A. Semi Ethernet works!
-
--- Christian
-
-
-On 23 January 2019 at 3:34PM, Christian Zigotzky wrote:
-> Hi Christoph,
+On Fri, Jan 25, 2019 at 03:13:38PM +0530, Srinath Mannam wrote:
+> On Fri, Jan 25, 2019 at 1:01 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Thu, Jan 24, 2019 at 02:10:18PM +0530, Srinath Mannam wrote:
+> > > On Fri, Jan 18, 2019 at 8:37 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Fri, Jan 18, 2019 at 09:53:21AM +0530, Srinath Mannam wrote:
+> > > > > Order mode in RX header of incoming pcie packets can be override to
+> > > > > strict or loose order based on requirement.
+> > > > > Sysfs entry is provided to set dynamic and default order modes of upstream
+> > > > > traffic.
+> > > > ...
+> > > > Are you talking about the Relaxed Ordering bit in the TLP Attributes
+> > > > field?  If so, please use the exact language used in the spec and
+> > > > include a reference, e.g., to PCIe r4.0, sec 2.2.6.4, 2.4, etc.
+> > > >
+> > > Yes Relax ordering bit in TLP. I will use spec reference. Thanks.
+> > > > I'm hesitant about a new sysfs file for this.  That automatically
+> > > > creates a user-space dependency on this iProc feature.  Who would use
+> > > > this file?
+> > > >
+> > > This is the specific feature given in iProc, used to improve
+> > > performance for the endpoints which does not support
+> > > ordering configuration at its end.
+> > > This is the reason we used sysfs file, which allows user to change
+> > > ordering based on endpoint used and requirement.
+> > > we are using these sysfs files to configure ordering to improve
+> > > performance in NVMe endpoints with SPDK/DPDK drivers.
+> > > If we enable this default in kernel, then it is applicable to all
+> > > endpoints connected. But it may not required for all endpoints.
+> >
+> > Normally, relaxed ordering is used only when an endpoint sets the
+> > "Relaxed Ordering" attribute bit in a TLP.  The endpoint is only
+> > allowed to do that if relaxed ordering is enabled in the Device
+> > Control register.
+> Yes, endpoint has to set RO attribute in up-streaming TLPs.
+> But in most of NVMe SSDs even Relax ordering bit in device controller
+> register is set,
+> still it send TLPs with RO attribute disable (strict order).
+> >
+> > If I understand correctly, this sysfs knob would let you configure the
+> > iProc RC so it handles *all* TLPs (or just those in certain address
+> > ranges) with relaxed ordering, regardless of whether the endpoint has
+> > relaxed ordering, or even whether it supports relaxed ordering at all.
+> Yes, iProc can enable/disable RO attribute in given address range regardless of
+> endpoint settings.
+> >
+> > My gut feeling is that this is a messy hack, and if you want the
+> > performance benefits of relaxed ordering, you should just choose an
+> > NVMe endpoint that supports it correctly.
 >
-> I also compiled a kernel (zImage) for the X1000  from your Git 
-> 'powerpc-dma.6-debug' (both patches) today.
->
-> It boots and the P.A. Semi Ethernet works!
->
-> I will test just the first patch tomorrow.
->
-> Thanks,
-> Christian
->
->
-> On 21 January 2019 at 3:38PM, Christian Zigotzky wrote:
->> Hello Christoph,
->>
->> Thanks for your reply. I successfully compiled a kernel (uImage) for 
->> the X5000 from your Git 'powerpc-dma.6-debug' (both patches) today.
->>
->> It detects the SATA hard disk drive and boots without any problems.
->>
->
->
+> Most of the NVMe endpoints available in market are sending TLPs in
+> strict order even Relax ordering bit in device controller register
+> is set.  This is the reason to add this dynamic ordering feature in
+> iProc IP.
+
+I'm not very sympathetic to this argument about NVMe endpoints not
+supporting Relaxed Ordering.  Relaxed Ordering has been in the PCIe
+spec since the very beginning in 2002 (see PCIe r1.0, sec 2.4.3).  Why
+should we jump through hoops to tack this on after the fact if the
+endpoint designer couldn't be bothered?
+
+This sysfs knob is problematic because it's not safe and it can't
+be supported across architectures.
+
+It's not safe because only the endpoint and its driver know the
+ordering requirements.  We *hope* the user only enables relaxed
+ordering when it is safe.  Even when it's not safe, it makes things
+faster and works most of the time, so it's pretty tempting.  But
+eventually it will lead to data corruption.
+
+We try to avoid sysfs things that are architecture-specific.  This
+particular file would only exist on iProc, and then any user-space
+software that uses it would only work on iProc.
+
+Bjorn
