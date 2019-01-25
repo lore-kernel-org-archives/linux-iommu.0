@@ -1,64 +1,72 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] dcdbas: Fix Intel-IOMMU domain allocation failure
-Date: Fri, 25 Jan 2019 13:12:28 +0000
-Message-ID: <7cd81f91-a69e-1561-821f-f21148a3aec0@arm.com>
-References: <20190123230131.42094-1-sfruhwald@google.com>
-	<c4e7855966a94b0c999a5f4325a27e90@ausx13mpc120.AMER.DELL.COM>
-	<CAKkQkjD=Hdm-3WbmrrqEj4c5df3LH7sMU960rwqHqF0Gf4CU7A@mail.gmail.com>
-	<CAHp75Vc4r=ceP=SOQk2LR2B8fZjmdo33fV3yio3a352WwkMyMA@mail.gmail.com>
-	<CAKkQkjD6WGE2jPSqUQ-BpJmevix2vd4GoSFKK5J312mEJB0Jpg@mail.gmail.com>
-	<CAHp75VdhqGSCxZSPAW2DXq-cFUcDCoOnpW5mqD27LygGoiLMHA@mail.gmail.com>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Subject: Re: use generic DMA mapping code in powerpc V4
+Date: Fri, 25 Jan 2019 14:37:34 +0100
+Message-ID: <4d8d4854-dac9-a78e-77e5-0455e8ca56c4@xenosoft.de>
+References: <871403f2-fa7d-de15-89eb-070432e15c69@xenosoft.de>
+ <20190118112842.GA9115@lst.de>
+ <a2ca0118-5915-8b1c-7cfa-71cb4b43eaa6@xenosoft.de>
+ <20190118121810.GA13327@lst.de>
+ <eceebeda-0e18-00f6-06e7-def2eb0aa961@xenosoft.de>
+ <20190118125500.GA15657@lst.de>
+ <e11e61b1-6468-122e-fc2b-3b3f857186bb@xenosoft.de>
+ <f39d4fc6-7e4e-9132-c03f-59f1b52260e0@xenosoft.de>
+ <b9e5e081-a3cc-2625-4e08-2d55c2ba224b@xenosoft.de>
+ <20190119130222.GA24346@lst.de> <20190119140452.GA25198@lst.de>
+ <bfe4adcc-01c1-7b46-f40a-8e020ff77f58@xenosoft.de>
+ <8434e281-eb85-51d9-106f-f4faa559e89c@xenosoft.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAHp75VdhqGSCxZSPAW2DXq-cFUcDCoOnpW5mqD27LygGoiLMHA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-GB
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Shevchenko <andy.shevchenko-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Szabolcs Fruhwald <sfruhwald-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Mario Limonciello <Mario.Limonciello-8PEkshWhKlo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Stuart Hayes <stuart.w.hayes-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Platform Driver <platform-driver-x86-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <8434e281-eb85-51d9-106f-f4faa559e89c@xenosoft.de>
+Content-Language: de-DE
+Sender: linux-kernel-owner@vger.kernel.org
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/01/2019 11:58, Andy Shevchenko wrote:
-> On Fri, Jan 25, 2019 at 3:50 AM Szabolcs Fruhwald <sfruhwald-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> wrote:
-> 
-> First of all, please do not top post!
-> 
->> I took a quick look at arch_setup_pdev_archdata(), overridden it in
->> dcdbas.c and it works well (despite it's being called twice, since
->> it's called from platform_device_alloc and platform_device_register).
+Next step just with the first patch: 
+5c532d07c2f3c3972104de505d06b8d85f403f06 (use powerpc zone selection)
+
+git clone git://git.infradead.org/users/hch/misc.git -b 
+powerpc-dma.6-debug a
+
+git checkout 5c532d07c2f3c3972104de505d06b8d85f403f06
+
+Link to the Git: 
+http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc-dma.6-debug
+
+Results:
+
+X5000: The kernel detects the SATA hard disk drive and boots without any 
+problems.
+
+X1000: The kernel boots and the P.A. Semi Ethernet works!
+
+-- Christian
+
+
+On 23 January 2019 at 3:34PM, Christian Zigotzky wrote:
+> Hi Christoph,
+>
+> I also compiled a kernel (zImage) for the X1000  from your Git 
+> 'powerpc-dma.6-debug' (both patches) today.
+>
+> It boots and the P.A. Semi Ethernet works!
+>
+> I will test just the first patch tomorrow.
+>
+> Thanks,
+> Christian
+>
+>
+> On 21 January 2019 at 3:38PM, Christian Zigotzky wrote:
+>> Hello Christoph,
 >>
->> However, as I am not super familiar with ELF weak method references,
->> especially with its scope resolution / versioning part, so as I see
->> this weak method was introduced mainly for arch/** specific hooks.
->> Is it safe to override this method from driver code, when let's say
->> there's another implementation in the x86 arch code (currently there
->> isn't)?
-> 
-> No, it should be done somewhere in arch/x86.
-> 
-> OTOH, Intel iommu driver can do it based on the check dev_is_pci().
-> For now I think it's better to solve this inside Intel iommu driver.
-
-Indeed - hacking code into individual device drivers which is entirely 
-specific to the current implementation of the intel-iommu driver sounds 
-like a recipe for a maintenance disaster (not to mention the extra fun 
-if any of those devices also end up in AMD-based systems).
-
-AFAICS, the VT-d spec accommodates non-PCI devices via DRHD and 
-corresponding ANDD entries, and the driver already has at least some 
-degree of support for those - see dmar_acpi_insert_dev_scope() - so it 
-may not need much more than just hooking up to the platform bus. If 
-these platform devices do actually master through the IOMMU but don't 
-have an appropriate device scope described, then frankly that's broken 
-firmware, but the place to work around that would still be in the DMAR code.
-
-Robin.
+>> Thanks for your reply. I successfully compiled a kernel (uImage) for 
+>> the X5000 from your Git 'powerpc-dma.6-debug' (both patches) today.
+>>
+>> It detects the SATA hard disk drive and boots without any problems.
+>>
+>
+>
