@@ -1,254 +1,365 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v3 01/21] iommu: Introduce set_pasid_table API
-Date: Fri, 25 Jan 2019 10:20:34 +0100
-Message-ID: <668880de-e967-6290-c842-54e2796f3bfe@redhat.com>
-References: <20190108102633.17482-1-eric.auger@redhat.com>
- <20190108102633.17482-2-eric.auger@redhat.com>
- <20190111114316.71e77d5f@x1.home>
+From: Srinath Mannam <srinath.mannam@broadcom.com>
+Subject: Re: [PATCH 1/3] PCI: iproc: Add feature to set order mode
+Date: Fri, 25 Jan 2019 15:13:38 +0530
+Message-ID: <CABe79T5Qu-j6j0sGn7PD-z+QidLMNc0U03g6RB1YgoXpaQ8=WA@mail.gmail.com>
+References: <1547785403-32268-1-git-send-email-srinath.mannam@broadcom.com>
+ <1547785403-32268-2-git-send-email-srinath.mannam@broadcom.com>
+ <20190118150713.GB25249@google.com> <CABe79T741K-jPpkgCWWOoFRGY2Nf3zs1ea=NO=sLke=WJUT9iA@mail.gmail.com>
+ <20190124193131.GG14636@google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190111114316.71e77d5f@x1.home>
-Content-Language: en-US
+In-Reply-To: <20190124193131.GG14636@google.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, joro@8bytes.org, jacob.jun.pan@linux.intel.com, yi.l.liu@linux.intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com, robin.murphy@arm.com, kevin.tian@intel.com, ashok.raj@intel.com, marc.zyngier@arm.com, christoffer.dall@arm.com, peter.maydell@linaro.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>, BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Arun Ananthapadmanaban <arun.ananthapadmanaban@broadcom.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
+Hi Bjorn,
 
-On 1/11/19 7:43 PM, Alex Williamson wrote:
-> On Tue,  8 Jan 2019 11:26:13 +0100
-> Eric Auger <eric.auger@redhat.com> wrote:
-> 
->> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>
->> In virtualization use case, when a guest is assigned
->> a PCI host device, protected by a virtual IOMMU on a guest,
->> the physical IOMMU must be programmed to be consistent with
->> the guest mappings. If the physical IOMMU supports two
->> translation stages it makes sense to program guest mappings
->> onto the first stage/level (ARM/VTD terminology) while to host
->> owns the stage/level 2.
->>
->> In that case, it is mandated to trap on guest configuration
->> settings and pass those to the physical iommu driver.
->>
->> This patch adds a new API to the iommu subsystem that allows
->> to set the pasid table information.
->>
->> A generic iommu_pasid_table_config struct is introduced in
->> a new iommu.h uapi header. This is going to be used by the VFIO
->> user API. We foresee at least two specializations of this struct,
->> for PASID table passing and ARM SMMUv3.
->>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
->> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
->> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>
->> ---
->>
->> This patch generalizes the API introduced by Jacob & co-authors in
->> https://lwn.net/Articles/754331/
->>
->> v2 -> v3:
->> - replace unbind/bind by set_pasid_table
->> - move table pointer and pasid bits in the generic part of the struct
->>
->> v1 -> v2:
->> - restore the original pasid table name
->> - remove the struct device * parameter in the API
->> - reworked iommu_pasid_smmuv3
->> ---
->>  drivers/iommu/iommu.c      | 10 ++++++++
->>  include/linux/iommu.h      | 14 +++++++++++
->>  include/uapi/linux/iommu.h | 50 ++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 74 insertions(+)
->>  create mode 100644 include/uapi/linux/iommu.h
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 3ed4db334341..0f2b7f1fc7c8 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1393,6 +1393,16 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->>  }
->>  EXPORT_SYMBOL_GPL(iommu_attach_device);
->>  
->> +int iommu_set_pasid_table(struct iommu_domain *domain,
->> +			  struct iommu_pasid_table_config *cfg)
->> +{
->> +	if (unlikely(!domain->ops->set_pasid_table))
->> +		return -ENODEV;
->> +
->> +	return domain->ops->set_pasid_table(domain, cfg);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_set_pasid_table);
->> +
->>  static void __iommu_detach_device(struct iommu_domain *domain,
->>  				  struct device *dev)
->>  {
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index e90da6b6f3d1..1da2a2357ea4 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -25,6 +25,7 @@
->>  #include <linux/errno.h>
->>  #include <linux/err.h>
->>  #include <linux/of.h>
->> +#include <uapi/linux/iommu.h>
->>  
->>  #define IOMMU_READ	(1 << 0)
->>  #define IOMMU_WRITE	(1 << 1)
->> @@ -184,6 +185,7 @@ struct iommu_resv_region {
->>   * @domain_window_disable: Disable a particular window for a domain
->>   * @of_xlate: add OF master IDs to iommu grouping
->>   * @pgsize_bitmap: bitmap of all possible supported page sizes
->> + * @set_pasid_table: set pasid table
->>   */
->>  struct iommu_ops {
->>  	bool (*capable)(enum iommu_cap);
->> @@ -226,6 +228,9 @@ struct iommu_ops {
->>  	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
->>  	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
->>  
->> +	int (*set_pasid_table)(struct iommu_domain *domain,
->> +			       struct iommu_pasid_table_config *cfg);
->> +
->>  	unsigned long pgsize_bitmap;
->>  };
->>  
->> @@ -287,6 +292,8 @@ extern int iommu_attach_device(struct iommu_domain *domain,
->>  			       struct device *dev);
->>  extern void iommu_detach_device(struct iommu_domain *domain,
->>  				struct device *dev);
->> +extern int iommu_set_pasid_table(struct iommu_domain *domain,
->> +				 struct iommu_pasid_table_config *cfg);
->>  extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->>  extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
->>  extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
->> @@ -696,6 +703,13 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
->>  	return NULL;
->>  }
->>  
->> +static inline
->> +int iommu_set_pasid_table(struct iommu_domain *domain,
->> +			  struct iommu_pasid_table_config *cfg)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->>  #endif /* CONFIG_IOMMU_API */
->>  
->>  #ifdef CONFIG_IOMMU_DEBUGFS
->> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
->> new file mode 100644
->> index 000000000000..7a7cf7a3de7c
->> --- /dev/null
->> +++ b/include/uapi/linux/iommu.h
->> @@ -0,0 +1,50 @@
->> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
->> +/*
->> + * IOMMU user API definitions
->> + *
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + */
->> +
->> +#ifndef _UAPI_IOMMU_H
->> +#define _UAPI_IOMMU_H
->> +
->> +#include <linux/types.h>
->> +
->> +/**
->> + * SMMUv3 Stream Table Entry stage 1 related information
->> + * @abort: shall the STE lead to abort
->> + * @s1fmt: STE s1fmt field as set by the guest
->> + * @s1dss: STE s1dss as set by the guest
->> + * All field names match the smmu 3.0/3.1 spec (ARM IHI 0070A)
->> + */
->> +struct iommu_pasid_smmuv3 {
->> +	__u8 abort;
->> +	__u8 s1fmt;
->> +	__u8 s1dss;
->> +};
->> +
-> 
-> I can find STE.S1DSS and STE.S1FMT in the spec, but not STE.ABORT, is
-> this something to do with Config[2:0]?  Are we allowed to describe what
-> these fields are beyond their name and why they're necessary here vs
-> the other fields or do the spec restrictions preclude that?
-Yes you're right abort matches !Config[2]
+Thank you, Please see my comments below inline.
 
-what about:
-
-/**
- * SMMUv3 Stream Table Entry stage 1 related information
- * The PASID table is referred to as the context descriptor (CD) table.
- *
- * @s1fmt: STE s1fmt (format of the CD table: single CD, linear table
-   or 2-level table)
- * @s1dss: STE s1dss (specifies the behavior when pasid_bits != 0
-   an no pasid is passed along with the incoming transaction)
- * Please refer to the smmu 3.x spec (ARM IHI 0070A) for full details
- */
-struct iommu_pasid_smmuv3 {
-#define PASID_TABLE_SMMUV3_CFG_VERSION_1 1
-        __u32   version;
-        __u8 s1fmt;
-        __u8 s1dss;
-        __u8 padding[2];
-};
-
-
-> 
->> +/**
->> + * PASID table data used to bind guest PASID table to the host IOMMU
->> + * Note PASID table corresponds to the Context Table on ARM SMMUv3.
->> + *
->> + * @version: API version to prepare for future extensions
->> + * @format: format of the PASID table
->> + *
->> + */
->> +struct iommu_pasid_table_config {
->> +#define PASID_TABLE_CFG_VERSION_1 1
->> +	__u32	version;
->> +#define IOMMU_PASID_FORMAT_SMMUV3	(1 << 0)
->> +	__u32	format;
->> +	__u64	base_ptr;
->> +	__u8	pasid_bits;
->> +	__u8	bypass;
->> +	union {
->> +		struct iommu_pasid_smmuv3 smmuv3;
->> +	};
->> +};
-> 
-> Structure is not naturally aligned or explicitly aligned for
-> interchange with userspace.  It might work for smmuv3 since the
-> structure is only composed of bytes, but looks troublesome in general.
-> Should each format type also contain a version?  Is format intended to
-> be a bit-field or a signature?  It seems we only need a signature, but
-> only having a single format defined, it looks like a bit-field, which
-> makes me worry what we do when we exhaust the bits.
-
-I think a signature is what we need.
-
-  The bypass field
-> should be better defined, is it 0/1?  zero/non-zero?  more selective?
-
-I suggest to replace by a signature config field (bypass, abort, translate)
-
-Thanks
-
-Eric
-> Thanks,
-> 
-> Alex
-> 
->> +
->> +#endif /* _UAPI_IOMMU_H */
-> 
+On Fri, Jan 25, 2019 at 1:01 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Thu, Jan 24, 2019 at 02:10:18PM +0530, Srinath Mannam wrote:
+> > On Fri, Jan 18, 2019 at 8:37 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > On Fri, Jan 18, 2019 at 09:53:21AM +0530, Srinath Mannam wrote:
+> > > > Order mode in RX header of incoming pcie packets can be override to
+> > > > strict or loose order based on requirement.
+> > > > Sysfs entry is provided to set dynamic and default order modes of upstream
+> > > > traffic.
+> > > ...
+> > > Are you talking about the Relaxed Ordering bit in the TLP Attributes
+> > > field?  If so, please use the exact language used in the spec and
+> > > include a reference, e.g., to PCIe r4.0, sec 2.2.6.4, 2.4, etc.
+> > >
+> > Yes Relax ordering bit in TLP. I will use spec reference. Thanks.
+> > > I'm hesitant about a new sysfs file for this.  That automatically
+> > > creates a user-space dependency on this iProc feature.  Who would use
+> > > this file?
+> > >
+> > This is the specific feature given in iProc, used to improve
+> > performance for the endpoints which does not support
+> > ordering configuration at its end.
+> > This is the reason we used sysfs file, which allows user to change
+> > ordering based on endpoint used and requirement.
+> > we are using these sysfs files to configure ordering to improve
+> > performance in NVMe endpoints with SPDK/DPDK drivers.
+> > If we enable this default in kernel, then it is applicable to all
+> > endpoints connected. But it may not required for all endpoints.
+>
+> Normally, relaxed ordering is used only when an endpoint sets the
+> "Relaxed Ordering" attribute bit in a TLP.  The endpoint is only
+> allowed to do that if relaxed ordering is enabled in the Device
+> Control register.
+Yes, endpoint has to set RO attribute in up-streaming TLPs.
+But in most of NVMe SSDs even Relax ordering bit in device controller
+register is set,
+still it send TLPs with RO attribute disable (strict order).
+>
+> If I understand correctly, this sysfs knob would let you configure the
+> iProc RC so it handles *all* TLPs (or just those in certain address
+> ranges) with relaxed ordering, regardless of whether the endpoint has
+> relaxed ordering, or even whether it supports relaxed ordering at all.
+Yes, iProc can enable/disable RO attribute in given address range regardless of
+endpoint settings.
+>
+> My gut feeling is that this is a messy hack, and if you want the
+> performance benefits of relaxed ordering, you should just choose an
+> NVMe endpoint that supports it correctly.
+Most of the NVMe endpoints available in market are sending TLPs in strict order
+even Relax ordering bit in device controller register is set.
+This is the reason to add this dynamic ordering feature in iProc IP.
+>
+> I assume the iProc RC does actually have the smarts to pay attention
+> to the Relaxed Ordering bit in TLPs if the endpoint sets it?
+Yes, iProc IP scan all TLPs and modify RO attributes as requested.
+if suppose endpoint set RO attribute in TLP, but user need it as
+strict order then iProc disable it.
+>
+> > > > To improve performance in few endpoints we required to modify the
+> > > > ordering attributes. Using this feature we can override order modes of RX
+> > > > packets at IPROC RC.
+> > > >
+> > > > Ex:
+> > > > In PCIe based NVMe SSD endpoints data read/writes from disk is using
+> > > > Queue pairs (submit/completion). After completion of block read/write,
+> > > > EP writes completion command to completion queue to notify RC.
+> > > > So that all data transfers before completion command write are not
+> > > > required to strict order except completion command. It means previous all
+> > > > packets before completion command write to RC should be written to memory
+> > > > and acknowledged.
+> > >
+> > > IIUC, if Enable Relaxed Ordering in the endpoint's Device Control
+> > > register is set, the device is permitted to set the Relaxed Ordering
+> > > bit in TLPs it initiates.  So I would think that if we set Enable
+> > > Relaxed Ordering correctly, the NVMe endpoint should be able to
+> > > use Relaxed Ordering for the data transfers and strict ordering (the
+> > > default) for the completion command.  What am I missing?
+> > >
+> > As per NVMe spec Enable Relaxed ordering is implementation specific all cards
+> > may not support.
+>
+> Relaxed ordering support is optional for *every* PCIe endpoint, not
+> just NVMe.  If an endpoint doesn't support relaxed ordering at all, it
+> should hardwire the Enable Relaxed Ordering bit to zero.
+>
+> > > This sysfs file apparently affects the Root Port/Root Complex
+> > > behavior, not the Endpoint's behavior.  Does that mean iProc ignores
+> > > the Relaxed Ordering bit by default, and you're providing a knob that
+> > >
+> > With sysfs file setting, ordering attributes of all TLPs directed to
+> > specific memory window can be override iProc layer based on
+> > settings.  TLPs to one memory window can keep as strict order and
+> > other memory windows can set to strict order.
+> >
+> > Using sysfs file ordering settings can configure and revert back to default.
+> >
+> > > makes it pay attention to it?  If that's the case, why wouldn't you
+> > > enable iProc support for Relaxed Ordering always, by default?
+> > >
+> > Option is given to user, because few endpoints may support ordering
+> > configuration internally.
+> > few EPs doesn't support. Based on requirement user can configure
+> > ordering settings.
+> >
+> > > > Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> > > > Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+> > > > ---
+> > > >  drivers/pci/controller/pcie-iproc.c | 128 ++++++++++++++++++++++++++++++++++++
+> > > >  drivers/pci/controller/pcie-iproc.h |  16 +++++
+> > > >  2 files changed, 144 insertions(+)
+> > > >
+> > > > diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
+> > > > index c20fd6b..13ce80f 100644
+> > > > --- a/drivers/pci/controller/pcie-iproc.c
+> > > > +++ b/drivers/pci/controller/pcie-iproc.c
+> > > > @@ -57,6 +57,9 @@
+> > > >  #define PCIE_DL_ACTIVE_SHIFT         2
+> > > >  #define PCIE_DL_ACTIVE                       BIT(PCIE_DL_ACTIVE_SHIFT)
+> > > >
+> > > > +#define MPS_MRRS_CFG_MPS_SHIFT               0
+> > > > +#define MPS_MRRS_CFG_MRRS_SHIFT              16
+> > > > +
+> > > >  #define APB_ERR_EN_SHIFT             0
+> > > >  #define APB_ERR_EN                   BIT(APB_ERR_EN_SHIFT)
+> > > >
+> > > > @@ -91,6 +94,14 @@
+> > > >
+> > > >  #define IPROC_PCIE_REG_INVALID               0xffff
+> > > >
+> > > > +#define RO_FIELD(window)             BIT((window) << 1)
+> > > > +#define RO_VALUE(window)             BIT(((window) << 1) + 1)
+> > > > +/* All Windows are allowed */
+> > > > +#define RO_ALL_WINDOW                        0x33333333
+> > > > +/* Wait on All Windows */
+> > > > +#define RO_FIELD_ALL_WINDOW          0x11111111
+> > > > +#define DYNAMIC_ORDER_MODE           0x5
+> > > > +
+> > > >  /**
+> > > >   * iProc PCIe outbound mapping controller specific parameters
+> > > >   *
+> > > > @@ -295,6 +306,15 @@ enum iproc_pcie_reg {
+> > > >       /* enable APB error for unsupported requests */
+> > > >       IPROC_PCIE_APB_ERR_EN,
+> > > >
+> > > > +     /* Ordering Mode configuration registers */
+> > > > +     IPROC_PCIE_ORDERING_CFG,
+> > > > +     IPROC_PCIE_MPS_MRRS_CFG,
+> > > > +     IPROC_PCIE_IMAP0_RO_CONTROL,
+> > > > +     IPROC_PCIE_IMAP1_RO_CONTROL,
+> > > > +     IPROC_PCIE_IMAP2_RO_CONTROL,
+> > > > +     IPROC_PCIE_IMAP3_RO_CONTROL,
+> > > > +     IPROC_PCIE_IMAP4_RO_CONTROL,
+> > > > +
+> > > >       /* total number of core registers */
+> > > >       IPROC_PCIE_MAX_NUM_REG,
+> > > >  };
+> > > > @@ -352,6 +372,13 @@ static const u16 iproc_pcie_reg_paxb_v2[] = {
+> > > >       [IPROC_PCIE_IMAP4]              = 0xe70,
+> > > >       [IPROC_PCIE_LINK_STATUS]        = 0xf0c,
+> > > >       [IPROC_PCIE_APB_ERR_EN]         = 0xf40,
+> > > > +     [IPROC_PCIE_ORDERING_CFG]       = 0x2000,
+> > > > +     [IPROC_PCIE_MPS_MRRS_CFG]       = 0x2008,
+> > > > +     [IPROC_PCIE_IMAP0_RO_CONTROL]   = 0x201c,
+> > > > +     [IPROC_PCIE_IMAP1_RO_CONTROL]   = 0x2020,
+> > > > +     [IPROC_PCIE_IMAP2_RO_CONTROL]   = 0x2024,
+> > > > +     [IPROC_PCIE_IMAP3_RO_CONTROL]   = 0x2028,
+> > > > +     [IPROC_PCIE_IMAP4_RO_CONTROL]   = 0x202c,
+> > > >  };
+> > > >
+> > > >  /* iProc PCIe PAXC v1 registers */
+> > > > @@ -1401,6 +1428,97 @@ static int iproc_pcie_rev_init(struct iproc_pcie *pcie)
+> > > >       return 0;
+> > > >  }
+> > > >
+> > > > +static
+> > > > +ssize_t order_mode_show(struct device *dev,
+> > > > +                     struct device_attribute *attr,
+> > > > +                     char *buff)
+> > >
+> > > Please format the same as the rest of the file, i.e.,
+> > >
+> > >   static ssize_t order_mode_show(struct device *dev, ...
+> > >
+> > > > +{
+> > > > +     struct pci_host_bridge *host = to_pci_host_bridge(dev);
+> > > > +     struct iproc_pcie *pcie = pci_host_bridge_priv(host);
+> > > > +
+> > > > +     return sprintf(buff, "Current PAXB order configuration %d\n",
+> > > > +                    pcie->order_cfg);
+> > > > +}
+> > > > +
+> > > > +static void pcie_iproc_set_dynamic_order(struct iproc_pcie *pcie)
+> > > > +{
+> > > > +     u32 val = 0, mps;
+> > > > +
+> > > > +     /* Set all IMAPs to relaxed order in dynamic order mode */
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_ORDERING_CFG,
+> > > > +                          DYNAMIC_ORDER_MODE);
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP0_RO_CONTROL,
+> > > > +                          RO_ALL_WINDOW);
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP1_RO_CONTROL,
+> > > > +                          RO_ALL_WINDOW);
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP2_RO_CONTROL,
+> > > > +                          RO_ALL_WINDOW);
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP3_RO_CONTROL,
+> > > > +                          RO_ALL_WINDOW);
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP4_RO_CONTROL,
+> > > > +                          RO_ALL_WINDOW);
+> > > > +
+> > > > +     /* PAXB MPS/MRRS settings configuration */
+> > > > +     iproc_pci_raw_config_read32(pcie, 0, IPROC_PCI_EXP_CAP + PCI_EXP_DEVCTL,
+> > > > +                                 2, &mps);
+> > > > +     mps = (mps & PCI_EXP_DEVCTL_PAYLOAD) >> 5;
+> > > > +     /* set MRRS to match system MPS */
+> > > > +     val |= (mps << MPS_MRRS_CFG_MRRS_SHIFT);
+> > > > +     /* set MPS to 4096 bytes */
+> > > > +     val |= (0x5 << MPS_MRRS_CFG_MPS_SHIFT);
+> > > > +     iproc_pcie_write_reg(pcie, IPROC_PCIE_MPS_MRRS_CFG, val);
+> > > > +}
+> > > > +
+> > > > +static
+> > > > +ssize_t order_mode_store(struct device *dev,
+> > > > +                      struct device_attribute *attr,
+> > > > +                      const char *buf,
+> > > > +                      size_t count)
+> > >
+> > > Fix formatting as above.
+> > >
+> > > > +{
+> > > > +     struct pci_host_bridge *host = to_pci_host_bridge(dev);
+> > > > +     struct iproc_pcie *pcie = pci_host_bridge_priv(host);
+> > > > +     unsigned long  val, regval;
+> > > > +
+> > > > +     if (kstrtoul(buf, 0, &val) < 0)
+> > > > +             return -EINVAL;
+> > > > +
+> > > > +     if (val > PAXB_ORDER_DEV_MEM_ONLY) {
+> > > > +             dev_err(dev, "Invalid Value passed %lu\n", val);
+> > > > +             dev_err(dev, "0: Everything in strict order\n");
+> > > > +             dev_err(dev, "1: Only IMAP2 in strict order\n");
+> > > > +             dev_err(dev, "2: Only device memory in strict order (MSI/MSIX)\n");
+> > > > +             return -EINVAL;
+> > > > +     }
+> > > > +
+> > > > +     if (val == pcie->order_cfg)
+> > > > +             return count;
+> > > > +
+> > > > +     switch (val) {
+> > > > +     case PAXB_ORDER_IMAP2_ONLY:
+> > > > +             pcie_iproc_set_dynamic_order(pcie);
+> > > > +             regval = RO_ALL_WINDOW;
+> > > > +             regval &= ~(RO_VALUE(0));
+> > > > +             /* Set IMAP2 to strict order */
+> > > > +             iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP2_RO_CONTROL, regval);
+> > > > +             dev_info(dev, "RO_IMAP2 set to %#lx\n", regval);
+> > > > +             break;
+> > > > +     case PAXB_ORDER_DEV_MEM_ONLY:
+> > > > +             pcie_iproc_set_dynamic_order(pcie);
+> > > > +             /* Set IMAP0 to strict order */
+> > > > +             iproc_pcie_write_reg(pcie, IPROC_PCIE_IMAP0_RO_CONTROL,
+> > > > +                                  RO_FIELD_ALL_WINDOW);
+> > > > +             dev_info(dev, "RO_IMAP0 set to %#x\n", RO_FIELD_ALL_WINDOW);
+> > > > +             break;
+> > > > +     default:
+> > > > +             iproc_pcie_write_reg(pcie, IPROC_PCIE_ORDERING_CFG, 0);
+> > > > +             break;
+> > > > +     }
+> > > > +     pcie->order_cfg = val;
+> > > > +     return count;
+> > > > +}
+> > > > +
+> > > > +static DEVICE_ATTR_RW(order_mode);
+> > > > +
+> > > >  int iproc_pcie_setup(struct iproc_pcie *pcie, struct list_head *res)
+> > > >  {
+> > > >       struct device *dev;
+> > > > @@ -1484,6 +1602,11 @@ int iproc_pcie_setup(struct iproc_pcie *pcie, struct list_head *res)
+> > > >
+> > > >       pci_bus_add_devices(host->bus);
+> > > >
+> > > > +     if (pcie->type == IPROC_PCIE_PAXB_V2) {
+> > > > +             ret = device_create_file(&host->dev, &dev_attr_order_mode);
+> > > > +             if (ret < 0)
+> > > > +                     goto err_power_off_phy;
+> > > > +     }
+> > > >       return 0;
+> > > >
+> > > >  err_power_off_phy:
+> > > > @@ -1496,6 +1619,11 @@ EXPORT_SYMBOL(iproc_pcie_setup);
+> > > >
+> > > >  int iproc_pcie_remove(struct iproc_pcie *pcie)
+> > > >  {
+> > > > +     struct pci_host_bridge *host = pci_host_bridge_from_priv(pcie);
+> > > > +
+> > > > +     if (pcie->type == IPROC_PCIE_PAXB_V2)
+> > > > +             device_remove_file(&host->dev, &dev_attr_order_mode);
+> > > > +
+> > > >       pci_stop_root_bus(pcie->root_bus);
+> > > >       pci_remove_root_bus(pcie->root_bus);
+> > > >
+> > > > diff --git a/drivers/pci/controller/pcie-iproc.h b/drivers/pci/controller/pcie-iproc.h
+> > > > index 4f03ea5..6e100cd 100644
+> > > > --- a/drivers/pci/controller/pcie-iproc.h
+> > > > +++ b/drivers/pci/controller/pcie-iproc.h
+> > > > @@ -24,6 +24,18 @@ enum iproc_pcie_type {
+> > > >  };
+> > > >
+> > > >  /**
+> > > > + * PAXB Dynamic ordering modes
+> > > > + * PAXB_ORDER_EVERYTHING: Everything in strict order
+> > > > + * PAXB_ORDER_IMAP2_ONLY: Only IMAP2 memory window strict order
+> > > > + * PAXB_ORDER_DEV_MEM_ONLY: Only device memory (MSI/MSIX) is strict order
+> > > > + */
+> > > > +enum paxb_order_cfg {
+> > > > +     PAXB_ORDER_EVERYTHING,
+> > > > +     PAXB_ORDER_IMAP2_ONLY,
+> > > > +     PAXB_ORDER_DEV_MEM_ONLY,
+> > > > +};
+> > > > +
+> > > > +/**
+> > > >   * iProc PCIe outbound mapping
+> > > >   * @axi_offset: offset from the AXI address to the internal address used by
+> > > >   * the iProc PCIe core
+> > > > @@ -74,6 +86,8 @@ struct iproc_msi;
+> > > >   * @ib: inbound mapping related parameters
+> > > >   * @ib_map: outbound mapping region related parameters
+> > > >   *
+> > > > + * @order_cfg: indicates current value of the order mode.
+> > > > + *
+> > > >   * @need_msi_steer: indicates additional configuration of the iProc PCIe
+> > > >   * controller is required to steer MSI writes to external interrupt controller
+> > > >   * @msi: MSI data
+> > > > @@ -102,6 +116,8 @@ struct iproc_pcie {
+> > > >       struct iproc_pcie_ib ib;
+> > > >       const struct iproc_pcie_ib_map *ib_map;
+> > > >
+> > > > +     enum paxb_order_cfg order_cfg;
+> > > > +
+> > > >       bool need_msi_steer;
+> > > >       struct iproc_msi *msi;
+> > > >  };
+> > > > --
+> > > > 2.7.4
+> > > >
