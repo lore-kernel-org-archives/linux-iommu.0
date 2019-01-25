@@ -1,7 +1,7 @@
 From: Auger Eric <eric.auger@redhat.com>
 Subject: Re: [RFC v3 03/21] iommu: Introduce bind_guest_msi
-Date: Fri, 25 Jan 2019 18:51:09 +0100
-Message-ID: <6969a418-bd9c-7ae9-1790-fece4a42e81e@redhat.com>
+Date: Fri, 25 Jan 2019 19:11:36 +0100
+Message-ID: <795f8004-a156-28c2-ba23-bbcc4bcf5018@redhat.com>
 References: <20190108102633.17482-1-eric.auger@redhat.com>
  <20190108102633.17482-4-eric.auger@redhat.com>
  <20190111154419.502b3850@x1.home>
@@ -17,6 +17,7 @@ Cc: eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org, linux-kernel@vge
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Alex,
+
 On 1/11/19 11:44 PM, Alex Williamson wrote:
 > On Tue,  8 Jan 2019 11:26:15 +0100
 > Eric Auger <eric.auger@redhat.com> wrote:
@@ -33,7 +34,6 @@ On 1/11/19 11:44 PM, Alex Williamson wrote:
 >> gIOVA    ->    gDB
 >>               hIOVA    ->    gDB
 >                                ^^^ hDB
-right!
 > 
 >> Currently the PCI device is programmed by the host with hIOVA
 >> as MSI doorbell. So this does not work.
@@ -134,48 +134,19 @@ right!
 > 
 > What's granule?  The size?  This looks a lot like just a stage 1
 > mapping interface, I can't really figure out from the description how
-> this matches to any specific MSI mapping.
-Yes that's just a stage 1 binding. The granule is the log2size of the
-stage1 page. As this is a guest mapping of a virtual doorbell, this is
-WRITE only.
-
-What about something like:
-/**
- * 1st level/stage1 binding of a virtual MSI doorbell
- *
- * @iova:       iova
- * @gpa:        guest physical address of the virtual doorbell
- * @log2size:   log2size of the doorbell (generally a guest page)
- *
- * As this is an MSI doorbell, the mapping is write only.
- */
-struct iommu_guest_msi_binding {
-        __u64   iova;
-        __u64   gpa;
-        __u32   log2size;
-};
-
-Also added:
-
-/**
- * iommu_bind_guest_msi - Passes the stage1 binding of the virtual
- * doorbell used by the assigned device @dev.
- *
- * @domain: iommu domain the stage 1 mapping will be attached to
- * @dev: assigned device which uses this stage1 mapping
- * @binding: stage1 MSI binding
- *
- * The associated IOVA can be reused by the host to create a nested
- * stage2 binding mapping onto the physical doorbell used by @dev
- */
+> this matches to any specific MSI mapping.  Zero comments in the code
+> or headers here about how this is supposed to work.  Thanks,
+Considering your next comment about the unbind() operation, I think the
+struct can simply be removed. Instead we could directly have:
+int (*bind_guest_msi)(struct iommu_domain *domain, struct device *dev,
+                              dma_addr_t iova, gpa_t gpa, size_t size);
+int (*unbind_guest_msi)(struct iommu_domain *domain, struct device *dev,
+                                dma_addr_t iova);
 
 
 Thanks
 
 Eric
-
-  Zero comments in the code
-> or headers here about how this is supposed to work.  Thanks,
 > 
 > Alex
 > 
