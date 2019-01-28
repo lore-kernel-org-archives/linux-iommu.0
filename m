@@ -1,160 +1,82 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH 1/2] iommu/io-pgtable-arm: Add support for non-coherent
- page tables
-Date: Mon, 28 Jan 2019 17:50:42 +0530
-Message-ID: <CAFp+6iG6ohd0ZGiUne324icvtrfR8FJLG+YkQ0dg20=RwceDCQ@mail.gmail.com>
-References: <20190117092718.1396-1-vivek.gautam@codeaurora.org>
- <20190117092718.1396-2-vivek.gautam@codeaurora.org> <a508a6a5-8e1f-3660-51ef-e65bc382931e@arm.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 0/5 v3] Fix virtio-blk issue with SWIOTLB
+Date: Mon, 28 Jan 2019 10:20:05 -0500
+Message-ID: <20190128101852-mutt-send-email-mst@kernel.org>
+References: <20190123163049.24863-1-joro@8bytes.org>
+ <20190123135000-mutt-send-email-mst@kernel.org>
+ <20190123211453.GA2474@char.us.oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <a508a6a5-8e1f-3660-51ef-e65bc382931e@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20190123211453.GA2474@char.us.oracle.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <joro@8bytes.org>"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de, mst@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 21, 2019 at 6:43 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 17/01/2019 09:27, Vivek Gautam wrote:
-> >  From Robin's comment [1] about touching TCR configurations -
-> >
-> > "TBH if we're going to touch the TCR attributes at all then we should
-> > probably correct that sloppiness first - there's an occasional argument
-> > for using non-cacheable pagetables even on a coherent SMMU if reducing
-> > snoop traffic/latency on walks outweighs the cost of cache maintenance
-> > on PTE updates, but anyone thinking they can get that by overriding
-> > dma-coherent silently gets the worst of both worlds thanks to this
-> > current TCR value."
-> >
-> > We have IO_PGTABLE_QUIRK_NO_DMA quirk present, but we don't force
-> > anybody _not_ using dma-coherent smmu to have non-cacheable page table
-> > mappings.
-> > Having another quirk flag can help in having non-cacheable memory for
-> > page tables once and for all.
-> >
-> > [1] https://lore.kernel.org/patchwork/patch/1020906/
-> >
-> > Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> > ---
-> >   drivers/iommu/io-pgtable-arm.c | 17 ++++++++++++-----
-> >   drivers/iommu/io-pgtable.h     |  6 ++++++
-> >   2 files changed, 18 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> > index 237cacd4a62b..c76919c30f1a 100644
-> > --- a/drivers/iommu/io-pgtable-arm.c
-> > +++ b/drivers/iommu/io-pgtable-arm.c
-> > @@ -780,7 +780,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >       struct arm_lpae_io_pgtable *data;
-> >
-> >       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS | IO_PGTABLE_QUIRK_NO_DMA |
-> > -                         IO_PGTABLE_QUIRK_NON_STRICT))
-> > +                         IO_PGTABLE_QUIRK_NON_STRICT |
-> > +                         IO_PGTABLE_QUIRK_NON_COHERENT))
-> >               return NULL;
-> >
-> >       data = arm_lpae_alloc_pgtable(cfg);
-> > @@ -788,9 +789,14 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
-> >               return NULL;
-> >
-> >       /* TCR */
-> > -     reg = (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
-> > -           (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
-> > -           (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
-> > +     reg = ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT;
-> > +
-> > +     if (cfg->quirks & IO_PGTABLE_QUIRK_NON_COHERENT)
-> > +             reg |= ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_IRGN0_SHIFT |
-> > +                    ARM_LPAE_TCR_RGN_NC << ARM_LPAE_TCR_ORGN0_SHIFT;
-> > +     else
-> > +             reg |= ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT |
-> > +                    ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT;
-> >
-> >       switch (ARM_LPAE_GRANULE(data)) {
-> >       case SZ_4K:
-> > @@ -873,7 +879,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
-> >
-> >       /* The NS quirk doesn't apply at stage 2 */
-> >       if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NO_DMA |
-> > -                         IO_PGTABLE_QUIRK_NON_STRICT))
-> > +                         IO_PGTABLE_QUIRK_NON_STRICT |
-> > +                         IO_PGTABLE_QUIRK_NON_COHERENT))
-> >               return NULL;
-> >
-> >       data = arm_lpae_alloc_pgtable(cfg);
-> > diff --git a/drivers/iommu/io-pgtable.h b/drivers/iommu/io-pgtable.h
-> > index 47d5ae559329..46604cf7b017 100644
-> > --- a/drivers/iommu/io-pgtable.h
-> > +++ b/drivers/iommu/io-pgtable.h
-> > @@ -75,6 +75,11 @@ struct io_pgtable_cfg {
-> >        * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
-> >        *      on unmap, for DMA domains using the flush queue mechanism for
-> >        *      delayed invalidation.
-> > +      *
-> > +      * IO_PGTABLE_QUIRK_NON_COHERENT: Enforce non-cacheable mappings for
-> > +      *      pagetables even on a coherent SMMU for cases where reducing
-> > +      *      snoop traffic/latency on walks outweighs the cost of cache
-> > +      *      maintenance on PTE updates.
->
-> Hmm, we can't actually "enforce" anything with this as-is - all we're
-> doing is setting the attributes that the IOMMU will use for pagetable
-> walks, and that has no impact on how the CPU actually writes PTEs to
-> memory. In particular, in the case of a hardware-coherent IOMMU which is
-> described as such, even if we make the dma_map/sync calls they still
-> won't do anything since they 'know' that the IOMMU is coherent. Thus if
-> we then set up a non-cacheable TCR we would have no proper means of
-> making pagetables correctly visible to the walker.
+On Wed, Jan 23, 2019 at 04:14:53PM -0500, Konrad Rzeszutek Wilk wrote:
+> On Wed, Jan 23, 2019 at 01:51:29PM -0500, Michael S. Tsirkin wrote:
+> > On Wed, Jan 23, 2019 at 05:30:44PM +0100, Joerg Roedel wrote:
+> > > Hi,
+> > > 
+> > > here is the third version of this patch-set. Previous
+> > > versions can be found here:
+> > > 
+> > > 	V1: https://lore.kernel.org/lkml/20190110134433.15672-1-joro@8bytes.org/
+> > > 
+> > > 	V2: https://lore.kernel.org/lkml/20190115132257.6426-1-joro@8bytes.org/
+> > > 
+> > > The problem solved here is a limitation of the SWIOTLB implementation,
+> > > which does not support allocations larger than 256kb.  When the
+> > > virtio-blk driver tries to read/write a block larger than that, the
+> > > allocation of the dma-handle fails and an IO error is reported.
+> > 
+> > 
+> > OK looks good to me.
+> > I will park this in my tree for now this way it will get
+> > testing in linux-next.
+> > Can I get an ack from DMA maintainers on the DMA bits for
+> > merging this in 5.0?
+> 
+> You got mine (SWIOTBL is my area).
 
-Right, I get this point. With non-cacheable TCR, the PTW will always go to
-the main memory rather then snooping in CPU caches for the latest page
-tables.
+OK so
 
->
-> Aw crap, this is turning out to be a microcosm of the PCIe no-snoop
-> mess... :(
->
-> To start with, at least, what we want is to set a non-cacheable TCR if
-> the IOMMU is *not* coherent (as far as Linux is concerned - that
-> includes the firmware-lying-about-the-hardware situation I was alluding
-> to before), but even that isn't necessarily as straightforward as it
-> seems. AFAICS, if QUIRK_NO_DMA is set then we definitely have to use a
-> cacheable TCR;
-
-Okay, so for QUIRK_NO_DMA we set IRGN0 and ORGN0 to WBWA in TCR,
-But, for SMMUs that omit 'dma-coherent' and thus QUIRK_NO_DMA is not set
-do we allow them to have a Non-Cacheable set to IRGN0 and ORGN0, as the
-PTW will anyways have to read from memory after the CPU flushes the
-PTEs to the memory (which we are already doing).
-
-Regards
-Vivek
-
-
-> we can't strictly rely on the inverse being true, but in
-> practice we *might* get away with it since we already disallow most
-> cases in which the DMA API calls would actually do anything for a
-> known-coherent IOMMU device.
->
-> Robin.
->
-> >        */
-> >       #define IO_PGTABLE_QUIRK_ARM_NS         BIT(0)
-> >       #define IO_PGTABLE_QUIRK_NO_PERMS       BIT(1)
-> > @@ -82,6 +87,7 @@ struct io_pgtable_cfg {
-> >       #define IO_PGTABLE_QUIRK_ARM_MTK_4GB    BIT(3)
-> >       #define IO_PGTABLE_QUIRK_NO_DMA         BIT(4)
-> >       #define IO_PGTABLE_QUIRK_NON_STRICT     BIT(5)
-> > +     #define IO_PGTABLE_QUIRK_NON_COHERENT   BIT(6)
-> >       unsigned long                   quirks;
-> >       unsigned long                   pgsize_bitmap;
-> >       unsigned int                    ias;
-> >
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 
 
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> > 
+> > > Changes to v2 are:
+> > > 
+> > > 	* Check if SWIOTLB is active before returning its limit in
+> > > 	  dma_direct_max_mapping_size()
+> > > 
+> > > 	* Only apply the maximum segment limit in virtio-blk when
+> > > 	  DMA-API is used for the vring
+> > > 
+> > > Please review.
+> > > 
+> > > Thanks,
+> > > 
+> > > 	Joerg
+> > > 
+> > > Joerg Roedel (5):
+> > >   swiotlb: Introduce swiotlb_max_mapping_size()
+> > >   swiotlb: Add is_swiotlb_active() function
+> > >   dma: Introduce dma_max_mapping_size()
+> > >   virtio: Introduce virtio_max_dma_size()
+> > >   virtio-blk: Consider virtio_max_dma_size() for maximum segment size
+> > > 
+> > >  drivers/block/virtio_blk.c   | 10 ++++++----
+> > >  drivers/virtio/virtio_ring.c | 10 ++++++++++
+> > >  include/linux/dma-mapping.h  | 16 ++++++++++++++++
+> > >  include/linux/swiotlb.h      | 11 +++++++++++
+> > >  include/linux/virtio.h       |  2 ++
+> > >  kernel/dma/direct.c          | 11 +++++++++++
+> > >  kernel/dma/swiotlb.c         | 10 ++++++++++
+> > >  7 files changed, 66 insertions(+), 4 deletions(-)
+> > > 
+> > > -- 
+> > > 2.17.1
