@@ -1,74 +1,64 @@
-From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.20 139/304] iommu/amd: Fix amd_iommu=force_isolation
-Date: Mon, 28 Jan 2019 10:40:56 -0500
-Message-ID: <20190128154341.47195-139-sashal@kernel.org>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.20 152/304] iommu/arm-smmu-v3: Avoid memory corruption from Hisilicon MSI payloads
+Date: Mon, 28 Jan 2019 10:41:09 -0500
+Message-ID: <20190128154341.47195-152-sashal@kernel.org>
 References: <20190128154341.47195-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190128154341.47195-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190128154341.47195-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-[ Upstream commit c12b08ebbe16f0d3a96a116d86709b04c1ee8e74 ]
+[ Upstream commit 84a9a75774961612d0c7dd34a1777e8f98a65abd ]
 
-The parameter is still there but it's ignored. We need to check its
-value before deciding to go into passthrough mode for AMD IOMMU v2
-capable device.
+The GITS_TRANSLATER MMIO doorbell register in the ITS hardware is
+architected to be 4 bytes in size, yet on hi1620 and earlier, Hisilicon
+have allocated the adjacent 4 bytes to carry some IMPDEF sideband
+information which results in an 8-byte MSI payload being delivered when
+signalling an interrupt:
 
-We occasionally use this parameter to force v2 capable device into
-translation mode to debug memory corruption that we suspect is
-caused by DMA writes.
+MSIAddr:
+	 |----4bytes----|----4bytes----|
+	 |    MSIData   |    IMPDEF    |
 
-To address the following comment from Joerg Roedel on the first
-version, v2 capability of device is completely ignored.
-> This breaks the iommu_v2 use-case, as it needs a direct mapping for the
-> devices that support it.
+This poses no problem for the ITS hardware because the adjacent 4 bytes
+are reserved in the memory map. However, when delivering MSIs to memory,
+as we do in the SMMUv3 driver for signalling the completion of a SYNC
+command, the extended payload will corrupt the 4 bytes adjacent to the
+"sync_count" member in struct arm_smmu_device. Fortunately, the current
+layout allocates these bytes to padding, but this is fragile and we
+should make this explicit.
 
-And from Documentation/admin-guide/kernel-parameters.txt:
-  This option does not override iommu=pt
-
-Fixes: aafd8ba0ca74 ("iommu/amd: Implement add_device and remove_device")
-
-Signed-off-by: Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+[will: Rewrote commit message and comment]
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd_iommu.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 1167ff0416cf..325f3bad118b 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -438,7 +438,14 @@ static int iommu_init_device(struct device *dev)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 71eda422c926..62ef4afc9ee5 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -576,7 +576,11 @@ struct arm_smmu_device {
  
- 	dev_data->alias = get_alias(dev);
+ 	struct arm_smmu_strtab_cfg	strtab_cfg;
  
--	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
-+	/*
-+	 * By default we use passthrough mode for IOMMUv2 capable device.
-+	 * But if amd_iommu=force_isolation is set (e.g. to debug DMA to
-+	 * invalid address), we ignore the capability for the device so
-+	 * it'll be forced to go into translation mode.
-+	 */
-+	if ((iommu_pass_through || !amd_iommu_force_isolation) &&
-+	    dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
- 		struct amd_iommu *iommu;
+-	u32				sync_count;
++	/* Hi16xx adds an extra 32 bits of goodness to its MSI payload */
++	union {
++		u32			sync_count;
++		u64			padding;
++	};
  
- 		iommu = amd_iommu_rlookup_table[dev_data->devid];
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
 -- 
 2.19.1
