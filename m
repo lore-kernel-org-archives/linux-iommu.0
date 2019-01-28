@@ -1,64 +1,58 @@
 From: Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.19 128/258] iommu/arm-smmu-v3: Avoid memory corruption from Hisilicon MSI payloads
-Date: Mon, 28 Jan 2019 10:57:14 -0500
-Message-ID: <20190128155924.51521-128-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 130/258] iommu/arm-smmu-v3: Use explicit mb() when moving cons pointer
+Date: Mon, 28 Jan 2019 10:57:16 -0500
+Message-ID: <20190128155924.51521-130-sashal@kernel.org>
 References: <20190128155924.51521-1-sashal@kernel.org>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: stable-owner@vger.kernel.org
 To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Will Deacon <will.deacon@arm.com>
 
-[ Upstream commit 84a9a75774961612d0c7dd34a1777e8f98a65abd ]
+[ Upstream commit a868e8530441286342f90c1fd9c5f24de3aa2880 ]
 
-The GITS_TRANSLATER MMIO doorbell register in the ITS hardware is
-architected to be 4 bytes in size, yet on hi1620 and earlier, Hisilicon
-have allocated the adjacent 4 bytes to carry some IMPDEF sideband
-information which results in an 8-byte MSI payload being delivered when
-signalling an interrupt:
+After removing an entry from a queue (e.g. reading an event in
+arm_smmu_evtq_thread()) it is necessary to advance the MMIO consumer
+pointer to free the queue slot back to the SMMU. A memory barrier is
+required here so that all reads targetting the queue entry have
+completed before the consumer pointer is updated.
 
-MSIAddr:
-	 |----4bytes----|----4bytes----|
-	 |    MSIData   |    IMPDEF    |
+The implementation of queue_inc_cons() relies on a writel() to complete
+the previous reads, but this is incorrect because writel() is only
+guaranteed to complete prior writes. This patch replaces the call to
+writel() with an mb(); writel_relaxed() sequence, which gives us the
+read->write ordering which we require.
 
-This poses no problem for the ITS hardware because the adjacent 4 bytes
-are reserved in the memory map. However, when delivering MSIs to memory,
-as we do in the SMMUv3 driver for signalling the completion of a SYNC
-command, the extended payload will corrupt the 4 bytes adjacent to the
-"sync_count" member in struct arm_smmu_device. Fortunately, the current
-layout allocates these bytes to padding, but this is fragile and we
-should make this explicit.
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-[will: Rewrote commit message and comment]
+Cc: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Will Deacon <will.deacon@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 3e02aace38b1..4afb9cb99ea3 100644
+index 4afb9cb99ea3..9ae3678844eb 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -586,7 +586,11 @@ struct arm_smmu_device {
+@@ -688,7 +688,13 @@ static void queue_inc_cons(struct arm_smmu_queue *q)
+ 	u32 cons = (Q_WRP(q, q->cons) | Q_IDX(q, q->cons)) + 1;
  
- 	struct arm_smmu_strtab_cfg	strtab_cfg;
+ 	q->cons = Q_OVF(q, q->cons) | Q_WRP(q, cons) | Q_IDX(q, cons);
+-	writel(q->cons, q->cons_reg);
++
++	/*
++	 * Ensure that all CPU accesses (reads and writes) to the queue
++	 * are complete before we update the cons pointer.
++	 */
++	mb();
++	writel_relaxed(q->cons, q->cons_reg);
+ }
  
--	u32				sync_count;
-+	/* Hi16xx adds an extra 32 bits of goodness to its MSI payload */
-+	union {
-+		u32			sync_count;
-+		u64			padding;
-+	};
- 
- 	/* IOMMU core code handle */
- 	struct iommu_device		iommu;
+ static int queue_sync_prod(struct arm_smmu_queue *q)
 -- 
 2.19.1
