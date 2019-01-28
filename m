@@ -1,41 +1,41 @@
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: use generic DMA mapping code in powerpc V4
-Date: Mon, 28 Jan 2019 17:52:03 +0100
-Message-ID: <D64B1ED5-46F9-43CF-9B21-FABB2807289B@xenosoft.de>
-References: <e11e61b1-6468-122e-fc2b-3b3f857186bb@xenosoft.de> <f39d4fc6-7e4e-9132-c03f-59f1b52260e0@xenosoft.de> <b9e5e081-a3cc-2625-4e08-2d55c2ba224b@xenosoft.de> <20190119130222.GA24346@lst.de> <20190119140452.GA25198@lst.de> <bfe4adcc-01c1-7b46-f40a-8e020ff77f58@xenosoft.de> <8434e281-eb85-51d9-106f-f4faa559e89c@xenosoft.de> <4d8d4854-dac9-a78e-77e5-0455e8ca56c4@xenosoft.de> <1dec2fbe-f654-dac7-392a-93a5d20e3602@xenosoft.de> <20190128070422.GA2772@lst.de> <20190128162256.GA11737@lst.de>
-Mime-Version: 1.0 (1.0)
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 5/5] virtio-blk: Consider virtio_max_dma_size() for
+ maximum segment size
+Date: Mon, 28 Jan 2019 12:14:33 -0500
+Message-ID: <20190128121407-mutt-send-email-mst@kernel.org>
+References: <20190123163049.24863-1-joro@8bytes.org>
+ <20190123163049.24863-6-joro@8bytes.org>
+ <20190123213139.GD9032@lst.de>
+ <20190124084011.GJ32526@8bytes.org>
+ <20190124084221.GB19441@lst.de>
+ <20190124095150.GL32526@8bytes.org>
+ <20190128080526.GA3874@lst.de>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190128162256.GA11737@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20190128080526.GA3874@lst.de>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Christoph Hellwig <hch@lst.de>
-Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>, linux-kernel@vger.kernel.org, Julian Margetson <runaway@candw.ms>, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>, Olof Johansson <olof@lixom.net>, linuxppc-dev@lists.ozlabs.org
+Cc: Joerg Roedel <joro@8bytes.org>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
 List-Id: iommu@lists.linux-foundation.org
 
-Thanks a lot! I will test it tomorrow.
+On Mon, Jan 28, 2019 at 09:05:26AM +0100, Christoph Hellwig wrote:
+> On Thu, Jan 24, 2019 at 10:51:51AM +0100, Joerg Roedel wrote:
+> > On Thu, Jan 24, 2019 at 09:42:21AM +0100, Christoph Hellwig wrote:
+> > > Yes.  But more importantly it would fix the limit for all other block
+> > > drivers that set large segment sizes when running over swiotlb.
+> > 
+> > True, so it would be something like the diff below? I havn't worked on
+> > the block layer, so I don't know if that needs additional checks for
+> > ->dev or anything.
+> 
+> Looks sensible.  Maybe for now we'll just do the virtio-blk case
+> that triggered it, and we'll do something like this patch for the
+> next merge window.  We'll also need to apply the same magic to the
+> DMA boundary.
 
-=E2=80=94 Christian
+So do I get an ack for this patch then?
 
-Sent from my iPhone
-
-> On 28. Jan 2019, at 17:22, Christoph Hellwig <hch@lst.de> wrote:
->=20
->> On Mon, Jan 28, 2019 at 08:04:22AM +0100, Christoph Hellwig wrote:
->>> On Sun, Jan 27, 2019 at 02:13:09PM +0100, Christian Zigotzky wrote:
->>> Christoph,
->>>=20
->>> What shall I do next?
->>=20
->> I'll need to figure out what went wrong with the new zone selection
->> on powerpc and give you another branch to test.
->=20
-> Can you try the new powerpc-dma.6-debug.2 branch:
->=20
->    git://git.infradead.org/users/hch/misc.git powerpc-dma.6-debug.2
->=20
-> Gitweb:
->=20
->    http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/powerpc=
--dma.6-debug.2
+-- 
+MST
