@@ -1,14 +1,17 @@
-From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH AUTOSEL 4.20 153/304] iommu/arm-smmu: Add support for qcom,
-	smmu-v2 variant
-Date: Mon, 28 Jan 2019 10:41:10 -0500
-Message-ID: <20190128154341.47195-153-sashal@kernel.org>
-References: <20190128154341.47195-1-sashal@kernel.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 0/5 v3] Fix virtio-blk issue with SWIOTLB
+Date: Mon, 28 Jan 2019 10:53:22 -0500
+Message-ID: <20190128155322.GA32686@char.us.oracle.com>
+References: <20190123163049.24863-1-joro@8bytes.org>
+	<20190123135000-mutt-send-email-mst@kernel.org>
+	<20190123211453.GA2474@char.us.oracle.com>
+	<20190128101852-mutt-send-email-mst@kernel.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20190128154341.47195-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20190128101852-mutt-send-email-mst-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,58 +21,75 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, brijesh.singh-5C7GfCeVMHo@public.gmane.org, jon.grimm-5C7GfCeVMHo@public.gmane.org, jfehlig-IBi9RG/b67k@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+On Mon, Jan 28, 2019 at 10:20:05AM -0500, Michael S. Tsirkin wrote:
+> On Wed, Jan 23, 2019 at 04:14:53PM -0500, Konrad Rzeszutek Wilk wrote:
+> > On Wed, Jan 23, 2019 at 01:51:29PM -0500, Michael S. Tsirkin wrote:
+> > > On Wed, Jan 23, 2019 at 05:30:44PM +0100, Joerg Roedel wrote:
+> > > > Hi,
+> > > > 
+> > > > here is the third version of this patch-set. Previous
+> > > > versions can be found here:
+> > > > 
+> > > > 	V1: https://lore.kernel.org/lkml/20190110134433.15672-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org/
+> > > > 
+> > > > 	V2: https://lore.kernel.org/lkml/20190115132257.6426-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org/
+> > > > 
+> > > > The problem solved here is a limitation of the SWIOTLB implementation,
+> > > > which does not support allocations larger than 256kb.  When the
+> > > > virtio-blk driver tries to read/write a block larger than that, the
+> > > > allocation of the dma-handle fails and an IO error is reported.
+> > > 
+> > > 
+> > > OK looks good to me.
+> > > I will park this in my tree for now this way it will get
+> > > testing in linux-next.
+> > > Can I get an ack from DMA maintainers on the DMA bits for
+> > > merging this in 5.0?
+> > 
+> > You got mine (SWIOTBL is my area).
+> 
+> OK so
+> 
+> Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-[ Upstream commit 89cddc563743cb1e0068867ac97013b2a5bf86aa ]
-
-qcom,smmu-v2 is an arm,smmu-v2 implementation with specific
-clock and power requirements.
-On msm8996, multiple cores, viz. mdss, video, etc. use this
-smmu. On sdm845, this smmu is used with gpu.
-Add bindings for the same.
-
-Signed-off-by: Vivek Gautam <vivek.gautam-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Reviewed-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Reviewed-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 5a28ae892504..e23aa7f6c4ad 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -119,6 +119,7 @@ enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
- 	CAVIUM_SMMUV2,
-+	QCOM_SMMUV2,
- };
- 
- struct arm_smmu_s2cr {
-@@ -1954,6 +1955,7 @@ ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
- ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
-+ARM_SMMU_MATCH_DATA(qcom_smmuv2, ARM_SMMU_V2, QCOM_SMMUV2);
- 
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
-@@ -1962,6 +1964,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
--- 
-2.19.1
+Yes :-)
+> 
+> 
+> 
+> > > 
+> > > > Changes to v2 are:
+> > > > 
+> > > > 	* Check if SWIOTLB is active before returning its limit in
+> > > > 	  dma_direct_max_mapping_size()
+> > > > 
+> > > > 	* Only apply the maximum segment limit in virtio-blk when
+> > > > 	  DMA-API is used for the vring
+> > > > 
+> > > > Please review.
+> > > > 
+> > > > Thanks,
+> > > > 
+> > > > 	Joerg
+> > > > 
+> > > > Joerg Roedel (5):
+> > > >   swiotlb: Introduce swiotlb_max_mapping_size()
+> > > >   swiotlb: Add is_swiotlb_active() function
+> > > >   dma: Introduce dma_max_mapping_size()
+> > > >   virtio: Introduce virtio_max_dma_size()
+> > > >   virtio-blk: Consider virtio_max_dma_size() for maximum segment size
+> > > > 
+> > > >  drivers/block/virtio_blk.c   | 10 ++++++----
+> > > >  drivers/virtio/virtio_ring.c | 10 ++++++++++
+> > > >  include/linux/dma-mapping.h  | 16 ++++++++++++++++
+> > > >  include/linux/swiotlb.h      | 11 +++++++++++
+> > > >  include/linux/virtio.h       |  2 ++
+> > > >  kernel/dma/direct.c          | 11 +++++++++++
+> > > >  kernel/dma/swiotlb.c         | 10 ++++++++++
+> > > >  7 files changed, 66 insertions(+), 4 deletions(-)
+> > > > 
+> > > > -- 
+> > > > 2.17.1
