@@ -1,82 +1,74 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 0/5 v3] Fix virtio-blk issue with SWIOTLB
-Date: Mon, 28 Jan 2019 10:20:05 -0500
-Message-ID: <20190128101852-mutt-send-email-mst@kernel.org>
-References: <20190123163049.24863-1-joro@8bytes.org>
- <20190123135000-mutt-send-email-mst@kernel.org>
- <20190123211453.GA2474@char.us.oracle.com>
+From: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH AUTOSEL 4.20 139/304] iommu/amd: Fix amd_iommu=force_isolation
+Date: Mon, 28 Jan 2019 10:40:56 -0500
+Message-ID: <20190128154341.47195-139-sashal@kernel.org>
+References: <20190128154341.47195-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190123211453.GA2474@char.us.oracle.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Jason Wang <jasowang@redhat.com>, Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de, mst@redhat.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20190128154341.47195-1-sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 23, 2019 at 04:14:53PM -0500, Konrad Rzeszutek Wilk wrote:
-> On Wed, Jan 23, 2019 at 01:51:29PM -0500, Michael S. Tsirkin wrote:
-> > On Wed, Jan 23, 2019 at 05:30:44PM +0100, Joerg Roedel wrote:
-> > > Hi,
-> > > 
-> > > here is the third version of this patch-set. Previous
-> > > versions can be found here:
-> > > 
-> > > 	V1: https://lore.kernel.org/lkml/20190110134433.15672-1-joro@8bytes.org/
-> > > 
-> > > 	V2: https://lore.kernel.org/lkml/20190115132257.6426-1-joro@8bytes.org/
-> > > 
-> > > The problem solved here is a limitation of the SWIOTLB implementation,
-> > > which does not support allocations larger than 256kb.  When the
-> > > virtio-blk driver tries to read/write a block larger than that, the
-> > > allocation of the dma-handle fails and an IO error is reported.
-> > 
-> > 
-> > OK looks good to me.
-> > I will park this in my tree for now this way it will get
-> > testing in linux-next.
-> > Can I get an ack from DMA maintainers on the DMA bits for
-> > merging this in 5.0?
-> 
-> You got mine (SWIOTBL is my area).
+From: Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 
-OK so
+[ Upstream commit c12b08ebbe16f0d3a96a116d86709b04c1ee8e74 ]
 
-Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+The parameter is still there but it's ignored. We need to check its
+value before deciding to go into passthrough mode for AMD IOMMU v2
+capable device.
 
+We occasionally use this parameter to force v2 capable device into
+translation mode to debug memory corruption that we suspect is
+caused by DMA writes.
 
+To address the following comment from Joerg Roedel on the first
+version, v2 capability of device is completely ignored.
+> This breaks the iommu_v2 use-case, as it needs a direct mapping for the
+> devices that support it.
 
-> > 
-> > > Changes to v2 are:
-> > > 
-> > > 	* Check if SWIOTLB is active before returning its limit in
-> > > 	  dma_direct_max_mapping_size()
-> > > 
-> > > 	* Only apply the maximum segment limit in virtio-blk when
-> > > 	  DMA-API is used for the vring
-> > > 
-> > > Please review.
-> > > 
-> > > Thanks,
-> > > 
-> > > 	Joerg
-> > > 
-> > > Joerg Roedel (5):
-> > >   swiotlb: Introduce swiotlb_max_mapping_size()
-> > >   swiotlb: Add is_swiotlb_active() function
-> > >   dma: Introduce dma_max_mapping_size()
-> > >   virtio: Introduce virtio_max_dma_size()
-> > >   virtio-blk: Consider virtio_max_dma_size() for maximum segment size
-> > > 
-> > >  drivers/block/virtio_blk.c   | 10 ++++++----
-> > >  drivers/virtio/virtio_ring.c | 10 ++++++++++
-> > >  include/linux/dma-mapping.h  | 16 ++++++++++++++++
-> > >  include/linux/swiotlb.h      | 11 +++++++++++
-> > >  include/linux/virtio.h       |  2 ++
-> > >  kernel/dma/direct.c          | 11 +++++++++++
-> > >  kernel/dma/swiotlb.c         | 10 ++++++++++
-> > >  7 files changed, 66 insertions(+), 4 deletions(-)
-> > > 
-> > > -- 
-> > > 2.17.1
+And from Documentation/admin-guide/kernel-parameters.txt:
+  This option does not override iommu=pt
+
+Fixes: aafd8ba0ca74 ("iommu/amd: Implement add_device and remove_device")
+
+Signed-off-by: Yu Zhao <yuzhao-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Sasha Levin <sashal-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 1167ff0416cf..325f3bad118b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -438,7 +438,14 @@ static int iommu_init_device(struct device *dev)
+ 
+ 	dev_data->alias = get_alias(dev);
+ 
+-	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
++	/*
++	 * By default we use passthrough mode for IOMMUv2 capable device.
++	 * But if amd_iommu=force_isolation is set (e.g. to debug DMA to
++	 * invalid address), we ignore the capability for the device so
++	 * it'll be forced to go into translation mode.
++	 */
++	if ((iommu_pass_through || !amd_iommu_force_isolation) &&
++	    dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
+ 		struct amd_iommu *iommu;
+ 
+ 		iommu = amd_iommu_rlookup_table[dev_data->devid];
+-- 
+2.19.1
