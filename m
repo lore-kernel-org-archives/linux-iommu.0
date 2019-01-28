@@ -1,95 +1,64 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 0/5 v3] Fix virtio-blk issue with SWIOTLB
-Date: Mon, 28 Jan 2019 10:53:22 -0500
-Message-ID: <20190128155322.GA32686@char.us.oracle.com>
-References: <20190123163049.24863-1-joro@8bytes.org>
-	<20190123135000-mutt-send-email-mst@kernel.org>
-	<20190123211453.GA2474@char.us.oracle.com>
-	<20190128101852-mutt-send-email-mst@kernel.org>
+From: Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 128/258] iommu/arm-smmu-v3: Avoid memory corruption from Hisilicon MSI payloads
+Date: Mon, 28 Jan 2019 10:57:14 -0500
+Message-ID: <20190128155924.51521-128-sashal@kernel.org>
+References: <20190128155924.51521-1-sashal@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20190128101852-mutt-send-email-mst-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Jens Axboe <axboe-tSWWG44O7X1aa/9Udqfwiw@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org, brijesh.singh-5C7GfCeVMHo@public.gmane.org, jon.grimm-5C7GfCeVMHo@public.gmane.org, jfehlig-IBi9RG/b67k@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-block-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20190128155924.51521-1-sashal@kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will.deacon@arm.com>, Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 28, 2019 at 10:20:05AM -0500, Michael S. Tsirkin wrote:
-> On Wed, Jan 23, 2019 at 04:14:53PM -0500, Konrad Rzeszutek Wilk wrote:
-> > On Wed, Jan 23, 2019 at 01:51:29PM -0500, Michael S. Tsirkin wrote:
-> > > On Wed, Jan 23, 2019 at 05:30:44PM +0100, Joerg Roedel wrote:
-> > > > Hi,
-> > > > 
-> > > > here is the third version of this patch-set. Previous
-> > > > versions can be found here:
-> > > > 
-> > > > 	V1: https://lore.kernel.org/lkml/20190110134433.15672-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org/
-> > > > 
-> > > > 	V2: https://lore.kernel.org/lkml/20190115132257.6426-1-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org/
-> > > > 
-> > > > The problem solved here is a limitation of the SWIOTLB implementation,
-> > > > which does not support allocations larger than 256kb.  When the
-> > > > virtio-blk driver tries to read/write a block larger than that, the
-> > > > allocation of the dma-handle fails and an IO error is reported.
-> > > 
-> > > 
-> > > OK looks good to me.
-> > > I will park this in my tree for now this way it will get
-> > > testing in linux-next.
-> > > Can I get an ack from DMA maintainers on the DMA bits for
-> > > merging this in 5.0?
-> > 
-> > You got mine (SWIOTBL is my area).
-> 
-> OK so
-> 
-> Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+From: Zhen Lei <thunder.leizhen@huawei.com>
 
-Yes :-)
-> 
-> 
-> 
-> > > 
-> > > > Changes to v2 are:
-> > > > 
-> > > > 	* Check if SWIOTLB is active before returning its limit in
-> > > > 	  dma_direct_max_mapping_size()
-> > > > 
-> > > > 	* Only apply the maximum segment limit in virtio-blk when
-> > > > 	  DMA-API is used for the vring
-> > > > 
-> > > > Please review.
-> > > > 
-> > > > Thanks,
-> > > > 
-> > > > 	Joerg
-> > > > 
-> > > > Joerg Roedel (5):
-> > > >   swiotlb: Introduce swiotlb_max_mapping_size()
-> > > >   swiotlb: Add is_swiotlb_active() function
-> > > >   dma: Introduce dma_max_mapping_size()
-> > > >   virtio: Introduce virtio_max_dma_size()
-> > > >   virtio-blk: Consider virtio_max_dma_size() for maximum segment size
-> > > > 
-> > > >  drivers/block/virtio_blk.c   | 10 ++++++----
-> > > >  drivers/virtio/virtio_ring.c | 10 ++++++++++
-> > > >  include/linux/dma-mapping.h  | 16 ++++++++++++++++
-> > > >  include/linux/swiotlb.h      | 11 +++++++++++
-> > > >  include/linux/virtio.h       |  2 ++
-> > > >  kernel/dma/direct.c          | 11 +++++++++++
-> > > >  kernel/dma/swiotlb.c         | 10 ++++++++++
-> > > >  7 files changed, 66 insertions(+), 4 deletions(-)
-> > > > 
-> > > > -- 
-> > > > 2.17.1
+[ Upstream commit 84a9a75774961612d0c7dd34a1777e8f98a65abd ]
+
+The GITS_TRANSLATER MMIO doorbell register in the ITS hardware is
+architected to be 4 bytes in size, yet on hi1620 and earlier, Hisilicon
+have allocated the adjacent 4 bytes to carry some IMPDEF sideband
+information which results in an 8-byte MSI payload being delivered when
+signalling an interrupt:
+
+MSIAddr:
+	 |----4bytes----|----4bytes----|
+	 |    MSIData   |    IMPDEF    |
+
+This poses no problem for the ITS hardware because the adjacent 4 bytes
+are reserved in the memory map. However, when delivering MSIs to memory,
+as we do in the SMMUv3 driver for signalling the completion of a SYNC
+command, the extended payload will corrupt the 4 bytes adjacent to the
+"sync_count" member in struct arm_smmu_device. Fortunately, the current
+layout allocates these bytes to padding, but this is fragile and we
+should make this explicit.
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+[will: Rewrote commit message and comment]
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 3e02aace38b1..4afb9cb99ea3 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -586,7 +586,11 @@ struct arm_smmu_device {
+ 
+ 	struct arm_smmu_strtab_cfg	strtab_cfg;
+ 
+-	u32				sync_count;
++	/* Hi16xx adds an extra 32 bits of goodness to its MSI payload */
++	union {
++		u32			sync_count;
++		u64			padding;
++	};
+ 
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
+-- 
+2.19.1
