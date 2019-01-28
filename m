@@ -1,29 +1,58 @@
-From: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 5/5] virtio-blk: Consider virtio_max_dma_size() for
- maximum segment size
-Date: Mon, 28 Jan 2019 09:05:26 +0100
-Message-ID: <20190128080526.GA3874@lst.de>
-References: <20190123163049.24863-1-joro@8bytes.org> <20190123163049.24863-6-joro@8bytes.org> <20190123213139.GD9032@lst.de> <20190124084011.GJ32526@8bytes.org> <20190124084221.GB19441@lst.de> <20190124095150.GL32526@8bytes.org>
+From: Nicolas Boichat <drinkcat@chromium.org>
+Subject: [PATCH] iommu/io-pgtable-arm-v7s: only kmemleak_ignore L2 tables
+Date: Mon, 28 Jan 2019 17:43:01 +0800
+Message-ID: <20190128094301.151252-1-drinkcat@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190124095150.GL32526@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Christoph Hellwig <hch@lst.de>, "Michael S . Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jens Axboe <axboe@kernel.dk>, virtualization@lists.linux-foundation.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, jfehlig@suse.com, jon.grimm@amd.com, brijesh.singh@amd.com, jroedel@suse.de
+Content-Transfer-Encoding: 8bit
+Return-path: <stable-owner@vger.kernel.org>
+Sender: stable-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 24, 2019 at 10:51:51AM +0100, Joerg Roedel wrote:
-> On Thu, Jan 24, 2019 at 09:42:21AM +0100, Christoph Hellwig wrote:
-> > Yes.  But more importantly it would fix the limit for all other block
-> > drivers that set large segment sizes when running over swiotlb.
-> 
-> True, so it would be something like the diff below? I havn't worked on
-> the block layer, so I don't know if that needs additional checks for
-> ->dev or anything.
+L1 tables are allocated with __get_dma_pages, and therefore already
+ignored by kmemleak.
 
-Looks sensible.  Maybe for now we'll just do the virtio-blk case
-that triggered it, and we'll do something like this patch for the
-next merge window.  We'll also need to apply the same magic to the
-DMA boundary.
+Without this, the kernel would print this error message on boot,
+when the first L1 table is allocated:
+
+[    2.810533] kmemleak: Trying to color unknown object at 0xffffffd652388000 as Black
+[    2.818190] CPU: 5 PID: 39 Comm: kworker/5:0 Tainted: G S                4.19.16 #8
+[    2.831227] Workqueue: events deferred_probe_work_func
+[    2.836353] Call trace:
+...
+[    2.852532]  paint_ptr+0xa0/0xa8
+[    2.855750]  kmemleak_ignore+0x38/0x6c
+[    2.859490]  __arm_v7s_alloc_table+0x168/0x1f4
+[    2.863922]  arm_v7s_alloc_pgtable+0x114/0x17c
+[    2.868354]  alloc_io_pgtable_ops+0x3c/0x78
+...
+
+Fixes: e5fc9753b1a8314 ("iommu/io-pgtable: Add ARMv7 short descriptor support")
+Signed-off-by: Nicolas Boichat <drinkcat@chromium.org>
+---
+
+I only tested this on top of my other series
+(https://patchwork.kernel.org/patch/10720495/), but I think the same fix
+applies. I'm still a bit confused as to why this only shows up now, as IIUC,
+the kmemleak_ignore call was always wrong with L1 tables.
+
+ drivers/iommu/io-pgtable-arm-v7s.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index cec29bf45c9bd7..98a4a4a0dfb0c1 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -217,7 +217,8 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 		if (dma != phys)
+ 			goto out_unmap;
+ 	}
+-	kmemleak_ignore(table);
++	if (lvl == 2)
++		kmemleak_ignore(table);
+ 	return table;
+ 
+ out_unmap:
+-- 
+2.20.1.495.gaa96b0ce6b-goog
