@@ -1,37 +1,89 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Tue, 29 Jan 2019 13:43:02 -0700
-Message-ID: <b3264844-2c04-6c34-f1e7-6b3bf9849a75@deltatee.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
+Date: Tue, 29 Jan 2019 15:44:00 -0500
+Message-ID: <20190129204359.GM3176@redhat.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
  <20190129174728.6430-4-jglisse@redhat.com>
  <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
  <20190129191120.GE3176@redhat.com>
- <c2c02af7-1d6f-e54f-c7fb-99c5b7776014@deltatee.com>
- <20190129194418.GG3176@redhat.com>
+ <20190129193250.GK10108@mellanox.com>
+ <20190129195055.GH3176@redhat.com>
+ <20190129202429.GL10108@mellanox.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190129194418.GG3176@redhat.com>
-Content-Language: en-CA
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <20190129202429.GL10108@mellanox.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jason Gunthorpe <jgg@mellanox.com>
+Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Logan Gunthorpe <logang@deltatee.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019-01-29 12:44 p.m., Jerome Glisse wrote:
->> I'd suggest [1] should be a part of the patchset so we can actually see
->> a user of the stuff you're adding.
-> 
-> I did not wanted to clutter patchset with device driver specific usage
-> of this. As the API can be reason about in abstract way.
-
-It's hard to reason about an interface when you can't see what all the
-layers want to do with it. Most maintainers (I'd hope) would certainly
-never merge code that has no callers, and for much the same reason, I'd
-rather not review patches that don't have real use case examples.
-
-Logan
+T24gVHVlLCBKYW4gMjksIDIwMTkgYXQgMDg6MjQ6MzZQTSArMDAwMCwgSmFzb24gR3VudGhvcnBl
+IHdyb3RlOgo+IE9uIFR1ZSwgSmFuIDI5LCAyMDE5IGF0IDAyOjUwOjU1UE0gLTA1MDAsIEplcm9t
+ZSBHbGlzc2Ugd3JvdGU6Cj4gCj4gPiBHUFUgZHJpdmVyIGRvIHdhbnQgbW9yZSBjb250cm9sIDop
+IEdQVSBkcml2ZXIgYXJlIG1vdmluZyB0aGluZ3MgYXJvdW5kCj4gPiBhbGwgdGhlIHRpbWUgYW5k
+IHRoZXkgaGF2ZSBtb3JlIG1lbW9yeSB0aGFuIGJhciBzcGFjZSAob24gbmV3ZXIgcGxhdGZvcm0K
+PiA+IEFNRCBHUFUgZG8gcmVzaXplIHRoZSBiYXIgYnV0IGl0IGlzIG5vdCB0aGUgcnVsZSBmb3Ig
+YWxsIEdQVXMpLiBTbwo+ID4gR1BVIGRyaXZlciBkbyBhY3R1YWx5IG1hbmFnZSB0aGVpciBCQVIg
+YWRkcmVzcyBzcGFjZSBhbmQgdGhleSBtYXAgYW5kCj4gPiB1bm1hcCB0aGluZyB0aGVyZS4gVGhl
+eSBjYW4gbm90IGFsbG93IHNvbWVvbmUgdG8ganVzdCBwaW4gc3R1ZmYgdGhlcmUKPiA+IHJhbmRv
+bWx5IG9yIHRoaXMgd291bGQgZGlzcnVwdCB0aGVpciByZWd1bGFyIHdvcmsgZmxvdy4gSGVuY2Ug
+dGhleSBuZWVkCj4gPiBjb250cm9sIGFuZCB0aGV5IG1pZ2h0IGltcGxlbWVudCB0aHJlc2hvbGQg
+Zm9yIGluc3RhbmNlIGlmIHRoZXkgaGF2ZQo+ID4gbW9yZSB0aGFuIE4gcGFnZXMgb2YgYmFyIHNw
+YWNlIG1hcCBmb3IgcGVlciB0byBwZWVyIHRoZW4gdGhleSBjYW4gZGVjaWRlCj4gPiB0byBmYWxs
+IGJhY2sgdG8gbWFpbiBtZW1vcnkgZm9yIGFueSBuZXcgcGVlciBtYXBwaW5nLgo+IAo+IEJ1dCB0
+aGlzIEFQSSBkb2Vzbid0IHNlZW0gdG8gb2ZmZXIgYW55IGNvbnRyb2wgLSBJIHRob3VnaHQgdGhh
+dAo+IGNvbnRyb2wgd2FzIGFsbCBjb21pbmcgZnJvbSB0aGUgbW0vaG1tIG5vdGlmaWVycyB0cmln
+Z2VyaW5nIHAycF91bm1hcHM/CgpUaGUgY29udHJvbCBpcyB3aXRoaW4gdGhlIGRyaXZlciBpbXBs
+ZW1lbnRhdGlvbiBvZiB0aG9zZSBjYWxsYmFja3MuIFNvCmRyaXZlciBpbXBsZW1lbnRhdGlvbiBj
+YW4gcmVmdXNlIHRvIG1hcCBieSByZXR1cm5pbmcgYW4gZXJyb3Igb24gcDJwX21hcApvciBpdCBj
+YW4gZGVjaWRlIHRvIHVzZSBtYWluIG1lbW9yeSBieSBtaWdyYXRpbmcgaXRzIG9iamVjdCB0byBt
+YWluIG1lbW9yeQphbmQgcG9wdWxhdGluZyB0aGUgZG1hIGFkZHJlc3MgYXJyYXkgd2l0aCBkbWFf
+cGFnZV9tYXAoKSBvZiB0aGUgbWFpbiBtZW1vcnkKcGFnZXMuIERyaXZlciBsaWtlIEdQVSBjYW4g
+aGF2ZSBwb2xpY3kgb24gdG9wIG9mIHRoYXQgZm9yIGluc3RhbmNlIHRoZXkKd2lsbCBvbmx5IGFs
+bG93IHAycCBtYXAgdG8gc3VjY2VlZCBmb3Igb2JqZWN0cyB0aGF0IGhhdmUgYmVlbiB0YWdnZWQg
+YnkgdGhlCnVzZXJzcGFjZSBpbiBzb21lIHdheSBpZSB0aGUgdXNlcnNwYWNlIGFwcGxpY2F0aW9u
+IGlzIGluIGNvbnRyb2wgb2Ygd2hhdApjYW4gYmUgbWFwIHRvIHBlZXIgZGV2aWNlLiBUaGlzIGlz
+IG5lZWRlZCBmb3IgR1BVIGRyaXZlciBhcyB3ZSBkbyB3YW50CnVzZXJzcGFjZSBpbnZvbHZlbWVu
+dCBvbiB3aGF0IG9iamVjdCBhcmUgYWxsb3dlZCB0byBoYXZlIHAycCBhY2Nlc3MgYW5kCmFsc28g
+c28gdGhhdCB3ZSBjYW4gcmVwb3J0IHRvIHVzZXJzcGFjZSB3aGVuIHdlIGFyZSBydW5uaW5nIG91
+dCBvZiBCQVIKYWRkcmVzc2VzIGZvciB0aGlzIHRvIHdvcmsgYXMgaW50ZW5kZWQgKGllIG5vdCBm
+YWxsaW5nIGJhY2sgdG8gbWFpbiBtZW1vcnkpCnNvIHRoYXQgYXBwbGljYXRpb24gY2FuIHRha2Ug
+YXBwcm9wcmlhdGUgYWN0aW9ucyAobGlrZSBkZWNpZGUgd2hhdCB0bwpwcmlvcml0aXplKS4KCkZv
+ciBtb3ZpbmcgdGhpbmdzIGFyb3VuZCBhZnRlciBhIHN1Y2Nlc3NmdWwgcDJwX21hcCB5ZXMgdGhl
+IGV4cG9ydGluZwpkZXZpY2UgaGF2ZSB0byBjYWxsIGZvciBpbnN0YW5jZSB6YXBfdm1hX3B0ZXMo
+KSBvciBzb21ldGhpbmcgc2ltaWxhci4KVGhpcyB3aWxsIHRyaWdnZXIgbm90aWZpZXIgY2FsbCBh
+bmQgdGhlIGltcG9ydGluZyBkZXZpY2Ugd2lsbCBpbnZhbGlkYXRlCml0cyBtYXBwaW5nLiBPbmNl
+IGl0IGlzIGludmFsaWRhdGVkIHRoZW4gdGhlIGV4cG9ydGluZyBkZXZpY2UgY2FuCnBvaW50IG5l
+dyBjYWxsIG9mIHAycF9tYXAgKGZvciB0aGUgc2FtZSByYW5nZSkgdG8gbmV3IG1lbW9yeSAob2J2
+aW91c2x5CnRoZSBleHBvcnRpbmcgZGV2aWNlIGhhdmUgdG8gc3luY2hyb25pemUgYW55IGNvbmN1
+cnJlbnQgY2FsbCB0byBwMnBfbWFwCndpdGggdGhlIGludmFsaWRhdGlvbikuCgo+IAo+IEkgd291
+bGQgdGhpbmsgdGhhdCB0aGUgaW1wb3J0aW5nIGRyaXZlciBjYW4gYXNzdW1lIHRoZSBCQVIgcGFn
+ZSBpcwo+IGtlcHQgYWxpdmUgdW50aWwgaXQgY2FsbHMgdW5tYXAgKHByZXN1bWFibHkgdHJpZ2dl
+cmVkIGJ5IG5vdGlmaWVycyk/Cj4gCj4gaWUgdGhlIGV4cG9ydGluZyBkcml2ZXIgc2VlcyB0aGUg
+QkFSIHBhZ2UgYXMgcGlubmVkIHVudGlsIHVubWFwLgoKVGhlIGludGVudGlvbiB3aXRoIHRoaXMg
+cGF0Y2hzZXQgaXMgdGhhdCBpdCBpcyBub3QgcGluIGllIHRoZSBpbXBvcnRlcgpkZXZpY2UgX211
+c3RfIGFiaWRlIGJ5IGFsbCBtbXUgbm90aWZpZXIgaW52YWxpZGF0aW9ucyBhbmQgdGhleSBjYW4K
+aGFwcGVuIGF0IGFueXRpbWUuIFRoZSBpbXBvcnRpbmcgZGV2aWNlIGNhbiBob3dldmVyIHJlLXAy
+cF9tYXAgdGhlCnNhbWUgcmFuZ2UgYWZ0ZXIgYW4gaW52YWxpZGF0aW9uLgoKSSB3b3VsZCBsaWtl
+IHRvIHJlc3RyaWN0IHRoaXMgdG8gaW1wb3J0ZXIgdGhhdCBjYW4gaW52YWxpZGF0ZSBmb3IKbm93
+IGJlY2F1c2UgaSBiZWxpZXZlIGFsbCB0aGUgZmlyc3QgZGV2aWNlIHRvIHVzZSBjYW4gc3VwcG9y
+dCB0aGUKaW52YWxpZGF0aW9uLgoKQWxzbyB3aGVuIHVzaW5nIEhNTSBwcml2YXRlIGRldmljZSBt
+ZW1vcnkgd2UgX2NhbiBub3RfIHBpbiB2aXJ0dWFsCmFkZHJlc3MgdG8gZGV2aWNlIG1lbW9yeSBh
+cyBvdGhlcndpc2UgQ1BVIGFjY2VzcyB3b3VsZCBoYXZlIHRvIFNJR0JVUwpvciBTRUdGQVVMVCBh
+bmQgd2UgZG8gbm90IHdhbnQgdGhhdC4gU28gdGhpcyB3YXMgYWxzbyBhIG1vdGl2YXRpb24gdG8K
+a2VlcCB0aGluZyBjb25zaXN0ZW50IGZvciB0aGUgaW1wb3J0ZXIgZm9yIGJvdGggY2FzZXMuCgpD
+aGVlcnMsCkrDqXLDtG1lCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9w
+Lm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1k
+ZXZlbAo=
