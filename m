@@ -1,81 +1,120 @@
-From: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Tue, 29 Jan 2019 14:30:49 -0700
-Message-ID: <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
+From: Jerome Glisse <jglisse@redhat.com>
+Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
+Date: Tue, 29 Jan 2019 16:50:28 -0500
+Message-ID: <20190129215028.GQ3176@redhat.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
  <20190129174728.6430-4-jglisse@redhat.com>
  <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
+ <20190129191120.GE3176@redhat.com>
+ <20190129193250.GK10108@mellanox.com>
  <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
  <20190129205749.GN3176@redhat.com>
+ <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190129205749.GN3176@redhat.com>
-Content-Language: en-CA
-Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: Jason Gunthorpe <jgg@mellanox.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+In-Reply-To: <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Logan Gunthorpe <logang@deltatee.com>
+Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Jason Gunthorpe <jgg@mellanox.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 2019-01-29 1:57 p.m., Jerome Glisse wrote:
-> GPU driver must be in control and must be call to. Here there is 2 cases
-> in this patchset and i should have instead posted 2 separate patchset as
-> it seems that it is confusing things.
-> 
-> For the HMM page, the physical address of the page ie the pfn does not
-> correspond to anything ie there is nothing behind it. So the importing
-> device has no idea how to get a valid physical address from an HMM page
-> only the device driver exporting its memory with HMM device memory knows
-> that.
-> 
-> 
-> For the special vma ie mmap of a device file. GPU driver do manage their
-> BAR ie the GPU have a page table that map BAR page to GPU memory and the
-> driver _constantly_ update this page table, it is reflected by invalidating
-> the CPU mapping. In fact most of the time the CPU mapping of GPU object are
-> invalid they are valid only a small fraction of their lifetime. So you
-> _must_ have some call to inform the exporting device driver that another
-> device would like to map one of its vma. The exporting device can then
-> try to avoid as much churn as possible for the importing device. But this
-> has consequence and the exporting device driver must be allow to apply
-> policy and make decission on wether or not it authorize the other device
-> to peer map its memory. For GPU the userspace application have to call
-> specific API that translate into specific ioctl which themself set flags
-> on object (in the kernel struct tracking the user space object). The only
-> way to allow program predictability is if the application can ask and know
-> if it can peer export an object (ie is there enough BAR space left).
-
-This all seems like it's an HMM problem and not related to mapping
-BARs/"potential BARs" to userspace. If some code wants to DMA map HMM
-pages, it calls an HMM function to map them. If HMM needs to consult
-with the driver on aspects of how that's mapped, then that's between HMM
-and the driver and not something I really care about. But making the
-entire mapping stuff tied to userspace VMAs does not make sense to me.
-What if somebody wants to map some HMM pages in the same way but from
-kernel space and they therefore don't have a VMA?
-
-
->> I also figured there'd be a fault version of p2p_ioremap_device_memory()
->> for when you are mapping P2P memory and you want to assign the pages
->> lazily. Though, this can come later when someone wants to implement that.
-> 
-> For GPU the BAR address space is manage page by page and thus you do not
-> want to map a range of BAR addresses but you want to allow mapping of
-> multiple page of BAR address that are not adjacent to each other nor
-> ordered in anyway. But providing helper for simpler device does make sense.
-
-Well, this has little do with the backing device but how the memory is
-mapped into userspace. With p2p_ioremap_device_memory() the entire range
-is mapped into the userspace VMA immediately during the call to mmap().
-With p2p_fault_device_memory(), mmap() would not actually map anything
-and a page in the VMA would be mapped only when userspace accesses it
-(using fault()). It seems to me like GPUs would prefer the latter but if
-HMM takes care of the mapping from userspace potential pages to actual
-GPU pages through the BAR then that may not be true.
-
-Logan
+T24gVHVlLCBKYW4gMjksIDIwMTkgYXQgMDI6MzA6NDlQTSAtMDcwMCwgTG9nYW4gR3VudGhvcnBl
+IHdyb3RlOgo+IAo+IAo+IE9uIDIwMTktMDEtMjkgMTo1NyBwLm0uLCBKZXJvbWUgR2xpc3NlIHdy
+b3RlOgo+ID4gR1BVIGRyaXZlciBtdXN0IGJlIGluIGNvbnRyb2wgYW5kIG11c3QgYmUgY2FsbCB0
+by4gSGVyZSB0aGVyZSBpcyAyIGNhc2VzCj4gPiBpbiB0aGlzIHBhdGNoc2V0IGFuZCBpIHNob3Vs
+ZCBoYXZlIGluc3RlYWQgcG9zdGVkIDIgc2VwYXJhdGUgcGF0Y2hzZXQgYXMKPiA+IGl0IHNlZW1z
+IHRoYXQgaXQgaXMgY29uZnVzaW5nIHRoaW5ncy4KPiA+IAo+ID4gRm9yIHRoZSBITU0gcGFnZSwg
+dGhlIHBoeXNpY2FsIGFkZHJlc3Mgb2YgdGhlIHBhZ2UgaWUgdGhlIHBmbiBkb2VzIG5vdAo+ID4g
+Y29ycmVzcG9uZCB0byBhbnl0aGluZyBpZSB0aGVyZSBpcyBub3RoaW5nIGJlaGluZCBpdC4gU28g
+dGhlIGltcG9ydGluZwo+ID4gZGV2aWNlIGhhcyBubyBpZGVhIGhvdyB0byBnZXQgYSB2YWxpZCBw
+aHlzaWNhbCBhZGRyZXNzIGZyb20gYW4gSE1NIHBhZ2UKPiA+IG9ubHkgdGhlIGRldmljZSBkcml2
+ZXIgZXhwb3J0aW5nIGl0cyBtZW1vcnkgd2l0aCBITU0gZGV2aWNlIG1lbW9yeSBrbm93cwo+ID4g
+dGhhdC4KPiA+IAo+ID4gCj4gPiBGb3IgdGhlIHNwZWNpYWwgdm1hIGllIG1tYXAgb2YgYSBkZXZp
+Y2UgZmlsZS4gR1BVIGRyaXZlciBkbyBtYW5hZ2UgdGhlaXIKPiA+IEJBUiBpZSB0aGUgR1BVIGhh
+dmUgYSBwYWdlIHRhYmxlIHRoYXQgbWFwIEJBUiBwYWdlIHRvIEdQVSBtZW1vcnkgYW5kIHRoZQo+
+ID4gZHJpdmVyIF9jb25zdGFudGx5XyB1cGRhdGUgdGhpcyBwYWdlIHRhYmxlLCBpdCBpcyByZWZs
+ZWN0ZWQgYnkgaW52YWxpZGF0aW5nCj4gPiB0aGUgQ1BVIG1hcHBpbmcuIEluIGZhY3QgbW9zdCBv
+ZiB0aGUgdGltZSB0aGUgQ1BVIG1hcHBpbmcgb2YgR1BVIG9iamVjdCBhcmUKPiA+IGludmFsaWQg
+dGhleSBhcmUgdmFsaWQgb25seSBhIHNtYWxsIGZyYWN0aW9uIG9mIHRoZWlyIGxpZmV0aW1lLiBT
+byB5b3UKPiA+IF9tdXN0XyBoYXZlIHNvbWUgY2FsbCB0byBpbmZvcm0gdGhlIGV4cG9ydGluZyBk
+ZXZpY2UgZHJpdmVyIHRoYXQgYW5vdGhlcgo+ID4gZGV2aWNlIHdvdWxkIGxpa2UgdG8gbWFwIG9u
+ZSBvZiBpdHMgdm1hLiBUaGUgZXhwb3J0aW5nIGRldmljZSBjYW4gdGhlbgo+ID4gdHJ5IHRvIGF2
+b2lkIGFzIG11Y2ggY2h1cm4gYXMgcG9zc2libGUgZm9yIHRoZSBpbXBvcnRpbmcgZGV2aWNlLiBC
+dXQgdGhpcwo+ID4gaGFzIGNvbnNlcXVlbmNlIGFuZCB0aGUgZXhwb3J0aW5nIGRldmljZSBkcml2
+ZXIgbXVzdCBiZSBhbGxvdyB0byBhcHBseQo+ID4gcG9saWN5IGFuZCBtYWtlIGRlY2lzc2lvbiBv
+biB3ZXRoZXIgb3Igbm90IGl0IGF1dGhvcml6ZSB0aGUgb3RoZXIgZGV2aWNlCj4gPiB0byBwZWVy
+IG1hcCBpdHMgbWVtb3J5LiBGb3IgR1BVIHRoZSB1c2Vyc3BhY2UgYXBwbGljYXRpb24gaGF2ZSB0
+byBjYWxsCj4gPiBzcGVjaWZpYyBBUEkgdGhhdCB0cmFuc2xhdGUgaW50byBzcGVjaWZpYyBpb2N0
+bCB3aGljaCB0aGVtc2VsZiBzZXQgZmxhZ3MKPiA+IG9uIG9iamVjdCAoaW4gdGhlIGtlcm5lbCBz
+dHJ1Y3QgdHJhY2tpbmcgdGhlIHVzZXIgc3BhY2Ugb2JqZWN0KS4gVGhlIG9ubHkKPiA+IHdheSB0
+byBhbGxvdyBwcm9ncmFtIHByZWRpY3RhYmlsaXR5IGlzIGlmIHRoZSBhcHBsaWNhdGlvbiBjYW4g
+YXNrIGFuZCBrbm93Cj4gPiBpZiBpdCBjYW4gcGVlciBleHBvcnQgYW4gb2JqZWN0IChpZSBpcyB0
+aGVyZSBlbm91Z2ggQkFSIHNwYWNlIGxlZnQpLgo+IAo+IFRoaXMgYWxsIHNlZW1zIGxpa2UgaXQn
+cyBhbiBITU0gcHJvYmxlbSBhbmQgbm90IHJlbGF0ZWQgdG8gbWFwcGluZwo+IEJBUnMvInBvdGVu
+dGlhbCBCQVJzIiB0byB1c2Vyc3BhY2UuIElmIHNvbWUgY29kZSB3YW50cyB0byBETUEgbWFwIEhN
+TQo+IHBhZ2VzLCBpdCBjYWxscyBhbiBITU0gZnVuY3Rpb24gdG8gbWFwIHRoZW0uIElmIEhNTSBu
+ZWVkcyB0byBjb25zdWx0Cj4gd2l0aCB0aGUgZHJpdmVyIG9uIGFzcGVjdHMgb2YgaG93IHRoYXQn
+cyBtYXBwZWQsIHRoZW4gdGhhdCdzIGJldHdlZW4gSE1NCj4gYW5kIHRoZSBkcml2ZXIgYW5kIG5v
+dCBzb21ldGhpbmcgSSByZWFsbHkgY2FyZSBhYm91dC4gQnV0IG1ha2luZyB0aGUKPiBlbnRpcmUg
+bWFwcGluZyBzdHVmZiB0aWVkIHRvIHVzZXJzcGFjZSBWTUFzIGRvZXMgbm90IG1ha2Ugc2Vuc2Ug
+dG8gbWUuCj4gV2hhdCBpZiBzb21lYm9keSB3YW50cyB0byBtYXAgc29tZSBITU0gcGFnZXMgaW4g
+dGhlIHNhbWUgd2F5IGJ1dCBmcm9tCj4ga2VybmVsIHNwYWNlIGFuZCB0aGV5IHRoZXJlZm9yZSBk
+b24ndCBoYXZlIGEgVk1BPwoKTm8gdGhpcyBpcyB0aGUgbm9uIEhNTSBjYXNlIGkgYW0gdGFsa2lu
+ZyBhYm91dCBoZXJlLiBGdWxseSBpZ25vcmUgSE1NCmluIHRoaXMgZnJhbWUuIEEgR1BVIGRyaXZl
+ciB0aGF0IGRvIG5vdCBzdXBwb3J0IG9yIHVzZSBITU0gaW4gYW55d2F5CmhhcyBhbGwgdGhlIHBy
+b3BlcnRpZXMgYW5kIHJlcXVpcmVtZW50IGkgZG8gbGlzdCBhYm92ZS4gU28gYWxsIHRoZSBwb2lu
+dHMKaSB3YXMgbWFraW5nIGFyZSB3aXRob3V0IEhNTSBpbiB0aGUgcGljdHVyZSB3aGF0c29ldmVy
+LiBJIHNob3VsZCBoYXZlCnBvc3RlZCB0aGlzIGEgc2VwYXJhdGUgcGF0Y2hlcyB0byBhdm9pZCB0
+aGlzIGNvbmZ1c2lvbi4KClJlZ2FyZGluZyB5b3VyIEhNTSBxdWVzdGlvbi4gWW91IGNhbiBub3Qg
+bWFwIEhNTSBwYWdlcywgYWxsIGNvZGUgcGF0aAp0aGF0IHdvdWxkIHRyeSB0aGF0IHdvdWxkIHRy
+aWdnZXIgYSBtaWdyYXRpb24gYmFjayB0byByZWd1bGFyIG1lbW9yeQphbmQgd2lsbCB1c2UgdGhl
+IHJlZ3VsYXIgbWVtb3J5IGZvciBDUFUgYWNjZXNzLgoKCj4gPj4gSSBhbHNvIGZpZ3VyZWQgdGhl
+cmUnZCBiZSBhIGZhdWx0IHZlcnNpb24gb2YgcDJwX2lvcmVtYXBfZGV2aWNlX21lbW9yeSgpCj4g
+Pj4gZm9yIHdoZW4geW91IGFyZSBtYXBwaW5nIFAyUCBtZW1vcnkgYW5kIHlvdSB3YW50IHRvIGFz
+c2lnbiB0aGUgcGFnZXMKPiA+PiBsYXppbHkuIFRob3VnaCwgdGhpcyBjYW4gY29tZSBsYXRlciB3
+aGVuIHNvbWVvbmUgd2FudHMgdG8gaW1wbGVtZW50IHRoYXQuCj4gPiAKPiA+IEZvciBHUFUgdGhl
+IEJBUiBhZGRyZXNzIHNwYWNlIGlzIG1hbmFnZSBwYWdlIGJ5IHBhZ2UgYW5kIHRodXMgeW91IGRv
+IG5vdAo+ID4gd2FudCB0byBtYXAgYSByYW5nZSBvZiBCQVIgYWRkcmVzc2VzIGJ1dCB5b3Ugd2Fu
+dCB0byBhbGxvdyBtYXBwaW5nIG9mCj4gPiBtdWx0aXBsZSBwYWdlIG9mIEJBUiBhZGRyZXNzIHRo
+YXQgYXJlIG5vdCBhZGphY2VudCB0byBlYWNoIG90aGVyIG5vcgo+ID4gb3JkZXJlZCBpbiBhbnl3
+YXkuIEJ1dCBwcm92aWRpbmcgaGVscGVyIGZvciBzaW1wbGVyIGRldmljZSBkb2VzIG1ha2Ugc2Vu
+c2UuCj4gCj4gV2VsbCwgdGhpcyBoYXMgbGl0dGxlIGRvIHdpdGggdGhlIGJhY2tpbmcgZGV2aWNl
+IGJ1dCBob3cgdGhlIG1lbW9yeSBpcwo+IG1hcHBlZCBpbnRvIHVzZXJzcGFjZS4gV2l0aCBwMnBf
+aW9yZW1hcF9kZXZpY2VfbWVtb3J5KCkgdGhlIGVudGlyZSByYW5nZQo+IGlzIG1hcHBlZCBpbnRv
+IHRoZSB1c2Vyc3BhY2UgVk1BIGltbWVkaWF0ZWx5IGR1cmluZyB0aGUgY2FsbCB0byBtbWFwKCku
+Cj4gV2l0aCBwMnBfZmF1bHRfZGV2aWNlX21lbW9yeSgpLCBtbWFwKCkgd291bGQgbm90IGFjdHVh
+bGx5IG1hcCBhbnl0aGluZwo+IGFuZCBhIHBhZ2UgaW4gdGhlIFZNQSB3b3VsZCBiZSBtYXBwZWQg
+b25seSB3aGVuIHVzZXJzcGFjZSBhY2Nlc3NlcyBpdAo+ICh1c2luZyBmYXVsdCgpKS4gSXQgc2Vl
+bXMgdG8gbWUgbGlrZSBHUFVzIHdvdWxkIHByZWZlciB0aGUgbGF0dGVyIGJ1dCBpZgo+IEhNTSB0
+YWtlcyBjYXJlIG9mIHRoZSBtYXBwaW5nIGZyb20gdXNlcnNwYWNlIHBvdGVudGlhbCBwYWdlcyB0
+byBhY3R1YWwKPiBHUFUgcGFnZXMgdGhyb3VnaCB0aGUgQkFSIHRoZW4gdGhhdCBtYXkgbm90IGJl
+IHRydWUuCgpBZ2FpbiBITU0gaGFzIG5vdGhpbmcgdG8gZG8gaGVyZSwgaWdub3JlIEhNTSBpdCBk
+b2VzIG5vdCBwbGF5IGFueSByb2xlCmFuZCBpdCBpcyBub3QgaW52b2x2ZSBpbiBhbnl3YXkgaGVy
+ZS4gR1BVIHdhbnQgdG8gY29udHJvbCB3aGF0IG9iamVjdAp0aGV5IGFsbG93IG90aGVyIGRldmlj
+ZSB0byBhY2Nlc3MgYW5kIG9iamVjdCB0aGV5IGRvIG5vdCBhbGxvdy4gR1BVIGRyaXZlcgpfY29u
+c3RhbnRseV8gaW52YWxpZGF0ZSB0aGUgQ1BVIHBhZ2UgdGFibGUgYW5kIGluIGZhY3QgdGhlIENQ
+VSBwYWdlIHRhYmxlCmRvIG5vdCBoYXZlIGFueSB2YWxpZCBwdGUgZm9yIGEgdm1hIHRoYXQgaXMg
+YW4gbW1hcCBvZiBHUFUgZGV2aWNlIGZpbGUKZm9yIG1vc3Qgb2YgdGhlIHZtYSBsaWZldGltZS4g
+Q2hhbmdpbmcgdGhhdCB3b3VsZCBoaWdobHkgZGlzcnVwdCBhbmQKYnJlYWsgR1BVIGRyaXZlcnMu
+IFRoZXkgbmVlZCB0byBjb250cm9sIHRoYXQsIHRoZXkgbmVlZCB0byBjb250cm9sIHdoYXQKdG8g
+ZG8gaWYgYW5vdGhlciBkZXZpY2UgdHJpZXMgdG8gcGVlciBtYXAgc29tZSBvZiB0aGVpciBtZW1v
+cnkuIEhlbmNlCndoeSB0aGV5IG5lZWQgdG8gaW1wbGVtZW50IHRoZSBjYWxsYmFjayBhbmQgZGVj
+aWRlIG9uIHdldGhlciBvciBub3QgdGhleQphbGxvdyB0aGUgcGVlciBtYXBwaW5nIG9yIHVzZSBk
+ZXZpY2UgbWVtb3J5IGZvciBpdCAodGhleSBjYW4gZGVjaWRlIHRvCmZhbGxiYWNrIHRvIG1haW4g
+bWVtb3J5KS4KCklmIHRoZSBleHBvcnRlciBjYW4gbm90IGNvbnRyb2wgdGhhbiB0aGlzIGlzIHVz
+ZWxlc3MgdG8gR1BVIGRyaXZlci4gSQp3b3VsZCByYXRoZXIgbm90IGV4Y2x1ZGUgR1BVIGRyaXZl
+ciBmcm9tIHRoaXMuCgpDaGVlcnMsCkrDqXLDtG1lCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxp
+c3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFu
+L2xpc3RpbmZvL2RyaS1kZXZlbAo=
