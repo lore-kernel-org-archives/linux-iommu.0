@@ -1,43 +1,44 @@
-From: Jason Gunthorpe <jgg@mellanox.com>
-Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
- vma
-Date: Tue, 29 Jan 2019 20:24:36 +0000
-Message-ID: <20190129202429.GL10108@mellanox.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [RFC PATCH 1/5] pci/p2p: add a function to test peer to peer
+ capability
+Date: Tue, 29 Jan 2019 13:24:48 -0700
+Message-ID: <83acb590-25a5-f8ae-1616-bdb8b069fa0f@deltatee.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
- <20190129174728.6430-4-jglisse@redhat.com>
- <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
- <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
- <20190129195055.GH3176@redhat.com>
+ <20190129174728.6430-2-jglisse@redhat.com>
+ <CADnq5_N8QLA_80j+iCtMHvSZhc-WFpzdZhpk6jR9yhoNoUDFZA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190129195055.GH3176@redhat.com>
-Content-Language: en-US
-Content-ID: <7B9013D8E8AFBE418AC181CA1F1B161F@eurprd05.prod.outlook.com>
+In-Reply-To: <CADnq5_N8QLA_80j+iCtMHvSZhc-WFpzdZhpk6jR9yhoNoUDFZA@mail.gmail.com>
+Content-Language: en-CA
 Sender: linux-kernel-owner@vger.kernel.org
-To: Jerome Glisse <jglisse@redhat.com>
-Cc: Logan Gunthorpe <logang@deltatee.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+To: Alex Deucher <alexdeucher@gmail.com>, Jerome Glisse <jglisse@redhat.com>
+Cc: linux-mm <linux-mm@kvack.org>, Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, LKML <linux-kernel@vger.kernel.org>, Maling list - DRI developers <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@mellanox.com>, Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 02:50:55PM -0500, Jerome Glisse wrote:
 
-> GPU driver do want more control :) GPU driver are moving things around
-> all the time and they have more memory than bar space (on newer platform
-> AMD GPU do resize the bar but it is not the rule for all GPUs). So
-> GPU driver do actualy manage their BAR address space and they map and
-> unmap thing there. They can not allow someone to just pin stuff there
-> randomly or this would disrupt their regular work flow. Hence they need
-> control and they might implement threshold for instance if they have
-> more than N pages of bar space map for peer to peer then they can decide
-> to fall back to main memory for any new peer mapping.
 
-But this API doesn't seem to offer any control - I thought that
-control was all coming from the mm/hmm notifiers triggering p2p_unmaps?
+On 2019-01-29 12:56 p.m., Alex Deucher wrote:
+> On Tue, Jan 29, 2019 at 12:47 PM <jglisse@redhat.com> wrote:
+>>
+>> From: Jérôme Glisse <jglisse@redhat.com>
+>>
+>> device_test_p2p() return true if two devices can peer to peer to
+>> each other. We add a generic function as different inter-connect
+>> can support peer to peer and we want to genericaly test this no
+>> matter what the inter-connect might be. However this version only
+>> support PCIE for now.
+>>
+> 
+> What about something like these patches:
+> https://cgit.freedesktop.org/~deathsimple/linux/commit/?h=p2p&id=4fab9ff69cb968183f717551441b475fabce6c1c
+> https://cgit.freedesktop.org/~deathsimple/linux/commit/?h=p2p&id=f90b12d41c277335d08c9dab62433f27c0fadbe5
+> They are a bit more thorough.
 
-I would think that the importing driver can assume the BAR page is
-kept alive until it calls unmap (presumably triggered by notifiers)?
+Those new functions seem to have a lot of overlap with the code that is
+already upstream in p2pdma.... Perhaps you should be improving the
+p2pdma functions if they aren't suitable for what you want already
+instead of creating new ones.
 
-ie the exporting driver sees the BAR page as pinned until unmap.
-
-Jason
+Logan
