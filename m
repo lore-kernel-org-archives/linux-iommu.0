@@ -1,65 +1,73 @@
-From: Logan Gunthorpe <logang@deltatee.com>
+From: Jason Gunthorpe <jgg@mellanox.com>
 Subject: Re: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device
  vma
-Date: Tue, 29 Jan 2019 15:58:45 -0700
-Message-ID: <deb7ba21-77f8-0513-2524-ee40a8ee35d5@deltatee.com>
+Date: Tue, 29 Jan 2019 23:02:25 +0000
+Message-ID: <20190129224016.GD4713@mellanox.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
  <20190129174728.6430-4-jglisse@redhat.com>
  <ae928aa5-a659-74d5-9734-15dfefafd3ea@deltatee.com>
  <20190129191120.GE3176@redhat.com> <20190129193250.GK10108@mellanox.com>
- <99c228c6-ef96-7594-cb43-78931966c75d@deltatee.com>
- <20190129205749.GN3176@redhat.com>
- <2b704e96-9c7c-3024-b87f-364b9ba22208@deltatee.com>
- <20190129215028.GQ3176@redhat.com>
+ <20190129195055.GH3176@redhat.com> <20190129202429.GL10108@mellanox.com>
+ <20190129204359.GM3176@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190129215028.GQ3176@redhat.com>
-Content-Language: en-CA
+In-Reply-To: <20190129204359.GM3176@redhat.com>
+Content-Language: en-US
+Content-ID: <80A32BC881EDF545A23BE7BA9D3E7E68@eurprd05.prod.outlook.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Jerome Glisse <jglisse@redhat.com>
-Cc: Jason Gunthorpe <jgg@mellanox.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: Logan Gunthorpe <logang@deltatee.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Tue, Jan 29, 2019 at 03:44:00PM -0500, Jerome Glisse wrote:
+
+> > But this API doesn't seem to offer any control - I thought that
+> > control was all coming from the mm/hmm notifiers triggering p2p_unmaps?
+>=20
+> The control is within the driver implementation of those callbacks.=20
+
+Seems like what you mean by control is 'the exporter gets to choose
+the physical address at the instant of map' - which seems reasonable
+for GPU.
 
 
-On 2019-01-29 2:50 p.m., Jerome Glisse wrote:
-> No this is the non HMM case i am talking about here. Fully ignore HMM
-> in this frame. A GPU driver that do not support or use HMM in anyway
-> has all the properties and requirement i do list above. So all the points
-> i was making are without HMM in the picture whatsoever. I should have
-> posted this a separate patches to avoid this confusion.
-> 
-> Regarding your HMM question. You can not map HMM pages, all code path
-> that would try that would trigger a migration back to regular memory
-> and will use the regular memory for CPU access.
-> 
+> will only allow p2p map to succeed for objects that have been tagged by t=
+he
+> userspace in some way ie the userspace application is in control of what
+> can be map to peer device.
 
-I thought this was the whole point of HMM... And eventually it would
-support being able to map the pages through the BAR in cooperation with
-the driver. If not, what's that whole layer for? Why not just have HMM
-handle this situation?
+I would have thought this means the VMA for the object is created
+without the map/unmap ops? Or are GPU objects and VMAs unrelated?
 
-And what struct pages are actually going to be backing these VMAs if
-it's not using HMM?
+> For moving things around after a successful p2p_map yes the exporting
+> device have to call for instance zap_vma_ptes() or something
+> similar.
 
+Okay, great, RDMA needs this flow for hotplug - we zap the VMA's when
+unplugging the PCI device and we can delay the PCI unplug completion
+until all the p2p_unmaps are called...
 
-> Again HMM has nothing to do here, ignore HMM it does not play any role
-> and it is not involve in anyway here. GPU want to control what object
-> they allow other device to access and object they do not allow. GPU driver
-> _constantly_ invalidate the CPU page table and in fact the CPU page table
-> do not have any valid pte for a vma that is an mmap of GPU device file
-> for most of the vma lifetime. Changing that would highly disrupt and
-> break GPU drivers. They need to control that, they need to control what
-> to do if another device tries to peer map some of their memory. Hence
-> why they need to implement the callback and decide on wether or not they
-> allow the peer mapping or use device memory for it (they can decide to
-> fallback to main memory).
+But in this case a future p2p_map will have to fail as the BAR no
+longer exists. How to handle this?
 
-But mapping is an operation of the memory/struct pages behind the VMA;
-not of the VMA itself and I think that's evident by the code in that the
-only way the VMA layer is involved is the fact that you're abusing
-vm_ops by adding new ops there and calling it by other layers.
+> > I would think that the importing driver can assume the BAR page is
+> > kept alive until it calls unmap (presumably triggered by notifiers)?
+> >=20
+> > ie the exporting driver sees the BAR page as pinned until unmap.
+>=20
+> The intention with this patchset is that it is not pin ie the importer
+> device _must_ abide by all mmu notifier invalidations and they can
+> happen at anytime. The importing device can however re-p2p_map the
+> same range after an invalidation.
+>
+> I would like to restrict this to importer that can invalidate for
+> now because i believe all the first device to use can support the
+> invalidation.
 
-Logan
+This seems reasonable (and sort of says importers not getting this
+from HMM need careful checking), was this in the comment above the
+ops?
+
+Jason
