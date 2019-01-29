@@ -1,79 +1,196 @@
-From: Vivek Gautam <vivek.gautam@codeaurora.org>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: Add support for non-coherent page
- table mappings
-Date: Tue, 29 Jan 2019 16:13:12 +0530
-Message-ID: <CAFp+6iHJ_Ctjh8-y8p4KWGrCVHE+1uv3KX2-rfKkt1uqb0YqHA@mail.gmail.com>
-References: <20190117092718.1396-1-vivek.gautam@codeaurora.org>
- <20190117092718.1396-3-vivek.gautam@codeaurora.org> <20190120000117.GH26876@brain-police>
- <CAFp+6iFh26JgBUx1jkm4EHNY1vs93Uz2qngxP27D0f7dcpX2GQ@mail.gmail.com> <20190122054326.GA6445@brain-police>
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Subject: Re: [PATCH 0/3] iommu/arm-smmu: Add support to use Last level cache
+Date: Tue, 29 Jan 2019 16:02:41 +0100
+Message-ID: <CAKv+Gu9c2YYQdDNV_9Lgs3nb8MFXNvLj8GdeOfEnHvPAw6qAfg@mail.gmail.com>
+References: <20190121055335.15430-1-vivek.gautam@codeaurora.org>
+ <CAKv+Gu8P-5hxZ8+OV_xSZteTvCLw-Sc-=KJM1i=3aWajcS9bUw@mail.gmail.com>
+ <CAFp+6iEp-bzMrZz8cFUciTFKm7TwAoLdYpsSTD73kDfCRh60bA@mail.gmail.com>
+ <CAKv+Gu9z_mGwdZYMKPfM_g2MZwrCF5=f4WAdn_R6wJ1A9xSZ_Q@mail.gmail.com>
+ <dbba5a8a-70c0-dd01-713c-081eb412e2d7@arm.com> <CAKv+Gu8K5f0va9q4FYk9x1puoOTDjZ0c25qokm2izSVAwd1gmQ@mail.gmail.com>
+ <964779d6-c676-3379-bf1e-cde0dd82d63d@arm.com> <CAKv+Gu_Oz-QEFnq9KiOBHQrC8o+0ykkEZBm0vCWfYDfFB8QTcQ@mail.gmail.com>
+ <CAFp+6iESSKZsG06j9RJDn3n84zNT=b962sEyPwfyW1u5DGu-+A@mail.gmail.com>
+ <CAKv+Gu964=UOPcxh1ZZ4HEvJonrQ_d21t=GbVV9XwV3o91c6ng@mail.gmail.com> <CAFp+6iGJLNA-sgr+rCZsf20h8Ha0aVh4zKcxYQ_nYjP9CemVpw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20190122054326.GA6445@brain-police>
+In-Reply-To: <CAFp+6iGJLNA-sgr+rCZsf20h8Ha0aVh4zKcxYQ_nYjP9CemVpw@mail.gmail.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
-        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, Linux ARM <linux-arm-kernel@lists.infradead.org>
+To: Vivek Gautam <vivek.gautam@codeaurora.org>, Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: pdaly@codeaurora.org, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>, pratikp@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+(+ Bjorn)
 
-On Tue, Jan 22, 2019 at 11:14 AM Will Deacon <will.deacon@arm.com> wrote:
+On Mon, 28 Jan 2019 at 12:27, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
 >
-> On Mon, Jan 21, 2019 at 11:35:30AM +0530, Vivek Gautam wrote:
-> > On Sun, Jan 20, 2019 at 5:31 AM Will Deacon <will.deacon@arm.com> wrote:
-> > > On Thu, Jan 17, 2019 at 02:57:18PM +0530, Vivek Gautam wrote:
-> > > > Adding a device tree option for arm smmu to enable non-cacheable
-> > > > memory for page tables.
-> > > > We already enable a smmu feature for coherent walk based on
-> > > > whether the smmu device is dma-coherent or not. Have an option
-> > > > to enable non-cacheable page table memory to force set it for
-> > > > particular smmu devices.
-> > >
-> > > Hmm, I must be missing something here. What is the difference between this
-> > > new property, and simply omitting dma-coherent on the SMMU?
+> Hi Ard,
+>
+> On Thu, Jan 24, 2019 at 1:25 PM Ard Biesheuvel
+> <ard.biesheuvel@linaro.org> wrote:
 > >
-> > So, this is what I understood from the email thread for Last level
-> > cache support -
-> > Robin pointed to the fact that we may need to add support for setting
-> > non-cacheable
-> > mappings in the TCR.
-> > Currently, we don't do that for SMMUs that omit dma-coherent.
-> > We rely on the interconnect to handle the configuration set in TCR,
-> > and let interconnect
-> > ignore the cacheability if it can't support.
+> > On Thu, 24 Jan 2019 at 07:58, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
+> > >
+> > > On Mon, Jan 21, 2019 at 7:55 PM Ard Biesheuvel
+> > > <ard.biesheuvel@linaro.org> wrote:
+> > > >
+> > > > On Mon, 21 Jan 2019 at 14:56, Robin Murphy <robin.murphy@arm.com> wrote:
+> > > > >
+> > > > > On 21/01/2019 13:36, Ard Biesheuvel wrote:
+> > > > > > On Mon, 21 Jan 2019 at 14:25, Robin Murphy <robin.murphy@arm.com> wrote:
+> > > > > >>
+> > > > > >> On 21/01/2019 10:50, Ard Biesheuvel wrote:
+> > > > > >>> On Mon, 21 Jan 2019 at 11:17, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
+> > > > > >>>>
+> > > > > >>>> Hi,
+> > > > > >>>>
+> > > > > >>>>
+> > > > > >>>> On Mon, Jan 21, 2019 at 12:56 PM Ard Biesheuvel
+> > > > > >>>> <ard.biesheuvel@linaro.org> wrote:
+> > > > > >>>>>
+> > > > > >>>>> On Mon, 21 Jan 2019 at 06:54, Vivek Gautam <vivek.gautam@codeaurora.org> wrote:
+> > > > > >>>>>>
+> > > > > >>>>>> Qualcomm SoCs have an additional level of cache called as
+> > > > > >>>>>> System cache, aka. Last level cache (LLC). This cache sits right
+> > > > > >>>>>> before the DDR, and is tightly coupled with the memory controller.
+> > > > > >>>>>> The clients using this cache request their slices from this
+> > > > > >>>>>> system cache, make it active, and can then start using it.
+> > > > > >>>>>> For these clients with smmu, to start using the system cache for
+> > > > > >>>>>> buffers and, related page tables [1], memory attributes need to be
+> > > > > >>>>>> set accordingly. This series add the required support.
+> > > > > >>>>>>
+> > > > > >>>>>
+> > > > > >>>>> Does this actually improve performance on reads from a device? The
+> > > > > >>>>> non-cache coherent DMA routines perform an unconditional D-cache
+> > > > > >>>>> invalidate by VA to the PoC before reading from the buffers filled by
+> > > > > >>>>> the device, and I would expect the PoC to be defined as lying beyond
+> > > > > >>>>> the LLC to still guarantee the architected behavior.
+> > > > > >>>>
+> > > > > >>>> We have seen performance improvements when running Manhattan
+> > > > > >>>> GFXBench benchmarks.
+> > > > > >>>>
+> > > > > >>>
+> > > > > >>> Ah ok, that makes sense, since in that case, the data flow is mostly
+> > > > > >>> to the device, not from the device.
+> > > > > >>>
+> > > > > >>>> As for the PoC, from my knowledge on sdm845 the system cache, aka
+> > > > > >>>> Last level cache (LLC) lies beyond the point of coherency.
+> > > > > >>>> Non-cache coherent buffers will not be cached to system cache also, and
+> > > > > >>>> no additional software cache maintenance ops are required for system cache.
+> > > > > >>>> Pratik can add more if I am missing something.
+> > > > > >>>>
+> > > > > >>>> To take care of the memory attributes from DMA APIs side, we can add a
+> > > > > >>>> DMA_ATTR definition to take care of any dma non-coherent APIs calls.
+> > > > > >>>>
+> > > > > >>>
+> > > > > >>> So does the device use the correct inner non-cacheable, outer
+> > > > > >>> writeback cacheable attributes if the SMMU is in pass-through?
+> > > > > >>>
+> > > > > >>> We have been looking into another use case where the fact that the
+> > > > > >>> SMMU overrides memory attributes is causing issues (WC mappings used
+> > > > > >>> by the radeon and amdgpu driver). So if the SMMU would honour the
+> > > > > >>> existing attributes, would you still need the SMMU changes?
+> > > > > >>
+> > > > > >> Even if we could force a stage 2 mapping with the weakest pagetable
+> > > > > >> attributes (such that combining would work), there would still need to
+> > > > > >> be a way to set the TCR attributes appropriately if this behaviour is
+> > > > > >> wanted for the SMMU's own table walks as well.
+> > > > > >>
+> > > > > >
+> > > > > > Isn't that just a matter of implementing support for SMMUs that lack
+> > > > > > the 'dma-coherent' attribute?
+> > > > >
+> > > > > Not quite - in general they need INC-ONC attributes in case there
+> > > > > actually is something in the architectural outer-cacheable domain.
+> > > >
+> > > > But is it a problem to use INC-ONC attributes for the SMMU PTW on this
+> > > > chip? AIUI, the reason for the SMMU changes is to avoid the
+> > > > performance hit of snooping, which is more expensive than cache
+> > > > maintenance of SMMU page tables. So are you saying the by-VA cache
+> > > > maintenance is not relayed to this system cache, resulting in page
+> > > > table updates to be invisible to masters using INC-ONC attributes?
+> > >
+> > > The reason for this SMMU changes is that the non-coherent devices
+> > > can't access the inner caches at all. But they have a way to allocate
+> > > and lookup in system cache.
+> > >
+> > > CPU will by default make use of system cache when the inner-cacheable
+> > > and outer-cacheable memory attribute is set.
+> > >
+> > > So for SMMU page tables to be visible to PTW,
+> > > -- For IO coherent clients, the CPU cache maintenance operations are not
+> > > required for buffers marked Normal Cached to achieve a coherent view of
+> > > memory. However, client-specific cache maintenance may still be
+> > > required for devices
+> > > with local caches (for example, compute DSP local L1 or L2).
+> >
+> > Why would devices need to access the SMMU page tables?
 >
-> I think that's a bug. With that fixed, can you get what you want by omitting
-> "dma-coherent"?
-
-Based on the discussion on the first patch in this series [1], I can
-update the series.
-First thing can be -
-if QUIRK_NO_DMA is set (i.e. the IOMMU _is_ coherent) then we use a
-cacheable TCR;
-So, we may need an additional check for this when setting the TCR.
-
-For the second case -
-IOMMUs that are *not* coherent, i.e ones that are omitting
-'dma-coherent' property,
-anyways have to access the page table directly from memory. We take
-care of the CPU
-side of this by allocating non-coherent memory, and making sure that we sync the
-PTEs from map call.
-Shouldn't we mark TCR for these IOMMUs as non-cacheable for inner and outer
-cacheability attribute?
-
-
-[1] https://lore.kernel.org/patchwork/patch/1032939/
-
-Regards
-Vivek
-
+> No, the devices don't need to access the page tables, rather the PTW does.
+> Sorry for mixing it up.
 >
-> Will
+> >
+> > > -- For non-IO coherent clients, the CPU cache maintenance operations (cleans
+> > > and/or invalidates) are required at buffer handoff points for buffers marked as
+> > > Normal Cached in any CPU page table in order to observe the latest updates.
+> > >
+> >
+> > Indeed, and this is what your non-coherent SMMU PTW requires, and what
+> > you /should/ get when you omit the 'dma-coherent' property from its DT
+> > node (and if you don't, it is a bug in the SMMU driver that should get
+> > fixed)
+> >
+> > The question is whether using inner-non-cached/outer-cacheable
+> > attributes for the PTW is required for correctness, or whether it is
+> > merely an optimization (since the point of this exercise was to avoid
+> > snoop latency from the SMMU PTW). If it is an optimization, I would
+> > like to understand whether the performance delta between SMMU page
+> > tables in DRAM vs SMMU page tables in the LLC justifies these
+> > intrusive changes to the SMMU driver.
+>
+> IIUC, SMMU uses the TCR configurations to decide how PTW should access
+> the memory. TCR doesn't direct CPU whether to use cacheable or non -cacheable
+> memory to allocate page tables. Is that right?
 
+Correct
 
+> Currently, these TCR configurations are set for inner-cacheable, and
+> outer-cacheable.
+> With this, is it assumed that PTW would snoop into the CPU caches for
+> any updates
+> of the page tables?
+>
+`
+Yes, and if I understand the issue correctly, this snooping is costly,
+which is why you want to avoid it, right?
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+> When we omit 'dma-coherent', CPU will allocate non-coherent memory
+> for these page tables, and software has to explicitly flush CPU caches to
+> make the changes visible to SMMU.
+
+Indeed. But I would expect the TCR configuration to reflect this as
+well, and that doesn't appear the case.
+
+> The CPU will still mark this memory as Normal Cached, i.e. inner cached,
+> outer cached, and the non-IO coherent SMMU PTW won't be able to snoop into
+> CPU caches. Does the following code in io-pgtable-arm.c ensures that SMMU
+> sees the latest page tables?
+>
+>    } else if (!(cfg->quirks & IO_PGTABLE_QUIRK_NO_DMA) &&
+>                     !(pte & ARM_LPAE_PTE_SW_SYNC)) {
+>                  __arm_lpae_sync_pte(ptep, cfg);
+>    }
+>
+
+I don't know the history of why NO_DMA is implemented as a quirk (and
+why it is called like that in the first place).
+But it indeed appears that this is where the cache maintenance occurs
+for non-coherent PTWs.
+
+> This change is mostly to get optimized PTW. As seen in the patch [1] for GPU,
+> there's a separate slice for page tables - "gpuhtw_llc_slice".
+> Let me try to get the numbers for this optimization.
+>
+
+Yes, please. We'd need to compare page tables in the LLC with page
+tables in system RAM, and for completeness, it would be nice to
+include the cache-coherent configuration as well.
