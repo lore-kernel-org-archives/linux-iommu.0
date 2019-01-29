@@ -1,7 +1,7 @@
 From: jglisse@redhat.com
-Subject: [RFC PATCH 2/5] drivers/base: add a function to test peer to peer capability
-Date: Tue, 29 Jan 2019 12:47:25 -0500
-Message-ID: <20190129174728.6430-3-jglisse@redhat.com>
+Subject: [RFC PATCH 3/5] mm/vma: add support for peer to peer to device vma
+Date: Tue, 29 Jan 2019 12:47:26 -0500
+Message-ID: <20190129174728.6430-4-jglisse@redhat.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -15,11 +15,32 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Jérôme Glisse <jglisse@redhat.com>
 
-device_test_p2p() return true if two devices can peer to peer to
-each other. We add a generic function as different inter-connect
-can support peer to peer and we want to genericaly test this no
-matter what the inter-connect might be. However this version only
-support PCIE for now.
+Allow mmap of device file to export device memory to peer to peer
+devices. This will allow for instance a network device to access a
+GPU memory or to access a storage device queue directly.
+
+The common case will be a vma created by userspace device driver
+that is then share to another userspace device driver which call
+in its kernel device driver to map that vma.
+
+The vma does not need to have any valid CPU mapping so that only
+peer to peer device might access its content. Or it could have
+valid CPU mapping too in that case it should point to same memory
+for consistency.
+
+Note that peer to peer mapping is highly platform and device
+dependent and it might not work in all the cases. However we do
+expect supports for this to grow on more hardware platform.
+
+This patch only adds new call backs to vm_operations_struct bulk
+of code light within common bus driver (like pci) and device
+driver (both the exporting and importing device).
+
+Current design mandate that the importer must obey mmu_notifier
+and invalidate any peer to peer mapping anytime a notification
+of invalidation happens for a range that have been peer to peer
+mapped. This allows exporter device to easily invalidate mapping
+for any importer device.
 
 Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
 Cc: Logan Gunthorpe <logang@deltatee.com>
@@ -38,56 +59,57 @@ Cc: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <jroedel@suse.de>
 Cc: iommu@lists.linux-foundation.org
 ---
- drivers/base/core.c    | 20 ++++++++++++++++++++
- include/linux/device.h |  1 +
- 2 files changed, 21 insertions(+)
+ include/linux/mm.h | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 0073b09bb99f..56023b00e108 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -26,6 +26,7 @@
- #include <linux/netdevice.h>
- #include <linux/sched/signal.h>
- #include <linux/sysfs.h>
-+#include <linux/pci-p2pdma.h>
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 80bb6408fe73..1bd60a90e575 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -429,6 +429,44 @@ struct vm_operations_struct {
+ 			pgoff_t start_pgoff, pgoff_t end_pgoff);
+ 	unsigned long (*pagesize)(struct vm_area_struct * area);
  
- #include "base.h"
- #include "power/power.h"
-@@ -3167,3 +3168,22 @@ void device_set_of_node_from_dev(struct device *dev, const struct device *dev2)
- 	dev->of_node_reused = true;
- }
- EXPORT_SYMBOL_GPL(device_set_of_node_from_dev);
-+
-+/**
-+ * device_test_p2p - test if two device can peer to peer to each other
-+ * @devA: device A
-+ * @devB: device B
-+ * Returns: true if device can peer to peer to each other, false otherwise
-+ */
-+bool device_test_p2p(struct device *devA, struct device *devB)
-+{
 +	/*
-+	 * For now we only support PCIE peer to peer but other inter-connect
-+	 * can be added.
++	 * Optional for device driver that want to allow peer to peer (p2p)
++	 * mapping of their vma (which can be back by some device memory) to
++	 * another device.
++	 *
++	 * Note that the exporting device driver might not have map anything
++	 * inside the vma for the CPU but might still want to allow a peer
++	 * device to access the range of memory corresponding to a range in
++	 * that vma.
++	 *
++	 * FOR PREDICTABILITY IF DRIVER SUCCESSFULY MAP A RANGE ONCE FOR A
++	 * DEVICE THEN FURTHER MAPPING OF THE SAME IF THE VMA IS STILL VALID
++	 * SHOULD ALSO BE SUCCESSFUL. Following this rule allow the importing
++	 * device to map once during setup and report any failure at that time
++	 * to the userspace. Further mapping of the same range might happen
++	 * after mmu notifier invalidation over the range. The exporting device
++	 * can use this to move things around (defrag BAR space for instance)
++	 * or do other similar task.
++	 *
++	 * IMPORTER MUST OBEY mmu_notifier NOTIFICATION AND CALL p2p_unmap()
++	 * WHEN A NOTIFIER IS CALL FOR THE RANGE ! THIS CAN HAPPEN AT ANY
++	 * POINT IN TIME WITH NO LOCK HELD.
++	 *
++	 * In below function, the device argument is the importing device,
++	 * the exporting device is the device to which the vma belongs.
 +	 */
-+	if (pci_test_p2p(devA, devB))
-+		return true;
++	long (*p2p_map)(struct vm_area_struct *vma,
++			struct device *device,
++			unsigned long start,
++			unsigned long end,
++			dma_addr_t *pa,
++			bool write);
++	long (*p2p_unmap)(struct vm_area_struct *vma,
++			  struct device *device,
++			  unsigned long start,
++			  unsigned long end,
++			  dma_addr_t *pa);
 +
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(device_test_p2p);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 6cb4640b6160..0d532d7f0779 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -1250,6 +1250,7 @@ extern int device_online(struct device *dev);
- extern void set_primary_fwnode(struct device *dev, struct fwnode_handle *fwnode);
- extern void set_secondary_fwnode(struct device *dev, struct fwnode_handle *fwnode);
- void device_set_of_node_from_dev(struct device *dev, const struct device *dev2);
-+bool device_test_p2p(struct device *devA, struct device *devB);
- 
- static inline int dev_num_vf(struct device *dev)
- {
+ 	/* notification that a previously read-only page is about to become
+ 	 * writable, if an error is returned it will cause a SIGBUS */
+ 	vm_fault_t (*page_mkwrite)(struct vm_fault *vmf);
 -- 
 2.17.2
