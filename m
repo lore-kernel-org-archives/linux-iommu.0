@@ -1,307 +1,144 @@
 From: jglisse@redhat.com
-Subject: [RFC PATCH 5/5] mm/hmm: add support for peer to peer to special device vma
-Date: Tue, 29 Jan 2019 12:47:28 -0500
-Message-ID: <20190129174728.6430-6-jglisse@redhat.com>
+Subject: [RFC PATCH 4/5] mm/hmm: add support for peer to peer to HMM device
+ memory
+Date: Tue, 29 Jan 2019 12:47:27 -0500
+Message-ID: <20190129174728.6430-5-jglisse@redhat.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 In-Reply-To: <20190129174728.6430-1-jglisse@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
 To: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Logan Gunthorpe <logang@deltatee.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
+Cc: Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org, =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Logan Gunthorpe <logang@deltatee.com>, Christian Koenig <christian.koenig@amd.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jérôme Glisse <jglisse@redhat.com>
-
-Special device vma (mmap of a device file) can correspond to device
-driver object that some device driver might want to share with other
-device (giving access to). This add support for HMM to map those
-special device vma if the owning device (exporter) allows it.
-
-Signed-off-by: Jérôme Glisse <jglisse@redhat.com>
-Cc: Logan Gunthorpe <logang@deltatee.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Rafael J. Wysocki <rafael@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Christian Koenig <christian.koenig@amd.com>
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Cc: Jason Gunthorpe <jgg@mellanox.com>
-Cc: linux-pci@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: iommu@lists.linux-foundation.org
----
- include/linux/hmm.h |   6 ++
- mm/hmm.c            | 156 ++++++++++++++++++++++++++++++++++----------
- 2 files changed, 128 insertions(+), 34 deletions(-)
-
-diff --git a/include/linux/hmm.h b/include/linux/hmm.h
-index 7a3ac182cc48..98ebe9f52432 100644
---- a/include/linux/hmm.h
-+++ b/include/linux/hmm.h
-@@ -137,6 +137,7 @@ enum hmm_pfn_flag_e {
-  *      result of vmf_insert_pfn() or vm_insert_page(). Therefore, it should not
-  *      be mirrored by a device, because the entry will never have HMM_PFN_VALID
-  *      set and the pfn value is undefined.
-+ * HMM_PFN_P2P: this entry have been map as P2P ie the dma address is valid
-  *
-  * Driver provide entry value for none entry, error entry and special entry,
-  * driver can alias (ie use same value for error and special for instance). It
-@@ -151,6 +152,7 @@ enum hmm_pfn_value_e {
- 	HMM_PFN_ERROR,
- 	HMM_PFN_NONE,
- 	HMM_PFN_SPECIAL,
-+	HMM_PFN_P2P,
- 	HMM_PFN_VALUE_MAX
- };
- 
-@@ -250,6 +252,8 @@ static inline bool hmm_range_valid(struct hmm_range *range)
- static inline struct page *hmm_pfn_to_page(const struct hmm_range *range,
- 					   uint64_t pfn)
- {
-+	if (pfn == range->values[HMM_PFN_P2P])
-+		return NULL;
- 	if (pfn == range->values[HMM_PFN_NONE])
- 		return NULL;
- 	if (pfn == range->values[HMM_PFN_ERROR])
-@@ -270,6 +274,8 @@ static inline struct page *hmm_pfn_to_page(const struct hmm_range *range,
- static inline unsigned long hmm_pfn_to_pfn(const struct hmm_range *range,
- 					   uint64_t pfn)
- {
-+	if (pfn == range->values[HMM_PFN_P2P])
-+		return -1UL;
- 	if (pfn == range->values[HMM_PFN_NONE])
- 		return -1UL;
- 	if (pfn == range->values[HMM_PFN_ERROR])
-diff --git a/mm/hmm.c b/mm/hmm.c
-index fd49b1e116d0..621a4f831483 100644
---- a/mm/hmm.c
-+++ b/mm/hmm.c
-@@ -1058,37 +1058,36 @@ long hmm_range_snapshot(struct hmm_range *range)
- }
- EXPORT_SYMBOL(hmm_range_snapshot);
- 
--/*
-- * hmm_range_fault() - try to fault some address in a virtual address range
-- * @range: range being faulted
-- * @block: allow blocking on fault (if true it sleeps and do not drop mmap_sem)
-- * Returns: 0 on success ortherwise:
-- *      -EINVAL:
-- *              Invalid argument
-- *      -ENOMEM:
-- *              Out of memory.
-- *      -EPERM:
-- *              Invalid permission (for instance asking for write and range
-- *              is read only).
-- *      -EAGAIN:
-- *              If you need to retry and mmap_sem was drop. This can only
-- *              happens if block argument is false.
-- *      -EBUSY:
-- *              If the the range is being invalidated and you should wait for
-- *              invalidation to finish.
-- *      -EFAULT:
-- *              Invalid (ie either no valid vma or it is illegal to access that
-- *              range), number of valid pages in range->pfns[] (from range start
-- *              address).
-- *
-- * This is similar to a regular CPU page fault except that it will not trigger
-- * any memory migration if the memory being faulted is not accessible by CPUs
-- * and caller does not ask for migration.
-- *
-- * On error, for one virtual address in the range, the function will mark the
-- * corresponding HMM pfn entry with an error flag.
-- */
--long hmm_range_fault(struct hmm_range *range, bool block)
-+static int hmm_vma_p2p_map(struct hmm_range *range, struct vm_area_struct *vma,
-+			   unsigned long start, unsigned long end,
-+			   struct device *device, dma_addr_t *pas)
-+{
-+	struct hmm_vma_walk hmm_vma_walk;
-+	unsigned long npages, i;
-+	bool fault, write;
-+	uint64_t *pfns;
-+	int ret;
-+
-+	i = (start - range->start) >> PAGE_SHIFT;
-+	npages = (end - start) >> PAGE_SHIFT;
-+	pfns = &range->pfns[i];
-+	pas = &pas[i];
-+
-+	hmm_vma_walk.range = range;
-+	hmm_vma_walk.fault = true;
-+	hmm_range_need_fault(&hmm_vma_walk, pfns, npages,
-+			        0, &fault, &write);
-+
-+	ret = vma->vm_ops->p2p_map(vma, device, start, end, pas, write);
-+	for (i = 0; i < npages; ++i) {
-+		pfns[i] = ret ? range->values[HMM_PFN_ERROR] :
-+			  range->values[HMM_PFN_P2P];
-+	}
-+	return ret;
-+}
-+
-+static long _hmm_range_fault(struct hmm_range *range, bool block,
-+			     struct device *device, dma_addr_t *pas)
- {
- 	const unsigned long device_vma = VM_IO | VM_PFNMAP | VM_MIXEDMAP;
- 	unsigned long start = range->start, end;
-@@ -1110,9 +1109,22 @@ long hmm_range_fault(struct hmm_range *range, bool block)
- 		}
- 
- 		vma = find_vma(hmm->mm, start);
--		if (vma == NULL || (vma->vm_flags & device_vma))
-+		if (vma == NULL)
- 			return -EFAULT;
- 
-+		end = min(range->end, vma->vm_end);
-+		if (vma->vm_flags & device_vma) {
-+			if (!device || !pas || !vma->vm_ops->p2p_map)
-+				return -EFAULT;
-+
-+			ret = hmm_vma_p2p_map(range, vma, start,
-+					      end, device, pas);
-+			if (ret)
-+				return ret;
-+			start = end;
-+			continue;
-+		}
-+
- 		if (is_vm_hugetlb_page(vma)) {
- 			struct hstate *h = hstate_vma(vma);
- 
-@@ -1142,7 +1154,6 @@ long hmm_range_fault(struct hmm_range *range, bool block)
- 		hmm_vma_walk.block = block;
- 		hmm_vma_walk.range = range;
- 		mm_walk.private = &hmm_vma_walk;
--		end = min(range->end, vma->vm_end);
- 
- 		mm_walk.vma = vma;
- 		mm_walk.mm = vma->vm_mm;
-@@ -1175,6 +1186,41 @@ long hmm_range_fault(struct hmm_range *range, bool block)
- 
- 	return (hmm_vma_walk.last - range->start) >> PAGE_SHIFT;
- }
-+
-+/*
-+ * hmm_range_fault() - try to fault some address in a virtual address range
-+ * @range: range being faulted
-+ * @block: allow blocking on fault (if true it sleeps and do not drop mmap_sem)
-+ * Returns: 0 on success ortherwise:
-+ *      -EINVAL:
-+ *              Invalid argument
-+ *      -ENOMEM:
-+ *              Out of memory.
-+ *      -EPERM:
-+ *              Invalid permission (for instance asking for write and range
-+ *              is read only).
-+ *      -EAGAIN:
-+ *              If you need to retry and mmap_sem was drop. This can only
-+ *              happens if block argument is false.
-+ *      -EBUSY:
-+ *              If the the range is being invalidated and you should wait for
-+ *              invalidation to finish.
-+ *      -EFAULT:
-+ *              Invalid (ie either no valid vma or it is illegal to access that
-+ *              range), number of valid pages in range->pfns[] (from range start
-+ *              address).
-+ *
-+ * This is similar to a regular CPU page fault except that it will not trigger
-+ * any memory migration if the memory being faulted is not accessible by CPUs
-+ * and caller does not ask for migration.
-+ *
-+ * On error, for one virtual address in the range, the function will mark the
-+ * corresponding HMM pfn entry with an error flag.
-+ */
-+long hmm_range_fault(struct hmm_range *range, bool block)
-+{
-+	return _hmm_range_fault(range, block, NULL, NULL);
-+}
- EXPORT_SYMBOL(hmm_range_fault);
- 
- /*
-@@ -1197,7 +1243,7 @@ long hmm_range_dma_map(struct hmm_range *range,
- 	long ret;
- 
- again:
--	ret = hmm_range_fault(range, block);
-+	ret = _hmm_range_fault(range, block, device, daddrs);
- 	if (ret <= 0)
- 		return ret ? ret : -EBUSY;
- 
-@@ -1209,6 +1255,11 @@ long hmm_range_dma_map(struct hmm_range *range,
- 		enum dma_data_direction dir = DMA_FROM_DEVICE;
- 		struct page *page;
- 
-+		if (range->pfns[i] == range->values[HMM_PFN_P2P]) {
-+			mapped++;
-+			continue;
-+		}
-+
- 		/*
- 		 * FIXME need to update DMA API to provide invalid DMA address
- 		 * value instead of a function to test dma address value. This
-@@ -1274,6 +1325,11 @@ long hmm_range_dma_map(struct hmm_range *range,
- 		enum dma_data_direction dir = DMA_FROM_DEVICE;
- 		struct page *page;
- 
-+		if (range->pfns[i] == range->values[HMM_PFN_P2P]) {
-+			mapped--;
-+			continue;
-+		}
-+
- 		page = hmm_pfn_to_page(range, range->pfns[i]);
- 		if (page == NULL)
- 			continue;
-@@ -1305,6 +1361,30 @@ long hmm_range_dma_map(struct hmm_range *range,
- }
- EXPORT_SYMBOL(hmm_range_dma_map);
- 
-+static unsigned long hmm_vma_p2p_unmap(struct hmm_range *range,
-+				       struct vm_area_struct *vma,
-+				       unsigned long start,
-+				       struct device *device,
-+				       dma_addr_t *pas)
-+{
-+	unsigned long end;
-+
-+	if (!vma) {
-+		BUG();
-+		return 1;
-+	}
-+
-+	start &= PAGE_MASK;
-+	if (start < vma->vm_start || start >= vma->vm_end) {
-+		BUG();
-+		return 1;
-+	}
-+
-+	end = min(range->end, vma->vm_end);
-+	vma->vm_ops->p2p_unmap(vma, device, start, end, pas);
-+	return (end - start) >> PAGE_SHIFT;
-+}
-+
- /*
-  * hmm_range_dma_unmap() - unmap range of that was map with hmm_range_dma_map()
-  * @range: range being unmapped
-@@ -1342,6 +1422,14 @@ long hmm_range_dma_unmap(struct hmm_range *range,
- 		enum dma_data_direction dir = DMA_FROM_DEVICE;
- 		struct page *page;
- 
-+		if (range->pfns[i] == range->values[HMM_PFN_P2P]) {
-+			BUG_ON(!vma);
-+			cpages += hmm_vma_p2p_unmap(range, vma, addr,
-+						    device, &daddrs[i]);
-+			i += cpages - 1;
-+			continue;
-+		}
-+
- 		page = hmm_pfn_to_page(range, range->pfns[i]);
- 		if (page == NULL)
- 			continue;
--- 
-2.17.2
+RnJvbTogSsOpcsO0bWUgR2xpc3NlIDxqZ2xpc3NlQHJlZGhhdC5jb20+CgpTaWduZWQtb2ZmLWJ5
+OiBKw6lyw7RtZSBHbGlzc2UgPGpnbGlzc2VAcmVkaGF0LmNvbT4KQ2M6IExvZ2FuIEd1bnRob3Jw
+ZSA8bG9nYW5nQGRlbHRhdGVlLmNvbT4KQ2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxp
+bnV4Zm91bmRhdGlvbi5vcmc+CkNjOiBSYWZhZWwgSi4gV3lzb2NraSA8cmFmYWVsQGtlcm5lbC5v
+cmc+CkNjOiBCam9ybiBIZWxnYWFzIDxiaGVsZ2Fhc0Bnb29nbGUuY29tPgpDYzogQ2hyaXN0aWFu
+IEtvZW5pZyA8Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPgpDYzogRmVsaXggS3VlaGxpbmcgPEZl
+bGl4Lkt1ZWhsaW5nQGFtZC5jb20+CkNjOiBKYXNvbiBHdW50aG9ycGUgPGpnZ0BtZWxsYW5veC5j
+b20+CkNjOiBsaW51eC1wY2lAdmdlci5rZXJuZWwub3JnCkNjOiBkcmktZGV2ZWxAbGlzdHMuZnJl
+ZWRlc2t0b3Aub3JnCkNjOiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4KQ2M6IE1hcmVr
+IFN6eXByb3dza2kgPG0uc3p5cHJvd3NraUBzYW1zdW5nLmNvbT4KQ2M6IFJvYmluIE11cnBoeSA8
+cm9iaW4ubXVycGh5QGFybS5jb20+CkNjOiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4K
+Q2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCi0tLQogaW5jbHVkZS9saW51eC9o
+bW0uaCB8IDQ3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwogbW0vaG1tLmMgICAg
+ICAgICAgICB8IDYzICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0t
+LQogMiBmaWxlcyBjaGFuZ2VkLCAxMDUgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKCmRp
+ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2htbS5oIGIvaW5jbHVkZS9saW51eC9obW0uaAppbmRl
+eCA0YTE0NTRlM2VmYmEuLjdhM2FjMTgyY2M0OCAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9o
+bW0uaAorKysgYi9pbmNsdWRlL2xpbnV4L2htbS5oCkBAIC03MTAsNiArNzEwLDUzIEBAIHN0cnVj
+dCBobW1fZGV2bWVtX29wcyB7CiAJCSAgICAgY29uc3Qgc3RydWN0IHBhZ2UgKnBhZ2UsCiAJCSAg
+ICAgdW5zaWduZWQgaW50IGZsYWdzLAogCQkgICAgIHBtZF90ICpwbWRwKTsKKworCS8qCisJICog
+cDJwX21hcCgpIC0gbWFwIHBhZ2UgZm9yIHBlZXIgdG8gcGVlciBiZXR3ZWVuIGRldmljZQorCSAq
+IEBkZXZtZW06IGRldmljZSBtZW1vcnkgc3RydWN0dXJlIChzZWUgc3RydWN0IGhtbV9kZXZtZW0p
+CisJICogQHJhbmdlOiByYW5nZSBvZiB2aXJ0dWFsIGFkZHJlc3MgdGhhdCBpcyBiZWluZyBtYXBw
+ZWQKKwkgKiBAZGV2aWNlOiBkZXZpY2UgdGhlIHJhbmdlIGlzIGJlaW5nIG1hcCB0bworCSAqIEBh
+ZGRyOiBmaXJzdCB2aXJ0dWFsIGFkZHJlc3MgaW4gdGhlIHJhbmdlIHRvIGNvbnNpZGVyCisJICog
+QHBhOiBkZXZpY2UgYWRkcmVzcyAod2hlcmUgYWN0dWFsIG1hcHBpbmcgaXMgc3RvcmUpCisJICog
+UmV0dXJuczogbnVtYmVyIG9mIHBhZ2Ugc3VjY2Vzc2Z1bHkgbWFwcGVkLCAwIG90aGVyd2lzZQor
+CSAqCisJICogTWFwIHBhZ2UgYmVsb25naW5nIHRvIGRldm1lbSB0byBhbm90aGVyIGRldmljZSBm
+b3IgcGVlciB0byBwZWVyCisJICogYWNjZXNzLiBEZXZpY2UgY2FuIGRlY2lkZSBub3QgdG8gbWFw
+IGluIHdoaWNoIGNhc2UgbWVtb3J5IHdpbGwKKwkgKiBiZSBtaWdyYXRlZCB0byBtYWluIG1lbW9y
+eS4KKwkgKgorCSAqIEFsc28gdGhlcmUgaXMgbm8gZ2FyYW50ZWUgdGhhdCBhbGwgdGhlIHBhZ2Vz
+IGluIHRoZSByYW5nZSBkb2VzCisJICogYmVsb25ncyB0byB0aGUgZGV2bWVtIHNvIGl0IGlzIHVw
+IHRvIHRoZSBmdW5jdGlvbiB0byBjaGVjayB0aGF0CisJICogZXZlcnkgc2luZ2xlIHBhZ2UgZG9l
+cyBiZWxvbmcgdG8gZGV2bWVtLgorCSAqCisJICogTm90ZSBmb3Igbm93IHdlIGRvIG5vdCBjYXJl
+IGFib3V0IGVycm9yIGV4ZWN0IGVycm9yLCBzbyBvbiBmYWlsdXJlCisJICogZnVuY3Rpb24gc2hv
+dWxkIGp1c3QgcmV0dXJuIDAuCisJICovCisJbG9uZyAoKnAycF9tYXApKHN0cnVjdCBobW1fZGV2
+bWVtICpkZXZtZW0sCisJCQlzdHJ1Y3QgaG1tX3JhbmdlICpyYW5nZSwKKwkJCXN0cnVjdCBkZXZp
+Y2UgKmRldmljZSwKKwkJCXVuc2lnbmVkIGxvbmcgYWRkciwKKwkJCWRtYV9hZGRyX3QgKnBhcyk7
+CisKKwkvKgorCSAqIHAycF91bm1hcCgpIC0gdW5tYXAgcGFnZSBmcm9tIHBlZXIgdG8gcGVlciBi
+ZXR3ZWVuIGRldmljZQorCSAqIEBkZXZtZW06IGRldmljZSBtZW1vcnkgc3RydWN0dXJlIChzZWUg
+c3RydWN0IGhtbV9kZXZtZW0pCisJICogQHJhbmdlOiByYW5nZSBvZiB2aXJ0dWFsIGFkZHJlc3Mg
+dGhhdCBpcyBiZWluZyBtYXBwZWQKKwkgKiBAZGV2aWNlOiBkZXZpY2UgdGhlIHJhbmdlIGlzIGJl
+aW5nIG1hcCB0bworCSAqIEBhZGRyOiBmaXJzdCB2aXJ0dWFsIGFkZHJlc3MgaW4gdGhlIHJhbmdl
+IHRvIGNvbnNpZGVyCisJICogQHBhOiBkZXZpY2UgYWRkcmVzcyAod2hlcmUgYWN0dWFsIG1hcHBp
+bmcgaXMgc3RvcmUpCisJICogUmV0dXJuczogbnVtYmVyIG9mIHBhZ2Ugc3VjY2Vzc2Z1bHkgdW5t
+YXBwZWQsIDAgb3RoZXJ3aXNlCisJICoKKwkgKiBVbm1hcCBwYWdlIGJlbG9uZ2luZyB0byBkZXZt
+ZW0gcHJldmlvdXNseSBtYXAgd2l0aCBwMnBfbWFwKCkuCisJICoKKwkgKiBOb3RlIHRoZXJlIGlz
+IG5vIGdhcmFudGVlIHRoYXQgYWxsIHRoZSBwYWdlcyBpbiB0aGUgcmFuZ2UgZG9lcworCSAqIGJl
+bG9uZ3MgdG8gdGhlIGRldm1lbSBzbyBpdCBpcyB1cCB0byB0aGUgZnVuY3Rpb24gdG8gY2hlY2sg
+dGhhdAorCSAqIGV2ZXJ5IHNpbmdsZSBwYWdlIGRvZXMgYmVsb25nIHRvIGRldm1lbS4KKwkgKi8K
+Kwl1bnNpZ25lZCBsb25nICgqcDJwX3VubWFwKShzdHJ1Y3QgaG1tX2Rldm1lbSAqZGV2bWVtLAor
+CQkJCSAgIHN0cnVjdCBobW1fcmFuZ2UgKnJhbmdlLAorCQkJCSAgIHN0cnVjdCBkZXZpY2UgKmRl
+dmljZSwKKwkJCQkgICB1bnNpZ25lZCBsb25nIGFkZHIsCisJCQkJICAgZG1hX2FkZHJfdCAqcGFz
+KTsKIH07CiAKIC8qCmRpZmYgLS1naXQgYS9tbS9obW0uYyBiL21tL2htbS5jCmluZGV4IDFhNDQ0
+ODg1NDA0ZS4uZmQ0OWIxZTExNmQwIDEwMDY0NAotLS0gYS9tbS9obW0uYworKysgYi9tbS9obW0u
+YwpAQCAtMTE5MywxNiArMTE5MywxOSBAQCBsb25nIGhtbV9yYW5nZV9kbWFfbWFwKHN0cnVjdCBo
+bW1fcmFuZ2UgKnJhbmdlLAogCQkgICAgICAgZG1hX2FkZHJfdCAqZGFkZHJzLAogCQkgICAgICAg
+Ym9vbCBibG9jaykKIHsKLQl1bnNpZ25lZCBsb25nIGksIG5wYWdlcywgbWFwcGVkLCBwYWdlX3Np
+emU7CisJdW5zaWduZWQgbG9uZyBpLCBucGFnZXMsIG1hcHBlZCwgcGFnZV9zaXplLCBhZGRyOwog
+CWxvbmcgcmV0OwogCithZ2FpbjoKIAlyZXQgPSBobW1fcmFuZ2VfZmF1bHQocmFuZ2UsIGJsb2Nr
+KTsKIAlpZiAocmV0IDw9IDApCiAJCXJldHVybiByZXQgPyByZXQgOiAtRUJVU1k7CiAKKwltYXBw
+ZWQgPSAwOworCWFkZHIgPSByYW5nZS0+c3RhcnQ7CiAJcGFnZV9zaXplID0gaG1tX3JhbmdlX3Bh
+Z2Vfc2l6ZShyYW5nZSk7CiAJbnBhZ2VzID0gKHJhbmdlLT5lbmQgLSByYW5nZS0+c3RhcnQpID4+
+IHJhbmdlLT5wYWdlX3NoaWZ0OwotCWZvciAoaSA9IDAsIG1hcHBlZCA9IDA7IGkgPCBucGFnZXM7
+ICsraSkgeworCWZvciAoaSA9IDA7IGkgPCBucGFnZXM7ICsraSwgYWRkciArPSBwYWdlX3NpemUp
+IHsKIAkJZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZGlyID0gRE1BX0ZST01fREVWSUNFOwogCQlz
+dHJ1Y3QgcGFnZSAqcGFnZTsKIApAQCAtMTIyNiw2ICsxMjI5LDI5IEBAIGxvbmcgaG1tX3Jhbmdl
+X2RtYV9tYXAoc3RydWN0IGhtbV9yYW5nZSAqcmFuZ2UsCiAJCQlnb3RvIHVubWFwOwogCQl9CiAK
+KwkJaWYgKGlzX2RldmljZV9wcml2YXRlX3BhZ2UocGFnZSkpIHsKKwkJCXN0cnVjdCBobW1fZGV2
+bWVtICpkZXZtZW0gPSBwYWdlLT5wZ21hcC0+ZGF0YTsKKworCQkJaWYgKCFkZXZtZW0tPm9wcy0+
+cDJwX21hcCB8fCAhZGV2bWVtLT5vcHMtPnAycF91bm1hcCkgeworCQkJCS8qIEZhbGwtYmFjayB0
+byBtYWluIG1lbW9yeS4gKi8KKwkJCQlyYW5nZS0+ZGVmYXVsdF9mbGFncyB8PQorCQkJCQlyYW5n
+ZS0+ZmxhZ3NbSE1NX1BGTl9ERVZJQ0VfUFJJVkFURV07CisJCQkJZ290byBhZ2FpbjsKKwkJCX0K
+KworCQkJcmV0ID0gZGV2bWVtLT5vcHMtPnAycF9tYXAoZGV2bWVtLCByYW5nZSwgZGV2aWNlLAor
+CQkJCQkJICAgYWRkciwgZGFkZHJzKTsKKwkJCWlmIChyZXQgPD0gMCkgeworCQkJCS8qIEZhbGwt
+YmFjayB0byBtYWluIG1lbW9yeS4gKi8KKwkJCQlyYW5nZS0+ZGVmYXVsdF9mbGFncyB8PQorCQkJ
+CQlyYW5nZS0+ZmxhZ3NbSE1NX1BGTl9ERVZJQ0VfUFJJVkFURV07CisJCQkJZ290byBhZ2FpbjsK
+KwkJCX0KKwkJCW1hcHBlZCArPSByZXQ7CisJCQlpICs9IHJldDsKKwkJCWNvbnRpbnVlOworCQl9
+CisKIAkJLyogSWYgaXQgaXMgcmVhZCBhbmQgd3JpdGUgdGhhbiBtYXAgYmktZGlyZWN0aW9uYWwu
+ICovCiAJCWlmIChyYW5nZS0+cGZuc1tpXSAmIHJhbmdlLT52YWx1ZXNbSE1NX1BGTl9XUklURV0p
+CiAJCQlkaXIgPSBETUFfQklESVJFQ1RJT05BTDsKQEAgLTEyNDIsNyArMTI2OCw5IEBAIGxvbmcg
+aG1tX3JhbmdlX2RtYV9tYXAoc3RydWN0IGhtbV9yYW5nZSAqcmFuZ2UsCiAJcmV0dXJuIG1hcHBl
+ZDsKIAogdW5tYXA6Ci0JZm9yIChucGFnZXMgPSBpLCBpID0gMDsgKGkgPCBucGFnZXMpICYmIG1h
+cHBlZDsgKytpKSB7CisJbnBhZ2VzID0gaTsKKwlhZGRyID0gcmFuZ2UtPnN0YXJ0OworCWZvciAo
+aSA9IDA7IChpIDwgbnBhZ2VzKSAmJiBtYXBwZWQ7ICsraSwgYWRkciArPSBwYWdlX3NpemUpIHsK
+IAkJZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZGlyID0gRE1BX0ZST01fREVWSUNFOwogCQlzdHJ1
+Y3QgcGFnZSAqcGFnZTsKIApAQCAtMTI1Myw2ICsxMjgxLDE4IEBAIGxvbmcgaG1tX3JhbmdlX2Rt
+YV9tYXAoc3RydWN0IGhtbV9yYW5nZSAqcmFuZ2UsCiAJCWlmIChkbWFfbWFwcGluZ19lcnJvcihk
+ZXZpY2UsIGRhZGRyc1tpXSkpCiAJCQljb250aW51ZTsKIAorCQlpZiAoaXNfZGV2aWNlX3ByaXZh
+dGVfcGFnZShwYWdlKSkgeworCQkJc3RydWN0IGhtbV9kZXZtZW0gKmRldm1lbSA9IHBhZ2UtPnBn
+bWFwLT5kYXRhOworCQkJdW5zaWduZWQgbG9uZyBpbmM7CisKKwkJCWluYyA9IGRldm1lbS0+b3Bz
+LT5wMnBfdW5tYXAoZGV2bWVtLCByYW5nZSwgZGV2aWNlLAorCQkJCQkJICAgICBhZGRyLCAmZGFk
+ZHJzW2ldKTsKKwkJCUJVR19PTihpbmMgPiBucGFnZXMpOworCQkJbWFwcGVkICs9IGluYzsKKwkJ
+CWkgKz0gaW5jOworCQkJY29udGludWU7CisJCX0KKwogCQkvKiBJZiBpdCBpcyByZWFkIGFuZCB3
+cml0ZSB0aGFuIG1hcCBiaS1kaXJlY3Rpb25hbC4gKi8KIAkJaWYgKHJhbmdlLT5wZm5zW2ldICYg
+cmFuZ2UtPnZhbHVlc1tITU1fUEZOX1dSSVRFXSkKIAkJCWRpciA9IERNQV9CSURJUkVDVElPTkFM
+OwpAQCAtMTI4NSw3ICsxMzI1LDcgQEAgbG9uZyBobW1fcmFuZ2VfZG1hX3VubWFwKHN0cnVjdCBo
+bW1fcmFuZ2UgKnJhbmdlLAogCQkJIGRtYV9hZGRyX3QgKmRhZGRycywKIAkJCSBib29sIGRpcnR5
+KQogewotCXVuc2lnbmVkIGxvbmcgaSwgbnBhZ2VzLCBwYWdlX3NpemU7CisJdW5zaWduZWQgbG9u
+ZyBpLCBucGFnZXMsIHBhZ2Vfc2l6ZSwgYWRkcjsKIAlsb25nIGNwYWdlcyA9IDA7CiAKIAkvKiBT
+YW5pdHkgY2hlY2suICovCkBAIC0xMjk4LDcgKzEzMzgsNyBAQCBsb25nIGhtbV9yYW5nZV9kbWFf
+dW5tYXAoc3RydWN0IGhtbV9yYW5nZSAqcmFuZ2UsCiAKIAlwYWdlX3NpemUgPSBobW1fcmFuZ2Vf
+cGFnZV9zaXplKHJhbmdlKTsKIAlucGFnZXMgPSAocmFuZ2UtPmVuZCAtIHJhbmdlLT5zdGFydCkg
+Pj4gcmFuZ2UtPnBhZ2Vfc2hpZnQ7Ci0JZm9yIChpID0gMDsgaSA8IG5wYWdlczsgKytpKSB7CisJ
+Zm9yIChpID0gMCwgYWRkciA9IHJhbmdlLT5zdGFydDsgaSA8IG5wYWdlczsgKytpLCBhZGRyICs9
+IHBhZ2Vfc2l6ZSkgewogCQllbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBkaXIgPSBETUFfRlJPTV9E
+RVZJQ0U7CiAJCXN0cnVjdCBwYWdlICpwYWdlOwogCkBAIC0xMzE4LDYgKzEzNTgsMTkgQEAgbG9u
+ZyBobW1fcmFuZ2VfZG1hX3VubWFwKHN0cnVjdCBobW1fcmFuZ2UgKnJhbmdlLAogCQkJCXNldF9w
+YWdlX2RpcnR5KHBhZ2UpOwogCQl9CiAKKwkJaWYgKGlzX2RldmljZV9wcml2YXRlX3BhZ2UocGFn
+ZSkpIHsKKwkJCXN0cnVjdCBobW1fZGV2bWVtICpkZXZtZW0gPSBwYWdlLT5wZ21hcC0+ZGF0YTsK
+KwkJCXVuc2lnbmVkIGxvbmcgcmV0OworCisJCQlCVUdfT04oIWRldm1lbS0+b3BzLT5wMnBfdW5t
+YXApOworCisJCQlyZXQgPSBkZXZtZW0tPm9wcy0+cDJwX3VubWFwKGRldm1lbSwgcmFuZ2UsIGRl
+dmljZSwKKwkJCQkJCSAgICAgYWRkciwgJmRhZGRyc1tpXSk7CisJCQlCVUdfT04ocmV0ID4gbnBh
+Z2VzKTsKKwkJCWkgKz0gcmV0OworCQkJY29udGludWU7CisJCX0KKwogCQkvKiBVbm1hcCBhbmQg
+Y2xlYXIgcGZucy9kbWEgYWRkcmVzcyAqLwogCQlkbWFfdW5tYXBfcGFnZShkZXZpY2UsIGRhZGRy
+c1tpXSwgcGFnZV9zaXplLCBkaXIpOwogCQlyYW5nZS0+cGZuc1tpXSA9IHJhbmdlLT52YWx1ZXNb
+SE1NX1BGTl9OT05FXTsKLS0gCjIuMTcuMgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlz
+dGluZm8vZHJpLWRldmVsCg==
