@@ -1,43 +1,94 @@
-From: Jerome Glisse <jglisse@redhat.com>
-Subject: Re: [RFC PATCH 2/5] drivers/base: add a function to test peer to
- peer capability
-Date: Tue, 29 Jan 2019 14:56:52 -0500
-Message-ID: <20190129195651.GK3176@redhat.com>
+From: Alex Deucher <alexdeucher@gmail.com>
+Subject: Re: [RFC PATCH 1/5] pci/p2p: add a function to test peer to peer
+ capability
+Date: Tue, 29 Jan 2019 14:56:38 -0500
+Message-ID: <CADnq5_N8QLA_80j+iCtMHvSZhc-WFpzdZhpk6jR9yhoNoUDFZA@mail.gmail.com>
 References: <20190129174728.6430-1-jglisse@redhat.com>
- <20190129174728.6430-3-jglisse@redhat.com>
- <20190129194605.GC32069@kroah.com>
+ <20190129174728.6430-2-jglisse@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20190129194605.GC32069@kroah.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>, "Rafael J . Wysocki" <rafael@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian Koenig <christian.koenig@amd.com>, Felix Kuehling <Felix.Kuehling@amd.com>, Jason Gunthorpe <jgg@mellanox.com>, linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20190129174728.6430-2-jglisse@redhat.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Jerome Glisse <jglisse@redhat.com>
+Cc: Logan Gunthorpe <logang@deltatee.com>, Joerg Roedel <jroedel@suse.de>, "Rafael J . Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Felix Kuehling <Felix.Kuehling@amd.com>, LKML <linux-kernel@vger.kernel.org>, Maling list - DRI developers <dri-devel@lists.freedesktop.org>, Christian Koenig <christian.koenig@amd.com>, linux-mm <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@mellanox.com>, Linux PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 29, 2019 at 08:46:05PM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Jan 29, 2019 at 12:47:25PM -0500, jglisse@redhat.com wrote:
-> > From: Jérôme Glisse <jglisse@redhat.com>
-> > 
-> > device_test_p2p() return true if two devices can peer to peer to
-> > each other. We add a generic function as different inter-connect
-> > can support peer to peer and we want to genericaly test this no
-> > matter what the inter-connect might be. However this version only
-> > support PCIE for now.
-> 
-> There is no defintion of "peer to peer" in the driver/device model, so
-> why should this be in the driver core at all?
-> 
-> Especially as you only do this for PCI, why not just keep it in the PCI
-> layer, that way you _know_ you are dealing with the right pointer types
-> and there is no need to mess around with the driver core at all.
-
-Ok i will drop the core device change. I wanted to allow other non
-PCI to join latter on (ie allow PCI device to export to non PCI device)
-but if that ever happen then we can update pci exporter at the same
-time we introduce non pci importer.
-
-Cheers,
-Jérôme
+T24gVHVlLCBKYW4gMjksIDIwMTkgYXQgMTI6NDcgUE0gPGpnbGlzc2VAcmVkaGF0LmNvbT4gd3Jv
+dGU6Cj4KPiBGcm9tOiBKw6lyw7RtZSBHbGlzc2UgPGpnbGlzc2VAcmVkaGF0LmNvbT4KPgo+IGRl
+dmljZV90ZXN0X3AycCgpIHJldHVybiB0cnVlIGlmIHR3byBkZXZpY2VzIGNhbiBwZWVyIHRvIHBl
+ZXIgdG8KPiBlYWNoIG90aGVyLiBXZSBhZGQgYSBnZW5lcmljIGZ1bmN0aW9uIGFzIGRpZmZlcmVu
+dCBpbnRlci1jb25uZWN0Cj4gY2FuIHN1cHBvcnQgcGVlciB0byBwZWVyIGFuZCB3ZSB3YW50IHRv
+IGdlbmVyaWNhbHkgdGVzdCB0aGlzIG5vCj4gbWF0dGVyIHdoYXQgdGhlIGludGVyLWNvbm5lY3Qg
+bWlnaHQgYmUuIEhvd2V2ZXIgdGhpcyB2ZXJzaW9uIG9ubHkKPiBzdXBwb3J0IFBDSUUgZm9yIG5v
+dy4KPgoKV2hhdCBhYm91dCBzb21ldGhpbmcgbGlrZSB0aGVzZSBwYXRjaGVzOgpodHRwczovL2Nn
+aXQuZnJlZWRlc2t0b3Aub3JnL35kZWF0aHNpbXBsZS9saW51eC9jb21taXQvP2g9cDJwJmlkPTRm
+YWI5ZmY2OWNiOTY4MTgzZjcxNzU1MTQ0MWI0NzVmYWJjZTZjMWMKaHR0cHM6Ly9jZ2l0LmZyZWVk
+ZXNrdG9wLm9yZy9+ZGVhdGhzaW1wbGUvbGludXgvY29tbWl0Lz9oPXAycCZpZD1mOTBiMTJkNDFj
+Mjc3MzM1ZDA4YzlkYWI2MjQzM2YyN2MwZmFkYmU1ClRoZXkgYXJlIGEgYml0IG1vcmUgdGhvcm91
+Z2guCgpBbGV4Cgo+IFNpZ25lZC1vZmYtYnk6IErDqXLDtG1lIEdsaXNzZSA8amdsaXNzZUByZWRo
+YXQuY29tPgo+IENjOiBMb2dhbiBHdW50aG9ycGUgPGxvZ2FuZ0BkZWx0YXRlZS5jb20+Cj4gQ2M6
+IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5vcmc+Cj4gQ2M6IFJh
+ZmFlbCBKLiBXeXNvY2tpIDxyYWZhZWxAa2VybmVsLm9yZz4KPiBDYzogQmpvcm4gSGVsZ2FhcyA8
+YmhlbGdhYXNAZ29vZ2xlLmNvbT4KPiBDYzogQ2hyaXN0aWFuIEtvZW5pZyA8Y2hyaXN0aWFuLmtv
+ZW5pZ0BhbWQuY29tPgo+IENjOiBGZWxpeCBLdWVobGluZyA8RmVsaXguS3VlaGxpbmdAYW1kLmNv
+bT4KPiBDYzogSmFzb24gR3VudGhvcnBlIDxqZ2dAbWVsbGFub3guY29tPgo+IENjOiBsaW51eC1r
+ZXJuZWxAdmdlci5rZXJuZWwub3JnCj4gQ2M6IGxpbnV4LXBjaUB2Z2VyLmtlcm5lbC5vcmcKPiBD
+YzogZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwo+IENjOiBDaHJpc3RvcGggSGVsbHdp
+ZyA8aGNoQGxzdC5kZT4KPiBDYzogTWFyZWsgU3p5cHJvd3NraSA8bS5zenlwcm93c2tpQHNhbXN1
+bmcuY29tPgo+IENjOiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPgo+IENjOiBK
+b2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4KPiBDYzogaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKPiAtLS0KPiAgZHJpdmVycy9wY2kvcDJwZG1hLmMgICAgICAgfCAyNyArKysr
+KysrKysrKysrKysrKysrKysrKysrKysKPiAgaW5jbHVkZS9saW51eC9wY2ktcDJwZG1hLmggfCAg
+NiArKysrKysKPiAgMiBmaWxlcyBjaGFuZ2VkLCAzMyBpbnNlcnRpb25zKCspCj4KPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9wY2kvcDJwZG1hLmMgYi9kcml2ZXJzL3BjaS9wMnBkbWEuYwo+IGluZGV4
+IGM1MjI5OGQ3NmU2NC4uNjIwYWM2MGJhYmI1IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvcGNpL3Ay
+cGRtYS5jCj4gKysrIGIvZHJpdmVycy9wY2kvcDJwZG1hLmMKPiBAQCAtNzk3LDMgKzc5NywzMCBA
+QCBzc2l6ZV90IHBjaV9wMnBkbWFfZW5hYmxlX3Nob3coY2hhciAqcGFnZSwgc3RydWN0IHBjaV9k
+ZXYgKnAycF9kZXYsCj4gICAgICAgICByZXR1cm4gc3ByaW50ZihwYWdlLCAiJXNcbiIsIHBjaV9u
+YW1lKHAycF9kZXYpKTsKPiAgfQo+ICBFWFBPUlRfU1lNQk9MX0dQTChwY2lfcDJwZG1hX2VuYWJs
+ZV9zaG93KTsKPiArCj4gK2Jvb2wgcGNpX3Rlc3RfcDJwKHN0cnVjdCBkZXZpY2UgKmRldkEsIHN0
+cnVjdCBkZXZpY2UgKmRldkIpCj4gK3sKPiArICAgICAgIHN0cnVjdCBwY2lfZGV2ICpwY2lBLCAq
+cGNpQjsKPiArICAgICAgIGJvb2wgcmV0Owo+ICsgICAgICAgaW50IHRtcDsKPiArCj4gKyAgICAg
+ICAvKgo+ICsgICAgICAgICogRm9yIG5vdyB3ZSBvbmx5IHN1cHBvcnQgUENJRSBwZWVyIHRvIHBl
+ZXIgYnV0IG90aGVyIGludGVyLWNvbm5lY3QKPiArICAgICAgICAqIGNhbiBiZSBhZGRlZC4KPiAr
+ICAgICAgICAqLwo+ICsgICAgICAgcGNpQSA9IGZpbmRfcGFyZW50X3BjaV9kZXYoZGV2QSk7Cj4g
+KyAgICAgICBwY2lCID0gZmluZF9wYXJlbnRfcGNpX2RldihkZXZCKTsKPiArICAgICAgIGlmIChw
+Y2lBID09IE5VTEwgfHwgcGNpQiA9PSBOVUxMKSB7Cj4gKyAgICAgICAgICAgICAgIHJldCA9IGZh
+bHNlOwo+ICsgICAgICAgICAgICAgICBnb3RvIG91dDsKPiArICAgICAgIH0KPiArCj4gKyAgICAg
+ICB0bXAgPSB1cHN0cmVhbV9icmlkZ2VfZGlzdGFuY2UocGNpQSwgcGNpQiwgTlVMTCk7Cj4gKyAg
+ICAgICByZXQgPSB0bXAgPCAwID8gZmFsc2UgOiB0cnVlOwo+ICsKPiArb3V0Ogo+ICsgICAgICAg
+cGNpX2Rldl9wdXQocGNpQik7Cj4gKyAgICAgICBwY2lfZGV2X3B1dChwY2lBKTsKPiArICAgICAg
+IHJldHVybiBmYWxzZTsKPiArfQo+ICtFWFBPUlRfU1lNQk9MX0dQTChwY2lfdGVzdF9wMnApOwo+
+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3BjaS1wMnBkbWEuaCBiL2luY2x1ZGUvbGludXgv
+cGNpLXAycGRtYS5oCj4gaW5kZXggYmNhOWJjM2U1YmU3Li43NjcxY2M0OTlhMDggMTAwNjQ0Cj4g
+LS0tIGEvaW5jbHVkZS9saW51eC9wY2ktcDJwZG1hLmgKPiArKysgYi9pbmNsdWRlL2xpbnV4L3Bj
+aS1wMnBkbWEuaAo+IEBAIC0zNiw2ICszNiw3IEBAIGludCBwY2lfcDJwZG1hX2VuYWJsZV9zdG9y
+ZShjb25zdCBjaGFyICpwYWdlLCBzdHJ1Y3QgcGNpX2RldiAqKnAycF9kZXYsCj4gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIGJvb2wgKnVzZV9wMnBkbWEpOwo+ICBzc2l6ZV90IHBjaV9wMnBk
+bWFfZW5hYmxlX3Nob3coY2hhciAqcGFnZSwgc3RydWN0IHBjaV9kZXYgKnAycF9kZXYsCj4gICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIGJvb2wgdXNlX3AycGRtYSk7Cj4gK2Jvb2wgcGNp
+X3Rlc3RfcDJwKHN0cnVjdCBkZXZpY2UgKmRldkEsIHN0cnVjdCBkZXZpY2UgKmRldkIpOwo+ICAj
+ZWxzZSAvKiBDT05GSUdfUENJX1AyUERNQSAqLwo+ICBzdGF0aWMgaW5saW5lIGludCBwY2lfcDJw
+ZG1hX2FkZF9yZXNvdXJjZShzdHJ1Y3QgcGNpX2RldiAqcGRldiwgaW50IGJhciwKPiAgICAgICAg
+ICAgICAgICAgc2l6ZV90IHNpemUsIHU2NCBvZmZzZXQpCj4gQEAgLTk3LDYgKzk4LDExIEBAIHN0
+YXRpYyBpbmxpbmUgc3NpemVfdCBwY2lfcDJwZG1hX2VuYWJsZV9zaG93KGNoYXIgKnBhZ2UsCj4g
+IHsKPiAgICAgICAgIHJldHVybiBzcHJpbnRmKHBhZ2UsICJub25lXG4iKTsKPiAgfQo+ICsKPiAr
+c3RhdGljIGlubGluZSBib29sIHBjaV90ZXN0X3AycChzdHJ1Y3QgZGV2aWNlICpkZXZBLCBzdHJ1
+Y3QgZGV2aWNlICpkZXZCKQo+ICt7Cj4gKyAgICAgICByZXR1cm4gZmFsc2U7Cj4gK30KPiAgI2Vu
+ZGlmIC8qIENPTkZJR19QQ0lfUDJQRE1BICovCj4KPgo+IC0tCj4gMi4xNy4yCj4KPiBfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IGRyaS1kZXZlbCBtYWls
+aW5nIGxpc3QKPiBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlz
+dApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0
+b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
